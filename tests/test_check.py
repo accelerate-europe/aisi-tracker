@@ -140,9 +140,11 @@ def test_child_environment_drops_git_and_uv_routing(monkeypatch):
     routing = {"GIT_INDEX_FILE", "VIRTUAL_ENV", "UV_WORKING_DIR", "UV_PROJECT", "UV_PROJECT_ENVIRONMENT", "UV_NO_PROJECT", "UV_NO_SYNC", "UV_FROZEN"}
     for name in routing | {"UV_CACHE_DIR"}:
         monkeypatch.setenv(name, "/checkout")
+    monkeypatch.setenv("UV_EXCLUDE_NEWER", "7 days")  # CI sets the window uv.lock records
     env = check.clean_env()
     assert not routing & set(env)
     assert env["UV_CACHE_DIR"] == "/checkout"
+    assert env["UV_EXCLUDE_NEWER"] == "7 days"
     assert env["PYTHONDONTWRITEBYTECODE"] == "1"
 
 

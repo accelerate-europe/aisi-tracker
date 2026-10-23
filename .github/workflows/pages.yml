@@ -17,12 +17,17 @@ jobs:
     runs-on: ubuntu-latest
     env:
       PUBLISH: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
+      # The maintainer's uv refuses versions published less than 7 days ago and uv.lock records that window;
+      # CI uses the same window so the lockfile matches (--locked).
+      UV_EXCLUDE_NEWER: "7 days"
     steps:
       # Actions are pinned to full commit SHAs; the comment names the release the SHA resolves to.
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           persist-credentials: false
       - uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86 # v5.4.2
+        with:
+          version: "0.11.14" # the uv the lockfile was checked with; relative exclude-newer needs uv >= 0.9.12
       # One entry point: the hook's fast steps, then build into dist/ and the browser gate on exactly that build.
       # The publishing path also rejects draft wording (--release).
       - run: uv run scripts/check.py --only fast,build,gate --out dist --report-dir "$RUNNER_TEMP/check" ${{ env.PUBLISH == 'true' && '--release' || '' }}

@@ -83,13 +83,13 @@ class Context:
 
 
 UV_KEPT = ("UV_CACHE_DIR", "UV_PYTHON_INSTALL_DIR", "UV_PYTHON_DOWNLOADS", "UV_INDEX", "UV_DEFAULT_INDEX",
-           "UV_EXTRA_INDEX_URL", "UV_NATIVE_TLS", "UV_OFFLINE", "UV_HTTP_TIMEOUT")
+           "UV_EXTRA_INDEX_URL", "UV_NATIVE_TLS", "UV_OFFLINE", "UV_HTTP_TIMEOUT", "UV_EXCLUDE_NEWER")
 
 
 def clean_env() -> dict:
     """Children run in the snapshot: no hook index, no outer virtualenv, no bytecode files."""
     # Any other uv setting could redirect the project, environment or sync and bypass the lock,
-    # so only cache, interpreter and index settings pass through.
+    # so only cache, interpreter and index settings and the resolution cutoff (which uv.lock records) pass through.
     env = {
         k: v for k, v in os.environ.items()
         if not k.startswith("GIT_") and k != "VIRTUAL_ENV" and (not k.startswith("UV_") or k.startswith(UV_KEPT))
