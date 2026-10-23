@@ -5,7 +5,7 @@ Use this runbook for the first public release. Repository creation, publication,
 ## Prepare the release
 
 1. Resolve the [release checklist](../README.md#release-checklist), including draft wording, evidence limits and licence scope. Keep the documentation licence stated in the README unless the owner changes it.
-2. Regenerate the tracked metadata with `uv run scripts/build.py --update-readme`. Stage the intended changes, including README and `CITATION.cff`.
+2. Regenerate the tracked metadata with `uv run scripts/build.py --update-readme`. Stage the intended changes, including README, `CITATION.cff` and `.zenodo.json`.
 3. Configure `AISI_SNAPSHOTS` as described in the [source snapshot guide](source-snapshots.md). Run `uv run scripts/check.py --release --out dist`. Require a successful exit and every step PASS, including private copies and quotation verification. A `dist/` directory can exist after validation fails and is not proof of a successful check.
 4. Read the report and complete the independent review of the staged tree and the visual pass (`AGENTS.md`, Done means). Commit exactly the reviewed staged tree and record its full SHA. Do not export a working tree or an unreviewed branch tip.
 
@@ -18,7 +18,7 @@ Use this runbook for the first public release. Repository creation, publication,
    git archive "$release_sha" | tar -x -C "$export_dir"
    ```
 
-2. Inspect the exported files and scan for secrets, private paths, internal notes and research job labels. Confirm that export-ignored files (`docs/history/`, `docs/review.md`) are absent and `LICENSE`, `LICENSE-DATA` and `CITATION.cff` are present. Source snapshots and local reports must not be included.
+2. Inspect the exported files and scan for secrets, private paths, internal notes and research job labels. Confirm that export-ignored files (`docs/history/`, `docs/review.md`) are absent and `LICENSE`, `LICENSE-DATA`, `CITATION.cff` and `.zenodo.json` are present. Source snapshots and local reports must not be included.
 3. In the export directory, run `git init -b main`, stage the import with `git add .`, and independently review that staged tree. Run the public checks before committing it.
 
    ```sh
@@ -35,7 +35,7 @@ Use this runbook for the first public release. Repository creation, publication,
 3. Add the DNS CNAME for `aisi.accelerate-europe.org` pointing to `accelerate-europe.github.io`, without a repository path. With Actions-based Pages, configure the custom domain in repository settings; a `CNAME` file is unnecessary. Once DNS and the certificate are ready, enable **Enforce HTTPS**. Follow [GitHub's custom-domain instructions](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site). The error page's root-relative recovery and favicon links assume the custom domain root; every other page (the tracker, method and API pages) links to the favicon relatively.
 4. Enable secret scanning and push protection. With Gitleaks installed, run `gitleaks git --redact --log-opts="--all" .` from the fresh public repository to scan its complete history before pushing it. Resolve findings before publication. See [GitHub secret scanning](https://docs.github.com/en/code-security/concepts/secret-security/secret-scanning).
 5. Push the reviewed import and monitor both `build` and `deploy`. Once the `build` check is available, protect `main` with required pull requests and that status check; block force pushes and deletion. Verify the rule applies to maintainers. Before merging data changes, contributors run `uv run scripts/check.py --release --only fast,build,gate --out dist`; ordinary pull-request checks do not run the release wording guard. The maintainer also runs the full release check with the private source store as described above. See [protected branches](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches).
-6. Connect Zenodo to GitHub, grant access to the public repository and enable that repository in Zenodo **before** creating the first GitHub release. Check the creators, title, version and licence against `CITATION.cff`. Create the version tag and GitHub release from the reviewed public commit. Confirm Zenodo's archive and DOI were created and inspect their metadata; enabling the integration alone does not mint a DOI. See [Zenodo's repository setup](https://help.zenodo.org/docs/github/enable-repository/).
+6. Connect Zenodo to GitHub, grant access to the public repository and enable that repository in Zenodo **before** creating the first GitHub release. Check the creators, title, version and licence against `.zenodo.json`, which Zenodo reads in place of `CITATION.cff`. Create the version tag and GitHub release from the reviewed public commit. Confirm Zenodo's archive and DOI were created and inspect their metadata; enabling the integration alone does not mint a DOI. See [Zenodo's repository setup](https://help.zenodo.org/docs/github/enable-repository/).
 
 ## Verify publication
 

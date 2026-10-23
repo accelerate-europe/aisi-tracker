@@ -779,3 +779,16 @@ def test_validation_fails_a_compared_state_budget_without_gdp(dataset, strict):
     assert build.check_consistency(dataset, strict=strict) == []
     dataset["jurisdictions"][0].pop("gdp")
     assert any("institute gb-test" in e and "needs a positive gdp" in e for e in build.check_consistency(dataset, strict=strict))
+
+
+@pytest.mark.parametrize(("doi", "valid"), [
+    ("10.5281/zenodo.1234567", True),
+    ("https://doi.org/10.5281/zenodo.1234567", False),  # the bare DOI, not its link
+    ("10.5281/zenodo 1234567", False),
+])
+def test_dataset_doi_schema(dataset, doi, valid):
+    from jsonschema import Draft202012Validator
+
+    dataset["dataset"]["doi"] = doi
+    errors = list(Draft202012Validator(json.loads(build.SCHEMA.read_text())).iter_errors(dataset))
+    assert (not any(list(e.path) == ["dataset", "doi"] for e in errors)) == valid

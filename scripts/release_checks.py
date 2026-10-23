@@ -8,8 +8,10 @@ import tempfile
 from pathlib import Path
 
 try:
+    from .agent_files import doi_url
     from .reader_text import reader_text
 except ImportError:
+    from agent_files import doi_url
     from reader_text import reader_text
 
 
@@ -38,6 +40,15 @@ def check_readme_licence(readme: str) -> list[str]:
     ]
 
 
+def check_readme_doi(readme: str, doi: str | None) -> list[str]:
+    """With dataset.doi set, the README introduction (before the first section) links it."""
+    if not doi:
+        return []
+    intro = re.split(r"^## ", readme, maxsplit=1, flags=re.M)[0]
+    link = f"[{doi}]({doi_url(doi)})"
+    return [] if link in intro else [f"README.md introduction: missing the DOI link {link}"]
+
+
 def today() -> dt.date:
     """The machine's local date; a separate function so tests can fix it."""
     return dt.date.today()
@@ -51,6 +62,8 @@ def check_metadata(data: dict) -> list[str]:
     # The whole version token: 'version 1.0.1' must not match inside 'version 1.0.10'.
     if not re.search(r"(?<!\w)version " + re.escape(metadata["version"]) + r"(?![\w.+-]*\w)", metadata["citation"]):
         errors.append("dataset.citation does not name the current version")
+    if metadata.get("doi") and not metadata["citation"].endswith(" " + doi_url(metadata["doi"])):
+        errors.append("dataset.citation must end with the DOI link https://doi.org/ followed by dataset.doi")
     if not data.get("changelog") or data["changelog"][-1]["date"] != metadata["as_of"]:
         errors.append("dataset.as_of must equal the last changelog date")
     try:

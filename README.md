@@ -1,6 +1,6 @@
 # AI Security Institutes tracker
 
-Which states have an AI Security Institute (AISI), with funding, staff and leadership where published. Every record cites its sources and the date of its last recorded full check, with uncertain historical dates marked; funding, staff and leadership facts also carry a confidence rating. Published by Accelerate Europe under CC BY 4.0.
+Which states have an AI Security Institute (AISI), with funding, staff and leadership where published. Every record cites its sources and the date of its last recorded full check, with uncertain historical dates marked; funding, staff and leadership facts also carry a confidence rating. Published by Accelerate Europe under CC BY 4.0. DOI [10.5281/zenodo.23600431](https://doi.org/10.5281/zenodo.23600431), which always resolves to the latest version.
 
 <!-- definition:start -->
 
@@ -81,7 +81,7 @@ Code: MIT (`LICENSE`). Data, page text and documentation: CC BY 4.0 (`LICENSE-DA
 
 ### Cite as
 
-Accelerate Europe (2026). AI Security Institutes tracker, version 1.0.0, data as of 23 October 2026. Compiled by Jason Hoelscher-Obermaier.
+Accelerate Europe (2026). AI Security Institutes tracker, version 1.0.0, data as of 23 October 2026. Compiled by Jason Hoelscher-Obermaier. https://doi.org/10.5281/zenodo.23600431
 
 <!-- agents:end -->
 
@@ -91,7 +91,7 @@ The code is licensed under the [MIT License](LICENSE).
 
 The Inter fonts bundled in `scripts/fonts/` retain their [SIL Open Font License 1.1](scripts/fonts/OFL.txt). Regenerate the social image with `uv run --locked scripts/social_preview.py`.
 
-The data, page text and documentation, including the authored dataset in `data/aisi.json` and its generated data exports, are licensed under [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/). The full legal code is included in [LICENSE-DATA](LICENSE-DATA), also published at the site root. Credit: Accelerate Europe, compiled by Jason Hoelscher-Obermaier. Include the licence link and indicate any changes. The dataset licence is recorded in `dataset.license`, `CITATION.cff` and the generated data package. Quotations from sources remain with their rights holders and are reproduced as quotations; the licence covers our own compilation, text and data.
+The data, page text and documentation, including the authored dataset in `data/aisi.json` and its generated data exports, are licensed under [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/). The full legal code is included in [LICENSE-DATA](LICENSE-DATA), also published at the site root. Credit: Accelerate Europe, compiled by Jason Hoelscher-Obermaier. Include the licence link and indicate any changes. The dataset licence is recorded in `dataset.license`, `CITATION.cff`, `.zenodo.json` and the generated data package. Quotations from sources remain with their rights holders and are reproduced as quotations; the licence covers our own compilation, text and data.
 
 ## Update the data
 
@@ -146,7 +146,7 @@ The citation, current counts, agents and definition blocks, and `CITATION.cff` (
 
 <!-- citation:start -->
 
-Accelerate Europe (2026). AI Security Institutes tracker, version 1.0.0, data as of 23 October 2026. Compiled by Jason Hoelscher-Obermaier.
+Accelerate Europe (2026). AI Security Institutes tracker, version 1.0.0, data as of 23 October 2026. Compiled by Jason Hoelscher-Obermaier. https://doi.org/10.5281/zenodo.23600431
 
 <!-- citation:end -->
 
@@ -189,8 +189,8 @@ Follow the [launch runbook](docs/launch.md) for the public source export, hostin
 - Read the check report's Release warnings: sources marked `legal_text` whose `instrument_status_checked` is missing or more than 183 days old (rule `rescinded-instruments` in `dataset.method`; measured at `as_of`, and at the release date under `--release`). Re-verify each instrument's status and record the date, or leave the warning for the owner to accept. The warnings also list work dated after `as_of` (flag searches, source, snapshot and excerpt access dates, instrument status checks); `--release` fails on these, so set `as_of` to the release date first.
 - Rerun the full page sweep on the release build (every fold open, all table rows shown, 1440, 1000 and 390 px, light and dark) and fix or log every finding.
 - Remove draft wording from the README, canonical citation, schema descriptions, CLAUDE.md and AGENTS.md; regenerate the README citation, current counts, agents and definition blocks with `uv run scripts/build.py --update-readme`.
-- Set `PUBLIC_URL` in `scripts/agent_files.py` to the public site address; `--release` fails while it is the placeholder. Regenerate with `--update-readme`, since `CITATION.cff` carries the address.
-- Owner or team, at launch: switch on the Zenodo GitHub integration for the public repository, so each release gets a DOI with the same creators as `CITATION.cff`.
+- Set `PUBLIC_URL` in `scripts/agent_files.py` to the public site address; `--release` fails while it is the placeholder. Regenerate with `--update-readme`, since `CITATION.cff` and `.zenodo.json` carry the address.
+- Owner or team, at launch: switch on the Zenodo GitHub integration for the public repository, so each release gets a DOI with the metadata in `.zenodo.json` (generated with `CITATION.cff`; creators are the maintainers, the publisher is the imprint).
 - Run `uv run scripts/check.py --release --out dist`; every step must pass, none NOT RUN, and `dist/` is the build to publish.
 - Owner, at launch: enable branch protection requiring the `build` job and GitHub secret scanning with push protection, and run a one-off secrets scan of the full repository history.
 

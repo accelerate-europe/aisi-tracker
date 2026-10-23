@@ -7,7 +7,7 @@
   confidence, licence, citation), written once here and rendered into the page's "Using the
   data" block, the README section "For agents and scripts", api/v<major>/index.json and llms.txt.
 - The schema.org Dataset JSON-LD in the page head, sitemap.xml and robots.txt.
-- CITATION.cff, the only tracked output, written by build.py --update-readme.
+- CITATION.cff and .zenodo.json, the only tracked outputs, written by build.py --update-readme.
 """
 
 from __future__ import annotations
@@ -32,6 +32,12 @@ def public_url_errors(url: str | None = None) -> list[str]:
     if parts.hostname.endswith(".invalid"):
         return [f"PUBLIC_URL in scripts/agent_files.py is still the placeholder {url!r}; set the public site address before release"]
     return []
+
+
+def doi_url(doi: str) -> str:
+    """The resolvable link for a DOI, as the citation, page and metadata files give it."""
+    return "https://doi.org/" + doi
+
 
 SAFE_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]*")
 
@@ -97,7 +103,8 @@ def record_file(published: dict, kind: str, index: int) -> dict:
     dataset = published["dataset"]
     result = {
         "dataset": {"name": dataset["name"], "version": dataset["version"], "as_of": dataset["as_of"],
-                    "license": dataset["license"], "license_note": dataset["license_note"], "citation": dataset["citation"]},
+                    "license": dataset["license"], "license_note": dataset["license_note"], "citation": dataset["citation"]}
+        | ({"doi": dataset["doi"]} if dataset.get("doi") else {}),
         "aisi_json_pointer": prefix,
         "record": record,
     }
@@ -253,6 +260,7 @@ def json_ld(published: dict, resources: list[dict]) -> dict:
         "alternateName": dataset["name"],
         "description": dataset["description"],
         "url": PUBLIC_URL,
+        **({"identifier": doi_url(dataset["doi"])} if dataset.get("doi") else {}),
         "version": dataset["version"],
         "dateModified": dataset["as_of"],
         "license": LICENSES[dataset["license"]]["path"],
@@ -298,6 +306,17 @@ def sitemap_xml(published: dict, paths: list[str]) -> str:
 CFF_HEADER = "# Generated from data/aisi.json by scripts/build.py --update-readme; do not edit.\n"
 
 
+def citation_message(dataset: dict) -> str:
+    """The licence sentence and the canonical citation: the CFF message and the Zenodo notes."""
+    return f"Data, page text and documentation: {dataset['license']} (LICENSE-DATA). Code: MIT (LICENSE). {dataset['license_note']} If you use this dataset, please cite it as: {dataset['citation']}"
+
+
+def split_name(name: str) -> tuple[str, str]:
+    """Given names and family name: the family name is the last word."""
+    given, _, family = name.rpartition(" ")
+    return given, family
+
+
 def citation_cff(published: dict) -> str:
     """CITATION.cff (type dataset) from the dataset citation metadata: the publisher as an entity
     author and each maintainer as a person, the canonical citation verbatim."""
@@ -306,15 +325,19 @@ def citation_cff(published: dict) -> str:
     dataset = published["dataset"]
     people = []
     for maintainer in dataset["maintainers"]:
-        given, _, family = maintainer["name"].rpartition(" ")
-        people.append(({"given-names": given} if given else {}) | {"family-names": family} | ({"affiliation": maintainer["affiliation"]} if maintainer.get("affiliation") else {}))
+        given, family = split_name(maintainer["name"])
+        people.append(({"given-names": given} if given else {}) | {"family-names": family}
+                      | ({"affiliation": maintainer["affiliation"]} if maintainer.get("affiliation") else {})
+                      | ({"orcid": "https://orcid.org/" + maintainer["orcid"]} if maintainer.get("orcid") else {}))
     cff = {
         "cff-version": "1.2.0",
-        "message": f"Data, page text and documentation: {dataset['license']} (LICENSE-DATA). Code: MIT (LICENSE). {dataset['license_note']} If you use this dataset, please cite it as: {dataset['citation']}",
+        "message": citation_message(dataset),
         "type": "dataset",
         "title": dataset["title"],
         "abstract": dataset["description"],
         "version": dataset["version"],
+        # The concept DOI, which always resolves to the latest version (Zenodo mints a version DOI per release).
+        **({"doi": dataset["doi"], "identifiers": [{"type": "doi", "value": dataset["doi"], "description": "Concept DOI; resolves to the latest version"}]} if dataset.get("doi") else {}),
         # The current version's changelog date: build.py checks the last entry is this version, and
         # check_metadata that its date equals as_of, which release day sets to the release date.
         "date-released": published["changelog"][-1]["date"],
@@ -328,13 +351,49 @@ def citation_cff(published: dict) -> str:
     return CFF_HEADER + yaml.safe_dump(cff, sort_keys=False, allow_unicode=True, width=1000)
 
 
+ZENODO_KEYWORDS = ["AI Security Institute", "AI safety", "AI governance", "AI policy", "Europe"]
+
+
+def zenodo_json(published: dict) -> str:
+    """.zenodo.json (Zenodo's legacy deposit metadata), which Zenodo reads in place of CITATION.cff
+    when archiving a GitHub release. Same dataset fields as citation_cff, so the two cannot drift.
+    Creators are persons only (Zenodo's loader treats every creator as a person); the publisher is
+    the imprint. No publication_date: Zenodo takes the release date."""
+    dataset = published["dataset"]
+    creators = []
+    for maintainer in dataset["maintainers"]:
+        given, family = split_name(maintainer["name"])
+        creators.append({"name": f"{family}, {given}" if given else family}
+                        | ({"affiliation": maintainer["affiliation"]} if maintainer.get("affiliation") else {})
+                        | ({"orcid": maintainer["orcid"]} if maintainer.get("orcid") else {}))
+    related = [{"relation": "isDocumentedBy", "identifier": PUBLIC_URL, "resource_type": "other"}]
+    if dataset.get("repository"):
+        # The release tag is v<version>, e.g. v1.0.0.
+        related.append({"relation": "isSupplementTo", "identifier": f"{dataset['repository']}/tree/v{dataset['version']}", "resource_type": "software"})
+    deposit = {
+        "upload_type": "dataset",
+        "title": dataset["title"],
+        "version": dataset["version"],
+        "description": dataset["description"],
+        "notes": citation_message(dataset),
+        "creators": creators,
+        "imprint_publisher": dataset["publisher"],
+        # One SPDX id: a list makes Zenodo fail the release.
+        "license": LICENSES[dataset["license"]]["name"],
+        "keywords": ZENODO_KEYWORDS,
+        "related_identifiers": related,
+    }
+    return json.dumps(deposit, indent=2, ensure_ascii=False) + "\n"
+
+
 def api_index(published: dict) -> dict:
     dataset = published["dataset"]
     root = api_root(published)
     return {
         "api_version": api_major(published),
         "dataset": {"name": dataset["name"], "title": dataset["title"], "version": dataset["version"],
-                    "as_of": dataset["as_of"], "license": dataset["license"], "license_note": dataset["license_note"], "citation": dataset["citation"]},
+                    "as_of": dataset["as_of"], "license": dataset["license"], "license_note": dataset["license_note"], "citation": dataset["citation"]}
+        | ({"doi": dataset["doi"]} if dataset.get("doi") else {}),
         "versioning": f"{root}/ follows the major of dataset.version, which changes only with a breaking schema change; a breaking change will get a new path, and this one is to stay online unchanged.",
         "files": [{"path": path, "description": text} for path, text in API_FILES.items()],
         "institute_ids": [i["id"] for i in published["institutes"]],

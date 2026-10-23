@@ -2584,7 +2584,12 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
       });
       instantTips($("downloads"));
     }).catch(function () { $("downloads").appendChild(el("p", "small", "File list unavailable; see data/datapackage.json.")); });
-    $("cite").textContent = m.citation;
+    // The citation verbatim; its closing DOI link (dataset.doi) is clickable.
+    var doiUrl = m.doi ? "https://doi.org/" + m.doi : "", citeEnd = " " + doiUrl;
+    if (doiUrl && m.citation.slice(-citeEnd.length) === citeEnd) {
+      $("cite").textContent = m.citation.slice(0, -doiUrl.length);
+      var doi = el("a", null, doiUrl); doi.href = doiUrl; doi.rel = "noopener"; $("cite").appendChild(doi);
+    } else $("cite").textContent = m.citation;
     glossify($("top"), m.glossary);
     glossify(document.querySelector("main"), m.glossary);
     W.forEach(function (r) { glossify(r.tr, m.glossary); glueCitations(r.tr); });

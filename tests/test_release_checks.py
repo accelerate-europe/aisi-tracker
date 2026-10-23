@@ -3,6 +3,7 @@
 import json
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
 
@@ -766,3 +767,53 @@ def test_instrument_status_is_exported_and_warnings_reach_the_report_without_fai
     expected = "source gb-source: status last verified 2026-01-02, 288 days before dataset.as_of 2026-10-17 (limit 183)"
     assert f"warning: {expected}" in captured.err
     assert (report / build.RELEASE_WARNINGS).read_text() == f"## Release warnings\n\n- {expected}\n"
+
+
+def test_citation_ends_with_the_doi_link(dataset):
+    doi = "10.5281/zenodo.1234567"
+    dataset["dataset"]["doi"] = doi
+    assert any("must end with the DOI link" in e for e in release_checks.check_metadata(dataset))
+    dataset["dataset"]["citation"] += " https://doi.org/" + doi + "."
+    assert any("must end with the DOI link" in e for e in release_checks.check_metadata(dataset))
+    dataset["dataset"]["citation"] = dataset["dataset"]["citation"][:-1]
+    assert release_checks.check_metadata(dataset) == []
+    del dataset["dataset"]["doi"]  # no DOI, no link required
+    assert release_checks.check_metadata(dataset) == []
+
+
+def test_readme_introduction_links_the_doi():
+    doi = "10.5281/zenodo.1234567"
+    link = f"[{doi}](https://doi.org/{doi})"
+    assert release_checks.check_readme_doi(f"# T\n\nIntro. DOI {link}.\n\n## Setup\n", doi) == []
+    assert release_checks.check_readme_doi("# T\n\nIntro.\n\n## Cite\n\n" + link + "\n", doi) == [
+        f"README.md introduction: missing the DOI link {link}"
+    ]
+    assert release_checks.check_readme_doi("# T\n", None) == []
+
+
+def test_repository_readme_and_data_carry_the_doi():
+    root = Path(__file__).resolve().parents[1]
+    data = json.loads((root / "data/aisi.json").read_text(encoding="utf-8"))
+    doi = data["dataset"]["doi"]
+    assert release_checks.check_metadata(data) == []
+    assert release_checks.check_readme_doi((root / "README.md").read_text(encoding="utf-8"), doi) == []
+
+
+def test_zenodo_json_is_generated_and_stale_copies_fail(dataset, build_env, monkeypatch, capsys):
+    write_json(build.DATA, dataset)
+    zenodo = build_env / ".zenodo.json"
+    expected = zenodo.read_text()
+    assert json.loads(expected)["version"] == dataset["dataset"]["version"]
+    zenodo.write_text(expected.replace('"license": "CC-BY-4.0"', '"license": ["CC-BY-4.0"]'))
+    monkeypatch.setattr(sys, "argv", ["build.py", "--check"])
+    with pytest.raises(SystemExit):
+        build.main()
+    assert ".zenodo.json is missing or stale; run scripts/build.py --update-readme" in capsys.readouterr().err
+    monkeypatch.setattr(sys, "argv", ["build.py", "--update-readme"])
+    build.main()
+    assert zenodo.read_text() == expected
+    zenodo.unlink()
+    monkeypatch.setattr(sys, "argv", ["build.py", "--check"])
+    with pytest.raises(SystemExit):
+        build.main()
+    assert ".zenodo.json is missing or stale" in capsys.readouterr().err

@@ -8,7 +8,7 @@ Run from the repo root: uv run scripts/build.py [--out DIR]
 Exits non-zero on any schema or consistency error, so a broken dataset never ships.
 Outputs are written to a temporary folder beside the output directory first and only replace it
 when everything succeeded. No mode writes a tracked file except --update-readme, which regenerates
-the README citation, current-count, agents and definition blocks and CITATION.cff; --check writes nothing at all unless --report-dir is given.
+the README citation, current-count, agents and definition blocks, CITATION.cff and .zenodo.json; --check writes nothing at all unless --report-dir is given.
 """
 
 import argparse
@@ -39,8 +39,8 @@ if __package__:
     from .method_copy import full_method_page
     from .method_checks import check_method_rules  # type: ignore[import-not-found]
     from .source_origins import source_origin_report, write_source_origin_report
-    from .agent_files import LICENSES, api_files, api_landing_html, api_root, citation_cff, head_links, json_ld_script, llms_txt, robots_txt, sitemap_xml, orientation_html, orientation_markdown, definition_markdown, public_url_errors
-    from .release_checks import check_metadata, check_readme_licence, check_markdown, generated_block, generated_citation, generated_counts, check_launch_wording, write_citation, check_instrument_status_dates, instrument_status_warnings, dates_after_as_of
+    from .agent_files import LICENSES, doi_url, api_files, api_landing_html, api_root, citation_cff, zenodo_json, head_links, json_ld_script, llms_txt, robots_txt, sitemap_xml, orientation_html, orientation_markdown, definition_markdown, public_url_errors
+    from .release_checks import check_metadata, check_readme_licence, check_readme_doi, check_markdown, generated_block, generated_citation, generated_counts, check_launch_wording, write_citation, check_instrument_status_dates, instrument_status_warnings, dates_after_as_of
 else:  # Direct script execution.
     import published as fact_pipeline
     from references import authored_schema, excerpt_identity, materialise_references, pointer_ancestors
@@ -49,8 +49,8 @@ else:  # Direct script execution.
     from method_copy import full_method_page
     from method_checks import check_method_rules
     from source_origins import source_origin_report, write_source_origin_report
-    from agent_files import LICENSES, api_files, api_landing_html, api_root, citation_cff, head_links, json_ld_script, llms_txt, robots_txt, sitemap_xml, orientation_html, orientation_markdown, definition_markdown, public_url_errors
-    from release_checks import check_metadata, check_readme_licence, check_markdown, generated_block, generated_citation, generated_counts, check_launch_wording, write_citation, check_instrument_status_dates, instrument_status_warnings, dates_after_as_of
+    from agent_files import LICENSES, doi_url, api_files, api_landing_html, api_root, citation_cff, zenodo_json, head_links, json_ld_script, llms_txt, robots_txt, sitemap_xml, orientation_html, orientation_markdown, definition_markdown, public_url_errors
+    from release_checks import check_metadata, check_readme_licence, check_readme_doi, check_markdown, generated_block, generated_citation, generated_counts, check_launch_wording, write_citation, check_instrument_status_dates, instrument_status_warnings, dates_after_as_of
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "data" / "aisi.json"
@@ -994,7 +994,7 @@ def main() -> None:
     ap.add_argument("--report-dir", type=Path, help="write the informational source-origin report to this directory (default: no report file)")
     ap.add_argument("--out", type=Path, default=DIST, help="output directory for the built site (default: dist/)")
     ap.add_argument("--check", action="store_true", help="validate only; write nothing")
-    ap.add_argument("--update-readme", action="store_true", help="regenerate README citation, current-count, agents and definition blocks and CITATION.cff, then validate as --check does; the only mode that writes a tracked file")
+    ap.add_argument("--update-readme", action="store_true", help="regenerate README citation, current-count, agents and definition blocks, CITATION.cff and .zenodo.json, then validate as --check does; the only mode that writes a tracked file")
     ap.add_argument("--require-complete", action="store_true", help="require timeline and status confidence for jurisdictions, placement and short mandate for institutes, and legal basis for established institutes")
     ap.add_argument("--require-roster", action="store_true", help="require exactly the jurisdictions in data/reference/roster.csv")
     ap.add_argument("--release", action="store_true", help="also reject draft wording in release prose")
@@ -1036,14 +1036,18 @@ def main() -> None:
                 errors.append(f"README.md {' and '.join(stale)} block is stale; run scripts/build.py --update-readme")
         except (OSError, ValueError) as exc:
             errors.append(str(exc))
-    cff_path, cff_text = ROOT / "CITATION.cff", None
+    # Tracked metadata files generated whole: path, current text, generated text.
+    tracked = []
     if canonical:
-        cff_text = citation_cff(published)
-        current_cff = cff_path.read_text(encoding="utf-8") if cff_path.is_file() else None
-        if current_cff != cff_text and not args.update_readme:
-            errors.append("CITATION.cff is missing or stale; run scripts/build.py --update-readme")
+        for name, generate in (("CITATION.cff", citation_cff), (".zenodo.json", zenodo_json)):
+            path = ROOT / name
+            current, text = (path.read_text(encoding="utf-8") if path.is_file() else None), generate(published)
+            tracked.append((path, current, text))
+            if current != text and not args.update_readme:
+                errors.append(f"{name} is missing or stale; run scripts/build.py --update-readme")
     if canonical and citation_bytes is not None:
         errors.extend(check_readme_licence(citation_bytes.decode("utf-8")))
+        errors.extend(check_readme_doi(citation_bytes.decode("utf-8"), d["dataset"].get("doi")))
     errors.extend(check_markdown(ROOT, citation_bytes))
     if args.release:
         errors.extend(public_url_errors())
@@ -1057,9 +1061,10 @@ def main() -> None:
     if args.update_readme and citation_bytes != current_readme:
         write_citation(readme, citation_bytes)
         print(f"updated {readme.relative_to(ROOT)} citation, counts, agents and definition blocks", file=sys.stderr)
-    if args.update_readme and cff_text is not None and current_cff != cff_text:
-        write_citation(cff_path, cff_text.encode("utf-8"))
-        print(f"updated {cff_path.relative_to(ROOT)}", file=sys.stderr)
+    for path, current, text in tracked:
+        if args.update_readme and current != text:
+            write_citation(path, text.encode("utf-8"))
+            print(f"updated {path.relative_to(ROOT)}", file=sys.stderr)
     warnings = instrument_status_warnings(d, release=args.release) + late
     for warning in warnings:
         print(f"warning: {warning}", file=sys.stderr)
@@ -1121,6 +1126,8 @@ def main() -> None:
         for r in resources:
             r["title"], r["description"] = FILES[r["name"]]
         package = {
+            # Frictionless "id": a globally unique identifier, a DOI link where one exists.
+            **({"id": doi_url(m["doi"])} if m.get("doi") else {}),
             "name": m["name"], "title": m["title"], "description": m["description"], "version": m["version"],
             "licenses": [LICENSES[m["license"]]],
             "license_note": m["license_note"],

@@ -12,12 +12,14 @@
     "maintainers": [
       {
         "name": "Jason Hoelscher-Obermaier",
-        "affiliation": "Accelerate Europe; Transformative KI Österreich"
+        "affiliation": "Accelerate Europe; Transformative KI Österreich",
+        "orcid": "0000-0003-4773-9059"
       }
     ],
     "contact": "contact@accelerate-europe.org",
     "repository": "https://github.com/accelerate-europe/aisi-tracker",
-    "citation": "Accelerate Europe (2026). AI Security Institutes tracker, version 1.0.0, data as of 23 October 2026. Compiled by Jason Hoelscher-Obermaier.",
+    "citation": "Accelerate Europe (2026). AI Security Institutes tracker, version 1.0.0, data as of 23 October 2026. Compiled by Jason Hoelscher-Obermaier. https://doi.org/10.5281/zenodo.23600431",
+    "doi": "10.5281/zenodo.23600431",
     "scope": "Status is tracked for all 193 UN member states, Taiwan (as a territory) and the EU AI Office. The Europe page counts the 27 EU member states, Iceland, Liechtenstein, Norway, the United Kingdom and Switzerland.",
     "method": [
       {

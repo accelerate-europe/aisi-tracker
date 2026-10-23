@@ -38,6 +38,7 @@ def write_json(path, value):
             readme.write_bytes(release_checks.generated_counts(readme.read_bytes(), value))
         if b"<!-- agents:start -->" in readme.read_bytes():
             (readme.parent / "CITATION.cff").write_text(agent_files.citation_cff(value), encoding="utf-8")
+            (readme.parent / ".zenodo.json").write_text(agent_files.zenodo_json(value), encoding="utf-8")
             readme.write_bytes(release_checks.generated_block(readme.read_bytes(), agent_files.orientation_markdown(value), "agents"))
         if b"<!-- definition:start -->" in readme.read_bytes() and "definition" in value["dataset"]:
             readme.write_bytes(release_checks.generated_block(readme.read_bytes(), agent_files.definition_markdown(value["dataset"]), "definition"))

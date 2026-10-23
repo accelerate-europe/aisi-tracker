@@ -564,3 +564,17 @@ def test_every_theme_is_set_through_the_theme_helpers():
                     loops.append(f"{function.name} (raw page at lines {raw})" if raw else function.name)
     assert not offenders, f"colour scheme set outside the theme helpers in {offenders}"
     assert not loops, f"a loop over both themes does not use themed_page or set_theme in {loops}"
+
+
+def test_cite_is_the_citation_with_its_doi_link():
+    doi = "10.5281/zenodo.1234567"
+    url = "https://doi.org/" + doi
+    dataset = {"citation": "Tracker, version 1.0.0. " + url, "doi": doi}
+    good = BeautifulSoup(f'<p id="cite">Tracker, version 1.0.0. <a href="{url}">{url}<span class="vh"> (opens in a new tab)</span></a></p>', "html.parser")
+    assert check_page.check_cite(good, dataset) == []
+    plain = BeautifulSoup(f'<p id="cite">Tracker, version 1.0.0. {url}</p>', "html.parser")
+    assert "expected the DOI link" in check_page.check_cite(plain, dataset)[0]
+    wrong = BeautifulSoup('<p id="cite">Tracker, version 1.0.0.</p>', "html.parser")
+    assert check_page.check_cite(wrong, dataset) == ["Cite as is not dataset.citation verbatim"]
+    no_doi = {"citation": "Tracker, version 1.0.0."}
+    assert check_page.check_cite(wrong, no_doi) == []

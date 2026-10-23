@@ -720,6 +720,9 @@ def check_json_ld(soup, dist: Path) -> list[str]:
             errors.append(f"JSON-LD {key}: expected {value!r}, got {ld.get(key)!r}")
     if dataset["publisher"] not in {c.get("name") for c in ld.get("creator", [])}:
         errors.append("JSON-LD creator does not name the publisher")
+    doi = f"https://doi.org/{dataset['doi']}" if dataset.get("doi") else None
+    if ld.get("identifier") != doi or package.get("id") != doi:
+        errors.append(f"JSON-LD identifier and datapackage id: expected {doi!r}, got {ld.get('identifier')!r} and {package.get('id')!r}")
     urls = [d.get("contentUrl", "") for d in ld.get("distribution", []) if d.get("@type") == "DataDownload"]
     site = str(ld.get("url", ""))
     wanted = sorted(f"data/{r['path']}" for r in package["resources"])
@@ -2653,6 +2656,22 @@ def first_output_part_errors(parts: list[str], events: list[dict]) -> list[str]:
     return [f"development line for a first output does not read {FIRST_OUTPUT_LINE!r}: {parts}"]
 
 
+def check_cite(soup, dataset: dict) -> list[str]:
+    """Cite as: dataset.citation verbatim, its closing DOI link (dataset.doi) the one link."""
+    cite = soup.select_one("#cite")
+    if cite:  # the external-link hint ("opens in a new tab") is not citation text
+        cite = BeautifulSoup(str(cite), "html.parser").select_one("#cite")
+        for hint in cite.select(".vh"):
+            hint.decompose()
+    if not cite or cite.get_text() != dataset["citation"]:
+        return ["Cite as is not dataset.citation verbatim"]
+    links = [(a.get("href"), a.get_text()) for a in cite.select("a")]
+    doi = f"https://doi.org/{dataset['doi']}" if dataset.get("doi") else None
+    if links != ([(doi, doi)] if doi else []) or (doi and not dataset["citation"].endswith(" " + doi)):
+        return [f"Cite as: expected the DOI link {doi!r} at its end and no other link, got {links}"]
+    return []
+
+
 def check_summary_data(html: str, data: dict) -> list[str]:
     """Compare the hero, legend and developments with their source records."""
     soup = BeautifulSoup(html, "html.parser")
@@ -2710,6 +2729,7 @@ def check_summary_data(html: str, data: dict) -> list[str]:
         or not section.select_one("#cite")
     ):
         errors.append("changelog is not next to Cite as in Data")
+    errors += check_cite(soup, dataset)
 
     errors += first_output_data_errors(data)
     kinds = {

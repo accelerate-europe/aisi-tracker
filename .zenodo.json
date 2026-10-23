@@ -1,0 +1,35 @@
+{
+  "upload_type": "dataset",
+  "title": "AI Security Institutes tracker",
+  "version": "1.0.0",
+  "description": "Which states have an AI Security Institute (AISI), covering all 193 UN member states plus Taiwan and the EU AI Office, with funding, staff and leadership where published. Every record cites its sources.",
+  "notes": "Data, page text and documentation: CC BY 4.0 (LICENSE-DATA). Code: MIT (LICENSE). Quotations from sources remain with their rights holders and are reproduced as quotations; the licence covers our own compilation, text and data. If you use this dataset, please cite it as: Accelerate Europe (2026). AI Security Institutes tracker, version 1.0.0, data as of 23 October 2026. Compiled by Jason Hoelscher-Obermaier. https://doi.org/10.5281/zenodo.23600431",
+  "creators": [
+    {
+      "name": "Hoelscher-Obermaier, Jason",
+      "affiliation": "Accelerate Europe; Transformative KI Österreich",
+      "orcid": "0000-0003-4773-9059"
+    }
+  ],
+  "imprint_publisher": "Accelerate Europe",
+  "license": "CC-BY-4.0",
+  "keywords": [
+    "AI Security Institute",
+    "AI safety",
+    "AI governance",
+    "AI policy",
+    "Europe"
+  ],
+  "related_identifiers": [
+    {
+      "relation": "isDocumentedBy",
+      "identifier": "https://aisi.accelerate-europe.org/",
+      "resource_type": "other"
+    },
+    {
+      "relation": "isSupplementTo",
+      "identifier": "https://github.com/accelerate-europe/aisi-tracker/tree/v1.0.0",
+      "resource_type": "software"
+    }
+  ]
+}

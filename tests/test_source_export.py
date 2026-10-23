@@ -220,7 +220,7 @@ def test_build_check_works_from_source_export(tmp_path, monkeypatch):
             tmp_path / folder,
             ignore=shutil.ignore_patterns("__pycache__", "migrate_references.py"),
         )
-    for name in ("README.md", "CITATION.cff"):
+    for name in ("README.md", "CITATION.cff", ".zenodo.json"):
         shutil.copyfile(ROOT / name, tmp_path / name)
     monkeypatch.setenv("PATH", "")
     result = subprocess.run(
@@ -271,7 +271,7 @@ def test_shipped_markdown_links_resolve_in_the_public_export():
     with tarfile.open(fileobj=BytesIO(git("archive", "--format=tar", tree))) as archive:
         shipped = {m.name for m in archive.getmembers() if m.isfile()}
     assert "docs/review.md" not in shipped and not any(name.startswith("docs/history/") for name in shipped)
-    assert {"README.md", "AGENTS.md", "LICENSE", "LICENSE-DATA", "CITATION.cff"} <= shipped
+    assert {"README.md", "AGENTS.md", "LICENSE", "LICENSE-DATA", "CITATION.cff", ".zenodo.json"} <= shipped
     bad = []
     for name in sorted(n for n in shipped if n.endswith(".md")):
         text = (ROOT / name).read_text(encoding="utf-8")

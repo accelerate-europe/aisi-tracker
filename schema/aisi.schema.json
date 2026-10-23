@@ -90,6 +90,11 @@
               },
               "affiliation": {
                 "type": "string"
+              },
+              "orcid": {
+                "type": "string",
+                "pattern": "^[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{3}[0-9X]$",
+                "description": "ORCID iD, without the https://orcid.org/ prefix; CITATION.cff and .zenodo.json carry it."
               }
             }
           },
@@ -106,7 +111,12 @@
         "citation": {
           "type": "string",
           "pattern": "^[^\\r\\n<>]+(?![\\s\\S])",
-          "description": "One line of plain text: build.py copies it verbatim into README.md, so it may not contain line breaks or angle brackets (Markdown/HTML)."
+          "description": "One line of plain text: build.py copies it verbatim into README.md, so it may not contain line breaks or angle brackets (Markdown/HTML). When doi is set, it ends with the DOI as a resolvable link, https://doi.org/ followed by the DOI."
+        },
+        "doi": {
+          "type": "string",
+          "pattern": "^10\\.[0-9]{4,9}/[^\\s<>]+$",
+          "description": "Concept DOI of the dataset on Zenodo. It always resolves to the latest version, so it stays the same across versions; link it as https://doi.org/ followed by the DOI."
         },
         "scope": {
           "type": "string"

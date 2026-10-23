@@ -468,3 +468,57 @@ def test_orientation_rule_needs_its_lead_in(dataset):
     rule["text"] = "Missing values. An empty value means: not known."
     with pytest.raises(ValueError, match="missing-values must open with its name"):
         agent_files.method_rule(dataset["dataset"], "missing-values")
+
+
+def test_doi_reaches_cff_api_and_json_ld(dataset):
+    import yaml
+    from scripts import agent_files
+
+    doi = "10.5281/zenodo.1234567"
+    dataset["dataset"]["doi"] = doi
+    cff = yaml.safe_load(agent_files.citation_cff(dataset))
+    assert cff["doi"] == doi
+    assert cff["identifiers"] == [{"type": "doi", "value": doi, "description": "Concept DOI; resolves to the latest version"}]
+    assert cff["license"] == "CC-BY-4.0"  # still a single string with a DOI
+    assert agent_files.api_index(dataset)["dataset"]["doi"] == doi
+    assert agent_files.record_file(dataset, "jurisdictions", 0)["dataset"]["doi"] == doi
+    assert agent_files.json_ld(dataset, [])["identifier"] == "https://doi.org/" + doi
+    del dataset["dataset"]["doi"]
+    cff = yaml.safe_load(agent_files.citation_cff(dataset))
+    assert "doi" not in cff and "identifiers" not in cff
+    assert "doi" not in agent_files.api_index(dataset)["dataset"]
+    assert "identifier" not in agent_files.json_ld(dataset, [])
+
+
+def test_zenodo_json_from_the_cff_fields(dataset):
+    import yaml
+    from scripts import agent_files
+
+    dataset["dataset"]["repository"] = "https://github.com/example/tracker"
+    dataset["dataset"]["version"] = "2.3.4"
+    dataset["dataset"]["maintainers"] = [{"name": "Ada Lovelace", "affiliation": "Example Lab", "orcid": "0000-0002-1825-0097"}]
+    zenodo = json.loads(agent_files.zenodo_json(dataset))
+    cff = yaml.safe_load(agent_files.citation_cff(dataset))
+    assert zenodo["upload_type"] == "dataset"
+    assert (zenodo["title"], zenodo["description"], zenodo["notes"]) == (cff["title"], cff["abstract"], cff["message"])
+    assert zenodo["version"] == cff["version"] == "2.3.4"  # no "v"
+    assert zenodo["license"] == "CC-BY-4.0"  # a single string: a list fails the Zenodo release
+    assert "publication_date" not in zenodo
+    assert zenodo["creators"] == [{"name": "Lovelace, Ada", "affiliation": "Example Lab", "orcid": "0000-0002-1825-0097"}]
+    assert cff["authors"][1]["orcid"] == "https://orcid.org/0000-0002-1825-0097"
+    assert zenodo["imprint_publisher"] == dataset["dataset"]["publisher"]
+    assert zenodo["related_identifiers"] == [
+        {"relation": "isDocumentedBy", "identifier": agent_files.PUBLIC_URL, "resource_type": "other"},
+        {"relation": "isSupplementTo", "identifier": "https://github.com/example/tracker/tree/v2.3.4", "resource_type": "software"},
+    ]
+    del dataset["dataset"]["maintainers"][0]["orcid"]
+    assert "orcid" not in json.loads(agent_files.zenodo_json(dataset))["creators"][0]
+    assert "orcid" not in yaml.safe_load(agent_files.citation_cff(dataset))["authors"][1]
+
+
+def test_repository_zenodo_json_is_current():
+    data = json.loads(build.DATA.read_text(encoding="utf-8"))
+    tracked = json.loads((build.ROOT / ".zenodo.json").read_text(encoding="utf-8"))
+    assert tracked["creators"][0]["orcid"] == "0000-0003-4773-9059"
+    assert tracked["license"] == "CC-BY-4.0"
+    assert tracked["related_identifiers"][1]["identifier"].endswith("/tree/v" + data["dataset"]["version"])
