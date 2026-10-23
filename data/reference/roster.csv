@@ -1,0 +1,195 @@
+id,name,kind,un_member,m49_region_id,m49_region,m49_subregion_id,m49_subregion,population,population_year
+AD,Andorra,state,True,150,Europe,039,Southern Europe,82904,2025
+AE,United Arab Emirates,state,True,142,Asia,145,Western Asia,11513149,2025
+AF,Afghanistan,state,True,142,Asia,034,Southern Asia,43844111,2025
+AG,Antigua and Barbuda,state,True,019,Americas,419,Latin America and the Caribbean,94209,2025
+AL,Albania,state,True,150,Europe,039,Southern Europe,2349580,2025
+AM,Armenia,state,True,142,Asia,145,Western Asia,3086700,2025
+AO,Angola,state,True,002,Africa,202,Sub-Saharan Africa,39040039,2025
+AR,Argentina,state,True,019,Americas,419,Latin America and the Caribbean,45851378,2025
+AT,Austria,state,True,150,Europe,155,Western Europe,9208163,2025
+AU,Australia,state,True,009,Oceania,053,Australia and New Zealand,27614411,2025
+AZ,Azerbaijan,state,True,142,Asia,145,Western Asia,10246996,2025
+BA,Bosnia and Herzegovina,state,True,150,Europe,039,Southern Europe,3140095,2025
+BB,Barbados,state,True,019,Americas,419,Latin America and the Caribbean,282623,2025
+BD,Bangladesh,state,True,142,Asia,034,Southern Asia,175686899,2025
+BE,Belgium,state,True,150,Europe,155,Western Europe,11941781,2025
+BF,Burkina Faso,state,True,002,Africa,202,Sub-Saharan Africa,24074580,2025
+BG,Bulgaria,state,True,150,Europe,151,Eastern Europe,6433302,2025
+BH,Bahrain,state,True,142,Asia,145,Western Asia,1600366,2025
+BI,Burundi,state,True,002,Africa,202,Sub-Saharan Africa,14390003,2025
+BJ,Benin,state,True,002,Africa,202,Sub-Saharan Africa,14814460,2025
+BN,Brunei,state,True,142,Asia,035,South-eastern Asia,466330,2025
+BO,Bolivia,state,True,019,Americas,419,Latin America and the Caribbean,12581843,2025
+BR,Brazil,state,True,019,Americas,419,Latin America and the Caribbean,212812405,2025
+BS,The Bahamas,state,True,019,Americas,419,Latin America and the Caribbean,403033,2025
+BT,Bhutan,state,True,142,Asia,034,Southern Asia,796682,2025
+BW,Botswana,state,True,002,Africa,202,Sub-Saharan Africa,2562122,2025
+BY,Belarus,state,True,150,Europe,151,Eastern Europe,9085991,2025
+BZ,Belize,state,True,019,Americas,419,Latin America and the Caribbean,422924,2025
+CA,Canada,state,True,019,Americas,021,Northern America,41651653,2025
+CD,Democratic Republic of the Congo,state,True,002,Africa,202,Sub-Saharan Africa,112832473,2025
+CF,Central African Republic,state,True,002,Africa,202,Sub-Saharan Africa,5513282,2025
+CG,Republic of the Congo,state,True,002,Africa,202,Sub-Saharan Africa,6484437,2025
+CH,Switzerland,state,True,150,Europe,155,Western Europe,9092436,2025
+CI,Ivory Coast,state,True,002,Africa,202,Sub-Saharan Africa,32711547,2025
+CL,Chile,state,True,019,Americas,419,Latin America and the Caribbean,19859921,2025
+CM,Cameroon,state,True,002,Africa,202,Sub-Saharan Africa,29879337,2025
+CN,People's Republic of China,state,True,142,Asia,030,Eastern Asia,1406585000,2025
+CO,Colombia,state,True,019,Americas,419,Latin America and the Caribbean,53425635,2025
+CR,Costa Rica,state,True,019,Americas,419,Latin America and the Caribbean,5152950,2025
+CU,Cuba,state,True,019,Americas,419,Latin America and the Caribbean,10937203,2025
+CV,Cape Verde,state,True,002,Africa,202,Sub-Saharan Africa,527326,2025
+CY,Cyprus,state,True,142,Asia,145,Western Asia,1370754,2025
+CZ,Czech Republic,state,True,150,Europe,151,Eastern Europe,10886878,2025
+DE,Germany,state,True,150,Europe,155,Western Europe,83491249,2025
+DJ,Djibouti,state,True,002,Africa,202,Sub-Saharan Africa,1184076,2025
+DK,Denmark,state,True,150,Europe,154,Northern Europe,6009169,2025
+DM,Dominica,state,True,019,Americas,419,Latin America and the Caribbean,65871,2025
+DO,Dominican Republic,state,True,019,Americas,419,Latin America and the Caribbean,11520487,2025
+DZ,Algeria,state,True,002,Africa,015,Northern Africa,47435312,2025
+EC,Ecuador,state,True,019,Americas,419,Latin America and the Caribbean,18289896,2025
+EE,Estonia,state,True,150,Europe,154,Northern Europe,1366475,2025
+EG,Egypt,state,True,002,Africa,015,Northern Africa,118365995,2025
+ER,Eritrea,state,True,002,Africa,202,Sub-Saharan Africa,3607003,2025
+ES,Spain,state,True,150,Europe,039,Southern Europe,49355143,2025
+ET,Ethiopia,state,True,002,Africa,202,Sub-Saharan Africa,135472051,2025
+FI,Finland,state,True,150,Europe,154,Northern Europe,5646436,2025
+FJ,Fiji,state,True,009,Oceania,054,Melanesia,933154,2025
+FM,Federated States of Micronesia,state,True,009,Oceania,057,Micronesia,113683,2025
+FR,France,state,True,150,Europe,155,Western Europe,68720337,2025
+GA,Gabon,state,True,002,Africa,202,Sub-Saharan Africa,2593130,2025
+GB,United Kingdom,state,True,150,Europe,154,Northern Europe,69487000,2025
+GD,Grenada,state,True,019,Americas,419,Latin America and the Caribbean,117303,2025
+GE,Georgia,state,True,142,Asia,145,Western Asia,3935766,2025
+GH,Ghana,state,True,002,Africa,202,Sub-Saharan Africa,35064272,2025
+GM,The Gambia,state,True,002,Africa,202,Sub-Saharan Africa,2822093,2025
+GN,Guinea,state,True,002,Africa,202,Sub-Saharan Africa,15099727,2025
+GQ,Equatorial Guinea,state,True,002,Africa,202,Sub-Saharan Africa,1938431,2025
+GR,Greece,state,True,150,Europe,039,Southern Europe,10413962,2025
+GT,Guatemala,state,True,019,Americas,419,Latin America and the Caribbean,18687881,2025
+GW,Guinea-Bissau,state,True,002,Africa,202,Sub-Saharan Africa,2249515,2025
+GY,Guyana,state,True,019,Americas,419,Latin America and the Caribbean,835986,2025
+HN,Honduras,state,True,019,Americas,419,Latin America and the Caribbean,11005850,2025
+HR,Croatia,state,True,150,Europe,039,Southern Europe,3876200,2025
+HT,Haiti,state,True,019,Americas,419,Latin America and the Caribbean,11906095,2025
+HU,Hungary,state,True,150,Europe,151,Eastern Europe,9514251,2025
+ID,Indonesia,state,True,142,Asia,035,South-eastern Asia,285721236,2025
+IE,Ireland,state,True,150,Europe,154,Northern Europe,5484367,2025
+IL,Israel,state,True,142,Asia,145,Western Asia,10122800,2025
+IN,India,state,True,142,Asia,034,Southern Asia,1463865525,2025
+IQ,Iraq,state,True,142,Asia,145,Western Asia,47020774,2025
+IR,Iran,state,True,142,Asia,034,Southern Asia,92417681,2025
+IS,Iceland,state,True,150,Europe,154,Northern Europe,392404,2025
+IT,Italy,state,True,150,Europe,039,Southern Europe,58915656,2025
+JM,Jamaica,state,True,019,Americas,419,Latin America and the Caribbean,2837077,2025
+JO,Jordan,state,True,142,Asia,145,Western Asia,11520684,2025
+JP,Japan,state,True,142,Asia,030,Eastern Asia,123366734,2025
+KE,Kenya,state,True,002,Africa,202,Sub-Saharan Africa,57532493,2025
+KG,Kyrgyzstan,state,True,142,Asia,143,Central Asia,7343064,2025
+KH,Cambodia,state,True,142,Asia,035,South-eastern Asia,17847982,2025
+KI,Kiribati,state,True,009,Oceania,057,Micronesia,136488,2025
+KM,Comoros,state,True,002,Africa,202,Sub-Saharan Africa,882847,2025
+KN,Saint Kitts and Nevis,state,True,019,Americas,419,Latin America and the Caribbean,46922,2025
+KP,North Korea,state,True,142,Asia,030,Eastern Asia,26571036,2025
+KR,South Korea,state,True,142,Asia,030,Eastern Asia,51684564,2025
+KW,Kuwait,state,True,142,Asia,145,Western Asia,4865298,2025
+KZ,Kazakhstan,state,True,142,Asia,143,Central Asia,20843754,2025
+LA,Laos,state,True,142,Asia,035,South-eastern Asia,7873046,2025
+LB,Lebanon,state,True,142,Asia,145,Western Asia,5849421,2025
+LC,Saint Lucia,state,True,019,Americas,419,Latin America and the Caribbean,180149,2025
+LI,Liechtenstein,state,True,150,Europe,155,Western Europe,41024,2025
+LK,Sri Lanka,state,True,142,Asia,034,Southern Asia,21756000,2025
+LR,Liberia,state,True,002,Africa,202,Sub-Saharan Africa,5731206,2025
+LS,Lesotho,state,True,002,Africa,202,Sub-Saharan Africa,2363325,2025
+LT,Lithuania,state,True,150,Europe,154,Northern Europe,2888774,2025
+LU,Luxembourg,state,True,150,Europe,155,Western Europe,686970,2025
+LV,Latvia,state,True,150,Europe,154,Northern Europe,1847785,2025
+LY,Libya,state,True,002,Africa,015,Northern Africa,7458555,2025
+MA,Morocco,state,True,002,Africa,015,Northern Africa,38430770,2025
+MC,Monaco,state,True,150,Europe,155,Western Europe,38341,2025
+MD,Moldova,state,True,150,Europe,151,Eastern Europe,2360527,2025
+ME,Montenegro,state,True,150,Europe,039,Southern Europe,623129,2025
+MG,Madagascar,state,True,002,Africa,202,Sub-Saharan Africa,32740678,2025
+MH,Marshall Islands,state,True,009,Oceania,057,Micronesia,36282,2025
+MK,North Macedonia,state,True,150,Europe,039,Southern Europe,1820909,2025
+ML,Mali,state,True,002,Africa,202,Sub-Saharan Africa,25198821,2025
+MM,Myanmar,state,True,142,Asia,035,South-eastern Asia,54850648,2025
+MN,Mongolia,state,True,142,Asia,030,Eastern Asia,3568978,2025
+MR,Mauritania,state,True,002,Africa,202,Sub-Saharan Africa,5315065,2025
+MT,Malta,state,True,150,Europe,039,Southern Europe,579704,2025
+MU,Mauritius,state,True,002,Africa,202,Sub-Saharan Africa,1243741,2025
+MV,Maldives,state,True,142,Asia,034,Southern Asia,529676,2025
+MW,Malawi,state,True,002,Africa,202,Sub-Saharan Africa,22216120,2025
+MX,Mexico,state,True,019,Americas,419,Latin America and the Caribbean,131946900,2025
+MY,Malaysia,state,True,142,Asia,035,South-eastern Asia,35977838,2025
+MZ,Mozambique,state,True,002,Africa,202,Sub-Saharan Africa,35631653,2025
+NA,Namibia,state,True,002,Africa,202,Sub-Saharan Africa,3092816,2025
+NE,Niger,state,True,002,Africa,202,Sub-Saharan Africa,27917831,2025
+NG,Nigeria,state,True,002,Africa,202,Sub-Saharan Africa,237527782,2025
+NI,Nicaragua,state,True,019,Americas,419,Latin America and the Caribbean,7007502,2025
+NL,Kingdom of the Netherlands,state,True,150,Europe,155,Western Europe,18087633,2025
+NO,Norway,state,True,150,Europe,154,Northern Europe,5610870,2025
+NP,Nepal,state,True,142,Asia,034,Southern Asia,29618118,2025
+NR,Nauru,state,True,009,Oceania,057,Micronesia,12025,2025
+NZ,New Zealand,state,True,009,Oceania,053,Australia and New Zealand,5324700,2025
+OM,Oman,state,True,142,Asia,145,Western Asia,5494691,2025
+PA,Panama,state,True,019,Americas,419,Latin America and the Caribbean,4571189,2025
+PE,Peru,state,True,019,Americas,419,Latin America and the Caribbean,34576665,2025
+PG,Papua New Guinea,state,True,009,Oceania,054,Melanesia,10762817,2025
+PH,Philippines,state,True,142,Asia,035,South-eastern Asia,116786962,2025
+PK,Pakistan,state,True,142,Asia,034,Southern Asia,255219554,2025
+PL,Poland,state,True,150,Europe,151,Eastern Europe,36435861,2025
+PT,Portugal,state,True,150,Europe,039,Southern Europe,10804871,2025
+PW,Palau,state,True,009,Oceania,057,Micronesia,17663,2025
+PY,Paraguay,state,True,019,Americas,419,Latin America and the Caribbean,7013078,2025
+QA,Qatar,state,True,142,Asia,145,Western Asia,2972215,2025
+RO,Romania,state,True,150,Europe,151,Eastern Europe,19020271,2025
+RS,Serbia,state,True,150,Europe,039,Southern Europe,6549143,2025
+RU,Russia,state,True,150,Europe,151,Eastern Europe,143513328,2025
+RW,Rwanda,state,True,002,Africa,202,Sub-Saharan Africa,14569341,2025
+SA,Saudi Arabia,state,True,142,Asia,145,Western Asia,36973555,2025
+SB,Solomon Islands,state,True,009,Oceania,054,Melanesia,838645,2025
+SC,Seychelles,state,True,002,Africa,202,Sub-Saharan Africa,122730,2025
+SD,Sudan,state,True,002,Africa,015,Northern Africa,51662147,2025
+SE,Sweden,state,True,150,Europe,154,Northern Europe,10596620,2025
+SG,Singapore,state,True,142,Asia,035,South-eastern Asia,6111175,2025
+SI,Slovenia,state,True,150,Europe,039,Southern Europe,2130986,2025
+SK,Slovakia,state,True,150,Europe,151,Eastern Europe,5413813,2025
+SL,Sierra Leone,state,True,002,Africa,202,Sub-Saharan Africa,8819794,2025
+SM,San Marino,state,True,150,Europe,039,Southern Europe,34109,2025
+SN,Senegal,state,True,002,Africa,202,Sub-Saharan Africa,18931966,2025
+SO,Somalia,state,True,002,Africa,202,Sub-Saharan Africa,19654739,2025
+SR,Suriname,state,True,019,Americas,419,Latin America and the Caribbean,639850,2025
+SS,South Sudan,state,True,002,Africa,202,Sub-Saharan Africa,12188788,2025
+ST,São Tomé and Príncipe,state,True,002,Africa,202,Sub-Saharan Africa,240254,2025
+SV,El Salvador,state,True,019,Americas,419,Latin America and the Caribbean,6365503,2025
+SY,Syria,state,True,142,Asia,145,Western Asia,25620427,2025
+SZ,Eswatini,state,True,002,Africa,202,Sub-Saharan Africa,1256174,2025
+TD,Chad,state,True,002,Africa,202,Sub-Saharan Africa,21003705,2025
+TG,Togo,state,True,002,Africa,202,Sub-Saharan Africa,8591626,2025
+TH,Thailand,state,True,142,Asia,035,South-eastern Asia,71619863,2025
+TJ,Tajikistan,state,True,142,Asia,143,Central Asia,10786734,2025
+TL,Timor-Leste,state,True,142,Asia,035,South-eastern Asia,1418517,2025
+TM,Turkmenistan,state,True,142,Asia,143,Central Asia,7618847,2025
+TN,Tunisia,state,True,002,Africa,015,Northern Africa,12348573,2025
+TO,Tonga,state,True,009,Oceania,061,Polynesia,103742,2025
+TR,Turkey,state,True,142,Asia,145,Western Asia,85878556,2025
+TT,Trinidad and Tobago,state,True,019,Americas,419,Latin America and the Caribbean,1367764,2025
+TV,Tuvalu,state,True,009,Oceania,061,Polynesia,9492,2025
+TZ,Tanzania,state,True,002,Africa,202,Sub-Saharan Africa,70545865,2025
+UA,Ukraine,state,True,150,Europe,151,Eastern Europe,38980376,2025
+UG,Uganda,state,True,002,Africa,202,Sub-Saharan Africa,51384894,2025
+US,United States,state,True,019,Americas,021,Northern America,341784857,2025
+UY,Uruguay,state,True,019,Americas,419,Latin America and the Caribbean,3384688,2025
+UZ,Uzbekistan,state,True,142,Asia,143,Central Asia,37053428,2025
+VC,Saint Vincent and the Grenadines,state,True,019,Americas,419,Latin America and the Caribbean,99924,2025
+VE,Venezuela,state,True,019,Americas,419,Latin America and the Caribbean,28516896,2025
+VN,Vietnam,state,True,142,Asia,035,South-eastern Asia,101598527,2025
+VU,Vanuatu,state,True,009,Oceania,054,Melanesia,335169,2025
+WS,Samoa,state,True,009,Oceania,061,Polynesia,219306,2025
+YE,Yemen,state,True,142,Asia,145,Western Asia,41773878,2025
+ZA,South Africa,state,True,002,Africa,202,Sub-Saharan Africa,64747319,2025
+ZM,Zambia,state,True,002,Africa,202,Sub-Saharan Africa,21913874,2025
+ZW,Zimbabwe,state,True,002,Africa,202,Sub-Saharan Africa,16950795,2025
+TW,Taiwan,territory,False,142,Asia,030,Eastern Asia,,

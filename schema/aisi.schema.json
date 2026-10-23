@@ -1,0 +1,4056 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://accelerate-europe.org/data/aisi/aisi.schema.json",
+  "title": "AI Security Institutes tracker",
+  "description": "AI Security Institutes (AISIs) and equivalent bodies: which jurisdictions have one, what they are, what they cost and who staffs them. Every fact cites sources by id. Missing values: an omitted field or null means not known or not published, never zero or false. Record ids are stable across renames.",
+  "type": "object",
+  "required": [
+    "dataset",
+    "jurisdictions",
+    "institutes",
+    "sources",
+    "changelog"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "dataset": {
+      "type": "object",
+      "required": [
+        "as_of",
+        "citation",
+        "contact",
+        "description",
+        "definition",
+        "exchange_rates",
+        "license",
+        "license_note",
+        "maintainers",
+        "method",
+        "name",
+        "publisher",
+        "scope",
+        "status_definitions",
+        "title",
+        "version",
+        "vocabularies",
+        "method_summaries",
+        "method_no_reader_summary",
+        "method_summary_status"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+$"
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "definition": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The short definition of an AI Security Institute, shown under the page headline and at the top of the README. The full rule is the method's Qualifying body (method.html#qualifying-body)."
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "description": "Semantic version of the data: major = breaking schema change, minor = new records, status changes or additive schema fields, patch = corrections."
+        },
+        "as_of": {
+          "$ref": "#/$defs/date",
+          "description": "Date the dataset as a whole was last reviewed."
+        },
+        "license": {
+          "enum": [
+            "CC BY 4.0"
+          ]
+        },
+        "license_note": {
+          "type": "string",
+          "description": "Licence scope and rights retained by owners of quoted source material."
+        },
+        "publisher": {
+          "type": "string"
+        },
+        "maintainers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "name",
+              "affiliation"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "affiliation": {
+                "type": "string"
+              }
+            }
+          },
+          "minItems": 1
+        },
+        "contact": {
+          "type": "string"
+        },
+        "repository": {
+          "type": "string",
+          "format": "uri",
+          "description": "Source repository; corrections go there as issues or pull requests."
+        },
+        "citation": {
+          "type": "string",
+          "pattern": "^[^\\r\\n<>]+(?![\\s\\S])",
+          "description": "One line of plain text: build.py copies it verbatim into README.md, so it may not contain line breaks or angle brackets (Markdown/HTML)."
+        },
+        "scope": {
+          "type": "string"
+        },
+        "method": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "text"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$"
+              },
+              "text": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "description": "Full editorial rule with a permanent id, also its anchor on method.html. Agents follow this text; reader summaries are not rules."
+          },
+          "minItems": 1
+        },
+        "other_overviews": {
+          "type": "array",
+          "description": "Other overviews of AISIs, with what each covers and misses.",
+          "items": {
+            "type": "object",
+            "required": [
+              "source_ids",
+              "note"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "source_ids": {
+                "$ref": "#/$defs/source_ids_required"
+              },
+              "note": {
+                "type": "string"
+              },
+              "citations": {
+                "$ref": "#/$defs/citations"
+              },
+              "display": {
+                "type": "object",
+                "readOnly": true,
+                "additionalProperties": false,
+                "required": [
+                  "source_links"
+                ],
+                "properties": {
+                  "source_links": {
+                    "$ref": "#/$defs/source_ids_required",
+                    "description": "Generated links to the overview items themselves; these are list content, not claim citations."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "glossary": {
+          "type": "object",
+          "description": "Acronym expansions, and short plain-language definitions of terms shown with funding figures, for terms used in record text. A value is either one expansion or definition, or an object mapping jurisdiction ids to expansions when the acronym means different things in different countries.",
+          "additionalProperties": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "object",
+                "minProperties": 1,
+                "additionalProperties": {
+                  "type": "string"
+                }
+              }
+            ]
+          }
+        },
+        "status_definitions": {
+          "type": "object",
+          "propertyNames": {
+            "$ref": "#/$defs/status"
+          },
+          "additionalProperties": {
+            "type": "string"
+          },
+          "required": [
+            "established",
+            "planned",
+            "proposed",
+            "exploring",
+            "none_identified"
+          ]
+        },
+        "vocabularies": {
+          "type": "object",
+          "required": [
+            "testing_capacity",
+            "model_access",
+            "staffing_model",
+            "membership_body"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "testing_capacity": {
+              "type": "object",
+              "minProperties": 1,
+              "propertyNames": {
+                "pattern": "^[a-z_]+$"
+              },
+              "additionalProperties": {
+                "type": "object",
+                "required": [
+                  "label",
+                  "definition"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "label": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "definition": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              },
+              "description": "Codes for institutes[].testing_capacity: the modes in_house and via_other_bodies and the states planned and not_published, each with its label and definition. Adding a code is a minor version; renaming or removing one is major."
+            },
+            "model_access": {
+              "type": "object",
+              "minProperties": 1,
+              "propertyNames": {
+                "pattern": "^[a-z_]+$"
+              },
+              "additionalProperties": {
+                "type": "object",
+                "required": [
+                  "label",
+                  "definition"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "label": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "definition": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              },
+              "description": "Codes for the generated institutes[].model_access.value, in precedence order (recent_access, earlier_access, by_law, access_agreed, none_found), each with its label and definition; '<year>' in a label is the year of the latest event. Adding a code is a minor version; renaming or removing one is major."
+            },
+            "staffing_model": {
+              "type": "object",
+              "minProperties": 1,
+              "propertyNames": {
+                "pattern": "^[a-z_]+$"
+              },
+              "additionalProperties": {
+                "type": "object",
+                "required": [
+                  "label",
+                  "definition"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "label": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "definition": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              },
+              "description": "Codes for institutes[].staffing_model.code: the models own_staff, member_bodies, core_with_partners and host_unit and the states planned and not_published, each with its label and definition. Adding a code is a minor version; renaming or removing one is major."
+            },
+            "membership_body": {
+              "type": "object",
+              "minProperties": 1,
+              "propertyNames": {
+                "pattern": "^[a-z0-9-]+$"
+              },
+              "additionalProperties": {
+                "type": "string"
+              },
+              "description": "Codes for jurisdictions[].memberships[].body with definitions. Adding a code is a minor version; renaming or removing one is major."
+            },
+            "timeline_event": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              },
+              "description": "Timeline event codes with definitions; see docs/design/schema-1.0.md#timeline-and-status for the status each implies."
+            },
+            "source_origin": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              },
+              "description": "Named international source issuers mapped to definitions. Country origins use the jurisdiction ISO code; EU is also accepted."
+            },
+            "partner_relation": {
+              "type": "object",
+              "minProperties": 1,
+              "propertyNames": {
+                "pattern": "^[a-z_]+$"
+              },
+              "additionalProperties": {
+                "type": "object",
+                "required": [
+                  "label",
+                  "definition"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "label": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "definition": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              },
+              "description": "Codes for institutes[].national_partners.entries[].relation (member, works_with, planned), each with its card word and definition."
+            },
+            "partner_cyber_none_published": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Muted tail shown on the Partners line when no entry has cyber_agency: the national cyber security agency is the one body searched for every institute, so its absence is recorded."
+            }
+          },
+          "description": "Controlled code lists for the 1.0.0 download contract; see docs/design/schema-1.0.md."
+        },
+        "network_milestones": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "body",
+              "type",
+              "date",
+              "description",
+              "source_ids"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z0-9-]+$"
+              },
+              "body": {
+                "type": "string",
+                "description": "Network code from dataset.vocabularies.membership_body."
+              },
+              "type": {
+                "enum": [
+                  "founding",
+                  "convening",
+                  "joint_testing",
+                  "renamed"
+                ]
+              },
+              "date": {
+                "$ref": "#/$defs/date_or_partial"
+              },
+              "description": {
+                "type": "string",
+                "description": "What happened at network level, without implying national status or institute participation."
+              },
+              "source_ids": {
+                "$ref": "#/$defs/source_ids_required"
+              },
+              "short": {
+                "$ref": "#/$defs/event_short"
+              },
+              "citations": {
+                "$ref": "#/$defs/citations"
+              }
+            }
+          }
+        },
+        "shared_claims": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/shared_claim"
+          },
+          "description": "Reviewed identities of genuine repeated facts. Values stay in their canonical records, not in this registry. Every nonregistered numeric institute leaf is reported as unchecked by shared-claim coverage."
+        },
+        "exchange_rates": {
+          "type": "array",
+          "description": "One cited table of ECB euro foreign exchange reference rates (annual averages), one row per currency in funding except EUR, the base; see dataset.method for funding limitations.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "currency",
+              "units_per_eur",
+              "eur_per_unit",
+              "basis",
+              "period",
+              "source_ids"
+            ],
+            "properties": {
+              "currency": {
+                "type": "string",
+                "pattern": "^[A-Z]{3}$",
+                "description": "Currency code; EUR is the base and has no row."
+              },
+              "units_per_eur": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "description": "Published currency units per euro: the ECB euro foreign exchange reference rate, annual average."
+              },
+              "eur_per_unit": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "description": "1 divided by units_per_eur, rounded half up to 12 significant figures."
+              },
+              "basis": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Shared basis for the cited rate table."
+              },
+              "period": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "start",
+                  "end"
+                ],
+                "properties": {
+                  "start": {
+                    "$ref": "#/$defs/date"
+                  },
+                  "end": {
+                    "$ref": "#/$defs/date"
+                  }
+                }
+              },
+              "source_ids": {
+                "$ref": "#/$defs/source_ids_required"
+              },
+              "citations": {
+                "$ref": "#/$defs/citations"
+              }
+            }
+          }
+        },
+        "display": {
+          "type": "object",
+          "required": [
+            "developments",
+            "maintainers",
+            "changelog",
+            "latest_change",
+            "generic_sources",
+            "counts",
+            "rule_labels"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "developments": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "jurisdiction",
+                  "name",
+                  "date",
+                  "events",
+                  "texts",
+                  "source_ids",
+                  "order",
+                  "citations"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "jurisdiction": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "date": {
+                    "$ref": "#/$defs/date_or_partial"
+                  },
+                  "events": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "texts": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "source_ids": {
+                    "$ref": "#/$defs/source_ids"
+                  },
+                  "order": {
+                    "type": "string",
+                    "description": "Stable event ID used as the final tie-break for equally dated groups."
+                  },
+                  "citations": {
+                    "$ref": "#/$defs/citations"
+                  }
+                }
+              }
+            },
+            "maintainers": {
+              "$ref": "#/properties/dataset/properties/maintainers"
+            },
+            "changelog": {
+              "$ref": "#/properties/changelog"
+            },
+            "latest_change": {
+              "anyOf": [
+                {
+                  "$ref": "#/properties/changelog/items"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "counts": {
+              "type": "object",
+              "required": [
+                "budget",
+                "headcount"
+              ],
+              "additionalProperties": false,
+              "description": "Median and highest figures for the page's counts row, rounded to two significant figures by one rule; null when fewer than two institutes qualify. Budget uses the institutes with a comparable annual figure for the reference year; headcount uses state institutes with a published staff total.",
+              "properties": {
+                "budget": {
+                  "$ref": "#/$defs/count_summary"
+                },
+                "headcount": {
+                  "$ref": "#/$defs/count_summary"
+                }
+              }
+            },
+            "generic_sources": {
+              "$ref": "#/$defs/source_ids",
+              "description": "Standard statistical sources (population, regions) that apply to every entry. Entries do not list them; Method names them once."
+            },
+            "rule_labels": {
+              "type": "object",
+              "description": "Heading of each full method rule by rule id, as method.html shows it (scripts/method_copy.py rule_label).",
+              "additionalProperties": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "method_summaries": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "title",
+              "summary",
+              "rules"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$"
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1
+              },
+              "summary": {
+                "type": "string",
+                "minLength": 1
+              },
+              "rules": {
+                "type": "object",
+                "minProperties": 1,
+                "propertyNames": {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$"
+                },
+                "additionalProperties": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                }
+              }
+            }
+          },
+          "description": "Owner-owned reader copy. rules maps rule ids to SHA-256 of NFKC-normalised text with whitespace collapsed and trimmed. Refresh explicitly after rereading the summary."
+        },
+        "method_no_reader_summary": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$"
+          },
+          "description": "Rules intentionally without reader summaries. Every full rule must be referenced by a summary or listed here, never both."
+        },
+        "method_summary_status": {
+          "type": "string",
+          "enum": [
+            "Owner copy edit pending.",
+            "Owner copy approved."
+          ],
+          "description": "Pending reader copy blocks release through the draft-wording check."
+        }
+      }
+    },
+    "jurisdictions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "kind",
+          "europe_scope",
+          "status",
+          "summary",
+          "check",
+          "source_ids"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Z]{2}$",
+            "description": "ISO 3166-1 alpha-2, except EU for the European Union."
+          },
+          "name": {
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "state",
+              "territory",
+              "supranational"
+            ],
+            "description": "state = UN member state; territory = non-UN jurisdiction tracked because readers look for it (e.g. Taiwan); supranational = EU."
+          },
+          "europe_scope": {
+            "type": "boolean",
+            "description": "True for the 32 states counted on the Europe page (EU-27, Iceland, Liechtenstein, Norway, UK, Switzerland)."
+          },
+          "eu_member": {
+            "type": "boolean"
+          },
+          "population": {
+            "type": "object",
+            "required": [
+              "value",
+              "year",
+              "source_ids"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "value": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "year": {
+                "type": "integer"
+              },
+              "source_ids": {
+                "$ref": "#/$defs/source_ids_required"
+              },
+              "citations": {
+                "$ref": "#/$defs/citations"
+              }
+            }
+          },
+            "gdp": {
+              "type": "object",
+              "description": "Gross domestic product in current national currency (World Bank WDI NY.GDP.MKTP.CN) for one calendar year: the share-of-GDP denominator for the state's compared budget (rule budget-ratios in dataset.method). Recorded only where a state has a compared annual budget; absent otherwise.",
+              "required": [
+                "value",
+                "currency",
+                "year",
+                "source_ids"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "value": {
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "description": "GDP in units of currency, unrounded as published."
+                },
+                "currency": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{3}$",
+                  "description": "ISO 4217 code of the national currency the value is in."
+                },
+                "year": {
+                  "type": "integer"
+                },
+                "source_ids": {
+                  "$ref": "#/$defs/source_ids_required"
+                },
+                "citations": {
+                  "$ref": "#/$defs/citations"
+                }
+              }
+            },
+          "status": {
+            "$ref": "#/$defs/status"
+          },
+          "status_since": {
+            "$ref": "#/$defs/date_or_partial"
+          },
+          "institute_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "summary": {
+            "type": "string",
+            "description": "One or two plain sentences a non-expert can read."
+          },
+          "related_bodies": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "name",
+                "role",
+                "kind"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "name_en": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "Faithful English translation of a name that is not in English; the original stays in name. Omitted when the name is already English or only an acronym. Not necessarily an official English name."
+                },
+                "role": {
+                  "type": "string"
+                },
+                "counts_as_aisi": {
+                  "type": "boolean"
+                },
+                "source_ids": {
+                  "$ref": "#/$defs/source_ids_required"
+                },
+                "designation_state": {
+                  "type": "string",
+                  "enum": [
+                    "designated",
+                    "proposed"
+                  ],
+                  "description": "State of the AI Act authority designation in the cited national source. Omission means unresolved or inapplicable."
+                },
+                "authority_roles": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "market_surveillance",
+                      "notifying",
+                      "single_point_of_contact"
+                    ]
+                  },
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "description": "Explicit AI Act authority roles established by the cited source. Sector limits and proposed allocations are stated in role."
+                },
+                "designation_basis": {
+                  "enum": [
+                    "law",
+                    "decree",
+                    "government_decision",
+                    "cabinet_decision",
+                    "ministerial_act",
+                    "none_yet"
+                  ]
+                },
+                "designation_note": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "kind": {
+                  "type": "string",
+                  "enum": [
+                    "ai_act_authority",
+                    "other"
+                  ],
+                  "description": "Classifies AI Act authorities independently of designation metadata; other covers related bodies without an AI Act authority role."
+                },
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "Permanent record identity within this collection; retained across edits and ordering changes. Never reuse a deleted identity."
+                },
+                "citations": {
+                  "$ref": "#/$defs/citations"
+                },
+                "display": {
+                  "type": "object",
+                  "required": [
+                    "source_links"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "source_links": {
+                      "$ref": "#/$defs/source_ids",
+                      "description": "The body's own sources, for the marker after its entry; catalogue links, not field evidence."
+                    }
+                  }
+                }
+              },
+              "allOf": [
+                {
+                  "if": {
+                    "properties": {
+                      "kind": {
+                        "const": "ai_act_authority"
+                      }
+                    },
+                    "required": [
+                      "kind"
+                    ]
+                  },
+                  "then": {
+                    "required": [
+                      "designation_basis",
+                      "source_ids",
+                      "counts_as_aisi"
+                    ],
+                    "properties": {
+                      "counts_as_aisi": {
+                        "const": false
+                      }
+                    }
+                  },
+                  "else": {
+                    "not": {
+                      "anyOf": [
+                        {
+                          "required": [
+                            "designation_state"
+                          ]
+                        },
+                        {
+                          "required": [
+                            "designation_basis"
+                          ]
+                        },
+                        {
+                          "required": [
+                            "authority_roles"
+                          ]
+                        },
+                        {
+                          "required": [
+                            "designation_note"
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            "description": "Nearby bodies a reader might mistake for an AISI (AI Act authorities, cyber centres), and why they are not counted."
+          },
+          "next_check": {
+            "type": "object",
+            "required": [
+              "date",
+              "reason"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "date": {
+                "$ref": "#/$defs/date"
+              },
+              "reason": {
+                "type": "string"
+              }
+            }
+          },
+          "check": {
+            "$ref": "#/$defs/check"
+          },
+          "source_ids": {
+            "$ref": "#/$defs/source_ids"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "region": {
+            "type": "object",
+            "required": [
+              "id",
+              "name",
+              "subregion_id",
+              "subregion",
+              "source_ids"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^\\d{3}$",
+                "description": "M49 region code, e.g. 150 = Europe."
+              },
+              "name": {
+                "type": "string"
+              },
+              "subregion_id": {
+                "type": "string",
+                "pattern": "^\\d{3}$",
+                "description": "M49 sub-region code, e.g. 155 = Western Europe."
+              },
+              "subregion": {
+                "type": "string"
+              },
+              "source_ids": {
+                "$ref": "#/$defs/source_ids"
+              },
+              "citations": {
+                "$ref": "#/$defs/citations"
+              }
+            },
+            "description": "UN M49 region and sub-region, from data/reference/roster.csv."
+          },
+          "memberships": {
+            "type": "array",
+            "description": "Memberships of international bodies relevant to AI evaluation, by jurisdiction. Body codes are defined in dataset.vocabularies.membership_body.",
+            "items": {
+              "type": "object",
+              "required": [
+                "body",
+                "source_ids"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "body": {
+                  "type": "string"
+                },
+                "since": {
+                  "$ref": "#/$defs/date_or_partial"
+                },
+                "source_ids": {
+                  "$ref": "#/$defs/source_ids_required"
+                },
+                "citations": {
+                  "$ref": "#/$defs/citations"
+                }
+              }
+            }
+          },
+          "status_confidence": {
+            "enum": [
+              "high",
+              "medium",
+              "low"
+            ],
+            "description": "Confidence in the evidence for the status: high, medium or low. Rules, including the separate requirements for none_identified, are in dataset.method."
+          },
+          "timeline": {
+            "type": "array",
+            "description": "Dated events behind the status (docs/design/schema-1.0.md#timeline-and-status). Codes in dataset.vocabularies.timeline_event.",
+            "items": {
+              "type": "object",
+              "required": [
+                "id",
+                "date",
+                "event",
+                "instrument",
+                "description",
+                "source_ids"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9-]+$"
+                },
+                "date": {
+                  "$ref": "#/$defs/date_or_partial"
+                },
+                "event": {
+                  "type": "string"
+                },
+                "instrument": {
+                  "enum": [
+                    "speech",
+                    "press_release",
+                    "decision",
+                    "strategy",
+                    "budget_proposal",
+                    "budget_act",
+                    "draft_policy",
+                    "bill",
+                    "law",
+                    "decree",
+                    "administrative",
+                    "international_statement",
+                    "advisory_report",
+                    "publication",
+                    "unknown"
+                  ]
+                },
+                "description": {
+                  "type": "string"
+                },
+                "withdraws": {
+                  "type": "string"
+                },
+                "source_ids": {
+                  "$ref": "#/$defs/source_ids",
+                  "description": "Source associations for an authored act. For a generated first_output event, the union of the selected output\u2019s exact institutional-credit identity and date evidence."
+                },
+                "short": {
+                  "$ref": "#/$defs/event_short"
+                },
+                "output_lineage": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "For first_output only: the institute catalogue lineage whose explicit credit.date supplies the generated event date."
+                },
+                "citations": {
+                  "$ref": "#/$defs/citations"
+                }
+              },
+              "allOf": [
+                {
+                  "if": {
+                    "properties": {
+                      "event": {
+                        "const": "first_output"
+                      }
+                    },
+                    "required": [
+                      "event"
+                    ]
+                  },
+                  "then": {
+                    "required": [
+                      "output_lineage"
+                    ]
+                  }
+                },
+                {
+                  "if": {
+                    "properties": {
+                      "event": {
+                        "not": {
+                          "const": "first_output"
+                        }
+                      }
+                    },
+                    "required": [
+                      "event"
+                    ]
+                  },
+                  "then": {
+                    "properties": {
+                      "source_ids": {
+                        "minItems": 1
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "iso3": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[A-Z]{3}$",
+            "description": "ISO 3166-1 alpha-3 country code; null for the EU."
+          },
+          "m49": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[0-9]{3}$",
+            "description": "UN M49 numeric code as a three-digit string; null for the EU."
+          },
+          "wikidata": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^Q[1-9][0-9]*$",
+            "description": "Verified Wikidata entity QID; null or omitted when no matching item was identified."
+          },
+          "identifier_source_ids": {
+            "$ref": "#/$defs/source_ids_required"
+          },
+          "identifier_notes": {
+            "type": "string",
+            "description": "Identifier distinctions, inapplicability or unsuccessful exact-item searches."
+          },
+          "closest_body": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "stage",
+              "gap",
+              "note",
+              "source_ids"
+            ],
+            "description": "The single closest candidate for a none_identified jurisdiction, limited to model-level evaluation, testing or safety, or a self-described qualifying function. Does not confer institute status; see dataset.method.",
+            "properties": {
+              "name": {
+                "type": "string",
+                "pattern": "\\S",
+                "description": "Name of the single closest candidate, not its host or a list of alternatives."
+              },
+              "stage": {
+                "enum": [
+                  "exists",
+                  "planned",
+                  "proposed",
+                  "under_study"
+                ],
+                "description": "Stage of the body, not jurisdiction status: exists; planned by an adopted commitment; formally proposed awaiting approval; or under_study in a study, working draft or advisory recommendation. An existing body remains exists when an extension is pending; the note records the extension."
+              },
+              "gap": {
+                "enum": [
+                  "remit",
+                  "designation"
+                ],
+                "description": "remit = a government act creates, plans, proposes or recognises the body but gives it no qualifying role; designation = the body does qualifying work, self-described or documented, without a government act concerning it. remit takes precedence when both apply."
+              },
+              "note": {
+                "type": "string",
+                "pattern": "\\S",
+                "description": "Evidence for the model-level role and the gap, with unresolved limits. Excerpts support the factual basis; classification and absence of assignment remain editorial judgements."
+              },
+              "source_ids": {
+                "$ref": "#/$defs/source_ids_required"
+              },
+              "citations": {
+                "$ref": "#/$defs/citations"
+              },
+              "display": {
+                "type": "object",
+                "required": [
+                  "source_links"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "source_links": {
+                    "$ref": "#/$defs/source_ids",
+                    "description": "The body's own sources, for the marker after its entry; catalogue links, not field evidence."
+                  }
+                }
+              }
+            }
+          },
+          "citations": {
+            "$ref": "#/$defs/citations"
+          },
+          "display": {
+            "type": "object",
+            "required": [
+              "small_state",
+              "advisory",
+              "source_links"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "small_state": {
+                "type": "boolean"
+              },
+              "advisory": {
+                "type": "boolean"
+              },
+              "source_links": {
+                "$ref": "#/$defs/source_ids"
+              }
+            }
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "required": [
+                "closest_body"
+              ]
+            },
+            "then": {
+              "properties": {
+                "status": {
+                  "const": "none_identified"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "institutes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "short_name",
+          "jurisdiction_id",
+          "status",
+          "host",
+          "legal_form",
+          "mandate",
+          "check",
+          "source_ids",
+          "testing_capacity",
+          "model_access",
+          "staffing_model"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9-]+$"
+          },
+          "name": {
+            "type": "string"
+          },
+          "name_local": {
+            "type": "string"
+          },
+          "acronym": {
+            "type": "string"
+          },
+          "short_name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Recorded short form of the display name for tight places such as table cells. It is unique among institutes and never a bare generic acronym such as AISI; the page gives the full name on hover."
+          },
+          "jurisdiction_id": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/$defs/status"
+          },
+          "announced": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/date_or_partial"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Generated date of the first commitment or proposal event in the jurisdiction timeline, withdrawn acts included; absent from authored data. Null when no such event is recorded: a designation is never read as an announcement. The same reading starts the announcement intervals."
+          },
+          "established": {
+            "$ref": "#/$defs/date_or_partial",
+            "description": "Generated date of the first designation whose act has not been withdrawn. A later closure retains this historical date."
+          },
+          "host": {
+            "type": "string",
+            "description": "Where it sits: ministry, agency, university, or a federation of bodies."
+          },
+          "legal_form": {
+            "enum": [
+              "new_body",
+              "unit_in_existing_body",
+              "federation_of_existing_bodies",
+              "university_centre",
+              "unknown"
+            ]
+          },
+          "mandate": {
+            "type": "string"
+          },
+          "website": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri",
+            "description": "null = no own website found."
+          },
+          "names": {
+            "type": "array",
+            "description": "Name history, oldest first.",
+            "items": {
+              "type": "object",
+              "required": [
+                "name",
+                "event",
+                "from",
+                "source_ids"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "event": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9-]+$",
+                  "description": "Permanent ID of the event in the institute's jurisdiction timeline that gave this name: a designation, a mandate change, a commitment naming the planned body, or a named event. The build fails when the ID is not in that timeline."
+                },
+                "from": {
+                  "$ref": "#/$defs/date_or_partial",
+                  "description": "Generated date of the linked timeline event; absent from authored data."
+                },
+                "source_ids": {
+                  "$ref": "#/$defs/source_ids_required"
+                },
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "Permanent record identity within this collection; retained across edits and ordering changes. Never reuse a deleted identity."
+                },
+                "citations": {
+                  "$ref": "#/$defs/citations"
+                }
+              }
+            }
+          },
+          "funding": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/funding"
+            }
+          },
+          "staff": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/staff"
+            }
+          },
+          "people": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "name",
+                "role",
+                "source_ids"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "role": {
+                  "type": "string"
+                },
+                "since": {
+                  "$ref": "#/$defs/date_or_partial"
+                },
+                "background": {
+                  "type": "string"
+                },
+                "source_ids": {
+                  "$ref": "#/$defs/source_ids_required"
+                },
+                "confidence": {
+                  "$ref": "#/$defs/confidence"
+                },
+                "until": {
+                  "$ref": "#/$defs/date_or_partial"
+                },
+                "title_status": {
+                  "enum": [
+                    "published",
+                    "unpublished"
+                  ]
+                },
+                "notes": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "Permanent record identity within this collection; retained across edits and ordering changes. Never reuse a deleted identity."
+                },
+                "citations": {
+                  "$ref": "#/$defs/citations"
+                }
+              }
+            }
+          },
+          "staffing_profile": {
+            "type": "string",
+            "description": "How the institute gets its people: direct hires, secondees, partner institutes."
+          },
+          "check": {
+            "$ref": "#/$defs/check"
+          },
+          "source_ids": {
+            "$ref": "#/$defs/source_ids_required"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "operating": {
+            "$ref": "#/$defs/operating"
+          },
+          "intervals": {
+            "type": "object",
+            "readOnly": true,
+            "additionalProperties": false,
+            "required": [
+              "announced_to_established",
+              "established_to_first_qualifying_activity",
+              "announced_to_first_qualifying_activity"
+            ],
+            "description": "Generated intervals between milestones, in signed whole days, absent from authored data. The announcement is the first commitment or proposal event in the timeline, the establishment the first unwithdrawn designation, the first qualifying activity the earliest institute-credit date of an output that qualifies as Known activity. Rule: dataset.method (Intervals between milestones).",
+            "properties": {
+              "announced_to_established": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/interval"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "From the announcement to the establishment; null when either is not recorded."
+              },
+              "established_to_first_qualifying_activity": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/interval"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "From the establishment to the first qualifying activity; null when either is not recorded or the institute is not currently established, even where qualifying work is credited to it."
+              },
+              "announced_to_first_qualifying_activity": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/interval"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "From the announcement to the first qualifying activity; null when either is not recorded or the institute is not currently established, even where qualifying work is credited to it."
+              }
+            }
+          },
+          "testing_capacity": {
+            "$ref": "#/$defs/testing_capacity"
+          },
+          "model_access": {
+            "$ref": "#/$defs/model_access"
+          },
+          "staffing_model": {
+            "$ref": "#/$defs/staffing_model"
+          },
+          "mandate_short": {
+            "type": "string",
+            "description": "One plain line, about 12 words at most, for the page card."
+          },
+          "legal_basis": {
+            "type": "object",
+            "required": [
+              "type",
+              "state",
+              "source_ids"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "enum": [
+                  "law",
+                  "decree",
+                  "cabinet_decision",
+                  "ministerial_act",
+                  "administrative",
+                  "none_found"
+                ]
+              },
+              "state": {
+                "enum": [
+                  "in_force",
+                  "foreseen"
+                ]
+              },
+              "source_ids": {
+                "$ref": "#/$defs/source_ids_required"
+              },
+              "citations": {
+                "$ref": "#/$defs/citations"
+              }
+            },
+            "description": "The act giving the institute its qualifying mandate (not the host's founding act)."
+          },
+          "placement": {
+            "type": "object",
+            "required": [
+              "host_type",
+              "source_ids"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "host_type": {
+                "enum": [
+                  "ministry",
+                  "government_agency",
+                  "public_research_body",
+                  "university",
+                  "supranational",
+                  "multiple",
+                  "unknown"
+                ]
+              },
+              "source_ids": {
+                "$ref": "#/$defs/source_ids_required"
+              },
+              "citations": {
+                "$ref": "#/$defs/citations"
+              }
+            },
+            "description": "Where the institute sits; multiple = network or federation of existing bodies. Not a measure of independence."
+          },
+          "wikidata": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^Q[1-9][0-9]*$",
+            "description": "Verified Wikidata entity QID; null or omitted when no matching item was identified."
+          },
+          "identifier_source_ids": {
+            "$ref": "#/$defs/source_ids_required"
+          },
+          "identifier_notes": {
+            "type": "string",
+            "description": "Identifier distinctions, inapplicability or unsuccessful exact-item searches."
+          },
+          "agreements": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "counterparty",
+                "counterparty_type",
+                "state",
+                "source_ids"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "state": {
+                  "enum": [
+                    "announced",
+                    "signed",
+                    "pledged"
+                  ],
+                  "description": "The recorded act: announced agreement, signed agreement or government-announced company pledge. Not proof that original terms remain in force."
+                },
+                "date": {
+                  "$ref": "#/$defs/date_or_partial"
+                },
+                "scope": {
+                  "type": "string"
+                },
+                "source_ids": {
+                  "$ref": "#/$defs/source_ids_required"
+                },
+                "counterparty": {
+                  "type": "string",
+                  "description": "Name of the agreement counterparty or the company making the pledge."
+                },
+                "counterparty_type": {
+                  "enum": [
+                    "developer",
+                    "institute",
+                    "government",
+                    "multilateral",
+                    "other"
+                  ]
+                },
+                "participation": {
+                  "enum": [
+                    "institute_party",
+                    "named_implementer",
+                    "recipient"
+                  ],
+                  "description": "institute_party: named party to an agreement; named_implementer: named institute implementing a government agreement; recipient: named beneficiary of a company pledge, including a documented predecessor. Only pledged records use recipient."
+                },
+                "domestic_interagency": {
+                  "const": false
+                },
+                "peer_institute_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "Permanent record identity within this collection; retained across edits and ordering changes. Never reuse a deleted identity."
+                },
+                "citations": {
+                  "$ref": "#/$defs/citations"
+                }
+              },
+              "allOf": [
+                {
+                  "if": {
+                    "properties": {
+                      "state": {
+                        "const": "pledged"
+                      }
+                    },
+                    "required": [
+                      "state"
+                    ]
+                  },
+                  "then": {
+                    "properties": {
+                      "participation": {
+                        "const": "recipient"
+                      }
+                    },
+                    "required": [
+                      "participation"
+                    ]
+                  },
+                  "else": {
+                    "properties": {
+                      "participation": {
+                        "enum": [
+                          "institute_party",
+                          "named_implementer"
+                        ]
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "description": "Signed or announced agreements naming the institute as a party or implementer, and government-announced company access pledges for it or a documented predecessor."
+          },
+          "outputs": {
+            "type": "array",
+            "description": "Published artefacts credited to the institute or a documented former name, excluding talks, blog posts and news items.",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "date",
+                "type",
+                "title",
+                "source_ids",
+                "lineage",
+                "attribution",
+                "qualifies_as",
+                "qualification_note"
+              ],
+              "properties": {
+                "date": {
+                  "$ref": "#/$defs/date_or_partial"
+                },
+                "type": {
+                  "enum": [
+                    "evaluation",
+                    "joint_testing",
+                    "report",
+                    "tool",
+                    "guidance",
+                    "dataset",
+                    "other"
+                  ]
+                },
+                "title": {
+                  "type": "string",
+                  "description": "Title of the published artefact."
+                },
+                "source_ids": {
+                  "$ref": "#/$defs/source_ids_required"
+                },
+                "lineage": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "attribution": {
+                  "enum": [
+                    "own_publication",
+                    "institutional_author",
+                    "named_contributor"
+                  ]
+                },
+                "attribution_note": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "credited_from": {
+                  "$ref": "#/$defs/date_or_partial",
+                  "description": "Generated compatibility field: credit.date when it differs from the lineage publication date. Authored input records the credit date in credit.date."
+                },
+                "qualifies_as": {
+                  "enum": [
+                    "published_work",
+                    "joint_testing",
+                    "none"
+                  ],
+                  "description": "Known activity decision: published_work for a published evaluation, test result, benchmark or technical report credited to the institute by name; joint_testing for named participation in a testing exercise, including authored joint reports; none for guidance alone, policy or programme reports, or work without institute credit. Tools and datasets qualify only as evaluation artefacts. See dataset.method; the decision is editorial, never inferred from a title."
+                },
+                "qualification_note": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "\\S",
+                  "description": "Reason for the Known activity qualification, read with this output's attribution and cited sources."
+                },
+                "citations": {
+                  "$ref": "#/$defs/citations"
+                },
+                "credit": {
+                  "type": "object",
+                  "required": [
+                    "institute_id",
+                    "date"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Primary institutional credit, separate from lineage publication. Attribution records the role; institute_id names the credited institute and date records the earliest public version carrying that credit. Each leaf has its own excerpt binding.",
+                  "properties": {
+                    "institute_id": {
+                      "type": "string"
+                    },
+                    "date": {
+                      "$ref": "#/$defs/date_or_partial"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "citations": {
+            "$ref": "#/$defs/citations"
+          },
+          "display": {
+            "type": "object",
+            "required": [
+              "comparison_funding",
+              "budget",
+              "staff",
+              "total_staff",
+              "technical_staff",
+              "funding_records",
+              "staff_records",
+              "funding_ids",
+              "staff_ids",
+              "related_funding_ids",
+              "operating",
+              "source_links",
+              "intervals"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "comparison_funding": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "budget": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "staff": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "total_staff": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "technical_staff": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "funding_records": {
+                "type": "object",
+                "additionalProperties": {
+                  "$ref": "#/$defs/funding"
+                }
+              },
+              "staff_records": {
+                "type": "object",
+                "additionalProperties": {
+                  "$ref": "#/$defs/staff"
+                }
+              },
+              "funding_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "uniqueItems": true
+              },
+              "staff_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "uniqueItems": true
+              },
+              "related_funding_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "uniqueItems": true
+              },
+              "operating": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "required": [
+                  "since",
+                  "first_lineage",
+                  "items"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "since": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "first_lineage": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "items": {
+                    "$ref": "#/$defs/operating"
+                  }
+                }
+              },
+              "source_links": {
+                "$ref": "#/$defs/source_ids"
+              },
+              "rows": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "head": {
+                    "type": "object",
+                    "required": [
+                      "state",
+                      "cited"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "$ref": "#/$defs/row_state"
+                      },
+                      "cited": {
+                        "$ref": "#/$defs/source_ids"
+                      },
+                      "text": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      }
+                    }
+                  },
+                  "reports_to": {
+                    "type": "object",
+                    "required": [
+                      "state",
+                      "cited"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "$ref": "#/$defs/row_state"
+                      },
+                      "cited": {
+                        "$ref": "#/$defs/source_ids"
+                      },
+                      "text": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      }
+                    }
+                  },
+                  "partners": {
+                    "type": "object",
+                    "required": [
+                      "state",
+                      "cited"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "$ref": "#/$defs/row_state"
+                      },
+                      "cited": {
+                        "$ref": "#/$defs/source_ids"
+                      },
+                      "items": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/$defs/partner_row_item"
+                        },
+                        "description": "At most six, in card order: cyber agency first, then member, works with, planned, then authored order."
+                      },
+                      "tail": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "fold_items": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/$defs/partner_row_item"
+                        },
+                        "description": "Every partner in card order, including those beyond six, with name/how citations for the fold-out."
+                      }
+                    }
+                  }
+                },
+                "description": "Card rows Head, Reports to and Partners, present when the institute has the fields. Texts, order and labels are generated; partner order is cyber agency first, then relation (member, works with, planned), then authored order, and the card shows at most six."
+              },
+              "intervals": {
+                "type": "object",
+                "required": [
+                  "status_since",
+                  "known_activity"
+                ],
+                "additionalProperties": false,
+                "description": "Card wording for exact intervals only (equal bounds); null otherwise. Ranges stay in intervals.",
+                "properties": {
+                  "status_since": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Interval from the announcement or proposal to the establishment, shown under Status since when that date is the establishment."
+                  },
+                  "known_activity": {
+                    "type": [
+                      "object",
+                      "null"
+                    ],
+                    "required": [
+                      "kind",
+                      "lineage",
+                      "text"
+                    ],
+                    "additionalProperties": false,
+                    "description": "Interval from the establishment to the first qualifying activity, shown under the Known activity item dated that day.",
+                    "properties": {
+                      "kind": {
+                        "enum": [
+                          "published_work",
+                          "joint_testing"
+                        ]
+                      },
+                      "lineage": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "text": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Generated selections by permanent ID and keyed record maps. List orders are documented in docs/design/schema-1.0.md; the page does not select from authored arrays."
+          },
+          "head": {
+            "type": "object",
+            "required": [
+              "state"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "state": {
+                "$ref": "#/$defs/row_state"
+              },
+              "person_id": {
+                "type": "string",
+                "minLength": 1,
+                "description": "The id of the people[] entry of this institute who is the top executive by published title (chair excluded; Acting and part-time kept as published)."
+              },
+              "source_ids": {
+                "$ref": "#/$defs/source_ids_required"
+              },
+              "notes": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Required for not_published: what was searched, in which languages, on what date."
+              },
+              "citations": {
+                "$ref": "#/$defs/citations"
+              }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "state": {
+                      "const": "stated"
+                    }
+                  },
+                  "required": [
+                    "state"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "person_id",
+                    "source_ids"
+                  ]
+                },
+                "else": {
+                  "properties": {
+                    "person_id": false,
+                    "source_ids": false
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "state": {
+                      "const": "not_published"
+                    }
+                  },
+                  "required": [
+                    "state"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "notes"
+                  ]
+                }
+              }
+            ],
+            "description": "Who leads the institute. The name and title come from the referenced person record, so they are stated once."
+          },
+          "reports_to": {
+            "type": "object",
+            "required": [
+              "state"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "state": {
+                "$ref": "#/$defs/row_state"
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "description": "The ministry-level body the institute answers to, in the source's language: one above an agency, university or research host, equal to the host for a ministry host. Several bodies are joined with '; '."
+              },
+              "name_en": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Faithful English translation of name; required when name is in a non-Latin script."
+              },
+              "source_ids": {
+                "$ref": "#/$defs/source_ids_required"
+              },
+              "notes": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Required for not_published: what was searched, in which languages, on what date."
+              },
+              "citations": {
+                "$ref": "#/$defs/citations"
+              }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "state": {
+                      "const": "stated"
+                    }
+                  },
+                  "required": [
+                    "state"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "name",
+                    "source_ids"
+                  ]
+                },
+                "else": {
+                  "properties": {
+                    "name": false,
+                    "name_en": false,
+                    "source_ids": false
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "state": {
+                      "const": "not_published"
+                    }
+                  },
+                  "required": [
+                    "state"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "notes"
+                  ]
+                }
+              }
+            ],
+            "description": "The body one level above the institute's host that it reports to."
+          },
+          "national_partners": {
+            "type": "object",
+            "required": [
+              "state"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "state": {
+                "$ref": "#/$defs/row_state"
+              },
+              "entries": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "$ref": "#/$defs/partner_entry"
+                },
+                "description": "Every partner that meets the partner rule, in authored order, which is the tie-break on the card (the card shows at most six). The host itself is never an entry; constituents of a federation host are member entries."
+              },
+              "notes": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Required for not_published, and for stated when no entry has cyber_agency: names the cyber agency searched, the date and the languages."
+              },
+              "citations": {
+                "$ref": "#/$defs/citations"
+              }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "state": {
+                      "const": "stated"
+                    }
+                  },
+                  "required": [
+                    "state"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "entries"
+                  ]
+                },
+                "else": {
+                  "properties": {
+                    "entries": false
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "state": {
+                      "const": "not_published"
+                    }
+                  },
+                  "required": [
+                    "state"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "notes"
+                  ]
+                }
+              }
+            ],
+            "description": "Domestic public bodies and public-interest research organisations that a primary text names as working with the institute on its mission. Only the national cyber security agency is searched for every institute; other bodies are recorded from documents fetched anyway, so their absence is never claimed."
+          }
+        }
+      }
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "url",
+          "title",
+          "publisher",
+          "type",
+          "accessed",
+          "origin"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9-]+$"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "title": {
+            "type": "string"
+          },
+          "publisher": {
+            "type": "string"
+          },
+          "type": {
+            "enum": [
+              "primary",
+              "secondary"
+            ],
+            "description": "primary = the government, institute or official document itself; secondary = press, trackers, wikis."
+          },
+          "legal_text": {
+            "const": true,
+            "description": "Present and true only when the source is the official text of an adopted legal instrument (an act, regulation, decree, executive order, presidential memorandum or government resolution, as enacted or officially published), not a bill, explainer, summary or press release. Required for the excerpt behind a model_access provision."
+          },
+          "instrument_status_checked": {
+            "$ref": "#/$defs/date",
+            "description": "Date on which an official record last confirmed this legal instrument's status: in force, or rescinded, repealed or replaced. Only on a source marked legal_text; omitted when not yet verified. The build rejects a date after today; the check report warns when a legal_text source lacks it or it is more than 183 days before dataset.as_of (before the release date under --release). A date after dataset.as_of is a release warning, and fails --release."
+          },
+          "published": {
+            "$ref": "#/$defs/date_or_partial"
+          },
+          "accessed": {
+            "$ref": "#/$defs/date"
+          },
+          "language": {
+            "type": "string",
+            "pattern": "^[a-z]{2}$",
+            "description": "ISO 639-1 language code of the source actually read; omitted when unknown or when no two-letter code exists."
+          },
+          "archive_url": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "access_note": {
+            "type": "string",
+            "description": "E.g. blocks automated readers, read in a browser."
+          },
+          "excerpts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "text",
+                "supports"
+              ],
+              "properties": {
+                "text": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 300,
+                  "description": "Short verbatim excerpt in the original language."
+                },
+                "gloss": {
+                  "type": "string",
+                  "description": "Short English gloss for a non-English excerpt."
+                },
+                "supports": {
+                  "type": "array",
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "pattern": "^/"
+                  },
+                  "description": "RFC 6901 pointers from the root of this exact dataset version to supported values."
+                },
+                "url": {
+                  "type": "string",
+                  "format": "uri",
+                  "description": "Live or archived copy actually read."
+                },
+                "accessed": {
+                  "$ref": "#/$defs/date"
+                }
+              }
+            }
+          },
+          "origin": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 2,
+            "description": "Issuer jurisdiction ISO code, EU, or a named international body from dataset.vocabularies.source_origin; null means unresolved. This is not the server location."
+          },
+          "title_en": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S",
+            "description": "Faithful English translation of a non-English or mixed-language source title; original title is retained. Omitted when already English or only a proper name/acronym. This is not necessarily an official English title."
+          },
+          "output_lineage": {
+            "type": "string",
+            "minLength": 1,
+            "description": "This source is a specific original document or its direct release, belonging to exactly this output lineage. Never annotate a multi-item index, catalogue or general briefing with this field. It anchors document identity independently of output labels; published is not assumed to be the earliest lineage date."
+          },
+          "output_role": {
+            "enum": [
+              "document",
+              "context"
+            ],
+            "description": "Reviewed role when cited by an output: specific document/direct substantive release, or contextual/index evidence covering independent facts. Document role requires output_lineage in consistency checks."
+          },
+          "snapshot": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "retrieved",
+              "sha256"
+            ],
+            "properties": {
+              "retrieved": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Recorded retrieval timestamp of the complete private response copy, in UTC or with an explicit offset. Not publication date."
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$",
+                "description": "SHA-256 of the complete preserved response bytes; not extracted text. Proves which file is held."
+              },
+              "text_sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$",
+                "description": "SHA-256 of the UTF-8 main text of the same copy under text_scheme, used to tell a real content change from byte-only or page-furniture changes. Scheme 1. HTML (by recorded MIME type or a leading doctype or html tag): drop head, title, script, style, template, noscript, nav and aside elements, the Wayback toolbar, and elements with role navigation, banner, contentinfo, complementary or search; drop header and footer elements unless inside main, article or role main; then take the visible text (the verifier's HTML view) of the first nonempty of: the one outermost main or role main element, the one outermost article, the body (the whole document when it has none); if all are empty, the whole document's visible text without dropping anything. Other copies: the verifier's primary text extraction; a rendered copy (text beginning \"Title:\" and containing \"Markdown Content:\") keeps only the text after that marker. Then Unicode NFKC and every whitespace run collapsed to one space, trimmed; no ASCII or case folding. Omitted when this text is empty or cannot be extracted, so only sha256 identifies the copy."
+              },
+              "text_scheme": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Version of the text_sha256 rule. A new scheme means one deliberate re-hash of every stored copy; hashes of different schemes are not compared."
+              }
+            },
+            "dependentRequired": {
+              "text_sha256": [
+                "text_scheme"
+              ],
+              "text_scheme": [
+                "text_sha256"
+              ]
+            },
+            "description": "Public verification metadata for a privately stored source copy. File paths, response bytes and local manifests are never part of the published dataset. Omitted when no valid copy was saved."
+          }
+        },
+        "dependentRequired": {
+          "instrument_status_checked": [
+            "legal_text"
+          ]
+        }
+      }
+    },
+    "changelog": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "date",
+          "version",
+          "changes",
+          "summary"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "date": {
+            "$ref": "#/$defs/date"
+          },
+          "version": {
+            "type": "string"
+          },
+          "changes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "summary": {
+            "type": "string",
+            "minLength": 1,
+            "description": "One or two plain-language sentences describing the data changes for readers."
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "count_summary": {
+      "anyOf": [
+        {
+          "type": "object",
+          "required": [
+            "n",
+            "median",
+            "highest",
+            "highest_jurisdiction_id"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "n": {
+              "type": "integer",
+              "minimum": 2
+            },
+            "median": {
+              "type": "string"
+            },
+            "highest": {
+              "type": "string"
+            },
+            "highest_jurisdiction_id": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "date": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+      "format": "date"
+    },
+    "date_or_partial": {
+      "type": "string",
+      "pattern": "^\\d{4}(-\\d{2}(-\\d{2})?)?$",
+      "description": "ISO date, or year-month, or year when the source is no more precise."
+    },
+    "status": {
+      "enum": [
+        "established",
+        "planned",
+        "proposed",
+        "exploring",
+        "none_identified"
+      ]
+    },
+    "confidence": {
+      "enum": [
+        "high",
+        "medium",
+        "low"
+      ],
+      "description": "high = stated in a primary source; medium = primary but indirect, or several consistent secondary sources; low = single secondary source, snippet, or estimate."
+    },
+    "source_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "check": {
+      "type": "object",
+      "required": [
+        "last_checked",
+        "method"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "last_checked": {
+          "$ref": "#/$defs/date"
+        },
+        "method": {
+          "enum": [
+            "individual",
+            "broad_search"
+          ],
+          "description": "individual = sources for this record searched and read one by one; broad_search = covered only by region-wide searches."
+        },
+        "by": {
+          "type": "string"
+        },
+        "partial": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "date",
+              "scope"
+            ],
+            "properties": {
+              "date": {
+                "$ref": "#/$defs/date"
+              },
+              "scope": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "searches": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "date",
+              "language",
+              "query",
+              "national_or_official",
+              "source_ids"
+            ],
+            "properties": {
+              "date": {
+                "$ref": "#/$defs/date"
+              },
+              "language": {
+                "type": "string",
+                "minLength": 1
+              },
+              "query": {
+                "type": "string",
+                "minLength": 1
+              },
+              "national_or_official": {
+                "type": "boolean"
+              },
+              "source_ids": {
+                "$ref": "#/$defs/source_ids"
+              },
+              "citations": {
+                "$ref": "#/$defs/citations"
+              }
+            }
+          }
+        },
+        "independent_source_ids": {
+          "$ref": "#/$defs/source_ids",
+          "description": "Historical source-independence audit metadata; not a condition of negative confidence under the confidence rule."
+        },
+        "language_note": {
+          "type": "string",
+          "minLength": 1
+        },
+        "independence_note": {
+          "type": "string",
+          "minLength": 1
+        },
+        "explicit_absence": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source_id",
+            "date"
+          ],
+          "properties": {
+            "source_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "date": {
+              "$ref": "#/$defs/date"
+            }
+          }
+        },
+        "last_checked_basis": {
+          "type": "string",
+          "enum": [
+            "recorded_full_check",
+            "historical_upper_bound"
+          ],
+          "description": "Historical upper bound marks a date preserved from an earlier record whose original full-check ledger is unavailable. It may be the same calendar day as a later partial audit and is not guaranteed freshness."
+        },
+        "governance_source_ids": {
+          "$ref": "#/$defs/source_ids_required",
+          "description": "Primary sources cited by this record and reviewed as evidence of the state\u2019s AI governance set-up, consistent with no qualifying institute. Requires governance_note; relevance is an editorial judgement."
+        },
+        "governance_note": {
+          "type": "string",
+          "minLength": 1,
+          "description": "What the cited primary governance evidence establishes and its limits; requires governance_source_ids."
+        }
+      },
+      "dependentRequired": {
+        "governance_source_ids": [
+          "governance_note"
+        ],
+        "governance_note": [
+          "governance_source_ids"
+        ]
+      }
+    },
+    "funding": {
+      "type": "object",
+      "required": [
+        "kind",
+        "description",
+        "source_ids",
+        "confidence",
+        "commitment",
+        "coverage"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": [
+            "annual",
+            "multi_year",
+            "one_off",
+            "not_institute_specific",
+            "none_disclosed"
+          ]
+        },
+        "amount": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "currency": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[A-Z]{3}$"
+        },
+        "years": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "exclusiveMinimum": 0,
+          "description": "Number of years a multi-year amount covers."
+        },
+        "period": {
+          "type": "string",
+          "description": "Funding year or period as the source states it; not a launch or announcement year alone."
+        },
+        "eur_per_year_est": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "Published annual_amount multiplied by the currency eur_per_unit in dataset.exchange_rates (EUR uses 1), rounded to 6 significant figures: up for an upper-bound amount_qualifier, down for a lower bound, otherwise half up; absent or null only when annual_amount is unknown; see dataset.method for limitations.",
+          "minimum": 0
+        },
+          "eur_per_person_est": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0,
+            "description": "Generated on the compared funding record only (display.comparison_funding): the unrounded annual EUR amount divided by the jurisdiction's population.value, rounded to 6 significant figures, up for an upper-bound amount_qualifier and down for a lower bound, otherwise half up. The amount_qualifier applies to it unchanged: an upper bound stays an upper bound. Null when no population is recorded. Rule budget-ratios in dataset.method."
+          },
+          "share_of_gdp_est": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0,
+            "description": "Generated on the compared funding record only: annual_amount as a fraction (not a percentage) of the jurisdiction's gdp.value, computed in the budget currency when it is the GDP currency (no exchange rate enters), otherwise with both converted to EUR at dataset.exchange_rates; unrounded inputs, 6 significant figures, rounded as eur_per_person_est. Null when no GDP is recorded or its currency has no rate. Rule budget-ratios in dataset.method."
+          },
+          "ratio_denominators": {
+            "type": "object",
+            "description": "Generated on the compared funding record only: the jurisdiction's population and GDP values and years that eur_per_person_est and share_of_gdp_est used; their sources are in citations. A missing key means that denominator is not recorded.",
+            "additionalProperties": false,
+            "properties": {
+              "population": {
+                "type": "object",
+                "required": [
+                  "value",
+                  "year"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "value": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "year": {
+                    "type": "integer"
+                  }
+                }
+              },
+              "gdp": {
+                "type": "object",
+                "required": [
+                  "value",
+                  "currency",
+                  "year"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "value": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0
+                  },
+                  "currency": {
+                    "type": "string",
+                    "pattern": "^[A-Z]{3}$"
+                  },
+                  "year": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          },
+        "description": {
+          "type": "string"
+        },
+        "source_ids": {
+          "$ref": "#/$defs/source_ids_required"
+        },
+        "confidence": {
+          "$ref": "#/$defs/confidence"
+        },
+        "figure_source": {
+          "$ref": "#/$defs/figure_source"
+        },
+        "notes": {
+          "type": "string"
+        },
+        "commitment": {
+          "enum": [
+            "proposed",
+            "adopted",
+            "announced",
+            "not_applicable"
+          ],
+          "description": "proposed = in a budget or bill not yet passed; adopted = in an adopted budget, law or plan; announced = government announcement whose legal basis was not checked; not_applicable = no amount."
+        },
+        "funding_source": {
+          "enum": [
+            "national_government",
+            "supranational",
+            "foreign_or_multilateral",
+            "philanthropic",
+            "private",
+            "mixed",
+            "unknown"
+          ],
+          "description": "Who pays."
+        },
+        "decision_date": {
+          "$ref": "#/$defs/date_or_partial",
+          "description": "Date the funding decision or announcement was made, never inferred from its fiscal period. Partial dates do not imply a day; comparison excludes only decisions dated wholly after the dataset date."
+        },
+        "annual_amount": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Annual allocation or arithmetic annual mean in the stated currency; see annual_basis."
+        },
+        "annual_basis": {
+          "type": "string",
+          "description": "Basis and limitations of annual_amount; allocation or arithmetic mean, not actual spending."
+        },
+        "annual_basis_code": {
+          "enum": [
+            "allocation_current_year",
+            "period_mean",
+            "other"
+          ],
+          "description": "Whether the annual figure is the current fiscal allocation, a mean over a stated period, or another stated basis."
+        },
+        "annual_period": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "start",
+            "end"
+          ],
+          "properties": {
+            "start": {
+              "$ref": "#/$defs/date"
+            },
+            "end": {
+              "$ref": "#/$defs/date"
+            }
+          },
+          "description": "Inclusive dates covered by the annual figure, or the full span for a period mean or repeated identical annual allocations. For ongoing funding, the first stated fiscal year is recorded; later years need an updated period before comparison."
+        },
+        "annual_profile": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "start",
+              "end",
+              "amount",
+              "source_ids"
+            ],
+            "properties": {
+              "start": {
+                "$ref": "#/$defs/date"
+              },
+              "end": {
+                "$ref": "#/$defs/date"
+              },
+              "amount": {
+                "type": "number",
+                "minimum": 0
+              },
+              "source_ids": {
+                "$ref": "#/$defs/source_ids_required"
+              },
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Permanent record identity within this collection; retained across edits and ordering changes. Never reuse a deleted identity."
+              },
+              "citations": {
+                "$ref": "#/$defs/citations"
+              }
+            }
+          }
+        },
+        "coverage": {
+          "enum": [
+            "whole_institute",
+            "component",
+            "not_institute_specific"
+          ],
+          "description": "Scope of this funding record: the institute as a whole, a component, or related funding belonging to another body or wider programme. Whole-institute scope does not assert that the amount represents all of the institute's resources. Comparison eligibility is defined by dataset.method (Annual funding and Budget display)."
+        },
+        "sum_of": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": "Permanent IDs of disjoint component funding records in this institute, retained in downloads. The build checks identity, period, currency, commitment, source union and lowest confidence. Components with amount qualifiers cannot be combined without an explicit bound derivation rule."
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Permanent record identity within this collection; retained across edits and ordering changes. Never reuse a deleted identity."
+        },
+        "citations": {
+          "$ref": "#/$defs/citations"
+        },
+        "display": {
+          "type": "object",
+          "required": [
+            "annual_estimate",
+            "value",
+            "qualifiers",
+            "native_value",
+            "native_qualifiers",
+            "budget_citations"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "annual_estimate": {
+              "type": "boolean"
+            },
+            "value": {
+              "type": "string"
+            },
+            "qualifiers": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "native_value": {
+              "type": "string"
+            },
+            "native_qualifiers": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "budget_citations": {
+              "$ref": "#/$defs/source_ids"
+            },
+            "per_person": {
+              "type": "string",
+              "description": "Compared record only: the annual figure per person at two significant figures from unrounded inputs, with the amount's qualifier, for example \"up to ~EUR 0.026 per person\"; absent without a population."
+            }
+          },
+          "description": "Generated value, qualifiers and evidence for rendering the shared Budget selection."
+        },
+        "amount_qualifier": {
+          "enum": [
+            "about",
+            "at_most",
+            "at_least",
+            "nearly",
+            "more_than",
+            "less_than"
+          ],
+          "description": "Sourced qualifier of the stated amount: about is an approximation; at_most/at_least are inclusive upper/lower bounds; more_than/less_than are strict lower/upper bounds; nearly means an approximate amount below the stated value. Omitted means no bound or approximation is stated, not proof of exactness. Currency conversions remain approximate while retaining the source bound. Not permitted on a calculated sum; component bounds cannot be silently combined."
+        }
+      },
+      "dependentRequired": {
+        "annual_amount": [
+          "annual_basis",
+          "currency"
+        ],
+        "annual_basis": [
+          "annual_amount"
+        ],
+        "annual_basis_code": [
+          "annual_amount",
+          "annual_basis"
+        ],
+        "amount_qualifier": [
+          "amount"
+        ]
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "amount",
+              "period"
+            ],
+            "properties": {
+              "amount": {
+                "type": "number"
+              },
+              "period": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "annual_amount",
+              "annual_basis",
+              "annual_basis_code"
+            ]
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "amount_qualifier"
+            ]
+          },
+          "then": {
+            "properties": {
+              "amount": {
+                "type": "number"
+              }
+            },
+            "not": {
+              "required": [
+                "sum_of"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "staff": {
+      "type": "object",
+      "required": [
+        "as_of",
+        "source_ids",
+        "confidence"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "display": {
+          "type": "object",
+          "required": [
+            "total",
+            "technical",
+            "target"
+          ],
+          "additionalProperties": false,
+          "description": "Generated text of the counts at two significant figures with their qualifiers, for rendering; null where the count is absent.",
+          "properties": {
+            "total": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "technical": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "target": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        },
+        "total": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "total_qualifier": {
+          "enum": [
+            "exact",
+            "at_least",
+            "about",
+            "at_most"
+          ]
+        },
+        "technical": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "technical_qualifier": {
+          "enum": [
+            "exact",
+            "at_least",
+            "about",
+            "at_most"
+          ]
+        },
+        "target": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "as_of": {
+          "$ref": "#/$defs/date_or_partial"
+        },
+        "description": {
+          "type": "string"
+        },
+        "source_ids": {
+          "$ref": "#/$defs/source_ids_required"
+        },
+        "confidence": {
+          "$ref": "#/$defs/confidence"
+        },
+        "figure_source": {
+          "$ref": "#/$defs/figure_source"
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Permanent record identity within this collection; retained across edits and ordering changes. Never reuse a deleted identity."
+        },
+        "citations": {
+          "$ref": "#/$defs/citations"
+        }
+      }
+    },
+    "source_ids_required": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "operating": {
+      "type": "array",
+      "readOnly": true,
+      "maxItems": 2,
+      "description": "Generated by the publication pipeline from outputs, absent from authored data. One earliest qualifying item per kind, ordered by unpadded institute-credit date then kind. Empty means none found, not inactivity. The page shows this only for established institutes. Any supplied array must match recomputation. Item ties use lexical lineage; partial dates are presentation order, not known chronology.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "date",
+          "lineage",
+          "source_ids"
+        ],
+        "properties": {
+          "kind": {
+            "enum": [
+              "published_work",
+              "joint_testing"
+            ],
+            "description": "Known activity kind from the selected output decision."
+          },
+          "date": {
+            "$ref": "#/$defs/date_or_partial",
+            "description": "Selected output credit.date; precision is retained."
+          },
+          "lineage": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Selected output lineage, identifying the item within this institute catalogue."
+          },
+          "source_ids": {
+            "$ref": "#/$defs/source_ids",
+            "description": "Generated source IDs from the selected output\u2019s exact credit.institute_id and credit.date excerpt bindings, not its full bibliography. Production evidence validation requires both credit leaves."
+          },
+          "citations": {
+            "$ref": "#/$defs/citations"
+          }
+        }
+      }
+    },
+    "interval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "days_min",
+        "days_max"
+      ],
+      "description": "Signed whole days between two dates, from the shortest to the longest reading: equal bounds when the interval is exact once each date is bounded; a month-only or year-only date covers every day of that month or year up to dataset.as_of. Negative means the later milestone came first; a negative days_min with a positive days_max means the order is not known. days_min never exceeds days_max.",
+      "properties": {
+        "days_min": {
+          "type": "integer",
+          "description": "Shortest reading, in days."
+        },
+        "days_max": {
+          "type": "integer",
+          "description": "Longest reading, in days."
+        }
+      }
+    },
+    "testing_capacity": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "modes": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 2,
+          "items": {
+            "$ref": "#/$defs/testing_mode"
+          },
+          "description": "Every stated mode, one or both, in vocabulary order (in_house, then via_other_bodies), each with its own sources and bound excerpt. Natural key: code."
+        },
+        "state": {
+          "enum": [
+            "planned",
+            "not_published"
+          ],
+          "description": "Only when no mode is stated. planned: adopted text (not a proposal) sets up testing capacity in the future. not_published: searched and no source states it. Codes and labels in dataset.vocabularies.testing_capacity."
+        },
+        "source_ids": {
+          "$ref": "#/$defs/source_ids_required",
+          "description": "For planned, the sources of the plan. Otherwise only the sources of the notes, which it then requires; each mode cites its own."
+        },
+        "notes": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Optional. For not_published, 'proposed: <quote, source, date>' when only a proposal exists; otherwise explicit negative statements such as no own staff, joint network testing credited as testing reported with its date, and a newer source contradicting an older one."
+        },
+        "citations": {
+          "$ref": "#/$defs/citations"
+        },
+        "named_as": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Optional: the words a bound excerpt uses for the institute (or for a body explicitly acting for it) when they are none of its recorded names, for example an informal short name. Never the host, the reporting-line body or a partner."
+        },
+        "searches": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/flag_search"
+          },
+          "description": "Required for not_published: the dated search log."
+        }
+      },
+      "oneOf": [
+        {
+          "required": [
+            "modes"
+          ],
+          "properties": {
+            "state": false
+          }
+        },
+        {
+          "required": [
+            "state"
+          ],
+          "properties": {
+            "modes": false
+          }
+        }
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "planned"
+              }
+            },
+            "required": [
+              "state"
+            ]
+          },
+          "then": {
+            "required": [
+              "source_ids"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "not_published"
+              }
+            },
+            "required": [
+              "state"
+            ]
+          },
+          "then": {
+            "required": [
+              "searches"
+            ],
+            "properties": {
+              "named_as": false
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "source_ids"
+            ],
+            "not": {
+              "properties": {
+                "state": {
+                  "const": "planned"
+                }
+              },
+              "required": [
+                "state"
+              ]
+            }
+          },
+          "then": {
+            "required": [
+              "notes"
+            ]
+          }
+        }
+      ],
+      "description": "Whether a source states that the institute tests or evaluates AI models itself, through named other bodies, or both; or that this is planned or not published. Every stated value is bound to an excerpt in which the institute, or a body explicitly acting for it, is the subject; the rule is in dataset.method (Testing capacity and model access). In the downloads and the API; the page shows it in its Testing and access groups, beside institutes with no access found."
+    },
+    "staffing_model": {
+      "type": "object",
+      "required": [
+        "code"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "enum": [
+            "own_staff",
+            "member_bodies",
+            "core_with_partners",
+            "host_unit",
+            "planned",
+            "not_published"
+          ],
+          "description": "Decided in this order, the first that applies: member_bodies (a federation of existing bodies whose staff do its work); core_with_partners (partner institutions do its research or testing, any own central team only coordinates); host_unit (a unit of an agency, public research body or university that employs, assigns or hires its staff, or an existing host unit designated as the institute); own_staff (posts of its own, including in a ministry, government department or the European Commission). planned: adopted text (not a proposal) sets up the staffing in the future. not_published: searched and no source states it. Labels and definitions in dataset.vocabularies.staffing_model."
+        },
+        "source_ids": {
+          "$ref": "#/$defs/source_ids_required",
+          "description": "Sources of the code and the notes. Required unless not_published; for not_published only the sources of the notes, which it then requires."
+        },
+        "notes": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Optional. Secondments, concurrent posts or contractors beside the main model, history from sources before 2023, a newer source contradicting an older one, or for not_published 'proposed: <quote, source, date>' when only a proposal exists."
+        },
+        "named_as": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Optional: the words a bound excerpt uses for the institute (or for a body explicitly acting for it) when they are none of its recorded names. Never the host, the reporting-line body or a partner."
+        },
+        "searches": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/flag_search"
+          },
+          "description": "Required for not_published: the dated search log."
+        },
+        "citations": {
+          "$ref": "#/$defs/citations"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "code": {
+                "const": "not_published"
+              }
+            },
+            "required": [
+              "code"
+            ]
+          },
+          "then": {
+            "required": [
+              "searches"
+            ],
+            "properties": {
+              "named_as": false
+            }
+          },
+          "else": {
+            "required": [
+              "source_ids"
+            ],
+            "properties": {
+              "searches": false
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "code": {
+                "const": "not_published"
+              }
+            },
+            "required": [
+              "code",
+              "source_ids"
+            ]
+          },
+          "then": {
+            "required": [
+              "notes"
+            ]
+          }
+        }
+      ],
+      "description": "How a source states the institute is staffed: one code, bound to an excerpt from a source dated 2023 or later (an undated page counts as of the day it was read; dataset.method, Staffing model) in which the institute, or a body explicitly acting for it, is the subject. The rule is in dataset.method (Staffing model). Downloads and API only; the page does not show it. Dated headcounts stay in staff."
+    },
+    "testing_mode": {
+      "type": "object",
+      "required": [
+        "code",
+        "source_ids"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "enum": [
+            "in_house",
+            "via_other_bodies"
+          ],
+          "description": "in_house: a source reports testing or evaluation of AI models that the institute itself has carried out or is carrying out. via_other_bodies: a source states a named body outside the institute tests or evaluates models for it. Labels and definitions in dataset.vocabularies.testing_capacity."
+        },
+        "source_ids": {
+          "$ref": "#/$defs/source_ids_required"
+        },
+        "citations": {
+          "$ref": "#/$defs/citations"
+        },
+        "named_as": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Optional: the words a bound excerpt uses for the institute (or for a body explicitly acting for it) when they are none of its recorded names, for example an informal short name. Never the host, the reporting-line body or a partner."
+        }
+      },
+      "description": "One stated testing mode."
+    },
+    "model_access": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value"
+      ],
+      "properties": {
+        "access_events": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/access_event"
+          },
+          "description": "Dated access events, in date order."
+        },
+        "legal_power": {
+          "$ref": "#/$defs/legal_power"
+        },
+        "developer_agreements": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/developer_agreement"
+          }
+        },
+        "notes": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Optional: non-frontier access (for example to a model outside Epoch AI's frontier set), access from developers without a frontier model, unknown access by contractors, or a newer source contradicting an older one."
+        },
+        "source_ids": {
+          "$ref": "#/$defs/source_ids_required",
+          "description": "Sources of the notes only, which it requires; events, the legal power and agreements cite their own."
+        },
+        "searches": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/flag_search"
+          },
+          "description": "The dated search log; required when nothing is recorded."
+        },
+        "value": {
+          "enum": [
+            "recent_access",
+            "earlier_access",
+            "by_law",
+            "access_agreed",
+            "none_found"
+          ],
+          "description": "Generated, never authored. recent_access: the latest event is within the twelve months up to dataset.as_of (a partial date counts from its first possible day); earlier_access: an older event; otherwise by_law with a legal power, access_agreed with a developer agreement, else none_found. Labels in dataset.vocabularies.model_access."
+        },
+        "latest_event": {
+          "$ref": "#/$defs/date_or_partial",
+          "description": "Generated: the date of the latest access event, on or before which that access took place; absent without events."
+        },
+        "citations": {
+          "$ref": "#/$defs/citations"
+        }
+      },
+      "anyOf": [
+        {
+          "required": [
+            "access_events"
+          ]
+        },
+        {
+          "required": [
+            "legal_power"
+          ]
+        },
+        {
+          "required": [
+            "developer_agreements"
+          ]
+        },
+        {
+          "required": [
+            "searches"
+          ]
+        }
+      ],
+      "description": "How the institute gets access to frontier AI models, as sources state it: dated access events, a legal power and developer agreements, with a generated value. Rule in dataset.method (Testing capacity and model access). In the downloads and the API; the page shows the value as its Testing and access groups.",
+      "dependentRequired": {
+        "source_ids": [
+          "notes"
+        ]
+      }
+    },
+    "access_event": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "model",
+        "developer",
+        "date",
+        "kind",
+        "epoch_model",
+        "epoch_source_id",
+        "source_ids",
+        "epoch_basis"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Permanent record identity within this collection."
+        },
+        "model": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The model the institute had access to, as the source names it."
+        },
+        "developer": {
+          "type": "string",
+          "minLength": 1
+        },
+        "date": {
+          "$ref": "#/$defs/date_or_partial",
+          "description": "The date by which the access had happened, at the precision the source gives: the access took place on or before it. How the date is chosen: dataset.method (Testing capacity and model access)."
+        },
+        "kind": {
+          "enum": [
+            "pre_release",
+            "deeper_than_public"
+          ],
+          "description": "pre_release: access before the model's public release. deeper_than_public: access beyond what the public gets, such as reduced or removed safeguards, weights or internals. Testing through the public interface is never an event."
+        },
+        "epoch_basis": {
+          "enum": [
+            "frontier_model",
+            "leading_developer"
+          ],
+          "description": "Why the event counts (dataset.method): frontier_model, the model is in Epoch AI's frontier set; leading_developer, its developer was a leading developer at the event date."
+        },
+        "epoch_model": {
+          "type": "string",
+          "minLength": 1,
+          "description": "For frontier_model, the event's model as Epoch AI's data lists it in the frontier set; for leading_developer, a frontier model of the developer released on or after 1 January 2023. Bound to an excerpt from epoch_source_id."
+        },
+        "epoch_model_date": {
+          "$ref": "#/$defs/date_or_partial",
+          "description": "leading_developer only: epoch_model's release date in Epoch AI's data, on or after 2023-01-01."
+        },
+        "epoch_notable_model": {
+          "type": "string",
+          "minLength": 1,
+          "description": "leading_developer only: a model of the developer in Epoch AI's notable models, released in the twelve months before the event."
+        },
+        "epoch_notable_date": {
+          "$ref": "#/$defs/date_or_partial",
+          "description": "leading_developer only: epoch_notable_model's release date in Epoch AI's data."
+        },
+        "epoch_source_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The source (published by Epoch AI) that the epoch_model excerpt comes from; also one of source_ids."
+        },
+        "named_as": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Optional: the words a bound excerpt uses for the institute (or for a body explicitly acting for it) when they are none of its recorded names, for example an informal short name. Never the host, the reporting-line body or a partner."
+        },
+        "source_ids": {
+          "$ref": "#/$defs/source_ids_required"
+        },
+        "citations": {
+          "$ref": "#/$defs/citations"
+        }
+      },
+      "description": "One dated access event: the institute had access to a leading model before release or deeper than the public. Rule in dataset.method (Testing capacity and model access).",
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "epoch_basis": {
+                "const": "leading_developer"
+              }
+            },
+            "required": [
+              "epoch_basis"
+            ]
+          },
+          "then": {
+            "required": [
+              "epoch_model_date",
+              "epoch_notable_model",
+              "epoch_notable_date"
+            ]
+          },
+          "else": {
+            "properties": {
+              "epoch_model_date": false,
+              "epoch_notable_model": false,
+              "epoch_notable_date": false
+            }
+          }
+        }
+      ]
+    },
+    "developer_agreement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "agreement_id",
+        "epoch_model",
+        "epoch_source_id",
+        "source_ids"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Permanent record identity within this collection."
+        },
+        "agreement_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The id of the institute's agreements[] entry with the developer; its date and counterparty are stated there once. Bound to an excerpt stating that the agreement provides for access to, or evaluation of, the developer's models; which agreements count: dataset.method (Testing capacity and model access)."
+        },
+        "epoch_model": {
+          "type": "string",
+          "minLength": 1,
+          "description": "A model of this developer as Epoch AI's dataset lists it in the frontier set at release, bound to an excerpt from that dataset."
+        },
+        "epoch_source_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The source (published by Epoch AI) that the epoch_model excerpt comes from; also one of source_ids."
+        },
+        "named_as": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Optional: the words a bound excerpt uses for the institute (or for a body explicitly acting for it) when they are none of its recorded names, for example an informal short name. Never the host, the reporting-line body or a partner."
+        },
+        "source_ids": {
+          "$ref": "#/$defs/source_ids_required"
+        },
+        "citations": {
+          "$ref": "#/$defs/citations"
+        }
+      },
+      "description": "A published agreement with a developer that has a model in Epoch AI's frontier set, providing for access to, or evaluation of, the developer's models. Rule in dataset.method (Testing capacity and model access)."
+    },
+    "legal_power": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "act",
+        "provision",
+        "conditions",
+        "source_ids"
+      ],
+      "properties": {
+        "act": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The act as the bound legal text's title names it, for example 'Regulation (EU) 2024/1689'."
+        },
+        "provision": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The operative article, for example 'Article 92'; bound to an excerpt from the legal text (a source marked legal_text), never only an explainer."
+        },
+        "conditions": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The conditions under which the power applies, in one plain sentence written from the bound excerpt."
+        },
+        "named_as": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Optional: the words a bound excerpt uses for the institute (or for a body explicitly acting for it) when they are none of its recorded names, for example an informal short name. Never the host, the reporting-line body or a partner."
+        },
+        "source_ids": {
+          "$ref": "#/$defs/source_ids_required"
+        },
+        "citations": {
+          "$ref": "#/$defs/citations"
+        }
+      },
+      "description": "An operative legal power of the institute, or explicitly of the institute on behalf of its authority, to require access to models. Rule in dataset.method (Testing capacity and model access)."
+    },
+    "flag_search": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "date",
+        "query",
+        "language",
+        "sources_read"
+      ],
+      "properties": {
+        "date": {
+          "$ref": "#/$defs/date"
+        },
+        "query": {
+          "type": "string",
+          "minLength": 1
+        },
+        "language": {
+          "type": "string",
+          "minLength": 2
+        },
+        "sources_read": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": "Addresses or titles of the sources read for this query."
+        }
+      },
+      "description": "One search for a not_published flag: when, what, in which language and what was read."
+    },
+    "event_export": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "jurisdiction_id": {
+          "type": "string",
+          "description": "Jurisdiction ID, or empty for network milestones."
+        },
+        "jurisdiction": {
+          "type": "string",
+          "description": "Jurisdiction name, or empty for network milestones."
+        },
+        "institute_id": {
+          "type": "string",
+          "description": "Institute ID when the event belongs to an institute, otherwise empty."
+        },
+        "institute": {
+          "type": "string",
+          "description": "Institute name when applicable, otherwise empty."
+        },
+        "type": {
+          "type": "string",
+          "description": "Timeline event code, appointment, membership, agreement, funding_decision, or network_ followed by milestone type. Name changes appear only as the timeline event each name links to."
+        },
+        "date": {
+          "type": "string",
+          "description": "Original unpadded ISO date, year-month or year; overlapping partial dates do not imply a known sequence."
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the dated canonical record."
+        },
+        "origin_kind": {
+          "type": "string",
+          "description": "Canonical collection supplying this event."
+        },
+        "origin_id": {
+          "type": "string",
+          "description": "Permanent source record ID, scoped by jurisdiction or institute where needed; memberships use their body natural key. Never a JSON pointer."
+        },
+        "source_pointer": {
+          "type": "string",
+          "description": "RFC 6901 pointer to the canonical record in this exact data/aisi.json."
+        },
+        "withdraws": {
+          "type": "string",
+          "description": "For a withdrawal, the origin_id of the earlier timeline event withdrawn; otherwise empty."
+        },
+        "source_ids": {
+          "type": "string",
+          "description": "Source IDs separated by semicolon and space."
+        },
+        "source_urls": {
+          "type": "string",
+          "description": "Cited source URLs in the same order as source_ids."
+        },
+        "scheduled": {
+          "type": "boolean",
+          "description": "True when the event date is wholly later than dataset.as_of; not a completed event as of the release."
+        },
+        "short": {
+          "type": "string",
+          "description": "Canonical short for timeline and network milestones; empty for other event origins."
+        },
+        "citations": {
+          "$ref": "#/$defs/citations"
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Stable event row identity, combining origin kind and scoped origin ID."
+        }
+      }
+    },
+    "event_short": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Plain event summary drawn only from the description and its sources. The build requires one nonblank line with no surrounding whitespace and at most 12 whitespace-delimited words."
+    },
+    "shared_claim_selector": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "oneOf": [
+          {
+            "type": "string",
+            "minLength": 1
+          },
+          {
+            "type": "object",
+            "minProperties": 1,
+            "additionalProperties": {
+              "type": [
+                "string",
+                "number",
+                "boolean"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "shared_claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "subject",
+        "metric",
+        "unit",
+        "period",
+        "scope",
+        "source_ids",
+        "targets"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "enum": [
+            "date",
+            "number",
+            "agreement"
+          ]
+        },
+        "subject": {
+          "type": "string",
+          "minLength": 1
+        },
+        "metric": {
+          "type": "string",
+          "minLength": 1
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "period": {
+          "type": "string",
+          "minLength": 1
+        },
+        "scope": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "targets": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/shared_claim_selector"
+          }
+        },
+        "citations": {
+          "$ref": "#/$defs/citations"
+        }
+      }
+    },
+    "citations": {
+      "type": "object",
+      "description": "Generated source IDs per displayed field, derived only from excerpt supports bindings. Empty means no exact or descendant binding was recorded; it is never replaced with a record source list.",
+      "additionalProperties": {
+        "$ref": "#/$defs/source_ids"
+      }
+    },
+    "row_state": {
+      "enum": [
+        "stated",
+        "not_published",
+        "not_applicable"
+      ],
+      "description": "stated: the value is published and bound to a verbatim excerpt. not_published: searched and nothing published; notes name what was searched and when. not_applicable: the row does not apply to this institute."
+    },
+    "partner_entry": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "what",
+        "relation",
+        "how",
+        "source_ids"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Permanent record identity within this collection; retained across edits and ordering changes. Never reuse a deleted identity."
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The body's name in its own language."
+        },
+        "name_en": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Faithful English translation of name; required when name is in a non-Latin script."
+        },
+        "acronym": {
+          "type": "string",
+          "minLength": 1
+        },
+        "what": {
+          "type": "string",
+          "pattern": "^\\S+( \\S+){1,5}$",
+          "description": "What the body is, in two to six words, from its own page or the quote."
+        },
+        "relation": {
+          "enum": [
+            "member",
+            "works_with",
+            "planned"
+          ],
+          "description": "member: the institute is a federation of existing bodies and the founding text lists this body as a constituent. planned: the text is future tense or a mandate and no current joint work is quoted. works_with: otherwise. Card words in dataset.vocabularies.partner_relation."
+        },
+        "cyber_agency": {
+          "const": true,
+          "description": "Present, and true, only when the body is the national cyber security agency or the body that contains it."
+        },
+        "how": {
+          "type": "string",
+          "minLength": 1,
+          "description": "One sentence of at most 25 words, written from the bound quote alone like a gloss: how the body works with the institute. Shown in the fold-out and the API, not on the card line."
+        },
+        "source_ids": {
+          "$ref": "#/$defs/source_ids_required"
+        },
+        "citations": {
+          "$ref": "#/$defs/citations"
+        }
+      }
+    },
+    "partner_row_item": {
+      "type": "object",
+      "required": [
+        "id",
+        "text",
+        "name",
+        "how"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "how": {
+          "type": "string"
+        },
+        "cited": {
+          "$ref": "#/$defs/source_ids",
+          "description": "Sources for the name and how sentence in the fold-out; the card citation group also covers the displayed descriptor, relation and cyber flag."
+        }
+      }
+    },
+    "figure_source": {
+      "type": "string",
+      "enum": [
+        "secondary_sources",
+        "press_report",
+        "our_estimate"
+      ],
+      "description": "Source type shown beside a low-confidence budget or staff figure: secondary_sources for another body's or government's account, press_report for a press report, our_estimate for our own estimate or calculation from reported figures. Required when confidence is low and absent otherwise; a medium-confidence figure is shown as from secondary sources."
+    }
+  }
+}

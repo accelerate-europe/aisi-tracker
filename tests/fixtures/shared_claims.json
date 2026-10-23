@@ -1,0 +1,245 @@
+{
+  "dataset": {
+    "shared_claims": [
+      {
+        "id": "pilot-publication",
+        "kind": "date",
+        "subject": "intl-network",
+        "metric": "publication",
+        "unit": "ISO8601",
+        "period": "2024",
+        "scope": "pilot report",
+        "source_ids": [
+          "sg-pilot-2024"
+        ],
+        "targets": [
+          [
+            "institutes",
+            {
+              "id": "gb-aisi"
+            },
+            "outputs",
+            {
+              "lineage": "network-pilot-2024"
+            },
+            "date"
+          ],
+          [
+            "dataset",
+            "network_milestones",
+            {
+              "id": "pilot"
+            },
+            "date"
+          ]
+        ]
+      },
+      {
+        "id": "uk-us-instrument",
+        "kind": "agreement",
+        "subject": "gb-aisi + us-caissi",
+        "metric": "date and state of one instrument",
+        "unit": "ISO8601 and agreement_state",
+        "period": "instrument date",
+        "scope": "April 2024 MOU",
+        "source_ids": [
+          "depth-uk-us-mou"
+        ],
+        "targets": [
+          [
+            "institutes",
+            {
+              "id": "gb-aisi"
+            },
+            "agreements",
+            {
+              "counterparty": "US Department of Commerce"
+            }
+          ],
+          [
+            "institutes",
+            {
+              "id": "us-caissi"
+            },
+            "agreements",
+            {
+              "counterparty": "UK DSIT"
+            }
+          ]
+        ]
+      },
+      {
+        "id": "uk-annual",
+        "kind": "number",
+        "subject": "gb-aisi",
+        "metric": "annual funding",
+        "unit": "GBP",
+        "period": "per financial year",
+        "scope": "published allocation",
+        "source_ids": [
+          "gb-about"
+        ],
+        "targets": [
+          [
+            "institutes",
+            {
+              "id": "gb-aisi"
+            },
+            "funding",
+            {
+              "period": "per financial year",
+              "currency": "GBP"
+            },
+            "amount"
+          ],
+          [
+            "institutes",
+            {
+              "id": "gb-aisi"
+            },
+            "funding",
+            {
+              "period": "per financial year",
+              "currency": "GBP"
+            },
+            "annual_amount"
+          ]
+        ]
+      }
+    ],
+    "network_milestones": [
+      {
+        "id": "pilot",
+        "date": "2024-11-20",
+        "source_ids": [
+          "sg-pilot-2024"
+        ]
+      }
+    ]
+  },
+  "sources": [
+    {
+      "id": "sg-pilot-2024",
+      "output_lineage": "network-pilot-2024",
+      "published": "2024-11-20",
+      "output_role": "document",
+      "url": "https://example.org/sg-pilot-2024"
+    },
+    {
+      "id": "depth-uk-us-mou",
+      "published": "2024-04-02",
+      "output_role": "context",
+      "url": "https://example.org/depth-uk-us-mou"
+    },
+    {
+      "id": "gb-about",
+      "output_role": "context",
+      "url": "https://example.org/gb-about"
+    },
+    {
+      "id": "index",
+      "output_role": "context",
+      "url": "https://example.org/index"
+    }
+  ],
+  "institutes": [
+    {
+      "id": "gb-aisi",
+      "outputs": [
+        {
+          "lineage": "network-pilot-2024",
+          "date": "2024-11-20",
+          "source_ids": [
+            "sg-pilot-2024",
+            "index"
+          ]
+        }
+      ],
+      "agreements": [
+        {
+          "counterparty": "US Department of Commerce",
+          "date": "2024-04-01",
+          "state": "signed",
+          "source_ids": [
+            "depth-uk-us-mou"
+          ]
+        }
+      ],
+      "funding": [
+        {
+          "amount": 66000000,
+          "annual_amount": 66000000,
+          "currency": "GBP",
+          "period": "per financial year",
+          "source_ids": [
+            "gb-about"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "us-caissi",
+      "outputs": [
+        {
+          "lineage": "network-pilot-2024",
+          "date": "2024-11-20",
+          "credited_from": "2024-11-21",
+          "source_ids": [
+            "sg-pilot-2024",
+            "index"
+          ]
+        }
+      ],
+      "agreements": [
+        {
+          "counterparty": "UK DSIT",
+          "date": "2024-04-01",
+          "state": "signed",
+          "source_ids": [
+            "depth-uk-us-mou"
+          ]
+        }
+      ],
+      "staff": [
+        {
+          "total": 30,
+          "source_ids": [
+            "gb-about"
+          ]
+        }
+      ]
+    }
+  ],
+  "jurisdictions": [
+    {
+      "id": "GB",
+      "institute_id": "gb-aisi",
+      "timeline": [
+        {
+          "id": "first",
+          "event": "first_output",
+          "output_lineage": "network-pilot-2024",
+          "date": "2024-11-20",
+          "source_ids": [
+            "sg-pilot-2024"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "US",
+      "institute_id": "us-caissi",
+      "timeline": [
+        {
+          "id": "first",
+          "event": "first_output",
+          "output_lineage": "network-pilot-2024",
+          "date": "2024-11-21",
+          "source_ids": [
+            "sg-pilot-2024"
+          ]
+        }
+      ]
+    }
+  ]
+}

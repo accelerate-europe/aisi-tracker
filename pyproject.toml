@@ -1,0 +1,35 @@
+[project]
+name = "aisi-tracker-checks"
+version = "0.1.0"
+requires-python = ">=3.11"
+
+[tool.uv]
+package = false
+
+[dependency-groups]
+evidence = [
+    "beautifulsoup4>=4.12",
+    "pypdf[crypto]>=5",
+    "fonttools>=4",
+]
+dev = [
+    { include-group = "evidence" },
+    "jsonschema[format-nongpl]>=4.23",
+    "pillow>=10",
+    "pytest>=8",
+    "pyyaml>=6",
+    "ruff>=0.14",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = [".", "tests"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 88
+extend-exclude = ["work", "dist"]
+
+[tool.ruff.lint]
+# Correctness rules only; formatting existing files is deferred (about 3,300 changed lines).
+select = ["E4", "E7", "E9", "F"]

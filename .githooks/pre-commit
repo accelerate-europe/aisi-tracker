@@ -1,0 +1,9 @@
+#!/bin/sh
+# Fast checks on the staged snapshot; CI runs the same command with more steps (.github/workflows/pages.yml).
+# Runs the staged copy of scripts/check.py (standard library only), so the working tree cannot change the result.
+# Install once per clone: git config core.hooksPath .githooks
+set -eu
+cd "$(git rev-parse --show-toplevel)"
+unset UV_WORKING_DIR UV_PROJECT UV_PROJECT_ENVIRONMENT
+script=$(git show :scripts/check.py) || { echo "pre-commit: scripts/check.py is not staged; refusing to skip the checks" >&2; exit 1; }
+printf '%s\n' "$script" | uv run -q --no-project --python '>=3.11' python - --only fast

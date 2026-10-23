@@ -1,0 +1,2018 @@
+{
+ "gb-rename": {
+  "url": "https://www.gov.uk/government/news/tackling-ai-security-risks-to-unleash-growth-and-deliver-plan-for-change",
+  "archive_url": "https://web.archive.org/web/20261012061505/https://www.gov.uk/government/news/tackling-ai-security-risks-to-unleash-growth-and-deliver-plan-for-change"
+ },
+ "gb-about": {
+  "url": "https://www.aisi.gov.uk/about",
+  "archive_url": "https://web.archive.org/web/20261011113245/https://www.aisi.gov.uk/about"
+ },
+ "gb-jobad": {
+  "url": "https://job-boards.eu.greenhouse.io/aisi/jobs/4941583101",
+  "archive_url": "https://web.archive.org/web/20261016191318/https://job-boards.eu.greenhouse.io/aisi/jobs/4941583101"
+ },
+ "network-2025": {
+  "url": "https://www.gov.uk/government/news/efforts-to-share-best-practices-on-ai-measurement-and-evaluations-driven-forward-through-the-international-network-for-advanced-ai-measurement-evalua",
+  "archive_url": "https://web.archive.org/web/20261016191445/https://www.gov.uk/government/news/efforts-to-share-best-practices-on-ai-measurement-and-evaluations-driven-forward-through-the-international-network-for-advanced-ai-measurement-evalua"
+ },
+ "network-nist-2026": {
+  "url": "https://www.nist.gov/news-events/news/2026/02/international-network-advanced-ai-measurement-evaluation-and-science",
+  "archive_url": "https://web.archive.org/web/20260922154030/https://www.nist.gov/news-events/news/2026/02/international-network-advanced-ai-measurement-evaluation-and-science"
+ },
+ "fr-dge": {
+  "url": "https://www.entreprises.gouv.fr/espace-presse/le-gouvernement-annonce-la-creation-de-linstitut-national-pour-levaluation-et-la",
+  "archive_url": "https://web.archive.org/web/20260616155140/https://www.entreprises.gouv.fr/espace-presse/le-gouvernement-annonce-la-creation-de-linstitut-national-pour-levaluation-et-la"
+ },
+ "de-bmds": {
+  "url": "https://bmds.bund.de/aktuelles/pressemitteilungen/detail/aisi-deutschland-gegruendet",
+  "archive_url": "https://web.archive.org/web/20260904100503/https://bmds.bund.de/aktuelles/pressemitteilungen/detail/aisi-deutschland-gegruendet"
+ },
+ "de-breg": {
+  "url": "https://www.bundesregierung.de/breg-de/aktuelles/eroeffnung-ki-sicherheitsinstitut-2449410",
+  "archive_url": "https://web.archive.org/web/20260904101617/https://www.bundesregierung.de/breg-de/aktuelles/eroeffnung-ki-sicherheitsinstitut-2449410"
+ },
+ "es-plan": {
+  "url": "https://www.lamoncloa.gob.es/presidente/actividades/Documents/2026/20260920%20Plan%20IA360.pdf",
+  "archive_url": "https://web.archive.org/web/20261005174229/https://www.lamoncloa.gob.es/presidente/actividades/Documents/2026/20260920%20Plan%20IA360.pdf"
+ },
+ "es-moncloa": {
+  "url": "https://www.lamoncloa.gob.es/lang/en/presidente/news/paginas/2026/20260921-ia360-plan-presentation.aspx",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ },
+ "no-budget": {
+  "url": "https://www.regjeringen.no/no/aktuelt/foreslar-kraftfull-satsing-pa-ki-og-digitalisering/id3173740/",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ },
+ "nl-bb": {
+  "url": "https://www.binnenlandsbestuur.nl/digitaal/kabinet-niet-europese-ai-weren-bij-overheid-gaat-te-ver",
+  "archive_url": "https://web.archive.org/web/20261016191837/https://www.binnenlandsbestuur.nl/digitaal/kabinet-niet-europese-ai-weren-bij-overheid-gaat-te-ver"
+ },
+ "nl-tno": {
+  "url": "https://publications.tno.nl/publication/34646176/VxjvZPNJ/TNO-2026-16238.pdf",
+  "archive_url": "https://web.archive.org/web/20261016191905/https://publications.tno.nl/publication/34646176/VxjvZPNJ/TNO-2026-16238.pdf"
+ },
+ "nl-nltimes": {
+  "url": "https://nltimes.nl/2026/09/18/netherlands-considering-ai-security-agency-address-serious-concerns",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ },
+ "se-gov": {
+  "url": "https://www.regeringen.se/pressmeddelanden/2026/07/regeringen-agerar-for-att-starka-samhallets-arbete-med-cybersakerhet-kopplat-till-utvecklingen-av-nya-ai-modeller/",
+  "archive_url": "https://web.archive.org/web/20261016192131/https://www.regeringen.se/pressmeddelanden/2026/07/regeringen-agerar-for-att-starka-samhallets-arbete-med-cybersakerhet-kopplat-till-utvecklingen-av-nya-ai-modeller/"
+ },
+ "ch-bk": {
+  "url": "https://www.bk.admin.ch/en/artificial-intelligence",
+  "archive_url": "https://web.archive.org/web/20261016192301/https://www.bk.admin.ch/en/artificial-intelligence"
+ },
+ "pl-nask": {
+  "url": "https://www.gov.pl/web/cyfryzacja/powstanie-osrodka-badan-nad-bezpieczenstwem-sztucznej-inteligencji-w-nask",
+  "archive_url": "https://web.archive.org/web/20260218053853/https://www.gov.pl/web/cyfryzacja/powstanie-osrodka-badan-nad-bezpieczenstwem-sztucznej-inteligencji-w-nask"
+ },
+ "ai-act-tracker": {
+  "url": "https://artificialintelligenceact.eu/national-implementation-plans/",
+  "archive_url": "https://web.archive.org/web/20260928103758/https://artificialintelligenceact.eu/national-implementation-plans/"
+ },
+ "eu-aioffice": {
+  "url": "https://digital-strategy.ec.europa.eu/en/policies/ai-office",
+  "archive_url": "https://web.archive.org/web/20261016192441/https://digital-strategy.ec.europa.eu/en/policies/ai-office"
+ },
+ "eurostat-pop": {
+  "url": "https://ec.europa.eu/eurostat/databrowser/view/tps00001/default/table",
+  "archive_url": "https://web.archive.org/web/20260523162323/https://ec.europa.eu/eurostat/databrowser/view/TPS00001/default/table"
+ },
+ "us-caissi": {
+  "url": "https://www.nist.gov/caissi",
+  "archive_url": "https://web.archive.org/web/20261015185309/https://www.nist.gov/caissi"
+ },
+ "us-senate-fy26": {
+  "url": "https://www.commerce.senate.gov/press/dem/release/science-survives-existential-threat-from-trump-budget-as-senate-rejects-gutting-nasa-nsf-nist/",
+  "archive_url": "https://web.archive.org/web/20261016192617/https://www.commerce.senate.gov/press/dem/release/science-survives-existential-threat-from-trump-budget-as-senate-rejects-gutting-nasa-nsf-nist/"
+ },
+ "us-usajobs": {
+  "url": "https://www.usajobs.gov/job/856265200",
+  "archive_url": "https://web.archive.org/web/20261016192745/https://www.usajobs.gov/job/856265200"
+ },
+ "ca-budget": {
+  "url": "https://budget.canada.ca/2024/report-rapport/chap4-en.html",
+  "archive_url": "https://web.archive.org/web/20261016192907/https://budget.canada.ca/2024/report-rapport/chap4-en.html"
+ },
+ "jp-cao-2604": {
+  "url": "https://www8.cao.go.jp/cstp/ai/aisi/3kai/renrakukaigi_manager/shiryo1_1.pdf",
+  "archive_url": "https://web.archive.org/web/20260821192817/https://www8.cao.go.jp/cstp/ai/aisi/3kai/renrakukaigi_manager/shiryo1_1.pdf"
+ },
+ "jp-cao-2601": {
+  "url": "https://www8.cao.go.jp/cstp/ai/aisi/2kai/renrakukaigi_manager/shiryo3_2.pdf",
+  "archive_url": "https://web.archive.org/web/20260519015226/https://www8.cao.go.jp/cstp/ai/aisi/2kai/renrakukaigi_manager/shiryo3_2.pdf"
+ },
+ "kr-zdnet": {
+  "url": "https://zdnet.co.kr/view/?no=20260928132902",
+  "archive_url": "https://web.archive.org/web/20260928090725/https://zdnet.co.kr/view/?no=20260928132902"
+ },
+ "kr-nate": {
+  "url": "https://m.news.nate.com/view/20261006n21746",
+  "archive_url": "https://web.archive.org/web/20261016193045/https://m.news.nate.com/view/20261006n21746"
+ },
+ "kr-ddaily": {
+  "url": "https://www.ddaily.co.kr/page/view/2026100610291136946",
+  "archive_url": "https://web.archive.org/web/20261016193233/https://www.ddaily.co.kr/page/view/2026100610291136946"
+ },
+ "sg-imda": {
+  "url": "https://www.imda.gov.sg/-/media/imda/files/news-and-events/media-room/media-releases/2024/05/imda-factsheet--digital-trust-centre-designated-as-spore-ai-safety-institute-22-may-2024.pdf",
+  "archive_url": "https://web.archive.org/web/20250404221519/https://www.imda.gov.sg/-/media/imda/files/news-and-events/media-room/media-releases/2024/05/imda-factsheet--digital-trust-centre-designated-as-spore-ai-safety-institute-22-may-2024.pdf"
+ },
+ "sg-site": {
+  "url": "https://sgaisi.sg/about-us/",
+  "archive_url": "https://web.archive.org/web/20260925142147/https://sgaisi.sg/about-us/"
+ },
+ "au-abc": {
+  "url": "https://www.abc.net.au/news/2026-05-29/kate-conroy-leading-ai-safety-institute/106736306",
+  "archive_url": "https://web.archive.org/web/20261016194247/https://www.abc.net.au/news/2026-05-29/kate-conroy-leading-ai-safety-institute/106736306"
+ },
+ "ca-launch": {
+  "url": "https://www.canada.ca/en/innovation-science-economic-development/news/2024/11/canada-launches-canadian-artificial-intelligence-safety-institute.html",
+  "archive_url": "https://web.archive.org/web/20261016194417/https://www.canada.ca/en/innovation-science-economic-development/news/2024/11/canada-launches-canadian-artificial-intelligence-safety-institute.html"
+ },
+ "au-minister": {
+  "url": "https://www.minister.industry.gov.au/charlton/media/establishment-australian-ai-safety-institute",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ },
+ "gb-taskforce-2023": {
+  "url": "https://www.gov.uk/government/news/initial-100-million-for-expert-taskforce-to-help-uk-build-and-adopt-next-generation-of-safe-ai",
+  "archive_url": "https://web.archive.org/web/20261012061244/https://www.gov.uk/government/news/initial-100-million-for-expert-taskforce-to-help-uk-build-and-adopt-next-generation-of-safe-ai"
+ },
+ "gb-taskforce-rename": {
+  "url": "https://www.gov.uk/government/publications/frontier-ai-taskforce-first-progress-report/frontier-ai-taskforce-first-progress-report",
+  "archive_url": "https://web.archive.org/web/20260925034047/https://www.gov.uk/government/publications/frontier-ai-taskforce-first-progress-report/frontier-ai-taskforce-first-progress-report"
+ },
+ "gb-aisi-launch": {
+  "url": "https://www.gov.uk/government/news/prime-minister-launches-new-ai-safety-institute",
+  "archive_url": "https://web.archive.org/web/20261016194747/https://www.gov.uk/government/news/prime-minister-launches-new-ai-safety-institute"
+ },
+ "au-industry": {
+  "url": "https://www.industry.gov.au/science-technology-and-innovation/technology/artificial-intelligence/ai-safety-institute",
+  "archive_url": "https://web.archive.org/web/20261015131505/https://www.industry.gov.au/science-technology-and-innovation/technology/artificial-intelligence/ai-safety-institute"
+ },
+ "au-plan": {
+  "url": "https://www.minister.industry.gov.au/t-ayres/media/national-ai-plan-empowering-all-australians",
+  "archive_url": "https://web.archive.org/web/20261016194944/https://www.minister.industry.gov.au/t-ayres/media/national-ai-plan-empowering-all-australians"
+ },
+ "ca-cifar": {
+  "url": "https://cifar.ca/ai/caisi/",
+  "archive_url": "https://web.archive.org/web/20261016195132/https://cifar.ca/ai/caisi/"
+ },
+ "ca-ised": {
+  "url": "https://ised-isde.canada.ca/site/ised/canadian-artificial-intelligence-safety-institute",
+  "archive_url": "https://web.archive.org/web/20261016195313/https://ised-isde.canada.ca/site/ised/en/canadian-artificial-intelligence-safety-institute"
+ },
+ "us-si-page": {
+  "url": "https://www.nist.gov/super-intelligence",
+  "archive_url": "https://web.archive.org/web/20261012160155/https://www.nist.gov/super-intelligence"
+ },
+ "us-eo-14434": {
+  "url": "https://www.whitehouse.gov/presidential-actions/2026/09/inaugurating-the-era-of-super-intelligence/",
+  "archive_url": "https://web.archive.org/web/20261016195456/https://www.whitehouse.gov/presidential-actions/2026/09/inaugurating-the-era-of-super-intelligence/"
+ },
+ "se-ai-commission": {
+  "url": "https://regeringen.se/contentassets/bfd2108c278342c4b04e8bae31d1aebb/presentationsbilder-vid-presstraff-26-november.pdf",
+  "archive_url": "https://web.archive.org/web/20261016195543/https://www.regeringen.se/contentassets/bfd2108c278342c4b04e8bae31d1aebb/presentationsbilder-vid-presstraff-26-november.pdf"
+ },
+ "eu-decision": {
+  "url": "https://digital-strategy.ec.europa.eu/en/library/commission-decision-establishing-european-ai-office",
+  "archive_url": "https://web.archive.org/web/20261016195721/https://digital-strategy.ec.europa.eu/en/library/commission-decision-establishing-european-ai-office"
+ },
+ "eu-sioli": {
+  "url": "https://eic.ec.europa.eu/lucilla-sioli_en",
+  "archive_url": "https://web.archive.org/web/20261016195851/https://eic.ec.europa.eu/lucilla-sioli_en"
+ },
+ "jp-aisi-deck": {
+  "url": "https://aisi.go.jp/assets/pdf/20260708_AISI_en.pdf",
+  "archive_url": "https://web.archive.org/web/20261005130334/https://aisi.go.jp/assets/pdf/20260708_AISI_en.pdf"
+ },
+ "kr-site": {
+  "url": "https://www.aisi.re.kr/eng/contents/23",
+  "archive_url": "https://web.archive.org/web/20261016200034/https://www.aisi.re.kr/eng/contents/23"
+ },
+ "fr-roadmap": {
+  "url": "https://www.entreprises.gouv.fr/espace-presse/linstitut-national-pour-levaluation-et-la-securite-de-lia-adopte-sa-feuille-de-route",
+  "archive_url": "https://web.archive.org/web/20260616145648/https://www.entreprises.gouv.fr/espace-presse/linstitut-national-pour-levaluation-et-la-securite-de-lia-adopte-sa-feuille-de-route"
+ },
+ "wb-pop": {
+  "url": "https://data.worldbank.org/indicator/SP.POP.TOTL",
+  "archive_url": "https://web.archive.org/web/20261011235042/https://data.worldbank.org/indicator/SP.POP.TOTL"
+ },
+ "cn-carnegie-2025": {
+  "url": "https://carnegieendowment.org/research/2025/06/how-some-of-chinas-top-ai-thinkers-built-their-own-ai-safety-institute",
+  "archive_url": "https://web.archive.org/web/20261016200201/https://carnegieendowment.org/research/2025/06/how-some-of-chinas-top-ai-thinkers-built-their-own-ai-safety-institute"
+ },
+ "cn-digichina-2025": {
+  "url": "https://digichina.stanford.edu/work/what-do-we-know-about-chinas-new-ai-safety-institute/",
+  "archive_url": "https://web.archive.org/web/20260310142353/https://digichina.stanford.edu/work/what-do-we-know-about-chinas-new-ai-safety-institute/"
+ },
+ "cn-ciss-fuying-2025": {
+  "url": "https://ciss.tsinghua.edu.cn/info/wzjx/7913",
+  "archive_url": "https://web.archive.org/web/20261016200345/https://ciss.tsinghua.edu.cn/info/wzjx/7913"
+ },
+ "cn-tsinghua-aiig-2026": {
+  "url": "https://aiig.tsinghua.edu.cn/en/info/1025/1700.htm",
+  "archive_url": "https://web.archive.org/web/20261016200525/https://aiig.tsinghua.edu.cn/en/info/1025/1700.htm"
+ },
+ "cn-tc260-framework-3": {
+  "url": "https://www.cac.gov.cn/rootimages/uploadimg/1791137114683961/1791137114683961.pdf",
+  "archive_url": "https://web.archive.org/web/20260925150011/https://www.cac.gov.cn/rootimages/uploadimg/1791137114683961/1791137114683961.pdf"
+ },
+ "cn-chinai-caict-2026": {
+  "url": "https://chinai.substack.com/p/chinai-351-caict-launches-2026-ai",
+  "archive_url": "https://web.archive.org/web/20260907200601/https://chinai.substack.com/p/chinai-351-caict-launches-2026-ai"
+ },
+ "tw-moda-aiec-2023": {
+  "url": "https://moda.gov.tw/ADI/news/latest-news/9295",
+  "archive_url": "https://web.archive.org/web/20260814130528/https://moda.gov.tw/ADI/news/latest-news/9295"
+ },
+ "tw-moda-aiec-2026": {
+  "url": "https://moda.gov.tw/ADI/news/latest-news/19588",
+  "archive_url": "https://web.archive.org/web/20261016200740/https://moda.gov.tw/ADI/news/latest-news/19588"
+ },
+ "tw-itri-lab-2024": {
+  "url": "https://www.itri.org.tw/ListStyle.aspx?DisplayStyle=01_content&MGID=113103018085866398&MmmID=1036276263153520257&SiteID=1",
+  "archive_url": "https://web.archive.org/web/20260422120942/https://www.itri.org.tw/ListStyle.aspx?DisplayStyle=01_content&SiteID=1&MmmID=1036276263153520257&MGID=113103018085866398"
+ },
+ "tw-nstc-ai-act-2025": {
+  "url": "https://www.nstc.gov.tw/folksonomy/detail/ed981806-1852-4b63-8dfd-9eea04157971",
+  "archive_url": "https://web.archive.org/web/20261016200921/https://www.nstc.gov.tw/folksonomy/detail/ed981806-1852-4b63-8dfd-9eea04157971"
+ },
+ "tw-moi-pop-2025": {
+  "url": "https://www.ris.gov.tw/info-liferay/app/channel/newsDetail/26007114",
+  "archive_url": "https://web.archive.org/web/20261016201108/https://www.ris.gov.tw/info-liferay/app/channel/newsDetail/26007114"
+ },
+ "my-digital-2026-07": {
+  "url": "https://www.digital.gov.my/en-GB/siaran/AI-Malaysia-Pemacu-Utama-Menuju-Negara-AI-2030",
+  "archive_url": "https://web.archive.org/web/20261016201248/https://www.digital.gov.my/en-GB/siaran/AI-Malaysia-Pemacu-Utama-Menuju-Negara-AI-2030"
+ },
+ "my-plan-2026": {
+  "url": "https://strapi.naio.okie.my/uploads/AI_Nation_2030_National_AI_Action_Plan_2026_2030_EN_V_180826_ddf0221683.pdf",
+  "archive_url": "https://web.archive.org/web/20261016201346/https://strapi.naio.okie.my/uploads/AI_Nation_2030_National_AI_Action_Plan_2026_2030_EN_V_180826_ddf0221683.pdf"
+ },
+ "my-bernama-2026-07": {
+  "url": "https://www.bernama.com/en/news.php?id=2587122",
+  "archive_url": "https://web.archive.org/web/20261016201530/https://www.bernama.com/en/news.php?id=2587122"
+ },
+ "my-scoop-2026-09": {
+  "url": "https://www.scoop.my/news/298296/governance-bill-and-safety-institute-to-guide-ai-use-in-the-works-ai-malaysia/",
+  "archive_url": "https://web.archive.org/web/20261016201747/https://www.scoop.my/news/298296/governance-bill-and-safety-institute-to-guide-ai-use-in-the-works-ai-malaysia/"
+ },
+ "id-komdigi-roadmap-2026": {
+  "url": "https://jdih.komdigi.go.id/berita/view/113",
+  "archive_url": "https://web.archive.org/web/20261016201930/https://jdih.komdigi.go.id/berita/view/113"
+ },
+ "id-aisii": {
+  "url": "https://aisii.id/",
+  "archive_url": "https://web.archive.org/web/20261016202127/https://aisii.id/"
+ },
+ "id-rri-brin-2026": {
+  "url": "https://rri.co.id/en/technology/2755957/brin-urges-government-to-establish-ai-safety-institute-to-oversee-agentic-ai",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ },
+ "th-etda-aigpc-2027": {
+  "url": "https://www.etda.or.th/th/pr-news/aigc/etda-aigpc-ai-governance-sandbox-2027.aspx",
+  "archive_url": "https://web.archive.org/web/20261016203829/https://www.etda.or.th/th/pr-news/aigc/etda-aigpc-ai-governance-sandbox-2027.aspx"
+ },
+ "th-etda-draft-law-2025": {
+  "url": "https://www.etda.or.th/th/pr-news/law_ai.aspx",
+  "archive_url": "https://web.archive.org/web/20260703164127/https://www.etda.or.th/th/pr-news/law_ai.aspx"
+ },
+ "th-thaipbs-2026": {
+  "url": "https://policywatch.thaipbs.or.th/article/government-364",
+  "archive_url": "https://web.archive.org/web/20261016204009/https://policywatch.thaipbs.or.th/article/government-364"
+ },
+ "vn-mst-ai-law-2026": {
+  "url": "https://mst.gov.vn/ai-la-cong-cu-ho-tro-quyet-dinh-cuoi-cung-van-la-con-nguoi-19726030111172663.htm",
+  "archive_url": "https://web.archive.org/web/20260829181006/https://mst.gov.vn/ai-la-cong-cu-ho-tro-quyet-dinh-cuoi-cung-van-la-con-nguoi-19726030111172663.htm"
+ },
+ "vn-mst-portal-2026": {
+  "url": "https://mst.gov.vn/chinh-thuc-van-hanh-cong-thong-tin-dien-tu-va-co-so-du-lieu-quoc-gia-ve-tri-tue-nhan-tao-197260828221343433.htm",
+  "archive_url": "https://web.archive.org/web/20260829181011/https://mst.gov.vn/chinh-thuc-van-hanh-cong-thong-tin-dien-tu-va-co-so-du-lieu-quoc-gia-ve-tri-tue-nhan-tao-197260828221343433.htm"
+ },
+ "ph-dost-naicri-2026": {
+  "url": "https://asti.dost.gov.ph/news-articles/dost-marks-first-year-of-ai-flagship-program-with-rd-prototypes-400-trained-and-a-national-ai-center-launched/",
+  "archive_url": "https://web.archive.org/web/20260502004231/https://asti.dost.gov.ph/news-articles/dost-marks-first-year-of-ai-flagship-program-with-rd-prototypes-400-trained-and-a-national-ai-center-launched/"
+ },
+ "ph-rappler-2026": {
+  "url": "https://www.rappler.com/technology/features/artificial-intelligence-bills-20th-congress-philippines/",
+  "archive_url": "https://web.archive.org/web/20260725215337/https://www.rappler.com/technology/features/artificial-intelligence-bills-20th-congress-philippines/"
+ },
+ "nz-mbie-strategy-2025": {
+  "url": "https://www.mbie.govt.nz/assets/new-zealands-strategy-for-artificial-intelligence.pdf",
+  "archive_url": "https://web.archive.org/web/20261006181240/https://www.mbie.govt.nz/assets/new-zealands-strategy-for-artificial-intelligence.pdf"
+ },
+ "nz-cabinet-2024": {
+  "url": "https://www.mbie.govt.nz/dmsdocument/28919-approach-to-work-on-artificial-intelligence-minute-of-decision-proactiverelease-pdf",
+  "archive_url": "https://web.archive.org/web/20250324154158/https://www.mbie.govt.nz/dmsdocument/28919-approach-to-work-on-artificial-intelligence-minute-of-decision-proactiverelease-pdf"
+ },
+ "mn-ai-strategy-2026": {
+  "url": "https://mddic.gov.mn/wp-content/uploads/2026/02/AI_Strategy-20260202.pdf",
+  "archive_url": "https://web.archive.org/web/20260608210105/https://mddic.gov.mn/wp-content/uploads/2026/02/AI_Strategy-20260202.pdf"
+ },
+ "mn-montsame-2025": {
+  "url": "https://montsame.mn/en/read/369839",
+  "archive_url": "https://web.archive.org/web/20250723034541/https://montsame.mn/en/read/369839"
+ },
+ "pg-dict-strategy-2026": {
+  "url": "https://www.ict.gov.pg/wp-content/uploads/2026/03/National-Sovereign-AI-Strategy-v15.pdf",
+  "archive_url": "https://web.archive.org/web/20260519012049/https://www.ict.gov.pg/wp-content/uploads/2026/03/National-Sovereign-AI-Strategy-v15.pdf"
+ },
+ "fj-un-statement-2026": {
+  "url": "https://www.un.org/global-dialogue-ai-governance/sites/default/files/2026-07/104._fiji.pdf",
+  "archive_url": "https://web.archive.org/web/20261016204240/https://www.un.org/global-dialogue-ai-governance/sites/default/files/2026-07/104._fiji.pdf"
+ },
+ "eap-asean-ai-safe-2025": {
+  "url": "https://asean.org/wp-content/uploads/2025/10/11.-Declaration-on-the-Establishment-of-an-ASEAN-AI-Safe.pdf",
+  "archive_url": "https://web.archive.org/web/20260722133019/https://asean.org/wp-content/uploads/2025/10/11.-Declaration-on-the-Establishment-of-an-ASEAN-AI-Safe.pdf"
+ },
+ "eap-iseas-2026": {
+  "url": "https://www.iseas.edu.sg/wp-content/uploads/2026/01/ISEAS-Perspective_2026_13.pdf",
+  "archive_url": "https://web.archive.org/web/20260802051612/https://www.iseas.edu.sg/wp-content/uploads/2026/01/ISEAS-Perspective_2026_13.pdf"
+ },
+ "eap-pina-2026": {
+  "url": "https://pina.com.fj/2026/08/14/pacific-ministers-back-ai-rules-and-safer-digital-spaces-as-connectivity-expands/",
+  "archive_url": "https://web.archive.org/web/20261016204419/https://pina.com.fj/2026/08/14/pacific-ministers-back-ai-rules-and-safer-digital-spaces-as-connectivity-expands/"
+ },
+ "my-bernama-asean-2026": {
+  "url": "https://www.bernama.com/en/news.php?id=2513540",
+  "archive_url": "https://web.archive.org/web/20260207005350/https://bernama.com/en/news.php?id=2513540"
+ },
+ "mn-mddic-legal": {
+  "url": "https://mddic.gov.mn/mn/legal-framework/",
+  "archive_url": "https://web.archive.org/web/20260613160400/https://mddic.gov.mn/mn/legal-framework/"
+ },
+ "vn-ai-law-134": {
+  "url": "https://thuvienphapluat.vn/van-ban/Cong-nghe-thong-tin/Luat-Tri-tue-nhan-tao-2025-so-134-2025-QH15-679013.aspx",
+  "archive_url": "https://web.archive.org/web/20260606185128/https://thuvienphapluat.vn/van-ban/Cong-nghe-thong-tin/Luat-Tri-tue-nhan-tao-2025-so-134-2025-QH15-679013.aspx"
+ },
+ "cn-caict-notice-2026": {
+  "url": "https://mp.weixin.qq.com/s/sysShusPIw8O8j3wWvX8CQ",
+  "archive_url": "https://web.archive.org/web/20260418095312/https://mp.weixin.qq.com/s/sysShusPIw8O8j3wWvX8CQ"
+ },
+ "tr-action-plan": {
+  "url": "https://www.sanayi.gov.tr/yapayzekaeylemplani",
+  "archive_url": "https://web.archive.org/web/20261009203928/https://www.sanayi.gov.tr/yapayzekaeylemplani"
+ },
+ "tr-cms": {
+  "url": "https://cms.law/en/tur/legal-updates/turkiye-unveils-new-ai-action-plan",
+  "archive_url": "https://web.archive.org/web/20261016204650/https://cms.law/en/tur/legal-updates/turkiye-unveils-new-ai-action-plan"
+ },
+ "ua-rada-ai-law": {
+  "url": "https://komit.rada.gov.ua/print/76988.html",
+  "archive_url": "https://web.archive.org/web/20261016204824/https://komit.rada.gov.ua/print/76988.html"
+ },
+ "ua-dc-aisi": {
+  "url": "https://dc.org.ua/en/news/instytuty-bezpeky-shi-perspektyvy-ta-vyklyky",
+  "archive_url": "https://web.archive.org/web/20261016205007/https://dc.org.ua/en/news/instytuty-bezpeky-shi-perspektyvy-ta-vyklyky"
+ },
+ "ru-antimalware": {
+  "url": "https://www.anti-malware.ru/news/2026-08-13-111332/51026",
+  "archive_url": "https://web.archive.org/web/20260816060910/https://www.anti-malware.ru/news/2026-08-13-111332/51026"
+ },
+ "kz-maidd-brief": {
+  "url": "https://memleket.kz/en/documents/47143-briefing-note-on-the-role-of-the-department-of-artificial-intelligence-and-data-management-in-kazakhstans-framework-for-ai-regulation-and-safety-assessment",
+  "archive_url": "https://web.archive.org/web/20261016205148/https://memleket.kz/en/documents/47143-briefing-note-on-the-role-of-the-department-of-artificial-intelligence-and-data-management-in-kazakhstans-framework-for-ai-regulation-and-safety-assessment"
+ },
+ "kz-kaisi": {
+  "url": "https://www.kaisi.kz/",
+  "archive_url": "https://web.archive.org/web/20260608151050/https://www.kaisi.kz/"
+ },
+ "uz-pp358": {
+  "url": "https://lex.uz/en/docs/7158606",
+  "archive_url": "https://web.archive.org/web/20260209161940/https://lex.uz/en/docs/7158606"
+ },
+ "uz-up189": {
+  "url": "https://lex.uz/en/acts/7790236",
+  "archive_url": "https://web.archive.org/web/20261016205357/https://lex.uz/en/acts/7790236"
+ },
+ "rs-tanjug": {
+  "url": "https://www.tanjug.rs/english/economy/133288/serbian-govt-adopts-2025-2030-ai-development-strategy/vest",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ },
+ "am-eu4digital": {
+  "url": "https://eufordigital.eu/armenia-aws-and-mistral-ai-launch-national-ai-virtual-institute/",
+  "archive_url": "https://web.archive.org/web/20261016205652/https://eufordigital.eu/armenia-aws-and-mistral-ai-launch-national-ai-virtual-institute/"
+ },
+ "az-techaz": {
+  "url": "https://tech.az/en/posts/artificial-intelligence-strategy-adopted-in-azerbaijan-4788",
+  "archive_url": "https://web.archive.org/web/20261016205838/https://tech.az/en/posts/artificial-intelligence-strategy-adopted-in-azerbaijan-4788"
+ },
+ "md-eu4digital": {
+  "url": "https://eufordigital.eu/?p=43291",
+  "archive_url": "https://web.archive.org/web/20261016210019/https://eufordigital.eu/moldova-launches-special-body-to-align-the-national-ai-ecosystem/"
+ },
+ "ge-pmcg": {
+  "url": "https://pmcg-i.com/research/georgia-fit-for-the-age-of-artificial-intelligence/",
+  "archive_url": "https://web.archive.org/web/20261016210159/https://pmcg-i.com/research/georgia-fit-for-the-age-of-artificial-intelligence/"
+ },
+ "tr-gazette-2026": {
+  "url": "https://www.resmigazete.gov.tr/eskiler/2026/08/20260818-8.pdf",
+  "archive_url": "https://web.archive.org/web/20261016210249/https://www.resmigazete.gov.tr/eskiler/2026/08/20260818-8.pdf"
+ },
+ "kz-ai-law-2025": {
+  "url": "https://adilet.zan.kz/rus/docs/Z2500000230",
+  "archive_url": "https://web.archive.org/web/20261016210436/https://adilet.zan.kz/rus/docs/Z2500000230"
+ },
+ "ru-law-243fz": {
+  "url": "https://www.v2b.ru/documents/federalnyy-zakon-ot-26-07-2026-243-fz/",
+  "archive_url": "https://web.archive.org/web/20261016233852/https://www.v2b.ru/documents/federalnyy-zakon-ot-26-07-2026-243-fz/"
+ },
+ "br-camara-pl2338": {
+  "url": "https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=2487262",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ },
+ "br-pbia": {
+  "url": "https://www.cgee.org.br/documents/37878/43769/CGEE_PBIA.pdf/6174f551-a40f-7302-b74b-48c8d840fc65?t=1756481406537",
+  "archive_url": "https://web.archive.org/web/20261002042149/https://www.cgee.org.br/documents/37878/43769/CGEE_PBIA.pdf/6174f551-a40f-7302-b74b-48c8d840fc65?t=1756481406537"
+ },
+ "br-itsrio-aiso": {
+  "url": "https://itsrio.org/en/publicacoes/an-ai-safety-and-opportunities-institute-for-brazil-a-design-of-features-functions-and-potential-challenges/",
+  "archive_url": "https://web.archive.org/web/20261016234118/https://itsrio.org/en/publicacoes/an-ai-safety-and-opportunities-institute-for-brazil-a-design-of-features-functions-and-potential-challenges/"
+ },
+ "cl-senado-bill": {
+  "url": "https://www.senado.cl/comunicaciones/noticias/proyecto-que-regula-sistemas-de-inteligencia-artificial-sera-estudiado-por",
+  "archive_url": "https://web.archive.org/web/20260811202139/https://www.senado.cl/comunicaciones/noticias/proyecto-que-regula-sistemas-de-inteligencia-artificial-sera-estudiado-por"
+ },
+ "cl-senado-ejecutivo": {
+  "url": "https://www.senado.cl/comunicaciones/noticias/senadores-conocen-propuesta-del-ejecutivo-para-ley-marco-de-ia",
+  "archive_url": "https://web.archive.org/web/20261016234213/https://www.senado.cl/comunicaciones/noticias/senadores-conocen-propuesta-del-ejecutivo-para-ley-marco-de-ia"
+ },
+ "cl-latercera-ministerio": {
+  "url": "https://www.latercera.com/nacional/noticia/ministerio-de-ciencia-fija-seis-ejes-para-2026-2030-y-prepara-nuevo-proyecto-de-ley-de-inteligencia-artificial/",
+  "archive_url": "https://web.archive.org/web/20261016234357/https://www.latercera.com/nacional/noticia/ministerio-de-ciencia-fija-seis-ejes-para-2026-2030-y-prepara-nuevo-proyecto-de-ley-de-inteligencia-artificial/"
+ },
+ "mx-atdt-plan": {
+  "url": "https://www.gob.mx/atdt/agendas/2030/inteligencia-artificial",
+  "archive_url": "https://web.archive.org/web/20261016234538/https://www.gob.mx/atdt/agendas/2030/inteligencia-artificial"
+ },
+ "mx-aipolicytracker-plan": {
+  "url": "https://aipolicytracker.org/policies/mexico-plan-nacional-de-inteligencia-artificial",
+  "archive_url": "https://web.archive.org/web/20261016234621/https://aipolicytracker.org/policies/mexico-plan-nacional-de-inteligencia-artificial"
+ },
+ "co-camara-pl025": {
+  "url": "https://www.camara.gov.co/wp-content/uploads/2026/07/proyectos-ley/documentos/proyecto-36127/P.L.025-2026SC-INTELIGENCIA-ARTIFICIAL.pdf",
+  "archive_url": "https://web.archive.org/web/20261003022330/https://www.camara.gov.co/wp-content/uploads/2026/07/proyectos-ley/documentos/proyecto-36127/P.L.025-2026SC-INTELIGENCIA-ARTIFICIAL.pdf"
+ },
+ "pe-catalogo-ia": {
+  "url": "https://catalogoia.servicios.gob.pe/marconormativo",
+  "archive_url": "https://web.archive.org/web/20261016234711/https://catalogoia.servicios.gob.pe/marconormativo"
+ },
+ "uy-busqueda-agesic": {
+  "url": "https://www.busqueda.com.uy/tecnologia/ante-el-avance-la-inteligencia-artificial-agesic-revisa-la-ciberseguridad-del-estado-n5414697",
+  "archive_url": "https://web.archive.org/web/20260630045142/https://www.busqueda.com.uy/tecnologia/ante-el-avance-la-inteligencia-artificial-agesic-revisa-la-ciberseguridad-del-estado-n5414697"
+ },
+ "ar-cronica-proyecto": {
+  "url": "https://www.diariocronica.com.ar/noticias/2026/06/14/149011-presentan-un-proyecto-para-convertir-a-argentina-en-un-polo-global-de-ia",
+  "archive_url": "https://web.archive.org/web/20261016234839/https://www.diariocronica.com.ar/noticias/2026/06/14/149011-presentan-un-proyecto-para-convertir-a-argentina-en-un-polo-global-de-ia"
+ },
+ "cr-regulations-ai": {
+  "url": "https://regulations.ai/regulations/RAI-CR-NA-SUMMARY-2026",
+  "archive_url": "https://web.archive.org/web/20261016235015/https://regulations.ai/regulations/RAI-CR-NA-SUMMARY-2026"
+ },
+ "ec-eldiario-leyes": {
+  "url": "https://www.eldiario.ec/ecuador/ecuador-reglas-leyes-inteligencia-artificial-11102026/",
+  "archive_url": "https://web.archive.org/web/20261011143016/https://www.eldiario.ec/ecuador/ecuador-reglas-leyes-inteligencia-artificial-11102026"
+ },
+ "lac-eaforum-map": {
+  "url": "https://forum.effectivealtruism.org/posts/3sL6iB6WzKHJciwta/latin-america-in-search-of-its-stake-in-ai-safety-a-map",
+  "archive_url": "https://web.archive.org/web/20260903123906/https://forum.effectivealtruism.org/posts/3sL6iB6WzKHJciwta/latin-america-in-search-of-its-stake-in-ai-safety-a-map"
+ },
+ "br-mobiletime-2026-08": {
+  "url": "https://www.mobiletime.com.br/noticias/20/08/2026/governo-supercomputador2/",
+  "archive_url": "https://web.archive.org/web/20260825145708/https://www.mobiletime.com.br/noticias/20/08/2026/governo-supercomputador2/"
+ },
+ "br-mre-paris-2025": {
+  "url": "https://www.gov.br/mre/pt-br/centrais-de-conteudo/publicacoes/discursos-artigos-e-entrevistas/ministro-das-relacoes-exteriores/discursos-mre/mauro-vieira/palavras-do-ministro-mauro-vieira-na-mesa-redonda-sobre-o-estabelecimento-de-uma-governanca-de-inteligencia-artificial-eficiente-e-realmente-inclusiva",
+  "archive_url": "https://web.archive.org/web/20250213205340/https://www.gov.br/mre/pt-br/centrais-de-conteudo/publicacoes/discursos-artigos-e-entrevistas/ministro-das-relacoes-exteriores/discursos-mre/mauro-vieira/palavras-do-ministro-mauro-vieira-na-mesa-redonda-sobre-o-estabelecimento-de-uma-governanca-de-inteligencia-artificial-eficiente-e-realmente-inclusiva"
+ },
+ "uy-vidart-2026": {
+  "url": "https://www.gub.uy/uruguay-innova/noticias/se-lanzo-el-instituto-vidart-el-centro-nacional-de-inteligencia-artificial",
+  "archive_url": "https://web.archive.org/web/20261016235325/https://www.gub.uy/uruguay-innova/noticias/se-lanzo-el-instituto-vidart-el-centro-nacional-de-inteligencia-artificial"
+ },
+ "pe-cuatrecasas-2025": {
+  "url": "https://www.cuatrecasas.com/es/latam/tecnologia-medios-digitales/art/que-establece-el-reglamento-de-la-ley-de-inteligencia-artificial",
+  "archive_url": "https://web.archive.org/web/20261016235501/https://www.cuatrecasas.com/es/latam/tecnologia-medios-digitales/art/que-establece-el-reglamento-de-la-ley-de-inteligencia-artificial"
+ },
+ "mx-mobiletime-2026-09": {
+  "url": "https://mobiletime.la/noticias/08/09/2026/estrategia-nacional-inteligencia-artificial/",
+  "archive_url": "https://web.archive.org/web/20261016235640/https://mobiletime.la/noticias/08/09/2026/estrategia-nacional-inteligencia-artificial/"
+ },
+ "in-indiaai-2025": {
+  "url": "https://indiaai.gov.in/article/india-takes-the-lead-establishing-the-indiaai-safety-institute-for-responsible-ai-innovation",
+  "archive_url": "https://web.archive.org/web/20260831050900/https://indiaai.gov.in/article/india-takes-the-lead-establishing-the-indiaai-safety-institute-for-responsible-ai-innovation"
+ },
+ "in-guidelines-2025": {
+  "url": "https://static.pib.gov.in/WriteReadData/specificdocs/documents/2025/nov/doc2025115685601.pdf",
+  "archive_url": "https://web.archive.org/web/20261011214547/https://static.pib.gov.in/WriteReadData/specificdocs/documents/2025/nov/doc2025115685601.pdf"
+ },
+ "in-dic-director": {
+  "url": "https://dic.gov.in/jobs/director-indiaai-safety-institute/",
+  "archive_url": "https://web.archive.org/web/20260605232533/https://dic.gov.in/jobs/director-indiaai-safety-institute/"
+ },
+ "in-medianama-2026": {
+  "url": "https://www.medianama.com/2026/07/223-meity-india-ai-safety-institute-director-hiring/",
+  "archive_url": "https://web.archive.org/web/20261016235857/https://www.medianama.com/2026/07/223-meity-india-ai-safety-institute-director-hiring/"
+ },
+ "sas-mena-arcadia-2026": {
+  "url": "https://arxiv.org/abs/2608.19278",
+  "archive_url": "https://web.archive.org/web/20261004095433/https://arxiv.org/abs/2608.19278"
+ },
+ "ae-wam-2026": {
+  "url": "https://www.wam.ae/a/c01kgfl",
+  "archive_url": "https://web.archive.org/web/20261017000320/https://www.wam.ae/a/c01kgfl"
+ },
+ "sa-gowling-2026": {
+  "url": "https://gowlingwlg.com/en/insights-resources/articles/2026/what-saudi-arabias-ai-risk-management-framework-means-for-organisations",
+  "archive_url": "https://web.archive.org/web/20261017000417/https://gowlingwlg.com/en/insights-resources/articles/2026/what-saudi-arabias-ai-risk-management-framework-means-for-organisations"
+ },
+ "il-globes-2026": {
+  "url": "https://en.globes.co.il/en/article-1001552634",
+  "archive_url": "https://web.archive.org/web/20261017000610/https://en.globes.co.il/en/article-israels-ai-directorate-launches-modest-national-plan-1001552634"
+ },
+ "qa-qna-2026": {
+  "url": "https://qna.org.qa/ar-QA/News-Area/News/2026-6/7/%D8%AE%D8%B7%D9%88%D8%A7%D8%AA-%D9%82%D8%B7%D8%B1-%D8%AA%D9%82%D9%88%D8%AF%D9%87%D8%A7-%D8%A7%D9%84%D9%89-%D9%85%D9%88%D8%A7%D8%B6%D8%B9-%D8%A7%D9%84%D8%B5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%B9%D8%A7%D9%84%D9%85%D9%8A%D8%A7-%D9%81%D9%8A-%D8%A7%D8%B3%D8%AA%D8%AE%D8%AF%D8%A7%D9%85-%D8%A7%D9%84%D8%B0%D9%83%D8%A7%D8%A1-%D8%A7%D9%84%D8%A7%D8%B5%D8%B7%D9%86%D8%A7%D8%B9%D9%8A-%D8%AA%D9%82%D8%B1%D9%8A%D8%B1",
+  "archive_url": "https://web.archive.org/web/20261017000916/https://qna.org.qa/ar-QA/news/news-details?id=%D8%AE%D8%B7%D9%88%D8%A7%D8%AA-%D9%82%D8%B7%D8%B1-%D8%AA%D9%82%D9%88%D8%AF%D9%87%D8%A7-%D8%A7%D9%84%D9%89-%D9%85%D9%88%D8%A7%D8%B6%D8%B9-%D8%A7%D9%84%D8%B5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%B9%D8%A7%D9%84%D9%85%D9%8A%D8%A7-%D9%81%D9%8A-%D8%A7%D8%B3%D8%AA%D8%AE%D8%AF%D8%A7%D9%85-%D8%A7%D9%84%D8%B0%D9%83%D8%A7%D8%A1-%D8%A7%D9%84%D8%A7%D8%B5%D8%B7%D9%86%D8%A7%D8%B9%D9%8A-%D8%AA%D9%82%D8%B1%D9%8A%D8%B1&date=7/06/2026"
+ },
+ "eg-masrawy-2025": {
+  "url": "https://www.masrawy.com/news/education-universityeducation/details/2025/3/10/2741346",
+  "archive_url": "https://web.archive.org/web/20261017001115/https://www.masrawy.com/news/education-universityeducation/details/2025/3/10/2741346"
+ },
+ "ma-meatechwatch-2026": {
+  "url": "https://meatechwatch.com/2026/01/13/morocco-launches-maroc-ia-2030-roadmap-to-strengthen-ai-governance-digital-sovereignty/",
+  "archive_url": "https://web.archive.org/web/20260419121244/https://meatechwatch.com/2026/01/13/morocco-launches-maroc-ia-2030-roadmap-to-strengthen-ai-governance-digital-sovereignty/"
+ },
+ "tn-lapresse-2026": {
+  "url": "https://www.lapresse.tn/?p=4353667",
+  "archive_url": "https://web.archive.org/web/20261017001246/https://www.lapresse.tn/2026/08/15/ia-la-tunisie-entre-dans-le-top-30-mondial-des-publications-scientifiques/"
+ },
+ "jo-jordannews-2026": {
+  "url": "https://www.jordannews.jo/Section-109/News/Experts-Urge-Jordan-to-Update-National-AI-Strategy-After-Strong-Showing-in-Global-Responsible-AI-Index-54401",
+  "archive_url": "https://web.archive.org/web/20261017001443/https://www.jordannews.jo/Section-109/News/Experts-Urge-Jordan-to-Update-National-AI-Strategy-After-Strong-Showing-in-Global-Responsible-AI-Index-54401"
+ },
+ "pk-regulations-ai": {
+  "url": "https://regulations.ai/regulations/RAI-PK-NA-NAINAXX-2025",
+  "archive_url": "https://web.archive.org/web/20261017001634/https://regulations.ai/regulations/RAI-PK-NA-NAINAXX-2025"
+ },
+ "bd-dailystar-2026": {
+  "url": "https://www.thedailystar.net/business/economy/news/draft-ai-policy-targets-innovation-better-public-services-4090431",
+  "archive_url": "https://web.archive.org/web/20260211111757/https://www.thedailystar.net/business/economy/news/draft-ai-policy-targets-innovation-better-public-services-4090431"
+ },
+ "bd-fe-2026": {
+  "url": "https://thefinancialexpress.com.bd/national/draft-ai-policy-tightens-state-oversight",
+  "archive_url": "https://web.archive.org/web/20261017001815/https://thefinancialexpress.com.bd/national/draft-ai-policy-tightens-state-oversight"
+ },
+ "lk-strategy-2024": {
+  "url": "https://mot.gov.lk/assets/files/National_AI_strategy_for_Sri_Lanka-08a88c78d541a0746aeb8c71ed312231.pdf",
+  "archive_url": "https://web.archive.org/web/20260208102715/https://mot.gov.lk/assets/files/National_AI_strategy_for_Sri_Lanka-08a88c78d541a0746aeb8c71ed312231.pdf"
+ },
+ "bh-iga-2025": {
+  "url": "https://www.iga.gov.bh/en/article/unesco-launches-global-report-on-bahrains-ai-readiness-and-remarks-the-kingdoms-progress-on-ai",
+  "archive_url": "https://web.archive.org/web/20261017002012/https://www.iga.gov.bh/en/article/unesco-launches-global-report-on-bahrains-ai-readiness-and-remarks-the-kingdoms-progress-on-ai"
+ },
+ "ir-tvbrics-2025": {
+  "url": "https://tvbrics.com/en/news/iran-approves-creation-of-national-ai-organisation/",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ },
+ "in-indiaai-partners-2025": {
+  "url": "https://indiaai.gov.in/article/call-for-partnerships-as-part-of-the-indiaai-safety-institute",
+  "archive_url": "https://web.archive.org/web/20260719035551/https://indiaai.gov.in/article/call-for-partnerships-as-part-of-the-indiaai-safety-institute"
+ },
+ "in-dic-gm-2026": {
+  "url": "https://dic.gov.in/jobs/general-manager-safe-trust-ai-pillar/",
+  "archive_url": "https://web.archive.org/web/20261017002253/https://dic.gov.in/jobs/general-manager-safe-trust-ai-pillar/"
+ },
+ "in-storyboard-2026": {
+  "url": "https://storyboard18.com/special-coverage/ashwini-vaishnaw-sets-ai-mission-2-0-agenda-sovereign-models-safety-and-mass-diffusion-90307.htm",
+  "archive_url": "https://web.archive.org/web/20261017002440/https://www.storyboard18.com/special-coverage/ashwini-vaishnaw-sets-ai-mission-2-0-agenda-sovereign-models-safety-and-mass-diffusion-90307.htm"
+ },
+ "ae-zawya-2026": {
+  "url": "https://www.zawya.com/en/press-release/companies-news/uae-cyber-security-council-cisco-and-open-innovation-ai-establish-national-ai-test-and-validation-lab-344555",
+  "archive_url": "https://web.archive.org/web/20261017002625/https://www.zawya.com/en/press-release/companies-news/uae-cyber-security-council-cisco-and-open-innovation-ai-establish-national-ai-test-and-validation-lab-344555"
+ },
+ "ae-morganlewis-2026": {
+  "url": "https://www.morganlewis.com/pubs/2026/06/uae-establishes-federal-authority-for-artificial-intelligence-and-data",
+  "archive_url": "https://web.archive.org/web/20261017002807/https://www.morganlewis.com/pubs/2026/06/uae-establishes-federal-authority-for-artificial-intelligence-and-data"
+ },
+ "ma-fnh-2026": {
+  "url": "https://www.fnh.ma/article/actualite-high-tech/ia-maroc-phase-operationnelle-2030",
+  "archive_url": "https://web.archive.org/web/20261017002850/https://www.fnh.ma/articles/ia-maroc-phase-operationnelle-2030"
+ },
+ "ke-ai-strategy-2025": {
+  "url": "https://www.data4sdgs.org/sites/default/files/2025-06/Kenya_AI_Strategy_2025_2030.pdf",
+  "archive_url": "https://web.archive.org/web/20250713230159/https://www.data4sdgs.org/sites/default/files/2025-06/Kenya_AI_Strategy_2025_2030.pdf"
+ },
+ "ke-ai-roadmap-2025": {
+  "url": "https://ict.go.ke/sites/default/files/2025-12/Kenya%20National%20AI%20Strategy%202025-2030%20Implementation%20Roadmap.pdf",
+  "archive_url": "https://web.archive.org/web/20260611194700/https://www.ict.go.ke/sites/default/files/2025-12/Kenya%20National%20AI%20Strategy%202025-2030%20Implementation%20Roadmap.pdf"
+ },
+ "ke-draft-policy-2026": {
+  "url": "https://ict.go.ke/sites/default/files/AI%20Policy%20Doc/draft-kenya-ai-and-emerging-technologies-policy-2026.pdf",
+  "archive_url": "https://web.archive.org/web/20260805060746/https://ict.go.ke/sites/default/files/AI%20Policy%20Doc/draft-kenya-ai-and-emerging-technologies-policy-2026.pdf"
+ },
+ "ke-policy-notice-2026": {
+  "url": "https://www.gaa.go.ke/sites/default/files/2026-07/State%20Department%20For%20ICT%20and%20The%20Digital%20Economy%20Public%20Notice%20on%20Call%20For%20Comments%20On%20the%20Draft%20Kenya%20Artificial%20Intelligence%20And%20Other%20Emerging%20Technologies%20.pdf",
+  "archive_url": "https://web.archive.org/web/20261017002945/https://www.gaa.go.ke/sites/default/files/2026-07/State%20Department%20For%20ICT%20and%20The%20Digital%20Economy%20Public%20Notice%20on%20Call%20For%20Comments%20On%20the%20Draft%20Kenya%20Artificial%20Intelligence%20And%20Other%20Emerging%20Technologies%20.pdf"
+ },
+ "ke-kna-network-2024": {
+  "url": "https://www.kenyanews.go.ke/ambassador-thigo-leads-kenyas-participation-in-historic-ai-safety-network-launch-in-the-us/",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ },
+ "ng-nais-2025": {
+  "url": "https://ncair.nitda.gov.ng/wp-content/uploads/2025/09/National-Artificial-Intelligence-Strategy-19092025.pdf",
+  "archive_url": "https://web.archive.org/web/20261011173058/https://ncair.nitda.gov.ng/wp-content/uploads/2025/09/National-Artificial-Intelligence-Strategy-19092025.pdf"
+ },
+ "rw-ktpress-2026": {
+  "url": "https://www.ktpress.rw/2026/06/rwandas-ai-ambition-takes-shape-as-cabinet-approves-new-agency/",
+  "archive_url": "https://web.archive.org/web/20261017003756/https://www.ktpress.rw/2026/06/rwandas-ai-ambition-takes-shape-as-cabinet-approves-new-agency/"
+ },
+ "za-timeslive-2026": {
+  "url": "https://www.timeslive.co.za/news/2026-04-27-minister-malatsi-withdraws-draft-ai-policy/",
+  "archive_url": "https://web.archive.org/web/20260617191933/https://www.timeslive.co.za/news/2026-04-27-minister-malatsi-withdraws-draft-ai-policy/"
+ },
+ "mz-enia-draft-2026": {
+  "url": "https://intic.gov.mz/wp-content/uploads/2026/08/Proposta-Draft-6-da-ENIA.docx",
+  "archive_url": "https://web.archive.org/web/20261017003849/https://intic.gov.mz/wp-content/uploads/2026/08/Proposta-Draft-6-da-ENIA.docx"
+ },
+ "mz-enia-consultation-2026": {
+  "url": "https://intic.gov.mz/consulta-publica-da-proposta-da-estrategia-nacional-de-inteligencia-artificial/",
+  "archive_url": "https://web.archive.org/web/20260514190643/https://intic.gov.mz/consulta-publica-da-proposta-da-estrategia-nacional-de-inteligencia-artificial/"
+ },
+ "mu-ai-strategy-2026": {
+  "url": "https://aim.govmu.org/aim/wp-content/uploads/2026/04/aistrategy.pdf",
+  "archive_url": "https://web.archive.org/web/20260827231721/https://aim.govmu.org/aim/wp-content/uploads/2026/04/aistrategy.pdf"
+ },
+ "mu-ai-launch-2026": {
+  "url": "https://govmu.org/EN/newsgov/SitePages/National-AI-Strategy-and-FAIR-Guidelines-unveiled-to-position-Mauritius-as-a-high-tech%2C-innovation-driven-econ.aspx",
+  "archive_url": "https://web.archive.org/web/20261012111749/https://govmu.org/EN/newsgov/SitePages/National-AI-Strategy-and-FAIR-Guidelines-unveiled-to-position-Mauritius-as-a-high-tech%2C-innovation-driven-econ.aspx"
+ },
+ "za-draft-policy-2026": {
+  "url": "https://www.gov.za/sites/default/files/gcis_document/202604/54477gen3880.pdf",
+  "archive_url": "https://web.archive.org/web/20261006050245/https://www.gov.za/sites/default/files/gcis_document/202604/54477gen3880.pdf"
+ },
+ "za-withdrawal-2026": {
+  "url": "https://www.gov.za/sites/default/files/gcis_document/202606/54840gen3978.pdf",
+  "archive_url": "https://web.archive.org/web/20260621181600/https://www.gov.za/sites/default/files/gcis_document/202606/54840gen3978.pdf"
+ },
+ "za-sanews-2026": {
+  "url": "https://www.sanews.gov.za/south-africa/minister-announces-withdrawal-draft-ai-policy",
+  "archive_url": "https://web.archive.org/web/20260904142734/https://www.sanews.gov.za/south-africa/minister-announces-withdrawal-draft-ai-policy"
+ },
+ "za-cabinet-2026": {
+  "url": "https://www.gov.za/sites/default/files/Fact%2013%20Statement%20Wednesday%2C%2013%20May%202026.pdf",
+  "archive_url": "https://web.archive.org/web/20260621184340/https://www.gov.za/sites/default/files/Fact%2013%20Statement%20Wednesday%2C%2013%20May%202026.pdf"
+ },
+ "ci-snia-2025": {
+  "url": "https://anssi.gouv.ci/documents/87/Strat%C3%A9gie_Nationale_de_lIntelligence_Artificielle_250321_041840.pdf",
+  "archive_url": "https://web.archive.org/web/20261017003949/https://anssi.gouv.ci/documents/87/Strat%C3%A9gie_Nationale_de_lIntelligence_Artificielle_250321_041840.pdf"
+ },
+ "sn-snia-2023": {
+  "url": "https://www.vie-publique.sn/docs/87957d65-ca04-4fbb-ac05-7fdc8ac12263/srategie-nationale-intelligence-artificielle.pdf",
+  "archive_url": "https://web.archive.org/web/20261017004126/https://www.vie-publique.sn/docs/87957d65-ca04-4fbb-ac05-7fdc8ac12263/srategie-nationale-intelligence-artificielle.pdf"
+ },
+ "et-aii-regulation-2022": {
+  "url": "https://www.metaappz.com/pdf/ethiopian_laws/federal/2022/re_510_2022.pdf",
+  "archive_url": "https://web.archive.org/web/20261017004158/https://www.metaappz.com/pdf/ethiopian_laws/federal/2022/re_510_2022.pdf"
+ },
+ "et-unesco-ram-2026": {
+  "url": "https://www.unesco.org/ethics-ai/en/global-hub/ethiopia",
+  "archive_url": "https://web.archive.org/web/20261017004235/https://www.unesco.org/ethics-ai/en/global-hub/ethiopia"
+ },
+ "gh-cabinet-ai-2026": {
+  "url": "https://www.isd.gov.gh/ghana-approves-250-million-ai-centre-strategy-launch-set-for-april/",
+  "archive_url": "https://web.archive.org/web/20261017004415/https://www.isd.gov.gh/ghana-approves-250-million-ai-centre-strategy-launch-set-for-april/"
+ },
+ "gh-emerging-tech-bill-2026": {
+  "url": "https://gna.org.gh/2026/04/ghana-to-invest-250m-in-ai-centre-launch-national-strategy/",
+  "archive_url": "https://web.archive.org/web/20260610030255/https://gna.org.gh/2026/04/ghana-to-invest-250m-in-ai-centre-launch-national-strategy/"
+ },
+ "rw-ai-policy-2023": {
+  "url": "https://extranet.who.int/countryplanningcycles/sites/default/files/public_file_rep/RWA_Rwanda_Artificial_Intelligence_Policy_2023.pdf",
+  "archive_url": "https://web.archive.org/web/20250906020540/https://extranet.who.int/countryplanningcycles/sites/default/files/public_file_rep/RWA_Rwanda_Artificial_Intelligence_Policy_2023.pdf"
+ },
+ "tz-ai-strategy-draft-2025": {
+  "url": "https://www.mawasiliano.go.tz/document-groups/strategies",
+  "archive_url": "https://web.archive.org/web/20260519042635/https://mawasiliano.go.tz/document-groups/strategies"
+ },
+ "ug-strategy-consultation-2026": {
+  "url": "https://ict.go.ug/media/news/ministry-engages-stakeholders-on-ugandas-national-emerging-technologies-strategy",
+  "archive_url": "https://web.archive.org/web/20260515112609/https://ict.go.ug/media/news/ministry-engages-stakeholders-on-ugandas-national-emerging-technologies-strategy"
+ },
+ "zm-ai-strategy-2025": {
+  "url": "https://www.mots.gov.zm/wp-content/uploads/2025/02/Zambia-Ai-Strategy-Book-option-2.pdf",
+  "archive_url": "https://web.archive.org/web/20261003022448/https://www.mots.gov.zm/wp-content/uploads/2025/02/Zambia-Ai-Strategy-Book-option-2.pdf"
+ },
+ "ke-launch-2025": {
+  "url": "https://ict.go.ke/kenyas-artificial-intelligence-ai-strategy-2025-2030-launched-kicc-nairobi",
+  "archive_url": "https://web.archive.org/web/20260717061659/https://www.ict.go.ke/kenyas-artificial-intelligence-ai-strategy-2025-2030-launched-kicc-nairobi"
+ },
+ "eu-joint-testing-2025": {
+  "url": "https://digital-strategy.ec.europa.eu/en/news/ai-office-contributes-third-joint-testing-exercise-international-network-ai-safety-institutes",
+  "archive_url": "https://web.archive.org/web/20260420092204/https://digital-strategy.ec.europa.eu/en/news/ai-office-contributes-third-joint-testing-exercise-international-network-ai-safety-institutes"
+ },
+ "sg-kr-agent-2026": {
+  "url": "https://sgaisi.sg/wp-api/wp-content/uploads/2026/06/SG_KR_AISI_Agent_Evaluation_Data_Leakage_2026.pdf",
+  "archive_url": "https://web.archive.org/web/20260919113536/https://sgaisi.sg/wp-api/wp-content/uploads/2026/06/SG_KR_AISI_Agent_Evaluation_Data_Leakage_2026.pdf"
+ },
+ "gb-joint-testing": {
+  "url": "https://www.aisi.gov.uk/work/international-joint-testing-exercise-agentic-testing",
+  "archive_url": "https://web.archive.org/web/20250905113943/https://www.aisi.gov.uk/work/international-joint-testing-exercise-agentic-testing"
+ },
+ "de-bsi-aisi": {
+  "url": "https://www.bsi.bund.de/DE/Themen/Unternehmen-und-Organisationen/Informationen-und-Empfehlungen/AISI/aisi_node.html",
+  "archive_url": "https://web.archive.org/web/20261017004754/https://www.bsi.bund.de/DE/Themen/Unternehmen-und-Organisationen/Informationen-und-Empfehlungen/AISI/aisi_node.html"
+ },
+ "fr-sgdsn-aisi": {
+  "url": "https://www.sgdsn.gouv.fr/nos-missions/anticiper-et-prevenir/evaluer-et-securiser-lia",
+  "archive_url": "https://web.archive.org/web/20261017005049/https://www.sgdsn.gouv.fr/nos-missions/anticiper-et-prevenir/evaluer-et-securiser-lia"
+ },
+ "bn-aiti-guide-2025": {
+  "url": "https://www.aiti.gov.bn/news/2025/guide-on-artificial-intelligence-governance-and-ethics-for-brunei-darussalam/",
+  "archive_url": "https://web.archive.org/web/20261017005248/https://www.aiti.gov.bn/news/2025/guide-on-artificial-intelligence-governance-and-ethics-for-brunei-darussalam/"
+ },
+ "kh-mptc-2025-04": {
+  "url": "https://mptc.gov.kh/?p=41308",
+  "archive_url": "https://web.archive.org/web/20261017005448/https://mptc.gov.kh/en/2025/04/press-release-on-the-deep-dive-workshop-on-draft-national-artificial-intelligence-strategy/"
+ },
+ "kh-mptc-2025-05": {
+  "url": "https://mptc.gov.kh/?p=42011",
+  "archive_url": "https://web.archive.org/web/20261017005647/https://mptc.gov.kh/en/2025/05/his-excellency-secretary-of-state-keo-sothie-chairs-consultation-meetings-with-ministries-and-institutions-on-the-draft-national-artificial-intelligence-strategy/"
+ },
+ "la-kpl-2026-01": {
+  "url": "https://kpl.gov.la/EN/detail.aspx?id=96675",
+  "archive_url": "https://web.archive.org/web/20261017005837/https://kpl.gov.la/EN/detail.aspx?id=96675"
+ },
+ "la-star-2026-09": {
+  "url": "https://www.thestar.com.my/aseanplus/aseanplus-news/2026/09/24/laos-advances-10-year-strategies-for-ai-and-satellite-development",
+  "archive_url": "https://web.archive.org/web/20261004175826/https://www.thestar.com.my/aseanplus/aseanplus-news/2026/09/24/laos-advances-10-year-strategies-for-ai-and-satellite-development"
+ },
+ "tl-catalpa-2026": {
+  "url": "https://catalpa.io/projects/ai-readiness-in-timor-leste-designing-the-future-responsibly/",
+  "archive_url": "https://web.archive.org/web/20260814083055/https://catalpa.io/projects/ai-readiness-in-timor-leste-designing-the-future-responsibly/"
+ },
+ "kp-aljazeera-2025-09": {
+  "url": "https://www.aljazeera.com/amp/news/2025/9/19/kim-jong-un-declares-ai-military-drone-development-a-top-priority",
+  "archive_url": "https://web.archive.org/web/20261017010036/https://www.aljazeera.com/amp/news/2025/9/19/kim-jong-un-declares-ai-military-drone-development-a-top-priority"
+ },
+ "kp-rfa-2026-06": {
+  "url": "https://rfa.org/korean/in-focus/2026/06/19/north-korea-ai-nuclear-development/",
+  "archive_url": "https://web.archive.org/web/20260620090436/https://www.rfa.org/korean/in-focus/2026/06/19/north-korea-ai-nuclear-development/"
+ },
+ "recheck-eap-undp-pacific-2026": {
+  "url": "https://www.undp.org/pacific/blog/pacifics-stake-shaping-ais-future",
+  "archive_url": "https://web.archive.org/web/20261017010213/https://www.undp.org/pacific/blog/pacifics-stake-shaping-ais-future"
+ },
+ "recheck-eap-pina-leaders-2026": {
+  "url": "https://pina.com.fj/?p=72251",
+  "archive_url": "https://web.archive.org/web/20261017010351/https://pina.com.fj/2026/09/06/pacific-leaders-set-ai-rules-push-stronger-digital-connectivity/"
+ },
+ "recheck-eap-standards-au-2026": {
+  "url": "https://www.standards.org.au/engagement-events/international/responsible-adoption-of-ai-in-the-pacific",
+  "archive_url": "https://web.archive.org/web/20261017010535/https://www.standards.org.au/engagement-events/international/responsible-adoption-of-ai-in-the-pacific"
+ },
+ "recheck-eap-devpolicy-2025": {
+  "url": "https://devpolicy.org/bridging-the-divide-building-pacific-agency-in-the-ai-era-20250711/",
+  "archive_url": "https://web.archive.org/web/20260314232243/https://devpolicy.org/bridging-the-divide-building-pacific-agency-in-the-ai-era-20250711/"
+ },
+ "vu-dailypost-2026-08": {
+  "url": "https://www.dailypost.vu/news/connectivity-resilience-and-ai-governance-vanuatus-message-to-pacific-ict-ministers/article_85aeeb09-45be-5f22-96ca-16f665455b0b.html",
+  "archive_url": "https://web.archive.org/web/20260805104206/https://www.dailypost.vu/news/connectivity-resilience-and-ai-governance-vanuatus-message-to-pacific-ict-ministers/article_85aeeb09-45be-5f22-96ca-16f665455b0b.html"
+ },
+ "tl-unesco-ai-readiness-2025": {
+  "url": "https://unesdoc.unesco.org/ark:/48223/pf0000395617",
+  "archive_url": "https://web.archive.org/web/20261017010712/https://unesdoc.unesco.org/ark:/48223/pf0000395617"
+ },
+ "is-stjornarradid-ai-plan": {
+  "url": "https://www.stjornarradid.is/frettir/grein/2025-07-01-Icelands-AI-Action-Plan-2025-2027/",
+  "archive_url": "https://web.archive.org/web/20261017010904/https://www.stjornarradid.is/frettir/grein/2025-07-01-Icelands-AI-Action-Plan-2025-2027/"
+ },
+ "li-business-ai-strategy": {
+  "url": "https://en.liechtenstein-business.li/detail/landesverwaltung-erhalt-ki-strategie-076f3f0e-0b51-4a08-bca5-3126ee2936c1.html",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ },
+ "lu-gouv-ai-act-2026": {
+  "url": "https://gouvernement.lu/fr/gouvernement/elisabeth-margue/actualites.gouvernement2024%2Bfr%2Bactualites%2Btoutes_actualites%2Bcommuniques%2B2026%2B01-janvier%2B20-margue-ai-act.html",
+  "archive_url": "https://web.archive.org/web/20261017011201/https://gouvernement.lu/fr/gouvernement/elisabeth-margue/actualites.gouvernement2024+fr+actualites+toutes_actualites+communiques+2026+01-janvier+20-margue-ai-act.html"
+ },
+ "lu-paperjam-ai-factory": {
+  "url": "https://en.paperjam.lu/article/luxembourgs-ai-factory-a-one-stop-shop-boots-up",
+  "archive_url": "https://web.archive.org/web/20260711024218/https://en.paperjam.lu/article/luxembourgs-ai-factory-a-one-stop-shop-boots-up"
+ },
+ "gr-ey-law-5321": {
+  "url": "https://www.ey.com/en_gr/technical/tax/tax-alerts/ai-act-greek-legal-framework-for-the-supervision-of-artificial-intelligence-systems",
+  "archive_url": "https://web.archive.org/web/20261017011244/https://www.ey.com/en_gr/technical/tax/tax-alerts/ai-act-greek-legal-framework-for-the-supervision-of-artificial-intelligence-systems"
+ },
+ "hr-mpudt-startai": {
+  "url": "https://mpudt.gov.hr/news-25399/workshop-startai-a-step-towards-a-strategic-framework-held-in-zagreb/30131",
+  "archive_url": "https://web.archive.org/web/20260210122712/https://mpudt.gov.hr/news-25399/workshop-startai-a-step-towards-a-strategic-framework-held-in-zagreb/30131"
+ },
+ "si-nsai2030": {
+  "url": "https://www.gov.si/assets/ministrstva/MNZJU/MDP/Dokumenti/Umetna-inteligenca/NsUI2030_ang.pdf",
+  "archive_url": "https://web.archive.org/web/20261017011333/https://www.gov.si/assets/ministrstva/MNZJU/MDP/Dokumenti/Umetna-inteligenca/NsUI2030_ang.pdf"
+ },
+ "sk-ai-cyberlab-zamer": {
+  "url": "https://eurofondy.gov.sk/wp-content/uploads/2026/04/Zamer_NP_AI_CyberLab.pdf",
+  "archive_url": "https://web.archive.org/web/20261017011409/https://eurofondy.gov.sk/wp-content/uploads/2026/04/Zamer_NP_AI_CyberLab.pdf"
+ },
+ "sk-oecd-cyberlab": {
+  "url": "https://oecd.ai/en/incidents/2026-02-20-4c28",
+  "archive_url": "https://web.archive.org/web/20261017011528/https://oecd.ai/en/incidents/2026-02-20-4c28"
+ },
+ "hu-njt-344-2025": {
+  "url": "https://njt.jog.gov.hu/jogszabaly/2025-344-20-22",
+  "archive_url": "https://web.archive.org/web/20260729234323/https://njt.jog.gov.hu/jogszabaly/2025-344-20-22"
+ },
+ "hu-economx-ai-council": {
+  "url": "https://www.economx.hu/mesterseges-intelligencia/2025/12/15/mesterseges-intelligencia-tanacs-kormany-eu-820986/",
+  "archive_url": "https://web.archive.org/web/20261017011702/https://www.economx.hu/mesterseges-intelligencia/2025/12/15/mesterseges-intelligencia-tanacs-kormany-eu-820986/"
+ },
+ "bg-regulations-ai": {
+  "url": "https://regulations.ai/regulations/RAI-BG-NA-SUMMARY-2026",
+  "archive_url": "https://web.archive.org/web/20261017011848/https://regulations.ai/regulations/RAI-BG-NA-SUMMARY-2026"
+ },
+ "bg-insait-digitalk": {
+  "url": "https://insait.ai/insaits-maria-drencheva-discusses-ai-safety-and-security-at-digitalk-2026/",
+  "archive_url": "https://web.archive.org/web/20261017012034/https://insait.ai/insaits-maria-drencheva-discusses-ai-safety-and-security-at-digitalk-2026/"
+ },
+ "lt-ktu-centre": {
+  "url": "https://en.ktu.edu/news/new-centre-in-kaunas-a-strategic-investment-in-sustainable-artificial-intelligence-in-lithuania",
+  "archive_url": "https://web.archive.org/web/20261017012232/https://en.ktu.edu/news/new-centre-in-kaunas-a-strategic-investment-in-sustainable-artificial-intelligence-in-lithuania/"
+ },
+ "lv-likumi-ai-centre": {
+  "url": "https://m.likumi.lv/ta/id/359339",
+  "archive_url": "https://web.archive.org/web/20261017012425/https://m.likumi.lv/ta/id/359339"
+ },
+ "lv-lvportals-sandbox": {
+  "url": "https://lvportals.lv/dienaskartiba/384869-varam-izstradajusi-regulejumu-drosai-maksliga-intelekta-risinajumu-testesanai-specialaja-regulativaja-vide-2026",
+  "archive_url": "https://web.archive.org/web/20260215195347/https://lvportals.lv/dienaskartiba/384869-varam-izstradajusi-regulejumu-drosai-maksliga-intelekta-risinajumu-testesanai-specialaja-regulativaja-vide-2026"
+ },
+ "cy-ccci-circular": {
+  "url": "https://ccci.org.cy/wp-content/uploads/2026/07/circular-27-7-26.pdf",
+  "archive_url": "https://web.archive.org/web/20261017012609/https://ccci.org.cy/wp-content/uploads/2026/07/circular-27-7-26.pdf"
+ },
+ "cy-mail-strategy": {
+  "url": "https://cyprus-mail.com/2026/07/28/cyprus-ai-strategy-aims-to-reshape-government-and-business",
+  "archive_url": "https://web.archive.org/web/20261017012642/https://cyprus-mail.com/2026/07/28/cyprus-ai-strategy-aims-to-reshape-government-and-business"
+ },
+ "cy-mail-prosandcons": {
+  "url": "https://cyprus-mail.com/2026/08/07/pros-and-cons-of-cyprus-national-ai-strategy",
+  "archive_url": "https://web.archive.org/web/20261017012830/https://cyprus-mail.com/2026/08/07/pros-and-cons-of-cyprus-national-ai-strategy"
+ },
+ "mt-regulations-ln226": {
+  "url": "https://regulations.ai/regulations/malta-2025-10-artificial-intelligence-regulations-ln226-2025/",
+  "archive_url": "https://web.archive.org/web/20261017013018/https://regulations.ai/regulations/RAI-MT-NA-22AIRXX-2025"
+ },
+ "al-akshi-ai-rights": {
+  "url": "https://akshi.gov.al/ai-dhe-te-drejtat-e-njeriut-akshi-ekostistem-i-sigurt-dhe-i-harmonizuar-me-standardet-e-be-se/",
+  "archive_url": "https://web.archive.org/web/20260819191914/https://akshi.gov.al/ai-dhe-te-drejtat-e-njeriut-akshi-ekostistem-i-sigurt-dhe-i-harmonizuar-me-standardet-e-be-se/"
+ },
+ "al-akshi-ai-search": {
+  "url": "https://akshi.gov.al/?s=inteligjenca+artificiale",
+  "archive_url": "https://web.archive.org/web/20261017013231/https://akshi.gov.al/?s=inteligjenca+artificiale"
+ },
+ "by-mpt-ai-forum": {
+  "url": "https://www.mpt.gov.by/ru/bolee-300-specialistov-iz-5-stran-sobralis-na-mezhdunarodnom-forume-po-ii-v-nan-belarusi",
+  "archive_url": "https://web.archive.org/web/20261017013343/https://www.mpt.gov.by/ru/bolee-300-specialistov-iz-5-stran-sobralis-na-mezhdunarodnom-forume-po-ii-v-nan-belarusi"
+ },
+ "kg-24kg-ai-centre": {
+  "url": "https://24.kg/article/363327",
+  "archive_url": "https://web.archive.org/web/20261017013516/https://24.kg/article/363327"
+ },
+ "kg-24kg-ai-ethics": {
+  "url": "https://24.kg/article/390935",
+  "archive_url": "https://web.archive.org/web/20261017013644/https://24.kg/article/390935"
+ },
+ "kg-24kg-ai-risk": {
+  "url": "https://24.kg/article/343843",
+  "archive_url": "https://web.archive.org/web/20261017013756/https://24.kg/article/343843"
+ },
+ "ba-council-ministers": {
+  "url": "https://www.vijeceministara.gov.ba/",
+  "archive_url": "https://web.archive.org/web/20261017013904/https://www.vijeceministara.gov.ba/hr"
+ },
+ "ad-govern-digital": {
+  "url": "https://www.govern.ad/ca/ministeris-i-secretaries-d-estat/ministeri-de-funcio-publica-i-transformacio-digital/andorra-digital",
+  "archive_url": "https://web.archive.org/web/20261017014000/https://www.govern.ad/ca/ministeris-i-secretaries-d-estat/ministeri-de-funcio-publica-i-transformacio-digital/andorra-digital"
+ },
+ "mc-gouv-numerique": {
+  "url": "https://www.gouv.mc/",
+  "archive_url": "https://web.archive.org/web/20261017014112/https://www.gouv.mc/"
+ },
+ "sm-gov-home": {
+  "url": "https://www.gov.sm/",
+  "archive_url": "https://web.archive.org/web/20261012105742/https://www.gov.sm/"
+ },
+ "tj-president-home": {
+  "url": "https://www.president.tj/",
+  "archive_url": "https://web.archive.org/web/20261001151838/https://www.president.tj/"
+ },
+ "tm-gov-home": {
+  "url": "https://turkmenistan.gov.tm/en",
+  "archive_url": "https://web.archive.org/web/20261017014238/https://turkmenistan.gov.tm/en"
+ },
+ "ge-imedi-digital-economy-2026": {
+  "url": "https://info.imedi.ge/en/economy/10426/georgian-economy-minister-georgias-digital-transformation-aims-to-create-opportunities-ensure-every-citizen-benefits-from-digital-economy",
+  "archive_url": "https://web.archive.org/web/20261017014339/https://imedi.ge/en/economy/10426/georgian-economy-minister-georgias-digital-transformation-aims-to-create-opportunities-ensure-every-citizen-benefits-from-digital-economy"
+ },
+ "mk-dzr-ai-audit": {
+  "url": "https://dzr.mk/sites/default/files/2025-08/Soopstenie_mediumi_Veshtacka_intelegencija_FINAL_pdf.pdf",
+  "archive_url": "https://web.archive.org/web/20261017014511/https://dzr.mk/sites/default/files/2025-08/Soopstenie_mediumi_Veshtacka_intelegencija_FINAL_pdf.pdf"
+ },
+ "me-undp-aila-2025": {
+  "url": "https://www.undp.org/cnr/node/523476",
+  "archive_url": "https://web.archive.org/web/20261017014633/https://www.undp.org/cnr/montenegro/publications/izvjestaj-o-procjeni-spremnosti-za-primjenu-vjestacke-inteligencije-aila"
+ },
+ "sk-infosk-ai-bill-2026": {
+  "url": "https://www.info.sk/sprava/281740/vlada-schvalila-dohlad-nad-umelou-inteligenciou-mirri-povedie-kontrolu-ai-a-zriadi-sandbox/",
+  "archive_url": "https://web.archive.org/web/20261017014820/https://www.info.sk/sprava/281740/vlada-schvalila-dohlad-nad-umelou-inteligenciou-mirri-povedie-kontrolu-ai-a-zriadi-sandbox/"
+ },
+ "sk-nrsr-ai-overview-2026": {
+  "url": "https://www.nrsr.sk/web/Dynamic/Download.aspx?DocID=596793",
+  "archive_url": "https://web.archive.org/web/20261017014909/https://www.nrsr.sk/web/Dynamic/Download.aspx?DocID=596793"
+ },
+ "si-gov-session-2026-03-05": {
+  "url": "https://www.gov.si/en/news/2026-03-05-193rd-regular-session-of-the-government-of-the-republic-of-slovenia/",
+  "archive_url": "https://web.archive.org/web/20261017014945/https://www.gov.si/en/news/2026-03-05-193rd-regular-session-of-the-government-of-the-republic-of-slovenia/"
+ },
+ "si-gov-novice-2026-03-05": {
+  "url": "https://www.gov.si/novice/2026-03-05-vlada-sprejela-nacionalno-strategijo-umetne-inteligence-do-2030-za-suvereno-in-zaupanja-vredno-ui/",
+  "archive_url": "https://web.archive.org/web/20261017015154/https://www.gov.si/novice/2026-03-05-vlada-sprejela-nacionalno-strategijo-umetne-inteligence-do-2030-za-suvereno-in-zaupanja-vredno-ui/"
+ },
+ "hr-mpudt-plan-2026-10": {
+  "url": "https://mpudt.gov.hr/vijesti-8/ministar-habijan-predstavio-nacionalni-plan-za-razvoj-umjetne-inteligencije-do-2032-godine-i-novosti-u-pravosudju/31137",
+  "archive_url": "https://web.archive.org/web/20261017015239/https://mpudt.gov.hr/vijesti-8/ministar-habijan-predstavio-nacionalni-plan-za-razvoj-umjetne-inteligencije-do-2032-godine-i-novosti-u-pravosudju/31137"
+ },
+ "lu-unilu-sandbox-configurator": {
+  "url": "https://www.uni.lu/snt-en/?p=24737",
+  "archive_url": "https://web.archive.org/web/20261017015404/https://www.uni.lu/snt-en/news/new-open-source-tool-accelerates-testing-for-trustworthy-artificial-intelligence/"
+ },
+ "bg-parliament-ai-bill": {
+  "url": "https://www.parliament.bg/bg/bills/ID/167569",
+  "archive_url": "https://web.archive.org/web/20261017015451/https://www.parliament.bg/bg/bills/ID/167569"
+ },
+ "ro-capital-ai-act": {
+  "url": "https://www.capital.ro/regulamentul-european-privind-ai-intra-in-aplicare-din-2-august-ancom-va-coordona-supravegherea-in-romania.html",
+  "archive_url": "https://web.archive.org/web/20261017015609/https://www.capital.ro/regulamentul-european-privind-ai-intra-in-aplicare-din-2-august-ancom-va-coordona-supravegherea-in-romania.html"
+ },
+ "ro-digi24-ai-act": {
+  "url": "https://www.digi24.ro/stiri/economie/din-august-2026-ai-act-devine-pe-deplin-aplicabil-in-ue-ce-trebuie-sa-stie-firmele-din-romania-si-ce-amenzi-risca-3714541",
+  "archive_url": "https://web.archive.org/web/20261017015701/https://www.digi24.ro/stiri/economie/din-august-2026-ai-act-devine-pe-deplin-aplicabil-in-ue-ce-trebuie-sa-stie-firmele-din-romania-si-ce-amenzi-risca-3714541"
+ },
+ "gr-kodiko-law-5321": {
+  "url": "https://www.kodiko.gr/nomothesia/document/1341611/nomos-5321-2026",
+  "archive_url": "https://web.archive.org/web/20261017015751/https://www.kodiko.gr/nomothesia/document/1341611/nomos-5321-2026"
+ },
+ "hu-njt-2025-75": {
+  "url": "https://njt.jog.gov.hu/jogszabaly/2025-75-00-00",
+  "archive_url": "https://web.archive.org/web/20261017015843/https://njt.jog.gov.hu/jogszabaly/2025-75-00-00"
+ },
+ "hu-mmit-declaration": {
+  "url": "https://sztnh.gov.hu/sw/static/file/Zaronyilatkozat_MMIT_20251215_C.pdf",
+  "archive_url": "https://web.archive.org/web/20260927101243/https://sztnh.gov.hu/sw/static/file/Zaronyilatkozat_MMIT_20251215_C.pdf"
+ },
+ "is-stjornarradid-action-plan-2025": {
+  "url": "https://www.stjornarradid.is/efst-a-baugi/frettir/stok-frett/2025/07/02/Verdmaetaskopun-og-velferd-leidarstef-i-fyrstu-adgerdaaaetluninni-um-gervigreind-/",
+  "archive_url": "https://web.archive.org/web/20260114072412/https://www.stjornarradid.is/efst-a-baugi/frettir/stok-frett/2025/07/02/Verdmaetaskopun-og-velferd-leidarstef-i-fyrstu-adgerdaaaetluninni-um-gervigreind-/"
+ },
+ "mt-mdia-strategy-2025": {
+  "url": "https://mdia.gov.mt/?p=7326",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ },
+ "li-asit-visit-2025": {
+  "url": "https://www.a-sit.at/wp-content/uploads/2025/11/VISIT-2025-1-6-LI-Clara-Guerra-VISIT-2025.pdf",
+  "archive_url": "https://web.archive.org/web/20260121224612/https://www.a-sit.at/wp-content/uploads/2025/11/VISIT-2025-1-6-LI-Clara-Guerra-VISIT-2025.pdf"
+ },
+ "recheck-lac-dl-2026": {
+  "url": "https://parlamericas.org/uploads/documents/Presentation-ArtificialIntelligence-DL-sp.pdf",
+  "archive_url": "https://web.archive.org/web/20260515200018/https://parlamericas.org/uploads/documents/Presentation-ArtificialIntelligence-DL-sp.pdf"
+ },
+ "ag-abs-ethical-ai": {
+  "url": "https://abstvradio.com/antigua-and-barbuda-explores-ethical-use-of-artificial-intelligence/",
+  "archive_url": "https://web.archive.org/web/20240816174044/https://abstvradio.com/antigua-and-barbuda-explores-ethical-use-of-artificial-intelligence/"
+ },
+ "bb-cbb-ai-policy": {
+  "url": "https://centralbank.org.bb/news/blog/the-future-of-ai-policy-lessons-for-barbados",
+  "archive_url": "https://web.archive.org/web/20261017020226/https://www.centralbank.org.bb/news/blog/the-future-of-ai-policy-lessons-for-barbados"
+ },
+ "bo-agetic-boletin-2026-06": {
+  "url": "https://agetic.gob.bo/sites/default/files/2026-06/Boleti%CC%81n%20de%20Prensa_4ta%20edici%C3%B3n_29%20de%20junio%202026_0.pdf",
+  "archive_url": "https://web.archive.org/web/20261017020401/https://agetic.gob.bo/sites/default/files/2026-06/Boleti%CC%81n%20de%20Prensa_4ta%20edici%C3%B3n_29%20de%20junio%202026_0.pdf"
+ },
+ "bo-correodelsur-senado": {
+  "url": "https://correodelsur.com/politica/20251023/senado-aprueba-proyecto-de-ley-para-regular-el-uso-de-inteligencia-artificial-en-bolivia.html",
+  "archive_url": "https://web.archive.org/web/20261004121120/https://correodelsur.com/politica/20251023/senado-aprueba-proyecto-de-ley-para-regular-el-uso-de-inteligencia-artificial-en-bolivia.html"
+ },
+ "bo-dpl-ley-178": {
+  "url": "https://dplnews.com/?p=293932",
+  "archive_url": "https://web.archive.org/web/20261017020441/https://dplnews.com/bolivia-avanza-regulacion-uso-inteligencia-artificial/"
+ },
+ "bs-ewnews-ai-law": {
+  "url": "https://ewnews.com/?p=204375",
+  "archive_url": "https://web.archive.org/web/20261017020620/https://ewnews.com/government-advances-digital-economy-push-with-national-id-ai-law-and-skills-drive/"
+ },
+ "bs-tribune-ilc": {
+  "url": "http://www.tribune242.com/news/2026/jun/10/minister-bahamas-ready-for-ai-age/",
+  "archive_url": "https://web.archive.org/web/20260616065331/https://www.tribune242.com/news/2026/jun/10/minister-bahamas-ready-for-ai-age/"
+ },
+ "bz-pr172-cabei": {
+  "url": "https://www.pressoffice.gov.bz/wp-content/uploads/2026/07/July-1-PR172-26-Belize-Advances-Strategic-Priorities-at-the-66th-Ordinary-Meeting-of-the-CABEI-Board-of-Governors.pdf",
+  "archive_url": "https://web.archive.org/web/20261017020710/https://www.pressoffice.gov.bz/wp-content/uploads/2026/07/July-1-PR172-26-Belize-Advances-Strategic-Priorities-at-the-66th-Ordinary-Meeting-of-the-CABEI-Board-of-Governors.pdf"
+ },
+ "cu-oecd-estrategia-ia": {
+  "url": "https://oecd.ai/en/dashboards/policy-initiatives/strategy-for-the-development-of-artificial-intelligence-in-cuba",
+  "archive_url": "https://web.archive.org/web/20261017020811/https://oecd.ai/en/dashboards/policy-initiatives/strategy-for-the-development-of-artificial-intelligence-in-cuba"
+ },
+ "do-enia-pdf": {
+  "url": "https://agendadigital.gob.do/wp-content/uploads/2023/10/Final_ENIA-Estrategia-Nacional-de-Inteligencia-Artificial-de-la-Republica-Dominicana-.pdf",
+  "archive_url": "https://web.archive.org/web/20261010094822/https://agendadigital.gob.do/wp-content/uploads/2023/10/Final_ENIA-Estrategia-Nacional-de-Inteligencia-Artificial-de-la-Republica-Dominicana-.pdf"
+ },
+ "gt-undp-aila": {
+  "url": "https://jointsdgfund.org/article/guatemala-advances-toward-inclusive-and-responsible-use-artificial-intelligence",
+  "archive_url": "https://web.archive.org/web/20260516053147/https://jointsdgfund.org/article/guatemala-advances-toward-inclusive-and-responsible-use-artificial-intelligence"
+ },
+ "gy-dpi-ally-2026": {
+  "url": "https://dpi.gov.gy/min-ally-says-digitalisation-data-centres-and-ai-central-to-guyanas-next-development-phase",
+  "archive_url": "https://web.archive.org/web/20260313175226/https://dpi.gov.gy/min-ally-says-digitalisation-data-centres-and-ai-central-to-guyanas-next-development-phase/"
+ },
+ "hn-dpl-bid-ia": {
+  "url": "https://dplnews.com/?p=319661",
+  "archive_url": "https://web.archive.org/web/20261017020937/https://dplnews.com/honduras-modernizara-el-estado-con-apoyo-de-la-inteligencia-artificial/"
+ },
+ "ht-nouvelliste-ayiti-ai": {
+  "url": "https://lenouvelliste.com/en/article/257613/haiti-hosts-inaugural-ayiti-ai-summit-on-artificial-intelligence",
+  "archive_url": "https://web.archive.org/web/20251024004227/https://lenouvelliste.com/en/article/257613/haiti-hosts-inaugural-ayiti-ai-summit-on-artificial-intelligence"
+ },
+ "jm-opm-task-force": {
+  "url": "https://opm.gov.jm/minister-wheatley-convenes-first-meeting-of-reconstituted-national-ai-task-force-sets-policy-and-legislative-deliverables/",
+  "archive_url": "https://web.archive.org/web/20261017021027/https://opm.gov.jm/minister-wheatley-convenes-first-meeting-of-reconstituted-national-ai-task-force-sets-policy-and-legislative-deliverables/"
+ },
+ "jm-jis-draft-policy": {
+  "url": "https://jis.gov.jm/ai-task-force-to-develop-draft-policy-by-november/",
+  "archive_url": "https://web.archive.org/web/20260606073638/https://jis.gov.jm/ai-task-force-to-develop-draft-policy-by-november/"
+ },
+ "pa-laestrella-decreto36": {
+  "url": "https://www.laestrella.com.pa/economia/panama-declara-las-tecnologias-criticas-como-prioridad-nacional-FG22241455",
+  "archive_url": "https://web.archive.org/web/20260608173224/https://www.laestrella.com.pa/economia/panama-declara-las-tecnologias-criticas-como-prioridad-nacional-FG22241455"
+ },
+ "pa-panamaamerica-agenda": {
+  "url": "https://www.panamaamerica.com.pa/sociedad/el-plan-de-panama-para-convertirse-en-el-hub-de-inteligencia-artificial-de-la-region",
+  "archive_url": "https://web.archive.org/web/20260731132909/https://www.panamaamerica.com.pa/sociedad/el-plan-de-panama-para-convertirse-en-el-hub-de-inteligencia-artificial-de-la-region"
+ },
+ "pa-mobiletime-ley": {
+  "url": "https://mobiletime.la/?p=818375",
+  "archive_url": "https://web.archive.org/web/20261017021215/https://mobiletime.la/noticias/31/07/2026/panama-ia-y-semiconductores/"
+ },
+ "py-ip-mitic-cumbre": {
+  "url": "https://www.ip.gov.py/ip/2026/06/26/mitic-presenta-avances-del-pais-en-inteligencia-artificial-en-cumbre-regional-sobre-etica-de-la-ia/",
+  "archive_url": "https://web.archive.org/web/20261017021346/https://www.ip.gov.py/ip/2026/06/26/mitic-presenta-avances-del-pais-en-inteligencia-artificial-en-cumbre-regional-sobre-etica-de-la-ia/"
+ },
+ "py-ultimahora-proyecto": {
+  "url": "https://www.ultimahora.com/proyecto-que-regula-la-inteligencia-artificial-ya-tuvo-entrada-en-el-senado",
+  "archive_url": "https://web.archive.org/web/20261017021546/https://www.ultimahora.com/proyecto-que-regula-la-inteligencia-artificial-ya-tuvo-entrada-en-el-senado"
+ },
+ "sr-devdiscourse-ram": {
+  "url": "https://www.devdiscourse.com/article/technology/3972480-suriname-takes-caribbean-lead-with-unescos-new-ai-readiness-review",
+  "archive_url": "https://web.archive.org/web/20260905091428/https://www.devdiscourse.com/article/technology/3972480-suriname-takes-caribbean-lead-with-unescos-new-ai-readiness-review"
+ },
+ "sv-ania-resolucion-2025": {
+  "url": "https://www.jurisprudencia.gob.sv/DocumentosBoveda/D/2/2020-2029/2025/08/10D107.PDF",
+  "archive_url": "https://web.archive.org/web/20260119164246/https://www.jurisprudencia.gob.sv/DocumentosBoveda/D/2/2020-2029/2025/08/10D107.PDF"
+ },
+ "sv-elmundo-vigencia": {
+  "url": "https://diario.elmundo.sv/politica/inicia-vigencia-de-ley-de-fomento-a-inteligencia-artificial-en-el-salvador",
+  "archive_url": "https://web.archive.org/web/20260920042919/https://diario.elmundo.sv/politica/inicia-vigencia-de-ley-de-fomento-a-inteligencia-artificial-en-el-salvador"
+ },
+ "tt-guardian-ram": {
+  "url": "https://guardian.co.tt/news/government-begins-next-phase-of-national-ai-assessment-6.2.2493221.396bdf4ff9",
+  "archive_url": "https://web.archive.org/web/20260117115035/https://www.guardian.co.tt/news/government-begins-next-phase-of-national-ai-assessment-6.2.2493221.396bdf4ff9"
+ },
+ "tt-uwi-validation": {
+  "url": "https://sta.uwi.edu/UWIToday/archive/march_2026/article8.asp",
+  "archive_url": "https://web.archive.org/web/20261017021829/https://sta.uwi.edu/UWIToday/archive/march_2026/article8.asp"
+ },
+ "vc-iwn-ulp-ai": {
+  "url": "https://www.iwnsvg.com/2025/09/18/ulp-to-detail-ai-policy-in-election-manifesto/",
+  "archive_url": "https://web.archive.org/web/20251012181222/https://www.iwnsvg.com/2025/09/18/ulp-to-detail-ai-policy-in-election-manifesto/"
+ },
+ "ve-dpl-primera-discusion": {
+  "url": "https://dplnews.com/?p=256916",
+  "archive_url": "https://web.archive.org/web/20261017021920/https://dplnews.com/venezuela-an-aprueba-en-primera-discusion-proyecto-de-ley-de-inteligencia-artificial/"
+ },
+ "ve-dpl-delcy-leyes": {
+  "url": "https://dplnews.com/?p=301437",
+  "archive_url": "https://web.archive.org/web/20261017022046/https://dplnews.com/delcy-rodriguez-impulsa-leyes-sobre-ia-y-ciberseguridad-venezuela/"
+ },
+ "ve-dpl-plan-ia": {
+  "url": "https://dplnews.com/venezuela-gobierno-nacional-avanza-en-plan-de-ia-para-el-desarrollo-productivo-del-pais/",
+  "archive_url": "https://web.archive.org/web/20261017022133/https://dplnews.com/venezuela-gobierno-nacional-avanza-en-plan-de-ia-para-el-desarrollo-productivo-del-pais/"
+ },
+ "ve-kpmg-etica": {
+  "url": "https://assets.kpmg.com/content/dam/kpmgsites/ve/pdf/2026/5/Venezuela%20y%20la%20%C3%89tica%20de%20la%20Inteligencia%20Artificial.pdf",
+  "archive_url": "https://web.archive.org/web/20260516075143/https://assets.kpmg.com/content/dam/kpmgsites/ve/pdf/2026/5/Venezuela%20y%20la%20%C3%89tica%20de%20la%20Inteligencia%20Artificial.pdf"
+ },
+ "recheck-lac-ctu-caitf-2026": {
+  "url": "https://ctu.int/wp-content/uploads/2026/07/CAITF-Final-Report.pdf",
+  "archive_url": "https://web.archive.org/web/20261017022216/https://ctu.int/wp-content/uploads/2026/07/CAITF-Final-Report.pdf"
+ },
+ "pa-gaceta-30592a": {
+  "url": "https://www.gacetaoficial.gob.pa/storage/gacetas/2026/08/30592_A/GacetaNo_30592a_20260818.pdf",
+  "archive_url": "https://web.archive.org/web/20261017022256/https://www.gacetaoficial.gob.pa/storage/gacetas/2026/08/30592_A/GacetaNo_30592a_20260818.pdf"
+ },
+ "pa-senacyt-estrategia-ia": {
+  "url": "https://www.observatorioia.com.pa/wp-content/uploads/2026/07/iapanama_2026-2036_download.pdf",
+  "archive_url": "https://web.archive.org/web/20261017022408/https://www.observatorioia.com.pa/wp-content/uploads/2026/07/iapanama_2026-2036_download.pdf"
+ },
+ "ve-lega-anteproyecto-ia": {
+  "url": "https://lega.law/perspectivas-lega/notas-anteproyecto-ley-ia/",
+  "archive_url": "https://web.archive.org/web/20261017022447/https://lega.law/perspectivas-lega/notas-anteproyecto-ley-ia/"
+ },
+ "ve-mincyt-ecosistema-digital": {
+  "url": "https://mincyt.gob.ve/venezuela-fortalece-ecosistema-digital-seguro-para-la-soberania-tecnologica/",
+  "archive_url": "https://web.archive.org/web/20261017022533/https://mincyt.gob.ve/venezuela-fortalece-ecosistema-digital-seguro-para-la-soberania-tecnologica/"
+ },
+ "dm-cardtp-home": {
+  "url": "https://cardtp.gov.dm",
+  "archive_url": "https://web.archive.org/web/20260608074509/https://cardtp.gov.dm/"
+ },
+ "gd-gov-ict": {
+  "url": "https://www.gov.gd/ict",
+  "archive_url": "https://web.archive.org/web/20260316152527/https://www.gov.gd/ict"
+ },
+ "gd-nowgrenada-redhead": {
+  "url": "https://nowgrenada.com/2026/06/hon-ron-redhead-appointed-minister-for-digital-transformation/",
+  "archive_url": "https://web.archive.org/web/20261017022908/https://nowgrenada.com/2026/06/hon-ron-redhead-appointed-minister-for-digital-transformation/"
+ },
+ "gd-dta-bill-2026": {
+  "url": "https://grenadaparliament.gd/wp-content/uploads/2026/07/Digital-Transformation-Agency-Bill-2026-1.pdf",
+  "archive_url": "https://web.archive.org/web/20261017023036/https://grenadaparliament.gd/wp-content/uploads/2026/07/Digital-Transformation-Agency-Bill-2026-1.pdf"
+ },
+ "kn-sknis-hanley-2026": {
+  "url": "https://sknis.gov.kn/2026/09/27/the-next-great-divide-must-not-be-digital-acting-prime-minister-hanley-calls-for-inclusive-ai-future/",
+  "archive_url": "https://web.archive.org/web/20261017023109/https://sknis.gov.kn/2026/09/27/the-next-great-divide-must-not-be-digital-acting-prime-minister-hanley-calls-for-inclusive-ai-future/"
+ },
+ "lc-stluciatimes-cxc-2026": {
+  "url": "https://stluciatimes.com/177560/2026/01/education-minister-addresses-ai-use-in-cxc-sbas/",
+  "archive_url": "https://web.archive.org/web/20261017023201/https://stluciatimes.com/177560/2026/01/education-minister-addresses-ai-use-in-cxc-sbas/"
+ },
+ "lc-stluciatimes-dependence-2026": {
+  "url": "https://stluciatimes.com/184765/2026/10/education-minister-wants-to-curb-ai-dependence-in-schools/",
+  "archive_url": "https://web.archive.org/web/20261017023329/https://stluciatimes.com/184765/2026/10/education-minister-wants-to-curb-ai-dependence-in-schools/"
+ },
+ "bb-barbadostoday-digital-2030": {
+  "url": "https://barbadostoday.bb/2026/03/11/minister-unveils-188m-plan-to-build-world-class-digital-economy-by-2030/",
+  "archive_url": "https://web.archive.org/web/20261017023512/https://barbadostoday.bb/2026/03/11/minister-unveils-188m-plan-to-build-world-class-digital-economy-by-2030/"
+ },
+ "ht-conatel-wsis-2026": {
+  "url": "https://conatel.gouv.ht/node/666",
+  "archive_url": "https://web.archive.org/web/20261017023557/https://conatel.gouv.ht/node/666"
+ },
+ "ht-brh-ia": {
+  "url": "https://www.brh.ht/lintelligence-artificielle-en-haiti-pourquoi-la-banque-de-la-republique-dhaiti-sy-interesse/",
+  "archive_url": "https://web.archive.org/web/20261017023733/https://www.brh.ht/lintelligence-artificielle-en-haiti-pourquoi-la-banque-de-la-republique-dhaiti-sy-interesse/"
+ },
+ "do-senado-fusion-2026": {
+  "url": "https://www.senadord.gob.do/comision-de-senadores-acuerda-fusionar-proyectos-de-ley-que-buscan-regular-el-uso-de-la-inteligencia-artificial/",
+  "archive_url": "https://web.archive.org/web/20261017023825/https://www.senadord.gob.do/comision-de-senadores-acuerda-fusionar-proyectos-de-ley-que-buscan-regular-el-uso-de-la-inteligencia-artificial/"
+ },
+ "bo-bcn-regulacion-ia-2026": {
+  "url": "https://obtienearchivo.bcn.cl/obtienearchivo?id=repositorio%2F10221%2F38861%2F1%2FBCN_Regulacion_IA_en_Sudamerica_sept_2026.pdf",
+  "archive_url": "https://web.archive.org/web/20261017023918/https://obtienearchivo.bcn.cl/obtienearchivo?id=repositorio%2F10221%2F38861%2F1%2FBCN_Regulacion_IA_en_Sudamerica_sept_2026.pdf"
+ },
+ "af-mcit-home": {
+  "url": "https://mcit.gov.af",
+  "archive_url": "https://web.archive.org/web/20261012151315/http://www.mcit.gov.af/"
+ },
+ "bt-govtech-ais-2025": {
+  "url": "https://tech.gov.bt/wp-content/uploads/2025/10/National-AI-Strategy-2025.pdf",
+  "archive_url": "https://web.archive.org/web/20261017024011/https://tech.gov.bt/wp-content/uploads/2025/10/National-AI-Strategy-2025.pdf"
+ },
+ "dj-escwa-2026": {
+  "url": "https://www.unescwa.org/news/developing-national-artificial-intelligence-strategy-djibouti",
+  "archive_url": "https://web.archive.org/web/20261017024139/https://www.unescwa.org/news/developing-national-artificial-intelligence-strategy-djibouti"
+ },
+ "dj-wearetech-2026": {
+  "url": "https://www.wearetech.africa/fr/fils/actualites/tech/djibouti-se-dote-d-une-strategie-d-ia-sur-fond-de-preparation-encore-limitee",
+  "archive_url": "https://web.archive.org/web/20261017024322/https://www.wearetech.africa/fr/fils/actualites/tech/djibouti-se-dote-d-une-strategie-d-ia-sur-fond-de-preparation-encore-limitee"
+ },
+ "dz-radioalgerie-2024": {
+  "url": "https://news.radioalgerie.dz/fr/node/56441",
+  "archive_url": "https://web.archive.org/web/20260612150345/https://news.radioalgerie.dz/fr/node/56441"
+ },
+ "dz-radioalgerie-council-2024": {
+  "url": "https://news.radioalgerie.dz/ar/node/48177",
+  "archive_url": "https://web.archive.org/web/20261017024509/https://news.radioalgerie.dz/ar/node/48177"
+ },
+ "dz-elbilad-2026": {
+  "url": "https://www.elbilad.net/s@3omfelar145225",
+  "archive_url": "https://web.archive.org/web/20261017024708/https://www.elbilad.net/national/%D9%88%D8%B2%D9%8A%D8%B1-%D8%A7%D9%84%D8%AA%D8%B9%D9%84%D9%8A%D9%85-%D8%A7%D9%84%D8%B9%D8%A7%D9%84%D9%8A-%D9%8A%D8%AA%D8%B1%D8%A3%D8%B3-%D8%A3%D8%B9%D9%85%D8%A7%D9%84-%D8%A7%D9%84%D8%A7%D8%AC%D8%AA%D9%85%D8%A7%D8%B9-%D8%A7%D9%84%D8%AA%D9%86%D8%B3%D9%8A%D9%82%D9%8A-%D8%A7%D9%84%D8%A3%D9%88%D9%84-%D8%A7%D9%84%D9%85%D8%AE%D8%B5%D8%B5-%D9%84%D8%AA%D9%86%D9%81%D9%8A%D8%B0-%D8%A7%D9%84%D8%AE%D8%B7%D8%A9-%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D8%B1%D8%A7%D8%AA%D8%AC%D9%8A%D8%A9-%D8%A7%D9%84%D9%88%D8%B7%D9%86%D9%8A%D8%A9-%D9%81%D9%8A-%D9%85%D8%AC%D8%A7%D9%84-%D8%A7%D9%84%D8%B0%D9%83%D8%A7%D8%A1-%D8%A7%D9%84%D8%A7%D8%B5%D8%B7%D9%86%D8%A7%D8%B9%D9%8A-145225"
+ },
+ "iq-cmc-draft-2026": {
+  "url": "https://cmc.iq/wp-content/uploads/2026/09/%D8%A7%D9%84%D9%84%D8%A7%D9%8A%D9%94%D8%AD%D8%A9-%D8%A7%D9%84%D8%AA%D9%86%D8%B8%D9%8A%D9%85%D9%8A%D8%A9-%D9%84%D8%AE%D8%AF%D9%85%D8%A7%D8%AA-%D8%A7%D9%84%D8%B0%D9%83%D8%A7%D8%A1-%D8%A7%D9%84%D8%A7%D8%B5%D8%B7%D9%86%D8%A7%D8%B9%D9%8A-%D9%81%D9%8A-%D8%AC%D9%85%D9%87%D9%88%D8%B1%D9%8A%D8%A9-%D8%A7%D9%84%D8%B9%D8%B1%D8%A7%D9%82%D9%8A-%D8%A7%D9%84%D9%89-%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D8%B4%D8%A7%D8%B1%D8%A9-%D8%A7%D9%84%D8%B9%D8%A7%D9%85%D8%A9-1287.pdf",
+  "archive_url": "https://web.archive.org/web/20261003222805/https://cmc.iq/wp-content/uploads/2026/09/%D8%A7%D9%84%D9%84%D8%A7%D9%8A%D9%94%D8%AD%D8%A9-%D8%A7%D9%84%D8%AA%D9%86%D8%B8%D9%8A%D9%85%D9%8A%D8%A9-%D9%84%D8%AE%D8%AF%D9%85%D8%A7%D8%AA-%D8%A7%D9%84%D8%B0%D9%83%D8%A7%D8%A1-%D8%A7%D9%84%D8%A7%D8%B5%D8%B7%D9%86%D8%A7%D8%B9%D9%8A-%D9%81%D9%8A-%D8%AC%D9%85%D9%87%D9%88%D8%B1%D9%8A%D8%A9-%D8%A7%D9%84%D8%B9%D8%B1%D8%A7%D9%82%D9%8A-%D8%A7%D9%84%D9%89-%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D8%B4%D8%A7%D8%B1%D8%A9-%D8%A7%D9%84%D8%B9%D8%A7%D9%85%D8%A9-1287.pdf"
+ },
+ "iq-businessnews-cmc-2026": {
+  "url": "https://www.iraq-businessnews.com/?p=248610",
+  "archive_url": "https://web.archive.org/web/20261017024907/https://www.iraq-businessnews.com/2026/09/28/public-consultation-opens-on-iraqs-draft-ai-regulation/"
+ },
+ "iq-businessnews-planning-2026": {
+  "url": "https://www.iraq-businessnews.com/2026/04/26/ai-strategy-meeting-at-iraqs-ministry-of-planning/",
+  "archive_url": "https://web.archive.org/web/20260427051852/https://www.iraq-businessnews.com/2026/04/26/ai-strategy-meeting-at-iraqs-ministry-of-planning/"
+ },
+ "kw-undp-aila-2026": {
+  "url": "https://www.undp.org/kuwait/press-releases/kuwait-assesses-ai-opportunities-and-priorities",
+  "archive_url": "https://web.archive.org/web/20261017024959/https://www.undp.org/kuwait/press-releases/kuwait-assesses-ai-opportunities-and-priorities"
+ },
+ "lb-lbc-leap-2025": {
+  "url": "https://lbcgroup.tv/news/news-bulletin-reports/848500/a-leap-into-the-future-lebanon-begins-five-year-ai-transformation-plan/en",
+  "archive_url": "https://web.archive.org/web/20261017025046/https://www.lbcgroup.tv/news/news-bulletin-reports/848500/a-leap-into-the-future-lebanon-begins-five-year-ai-transformation-plan/en"
+ },
+ "lb-regulations-ai-2026": {
+  "url": "https://regulations.ai/regulations/RAI-LB-NA-BMITAXX-2025",
+  "archive_url": "https://web.archive.org/web/20261017025144/https://regulations.ai/regulations/RAI-LB-NA-BMITAXX-2025"
+ },
+ "ly-escwa-2025": {
+  "url": "https://www.unescwa.org/news/national-artificial-intelligence-strategy-libya",
+  "archive_url": "https://web.archive.org/web/20260115124609/https://www.unescwa.org/news/national-artificial-intelligence-strategy-libya"
+ },
+ "ly-smex-2026": {
+  "url": "https://smex.org/libyas-new-ai-strategy-celebrates-participation-yet-was-built-without-it/",
+  "archive_url": "https://web.archive.org/web/20260811194150/https://smex.org/libyas-new-ai-strategy-celebrates-participation-yet-was-built-without-it/"
+ },
+ "ly-oecd-2026": {
+  "url": "https://oecd.ai/en/dashboards/national/libya",
+  "archive_url": "https://web.archive.org/web/20261017025231/https://oecd.ai/en/dashboards/national/libya"
+ },
+ "mv-presidency-2024": {
+  "url": "https://presidency.gov.mv/Press/Article/31907",
+  "archive_url": "https://web.archive.org/web/20260405185309/https://presidency.gov.mv/Press/Article/31907"
+ },
+ "mv-seemv-ram-2025": {
+  "url": "https://see.mv/97862",
+  "archive_url": "https://web.archive.org/web/20261017025410/https://see.mv/97862"
+ },
+ "mv-regulations-ai-2026": {
+  "url": "https://regulations.ai/regulations/RAI-MV-NA-SUMMARY-2026",
+  "archive_url": "https://web.archive.org/web/20261017025458/https://regulations.ai/regulations/RAI-MV-NA-SUMMARY-2026"
+ },
+ "np-mocit-ai-policy-2025": {
+  "url": "https://giwmscdnone.gov.np/media/pdf_upload/National%20AI%20Policy-Final_uxc94vg.pdf",
+  "archive_url": "https://web.archive.org/web/20261004121057/https://giwmscdnone.gov.np/media/pdf_upload/National%20AI%20Policy-Final_uxc94vg.pdf"
+ },
+ "np-kathmandupost-2025": {
+  "url": "https://kathmandupost.com/money/2025/08/16/nepal-rolls-out-ambitious-ai-policy",
+  "archive_url": "https://web.archive.org/web/20261017025639/https://kathmandupost.com/money/2025/08/16/nepal-rolls-out-ambitious-ai-policy"
+ },
+ "np-ekantipur-2025-11": {
+  "url": "https://ekantipur.com/business/2025/11/14/en/ai-excellence-center-to-be-established-after-ai-center-37-02.html",
+  "archive_url": "https://web.archive.org/web/20261017025730/https://ekantipur.com/business/2025/11/14/en/ai-excellence-center-to-be-established-after-ai-center-37-02.html"
+ },
+ "om-mtcit-policy-2025": {
+  "url": "https://qanoon.om/p/2025/mtcit20259901/",
+  "archive_url": "https://web.archive.org/web/20261017025818/https://qanoon.om/p/2025/mtcit20259901/"
+ },
+ "om-ona-ram-2026": {
+  "url": "https://www.omannews.gov.om/topics/en/79/show/127042/",
+  "archive_url": "https://web.archive.org/web/20261017025907/https://www.omannews.gov.om/topics/en/79/show/127042/"
+ },
+ "sy-sana-2026": {
+  "url": "https://sana.sy/fr/syrie/2314005/",
+  "archive_url": "https://web.archive.org/web/20261017030009/https://sana.sy/fr/syrie/2314005/"
+ },
+ "ye-itweb-2026": {
+  "url": "https://itweb.africa/article/yemen-enlists-egyptian-expertise-to-revamp-telecoms/nWJad7bNwGk7bjO1",
+  "archive_url": "https://web.archive.org/web/20260516045932/https://itweb.africa/article/yemen-enlists-egyptian-expertise-to-revamp-telecoms/nWJad7bNwGk7bjO1"
+ },
+ "ye-ust-2025": {
+  "url": "https://journals.ust.edu/index.php/JST/article/view/2908",
+  "archive_url": "https://web.archive.org/web/20261017030107/https://journals.ust.edu/index.php/JST/article/view/2908"
+ },
+ "lb-mitai-strategy-2032": {
+  "url": "https://www.mitai.gov.lb/documents/National_AI_Strategy_for_Lebanon_2032.pdf",
+  "archive_url": "https://web.archive.org/web/20261017030154/https://www.mitai.gov.lb/documents/National_AI_Strategy_for_Lebanon_2032.pdf"
+ },
+ "np-risingnepal-2025-11": {
+  "url": "https://risingnepaldaily.com/news/70926",
+  "archive_url": "https://web.archive.org/web/20261017031632/https://risingnepaldaily.com/news/70926"
+ },
+ "np-techpana-2025-11": {
+  "url": "https://techpana.com/2025/153947/national-ai-center-established-at-ministry-of-communication",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ },
+ "np-lawcommission-ai-policy": {
+  "url": "https://lawcommission.gov.np/content/13606/national-artificial-intelligence--ai--policy--2082/",
+  "archive_url": "https://web.archive.org/web/20261017031831/https://lawcommission.gov.np/content/13606/national-artificial-intelligence--ai--policy--2082/"
+ },
+ "om-mtcit-policy-page": {
+  "url": "https://www.mtcit.gov.om/library-3/legislations-policies-8/policies-73/general-policy-for-the-safe-and-ethical-use-of-artificial-intelligence-systems-291",
+  "archive_url": "https://web.archive.org/web/20260607135435/https://mtcit.gov.om/library-3/legislations-policies-8/policies-73/general-policy-for-the-safe-and-ethical-use-of-artificial-intelligence-systems-291"
+ },
+ "om-mtcit-ai-experts-committee": {
+  "url": "https://mtcit.gov.om/ar/4/12/91/1499",
+  "archive_url": "https://web.archive.org/web/20261017031923/https://mtcit.gov.om/ar/4/12/91/1499"
+ },
+ "ao-aipolicy-2026": {
+  "url": "https://www.aipolicy.africa/country-profiles/angola",
+  "archive_url": "https://web.archive.org/web/20261011075038/https://www.aipolicy.africa/country-profiles/angola"
+ },
+ "bf-aipolicy-2026": {
+  "url": "https://www.aipolicy.africa/country-profiles/burkina-faso",
+  "archive_url": "https://web.archive.org/web/20261017032013/https://www.aipolicy.africa/country-profiles/burkina-faso"
+ },
+ "bi-aipolicy-2026": {
+  "url": "https://www.aipolicy.africa/country-profiles/burundi",
+  "archive_url": "https://web.archive.org/web/20261017032054/https://www.aipolicy.africa/country-profiles/burundi"
+ },
+ "bj-aipolicy-2026": {
+  "url": "https://www.aipolicy.africa/country-profiles/benin",
+  "archive_url": "https://web.archive.org/web/20261017032137/https://www.aipolicy.africa/country-profiles/benin"
+ },
+ "bw-aipolicy-2026": {
+  "url": "https://www.aipolicy.africa/country-profiles/botswana",
+  "archive_url": "https://web.archive.org/web/20261017032305/https://www.aipolicy.africa/country-profiles/botswana"
+ },
+ "cd-aipolicy-2026": {
+  "url": "https://www.aipolicy.africa/country-profiles/democratic-republic-of-the-congo",
+  "archive_url": "https://web.archive.org/web/20261017032350/https://www.aipolicy.africa/country-profiles/democratic-republic-of-the-congo"
+ },
+ "cf-aipolicy-2026": {
+  "url": "https://www.aipolicy.africa/country-profiles/central-african-republic",
+  "archive_url": "https://web.archive.org/web/20261017032432/https://www.aipolicy.africa/country-profiles/central-african-republic"
+ },
+ "cg-aipolicy-2026": {
+  "url": "https://www.aipolicy.africa/country-profiles/congo",
+  "archive_url": "https://web.archive.org/web/20261017032513/https://www.aipolicy.africa/country-profiles/congo"
+ },
+ "cm-aipolicy-2026": {
+  "url": "https://www.aipolicy.africa/country-profiles/cameroon",
+  "archive_url": "https://web.archive.org/web/20261017032559/https://www.aipolicy.africa/country-profiles/cameroon"
+ },
+ "cv-aipolicy-2026": {
+  "url": "https://www.aipolicy.africa/country-profiles/cabo-verde",
+  "archive_url": "https://web.archive.org/web/20261017032721/https://www.aipolicy.africa/country-profiles/cabo-verde"
+ },
+ "er-aipolicy-2026": {
+  "url": "https://www.aipolicy.africa/country-profiles/eritrea",
+  "archive_url": "https://web.archive.org/web/20261017032808/https://www.aipolicy.africa/country-profiles/eritrea"
+ },
+ "ga-aipolicy-2026": {
+  "url": "https://www.aipolicy.africa/country-profiles/gabon",
+  "archive_url": "https://web.archive.org/web/20261017032851/https://www.aipolicy.africa/country-profiles/gabon"
+ },
+ "gm-aipolicy-2026": {
+  "url": "https://www.aipolicy.africa/country-profiles/gambia",
+  "archive_url": "https://web.archive.org/web/20261017032933/https://www.aipolicy.africa/country-profiles/gambia"
+ },
+ "gn-aipolicy-2026": {
+  "url": "https://www.aipolicy.africa/country-profiles/guinea",
+  "archive_url": "https://web.archive.org/web/20261017033018/https://www.aipolicy.africa/country-profiles/guinea"
+ },
+ "gq-aipolicy-2026": {
+  "url": "https://www.aipolicy.africa/country-profiles/equatorial-guinea",
+  "archive_url": "https://web.archive.org/web/20261017033101/https://www.aipolicy.africa/country-profiles/equatorial-guinea"
+ },
+ "gw-aipolicy-2026": {
+  "url": "https://www.aipolicy.africa/country-profiles/guinea-bissau",
+  "archive_url": "https://web.archive.org/web/20261017033145/https://www.aipolicy.africa/country-profiles/guinea-bissau"
+ },
+ "km-aipolicy-2026": {
+  "url": "https://www.aipolicy.africa/country-profiles/comoros",
+  "archive_url": "https://web.archive.org/web/20261017033329/https://www.aipolicy.africa/country-profiles/comoros"
+ },
+ "lr-aipolicy-2026": {
+  "url": "https://www.aipolicy.africa/country-profiles/liberia",
+  "archive_url": "https://web.archive.org/web/20261017033411/https://www.aipolicy.africa/country-profiles/liberia"
+ },
+ "ao-allafrica-unesco-ram-2026": {
+  "url": "https://fr.allafrica.com/stories/202603050324.html",
+  "archive_url": "https://web.archive.org/web/20260305113820/https://fr.allafrica.com/stories/202603050324.html"
+ },
+ "bi-digitalbusiness-2026": {
+  "url": "https://www.digitalbusiness.africa/burundi-la-strategie-nationale-de-lintelligence-artificielle-validee-axes-et-objectifs/",
+  "archive_url": "https://web.archive.org/web/20260509201254/https://www.digitalbusiness.africa/burundi-la-strategie-nationale-de-lintelligence-artificielle-validee-axes-et-objectifs/"
+ },
+ "bj-sniam-2023": {
+  "url": "https://asin.bj/doc/13/download",
+  "archive_url": "https://web.archive.org/web/20250922231525/https://asin.bj/doc/13/download"
+ },
+ "bw-dailynews-ai-policy-2025": {
+  "url": "https://dailynews.gov.bw/news-detail/88106",
+  "archive_url": "https://web.archive.org/web/20261017033508/https://dailynews.gov.bw/news-detail/88106"
+ },
+ "bw-dailynews-ram-2025": {
+  "url": "https://dailynews.gov.bw/news-detail/86364",
+  "archive_url": "https://web.archive.org/web/20261017033609/https://dailynews.gov.bw/news-detail/86364"
+ },
+ "cd-mediacongo-2026": {
+  "url": "https://www.mediacongo.net/article-actualite-166058_economie_numerique_les_participants_a_l_atelier_de_validation_technique_approuvent_le_projet_de_la_strategie_nationale_de_l_intelligence_artificielle.html",
+  "archive_url": "https://web.archive.org/web/20261017033714/https://www.mediacongo.net/article-actualite-166058_economie_numerique_les_participants_a_l_atelier_de_validation_technique_approuvent_le_projet_de_la_strategie_nationale_de_l_intelligence_artificielle.html"
+ },
+ "cg-allafrica-2026": {
+  "url": "https://fr.allafrica.com/stories/202605070096.html",
+  "archive_url": "https://web.archive.org/web/20261017033815/https://fr.allafrica.com/stories/202605070096.html"
+ },
+ "cv-governo-economiadigital-2026": {
+  "url": "https://www.governo.cv/wp-content/uploads/2026/04/economiadigital.pdf",
+  "archive_url": "https://web.archive.org/web/20261017033907/https://www.governo.cv/wp-content/uploads/2026/04/economiadigital.pdf"
+ },
+ "ga-osiris-2026": {
+  "url": "https://www.osiris.sn/le-gabon-lance-les-travaux-de-sa-future-strategie-nationale-d-ia.html",
+  "archive_url": "https://web.archive.org/web/20261017034035/https://www.osiris.sn/le-gabon-lance-les-travaux-de-sa-future-strategie-nationale-d-ia.html"
+ },
+ "gn-ecofin-2025": {
+  "url": "https://www.ecofinagency.com/news-digital/2212-51603-guinea-validates-10-year-national-ai-roadmap",
+  "archive_url": "https://web.archive.org/web/20260215200842/https://www.ecofinagency.com/news-digital/2212-51603-guinea-validates-10-year-national-ai-roadmap"
+ },
+ "gq-unesco-malabo-2026": {
+  "url": "https://www.unesco.org/en/articles/itu-and-unesco-strengthen-collaboration-green-digital-transformation-equatorial-guinea",
+  "archive_url": "https://web.archive.org/web/20261017034123/https://www.unesco.org/en/articles/itu-and-unesco-strengthen-collaboration-green-digital-transformation-equatorial-guinea"
+ },
+ "lr-allafrica-summit-2026": {
+  "url": "https://allafrica.com/stories/202607220299.html",
+  "archive_url": "https://web.archive.org/web/20261017034212/https://allafrica.com/stories/202607220299.html"
+ },
+ "bf-dmf-roadmap-2026": {
+  "url": "https://droitmediasfinance.com/index.php/actualites/droit-tech-fintech/1304-burkina-faso-un-atelier-pour-valider-la-feuille-de-route-nationale-de-lintelligence-artificielle-a-lhorizon-2030-a-la-veille-du-salon-uemoa-des-professionnels-du-numerique",
+  "archive_url": "https://web.archive.org/web/20261017034306/https://droitmediasfinance.com/index.php/actualites/droit-tech-fintech/1304-burkina-faso-un-atelier-pour-valider-la-feuille-de-route-nationale-de-lintelligence-artificielle-a-lhorizon-2030-a-la-veille-du-salon-uemoa-des-professionnels-du-numerique"
+ },
+ "cd-osiris-academie-2025": {
+  "url": "https://www.osiris.sn/rdc-vers-la-creation-d-une-academie-nationale-dediee-a-l-intelligence.html",
+  "archive_url": "https://web.archive.org/web/20261017034436/https://www.osiris.sn/rdc-vers-la-creation-d-une-academie-nationale-dediee-a-l-intelligence.html"
+ },
+ "cm-osiris-snia-2025": {
+  "url": "https://osiris.sn/le-cameroun-developpe-une-strategie-nationale-de-l-ia-adossee-a-sept-piliers.html",
+  "archive_url": "https://web.archive.org/web/20261017034523/https://osiris.sn/le-cameroun-developpe-une-strategie-nationale-de-l-ia-adossee-a-sept-piliers.html"
+ },
+ "cf-osiris-centre-2025": {
+  "url": "https://www.osiris.sn/la-republique-centrafricaine-prepare-la-creation-d-un-centre-d-excellence-en-ia.html",
+  "archive_url": "https://web.archive.org/web/20261017034610/https://www.osiris.sn/la-republique-centrafricaine-prepare-la-creation-d-un-centre-d-excellence-en-ia.html"
+ },
+ "ls-lena-ai-policy-2025": {
+  "url": "https://www.lena.gov.ls/lesothos-ai-vision-takes-center-stage-at-ministerial-roundtable-in-barcelona/",
+  "archive_url": "https://web.archive.org/web/20260430132637/https://www.lena.gov.ls/lesothos-ai-vision-takes-center-stage-at-ministerial-roundtable-in-barcelona/"
+ },
+ "mg-osiris-institut-2024": {
+  "url": "https://www.osiris.sn/madagascar-se-projette-en-hub-international-d-intelligence-artificielle.html",
+  "archive_url": "https://web.archive.org/web/20261017034658/https://www.osiris.sn/madagascar-se-projette-en-hub-international-d-intelligence-artificielle.html"
+ },
+ "ml-osiris-ciar-2026": {
+  "url": "https://osiris.sn/mali-un-centre-public-d-intelligence-artificielle-inaugure-pres-de-bamako.html",
+  "archive_url": "https://web.archive.org/web/20261017034817/https://osiris.sn/mali-un-centre-public-d-intelligence-artificielle-inaugure-pres-de-bamako.html"
+ },
+ "mr-ai-strategy-draft-2024": {
+  "url": "https://www.mtnima.gov.mr/wp-content/uploads/2024/04/Mauritani-AI-Strategy-Draft-April-2024_.pdf",
+  "archive_url": "https://web.archive.org/web/20261017034956/https://www.mtnima.gov.mr/wp-content/uploads/2024/04/Mauritani-AI-Strategy-Draft-April-2024_.pdf"
+ },
+ "mw-dmap-ai-2026": {
+  "url": "https://dmap.pppc.mw/news/malawi-showcases-digital-transformation-and-ai-agenda-at-regional-digital-forum",
+  "archive_url": "https://web.archive.org/web/20261017035037/https://dmap.pppc.mw/news/malawi-showcases-digital-transformation-and-ai-agenda-at-regional-digital-forum"
+ },
+ "na-brief-readiness-2025": {
+  "url": "https://thebrief.com.na/2025/08/policy-and-infrastructure-gaps-found-in-namibias-ai-readiness/",
+  "archive_url": "https://web.archive.org/web/20250906173031/https://thebrief.com.na/2025/08/policy-and-infrastructure-gaps-found-in-namibias-ai-readiness/"
+ },
+ "na-namibian-ai-institute-2026": {
+  "url": "https://www.namibian.com.na/national-ai-institute-launched/",
+  "archive_url": "https://web.archive.org/web/20261004062712/https://www.namibian.com.na/national-ai-institute-launched/"
+ },
+ "ne-osiris-cyber-2025": {
+  "url": "https://www.osiris.sn/transformation-numerique-le-niger-cree-un-centre-national-de-cybersecurite.html",
+  "archive_url": "https://web.archive.org/web/20260614044103/https://www.osiris.sn/transformation-numerique-le-niger-cree-un-centre-national-de-cybersecurite.html"
+ },
+ "sc-nation-ai-education-2026": {
+  "url": "https://nation.sc/articles/31810/cabinet-backs-national-artificial-intelligence-framework-for-education",
+  "archive_url": "https://web.archive.org/web/20260807105424/https://www.nation.sc/articles/31810/cabinet-backs-national-artificial-intelligence-framework-for-education"
+ },
+ "sd-ecofin-bodies-2025": {
+  "url": "https://www.ecofinagency.com/news-digital/0711-50239-sudan-lays-groundwork-for-digital-state-with-cybersecurity-ai-data-bodies",
+  "archive_url": "https://web.archive.org/web/20260215200922/https://www.ecofinagency.com/news-digital/0711-50239-sudan-lays-groundwork-for-digital-state-with-cybersecurity-ai-data-bodies"
+ },
+ "sl-ecofin-ai-strategy-2026": {
+  "url": "https://www.ecofinagency.com/news-digital/2605-55944-sierra-leone-advances-national-ai-strategy-to-support-digital-expansion",
+  "archive_url": "https://web.archive.org/web/20261017035258/https://www.ecofinagency.com/news-digital/2605-55944-sierra-leone-advances-national-ai-strategy-to-support-digital-expansion"
+ },
+ "so-nca-ai-center": {
+  "url": "https://nca.gov.so/initiatives/ai-center",
+  "archive_url": "https://web.archive.org/web/20261017035346/https://nca.gov.so/initiatives/ai-center"
+ },
+ "ss-eyeradio-ai-2025": {
+  "url": "https://www.eyeradio.org/south-sudan-to-embrace-ai-space-science-to-drive-development",
+  "archive_url": "https://web.archive.org/web/20261017035444/https://eyeradio.org/south-sudan-to-embrace-ai-space-science-to-drive-development/"
+ },
+ "st-unesco-hub": {
+  "url": "https://www.unesco.org/ethics-ai/en/global-hub/sao-tome-and-principe",
+  "archive_url": "https://web.archive.org/web/20261017035536/https://www.unesco.org/ethics-ai/en/global-hub/sao-tome-and-principe"
+ },
+ "sz-observer-ai-2025": {
+  "url": "https://www.eswatiniobserver.com/parliamentarians-capacitated-on-ai/",
+  "archive_url": "https://web.archive.org/web/20261017035707/https://www.eswatiniobserver.com/parliamentarians-capacitated-on-ai/"
+ },
+ "sz-un-ai-strategy-2024": {
+  "url": "https://eswatini.un.org/en/node/284410",
+  "archive_url": "https://web.archive.org/web/20261017035752/https://eswatini.un.org/en/284410-un-eswatini-joins-ministry-ict-explore-artificial-intelligence-sustainable-development"
+ },
+ "td-osiris-ia-2026": {
+  "url": "https://www.osiris.sn/tchad-la-strategie-de-gouvernance-des-donnees-validee-celle-de-l-ia-en.html",
+  "archive_url": "https://web.archive.org/web/20261017035837/https://www.osiris.sn/tchad-la-strategie-de-gouvernance-des-donnees-validee-celle-de-l-ia-en.html"
+ },
+ "td-tchadinfos-dgia-2025": {
+  "url": "https://tchadinfos.com/2025/10/21/tchad-creation-dune-direction-generale-de-lintelligence-artificielle-au-ministere-du-numerique/",
+  "archive_url": "https://web.archive.org/web/20260702150110/https://tchadinfos.com/2025/10/21/tchad-creation-dune-direction-generale-de-lintelligence-artificielle-au-ministere-du-numerique/"
+ },
+ "tg-osiris-digital-2025": {
+  "url": "https://www.osiris.sn/togo-une-nouvelle-strategie-numerique-en-preparation-pour-la-periode-2025-2030.html",
+  "archive_url": "https://web.archive.org/web/20251216032804/https://www.osiris.sn/togo-une-nouvelle-strategie-numerique-en-preparation-pour-la-periode-2025-2030.html"
+ },
+ "zw-un-ai-strategy-2026": {
+  "url": "https://zimbabwe.un.org/en/node/311859",
+  "archive_url": "https://web.archive.org/web/20261017035924/https://zimbabwe.un.org/en/311859-zimbabwe-unveils-2026%E2%80%932030-ai-strategy-advance-inclusive-digital-transformation"
+ },
+ "so-ecofin-snaic-2026": {
+  "url": "https://www.ecofinagency.com/news-digital/1707-57474-somalia-launches-university-ai-center-to-tackle-local-development-challenges",
+  "archive_url": "https://web.archive.org/web/20261017040009/https://www.ecofinagency.com/news-digital/1707-57474-somalia-launches-university-ai-center-to-tackle-local-development-challenges"
+ },
+ "ls-osiris-ai-framework-2026": {
+  "url": "https://www.osiris.sn/le-lesotho-met-en-oeuvre-son-cadre-national-sur-l-ia-avec-l-appui-de-l-onu.html",
+  "archive_url": "https://web.archive.org/web/20261017040101/https://www.osiris.sn/le-lesotho-met-en-oeuvre-son-cadre-national-sur-l-ia-avec-l-appui-de-l-onu.html"
+ },
+ "sd-suna-allafrica-2025": {
+  "url": "https://fr.allafrica.com/stories/202511060155.html",
+  "archive_url": "https://web.archive.org/web/20261017040212/https://fr.allafrica.com/stories/202511060155.html"
+ },
+ "zw-businesstimes-2025": {
+  "url": "https://businesstimes.co.zw/govt-unveils-national-ai-strategy/",
+  "archive_url": "https://web.archive.org/web/20261017040730/https://businesstimes.co.zw/govt-unveils-national-ai-strategy/"
+ },
+ "network-multilingual-2025": {
+  "url": "https://sgaisi.sg/wp-api/wp-content/uploads/2025/06/Improving-Methodologies-for-LLM-Evaluations-Across-Global-Languages-Evaluation-Report-1.pdf",
+  "archive_url": "https://web.archive.org/web/20260919113540/https://sgaisi.sg/wp-api/wp-content/uploads/2025/06/Improving-Methodologies-for-LLM-Evaluations-Across-Global-Languages-Evaluation-Report-1.pdf"
+ },
+ "un-m49": {
+  "url": "https://unstats.un.org/unsd/methodology/m49/overview/",
+  "archive_url": "https://web.archive.org/web/20261004085234/https://unstats.un.org/unsd/methodology/m49/overview/"
+ },
+ "ov-wikipedia": {
+  "url": "https://en.wikipedia.org/wiki/Artificial_intelligence_safety_institute",
+  "archive_url": "https://web.archive.org/web/20261017040903/https://en.wikipedia.org/wiki/Artificial_intelligence_safety_institute"
+ },
+ "ov-casrai": {
+  "url": "https://casrai.org/guides/network-of-ai-safety-institutes",
+  "archive_url": "https://web.archive.org/web/20260926013115/https://casrai.org/guides/network-of-ai-safety-institutes"
+ },
+ "ov-aiact-tracker": {
+  "url": "https://artificialintelligenceact.eu/national-implementation-plans/",
+  "archive_url": "https://web.archive.org/web/20261017041038/https://artificialintelligenceact.eu/national-implementation-plans/"
+ },
+ "us-glm53": {
+  "url": "https://www.nist.gov/news-events/news/2026/09/caisis-assessment-zais-glm-53-cyber-capabilities",
+  "archive_url": "https://web.archive.org/web/20261017041125/https://www.nist.gov/news-events/news/2026/09/caisis-assessment-zais-glm-53-cyber-capabilities"
+ },
+ "jp-joint-2025": {
+  "url": "https://aisi.go.jp/assets/pdf/International-Network-of-AI-Safety-Institutes-Joint-Testing-Exercise-Improving-Methodologies-for-AI-Model-Evaluations-Across-Global-Languages.pdf",
+  "archive_url": "https://web.archive.org/web/20250318174208/https://aisi.go.jp/assets/pdf/International-Network-of-AI-Safety-Institutes-Joint-Testing-Exercise-Improving-Methodologies-for-AI-Model-Evaluations-Across-Global-Languages.pdf"
+ },
+ "us-aisi-2024": {
+  "url": "https://www.nist.gov/news-events/news/2024/02/us-commerce-secretary-gina-raimondo-announces-key-executive-leadership-us",
+  "archive_url": "https://web.archive.org/web/20261017041303/https://www.nist.gov/news-events/news/2024/02/us-commerce-secretary-gina-raimondo-announces-key-executive-leadership-us"
+ },
+ "us-commerce-2023": {
+  "url": "https://www.commerce.gov/news/press-releases/2023/11/direction-president-biden-department-commerce-establish-us-artificial",
+  "archive_url": "https://web.archive.org/web/20260211063744/https://www.commerce.gov/news/press-releases/2023/11/direction-president-biden-department-commerce-establish-us-artificial"
+ },
+ "us-nist-mou-2024": {
+  "url": "https://www.nist.gov/news-events/news/2024/08/us-ai-safety-institute-signs-agreements-regarding-ai-safety-research",
+  "archive_url": "https://web.archive.org/web/20261017041356/https://www.nist.gov/news-events/news/2024/08/us-ai-safety-institute-signs-agreements-regarding-ai-safety-research"
+ },
+ "us-claude35-2024": {
+  "url": "https://www.nist.gov/news-events/news/2024/11/pre-deployment-evaluation-anthropics-upgraded-claude-35-sonnet",
+  "archive_url": "https://web.archive.org/web/20260608183204/https://www.nist.gov/news-events/news/2024/11/pre-deployment-evaluation-anthropics-upgraded-claude-35-sonnet"
+ },
+ "ca-qp-caisi-2025": {
+  "url": "https://search.open.canada.ca/qpnotes/record/ic,AIDI-2026-QP-00001",
+  "archive_url": "https://web.archive.org/web/20260519012514/https://search.open.canada.ca/qpnotes/record/ic,AIDI-2026-QP-00001"
+ },
+ "ca-cohere-2025": {
+  "url": "https://cohere.com/blog/canada-uk-government-partnerships",
+  "archive_url": "https://web.archive.org/web/20260513191105/https://cohere.com/blog/canada-uk-government-partnerships"
+ },
+ "jp-anthropic-moc-2025": {
+  "url": "https://aisi.go.jp/activity/activity_international/251029/",
+  "archive_url": "https://web.archive.org/web/20261017041447/https://aisi.go.jp/activity/activity_international/251029/"
+ },
+ "jp-openai-moc-2026": {
+  "url": "https://aisi.go.jp/activity/activity_international/260529/",
+  "archive_url": "https://web.archive.org/web/20260618115514/https://aisi.go.jp/activity/activity_international/260529/"
+ },
+ "kr-inews24-2024": {
+  "url": "https://www.inews24.com/view/1722475",
+  "archive_url": "https://web.archive.org/web/20250615210256/https://www.inews24.com/view/1722475"
+ },
+ "kr-msit-2024-11": {
+  "url": "https://eiec.kdi.re.kr/policy/materialView.do?num=260199",
+  "archive_url": "https://web.archive.org/web/20261017041537/https://eiec.kdi.re.kr/policy/materialView.do?num=260199"
+ },
+ "kr-aibasic-art12": {
+  "url": "https://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0012&lsiSeq=282791&urlMode=lsScJoRltInfoR",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ },
+ "kr-msit-openai-2026": {
+  "url": "https://www.msit.go.kr/eng/bbs/view.do?bbsSeqNo=42&mId=4&nttSeqNo=1274&sCode=eng",
+  "archive_url": "https://web.archive.org/web/20261017041823/https://www.msit.go.kr/eng/bbs/view.do?bbsSeqNo=42&mId=4&nttSeqNo=1274&sCode=eng"
+ },
+ "kr-msit-anthropic-2026": {
+  "url": "https://www.msit.go.kr/eng/bbs/view.do?bbsSeqNo=42&mId=4&nttSeqNo=1275&sCode=eng",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ },
+ "sg-pilot-2024": {
+  "url": "https://sgaisi.sg/resources/a-pilot-testing-exercise-from-the-international-network-of-ai-safety-institutes/",
+  "archive_url": "https://web.archive.org/web/20260919113600/https://sgaisi.sg/resources/a-pilot-testing-exercise-from-the-international-network-of-ai-safety-institutes/"
+ },
+ "au-anthropic-mou-2026": {
+  "url": "https://www.industry.gov.au/publications/memorandum-understanding-between-australian-government-and-anthropic-collaboration-ai-opportunities",
+  "archive_url": "https://web.archive.org/web/20260916065110/https://www.industry.gov.au/publications/memorandum-understanding-between-australian-government-and-anthropic-collaboration-ai-opportunities"
+ },
+ "au-forbes-2026": {
+  "url": "https://www.forbes.com.au/news/innovation/anthropic-frontier-models-up-australian-ai-safety-institute/",
+  "archive_url": "https://web.archive.org/web/20261017042042/https://www.forbes.com.au/news/innovation/anthropic-frontier-models-up-australian-ai-safety-institute/"
+ },
+ "in-pib-2025-01-30": {
+  "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2097709",
+  "archive_url": "https://web.archive.org/web/20251118032034/https://www.pib.gov.in/PressReleasePage.aspx?PRID=2097709"
+ },
+ "au-anthropic-news-2026": {
+  "url": "https://www.anthropic.com/news/australia-MOU",
+  "archive_url": "https://web.archive.org/web/20261017042136/https://www.anthropic.com/news/australia-MOU"
+ },
+ "gb-pm-speech-2023": {
+  "url": "https://www.gov.uk/government/speeches/prime-ministers-speech-on-ai-26-october-2023",
+  "archive_url": "https://web.archive.org/web/20261011231440/https://www.gov.uk/government/speeches/prime-ministers-speech-on-ai-26-october-2023"
+ },
+ "gb-ltw-2023": {
+  "url": "https://www.gov.uk/government/speeches/pm-london-tech-week-speech-12-june-2023",
+  "archive_url": "https://web.archive.org/web/20261011225102/https://www.gov.uk/government/speeches/pm-london-tech-week-speech-12-june-2023"
+ },
+ "de-nsr-2026": {
+  "url": "https://www.bundesregierung.de/breg-de/aktuelles/pressemitteilungen/sitzung-des-nationalen-sicherheitsrates-im-juni-2026-2438050",
+  "archive_url": "https://web.archive.org/web/20261017042229/https://www.bundesregierung.de/breg-de/aktuelles/pressemitteilungen/sitzung-des-nationalen-sicherheitsrates-im-juni-2026-2438050"
+ },
+ "eu-decision-oj": {
+  "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=OJ:C_202401459",
+  "archive_url": "https://web.archive.org/web/20240812105728/https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=OJ%3AC_202401459"
+ },
+ "nl-kamerbrief-2026-09": {
+  "url": "https://www.tweedekamer.nl/kamerstukken/brieven_regering/detail?id=2026Z20091&did=2026D46392",
+  "archive_url": "https://web.archive.org/web/20261017042323/https://www.tweedekamer.nl/kamerstukken/brieven_regering/detail?id=2026Z20091&did=2026D46392"
+ },
+ "gb-approach-2024": {
+  "url": "https://www.gov.uk/government/publications/ai-safety-institute-approach-to-evaluations/ai-safety-institute-approach-to-evaluations",
+  "archive_url": "https://web.archive.org/web/20261017042410/https://www.gov.uk/government/publications/ai-safety-institute-approach-to-evaluations/ai-safety-institute-approach-to-evaluations"
+ },
+ "gb-taskforce-progress-2023": {
+  "url": "https://www.gov.uk/government/publications/frontier-ai-taskforce-first-progress-report/frontier-ai-taskforce-first-progress-report",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ },
+ "er-shabait-erichat-2025": {
+  "url": "https://shabait.com/2025/11/01/eri-chat-offline-ai-app/",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ },
+ "gm-grts-nmdrc-2026": {
+  "url": "https://www.grts.gm/new-site/public/index.php/news-article-details/news/gambia-launches-west-africas-first-ai-centre-to-fight-fake-news",
+  "archive_url": "https://web.archive.org/web/20260427161222/https://www.grts.gm/new-site/public/index.php/news-article-details/news/gambia-launches-west-africas-first-ai-centre-to-fight-fake-news"
+ },
+ "gw-bo-10-2025": {
+  "url": "https://faolex.fao.org/docs/pdf/gbs235634.pdf",
+  "archive_url": "https://web.archive.org/web/20261004121323/https://faolex.fao.org/docs/pdf/gbs235634.pdf"
+ },
+ "gw-undp-entd-2025": {
+  "url": "https://www.undp.org/pt/guinea-bissau/news/lancamento-da-estrategia-nacional-para-transformacao-digital",
+  "archive_url": "https://web.archive.org/web/20250316164151/https://www.undp.org/pt/guinea-bissau/news/lancamento-da-estrategia-nacional-para-transformacao-digital"
+ },
+ "km-presidency-ai-readiness-2026": {
+  "url": "https://www.beit-salam.km/actualit%C3%A9s/conseil-des-ministres-du-11-mars-2026-des-initiatives-pour-l%E2%80%99agriculture,-la-s%C3%A9curit%C3%A9,-l%E2%80%99innovation-et-l%E2%80%99environnement.html",
+  "archive_url": "https://web.archive.org/web/20260312163557/https://www.beit-salam.km/actualit%C3%A9s/conseil-des-ministres-du-11-mars-2026-des-initiatives-pour-l%E2%80%99agriculture,-la-s%C3%A9curit%C3%A9,-l%E2%80%99innovation-et-l%E2%80%99environnement.html"
+ },
+ "ne-government-ai-strategy-2025": {
+  "url": "https://www.gouv.ne/index.php/actualite-des-ministeres/808-semaine-de-l-ia-et-des-technologies-geospatiales-le-gouvernement-entend-elaborer-une-strategie-nationale-dans-le-domaine-par-une-demarche-inclusive",
+  "archive_url": "https://web.archive.org/web/20260829190544/https://www.gouv.ne/index.php/actualite-des-ministeres/808-semaine-de-l-ia-et-des-technologies-geospatiales-le-gouvernement-entend-elaborer-une-strategie-nationale-dans-le-domaine-par-une-demarche-inclusive"
+ },
+ "ne-government-cnac-2025": {
+  "url": "https://www.gouv.ne/index.php/les-communiques-du-gouvernement/919-communique-du-conseil-des-ministres-du-samedi-11-octobre-2025",
+  "archive_url": "https://web.archive.org/web/20260829182336/https://www.gouv.ne/index.php/les-communiques-du-gouvernement/919-communique-du-conseil-des-ministres-du-samedi-11-octobre-2025"
+ },
+ "tg-government-ai-strategy-2024": {
+  "url": "https://www.republiquetogolaise.tg/tic/0410-9801-intelligence-artificielle-vers-lelaboration-dune-strategie-nationale",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ },
+ "tg-cega-ai-lab-2026": {
+  "url": "https://cega.berkeley.edu/collection/togo-ai-lab/",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ },
+ "tg-cega-minister-interview-2025": {
+  "url": "https://cega.berkeley.edu/article/togo-partnership-innovation-evidence/",
+  "archive_url": "https://web.archive.org/web/20260512001320/https://cega.berkeley.edu/article/togo-partnership-innovation-evidence/"
+ },
+ "ad-recheck2-ethics-code": {
+  "url": "https://www.govern.ad/ca/w/el-govern-aprova-un-codi-etic-sobre-intel-ligencia-artificial-ia-1",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ },
+ "ad-recheck2-action-summit": {
+  "url": "https://www.govern.ad/ca/w/programa-de-digitalitzacio-d-empreses-incloura-una-linia-d-ajuts-per-a-la-implantacio-de-la-intel-ligencia-artificial",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ },
+ "ba-recheck2-federation-strategy": {
+  "url": "https://www.vladazzh.com/Dokumenti/ZPP/strategija-razvoja-fbih-2021-2027_bos.pdf",
+  "archive_url": "https://web.archive.org/web/20250913175103/https://www.vladazzh.com/Dokumenti/ZPP/strategija-razvoja-fbih-2021-2027_bos.pdf"
+ },
+ "ba-recheck2-blum-proposal": {
+  "url": "https://mon.ks.gov.ba/aktuelno/vlada-kantona-sarajevo-dala-saglasnost-na-elaborat-o-opravdanosti-osnivanja",
+  "archive_url": "https://web.archive.org/web/20250515151401/https://mon.ks.gov.ba/aktuelno/vlada-kantona-sarajevo-dala-saglasnost-na-elaborat-o-opravdanosti-osnivanja"
+ },
+ "ba-recheck2-convention": {
+  "url": "https://vijeceministara.gov.ba/en/portal/post/council-of-ministers-of-bosnia-and-herzegovina-hodsl-its-104th-session-1772801442489",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ },
+ "mc-recheck2-data-programme": {
+  "url": "https://journaldemonaco.gouv.mc/Journaux/2025/Journal-8730/Avis-de-recrutement-n-2025-11-d-un-Chef-de-Division-Responsable-du-Programme-Data-au-sein-de-la-Direction-des-Plateformes-et-des-Ressources-Numeriques.",
+  "archive_url": "https://web.archive.org/web/20250120102649/https://journaldemonaco.gouv.mc/Journaux/2025/Journal-8730/Avis-de-recrutement-n-2025-11-d-un-Chef-de-Division-Responsable-du-Programme-Data-au-sein-de-la-Direction-des-Plateformes-et-des-Ressources-Numeriques."
+ },
+ "sm-recheck2-ai-training": {
+  "url": "https://www.sanmarinoinnovation.com/comunicati-stampa/al-via-speedmaster-lite-il-programma-gratuito-per-chi-vuole-costruire-una-startup",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ },
+ "sm-recheck2-olitec-cooperation": {
+  "url": "https://www.sanmarinoinnovation.com/comunicati-stampa/san-marino-innovation-e-fondazione-olitec-si-incontrano-per-parlare-di-sovranit-digitale-alta-tecnologia-e-sicurezza-strategica",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ },
+ "tj-recheck2-strategy-2040": {
+  "url": "https://egov.tj/uploads/2025/9/25/db29ff250e97ee01de3339e6bf2423e6_original.144805.pdf",
+  "archive_url": "https://web.archive.org/web/20260509071434/https://egov.tj/uploads/2025/9/25/db29ff250e97ee01de3339e6bf2423e6_original.144805.pdf"
+ },
+ "tj-recheck2-teaching-institute": {
+  "url": "https://iutet.tj/ru/%D1%80%D0%B0%D0%B7%D1%8A%D1%8F%D1%81%D0%BD%D0%B5%D0%BD%D0%B8%D0%B5-%D0%BF%D0%BE%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D0%B9-%D0%BF%D1%80%D0%B0%D0%B2%D0%B8%D1%82%D0%B5%D0%BB%D1%8C/",
+  "archive_url": "https://web.archive.org/web/20260607050612/https://iutet.tj/ru/%D1%80%D0%B0%D0%B7%D1%8A%D1%8F%D1%81%D0%BD%D0%B5%D0%BD%D0%B8%D0%B5-%D0%BF%D0%BE%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D0%B9-%D0%BF%D1%80%D0%B0%D0%B2%D0%B8%D1%82%D0%B5%D0%BB%D1%8C/"
+ },
+ "tj-recheck2-regional-ai-centre": {
+  "url": "https://jumhuriyat.tj/8549-rustami-jemomal-markazi-mintaavii-zeni-suniro-sangi-asos-guzosht.html",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ },
+ "tm-recheck2-ai-centre-plan": {
+  "url": "https://www.drg.gov.tm/habar/turkmenistan-emeli-we-maglumat-merkezleri-boyunca-milli-strategiya-tayyarlar",
+  "archive_url": "https://web.archive.org/web/20260415072747/https://drg.gov.tm/habar/turkmenistan-emeli-we-maglumat-merkezleri-boyunca-milli-strategiya-tayyarlar"
+ },
+ "tm-recheck2-ai-centre-purpose": {
+  "url": "https://www.turkmengaz.gov.tm/news-detail/3394",
+  "error": "HTTPError: HTTP Error 429: Too Many Requests"
+ },
+ "tm-recheck2-ai-strategy-workshop": {
+  "url": "https://www.undp.org/turkmenistan/press-releases/undp-supports-national-efforts-shape-turkmenistans-artificial-intelligence-strategy",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ },
+ "tr-recheck2-plan-copy": {
+  "url": "https://www.alomaliye.com/wp-content/uploads/2026/08/ai-eylem-2026-2030.pdf",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ },
+ "tr-recheck2-summit": {
+  "url": "https://f.invest.gov.tr/en/news/news-from-turkey/pages/turkiye-unveils-ai-action-plan-artificial-intelligence-summit.aspx",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ },
+ "mz-recheck2-sectorial": {
+  "url": "https://intic.gov.mz/sectorial/",
+  "archive_url": "https://web.archive.org/web/20260422152842/https://intic.gov.mz/sectorial/"
+ },
+ "mz-recheck2-october": {
+  "url": "https://intic.gov.mz/intic-apresenta-bases-e-instrumentos-para-o-uso-da-inteligencia-artificial/",
+  "archive_url": "https://web.archive.org/web/20261002154614/https://intic.gov.mz/intic-apresenta-bases-e-instrumentos-para-o-uso-da-inteligencia-artificial/"
+ },
+ "dm-recheck2-cyber-training": {
+  "url": "https://www.caricomimpacs.org/articles/caricom-impacs-and-dominica-partner-to-boost-government-cyber-security",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ },
+ "dm-recheck2-aila": {
+  "url": "https://www.q95da.com/news/an-artificial-intelligence-landscape-assessment-aila-was-launched-in-dominica-on-october-12-with-technical-and-financial-support-from-the-undp-to-explore-the-countrys-readiness-for-artificial-intelligence-ai",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ },
+ "dm-recheck2-strategy-catalogue": {
+  "url": "https://cardtp.gov.dm/documents/1-documents/2-dynamic-dominica-national-digital-transformation-strategy-2022-2026",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ },
+ "fm-recheck2-digital-fsm": {
+  "url": "https://dofa.gov.fm/project-link/digital-fsm/",
+  "archive_url": "https://web.archive.org/web/20260615084544/https://dofa.gov.fm/project-link/digital-fsm/"
+ },
+ "ki-recheck2-ict-policy-2019": {
+  "url": "https://www.mict.gov.ki/sites/default/files/publications/National%20ICT%20Policy_4.pdf",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ },
+ "mh-recheck2-digital-rmi-2021": {
+  "url": "https://mof.gov.mh/wp-content/uploads/2024/12/DIGITAL-RMI-ESMP-June-2021_FINAL.pdf",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ },
+ "nr-recheck2-digital-strategy-2025": {
+  "url": "https://www.nauru.gov.nr/media/204028/nndts_final_version_2025.pdf",
+  "archive_url": "https://web.archive.org/web/20260918105505/https://www.nauru.gov.nr/media/204028/nndts_final_version_2025.pdf"
+ },
+ "pw-recheck2-development-plan": {
+  "url": "https://www.palaugov.pw/wp-content/uploads/Palau-Development-Plan-PDP-2023-2026.pdf",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ },
+ "pw-recheck2-cybersecurity-act-2026": {
+  "url": "https://palauoek.org/bills/creation-comprehensive-cybersecurity-system-palau/",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ },
+ "tv-recheck2-ict-policy-2021": {
+  "url": "https://finance.gov.tv/wp-content/uploads/2022/08/National-ICT-Policy-2021.pdf",
+  "archive_url": "https://web.archive.org/web/20250822120434/https://finance.gov.tv/wp-content/uploads/2022/08/National-ICT-Policy-2021.pdf"
+ },
+ "mm-recheck2-ai-strategy-draft-2025": {
+  "url": "https://www.moi.gov.mm/news/67356",
+  "archive_url": "https://web.archive.org/web/20260511084917/https://www.moi.gov.mm/news/67356"
+ },
+ "mm-recheck2-ai-development-department-2026": {
+  "url": "https://mdn.gov.mm/en/pyidaungsu-hluttaw-weighs-ordinance-continuation-waico-signing",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ },
+ "mm-recheck2-ai-metrology-2025": {
+  "url": "https://www.mofa.gov.mm/en/dr-aung-zeya-deputy-minister-of-science-and-technology-of-myanmar-and-consul-general-of-myanmar-attended-2025-asean-oriented-standardization-cooperation-forum-27-8-2025/",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ },
+ "au-myefo-2025-26": {
+  "url": "https://budget.gov.au/content/myefo/download/08_App_A.pdf",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ },
+ "nl-hansard-2026-09-17": {
+  "url": "https://www.tweedekamer.nl/kamerstukken/plenaire_verslagen/detail/2026-2027/3",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ },
+ "nl-ai-supervision-2026": {
+  "url": "https://www.rijksoverheid.nl/actueel/nieuws/2026/04/20/kabinet-zet-stap-met-toezicht-op-europese-ai-regels",
+  "archive_url": "https://web.archive.org/web/20260727001101/https://www.rijksoverheid.nl/actueel/nieuws/2026/04/20/kabinet-zet-stap-met-toezicht-op-europese-ai-regels"
+ },
+ "my-digital-asean-secretariat-2026": {
+  "url": "https://www.digital.gov.my/en-GB/siaran/ADGMIN-Sambut-Baik-Pendekatan-Pelan-Induk-Digital-ASEAN-2030-Serta-Rangkaian-Keselamatan-AI-ASEAN%3BKuala-Lumpur-Dipilih-Sebagai-Tuan-Rumah-Sekretariat",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ },
+ "kr-etri-department": {
+  "url": "https://etri.re.kr/kor/sub6/sub6_01020101.etri?departCode=191&departInfoCode=352",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ },
+ "rs-tanjug-primary-proposal": {
+  "url": "https://www.srbija.gov.rs/vest/en/241045/strategy-for-ai-development-until-2030-adopted.php",
+  "archive_url": "https://web.archive.org/web/20250724173253/https://www.srbija.gov.rs/vest/en/241045/strategy-for-ai-development-until-2030-adopted.php"
+ },
+ "am-eu4digital-primary-proposal": {
+  "url": "https://hightech.gov.am/en/artificial-intelligence-virtual-institute",
+  "archive_url": "https://web.archive.org/web/20260930215136/https://hightech.gov.am/en/artificial-intelligence-virtual-institute"
+ },
+ "az-techaz-primary-proposal": {
+  "url": "https://president.az/ru/articles/view/68364/print",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ },
+ "bd-fe-2026-primary-proposal": {
+  "url": "https://ictd.gov.bd/pages/notices/national-ai-policy-bangladesh-2026-2030-draft-v11-6966e23b8c8a196928d558b4",
+  "archive_url": "https://web.archive.org/web/20260510203124/https://ictd.gov.bd/pages/notices/national-ai-policy-bangladesh-2026-2030-draft-v11-6966e23b8c8a196928d558b4"
+ },
+ "vu-dailypost-2026-08-primary-proposal": {
+  "url": "https://pmo.gov.vu/bi/1167-connectivity%2C-resilience-and-ai-governance-vanuatu-s-message-to-pacific-ict-ministers.html",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ },
+ "lu-paperjam-ai-factory-primary-proposal": {
+  "url": "https://meco.gouvernement.lu/en/actualites.gouvernement2024%2Ben%2Bactualites%2Btoutes_actualites%2Bcommuniques%2B2025%2B12-decembre%2B02-obertin-data-summit.html",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ },
+ "sk-oecd-cyberlab-primary-proposal": {
+  "url": "https://mirri.gov.sk/aktuality/csirt/oznamenie-o-verejnom-pripomienkovani-projektovej-dokumentacie-k-pripravovanemu-narodnemu-projektu-narodne-laboratorium-umelej-inteligencie-pre-kyberneticku-bezpecnost-ai-cyberlab/",
+  "archive_url": "https://web.archive.org/web/20260610054538/https://mirri.gov.sk/aktuality/csirt/oznamenie-o-verejnom-pripomienkovani-projektovej-dokumentacie-k-pripravovanemu-narodnemu-projektu-narodne-laboratorium-umelej-inteligencie-pre-kyberneticku-bezpecnost-ai-cyberlab/"
+ },
+ "lv-lvportals-sandbox-primary-proposal": {
+  "url": "https://www.varam.gov.lv/en/article/ministry-smart-administration-and-regional-development-develops-regulatory-framework-safe-testing-artificial-intelligence-solutions-special-regulatory-environment",
+  "archive_url": "https://web.archive.org/web/20260515104227/https://www.varam.gov.lv/en/article/ministry-smart-administration-and-regional-development-develops-regulatory-framework-safe-testing-artificial-intelligence-solutions-special-regulatory-environment"
+ },
+ "cy-ccci-circular-primary-proposal": {
+  "url": "https://www.gov.cy/erevna-kainotomia-kai-psifiaki-politiki/enarxi-dimosias-diavoulefsis-gia-tin-ethniki-stratigiki-gia-tin-techniti-noimosyni-tis-kypriakis-dimokratias/",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ },
+ "pa-panamaamerica-agenda-primary-proposal": {
+  "url": "https://www.presidencia.gob.pa/publicacion/panama-lanza-la-agenda-nacional-de-tecnologias-avanzadas-en-presencia-del-presidente-mulino",
+  "archive_url": "https://web.archive.org/web/20260806081619/https://www.presidencia.gob.pa/publicacion/panama-lanza-la-agenda-nacional-de-tecnologias-avanzadas-en-presencia-del-presidente-mulino"
+ },
+ "pa-mobiletime-ley-primary-proposal": {
+  "url": "https://asamblea.gob.pa/Noticias/Actualidad/REGLAS-DE-GOBERNANZA-EN-APLICACION-DE-LA-IA-",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ },
+ "sr-devdiscourse-ram-primary-proposal": {
+  "url": "https://www.unesco.org/en/articles/suriname-advances-responsible-ai-governance-unescos-ram-20",
+  "archive_url": "https://web.archive.org/web/20260906235443/https://www.unesco.org/en/articles/suriname-advances-responsible-ai-governance-unescos-ram-20"
+ },
+ "mv-seemv-ram-2025-primary-proposal": {
+  "url": "https://home.gov.mv/article/261",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ },
+ "ml-osiris-ciar-2026-primary-proposal": {
+  "url": "https://gouvernement.ml/souverainete-technologique-le-president-de-la-transition-inaugure-le-centre-dintelligence-artificielle-et-de-robotique-du-mali/",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ },
+ "ls-osiris-ai-framework-2026-primary-proposal": {
+  "url": "https://www.gov.ls/development/lesotho-first-country-to-implement-un-ai-blueprint/",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ },
+ "tr-cms-primary-proposal": {
+  "url": "https://www.iletisim.gov.tr/English/haberler/detay/we-are-determined-to-build-a-great-and-strong-turkiye-in-the-digital-world-as-well",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ },
+ "ae-zawya-2026-primary-proposal": {
+  "url": "https://www.wam.ae/en/article/c01kgfl-uae-cyber-security-council-cisco-open-innovation",
+  "archive_url": "https://web.archive.org/web/20260521191911/https://www.wam.ae/en/article/c01kgfl-uae-cyber-security-council-cisco-open-innovation"
+ },
+ "na-brief-readiness-2025-primary-proposal": {
+  "url": "https://www.unesco.org/en/articles/namibia-launches-artificial-intelligence-readiness-assessment-report?hub=343",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ },
+ "sc-nation-ai-education-2026-primary-proposal": {
+  "url": "https://www.statehouse.gov.sc/news/7158/president-herminies-vision-for-artificial-intelligence-takes-root-in-seychelles-classrooms",
+  "archive_url": "https://web.archive.org/web/20260801040238/https://statehouse.gov.sc/news/7158/president-herminies-vision-for-artificial-intelligence-takes-root-in-seychelles-classrooms"
+ },
+ "dz-radioalgerie-council-2024-primary-proposal": {
+  "url": "https://www.mesrs.dz/fr/2024/07/conference-mondiale-pour-la-gouvernance-de-lintelligence-artificielle-pour-le-bien-et-pour-tous-2/",
+  "archive_url": "https://web.archive.org/web/20260618111010/https://www.mesrs.dz/fr/2024/07/conference-mondiale-pour-la-gouvernance-de-lintelligence-artificielle-pour-le-bien-et-pour-tous-2/"
+ },
+ "gt-undp-aila-primary-proposal": {
+  "url": "https://gae.gob.gt/evaluacion-del-panorama-de-ia-aila-para-guatemala/",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ },
+ "ye-itweb-2026-primary-proposal": {
+  "url": "https://sis.gov.eg/en/media-center/news/egypt-yemen-discuss-cooperation-in-digital-transformation/",
+  "archive_url": "https://web.archive.org/web/20260610114232/https://sis.gov.eg/en/media-center/news/egypt-yemen-discuss-cooperation-in-digital-transformation/"
+ },
+ "au-oversight-news-2026": {
+  "url": "https://www.industry.gov.au/news/new-report-explores-safe-oversight-advanced-ai-systems",
+  "archive_url": "https://web.archive.org/web/20261008103258/https://www.industry.gov.au/news/new-report-explores-safe-oversight-advanced-ai-systems"
+ },
+ "au-oversight-report-2026": {
+  "url": "https://www.industry.gov.au/publications/epistemic-safety-scalable-oversight",
+  "archive_url": "https://web.archive.org/web/20261008101201/https://www.industry.gov.au/publications/epistemic-safety-scalable-oversight"
+ },
+ "us-plaw-119-74": {
+  "url": "https://www.govinfo.gov/app/details/PLAW-119publ74",
+  "archive_url": "https://web.archive.org/web/20260806143206/https://www.govinfo.gov/app/details/PLAW-119publ74/"
+ },
+ "us-crec-2026-01-08": {
+  "url": "https://www.govinfo.gov/content/pkg/CREC-2026-01-08/pdf/CREC-2026-01-08-pt3-PgH255.pdf",
+  "archive_url": "https://web.archive.org/web/20260810054123/https://www.govinfo.gov/content/pkg/CREC-2026-01-08/pdf/CREC-2026-01-08-pt3-PgH255.pdf"
+ },
+ "ca-cifar-call-2025": {
+  "url": "https://cifar.ca/wp-content/uploads/2025/03/solution-networks-in-ai-safety-en-250304.pdf",
+  "archive_url": null,
+  "error": "HTTPError: HTTP Error 520: UNKNOWN"
+ }
+}

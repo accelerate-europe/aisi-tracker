@@ -1,0 +1,54 @@
+# Validate data/aisi.json, build dist/ and, on main, publish it to GitHub Pages.
+# Runs on every branch. Pages needs a public repository on the free plan; enable it under Settings > Pages > Source: GitHub Actions.
+name: pages
+on:
+  push:
+    branches: ['**']
+  pull_request:
+  workflow_dispatch:
+# Least privilege: build reads the repository; only deploy may publish to Pages.
+permissions:
+  contents: read
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      PUBLISH: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
+    steps:
+      # Actions are pinned to full commit SHAs; the comment names the release the SHA resolves to.
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86 # v5.4.2
+      # One entry point: the hook's fast steps, then build into dist/ and the browser gate on exactly that build.
+      # The publishing path also rejects draft wording (--release).
+      - run: uv run scripts/check.py --only fast,build,gate --out dist --report-dir "$RUNNER_TEMP/check" ${{ env.PUBLISH == 'true' && '--release' || '' }}
+      - if: always()
+        run: cat "$RUNNER_TEMP/check/report.md" || true
+      # The slide map is an extra download the page does not use: a Natural Earth outage or a changed upstream
+      # file (the script pins its hash) shows as a failed step but does not hold back the page.
+      - run: uv run scripts/slide_map.py dist/maps/aisi-europe
+        continue-on-error: true
+        timeout-minutes: 5
+      # Backstop: no step may change or add a file outside the ignored outputs.
+      - run: test -z "$(git status --porcelain --untracked-files=all)" || { git status --short; git diff; exit 1; }
+      - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1
+        if: env.PUBLISH == 'true'
+        with:
+          path: dist
+  deploy:
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5

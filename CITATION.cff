@@ -1,0 +1,19 @@
+# Generated from data/aisi.json by scripts/build.py --update-readme; do not edit.
+cff-version: 1.2.0
+message: 'Data, page text and documentation: CC BY 4.0 (LICENSE-DATA). Code: MIT (LICENSE). Quotations from sources remain with their rights holders and are reproduced as quotations; the licence covers our own compilation, text and data. If you use this dataset, please cite it as: Accelerate Europe (2026). AI Security Institutes tracker, version 1.0.0, data as of 23 October 2026. Compiled by Jason Hoelscher-Obermaier.'
+type: dataset
+title: AI Security Institutes tracker
+abstract: Which states have an AI Security Institute (AISI), covering all 193 UN member states plus Taiwan and the EU AI Office, with funding, staff and leadership where published. Every record cites its sources.
+version: 1.0.0
+date-released: '2026-10-23'
+authors:
+- name: Accelerate Europe
+- given-names: Jason
+  family-names: Hoelscher-Obermaier
+  affiliation: Accelerate Europe; Transformative KI Österreich
+contact:
+- name: Accelerate Europe
+  email: contact@accelerate-europe.org
+license: CC-BY-4.0
+url: https://aisi.accelerate-europe.org/
+repository-code: https://github.com/accelerate-europe/aisi-tracker
