@@ -3995,6 +3995,8 @@ def check_touch_tips(browser, base_url: str) -> list[str]:
         if not page.evaluate(shown):
             errors.append("a tapped tooltip closes on a 4px scroll")
     context.close()
+    for viewport, scale in (({"width": 412, "height": 924}, 2.625), ({"width": 360, "height": 780}, 3)):
+        errors.extend(f"{viewport['width']}px: {e}" for e in touch_control_tips(browser, base_url, viewport, scale))
     # Keyboard: a trigger reached by Tab keeps its tip while the page scrolls, and the tip follows it.
     page = browser.new_page(viewport={"width": 1280, "height": 800})
     hydrated(page, base_url)
@@ -4010,6 +4012,121 @@ def check_touch_tips(browser, base_url: str) -> list[str]:
     if got != [True, True, True]:
         errors.append(f"a tooltip opened by keyboard does not stay with its trigger on scroll (focused, shown, beside trigger: {got})")
     page.close()
+    return errors
+
+
+def touch_control_tips(browser, base_url: str, viewport: dict, scale: float) -> list[str]:
+    """Touch (owner report from a Pixel phone): a tap's emulated mouseover and the focus it leaves (which comes back with
+    the tab after a link opened another one) never open a tip. A tap on a control (link, button) does its job with no
+    tip; a tap on a citation opens its tip instead of the source, the tip's host link opens the source in a new tab, and
+    a tap on the tip's text closes it."""
+    errors: list[str] = []
+    context = browser.new_context(viewport=viewport, device_scale_factor=scale, has_touch=True, is_mobile=True)
+    local = base_url.split("/")[2]
+    context.route(lambda url: url.split("/")[2] != local, lambda route: route.fulfill(status=200, content_type="text/html", body=""))
+    page = context.new_page()
+    popups: list = []
+    context.on("page", lambda p: popups.append(p))
+    hydrated(page, base_url)
+    page.evaluate("document.fonts.ready")
+    shown = "() => { const t = document.getElementById('tip'); return !!t && !t.hidden; }"
+
+    def tap(selector: str) -> bool:
+        """Tap the first rendered match (a citation is a zero-height box whose hit area reaches above the baseline)."""
+        point = page.evaluate("""s => { const n = [...document.querySelectorAll(s)].find(n => n.getClientRects().length); if (!n) return null;
+          n.scrollIntoView({ block: 'center', inline: 'center' }); const r = n.getBoundingClientRect(), x = r.left + r.width / 2, y = r.height ? r.top + r.height / 2 : r.top - 4;
+          const h = document.elementFromPoint(x, y); return h && n.contains(h) ? [x, y] : null; }""", selector)
+        if not point:
+            errors.append(f"no tappable {selector}")
+            return False
+        page.wait_for_timeout(150)
+        page.touchscreen.tap(*point)
+        page.wait_for_timeout(400)
+        return True
+
+    def come_back() -> list[str]:
+        """Close any tab the tap opened and return to the page, as a reader does (focus comes back to the tapped link)."""
+        opened = []
+        for p in popups:
+            p.wait_for_load_state()
+            opened.append(p.url)
+            p.bring_to_front()
+            page.wait_for_timeout(150)
+            p.close()
+        popups.clear()
+        page.bring_to_front()
+        page.wait_for_timeout(400)
+        return opened
+
+    for selector in ("#c-fr a.standalone[data-tip]", "#downloads a.ico[data-tip]", "#theme-toggle", "#world-scroll button[data-tip]", "#updated a.meta-link"):
+        if not tap(selector):
+            continue
+        if page.evaluate(shown):
+            errors.append(f"a tap on the control {selector} shows a tooltip")
+        come_back()
+        if page.evaluate(shown):
+            errors.append(f"after a tap on the control {selector} and a return to the tab, a tooltip shows")
+        hydrated(page, base_url)
+    # A map dot is a control: its tap opens the record, which names the state, with no tip over the map.
+    page.evaluate("document.querySelector('#worldmap').scrollIntoView({ block: 'center' })")
+    page.wait_for_timeout(200)
+    dot = page.evaluate("""() => { const t = [...document.querySelectorAll('#worldmap svg')].find(n => n.getClientRects().length).querySelector('.tgt[data-j="FR"]'), r = t.getBoundingClientRect(),
+      x = r.left + r.width / 2, y = r.top + r.height / 2, h = document.elementFromPoint(x, y); return h && h.closest('#worldmap') ? [x, y] : null; }""")
+    if not dot:
+        errors.append("no tappable map dot for France")
+    else:
+        page.touchscreen.tap(*dot)
+        page.wait_for_timeout(400)
+        hidden, tipped = page.evaluate("document.getElementById('record').hidden"), page.evaluate(shown)
+        if hidden or tipped:
+            errors.append(f"a tap on a map dot does not open the record without a tooltip (record hidden: {hidden}, tooltip shown: {tipped})")
+        page.locator("#record .record-close").tap()
+        page.wait_for_timeout(200)
+    # The owner's case: the France record panel's first citation.
+    page.locator("#map-search").fill("fra")
+    page.locator("#map-search-0").tap()
+    page.wait_for_timeout(400)
+    cite = "#record a.cn"
+    if tap(cite):
+        href = page.evaluate("s => [...document.querySelectorAll(s)].find(n => n.getClientRects().length).href", cite)
+        if popups or not page.evaluate(shown):
+            errors.append(f"a tap on a citation does not open its tooltip in place (tooltip shown: {page.evaluate(shown)}, tabs opened: {len(popups)})")
+        come_back()
+        if not page.evaluate(shown):
+            errors.append("a citation's tooltip closes on a return to the tab")
+        link = page.evaluate("""h => { const a = [...document.querySelectorAll('#tip a')].find(a => a.href === h); if (!a || document.getElementById('tip').hidden) return null;
+          const r = a.getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2; return a.contains(document.elementFromPoint(x, y)) ? [x, y] : null; }""", href)
+        if not link:
+            errors.append("a citation's tooltip has no tappable link to its source")
+        else:
+            page.touchscreen.tap(*link)
+            page.wait_for_timeout(600)
+            opened = come_back()
+            if opened != [href]:
+                errors.append(f"a tap on the source link in a citation's tooltip does not open the source in a new tab (opened: {opened})")
+            if page.evaluate(shown):
+                errors.append("a citation's tooltip stays (or comes back) after its source link was followed")
+    if tap(cite):
+        corner = page.evaluate("() => { const t = document.getElementById('tip'), r = t.getBoundingClientRect(); return t.hidden ? null : [r.left + 6, r.top + 6]; }")
+        if corner:
+            page.touchscreen.tap(*corner)
+            page.wait_for_timeout(400)
+        if not corner or page.evaluate(shown) or popups:
+            errors.append(f"a tap on a citation tooltip's text does not close it (tooltip was shown: {bool(corner)}, tabs opened: {len(popups)})")
+        come_back()
+        page.evaluate("scrollBy(0, 200)")
+        page.wait_for_timeout(400)
+        if page.evaluate(shown):
+            errors.append("a closed citation tooltip comes back after a return to the tab or a scroll")
+    # A mouse on a touch screen: after a tap, hovering with the mouse shows tips again.
+    if tap("#world-rows abbr.g"):
+        page.touchscreen.tap(3, viewport["height"] // 2)
+        box = page.locator("#world-rows abbr.g").first.bounding_box()
+        page.mouse.move(box["x"] + box["width"] / 2, box["y"] + box["height"] / 2, steps=3)
+        page.wait_for_timeout(300)
+        if not page.evaluate(shown):
+            errors.append("after a tap, hovering a term with a mouse shows no tooltip")
+    context.close()
     return errors
 
 

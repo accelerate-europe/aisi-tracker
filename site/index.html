@@ -908,7 +908,10 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
       tip.addEventListener("mouseenter", function () { clearTimeout(tipTimer); });
       tip.addEventListener("mouseleave", function (e) { if (!(e.relatedTarget && tipFor && tipFor.contains(e.relatedTarget))) hideTipSoon(); }); }
     clearTimeout(tipTimer); tipFor = ab; tipY = window.scrollY; tip.textContent = ab.dataset.exp || ab.dataset.tip; tip.hidden = false;
-    if (ab.dataset.tipSub) { var sub = el("span", "tip-sub"); sub.appendChild(separated(ab.dataset.tipSub.split(" · "))); if ("tipExt" in ab.dataset) bindArrow(sub); tip.appendChild(sub); }
+    if (ab.dataset.tipSub) { // a source's host is a link to it, so a reader on touch, whose tap on the citation opened this tip, can follow it
+      var parts = ab.dataset.tipSub.split(" · "), sub = el("span", "tip-sub");
+      if ("tipExt" in ab.dataset && ab.href) { var go = el("a", "", parts.pop()); go.href = ab.href; go.target = "_blank"; go.rel = "noopener"; go.tabIndex = -1; parts.push(go); }
+      sub.appendChild(separated(parts)); if ("tipExt" in ab.dataset) bindArrow(sub); tip.appendChild(sub); }
     tip.style.left = "0px"; tip.style.top = "0px"; // measure at full available width, not the previous position
     var r = tipAnchor(ab), w = tip.offsetWidth, h = tip.offsetHeight, vw = document.documentElement.clientWidth;
     var gap = 4, x = Math.max(16, Math.min(r.left + (r.width - w) / 2, vw - 16 - w)), y = r.bottom + gap + h > window.innerHeight ? Math.max(gap, r.top - gap - h) : r.bottom + gap;
@@ -923,10 +926,22 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
     return { left: r.left, width: r.width, top: r.top, bottom: Math.max(r.bottom, b.bottom) };
   }
   var TIPSEL = "abbr.g, [data-tip]";
-  document.addEventListener("mouseover", function (e) { var ab = e.target.closest && e.target.closest(TIPSEL); if (ab) showTip(ab); });
+  // Touch: a tap fires emulated mouseover and moves focus (which comes back with the tab after a link opened another one), so neither opens a tip after a touch.
+  // There a tip opens only from the tap itself, and only on a term or mark: a control (link, button, map dot) does its own job, except a citation, whose tap opens the tip naming its source with a link to it.
+  // Hover, keyboard focus and a mouse click behave as before; the last pointer (a mouse as soon as it moves) or key decides which input is in use.
+  var touchInput = false, CONTROL = "a[href], button, summary, input, select, textarea, .tgt";
+  document.addEventListener("pointerdown", function (e) { touchInput = e.pointerType === "touch"; }, { capture: true });
+  document.addEventListener("keydown", function () { touchInput = false; }, { capture: true });
+  ["pointerover", "pointermove"].forEach(function (type) { document.addEventListener(type, function (e) { if (e.pointerType === "mouse") touchInput = false; }, { capture: true, passive: true }); }); // a real mouse after a touch (emulated mouse events are no pointer events)
+  document.addEventListener("mouseover", function (e) { var ab = !touchInput && e.target.closest && e.target.closest(TIPSEL); if (ab) showTip(ab); });
   document.addEventListener("mouseout", function (e) { if (tipFor && e.target.closest && e.target.closest(TIPSEL) === tipFor && !(e.relatedTarget && (tip.contains(e.relatedTarget) || tipFor.contains(e.relatedTarget)))) hideTipSoon(); });
-  document.addEventListener("focusin", function (e) { if (e.target.matches && e.target.matches(TIPSEL)) showTip(e.target); });
-  document.addEventListener("click", function (e) { var ab = e.target.closest && e.target.closest(TIPSEL); if (ab && !ab.closest("a")) showTip(ab); });
+  document.addEventListener("focusin", function (e) { if (!touchInput && e.target.matches && e.target.matches(TIPSEL)) showTip(e.target); });
+  document.addEventListener("click", function (e) {
+    if (tip && e.target instanceof Node && tip.contains(e.target)) { if (touchInput || e.target.closest("a")) hideTip(); return; } // a link in the tip opens (in a new tab) and the tip goes; on touch a tap on its text closes it
+    var ab = e.target.closest && e.target.closest(TIPSEL); if (!ab) return;
+    if (touchInput && ab.matches("a.cn")) { e.preventDefault(); showTip(ab); }
+    else if (touchInput ? !ab.closest(CONTROL) : !ab.closest("a")) showTip(ab);
+  });
   // Instant tooltips: move every non-empty native title attribute (slow browser delay, and it stacks on the page's own tooltip) to data-tip.
   function instantTips(root) {
     [].forEach.call(root.querySelectorAll("[title]"), function (x) {
@@ -937,13 +952,13 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
       x.dataset.tip = x.title; x.removeAttribute("title");
     });
   }
-  document.addEventListener("focusout", function (e) { if (e.target === tipFor) hideTip(); });
+  document.addEventListener("focusout", function (e) { if (e.target === tipFor && !(tip && e.relatedTarget instanceof Node && tip.contains(e.relatedTarget))) hideTip(); }); // a press on the tip's link moves focus there
   document.addEventListener("keydown", function (e) { if (e.key === "Escape") hideTip(); });
   // A tip opened by pointer or tap hides on scroll (past a few pixels of jitter), on in-page navigation and on a tap or click elsewhere;
   // a keyboard-focused element keeps its tip (focus itself may scroll it into view), repositioned. A tapped element keeps focus, so focus alone is no keyboard signal.
   document.addEventListener("scroll", function (e) {
     if (!tipFor || (tip && e.target instanceof Node && tip.contains(e.target))) return; /* nothing open, or scrolling the tip itself */
-    if (tipFor === document.activeElement && tipFor.matches(":focus-visible")) showTip(tipFor);
+    if (!touchInput && tipFor === document.activeElement && tipFor.matches(":focus-visible")) showTip(tipFor);
     else if (e.target !== document || Math.abs(window.scrollY - tipY) > 8) hideTip();
   }, { passive: true, capture: true });
   window.addEventListener("hashchange", hideTip); window.addEventListener("popstate", hideTip);
@@ -1801,7 +1816,7 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
       placeLabels(L, M.nodes, M.labels);
       // Hit circles overlap where states are close: the pointer acts on the nearest dot whose circle it is in.
       dots.addEventListener("mousemove", function (e) {
-        var near = nearestAt(M, e); if (near) showTip(near.tgt); // also over another dot's overlapping circle
+        var near = nearestAt(M, e); if (near && !touchInput) showTip(near.tgt); // also over another dot's overlapping circle
         if (near === M.over) return;
         M.over = near; hover(near ? near.j.id : null, !!near);
       });
@@ -1835,7 +1850,7 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
       e.stopPropagation(); // the page's tooltip handler would show the topmost circle's tip
       if (e.detail && hit.tgt !== document.activeElement) hit.tgt.focus({ preventScroll: true }); // first, so the record's opener is this dot
       choose(hit.j.id);
-      showTip(hit.tgt);
+      if (!touchInput) showTip(hit.tgt); // on touch the record that opens names the state
     }
     function nearestAt(M, e) {
       if (!e.clientX && !e.clientY) return null; // a keyboard or scripted click has no position
