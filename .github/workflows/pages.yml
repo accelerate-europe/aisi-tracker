@@ -28,6 +28,11 @@ jobs:
       - uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86 # v5.4.2
         with:
           version: "0.11.14" # the uv the lockfile was checked with; relative exclude-newer needs uv >= 0.9.12
+          # Reuse downloaded packages between runs; the cache key follows the project and check-script lockfiles.
+          enable-cache: true
+          cache-dependency-glob: |
+            uv.lock
+            scripts/*.lock
       # One entry point: the hook's fast steps, then build into dist/ and the browser gate on exactly that build.
       # The publishing path also rejects draft wording (--release).
       - run: uv run scripts/check.py --only fast,build,gate --out dist --report-dir "$RUNNER_TEMP/check" ${{ env.PUBLISH == 'true' && '--release' || '' }}

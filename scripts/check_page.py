@@ -22,7 +22,8 @@ import subprocess
 import sys
 import tempfile
 import threading
-from collections import Counter
+from collections import Counter, defaultdict
+from contextlib import contextmanager
 from datetime import date
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
@@ -41,6 +42,44 @@ from method_copy import rule_label  # noqa: E402
 ROOT = Path(__file__).resolve().parents[1]
 NOT_RUN = 3
 MAC_CHROME = Path("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome")
+
+
+PLAIN_KEY = re.compile(r"[A-Za-z0-9_-]+")
+
+
+class Keyed:
+    """soup.select_one('<selector>[<attr>="<value>"] <rest>') for many values with one walk of the document.
+
+    The elements matching the selector are grouped by the attribute once. A value held by one element is searched
+    inside it (:scope keeps the rest of the selector below it, as in the plain query); a value held by several
+    elements, or a value that is not a plain name (which CSS would read differently), takes the plain query, which
+    keeps document order. Either way the result is the plain query's. Supported: a selector list split at its commas
+    (so no commas inside an arm) and a rest without commas. Build it after the last change to the tree that the
+    lookups depend on.
+    """
+
+    def __init__(self, soup, selector: str, attr: str = "data-j"):
+        self.soup, self.selector, self.attr = soup, selector, attr
+        self.held = defaultdict(list)
+        for node in soup.select(selector):
+            self.held[node.get(attr)].append(node)
+
+    def plain(self, value: str, rest: str) -> str:
+        return ", ".join(f'{arm.strip()}[{self.attr}="{value}"] {rest}'.rstrip() for arm in self.selector.split(","))
+
+    def one(self, value: str, rest: str = ""):
+        nodes = self.held.get(value, [])
+        if not PLAIN_KEY.fullmatch(value) or (rest and len(nodes) > 1):
+            return self.soup.select_one(self.plain(value, rest))
+        if not nodes:
+            return None
+        return nodes[0].select_one(f":scope {rest}") if rest else nodes[0]
+
+    def all(self, value: str, rest: str) -> list:
+        nodes = self.held.get(value, [])
+        if not PLAIN_KEY.fullmatch(value) or len(nodes) > 1:
+            return self.soup.select(self.plain(value, rest))
+        return nodes[0].select(f":scope {rest}") if nodes else []
 
 
 def find_chrome() -> str | None:
@@ -393,167 +432,148 @@ def mapless_controls(page, failed: bool) -> list[str]:
     return errors
 
 
-def check_hydration(chrome: str, dist: Path) -> list[str]:
+def hydration_paint(browser, base_url: str) -> list[str]:
     """No visible flash: with the data held back, the saved page paints exactly what the hydrated page paints, at the
     top of the page and scrolled to the worldwide cards, at 1440, 1000 and 390 px in both themes. The section
-    bar and the group rows are masked: their scroll-dependent state starts with the script. Without the data, the saved page stays."""
-    from playwright.sync_api import TimeoutError as PlaywrightTimeout, sync_playwright
-
+    bar and the group rows are masked: their scroll-dependent state starts with the script."""
     errors = []
-    handler = partial(QuietHandler, directory=str(dist))
-    with ThreadingHTTPServer(("127.0.0.1", 0), handler) as server:
-        thread = threading.Thread(target=server.serve_forever, daemon=True)
-        thread.start()
-        base_url = f"http://127.0.0.1:{server.server_port}/"
-        try:
-            with sync_playwright() as playwright:
-                browser = playwright.chromium.launch(executable_path=chrome, headless=True)
-                for width in (1440, 1000, 390):
-                    for theme in ("light", "dark"):
-                        for place in ("top", "#world-cards"):
-                            page = themed_page(browser, theme, viewport={"width": width, "height": 1000})
-                            held = []
-                            page.route(PAGE_DATA, lambda route: held.append(route))
-                            page.goto(base_url, wait_until="load")
-                            page.evaluate("document.fonts.ready")
-                            if place != "top":
-                                page.evaluate(f"window.scrollTo(0, document.querySelector('{place}').getBoundingClientRect().top + window.scrollY)")
-                            page.wait_for_timeout(300)
-                            before = page.screenshot(mask=[page.locator(".secnav, .group-nav")])
-                            for route in held:
-                                route.continue_()
-                            page.wait_for_function("!document.documentElement.hasAttribute('data-prerendered')", timeout=30_000)
-                            page.wait_for_timeout(300)
-                            if page.evaluate("getComputedStyle(document.body).backgroundColor") != GROUNDS[theme]:
-                                errors.append(f"hydration {width}px {theme}: the page does not show the {theme} theme")
-                            changed = changed_pixels(page, before, page.screenshot(mask=[page.locator(".secnav, .group-nav")]))
-                            if changed > FLASH_PIXELS:
-                                errors.append(f"hydration {width}px {theme} at {place}: {changed} pixels change when the script takes over (visible flash)")
-                            page.close()
-                # What a reader does before the script takes over survives it: an opened disclosure, a typed filter.
-                page = browser.new_page(viewport={"width": 1440, "height": 1000})
+    for width in (1440, 1000, 390):
+        for theme in ("light", "dark"):
+            for place in ("top", "#world-cards"):
+                page = themed_page(browser, theme, viewport={"width": width, "height": 1000})
                 held = []
                 page.route(PAGE_DATA, lambda route: held.append(route))
                 page.goto(base_url, wait_until="load")
-                page.locator("#world-cards details summary").first.click()
-                page.fill("#world-filter", "fra")
-                page.locator("#method > summary").focus()  # a control below the table, without an id
+                page.evaluate("document.fonts.ready")
+                if place != "top":
+                    page.evaluate(f"window.scrollTo(0, document.querySelector('{place}').getBoundingClientRect().top + window.scrollY)")
+                page.wait_for_timeout(300)
+                before = page.screenshot(mask=[page.locator(".secnav, .group-nav")])
                 for route in held:
                     route.continue_()
                 page.wait_for_function("!document.documentElement.hasAttribute('data-prerendered')", timeout=30_000)
-                state = page.evaluate("[document.querySelector('#world-cards details').open, document.getElementById('world-filter').value, document.activeElement === document.querySelector('#method > summary')]")
-                if state != [True, "fra", True]:
-                    errors.append(f"hydration: the reader's open disclosure, filter text or focus was lost ({state})")
+                page.wait_for_timeout(300)
+                if page.evaluate("getComputedStyle(document.body).backgroundColor") != GROUNDS[theme]:
+                    errors.append(f"hydration {width}px {theme}: the page does not show the {theme} theme")
+                changed = changed_pixels(page, before, page.screenshot(mask=[page.locator(".secnav, .group-nav")]))
+                if changed > FLASH_PIXELS:
+                    errors.append(f"hydration {width}px {theme} at {place}: {changed} pixels change when the script takes over (visible flash)")
                 page.close()
-                # A link to a disclosure leaves it open and the page where the browser put it, also when the fonts
-                # have loaded before the data (cached fonts): the order in which a restore could close the target.
-                data = json.loads((dist / "data/aisi.json").read_text(encoding="utf-8"))
-                mini = sorted(j["id"] for j in data["jurisdictions"] if j["europe_scope"] and j["status"] == "none_identified")[0]
-                for target in ("method", "changes", f"c-{mini.lower()}"):
-                    page = browser.new_page(viewport={"width": 1440, "height": 1000})
-                    held = []
-                    page.route(PAGE_DATA, lambda route: held.append(route))
-                    page.goto(f"{base_url}#{target}", wait_until="load")
-                    fonts = page.evaluate("document.fonts.ready.then(() => document.fonts.status)")
-                    if len(held) != 1:
-                        errors.append(f"hydration: the data request for #{target} was not held ({len(held)} held)")
-                    before = page.evaluate("window.scrollY")
-                    for route in held:
-                        route.continue_()
-                    page.wait_for_function("!document.documentElement.hasAttribute('data-prerendered')", timeout=30_000)
-                    page.evaluate("new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)))")
-                    state = page.evaluate(f"[document.getElementById('{target}')?.open, window.scrollY]")
-                    if fonts != "loaded" or state[0] is not True or abs(state[1] - before) > 1:
-                        errors.append(f"hydration: a link to #{target} (fonts {fonts}) ends {'open' if state[0] else 'closed'} at y={state[1]}, scrolled from y={before}")
-                    page.close()
-                page = browser.new_page(viewport={"width": 1440, "height": 1000})
-                page.route(PAGE_DATA, lambda route: route.abort())
-                page.goto(base_url, wait_until="load")
-                page.wait_for_timeout(1000)
-                if not page.evaluate("document.documentElement.hasAttribute('data-prerendered') && document.querySelectorAll('#figures > .figure').length > 0"):
-                    errors.append("hydration: without the data file the saved page does not stay as it is")
-                page.close()
-                # Without the map (topology and d3 blocked) the page still takes over: the saved drawing stays.
-                page = browser.new_page(viewport={"width": 1440, "height": 1000})
-                page.route("**/assets/world-*.json", lambda route: route.abort())
-                page.route("**/assets/d3.*.js", lambda route: route.abort())
-                page.goto(base_url, wait_until="load")
-                try:
-                    page.wait_for_function("!document.documentElement.hasAttribute('data-prerendered')", timeout=15_000)
-                    errors.extend(f"hydration without the map: {e}" for e in mapless_controls(page, failed=True))
-                except PlaywrightTimeout:
-                    errors.append("hydration: without the map topology and d3 the page script does not take over")
-                page.close()
-                # A map that is slow: the page takes over without it, says so after the wait, and draws it when it comes.
-                page = browser.new_page(viewport={"width": 1440, "height": 1000})
-                late = []
-                page.route("**/assets/world-*.json", lambda route: late.append(route))
-                page.goto(base_url, wait_until="load")
-                try:
-                    page.wait_for_function("!document.documentElement.hasAttribute('data-prerendered')", timeout=15_000)
-                    errors.extend(f"hydration before the map: {e}" for e in mapless_controls(page, failed=False))
-                    page.locator('#regions .region-head[data-region="Asia"]').first.click()
-                    page.wait_for_timeout(MAP_WAIT_MS + 500)
-                    if "could not be loaded" not in page.locator("#worldmap").inner_text():
-                        errors.append(f"hydration: {MAP_WAIT_MS} ms without the map, Asia's map box reads {page.locator('#worldmap').inner_text()!r}")
-                    for route in late:
-                        route.continue_()
-                    page.wait_for_function("document.querySelector('#worldmap svg.map-wide .land')", timeout=10_000)
-                    page.locator('#regions .region-head[data-region="Europe"]').first.click()
-                    page.locator('#worldmap svg.map-wide .tgt[data-j="FR"]').dispatch_event("click")
-                    if not page.locator("#worldmap svg.map-wide .hl-sel").count() or page.locator("#record-name").text_content() != "France":
-                        errors.append("hydration: a map arriving late is not drawn as the interactive map (no selection highlight for France)")
-                except PlaywrightTimeout as exc:
-                    errors.append(f"hydration: a late map: {exc}")
-                page.close()
-                browser.close()
-        finally:
-            server.shutdown()
-            thread.join(timeout=5)
+    return errors
+
+
+def hydration_edges(browser, base_url: str, dist: Path) -> list[str]:
+    """What a reader did before the script took over survives it; without the data the saved page stays; without
+    the map, or with a late one, the page still takes over."""
+    from playwright.sync_api import TimeoutError as PlaywrightTimeout
+
+    errors = []
+    # What a reader does before the script takes over survives it: an opened disclosure, a typed filter.
+    page = browser.new_page(viewport={"width": 1440, "height": 1000})
+    held = []
+    page.route(PAGE_DATA, lambda route: held.append(route))
+    page.goto(base_url, wait_until="load")
+    page.locator("#world-cards details summary").first.click()
+    page.fill("#world-filter", "fra")
+    page.locator("#method > summary").focus()  # a control below the table, without an id
+    for route in held:
+        route.continue_()
+    page.wait_for_function("!document.documentElement.hasAttribute('data-prerendered')", timeout=30_000)
+    state = page.evaluate("[document.querySelector('#world-cards details').open, document.getElementById('world-filter').value, document.activeElement === document.querySelector('#method > summary')]")
+    if state != [True, "fra", True]:
+        errors.append(f"hydration: the reader's open disclosure, filter text or focus was lost ({state})")
+    page.close()
+    # A link to a disclosure leaves it open and the page where the browser put it, also when the fonts
+    # have loaded before the data (cached fonts): the order in which a restore could close the target.
+    data = json.loads((dist / "data/aisi.json").read_text(encoding="utf-8"))
+    mini = sorted(j["id"] for j in data["jurisdictions"] if j["europe_scope"] and j["status"] == "none_identified")[0]
+    for target in ("method", "changes", f"c-{mini.lower()}"):
+        page = browser.new_page(viewport={"width": 1440, "height": 1000})
+        held = []
+        page.route(PAGE_DATA, lambda route: held.append(route))
+        page.goto(f"{base_url}#{target}", wait_until="load")
+        fonts = page.evaluate("document.fonts.ready.then(() => document.fonts.status)")
+        if len(held) != 1:
+            errors.append(f"hydration: the data request for #{target} was not held ({len(held)} held)")
+        before = page.evaluate("window.scrollY")
+        for route in held:
+            route.continue_()
+        page.wait_for_function("!document.documentElement.hasAttribute('data-prerendered')", timeout=30_000)
+        page.evaluate("new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)))")
+        state = page.evaluate(f"[document.getElementById('{target}')?.open, window.scrollY]")
+        if fonts != "loaded" or state[0] is not True or abs(state[1] - before) > 1:
+            errors.append(f"hydration: a link to #{target} (fonts {fonts}) ends {'open' if state[0] else 'closed'} at y={state[1]}, scrolled from y={before}")
+        page.close()
+    page = browser.new_page(viewport={"width": 1440, "height": 1000})
+    page.route(PAGE_DATA, lambda route: route.abort())
+    page.goto(base_url, wait_until="load")
+    page.wait_for_timeout(1000)
+    if not page.evaluate("document.documentElement.hasAttribute('data-prerendered') && document.querySelectorAll('#figures > .figure').length > 0"):
+        errors.append("hydration: without the data file the saved page does not stay as it is")
+    page.close()
+    # Without the map (topology and d3 blocked) the page still takes over: the saved drawing stays.
+    page = browser.new_page(viewport={"width": 1440, "height": 1000})
+    page.route("**/assets/world-*.json", lambda route: route.abort())
+    page.route("**/assets/d3.*.js", lambda route: route.abort())
+    page.goto(base_url, wait_until="load")
+    try:
+        page.wait_for_function("!document.documentElement.hasAttribute('data-prerendered')", timeout=15_000)
+        errors.extend(f"hydration without the map: {e}" for e in mapless_controls(page, failed=True))
+    except PlaywrightTimeout:
+        errors.append("hydration: without the map topology and d3 the page script does not take over")
+    page.close()
+    # A map that is slow: the page takes over without it, says so after the wait, and draws it when it comes.
+    page = browser.new_page(viewport={"width": 1440, "height": 1000})
+    late = []
+    page.route("**/assets/world-*.json", lambda route: late.append(route))
+    page.goto(base_url, wait_until="load")
+    try:
+        page.wait_for_function("!document.documentElement.hasAttribute('data-prerendered')", timeout=15_000)
+        errors.extend(f"hydration before the map: {e}" for e in mapless_controls(page, failed=False))
+        page.locator('#regions .region-head[data-region="Asia"]').first.click()
+        page.wait_for_timeout(MAP_WAIT_MS + 500)
+        if "could not be loaded" not in page.locator("#worldmap").inner_text():
+            errors.append(f"hydration: {MAP_WAIT_MS} ms without the map, Asia's map box reads {page.locator('#worldmap').inner_text()!r}")
+        for route in late:
+            route.continue_()
+        page.wait_for_function("document.querySelector('#worldmap svg.map-wide .land')", timeout=10_000)
+        page.locator('#regions .region-head[data-region="Europe"]').first.click()
+        page.locator('#worldmap svg.map-wide .tgt[data-j="FR"]').dispatch_event("click")
+        if not page.locator("#worldmap svg.map-wide .hl-sel").count() or page.locator("#record-name").text_content() != "France":
+            errors.append("hydration: a map arriving late is not drawn as the interactive map (no selection highlight for France)")
+    except PlaywrightTimeout as exc:
+        errors.append(f"hydration: a late map: {exc}")
+    page.close()
     return errors
 
 
 VENDORED_FONTS = {"Inter": "assets/fonts/inter-", "Source Sans 3": "assets/fonts/source-sans-3-"}
 
 
-def check_origins(chrome: str, dist: Path) -> list[str]:
+def check_origins(browser, base_url: str, dist: Path) -> list[str]:
     """The tracker and its Method page request nothing from another origin (fonts, scripts and map are vendored
     under assets/), and both text faces load from the vendored font files."""
-    from playwright.sync_api import sync_playwright
-
     errors = []
-    handler = partial(QuietHandler, directory=str(dist))
-    with ThreadingHTTPServer(("127.0.0.1", 0), handler) as server:
-        thread = threading.Thread(target=server.serve_forever, daemon=True)
-        thread.start()
-        base_url = f"http://127.0.0.1:{server.server_port}/"
-        try:
-            with sync_playwright() as playwright:
-                browser = playwright.chromium.launch(executable_path=chrome, headless=True)
-                for name in ("index.html", "method.html"):
-                    page = browser.new_page(viewport={"width": 1440, "height": 1000})
-                    foreign, fonts = [], []
-                    local = lambda url: url.startswith((base_url, "data:", "blob:"))  # noqa: E731
-                    page.on("request", lambda request: None if local(request.url) else foreign.append(request.url))
-                    page.on("response", lambda response: fonts.append(response.url[len(base_url):]) if response.ok and response.url.startswith(base_url + "assets/fonts/") else None)
-                    page.route(lambda url: not local(url), lambda route: route.abort())  # recorded above; never wait on the network
-                    page.goto(base_url + name, wait_until="load")
-                    if name == "index.html":
-                        page.wait_for_function("!document.documentElement.hasAttribute('data-prerendered')", timeout=30_000)
-                    faces = page.evaluate("document.fonts.ready.then(() => [...document.fonts].map(f => [f.family.replace(/[\"']/g, ''), f.style, f.weight, f.unicodeRange.slice(0, 24), f.status]))")
-                    loaded = [f[0] for f in faces if f[4] == "loaded"]
-                    for family, path in VENDORED_FONTS.items():
-                        if family not in loaded or not any(f.startswith(path) for f in fonts):
-                            errors.append(f"{name}: {family} does not load from the vendored files {path}*.woff2")
-                    errors.extend(f"{name}: the font face {f[:4]} failed to load" for f in faces if f[4] == "error")
-                    html_text = (dist / name).read_text(encoding="utf-8")
-                    errors.extend(f"{name}: @font-face names a missing file {url}" for url in sorted(set(re.findall(r"url\((assets/fonts/[^)]+)\)", html_text))) if not (dist / url).is_file())
-                    errors.extend(f"{name}: request to another origin: {url}" for url in sorted(set(foreign)))
-                    page.close()
-                browser.close()
-        finally:
-            server.shutdown()
-            thread.join(timeout=5)
+    for name in ("index.html", "method.html"):
+        page = browser.new_page(viewport={"width": 1440, "height": 1000})
+        foreign, fonts = [], []
+        local = lambda url: url.startswith((base_url, "data:", "blob:"))  # noqa: E731
+        page.on("request", lambda request: None if local(request.url) else foreign.append(request.url))
+        page.on("response", lambda response: fonts.append(response.url[len(base_url):]) if response.ok and response.url.startswith(base_url + "assets/fonts/") else None)
+        page.route(lambda url: not local(url), lambda route: route.abort())  # recorded above; never wait on the network
+        page.goto(base_url + name, wait_until="load")
+        if name == "index.html":
+            page.wait_for_function("!document.documentElement.hasAttribute('data-prerendered')", timeout=30_000)
+        faces = page.evaluate("document.fonts.ready.then(() => [...document.fonts].map(f => [f.family.replace(/[\"']/g, ''), f.style, f.weight, f.unicodeRange.slice(0, 24), f.status]))")
+        loaded = [f[0] for f in faces if f[4] == "loaded"]
+        for family, path in VENDORED_FONTS.items():
+            if family not in loaded or not any(f.startswith(path) for f in fonts):
+                errors.append(f"{name}: {family} does not load from the vendored files {path}*.woff2")
+        errors.extend(f"{name}: the font face {f[:4]} failed to load" for f in faces if f[4] == "error")
+        html_text = (dist / name).read_text(encoding="utf-8")
+        errors.extend(f"{name}: @font-face names a missing file {url}" for url in sorted(set(re.findall(r"url\((assets/fonts/[^)]+)\)", html_text))) if not (dist / url).is_file())
+        errors.extend(f"{name}: request to another origin: {url}" for url in sorted(set(foreign)))
+        page.close()
     return errors
 
 
@@ -844,13 +864,14 @@ def check_source_alignment(html: str, data: dict) -> list[str]:
     sources = {source["id"]: source for source in data["sources"]}
     errors = []
     orders = {}
+    world_rows = Keyed(soup, "#world-rows tr[data-j]")
     for card in soup.select(".card:not(.mini)[data-j]"):
         jid = str(card["data-j"])
         ids = [li.get("data-source-id") for li in card.select(".srcs li")]
         orders[jid] = ids
         if len(ids) != len(set(ids)) or None in ids:
             errors.append(f"{jid}: source list has missing or duplicate IDs")
-        table = soup.select_one(f'#world-rows tr[data-j="{jid}"]')
+        table = world_rows.one(jid)
         if table:
             columns = {
                 "Institute": "inst",
@@ -903,10 +924,11 @@ def check_source_alignment(html: str, data: dict) -> list[str]:
             errors.append(f"{jid}: citation {sid} differs from card source numbering")
         if sid not in sources or cite.get("href") != sources[sid]["url"]:
             errors.append(f"{jid}: citation {sid} URL does not match data")
+    fund_items, fund_none = Keyed(soup, ".fund-item[data-j]"), Keyed(soup, ".fund-none li[data-j]")
     for institute in data["institutes"]:
         jid = institute["jurisdiction_id"]
-        host = soup.select_one(f'.fund-item[data-j="{jid}"]')
-        if not host and soup.select_one(f'.fund-none li[data-j="{jid}"]'):
+        host = fund_items.one(jid)
+        if not host and fund_none.one(jid):
             continue  # collapsed into the Not published line, which carries no source list
         if not host:
             errors.append(f"{jid}: missing funding entry")
@@ -983,12 +1005,13 @@ def check_source_alignment(html: str, data: dict) -> list[str]:
     for mark in soup.select(".smark:not([data-state])"):
         if not mark.select_one(".sw"):
             errors.append("status mark lacks the shared sw symbol")
+    cards = Keyed(soup, ".card[data-j]")
     for institute in data["institutes"]:
         if "operating" not in institute or institute["status"] != "established":
             continue
         jid = institute["jurisdiction_id"]
         state = "confirmed" if expected_activity(institute) else "not_confirmed"
-        op_card = soup.select_one(f'.card[data-j="{jid}"]')
+        op_card = cards.one(jid)
         if not op_card or not op_card.select_one(f'.smark[data-state="{state}"]'):
             errors.append(f"{jid}: operating state does not use the text mark")
     return sorted(set(errors))
@@ -1254,12 +1277,13 @@ def check_interval_output(html: str, data: dict, hand_worked: dict | None = None
     errors = []
     if soup.select("#world-rows .interval, #world-rows .activity-interval"):
         errors.append("table shows an interval; intervals are card qualifiers only")
+    full_cards = Keyed(soup, "article.card:not(.mini)[data-j]")
     for j in data["jurisdictions"]:
         institute = institutes.get(j.get("institute_id"))
         since, line, counted = expected_intervals(j, institute, as_of)
         if hand_worked is not None and j["id"] in hand_worked and (since, line and line["text"]) != hand_worked[j["id"]]:
             errors.append(f"{j['id']}: interval oracle {(since, line and line['text'])!r} differs from the hand-worked {hand_worked[j['id']]!r}")
-        card = soup.select_one(f'article.card:not(.mini)[data-j="{j["id"]}"]')
+        card = full_cards.one(j["id"])
         if card is None:
             continue
         rows = {r.select_one(".k").get_text(strip=True): r for r in card.select(".row") if r.select_one(".k")}
@@ -1321,11 +1345,12 @@ def check_operating_output(
     }
     for node in soup.select(".cites, .vh"):
         node.decompose()
+    full_cards, world_rows = Keyed(soup, "article.card:not(.mini)[data-j]"), Keyed(soup, "#world-rows tr[data-j]")
     for j in data["jurisdictions"]:
         institute = institutes.get(j.get("institute_id"))
         card_expected = expected_operating_lines(j, institute, credit_sources, expected_intervals(j, institute, data.get("dataset", {}).get("as_of"))[1])
-        card = soup.select_one(f'article.card:not(.mini)[data-j="{j["id"]}"]')
-        table = soup.select_one(f'#world-rows tr[data-j="{j["id"]}"]')
+        card = full_cards.one(j["id"])
+        table = world_rows.one(j["id"])
         card_values = (
             {
                 r.select_one(".k").get_text(): r.select_one(".v")
@@ -1858,12 +1883,13 @@ def expected_staff_total(record) -> str:
 def check_staff_figures(soup, data: dict) -> list[str]:
     """Each chart row's staff total is the data's total at two figures, marked ~ exactly when rounding changed it."""
     errors = []
+    chart_rows = Keyed(soup, "#fund-rows article.fund-item[data-j]")
     for inst in data["institutes"]:
         display = inst["display"]
         record = display["staff_records"].get(display["total_staff"]) if display.get("total_staff") else None
         if not record or record.get("total") is None:
             continue
-        node = soup.select_one(f'#fund-rows article.fund-item[data-j="{inst["jurisdiction_id"]}"] .fund-staff > .fund-value strong')
+        node = chart_rows.one(inst["jurisdiction_id"], ".fund-staff > .fund-value strong")
         if node:
             node = copy.copy(node)
             for cites in node.select(".cites"):
@@ -2010,6 +2036,9 @@ def check_figure_grades(soup, data: dict) -> list[str]:
     # Any grade wording counts as a mark, including the retired labels, so a primary figure cannot be marked by accident.
     words = [r"\bofficial figure\b", r"\bindirect\b(?! )", *FIGURE_LABELS, "press report or estimate", r"press or estimate"]
     checked = expected_places = 0
+    full_cards = Keyed(soup, ".card:not(.mini)[data-j]")
+    table_rows = Keyed(soup, "#world-rows tr[data-j], #world-rest tr[data-j]")
+    chart_rows = Keyed(soup, "#fund-rows > .fund-item[data-j]")
     for inst in data["institutes"]:
         jid, display = inst["jurisdiction_id"], inst["display"]
         if jid not in jurisdictions:
@@ -2023,13 +2052,13 @@ def check_figure_grades(soup, data: dict) -> list[str]:
             if record.get("confidence") not in ("high", "medium", "low") or figure_grade(record) == "unknown figure source":
                 errors.append(f"{jid}: displayed {kind} figure has no grade ({record.get('confidence')!r})")
         places = {"card Budget": None, "card Staff": None, "table Budget": None, "table Staff": None}
-        card = soup.select_one(f'.card:not(.mini)[data-j="{jid}"]')
+        card = full_cards.one(jid)
         if card:
             for row in card.select(".row"):
                 label = row.select_one(".k").get_text(strip=True)
                 if label in ("Budget", "Staff"):
                     places[f"card {label}"] = row.select_one(".v")
-        table = soup.select_one(f'#world-rows tr[data-j="{jid}"], #world-rest tr[data-j="{jid}"]')
+        table = table_rows.one(jid)
         if table:
             places["table Budget"] = table.select_one('[data-col="budget"]')
             places["table Staff"] = table.select_one('[data-col="staff"]')
@@ -2050,7 +2079,7 @@ def check_figure_grades(soup, data: dict) -> list[str]:
             want = [figure_grade(record)] if figure_grade(record) else []
             if found != want:
                 errors.append(f"{jid}: {place} shows grade {found}, expected {want}")
-        chart = soup.select_one(f'#fund-rows > .fund-item[data-j="{jid}"] .fund-staff')
+        chart = chart_rows.one(jid, ".fund-staff")
         total = shown.get("total")
         if total and not chart and any(r.select_one(f'[data-j="{jid}"]') for r in soup.select("#fund-rows")):
             errors.append(f"{jid}: funding Staff cell not found")
@@ -2386,8 +2415,9 @@ def check_figures_row(soup, data: dict) -> list[str]:
             errors.append(f"{label} median figure {figure!r} differs from the data median {expected!r}")
     # No budget: the established state institutes whose card shows the Budget row as Not published.
     missing = 0
+    cards = Keyed(soup, ".card[data-j]")
     for jid in counted:
-        row = next((r for r in soup.select(f'.card[data-j="{jid}"] .row') if r.select_one(".k") and r.select_one(".k").get_text(strip=True) == "Budget"), None)
+        row = next((r for r in cards.all(jid, ".row") if r.select_one(".k") and r.select_one(".k").get_text(strip=True) == "Budget"), None)
         value = row.select_one(".v").get_text(" ", strip=True) if row else ""
         missing += value == MISSING_TEXT
     want = (f"{missing} of {len(counted)}", "institutes: budget not published.")
@@ -2433,6 +2463,7 @@ def check_setup_groups(soup, data: dict) -> list[str]:
     blocks = soup.select("#setup .group-block")
     if [b.get("data-form") for b in blocks] != order:
         return errors + [f"set-up groups {[b.get('data-form') for b in blocks]}, expected {order}"]
+    by_id = Keyed(soup, "[id]", "id")
     for block, form in zip(blocks, order):
         members = sorted(groups[form], key=lambda i: (jurisdictions[i["jurisdiction_id"]]["name"], i["jurisdiction_id"]))
         if block.select_one("h3").get_text(strip=True) != FORM_LABELS.get(form, FORM_UNKNOWN):
@@ -2449,7 +2480,7 @@ def check_setup_groups(soup, data: dict) -> list[str]:
         for li, inst in zip(rows, members):
             jid = inst["jurisdiction_id"]
             link = li.select_one("a")
-            if not link or link.get("href") != f"#c-{jid.lower()}" or not soup.select_one(f"#c-{jid.lower()}"):
+            if not link or link.get("href") != f"#c-{jid.lower()}" or not by_id.one(f"c-{jid.lower()}"):
                 errors.append(f"set-up group {form}: {jid} is not a link to its card")
             note = copy.copy(li.select_one(".group-note"))
             cites = [{a.get("data-source-id") for a in c.select("a.cn")} for c in note.select(".cites")] if note else []
@@ -2505,10 +2536,11 @@ def check_per_person(soup, data: dict) -> list[str]:
         if node.name != "abbr" or "g" not in node.get("class", []) or node.get("data-exp") != PER_PERSON_TIP or node.get("tabindex") != "0":
             errors.append(f"per-person figure {node.get_text()!r} lacks the focusable caveat tooltip {PER_PERSON_TIP!r}")
     shown = 0
+    fund_items = Keyed(soup, ".fund-item[data-j]")
     for inst in data["institutes"]:
         jurisdiction = jurisdictions[inst["jurisdiction_id"]]
         record = inst["display"]["funding_records"].get(inst["display"].get("comparison_funding") or "")
-        row = soup.select_one(f'.fund-item[data-j="{jurisdiction["id"]}"] .fund-value')
+        row = fund_items.one(jurisdiction["id"], ".fund-value")
         node = row.select_one(".qualifiers .per-person") if row else None
         want = expected_budget_ratios(record, jurisdiction, data)[2] if record and jurisdiction["kind"] == "state" and record.get("eur_per_year_est") is not None else None
         if (node.get_text() if node else None) != want:
@@ -5308,8 +5340,9 @@ def check_institute_names(html, data: dict) -> list[str]:
     for iid, jid in owner.items():
         by_state.setdefault(jid, []).append(iid)
     # Cards show the display name in full, with no appended acronym.
+    by_id = Keyed(soup, "[id]", "id")
     for iid, jid in owner.items():
-        card = soup.select_one(f"#c-{jid.lower()} .row[data-track='2'] .v")
+        card = by_id.one(f"c-{jid.lower()}", ".row[data-track='2'] .v")
         if card is None:
             errors.append(f"{jid} card has no Institute row")
             continue
@@ -5442,9 +5475,10 @@ def check_leadership_rows(html, data: dict) -> list[str]:
     expected = expected_leadership(data)
     errors = []
     any_rows = any(rows for rows in expected.values())
+    by_id = Keyed(soup, "[id]", "id")
     for institute in data["institutes"]:
         jid = institute["jurisdiction_id"]
-        card = soup.select_one(f"#c-{jid.lower()}")
+        card = by_id.one(f"c-{jid.lower()}")
         if card is None:
             continue  # an institute without a card is the card checks' concern
         rows = expected[institute["id"]]
@@ -5541,8 +5575,9 @@ def check_nonidentified_folds(html, data: dict) -> list[str]:
     """
     soup = BeautifulSoup(html, "html.parser")
     errors = []
+    folds = Keyed(soup, "details.card.mini[id]", "id")
     for j in data["jurisdictions"]:
-        card = soup.select_one(f"details.card.mini#c-{j['id'].lower()}")
+        card = folds.one(f"c-{j['id'].lower()}")
         if card is None:
             if j.get("status") == "none_identified" and j.get("europe_scope"):
                 errors.append(f"{j['id']} none-identified entry is missing")
@@ -6630,6 +6665,7 @@ def check_budget_output(html, data, expected=None):
     soup = BeautifulSoup(html, "html.parser")
     errors = []
     jurisdictions = {row["id"]: row for row in data["jurisdictions"]}
+    cards, world_rows = Keyed(soup, ".card[data-j]"), Keyed(soup, "#world-rows tr[data-j]")
     for institute in data["institutes"]:
         identity, jid = institute["id"], institute["jurisdiction_id"]
         if identity not in expected:
@@ -6638,9 +6674,9 @@ def check_budget_output(html, data, expected=None):
         if jurisdictions[jid]["status"] != "established":
             continue
         wanted = expected[identity]
-        card = soup.select_one(f'.card[data-j="{jid}"]')
+        card = cards.one(jid)
         budget = next((row.select_one(".v") for row in card.select(".row") if row.select_one(".k").get_text(strip=True) == "Budget"), None) if card else None
-        table = soup.select_one(f'#world-rows tr[data-j="{jid}"] [data-col="budget"]')
+        table = world_rows.one(jid, '[data-col="budget"]')
         for view, node in (("card", budget), ("table", table)):
             if view == "table" and jurisdictions[jid].get("kind") == "supranational":
                 continue
@@ -7101,828 +7137,929 @@ def click_control_text(page, control) -> None:
     page.mouse.up()
 
 
-def check_interactions(
-    chrome: str, dist: Path, data: dict, screenshots: Path | None = None
-) -> list[str]:
-    """Exercise layout and behaviour in installed headless Chrome, with fresh preferences.
+def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots: Path | None, width: int, theme: str) -> list[str]:
+    """Layout and behaviour of the hydrated page at one width in one theme, step after step on one page: later steps
+    rely on the filters, scroll position and open disclosures that earlier ones leave."""
+    errors = []
+    label = f"{width}px {theme}"
+    page = themed_page(
+        browser,
+        theme,
+        viewport={"width": width, "height": 1000},
+    )
+    page_errors: list[Exception] = []
+    # Mypy cannot infer the overloaded callback with a bound default.
+    page.on("pageerror", lambda e, errs=page_errors: errs.append(e))  # type: ignore[call-overload]
 
-    Import Playwright here so the DOM helpers and their unit tests stay usable
-    without it. The script's PEP 723 dependencies provide the browser driver.
-    """
-    from playwright.sync_api import Error as BrowserError
+    def require(condition, message, context=label):
+        if not condition:
+            errors.append(f"{context}: {message}")
+
+    hydrated(page, base_url)
+    page.wait_for_selector("#world-rows tr")
+    require(
+        page.locator("#headline[role=alert]").count() == 0,
+        "render failed",
+    )
+    page.evaluate("document.fonts.ready")
+    page.wait_for_timeout(100)
+    require(
+        page.locator("#figures").is_visible(),
+        "figures row is hidden",
+    )
+    for error in check_hit_targets(page):
+        require(False, error)
+    for check in (
+        check_typography,
+        check_baselines_and_rhythm,
+        check_citations,
+        check_design_roles,
+        check_source_footers,
+        check_meta_separators,
+        check_line_end_separators,
+        check_card_grid,
+        check_external_markers,
+        check_status_contrast,
+        check_status_states,
+    ):
+        for error in check(page):
+            require(False, error)
+    for error in check_source_keyboard(page):
+        require(False, error)
+    for error in check_wrapped_rows(page):
+        require(False, "wrapped rows: " + error)
+    for error in check_unbroken_dates(page):
+        require(False, error)
+    for error in check_fold_block_gaps(page):
+        require(False, error)
+    for error in check_value_qualifiers(page):
+        require(False, error)
+    for check in (check_value_column, check_repeated_spacing):
+        for error in check(page):
+            require(False, error)
+    if width in (390, 1000):
+        for error in check_meta_separators(page, force_wrap=True):
+            errors.append(f"{width}px forced wrap: {error}")
+    if width == 390:
+        page.set_viewport_size({"width": 320, "height": 1000})
+        for error in check_controls(page):
+            errors.append(f"320px {theme}: {error}")
+        page.set_viewport_size({"width": width, "height": 1000})
+    for check in (check_controls, check_in_content_controls):
+        for error in check(page):
+            require(False, error)
+    for error in check_status_filter(page, data):
+        require(False, error)
+    for error in check_funding_weights(page):
+        require(False, error)
+    for error in check_label_ladder(page):
+        require(False, error)
+    for error in check_download_layout(page):
+        require(False, error)
+    for error in check_version_history(page, data):
+        require(False, error)
+    for error in check_funding_bars(page, data) + check_budget_output(page.content(), data) + check_funding_outside(page.content(), data):
+        require(False, error)
+    for error in check_operating_output(page.content(), data) + check_interval_output(page.content(), data, HAND_WORKED_INTERVALS):
+        require(False, error)
+    for error in check_summary_data(page.content(), data):
+        require(False, error)
+    for error in check_two_significant_figures(BeautifulSoup(page.content(), "html.parser")) + check_staff_figures(BeautifulSoup(page.content(), "html.parser"), data):
+        require(False, error)
+    for error in check_source_alignment(page.content(), data):
+        require(False, error)
+    r2_soup = BeautifulSoup(page.content(), "html.parser")
+    for error in check_section_bar(r2_soup) + check_access_groups(r2_soup, data) + check_figures_row(r2_soup, data) + check_setup_groups(r2_soup, data) + check_per_person(r2_soup, data) + check_access_layout(page, width) + check_access_tips(page):
+        require(False, error)
+    for error in check_institute_names(page.content(), data):
+        require(False, error)
+    for error in check_leadership_rows(page.content(), data):
+        require(False, error)
+    for error in check_generic_sources(page.content(), data) + check_archive_wrap(page):
+        require(False, error)
+    for error in check_nonidentified_folds(page.content(), data) + check_nonidentified_style(page):
+        require(False, error)
+    require(
+        page.locator(".cards").evaluate_all(
+            """(grids, statuses) => grids.every(grid => {
+          const group = grid.closest('.statusgroup');
+          if (grid.closest('.eu-level')) return true;
+          return group && group.querySelector(':scope > h3 .st-' + group.dataset.status)
+            && [...grid.querySelectorAll('.card')].every(card => statuses[card.dataset.j] === group.dataset.status);
+        })""",
+            {j["id"]: j["status"] for j in data["jurisdictions"]},
+        ),
+        "card columns mix statuses or lack a status heading",
+    )
+    require(
+        page.evaluate(
+            "document.documentElement.scrollWidth <= innerWidth + 1"
+        ),
+        "page overflows horizontally",
+    )
+    # One tooltip system and one external marker: no native title tooltips survive rendering, and no arrow glyph.
+    require(
+        page.evaluate(
+            "() => !document.querySelector('body [title]:not(svg *)')"
+        ),
+        "a native title tooltip survives rendering",
+    )
+    # State summaries reach keyboard users: a linked name and an unlinked one both show the tooltip on focus, and Escape dismisses it.
+    scroll = page.evaluate("[scrollX, scrollY]")
+    page.locator("#world-status").select_option("")
+    for name_sel in ("#world-rows td:first-child a[data-tip]", "#world-rows td:first-child strong[data-tip]"):
+        name = page.locator(name_sel).first
+        if not name.count():
+            require(False, f"no state name tooltip for {name_sel}")
+            continue
+        page.mouse.move(0, 0)  # a pointer left over the page would hover whatever scrolls under it
+        name.focus()
+        require(
+            page.evaluate("s => { const n = document.querySelector(s), t = document.getElementById('tip'); return n === document.activeElement && t && !t.hidden && t.textContent === n.dataset.tip && !!n.getAttribute('aria-description'); }", name_sel),
+            f"state summary tooltip not shown on keyboard focus: {name_sel}",
+        )
+        page.keyboard.press("Escape")
+        require(page.evaluate("() => document.getElementById('tip').hidden"), "Escape does not dismiss the state summary tooltip")
+        page.evaluate("document.activeElement.blur()")
+    page.locator("#world-status").select_option("pos")
+    page.evaluate("([x, y]) => scrollTo(x, y)", scroll)
+    page.wait_for_timeout(300)
+    page.evaluate("scrollTo(0, 0)")  # the nav strip follows the section in view; at the top it starts at its first item
+    page.wait_for_timeout(300)
+    require(
+        page.evaluate(
+            "() => !document.body.textContent.includes('\\u2197') && ![...document.querySelectorAll('[data-tip], [data-tip-sub], [data-exp]')].some(n => Object.values(n.dataset).some(v => v.includes('\\u2197')))"
+        ),
+        "an arrow glyph is used instead of the drawn external marker",
+    )
+    require(
+        page.locator(".secnav .measure").evaluate(
+            "e => e.scrollLeft === 0"
+        ),
+        "nav does not start at its first item",
+    )
+    require(
+        page.locator('.secnav a[href="#map-h"]').evaluate(
+            "e => e.getBoundingClientRect().left >= e.parentNode.getBoundingClientRect().left - 1"
+        ),
+        "first nav item is clipped",
+    )
+    require(
+        page.locator(
+            'table.world th[data-col="since"]'
+        ).is_visible()
+        == (width > 640),
+        "phone column defaults are incorrect",
+    )
+    require(
+        page.locator('table.world th[data-col="inst"]').evaluate(
+            "e => e.getBoundingClientRect().width >= 175"  # 11rem: the owner tightened minimums so the default table fits at 1100px
+        ),
+        "Institute column is too narrow",
+    )
+    for error in check_activity_width(page) + check_activity_tooltip(page):
+        require(False, error)
+    for error in check_first_screen(page, data):
+        require(False, error)
+    # The bar shows the page title once the h1 is under it; Back to top reveals the h1 fully.
+    page.evaluate(
+        "() => { const h = document.querySelector('#top h1'), n = document.querySelector('.secnav'); window.scrollTo(0, h.getBoundingClientRect().bottom + scrollY - n.offsetHeight + 2); }"
+    )
+    page.wait_for_timeout(150)
+    require(
+        page.locator(".secnav").evaluate(
+            "n => n.classList.contains('scrolled')"
+        ),
+        "nav title does not appear once the h1 scrolls under the bar",
+    )
+    if width <= 430:  # phones: the five items alone, no title (check_group_rows)
+        require(not page.locator(".secnav .navtitle").is_visible(), "nav title shows on a phone")
+    else:
+        page.locator(".secnav .navtitle").click()
+        page.wait_for_timeout(400)
+        require(
+            page.evaluate(
+                "() => document.querySelector('#top h1').getBoundingClientRect().top >= document.querySelector('.secnav').getBoundingClientRect().bottom"
+            ),
+            "Back to top leaves the h1 under the bar",
+        )
+    page.evaluate("window.scrollTo(0, 0)")
+    page.wait_for_timeout(150)
+
+    if screenshots:
+        screenshots.mkdir(parents=True, exist_ok=True)
+        page.screenshot(
+            path=str(
+                screenshots / f"after-{width}-{theme}-full.png"
+            ),
+            full_page=True,
+        )
+        page.screenshot(
+            path=str(
+                screenshots / f"after-{width}-{theme}-hero.png"
+            )
+        )
+        capture_sections(
+            page, screenshots, f"closed-{width}-{theme}"
+        )
+
+    version_link = page.locator("#updated a")
+    version_link.scroll_into_view_if_needed()
+    for state in ("hover", "focus"):
+        if state == "hover":
+            version_link.hover()
+        else:
+            page.mouse.move(0, 0)
+            page.keyboard.press("Shift")
+            version_link.focus()
+        require(
+            page.locator("#tip").is_visible()
+            and page.locator("#tip").inner_text()
+            == "What changed in each version",
+            "version tooltip missing on " + state,
+        )
+    version_link.click()
+    require(
+        page.locator("#changes").get_attribute("open") is not None
+        and page.evaluate("location.hash") == "#changes",
+        "version link does not open the Data changelog",
+    )
+    page.locator("#changes").evaluate("n => n.open = false")
+    if page.locator("#development-list > li.earlier").count():
+        more = page.locator("#developments-more")
+        n = page.locator("#development-list > li.earlier").count()
+        # A list extension stays after the list's last visible item and extends it in place.
+        after_last = "() => { const items = [...document.querySelectorAll('#development-list > li')].filter(li => !li.hidden), b = document.getElementById('developments-more'); return b.getBoundingClientRect().top >= items.at(-1).getBoundingClientRect().bottom - 1; }"
+        require(more.inner_text().strip() == f"Show {n} earlier" and more.get_attribute("aria-expanded") == "false" and page.evaluate(after_last), "developments control is not a collapsed 'Show N earlier' after the list")
+        more.click()
+        require(
+            page.locator("#development-list > li.earlier").first.is_visible()
+            and more.inner_text().strip() == "Show fewer"
+            and more.get_attribute("aria-expanded") == "true"
+            and page.evaluate(after_last),
+            "developments control does not extend the list in place with 'Show fewer' at its end",
+        )
+        more.click()
+        require(not page.locator("#development-list > li.earlier").first.is_visible(), "Show fewer does not collapse the earlier developments")
+        # Keyboard: Enter expands and moves focus to the first revealed item in view, below the sticky section bar; Space collapses with focus on the control in view.
+        in_view = "n => { const r = n.getBoundingClientRect(), nav = document.querySelector('.secnav').getBoundingClientRect(); return n === document.activeElement && r.top >= Math.max(0, nav.bottom) && r.bottom <= innerHeight; }"
+        more.focus()
+        page.keyboard.press("Enter")
+        require(page.locator("#development-list > li.earlier").first.evaluate(in_view), "keyboard expansion leaves focus off the first revealed development or off-screen")
+        more.focus()
+        page.keyboard.press("Space")
+        require(more.get_attribute("aria-expanded") == "false" and more.evaluate(in_view), "keyboard collapse leaves focus off the control or off-screen")
+        page.evaluate("document.activeElement.blur()")
+    with page.expect_download() as event_download:
+        page.locator("#events-download").click()
+    require(
+        Path(event_download.value.path()).read_bytes()
+        == (dist / "data" / "events.csv").read_bytes(),
+        "events download differs from the built events.csv",
+    )
+    page.evaluate(
+        "() => { history.replaceState(null, '', location.pathname); scrollTo(0, 0); }"
+    )
+    for error in check_rules_render(page):
+        require(False, error)
+    for error in check_link_states(page):
+        require(False, error)
+
+    # A heading inside a sticky label stops moving. Its section does not.
+    for target in ("map-h", "test-h", "setup-h", "fund-h", "states-h", "world-h"):
+        page.locator(
+            f'section[aria-labelledby="{target}"]'
+        ).evaluate(
+            "e => scrollTo(0, e.getBoundingClientRect().top + scrollY + Math.min(220, e.offsetHeight / 2))"
+        )
+        page.wait_for_timeout(100)
+        require(
+            page.locator(
+                f'.secnav a[data-sections~="{target}"]'
+            ).get_attribute("aria-current")
+            == "location",
+            f"scrollspy lags inside {target}",  # the item of its group
+        )
+        require(
+            page.locator(".secnav a.active").evaluate(
+                "e => { const r=e.getBoundingClientRect(), p=e.parentNode.getBoundingClientRect(); return r.left >= p.left-1 && r.right <= p.right+1; }"
+            ),
+            f"active nav link is clipped at {target}",
+        )
+    page.evaluate(
+        "scrollTo(0, document.documentElement.scrollHeight)"
+    )
+    page.wait_for_timeout(100)
+    require(
+        page.locator('.secnav a[data-sections~="method-h"]').get_attribute("aria-current")
+        == "location",
+        "last section is not active at page bottom",
+    )
+    page.locator('.secnav a[href="#states-h"]').evaluate(
+        "e => e.click()"
+    )
+    page.wait_for_timeout(100)
+    require(
+        page.locator('.secnav a[href="#states-h"]').get_attribute(
+            "aria-current"
+        )
+        == "location",
+        "nav click does not reach the section",
+    )
+
+    for error in check_design_roles(page):
+        require(False, error)
+
+    # At this scroll position the first card citations can be hit-tested.
+    for error in check_citations(page):
+        require(False, error)
+
+    require(
+        page.locator("main abbr, main strong, main a").evaluate_all(
+            "nodes => nodes.every(n => n.textContent.trim())"
+        ),
+        "citation glue left an empty text or focus target",
+    )
+    require(
+        page.locator(".conf").evaluate_all(
+            "nodes => nodes.every(n => ['secondary sources', 'press report', 'our estimate', 'low confidence', 'medium confidence'].includes(n.textContent))"
+        ),
+        "citation glue split a confidence label",
+    )
+
+    # Expanded lists stay in the shared footer track.
+    for grid in page.locator(".cards:not(.minis)").all():
+        paired = grid.locator(".card-row:has(> .card:nth-child(2))")
+        row = paired.first if paired.count() else grid.locator(".card-row").first
+        snapshot = "e => ({tops: [...e.querySelectorAll('.top, .row')].map(n => n.getBoundingClientRect().top + scrollY), bottom: e.getBoundingClientRect().bottom + scrollY})"
+        before = row.evaluate(snapshot)
+        fold = row.locator("details.srcs").first
+        fold.evaluate("e => e.open = true")
+        after = row.evaluate(snapshot)
+        require(
+            len(before["tops"]) == len(after["tops"])
+            and all(
+                abs(a - b) < 1
+                for a, b in zip(before["tops"], after["tops"])
+            ),
+            "opening Sources moves comparison fields",
+        )
+        require(
+            after["bottom"] > before["bottom"],
+            "Sources does not grow its comparison row",
+        )
+        require(
+            fold.evaluate(
+                "e => e.querySelector('ol').getBoundingClientRect().bottom <= e.closest('.card-row').getBoundingClientRect().bottom + 1"
+            ),
+            "Sources overflows the shared footer track",
+        )
+        for error in check_card_grid(page):
+            require(False, "expanded comparison row: " + error)
+        fold.evaluate("e => e.open = false")
+    require(
+        page.locator(".fund-detail").evaluate_all(
+            "folds => folds.every(f => f.getBoundingClientRect().top - f.previousElementSibling.getBoundingClientRect().bottom < 32)"
+        ),
+        "funding disclosure is separated from its budget by staff height",
+    )
+
+    # Production bindings: filters, column preference, CSV, glossary, downloads.
+    page.locator("#world-filter").fill("United Kingdom")
+    require(
+        page.locator("#world-rows > tr").count() == 1,
+        "world search fails",
+    )
+    menu = page.locator("#world-download")
+    trigger = menu.locator("summary")
+    trigger.focus()
+    trigger.press("Enter")
+    require(
+        menu.get_attribute("open") is not None,
+        "Download does not open by keyboard",
+    )
+    require(
+        menu.locator(".popover").evaluate(
+            "n => { const r=n.getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth; }"
+        ),
+        "Download choices are outside the viewport",
+    )
+    trigger.press("Tab")
+    require(
+        page.locator("#world-csv").evaluate(
+            "n => n === document.activeElement"
+        ),
+        "CSV choice is not next in tab order",
+    )
+    page.keyboard.press("Escape")
+    require(
+        menu.get_attribute("open") is None
+        and trigger.evaluate("n => n === document.activeElement"),
+        "Escape does not close Download and restore focus",
+    )
+    trigger.click()
+    page.locator("#world-filter").click()
+    require(
+        menu.get_attribute("open") is None,
+        "outside click does not close Download",
+    )
+    trigger.click()
+    with page.expect_download() as download:
+        click_control_text(page, page.locator("#world-csv"))
+    require(
+        menu.get_attribute("open") is None,
+        "CSV choice leaves Download open",
+    )
+    csv_text = Path(download.value.path()).read_text()
+    csv_rows = list(csv.DictReader(io.StringIO(csv_text)))
+    for error in check_operating_output(
+        page.content(), data, csv_rows
+    ):
+        require(False, error)
+    require(
+        len(csv_rows) == 1 and csv_rows[0]["id"] == "GB",
+        "filtered CSV export differs from view",
+    )
+    trigger.click()
+    menu.get_by_role("link", name="Full dataset…").click()
+    require(
+        page.evaluate("location.hash") == "#data-h"
+        and menu.get_attribute("open") is None,
+        "Full dataset does not close Download and navigate to Data",
+    )
+    page.locator("#world-count button").click()
+    require(
+        page.locator("#world-filter").input_value() == "",
+        "Show all does not clear search",
+    )
+    total = sum(
+        j["kind"] != "supranational" for j in data["jurisdictions"]
+    )
+    require(
+        page.locator("#world-rows > tr").count() == total
+        and page.locator('#world-status option[value=""]').inner_text()
+        == f"All ({total})",
+        "All status count or table total differs from data",
+    )
+    for error in check_operating_output(page.content(), data):
+        require(False, error)
+    region = page.locator(
+        '#world-region option[value^="c:"]'
+    ).first.get_attribute("value")
+    if region is None:
+        raise RuntimeError("region filter has no continent option")
+    page.locator("#world-region").select_option(region)
+    expected_region = {
+        j["id"]
+        for j in data["jurisdictions"]
+        if j["kind"] != "supranational"
+        and (j.get("region") or {}).get("name") == region[2:]
+    }
+    actual_region = set(
+        page.locator("#world-rows > tr").evaluate_all(
+            "rows => rows.map(r => r.dataset.j)"
+        )
+    )
+    require(
+        actual_region == expected_region,
+        "region filter differs from data",
+    )
+    require(
+        region[2:]
+        in (
+            page.locator("#world-region").get_attribute(
+                "aria-label"
+            )
+            or ""
+        ),
+        "selected region is absent from accessible label",
+    )
+    page.locator("#world-region").select_option("")
+    page.locator("#world-status").select_option("none_identified")
+    expected_none = sum(
+        j["kind"] != "supranational"
+        and j["status"] == "none_identified"
+        for j in data["jurisdictions"]
+    )
+    require(
+        page.locator("#world-rows > tr").count() == expected_none,
+        "status filter fails",
+    )
+    for error in check_structural_columns(page, True):
+        require(False, "None identified: " + error)
+    page.locator("#world-status").select_option("pos")
+    for error in check_structural_columns(page, False):
+        require(False, "default status view: " + error)
+    page.locator("details.cols > summary").click()
+    require(
+        page.locator("#col-opts").evaluate(
+            "e => { const r=e.getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth; }"
+        ),
+        "Columns menu is outside the viewport",
+    )
+    since = (
+        page.locator("#col-opts label")
+        .filter(has_text="Status since")
+        .locator("input")
+    )
+    since.set_checked(width <= 640)
+    require(
+        page.locator(
+            'table.world th[data-col="since"]'
+        ).is_visible()
+        == (width <= 640),
+        "Columns cannot override defaults",
+    )
+    page.locator("details.cols > summary").click()
+    # The hint: on a phone with a phone-default column hidden, "More columns on a wider
+    # screen."; otherwise "Scroll sideways" exactly when the table overflows.
+    hint = page.locator("#world-scroll-hint")
+    overflow = page.locator("#world-scroll").evaluate("e => e.scrollWidth > e.clientWidth + 1")
+    narrowed = width <= 640 and page.locator("table.world").evaluate(
+        "t => ['since', 'op', 'budget'].some(k => t.classList.contains('hide-' + k))"
+    )
+    require(hint.is_visible() == (overflow or narrowed), "scroll hint does not reflect hidden columns or table overflow")
+    if hint.is_visible():
+        want_hint = "More columns on a wider screen." if narrowed else "Scroll sideways for more columns \u2192"
+        require(" ".join(hint.inner_text().split()) == want_hint, f"scroll hint reads {hint.inner_text()!r}, expected {want_hint!r}")
+    if width <= 640:
+        require(
+            page.locator(".dlist li").first.evaluate(
+                "e => e.querySelector('.d').getBoundingClientRect().top >= e.querySelector('.dl-title').getBoundingClientRect().bottom"
+            ),
+            "phone download description is not below its title",
+        )
+    term = page.locator("abbr.g").filter(visible=True).first
+    term.scroll_into_view_if_needed()
+    page.evaluate("new Promise(requestAnimationFrame)")
+    term.focus()
+    require(
+        page.locator("#tip").is_visible(),
+        "glossary tooltip does not open on focus",
+    )
+    page.keyboard.press("Escape")
+    require(
+        not page.locator("#tip").is_visible(),
+        "tooltip does not dismiss with Escape",
+    )
+    # Tooltip geometry after a previous tooltip elsewhere: 4px from the trigger, centred unless clamped.
+    # A tooltip left near the right edge must not narrow the next one during measurement.
+    page.evaluate("() => { const t = document.getElementById('tip'); t.style.left = (document.documentElement.clientWidth - 40) + 'px'; }")
+    page.mouse.move(0, 0)
+    term.scroll_into_view_if_needed()
+    term.hover()
+    bad_tip = page.evaluate(
+        """t => {
+            const tip = document.getElementById('tip');
+            const r = t.getBoundingClientRect(), b = tip.getBoundingClientRect();
+            const vw = document.documentElement.clientWidth;
+            const below = Math.abs(b.top - (r.bottom + 4)) < 1.5, above = Math.abs(r.top - 4 - b.bottom) < 1.5 || Math.abs(b.top - 4) < 1.5;
+            const centred = Math.abs((b.left + b.right) / 2 - (r.left + r.right) / 2) < 1.5;
+            const clamped = Math.abs(b.left - 16) < 1.5 || Math.abs(b.right - (vw - 16)) < 1.5;
+            return tip.hidden ? 'hidden' : (below || above) && (centred || clamped) ? '' : JSON.stringify({r, b});
+        }""",
+        term.element_handle(),
+    )
+    require(not bad_tip, "tooltip is not 4px from its trigger and centred or clamped: " + bad_tip)
+    with page.expect_download() as download:
+        page.locator('.dlist a[download="aisi.json"]').click()
+    require(
+        json.loads(Path(download.value.path()).read_text())[
+            "dataset"
+        ]["version"]
+        == data["dataset"]["version"],
+        "raw dataset download differs from build",
+    )
+    require(
+        page.locator("#fund-rows > .fund-item").count()
+        + page.locator("#fund-none li[data-j]").count()
+        == len(data["institutes"]),
+        "funding section omits an institute",
+    )
+
+    for record_type in ("funding", "staff"):
+        # Institutes on the Not published line keep their records on their cards, not in a fold.
+        expected = sum(
+            len(i.get(record_type, []))
+            for i in data["institutes"]
+            if i["jurisdiction_id"] not in funding_groups(data)[2]
+        )
+        require(
+            page.locator(f"[data-record={record_type}]").count()
+            == expected,
+            f"funding folds lost {record_type} records",
+        )
+
+    # Check all controls revealed by disclosures.
+    page.locator("details").evaluate_all(
+        "nodes => nodes.forEach(n => { if (!n.closest('.toolbar-actions')) n.open = true; })"
+    )
+    require(
+        page.locator(
+            "details:not(.cols):not(.download-menu)"
+        ).evaluate_all(
+            "nodes => nodes.every(n => [n, ...n.querySelectorAll('*')].every(e => getComputedStyle(e).userSelect !== 'none'))"
+        ),
+        "descriptive disclosure text is not selectable",
+    )
+    for error in check_wrapped_rows(page):
+        require(False, "expanded wrapped rows: " + error)
+    for error in check_hit_targets(page):
+        require(False, "expanded content: " + error)
+    for error in check_planned_swatches(page):
+        require(False, "expanded content: " + error)
+    for check in (
+        check_typography,
+        check_baselines_and_rhythm,
+        check_citations,
+        check_design_roles,
+        check_source_footers,
+        check_meta_separators,
+        check_card_grid,
+        check_external_markers,
+    ):
+        for error in check(page):
+            require(False, "expanded content: " + error)
+    for error in check_source_keyboard(page):
+        require(False, "expanded content: " + error)
+    for error in check_controls(page):
+        require(False, "expanded content: " + error)
+    # Toolbar disclosures are exclusive, so measure each separately.
+    for menu_width in (320, width) if width == 390 else (width,):
+        page.set_viewport_size(
+            {"width": menu_width, "height": 1000}
+        )
+        for selector in ("details.cols", "#world-download"):
+            disclosure = page.locator(selector)
+            disclosure.locator("summary").click()
+            require(
+                disclosure.get_attribute("open") is not None,
+                f"{selector}: menu did not open",
+            )
+            require(
+                disclosure.locator(".popover").evaluate(
+                    "n => getComputedStyle(n).userSelect === 'none'"
+                ),
+                f"{selector}: control popover allows text selection",
+            )
+            require(
+                disclosure.locator(".popover").evaluate(
+                    "n => { const r=n.getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth; }"
+                ),
+                f"{selector} at {menu_width}px: popover is outside the viewport",
+            )
+            if selector == "details.cols":
+                checkbox = disclosure.locator("input").first
+                was_checked = checkbox.is_checked()
+                choice = disclosure.locator("label").first
+                click_control_text(page, choice)
+                require(
+                    checkbox.is_checked() != was_checked
+                    and disclosure.get_attribute("open")
+                    is not None,
+                    "clicking Columns label text fails or closes the menu",
+                )
+                click_control_text(page, choice)
+            for check in (
+                check_hit_targets,
+                check_typography,
+                check_controls,
+            ):
+                for error in check(page):
+                    require(
+                        False,
+                        f"{selector} at {menu_width}px: {error}",
+                    )
+            last_choice = disclosure.locator(
+                "input, button, a"
+            ).last
+            last_choice.focus()
+            last_choice.press("Tab")
+            require(
+                disclosure.get_attribute("open") is None,
+                f"{selector}: tabbing away leaves menu open",
+            )
+    require(
+        page.locator("th:visible").evaluate_all(
+            "nodes => nodes.every(th => { const b=th.querySelector('button').getBoundingClientRect(); return Math.abs(th.clientWidth-b.width)<2 && Math.abs(th.clientHeight-b.height)<2; })"  # inside the header rule
+        ),
+        "sort button does not fill its header cell",
+    )
+    if screenshots:
+        page.screenshot(
+            path=str(screenshots / f"expanded-{width}-{theme}.png"),
+            full_page=True,
+        )
+        capture_sections(
+            page, screenshots, f"expanded-{width}-{theme}"
+        )
+    for browser_error in page_errors:
+        require(False, f"JavaScript error: {browser_error}")
+    page.close()
+    return errors
+
+
+def shared_links(browser, base_url: str) -> list[str]:
+    """Section links and shared #links on a tall page, then the stylesheet at 320 px and its older-browser fallback."""
+    errors = []
+    # Short final sections must retain an explicit nav choice at a clamped scroll position.
+    page = browser.new_page(viewport={"width": 1440, "height": 1600})
+    page_errors = []
+    page.on("pageerror", lambda e, errs=page_errors: errs.append(e))  # type: ignore[call-overload]
+    hydrated(page, base_url)
+    page.wait_for_selector("#world-rows tr")
+    page.locator('.secnav a[href="#data-h"]').evaluate("e => e.click()")
+    page.wait_for_timeout(100)
+    if (
+        page.locator('.secnav a[href="#data-h"]').get_attribute(
+            "aria-current"
+        )
+        != "location"
+    ):
+        errors.append(
+            "tall viewport: clicking Data selects another section"
+        )
+    if page.evaluate("document.activeElement.id") != "data-h":
+        errors.append("section navigation does not transfer keyboard focus")
+    for target in ("c-fr", "world-h", "fund-h", "method", "changes"):
+        hydrated(page, base_url + "#" + target)
+        page.wait_for_selector("#world-rows tr")
+        page.evaluate("document.fonts.ready")
+        page.wait_for_timeout(100)
+        visible_target = page.locator("#" + target).evaluate(
+            "e => { const t=e.tagName === 'H2' ? e.closest('section') : e; const r=t.getBoundingClientRect(); return r.top >= document.querySelector('.secnav').getBoundingClientRect().bottom - 1 && r.top < innerHeight; }"
+        )
+        if not visible_target:
+            errors.append(
+                f"shared link #{target} does not arrive below the nav"
+            )
+    # Test the shipped stylesheet at narrow width before mutating it
+    # for the older-browser palette fallback check.
+    page.set_viewport_size({"width": 320, "height": 1000})
+    page.locator("details.srcs").evaluate_all(
+        "nodes => nodes.forEach(n => n.open = true)"
+    )
+    page.evaluate("new Promise(requestAnimationFrame)")
+    for theme in ("light", "dark"):
+        set_theme(page, theme)
+        errors.extend(check_external_markers(page))
+    try:
+        page.emulate_media(forced_colors="active")
+        errors.extend(check_external_markers(page))
+    finally:
+        page.emulate_media(forced_colors="none")
+    errors.extend(check_light_fallback(page))
+    errors.extend(
+        f"shared-link JavaScript error: {error}" for error in page_errors
+    )
+    page.close()
+    return errors
+
+
+def table_sorting(browser, base_url: str, data: dict) -> list[str]:
+    sort_page = browser.new_page(viewport={"width": 1440, "height": 1000})
+    hydrated(sort_page, base_url)
+    sort_page.wait_for_selector("#world-rows tr")
+    sort_page.locator("#world-status").select_option("")
+    errors = check_table_sorting(sort_page, data=data)
+    sort_page.close()
+    return errors
+
+
+def prefixed(prefix: str, check, browser, base_url: str, *args) -> list[str]:
+    return [prefix + error for error in check(browser, base_url, *args)]
+
+
+@contextmanager
+def chrome_session(chrome: str, dist: Path):
+    """A local server for the built site and headless Chrome with fresh preferences: what every browser job runs
+    against. Playwright is imported here so the DOM helpers and their unit tests stay usable without it."""
     from playwright.sync_api import sync_playwright
 
-    errors = check_style_source((dist / "index.html").read_text())
     handler = partial(QuietHandler, directory=str(dist))
     with ThreadingHTTPServer(("127.0.0.1", 0), handler) as server:
         thread = threading.Thread(target=server.serve_forever, daemon=True)
         thread.start()
-        base_url = f"http://127.0.0.1:{server.server_port}/"
         try:
             with sync_playwright() as playwright:
-                browser = playwright.chromium.launch(
-                    executable_path=chrome, headless=True
-                )
-                errors.extend(check_recovery_page(browser, base_url, dist, screenshots))
-                for width in (1440, 1000, 390):
-                    for theme in ("light", "dark"):
-                        label = f"{width}px {theme}"
-                        page = themed_page(
-                            browser,
-                            theme,
-                            viewport={"width": width, "height": 1000},
-                        )
-                        page_errors: list[Exception] = []
-                        # Mypy cannot infer the overloaded callback with a bound default.
-                        page.on("pageerror", lambda e, errs=page_errors: errs.append(e))  # type: ignore[call-overload]
-
-                        def require(condition, message, context=label):
-                            if not condition:
-                                errors.append(f"{context}: {message}")
-
-                        hydrated(page, base_url)
-                        page.wait_for_selector("#world-rows tr")
-                        require(
-                            page.locator("#headline[role=alert]").count() == 0,
-                            "render failed",
-                        )
-                        page.evaluate("document.fonts.ready")
-                        page.wait_for_timeout(100)
-                        require(
-                            page.locator("#figures").is_visible(),
-                            "figures row is hidden",
-                        )
-                        for error in check_hit_targets(page):
-                            require(False, error)
-                        for check in (
-                            check_typography,
-                            check_baselines_and_rhythm,
-                            check_citations,
-                            check_design_roles,
-                            check_source_footers,
-                            check_meta_separators,
-                            check_line_end_separators,
-                            check_card_grid,
-                            check_external_markers,
-                            check_status_contrast,
-                            check_status_states,
-                        ):
-                            for error in check(page):
-                                require(False, error)
-                        for error in check_source_keyboard(page):
-                            require(False, error)
-                        for error in check_wrapped_rows(page):
-                            require(False, "wrapped rows: " + error)
-                        for error in check_unbroken_dates(page):
-                            require(False, error)
-                        for error in check_fold_block_gaps(page):
-                            require(False, error)
-                        for error in check_value_qualifiers(page):
-                            require(False, error)
-                        for check in (check_value_column, check_repeated_spacing):
-                            for error in check(page):
-                                require(False, error)
-                        if width in (390, 1000):
-                            for error in check_meta_separators(page, force_wrap=True):
-                                errors.append(f"{width}px forced wrap: {error}")
-                        if width == 390:
-                            page.set_viewport_size({"width": 320, "height": 1000})
-                            for error in check_controls(page):
-                                errors.append(f"320px {theme}: {error}")
-                            page.set_viewport_size({"width": width, "height": 1000})
-                        for check in (check_controls, check_in_content_controls):
-                            for error in check(page):
-                                require(False, error)
-                        for error in check_status_filter(page, data):
-                            require(False, error)
-                        for error in check_funding_weights(page):
-                            require(False, error)
-                        for error in check_label_ladder(page):
-                            require(False, error)
-                        for error in check_download_layout(page):
-                            require(False, error)
-                        for error in check_version_history(page, data):
-                            require(False, error)
-                        for error in check_funding_bars(page, data) + check_budget_output(page.content(), data) + check_funding_outside(page.content(), data):
-                            require(False, error)
-                        for error in check_operating_output(page.content(), data) + check_interval_output(page.content(), data, HAND_WORKED_INTERVALS):
-                            require(False, error)
-                        for error in check_summary_data(page.content(), data):
-                            require(False, error)
-                        for error in check_two_significant_figures(BeautifulSoup(page.content(), "html.parser")) + check_staff_figures(BeautifulSoup(page.content(), "html.parser"), data):
-                            require(False, error)
-                        for error in check_source_alignment(page.content(), data):
-                            require(False, error)
-                        r2_soup = BeautifulSoup(page.content(), "html.parser")
-                        for error in check_section_bar(r2_soup) + check_access_groups(r2_soup, data) + check_figures_row(r2_soup, data) + check_setup_groups(r2_soup, data) + check_per_person(r2_soup, data) + check_access_layout(page, width) + check_access_tips(page):
-                            require(False, error)
-                        for error in check_institute_names(page.content(), data):
-                            require(False, error)
-                        for error in check_leadership_rows(page.content(), data):
-                            require(False, error)
-                        for error in check_generic_sources(page.content(), data) + check_archive_wrap(page):
-                            require(False, error)
-                        for error in check_nonidentified_folds(page.content(), data) + check_nonidentified_style(page):
-                            require(False, error)
-                        require(
-                            page.locator(".cards").evaluate_all(
-                                """(grids, statuses) => grids.every(grid => {
-                              const group = grid.closest('.statusgroup');
-                              if (grid.closest('.eu-level')) return true;
-                              return group && group.querySelector(':scope > h3 .st-' + group.dataset.status)
-                                && [...grid.querySelectorAll('.card')].every(card => statuses[card.dataset.j] === group.dataset.status);
-                            })""",
-                                {j["id"]: j["status"] for j in data["jurisdictions"]},
-                            ),
-                            "card columns mix statuses or lack a status heading",
-                        )
-                        require(
-                            page.evaluate(
-                                "document.documentElement.scrollWidth <= innerWidth + 1"
-                            ),
-                            "page overflows horizontally",
-                        )
-                        # One tooltip system and one external marker: no native title tooltips survive rendering, and no arrow glyph.
-                        require(
-                            page.evaluate(
-                                "() => !document.querySelector('body [title]:not(svg *)')"
-                            ),
-                            "a native title tooltip survives rendering",
-                        )
-                        # State summaries reach keyboard users: a linked name and an unlinked one both show the tooltip on focus, and Escape dismisses it.
-                        scroll = page.evaluate("[scrollX, scrollY]")
-                        page.locator("#world-status").select_option("")
-                        for name_sel in ("#world-rows td:first-child a[data-tip]", "#world-rows td:first-child strong[data-tip]"):
-                            name = page.locator(name_sel).first
-                            if not name.count():
-                                require(False, f"no state name tooltip for {name_sel}")
-                                continue
-                            page.mouse.move(0, 0)  # a pointer left over the page would hover whatever scrolls under it
-                            name.focus()
-                            require(
-                                page.evaluate("s => { const n = document.querySelector(s), t = document.getElementById('tip'); return n === document.activeElement && t && !t.hidden && t.textContent === n.dataset.tip && !!n.getAttribute('aria-description'); }", name_sel),
-                                f"state summary tooltip not shown on keyboard focus: {name_sel}",
-                            )
-                            page.keyboard.press("Escape")
-                            require(page.evaluate("() => document.getElementById('tip').hidden"), "Escape does not dismiss the state summary tooltip")
-                            page.evaluate("document.activeElement.blur()")
-                        page.locator("#world-status").select_option("pos")
-                        page.evaluate("([x, y]) => scrollTo(x, y)", scroll)
-                        page.wait_for_timeout(300)
-                        page.evaluate("scrollTo(0, 0)")  # the nav strip follows the section in view; at the top it starts at its first item
-                        page.wait_for_timeout(300)
-                        require(
-                            page.evaluate(
-                                "() => !document.body.textContent.includes('\\u2197') && ![...document.querySelectorAll('[data-tip], [data-tip-sub], [data-exp]')].some(n => Object.values(n.dataset).some(v => v.includes('\\u2197')))"
-                            ),
-                            "an arrow glyph is used instead of the drawn external marker",
-                        )
-                        require(
-                            page.locator(".secnav .measure").evaluate(
-                                "e => e.scrollLeft === 0"
-                            ),
-                            "nav does not start at its first item",
-                        )
-                        require(
-                            page.locator('.secnav a[href="#map-h"]').evaluate(
-                                "e => e.getBoundingClientRect().left >= e.parentNode.getBoundingClientRect().left - 1"
-                            ),
-                            "first nav item is clipped",
-                        )
-                        require(
-                            page.locator(
-                                'table.world th[data-col="since"]'
-                            ).is_visible()
-                            == (width > 640),
-                            "phone column defaults are incorrect",
-                        )
-                        require(
-                            page.locator('table.world th[data-col="inst"]').evaluate(
-                                "e => e.getBoundingClientRect().width >= 175"  # 11rem: the owner tightened minimums so the default table fits at 1100px
-                            ),
-                            "Institute column is too narrow",
-                        )
-                        for error in check_activity_width(page) + check_activity_tooltip(page):
-                            require(False, error)
-                        for error in check_first_screen(page, data):
-                            require(False, error)
-                        # The bar shows the page title once the h1 is under it; Back to top reveals the h1 fully.
-                        page.evaluate(
-                            "() => { const h = document.querySelector('#top h1'), n = document.querySelector('.secnav'); window.scrollTo(0, h.getBoundingClientRect().bottom + scrollY - n.offsetHeight + 2); }"
-                        )
-                        page.wait_for_timeout(150)
-                        require(
-                            page.locator(".secnav").evaluate(
-                                "n => n.classList.contains('scrolled')"
-                            ),
-                            "nav title does not appear once the h1 scrolls under the bar",
-                        )
-                        if width <= 430:  # phones: the five items alone, no title (check_group_rows)
-                            require(not page.locator(".secnav .navtitle").is_visible(), "nav title shows on a phone")
-                        else:
-                            page.locator(".secnav .navtitle").click()
-                            page.wait_for_timeout(400)
-                            require(
-                                page.evaluate(
-                                    "() => document.querySelector('#top h1').getBoundingClientRect().top >= document.querySelector('.secnav').getBoundingClientRect().bottom"
-                                ),
-                                "Back to top leaves the h1 under the bar",
-                            )
-                        page.evaluate("window.scrollTo(0, 0)")
-                        page.wait_for_timeout(150)
-
-                        if screenshots:
-                            screenshots.mkdir(parents=True, exist_ok=True)
-                            page.screenshot(
-                                path=str(
-                                    screenshots / f"after-{width}-{theme}-full.png"
-                                ),
-                                full_page=True,
-                            )
-                            page.screenshot(
-                                path=str(
-                                    screenshots / f"after-{width}-{theme}-hero.png"
-                                )
-                            )
-                            capture_sections(
-                                page, screenshots, f"closed-{width}-{theme}"
-                            )
-
-                        version_link = page.locator("#updated a")
-                        version_link.scroll_into_view_if_needed()
-                        for state in ("hover", "focus"):
-                            if state == "hover":
-                                version_link.hover()
-                            else:
-                                page.mouse.move(0, 0)
-                                page.keyboard.press("Shift")
-                                version_link.focus()
-                            require(
-                                page.locator("#tip").is_visible()
-                                and page.locator("#tip").inner_text()
-                                == "What changed in each version",
-                                "version tooltip missing on " + state,
-                            )
-                        version_link.click()
-                        require(
-                            page.locator("#changes").get_attribute("open") is not None
-                            and page.evaluate("location.hash") == "#changes",
-                            "version link does not open the Data changelog",
-                        )
-                        page.locator("#changes").evaluate("n => n.open = false")
-                        if page.locator("#development-list > li.earlier").count():
-                            more = page.locator("#developments-more")
-                            n = page.locator("#development-list > li.earlier").count()
-                            # A list extension stays after the list's last visible item and extends it in place.
-                            after_last = "() => { const items = [...document.querySelectorAll('#development-list > li')].filter(li => !li.hidden), b = document.getElementById('developments-more'); return b.getBoundingClientRect().top >= items.at(-1).getBoundingClientRect().bottom - 1; }"
-                            require(more.inner_text().strip() == f"Show {n} earlier" and more.get_attribute("aria-expanded") == "false" and page.evaluate(after_last), "developments control is not a collapsed 'Show N earlier' after the list")
-                            more.click()
-                            require(
-                                page.locator("#development-list > li.earlier").first.is_visible()
-                                and more.inner_text().strip() == "Show fewer"
-                                and more.get_attribute("aria-expanded") == "true"
-                                and page.evaluate(after_last),
-                                "developments control does not extend the list in place with 'Show fewer' at its end",
-                            )
-                            more.click()
-                            require(not page.locator("#development-list > li.earlier").first.is_visible(), "Show fewer does not collapse the earlier developments")
-                            # Keyboard: Enter expands and moves focus to the first revealed item in view, below the sticky section bar; Space collapses with focus on the control in view.
-                            in_view = "n => { const r = n.getBoundingClientRect(), nav = document.querySelector('.secnav').getBoundingClientRect(); return n === document.activeElement && r.top >= Math.max(0, nav.bottom) && r.bottom <= innerHeight; }"
-                            more.focus()
-                            page.keyboard.press("Enter")
-                            require(page.locator("#development-list > li.earlier").first.evaluate(in_view), "keyboard expansion leaves focus off the first revealed development or off-screen")
-                            more.focus()
-                            page.keyboard.press("Space")
-                            require(more.get_attribute("aria-expanded") == "false" and more.evaluate(in_view), "keyboard collapse leaves focus off the control or off-screen")
-                            page.evaluate("document.activeElement.blur()")
-                        with page.expect_download() as event_download:
-                            page.locator("#events-download").click()
-                        require(
-                            Path(event_download.value.path()).read_bytes()
-                            == (dist / "data" / "events.csv").read_bytes(),
-                            "events download differs from the built events.csv",
-                        )
-                        page.evaluate(
-                            "() => { history.replaceState(null, '', location.pathname); scrollTo(0, 0); }"
-                        )
-                        for error in check_rules_render(page):
-                            require(False, error)
-                        for error in check_link_states(page):
-                            require(False, error)
-
-                        # A heading inside a sticky label stops moving. Its section does not.
-                        for target in ("map-h", "test-h", "setup-h", "fund-h", "states-h", "world-h"):
-                            page.locator(
-                                f'section[aria-labelledby="{target}"]'
-                            ).evaluate(
-                                "e => scrollTo(0, e.getBoundingClientRect().top + scrollY + Math.min(220, e.offsetHeight / 2))"
-                            )
-                            page.wait_for_timeout(100)
-                            require(
-                                page.locator(
-                                    f'.secnav a[data-sections~="{target}"]'
-                                ).get_attribute("aria-current")
-                                == "location",
-                                f"scrollspy lags inside {target}",  # the item of its group
-                            )
-                            require(
-                                page.locator(".secnav a.active").evaluate(
-                                    "e => { const r=e.getBoundingClientRect(), p=e.parentNode.getBoundingClientRect(); return r.left >= p.left-1 && r.right <= p.right+1; }"
-                                ),
-                                f"active nav link is clipped at {target}",
-                            )
-                        page.evaluate(
-                            "scrollTo(0, document.documentElement.scrollHeight)"
-                        )
-                        page.wait_for_timeout(100)
-                        require(
-                            page.locator('.secnav a[data-sections~="method-h"]').get_attribute("aria-current")
-                            == "location",
-                            "last section is not active at page bottom",
-                        )
-                        page.locator('.secnav a[href="#states-h"]').evaluate(
-                            "e => e.click()"
-                        )
-                        page.wait_for_timeout(100)
-                        require(
-                            page.locator('.secnav a[href="#states-h"]').get_attribute(
-                                "aria-current"
-                            )
-                            == "location",
-                            "nav click does not reach the section",
-                        )
-
-                        for error in check_design_roles(page):
-                            require(False, error)
-
-                        # At this scroll position the first card citations can be hit-tested.
-                        for error in check_citations(page):
-                            require(False, error)
-
-                        require(
-                            page.locator("main abbr, main strong, main a").evaluate_all(
-                                "nodes => nodes.every(n => n.textContent.trim())"
-                            ),
-                            "citation glue left an empty text or focus target",
-                        )
-                        require(
-                            page.locator(".conf").evaluate_all(
-                                "nodes => nodes.every(n => ['secondary sources', 'press report', 'our estimate', 'low confidence', 'medium confidence'].includes(n.textContent))"
-                            ),
-                            "citation glue split a confidence label",
-                        )
-
-                        # Expanded lists stay in the shared footer track.
-                        for grid in page.locator(".cards:not(.minis)").all():
-                            paired = grid.locator(".card-row:has(> .card:nth-child(2))")
-                            row = paired.first if paired.count() else grid.locator(".card-row").first
-                            snapshot = "e => ({tops: [...e.querySelectorAll('.top, .row')].map(n => n.getBoundingClientRect().top + scrollY), bottom: e.getBoundingClientRect().bottom + scrollY})"
-                            before = row.evaluate(snapshot)
-                            fold = row.locator("details.srcs").first
-                            fold.evaluate("e => e.open = true")
-                            after = row.evaluate(snapshot)
-                            require(
-                                len(before["tops"]) == len(after["tops"])
-                                and all(
-                                    abs(a - b) < 1
-                                    for a, b in zip(before["tops"], after["tops"])
-                                ),
-                                "opening Sources moves comparison fields",
-                            )
-                            require(
-                                after["bottom"] > before["bottom"],
-                                "Sources does not grow its comparison row",
-                            )
-                            require(
-                                fold.evaluate(
-                                    "e => e.querySelector('ol').getBoundingClientRect().bottom <= e.closest('.card-row').getBoundingClientRect().bottom + 1"
-                                ),
-                                "Sources overflows the shared footer track",
-                            )
-                            for error in check_card_grid(page):
-                                require(False, "expanded comparison row: " + error)
-                            fold.evaluate("e => e.open = false")
-                        require(
-                            page.locator(".fund-detail").evaluate_all(
-                                "folds => folds.every(f => f.getBoundingClientRect().top - f.previousElementSibling.getBoundingClientRect().bottom < 32)"
-                            ),
-                            "funding disclosure is separated from its budget by staff height",
-                        )
-
-                        # Production bindings: filters, column preference, CSV, glossary, downloads.
-                        page.locator("#world-filter").fill("United Kingdom")
-                        require(
-                            page.locator("#world-rows > tr").count() == 1,
-                            "world search fails",
-                        )
-                        menu = page.locator("#world-download")
-                        trigger = menu.locator("summary")
-                        trigger.focus()
-                        trigger.press("Enter")
-                        require(
-                            menu.get_attribute("open") is not None,
-                            "Download does not open by keyboard",
-                        )
-                        require(
-                            menu.locator(".popover").evaluate(
-                                "n => { const r=n.getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth; }"
-                            ),
-                            "Download choices are outside the viewport",
-                        )
-                        trigger.press("Tab")
-                        require(
-                            page.locator("#world-csv").evaluate(
-                                "n => n === document.activeElement"
-                            ),
-                            "CSV choice is not next in tab order",
-                        )
-                        page.keyboard.press("Escape")
-                        require(
-                            menu.get_attribute("open") is None
-                            and trigger.evaluate("n => n === document.activeElement"),
-                            "Escape does not close Download and restore focus",
-                        )
-                        trigger.click()
-                        page.locator("#world-filter").click()
-                        require(
-                            menu.get_attribute("open") is None,
-                            "outside click does not close Download",
-                        )
-                        trigger.click()
-                        with page.expect_download() as download:
-                            click_control_text(page, page.locator("#world-csv"))
-                        require(
-                            menu.get_attribute("open") is None,
-                            "CSV choice leaves Download open",
-                        )
-                        csv_text = Path(download.value.path()).read_text()
-                        csv_rows = list(csv.DictReader(io.StringIO(csv_text)))
-                        for error in check_operating_output(
-                            page.content(), data, csv_rows
-                        ):
-                            require(False, error)
-                        require(
-                            len(csv_rows) == 1 and csv_rows[0]["id"] == "GB",
-                            "filtered CSV export differs from view",
-                        )
-                        trigger.click()
-                        menu.get_by_role("link", name="Full dataset…").click()
-                        require(
-                            page.evaluate("location.hash") == "#data-h"
-                            and menu.get_attribute("open") is None,
-                            "Full dataset does not close Download and navigate to Data",
-                        )
-                        page.locator("#world-count button").click()
-                        require(
-                            page.locator("#world-filter").input_value() == "",
-                            "Show all does not clear search",
-                        )
-                        total = sum(
-                            j["kind"] != "supranational" for j in data["jurisdictions"]
-                        )
-                        require(
-                            page.locator("#world-rows > tr").count() == total
-                            and page.locator('#world-status option[value=""]').inner_text()
-                            == f"All ({total})",
-                            "All status count or table total differs from data",
-                        )
-                        for error in check_operating_output(page.content(), data):
-                            require(False, error)
-                        region = page.locator(
-                            '#world-region option[value^="c:"]'
-                        ).first.get_attribute("value")
-                        if region is None:
-                            raise RuntimeError("region filter has no continent option")
-                        page.locator("#world-region").select_option(region)
-                        expected_region = {
-                            j["id"]
-                            for j in data["jurisdictions"]
-                            if j["kind"] != "supranational"
-                            and (j.get("region") or {}).get("name") == region[2:]
-                        }
-                        actual_region = set(
-                            page.locator("#world-rows > tr").evaluate_all(
-                                "rows => rows.map(r => r.dataset.j)"
-                            )
-                        )
-                        require(
-                            actual_region == expected_region,
-                            "region filter differs from data",
-                        )
-                        require(
-                            region[2:]
-                            in (
-                                page.locator("#world-region").get_attribute(
-                                    "aria-label"
-                                )
-                                or ""
-                            ),
-                            "selected region is absent from accessible label",
-                        )
-                        page.locator("#world-region").select_option("")
-                        page.locator("#world-status").select_option("none_identified")
-                        expected_none = sum(
-                            j["kind"] != "supranational"
-                            and j["status"] == "none_identified"
-                            for j in data["jurisdictions"]
-                        )
-                        require(
-                            page.locator("#world-rows > tr").count() == expected_none,
-                            "status filter fails",
-                        )
-                        for error in check_structural_columns(page, True):
-                            require(False, "None identified: " + error)
-                        page.locator("#world-status").select_option("pos")
-                        for error in check_structural_columns(page, False):
-                            require(False, "default status view: " + error)
-                        page.locator("details.cols > summary").click()
-                        require(
-                            page.locator("#col-opts").evaluate(
-                                "e => { const r=e.getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth; }"
-                            ),
-                            "Columns menu is outside the viewport",
-                        )
-                        since = (
-                            page.locator("#col-opts label")
-                            .filter(has_text="Status since")
-                            .locator("input")
-                        )
-                        since.set_checked(width <= 640)
-                        require(
-                            page.locator(
-                                'table.world th[data-col="since"]'
-                            ).is_visible()
-                            == (width <= 640),
-                            "Columns cannot override defaults",
-                        )
-                        page.locator("details.cols > summary").click()
-                        # The hint: on a phone with a phone-default column hidden, "More columns on a wider
-                        # screen."; otherwise "Scroll sideways" exactly when the table overflows.
-                        hint = page.locator("#world-scroll-hint")
-                        overflow = page.locator("#world-scroll").evaluate("e => e.scrollWidth > e.clientWidth + 1")
-                        narrowed = width <= 640 and page.locator("table.world").evaluate(
-                            "t => ['since', 'op', 'budget'].some(k => t.classList.contains('hide-' + k))"
-                        )
-                        require(hint.is_visible() == (overflow or narrowed), "scroll hint does not reflect hidden columns or table overflow")
-                        if hint.is_visible():
-                            want_hint = "More columns on a wider screen." if narrowed else "Scroll sideways for more columns \u2192"
-                            require(" ".join(hint.inner_text().split()) == want_hint, f"scroll hint reads {hint.inner_text()!r}, expected {want_hint!r}")
-                        if width <= 640:
-                            require(
-                                page.locator(".dlist li").first.evaluate(
-                                    "e => e.querySelector('.d').getBoundingClientRect().top >= e.querySelector('.dl-title').getBoundingClientRect().bottom"
-                                ),
-                                "phone download description is not below its title",
-                            )
-                        term = page.locator("abbr.g").filter(visible=True).first
-                        term.scroll_into_view_if_needed()
-                        page.evaluate("new Promise(requestAnimationFrame)")
-                        term.focus()
-                        require(
-                            page.locator("#tip").is_visible(),
-                            "glossary tooltip does not open on focus",
-                        )
-                        page.keyboard.press("Escape")
-                        require(
-                            not page.locator("#tip").is_visible(),
-                            "tooltip does not dismiss with Escape",
-                        )
-                        # Tooltip geometry after a previous tooltip elsewhere: 4px from the trigger, centred unless clamped.
-                        # A tooltip left near the right edge must not narrow the next one during measurement.
-                        page.evaluate("() => { const t = document.getElementById('tip'); t.style.left = (document.documentElement.clientWidth - 40) + 'px'; }")
-                        page.mouse.move(0, 0)
-                        term.scroll_into_view_if_needed()
-                        term.hover()
-                        bad_tip = page.evaluate(
-                            """t => {
-                                const tip = document.getElementById('tip');
-                                const r = t.getBoundingClientRect(), b = tip.getBoundingClientRect();
-                                const vw = document.documentElement.clientWidth;
-                                const below = Math.abs(b.top - (r.bottom + 4)) < 1.5, above = Math.abs(r.top - 4 - b.bottom) < 1.5 || Math.abs(b.top - 4) < 1.5;
-                                const centred = Math.abs((b.left + b.right) / 2 - (r.left + r.right) / 2) < 1.5;
-                                const clamped = Math.abs(b.left - 16) < 1.5 || Math.abs(b.right - (vw - 16)) < 1.5;
-                                return tip.hidden ? 'hidden' : (below || above) && (centred || clamped) ? '' : JSON.stringify({r, b});
-                            }""",
-                            term.element_handle(),
-                        )
-                        require(not bad_tip, "tooltip is not 4px from its trigger and centred or clamped: " + bad_tip)
-                        with page.expect_download() as download:
-                            page.locator('.dlist a[download="aisi.json"]').click()
-                        require(
-                            json.loads(Path(download.value.path()).read_text())[
-                                "dataset"
-                            ]["version"]
-                            == data["dataset"]["version"],
-                            "raw dataset download differs from build",
-                        )
-                        require(
-                            page.locator("#fund-rows > .fund-item").count()
-                            + page.locator("#fund-none li[data-j]").count()
-                            == len(data["institutes"]),
-                            "funding section omits an institute",
-                        )
-
-                        for record_type in ("funding", "staff"):
-                            # Institutes on the Not published line keep their records on their cards, not in a fold.
-                            expected = sum(
-                                len(i.get(record_type, []))
-                                for i in data["institutes"]
-                                if i["jurisdiction_id"] not in funding_groups(data)[2]
-                            )
-                            require(
-                                page.locator(f"[data-record={record_type}]").count()
-                                == expected,
-                                f"funding folds lost {record_type} records",
-                            )
-
-                        # Check all controls revealed by disclosures.
-                        page.locator("details").evaluate_all(
-                            "nodes => nodes.forEach(n => { if (!n.closest('.toolbar-actions')) n.open = true; })"
-                        )
-                        require(
-                            page.locator(
-                                "details:not(.cols):not(.download-menu)"
-                            ).evaluate_all(
-                                "nodes => nodes.every(n => [n, ...n.querySelectorAll('*')].every(e => getComputedStyle(e).userSelect !== 'none'))"
-                            ),
-                            "descriptive disclosure text is not selectable",
-                        )
-                        for error in check_wrapped_rows(page):
-                            require(False, "expanded wrapped rows: " + error)
-                        for error in check_hit_targets(page):
-                            require(False, "expanded content: " + error)
-                        for error in check_planned_swatches(page):
-                            require(False, "expanded content: " + error)
-                        for check in (
-                            check_typography,
-                            check_baselines_and_rhythm,
-                            check_citations,
-                            check_design_roles,
-                            check_source_footers,
-                            check_meta_separators,
-                            check_card_grid,
-                            check_external_markers,
-                        ):
-                            for error in check(page):
-                                require(False, "expanded content: " + error)
-                        for error in check_source_keyboard(page):
-                            require(False, "expanded content: " + error)
-                        for error in check_controls(page):
-                            require(False, "expanded content: " + error)
-                        # Toolbar disclosures are exclusive, so measure each separately.
-                        for menu_width in (320, width) if width == 390 else (width,):
-                            page.set_viewport_size(
-                                {"width": menu_width, "height": 1000}
-                            )
-                            for selector in ("details.cols", "#world-download"):
-                                disclosure = page.locator(selector)
-                                disclosure.locator("summary").click()
-                                require(
-                                    disclosure.get_attribute("open") is not None,
-                                    f"{selector}: menu did not open",
-                                )
-                                require(
-                                    disclosure.locator(".popover").evaluate(
-                                        "n => getComputedStyle(n).userSelect === 'none'"
-                                    ),
-                                    f"{selector}: control popover allows text selection",
-                                )
-                                require(
-                                    disclosure.locator(".popover").evaluate(
-                                        "n => { const r=n.getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth; }"
-                                    ),
-                                    f"{selector} at {menu_width}px: popover is outside the viewport",
-                                )
-                                if selector == "details.cols":
-                                    checkbox = disclosure.locator("input").first
-                                    was_checked = checkbox.is_checked()
-                                    choice = disclosure.locator("label").first
-                                    click_control_text(page, choice)
-                                    require(
-                                        checkbox.is_checked() != was_checked
-                                        and disclosure.get_attribute("open")
-                                        is not None,
-                                        "clicking Columns label text fails or closes the menu",
-                                    )
-                                    click_control_text(page, choice)
-                                for check in (
-                                    check_hit_targets,
-                                    check_typography,
-                                    check_controls,
-                                ):
-                                    for error in check(page):
-                                        require(
-                                            False,
-                                            f"{selector} at {menu_width}px: {error}",
-                                        )
-                                last_choice = disclosure.locator(
-                                    "input, button, a"
-                                ).last
-                                last_choice.focus()
-                                last_choice.press("Tab")
-                                require(
-                                    disclosure.get_attribute("open") is None,
-                                    f"{selector}: tabbing away leaves menu open",
-                                )
-                        require(
-                            page.locator("th:visible").evaluate_all(
-                                "nodes => nodes.every(th => { const b=th.querySelector('button').getBoundingClientRect(); return Math.abs(th.clientWidth-b.width)<2 && Math.abs(th.clientHeight-b.height)<2; })"  # inside the header rule
-                            ),
-                            "sort button does not fill its header cell",
-                        )
-                        if screenshots:
-                            page.screenshot(
-                                path=str(screenshots / f"expanded-{width}-{theme}.png"),
-                                full_page=True,
-                            )
-                            capture_sections(
-                                page, screenshots, f"expanded-{width}-{theme}"
-                            )
-                        for browser_error in page_errors:
-                            require(False, f"JavaScript error: {browser_error}")
-                        page.close()
-                # Short final sections must retain an explicit nav choice at a clamped scroll position.
-                page = browser.new_page(viewport={"width": 1440, "height": 1600})
-                page_errors = []
-                page.on("pageerror", lambda e, errs=page_errors: errs.append(e))  # type: ignore[call-overload]
-                hydrated(page, base_url)
-                page.wait_for_selector("#world-rows tr")
-                page.locator('.secnav a[href="#data-h"]').evaluate("e => e.click()")
-                page.wait_for_timeout(100)
-                if (
-                    page.locator('.secnav a[href="#data-h"]').get_attribute(
-                        "aria-current"
-                    )
-                    != "location"
-                ):
-                    errors.append(
-                        "tall viewport: clicking Data selects another section"
-                    )
-                if page.evaluate("document.activeElement.id") != "data-h":
-                    errors.append("section navigation does not transfer keyboard focus")
-                for target in ("c-fr", "world-h", "fund-h", "method", "changes"):
-                    hydrated(page, base_url + "#" + target)
-                    page.wait_for_selector("#world-rows tr")
-                    page.evaluate("document.fonts.ready")
-                    page.wait_for_timeout(100)
-                    visible_target = page.locator("#" + target).evaluate(
-                        "e => { const t=e.tagName === 'H2' ? e.closest('section') : e; const r=t.getBoundingClientRect(); return r.top >= document.querySelector('.secnav').getBoundingClientRect().bottom - 1 && r.top < innerHeight; }"
-                    )
-                    if not visible_target:
-                        errors.append(
-                            f"shared link #{target} does not arrive below the nav"
-                        )
-                # Test the shipped stylesheet at narrow width before mutating it
-                # for the older-browser palette fallback check.
-                page.set_viewport_size({"width": 320, "height": 1000})
-                page.locator("details.srcs").evaluate_all(
-                    "nodes => nodes.forEach(n => n.open = true)"
-                )
-                page.evaluate("new Promise(requestAnimationFrame)")
-                for theme in ("light", "dark"):
-                    set_theme(page, theme)
-                    errors.extend(check_external_markers(page))
-                try:
-                    page.emulate_media(forced_colors="active")
-                    errors.extend(check_external_markers(page))
-                finally:
-                    page.emulate_media(forced_colors="none")
-                errors.extend(check_light_fallback(page))
-                errors.extend(
-                    f"shared-link JavaScript error: {error}" for error in page_errors
-                )
-                page.close()
-                errors.extend(check_development_edges(browser, base_url, data) + check_access_edges(browser, base_url, data))
-                errors.extend(check_funding_edges(browser, base_url, data))
-                errors.extend(check_published_amount_fallback(browser, base_url, data))
-                errors.extend(check_menu_touch(browser, base_url))
-                errors.extend(check_arrival(browser, base_url))
-                errors.extend(f"access: {e}" for e in check_access_fixes(browser, base_url))
-                errors.extend(f"group rows: {e}" for e in check_group_rows(browser, base_url))
-                errors.extend(f"touch tips: {e}" for e in check_touch_tips(browser, base_url))
-                errors.extend(check_theme_default(browser, base_url, dist))
-                errors.extend(check_wide_layout(browser, base_url))
-                errors.extend(f"measure: {e}" for e in check_text_measure(browser, base_url))
-                errors.extend(check_none_identified_tips(browser, base_url, data))
-                errors.extend(check_theme_parity(browser, base_url))
-                errors.extend(check_format_edges(browser, base_url, data))
-                errors.extend(check_operating_edges(browser, base_url, data))
-                sort_page = browser.new_page(viewport={"width": 1440, "height": 1000})
-                hydrated(sort_page, base_url)
-                sort_page.wait_for_selector("#world-rows tr")
-                sort_page.locator("#world-status").select_option("")
-                errors.extend(check_table_sorting(sort_page, data=data))
-                sort_page.close()
-                errors.extend(check_card_grid_edges(browser, base_url, data))
+                browser = playwright.chromium.launch(executable_path=chrome, headless=True)
+                yield browser, f"http://127.0.0.1:{server.server_port}/"
                 browser.close()
-        except BrowserError as exc:
-            raise RuntimeError(
-                f"headless Chrome interaction checks failed: {exc}"
-            ) from exc
         finally:
             server.shutdown()
             thread.join(timeout=5)
-    return errors
+
+
+def browser_jobs(dist: Path, data: dict, screenshots: Path | None) -> list[tuple]:
+    """Every browser check as (stage, check, arguments after browser and base URL), in the order its errors are
+    reported. No job depends on another: each opens its own pages."""
+    passes = [(interaction_pass, (dist, data, screenshots, width, theme)) for width in (1440, 1000, 390) for theme in ("light", "dark")]
+    return [
+        ("hydration", hydration_paint, ()),
+        ("hydration", hydration_edges, (dist,)),
+        ("origins", check_origins, (dist,)),
+        ("interactions", check_recovery_page, (dist, screenshots)),
+        *(("interactions", check, args) for check, args in passes),
+        ("interactions", shared_links, ()),
+        ("interactions", check_development_edges, (data,)),
+        ("interactions", check_access_edges, (data,)),
+        ("interactions", check_funding_edges, (data,)),
+        ("interactions", check_published_amount_fallback, (data,)),
+        ("interactions", check_menu_touch, ()),
+        ("interactions", check_arrival, ()),
+        ("interactions", partial(prefixed, "access: ", check_access_fixes), ()),
+        ("interactions", partial(prefixed, "group rows: ", check_group_rows), ()),
+        ("interactions", partial(prefixed, "touch tips: ", check_touch_tips), ()),
+        ("interactions", check_theme_default, (dist,)),
+        ("interactions", check_wide_layout, ()),
+        ("interactions", partial(prefixed, "measure: ", check_text_measure), ()),
+        ("interactions", check_none_identified_tips, (data,)),
+        ("interactions", check_theme_parity, ()),
+        ("interactions", check_format_edges, (data,)),
+        ("interactions", check_operating_edges, (data,)),
+        ("interactions", table_sorting, (data,)),
+        ("interactions", check_card_grid_edges, (data,)),
+    ]
+
+
+# Jobs that start before the others: hydration, which every later stage waits on, then the longest (about 15 to
+# 35 s each on an M3 Max), longest first, so the parallel run ends soon after the slowest one.
+FIRST = (hydration_paint, hydration_edges, check_touch_tips, check_arrival, interaction_pass, check_group_rows, check_wide_layout)
+
+
+def start_order(check) -> int:
+    check = check.args[1] if isinstance(check, partial) else check
+    return FIRST.index(check) if check in FIRST else len(FIRST)
+
+
+def run_browser_job(chrome: str, dist: Path, stage: str, check, args: tuple) -> list[str]:
+    from playwright.sync_api import Error as BrowserError
+
+    try:
+        with chrome_session(chrome, dist) as (browser, base_url):
+            return check(browser, base_url, *args)
+    except BrowserError as exc:
+        if stage != "interactions":
+            raise
+        raise RuntimeError(f"headless Chrome interaction checks failed: {exc}") from exc
+
+
+def stop_pool(pool, finished: bool) -> None:
+    """Shut the pool down. After an early end (a stage not reached, an exception, an interrupt) terminate the workers
+    still running jobs nobody will read, rather than wait for them; their Playwright driver then closes its Chrome."""
+    processes = [] if finished else list((pool._processes or {}).values())  # no public API before Python 3.14
+    pool.shutdown(wait=finished, cancel_futures=True)
+    for process in processes:
+        process.terminate()
+    for process in processes:
+        process.join(timeout=5)
+        if process.is_alive():
+            process.kill()
+            process.join()
+
+
+def run_stages(run, work: list[tuple], seeds: dict, jobs: int = 1) -> list[str]:
+    """Report (stage, check, args) jobs, each run as run(stage, check, args), as the sequential gate does: stages in
+    the order they first appear, each only when every earlier one passed; within a stage its seed's errors (a
+    function of no arguments), then each job's in list order; the first exception in that order ends the run.
+
+    With jobs > 1 every job starts at once in that many spawned processes (FIRST first) and results are read back
+    in list order, so the report and the exception are the same; the results of a stage that is not reached are
+    discarded. run and every check must pickle: module-level functions or partials of them.
+    """
+    stages = list(dict.fromkeys(stage for stage, _, _ in work))
+    pool, futures, finished = None, {}, False
+    try:
+        if jobs > 1:
+            import multiprocessing
+            from concurrent.futures import ProcessPoolExecutor
+
+            pool = ProcessPoolExecutor(jobs, mp_context=multiprocessing.get_context("spawn"))
+            for n in sorted(range(len(work)), key=lambda n: start_order(work[n][1])):
+                futures[n] = pool.submit(run, *work[n])
+        errors = []
+        for stage in stages:
+            if errors:
+                break
+            found = seeds[stage]() if stage in seeds else []
+            for n, job in enumerate(work):
+                if job[0] == stage:
+                    found += futures[n].result() if pool else run(*job)
+            errors += found
+        else:
+            finished = True
+        return errors
+    finally:
+        if pool:
+            stop_pool(pool, finished)
+
+
+def check_browser(chrome: str, dist: Path, data: dict, screenshots: Path | None = None, jobs: int = 1) -> list[str]:
+    """Hydration, then origins, then interactions (after the page's style-source check), each only when everything
+    before it passed; a failed Playwright call in the interactions stops the gate. With --screenshots a parallel run
+    may also write the screenshots of a stage it then does not report."""
+    seeds = {"interactions": lambda: check_style_source((dist / "index.html").read_text())}
+    return run_stages(partial(run_browser_job, chrome, dist), browser_jobs(dist, data, screenshots), seeds, jobs)
 
 
 def expected_budget_ratios(record, jurisdiction, data):
@@ -8192,7 +8329,7 @@ def check_recovery_page(
     return errors
 
 
-def main(dist: Path = ROOT / "dist", screenshots: Path | None = None, capture: Path | None = None) -> int:
+def main(dist: Path = ROOT / "dist", screenshots: Path | None = None, capture: Path | None = None, jobs: int = 1) -> int:
     chrome = find_chrome()
     if chrome is None:
         print(
@@ -8214,11 +8351,7 @@ def main(dist: Path = ROOT / "dist", screenshots: Path | None = None, capture: P
             html, base_url = render(chrome, dist, Path(temporary_root))
         errors = check_method_pages(html, data, dist) + check_dom(html, data, dist, base_url) + check_agent_files(dist) + check_static_page(dist, data) + check_hydrated(html) + check_archive_links(html, data) + check_launch_assets(dist) + check_page_data(dist, data) + check_budget_ratio_downloads(dist, data) + check_state_downloads(dist, data) + check_state_download_buttons(html, dist, data)
         if not errors:
-            errors.extend(check_hydration(chrome, dist))
-        if not errors:
-            errors.extend(check_origins(chrome, dist))
-        if not errors:
-            errors.extend(check_interactions(chrome, dist, data, screenshots))
+            errors.extend(check_browser(chrome, dist, data, screenshots, jobs))
     except (OSError, subprocess.SubprocessError, ValueError, RuntimeError) as exc:
         print(f"error: page check failed: {exc}", file=sys.stderr)
         if isinstance(exc, subprocess.CalledProcessError) and exc.stderr:
@@ -8232,6 +8365,12 @@ def main(dist: Path = ROOT / "dist", screenshots: Path | None = None, capture: P
         f"ok: rendered page and interaction checks passed ({len(data['jurisdictions'])} jurisdictions; {urlsplit(base_url).hostname})"
     )
     return 0
+
+
+def job_count(text: str) -> int:
+    if int(text) < 1:
+        raise argparse.ArgumentTypeError(f"needs at least one job, not {text}")
+    return int(text)
 
 
 if __name__ == "__main__":
@@ -8253,6 +8392,12 @@ if __name__ == "__main__":
         help="only capture fixed page states for a contact sheet into this directory; runs no checks",
     )
     parser.add_argument(
+        "--jobs",
+        type=job_count,
+        default=min(os.cpu_count() or 1, 8),
+        help="browser checks in this many parallel processes (default: CPUs, at most 8); 1 runs them one after another",
+    )
+    parser.add_argument(
         "--find-chrome",
         action="store_true",
         help="only print the Chrome/Chromium path this check would use; exit NOT_RUN if none",
@@ -8262,4 +8407,4 @@ if __name__ == "__main__":
         found = find_chrome()
         print(found or "")
         sys.exit(0 if found else NOT_RUN)
-    sys.exit(main(args.dist.resolve(), args.screenshots, args.capture))
+    sys.exit(main(args.dist.resolve(), args.screenshots, args.capture, args.jobs))

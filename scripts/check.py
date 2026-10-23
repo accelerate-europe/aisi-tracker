@@ -167,7 +167,8 @@ def step_lint(ctx: Context) -> Result:
 
 
 def step_tests(ctx: Context) -> Result:
-    return command_step(ctx, "tests", ["uv", "run", "--locked", "-q", "pytest", "-q", "-p", "no:cacheprovider"])
+    # Four pytest-xdist workers: 50 s to 18 s on an M3 Max; more workers are not faster (session fixtures dominate).
+    return command_step(ctx, "tests", ["uv", "run", "--locked", "-q", "pytest", "-q", "-p", "no:cacheprovider", "-n", "4"])
 
 
 def snapshot_location(store: Path | None) -> str:

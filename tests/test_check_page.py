@@ -578,3 +578,101 @@ def test_cite_is_the_citation_with_its_doi_link():
     assert check_page.check_cite(wrong, dataset) == ["Cite as is not dataset.citation verbatim"]
     no_doi = {"citation": "Tracker, version 1.0.0."}
     assert check_page.check_cite(wrong, no_doi) == []
+
+
+KEYED_PAGE = BeautifulSoup("""
+<table><tbody id="world-rows">
+  <tr data-j="GB"><td data-col="budget">1</td></tr>
+  <tr data-j="FR"></tr>
+  <tr data-j="FR"><td data-col="budget">2</td></tr>
+</tbody><tbody id="world-rest"><tr data-j="DE"><td data-col="budget">3</td></tr></tbody></table>
+<article class="card" data-j="GB"><div class="row"><span class="v">a</span></div>
+  <article class="card" data-j="IT"><div class="row"><span class="v">b</span></div></article></article>
+<div id="c-gb"><div class="row" data-track="2"><span class="v">c</span></div></div>
+""", "html.parser")
+
+
+@pytest.mark.parametrize("selector, attr, value, rest", [
+    ("#world-rows tr[data-j]", "data-j", "GB", ""),
+    ("#world-rows tr[data-j]", "data-j", "FR", ""),  # two rows: the first
+    ("#world-rows tr[data-j]", "data-j", "FR", '[data-col="budget"]'),  # the first row has none: the second's
+    ("#world-rows tr[data-j], #world-rest tr[data-j]", "data-j", "DE", ""),
+    ("#world-rows tr[data-j], #world-rest tr[data-j]", "data-j", "FR", "td"),
+    ("#world-rows tr[data-j]", "data-j", "NL", ""),  # absent
+    (".card[data-j]", "data-j", "GB", ".row .v"),  # a nested card's row is inside the outer card too
+    (".card[data-j]", "data-j", "IT", ".row .v"),
+    ("[id]", "id", "c-gb", ".row[data-track='2'] .v"),
+    ("#world-rows tr[data-j]", "data-j", "G\\42", ""),  # not a plain name: CSS reads the escape
+])
+def test_keyed_finds_what_the_plain_query_finds(selector, attr, value, rest):
+    keyed = check_page.Keyed(KEYED_PAGE, selector, attr)
+    plain = ", ".join(f'{arm.strip()}[{attr}="{value}"] {rest}'.rstrip() for arm in selector.split(","))
+    assert keyed.one(value, rest) is KEYED_PAGE.select_one(plain)
+    if rest:
+        assert keyed.all(value, rest) == KEYED_PAGE.select(plain)
+
+
+def staged_job(stage, check, args):
+    """A stand-in browser job for run_stages: ("ok", errors) returns them, ("raise", message) raises, ("mark", (file,
+    errors)) creates the file and returns them, ("after", (file, errors)) returns them once the file exists, ("stuck",
+    pid file) ignores SIGTERM, then records its process id and never returns."""
+    import os
+    import signal
+    import time
+
+    kind, payload = args
+    if kind == "raise":
+        raise RuntimeError(payload)
+    if kind == "mark":
+        Path(payload[0]).touch()
+        return list(payload[1])
+    if kind == "after":
+        deadline = time.monotonic() + 60
+        while not Path(payload[0]).exists():
+            if time.monotonic() > deadline:
+                raise TimeoutError(f"{payload[0]} never appeared")
+            time.sleep(0.05)
+        return list(payload[1])
+    if kind == "stuck":
+        signal.signal(signal.SIGTERM, signal.SIG_IGN)
+        Path(payload + ".tmp").write_text(str(os.getpid()))
+        Path(payload + ".tmp").rename(payload)  # appears complete
+        time.sleep(600)
+    return list(payload)
+
+
+@pytest.mark.parametrize("jobs", [1, 2])
+def test_run_stages_reports_like_the_sequential_gate(jobs, tmp_path):
+    def job(stage, kind, payload):  # a real job's check: a partial of module functions, as browser_jobs builds them
+        return (stage, check_page.partial(check_page.prefixed, "access: ", check_page.check_access_fixes), (kind, payload))
+
+    seeds = {"late": lambda: ["seed"]}
+    done = tmp_path / "l2-done"
+    l1 = job("late", "after", (str(done), ["l1"])) if jobs > 1 else job("late", "ok", ["l1"])  # in parallel, l2 finishes first
+    work = [job("early", "ok", []), l1, job("early", "ok", []), job("late", "mark", (str(done), ["l2"]))]
+    assert check_page.run_stages(staged_job, work, seeds, jobs) == ["seed", "l1", "l2"]
+    # A stage is reached only when everything before it passed: the later failure is never reported.
+    assert check_page.run_stages(staged_job, [job("early", "ok", ["e1"]), job("late", "raise", "late")], {}, jobs) == ["e1"]
+    # The first exception in report order ends the run, whichever finishes first.
+    work = [job("early", "ok", []), job("late", "ok", ["l1"]), job("late", "raise", "first"), job("late", "raise", "second")]
+    with pytest.raises(RuntimeError, match="^first$"):
+        check_page.run_stages(staged_job, work, {}, jobs)
+
+
+def test_job_count_is_at_least_one():
+    assert check_page.job_count("3") == 3
+    with pytest.raises(check_page.argparse.ArgumentTypeError):
+        check_page.job_count("0")
+
+
+def test_run_stages_stops_workers_it_no_longer_needs(tmp_path):
+    import os
+    import time
+
+    pid_file = tmp_path / "stuck.pid"
+    work = [("early", None, ("after", (str(pid_file), ["e1"]))), ("late", None, ("stuck", str(pid_file)))]
+    start = time.monotonic()
+    assert check_page.run_stages(staged_job, work, {}, jobs=2) == ["e1"]
+    assert time.monotonic() - start < 30
+    with pytest.raises(ProcessLookupError):  # terminated, then killed when it ignored that, and reaped
+        os.kill(int(pid_file.read_text()), 0)
