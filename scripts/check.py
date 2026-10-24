@@ -80,6 +80,8 @@ class Context:
     sections: dict[str, str] = field(default_factory=dict)  # report sections by step
     serve_url: str = SERVE_URL  # where the owner serves the staged build for the Where to look links
     snapshots: Path | None = None  # private source snapshots that seed quote verification
+    gate_args: list[str] = field(default_factory=list)  # CI: shard or merge options for check_page.py
+    test_workers: int = 4
 
 
 UV_KEPT = ("UV_CACHE_DIR", "UV_PYTHON_INSTALL_DIR", "UV_PYTHON_DOWNLOADS", "UV_INDEX", "UV_DEFAULT_INDEX",
@@ -167,8 +169,9 @@ def step_lint(ctx: Context) -> Result:
 
 
 def step_tests(ctx: Context) -> Result:
-    # Four pytest-xdist workers: 50 s to 18 s on an M3 Max; more workers are not faster (session fixtures dominate).
-    return command_step(ctx, "tests", ["uv", "run", "--locked", "-q", "pytest", "-q", "-p", "no:cacheprovider", "-n", "4"])
+    # Four pytest-xdist workers by default: 50 s to 18 s on an M3 Max, where more are not faster (session fixtures
+    # dominate); CI's two-core runner is fastest with two (--test-workers 2).
+    return command_step(ctx, "tests", ["uv", "run", "--locked", "-q", "pytest", "-q", "-p", "no:cacheprovider", "-n", str(ctx.test_workers)])
 
 
 def snapshot_location(store: Path | None) -> str:
@@ -225,7 +228,7 @@ def gate_result(step: str, code: int, seconds: float, log: Path) -> Result:
 def step_gate(ctx: Context) -> Result:
     if not ctx.built:
         return Result("gate", "NOT RUN", detail="no successful build of this snapshot in this run")
-    code, seconds, log = run(ctx, "gate", ["uv", "run", "--locked", "-q", "scripts/check_page.py", "--dist", str(ctx.dist)])
+    code, seconds, log = run(ctx, "gate", ["uv", "run", "--locked", "-q", "scripts/check_page.py", "--dist", str(ctx.dist), *ctx.gate_args])
     return gate_result("gate", code, seconds, log)
 
 
@@ -605,6 +608,12 @@ RUNNERS = {
 # Main --------------------------------------------------------------------------------------------
 
 
+def gate_arguments(args) -> list[str]:
+    """check_page.py options for a CI shard or merge (validated in main)."""
+    return ([f"--shard={args.gate_shard}", f"--results={args.gate_results.resolve()}"] if args.gate_shard else []) + (
+        [f"--merge={args.gate_merge.resolve()}"] if args.gate_merge else []) + ([f"--jobs={args.gate_jobs}"] if args.gate_jobs else [])
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--base", default="HEAD", help="revision to compare the staged snapshot with (default: HEAD)")
@@ -618,6 +627,12 @@ def main() -> int:
     ap.add_argument("--snapshots", type=Path, default=SNAPSHOTS, help="private store of source copies (default: AISI_SNAPSHOTS, otherwise unconfigured); checks copies and seeds quote verification")
     ap.add_argument("--serve-url", default=SERVE_URL, help=f"where the staged build is served for the Where to look links (default: {SERVE_URL})")
     ap.add_argument("--preflight", action="store_true", help="only check that this agent can run every step")
+    ap.add_argument("--test-workers", type=int, default=4, help="pytest-xdist workers for the tests step (default: 4; 0 runs in one process)")
+    ap.add_argument("--gate-dist", type=Path, help="CI: the gate checks this already built site instead of this run's build")
+    ap.add_argument("--gate-shard", help="CI: the gate runs only shard K/N of the browser jobs (needs --gate-results)")
+    ap.add_argument("--gate-results", type=Path, help="CI: where the gate shard writes its results")
+    ap.add_argument("--gate-jobs", type=int, help="browser jobs the gate runs at once (default: check_page.py's)")
+    ap.add_argument("--gate-merge", type=Path, help="CI: the gate reports the shard results under this directory instead of running the browser jobs")
     args = ap.parse_args()
     if args.snapshots is not None:
         args.snapshots = args.snapshots.expanduser().resolve()
@@ -630,6 +645,23 @@ def main() -> int:
         ap.error("--allow-skip is for local runs only")
     if args.skip_browser and not args.allow_skip:
         ap.error("--skip-browser requires --allow-skip")
+    gate_options = [o for o in ("gate_dist", "gate_shard", "gate_results", "gate_jobs", "gate_merge") if getattr(args, o) is not None]
+    if gate_options and "gate" not in steps:
+        ap.error(f"--{gate_options[0].replace('_', '-')} needs the gate step")
+    if args.gate_dist and ("build" in steps or args.out):
+        ap.error("--gate-dist checks an existing build: leave out the build step and --out")
+    if args.gate_shard and args.gate_merge:
+        ap.error("--gate-shard and --gate-merge exclude each other")
+    if (args.gate_shard is None) != (args.gate_results is None):
+        ap.error("--gate-shard and --gate-results go together")
+    if args.gate_jobs is not None and args.gate_jobs < 1:
+        ap.error("--gate-jobs needs at least 1")
+    if args.test_workers < 0:
+        ap.error("--test-workers needs 0 or more (0: no worker processes)")
+    if args.gate_shard is not None and not re.fullmatch(r"([1-9]\d*)/([1-9]\d*)", args.gate_shard or ""):
+        ap.error(f"--gate-shard expects K/N with 1 <= K <= N, not {args.gate_shard!r}")
+    if args.gate_shard and int(args.gate_shard.split("/")[0]) > int(args.gate_shard.split("/")[1]):
+        ap.error(f"--gate-shard expects K/N with 1 <= K <= N, not {args.gate_shard!r}")
     base = git(ROOT, "rev-parse", "--verify", f"{args.base}^{{commit}}").strip() if {"compare", "sheet"} & set(steps) else None
     report = (args.report_dir or Path(tempfile.mkdtemp(prefix="aisi-check-report-"))).resolve()
     if report.exists() and any(report.iterdir()):
@@ -638,9 +670,9 @@ def main() -> int:
     with tempfile.TemporaryDirectory(prefix="aisi-check-") as tmp:
         work = Path(tmp)
         snapshot_id = make_snapshot(ROOT, work / "snapshot")
-        dist = args.out.resolve() if args.out else work / "dist"
+        dist = args.gate_dist.resolve() if args.gate_dist else args.out.resolve() if args.out else work / "dist"
         ctx = Context(ROOT, work / "snapshot", work, report, base, args.release, dist, args.cache.resolve(), clean_env(), serve_url=args.serve_url,
-                      snapshots=args.snapshots)
+                      snapshots=args.snapshots, gate_args=gate_arguments(args), test_workers=args.test_workers, built=bool(args.gate_dist))
         results = []
         for step in STEPS:
             if step in steps:

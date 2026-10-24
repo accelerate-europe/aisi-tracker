@@ -12,6 +12,7 @@ when Chrome/Chromium is missing, so callers can tell "not run" from "passed".
 import argparse
 import copy
 import csv
+import hashlib
 import io
 import json
 import math
@@ -8058,8 +8059,223 @@ def check_browser(chrome: str, dist: Path, data: dict, screenshots: Path | None 
     """Hydration, then origins, then interactions (after the page's style-source check), each only when everything
     before it passed; a failed Playwright call in the interactions stops the gate. With --screenshots a parallel run
     may also write the screenshots of a stage it then does not report."""
-    seeds = {"interactions": lambda: check_style_source((dist / "index.html").read_text())}
-    return run_stages(partial(run_browser_job, chrome, dist), browser_jobs(dist, data, screenshots), seeds, jobs)
+    return run_stages(partial(run_browser_job, chrome, dist), browser_jobs(dist, data, screenshots), browser_seeds(dist), jobs)
+
+
+def browser_seeds(dist: Path) -> dict:
+    return {"interactions": lambda: check_style_source((dist / "index.html").read_text())}
+
+
+# Sharding: CI splits the browser jobs over several machines (--shard K/N) and one job reads the results back
+# (--merge) through the same run_stages, after the static checks. Findings, their order and exit codes are the local
+# gate's; an exception from a browser job prints the same text when main() catches its type, and any other failure
+# (a dead worker, a missing or foreign shard result) still fails, with its own message.
+
+SHARD_FORMAT = 1
+CAUGHT = (OSError, subprocess.SubprocessError, ValueError, RuntimeError)  # what main() reports as "page check failed"
+
+# Seconds per job on GitHub's ubuntu-latest, one job at a time (bench run 40025105295, 24 Oct 2026); shards are
+# balanced by them, so they affect only how long each shard takes. A job not listed counts DEFAULT_COST.
+JOB_COST = {
+    "hydration/hydration_paint": 27.8, "hydration/hydration_edges": 23.8, "origins/check_origins": 2.8,
+    "interactions/check_recovery_page": 3.2,
+    "interactions/interaction_pass/1440/light": 65.6, "interactions/interaction_pass/1440/dark": 65.6,
+    "interactions/interaction_pass/1000/light": 59.4, "interactions/interaction_pass/1000/dark": 59.6,
+    "interactions/interaction_pass/390/light": 59.1, "interactions/interaction_pass/390/dark": 57.8,
+    "interactions/shared_links": 6.5, "interactions/check_development_edges": 22.4, "interactions/check_access_edges": 8.8,
+    "interactions/check_funding_edges": 2.9, "interactions/check_published_amount_fallback": 2.8,
+    "interactions/check_menu_touch": 2.9, "interactions/check_arrival": 45.8, "interactions/check_access_fixes": 14.4,
+    "interactions/check_group_rows": 25.1, "interactions/check_touch_tips": 46.2, "interactions/check_theme_default": 10.0,
+    "interactions/check_wide_layout": 22.5, "interactions/check_text_measure": 7.7,
+    "interactions/check_none_identified_tips": 2.9, "interactions/check_theme_parity": 4.0,
+    "interactions/check_format_edges": 9.3, "interactions/check_operating_edges": 6.0, "interactions/table_sorting": 3.9,
+    "interactions/check_card_grid_edges": 7.8,
+}
+DEFAULT_COST = 5.0
+
+
+class RecordedError(RuntimeError):
+    """A caught exception that a shard recorded: main() prints it as it printed the original."""
+
+    def __init__(self, message: str, stderr: str | None = None):
+        super().__init__(message)
+        self.stderr = stderr
+
+
+class ShardJobError(Exception):
+    """Any other exception a shard recorded; like the original it is not caught by main()."""
+
+
+def job_id(stage: str, check, args: tuple) -> str:
+    """A browser job's stable name: stage, the check (a partial's wrapped one) and an interaction pass's width and theme."""
+    inner = check.args[1] if isinstance(check, partial) else check
+    name = f"{stage}/{inner.__name__}"
+    return f"{name}/{args[3]}/{args[4]}" if inner is interaction_pass else name
+
+
+def shard_numbers(ids: list[str], count: int) -> list[int]:
+    """The shard (1 to count) of every job: longest first onto the least loaded shard, ties to the lower number."""
+    loads, numbers = [0.0] * count, [0] * len(ids)
+    for n in sorted(range(len(ids)), key=lambda n: (-JOB_COST.get(ids[n], DEFAULT_COST), n)):
+        shard = min(range(count), key=lambda s: (loads[s], s))
+        loads[shard] += JOB_COST.get(ids[n], DEFAULT_COST)
+        numbers[n] = shard + 1
+    return numbers
+
+
+def file_digests(root: Path, patterns: tuple[str, ...] = ("**/*",)) -> dict[str, str]:
+    paths = {p for pattern in patterns for p in root.glob(pattern) if p.is_file()}
+    return {p.relative_to(root).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(paths)}
+
+
+def tree_digest(files: dict[str, str]) -> str:
+    """sha256 over the sorted lines "path NUL sha256(file)"."""
+    return hashlib.sha256("".join(f"{path}\0{digest}\n" for path, digest in sorted(files.items())).encode()).hexdigest()
+
+
+def checker_digest() -> str:
+    """The check scripts and every lockfile and project file that decides their environment."""
+    root = Path(__file__).resolve().parents[1]
+    return tree_digest(file_digests(root, ("scripts/*.py", "scripts/*.lock", "pyproject.toml", "uv.lock")))
+
+
+def outcome(exc: BaseException | None = None, errors: list[str] | None = None) -> dict:
+    if exc is None:
+        return {"errors": list(errors)}
+    stderr = exc.stderr if isinstance(exc, subprocess.CalledProcessError) and exc.stderr else None
+    return {"exception": {"type": type(exc).__name__, "message": str(exc), "caught": isinstance(exc, CAUGHT),
+                          "stderr": None if stderr is None else str(stderr[-2000:])}}  # as main() prints it
+
+
+def run_shard(run, work: list[tuple], indices: list[int], jobs: int) -> dict[int, dict]:
+    """Every job in indices, without stages or gating: the errors it returned or the exception it raised."""
+    pool, futures, finished, outcomes = None, {}, False, {}
+    try:
+        if jobs > 1:
+            import multiprocessing
+            from concurrent.futures import ProcessPoolExecutor
+
+            pool = ProcessPoolExecutor(jobs, mp_context=multiprocessing.get_context("spawn"))
+            for n in sorted(indices, key=lambda n: start_order(work[n][1])):
+                futures[n] = pool.submit(run, *work[n])
+        for n in indices:
+            try:
+                outcomes[n] = outcome(errors=futures[n].result() if pool else run(*work[n]))
+            except Exception as exc:  # noqa: BLE001 - every failure is a result the merge must see
+                outcomes[n] = outcome(exc)
+        finished = True
+        return outcomes
+    finally:
+        if pool:
+            stop_pool(pool, finished)
+
+
+def write_shard(chrome: str, dist: Path, data: dict, shard: tuple[int, int], results: Path, jobs: int) -> int:
+    """Run shard K of N and write its results; print its findings as raw diagnostics. Exit 1 when it found any."""
+    number, count = shard
+    work = browser_jobs(dist, data, None)
+    ids = [job_id(*job) for job in work]
+    mine = [n for n, s in enumerate(shard_numbers(ids, count)) if s == number]
+    outcomes = run_shard(partial(run_browser_job, chrome, dist), work, mine, jobs)
+    site = file_digests(dist)
+    results.parent.mkdir(parents=True, exist_ok=True)
+    results.write_text(json.dumps({
+        "format": SHARD_FORMAT, "shard": number, "count": count, "jobs": ids, "checker": checker_digest(),
+        "site": tree_digest(site), "site_files": site, "outcomes": {str(n): o for n, o in outcomes.items()},
+    }, indent=1), encoding="utf-8")
+    found = 0
+    for n in mine:
+        o = outcomes[n]
+        lines = o["errors"] if "errors" in o else [f"{o['exception']['type']}: {o['exception']['message']}"]
+        for line in lines:
+            print(f"shard {number}/{count} (raw, not the gate's report; the build job merges): {ids[n]}: {line}", file=sys.stderr)
+        found += len(lines)
+    print(f"shard {number}/{count}: {len(mine)} browser jobs, {found} findings; results in {results}")
+    return 1 if found else 0
+
+
+def load_shards(directory: Path, dist: Path, ids: list[str]) -> dict[int, dict]:
+    """Every job's recorded outcome from the shard files under directory, or ValueError naming what is wrong."""
+    def refuse(problem: str):
+        raise ValueError(f"shard results in {directory}: {problem}")
+
+    def unique_keys(pairs):
+        keys = [key for key, _ in pairs]
+        if len(keys) != len(set(keys)):
+            raise ValueError(f"duplicate keys {sorted(k for k in set(keys) if keys.count(k) > 1)}")
+        return dict(pairs)
+
+    def count_like(value) -> bool:
+        return isinstance(value, int) and not isinstance(value, bool) and value >= 1
+
+    files = sorted(directory.glob("**/shard-*.json"))
+    if not files:
+        refuse("none found")
+    site, checker, shards, counts, outcomes = file_digests(dist), checker_digest(), {}, set(), {}
+    for path in files:
+        try:
+            result = json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=unique_keys)
+        except (OSError, ValueError) as exc:  # JSONDecodeError is a ValueError, as is a duplicate key
+            refuse(f"{path.name} is not readable JSON without duplicate keys ({exc})")
+        keys = {"format", "shard", "count", "jobs", "checker", "site", "site_files", "outcomes"}
+        if not isinstance(result, dict) or set(result) != keys or not count_like(result["format"]) or result["format"] != SHARD_FORMAT:
+            refuse(f"{path.name} is not a format {SHARD_FORMAT} shard result")
+        if not (count_like(result["shard"]) and count_like(result["count"]) and result["shard"] <= result["count"]):
+            refuse(f"{path.name} has shard {result['shard']!r} of {result['count']!r}, not K of N with 1 <= K <= N")
+        if not (isinstance(result["jobs"], list) and all(isinstance(j, str) for j in result["jobs"])
+                and isinstance(result["checker"], str) and isinstance(result["site"], str)
+                and isinstance(result["site_files"], dict)
+                and all(isinstance(k, str) and isinstance(v, str) for k, v in result["site_files"].items())):
+            refuse(f"{path.name} has malformed jobs, digests or site files")
+        if result["shard"] in shards:
+            refuse(f"shard {result['shard']} appears twice ({shards[result['shard']]} and {path.name})")
+        shards[result["shard"]] = path.name
+        counts.add(result["count"])
+        if result["jobs"] != ids:
+            refuse(f"{path.name} lists other browser jobs than this gate")
+        if result["checker"] != checker:
+            refuse(f"{path.name} was produced by other check scripts")
+        if result["site"] != tree_digest(site):
+            changed = sorted(k for k in set(site) | set(result["site_files"]) if site.get(k) != result["site_files"].get(k))
+            refuse(f"{path.name} checked another build (differs in {', '.join(changed[:10]) or 'its digest'})")
+        if not isinstance(result["outcomes"], dict):
+            refuse(f"{path.name} has no outcomes")
+        for key, o in result["outcomes"].items():
+            if not key.isdigit() or not 0 <= int(key) < len(ids):
+                refuse(f"{path.name} has an outcome for job {key!r}, which does not exist")
+            if int(key) in outcomes:
+                refuse(f"job {ids[int(key)]} has outcomes in two shards")
+            errors_ok = isinstance(o, dict) and set(o) == {"errors"} and isinstance(o["errors"], list) and all(isinstance(e, str) for e in o["errors"])
+            exception = o.get("exception") if isinstance(o, dict) and set(o) == {"exception"} else None
+            exception_ok = (isinstance(exception, dict) and set(exception) == {"type", "message", "caught", "stderr"}
+                            and isinstance(exception["type"], str) and isinstance(exception["message"], str)
+                            and isinstance(exception["caught"], bool) and isinstance(exception["stderr"], (str, type(None))))
+            if not (errors_ok or exception_ok):
+                refuse(f"{path.name} has a malformed outcome for job {ids[int(key)]}")
+            outcomes[int(key)] = o
+    if len(counts) != 1 or set(shards) != set(range(1, next(iter(counts)) + 1)):
+        refuse(f"expected shards 1 to N of one N, found {sorted(shards)} of {sorted(counts)}")
+    if missing := [ids[n] for n in range(len(ids)) if n not in outcomes]:
+        refuse(f"no outcome for {', '.join(missing)}")
+    return outcomes
+
+
+def recorded(outcomes: dict[int, dict], stage: str, n: int, args: tuple) -> list[str]:
+    o = outcomes[n]
+    if "errors" in o:
+        return o["errors"]
+    exc = o["exception"]
+    if exc["caught"]:
+        raise RecordedError(exc["message"], exc["stderr"])
+    raise ShardJobError(f"{exc['type']}: {exc['message']}")
+
+
+def check_merged(dist: Path, data: dict, directory: Path) -> list[str]:
+    """check_browser's report from shard results instead of running the browser jobs."""
+    work = browser_jobs(dist, data, None)
+    outcomes = load_shards(directory, dist, [job_id(*job) for job in work])
+    indexed = [(stage, n, ()) for n, (stage, _, _) in enumerate(work)]
+    return run_stages(partial(recorded, outcomes), indexed, browser_seeds(dist))
 
 
 def expected_budget_ratios(record, jurisdiction, data):
@@ -8329,7 +8545,8 @@ def check_recovery_page(
     return errors
 
 
-def main(dist: Path = ROOT / "dist", screenshots: Path | None = None, capture: Path | None = None, jobs: int = 1) -> int:
+def main(dist: Path = ROOT / "dist", screenshots: Path | None = None, capture: Path | None = None, jobs: int = 1,
+         shard: tuple[int, int] | None = None, results: Path | None = None, merge: Path | None = None) -> int:
     chrome = find_chrome()
     if chrome is None:
         print(
@@ -8347,15 +8564,19 @@ def main(dist: Path = ROOT / "dist", screenshots: Path | None = None, capture: P
             print(f"captured fixed page states in {capture}")
             return 0
         data = json.loads((dist / "data/aisi.json").read_text(encoding="utf-8"))
+        if shard:
+            return write_shard(chrome, dist, data, shard, results, jobs)
         with tempfile.TemporaryDirectory(prefix="check-page-") as temporary_root:
             html, base_url = render(chrome, dist, Path(temporary_root))
         errors = check_method_pages(html, data, dist) + check_dom(html, data, dist, base_url) + check_agent_files(dist) + check_static_page(dist, data) + check_hydrated(html) + check_archive_links(html, data) + check_launch_assets(dist) + check_page_data(dist, data) + check_budget_ratio_downloads(dist, data) + check_state_downloads(dist, data) + check_state_download_buttons(html, dist, data)
         if not errors:
-            errors.extend(check_browser(chrome, dist, data, screenshots, jobs))
-    except (OSError, subprocess.SubprocessError, ValueError, RuntimeError) as exc:
+            errors.extend(check_merged(dist, data, merge) if merge else check_browser(chrome, dist, data, screenshots, jobs))
+    except CAUGHT as exc:
         print(f"error: page check failed: {exc}", file=sys.stderr)
         if isinstance(exc, subprocess.CalledProcessError) and exc.stderr:
             print(exc.stderr[-2000:], file=sys.stderr)
+        if isinstance(exc, RecordedError) and exc.stderr:
+            print(exc.stderr, file=sys.stderr)  # recorded already as printed above
         return 1
     if errors:
         for error in errors:
@@ -8365,6 +8586,13 @@ def main(dist: Path = ROOT / "dist", screenshots: Path | None = None, capture: P
         f"ok: rendered page and interaction checks passed ({len(data['jurisdictions'])} jurisdictions; {urlsplit(base_url).hostname})"
     )
     return 0
+
+
+def shard_spec(text: str) -> tuple[int, int]:
+    number, _, count = text.partition("/")
+    if not (number.isdigit() and count.isdigit() and 1 <= int(number) <= int(count)):
+        raise argparse.ArgumentTypeError(f"expected K/N with 1 <= K <= N, not {text}")
+    return int(number), int(count)
 
 
 def job_count(text: str) -> int:
@@ -8397,14 +8625,21 @@ if __name__ == "__main__":
         default=min(os.cpu_count() or 1, 8),
         help="browser checks in this many parallel processes (default: CPUs, at most 8); 1 runs them one after another",
     )
+    parser.add_argument("--shard", type=shard_spec, help="CI: run only shard K/N of the browser jobs, no static checks, and write --results")
+    parser.add_argument("--results", type=Path, help="with --shard: where to write the shard's results (JSON)")
+    parser.add_argument("--merge", type=Path, help="CI: run the static checks, then report the browser jobs from the shard results under this directory")
     parser.add_argument(
         "--find-chrome",
         action="store_true",
         help="only print the Chrome/Chromium path this check would use; exit NOT_RUN if none",
     )
     args = parser.parse_args()
+    if sum(bool(x) for x in (args.shard, args.merge, args.capture)) > 1:
+        parser.error("--shard, --merge and --capture exclude each other")
+    if bool(args.shard) != bool(args.results):
+        parser.error("--shard and --results go together")
     if args.find_chrome:
         found = find_chrome()
         print(found or "")
         sys.exit(0 if found else NOT_RUN)
-    sys.exit(main(args.dist.resolve(), args.screenshots, args.capture, args.jobs))
+    sys.exit(main(args.dist.resolve(), args.screenshots, args.capture, args.jobs, args.shard, args.results, args.merge and args.merge.resolve()))

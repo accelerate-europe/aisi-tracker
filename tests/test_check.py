@@ -76,6 +76,35 @@ def test_fast_group_expands_and_unknown_steps_fail(monkeypatch, capsys):
     assert check.GROUPS["fast"] == ("validate", "lint", "tests")
 
 
+@pytest.mark.parametrize("argv, message", [
+    (["--only", "fast", "--gate-merge", "results"], "--gate-merge needs the gate step"),
+    (["--only", "gate", "--gate-results", "shard.json"], "go together"),
+    (["--only", "gate", "--gate-shard", "1/4"], "go together"),
+    (["--only", "gate", "--gate-shard", "1/4", "--gate-results", "s.json", "--gate-merge", "results"], "exclude each other"),
+    (["--only", "build,gate", "--gate-dist", "site"], "checks an existing build"),
+    (["--only", "gate", "--gate-dist", "site", "--out", "dist"], "checks an existing build"),
+    (["--only", "gate", "--gate-jobs", "0"], "--gate-jobs needs at least 1"),
+    (["--only", "tests", "--test-workers", "-1"], "--test-workers needs 0 or more"),
+    *((["--only", "gate", "--gate-shard", spec, "--gate-results", "s.json"], "expects K/N") for spec in ("", "0/4", "5/4", "4", "a/b", "1/0")),
+])
+def test_gate_and_test_options_are_checked_before_anything_runs(monkeypatch, capsys, argv, message):
+    monkeypatch.setattr(sys, "argv", ["check.py", *argv])
+    with pytest.raises(SystemExit) as caught:
+        check.main()
+    assert caught.value.code == 2
+    assert message in capsys.readouterr().err
+
+
+def test_gate_arguments_reach_check_page(tmp_path):
+    from argparse import Namespace
+
+    args = Namespace(gate_shard="2/4", gate_results=tmp_path / "s.json", gate_merge=None, gate_jobs=3)
+    assert check.gate_arguments(args) == ["--shard=2/4", f"--results={tmp_path / 's.json'}", "--jobs=3"]
+    args = Namespace(gate_shard=None, gate_results=None, gate_merge=tmp_path / "gate", gate_jobs=None)
+    assert check.gate_arguments(args) == [f"--merge={tmp_path / 'gate'}"]
+    assert check.gate_arguments(Namespace(gate_shard=None, gate_results=None, gate_merge=None, gate_jobs=None)) == []
+
+
 def test_diff_matches_records_by_id_and_reports_new_pointers():
     old = {"jurisdictions": [{"id": "AT", "status": "exploring"}, {"id": "GB", "status": "planned"}]}
     new = {"jurisdictions": [{"id": "GB", "status": "established"}, {"id": "FR", "status": "planned"}]}

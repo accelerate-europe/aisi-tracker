@@ -1,5 +1,6 @@
 import subprocess
 import json
+from collections import Counter
 from pathlib import Path
 from urllib.request import urlopen
 
@@ -676,3 +677,241 @@ def test_run_stages_stops_workers_it_no_longer_needs(tmp_path):
     assert time.monotonic() - start < 30
     with pytest.raises(ProcessLookupError):  # terminated, then killed when it ignored that, and reaped
         os.kill(int(pid_file.read_text()), 0)
+
+
+def test_job_ids_are_unique_and_shards_cover_every_job_once():
+    ids = [check_page.job_id(*job) for job in check_page.browser_jobs(Path("site"), {}, None)]
+    assert len(ids) == len(set(ids))
+    for count in (1, 2, 4, 7):
+        numbers = check_page.shard_numbers(ids, count)
+        assert len(numbers) == len(ids) and set(numbers) <= set(range(1, count + 1))
+    loads = Counter()
+    for job, number in zip(ids, check_page.shard_numbers(ids, 4)):
+        loads[number] += check_page.JOB_COST.get(job, check_page.DEFAULT_COST)
+    assert max(loads.values()) - min(loads.values()) < 10  # seconds of CI work
+
+
+def test_an_unmeasured_job_counts_the_default_cost():
+    assert check_page.shard_numbers(["stage/new_a", "stage/new_b", "stage/new_c"], 2) == [1, 2, 1]
+
+
+def shard_files(tmp_path, ids, outcomes_by_shard, changes=None):
+    """Shard result files for a small site under tmp_path, one per shard, as write_shard writes them."""
+    site = tmp_path / "site"
+    site.mkdir(exist_ok=True)
+    (site / "index.html").write_text("page")
+    files = check_page.file_digests(site)
+    results = tmp_path / "results"
+    for number, outcomes in outcomes_by_shard.items():
+        result = {"format": check_page.SHARD_FORMAT, "shard": number, "count": len(outcomes_by_shard), "jobs": ids,
+                  "checker": check_page.checker_digest(), "site": check_page.tree_digest(files), "site_files": files,
+                  "outcomes": {str(n): o for n, o in outcomes.items()}}
+        result.update((changes or {}).get(number, {}))
+        (results / f"gate-shard-{number}").mkdir(parents=True, exist_ok=True)
+        (results / f"gate-shard-{number}" / f"shard-{number}.json").write_text(json.dumps(result))
+    return site, results
+
+
+OK = {"errors": []}
+
+
+def test_load_shards_returns_every_outcome(tmp_path):
+    site, results = shard_files(tmp_path, ["a", "b", "c"], {1: {0: OK, 2: {"errors": ["x"]}}, 2: {1: OK}})
+    assert check_page.load_shards(results, site, ["a", "b", "c"]) == {0: OK, 1: OK, 2: {"errors": ["x"]}}
+
+
+@pytest.mark.parametrize("shards, changes, problem", [
+    ({1: {0: OK}, 2: {1: OK}}, {2: {"jobs": ["a", "z"]}}, "other browser jobs"),
+    ({1: {0: OK}, 2: {1: OK}}, {2: {"checker": "0" * 64}}, "other check scripts"),
+    ({1: {0: OK}, 2: {1: OK}}, {2: {"site": "0" * 64, "site_files": {"index.html": "0" * 64}}}, "differs in index.html"),
+    ({1: {0: OK}, 2: {1: OK}}, {2: {"shard": 1}}, "appears twice"),
+    ({1: {0: OK}, 2: {1: OK}}, {2: {"count": 3}}, "expected shards 1 to N"),
+    ({1: {0: OK}, 2: {}}, {}, "no outcome for b"),
+    ({1: {0: OK, 1: OK}, 2: {1: OK}}, {}, "outcomes in two shards"),
+    ({1: {0: OK, 1: OK}, 2: {}}, {2: {"outcomes": {"5": OK}}}, "does not exist"),
+    ({1: {0: OK}, 2: {1: {"errors": [3]}}}, {}, "malformed outcome"),
+    ({1: {0: OK}, 2: {1: {"errors": [], "exception": None}}}, {}, "malformed outcome"),
+    ({1: {0: OK}, 2: {1: OK}}, {2: {"format": 99}}, "not a format"),
+    ({1: {0: OK}, 2: {1: OK}}, {2: {"format": True}}, "not a format"),
+    ({1: {0: OK}, 2: {1: OK}}, {2: {"shard": []}}, "not K of N"),
+    ({1: {0: OK}, 2: {1: OK}}, {2: {"shard": True}}, "not K of N"),
+    ({1: {0: OK}, 2: {1: OK}}, {2: {"count": 2.0}}, "not K of N"),
+    ({1: {0: OK}, 2: {1: OK}}, {2: {"shard": 3}}, "not K of N"),
+    ({1: {0: OK}, 2: {1: OK}}, {2: {"site_files": ["index.html"]}}, "malformed jobs, digests or site files"),
+    ({1: {0: OK}, 2: {1: OK}}, {2: {"jobs": "a,b"}}, "malformed jobs, digests or site files"),
+])
+def test_load_shards_refuses_incomplete_or_foreign_results(tmp_path, shards, changes, problem):
+    site, results = shard_files(tmp_path, ["a", "b"], shards, changes)
+    with pytest.raises(ValueError, match=problem):
+        check_page.load_shards(results, site, ["a", "b"])
+
+
+def test_load_shards_refuses_missing_or_unreadable_files(tmp_path):
+    site, results = shard_files(tmp_path, ["a"], {1: {0: OK}})
+    with pytest.raises(ValueError, match="none found"):
+        check_page.load_shards(tmp_path / "nothing", site, ["a"])
+    (results / "gate-shard-1" / "shard-1.json").write_text("{")
+    with pytest.raises(ValueError, match="not readable JSON"):
+        check_page.load_shards(results, site, ["a"])
+
+
+def test_load_shards_refuses_a_duplicated_outcome_within_one_file(tmp_path):
+    site, results = shard_files(tmp_path, ["a"], {1: {0: {"errors": ["the failure"]}}})
+    path = results / "gate-shard-1" / "shard-1.json"
+    path.write_text(path.read_text().replace('"outcomes": {"0": {"errors": ["the failure"]}}',
+                                             '"outcomes": {"0": {"errors": ["the failure"]}, "0": {"errors": []}}'))
+    with pytest.raises(ValueError, match="duplicate keys"):
+        check_page.load_shards(results, site, ["a"])
+
+
+def local_run(stage, check, args):
+    """A browser job for the local reduction: ("errors", list) returns it, ("raise", exception) raises it."""
+    kind, value = args
+    if kind == "raise":
+        raise value
+    return list(value)
+
+
+def reduce(run, work, seeds):
+    """The reduction as (errors, None), or how it ended: ("caught", message) for a type main() reports, else
+    ("uncaught", message)."""
+    try:
+        return check_page.run_stages(run, work, seeds), None
+    except check_page.CAUGHT as exc:
+        return "caught", str(exc)
+    except Exception as exc:
+        return "uncaught", str(exc) if isinstance(exc, check_page.ShardJobError) else f"{type(exc).__name__}: {exc}"
+
+
+@pytest.mark.parametrize("jobs, seeds", [
+    ([("hydration", ("errors", []))] * 2 + [("interactions", ("errors", ["i1"])), ("interactions", ("errors", ["i2"]))], {}),
+    ([("hydration", ("errors", ["h1"])), ("origins", ("errors", ["o1"])), ("interactions", ("raise", RuntimeError("late")))], {}),
+    ([("hydration", ("errors", [])), ("interactions", ("errors", ["i1"]))], {"interactions": lambda: ["seed"]}),
+    ([("hydration", ("errors", [])), ("interactions", ("errors", ["i1"])), ("interactions", ("raise", RuntimeError("stops")))], {}),
+    ([("hydration", ("raise", ValueError("bad value"))), ("interactions", ("errors", ["i1"]))], {}),
+    ([("hydration", ("raise", KeyError("uncaught"))), ("interactions", ("errors", ["i1"]))], {}),
+])
+def test_reduction_from_shard_results_matches_the_local_one(jobs, seeds):
+    work = [(stage, None, args) for stage, args in jobs]
+    outcomes = {n: check_page.outcome(value) if kind == "raise" else check_page.outcome(errors=value)
+                for n, (_, _, (kind, value)) in enumerate(work)}
+    indexed = [(stage, n, ()) for n, (stage, _, _) in enumerate(work)]
+    assert reduce(check_page.partial(check_page.recorded, outcomes), indexed, seeds) == reduce(local_run, work, seeds)
+
+
+def test_a_recorded_exception_prints_as_the_original(rendered, monkeypatch, capsys):
+    _, data, dist = rendered
+    (dist / "data/aisi.json").write_text(json.dumps(data))
+    (dist / "index.html").write_text("Built page")
+    monkeypatch.setattr(check_page, "find_chrome", lambda: "chrome")
+
+    def fail(*args):
+        raise check_page.RecordedError("headless Chrome interaction checks failed: boom", "the tail of stderr")
+
+    monkeypatch.setattr(check_page, "render", fail)
+    assert check_page.main(dist) == 1
+    err = capsys.readouterr().err
+    assert "error: page check failed: headless Chrome interaction checks failed: boom" in err and "the tail of stderr" in err
+
+
+def fake_hydration(*args):
+    """Stand-ins for browser checks in the shard round trip; run_round_trip decides what each returns."""
+
+
+def fake_origins(*args):
+    """See fake_hydration."""
+
+
+def fake_interaction(*args):
+    """See fake_hydration."""
+
+
+def run_round_trip(tmp_path, monkeypatch, behaviour, count=2):
+    """Write count shard files with write_shard for jobs whose behaviour is ("errors", list) or ("raise", exc),
+    merge them with check_merged, and reduce the same jobs directly; return both endings (see reduce)."""
+    checks = {"hydration": fake_hydration, "origins": fake_origins, "interactions": fake_interaction}
+    work = [(stage, checks[stage], (n,)) for n, (stage, _) in enumerate(behaviour)]
+
+    def run(chrome, dist, stage, check, args):
+        kind, value = behaviour[args[0]][1]
+        if kind == "raise":
+            raise value
+        return list(value)
+
+    site = tmp_path / "site"
+    site.mkdir()
+    (site / "index.html").write_text("page")
+    monkeypatch.setattr(check_page, "browser_jobs", lambda dist, data, screenshots: work)
+    monkeypatch.setattr(check_page, "job_id", lambda stage, check, args: f"{stage}/{check.__name__}/{args[0]}")
+    monkeypatch.setattr(check_page, "run_browser_job", run)
+    monkeypatch.setattr(check_page, "browser_seeds", lambda dist: {"interactions": lambda: ["seed"]})
+    for number in range(1, count + 1):
+        check_page.write_shard("chrome", site, {}, (number, count), tmp_path / "gate" / f"gate-shard-{number}" / f"shard-{number}.json", 1)
+
+    def merged():
+        return check_page.check_merged(site, {}, tmp_path / "gate")
+
+    def local():
+        return check_page.run_stages(lambda stage, check, args: run(None, None, stage, check, args), work, check_page.browser_seeds(site))
+
+    return reduce_call(merged), reduce_call(local)
+
+
+def reduce_call(call):
+    try:
+        return call(), None
+    except check_page.CAUGHT as exc:
+        return "caught", str(exc)
+    except Exception as exc:
+        return "uncaught", str(exc) if isinstance(exc, check_page.ShardJobError) else f"{type(exc).__name__}: {exc}"
+
+
+@pytest.mark.parametrize("behaviour", [
+    [("hydration", ("errors", [])), ("origins", ("errors", [])), ("interactions", ("errors", ["i1", "i2"])), ("interactions", ("errors", []))],
+    [("hydration", ("errors", [])), ("origins", ("errors", ["o1"])), ("interactions", ("raise", RuntimeError("never reached")))],
+    [("hydration", ("errors", [])), ("interactions", ("errors", ["i1"])), ("interactions", ("raise", RuntimeError("Chrome failed")))],
+    [("hydration", ("raise", ValueError("bad value"))), ("interactions", ("errors", ["i1"]))],
+    [("hydration", ("raise", KeyError("uncaught"))), ("interactions", ("errors", ["i1"]))],
+])
+def test_shard_files_merge_to_the_local_report(tmp_path, monkeypatch, behaviour):
+    merged, local = run_round_trip(tmp_path, monkeypatch, behaviour)
+    assert merged == local
+
+
+@pytest.mark.parametrize("stderr", [b"line one\nline two\n", b"x" * 2000 + b"line one", b"\x00\xff" * 1500 + b"line one", "line one " * 600])
+def test_a_recorded_exception_prints_as_the_original_through_main(rendered, monkeypatch, capsys, stderr):
+    _, data, dist = rendered
+    (dist / "data/aisi.json").write_text(json.dumps(data))
+    (dist / "index.html").write_text("Built page")
+    monkeypatch.setattr(check_page, "find_chrome", lambda: "chrome")
+    original = subprocess.CalledProcessError(1, ["chrome", "--dump-dom"], stderr=stderr)
+    record = check_page.outcome(original)
+    printed = []
+    for exc in (original, None):
+        def fail(*args, exc=exc):
+            if exc is not None:
+                raise exc
+            check_page.recorded({0: record}, "hydration", 0, ())
+
+        monkeypatch.setattr(check_page, "render", fail)
+        assert check_page.main(dist) == 1
+        printed.append(capsys.readouterr().err)
+    assert printed[0] == printed[1] and "line one" in printed[0]
+
+
+STATIC_CHECKS = ("check_method_pages", "check_dom", "check_agent_files", "check_static_page", "check_hydrated", "check_archive_links",
+                 "check_launch_assets", "check_page_data", "check_budget_ratio_downloads", "check_state_downloads", "check_state_download_buttons")
+
+
+def test_a_static_failure_is_reported_without_reading_shard_results(rendered, monkeypatch, capsys, tmp_path):
+    _, data, dist = rendered
+    (dist / "data/aisi.json").write_text(json.dumps(data))
+    (dist / "index.html").write_text("Built page")
+    monkeypatch.setattr(check_page, "find_chrome", lambda: "chrome")
+    monkeypatch.setattr(check_page, "render", lambda *args: ("<html></html>", "http://127.0.0.1:1/"))
+    for name in STATIC_CHECKS:
+        monkeypatch.setattr(check_page, name, lambda *args: [])
+    monkeypatch.setattr(check_page, "check_dom", lambda *args: ["a static failure"])
+    assert check_page.main(dist, merge=tmp_path / "no-shards") == 1
+    err = capsys.readouterr().err
+    assert "error: a static failure" in err and "shard results" not in err
