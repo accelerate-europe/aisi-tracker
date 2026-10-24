@@ -1,25 +1,32 @@
-# Validate data/aisi.json, build dist/ and, on main, publish it to GitHub Pages.
+# Validate data/aisi.json, build the site once, check it in parallel and, on main, publish exactly that build to GitHub Pages.
 # Runs on every branch. Pages needs a public repository on the free plan; enable it under Settings > Pages > Source: GitHub Actions.
+#
+# checks (validate, lint, tests) and site (the build) run side by side; gate checks the site in four shards of the
+# browser jobs; build (the required status check) runs the static checks, merges the shard results into the gate's
+# report in its usual order and uploads the site for deploy. build runs even when a dependency failed, so that a
+# failed or skipped job can never leave the required check passing; its last step fails unless everything passed.
 name: pages
 on:
   push:
     branches: ['**']
   pull_request:
   workflow_dispatch:
-# Least privilege: build reads the repository; only deploy may publish to Pages.
+# Least privilege: the jobs read the repository; only deploy may publish to Pages.
 permissions:
   contents: read
 concurrency:
   group: pages-${{ github.ref }}
   cancel-in-progress: true
+env:
+  PUBLISH: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
+  # The maintainer's uv refuses versions published less than 7 days ago and uv.lock records that window;
+  # CI uses the same window so the lockfile matches (--locked).
+  UV_EXCLUDE_NEWER: "7 days"
+# check.py is a script without dependencies (and so without a lockfile: uv run --locked would refuse it); it runs
+# every step with uv run --locked itself.
 jobs:
-  build:
+  checks:
     runs-on: ubuntu-latest
-    env:
-      PUBLISH: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
-      # The maintainer's uv refuses versions published less than 7 days ago and uv.lock records that window;
-      # CI uses the same window so the lockfile matches (--locked).
-      UV_EXCLUDE_NEWER: "7 days"
     steps:
       # Actions are pinned to full commit SHAs; the comment names the release the SHA resolves to.
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
@@ -33,22 +40,131 @@ jobs:
           cache-dependency-glob: |
             uv.lock
             scripts/*.lock
-      # One entry point: the hook's fast steps, then build into dist/ and the browser gate on exactly that build.
-      # The publishing path also rejects draft wording (--release).
-      - run: uv run scripts/check.py --only fast,build,gate --out dist --report-dir "$RUNNER_TEMP/check" ${{ env.PUBLISH == 'true' && '--release' || '' }}
+      # The hook's fast steps; two pytest workers are fastest on the runner's two cores. The publishing path also
+      # rejects draft wording (--release, which only the validate step reads).
+      - run: uv run scripts/check.py --only fast --test-workers 2 --report-dir "$RUNNER_TEMP/check" ${{ env.PUBLISH == 'true' && '--release' || '' }}
+      - if: always()
+        run: cat "$RUNNER_TEMP/check/report.md" || true
+      # Backstop: no step may change or add a file outside the ignored outputs.
+      - run: test -z "$(git status --porcelain --untracked-files=all)" || { git status --short; git diff; exit 1; }
+  site:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86 # v5.4.2
+        with:
+          version: "0.11.14"
+          enable-cache: true
+          cache-dependency-glob: |
+            uv.lock
+            scripts/*.lock
+      - run: uv run scripts/check.py --only build --out dist --report-dir "$RUNNER_TEMP/check"
+      - if: always()
+        run: cat "$RUNNER_TEMP/check/report.md" || true
+      - run: test -z "$(git status --porcelain --untracked-files=all)" || { git status --short; git diff; exit 1; }
+      # The one build every shard checks and build publishes, as a tar so that every file and mode arrives as built
+      # (the download verifies the artifact's digest). Kept for GitHub's 30-day re-run window; a re-run of this job
+      # replaces it, and the shards' recorded hashes then refuse results for the earlier bytes.
+      - run: tar -C dist -cf "$RUNNER_TEMP/site.tar" .
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: site
+          path: ${{ runner.temp }}/site.tar
+          if-no-files-found: error
+          retention-days: 30
+          overwrite: true
+  gate:
+    needs: site
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86 # v5.4.2
+        with:
+          version: "0.11.14"
+          enable-cache: true
+          cache-dependency-glob: |
+            uv.lock
+            scripts/*.lock
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: site
+          path: ${{ runner.temp }}
+      - run: mkdir "$RUNNER_TEMP/site" && tar -C "$RUNNER_TEMP/site" -xf "$RUNNER_TEMP/site.tar"
+      # Three browser jobs at a time are fastest on the runner's two cores. The shard's own lines are raw
+      # diagnostics; build prints the gate's report.
+      - run: >-
+          uv run scripts/check.py --only gate --gate-dist "$RUNNER_TEMP/site" --gate-shard ${{ matrix.shard }}/4 --gate-jobs 3
+          --gate-results "$RUNNER_TEMP/gate/shard-${{ matrix.shard }}.json" --report-dir "$RUNNER_TEMP/check"
+      - if: always()
+        run: cat "$RUNNER_TEMP/check/report.md" || true
+      - run: test -z "$(git status --porcelain --untracked-files=all)" || { git status --short; git diff; exit 1; }
+      # Also when the shard found errors: build needs every shard's results. A re-run replaces only this shard's.
+      - if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: gate-shard-${{ matrix.shard }}
+          path: ${{ runner.temp }}/gate/shard-${{ matrix.shard }}.json
+          if-no-files-found: error
+          retention-days: 30
+          overwrite: true
+  build:
+    needs: [checks, site, gate]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86 # v5.4.2
+        with:
+          version: "0.11.14"
+          enable-cache: true
+          cache-dependency-glob: |
+            uv.lock
+            scripts/*.lock
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: site
+          path: ${{ runner.temp }}
+      - run: mkdir "$RUNNER_TEMP/site" && tar -C "$RUNNER_TEMP/site" -xf "$RUNNER_TEMP/site.tar"
+      # Each shard's file in its own directory; the merge refuses a missing, duplicate or foreign one.
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: gate-shard-*
+          path: ${{ runner.temp }}/gate
+          merge-multiple: false
+      # The gate's report: the static checks on this site, then the shards' browser results in the sequential order.
+      - run: uv run scripts/check.py --only gate --gate-dist "$RUNNER_TEMP/site" --gate-merge "$RUNNER_TEMP/gate" --report-dir "$RUNNER_TEMP/check"
       - if: always()
         run: cat "$RUNNER_TEMP/check/report.md" || true
       # The slide map is an extra download the page does not use: a Natural Earth outage or a changed upstream
       # file (the script pins its hash) shows as a failed step but does not hold back the page.
-      - run: uv run scripts/slide_map.py dist/maps/aisi-europe
+      - run: uv run scripts/slide_map.py "$RUNNER_TEMP/site/maps/aisi-europe"  # unlocked script, as before
         continue-on-error: true
         timeout-minutes: 5
-      # Backstop: no step may change or add a file outside the ignored outputs.
       - run: test -z "$(git status --porcelain --untracked-files=all)" || { git status --short; git diff; exit 1; }
+      # The required check passes only when every job and every step before this one passed and the run was not
+      # cancelled: this job runs on regardless (always()), so a cancellation must fail it here. One arriving later,
+      # during the Pages upload, can leave build green, but only after every check passed; deploy, a new job, then
+      # does not start.
+      - if: cancelled()
+        run: echo "the run was cancelled" && exit 1
+      - if: always()
+        run: >-
+          test "${{ job.status }}" = success && test "${{ needs.checks.result }}" = success
+          && test "${{ needs.site.result }}" = success && test "${{ needs.gate.result }}" = success
       - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1
         if: env.PUBLISH == 'true'
         with:
-          path: dist
+          path: ${{ runner.temp }}/site
   deploy:
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     needs: build
