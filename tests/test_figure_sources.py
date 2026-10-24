@@ -1,4 +1,4 @@
-"""Hand-worked contracts for the three figure-source labels: secondary sources, press report, our estimate."""
+"""Hand-worked contracts for the figure-source labels: indirect or secondary (medium), secondary sources, press report, our estimate."""
 
 import copy
 import json
@@ -17,7 +17,7 @@ ROOT = Path(__file__).resolve().parents[1]
     "record,label",
     [
         ({"confidence": "high"}, ""),
-        ({"confidence": "medium"}, "secondary sources"),
+        ({"confidence": "medium"}, "indirect or secondary"),
         ({"confidence": "low", "figure_source": "secondary_sources"}, "secondary sources"),
         ({"confidence": "low", "figure_source": "press_report"}, "press report"),
         ({"confidence": "low", "figure_source": "our_estimate"}, "our estimate"),

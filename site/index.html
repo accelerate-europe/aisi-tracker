@@ -44,7 +44,7 @@
  * Section bar: the title (not on phones, up to 430px), then Map, Compare (Testing and access, Institutional set-up, Funding and staff), News, States (Europe, state by state; The world), Data (Data, Method; the group row says Downloads for Data), one row at every width with no sideways scroll or visible scrollbar from 360px, also with text 10% larger; an item is current while any of its sections is, the section whose top passed last deciding; above the first section of each multi-section group, a quiet group row names the group as in the bar (phones: links only) and links its sections; it sticks under the bar while the group is read, its current section's link marked like the bar's, and leaves with the group, so headings land below both rows (check_page check_section_bar, check_access_fixes, check_group_rows).
  * Figures row: below the map, in the counts row's figure type: median budget and median staff, each with its n and the highest, then the established institutes whose budget is not published; counts count established state institutes only, which a muted scope note under the row says with their number (check_page check_figures_row).
  * Groups: a grouped list (Testing and access; Institutional set-up, by form with the host as note and the form described once) shows a heading, one status square per member in list order, then each member's name linking to its card with a muted note; short groups stack in one column beside a long group that spans two with its list in halves; phones keep one column (check_page check_access_groups, check_access_layout). Testing and access orders squares and list alike (testing: in house, in house and other bodies, other bodies, planned, not published; then status; then name), cites every counterpart from its own source list, so flag-only sources stay off the cards, and explains developers (latest event), provisions and MOU in tooltips (check_page check_access_tips).
- * Missing: absence found by research is written out ("Not published" for unknown values with a tooltip, never zero; "None found yet"); absence by category (no institute yet) is structural: cards omit the row, the table shows a muted dash and hides a column that is inapplicable to every visible row. Each term explains itself in its tooltip, alike in cards and table (Not published, None found yet, None identified, and the dash once in the table's column headers); no legend lines (check_page check_absence_wording).
+ * Missing: absence found by research is written out ("Not published" for unknown values with a tooltip, never zero; "None found yet"); absence by category (no institute yet) is structural: cards omit the row, the table shows a muted dash and hides a column that is inapplicable to every visible row. Each term explains itself in its tooltip, alike in cards and table (Not published, None found yet, None identified, and the dash once in the table's column headers); a complete list is no research gap, so the Network column says "Not a member" with its own tooltip and sorts it after members; no legend lines (check_page check_absence_wording).
  * Figures: ISO currency + amount; ~ estimates to 3 significant figures, + lower bound, "up to" upper bound; technical counts labelled.
  * Values and qualifiers: in cards, table and funding alike, a field's value leads on its own line and its qualifiers (as-of date, scope, basis, confidence: 'as of Apr 2026', 'FY2024 supplementary') sit on one small muted line beneath; the unit named by the label is not repeated.
  * Intervals: cards only, and only an exact interval (equal bounds; a range from a month-only or year-only date stays in the downloads): a muted qualifier under Status since, counted from the announcement or proposal, and its own muted line under the first qualifying Known activity item, counted from establishment; producer wording (display.intervals), each with a tooltip saying it is not a measure of speed or quality.
@@ -436,7 +436,8 @@ main section.first { display: flex; flex-direction: column; gap: var(--sp-5); bo
 .card .row { font: var(--type-body); display: grid; align-items: first baseline; grid-template-columns: var(--card-key) minmax(0, 1fr); gap: var(--sp-3); margin-bottom: var(--gap-row); }
 .card .k { font: var(--type-meta); color: var(--muted); }
 .card .v { font-variant-numeric: tabular-nums; min-width: 0; overflow-wrap: break-word; }
-.missing { font: var(--type-body); color: var(--ink); }
+.missing, .nonmember { font: var(--type-body); color: var(--ink); }
+.nonmember { white-space: nowrap; } /* a two-word value stays on one line, like Member */
 .partner-how { margin-top: var(--gap-row); }
 .partner-how ul { list-style: none; margin: 0; padding: 0; display: grid; row-gap: var(--sp-2); } /* the fold-out under the Partners line: one sentence per partner */
 .partner-how .pname { font: var(--type-meta); color: var(--ink); } .partner-how .phow { font: var(--type-meta); color: var(--muted); }
@@ -858,14 +859,14 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
     document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
   }
   // Figure source type, two plain scales with the status confidence: a figure from a primary source is unmarked; any other says so in plain words on its own qualifier line, with its definition in its tooltip.
-  var CONF = { secondary_sources: ["secondary sources", "Not stated directly in a primary source; taken from secondary sources or read indirectly from a primary one."], press_report: ["press report", "From a press report, not confirmed in a primary source."], our_estimate: ["our estimate", "Our own estimate or calculation from reported figures."] };
+  var CONF = { indirect: ["indirect or secondary", "Not stated directly in a primary source; taken from secondary sources or read indirectly from a primary one."], secondary_sources: ["secondary sources", "Not stated directly in a primary source; taken from secondary sources or read indirectly from a primary one."], press_report: ["press report", "From a press report, not confirmed in a primary source."], our_estimate: ["our estimate", "Our own estimate or calculation from reported figures."] };
   var STATUS_CONF = "How sure we are that this status is right. Medium: indirect primary evidence or several secondary accounts. Low: a single secondary source.";
   // A term with a short definition shown on hover or focus.
   function term(label, definition, cls) { var t = el("abbr", "g" + (cls ? " " + cls : ""), label); t.dataset.exp = definition; t.tabIndex = 0; t.setAttribute("aria-label", label + ": " + definition); return t; }
   function confidence(label, definition) { return term(label, definition, "conf"); }
-  // Medium is always secondary sources; a low-confidence figure names its own source type (figure_source).
+  // Medium is always indirect or secondary; a low-confidence figure names its own source type (figure_source).
   function confTerms(qualifiers) { return qualifiers.map(function (q) { var k = Object.keys(CONF).filter(function (c) { return CONF[c][0] === q; })[0]; return k ? confidence(CONF[k][0], CONF[k][1]) : q; }); } // a producer qualifier that names a source type carries its definition
-  function confTag(r) { var x = CONF[r.confidence === "medium" ? "secondary_sources" : r.confidence === "low" ? r.figure_source : ""]; return x ? confidence(x[0], x[1]) : null; }
+  function confTag(r) { var x = CONF[r.confidence === "medium" ? "indirect" : r.confidence === "low" ? r.figure_source : ""]; return x ? confidence(x[0], x[1]) : null; }
   // Wrap acronyms from dataset.glossary in <abbr> with a hover/tap expansion.
   function glossify(root, G) {
     var keys = Object.keys(G || {}).sort(function (a, b) { return b.length - a.length; });
@@ -1018,9 +1019,11 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
     }
     return foot;
   }
+  // The repository's correction issue form (.github/ISSUE_TEMPLATE/correction.yml); card links prefill its title and State or institute field.
+  function correctionUrl(m) { return m.repository + "/issues/new?template=correction.yml"; }
   function correctionLink(j, m) {
     var a = el("a", "correction", "Suggest a correction");
-    a.href = m.repository + "/issues/new?title=" + encodeURIComponent("Correction: " + j.name + " (" + j.id + ")") + "&body=" + encodeURIComponent("What is wrong or out of date:\n\nSource (link):\n");
+    a.href = correctionUrl(m) + "&title=" + encodeURIComponent("Correction: " + j.name + " (" + j.id + ")") + "&record=" + encodeURIComponent(j.name + " (" + j.id + ")");
     return a;
   }
   function hostOf(url) { try { return new URL(url).hostname.replace(/^www\./, ""); } catch (e) { return ""; } }
@@ -1072,6 +1075,9 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
     return value;
   }
   // Head, Reports to and Partners: the producer supplies state, text, order and labels. Only a stated row has a value; not applicable is a dash, anything else reads Not published.
+  // The network's member list is complete (dataset.vocabularies.membership_body): no entry is a known value, not a research gap.
+  var NOT_MEMBER_TIP = "Not among the network's members; its member list is complete.";
+  function notMember() { var value = el("span", "nonmember", "Not a member"); value.title = NOT_MEMBER_TIP; return value; }
   function rowValue(r) { return r.state === "stated" && r.text ? r.text : missing(r.state === "not_applicable"); }
   function partnersValue(p) {
     if (p.state !== "stated" || !p.items.length) return missing(p.state === "not_applicable");
@@ -1355,7 +1361,8 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
       if (ht && inst.legal_form !== "university_centre") { if (inst.legal_form === "unit_in_existing_body") form[0] = "Unit " + ht; else if (form.length) form[0] += " " + ht; else form.push(ht); }
       if (inst.legal_basis) {
         var lb = inst.legal_basis, fore = lb.state === "foreseen";
-        form.push(BASIS[lb.type] ? (fore ? "to be set up by " : "set up by ") + BASIS[lb.type] : (fore ? "founding act not yet specified" : "no founding act found"));
+        // legal_basis is the act giving the qualifying mandate; a law can give it to a body that already exists (Korea), so a law reads as the mandate's source, not the founding act.
+        form.push(lb.type === "law" ? (fore ? "mandate to be set by law" : "mandate set by law") : BASIS[lb.type] ? (fore ? "to be set up by " : "set up by ") + BASIS[lb.type] : (fore ? "founding act not yet specified" : "no founding act found"));
       }
       var ftxt = form.join("; "); ftxt = ftxt.charAt(0).toUpperCase() + ftxt.slice(1);
       row("Form", ftxt || missing(), fieldCitations(inst, ["form"]));
@@ -2346,14 +2353,14 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
       var stxt = datedStaff(st);
       cell(staffValue(st) || missing(!exists), st ? staffCitations(st) : [], "num");
       var net = (j.memberships || []).filter(function (x) { return x.body === "intl-network"; })[0];
-      cell(net ? "Member" : missing(), net ? fieldCitations(net, ["body"]) : []);
+      cell(net ? "Member" : notMember(), net ? fieldCitations(net, ["body"]) : []);
       [1, 4, 5, 6, 7, 8].forEach(function (ci, n) { tr.children[ci].dataset.col = ["region", "since", "op", "budget", "staff", "net"][n]; });
       var na = { inst: !inst, since: !since && j.status === "none_identified", op: !exists, budget: !exists, staff: !exists };
       var earliest = exists && inst && inst.display.operating ? inst.display.operating.since : null;
       return { j: j, tr: tr, na: na, name: j.name, region: regionOf(j), cont: j.region ? j.region.name : "", inst: inst ? DISPLAY_NAME[inst.id] : "",
                // Sort keys, one per column header (data-k); see SORTED.
                s: { name: sortKey(j.name), region: sortKey(regionOf(j) || null), status: sortKey(ORDER.indexOf(j.status)), inst: sortKey(instLabel ? instLabel.textContent : null, false, true),
-                    since: sortKey(since || null, false, na.since), op: sortKey(earliest, false, na.op), eur: sortKey(eur, !!btxt, na.budget), staff: sortKey(staff, !!stxt, na.staff), net: sortKey(net ? 1 : null) },
+                    since: sortKey(since || null, false, na.since), op: sortKey(earliest, false, na.op), eur: sortKey(eur, !!btxt, na.budget), staff: sortKey(staff, !!stxt, na.staff), net: sortKey(net ? 1 : null, !net) },
                x: { since: since, operational: opv, budget: btxt || (exists ? MISSING : "Not applicable"), staff: stxt || (exists ? MISSING : "Not applicable"), network: net ? "member" : "" },
                q: (j.name + " " + j.id + " " + regionOf(j) + " " + (inst ? DISPLAY_NAME[inst.id] + " " + inst.name + " " + inst.short_name + " " + (inst.acronym || "") : "")).toLowerCase() };
     });
@@ -2596,7 +2603,8 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
     var corr = $("corr");
     if (m.repository) {
       corr.appendChild(document.createTextNode("Spotted a mistake or a newer source? "));
-      var iss = el("a", null, "Report it on GitHub"); iss.href = m.repository + "/issues/new"; iss.rel = "noopener"; corr.appendChild(iss);
+      var iss = el("a", null, "Report a correction"); iss.href = correctionUrl(m); iss.rel = "noopener"; corr.appendChild(iss);
+      corr.appendChild(document.createTextNode(" on GitHub"));
       corr.appendChild(document.createTextNode(", or edit "));
       var ed = el("a", null, "data/aisi.json"); ed.href = m.repository + "/blob/main/data/aisi.json"; ed.rel = "noopener"; corr.appendChild(ed);
       corr.appendChild(document.createTextNode(" and open a pull request. Without a GitHub account, write to "));

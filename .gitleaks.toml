@@ -1,0 +1,14 @@
+# Gitleaks configuration: the default rules plus one allowlist.
+[extend]
+useDefault = true
+
+# Method-copy fingerprints (dataset.method_summaries[].rules) are SHA-256 digests
+# of rule text, not secrets; generic-api-key flags them. The keys are the
+# dataset.method rule ids; add a new rule id here if a scan flags its fingerprint.
+[[allowlists]]
+description = "method-copy fingerprints in data/aisi.json"
+targetRules = ["generic-api-key"]
+condition = "AND"
+paths = ['''^data/aisi\.json$''']
+regexTarget = "line"
+regexes = ['''^\s*"(qualifying-body|why-this-bar|state-checks|european-population|missing-values|world-population-regions|known-activity|freshness|rescinded-instruments|status-confidence|excerpts|outputs|first-output|intervals|agreements|annual-funding|ai-act-authorities|leadership|reporting-line|national-partners|testing-and-access|staffing-model|source-preference|source-titles|consistency-checks|quotation-checks|private-evidence-copies|closest-candidate|none-identified|currency-rounding|budget-display|budget-ratios)": "[0-9a-f]{64}",?$''']

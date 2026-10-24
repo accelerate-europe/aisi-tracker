@@ -1,0 +1,34 @@
+name: Report a correction
+description: Something in the tracker is wrong, missing or out of date.
+title: "Correction: "
+labels: ["correction"]
+body:
+  - type: markdown
+    attributes:
+      value: Thank you. Fill in what you can; an incomplete report is still useful. Without a GitHub account, write to contact@accelerate-europe.org instead.
+  - type: input
+    id: record
+    attributes:
+      label: State or institute
+      description: The state or institute the correction concerns, for example "Germany" or "AISI Deutschland (de-aisi)".
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is wrong or out of date
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Source link
+      description: A link to an official or other public source that shows the correct information.
+  - type: textarea
+    id: excerpt
+    attributes:
+      label: Excerpt (optional)
+      description: The passage in the source that supports the correction, in its original language.
+  - type: input
+    id: date
+    attributes:
+      label: Date of the source or change (optional)
+      description: For example 2026-10-20.

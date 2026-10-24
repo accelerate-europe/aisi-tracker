@@ -1366,12 +1366,14 @@
             }
           },
           "funding": {
+            "description": "Every recorded funding figure: current, historical, proposed, component and related funding. Array order has no meaning; display.budget and display.comparison_funding name the selected records, and coverage says whether an amount is the institute's own.",
             "type": "array",
             "items": {
               "$ref": "#/$defs/funding"
             }
           },
           "staff": {
+            "description": "Every recorded staff count, current and historical. Array order has no meaning; display.staff, display.total_staff and display.technical_staff name the latest records.",
             "type": "array",
             "items": {
               "$ref": "#/$defs/staff"
@@ -1802,30 +1804,35 @@
             "additionalProperties": false,
             "properties": {
               "comparison_funding": {
+                "description": "ID of the funding record used to compare institutes' annual budgets (its eur_per_year_est is the euro figure); null when no record qualifies. Selection: dataset.method, Annual funding.",
                 "type": [
                   "string",
                   "null"
                 ]
               },
               "budget": {
+                "description": "ID of the funding record shown as the institute's Budget; null when no own funding qualifies (Not published). Selection: dataset.method, Budget display.",
                 "type": [
                   "string",
                   "null"
                 ]
               },
               "staff": {
+                "description": "ID of the staff record the page shows: the latest with a total count, else with a technical count, else the latest; null when none is recorded.",
                 "type": [
                   "string",
                   "null"
                 ]
               },
               "total_staff": {
+                "description": "ID of the latest staff record with a total count; null when none is recorded.",
                 "type": [
                   "string",
                   "null"
                 ]
               },
               "technical_staff": {
+                "description": "ID of the latest staff record with a technical count; null when none is recorded.",
                 "type": [
                   "string",
                   "null"
@@ -4060,7 +4067,7 @@
         "press_report",
         "our_estimate"
       ],
-      "description": "Source type shown beside a low-confidence budget or staff figure: secondary_sources for another body's or government's account, press_report for a press report, our_estimate for our own estimate or calculation from reported figures. Required when confidence is low and absent otherwise; a medium-confidence figure is shown as from secondary sources."
+      "description": "Source type shown beside a low-confidence budget or staff figure: secondary_sources for another body's or government's account, press_report for a press report, our_estimate for our own estimate or calculation from reported figures. Required when confidence is low and absent otherwise; a medium-confidence figure is labelled 'indirect or secondary'."
     }
   }
 }

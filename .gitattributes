@@ -1,3 +1,4 @@
 docs/history/ export-ignore
+docs/decisions.md export-ignore
 docs/review.md export-ignore
 LICENSE-DATA -text

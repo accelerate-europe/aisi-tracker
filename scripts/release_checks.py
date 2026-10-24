@@ -1,6 +1,7 @@
 """Release metadata and repository prose checks, shared by check and build."""
 
 import datetime as dt
+import json
 import os
 import re
 import subprocess
@@ -222,6 +223,24 @@ def generated_counts(readme: bytes, published: dict) -> bytes:
         + "."
     )
     return generated_block(readme, content, "counts")
+
+
+def release_tag(data: dict) -> str:
+    """The git tag for this release. .zenodo.json links tree/v<version>, and Zenodo reads the file at the tag."""
+    return f"v{data['dataset']['version']}"
+
+
+def check_release_tag(data: dict, zenodo: str, head_tags: list[str], tag_commit: str | None, head: str) -> list[str]:
+    """The tag about to be created must match the data version, the committed .zenodo.json and HEAD."""
+    tag = release_tag(data)
+    errors = []
+    zenodo_version = json.loads(zenodo).get("version")
+    if zenodo_version != data["dataset"]["version"]:
+        errors.append(f".zenodo.json at HEAD has version {zenodo_version!r}, data has {data['dataset']['version']!r}; run scripts/build.py --update-readme and commit")
+    errors.extend(f"HEAD carries tag {other}, expected {tag}" for other in head_tags if other.startswith("v") and other != tag)
+    if tag_commit is not None and tag_commit != head:
+        errors.append(f"tag {tag} already exists on {tag_commit[:12]}, not on HEAD {head[:12]}")
+    return errors
 
 
 def write_citation(path: Path, content: bytes) -> None:

@@ -862,7 +862,7 @@ FIELD_DOCS = {
     "name_history": "Names oldest first, with start date (the date of the timeline event that gave the name) and source ids.",
     "commitment": "proposed, adopted, announced or not_applicable; see the schema.",
     "confidence": "high = stated in a primary source; medium = primary but indirect or several consistent secondary sources; low = single secondary source or estimate.",
-    "figure_source": "For a low-confidence figure only: secondary_sources, press_report or our_estimate, shown as secondary sources, press report or our estimate. Empty otherwise; a medium-confidence figure is shown as from secondary sources.",
+    "figure_source": "For a low-confidence figure only: secondary_sources, press_report or our_estimate, shown as secondary sources, press report or our estimate. Empty otherwise; a medium-confidence figure is labelled 'indirect or secondary'.",
 }
 
 

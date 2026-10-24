@@ -10,9 +10,9 @@ We count a body as an AI Security Institute (AISI) if a national government, or 
 
 <!-- counts:start -->
 
-Version 1.0.0, data as of 2026-10-23. 195 jurisdictions, 15 institutes and 1088 sources. The Europe view covers 32 states.
+Version 1.0.1, data as of 2026-10-24. 195 jurisdictions, 15 institutes and 1099 sources. The Europe view covers 32 states.
 
-116 output records, 46 agreements and 9 network milestones. Negative findings by confidence: 0 high, 121 medium, 57 low.
+119 output records, 49 agreements and 9 network milestones. Negative findings by confidence: 0 high, 134 medium, 44 low.
 
 <!-- counts:end -->
 
@@ -53,7 +53,11 @@ Generated from the published dataset by `scripts/agent_files.py`, the one home o
 
 ### What this is
 
-Which states have an AI Security Institute (AISI), covering all 193 UN member states plus Taiwan and the EU AI Office, with funding, staff and leadership where published. Every record cites its sources. Published by Accelerate Europe; version 1.0.0, data as of 2026-10-23.
+Which states have an AI Security Institute (AISI), covering all 193 UN member states plus Taiwan and the EU AI Office, with funding, staff and leadership where published. Every record cites its sources. Published by Accelerate Europe; version 1.0.1, data as of 2026-10-24.
+
+### Answering from this data
+
+When you answer a question from this data, give the data date (`dataset.as_of`) and cite the source behind each fact: look up the IDs in the field's `citations` in `sources` and give each source's title and `url`. When a value is none_identified, not_published, none_found or none_disclosed, say that our searches found nothing, not that nothing exists.
 
 ### Files and addresses
 
@@ -69,7 +73,11 @@ Each institute can carry `head`, `reports_to` and `national_partners`: who leads
 
 ### Confidence and missing values
 
-`status_confidence` and `confidence` rate the evidence as high, medium or low; the schema defines each level, and `dataset.method` sets the rules for status confidence. An omitted field or null means not known or not published, never zero or false. Some fields give null, omission or an empty list a specific meaning, such as not applicable; their schema descriptions say which.
+`status_confidence` and `confidence` rate the evidence as high, medium or low; the schema defines each level, and `dataset.method` sets the rules for status confidence. An omitted field or null means not known or not published, never zero or false. For budget and staff, Not published means that no figure was found in the sources checked; these searches are not yet logged with dates, unlike those for testing and access. Some fields give null, omission or an empty list a specific meaning, such as not applicable; their schema descriptions say which.
+
+### Budgets and staff figures
+
+An institute's `funding` and `staff` lists hold every recorded figure, including historical figures, proposals, components and other bodies' funding, and their order has no meaning. `display.budget` names the funding record shown as the institute's budget, `display.comparison_funding` the annual figure used to compare institutes (`eur_per_year_est` gives it in euros), and `display.total_staff` and `display.technical_staff` the latest staff counts; each is null when nothing qualifies. Before quoting an amount, read its `coverage`: not_institute_specific is another body's or a wider programme's money and component is only part of the budget. Read `commitment` too: proposed is not adopted. A funding record of `kind` none_disclosed means we found no published budget.
 
 ### Sources
 
@@ -81,7 +89,7 @@ Code: MIT (`LICENSE`). Data, page text and documentation: CC BY 4.0 (`LICENSE-DA
 
 ### Cite as
 
-Accelerate Europe (2026). AI Security Institutes tracker, version 1.0.0, data as of 23 October 2026. Compiled by Jason Hoelscher-Obermaier. https://doi.org/10.5281/zenodo.23600431
+Accelerate Europe (2026). AI Security Institutes tracker, version 1.0.1, data as of 24 October 2026. Compiled by Jason Hoelscher-Obermaier. https://doi.org/10.5281/zenodo.23600431
 
 <!-- agents:end -->
 
@@ -146,11 +154,11 @@ The citation, current counts, agents and definition blocks, and `CITATION.cff` (
 
 <!-- citation:start -->
 
-Accelerate Europe (2026). AI Security Institutes tracker, version 1.0.0, data as of 23 October 2026. Compiled by Jason Hoelscher-Obermaier. https://doi.org/10.5281/zenodo.23600431
+Accelerate Europe (2026). AI Security Institutes tracker, version 1.0.1, data as of 24 October 2026. Compiled by Jason Hoelscher-Obermaier. https://doi.org/10.5281/zenodo.23600431
 
 <!-- citation:end -->
 
-Corrections: open an issue or pull request on GitHub, or write to <contact@accelerate-europe.org>.
+Corrections: use the "Report a correction" issue form on GitHub (incomplete reports are welcome), open a pull request, or write to <contact@accelerate-europe.org>.
 
 ## Consistency checks
 
@@ -184,6 +192,7 @@ Legacy archive candidates in `data/reference/archive_urls.json` are lookup histo
 
 Follow the [launch runbook](docs/launch.md) for the public source export, hosting setup and post-launch checks.
 
+- Freeze: changes to method, definition and naming text made less than 48 hours before release go to the next release.
 - Run excerpt verification and refresh [private source snapshots](docs/source-snapshots.md).
 - Review stale full-check dates and the recorded evidence limits.
 - Read the check report's Release warnings: sources marked `legal_text` whose `instrument_status_checked` is missing or more than 183 days old (rule `rescinded-instruments` in `dataset.method`; measured at `as_of`, and at the release date under `--release`). Re-verify each instrument's status and record the date, or leave the warning for the owner to accept. The warnings also list work dated after `as_of` (flag searches, source, snapshot and excerpt access dates, instrument status checks); `--release` fails on these, so set `as_of` to the release date first.
@@ -191,9 +200,13 @@ Follow the [launch runbook](docs/launch.md) for the public source export, hostin
 - Remove draft wording from the README, canonical citation, schema descriptions, CLAUDE.md and AGENTS.md; regenerate the README citation, current counts, agents and definition blocks with `uv run scripts/build.py --update-readme`.
 - Set `PUBLIC_URL` in `scripts/agent_files.py` to the public site address; `--release` fails while it is the placeholder. Regenerate with `--update-readme`, since `CITATION.cff` and `.zenodo.json` carry the address.
 - Owner or team, at launch: switch on the Zenodo GitHub integration for the public repository, so each release gets a DOI with the metadata in `.zenodo.json` (generated with `CITATION.cff`; creators are the maintainers, the publisher is the imprint).
+- Blind re-check: re-derive three to five randomly chosen records from their sources without looking at the stored values first; record the differences and adapt the number to what it finds.
+- Fresh-eyes audit, the last review before release: auditors never see the diff; each takes two or three records, sampled by risk (changed institutes, high-visibility records, random controls), checks bound quotations against the private copies, searches for what is new since the last check and reads the rendered card, table row and API file.
 - Run `uv run scripts/check.py --release --out dist`; every step must pass, none NOT RUN, and `dist/` is the build to publish.
+- Create the GitHub release on the pushed public commit with the tag from `uv run scripts/release_tag.py` (`v` plus `dataset.version`) and `--target` set to that commit; the script fails if `.zenodo.json` at HEAD carries another version, HEAD has another version tag, or the tag exists elsewhere locally or on `origin`.
 - Owner, at launch: enable branch protection requiring the `build` job and GitHub secret scanning with push protection, and run a one-off secrets scan of the full repository history.
+- Within three days after release, re-open the news and publications pages of every institute, record a `check.partial` entry for each and add anything new.
 
 ## Public source export
 
-Export the reviewed release commit with `git archive <release-commit> | tar -x -C <empty-export-directory>`. The `.gitattributes` export rules leave superseded internal notes in `docs/history/` and the maintainers' review protocol `docs/review.md` out of the archive. Initialise the public repository from that exported tree with a fresh history; do not push the private repository history.
+Export the reviewed release commit with `git archive <release-commit> | tar -x -C <empty-export-directory>`. The `.gitattributes` export rules leave superseded internal notes in `docs/history/`, the maintainers' review protocol `docs/review.md` and the owner's decision log `docs/decisions.md` out of the archive. Initialise the public repository from that exported tree with a fresh history; do not push the private repository history.

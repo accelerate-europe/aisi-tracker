@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 from conftest import FLAG_SEARCH, write_json
-from scripts import agent_files, build, release_checks
+from scripts import agent_files, build, release_checks, release_tag
 from scripts.reader_text import check_reader_text
 
 
@@ -817,3 +817,44 @@ def test_zenodo_json_is_generated_and_stale_copies_fail(dataset, build_env, monk
     with pytest.raises(SystemExit):
         build.main()
     assert ".zenodo.json is missing or stale" in capsys.readouterr().err
+
+
+def test_release_tag_matches_data_zenodo_and_head():
+    data = {"dataset": {"version": "1.0.1"}}
+    zenodo = json.dumps({"version": "1.0.1"})
+    assert release_checks.release_tag(data) == "v1.0.1"
+    assert release_checks.check_release_tag(data, zenodo, [], None, "a" * 40) == []
+    assert release_checks.check_release_tag(data, zenodo, ["v1.0.1"], "a" * 40, "a" * 40) == []
+    stale = release_checks.check_release_tag(data, json.dumps({"version": "1.0.0"}), [], None, "a" * 40)
+    assert stale and ".zenodo.json at HEAD has version '1.0.0'" in stale[0]
+    assert release_checks.check_release_tag(data, zenodo, ["v1.0.0"], None, "a" * 40) == ["HEAD carries tag v1.0.0, expected v1.0.1"]
+    moved = release_checks.check_release_tag(data, zenodo, [], "b" * 40, "a" * 40)
+    assert moved == ["tag v1.0.1 already exists on bbbbbbbbbbbb, not on HEAD aaaaaaaaaaaa"]
+
+
+def test_release_tag_cli_refuses_tags_elsewhere(tmp_path, capsys):
+    def git(cwd, *args):
+        subprocess.run(["git", "-C", str(cwd), *args], check=True, capture_output=True)
+    remote, repo = tmp_path / "remote.git", tmp_path / "repo"
+    git(tmp_path, "init", "-q", "--bare", str(remote))
+    git(tmp_path, "init", "-q", "-b", "main", str(repo))
+    (repo / "data").mkdir()
+    (repo / "data/aisi.json").write_text(json.dumps({"dataset": {"version": "1.0.1"}}))
+    (repo / ".zenodo.json").write_text(json.dumps({"version": "1.0.1"}))
+    git(repo, "add", ".")
+    git(repo, "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "-m", "one")
+    git(repo, "remote", "add", "origin", str(remote))
+    release_tag.main([], repo)
+    assert capsys.readouterr().out == "v1.0.1\n"
+    git(repo, "-c", "user.name=t", "-c", "user.email=t@t", "tag", "-a", "-m", "t", "v1.0.1")
+    git(repo, "push", "-q", "origin", "v1.0.1")
+    git(repo, "tag", "-d", "v1.0.1")
+    git(repo, "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "--allow-empty", "-m", "two")
+    with pytest.raises(SystemExit):
+        release_tag.main([], repo)
+    assert "already exists on origin" in capsys.readouterr().err
+    blob = subprocess.run(["git", "-C", str(repo), "hash-object", "-w", "--stdin"], input="x", text=True, capture_output=True, check=True).stdout.strip()
+    git(repo, "tag", "v1.0.1", blob)
+    with pytest.raises(SystemExit):
+        release_tag.main([], repo)
+    assert "already exists on a non-commit," in capsys.readouterr().err

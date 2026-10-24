@@ -15,14 +15,14 @@ The staged `check.py` command and shared pre-commit/CI steps run the automated c
 - `site/index.html`: the page. The build saves it pre-rendered (`scripts/prerender.py`); the comment at the top of its script says how the script takes over. Its design principles are the comment at the top of its `<style>`.
 - `scripts/check.py`: the one check command. `scripts/check_page.py`: the browser gate it runs. `scripts/contact_sheet.py`: the screenshot sheet.
 - `docs/design/schema-1.0.md`: the download contract and how rules are represented. `docs/consistency.md`: what the consistency checks cover. `docs/source-snapshots.md`: private source copies.
-- `docs/history/` and `docs/review.md`, when present in a development checkout: superseded notes, not current rules (do not act on them), and the maintainers' review protocol. Public source exports exclude both.
+- `docs/history/`, `docs/review.md` and `docs/decisions.md`, when present in a development checkout: superseded notes, not current rules (do not act on them), the maintainers' review protocol and the owner's binding decisions, one line each. Public source exports exclude all three.
 - `work/` (gitignored): reports, caches, screenshots and scratch files. Never commit them.
 
 ## Change type, files, done
 
 | Change | Edit | Also |
 | --- | --- | --- |
-| A fact | the record in `data/aisi.json`, its `sources` entry and an excerpt whose `supports` points at the claim | advance `check.last_checked` only after a full re-check; version, `as_of` and changelog per README "Update the data" |
+| A fact | the record in `data/aisi.json`, its `sources` entry and an excerpt whose `supports` points at the claim | when you open a source, record every fact it carries for the record before filling a field, and list leftovers in the handback; advance `check.last_checked` only after a full re-check; version, `as_of` and changelog per README "Update the data" |
 | A status | the jurisdiction `timeline` event; the build derives status and dates ([timeline rules](docs/design/schema-1.0.md#timeline-and-status)) | excerpt on the event |
 | Funding amount or exchange rates | primary amounts or ECB rate inputs in `data/aisi.json`; EUR results are generated | |
 | A field | schema, `build.py` export and tables, tests | from public 1.0.0: minor for additive fields, major for breaking changes |

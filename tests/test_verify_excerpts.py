@@ -379,7 +379,7 @@ def test_download_detects_partial_body_and_retries_once_per_fetcher_instance(
 ):
     calls = []
 
-    def opening(request, timeout):
+    def opening(request, timeout, context):
         calls.append(request.full_url)
         assert request.get_header("Accept-encoding") == "identity"
         return Response(b"partial", length=100)
@@ -404,7 +404,7 @@ def test_cached_transient_failure_recovers_online_and_reuses_success(
     url = "https://example.org/report"
     calls = []
 
-    def opening(request, timeout):
+    def opening(request, timeout, context):
         calls.append(request.full_url)
         if len(calls) == 1:
             if failure.isdigit():
@@ -461,7 +461,7 @@ def test_failed_cache_write_does_not_repeat_download_in_same_instance(
 ):
     calls = []
 
-    def opening(request, timeout):
+    def opening(request, timeout, context):
         calls.append(request.full_url)
         raise verify.URLError("temporary outage")
 
@@ -1543,7 +1543,7 @@ def test_lone_surrogates_in_pdf_text_are_stored_not_fatal(tmp_path, monkeypatch)
 def test_retry_diagnostics_cannot_be_changed_by_callers(tmp_path, monkeypatch):
     calls = []
 
-    def opening(request, timeout):
+    def opening(request, timeout, context):
         calls.append(request.full_url)
         raise verify.URLError("temporary outage")
 

@@ -26,7 +26,7 @@ def test_all_catalogue_outputs_have_reviewed_decisions():
         (Path(__file__).resolve().parents[1] / "data/aisi.json").read_text()
     )
     outputs = [o for i in data["institutes"] for o in i.get("outputs", [])]
-    assert len(outputs) == 116
+    assert len(outputs) == 119
     assert all(o["qualification_note"].strip() for o in outputs)
     assert all(
         o["qualifies_as"] in {"published_work", "joint_testing", "none"}
@@ -245,7 +245,7 @@ def test_canonical_data_has_no_stored_activity_and_real_dates_match():
         "gb-aisi": [("published_work", "2024-02-09"), ("joint_testing", "2024-11-19")],
         "us-caissi": [
             ("joint_testing", "2024-11-19"),
-            ("published_work", "2025-09-30"),
+            ("published_work", "2025-01-17"),
         ],
         "sg-aisi": [("joint_testing", "2024-11-20")],
         "jp-aisi": [("published_work", "2025-03-31"), ("joint_testing", "2025-06-26")],

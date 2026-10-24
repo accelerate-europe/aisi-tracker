@@ -344,6 +344,46 @@ def check_meta_descriptions(soup, data: dict) -> list[str]:
     return errors
 
 
+def check_network_cells(soup, data) -> list[str]:
+    """The network's member list is complete: on the saved page, which holds every table row, a non-member reads
+    Not a member with its tooltip, never Not published, and the Member cells match the recorded memberships."""
+    errors = []
+    members = {j["id"] for j in data["jurisdictions"] if any(m.get("body") == "intl-network" for m in j.get("memberships", []))}
+    rows = soup.select("#world-rows > tr, #world-rest > tr")
+    cells = soup.select('#world-rows > tr > td[data-col="net"], #world-rest > tr > td[data-col="net"]')
+    if not rows or len(cells) != len(rows):
+        errors.append(f"table: {len(cells)} Network cells for {len(rows)} rows")
+    for td in cells:
+        jid = td.find_parent("tr").get("data-j")
+        mark = td.select_one(".nonmember")
+        if td.select_one(".missing"):
+            errors.append(f"table: Network cell for {jid} says Not published; the member list is complete")
+        if mark is not None and (mark.get_text(strip=True) != "Not a member" or mark.get("data-tip") != NOT_MEMBER_TIP):
+            errors.append(f"table: Network cell for {jid} lacks 'Not a member' with the tooltip {NOT_MEMBER_TIP!r}")
+        if (mark is None) != (jid in members):
+            errors.append(f"table: Network cell for {jid} disagrees with the recorded memberships")
+    return errors
+
+
+def check_form_basis(soup, data) -> list[str]:
+    """legal_basis is the act giving the qualifying mandate: a law reads 'mandate set by law' (a law can mandate a body
+    that already existed), never 'set up by law'; other acts read 'set up by <act>'."""
+    errors = []
+    institutes = {i["jurisdiction_id"]: i for i in data["institutes"]}
+    for card in soup.select(".card:not(.mini)[data-j]"):
+        inst = institutes.get(card.get("data-j"))
+        if not inst or not inst.get("legal_basis"):
+            continue
+        text = " ".join(card.get_text(" ").split())
+        if "set up by law" in text:
+            errors.append(f"{card.get('data-j')}: Form says 'set up by law'; a law gives the mandate")
+        if inst["legal_basis"]["type"] == "law":
+            want = "mandate to be set by law" if inst["legal_basis"]["state"] == "foreseen" else "mandate set by law"
+            if want not in text:
+                errors.append(f"{card.get('data-j')}: Form lacks {want!r}")
+    return errors
+
+
 def check_static_page(dist: Path, data: dict) -> list[str]:
     """The pre-rendered page as saved, before any script runs: every jurisdiction, the stat row, the download links."""
     soup = BeautifulSoup((dist / "index.html").read_text(encoding="utf-8"), "html.parser")
@@ -357,6 +397,8 @@ def check_static_page(dist: Path, data: dict) -> list[str]:
     missing = [j["name"] for j in data["jurisdictions"] if j["name"] not in text]
     if missing:
         errors.append(f"static page: {len(missing)} jurisdictions missing, e.g. {missing[:5]}")
+    errors.extend(check_network_cells(soup, data))
+    errors.extend(check_form_basis(soup, data))
     rows = soup.select("#world-rows > tr, #world-rest > tr")
     if len(rows) != sum(j["kind"] != "supranational" for j in data["jurisdictions"]):
         errors.append(f"static page: expected a table row for every state and territory, got {len(rows)}")
@@ -593,7 +635,7 @@ def uncited_values(soup) -> list[str]:
 
     def bare(node) -> bool:
         text = " ".join(node.get_text(" ").split())
-        return bool(text) and text not in ("\u2013", NOTHING_FOUND) and not node.select_one(".cites a.cn, .missing")
+        return bool(text) and text not in ("\u2013", NOTHING_FOUND) and not node.select_one(".cites a.cn, .missing, .nonmember")
 
     def report(key: tuple[str, str], where: str) -> None:
         if key in KNOWN_UNCITED:
@@ -1025,9 +1067,11 @@ ACTIVITY_CREDIT_SOURCES = {
     ("gb-aisi", "pre-deployment-evaluation-of-anthropic-s-upgraded-claude-3-5-sonnet"): ["r3-gb-claude35-release"],
     ("eu-ai-office", "network-agentic-2025"): ["eu-joint-testing-2025"],
     ("us-caissi", "pre-deployment-evaluation-of-anthropic-s-upgraded-claude-3-5-sonnet"): ["us-claude35-2024"],
+    ("us-caissi", "agent-hijacking-evaluations-2025"): ["us-hijacking-blog-2025-archive"],
     ("us-caissi", "evaluation-of-deepseek-ai-models"): ["fix-output-us-entry-11"],
     ("jp-aisi", "red-teaming-rag-results"): ["depth-jp-redteam-results", "fix-output-jp-entry-16"],
     ("sg-aisi", "network-pilot-2024"): ["sg-pilot-2024"],
+    ("au-aisi", "risks-controls-multi-agent-systems"): ["au-multiagent-news-2026"],
     ("au-aisi", "epistemic-safety-scalable-oversight"): ["au-oversight-news-2026"],
     **{(iid, "network-multilingual-2025"): ["network-multilingual-2025", "r5-sg-multilingual-full-report-page"] for iid in ("fr-inesia", "ca-caisi", "jp-aisi", "kr-aisi", "ke-ai-safety-institute")},
 }
@@ -1522,7 +1566,8 @@ SORT_ROWS_JS = r"""
     const mark = td.querySelector(':scope > .smark'), t = text(mark || td);
     if (t === 'Not published' || t === 'None found yet') return { jid, name, tier: 2 };
     let v = t;
-    if (key === 'status') v = ORDER.findIndex(s => td.querySelector('.sw.st-' + s));
+    if (key === 'net') v = t === 'Member' ? 1 : null;  // Not a member: a known value without a comparable figure
+    else if (key === 'status') v = ORDER.findIndex(s => td.querySelector('.sw.st-' + s));
     else if (key === 'since') v = date(t);
     else if (key === 'op') { const m = / since ((?:\d{1,2} )?(?:[A-Z][a-z]{2} )?\d{4})/.exec(t); v = m ? date(m[1]) : null; }  // kinds are in date order: the first since is the earliest
     else if (key === 'eur') { const m = /^(?:(?:Up to|At least|About|Nearly|More than|Less than) )?~?EUR ([\d.,]+)(bn|m|k)?(?= )/.exec(t); v = m ? parseFloat(m[1].replace(/,/g, '')) * (m[2] === 'bn' ? 1e9 : m[2] === 'm' ? 1e6 : m[2] === 'k' ? 1e3 : 1) : null; }
@@ -1938,6 +1983,7 @@ def check_glyphs(soup) -> list[str]:
 
 
 MISSING_TIP = "No figure found in the sources we searched."
+NOT_MEMBER_TIP = "Not among the network's members; its member list is complete."
 NOTHING_FOUND_TIP = "No published work or joint testing found in the sources we searched."
 NONE_TIP = "None identified means our searches found nothing, not that nothing exists."
 DASH_TIP = "A dash means there is no institute yet."
@@ -2002,14 +2048,14 @@ def check_absence_wording(soup) -> list[str]:
     return errors
 
 
-FIGURE_LABELS = ("secondary sources", "press report", "our estimate")
+FIGURE_LABELS = ("indirect or secondary", "secondary sources", "press report", "our estimate")
 LOW_FIGURE_SOURCES = {"secondary_sources": "secondary sources", "press_report": "press report", "our_estimate": "our estimate"}
 
 
 def figure_grade(record: dict) -> str | None:
-    """The label a figure must carry: none when primary (high), secondary sources when medium, its own figure_source when low."""
+    """The label a figure must carry: none when primary (high), indirect or secondary when medium, its own figure_source when low."""
     if record.get("confidence") == "medium":
-        return "secondary sources"
+        return "indirect or secondary"
     if record.get("confidence") == "low":
         return LOW_FIGURE_SOURCES.get(record.get("figure_source"), "unknown figure source")
     return None
@@ -7001,7 +7047,7 @@ def check_funding_edges(browser, base_url: str, data: dict) -> list[str]:
     latest = page.locator(".fund-staff .fund-context").filter(has_text="Latest total")
     if latest.count() != expected["total"]:
         errors.append("funding fixture: latest total records are missing")
-    grade = r"\s*·\s*(?:secondary sources|press report|our estimate)"
+    grade = r"\s*·\s*(?:indirect or secondary|secondary sources|press report|our estimate)"
     if any(re.sub(grade, "", " ".join(text.split())) != "Latest total" for text in latest.all_text_contents()):
         errors.append("funding fixture: undated latest total has dangling punctuation")
     technical = page.locator(".fund-staff .fund-context").filter(has_text="technical")
@@ -7483,7 +7529,7 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
     )
     require(
         page.locator(".conf").evaluate_all(
-            "nodes => nodes.every(n => ['secondary sources', 'press report', 'our estimate', 'low confidence', 'medium confidence'].includes(n.textContent))"
+            "nodes => nodes.every(n => ['indirect or secondary', 'secondary sources', 'press report', 'our estimate', 'low confidence', 'medium confidence'].includes(n.textContent))"
         ),
         "citation glue split a confidence label",
     )

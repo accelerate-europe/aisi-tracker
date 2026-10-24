@@ -297,12 +297,13 @@ def per_person_label(record, jurisdiction, rates):
 
 
 FIGURE_SOURCE = {"secondary_sources": "secondary sources", "press_report": "press report", "our_estimate": "our estimate"}
+MEDIUM_FIGURE = "indirect or secondary"  # medium: primary but indirect, or several consistent secondary sources
 
 
 def figure_source(record) -> str:
     """The plain source-type label of a budget or staff figure; empty for a primary (high-confidence) figure."""
     if record.get("confidence") == "medium":
-        return FIGURE_SOURCE["secondary_sources"]
+        return MEDIUM_FIGURE
     if record.get("confidence") == "low":
         return FIGURE_SOURCE[record["figure_source"]]
     return ""

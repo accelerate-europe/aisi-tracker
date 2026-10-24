@@ -157,6 +157,9 @@ def orientation(published: dict) -> list[tuple[str, str]]:
     licence = LICENSES[dataset["license"]]
     return [
         ("What this is", f"{dataset['description']} Published by {dataset['publisher']}; version {dataset['version']}, data as of {dataset['as_of']}."),
+        ("Answering from this data",
+         "When you answer a question from this data, give the data date (`dataset.as_of`) and cite the source behind each fact: look up the IDs in the field's `citations` in `sources` and give each source's title and `url`. "
+         "When a value is none_identified, not_published, none_found or none_disclosed, say that our searches found nothing, not that nothing exists."),
         ("Files and addresses",
          "On the published site, the full dataset is `data/aisi.json`, every record with its sources and check dates; `data/aisi.schema.json` defines every field, "
          "and `data/datapackage.json` lists every file, including one CSV per table. "
@@ -178,6 +181,12 @@ def orientation(published: dict) -> list[tuple[str, str]]:
         ("Confidence and missing values",
          "`status_confidence` and `confidence` rate the evidence as high, medium or low; the schema defines each level, and `dataset.method` sets the rules for status confidence. "
          f"{method_rule(dataset, 'missing-values')} Some fields give null, omission or an empty list a specific meaning, such as not applicable; their schema descriptions say which."),
+        ("Budgets and staff figures",
+         "An institute's `funding` and `staff` lists hold every recorded figure, including historical figures, proposals, components and other bodies' funding, and their order has no meaning. "
+         "`display.budget` names the funding record shown as the institute's budget, `display.comparison_funding` the annual figure used to compare institutes (`eur_per_year_est` gives it in euros), "
+         "and `display.total_staff` and `display.technical_staff` the latest staff counts; each is null when nothing qualifies. "
+         "Before quoting an amount, read its `coverage`: not_institute_specific is another body's or a wider programme's money and component is only part of the budget. "
+         "Read `commitment` too: proposed is not adopted. A funding record of `kind` none_disclosed means we found no published budget."),
         ("Sources",
          "`citations` gives, for each field, the IDs of the sources whose quoted excerpt supports it. "
          "Each source has its address, an archive copy where one exists, and its excerpts, with an English gloss for other languages. "
@@ -351,7 +360,7 @@ def citation_cff(published: dict) -> str:
     return CFF_HEADER + yaml.safe_dump(cff, sort_keys=False, allow_unicode=True, width=1000)
 
 
-ZENODO_KEYWORDS = ["AI Security Institute", "AI safety", "AI governance", "AI policy", "Europe"]
+ZENODO_KEYWORDS = ["AI Security Institute", "AI Safety Institute", "AISI", "AI governance", "AI policy", "AI safety", "government institutions"]
 
 
 def zenodo_json(published: dict) -> str:

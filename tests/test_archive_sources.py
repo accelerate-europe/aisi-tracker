@@ -6,6 +6,7 @@ import sys
 from io import BytesIO
 
 import pytest
+import truststore
 
 from scripts import archive_sources, verify_excerpts
 
@@ -155,7 +156,9 @@ def network_fixture(monkeypatch, responses):
         def geturl(self):
             return self.final_url
 
-    def opening(request, timeout):
+    def opening(request, timeout, context):
+        # Live fetches verify certificates against the OS trust store (truststore).
+        assert isinstance(context, truststore.SSLContext)
         calls.append(request.full_url)
         body, final_url = responses[request.full_url]
         return Response(body, final_url)

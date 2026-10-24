@@ -7,6 +7,7 @@ import json
 import posixpath
 import re
 import shutil
+import ssl
 import subprocess
 import threading
 import time
@@ -25,6 +26,7 @@ from urllib.request import Request, urlopen
 from xml.etree import ElementTree
 from zipfile import ZipFile
 
+import truststore
 from bs4 import BeautifulSoup
 from pypdf import PdfReader
 
@@ -598,6 +600,9 @@ class Fetcher:
         # One download per URL per instance, even if persisting its diagnostic fails.
         self.attempts: dict[str, dict] = {}
         self.alternative_views: dict[tuple[str, str], list[tuple[str, str]]] = {}
+        # The OS trust store completes chains that servers send without their intermediate
+        # certificate, as browsers do; Python's bundled CA file alone rejects about 60 sources.
+        self.ssl_context = truststore.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
 
     def entry(self, url: str) -> Path:
         key = hashlib.sha256(url.encode()).hexdigest()
@@ -744,7 +749,9 @@ class Fetcher:
                     "Accept-Encoding": "identity",
                 },
             )
-            with urlopen(req, timeout=self.timeout) as response:
+            with urlopen(
+                req, timeout=self.timeout, context=self.ssl_context
+            ) as response:
                 meta.update(
                     final_url=response.geturl(),
                     content_type=response.headers.get("Content-Type", ""),

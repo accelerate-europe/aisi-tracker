@@ -679,7 +679,7 @@ def test_compact_confidence_qualifier_carries_its_citation():
     source(data, "amount", "/institutes/0/funding/0/amount")
     source(data, "confidence", "/institutes/0/funding/0/confidence")
     row = derive_display(data)["institutes"][0]["funding"][0]
-    assert "secondary sources" in row["display"]["qualifiers"]
+    assert "indirect or secondary" in row["display"]["qualifiers"]
     assert row["display"]["budget_citations"] == ["amount", "confidence"]
 
 
