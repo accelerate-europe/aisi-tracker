@@ -199,6 +199,37 @@ def test_budget_oracle_rejects_wrong_id_and_missing_value_structure():
     assert any("latest own JPY 8.8bn" in error for error in check_page.check_budget_output(html.replace("JPY 8.8bn", "JPY 380m"), data))
 
 
+def test_budget_oracle_covers_institutes_before_establishment():
+    """Norway's proposed institute shows its selected NOK 30m record; Not published there is an error."""
+    identity = check_page.EXPECTED_BUDGET_IDS["no-ki-norge"]
+    data = {"jurisdictions": [{"id": "NO", "status": "proposed"}], "institutes": [{"id": "no-ki-norge", "jurisdiction_id": "NO", "funding": []}]}
+    value = f'<span class="budget-value" data-funding-id="{identity}"><span class="budget-amount">NOK 30m</span><span class="budget-qualifiers">a year · 2027 budget proposal</span></span>'
+    html = f'<article class="card" data-j="NO"><div class="row"><div class="k">Budget</div><div class="v">{value}</div></div></article><table><tbody id="world-rows"><tr data-j="NO"><td data-col="budget">{value}</td></tr></tbody></table>'
+    assert check_page.check_budget_output(html, data) == []
+    missing = html.replace(value, '<span class="missing">Not published</span>')
+    assert any("wrong funding ID" in error for error in check_page.check_budget_output(missing, data))
+    assert any("separate amount and qualifiers" in error for error in check_page.check_budget_output(html.replace("budget-amount", "removed"), data))
+
+
+def test_setup_groups_cover_institutes_before_establishment():
+    """Institutional set-up lists every institute whatever its status, each square in its state's status colour."""
+    data = {
+        "jurisdictions": [{"id": "GB", "name": "United Kingdom", "status": "established"}, {"id": "NO", "name": "Norway", "status": "proposed"}],
+        "institutes": [
+            {"id": "gb", "jurisdiction_id": "GB", "legal_form": "new_body", "host": None, "citations": {"legal_form": [], "host": []}},
+            {"id": "no", "jurisdiction_id": "NO", "legal_form": "new_body", "host": None, "citations": {"legal_form": [], "host": []}},
+        ],
+    }
+    def page(states):
+        marks = "".join(f'<i class="sw st-{status}"></i>' for _, status in states)
+        items = "".join(f'<li data-state="{jid}"><a href="#c-{jid.lower()}">x</a><span class="group-note"><span class="missing">Not published</span></span></li>' for jid, _ in states)
+        cards = "".join(f'<article id="c-{jid.lower()}"></article>' for jid, _ in states)
+        return BeautifulSoup(f'<h2 id="set-up">Institutional set-up</h2><div id="setup"><div class="group-block" data-form="new_body"><h3>New body</h3><div class="marks">{marks}</div><p class="group-help">A body created for the purpose.</p><ul class="group-list">{items}</ul></div></div>{cards}', "html.parser")
+    assert check_page.check_setup_groups(page([("NO", "proposed"), ("GB", "established")]), data) == []
+    assert any("lists" in error for error in check_page.check_setup_groups(page([("GB", "established")]), data))
+    assert any("marks differ" in error for error in check_page.check_setup_groups(page([("NO", "established"), ("GB", "established")]), data))
+
+
 def test_uncited_values_need_a_citation_link_except_absence_and_known_gaps(monkeypatch):
     from bs4 import BeautifulSoup
 
@@ -279,6 +310,8 @@ def _names_html(gb="AI Security Institute (United Kingdom)", gb_short="UK AISI",
         return f'<article class="fund-item" data-j="{jid}"><div class="fund-identity"><h3>x</h3><span class="smark"></span><span>{name}</span></div></article>'
     def row(jid, short, full):
         return f'<tr data-j="{jid}"><td data-col="inst"><abbr class="g" data-exp="{full}">{short}</abbr></td></tr>'
+    def region(jid, short, full):
+        return f'<li><button class="pick" data-pick="{jid}"></button><span class="small"><abbr class="g" data-exp="{full}" tabindex="0">{short}</abbr></span></li>'
     return (
         card("GB", gb) + card("ES", "AI Security Institute (Spain)") + card("FR", "National Institute for AI Evaluation and Security")
         + "<table class='world'><tbody>"
@@ -286,6 +319,8 @@ def _names_html(gb="AI Security Institute (United Kingdom)", gb_short="UK AISI",
         + row("FR", fr_short, "National Institute for AI Evaluation and Security")
         + "</tbody></table>"
         + '<div id="fund-rows">' + funding("ES", "AI Security Institute (Spain)") + "</div>"
+        + '<div id="regions"><ul class="region-rows">' + region("GB", gb_short, "AI Security Institute (United Kingdom)")
+        + region("ES", "Spain AISI", "AI Security Institute (Spain)") + region("FR", fr_short, "National Institute for AI Evaluation and Security") + "</ul></div>"
     )
 
 
@@ -335,7 +370,7 @@ def _fold_html(status='<p class="basis">Proposed, not yet designated.</p>', det=
         f'<div class="body-group"><p class="gl">{label}</p>{status}<ul><li><span class="body-name">Financial Supervision Commission<span class="cites"><a class="cn">1</a></span></span>{orig}{det}</li></ul></div>'
         '<div class="body-group"><p class="gl">Other bodies</p><ul><li><span class="body-name">INSAIT (Sofia University)<span class="cites"><a class="cn">1</a></span></span></li></ul></div>'
         f"{how_block}</details>"
-        f'<ul id="rules"><li>{" ".join(["for a government-designated institute that evaluates advanced models."] * method_count)}</li></ul>'
+        f'<ul id="rules"><li>{" ".join(["for a body its government has tasked with testing general-purpose or frontier AI models or named its AI safety or security institute."] * method_count)}</li></ul>'
     )
 
 
@@ -347,7 +382,7 @@ def test_nonidentified_folds_pass_and_fail_on_each_rule():
     # A body under the wrong function heading.
     assert any("fold-out groups" in e for e in check_page.check_nonidentified_folds(_fold_html(label="AI Act notifying"), data))
     # Shared boilerplate repeated in an entry, or missing from Method.
-    html = _fold_html(boilerplate="Searched in English for a government-designated institute that evaluates advanced models.")
+    html = _fold_html(boilerplate="Searched in English for a body its government has tasked with testing general-purpose or frontier AI models or named its AI safety or security institute.")
     assert any("Method states once" in e for e in check_page.check_nonidentified_folds(html, data))
     assert any("Method states the search wording 0 times" in e for e in check_page.check_nonidentified_folds(_fold_html(method_count=0), data))
     # Notes outside a How we checked block; a body without its citation.
@@ -443,6 +478,47 @@ def test_archive_links_follow_archived_sources_only():
     assert "3 archived copy links on the page, 2 expected from source lists and Method" in check_page.check_archive_links(extra_citation, data)
     as_citation = _archive_html().replace('class="archive" href="https://web.archive.org', 'class="archive cn" href="https://web.archive.org', 1)
     assert check_page.check_archive_links(as_citation, data) == ["a superscript citation carries an archived copy link"]
+
+
+def test_former_names_are_marked_as_former():
+    data = {"institutes": [{
+        "id": "us-x", "name": "Center for Advancing Innovation and Standards for Super Intelligence", "acronym": "CAISSI", "short_name": "CAISSI",
+        "jurisdiction_id": "US", "names": [{"name": "US AI Safety Institute"}, {"name": "Center for AI Standards and Innovation (CAISI)"},
+                                           {"name": "Center for Advancing Innovation and Standards for Super Intelligence (CAISSI)"}],
+    }], "jurisdictions": [{"id": "US", "name": "United States"}, {"id": "CA", "name": "Canada"}]}
+    assert check_page.former_forms(data["institutes"][0]) == {"US AI Safety Institute", "Center for AI Standards and Innovation", "CAISI"}
+
+    def page(text, j="US"):
+        return f'<article id="c-{j.lower()}" data-j="{j}"><div class="v">{text}</div><details class="srcs"><ol><li>CAISI Evaluation</li></ol></details></article>'
+
+    ok = ["USD 27m requested for CAISI (now CAISSI).", "Chaired by the then U.S. AI Safety Institute.",
+          "Acting Director of the Center for AI Standards and Innovation (CAISI, the institute's former name)", "Run by CAISSI."]
+    for text in ok:
+        assert check_page.check_former_names(page(text), data) == [], text
+    assert check_page.check_former_names(page("USD 27m requested for CAISI."), data)
+    assert check_page.check_former_names(page("Chaired by the U.S. AI Safety Institute."), data)
+    # Text beside a nested qualifier, sentence-initial markers, a marker after a semicolon.
+    assert check_page.check_former_names(page('CAISI leads.<span class="meta-item">2026</span>'), data)
+    for text in ["Formerly called CAISI, it led the work.", "Then known as CAISI, it led the work.", "CAISI leads; now CAISSI."]:
+        assert check_page.check_former_names(page(text), data) == [], text
+    # The state's own qualifier does not exempt a former name; another body's name does.
+    gb = {"institutes": [{"id": "gb", "name": "AI Security Institute", "short_name": "UK AISI", "jurisdiction_id": "GB", "names": [{"name": "AI Safety Institute"}]}],
+          "jurisdictions": [{"id": "GB", "name": "United Kingdom"}]}
+    assert check_page.check_former_names(page("The UK AI Safety Institute leads this work.", j="GB"), gb)
+    gb["institutes"].append({"id": "jp", "name": "Japan AI Safety Institute", "short_name": "J-AISI", "jurisdiction_id": "JP"})
+    assert check_page.check_former_names(page("Signed with the Japan AI Safety Institute.", j="GB"), gb) == []
+    # A row that carries data-j itself, an ordinary capitalised word, markup inside a sentence, 'Now', other sentence ends.
+    assert check_page.check_former_names('<li class="development-row" data-j="US">CAISI leads the work.</li>', data)
+    assert check_page.check_former_names(page("Contact CAISI for details."), data)
+    assert check_page.check_former_names(page('CAISI <span class="meta-item">(now CAISSI)</span> leads.'), data) == []
+    assert check_page.check_former_names(page("CAISI (Now CAISSI) leads."), data) == []
+    assert check_page.check_former_names(page("CAISI leads; now CAISSIX helps."), data)
+    assert check_page.check_former_names(page("CAISI leads! The office was formerly elsewhere."), data)
+    # Prose with a link is checked; a source entry led by its link is not.
+    assert check_page.check_former_names('<ul data-j="US"><li>CAISI leads the work; <a class="ext" href="x">read more</a>.</li></ul>', data)
+    assert check_page.check_former_names('<ul data-j="US"><li><a class="standalone ext" href="x">CAISI Evaluation</a>, NIST</li></ul>', data) == []
+    # Another state's text, and source titles, are out of scope.
+    assert check_page.check_former_names(page("Canadian AI Safety Institute (CAISI) leads.", j="CA"), data) == []
 
 
 def test_institute_names_two_institutes_need_a_decision():
@@ -915,3 +991,16 @@ def test_a_static_failure_is_reported_without_reading_shard_results(rendered, mo
     assert check_page.main(dist, merge=tmp_path / "no-shards") == 1
     err = capsys.readouterr().err
     assert "error: a static failure" in err and "shard results" not in err
+
+
+def test_no_rate_amounts_stay_in_their_currency_and_say_why():
+    data = {"dataset": {"exchange_rates": [{"currency": "USD"}]}, "institutes": [{"id": "ke", "display": {"comparison_funding": None},
+            "funding": [{"id": "f-ke", "currency": "KES", "amount": 2_000_000_000}, {"id": "f-us", "currency": "USD"}]}]}
+    tip = check_page.NO_RATE_TIP
+    good = f'<span class="budget-value" data-funding-id="f-ke"><span class="budget-amount" data-tip="{tip}" tabindex="0">KES 2.0bn</span></span>'
+    assert check_page.check_no_rate_amounts(good, data) == []
+    assert any("why there is no euro figure" in e for e in check_page.check_no_rate_amounts(good.replace(f' data-tip="{tip}"', ""), data))
+    assert any("in KES only" in e for e in check_page.check_no_rate_amounts(good.replace("KES 2.0bn", "~EUR 13m (KES 2.0bn)"), data))
+    assert any("not shown" in e for e in check_page.check_no_rate_amounts("<p></p>", data))
+    data["institutes"][0]["display"]["comparison_funding"] = "f-ke"
+    assert any("never converted or compared" in e for e in check_page.check_no_rate_amounts(good, data))

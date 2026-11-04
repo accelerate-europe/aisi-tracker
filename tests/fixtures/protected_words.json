@@ -1,0 +1,90 @@
+{
+  "about": "How often each load-bearing word appears in each dataset.method rule (whole words, any case). tests/test_protected_words.py fails when a rule has fewer than recorded here, so a readability edit cannot silently drop a prohibition or a restriction. Lower a count only in a reviewed commit with the owner's approval of the rule change; a higher count may be recorded at any time.",
+  "words": [
+    "never",
+    "only",
+    "all",
+    "exact",
+    "ever"
+  ],
+  "rules": {
+    "qualifying-body": {
+      "only": 2,
+      "exact": 1
+    },
+    "state-checks": {
+      "only": 1
+    },
+    "missing-values": {
+      "never": 1
+    },
+    "known-activity": {
+      "only": 3
+    },
+    "rescinded-instruments": {
+      "never": 1,
+      "only": 1
+    },
+    "status-confidence": {
+      "only": 2
+    },
+    "excerpts": {
+      "only": 1
+    },
+    "outputs": {
+      "only": 3,
+      "exact": 1
+    },
+    "intervals": {
+      "never": 3,
+      "only": 3
+    },
+    "agreements": {
+      "only": 1
+    },
+    "annual-funding": {
+      "never": 3,
+      "only": 1
+    },
+    "ai-act-authorities": {
+      "all": 1
+    },
+    "leadership": {
+      "only": 2,
+      "exact": 1
+    },
+    "national-partners": {
+      "never": 1,
+      "only": 3,
+      "all": 1,
+      "ever": 1
+    },
+    "testing-and-access": {
+      "never": 4,
+      "only": 6
+    },
+    "staffing-model": {
+      "never": 3,
+      "only": 4
+    },
+    "source-preference": {
+      "only": 1
+    },
+    "private-evidence-copies": {
+      "never": 1,
+      "only": 4
+    },
+    "none-identified": {
+      "never": 1
+    },
+    "currency-rounding": {
+      "exact": 1
+    },
+    "budget-display": {
+      "only": 2
+    },
+    "budget-ratios": {
+      "only": 2
+    }
+  }
+}

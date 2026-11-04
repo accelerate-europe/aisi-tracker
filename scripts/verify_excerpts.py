@@ -89,7 +89,33 @@ def normalise(text: str) -> str:
     return " ".join(unicodedata.normalize("NFC", text).translate(QUOTES).split())
 
 
+# Japanese or Chinese text, CJK punctuation and full-width punctuation (not full-width
+# digits or Latin letters).
+WIDE = (
+    r"\u3041-\u3096\u30a1-\u30fa\u30fc\u3400-\u4dbf\u4e00-\u9fff\u3001-\u303f"
+    r"\uff01-\uff0f\uff1a-\uff20\uff3b-\uff40\uff5b-\uff60"
+)
+DIGITS = r"0-9\uff10-\uff19"
+_SPACE = r"[ \t\r\f\v\u00a0\u3000]*"
+# A line break with wide text on one side and wide text or a digit on the other is a
+# PDF layout wrap ("含めて\n30人", "90\n人", "までに、\n出向者", "の\n２００人"). A plain
+# space there keeps its boundary, and so does a break next to Latin letters or between
+# two digits.
+CJK_WRAP = re.compile(
+    rf"(?<=[{WIDE}]){_SPACE}\n{_SPACE}(?=[{WIDE}{DIGITS}])"
+    rf"|(?<=[{WIDE}{DIGITS}]){_SPACE}\n{_SPACE}(?=[{WIDE}])"
+)
+
+
 def literal_match(quote: str, text: str) -> bool:
+    """Match the view as extracted or, failing that, with CJK layout wraps joined."""
+    if _literal_match(quote, text):
+        return True
+    joined = CJK_WRAP.sub("", text)
+    return joined != text and _literal_match(quote, joined)
+
+
+def _literal_match(quote: str, text: str) -> bool:
     """Match one normalised view without truncating a numeric token at either edge.
 
     text is extractor output, where a BOUNDARY can only be an HTML element boundary.

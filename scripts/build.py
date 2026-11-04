@@ -34,22 +34,22 @@ from jsonschema import Draft202012Validator  # noqa: E402
 if __package__:
     from . import published as fact_pipeline
     from .references import authored_schema, excerpt_identity, materialise_references, pointer_ancestors
-    from .published import INTERVAL_KEYS, budget_ratios, comparable_funding, annual_eur_estimate as annual_eur_estimate, known_activity as known_activity, output_activity_kind as output_activity_kind, publish, prepared_facts, timeline_status as timeline_status, eur_per_unit as eur_per_unit, significant as significant
+    from .published import INTERVAL_KEYS, NO_ECB_RATE, budget_ratios, comparable_funding, annual_eur_estimate as annual_eur_estimate, known_activity as known_activity, output_activity_kind as output_activity_kind, publish, prepared_facts, timeline_status as timeline_status, eur_per_unit as eur_per_unit, significant as significant
     from .shared_claims import check_shared_claims, shared_claim_coverage  # type: ignore[import-not-found]
     from .method_copy import full_method_page
     from .method_checks import check_method_rules  # type: ignore[import-not-found]
     from .source_origins import source_origin_report, write_source_origin_report
-    from .agent_files import LICENSES, doi_url, api_files, api_landing_html, api_root, citation_cff, zenodo_json, head_links, json_ld_script, llms_txt, robots_txt, sitemap_xml, orientation_html, orientation_markdown, definition_markdown, public_url_errors
+    from .agent_files import LICENSES, doi_url, api_files, api_landing_html, api_root, citation_cff, zenodo_json, head_links, json_ld_script, llms_txt, robots_txt, sitemap_xml, feed_xml, FEED_PATH, orientation_html, orientation_markdown, definition_markdown, public_url_errors
     from .release_checks import check_metadata, check_readme_licence, check_readme_doi, check_markdown, generated_block, generated_citation, generated_counts, check_launch_wording, write_citation, check_instrument_status_dates, instrument_status_warnings, dates_after_as_of
 else:  # Direct script execution.
     import published as fact_pipeline
     from references import authored_schema, excerpt_identity, materialise_references, pointer_ancestors
-    from published import INTERVAL_KEYS, budget_ratios, comparable_funding, annual_eur_estimate as annual_eur_estimate, known_activity as known_activity, output_activity_kind as output_activity_kind, publish, prepared_facts, timeline_status as timeline_status, eur_per_unit as eur_per_unit, significant as significant
+    from published import INTERVAL_KEYS, NO_ECB_RATE, budget_ratios, comparable_funding, annual_eur_estimate as annual_eur_estimate, known_activity as known_activity, output_activity_kind as output_activity_kind, publish, prepared_facts, timeline_status as timeline_status, eur_per_unit as eur_per_unit, significant as significant
     from shared_claims import check_shared_claims, shared_claim_coverage
     from method_copy import full_method_page
     from method_checks import check_method_rules
     from source_origins import source_origin_report, write_source_origin_report
-    from agent_files import LICENSES, doi_url, api_files, api_landing_html, api_root, citation_cff, zenodo_json, head_links, json_ld_script, llms_txt, robots_txt, sitemap_xml, orientation_html, orientation_markdown, definition_markdown, public_url_errors
+    from agent_files import LICENSES, doi_url, api_files, api_landing_html, api_root, citation_cff, zenodo_json, head_links, json_ld_script, llms_txt, robots_txt, sitemap_xml, feed_xml, FEED_PATH, orientation_html, orientation_markdown, definition_markdown, public_url_errors
     from release_checks import check_metadata, check_readme_licence, check_readme_doi, check_markdown, generated_block, generated_citation, generated_counts, check_launch_wording, write_citation, check_instrument_status_dates, instrument_status_warnings, dates_after_as_of
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -217,9 +217,11 @@ def check_exchange_rates(d: dict) -> list[str]:
     if len(rates) != len(entries):
         errors.append("exchange_rates: duplicate currency")
     currencies = {f["currency"] for i in d["institutes"] for f in i.get("funding", []) if f.get("currency")}
-    missing = (currencies - {"EUR"}) - rates.keys()
+    missing = (currencies - {"EUR"} - NO_ECB_RATE) - rates.keys()
     if missing:
         errors.append(f"exchange_rates: missing currencies {sorted(missing)}")
+    if NO_ECB_RATE & rates.keys():
+        errors.append(f"exchange_rates: {sorted(NO_ECB_RATE & rates.keys())} listed as having no ECB rate but given a rate row")
     signatures = {(r["period"]["start"], r["period"]["end"], r["basis"], tuple(sorted(r["source_ids"]))) for r in entries}
     if len(signatures) > 1:
         errors.append("exchange_rates: all entries must use one period, basis and source set")
@@ -1155,6 +1157,7 @@ def main() -> None:
         (build / "index.html").write_text(generated_page(SITE.read_text(encoding="utf-8"), d, resources, data_urls), encoding="utf-8")
         (build / "method.html").write_text(full_method_page(m, SITE.read_text(encoding="utf-8")), encoding="utf-8")
         (build / "llms.txt").write_text(llms_txt(d), encoding="utf-8")
+        (build / FEED_PATH).write_text(feed_xml(d), encoding="utf-8")
         prerender(build)
         # Listed last, so the sitemap covers every file written above; the page is its directory URL.
         built = ["" if p.name == "index.html" and p.parent == build else p.relative_to(build).as_posix() for p in build.rglob("*") if p.is_file()]

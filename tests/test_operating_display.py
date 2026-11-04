@@ -59,7 +59,7 @@ def output(
     }
 
 
-def display(status="established", outputs=None, lines=()):
+def display(status="established", outputs=None, lines=(), institute=True):
     """Hand-written rendering (layout A): the kind and since lines are typed by the test, never computed."""
     outputs = outputs or []
     op = [
@@ -69,13 +69,13 @@ def display(status="established", outputs=None, lines=()):
         }
         for o in outputs
     ]
-    j = {"id": "GB", "status": status, "institute_id": "test"}
+    j = {"id": "GB", "status": status, "institute_id": "test" if institute else None}
     inst = {"id": "test", "outputs": outputs, "operating": op}
     # Each synthetic output declares its expected evidence separately from the producer.
     for item in outputs:
         check_page.ACTIVITY_CREDIT_SOURCES[("test", item["lineage"])] = list(item["source_ids"])
     established = status == "established"
-    missing = "Not published" if established else NA
+    missing = "Not published" if institute else NA  # Funding and staff covers every institute (principle: Scope)
 
     def cites(o):
         links = "".join(f'<a class="cn" data-source-id="{sid}">1</a>' for sid in o["source_ids"])
@@ -105,7 +105,7 @@ def display(status="established", outputs=None, lines=()):
     card = "".join(
         f'<div class="row"><div class="k">{name}</div><div class="v">{text}</div></div>'
         for name, _, text in values
-        if established
+        if institute and (established or name != "Known activity")
     )
     cells = "".join(f'<td data-col="{key}">{text}</td>' for _, key, text in values)
     rule = "A published evaluation or joint testing exercise; absence is not evidence of inactivity."
@@ -155,28 +155,28 @@ def test_no_qualifying_output():
     "status", ["planned", "proposed", "exploring", "none_identified"]
 )
 def test_all_non_established_states_are_inapplicable_even_with_outputs(status):
+    # Known activity is for established institutes only; Budget and Staff cover every institute.
     html, data = display(status, [output()])
-    rows = [
-        {
-            "id": "GB",
-            "operational": "Not applicable",
-            "budget": "Not applicable",
-            "staff": "Not applicable",
-        }
-    ]
+    rows = [{"id": "GB", "operational": "Not applicable", "budget": "Not published", "staff": "Not published"}]
     assert check_operating_output(html, data, rows) == []
     errors = check_operating_output(html.replace(NA, "Not published"), data)
     assert any("Known activity differs from structural absence" in e for e in errors)
-    assert any("must be a structural absence" in e for e in errors)
-    rows[0]["budget"] = "Not published"
-    assert any(
-        "CSV applicability" in e for e in check_operating_output(html, data, rows)
-    )
+    rows[0]["budget"] = "Not applicable"
+    assert any("CSV applicability" in e for e in check_operating_output(html, data, rows))
+    # A dash in Budget for a state that has an institute, or a missing card row, fails.
+    dashed = html.replace('<td data-col="budget">Not published</td>', f'<td data-col="budget">{NA}</td>')
+    assert any("must be a structural absence exactly when" in e for e in check_operating_output(dashed, data))
+    assert any("card has no Staff row" in e for e in check_operating_output(html.replace('<div class="k">Staff</div>', '<div class="k">Other</div>'), data))
+    # A state without an institute shows the dash everywhere.
+    html, data = display(status, institute=False)
+    rows = [{"id": "GB", "operational": "Not applicable", "budget": "Not applicable", "staff": "Not applicable"}]
+    assert check_operating_output(html, data, rows) == []
+    assert any("must be a structural absence" in e for e in check_operating_output(html.replace(NA, "Not published"), data))
 
 
 @pytest.mark.parametrize(
     ("label", "value"),
-    [("Known activity", NA), ("Budget", "Not applicable"), ("Staff", NA)],
+    [("Known activity", NA), ("Known activity", "Not applicable")],
 )
 def test_cards_omit_structurally_absent_rows(label, value):
     html, data = display("planned")
@@ -188,7 +188,7 @@ def test_cards_omit_structurally_absent_rows(label, value):
 
 
 def test_structural_dash_needs_screen_reader_text():
-    html, data = display("planned")
+    html, data = display("planned", institute=False)
     broken = html.replace('<span class="vh">Not applicable</span>', "")
     assert any(
         "must be a structural absence" in e
@@ -431,3 +431,22 @@ def test_activity_oracle_uses_catalogue_order_without_relaxing_citation_checks()
                 link.string = "1"
                 group.append(link)
         assert any("clause citations differ" in error for error in check_operating_output(str(soup), data)), ids
+
+
+def test_credit_fixture_is_the_oracle_and_rejects_repeats(tmp_path):
+    import json
+
+    from scripts import check_page
+
+    activity, first = check_page.load_credit_sources()
+    assert activity == check_page.ACTIVITY_CREDIT_SOURCES and first == check_page.FIRST_OUTPUT_CREDIT_SOURCES
+    assert ("us-caissi", "agent-hijacking-evaluations-2025") in activity
+    # An output with no reviewed entry still fails with its key.
+    with pytest.raises(ValueError, match="credit oracle needs reviewed sources for \\('us-caissi', 'unknown'\\)"):
+        check_page.expected_credit_sources({"id": "us-caissi"}, {"lineage": "unknown"})
+    fixture = json.loads(check_page.EARLIEST_CREDIT.read_text(encoding="utf-8"))
+    fixture["activity"].append(dict(fixture["activity"][0], source_ids=["other"]))
+    repeated = tmp_path / "earliest_credit.json"
+    repeated.write_text(json.dumps(fixture), encoding="utf-8")
+    with pytest.raises(ValueError, match="repeats"):
+        check_page.load_credit_sources(repeated)

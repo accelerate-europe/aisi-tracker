@@ -6,8 +6,10 @@
 - One orientation text (what the data is, files and URL patterns, how to read status and
   confidence, licence, citation), written once here and rendered into the page's "Using the
   data" block, the README section "For agents and scripts", api/v<major>/index.json and llms.txt.
-- The schema.org Dataset JSON-LD in the page head, sitemap.xml and robots.txt.
-- CITATION.cff and .zenodo.json, the only tracked outputs, written by build.py --update-readme.
+- The schema.org Dataset JSON-LD in the page head, sitemap.xml, robots.txt and the Atom feed of news and releases (feed.xml,
+  from the changelog).
+- CITATION.cff and .zenodo.json, the only tracked outputs, written by build.py --update-readme, and
+  the Zenodo record metadata scripts/zenodo_metadata.py sets after each release.
 """
 
 from __future__ import annotations
@@ -253,7 +255,8 @@ def head_links(published: dict, page_title: str) -> str:
             '<meta property="og:image:height" content="630">\n'
             f'<meta property="og:image:alt" content="{image_alt}">\n'
             f'<link rel="alternate" type="application/json" href="{api}/index.json" title="Per-record API">\n'
-            '<link rel="alternate" type="application/json" href="data/datapackage.json" title="Data package">')
+            '<link rel="alternate" type="application/json" href="data/datapackage.json" title="Data package">\n'
+            f'<link rel="alternate" type="application/atom+xml" href="{FEED_PATH}" title="News and new versions (Atom feed)">')
 
 
 def json_ld(published: dict, resources: list[dict]) -> dict:
@@ -312,6 +315,77 @@ def sitemap_xml(published: dict, paths: list[str]) -> str:
     return f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n{entries}</urlset>\n'
 
 
+FEED_PATH = "feed.xml"
+
+
+# Atom ids are permanent (RFC 4287 4.2.6): a tag URI minted once, independent of PUBLIC_URL, so a move of the site
+# or an edit of the text never makes a feed reader show a release twice.
+FEED_ID = "tag:aisi.accelerate-europe.org,2026:feed"
+
+
+def feed_entry_id(version: str) -> str:
+    """A release's permanent Atom id, fixed by its version."""
+    return f"tag:aisi.accelerate-europe.org,2026:release/{version}"
+
+
+def feed_news_id(development: dict) -> str:
+    """A News item's permanent Atom id, from the key that groups it (scripts/display.py recent_developments): the state
+    and a full date, or for a month or year date the state, the date and its permanent event id. A later event on the
+    same day joins the item and keeps its id; a corrected date makes a new item."""
+    tail = development["date"] if len(development["date"]) == 10 else f"{development['date']}/{development['order']}"
+    return f"tag:aisi.accelerate-europe.org,2026:news/{development['jurisdiction']}/{tail}"
+
+
+def feed_day(date: str) -> str:
+    """An Atom timestamp for a full or partial date: a month or a year counts from its first day."""
+    return {10: date, 7: date + "-01", 4: date + "-01-01"}[len(date)] + "T00:00:00Z"
+
+
+def feed_entries(published: dict) -> list[dict]:
+    """The feed's entries, newest first: one per release (the changelog) and one per News item
+    (dataset.display.developments, as the page's News section shows them). Ties: News items first, then by id."""
+    esc = lambda text: html.escape(text, quote=True)  # noqa: E731
+    sources = {x["id"]: x for x in published.get("sources", [])}
+    entries = []
+    for c in published["changelog"]:
+        content = (f"<p>{esc(c['summary'])}</p>" if c.get("summary") else "") + "<ul>" + "".join(f"<li>{esc(x)}</li>" for x in c["changes"]) + "</ul>"
+        entries.append({"kind": "release", "id": feed_entry_id(c["version"]), "title": f"Version {c['version']}", "updated": feed_day(c["date"]),
+                        "link": PUBLIC_URL + "#changes", "summary": c.get("summary"), "content": content, "key": [int(p) for p in c["version"].split(".")]})
+    for g in published["dataset"].get("display", {}).get("developments", []):
+        text = " ".join(t for t in g["texts"] if t)
+        cited = [sources[i] for i in g.get("citations", {}).get("display", []) if i in sources]
+        content = f"<p>{esc(text)}</p>" + ("<p>Sources: " + "; ".join(f'<a href="{esc(x["url"])}">{esc(x["title"])}</a>' for x in cited if x.get("url")) + "</p>" if cited else "")
+        entries.append({"kind": "news", "id": feed_news_id(g), "title": f"{g['name']}: {text}", "updated": feed_day(g["date"]),
+                        "link": PUBLIC_URL + "#c-" + g["jurisdiction"].lower(), "summary": text, "content": content, "key": []})
+    entries.sort(key=lambda e: (e["updated"], e["kind"] == "news", e["key"], e["id"]), reverse=True)
+    return entries
+
+
+def feed_xml(published: dict) -> str:
+    """The Atom feed of news and releases: one entry per News item and one per changelog entry, newest first, ids permanent."""
+    dataset = published["dataset"]
+    esc = lambda text: html.escape(text, quote=True)  # noqa: E731
+    entries = feed_entries(published)
+    body = "".join(
+        "<entry>\n"
+        f"<id>{e['id']}</id>\n"
+        f"<title>{esc(e['title'])}</title>\n"
+        f"<updated>{e['updated']}</updated>\n"
+        f'<link rel="alternate" type="text/html" href="{esc(e["link"])}"/>\n'
+        + (f"<summary>{esc(e['summary'])}</summary>\n" if e.get("summary") else "")
+        + f'<content type="html">{esc(e["content"])}</content>\n'
+        "</entry>\n" for e in entries)
+    return ('<?xml version="1.0" encoding="utf-8"?>\n<feed xmlns="http://www.w3.org/2005/Atom">\n'
+            f"<id>{FEED_ID}</id>\n"
+            f"<title>{esc(dataset['title'])}: news and releases</title>\n"
+            f"<updated>{max(e['updated'] for e in entries)}</updated>\n"
+            f"<author><name>{esc(dataset['publisher'])}</name></author>\n"
+            f'<link rel="self" type="application/atom+xml" href="{esc(PUBLIC_URL + FEED_PATH)}"/>\n'
+            f'<link rel="alternate" type="text/html" href="{esc(PUBLIC_URL)}"/>\n'
+            f"<rights>{esc(dataset['license'])}</rights>\n"
+            + body + "</feed>\n")
+
+
 CFF_HEADER = "# Generated from data/aisi.json by scripts/build.py --update-readme; do not edit.\n"
 
 
@@ -363,11 +437,21 @@ def citation_cff(published: dict) -> str:
 ZENODO_KEYWORDS = ["AI Security Institute", "AI Safety Institute", "AISI", "AI governance", "AI policy", "AI safety", "government institutions"]
 
 
+def zenodo_related(dataset: dict, version: str) -> list[tuple[str, str, str]]:
+    """Related identifiers of a Zenodo version as (relation, URL, resource type): the page and,
+    with a repository, the release tag v<version> (e.g. v1.0.0)."""
+    related = [("isDocumentedBy", PUBLIC_URL, "other")]
+    if dataset.get("repository"):
+        related.append(("isSupplementTo", f"{dataset['repository']}/tree/v{version}", "software"))
+    return related
+
+
 def zenodo_json(published: dict) -> str:
     """.zenodo.json (Zenodo's legacy deposit metadata), which Zenodo reads in place of CITATION.cff
     when archiving a GitHub release. Same dataset fields as citation_cff, so the two cannot drift.
     Creators are persons only (Zenodo's loader treats every creator as a person); the publisher is
-    the imprint. No publication_date: Zenodo takes the release date."""
+    the imprint, and scripts/zenodo_metadata.py adds it as the first creator after release
+    (zenodo_rdm_metadata). No publication_date: Zenodo takes the release date."""
     dataset = published["dataset"]
     creators = []
     for maintainer in dataset["maintainers"]:
@@ -375,10 +459,8 @@ def zenodo_json(published: dict) -> str:
         creators.append({"name": f"{family}, {given}" if given else family}
                         | ({"affiliation": maintainer["affiliation"]} if maintainer.get("affiliation") else {})
                         | ({"orcid": maintainer["orcid"]} if maintainer.get("orcid") else {}))
-    related = [{"relation": "isDocumentedBy", "identifier": PUBLIC_URL, "resource_type": "other"}]
-    if dataset.get("repository"):
-        # The release tag is v<version>, e.g. v1.0.0.
-        related.append({"relation": "isSupplementTo", "identifier": f"{dataset['repository']}/tree/v{dataset['version']}", "resource_type": "software"})
+    related = [{"relation": relation, "identifier": identifier, "resource_type": kind}
+               for relation, identifier, kind in zenodo_related(dataset, dataset["version"])]
     deposit = {
         "upload_type": "dataset",
         "title": dataset["title"],
@@ -393,6 +475,36 @@ def zenodo_json(published: dict) -> str:
         "related_identifiers": related,
     }
     return json.dumps(deposit, indent=2, ensure_ascii=False) + "\n"
+
+
+# Rights on the Zenodo record, as Zenodo licence vocabulary ids: the data licence, then MIT for the
+# code (named in citation_message). The legacy .zenodo.json can carry only the first.
+CODE_LICENSE_ID = "mit"
+
+
+def zenodo_rdm_metadata(dataset: dict, version: str) -> dict:
+    """The fields scripts/zenodo_metadata.py sets on a Zenodo version after release, in Zenodo's
+    InvenioRDM record shape: what .zenodo.json cannot express (the publisher as an organisational
+    creator, so the record's citation matches the canonical one, and a second licence for the code)
+    plus the other fields .zenodo.json sets from the same dataset fields. Vocabulary values carry
+    only their id. Title, description and notes are left to the GitHub import."""
+    creators = [{"person_or_org": {"type": "organizational", "name": dataset["publisher"]}}]
+    for maintainer in dataset["maintainers"]:
+        given, family = split_name(maintainer["name"])
+        person = {"type": "personal", "family_name": family} | ({"given_name": given} if given else {})
+        if maintainer.get("orcid"):
+            person["identifiers"] = [{"scheme": "orcid", "identifier": maintainer["orcid"]}]
+        creators.append({"person_or_org": person} | ({"affiliations": [{"name": maintainer["affiliation"]}]} if maintainer.get("affiliation") else {}))
+    return {
+        "resource_type": {"id": "dataset"},
+        "creators": creators,
+        "publisher": dataset["publisher"],
+        "version": version,
+        "rights": [{"id": LICENSES[dataset["license"]]["name"].lower()}, {"id": CODE_LICENSE_ID}],
+        "subjects": [{"subject": keyword} for keyword in ZENODO_KEYWORDS],
+        "related_identifiers": [{"identifier": identifier, "scheme": "url", "relation_type": {"id": relation.lower()}, "resource_type": {"id": kind}}
+                                for relation, identifier, kind in zenodo_related(dataset, version)],
+    }
 
 
 def api_index(published: dict) -> dict:
@@ -448,10 +560,11 @@ def api_landing_html(published: dict) -> str:
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>API v{api_major(published)} | {title}</title>
   <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
-  <script>try {{ if (localStorage.getItem("aisi-theme") === "dark") document.documentElement.setAttribute("data-theme", "dark"); }} catch (e) {{}}</script>
+  <script>try {{ var t = localStorage.getItem("aisi-theme"); if (t === "dark" || t === "light") document.documentElement.setAttribute("data-theme", t); }} catch (e) {{}}</script>
   <style>
-    /* Theme as on the tracker: light by default, dark when the reader chose it there. */
+    /* Theme as on the tracker: the system scheme unless the reader chose light or dark there. */
     :root {{ color-scheme: light; --ground: #FAF7F2; --ink: #1A1A1A; --link: #8F5A23; --code: #F0EBE3; }}
+    @media (prefers-color-scheme: dark) {{ :root:not([data-theme="light"]) {{ color-scheme: dark; --ground: #17191A; --ink: #F3F0EB; --link: #E9AA79; --code: #26292B; }} }}
     :root[data-theme="dark"] {{ color-scheme: dark; --ground: #17191A; --ink: #F3F0EB; --link: #E9AA79; --code: #26292B; }}
     body {{ margin: 0; background: var(--ground); color: var(--ink); font: 1rem/1.5 "Segoe UI", Arial, sans-serif; }}
     main {{ max-width: 42rem; margin: 8vh auto; padding: 1.5rem; overflow-wrap: anywhere; }}

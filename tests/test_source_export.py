@@ -256,7 +256,7 @@ def test_checkout_requires_release_instruction_files(tmp_path, git_kind, missing
 
 
 def test_shipped_markdown_links_resolve_in_the_public_export():
-    """The export (git archive of the staged tree, honouring .gitattributes) leaves out the internal docs, and no shipped Markdown links to a file it lacks."""
+    """The export (git archive of the staged tree, honouring .gitattributes) leaves out the internal docs and search-protocol files, and no shipped Markdown links to a file it lacks."""
     import re
     import tarfile
     from io import BytesIO
@@ -270,7 +270,7 @@ def test_shipped_markdown_links_resolve_in_the_public_export():
     tree = git("write-tree").decode().strip()
     with tarfile.open(fileobj=BytesIO(git("archive", "--format=tar", tree))) as archive:
         shipped = {m.name for m in archive.getmembers() if m.isfile()}
-    assert not {"docs/review.md", "docs/decisions.md"} & shipped and not any(name.startswith("docs/history/") for name in shipped)
+    assert not {"docs/review.md", "docs/decisions.md"} & shipped and not any(name.startswith(("docs/history/", "data/internal/")) for name in shipped)
     assert {"README.md", "AGENTS.md", "LICENSE", "LICENSE-DATA", "CITATION.cff", ".zenodo.json"} <= shipped
     bad = []
     for name in sorted(n for n in shipped if n.endswith(".md")):

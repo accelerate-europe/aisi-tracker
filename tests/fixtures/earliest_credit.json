@@ -1,0 +1,140 @@
+{
+  "about": "Hand-worked credit sources for each institute's earliest credited outputs, read from the source excerpts, never from the export's citations. scripts/check_page.py checks the page's Known activity and first-output citations against them; an output the page credits with no entry here fails the gate with its key. Edit with the DATA change that adds or changes such an output; the reviewer checks each entry against its source.",
+  "activity": [
+    {
+      "institute_id": "gb-aisi",
+      "lineage": "approach-to-evaluations",
+      "source_ids": [
+        "gb-approach-2024"
+      ]
+    },
+    {
+      "institute_id": "gb-aisi",
+      "lineage": "pre-deployment-evaluation-of-anthropic-s-upgraded-claude-3-5-sonnet",
+      "source_ids": [
+        "r3-gb-claude35-release"
+      ]
+    },
+    {
+      "institute_id": "eu-ai-office",
+      "lineage": "network-agentic-2025",
+      "source_ids": [
+        "eu-joint-testing-2025"
+      ]
+    },
+    {
+      "institute_id": "us-caissi",
+      "lineage": "pre-deployment-evaluation-of-anthropic-s-upgraded-claude-3-5-sonnet",
+      "source_ids": [
+        "us-claude35-2024"
+      ]
+    },
+    {
+      "institute_id": "us-caissi",
+      "lineage": "agent-hijacking-evaluations-2025",
+      "source_ids": [
+        "us-hijacking-blog-2025-archive"
+      ]
+    },
+    {
+      "institute_id": "us-caissi",
+      "lineage": "evaluation-of-deepseek-ai-models",
+      "source_ids": [
+        "fix-output-us-entry-11"
+      ]
+    },
+    {
+      "institute_id": "jp-aisi",
+      "lineage": "red-teaming-rag-results",
+      "source_ids": [
+        "depth-jp-redteam-results",
+        "fix-output-jp-entry-16"
+      ]
+    },
+    {
+      "institute_id": "sg-aisi",
+      "lineage": "network-pilot-2024",
+      "source_ids": [
+        "sg-pilot-2024"
+      ]
+    },
+    {
+      "institute_id": "au-aisi",
+      "lineage": "risks-controls-multi-agent-systems",
+      "source_ids": [
+        "au-multiagent-news-2026"
+      ]
+    },
+    {
+      "institute_id": "au-aisi",
+      "lineage": "epistemic-safety-scalable-oversight",
+      "source_ids": [
+        "au-oversight-news-2026"
+      ]
+    },
+    {
+      "institute_id": "fr-inesia",
+      "lineage": "network-multilingual-2025",
+      "source_ids": [
+        "network-multilingual-2025",
+        "r5-sg-multilingual-full-report-page"
+      ]
+    },
+    {
+      "institute_id": "ca-caisi",
+      "lineage": "network-multilingual-2025",
+      "source_ids": [
+        "network-multilingual-2025",
+        "r5-sg-multilingual-full-report-page"
+      ]
+    },
+    {
+      "institute_id": "jp-aisi",
+      "lineage": "network-multilingual-2025",
+      "source_ids": [
+        "network-multilingual-2025",
+        "r5-sg-multilingual-full-report-page"
+      ]
+    },
+    {
+      "institute_id": "kr-aisi",
+      "lineage": "network-multilingual-2025",
+      "source_ids": [
+        "network-multilingual-2025",
+        "r5-sg-multilingual-full-report-page"
+      ]
+    },
+    {
+      "institute_id": "ke-ai-safety-institute",
+      "lineage": "network-multilingual-2025",
+      "source_ids": [
+        "network-multilingual-2025",
+        "r5-sg-multilingual-full-report-page"
+      ]
+    }
+  ],
+  "first_output": [
+    {
+      "institute_id": "gb-aisi",
+      "lineage": "frontier-ai-taskforce-first-progress-report",
+      "source_ids": [
+        "gb-taskforce-rename"
+      ]
+    },
+    {
+      "institute_id": "us-caissi",
+      "lineage": "vision-mission-strategic-goals-2024",
+      "source_ids": [
+        "fix-output-us-aisi-vision-2024"
+      ]
+    },
+    {
+      "institute_id": "jp-aisi",
+      "lineage": "crosswalk-1",
+      "source_ids": [
+        "catalogue-jp-index",
+        "fix-output-jp-entry-29"
+      ]
+    }
+  ]
+}

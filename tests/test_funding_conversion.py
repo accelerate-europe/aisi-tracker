@@ -3,6 +3,7 @@
 import copy
 import csv
 import json
+import math
 import sys
 
 import pytest
@@ -84,8 +85,8 @@ def test_unknown_annual_amount_cannot_have_estimate(dataset):
 
 def test_missing_rate_is_not_silently_omitted(dataset):
     funding = funded(dataset)
-    funding["currency"] = "KES"
-    with pytest.raises(ValueError, match="no exchange rate for KES"):
+    funding["currency"] = "XTS"  # ISO test code; KES is a currency the ECB does not publish (NO_ECB_RATE)
+    with pytest.raises(ValueError, match="no exchange rate for XTS"):
         materialise_facts(dataset)
     assert any("missing currencies" in e for e in build.check_consistency(dataset))
 
@@ -135,9 +136,17 @@ def test_real_estimates_against_independent_arithmetic():
             raw = funding["annual_amount"] * (
                 1 if funding["currency"] == "EUR" else rates[funding["currency"]]
             )
-            assert funding["eur_per_year_est"] == float(format(raw, ".6g"))
+            # Bounded amounts round away from the stated bound's direction (schema eur_per_year_est).
+            exponent = math.floor(math.log10(raw)) - 5
+            if funding.get("amount_qualifier") in ("at_most", "less_than", "nearly"):
+                expected = math.ceil(raw / 10**exponent) * 10**exponent
+            elif funding.get("amount_qualifier") in ("at_least", "more_than"):
+                expected = math.floor(raw / 10**exponent) * 10**exponent
+            else:
+                expected = float(format(raw, ".6g"))
+            assert funding["eur_per_year_est"] == pytest.approx(expected, rel=1e-12)
             count += 1
-    assert count == 17
+    assert count == 23
 
 
 def test_changed_valid_table_invalidates_stored_estimates(dataset):

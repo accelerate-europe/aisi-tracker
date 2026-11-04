@@ -19,12 +19,37 @@ from scripts.method_checks import check_method_rules
 
 
 def test_missing_conversion_rate_names_currency_and_preserves_zero():
+    # XTS is the ISO 4217 code reserved for testing.
     for amount in (0, 1):
-        with pytest.raises(ValueError, match="^no exchange rate for KES$"):
-            build.annual_eur_estimate({"annual_amount": amount, "currency": "KES"}, {})
+        with pytest.raises(ValueError, match="^no exchange rate for XTS$"):
+            build.annual_eur_estimate({"annual_amount": amount, "currency": "XTS"}, {})
     assert build.annual_eur_estimate({"annual_amount": 0, "currency": "EUR"}, {}) == 0
     assert build.annual_eur_estimate({"annual_amount": 5, "currency": "EUR"}, {}) == 5
-    assert build.annual_eur_estimate({"annual_amount": None, "currency": "KES"}, {}) is None
+    assert build.annual_eur_estimate({"annual_amount": None, "currency": "XTS"}, {}) is None
+
+
+def test_currency_without_ecb_rate_is_never_converted():
+    """The ECB publishes no Kenyan shilling rate: KES amounts stay unconverted, with or without an annual figure (rule currency-rounding)."""
+    assert "KES" in build.NO_ECB_RATE
+    assert build.annual_eur_estimate({"annual_amount": 1000, "currency": "KES"}, {}) is None
+    assert build.annual_eur_estimate({"annual_amount": 1000, "currency": "KES"}, {"KES": 0.0077}) is None
+    from scripts.published import budget_ratios
+    for gdp_currency in ("KES", "EUR"):
+        jurisdiction = {"population": {"value": 50_000_000}, "gdp": {"value": 10**13, "currency": gdp_currency}}
+        assert budget_ratios({"annual_amount": 1000, "currency": "KES"}, jurisdiction, {}) == {"eur_per_person": None, "share_of_gdp": None}
+
+
+def test_adopted_annual_kes_record_is_not_converted_or_compared(dataset):
+    """Even an adopted annual amount in a currency without an ECB rate gets no euro figure and is not compared."""
+    institute = dataset["institutes"][0]
+    for record in institute.get("funding", []):
+        record.update({"currency": "KES"})
+        for key in ("eur_per_year_est", "eur_per_person_est", "share_of_gdp_est", "ratio_denominators", "units_per_eur"):
+            record.pop(key, None)
+    published = materialise_facts(dataset)
+    records = published["institutes"][0]["funding"]
+    assert records and all(r.get("eur_per_year_est") is None and "eur_per_person_est" not in r for r in records)
+    assert build.comparable_funding(records, published["dataset"]["as_of"]) is None
 
 
 @pytest.mark.parametrize(
@@ -54,7 +79,7 @@ def test_current_rate_contract():
     data = json.loads((ROOT / "data/aisi.json").read_text())
     assert build.check_exchange_rates(data) == []
     currencies = {r["currency"] for r in data["dataset"]["exchange_rates"]}
-    assert {"GBP", "CAD", "JPY", "KRW", "AUD", "NOK", "MYR", "SGD", "USD"} == currencies
+    assert {"GBP", "CAD", "INR", "JPY", "KRW", "AUD", "NOK", "MYR", "SGD", "USD"} == currencies
 
 
 @pytest.mark.parametrize(
@@ -76,11 +101,16 @@ def test_duplicate_and_missing_currency(dataset):
     rates.append(copy.deepcopy(rates[0]))
     assert "exchange_rates: duplicate currency" in build.check_exchange_rates(dataset)
     rates.pop()
-    dataset["institutes"][0]["funding"][0]["currency"] = "KES"
+    dataset["institutes"][0]["funding"][0]["currency"] = "XTS"
     assert any(
-        "missing currencies" in e and "KES" in e
+        "missing currencies" in e and "XTS" in e
         for e in build.check_exchange_rates(dataset)
     )
+    # A currency the ECB does not publish needs no rate row, and must not have one.
+    dataset["institutes"][0]["funding"][0]["currency"] = "KES"
+    assert not any("missing currencies" in e for e in build.check_exchange_rates(dataset))
+    rates.append({**copy.deepcopy(rates[0]), "currency": "KES"})
+    assert any("listed as having no ECB rate" in e for e in build.check_exchange_rates(dataset))
 
 
 @pytest.mark.parametrize(

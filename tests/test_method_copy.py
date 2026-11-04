@@ -206,7 +206,7 @@ def test_gate_checks_rendered_summaries_links_and_full_rules(tmp_path):
 
     data = {"dataset": fixture()}
     page = (
-        '<details id="method"><ul id="rules"><li id="method-summary-brief"><span class="method-copy">A summary.</span> '
+        '<details id="method-details"><ul id="rules"><li id="method-summary-brief"><span class="method-copy">A summary.</span> '
         '<a href="method.html#first">Full rule</a></li></ul><a href="method.html">Full method</a></details>'
         '<footer><a href="method.html">Full method</a></footer>'
     )
@@ -228,7 +228,7 @@ def test_gate_names_each_link_when_a_summary_covers_several_rules(tmp_path):
     data["dataset"]["method"][0]["text"] = "First rule: a rule."
     data["dataset"]["method_summaries"][0]["rules"]["internal"] = fingerprint("Internal rule.")
     page = (
-        '<details id="method"><ul id="rules"><li id="method-summary-brief"><span class="method-copy">A summary.</span> Full rules on '
+        '<details id="method-details"><ul id="rules"><li id="method-summary-brief"><span class="method-copy">A summary.</span> Full rules on '
         '<a href="method.html#first">First rule</a> and <a href="method.html#internal">Internal</a></li></ul><a href="method.html">Full method</a></details>'
         '<footer><a href="method.html">Full method</a></footer>'
     )
@@ -244,7 +244,7 @@ def test_gate_requires_the_median_exception_wherever_tilde_is_explained(tmp_path
     data = {"dataset": fixture()}
     data["dataset"]["method"][1]["text"] = f"Rounding: ~ marks a rounded figure, {MEDIAN_EXCEPTION}."
     page = (
-        '<details id="method"><ul id="rules"><li id="method-summary-brief"><span class="method-copy">A summary.</span> '
+        '<details id="method-details"><ul id="rules"><li id="method-summary-brief"><span class="method-copy">A summary.</span> '
         '<a href="method.html#first">Full rule</a></li></ul><a href="method.html">Full method</a></details>'
         '<footer><a href="method.html">Full method</a></footer>'
     )

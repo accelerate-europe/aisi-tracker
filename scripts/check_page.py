@@ -185,8 +185,10 @@ def check_dom(html: str, data: dict, dist: Path, base_url: str) -> list[str]:
             )
     for card in soup.select(".card:not(.mini)"):
         jid = card.get("data-j")
-        if jid in positive and not card.select_one(
-            f".smark .st-{positive[jid]['status']}"
+        group = card.find_parent(class_="statusgroup")  # under a status heading the card says its status in its accessible name only
+        if jid in positive and not (
+            group.get("data-status") == positive[jid]["status"] and card.select_one(".top > .vh")
+            if group else card.select_one(f".smark .st-{positive[jid]['status']}")
         ):
             errors.append(f"card {jid}: missing or incorrect status mark")
 
@@ -270,25 +272,59 @@ def check_download_groups(soup, files: set) -> list[str]:
     return errors
 
 
+INFO_LINES_JS = """() => {
+  const errors = [];
+  for (const b of document.querySelectorAll('.info')) {
+    const r = b.getBoundingClientRect();
+    if (!r.width || !r.height || b.closest('[hidden], details:not([open]) > :not(summary)')) continue;
+    // The nearest visible text before the (i) in document order: the last word of its heading or text.
+    const walk = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    let prev = null;
+    for (let n = walk.nextNode(); n; n = walk.nextNode()) {
+      if (b.compareDocumentPosition(n) & Node.DOCUMENT_POSITION_FOLLOWING) break;
+      if (b.contains(n) || !n.textContent.trim() || n.parentElement.closest('.vh, [aria-hidden="true"], #tip')) continue;
+      const range = document.createRange(); range.selectNodeContents(n);
+      const rects = [...range.getClientRects()].filter(x => x.width > 0);
+      if (rects.length) prev = rects[rects.length - 1];
+    }
+    const mid = (r.top + r.bottom) / 2;
+    if (!prev || mid < prev.top || mid > prev.bottom || prev.right > r.left + 2)
+      errors.push(`(i) ${b.id || b.getAttribute('aria-label').slice(0, 40)} sits alone on a line, not beside the last word before it`);
+  }
+  return errors;
+}"""
+
+
+def check_info_lines(page, width: int) -> list[str]:
+    """Supporting text: every visible (i) shares a line box with the last word of the heading or text before it."""
+    return [f"{width}px: {e}" for e in page.evaluate(INFO_LINES_JS)]
+
+
+def check_legend_place(page, width: int) -> list[str]:
+    """The map legend sits directly under the map: beside the region list on wide screens, and above it where the list stacks (1100px and narrower)."""
+    got = page.evaluate("""() => { const r = s => document.querySelector(s).getBoundingClientRect(), map = r('#worldmap'), legend = r('#legend'), list = r('#regions');
+      return {gap: legend.top - map.bottom, before: legend.bottom <= list.top + 1, stacked: list.top >= map.bottom - 1}; }""")
+    if got["stacked"] != (width <= 1100):
+        return [f"{width}px: the region list is {'stacked under' if got['stacked'] else 'beside'} the map, not {'stacked under' if width <= 1100 else 'beside'} it"]
+    if got["gap"] < -1 or got["gap"] > 64:
+        return [f"{width}px: the map legend is {got['gap']:.0f}px below the map, not directly under it"]
+    if got["stacked"] and not got["before"]:
+        return [f"{width}px: the map legend comes after the stacked region list instead of directly under the map"]
+    return []
+
+
 def check_version_history(page, data: dict) -> list[str]:
-    """Collapsed row: version, date and one line; the list gives each version a head and its notes, with no per-item category."""
+    """Collapsed row: version and date only; the list gives each version a head and its notes, with no per-item category."""
     latest = data["changelog"][-1]
     day = date.fromisoformat(latest["date"]).strftime("%-d %b %Y")
     errors = []
     page.evaluate("document.querySelector('#changes').open = false")
     row = page.locator("#changes-latest")
     text = " ".join(row.inner_text().split())
-    if not text.startswith(f"{latest['version']} \u00b7 {day}"):
-        errors.append(f"version history row starts {text[:40]!r}, expected version and date {latest['version']} \u00b7 {day}")
-    summary = data["dataset"]["display"]["latest_change"].get("summary") or ""
-    first = re.split(r"(?<=[.!?])\s", summary.strip(), maxsplit=1)[0] if summary else ""
-    if first and first not in text:
-        errors.append("version history row lacks the first sentence of the current notes")
-    parts = re.split(r"(?<=[.!?])\s", summary.strip(), maxsplit=1)
-    if len(parts) > 1 and parts[1][:30] in text:
-        errors.append("version history row runs past the first sentence")
+    if text != f"{latest['version']} \u00b7 {day}":
+        errors.append(f"version history row reads {text[:60]!r}, expected only version and date {latest['version']} \u00b7 {day}")
     if page.evaluate("() => { const s = document.querySelector('#changes > summary').getBoundingClientRect(), b = document.querySelector('#changes').getBoundingClientRect(); return s.right > b.right + 1 || s.width > innerWidth; }"):
-        errors.append("version history row is wider than its box (the one-line summary must truncate)")
+        errors.append("version history row is wider than its box")
     if row.evaluate("n => n.getBoundingClientRect().height > 1.5 * parseFloat(getComputedStyle(n).lineHeight)"):
         errors.append("version history row is more than one line")
     page.evaluate("document.querySelector('#changes').open = true")
@@ -317,7 +353,8 @@ def check_download_layout(page) -> list[str]:
       const p = document.createElement('span'); p.style.color = 'var(--muted)'; document.body.appendChild(p); const muted = getComputedStyle(p).color; p.remove();
       for (const a of rows) {
         const file = getComputedStyle(a.querySelector('.dl-file'));
-        if (file.color !== muted || parseFloat(file.fontSize) > 14.5) errors.push('download file name is not muted meta text');
+        const meta = (() => { const q = document.createElement('span'); q.style.font = 'var(--type-meta)'; document.body.appendChild(q); const v = parseFloat(getComputedStyle(q).fontSize); q.remove(); return v; })();
+        if (file.color !== muted || parseFloat(file.fontSize) > meta + 0.5) errors.push('download file name is not muted meta text');
       }
       for (const h of document.querySelectorAll('.dlgroup > h4')) {
         const title = h.parentElement.querySelector('.dl-title');
@@ -335,8 +372,8 @@ def check_meta_descriptions(soup, data: dict) -> list[str]:
     states = sum(j["kind"] == "state" for j in data["jurisdictions"])
     coverage = f"all {states} UN member states plus Taiwan and the EU AI Office, with Europe in detail"
     errors = []
-    if (soup.title.get_text() if soup.title else "") != "AI Security Institutes":
-        errors.append("page title is not 'AI Security Institutes'")
+    if (soup.title.get_text() if soup.title else "") != "AI Security Institutes worldwide":
+        errors.append("page title is not 'AI Security Institutes worldwide'")
     for selector in ('meta[name="description"]', 'meta[property="og:description"]', 'meta[name="twitter:description"]'):
         nodes = soup.select(selector)
         if len(nodes) != 1 or coverage not in nodes[0].get("content", ""):
@@ -358,8 +395,8 @@ def check_network_cells(soup, data) -> list[str]:
         mark = td.select_one(".nonmember")
         if td.select_one(".missing"):
             errors.append(f"table: Network cell for {jid} says Not published; the member list is complete")
-        if mark is not None and (mark.get_text(strip=True) != "Not a member" or mark.get("data-tip") != NOT_MEMBER_TIP):
-            errors.append(f"table: Network cell for {jid} lacks 'Not a member' with the tooltip {NOT_MEMBER_TIP!r}")
+        if mark is not None and (mark.get_text(strip=True) != "Not a member" or mark.get("data-tip") != NOT_MEMBER_TIP or mark.get("tabindex") != "0"):
+            errors.append(f"table: Network cell for {jid} lacks 'Not a member' with the focusable tooltip {NOT_MEMBER_TIP!r}")
         if (mark is None) != (jid in members):
             errors.append(f"table: Network cell for {jid} disagrees with the recorded memberships")
     return errors
@@ -441,7 +478,7 @@ MAP_WAIT_MS = 10_000  # the page's MAP_WAIT
 
 
 def mapless_controls(page, failed: bool) -> list[str]:
-    """On a page that took over without the map: the saved Europe drawing stands in and its dots open records;
+    """On a page that took over without the map: the saved World drawing stands in and its dots open records;
     search, the region list, table sort and filter work; another region says the map is loading or failed."""
     errors = []
     if not page.locator("#worldmap svg.map-wide .tgt").count():
@@ -518,11 +555,11 @@ def hydration_edges(browser, base_url: str, dist: Path) -> list[str]:
     page.goto(base_url, wait_until="load")
     page.locator("#world-cards details summary").first.click()
     page.fill("#world-filter", "fra")
-    page.locator("#method > summary").focus()  # a control below the table, without an id
+    page.locator("#method-details > summary").focus()  # a control below the table, without an id
     for route in held:
         route.continue_()
     page.wait_for_function("!document.documentElement.hasAttribute('data-prerendered')", timeout=30_000)
-    state = page.evaluate("[document.querySelector('#world-cards details').open, document.getElementById('world-filter').value, document.activeElement === document.querySelector('#method > summary')]")
+    state = page.evaluate("[document.querySelector('#world-cards details').open, document.getElementById('world-filter').value, document.activeElement === document.querySelector('#method-details > summary')]")
     if state != [True, "fra", True]:
         errors.append(f"hydration: the reader's open disclosure, filter text or focus was lost ({state})")
     page.close()
@@ -530,7 +567,7 @@ def hydration_edges(browser, base_url: str, dist: Path) -> list[str]:
     # have loaded before the data (cached fonts): the order in which a restore could close the target.
     data = json.loads((dist / "data/aisi.json").read_text(encoding="utf-8"))
     mini = sorted(j["id"] for j in data["jurisdictions"] if j["europe_scope"] and j["status"] == "none_identified")[0]
-    for target in ("method", "changes", f"c-{mini.lower()}"):
+    for target in ("method-details", "changes", f"c-{mini.lower()}"):
         page = browser.new_page(viewport={"width": 1440, "height": 1000})
         held = []
         page.route(PAGE_DATA, lambda route: held.append(route))
@@ -696,13 +733,13 @@ def check_agent_files(dist: Path) -> list[str]:
     for href in alternates:
         if not (dist / href).is_file():
             errors.append(f"head: alternate link {href!r} has no file in the build")
-    errors += check_json_ld(soup, dist) + check_crawl_files(dist)
+    errors += check_json_ld(soup, dist) + check_crawl_files(dist) + check_feed(soup, dist)
     if len(indexes) != 1 or not (dist / indexes[0]).is_file():
         return errors
     orientation = json.loads((dist / indexes[0]).read_text(encoding="utf-8")).get("orientation") or []
     block = soup.select_one("p#using-data")
     api = f"api/v{json.loads((dist / 'data/aisi.json').read_text(encoding='utf-8'))['dataset']['version'].split('.')[0]}/index.json"
-    if not block or [a.get("href") for a in block.select("a")] != ["llms.txt", api] or " ".join(block.get_text().split()) != "Scripts and AI agents: llms.txt and the API index" or not block.find_parent("section", attrs={"aria-labelledby": "data-h"}):
+    if not block or [a.get("href") for a in block.select("a")] != ["llms.txt", api] or " ".join(block.get_text().split()) != "Scripts and AI agents: llms.txt and the API index" or not block.find_parent("section", attrs={"aria-labelledby": "data"}):
         errors.append(f"Data section: '{USING_THE_DATA}' is not one line in the Data section linking llms.txt and {api}")
     elif not orientation:
         errors.append(f"{indexes[0]} carries no orientation text")
@@ -723,6 +760,80 @@ def check_agent_files(dist: Path) -> list[str]:
     for link in links:
         if not link.startswith(root) or not (dist / (link[len(root):] or "index.html")).is_file():
             errors.append(f"llms.txt: link {link!r} is not a built file under {root!r}")
+    return errors
+
+
+FEED_ID = "tag:aisi.accelerate-europe.org,2026:feed"
+FEED_ENTRY_ID = "tag:aisi.accelerate-europe.org,2026:release/{version}"
+
+
+# The median tile's tooltip when the median is a ceiling (site/index.html MEDIAN_CEILING).
+MEDIAN_CEILING = "Some of these budgets are ceilings, so the median is a ceiling too and is rounded up."
+
+
+def check_feed(soup, dist: Path) -> list[str]:
+    """One Atom alternate link in the head to feed.xml and one link from News, a valid Atom feed with one entry per
+    changelog version and one per News item (the page's developments, owner decision 4 Nov 2026), each with a unique
+    permanent id, newest first; releases point at the version history, News items at their state's card."""
+    errors = []
+    atoms = [str(a.get("href") or "") for a in soup.select('head link[rel="alternate"][type="application/atom+xml"]')]
+    if atoms != ["feed.xml"]:
+        return [f"head: expected one Atom alternate link to feed.xml, got {atoms}"]
+    link = soup.select_one("#news ~ a#news-feed")  # the saved page; its template copy repeats it
+    if not link or link.get("href") != "feed.xml":
+        errors.append("News: no Atom feed link beside its heading")
+    try:
+        root = ElementTree.parse(dist / "feed.xml").getroot()
+    except (OSError, ElementTree.ParseError) as exc:
+        return [f"feed.xml missing or invalid: {exc}"]
+    ns = "{http://www.w3.org/2005/Atom}"
+    if root.tag != ns + "feed" or not all(root.findtext(ns + t) for t in ("id", "title", "updated")) or root.find(f"{ns}author/{ns}name") is None:
+        errors.append("feed.xml: not an Atom feed with id, title, updated and author")
+    published = json.loads((dist / "data/aisi.json").read_text(encoding="utf-8"))
+    changelog = published["changelog"]
+    if root.findtext(ns + "id") != FEED_ID:
+        errors.append(f"feed.xml: feed id {root.findtext(ns + 'id')!r}, expected {FEED_ID!r}")
+    canonical = soup.select_one('head link[rel="canonical"]')
+    base = str(canonical.get("href")) if canonical else ""
+    day = lambda d: {10: d, 7: d + "-01", 4: d + "-01-01"}[len(d)] + "T00:00:00Z"  # noqa: E731
+    # Independent oracle: id, title, updated and link per entry, from the changelog and the page's News items.
+    want = {FEED_ENTRY_ID.format(version=c["version"]): (f"Version {c['version']}", day(c["date"]), [base + "#changes"]) for c in changelog}
+    sources = {x["id"]: x for x in published["sources"]}
+    kinds, bodies = {i: "release" for i in want}, {}
+    news = published["dataset"]["display"]["developments"]
+    for g in news:
+        text = " ".join(t for t in g["texts"] if t)
+        key = g["date"] if len(g["date"]) == 10 else f"{g['date']}/{g['order']}"  # the page's grouping key
+        nid = f"tag:aisi.accelerate-europe.org,2026:news/{g['jurisdiction']}/{key}"
+        want[nid] = (f"{g['name']}: {text}", day(g["date"]), [base + "#c-" + g["jurisdiction"].lower()])
+        kinds[nid] = "news"
+        bodies[nid] = (text, [(sources[i]["url"], sources[i]["title"]) for i in g["citations"]["display"] if sources.get(i, {}).get("url")])
+        if not soup.select_one(f"#c-{g['jurisdiction'].lower()}"):
+            errors.append(f"feed.xml: News item for {g['jurisdiction']} links to a card the page lacks")
+    entries = root.findall(ns + "entry")
+    ids = [e.findtext(ns + "id") for e in entries]
+    if len(set(ids)) != len(ids) or len({c["version"] for c in changelog}) != len(changelog):
+        errors.append(f"feed.xml: entry ids or changelog versions repeat: {sorted(i for i in set(ids) if ids.count(i) > 1)}")
+    if set(ids) != set(want):
+        errors.append(f"feed.xml: entries differ from the releases and News items: extra {sorted(set(ids) - set(want))}, missing {sorted(set(want) - set(ids))}")
+    for e in entries:
+        got = (e.findtext(ns + "title"), e.findtext(ns + "updated"), [a.get("href", "") for a in e.findall(ns + "link")])
+        if e.findtext(ns + "id") in want and got != want[e.findtext(ns + "id")]:
+            errors.append(f"feed.xml: {e.findtext(ns + 'id')} has title, updated and links {got}, expected {want[e.findtext(ns + 'id')]}")
+        if e.findtext(ns + "id") in bodies:  # a News item: its text as summary, its sources as links in the decoded HTML content
+            text, links = bodies[e.findtext(ns + "id")]
+            content = BeautifulSoup(e.findtext(ns + "content") or "", "html.parser")
+            got_links = [(a.get("href"), a.get_text()) for a in content.select("a")]
+            if e.findtext(ns + "summary") != text or content.select_one("p") is None or content.select_one("p").get_text() != text or got_links != links:
+                errors.append(f"feed.xml: {e.findtext(ns + 'id')} summary, text or source links differ from its News item")
+    stamps = [e.findtext(ns + "updated") or "" for e in entries]
+    if stamps != sorted(stamps, reverse=True):
+        errors.append("feed.xml: entries are not newest first")
+    for a, b in zip(entries, entries[1:]):  # on one date a News item comes before a release
+        if a.findtext(ns + "updated") == b.findtext(ns + "updated") and kinds.get(a.findtext(ns + "id")) == "release" and kinds.get(b.findtext(ns + "id")) == "news":
+            errors.append("feed.xml: a release precedes a News item of the same date")
+    if root.findtext(ns + "updated") != max(stamps, default=""):
+        errors.append(f"feed.xml: feed updated {root.findtext(ns + 'updated')!r} is not its newest entry")
     return errors
 
 
@@ -1060,28 +1171,23 @@ def check_source_alignment(html: str, data: dict) -> list[str]:
     return sorted(set(errors))
 
 
-# Hand-worked evidence expectations from the reviewed credit audit and source excerpts.
-# Deliberately independent of export.citations and the producer's pointer resolver.
-ACTIVITY_CREDIT_SOURCES = {
-    ("gb-aisi", "approach-to-evaluations"): ["gb-approach-2024"],
-    ("gb-aisi", "pre-deployment-evaluation-of-anthropic-s-upgraded-claude-3-5-sonnet"): ["r3-gb-claude35-release"],
-    ("eu-ai-office", "network-agentic-2025"): ["eu-joint-testing-2025"],
-    ("us-caissi", "pre-deployment-evaluation-of-anthropic-s-upgraded-claude-3-5-sonnet"): ["us-claude35-2024"],
-    ("us-caissi", "agent-hijacking-evaluations-2025"): ["us-hijacking-blog-2025-archive"],
-    ("us-caissi", "evaluation-of-deepseek-ai-models"): ["fix-output-us-entry-11"],
-    ("jp-aisi", "red-teaming-rag-results"): ["depth-jp-redteam-results", "fix-output-jp-entry-16"],
-    ("sg-aisi", "network-pilot-2024"): ["sg-pilot-2024"],
-    ("au-aisi", "risks-controls-multi-agent-systems"): ["au-multiagent-news-2026"],
-    ("au-aisi", "epistemic-safety-scalable-oversight"): ["au-oversight-news-2026"],
-    **{(iid, "network-multilingual-2025"): ["network-multilingual-2025", "r5-sg-multilingual-full-report-page"] for iid in ("fr-inesia", "ca-caisi", "jp-aisi", "kr-aisi", "ke-ai-safety-institute")},
-}
+# Hand-worked evidence expectations from the reviewed credit audit and source excerpts, kept as a reviewed fixture
+# (tests/fixtures/earliest_credit.json) so a data correction needs no code change. Deliberately independent of
+# export.citations and the producer's pointer resolver.
+EARLIEST_CREDIT = ROOT / "tests" / "fixtures" / "earliest_credit.json"
 
 
-FIRST_OUTPUT_CREDIT_SOURCES = {
-    ("gb-aisi", "frontier-ai-taskforce-first-progress-report"): ["gb-taskforce-rename"],
-    ("us-caissi", "vision-mission-strategic-goals-2024"): ["fix-output-us-aisi-vision-2024"],
-    ("jp-aisi", "crosswalk-1"): ["catalogue-jp-index", "fix-output-jp-entry-29"],
-}
+def load_credit_sources(path: Path = EARLIEST_CREDIT) -> tuple[dict, dict]:
+    fixture = json.loads(path.read_text(encoding="utf-8"))
+    table = lambda kind: {(e["institute_id"], e["lineage"]): list(e["source_ids"]) for e in fixture[kind]}  # noqa: E731
+    activity, first = table("activity"), table("first_output")
+    for kind, n in (("activity", len(activity)), ("first_output", len(first))):
+        if n != len(fixture[kind]):
+            raise ValueError(f"{path.name}: {kind} repeats an institute and lineage pair")
+    return activity, first
+
+
+ACTIVITY_CREDIT_SOURCES, FIRST_OUTPUT_CREDIT_SOURCES = load_credit_sources()
 
 
 DEVELOPMENT_CREDIT_SOURCES = {
@@ -1405,12 +1511,12 @@ def check_operating_output(
             else {}
         )
         established = j["status"] == "established"
-        if card is not None and not established:
-            for label in ("Known activity", "Budget", "Staff"):
-                if label in card_values:
-                    errors.append(
-                        f"{j['id']}: card shows {label} before establishment; the row must be omitted"
-                    )
+        if card is not None and not established and "Known activity" in card_values:
+            errors.append(f"{j['id']}: card shows Known activity before establishment; the row must be omitted")
+        if card is not None and institute is not None:
+            for label in ("Budget", "Staff"):  # Funding and staff covers every institute (principle: Scope)
+                if label not in card_values:
+                    errors.append(f"{j['id']}: card has no {label} row; Funding and staff covers every institute")
         for view, node in (
             ("card", card_values.get("Known activity")),
             ("table", table.select_one('[data-col="op"]') if table else None),
@@ -1456,20 +1562,18 @@ def check_operating_output(
                     )
                 if ACTIVITY_SINCE_DEFINITION not in tip:
                     errors.append(f"{j['id']}: {view} operational tooltip lacks the definition of since")
-        if not established and table is not None:
-            for label in ("Budget", "Staff"):
-                if id(table.select_one(f'[data-col="{label.lower()}"]')) not in structural:
+        if table is not None:
+            for label in ("Budget", "Staff"):  # a dash only where the state has no institute (principle: Scope)
+                if (id(table.select_one(f'[data-col="{label.lower()}"]')) in structural) != (institute is None):
                     errors.append(
-                        f"{j['id']}: table {label} must be a structural absence before establishment"
+                        f"{j['id']}: table {label} must be a structural absence exactly when the state has no institute"
                     )
         for row in csv_rows or []:
             if row["id"] != j["id"]:
                 continue
             if row["operational"] != expected_operating(j, institute, credit_sources):
                 errors.append(f"{j['id']}: view CSV operational label differs")
-            if j["status"] != "established" and any(
-                row[key] != "Not applicable" for key in ("budget", "staff")
-            ):
+            if any((row[key] == "Not applicable") != (institute is None) for key in ("budget", "staff")):
                 errors.append(f"{j['id']}: view CSV applicability differs")
     for mark in soup.select(
         ".smark[data-state]"
@@ -1612,15 +1716,13 @@ def sort_errors_for(rows: list[dict], key: str, direction: int, data=None) -> li
             # establish the displayed label, never its order or equality.
             value = (
                 record.get("eur_per_year_est" if key == "eur" else "total")
-                if jurisdictions[jid]["status"] == "established"
-                and (key != "eur" or selection == display.get("comparison_funding"))
+                if key != "eur" or selection == display.get("comparison_funding")
                 else None
             )
             native_budget = (
                 key == "eur"
                 and value is None
                 and record.get("amount") is not None
-                and jurisdictions[jid]["status"] == "established"
             )
             if native_budget:
                 # A native EUR one-off looks numeric, but has no annual sort key.
@@ -1755,20 +1857,24 @@ def check_state_counts(soup, data: dict) -> list[str]:
     eu_cards = soup.select('#entries > .eu-level .card[data-j="EU"]')
     if not first or "eu-level" not in first.get("class", []) or len(eu_cards) != 1:
         errors.append("the EU level entry is not first in Europe, state by state")
-    heading = first.select_one("h3").get_text(strip=True) if first else ""
+    h3 = first.select_one("h3") if first else None
+    heading = h3.get_text(strip=True) if h3 else ""
     if heading != "EU level":
         errors.append(f"EU level entry heading is {heading!r}")
     if soup.select_one('#world-cards .card[data-j="EU"]'):
         errors.append("the EU appears under Worldwide")
-    note = first.select_one("p") if first else None
-    if not note or not note.get_text().startswith("Not a state, so in none of the counts. The EU AI Office evaluates"):
-        errors.append("EU level entry lacks its one-line note that the EU is not a state")
+    # Principle Supporting text: the note is the (i) after the heading, never a line under it.
+    note = first.select_one(".eu-head > button.info#eu-scope") if first else None
+    if not note or not note.get("data-tip", "").startswith("Not a state, so in none of the counts. The EU AI Office evaluates"):
+        errors.append("EU level heading lacks its (i) saying the EU is not a state")
+    if first and first.select(":scope > p"):
+        errors.append("EU level entry keeps a text line under its heading; it belongs in the (i)")
     return errors
 
 
-# Headline (decision D5): "N of M [European] states have an institute. K states are planning, proposing or exploring one."
+# Headline (decision D5, wording 4 Nov 2026): "N of M [European] states have an AI Security Institute. K more are planning, proposing or exploring one."
 HEADLINE_SCOPE = "EU member states, Iceland, Liechtenstein, Norway, Switzerland and the UK"
-HEADLINE_WORDS = {"Europe": "European states", "Americas": "states in the Americas", "Asia": "Asian states", "Africa": "African states", "Oceania": "states in Oceania", "World": "states worldwide"}
+HEADLINE_WORDS = {"Europe": "European states", "Americas": "states in the Americas", "Asia": "Asian states", "Africa": "African states", "Oceania": "states in Oceania", "World": "states"}
 LIST_REGIONS = ("Europe", "Americas", "Asia", "Oceania", "Africa")
 MOVING_STATUSES = ("planned", "proposed", "exploring")
 
@@ -1787,7 +1893,7 @@ def expected_headline(data: dict, region: str) -> str:
     pool = [j for j in region_pool(data, region) if j["kind"] == "state"]  # counts are of states; a territory is mapped and listed, not counted
     n = sum(j["status"] == "established" for j in pool)
     k = sum(j["status"] in MOVING_STATUSES for j in pool)
-    one = f"{n} of {len(pool)} {HEADLINE_WORDS[region]} {'has' if n == 1 else 'have'} an institute."
+    one = f"{n} of {len(pool)} {HEADLINE_WORDS[region]} {'has' if n == 1 else 'have'} an AI Security Institute."
     if not k:
         two = f"No {'other ' if n else ''}state is planning, proposing or exploring one."
     elif n:
@@ -1804,7 +1910,7 @@ def expected_region_rows(data: dict, region: str) -> list[str]:
 
 
 def check_headline(soup, data: dict) -> list[str]:
-    """The saved headline is the Europe sentence pair, worded from the data; 'European' carries the scope; no number ends a line."""
+    """The saved headline is the World sentence pair, worded from the data; Europe's 'European' carries the scope; no number ends a line."""
     node = soup.select_one("#headline .hl-version.current")
     if not node:
         return ["headline missing"]
@@ -1814,9 +1920,10 @@ def check_headline(soup, data: dict) -> list[str]:
         errors_cell = []
     errors = []
     text = node.get_text().replace("\u00a0", " ")
-    if text != expected_headline(data, "Europe"):
-        errors.append(f"headline {text!r} differs from the data {expected_headline(data, 'Europe')!r}")
-    scope = node.select_one("abbr.g")
+    if text != expected_headline(data, "World"):
+        errors.append(f"headline {text!r} differs from the data {expected_headline(data, 'World')!r}")
+    europe = soup.select_one('#headline .hl-version[data-region="Europe"]')
+    scope = europe.select_one("abbr.g") if europe else None
     if not scope or scope.get_text() != "European" or scope.get("data-exp") != HEADLINE_SCOPE:
         errors.append("headline: 'European' lacks its scope definition")
     if re.search(r"\d ", node.get_text()):
@@ -1834,18 +1941,18 @@ def check_headline(soup, data: dict) -> list[str]:
         errors.append("headline: the two sentences are not separate wrapping units")
     if soup.select_one("#lede"):
         errors.append("the lede line is back under the title")
-    # Owner's order: title and meta line in the header, then search, headline, definition, then map and region list.
+    # Owner's order: title and meta line in the header, then headline, definition, region chips with the search, then map and region list.
     header = soup.select_one("#top .measure")
     if not header or [c.name if c.name == "h1" else c.get("id") for c in header.find_all(recursive=False)] != ["h1", "updated"] or not header.find_next("section", class_="first"):
         errors.append("first screen: the header is not the title then the meta line, before the first screen")
     titles = {"h1": soup.select_one("#top h1"), "og:title": soup.select_one('meta[property="og:title"]'), "bar": soup.select_one(".secnav .navtitle .long"), "bar short": soup.select_one(".secnav .navtitle .short")}
     got_titles = {k: (v.get("content") if k == "og:title" else v.get_text()) if v else None for k, v in titles.items()}
-    if got_titles != {"h1": "AI Security Institutes", "og:title": "AI Security Institutes", "bar": "AI Security Institutes", "bar short": "AISIs"}:
+    if got_titles != {"h1": "AI Security Institutes worldwide", "og:title": "AI Security Institutes worldwide", "bar": "AI Security Institutes", "bar short": "AISIs"}:
         errors.append(f"title forms differ from the owner's: {got_titles}")
     first = soup.select_one("section.first")
     order = [c.get("id") or " ".join(c.get("class") or []) for c in first.find_all(recursive=False) if c.name != "h2"] if first else []
-    if order[:4] != ["maptools", "headline", "definition", "explore"] or not soup.select_one("section.first .maptools #map-search"):
-        errors.append(f"first screen: expected search, headline, definition, then map and list; got {order}")
+    if order[:4] != ["headline", "definition-link", "maptools", "explore"] or not soup.select_one("section.first .maptools #map-search") or not soup.select_one("section.first .maptools #region-chips"):
+        errors.append(f"first screen: expected headline, definition, region chips with the search, then map and list; got {order}")
     if soup.select("#v-geo, #v-size, #view-size, #groups") or "aisi-view" in str(soup) or "#view=" in str(soup):
         errors.append("first screen: the population view or its toggle, saved choice or #view address is back")
     return errors + errors_cell
@@ -1987,9 +2094,10 @@ NOT_MEMBER_TIP = "Not among the network's members; its member list is complete."
 NOTHING_FOUND_TIP = "No published work or joint testing found in the sources we searched."
 NONE_TIP = "None identified means our searches found nothing, not that nothing exists."
 DASH_TIP = "A dash means there is no institute yet."
+OP_DASH_TIP = "A dash means there is no established institute."  # Known activity stays with established institutes
 DASH_COLUMNS = ("inst", "since", "op", "eur", "staff")
 OP_HEADER_TIP = ("Published work or joint testing found, with the date of the first known item. None found yet means none found "
-                 "in the sources we searched. A dash means there is no institute yet.")
+                 "in the sources we searched. " + OP_DASH_TIP)
 
 
 def check_absence_wording(soup) -> list[str]:
@@ -2006,8 +2114,8 @@ def check_absence_wording(soup) -> list[str]:
         for root in roots:
             for node in root.select(".missing:not(.na)"):
                 found["Not published"] += 1
-                if node.get("data-tip") != MISSING_TIP:
-                    errors.append(f"{place}: a Not published value lacks the tooltip {MISSING_TIP!r}")
+                if node.get("data-tip") != MISSING_TIP or node.get("tabindex") != "0":
+                    errors.append(f"{place}: a Not published value lacks the focusable tooltip {MISSING_TIP!r}")
             for node in root.select('.smark[data-state="not_confirmed"]'):
                 found["None found yet"] += 1
                 if not (node.get("data-tip") or "").startswith(NOTHING_FOUND_TIP + " ") or node.get("tabindex") != "0":
@@ -2022,9 +2130,9 @@ def check_absence_wording(soup) -> list[str]:
         if mark.get("data-tip") != NONE_TIP or mark.get("tabindex") != "0":
             errors.append(f"Europe cards: the None identified heading lacks the focusable tooltip {NONE_TIP!r}")
     for key in DASH_COLUMNS:
-        button = soup.select_one(f'table.world thead th[data-k="{key}"] button')
-        if not button or not (button.get("data-tip") or "").endswith(DASH_TIP) or (button.get("data-tip") or "").count(DASH_TIP) != 1:
-            errors.append(f"table column {key}: header tooltip does not explain the dash ({DASH_TIP!r})")
+        button, want = soup.select_one(f'table.world thead th[data-k="{key}"] button'), OP_DASH_TIP if key == "op" else DASH_TIP
+        if not button or not (button.get("data-tip") or "").endswith(want) or (button.get("data-tip") or "").count(want) != 1:
+            errors.append(f"table column {key}: header tooltip does not explain the dash ({want!r})")
     for name in soup.select("#world-rows td:first-child a"):  # a linked name says where it goes (no "Linked names" footnote)
         if not (name.get("data-tip") or "").endswith(" Open its full record."):
             errors.append(f"table: linked name {name.get_text()!r} lacks the tooltip ending 'Open its full record.'")
@@ -2036,7 +2144,7 @@ def check_absence_wording(soup) -> list[str]:
         if node.get("data-tip") != DASH_TIP:
             errors.append(f"a card dash lacks the tooltip {DASH_TIP!r}")
     visible = BeautifulSoup(str(soup), "html.parser")
-    for node in visible.select("#method, #rules, #limits, #changes, template, script, style, .srcs, .card.mini, #tip"):
+    for node in visible.select("#method-details, #rules, #limits, #changes, template, script, style, .srcs, .card.mini, #tip"):
         node.decompose()
     text = " ".join(visible.get_text(" ").split())
     for variant in ("Not available", "No data", "Unknown", "n/a", "N/A", "Not known", "None found.", "Not stated"):
@@ -2112,8 +2220,8 @@ def check_figure_grades(soup, data: dict) -> list[str]:
         for place, node in places.items():
             kind = place.split()[1]
             record = shown.get(kind)
-            if record is None or jurisdictions[jid]["status"] != "established":
-                continue  # Budget and Staff show only for established institutes
+            if record is None:
+                continue
             if place.startswith("table") and jurisdictions[jid]["kind"] == "supranational":
                 continue
             expected_places += 1
@@ -2155,48 +2263,59 @@ SHORT_DEFINITIONS = {
     "exploring": "Being studied or drafted, or recommended by an advisory commission.",
     "none_identified": "No decision, plan, proposal or study found.",
 }
-# Points to the definition under the headline rather than defining an institute a second time (owner-approved).
-LEGEND_STEM = "Statuses follow the definition above. Each shows the date of the government act that set it."
-SCOPE_NOTES = {"test-h": ("test-scope", "Leading AI developers' models only. Access counted only if confirmed in published sources."), "setup-h": ("setup-scope", "Established institutes only.")}  # owner decision 23 Oct: no section subtitles; scope as a muted note after the groups
+# The map's (i) after the legend: how to read the dots and statuses (owner decision 4 Nov 2026: no meta lines on the page).
+MAP_INFO = "One dot per state, near its centre; the World view leaves out states with none identified. Select a state to see its record. Each status is dated by the government act that set it."
+RECHECK_LINE = "Every state has a planned re-check date, sooner where a decision is pending; the dates are in the downloads."  # owner decision 24 Oct
+SCOPE_NOTES = {"testing": ("test-scope", "Every institute, whatever its status. Leading AI developers' models only. Access counted only if confirmed in published sources."), "set-up": ("setup-scope", "Every institute, whatever its status."), "funding": ("fund-scope", "Every institute, whatever its status.")}  # owner decision 23 Oct: no section subtitles; scope as a muted note after the groups
 
 
 def check_supporting_text(soup, data: dict) -> list[str]:
     """Four roles of supporting text: orientation (one short line, no numbers), legend, definition on demand, headline numbers in the stat row only.
 
-    Status definitions are visible once, short, in the map legend; the full text is in Method only.
+    Status definitions are short, on each legend name's tooltip; the full text is in Method only.
     """
     errors = []
     for stray in soup.select("main section .intro, #test-intro, #setup-intro, #world-intro, #method-intro, p.takeaway, #takeaway-technical"):
         errors.append(f"section subtitle still on the page (owner decision: none): {stray.get('id') or stray.get('class')}")
     for heading, (note_id, text) in SCOPE_NOTES.items():
         h2 = soup.select_one(f"#{heading}")
-        notes = h2.find_parent("section").select(f".section-body p.small.scope-note#{note_id}") if h2 else []
-        if len(notes) != 1 or notes[0].get_text() != text:
-            errors.append(f"{heading}: scope note is not one muted line reading {text!r}")
-        elif notes[0].find_previous_sibling(class_=("access-long", "setup-groups")) is None:
-            errors.append(f"{heading}: scope note does not follow the groups")
-    label = soup.select_one("#states-h")
+        mark = h2.find_next_sibling() if h2 else None
+        if not mark or mark.name != "button" or mark.get("id") != note_id or "info" not in (mark.get("class") or []) or mark.get("data-tip") != text:
+            errors.append(f"{heading}: the scope is not one (i) after the heading whose tooltip reads {text!r}")
+    if soup.select("p.scope-note"):
+        errors.append("a scope note line is back under a section (owner decision 4 Nov 2026: scope in an (i))")
+    recheck = soup.select_one("#recheck-line")
+    if not recheck or " ".join(recheck.get_text().split()) != RECHECK_LINE:
+        errors.append(f"Data section re-check line is not {RECHECK_LINE!r}")
+    label = soup.select_one("#europe")
     if soup.select("#defn") or not label or label.parent.select("a"):
         errors.append("Europe, state by state: no section keeps a lone explainer link under its heading (Method is in the Data group row)")
-    # The definition: dataset.definition verbatim, directly under the headline, then one link to the full rule; no second definition by the map.
-    definition = soup.select_one("#headline + #definition")
+    # The definition: one "Definition" link directly under the headline to dataset.definition verbatim at the top of Method,
+    # which ends with one link to the full rule; no second definition by the map (owner decision 4 Nov 2026).
+    definition = soup.select_one("#headline + #definition-link")
     links = definition.select("a") if definition else []
-    if not definition or definition.get_text() != data["dataset"]["definition"] + " What counts":
-        errors.append("the definition under the headline is not dataset.definition followed by 'What counts'")
+    if not definition or definition.get_text() != "Definition" or len(links) != 1 or links[0].get("href") != "#definition":
+        errors.append("under the headline there is not one 'Definition' link to #definition")
+    full = soup.select_one("#method-sec .section-body > #definition:first-child")
+    links = full.select("a") if full else []
+    if not full or full.get_text() != data["dataset"]["definition"] + " What counts":
+        errors.append("Method does not open with dataset.definition followed by 'What counts' as the first paragraph of its body")
     elif len(links) != 1 or links[0].get("href") != "method.html#qualifying-body":
         errors.append("the definition's 'What counts' link does not go to method.html#qualifying-body")
-    stem = soup.select_one("#legend-stem")
-    if not stem or stem.get_text() != LEGEND_STEM:
-        errors.append(f"map legend stem is not {LEGEND_STEM!r}")
+    if soup.select("#legend-stem, #mapnote"):
+        errors.append("a map meta line is back (owner decision 4 Nov 2026: the map's notes are in its (i))")
+    mark = soup.select_one("#legend > button.info#map-info:last-child")
+    if not mark or mark.get("data-tip") != MAP_INFO:
+        errors.append(f"the legend does not end with the map's (i) reading {MAP_INFO!r}")
     visible = BeautifulSoup(str(soup), "html.parser")
-    for node in visible.select("#method, template, script, style"):
+    for node in visible.select("#method-details, template, script, style"):
         node.decompose()
     text = " ".join(visible.get_text(" ").split())
     definitions = data["dataset"]["status_definitions"]
     for status, full in definitions.items():
         if full in text:
             errors.append(f"full status definition of {status} is shown outside Method")
-    if text.count("capabilities or risks of advanced AI models") > 1:
+    if text.count("general-purpose or frontier AI models for their capabilities and risks") > 1:
         errors.append("the institute definition is repeated outside Method")
     method = [li.get_text() for li in soup.select("#status-defs > li")]
     wanted = [f"{STATUS_LABELS[k]}. {v}" for k, v in definitions.items()]
@@ -2212,16 +2331,16 @@ def check_supporting_text(soup, data: dict) -> list[str]:
 # its first; an item is current while any of its sections is. A group of several sections has a quiet row above its
 # first section that names the group as the bar does and links each section.
 SECTION_BAR = (
-    ("Map", ("map-h",)),
-    ("Compare", ("test-h", "setup-h", "fund-h")),
-    ("News", ("developments-h",)),
-    ("States", ("states-h", "world-h")),
-    ("Data", ("data-h", "method-h")),
+    ("Map", ("map",)),
+    ("Compare", ("testing", "set-up", "funding")),
+    ("News", ("news",)),
+    ("States", ("europe", "world")),
+    ("Data", ("data", "method")),
 )
 GROUP_ROWS = {"Compare": ("Testing", "Set-up", "Funding"), "States": ("Europe", "The world"), "Data": ("Downloads", "Method")}
 SECTION_HEADINGS = {
-    "map-h": "Map", "test-h": "Testing and access", "setup-h": "Institutional set-up", "fund-h": "Funding and staff",
-    "developments-h": "News", "states-h": "Europe, state by state", "world-h": "The world", "data-h": "Data", "method-h": "Method",
+    "map": "Map", "testing": "Testing and access", "set-up": "Institutional set-up", "funding": "Funding and staff",
+    "news": "News", "europe": "Europe, state by state", "world": "The world", "data": "Data", "method": "Method",
 }
 
 
@@ -2264,7 +2383,7 @@ def check_section_bar(soup) -> list[str]:
 
 # Testing and access: four groups from the published model access value; both access values form the first group.
 ACCESS_GROUPS = (
-    ("privileged", ("recent_access", "earlier_access"), "Privileged access for testing"),
+    ("privileged", ("recent_access", "earlier_access"), "Privileged access on record"),
     ("law", ("by_law",), "Can require access by law"),
     ("agreed", ("access_agreed",), "Access agreed"),
     ("none", ("none_found",), "No access found"),
@@ -2430,7 +2549,10 @@ def check_figures_row(soup, data: dict) -> list[str]:
             counted.append(inst["jurisdiction_id"])
         elif (funding and funding.get("eur_per_year_est") is not None) or (staff and staff.get("total") is not None):
             unestablished.append(inst["id"])
-    tiles = [(t.select_one("b").get_text(strip=True), t.select_one("span").get_text(" ", strip=True)) for t in soup.select("#figures > .figure")]
+    def words(node):  # the figure's text without its (i), which joins the last word in one unbreakable box
+        return " ".join(s.strip() for s in node.find_all(string=True) if s.strip() and not s.find_parent(class_="info"))
+
+    tiles = [(t.select_one("b").get_text(strip=True), words(t.select_one("span"))) for t in soup.select("#figures > .figure")]
     if len(tiles) != 3:
         return [f"figures row has {len(tiles)} figures, expected budget, staff and no budget"]
     errors = []
@@ -2460,6 +2582,13 @@ def check_figures_row(soup, data: dict) -> list[str]:
             expected = format(int(median) if median == median.to_integral_value() else median.normalize(), ",")
         if figure != expected:
             errors.append(f"{label} median figure {figure!r} differs from the data median {expected!r}")
+            continue
+        tile = soup.select("#figures > .figure")[0 if label == "budget" else 1]
+        tip = tile.select_one("b > abbr.g[data-exp]")
+        if bound == "at_most" and (not tip or tip.get("data-exp") != MEDIAN_CEILING or tip.get_text(strip=True) != figure):
+            errors.append(f"{label} median {figure!r} is a ceiling but lacks the tooltip {MEDIAN_CEILING!r}")
+        elif bound != "at_most" and tip:
+            errors.append(f"{label} median {figure!r} is not a ceiling but carries a tooltip")
     # No budget: the established state institutes whose card shows the Budget row as Not published.
     missing = 0
     cards = Keyed(soup, ".card[data-j]")
@@ -2472,16 +2601,14 @@ def check_figures_row(soup, data: dict) -> list[str]:
         errors.append(f"no-budget figure {tiles[2]}, expected {want}")
     if unestablished:
         errors.append(f"figures row medians include institutes that are not established ({', '.join(unestablished)}); the note says counts are of established state institutes")
-    note = soup.select("#figures > p.small.scope-note#figures-scope")
+    note = soup.select("#figures > .figure:last-child > span > .info-glue:last-child > button.info#figures-scope:last-child")
     want_note = FIGURES_NOTE.format(n=len(counted))
-    if len(note) != 1 or note[0].get_text() != want_note:
-        errors.append(f"figures row: note is not one muted line reading {want_note!r}")
-    elif note[0].find_previous_sibling(class_="figure") is None or note[0].find_next_sibling() is not None:
-        errors.append("figures row: the counts note does not follow the figures")
+    if len(note) != 1 or note[0].get("data-tip") != want_note or len(soup.select("#figures-scope")) != 1:
+        errors.append(f"figures row: the last figure does not end with one (i) reading {want_note!r}")
     return errors
 
 
-# Institutional set-up (decisions: copy from Bahadir's feedback): established institutes by form, host as the note.
+# Institutional set-up (decisions: copy from Bahadir's feedback): every institute by form (principle: Scope), host as the note.
 SETUP_HEADING = "Institutional set-up"
 FORM_LABELS = {"unit_in_existing_body": "Unit in an existing body", "federation_of_existing_bodies": "Network of existing bodies", "university_centre": "University centre", "new_body": "New body"}
 FORM_HELP = {
@@ -2499,13 +2626,12 @@ STATE_DOWNLOAD = "JSON, for scripts and research"
 def check_setup_groups(soup, data: dict) -> list[str]:
     """Institutional set-up: heading, groups by form (larger first, Form not published last), members, marks, links, host notes and citations, from aisi.json."""
     errors, jurisdictions = [], {j["id"]: j for j in data["jurisdictions"]}
-    heading = soup.select_one("#setup-h")
+    heading = soup.select_one("#set-up")
     if not heading or heading.get_text(strip=True) != SETUP_HEADING:
         errors.append(f"set-up heading {heading.get_text(strip=True) if heading else None!r}, expected {SETUP_HEADING!r}")
     groups = {}
-    for inst in data["institutes"]:
-        if inst["status"] == "established":
-            groups.setdefault(inst["legal_form"] if inst["legal_form"] in FORM_LABELS else "unknown", []).append(inst)
+    for inst in data["institutes"]:  # every institute, whatever its status (principle: Scope)
+        groups.setdefault(inst["legal_form"] if inst["legal_form"] in FORM_LABELS else "unknown", []).append(inst)
     order = sorted(groups, key=lambda f: (f == "unknown", -len(groups[f]), FORM_LABELS.get(f, FORM_UNKNOWN)))
     blocks = soup.select("#setup .group-block")
     if [b.get("data-form") for b in blocks] != order:
@@ -2522,7 +2648,7 @@ def check_setup_groups(soup, data: dict) -> list[str]:
         if [li.get("data-state") for li in rows] != [i["jurisdiction_id"] for i in members]:
             errors.append(f"set-up group {form} lists {[li.get('data-state') for li in rows]}")
             continue
-        if [m.get("class", []) for m in block.select(".marks > i")] != [["sw", "st-established"]] * len(members):
+        if [m.get("class", []) for m in block.select(".marks > i")] != [["sw", f"st-{jurisdictions[i['jurisdiction_id']]['status']}"] for i in members]:
             errors.append(f"set-up group {form}: marks differ from its members")
         for li, inst in zip(rows, members):
             jid = inst["jurisdiction_id"]
@@ -2654,29 +2780,18 @@ def check_access_tips(page) -> list[str]:
 
 
 FIGURES_NOTE_JS = """() => {
-  const box = document.getElementById('figures'), note = document.getElementById('figures-scope');
-  if (!box || !note) return null;
-  const r = note.getBoundingClientRect(), b = box.getBoundingClientRect(), cs = getComputedStyle(box), ns = getComputedStyle(note);
-  const figs = [...box.querySelectorAll(':scope > .figure')].map(f => f.getBoundingClientRect());
-  return {visible: r.width > 0 && r.height > 0 && ns.visibility === 'visible' && parseFloat(ns.opacity) > 0,
-          span: ns.gridColumnStart + ' / ' + ns.gridColumnEnd, left: r.left, right: r.right, top: r.top,
-          boxLeft: b.left + parseFloat(cs.paddingLeft) + parseFloat(cs.borderLeftWidth), boxRight: b.right - parseFloat(cs.paddingRight) - parseFloat(cs.borderRightWidth),
-          figuresBottom: Math.max(...figs.map(f => f.bottom))};
+  const note = document.getElementById('figures-scope');
+  if (!note) return null;
+  const r = note.getBoundingClientRect(), ns = getComputedStyle(note);
+  return {visible: r.width > 0 && r.height > 0 && ns.visibility === 'visible' && parseFloat(ns.opacity) > 0};
 }"""
 
 
 def figures_note_layout_errors(m: dict | None) -> list[str]:
-    """The counts note is visible, spans every track of the figures row (its own measure may stop it short of the right edge) and sits below every figure; phones have one track."""
+    """The figures row's counts (i) is shown."""
     if m is None:
-        return ["figures row: counts note missing"]
-    if not m["visible"]:
-        return ["figures row: counts note is not visible"]
-    errors = []
-    if m["span"] != "1 / -1" or abs(m["left"] - m["boxLeft"]) > 1 or m["right"] > m["boxRight"] + 1:
-        errors.append(f"figures row: counts note does not span the row (grid-column {m['span']}, {m['left']:.0f}-{m['right']:.0f} in {m['boxLeft']:.0f}-{m['boxRight']:.0f})")
-    if m["top"] < m["figuresBottom"] - 1:
-        errors.append("figures row: counts note is not below the figures")
-    return errors
+        return ["figures row: counts (i) missing"]
+    return [] if m["visible"] else ["figures row: counts (i) is not visible"]
 
 
 def check_access_layout(page, width: int) -> list[str]:
@@ -2760,10 +2875,10 @@ def check_summary_data(html: str, data: dict) -> list[str]:
     if len(entries) != len(dataset["status_definitions"]):
         errors.append("legend omits status definitions")
     for entry in entries:
-        definition = entry.select_one(".legend-definition")
+        name = entry.select_one("abbr.g.legend-name")
         status = entry.get("data-status")
-        if not definition or definition.get_text() != SHORT_DEFINITIONS.get(status):
-            errors.append(f"legend short definition differs from the copy: {status}")
+        if not name or name.get("data-exp") != SHORT_DEFINITIONS.get(status) or entry.select_one(".legend-definition"):
+            errors.append(f"legend short definition is not the name's tooltip, or differs from the copy: {status}")
         if not entry.select_one(f".sw.st-{status}") or not entry.select_one(
             ".legend-name"
         ):
@@ -2775,8 +2890,6 @@ def check_summary_data(html: str, data: dict) -> list[str]:
         or legend.get("aria-hidden") == "true"
     ):
         errors.append("map definitions remain separate or hidden from accessibility")
-    if not soup.select_one("#mapnote"):
-        errors.append("separate map note missing")
     errors.extend(check_state_counts(soup, data))
     errors.extend(check_supporting_text(soup, data))
     errors.extend(check_figure_grades(soup, data))
@@ -2791,9 +2904,12 @@ def check_summary_data(html: str, data: dict) -> list[str]:
     if (
         not updated
         or updated.get_text()
-        != f"Updated {expected_date} · version {dataset['version']}"
+        != f"Updated {expected_date} · version {dataset['version']} · Atom feed"
     ):
-        errors.append("hero metadata is not just update date and version")
+        errors.append("hero metadata is not just update date, version and feed link")
+    feed = soup.select_one('#updated a[href="feed.xml"]')
+    if not feed or feed.get_text() != "Atom feed" or feed.get("data-tip") != "News and new versions in a feed reader":
+        errors.append("hero feed link lacks feed.xml or its instant tooltip")
     if (
         not version
         or version.get_text() != dataset["version"]
@@ -2804,7 +2920,7 @@ def check_summary_data(html: str, data: dict) -> list[str]:
     section = changes.find_parent("section") if changes else None
     if (
         not section
-        or section.get("aria-labelledby") != "data-h"
+        or section.get("aria-labelledby") != "data"
         or not section.select_one("#cite")
     ):
         errors.append("changelog is not next to Cite as in Data")
@@ -3063,12 +3179,12 @@ def check_baselines_and_rhythm(page) -> list[str]:
       const errors = [];
       // Each descriptor is one visual row, not a stack of independent rows.
       const rowTypes = [
-        ['.card .row', '.k, .v'], ['.card .top', ':scope > span, :scope > .name'],
+        ['.card .row', '.k, .v'], ['.card .top', ':scope > span:not(.vh), :scope > .name'],
         ['.card.mini > summary', ':scope > span, :scope > .name'], ['.meta', ':scope > *'],
         ['.fund-staff', ':scope > .label, :scope > .fund-value'],
         ['.dlist a', innerWidth <= 640 ? ':scope > .dl-title, :scope > .dl-file' : ':scope > .dl-title, :scope > .dl-file, :scope > .d'],
         ['table.world tr', ':scope > th, :scope > td'],
-        ['.secnav .measure', ':scope > a'], ['.chipset', ':scope > button'],
+        ['.secnav .measure', ':scope > a'], ['.region-chips', ':scope > button'],
         ['.legend-entry', ':scope > .legend-copy'],
         ['.development-row', innerWidth <= 640 ? ':scope > .development-date, :scope > .development-name' : ':scope > .development-date, :scope > .development-name, :scope > .development-text'],
       ];
@@ -3077,7 +3193,7 @@ def check_baselines_and_rhythm(page) -> list[str]:
         document.querySelectorAll(selector).forEach(row => {
           if (!visible(row)) return;
           const nodes = [...row.querySelectorAll(items)].filter(visible);
-          if (nodes.length < (['.legend-entry', '.meta'].includes(selector) || (selector === '.card.mini > summary' && row.parentElement.open && row.querySelector('.find-whole')) ? 1 : 2)) errors.push(`missing baseline items: ${selector}`);
+          if (nodes.length < (['.legend-entry', '.meta'].includes(selector) || (selector === '.card .top' && row.closest('.statusgroup')) || (selector === '.card.mini > summary' && row.parentElement.open && row.querySelector('.find-whole')) ? 1 : 2)) errors.push(`missing baseline items: ${selector}`);
           const lines = [];
           nodes.forEach(node => {
             const rect = node.getBoundingClientRect();
@@ -3173,9 +3289,12 @@ def check_citations(page) -> list[str]:
         // The gap is .12em of the marker (site/index.html .cites), so it grows with the annotated text.
         if (gap < 0 || gap > Math.max(2, .13 * parseFloat(s.fontSize))) errors.push(`citation gap to final word is ${gap.toFixed(1)}px`);
         if (s.whiteSpace !== 'nowrap' || parseFloat(s.lineHeight) !== 0 || Math.abs(parseFloat(s.top) + .4 * parseFloat(s.fontSize)) > .5) errors.push('citation group is not a tight raised superscript');
-        // One rule everywhere: three quarters of the annotated text's size, raised from that text.
+        // One rule everywhere: three quarters of the annotated text's size, raised from that text, never above meta size (beside a big figure).
         const annotated = parseFloat(getComputedStyle(word.parentElement).fontSize), ratio = parseFloat(s.fontSize) / annotated;
-        if (Math.abs(ratio - .75) > .02) errors.push(`citation ${cites.textContent} is sized from its container, not its text: ${ratio.toFixed(2)} of "${word.textContent.trim().slice(-20)}"`);
+        const probe = document.body.appendChild(Object.assign(document.createElement('span'), { style: 'font: var(--type-meta); position: absolute' }));
+        const meta = parseFloat(getComputedStyle(probe).fontSize); probe.remove();
+        const want = Math.min(.75 * annotated, meta);
+        if (Math.abs(parseFloat(s.fontSize) - want) > .02 * annotated) errors.push(`citation ${cites.textContent} is sized from its container, not its text: ${ratio.toFixed(2)} of "${word.textContent.trim().slice(-20)}"`);
         const numbers = [...cites.querySelectorAll('a')].map(a => Number(a.textContent));
         if (numbers.some((n, k) => k && n <= numbers[k - 1])) errors.push(`citation numerals not ascending: ${cites.textContent}`);
         const commas = document.createTreeWalker(cites, NodeFilter.SHOW_TEXT);
@@ -3382,7 +3501,7 @@ def check_card_grid(page) -> list[str]:
       // Three card shapes; structurally absent fields are omitted. Each field owns a fixed track so shapes stay aligned.
       const SHAPES = {
         established: ['Institute', 'Status since', 'Form', 'Mandate', 'Budget', 'Staff', 'Known activity'],  // Head, Reports to and Partners are optional here: check_leadership_rows holds them to the data
-        record: ['Institute', 'Status since', 'Form', 'Mandate'],
+        record: ['Institute', 'Status since', 'Form', 'Mandate', 'Budget', 'Staff'],
         none: ['Status since', 'Finding'],
       };
       const TRACK = { Institute: 2, 'Status since': 3, Form: 4, Head: 5, 'Reports to': 6, Partners: 7, Mandate: 8, Finding: 8, Budget: 9, Staff: 10, 'Known activity': 11, 'Related funding': 12 };
@@ -3404,7 +3523,7 @@ def check_card_grid(page) -> list[str]:
             if (i && r.top < rows[i-1].getBoundingClientRect().bottom) errors.push('comparison rows overlap');
             const fieldRows = [...card.querySelectorAll(':scope > .row')];
             const labels = fieldRows.map(n => n.querySelector('.k').textContent);
-            const shape = labels[0] !== 'Institute' ? 'none' : card.querySelector('.top .sw.st-established') ? 'established' : 'record';
+            const shape = labels[0] !== 'Institute' ? 'none' : (card.querySelector('.top .sw.st-established') || card.closest('.statusgroup[data-status="established"]')) ? 'established' : 'record';
             if (JSON.stringify(labels.filter(label => !OPTIONAL.includes(label))) !== JSON.stringify(SHAPES[shape])) errors.push(`missing or misplaced card fields: ${card.id} (${labels.join(', ')})`);
             card.querySelectorAll(':scope > .row > .k').forEach(k => { if (visible(k) && k.getBoundingClientRect().height > parseFloat(getComputedStyle(k).lineHeight) * 1.5) errors.push(`card label wraps: ${k.textContent}`); });
             const body = card.cloneNode(true); body.querySelectorAll(':scope > .row').forEach(r => { if (['Head', 'Reports to', 'Partners'].includes(r.querySelector('.k').textContent)) r.remove(); });
@@ -3785,7 +3904,8 @@ def check_rules_render(page) -> list[str]:
       const nav = document.querySelector('.secnav'), th = document.querySelector('table.world th');
       const search = document.querySelector('#world-search, input[type="search"]'), bar = document.querySelector('.fund-bar');
       if (nav && noBorder(getComputedStyle(nav), 'Bottom')) errors.push('nav rule does not paint');
-      if (search && noBorder(getComputedStyle(search), 'Top')) errors.push('control border does not paint');
+      // Principle Controls: a field is a soft fill without a drawn edge, so its fill (not a border) must paint against the page.
+      if (search && (clear(getComputedStyle(search).backgroundColor) || getComputedStyle(search).backgroundColor === getComputedStyle(document.body).backgroundColor)) errors.push('control fill does not paint');
       if (bar && clear(getComputedStyle(bar).backgroundColor) && getComputedStyle(bar).backgroundImage === 'none') errors.push('funding bar track does not paint');
       if (th && noBorder(getComputedStyle(th), 'Bottom') && noBorder(getComputedStyle(th.closest('thead') || th), 'Bottom')) errors.push('table header rule does not paint');
       return errors;
@@ -3854,6 +3974,21 @@ def check_none_identified_tips(browser, base_url: str, data: dict) -> list[str]:
     got = page.evaluate("""() => { const m = document.querySelector('#record .record-status .smark'); return m ? [m.dataset.tip, m.tabIndex] : null; }""")
     if got != [NONE_TIP, 0]:
         errors.append(f"record beside the map: {name}'s None identified mark lacks the focusable tooltip ({got})")
+    # The record qualifies the status date as the card does, no more: advisory recommendation, then any status confidence other than high.
+    dated_states = [j for j in data["jurisdictions"] if j["status"] != "none_identified" and j.get("status_since") and j.get("kind") != "supranational"]
+    qualified_states = [j for j in dated_states if j["display"].get("advisory") or j.get("status_confidence") not in (None, "high")]
+    plain = next((j for j in sorted(dated_states, key=lambda j: j["name"]) if j not in qualified_states), None)
+    if not qualified_states:
+        errors.append("record beside the map: no state with a qualified status date to check")
+    for j in qualified_states + ([plain] if plain else []):
+        want = (["advisory recommendation"] if j["display"].get("advisory") else []) + ([j["status_confidence"] + " confidence"] if j.get("status_confidence") not in (None, "high") else [])
+        page.locator("#map-search").fill(j["name"])
+        page.locator("#map-search").press("Enter")
+        shown = page.evaluate("""j => { const r = document.getElementById('record'); if (r.dataset.j !== j) return null; const q = r.querySelector('.record-status .qualifiers'); if (!q) return []; return [...q.querySelectorAll(':scope > .meta-item')].map(n => { const c = n.cloneNode(true); c.querySelectorAll('.cites, .cn').forEach(x => x.remove()); return c.textContent.replace(/\\u00b7/g, '').trim(); }); }""", j["id"])
+        if shown is None:
+            errors.append(f"record beside the map: searching {j['name']} does not open its record")
+        elif shown != want:
+            errors.append(f"record beside the map: {j['name']}'s status qualifiers {shown}, expected those on its card {want}")
     page.close()
     return errors
 
@@ -3870,12 +4005,12 @@ def check_text_measure(browser, base_url: str) -> list[str]:
         page.evaluate("async () => { document.body.offsetHeight; await document.fonts.ready; await new Promise(requestAnimationFrame); }")  # opened lists reveal italic text in its own font
         found, wrapped = page.evaluate(TEXT_MEASURE_JS)
         errors.extend(f"{width}px: {e}" for e in found)
-        # The headline and the definition under it share one measure (the headline is not a paragraph, so TEXT_MEASURE_JS skips it).
-        over = page.evaluate("""() => { const h = document.querySelector('#headline'), d = document.querySelector('#definition'); if (!h || !d) return 'missing';
+        # The headline runs full width (principle: Headline) but never past the first screen's own column (the headline is not a paragraph, so TEXT_MEASURE_JS skips it).
+        over = page.evaluate("""() => { const h = document.querySelector('#headline'), f = document.querySelector('section.first'); if (!h || !f) return 'missing';
           const r = document.createRange(); r.selectNodeContents(h); const right = Math.max(...[...r.getClientRects()].map(x => x.right));
-          return right > d.getBoundingClientRect().left + parseFloat(getComputedStyle(d).maxWidth) + 1 ? Math.round(right) : null; }""")
+          return right > f.getBoundingClientRect().right + 1 ? Math.round(right) : null; }""")
         if over:
-            errors.append(f"{width}px: the headline runs past the definition's measure ({over})")
+            errors.append(f"{width}px: the headline runs past the first screen's column ({over})")
         if wrapped < 20:
             errors.append(f"{width}px: only {wrapped} wrapped text blocks measured; the measure check is not seeing the page")
         page.close()
@@ -3926,6 +4061,37 @@ THEME_PARITY_PAIRS = {"--line": "hairline and control border", "--field-fill": "
 THEME_PARITY_TOLERANCE = 0.1  # contrast-ratio units between the light and dark step
 
 
+ANCHOR_ALIASES = {"map-h": "map", "test-h": "testing", "setup-h": "set-up", "fund-h": "funding", "developments-h": "news", "states-h": "europe",
+                  "world-h": "world", "data-h": "data", "method-h": "method", "definition-full": "definition"}
+
+
+def check_anchor_aliases(browser, base_url: str) -> list[str]:
+    """Principle Anchors: every reader anchor exists once, and each name used before 1.0.2 lands on its new anchor, its heading in the upper half of the window below the sticky rows."""
+    errors: list[str] = []
+    page = browser.new_page(viewport={"width": 1280, "height": 800})
+    hydrated(page, base_url)
+    for new in ANCHOR_ALIASES.values():
+        if page.evaluate("id => document.querySelectorAll('#' + CSS.escape(id)).length", new) != 1:
+            errors.append(f"anchor #{new} is missing or not unique")
+    page.close()
+    for old, new in ANCHOR_ALIASES.items():
+        page = browser.new_page(viewport={"width": 1280, "height": 800})
+        hydrated(page, f"{base_url}#{old}")
+        page.evaluate("document.fonts.ready")
+        page.wait_for_timeout(300)
+        # The heading (the section top for the visually hidden Map heading) lands in the upper half of the window, below the sticky rows.
+        got = page.evaluate("""id => { const t = document.getElementById(id); if (!t) return [location.hash, null, null, innerHeight, false];
+          const s = t.tagName === 'H2' ? t.closest('section') : t, top = (t.classList.contains('vh') ? s : t).getBoundingClientRect().top;
+          let bars = document.querySelector('.secnav').getBoundingClientRect().bottom;
+          for (const row of document.querySelectorAll('.group-nav')) { const r = row.getBoundingClientRect(); if (r.top < bars + 1 && r.bottom > bars) bars = r.bottom; }
+          return [location.hash, top, bars, innerHeight, innerHeight + scrollY >= document.documentElement.scrollHeight - 1]; }""", new)
+        hash, top, bars, height, at_end = got  # a heading near the page end can rise only as far as the page scrolls
+        if hash != f"#{new}" or top is None or top < bars - 1 or (top > height / 2 and not at_end):
+            errors.append(f"old anchor #{old} does not land on #{new} with its heading in the upper half below the sticky rows: hash {hash}, heading top {top}, rows end {bars}, window {height}")
+        page.close()
+    return errors
+
+
 def check_theme_parity(browser, base_url: str) -> list[str]:
     """Each surface token steps from the ground by a similar contrast ratio in light and dark.
 
@@ -3957,6 +4123,102 @@ def check_theme_parity(browser, base_url: str) -> list[str]:
     ]
 
 
+HIGHLIGHT_STEP = 1.17  # the active item's contrast step from the paper, both themes (principle Highlight); muted text caps the light step
+HIGHLIGHT_JS = """() => {
+  const canvas = document.createElement('canvas').getContext('2d', { willReadFrequently: true });
+  const rgb = c => { canvas.clearRect(0, 0, 1, 1); canvas.fillStyle = c; canvas.fillRect(0, 0, 1, 1); return [...canvas.getImageData(0, 0, 1, 1).data].slice(0, 3); };
+  const lum = c => { const f = v => { v /= 255; return v <= .03928 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4; }; const [r, g, b] = rgb(c).map(f); return .2126 * r + .7152 * g + .0722 * b; };
+  const ratio = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y) + .05) / (Math.min(x, y) + .05); };
+  const token = name => { const p = document.createElement('span'); p.style.color = `var(${name})`; document.body.appendChild(p); const c = getComputedStyle(p).color; p.remove(); return c; };
+  return { token: token('--highlight-fill'), paper: token('--paper'), ground: token('--ground'), step: ratio(token('--highlight-fill'), token('--paper')),
+    texts: [...document.querySelectorAll('#map-search-list li[aria-selected="true"], #map-search-list li[aria-selected="true"] *')].filter(n => [...n.childNodes].some(c => c.nodeType === 3 && c.textContent.trim())).map(n => ratio(getComputedStyle(n).color, token('--highlight-fill'))),
+    selected: getComputedStyle(document.querySelector('#map-search-list li[aria-selected="true"]') || document.body).backgroundColor, list: getComputedStyle(document.getElementById('map-search-list')).backgroundColor };
+}"""
+
+
+def check_highlight_fill(browser, base_url: str) -> list[str]:
+    """Principle Highlight: the current item in a list or menu stands out from the paper by HIGHLIGHT_STEP in both themes, its text at least 4.5:1,
+    and the active suggestion, a hovered download menu item, table row and download all take that one token."""
+    errors, steps = [], {}
+    for theme in ("light", "dark"):
+        page = themed_page(browser, theme, viewport={"width": 1280, "height": 900})
+        try:
+            hydrated(page, base_url)
+            page.locator("#map-search").fill("den")
+            page.locator("#map-search").press("ArrowDown")
+            page.wait_for_timeout(50)
+            got = page.evaluate(HIGHLIGHT_JS)
+            steps[theme] = got["step"]
+            if got["step"] < HIGHLIGHT_STEP:
+                errors.append(f"{theme}: --highlight-fill steps {got['step']:.2f}:1 from the paper, below {HIGHLIGHT_STEP}:1")
+            if not got["texts"]:
+                errors.append(f"{theme}: no active suggestion with text to measure")
+            elif min(got["texts"]) < 4.5:
+                errors.append(f"{theme}: text on the active suggestion is {min(got['texts']):.2f}:1, below 4.5:1")
+            if got["selected"] != got["token"] or got["list"] != got["paper"]:
+                errors.append(f"{theme}: the active suggestion ({got['selected']}) is not --highlight-fill ({got['token']}) on the paper list ({got['list']})")
+            page.locator("#map-search").fill("")
+            page.locator("#map-search").press("Escape")
+            def hovered(label, node):
+                node.scroll_into_view_if_needed()
+                node.hover()
+                if node.evaluate("n => getComputedStyle(n).backgroundColor") != got["token"]:
+                    errors.append(f"{theme}: a hovered {label} does not take --highlight-fill")
+
+            hovered("table row", page.locator("#world-rows tr").first)
+            page.locator("#world-download > summary").click()
+            hovered("download menu item", page.locator("#world-download .popover > *").first)
+            page.locator("#world-download > summary").click()
+            hovered("download", page.locator(".dlist a").first)
+        finally:
+            page.close()
+    if len(steps) == 2 and abs(steps["light"] - steps["dark"]) > THEME_PARITY_TOLERANCE:
+        errors.append(f"--highlight-fill steps {steps['light']:.2f}:1 from the paper in light but {steps['dark']:.2f}:1 in dark")
+    return [f"highlight: {e}" for e in errors]
+
+
+def check_toggle_place(browser, base_url: str) -> list[str]:
+    """Principles Theme and Phone: one theme toggle, at the right end of the sticky section bar above 430px (still there
+    when the page is scrolled), in the header on phones; the bar row keeps fitting without sideways scroll."""
+    errors = []
+    for width, scale in ((1440, "100%"), (1100, "110%"), (1000, "100%"), (680, "110%"), (650, "110%"), (470, "110%"), (431, "110%"), (390, "100%"), (360, "110%")):
+        page = browser.new_page(viewport={"width": width, "height": 800})
+        try:
+            hydrated(page, base_url)
+            page.evaluate(f"document.documentElement.style.fontSize = '{scale}'")
+            page.evaluate("scrollTo(0, 1500)")
+            page.wait_for_timeout(100)
+            got = page.evaluate("""() => { const t = document.getElementById('theme-toggle'), bar = document.querySelector('.secnav .measure'), r = t.getBoundingClientRect(), b = bar.getBoundingClientRect(), pad = parseFloat(getComputedStyle(bar).paddingRight);
+              return { count: document.querySelectorAll('.theme-toggle').length, inBar: !!t.closest('.secnav'), inHeader: !!t.closest('.topbar'), last: bar.lastElementChild === t,
+                right: b.right - pad - r.right, shown: r.width > 0 && r.top >= 0 && r.bottom <= document.querySelector('.secnav').getBoundingClientRect().bottom + 1,
+                overflow: bar.scrollWidth - bar.clientWidth }; }""")
+            if got["count"] != 1:
+                errors.append(f"{width}px: {got['count']} theme toggles in the page, expected one")
+            if width > 430 and not (got["inBar"] and got["last"] and abs(got["right"]) <= 2 and got["shown"]):
+                errors.append(f"{width}px: the theme toggle is not at the right end of the sticky section bar while scrolled ({got})")
+            if width <= 430:
+                page.evaluate("scrollTo(0, 0)")
+                top = page.evaluate("() => { const r = document.getElementById('theme-toggle').getBoundingClientRect(); return r.width > 0 && r.bottom <= document.querySelector('.secnav').getBoundingClientRect().top + 1; }")
+                if not got["inHeader"] or not top:
+                    errors.append(f"{width}px: on phones the theme toggle is not in the header above the section bar")
+            if got["overflow"] > 1:
+                errors.append(f"{width}px at {scale} text: the section bar row scrolls sideways by {got['overflow']}px with the theme toggle")
+        finally:
+            page.close()
+    # The toggle keeps keyboard focus when a width change moves it between the bar and the header.
+    page = browser.new_page(viewport={"width": 1000, "height": 800})
+    hydrated(page, base_url)
+    page.locator("#theme-toggle").focus()
+    for width, home in ((390, ".topbar"), (1000, ".secnav")):
+        page.set_viewport_size({"width": width, "height": 800})
+        page.wait_for_timeout(200)
+        got = page.evaluate("home => [document.activeElement && document.activeElement.id, !!document.querySelector(home + ' #theme-toggle')]", home)
+        if got != ["theme-toggle", True]:
+            errors.append(f"theme toggle loses focus or place when the width changes to {width}px: {got}")
+    page.close()
+    return errors
+
+
 def check_group_rows(browser, base_url: str) -> list[str]:
     """Phones and sticky group rows (owner report from an Android phone): at 360, 390 and 412px, also with the root
     text 10% larger, the bar is one row of the five items with no sideways scroll and no visible scrollbar, and each
@@ -3973,7 +4235,7 @@ def check_group_rows(browser, base_url: str) -> list[str]:
             hydrated(page, base_url)
             page.evaluate(f"document.documentElement.style.fontSize = '{scale}'")
             page.evaluate("document.fonts.ready")
-            page.evaluate("scrollTo(0, document.querySelector('#test-h').closest('section').offsetTop)")
+            page.evaluate("scrollTo(0, document.querySelector('#testing').closest('section').offsetTop)")
             page.wait_for_timeout(150)
             got = page.evaluate(bar)
             if got != [0, 1, [label for label, _ in SECTION_BAR], 0, 1]:
@@ -3986,7 +4248,7 @@ def check_group_rows(browser, base_url: str) -> list[str]:
         page = browser.new_page(viewport={"width": width, "height": height})
         hydrated(page, base_url)
         page.evaluate("document.fonts.ready")
-        for key, label in (("setup-h", "Compare"), ("fund-h", "Compare"), ("world-h", "States"), ("method-h", "Data")):
+        for key, label in (("set-up", "Compare"), ("funding", "Compare"), ("world", "States"), ("method", "Data")):
             page.evaluate("scrollTo(0, 0)")
             page.locator(f'.group-nav a[href="#{key}"]').click()
             page.wait_for_timeout(200)
@@ -3999,7 +4261,7 @@ def check_group_rows(browser, base_url: str) -> list[str]:
             if heading[0] is None or heading[1] < heading[0] or not heading[2]:
                 errors.append(f"{width}px: #{key} lands with its heading under the sticky rows or out of view (row bottom, heading top, in view: {heading})")
         # Scrolling marks the section under the row, forwards and back (no link chosen: the spy alone decides).
-        for key in ("test-h", "setup-h", "fund-h", "setup-h", "test-h"):
+        for key in ("testing", "set-up", "funding", "set-up", "testing"):
             page.evaluate("""k => { const nav = document.querySelector('.secnav').getBoundingClientRect().bottom, row = document.querySelector('.group-nav[aria-label="Compare sections"]');
               scrollTo(0, document.getElementById(k).closest('section').getBoundingClientRect().top + scrollY - nav - row.offsetHeight - 8); }""", key)
             page.wait_for_timeout(150)
@@ -4020,20 +4282,20 @@ def check_group_rows(browser, base_url: str) -> list[str]:
         page.close()
         # A hash link from elsewhere lands the same way, on a fresh page.
         page = browser.new_page(viewport={"width": width, "height": height})
-        hydrated(page, base_url + "#fund-h")
+        hydrated(page, base_url + "#funding")
         page.evaluate("document.fonts.ready")
         page.wait_for_timeout(300)
         heading = page.evaluate("""() => { const nav = document.querySelector('.secnav').getBoundingClientRect().bottom, row = document.querySelector('.group-nav[aria-label="Compare sections"]').getBoundingClientRect();
-          return [Math.round(row.top - nav), row.bottom, document.getElementById('fund-h').getBoundingClientRect().top]; }""")
+          return [Math.round(row.top - nav), row.bottom, document.getElementById('funding').getBoundingClientRect().top]; }""")
         if heading[0] != 0 or heading[2] < heading[1]:
-            errors.append(f"{width}px: the hash link #fund-h lands with its heading under the sticky rows (row offset, row bottom, heading top: {heading})")
+            errors.append(f"{width}px: the hash link #funding lands with its heading under the sticky rows (row offset, row bottom, heading top: {heading})")
         # Deep inside a group the row stays; in News no group row shows.
         page.evaluate("scrollTo(0, document.getElementById('world-scroll').getBoundingClientRect().top + scrollY - 200)")
         page.wait_for_timeout(200)
         got = page.evaluate(rows)
         if [g[:2] for g in got[:1]] != [["States sections", 0]]:
             errors.append(f"{width}px: deep in The world the States row is not stuck under the bar ({got})")
-        page.evaluate("scrollTo(0, document.getElementById('developments-h').closest('section').getBoundingClientRect().top + scrollY - 96)")
+        page.evaluate("scrollTo(0, document.getElementById('news').closest('section').getBoundingClientRect().top + scrollY - 96)")
         page.wait_for_timeout(200)
         got = page.evaluate(rows)
         if got:
@@ -4093,6 +4355,18 @@ def check_touch_tips(browser, base_url: str) -> list[str]:
         page.wait_for_timeout(200)
         if not page.evaluate(shown):
             errors.append("a tapped tooltip closes on a 4px scroll")
+    # Principle Supporting text: on touch, a tap on every visible (i) opens its note, as hover and focus do elsewhere.
+    page.evaluate("scrollTo(0, 0)")
+    for info_id in page.evaluate("() => [...document.querySelectorAll('button.info[id]')].filter(b => b.getClientRects().length).map(b => b.id)"):
+        page.tap("#world-count")
+        page.wait_for_timeout(150)
+        button = page.locator(f"#{info_id}")
+        button.scroll_into_view_if_needed()
+        page.wait_for_timeout(150)
+        button.tap()
+        page.wait_for_timeout(200)
+        if not page.evaluate("id => { const t = document.getElementById('tip'); return !!t && !t.hidden && t.textContent.startsWith(document.getElementById(id).dataset.tip); }", info_id):
+            errors.append(f"tapping the (i) #{info_id} on touch shows no note")
     context.close()
     for viewport, scale in (({"width": 412, "height": 924}, 2.625), ({"width": 360, "height": 780}, 3)):
         errors.extend(f"{viewport['width']}px: {e}" for e in touch_control_tips(browser, base_url, viewport, scale))
@@ -4250,7 +4524,7 @@ def check_access_fixes(browser, base_url: str) -> list[str]:
         hydrated(page, base_url)
         page.evaluate("document.fonts.ready")
         if width == 390:  # the bar is one row of the five items, the title hidden on phones, with no sideways scroll (320px may scroll)
-            page.evaluate("scrollTo(0, document.querySelector('#test-h').closest('section').offsetTop)")
+            page.evaluate("scrollTo(0, document.querySelector('#testing').closest('section').offsetTop)")
             page.wait_for_timeout(150)
             got = page.evaluate("""() => { const n = document.querySelector('.secnav'), m = n.querySelector('.measure'), items = [...m.children].filter(a => a.getBoundingClientRect().width);
               return [n.classList.contains('scrolled'), m.scrollWidth - m.clientWidth, new Set(items.map(a => Math.round(a.getBoundingClientRect().top))).size, items.map(a => a.innerText.trim())]; }""")
@@ -4286,12 +4560,13 @@ def check_access_fixes(browser, base_url: str) -> list[str]:
     if got != ["record-name", "true"]:
         errors.append(f"map: Enter on a dot does not focus the record heading and mark the dot expanded ({got})")
     page.keyboard.press("Escape")
-    bad = page.evaluate("""() => [...document.querySelectorAll('.card')].filter(c => { const n = c.querySelector('.name'); const g = c.closest('.statusgroup, .eu-level'); return !n || n.tagName !== 'H4' || !g || !g.querySelector(':scope > h3'); }).map(c => c.id)""")
+    bad = page.evaluate("""() => [...document.querySelectorAll('.card')].filter(c => { const n = c.querySelector('.name'); const g = c.closest('.statusgroup, .eu-level'); return !n || n.tagName !== 'H4' || !g || !g.querySelector(':scope > h3, :scope > .eu-head > h3'); }).map(c => c.id)""")
     if bad:
         errors.append(f"card names are not h4 under a group h3: {bad[:6]}")
     # Tooltips: the pointer can move onto the tip and it stays; it fits a short window and scrolls.
     page.evaluate("scrollTo(0, 0)")
-    term = page.locator("#headline abbr.g").first
+    page.locator('#region-chips button[data-region="Europe"]').click()  # the term is in Europe's headline
+    term = page.locator("#headline .hl-version.current abbr.g").first
     term.scroll_into_view_if_needed()
     t = term.bounding_box()
     page.mouse.move(t["x"] + t["width"] / 2, t["y"] + t["height"] / 2)
@@ -4371,7 +4646,7 @@ def check_arrival(browser, base_url: str) -> list[str]:
     state = """id => { const c = document.getElementById(id), s = getComputedStyle(c), nav = document.querySelector('.secnav').getBoundingClientRect(), r = c.getBoundingClientRect();
         return { hash: location.hash, outline: s.outlineStyle !== 'none' && parseFloat(s.outlineWidth) >= 2, arrived: c.classList.contains('arrived'),
           focused: document.activeElement === c, visible: r.top >= nav.bottom - 1 && r.top < innerHeight, open: c.tagName !== 'DETAILS' || c.open,
-          named: !!(c.getAttribute('aria-labelledby') && document.getElementById(c.getAttribute('aria-labelledby'))), animation: s.animationName }; }"""
+          named: !!c.getAttribute('aria-labelledby') && c.getAttribute('aria-labelledby').split(' ').every(n => document.getElementById(n)), animation: s.animationName }; }"""
     for width in (1440, 1000, 390):
         for theme in ("light", "dark"):
             motion = "no-preference" if theme == "light" else "reduce"
@@ -4380,6 +4655,8 @@ def check_arrival(browser, base_url: str) -> list[str]:
             try:
                 hydrated(page, base_url)
                 page.evaluate("document.fonts.ready")
+                page.locator('#region-chips button[data-region="Europe"]').click()  # Europe's map has none-identified dots
+                page.evaluate("scrollTo(0, 0)")
                 rows = page.locator("#region-rows-europe .pick").evaluate_all(
                     "bs => bs.map(b => [b.dataset.pick, document.getElementById('c-' + b.dataset.pick.toLowerCase())?.tagName])"
                 )
@@ -4401,6 +4678,10 @@ def check_arrival(browser, base_url: str) -> list[str]:
                             page.locator("#record .record-close").click()
                         page.locator(f'#region-rows-europe .pick[data-pick="{jid}"]').click()
                     else:
+                        if page.locator("#headline").get_attribute("data-region") != "Europe":  # after a reload the page opens on World, without none-identified dots
+                            if page.locator("#record").is_visible():
+                                page.locator("#record .record-close").click()
+                            page.locator('#region-chips button[data-region="Europe"]').click()
                         page.evaluate("j => [...document.querySelectorAll('#worldmap svg')].find(n => n.getClientRects().length).querySelector('.tgt[data-j=\"' + j + '\"]').dispatchEvent(new MouseEvent('click', { bubbles: true }))", jid)
                     if page.locator("#record").get_attribute("data-j") != jid or not page.locator("#record").is_visible():
                         errors.append(f"{label}: a {by} click on {jid} does not open its record beside the map")
@@ -4440,7 +4721,7 @@ def check_arrival(browser, base_url: str) -> list[str]:
                     back = page.evaluate("""id => { const s = document.querySelector('section.first').getBoundingClientRect(), nav = document.querySelector('.secnav').getBoundingClientRect(), record = document.querySelector('#record'), more = record.querySelector('.record-more');
                       const m = more.getBoundingClientRect();
                       return [location.hash, s.bottom > nav.bottom && s.top < innerHeight && m.top >= nav.bottom - 1 && m.bottom <= innerHeight + 1, !record.hidden && record.dataset.j, document.activeElement === more, getComputedStyle(document.getElementById(id)).outlineStyle, document.querySelectorAll('.back-map').length]; }""", full)
-                    if back != ["#map-h", True, full_id, True, "none", 0]:
+                    if back != ["#map", True, full_id, True, "none", 0]:
                         errors.append(f"{label}: Back to map does not return to the first screen with the record open and focused, arrival ended ({back})")
                     # The browser's Back returns to the card as it was reached: from the record, so with its link.
                     page.go_back()
@@ -4458,14 +4739,14 @@ def check_arrival(browser, base_url: str) -> list[str]:
                         page.locator(f"#{full} .back-map").click()
                         page.wait_for_timeout(150)
                         got = page.evaluate("() => { const r = document.getElementById('record'); return [location.hash, !r.hidden && r.dataset.j, document.activeElement === r.querySelector('.record-more')]; }")
-                        if got != ["#map-h", full_id, True]:
+                        if got != ["#map", full_id, True]:
                             errors.append(f"{label}: Back to map after a reload does not reopen the record with focus on its link ({got})")
                 open_record(mini_id, "map")
                 expect(mini, "none-identified record link")
                 if page.evaluate("id => document.getElementById(id).matches('.arrived, :target') || getComputedStyle(document.getElementById(id)).outlineStyle !== 'none'", full):
                     errors.append(f"{label}: #{full} keeps its arrival outline after another card is the target")
                 # Section navigation changes the address without a hashchange; the arrival ends there too.
-                page.locator('.secnav a[href="#states-h"]').click()
+                page.locator('.secnav a[href="#europe"]').click()
                 page.wait_for_timeout(100)
                 if page.evaluate("id => getComputedStyle(document.getElementById(id)).outlineStyle !== 'none'", mini):
                     errors.append(f"{label}: #{mini} keeps its arrival outline after section navigation")
@@ -4732,7 +5013,7 @@ def check_map_labels(page, label: str, names: dict[str, str]) -> list[str]:
 def check_first_screen(page, data: dict) -> list[str]:
     """The first screen against an independent oracle from aisi.json: per region the headline, the open accordion
     group and its institute rows, the others' name lines, one dot per state on or near its own country with its
-    status mark; World toggles back to the region before; the EU's merged border; search by keyboard; the record
+    status mark; World by default; region chips move to their view; the list's World view row shows only outside World; the EU's merged border; search by keyboard; the record
     beside the map with its one link down (card or table row)."""
     errors = []
     page.mouse.move(0, 0)
@@ -4823,6 +5104,10 @@ def check_first_screen(page, data: dict) -> list[str]:
             # The record's heading takes focus (as for list and search picks); the dot says it controls the open record; a tooltip, if still shown, names the state.
             aside = page.evaluate("j => { const a = document.activeElement, t = document.getElementById('tip'), d = [...document.querySelectorAll('#worldmap svg')].find(n => n.getClientRects().length).querySelector('.tgt[data-j=\"' + j + '\"]'); return [a && a.id === 'record-name' ? null : (a && (a.dataset.j || a.id || a.tagName)), t && !t.hidden ? t.firstChild.textContent : null, d.getAttribute('aria-controls') === 'record' && d.getAttribute('aria-expanded') === 'true']; }", jid)
             name = next(j["name"] for j in data["jurisdictions"] if j["id"] == jid)
+            # Opening the record can scroll another tooltip trigger under the resting pointer (a region list short name); its own tip is not the dot's.
+            under = page.evaluate("([x, y]) => { const n = document.elementFromPoint(x, y), o = n && n.closest('abbr.g, [data-tip]'); return o && !o.closest('#worldmap') ? (o.dataset.exp || o.dataset.tip) : null; }", [x, y])
+            if under is not None and aside[1] == under:
+                aside[1] = None
             if got != jid:
                 wrong.append(f"{jid}->{got}")
             elif aside[0] or aside[1] not in (name, None) or not aside[2]:
@@ -4841,7 +5126,12 @@ def check_first_screen(page, data: dict) -> list[str]:
             errors.append(f"first screen {label}: the list stays inert after the record closes")
         page.evaluate("scrollTo(0, 0)")
 
-    expect_region("Europe", "on load")
+    expect_region("World", "on load")
+    chips = "() => [...document.querySelectorAll('#region-chips button')].map(c => [c.dataset.region, c.getAttribute('aria-pressed')])"
+    if page.evaluate(chips) != [[r, str(r == "World").lower()] for r in ("World",) + LIST_REGIONS]:
+        errors.append(f"first screen: region chips are not World (pressed) then the list's regions: {page.evaluate(chips)}")
+    head("Europe")
+    expect_region("Europe", "Europe")
     pointer_picks("Europe")
     # A click on a country's shape, away from every dot, acts like a click on its dot: record, focus and tooltip.
     fr = next(j for j in data["jurisdictions"] if j["name"] == "France")
@@ -4864,13 +5154,31 @@ def check_first_screen(page, data: dict) -> list[str]:
     for region in LIST_REGIONS[1:]:
         head(region)
         expect_region(region, region)
+    if not page.locator(".region-world").is_visible():
+        errors.append("first screen: the region list has no World view row while another region is selected")
     head("World")
     expect_region("World", "World view")
     pointer_picks("World view")
-    head("World")
-    expect_region(LIST_REGIONS[-1], "World view clicked again (back to the region before)")
+    if page.locator(".region-world").is_visible():
+        errors.append("first screen: the region list still shows its World view row while World is selected")
     head("Europe")
     expect_region("Europe", "back to Europe")
+    # The World view row hides itself when used: keyboard focus moves to the World tab, not to the page.
+    page.locator(".region-world .region-head").focus()
+    page.keyboard.press("Enter")
+    page.wait_for_timeout(150)
+    if page.evaluate("""!!document.activeElement && document.activeElement.matches('#region-chips button[data-region="World"]')""") is not True:
+        errors.append("first screen: Enter on the World view row leaves focus nowhere; it should move to the World tab")
+    page.locator('#region-chips button[data-region="Europe"]').click()
+    page.wait_for_timeout(100)
+    # Region chips move to their view only: a pressed chip clicked again stays; World is a chip like the others.
+    for region, label in (("Asia", "Asia chip"), ("Asia", "Asia chip again"), ("World", "World chip"), ("World", "World chip again")):
+        page.locator(f'#region-chips button[data-region="{region}"]').click()
+        page.wait_for_timeout(50)
+        expect_region(region, label)
+        if page.evaluate(f"document.querySelector('#region-chips button[data-region=\"{region}\"]').getAttribute('aria-pressed')") != "true":
+            errors.append(f"first screen {label}: the {region} chip is not pressed")
+    head("Europe")
     # A window shorter than the map: a region picked from the list below still brings the map's top into view below the bar.
     if page.evaluate("matchMedia('(max-width: 1100px)').matches"):
         size = page.viewport_size
@@ -4973,7 +5281,7 @@ def check_first_screen(page, data: dict) -> list[str]:
         page.set_viewport_size({"width": width, "height": size["height"]})
         page.wait_for_timeout(50)
         seen = set()
-        for region in (*LIST_REGIONS, "World", "World"):
+        for region in (*LIST_REGIONS, "World"):  # the World row hides while World is shown, so no second World click
             head(region)
             seen.add(round(page.evaluate("document.getElementById('worldmap').getBoundingClientRect().top + scrollY"), 1))
             if width == 320 and region != "World":  # the phone drawing at its narrowest width
@@ -4988,16 +5296,18 @@ def check_first_screen(page, data: dict) -> list[str]:
 
 
 def check_theme_default(browser, base_url: str, dist: Path) -> list[str]:
-    """Principle Theme: light by default whatever the system says; the toggle (keyboard reachable) switches to dark,
-    is remembered across reloads, works before hydration, and Method, the API index and the 404 page follow the
-    choice; invalid or blocked storage gives light without errors; the theme is set before the stylesheet applies;
-    without scripting the toggle is hidden. Contexts start unseeded (no themed_page), so persistence is real."""
+    """Principle Theme: the system scheme by default; the toggle (keyboard reachable) moves through follows system,
+    light and dark, stores a light or dark choice and clears it for system, is remembered across reloads, works
+    before hydration, and Method, the API index and the 404 page follow both the choice and the system; invalid or
+    blocked storage follows the system without errors; the theme is set before the stylesheet applies; without
+    scripting the toggle is hidden. Contexts start unseeded (no themed_page), so persistence is real."""
     errors = []
     ground = "getComputedStyle(document.body).backgroundColor"
-    pressed = "document.getElementById('theme-toggle').getAttribute('aria-pressed')"
+    label = "document.getElementById('theme-toggle').getAttribute('aria-label')"
+    stored = f"localStorage.getItem('{THEME_KEY}')"
 
     def state(page):
-        return page.evaluate(f"[getComputedStyle(document.documentElement).colorScheme, {ground}, {pressed}]")
+        return page.evaluate(f"[getComputedStyle(document.documentElement).colorScheme, {ground}, {label}]")
 
     def bare_toggle(page, theme):
         """The toggle is a bare icon button: no visible border, fill or pressed accent line, in either state."""
@@ -5006,17 +5316,27 @@ def check_theme_default(browser, base_url: str, dist: Path) -> list[str]:
         if look[0] != "rgba(0, 0, 0, 0)" or look[1] != "rgba(0, 0, 0, 0)" or look[2] != "none":
             errors.append(f"theme: in {theme} the toggle is not a bare icon button (border, fill, shadow: {look})")
 
+    for system in ("light", "dark"):
+        context = browser.new_context(viewport={"width": 1440, "height": 1000}, color_scheme=system)
+        try:
+            page = context.new_page()
+            page.on("pageerror", lambda e: errors.append(f"theme: JavaScript error: {e}"))
+            hydrated(page, base_url)
+            got = state(page)
+            if got != ["light dark", GROUNDS[system], "Theme: follows system"]:
+                errors.append(f"theme: system {system} with nothing stored does not give the {system} page ({got})")
+        finally:
+            context.close()
+
     context = browser.new_context(viewport={"width": 1440, "height": 1000}, color_scheme="dark")
     try:
         page = context.new_page()
         page_errors: list = []
         page.on("pageerror", lambda e: page_errors.append(e))
         hydrated(page, base_url)
-        if state(page) != ["light", GROUNDS["light"], "false"]:
-            errors.append(f"theme: system dark with nothing stored does not give the light page ({state(page)})")
         toggle = page.locator("#theme-toggle")
-        if not toggle.is_visible() or toggle.get_attribute("aria-label") != "Dark theme":
-            errors.append("theme: the toggle is not shown with the label Dark theme")
+        if not toggle.is_visible():
+            errors.append("theme: the toggle is not shown")
             return errors  # nothing below can run without it
         page.evaluate("scrollTo(0, 0)")
         for _ in range(8):
@@ -5027,41 +5347,53 @@ def check_theme_default(browser, base_url: str, dist: Path) -> list[str]:
             errors.append("theme: the toggle is not reachable by keyboard")
         page.mouse.move(0, 0)
         page.evaluate("document.activeElement.blur()")
-        bare_toggle(page, "light")
+        bare_toggle(page, "system dark")
+        # The cycle: follows system -> light -> dark -> follows system, each stored (system clears the key).
+        for scheme, name, key in (("light", "light", "light"), ("dark", "dark", "dark"), ("light dark", "follows system", None)):
+            toggle.focus()
+            page.keyboard.press("Enter")
+            page.evaluate("document.activeElement.blur()")
+            got, kept = state(page), page.evaluate(stored)
+            want_ground = GROUNDS["light" if scheme == "light" else "dark"]  # system is dark in this context
+            if got != [scheme, want_ground, f"Theme: {name}"] or kept != key:
+                errors.append(f"theme: the toggle does not move to {name} and store it ({got}, stored {kept})")
+            bare_toggle(page, name)
+        # Dark, then light (against the dark system), are each kept after a reload.
         toggle.focus()
         page.keyboard.press("Enter")
-        page.evaluate("document.activeElement.blur()")
-        bare_toggle(page, "dark")
         toggle.focus()
-        if state(page) != ["dark", GROUNDS["dark"], "true"] or page.evaluate(f"localStorage.getItem('{THEME_KEY}')") != "dark":
-            errors.append(f"theme: the toggle does not switch to dark and store it ({state(page)})")
+        page.keyboard.press("Enter")
         hydrated(page, base_url)
-        if state(page) != ["dark", GROUNDS["dark"], "true"]:
-            errors.append(f"theme: dark is not kept after a reload ({state(page)})")
+        if state(page) != ["dark", GROUNDS["dark"], "Theme: dark"]:
+            errors.append(f"theme: a dark choice is not kept after a reload ({state(page)})")
+        page.evaluate(f"localStorage.setItem('{THEME_KEY}', 'light')")
+        hydrated(page, base_url)
+        if state(page) != ["light", GROUNDS["light"], "Theme: light"]:
+            errors.append(f"theme: a light choice is not kept after a reload ({state(page)})")
         # Before the script takes over: the saved page's toggle shows the stored state and works.
         held = []
         page.route(PAGE_DATA, lambda route: held.append(route))
         page.goto(base_url, wait_until="load")
-        if page.evaluate(pressed) != "true":
-            errors.append("theme: the saved page's toggle does not show the stored dark theme")
+        if page.evaluate(label) != "Theme: light":
+            errors.append("theme: the saved page's toggle does not show the stored light theme")
         page.locator("#theme-toggle").click(timeout=5_000)
         for route in held:
             route.continue_()
         page.wait_for_function("!document.documentElement.hasAttribute('data-prerendered')", timeout=30_000)
         page.unroute(PAGE_DATA)
-        if state(page) != ["light", GROUNDS["light"], "false"] or page.evaluate(f"localStorage.getItem('{THEME_KEY}')") != "light":
+        if state(page) != ["dark", GROUNDS["dark"], "Theme: dark"] or page.evaluate(stored) != "dark":
             errors.append(f"theme: a toggle before the script takes over is lost ({state(page)})")
         # The other pages follow the choice.
         api = sorted(dist.glob("api/v*/index.html"))
         others = {"Method": "method.html", "404": "404.html"} | ({"API index": api[-1].relative_to(dist).as_posix()} if api else {})
         if not api:
             errors.append("theme: no API index page to check")
-        for theme in ("dark", "light"):
-            page.evaluate(f"t => localStorage.setItem('{THEME_KEY}', t)", theme)
+        for theme in ("dark", "light", None):  # None: nothing stored, so the dark system decides
+            page.evaluate(f"t => t ? localStorage.setItem('{THEME_KEY}', t) : localStorage.removeItem('{THEME_KEY}')", theme)
             for name, path in others.items():
                 page.goto(base_url + path)
-                if page.evaluate(ground) != GROUNDS[theme]:
-                    errors.append(f"theme: {name} does not follow the stored {theme} theme")
+                if page.evaluate(ground) != GROUNDS[theme or "dark"]:
+                    errors.append(f"theme: {name} does not follow the {theme or 'system dark'} theme")
                 if name == "API index":
                     # Paths are code: monospace on a subtle fill distinct from the ground, text and links at least 4.5:1 on it.
                     bad = page.evaluate("""() => { const rgb = c => c.match(/[\\d.]+/g).slice(0, 3).map(Number);
@@ -5074,12 +5406,12 @@ def check_theme_default(browser, base_url: str, dist: Path) -> list[str]:
                           if (!/mono/i.test(s.fontFamily) || s.backgroundColor === ground || /rgba\\(0, 0, 0, 0\\)/.test(s.backgroundColor) || ratio(s.color, s.backgroundColor) < 4.5)
                             out.push(c.textContent + ' ' + s.fontFamily.slice(0, 20) + ' ' + s.backgroundColor + ' ' + ratio(s.color, s.backgroundColor).toFixed(2)); } }
                       return out; }""")
-                    errors.extend(f"api index: in {theme} a path is not readable code ({b})" for b in bad)
+                    errors.extend(f"api index: in {theme or 'system dark'} a path is not readable code ({b})" for b in bad)
         errors.extend(f"theme: JavaScript error: {e}" for e in page_errors)
     finally:
         context.close()
 
-    # Invalid and inaccessible storage: light, no errors, and the toggle still switches the open page.
+    # Invalid and inaccessible storage: the system decides, no errors, and the toggle still switches the open page.
     for name, script in (
         ("invalid", f"try {{ localStorage.setItem('{THEME_KEY}', 'purple'); }} catch (e) {{}}"),
         ("inaccessible", "Object.defineProperty(window, 'localStorage', { get() { throw new DOMException('blocked', 'SecurityError'); } });"),
@@ -5091,10 +5423,10 @@ def check_theme_default(browser, base_url: str, dist: Path) -> list[str]:
             page.on("pageerror", lambda e: page_errors.append(e))
             page.add_init_script(script)
             hydrated(page, base_url)
-            if state(page) != ["light", GROUNDS["light"], "false"]:
-                errors.append(f"theme: {name} storage does not give the light page ({state(page)})")
+            if state(page) != ["light dark", GROUNDS["dark"], "Theme: follows system"]:
+                errors.append(f"theme: {name} storage does not follow the system ({state(page)})")
             page.locator("#theme-toggle").click(timeout=5_000)
-            if state(page) != ["dark", GROUNDS["dark"], "true"]:
+            if state(page) != ["light", GROUNDS["light"], "Theme: light"]:
                 errors.append(f"theme: with {name} storage the toggle does not switch ({state(page)})")
             errors.extend(f"theme: {name} storage: JavaScript error: {e}" for e in page_errors)
         finally:
@@ -5158,7 +5490,7 @@ def check_link_states(page) -> list[str]:
     """Exercise hover and focus instead of trusting the rest-state declarations."""
     errors = []
     for selector, decoration in (
-        ('.secnav a[href="#map-h"]', "none"),
+        ('.secnav a[href="#map"]', "none"),
         (".cn", "underline"),
         ("a.standalone", "underline"),
         ("#regions .pick .pname", "underline"),
@@ -5317,9 +5649,9 @@ REPEATED_COMPONENTS = tuple(
         ".statusgroup", ".cards:not(.minis)", ".card-row", ".card:not(.mini) > .top", ".card:not(.mini) > .row", ".card .foot",
         ".card.mini", ".card.mini > summary", ".more:not(.quiet) > summary", ".more.quiet > summary", ".list-more",
         "summary.source-footer-line", ".source-count", ".fund-item", ".development-row", ".dlist a", ".legend-entry",
-        ".chipset button", ".qualified", ".qualifiers", ".activity-kinds",
+        ".region-chips button", ".qualified", ".qualifiers", ".activity-kinds",
     )
-) + ((".smark", ("rowGap", "columnGap")), (".chipset", ("rowGap", "columnGap")))
+) + ((".smark", ("rowGap", "columnGap")), (".region-chips", ("rowGap", "columnGap")))
 
 
 def check_repeated_spacing(page) -> list[str]:
@@ -5415,6 +5747,15 @@ def check_institute_names(html, data: dict) -> list[str]:
             errors.append(f"{jid} table cell does not show the short form {shorts[iid]!r} (marked for hover only when it has a name to give)")
         elif mark is not None and mark.get("data-exp") != hover:
             errors.append(f"{jid} short form {shorts[iid]!r} does not give {hover!r} on hover")
+        # The region list is a tight place too: its short form, cut off where long, gives the same name on hover or focus.
+        pick = soup.select_one(f'#regions .region-rows .pick[data-pick="{jid}"]')
+        short = pick.parent.select_one(":scope > .small") if pick else None
+        if pick is None or short is None:
+            errors.append(f"{jid} region list row or its short form {shorts[iid]!r} is missing")
+        else:
+            mark = short.select_one("abbr.g")
+            if short.get_text(strip=True) != shorts[iid] or (mark is None) != (hover is None) or (mark is not None and (mark.get("data-exp") != hover or mark.get("tabindex") != "0")):
+                errors.append(f"{jid} region list short form {shorts[iid]!r} does not give {hover!r} on hover and focus")
     for node in soup.select("abbr.g[data-exp]"):  # a hover never repeats what it is on
         if " ".join(node.get("data-exp").split()) == " ".join(node.get_text().split()):
             errors.append(f"tooltip repeats its own label: {node.get_text()!r}")
@@ -5511,6 +5852,91 @@ def expected_leadership(data: dict) -> dict[str, dict[str, tuple[str, list[str],
     return expected
 
 
+FORMER_MARK = re.compile(r"\b(?:then|former|formerly)\b", re.IGNORECASE)
+TEXT_BLOCKS = "p, li, td, div.v, span.meta-item, .how"
+
+
+def former_forms(institute: dict) -> set[str]:
+    """Hand-worked former names of an institute: each recorded name and its bracketed short form, minus the current ones."""
+    current = {institute["name"], institute.get("acronym"), institute.get("short_name")}
+    forms = set()
+    for entry in institute.get("names", []):
+        m = re.fullmatch(r"(.+?) \(([^()]+)\)", entry["name"])
+        forms.update([m.group(1), m.group(2)] if m else [entry["name"]])
+    return {f for f in forms if f and f not in current and not any(f in c for c in current if c)}
+
+
+def check_former_names(html, data: dict) -> list[str]:
+    """Former names are marked as former: in an institute's own page text, a sentence that uses a former name says
+    'then', 'former' or 'formerly', or gives the current short form after 'now'.
+
+    Scope is the text the page writes about the institute's state (the block's own or closest data-j, else its card
+    id), not source entries (a list item led by its source link), which quote the source. A former form inside another
+    institute's name (AI Safety Institute in Japan AI Safety Institute) is that body's name, not a use.
+    """
+    soup = BeautifulSoup(html, "html.parser")
+    for node in soup.select("script, style, template, details.srcs"):
+        node.decompose()
+    errors = []
+    blocks = []
+    for b in soup.select(TEXT_BLOCKS):
+        first = next((c for c in b.children if getattr(c, "name", None) or str(c).strip()), None)
+        if b.name == "li" and getattr(first, "name", None) == "a" and "ext" in (first.get("class") or []):
+            continue  # a source entry: its title and publisher quote the source
+        host = b if b.has_attr("data-j") else b.find_parent(attrs={"data-j": True})
+        card = b.find_parent(id=re.compile(r"^c-[a-z]{2}$"))
+        owner = host.get("data-j") if host else card.get("id")[2:].upper() if card else None
+        blocks.append((owner, " ".join(b.get_text(" ").split())))  # nested blocks are also checked whole; errors are deduplicated
+    for institute in data["institutes"]:
+        forms = former_forms(institute)
+        if not forms:
+            continue
+        jid, short = institute["jurisdiction_id"], institute["short_name"]
+        others = [o["name"] for o in data["institutes"] if o["id"] != institute["id"] and any(f in o["name"] for f in forms)]
+        pattern = re.compile(r"(?<![A-Za-z])(?:" + "|".join(re.escape(f) for f in sorted(forms, key=len, reverse=True)) + r")(?![A-Za-z])")
+        now = re.compile(r"\bnow\s+" + re.escape(short) + r"(?![\w-])", re.IGNORECASE)
+        for owner, text in blocks:
+            if owner != jid:
+                continue
+            text = text.replace("U.S.", "US").replace("( ", "(").replace(" )", ")")
+            for sentence in re.split(r"(?<=[.!?])\s+", text):
+                inside = [(m.start(), m.end()) for name in others for m in re.finditer(re.escape(name), sentence)]
+                uses = [m for m in pattern.finditer(sentence) if not any(s0 <= m.start() and m.end() <= e0 for s0, e0 in inside)]
+                if uses and not FORMER_MARK.search(sentence) and not now.search(sentence):
+                    error = f"{jid}: former name used without marking it as former: {sentence[:120]!r}"
+                    if error not in errors:
+                        errors.append(error)
+    return errors
+
+
+NO_RATE_TIP = "Shown in the national currency only, because the ECB publishes no euro reference rate for it."  # rule currency-rounding
+
+
+def check_no_rate_amounts(html, data: dict) -> list[str]:
+    """An amount in a currency without an ECB rate row is shown in that currency only, says why on hover and is never compared."""
+    soup = BeautifulSoup(html, "html.parser")
+    rated = {"EUR"} | {r["currency"] for r in data["dataset"].get("exchange_rates", [])}
+    errors = []
+    for institute in data["institutes"]:
+        display = institute.get("display", {})
+        for record in institute.get("funding", []) or []:
+            currency = record.get("currency")
+            if not currency or currency in rated:
+                continue
+            identity = record["id"]
+            if record.get("eur_per_year_est") is not None or display.get("comparison_funding") == identity:
+                errors.append(f"{identity}: {currency} has no ECB rate, so the amount is never converted or compared")
+            amounts = soup.select(f'.budget-value[data-funding-id="{identity}"] .budget-amount, .funding-record[data-record-id="{identity}"] .budget-amount')
+            if not amounts:
+                errors.append(f"{identity}: {currency} amount is not shown")
+            for amount in amounts:
+                if "EUR" in amount.get_text() or currency not in amount.get_text():
+                    errors.append(f"{identity}: amount must be in {currency} only, got {amount.get_text()!r}")
+                if amount.get("data-tip") != NO_RATE_TIP or amount.get("tabindex") != "0":
+                    errors.append(f"{identity}: {currency} amount must say on hover and focus why there is no euro figure")
+    return errors
+
+
 def check_leadership_rows(html, data: dict) -> list[str]:
     """Head, Reports to and Partners: present with the data, in order after Form, with the stated words, order and citations.
 
@@ -5599,7 +6025,7 @@ def check_leadership_rows(html, data: dict) -> list[str]:
     return errors
 
 
-SEARCH_BOILERPLATE = "government-designated institute that evaluates advanced models"
+SEARCH_BOILERPLATE = "body its government has tasked with testing general-purpose or frontier AI models or named its AI safety or security institute"
 ROLE_PHRASES = {"single_point_of_contact": "single point of contact", "market_surveillance": "market surveillance", "notifying": "notifying"}
 NON_LATIN_SCRIPT = re.compile(r"[\u0370-\u03ff\u0400-\u052f\u0530-\u058f\u0590-\u06ff\u0900-\u0dff\u0e00-\u0eff\u10a0-\u10ff\u1f00-\u1fff\u3040-\u30ff\u3400-\u9fff\uac00-\ud7af]")  # same scripts as method_checks.NON_LATIN, kept apart as the page gate's own oracle
 
@@ -5719,7 +6145,7 @@ def check_method_pages(html: str, data: dict, dist: Path) -> list[str]:
             errors.append(f"Method summary {sid}: full-rule links differ")
         if item and len(summary["rules"]) > 1 and "Full rules on " not in item.get_text():
             errors.append(f"Method summary {sid}: several rules without 'Full rules on'")
-    for selector in ("footer", "#method"):
+    for selector in ("footer", "#method-details"):
         if not soup.select(f'{selector} a[href="method.html"]'):
             errors.append(f"Full method: missing link in {selector}")
     path = dist / "method.html"
@@ -6009,7 +6435,7 @@ LANDMARKS_JS = """(root, clip) => {
       return [`${cardName(c)} card, ${k} field`, c.id, 'state cards', cardName(c), `${k} field`];
     }
     if (n.matches('.card')) return [`${cardName(n)} card`, n.id, 'state cards', cardName(n)];
-    if (n.matches('.statusgroup')) return [groupName(n), (n.querySelector('.card') || {}).id || 'states-h'];
+    if (n.matches('.statusgroup')) return [groupName(n), (n.querySelector('.card') || {}).id || 'europe'];
     if (n.matches('#world-rows tr')) {
       const name = text(n.querySelector('td'));
       return [`comparison table, ${name} row`, 'world-scroll', 'comparison table rows', name];
@@ -6023,7 +6449,7 @@ LANDMARKS_JS = """(root, clip) => {
       const name = text(n.querySelector('.development-name'));
       return [`News, ${name} entry`, 'developments', 'News entries', name];
     }
-    if (n.matches('.tbar')) return ['table toolbar', 'world-h'];
+    if (n.matches('.tbar')) return ['table toolbar', 'world'];
     const s = sectionOf(n);
     if (n.matches('section')) return s ? [`${s.name} section`, s.id] : [null, null];
     if (!n.id) return [null, null];
@@ -6126,10 +6552,10 @@ def check_controls(page) -> list[str]:
       probe.style.background = 'var(--selected-fill)';
       expected.selected = getComputedStyle(probe).backgroundColor; probe.remove();
       if (Math.abs(expected.height - 40) > .5) errors.push('control token is not 40px');
-      document.querySelectorAll('.field, .btn, .chipset button').forEach(node => {
+      document.querySelectorAll('.field, .btn').forEach(node => {
         if (!visible(node) || node.id === 'theme-toggle') return; // a bare icon button by design; check_theme_default checks it
         const s = getComputedStyle(node), r = node.getBoundingClientRect();
-        const selected = node.matches('[aria-pressed="true"], .btn:hover, .chipset button:hover') || !!node.closest('.selectwrap.is-filtered');
+        const selected = node.matches('[aria-pressed="true"], .btn:hover') || !!node.closest('.selectwrap.is-filtered');
         if (Math.abs(r.height-expected.height) > 1 || s.borderTopLeftRadius !== expected.radius || s.borderTop !== expected.border) errors.push(`inconsistent control dimensions/border: ${node.id || node.className || node.textContent}`);
         if (s.backgroundColor !== (selected ? expected.selected : expected.fill)) errors.push(`inconsistent control fill: ${node.id || node.className || node.textContent}`);
       });
@@ -6174,6 +6600,20 @@ def check_controls(page) -> list[str]:
         if (s.color !== (structural ? muted : body.color)) errors.push(structural ? 'structural absence is not muted' : 'missing value does not use the body ink');
       });
       if (document.querySelector('#world-all')) errors.push('duplicate full-dataset toolbar action remains');
+      // Principle Region tabs: the tab text starts on the map column's edge and the search spans the list column (beside the map) or the list's width (under it).
+      const tabs = document.querySelector('#region-chips'), first = tabs && tabs.querySelector('button'), map = [...document.querySelectorAll('#worldmap svg')].find(visible), list = document.querySelector('#regions'), find = document.querySelector('#map-search');
+      if (tabs && visible(tabs) && first && map && list && find) {
+        const range = document.createRange(); range.selectNodeContents(first);
+        const tx = range.getBoundingClientRect().left, mr = map.closest('#worldmap').getBoundingClientRect(), lr = list.getBoundingClientRect(), fr = find.getBoundingClientRect();
+        if (Math.abs(tx - mr.left) > 1) errors.push(`region tab text starts ${Math.round(tx - mr.left)}px off the map column edge`);
+        const beside = lr.left > mr.right; // the list beside the map, or stacked under it
+        if (beside && (Math.abs(fr.left - lr.left) > 1 || Math.abs(fr.right - lr.right) > 1)) errors.push(`search box [${Math.round(fr.left)}, ${Math.round(fr.right)}] does not span the region list [${Math.round(lr.left)}, ${Math.round(lr.right)}]`);
+        if (!beside && Math.abs(fr.right - mr.right) > 1) errors.push(`search box ends at ${Math.round(fr.right)}, not on the map's right edge ${Math.round(mr.right)}`);
+        const hr = tabs.getBoundingClientRect();
+        if (!beside && hr.right > fr.left + 1 && hr.bottom > fr.top + 1) errors.push('region tabs and the search overlap');
+        const ts = getComputedStyle(first);
+        if (parseFloat(ts.borderTopWidth) || ts.backgroundColor !== 'rgba(0, 0, 0, 0)') errors.push('region tabs are boxed');
+      }
       return errors;
     }"""
     )
@@ -6292,11 +6732,14 @@ def check_status_filter(page, data: dict) -> list[str]:
     def line() -> str:
         return " ".join(page.locator("#world-count").inner_text().split())
 
-    want = f"{total - none} of {total} states \u00b7 Show all"
+    # The table lists Taiwan as a territory beside the 193 states, so its total names both (the headline counts states only).
+    noun = "states and territories" if any(j["kind"] == "territory" for j in states) else "states"
+
+    want = f"{total - none} of {total} {noun} \u00b7 Show all"
     if line() != want:
         errors.append(f"count line {line()!r} differs from {want!r}")
     page.locator("#world-status").select_option("")
-    if line() != f"{total} of {total} states":
+    if line() != f"{total} of {total} {noun}":
         errors.append(f"count line with all states is {line()!r}")
     page.locator("#world-status").select_option("pos")
     # A region narrows the shown count; the line has the same words for every filter.
@@ -6308,12 +6751,12 @@ def check_status_filter(page, data: dict) -> list[str]:
     in_region = [j for j in states if (j.get("region") or {}).get("name") == region]
     region_none = sum(j["status"] == "none_identified" for j in in_region)
     page.locator("#world-region").select_option(f"c:{region}")
-    want = f"{len(in_region) - region_none} of {total} states \u00b7 Show all"
+    want = f"{len(in_region) - region_none} of {total} {noun} \u00b7 Show all"
     if line() != want:
         errors.append(f"count line in {region} is {line()!r}, expected {want!r}")
     page.locator("#world-status").select_option("planned")
     planned = sum(j["status"] == "planned" and j in in_region for j in states)
-    if line() != f"{planned} of {total} states \u00b7 Show all":
+    if line() != f"{planned} of {total} {noun} \u00b7 Show all":
         errors.append(f"count line for one status is {line()!r}")
     page.locator("#world-count button").click()
     if page.locator("#world-status").input_value() != "" or page.locator("#world-region").input_value() != "":
@@ -6702,7 +7145,7 @@ EXPECTED_BUDGET_IDS = {
     "jp-aisi": "funding-7d0b36a48cc65315865a6d6ec83ddeb6",
     "kr-aisi": EXPECTED_FUNDING_IDS["KR"], "sg-aisi": None,
     "au-aisi": EXPECTED_FUNDING_IDS["AU"], "my-aisafe": None,
-    "in-aisi": None, "ke-ai-safety-institute": None,
+    "in-aisi": None, "ke-ai-safety-institute": "funding-b60809279d92488ebf5dcea4813d9da9",
 }
 
 
@@ -6718,9 +7161,7 @@ def check_budget_output(html, data, expected=None):
         if identity not in expected:
             errors.append(f"{identity}: Budget oracle needs reviewed expectation")
             continue
-        if jurisdictions[jid]["status"] != "established":
-            continue
-        wanted = expected[identity]
+        wanted = expected[identity]  # every institute: Funding and staff covers all of them (principle: Scope)
         card = cards.one(jid)
         budget = next((row.select_one(".v") for row in card.select(".row") if row.select_one(".k").get_text(strip=True) == "Budget"), None) if card else None
         table = world_rows.one(jid, '[data-col="budget"]')
@@ -6797,7 +7238,7 @@ def check_funding_outside(html, data: dict) -> list[str]:
     line = soup.select_one("#fund-none")
     if line is None or line.has_attr("hidden") != (not none):
         errors.append("Not published line: visibility differs from its entries")
-    elif line and none and (line.select_one(".label") is None or line.select_one(".label").get_text(strip=True) != "Not published" or line.select("details, .budget-value")):
+    elif line and none and (line.select_one(".label") is None or line.select_one(".label").get_text(strip=True) != "Budget not published" or line.select("details, .budget-value")):
         errors.append("Not published line must be a label and names only")
     ids = {str(n["id"]) for n in soup.select("[id]")}
     for li in soup.select("#fund-none li[data-j]"):
@@ -6834,7 +7275,7 @@ def check_funding_outside(html, data: dict) -> list[str]:
 
 
 def check_label_ladder(page) -> list[str]:
-    """Section > group > item > label: a group heading is never weaker than its items; labels carry no colon; cards in a group keep a quiet status mark."""
+    """Section > group > item > label: a group heading is never weaker than its items; labels carry no colon; cards in a status group keep their status in the accessible name only."""
     return page.evaluate("""() => {
       const errors = [], visible = n => n.getClientRects().length > 0;
       const css = (n, p) => getComputedStyle(n)[p];
@@ -6844,11 +7285,12 @@ def check_label_ladder(page) -> list[str]:
         if (!name) continue;
         if (css(h, 'color') !== css(name, 'color') || parseFloat(css(h, 'fontWeight')) < parseFloat(css(name, 'fontWeight')) || parseFloat(css(h, 'fontSize')) < parseFloat(css(name, 'fontSize'))) errors.push(`group heading is weaker than its items: ${h.textContent.trim()}`);
       }
-      for (const mark of document.querySelectorAll('.statusgroup .card .top > .smark')) {
-        if (!visible(mark)) continue;
-        const meta = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--size-meta')) * 16;
-        const muted = (() => { const p = document.createElement('span'); p.style.color = 'var(--muted)'; document.body.appendChild(p); const c = css(p, 'color'); p.remove(); return c; })();
-        if (parseFloat(css(mark, 'fontSize')) > meta + .5 || css(mark, 'color') !== muted) errors.push('status mark on a card in a group is not quiet');
+      // A card under a status group heading does not repeat the status in its title row; its accessible name still carries it.
+      for (const card of document.querySelectorAll('.statusgroup .card:not(.mini)')) {
+        if (card.querySelector(':scope > .top > .smark')) errors.push(`card in a status group repeats its status in the title row: ${card.id}`);
+        const said = card.querySelector(':scope > .top > .vh'), ids = (card.getAttribute('aria-labelledby') || '').split(' ');
+        const want = ', ' + card.closest('.statusgroup').querySelector(':scope > h3 .smark > span').textContent.replace(/ \\(\\d+\\)$/, '');
+        if (!said || said.textContent !== want || !ids.includes(said.id)) errors.push(`card in a status group lacks its status in the accessible name: ${card.id}`);
       }
       for (const mark of document.querySelectorAll('.eu-level .card .top > .smark')) {
         if (visible(mark) && parseFloat(css(mark, 'fontSize')) < parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--size-label')) * 16 - .5) errors.push('the EU entry has no group heading, so its status mark must stay full weight');
@@ -6856,7 +7298,7 @@ def check_label_ladder(page) -> list[str]:
       const labelled = '.label, .card .k, h2, h3, h4, th, .gl, .legend-name, summary:not(.source-footer-line)';
       for (const n of document.querySelectorAll(labelled)) if (visible(n) && /:\\s*$/.test(n.textContent.trim())) errors.push(`label ends in a colon: ${n.textContent.trim().slice(0, 40)}`);
       // Lead-in labels inside running text: no colon either (the skip list names what is not scanned).
-      const skip = '#method, #changes, .source-list, .popover';
+      const skip = '#method-details, #changes, .source-list, .popover';
       const lead = /\\b(Closest|Supports|Not counted|Known activity|Related funding|Solid|Budget|Staff|Target|Status since|Institute|Form|Mandate)\\s*:/;
       for (const n of document.querySelectorAll('main p, main span, main div, main li')) {
         if (n.closest(skip)) continue;
@@ -7263,7 +7705,7 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
         require(False, error)
     for error in check_download_layout(page):
         require(False, error)
-    for error in check_version_history(page, data):
+    for error in check_version_history(page, data) + check_legend_place(page, width) + check_info_lines(page, width):
         require(False, error)
     for error in check_funding_bars(page, data) + check_budget_output(page.content(), data) + check_funding_outside(page.content(), data):
         require(False, error)
@@ -7278,7 +7720,7 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
     r2_soup = BeautifulSoup(page.content(), "html.parser")
     for error in check_section_bar(r2_soup) + check_access_groups(r2_soup, data) + check_figures_row(r2_soup, data) + check_setup_groups(r2_soup, data) + check_per_person(r2_soup, data) + check_access_layout(page, width) + check_access_tips(page):
         require(False, error)
-    for error in check_institute_names(page.content(), data):
+    for error in check_institute_names(page.content(), data) + check_former_names(page.content(), data) + check_no_rate_amounts(page.content(), data):
         require(False, error)
     for error in check_leadership_rows(page.content(), data):
         require(False, error)
@@ -7346,7 +7788,7 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
         "nav does not start at its first item",
     )
     require(
-        page.locator('.secnav a[href="#map-h"]').evaluate(
+        page.locator('.secnav a[href="#map"]').evaluate(
             "e => e.getBoundingClientRect().left >= e.parentNode.getBoundingClientRect().left - 1"
         ),
         "first nav item is clipped",
@@ -7379,7 +7821,7 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
         ),
         "nav title does not appear once the h1 scrolls under the bar",
     )
-    if width <= 430:  # phones: the five items alone, no title (check_group_rows)
+    if width <= 460:  # phones: the five items alone, no title (check_group_rows)
         require(not page.locator(".secnav .navtitle").is_visible(), "nav title shows on a phone")
     else:
         page.locator(".secnav .navtitle").click()
@@ -7410,7 +7852,7 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
             page, screenshots, f"closed-{width}-{theme}"
         )
 
-    version_link = page.locator("#updated a")
+    version_link = page.locator('#updated a[href="#changes"]')
     version_link.scroll_into_view_if_needed()
     for state in ("hover", "focus"):
         if state == "hover":
@@ -7473,7 +7915,7 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
         require(False, error)
 
     # A heading inside a sticky label stops moving. Its section does not.
-    for target in ("map-h", "test-h", "setup-h", "fund-h", "states-h", "world-h"):
+    for target in ("map", "testing", "set-up", "funding", "europe", "world"):
         page.locator(
             f'section[aria-labelledby="{target}"]'
         ).evaluate(
@@ -7498,16 +7940,16 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
     )
     page.wait_for_timeout(100)
     require(
-        page.locator('.secnav a[data-sections~="method-h"]').get_attribute("aria-current")
+        page.locator('.secnav a[data-sections~="method"]').get_attribute("aria-current")
         == "location",
         "last section is not active at page bottom",
     )
-    page.locator('.secnav a[href="#states-h"]').evaluate(
+    page.locator('.secnav a[href="#europe"]').evaluate(
         "e => e.click()"
     )
     page.wait_for_timeout(100)
     require(
-        page.locator('.secnav a[href="#states-h"]').get_attribute(
+        page.locator('.secnav a[href="#europe"]').get_attribute(
             "aria-current"
         )
         == "location",
@@ -7630,7 +8072,7 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
     trigger.click()
     menu.get_by_role("link", name="Full dataset…").click()
     require(
-        page.evaluate("location.hash") == "#data-h"
+        page.evaluate("location.hash") == "#data"
         and menu.get_attribute("open") is None,
         "Full dataset does not close Download and navigate to Data",
     )
@@ -7915,10 +8357,10 @@ def shared_links(browser, base_url: str) -> list[str]:
     page.on("pageerror", lambda e, errs=page_errors: errs.append(e))  # type: ignore[call-overload]
     hydrated(page, base_url)
     page.wait_for_selector("#world-rows tr")
-    page.locator('.secnav a[href="#data-h"]').evaluate("e => e.click()")
+    page.locator('.secnav a[href="#data"]').evaluate("e => e.click()")
     page.wait_for_timeout(100)
     if (
-        page.locator('.secnav a[href="#data-h"]').get_attribute(
+        page.locator('.secnav a[href="#data"]').get_attribute(
             "aria-current"
         )
         != "location"
@@ -7926,9 +8368,9 @@ def shared_links(browser, base_url: str) -> list[str]:
         errors.append(
             "tall viewport: clicking Data selects another section"
         )
-    if page.evaluate("document.activeElement.id") != "data-h":
+    if page.evaluate("document.activeElement.id") != "data":
         errors.append("section navigation does not transfer keyboard focus")
-    for target in ("c-fr", "world-h", "fund-h", "method", "changes"):
+    for target in ("c-fr", "world", "funding", "method", "changes"):
         hydrated(page, base_url + "#" + target)
         page.wait_for_selector("#world-rows tr")
         page.evaluate("document.fonts.ready")
@@ -8022,6 +8464,9 @@ def browser_jobs(dist: Path, data: dict, screenshots: Path | None) -> list[tuple
         ("interactions", partial(prefixed, "measure: ", check_text_measure), ()),
         ("interactions", check_none_identified_tips, (data,)),
         ("interactions", check_theme_parity, ()),
+        ("interactions", check_highlight_fill, ()),
+        ("interactions", check_toggle_place, ()),
+        ("interactions", check_anchor_aliases, ()),
         ("interactions", check_format_edges, (data,)),
         ("interactions", check_operating_edges, (data,)),
         ("interactions", table_sorting, (data,)),
@@ -8133,7 +8578,7 @@ JOB_COST = {
     "interactions/check_menu_touch": 2.9, "interactions/check_arrival": 45.8, "interactions/check_access_fixes": 14.4,
     "interactions/check_group_rows": 25.1, "interactions/check_touch_tips": 46.2, "interactions/check_theme_default": 10.0,
     "interactions/check_wide_layout": 22.5, "interactions/check_text_measure": 7.7,
-    "interactions/check_none_identified_tips": 2.9, "interactions/check_theme_parity": 4.0,
+    "interactions/check_none_identified_tips": 2.9, "interactions/check_theme_parity": 4.0, "interactions/check_highlight_fill": 4.0, "interactions/check_toggle_place": 4.0, "interactions/check_anchor_aliases": 6.0,
     "interactions/check_format_edges": 9.3, "interactions/check_operating_edges": 6.0, "interactions/table_sorting": 3.9,
     "interactions/check_card_grid_edges": 7.8,
 }

@@ -168,9 +168,9 @@ def test_a_removed_capture_links_to_its_section(tmp_path):
     page().save(before / "390-light-cards-7-planned.png")
     page().save(after / "390-light-hero.png")
     page().save(before / "390-light-hero.png")
-    (before / "390-light-cards-7-planned.json").write_text(json.dumps({"crop": {"label": "Planned worldwide cards", "anchor": "c-ke", "section": "world-h"}, "landmarks": []}))
+    (before / "390-light-cards-7-planned.json").write_text(json.dumps({"crop": {"label": "Planned worldwide cards", "anchor": "c-ke", "section": "world"}, "landmarks": []}))
     [change] = sheet.group_changes(before, after, sheet.find_regions(before, after)[0])
-    assert (change.label, change.anchor, change.what()) == ("Planned worldwide cards", "world-h", "removed")
+    assert (change.label, change.anchor, change.what()) == ("Planned worldwide cards", "world", "removed")
 
 
 def test_sections_sort_in_page_order():

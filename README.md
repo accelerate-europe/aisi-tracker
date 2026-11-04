@@ -4,15 +4,15 @@ Which states have an AI Security Institute (AISI), with funding, staff and leade
 
 <!-- definition:start -->
 
-We count a body as an AI Security Institute (AISI) if a national government, or the EU, has tasked it with testing general-purpose or frontier AI models for their capabilities and risks, or has named it its AI safety institute or its AI security institute. A regulator, certification body or cyber security agency does not count for that role alone. [What counts](https://aisi.accelerate-europe.org/method.html#qualifying-body)
+We count a body as an AI Security Institute (AISI) if a national government or an international organisation, such as the EU, has tasked it with testing general-purpose or frontier AI models for their capabilities and risks, or has named it its AI safety institute or its AI security institute. A regulator, certification body or cyber security agency does not count for that role alone. [What counts](https://aisi.accelerate-europe.org/method.html#qualifying-body)
 
 <!-- definition:end -->
 
 <!-- counts:start -->
 
-Version 1.0.1, data as of 2026-10-24. 195 jurisdictions, 15 institutes and 1099 sources. The Europe view covers 32 states.
+Version 1.0.2, data as of 2026-11-04. 195 jurisdictions, 15 institutes and 1154 sources. The Europe view covers 32 states.
 
-119 output records, 49 agreements and 9 network milestones. Negative findings by confidence: 0 high, 134 medium, 44 low.
+126 output records, 54 agreements and 9 network milestones. Negative findings by confidence: 0 high, 144 medium, 34 low.
 
 <!-- counts:end -->
 
@@ -53,7 +53,7 @@ Generated from the published dataset by `scripts/agent_files.py`, the one home o
 
 ### What this is
 
-Which states have an AI Security Institute (AISI), covering all 193 UN member states plus Taiwan and the EU AI Office, with funding, staff and leadership where published. Every record cites its sources. Published by Accelerate Europe; version 1.0.1, data as of 2026-10-24.
+Which states have an AI Security Institute (AISI), covering all 193 UN member states plus Taiwan and the EU AI Office, with funding, staff and leadership where published. Every record cites its sources. Published by Accelerate Europe; version 1.0.2, data as of 2026-11-04.
 
 ### Answering from this data
 
@@ -89,7 +89,7 @@ Code: MIT (`LICENSE`). Data, page text and documentation: CC BY 4.0 (`LICENSE-DA
 
 ### Cite as
 
-Accelerate Europe (2026). AI Security Institutes tracker, version 1.0.1, data as of 24 October 2026. Compiled by Jason Hoelscher-Obermaier. https://doi.org/10.5281/zenodo.23600431
+Accelerate Europe (2026). AI Security Institutes tracker, version 1.0.2, data as of 4 November 2026. Compiled by Jason Hoelscher-Obermaier. https://doi.org/10.5281/zenodo.23600431
 
 <!-- agents:end -->
 
@@ -154,7 +154,7 @@ The citation, current counts, agents and definition blocks, and `CITATION.cff` (
 
 <!-- citation:start -->
 
-Accelerate Europe (2026). AI Security Institutes tracker, version 1.0.1, data as of 24 October 2026. Compiled by Jason Hoelscher-Obermaier. https://doi.org/10.5281/zenodo.23600431
+Accelerate Europe (2026). AI Security Institutes tracker, version 1.0.2, data as of 4 November 2026. Compiled by Jason Hoelscher-Obermaier. https://doi.org/10.5281/zenodo.23600431
 
 <!-- citation:end -->
 
@@ -176,7 +176,7 @@ The report records paths and SHA-256 hashes for the dataset and both optional re
 
 `scripts/verify_excerpts.py` checks literal quotations against cached source text. Run `uv run --group evidence python scripts/verify_excerpts.py --all-excerpts --offline` to audit an existing cache, or omit `--offline` to retrieve source copies. Online retrieval is opt-in: the build does not invoke this tool. The verifier tries each declared live/archive copy and one rendered fallback, reuses cached attempts, and spaces request starts by host. It rejects error, login, challenge, empty-render, empty application, document-viewer-only and recognised cookie-settings-only responses. Reports and source caches stay in ignored `work/`.
 
-Matching normalises Unicode composition, whitespace and quotation marks only, and rejects matches that cut adjacent digits or comma, full-stop, Arabic, full-width, space or apostrophe number separators. Ambiguous adjacent numbers fail this boundary check and need review. HTML can also be checked in a separate view excluding explicitly hidden accessibility text. Both views retain noscript fallback text available without JavaScript; this does not verify its visibility in a JavaScript-enabled browser. PDF text can be checked through independent default, layout and, when the `pdftotext` executable is installed, Poppler extraction views. Independent PDF views are still attempted when the primary parser returns no text or raises an extraction error. A quotation must match within one view. The evidence group includes `fonttools` because pypdf uses it to decode embedded CFF Type1 fonts. A match establishes literal occurrence, not support for a claim. Non-matches need editorial review: readable PDF glyphs, especially Arabic and image-based text, can remain visual evidence with the source page recorded in `access_note`. A rendered publication timestamp must be labelled as metadata rather than article-body wording.
+Matching normalises Unicode composition, whitespace and quotation marks only, ignores spaces between Japanese or Chinese characters and PDF layout line breaks with Japanese or Chinese text or CJK or full-width punctuation on one side and one of those or a digit on the other, and rejects matches that cut adjacent digits or comma, full-stop, Arabic, full-width, space or apostrophe number separators. Ambiguous adjacent numbers fail this boundary check and need review. HTML can also be checked in a separate view excluding explicitly hidden accessibility text. Both views retain noscript fallback text available without JavaScript; this does not verify its visibility in a JavaScript-enabled browser. PDF text can be checked through independent default, layout and, when the `pdftotext` executable is installed, Poppler extraction views. Independent PDF views are still attempted when the primary parser returns no text or raises an extraction error. A quotation must match within one view. The evidence group includes `fonttools` because pypdf uses it to decode embedded CFF Type1 fonts. A match establishes literal occurrence, not support for a claim. Non-matches need editorial review: readable PDF glyphs, especially Arabic and image-based text, can remain visual evidence with the source page recorded in `access_note`. A rendered publication timestamp must be labelled as metadata rather than article-body wording.
 
 The default checks decisive excerpts; `--all-excerpts` checks every recorded quotation and `--all-sources` also retrieves sources without quotations. Defaults are one second between request starts to the same host, four workers and a 25-second timeout. Cached failures are retained; use a fresh `--cache` directory for an intentional new retrieval attempt. Reports distinguish mismatches, transport failures, uncached sources, rejected responses, retrieved but unextractable documents, extraction failures and local storage failures. A quotation found only outside its declared excerpt URL is flagged as `matched_other_copy` for review. Matches confined to hidden HTML text or to an undeclared rendered copy are flagged separately. Rendered plain text from Jina may contain spoken accessibility expansions that cannot be distinguished automatically; these still need editorial review. Exit status 1 means at least one quotation needs review. Reports record the extraction version and whether Poppler was available. For XLSX workbooks the verifier reads only literal string cells of visible worksheets; the [source snapshot guide](docs/source-snapshots.md) lists the exclusions.
 
@@ -199,14 +199,16 @@ Follow the [launch runbook](docs/launch.md) for the public source export, hostin
 - Rerun the full page sweep on the release build (every fold open, all table rows shown, 1440, 1000 and 390 px, light and dark) and fix or log every finding.
 - Remove draft wording from the README, canonical citation, schema descriptions, CLAUDE.md and AGENTS.md; regenerate the README citation, current counts, agents and definition blocks with `uv run scripts/build.py --update-readme`.
 - Set `PUBLIC_URL` in `scripts/agent_files.py` to the public site address; `--release` fails while it is the placeholder. Regenerate with `--update-readme`, since `CITATION.cff` and `.zenodo.json` carry the address.
-- Owner or team, at launch: switch on the Zenodo GitHub integration for the public repository, so each release gets a DOI with the metadata in `.zenodo.json` (generated with `CITATION.cff`; creators are the maintainers, the publisher is the imprint).
+- Owner or team, at launch: switch on the Zenodo GitHub integration for the public repository, so each release gets a DOI with the metadata in `.zenodo.json` (generated with `CITATION.cff`; creators are the maintainers, the publisher is the imprint; `scripts/zenodo_metadata.py` adds the publisher as first creator after each release).
+- At each minor release, in a development checkout: re-check the public claims in `docs/claims.csv` (claim, source, verdict and the record that decides it, from the 24 Oct 2026 landscape check) against the release data; a verdict that flips points at a fix or a mistake. Update `verdict`, `our_record` and `checked`.
 - Blind re-check: re-derive three to five randomly chosen records from their sources without looking at the stored values first; record the differences and adapt the number to what it finds.
 - Fresh-eyes audit, the last review before release: auditors never see the diff; each takes two or three records, sampled by risk (changed institutes, high-visibility records, random controls), checks bound quotations against the private copies, searches for what is new since the last check and reads the rendered card, table row and API file.
 - Run `uv run scripts/check.py --release --out dist`; every step must pass, none NOT RUN, and `dist/` is the build to publish.
 - Create the GitHub release on the pushed public commit with the tag from `uv run scripts/release_tag.py` (`v` plus `dataset.version`) and `--target` set to that commit; the script fails if `.zenodo.json` at HEAD carries another version, HEAD has another version tag, or the tag exists elsewhere locally or on `origin`.
+- Once Zenodo has archived the release, run `uv run scripts/zenodo_metadata.py` (diff against the new Zenodo version), then with `ZENODO_TOKEN` set `uv run scripts/zenodo_metadata.py --apply` (adds Accelerate Europe as organisational creator and the MIT licence, which `.zenodo.json` cannot carry), then the diff again, which must report nothing to do. Zenodo's public API can serve the old record for about a minute after `--apply`: the script reads it again for up to 2 minutes while it is older than the publish, and a later diff that shows the old values right after "published; record ... now matches" is that lag, not a failure, so wait a minute before the final diff.
 - Owner, at launch: enable branch protection requiring the `build` job and GitHub secret scanning with push protection, and run a one-off secrets scan of the full repository history.
 - Within three days after release, re-open the news and publications pages of every institute, record a `check.partial` entry for each and add anything new.
 
 ## Public source export
 
-Export the reviewed release commit with `git archive <release-commit> | tar -x -C <empty-export-directory>`. The `.gitattributes` export rules leave superseded internal notes in `docs/history/`, the maintainers' review protocol `docs/review.md` and the owner's decision log `docs/decisions.md` out of the archive. Initialise the public repository from that exported tree with a fresh history; do not push the private repository history.
+Export the reviewed release commit with `git archive <release-commit> | tar -x -C <empty-export-directory>`. The `.gitattributes` export rules leave superseded internal notes in `docs/history/`, the maintainers' review protocol `docs/review.md`, the owner's decision log `docs/decisions.md` and the public claims list `docs/claims.csv` out of the archive. Initialise the public repository from that exported tree with a fresh history; do not push the private repository history.

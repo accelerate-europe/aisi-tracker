@@ -274,7 +274,7 @@ EXPECTED_BUDGET_IDS = {
     "au-aisi": "funding-a7c0488859f35293a4b593ba44e40d12",
     "my-aisafe": None,
     "in-aisi": None,
-    "ke-ai-safety-institute": None,
+    "ke-ai-safety-institute": "funding-b60809279d92488ebf5dcea4813d9da9",
 }
 
 

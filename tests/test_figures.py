@@ -5,7 +5,7 @@ from decimal import Decimal
 import pytest
 from bs4 import BeautifulSoup
 
-from scripts.check_page import check_figures_row, check_two_significant_figures, expected_staff_total, half_up_two, short_amount, two_figures
+from scripts.check_page import MEDIAN_CEILING, check_figures_row, check_two_significant_figures, expected_staff_total, half_up_two, short_amount, two_figures
 from scripts.display import allocation_year, funding_label, median, median_bound, money, round2, staff_figure, summary_figures
 
 
@@ -67,7 +67,7 @@ def figures_row(budget, budget_top, staff, staff_top):
     """The page's figures row for two established institutes in states A and B (B the highest), neither with a card."""
     def fig(figure, text):
         return f'<div class="figure"><b>{figure}</b><span>{text}</span></div>'
-    return BeautifulSoup('<div id="figures">' + fig(budget, f"median annual budget of 2 institutes. <em>B {budget_top}.</em>") + fig(staff, f"median staff of 2 institutes. <em>B {staff_top}.</em>") + fig("0 of 2", "institutes: budget not published.") + '<p class="small scope-note" id="figures-scope">Counts cover the 2 established state institutes.</p></div>', "html.parser")
+    return BeautifulSoup('<div id="figures">' + fig(budget, f"median annual budget of 2 institutes. <em>B {budget_top}.</em>") + fig(staff, f"median staff of 2 institutes. <em>B {staff_top}.</em>") + fig("0 of 2", 'institutes: budget not <span class="info-glue">published.<button type="button" class="info" id="figures-scope" data-tip="Counts cover the 2 established state institutes.">i</button></span>') + '</div>', "html.parser")
 
 
 def counts(rows):
@@ -356,12 +356,12 @@ def test_sort_gate_uses_underlying_values_for_rounded_collisions():
     )
 
 
-def sort_data(key, entries):
+def sort_data(key, entries, status="established"):
     collection = "funding" if key == "eur" else "staff"
     selection = "comparison_funding" if key == "eur" else "staff"
     return {
         "jurisdictions": [
-            {"id": jid, "status": "established"} for jid, _, _ in entries
+            {"id": jid, "status": status} for jid, _, _ in entries
         ],
         "institutes": [
             {
@@ -591,13 +591,16 @@ def test_budget_median_over_a_bound_keeps_it_and_rounds_towards_it():
     for row in rows:
         row["display"]["funding_records"]["x"]["display"] = {"value": "EUR 1.0m"}
     data = {"institutes": rows, "jurisdictions": [{"id": key, "name": key, "kind": "state"} for key in "ABCD"]}
-    figures = lambda budget: BeautifulSoup(  # noqa: E731
-        '<div id="figures"><div class="figure"><b>' + budget + '</b><span>median annual budget of 4 institutes. D EUR 1.0m.</span></div>'
+    # A ceiling carries the tooltip that says why it can sit above its bar (site/index.html MEDIAN_CEILING).
+    tipped = lambda budget, tip=True: f'<abbr class="g" data-exp="{MEDIAN_CEILING}">{budget}</abbr>' if tip and budget.startswith("up to") else budget  # noqa: E731
+    figures = lambda budget, tip=True: BeautifulSoup(  # noqa: E731
+        '<div id="figures"><div class="figure"><b>' + tipped(budget, tip) + '</b><span>median annual budget of 4 institutes. D EUR 1.0m.</span></div>'
         '<div class="figure"><b>0</b><span>x</span></div><div class="figure"><b>0 of 0</b><span>institutes: budget not published.</span></div></div>',
         "html.parser",
     )
     budget_errors = lambda soup: [e for e in check_figures_row(soup, data) if e.startswith("budget median")]  # noqa: E731
     assert budget_errors(figures("up to EUR 8.5m")) == []
+    assert budget_errors(figures("up to EUR 8.5m", tip=False)) == [f"budget median 'up to EUR 8.5m' is a ceiling but lacks the tooltip {MEDIAN_CEILING!r}"]
     assert budget_errors(figures("EUR 8.4m")) == ["budget median figure 'EUR 8.4m' differs from the data median 'up to EUR 8.5m'"]
     # A lower bound rounds down.
     rows[2]["display"]["funding_records"]["x"].update(amount_qualifier="at_least", annual_amount=8_920_000, eur_per_year_est=8_920_000)
@@ -642,9 +645,14 @@ def test_figures_note_counts_established_state_institutes():
     html = str(figures_row("EUR 1.0m", "EUR 1.0m", "31", "31"))
     assert check_figures_row(BeautifulSoup(html, "html.parser"), data) == []
     wrong = html.replace("the 2 established", "the 11 established")
-    assert any("note is not one muted line" in e for e in check_figures_row(BeautifulSoup(wrong, "html.parser"), data))
-    missing = html.replace('<p class="small scope-note" id="figures-scope">Counts cover the 2 established state institutes.</p>', "")
-    assert any("note is not one muted line" in e for e in check_figures_row(BeautifulSoup(missing, "html.parser"), data))
+    assert any("does not end with one (i)" in e for e in check_figures_row(BeautifulSoup(wrong, "html.parser"), data))
+    missing = BeautifulSoup(html, "html.parser")
+    missing.select_one("#figures-scope").decompose()
+    assert any("does not end with one (i)" in e for e in check_figures_row(missing, data))
+    moved = BeautifulSoup(html, "html.parser")
+    mark = moved.select_one("#figures-scope").extract()
+    moved.select("#figures > .figure")[1].insert(0, mark)  # in the staff figure, not at the end of the row
+    assert any("does not end with one (i)" in e for e in check_figures_row(moved, data))
     rows[1]["status"] = "planned"  # a planned institute's budget in the medians would make the note false
     errors = check_figures_row(BeautifulSoup(html.replace("0 of 2", "0 of 1").replace("the 2 established", "the 1 established"), "html.parser"), data)
     assert any("not established (b)" in e for e in errors)
@@ -653,14 +661,9 @@ def test_figures_note_counts_established_state_institutes():
 def test_figures_note_layout_mutations():
     from scripts.check_page import figures_note_layout_errors
 
-    good = {"visible": True, "span": "1 / -1", "left": 16, "right": 374, "top": 300, "boxLeft": 16, "boxRight": 374, "figuresBottom": 280}
-    assert figures_note_layout_errors(good) == []
-    assert figures_note_layout_errors(None) == ["figures row: counts note missing"]
-    assert any("not visible" in e for e in figures_note_layout_errors({**good, "visible": False}))
-    assert figures_note_layout_errors({**good, "right": 300}) == []  # its measure may stop it short of the edge
-    assert any("does not span" in e for e in figures_note_layout_errors({**good, "span": "auto / auto", "right": 130}))  # grid-column auto: one track only
-    assert any("does not span" in e for e in figures_note_layout_errors({**good, "left": 140}))
-    assert any("not below" in e for e in figures_note_layout_errors({**good, "top": 200}))
+    assert figures_note_layout_errors({"visible": True}) == []
+    assert figures_note_layout_errors(None) == ["figures row: counts (i) missing"]
+    assert any("not visible" in e for e in figures_note_layout_errors({"visible": False}))
 
 
 def test_first_output_line_guards():
@@ -677,3 +680,14 @@ def test_first_output_line_guards():
     assert first_output_part_errors(["Launched.", "Earliest identified output."], [other, first])  # first output later in a merged row
     assert first_output_part_errors(["Launched."], [other, first])  # first-output part dropped
     assert first_output_part_errors(["Something else."], [other]) == []  # not a first-output row: the summary check covers it
+
+
+@pytest.mark.parametrize("status", ["planned", "proposed"])
+def test_numeric_sort_covers_institutes_before_establishment(status):
+    """Funding and staff covers every institute (principle: Scope), so a planned institute's staff sorts by value."""
+    from scripts.check_page import sort_errors_for
+
+    data = sort_data("staff", [("Z", 120, None), ("A", 1500, None)], status)
+    rows = figure_sort_rows([("Z", "Z", "120"), ("A", "A", "1,500")], "staff")
+    assert sort_errors_for(rows, "staff", 1, data) == []
+    assert any("out of order" in e for e in sort_errors_for(rows[::-1], "staff", 1, data))

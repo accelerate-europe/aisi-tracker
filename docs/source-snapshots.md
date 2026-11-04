@@ -31,3 +31,13 @@ uv run --group evidence python scripts/snapshot_sources.py --rehash --apply --re
 `--rehash` never fetches; a source whose cited copy is missing is reported as `previous_copy_missing` and left unchanged.
 
 Public sources may contain `snapshot.retrieved`, `snapshot.sha256`, `snapshot.text_sha256` and `snapshot.text_scheme`. CSV exports flatten these as `snapshot_retrieved`, `snapshot_sha256`, `snapshot_text_sha256` and `snapshot_text_scheme`; no private paths or raw source bytes are exported. Snapshot success verifies preservation and content identity where required, not the truth of every factual claim. The current downloader has a finite 128 MiB response limit. Larger files remain explicit failures requiring a reviewed change or separate retrieval.
+
+## Change monitor
+
+`scripts/monitor_sources.py` re-fetches every cited source once from its live URL (no reader proxies, no archives) and compares it with the copy its snapshot hash names. It never changes the dataset or the store. Classes: unchanged (same file or text hash), trivial, substantive (a bound quotation the cited copy carries is missing, or, without such quotations, no long run of the cited text survives), gone (404, 410, host no longer resolves), blocked (refuses automated readers, reported as a class) and failed (transient). It also lists due `next_check` dates and a discovery queue of recorded searches. Reports go to `work/monitor/monitor.md` and `monitor.json`:
+
+```sh
+uv run --group evidence python scripts/monitor_sources.py --report work/monitor
+```
+
+`--lead URL` checks a page that discovery read but did not cite against a private seen-leads ledger (`discovery-leads.jsonl` beside the snapshot directory): new, changed or skip (text hash unchanged). Add `--verdict irrelevant|not_primary|duplicate|candidate --reason "..."` (and `--duplicate-of SOURCE_ID`) to record a reading.

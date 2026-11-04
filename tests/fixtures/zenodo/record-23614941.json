@@ -1,0 +1,204 @@
+{
+ "id": "23614941",
+ "parent": {
+  "id": "23600431",
+  "access": {
+   "owned_by": {
+    "user": "1960799"
+   },
+   "settings": {
+    "allow_user_requests": false,
+    "allow_guest_requests": false,
+    "accept_conditions_text": null,
+    "secret_link_expiration": 0
+   }
+  },
+  "communities": {},
+  "pids": {
+   "doi": {
+    "identifier": "10.5281/zenodo.23600431",
+    "provider": "datacite",
+    "client": "datacite"
+   }
+  }
+ },
+ "versions": {
+  "is_latest": true,
+  "index": 2
+ },
+ "is_published": true,
+ "status": "published",
+ "access": {
+  "record": "public",
+  "files": "public",
+  "embargo": {
+   "active": false,
+   "reason": null
+  },
+  "status": "open"
+ },
+ "files": {
+  "enabled": true,
+  "order": [],
+  "count": 1,
+  "total_bytes": 2603709,
+  "entries": {
+   "accelerate-europe/aisi-tracker-v1.0.1.zip": {
+    "id": "7858ea34-09ac-4a2a-988e-2990a1e3c076",
+    "checksum": "md5:38f4f4f0be513da0fb655d1057c297b2",
+    "ext": "zip",
+    "size": 2603709,
+    "mimetype": "application/zip",
+    "storage_class": "L",
+    "key": "accelerate-europe/aisi-tracker-v1.0.1.zip",
+    "metadata": {},
+    "access": {
+     "hidden": false
+    },
+    "links": {
+     "self": "https://zenodo.org/api/records/23614941/files/accelerate-europe/aisi-tracker-v1.0.1.zip",
+     "content": "https://zenodo.org/api/records/23614941/files/accelerate-europe/aisi-tracker-v1.0.1.zip/content",
+     "container": "https://zenodo.org/api/records/23614941/files/accelerate-europe/aisi-tracker-v1.0.1.zip/container"
+    }
+   }
+  }
+ },
+ "metadata": {
+  "resource_type": {
+   "id": "dataset",
+   "title": {
+    "de": "Datensatz",
+    "en": "Dataset"
+   }
+  },
+  "creators": [
+   {
+    "person_or_org": {
+     "type": "personal",
+     "name": "Hoelscher-Obermaier, Jason",
+     "given_name": "Jason",
+     "family_name": "Hoelscher-Obermaier",
+     "identifiers": [
+      {
+       "identifier": "0000-0003-4773-9059",
+       "scheme": "orcid"
+      }
+     ]
+    },
+    "affiliations": [
+     {
+      "name": "Accelerate Europe; Transformative KI Österreich"
+     }
+    ]
+   }
+  ],
+  "title": "AI Security Institutes tracker",
+  "publisher": "Accelerate Europe",
+  "publication_date": "2026-10-24",
+  "subjects": [
+   {
+    "subject": "AI Security Institute"
+   },
+   {
+    "subject": "AI Safety Institute"
+   },
+   {
+    "subject": "AISI"
+   },
+   {
+    "subject": "AI governance"
+   },
+   {
+    "subject": "AI policy"
+   },
+   {
+    "subject": "AI safety"
+   },
+   {
+    "subject": "government institutions"
+   }
+  ],
+  "related_identifiers": [
+   {
+    "identifier": "https://aisi.accelerate-europe.org/",
+    "scheme": "url",
+    "relation_type": {
+     "id": "isdocumentedby",
+     "title": {
+      "de": "Wird dokumentiert von",
+      "en": "Is documented by"
+     }
+    },
+    "resource_type": {
+     "id": "other",
+     "title": {
+      "de": "Sonstige",
+      "en": "Other"
+     }
+    }
+   },
+   {
+    "identifier": "https://github.com/accelerate-europe/aisi-tracker/tree/v1.0.1",
+    "scheme": "url",
+    "relation_type": {
+     "id": "issupplementto",
+     "title": {
+      "de": "Ergänzt",
+      "en": "Is supplement to"
+     }
+    },
+    "resource_type": {
+     "id": "software",
+     "title": {
+      "de": "Software",
+      "en": "Software"
+     }
+    }
+   }
+  ],
+  "version": "1.0.1",
+  "rights": [
+   {
+    "id": "cc-by-4.0",
+    "title": {
+     "en": "Creative Commons Attribution 4.0 International"
+    },
+    "description": {
+     "en": "The Creative Commons Attribution license allows re-distribution and re-use of a licensed work on the condition that the creator is appropriately credited."
+    },
+    "icon": "cc-by-icon",
+    "props": {
+     "url": "https://creativecommons.org/licenses/by/4.0/legalcode",
+     "scheme": "spdx"
+    }
+   }
+  ],
+  "description": "Which states have an AI Security Institute (AISI), covering all 193 UN member states plus Taiwan and the EU AI Office, with funding, staff and leadership where published. Every record cites its sources.",
+  "additional_descriptions": [
+   {
+    "description": "Data, page text and documentation: CC BY 4.0 (LICENSE-DATA). Code: MIT (LICENSE). Quotations from sources remain with their rights holders and are reproduced as quotations; the licence covers our own compilation, text and data. If you use this dataset, please cite it as: Accelerate Europe (2026). AI Security Institutes tracker, version 1.0.1, data as of 24 October 2026. Compiled by Jason Hoelscher-Obermaier. https://doi.org/10.5281/zenodo.23600431",
+    "type": {
+     "id": "notes",
+     "title": {
+      "de": "Anmerkungen",
+      "en": "Notes"
+     }
+    }
+   }
+  ]
+ },
+ "custom_fields": {
+  "code:codeRepository": "https://github.com/accelerate-europe/aisi-tracker"
+ },
+ "pids": {
+  "doi": {
+   "identifier": "10.5281/zenodo.23614941",
+   "provider": "datacite",
+   "client": "datacite"
+  },
+  "oai": {
+   "identifier": "oai:zenodo.org:23614941",
+   "provider": "oai"
+  }
+ }
+}

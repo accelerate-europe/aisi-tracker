@@ -25,5 +25,5 @@ def test_page_head_passes_and_each_mutation_fails():
     assert check_meta_descriptions(BeautifulSoup(no_twitter, "html.parser"), DATA) == [
         "meta[name=\"twitter:description\"] must appear once and say 'all 193 UN member states plus Taiwan and the EU AI Office, with Europe in detail'"
     ]
-    retitled = html.replace("<title>AI Security Institutes</title>", "<title>AI Security Institutes in Europe</title>")
-    assert check_meta_descriptions(BeautifulSoup(retitled, "html.parser"), DATA) == ["page title is not 'AI Security Institutes'"]
+    retitled = html.replace("<title>AI Security Institutes worldwide</title>", "<title>AI Security Institutes in Europe</title>")
+    assert check_meta_descriptions(BeautifulSoup(retitled, "html.parser"), DATA) == ["page title is not 'AI Security Institutes worldwide'"]

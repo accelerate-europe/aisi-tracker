@@ -3,6 +3,7 @@
 import hashlib
 import json
 import os
+import re
 import sys
 
 import pytest
@@ -522,3 +523,112 @@ def test_repository_zenodo_json_is_current():
     assert tracked["creators"][0]["orcid"] == "0000-0003-4773-9059"
     assert tracked["license"] == "CC-BY-4.0"
     assert tracked["related_identifiers"][1]["identifier"].endswith("/tree/v" + data["dataset"]["version"])
+
+
+def test_feed_has_one_entry_per_release_with_stable_ids(dataset, site):
+    from xml.etree import ElementTree
+
+    from bs4 import BeautifulSoup
+    from scripts import agent_files, check_page
+
+    ns = "{http://www.w3.org/2005/Atom}"
+    previous = dataset["changelog"][-1]["version"]
+    dataset["changelog"] = dataset["changelog"] + [{"date": "2099-11-03", "version": "9.0.0", "summary": "A & B <c>.", "changes": ["One."]}]
+    root = ElementTree.fromstring(agent_files.feed_xml(dataset))
+    entries = root.findall(ns + "entry")
+    assert [e.findtext(ns + "title") for e in entries][:2] == ["Version 9.0.0", f"Version {previous}"]
+    assert entries[0].findtext(ns + "summary") == "A & B <c>."
+    assert root.findtext(ns + "updated") == "2099-11-03T00:00:00Z"
+    # An entry's id depends on its version only, so later edits to its text or new releases never change it.
+    dataset["changelog"][-1]["summary"] = "Edited."
+    again = ElementTree.fromstring(agent_files.feed_xml(dataset)).findall(ns + "entry")
+    assert [e.findtext(ns + "id") for e in again] == [e.findtext(ns + "id") for e in entries]
+    assert entries[1].findtext(ns + "id") == f"tag:aisi.accelerate-europe.org,2026:release/{previous}"
+    # The built site carries the feed, linked from the head, and the gate accepts it.
+    page = BeautifulSoup((site / "index.html").read_text(encoding="utf-8"), "html.parser")
+    assert check_page.check_feed(page, site) == []
+    assert agent_files.PUBLIC_URL + "feed.xml" in (site / "sitemap.xml").read_text()
+
+
+def test_feed_carries_each_news_item_with_a_permanent_id(site, tmp_path):
+    import shutil
+    from xml.etree import ElementTree
+
+    from bs4 import BeautifulSoup
+    from scripts import agent_files, check_page
+
+    ns = "{http://www.w3.org/2005/Atom}"
+    published = json.loads((site / "data/aisi.json").read_text(encoding="utf-8"))
+    # A hand-made News item and release on one day, with markup and an ampersand in the text and source.
+    published["sources"].append({"id": "t-src", "url": "https://example.org/a?b=1&c=2", "title": 'Report "A" <draft>'})
+    item = {"jurisdiction": "GB", "name": "United Kingdom", "date": "2099-01-02", "events": ["gb-zz"], "order": "gb-zz", "texts": ['Plan "B" & <C>.'], "citations": {"display": ["t-src"]}}
+    published["dataset"]["display"]["developments"].insert(0, item)
+    published["changelog"].append({"date": "2099-01-02", "version": "9.9.9", "summary": "S.", "changes": ["C."]})
+    root = ElementTree.fromstring(agent_files.feed_xml(published))
+    entries = root.findall(ns + "entry")
+    assert [e.findtext(ns + "id") for e in entries][:2] == ["tag:aisi.accelerate-europe.org,2026:news/GB/2099-01-02", "tag:aisi.accelerate-europe.org,2026:release/9.9.9"]
+    first = entries[0]
+    assert first.findtext(ns + "title") == 'United Kingdom: Plan "B" & <C>.'
+    assert first.findtext(ns + "summary") == 'Plan "B" & <C>.'
+    assert first.find(ns + "link").get("href") == agent_files.PUBLIC_URL + "#c-gb"
+    content = BeautifulSoup(first.findtext(ns + "content"), "html.parser")
+    assert content.p.get_text() == 'Plan "B" & <C>.'
+    assert [(a["href"], a.get_text()) for a in content.select("a")] == [("https://example.org/a?b=1&c=2", 'Report "A" <draft>')]
+    # A later event on the same day joins the item and keeps its id; rewording keeps it too.
+    item["events"].append("gb-aa")
+    item["texts"] = ["Reworded."]
+    assert agent_files.feed_news_id(item) == "tag:aisi.accelerate-europe.org,2026:news/GB/2099-01-02"
+    partial = {"jurisdiction": "GB", "date": "2026-07", "order": "gb-3"}
+    assert agent_files.feed_news_id(partial) == "tag:aisi.accelerate-europe.org,2026:news/GB/2026-07/gb-3"
+    assert agent_files.feed_day("2026-07") == "2026-07-01T00:00:00Z" and agent_files.feed_day("2026") == "2026-01-01T00:00:00Z"
+    # The gate checks the built feed against the page's News items, including content and same-date order.
+    built = tmp_path / "built"
+    shutil.copytree(site / "data", built / "data")
+    page = BeautifulSoup((site / "index.html").read_text(encoding="utf-8"), "html.parser")
+    good = (site / "feed.xml").read_text(encoding="utf-8")
+    (built / "feed.xml").write_text(good, encoding="utf-8")
+    assert check_page.check_feed(page, built) == []
+    link = re.search(r'&lt;a href=&quot;[^&]+', good)
+    assert link, "the built feed has a News source link"
+    (built / "feed.xml").write_text(good.replace(link[0], link[0] + "x", 1), encoding="utf-8")
+    assert any("source links differ" in e for e in check_page.check_feed(page, built))
+    # The same-date pair through the gate: accepted as generated, rejected with the release first.
+    (built / "data/aisi.json").write_text(json.dumps(published), encoding="utf-8")
+    pair = agent_files.feed_xml(published)
+    (built / "feed.xml").write_text(pair, encoding="utf-8")
+    assert check_page.check_feed(page, built) == []
+    one, two = re.findall(r"<entry>.*?</entry>\n", pair, flags=re.S)[:2]
+    (built / "feed.xml").write_text(pair.replace(one + two, two + one, 1), encoding="utf-8")
+    assert any("release precedes a News item" in e for e in check_page.check_feed(page, built))
+
+
+def test_feed_ids_survive_a_site_move_and_the_gate_rejects_wrong_entries(dataset, site, tmp_path, monkeypatch):
+    import shutil
+
+    from bs4 import BeautifulSoup
+    from scripts import agent_files, check_page
+
+    before = agent_files.feed_xml(dataset)
+    monkeypatch.setattr(agent_files, "PUBLIC_URL", "https://example.org/tracker/")
+    moved = agent_files.feed_xml(dataset)
+    ids = lambda text: re.findall(r"<id>([^<]+)</id>", text)  # noqa: E731
+    assert ids(moved) == ids(before)
+    monkeypatch.undo()
+    page = BeautifulSoup((site / "index.html").read_text(encoding="utf-8"), "html.parser")
+    built = tmp_path / "built"
+    shutil.copytree(site / "data", built / "data")
+    good = (site / "feed.xml").read_text(encoding="utf-8")
+    version = re.search(r"release/([^<]+)<", good)[1]
+    updated = re.search(r"<entry>\n<id>[^<]+</id>\n<title>[^<]+</title>\n(<updated>[^<]+</updated>)", good)[1]
+    for old, new in (
+        (f"release/{version}<", "release/x y<"),
+        (updated, "<updated>not-a-dateT00:00:00Z</updated>"),
+        (f'{agent_files.PUBLIC_URL}#changes"', 'https://example.org/#changes"'),
+    ):
+        assert old in good
+        (built / "feed.xml").write_text(good.replace(old, new, 1), encoding="utf-8")
+        assert check_page.check_feed(page, built), new
+    # A release listed twice (two changelog entries with one version) gives two entries with one id.
+    first = re.search(r"<entry>.*?</entry>\n", good, flags=re.S)[0]
+    (built / "feed.xml").write_text(good.replace(first, first + first, 1), encoding="utf-8")
+    assert any("repeat" in e for e in check_page.check_feed(page, built))

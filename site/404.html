@@ -6,12 +6,13 @@
   <meta name="robots" content="noindex">
   <title>Page not found | AI Security Institutes tracker</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <script>try { if (localStorage.getItem("aisi-theme") === "dark") document.documentElement.setAttribute("data-theme", "dark"); } catch (e) {}</script>
+  <script>try { var t = localStorage.getItem("aisi-theme"); if (t === "dark" || t === "light") document.documentElement.setAttribute("data-theme", t); } catch (e) {}</script>
   <style>
     /* Standalone recovery page. Use the tracker's palette, a readable measure
        and system fonts so missing paths need no external assets. Theme as on the
-       tracker: light by default, dark when the reader chose it there. */
+       tracker: the system scheme unless the reader chose light or dark there. */
     :root { color-scheme: light; --ground: #FAF7F2; --ink: #1A1A1A; --link: #8F5A23; }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { color-scheme: dark; --ground: #17191A; --ink: #F3F0EB; --link: #E9AA79; } }
     :root[data-theme="dark"] { color-scheme: dark; --ground: #17191A; --ink: #F3F0EB; --link: #E9AA79; }
     * { box-sizing: border-box; }
     body { margin: 0; background: var(--ground); color: var(--ink); font: 1rem/1.5 "Segoe UI", Arial, sans-serif; }

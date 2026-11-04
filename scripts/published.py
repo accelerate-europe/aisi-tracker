@@ -144,10 +144,17 @@ def exact_annual_amount(funding: dict) -> Decimal | None:
         return Decimal(str(amount)) if amount is not None else None
 
 
+# Currencies for which the ECB publishes no euro reference rate. Amounts in them are shown in that
+# currency only, never converted to euros and never compared (dataset.method, currency-rounding).
+# A currency joins this set only after checking the ECB's list of reference rates; build.check_exchange_rates
+# rejects one that also has a rate row.
+NO_ECB_RATE = frozenset({"KES"})
+
+
 def annual_eur_amount(funding: dict, rates: dict) -> Decimal | None:
     """Unrounded annual conversion, shared by display, the six-figure export and the budget ratios."""
     amount = exact_annual_amount(funding)
-    if amount is None:
+    if amount is None or funding.get("currency") in NO_ECB_RATE:
         return None
     currency = funding["currency"]
     if currency != "EUR" and currency not in rates:
@@ -254,6 +261,8 @@ def budget_ratios(funding: dict, jurisdiction: dict, rates: dict) -> dict:
     converted to EUR at the same rates. Non-positive denominators and GDP
     currencies without a rate give None. Rule in dataset.method (budget-ratios).
     """
+    if funding.get("currency") in NO_ECB_RATE:
+        return {"eur_per_person": None, "share_of_gdp": None}  # never compared, so no ratios (rule currency-rounding)
     with localcontext() as context:
         context.prec = 50
         amount = exact_annual_amount(funding)

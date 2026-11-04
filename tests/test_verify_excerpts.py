@@ -85,6 +85,45 @@ def test_literal_match_ignores_cjk_layout_spaces(joined, wrapped):
 @pytest.mark.parametrize(
     ("quote", "text"),
     [
+        # jp-cao-2601 and jp-cao-2604: the saved PDFs wrap lines at these points.
+        ("IPA内の併任を含めて30人強の体制", "IPA内の併任を含めて\n30人強の体制"),
+        ("うち専門家は90人", "(うち専門家は90\n人) (目標300人)"),
+        ("遅くとも7月頃までに、出向者を出す", "遅くとも7月頃までに、\n出向者を出す"),
+        ("英国並みの２００人体制", "英国並みの\n  ２００人体制"),
+    ],
+)
+def test_literal_match_joins_cjk_line_wraps_next_to_digits_and_punctuation(quote, text):
+    assert verify.literal_match(quote, text)
+
+
+def test_cjk_line_wrap_join_keeps_matches_that_rely_on_the_wrap_as_a_space():
+    # catalogue-jp-6-0: the quotation keeps the space that the saved PDF has as a wrap.
+    assert verify.literal_match("2025 年度活動報告書 令和 8 年", "2025 年度活動報告書\n令和 8 年")
+
+
+@pytest.mark.parametrize(
+    ("quote", "text"),
+    [
+        # A plain space keeps its boundary; a wrap next to Latin letters or between
+        # digits is not joined; a joined wrap still respects number edges.
+        ("含めて30人", "含めて 30人"),
+        ("AI安全", "AI\n安全"),
+        ("安全AI", "安全\nAI"),
+        ("安全ＡＩ", "安全\nＡＩ"),
+        ("ＡＩ安全", "ＡＩ\n安全"),
+        ("３１０００人", "３１\n０００人"),
+        ("31０００人", "31\n０００人"),
+        ("31000人", "31\n000人"),
+        ("90人", "は190\n人"),
+    ],
+)
+def test_cjk_line_wrap_join_keeps_other_boundaries(quote, text):
+    assert not verify.literal_match(quote, text)
+
+
+@pytest.mark.parametrize(
+    ("quote", "text"),
+    [
         ("国家サイバー統括室", "国家安全保障局"),
         ("AI Safety", "AISafety"),
         ("AI安全", "AI 安全"),
