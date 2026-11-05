@@ -191,12 +191,13 @@ def test_render_uses_loopback_free_port_isolated_profile_and_required_flags(tmp_
 def test_budget_oracle_rejects_wrong_id_and_missing_value_structure():
     data = {"jurisdictions": [{"id": "JP", "status": "established"}], "institutes": [{"id": "jp-aisi", "jurisdiction_id": "JP", "funding": []}]}
     identity = "funding-7d0b36a48cc65315865a6d6ec83ddeb6"
-    value = f'<span class="budget-value" data-funding-id="{identity}"><span class="budget-amount">JPY 8.8bn</span><span class="budget-qualifiers">one-off · FY2025 supplementary · adopted</span></span>'
+    value = f'<span class="budget-value" data-funding-id="{identity}"><span class="budget-amount">~EUR 52m (JPY 8.8bn)</span><span class="budget-qualifiers">one-off · FY2025 supplementary · adopted</span></span>'
     html = f'<article class="card" data-j="JP"><div class="row"><div class="k">Budget</div><div class="v">{value}</div></div></article><table><tbody id="world-rows"><tr data-j="JP"><td data-col="budget">{value}</td></tr></tbody></table>'
     assert check_page.check_budget_output(html, data) == []
     assert any("wrong funding ID" in error for error in check_page.check_budget_output(html.replace(identity, "older-record"), data))
     assert any("separate amount and qualifiers" in error for error in check_page.check_budget_output(html.replace("budget-qualifiers", "removed"), data))
-    assert any("latest own JPY 8.8bn" in error for error in check_page.check_budget_output(html.replace("JPY 8.8bn", "JPY 380m"), data))
+    assert any("latest own JPY 8.8bn" in error for error in check_page.check_budget_output(html.replace("~EUR 52m (JPY 8.8bn)", "~EUR 2.2m (JPY 380m)"), data))
+    assert any("latest own JPY 8.8bn" in error for error in check_page.check_budget_output(html.replace("~EUR 52m (JPY 8.8bn)", "JPY 8.8bn"), data))
 
 
 def test_budget_oracle_covers_institutes_before_establishment():
@@ -224,10 +225,13 @@ def test_setup_groups_cover_institutes_before_establishment():
         marks = "".join(f'<i class="sw st-{status}"></i>' for _, status in states)
         items = "".join(f'<li data-state="{jid}"><a href="#c-{jid.lower()}">x</a><span class="group-note"><span class="missing">Not published</span></span></li>' for jid, _ in states)
         cards = "".join(f'<article id="c-{jid.lower()}"></article>' for jid, _ in states)
-        return BeautifulSoup(f'<h2 id="set-up">Institutional set-up</h2><div id="setup"><div class="group-block" data-form="new_body"><h3>New body</h3><div class="marks">{marks}</div><p class="group-help">A body created for the purpose.</p><ul class="group-list">{items}</ul></div></div>{cards}', "html.parser")
-    assert check_page.check_setup_groups(page([("NO", "proposed"), ("GB", "established")]), data) == []
+        return BeautifulSoup(f'<h2 id="set-up">Institutional set-up</h2><div id="setup"><div class="groups-short"></div><div class="groups-long"><div class="group-block" data-form="new_body"><h3>New body</h3><div class="marks">{marks}</div><ul class="group-list">{items}</ul></div></div></div>{cards}', "html.parser")
+    assert check_page.check_setup_groups(page([("GB", "established"), ("NO", "proposed")]), data) == []
+    assert any("lists" in error for error in check_page.check_setup_groups(page([("NO", "proposed"), ("GB", "established")]), data))  # status on the ladder first, then name
+    described = str(page([("GB", "established"), ("NO", "proposed")])).replace("<ul", '<p class="group-help">A body created for the purpose.</p><ul')
+    assert any("describes its form" in error for error in check_page.check_setup_groups(BeautifulSoup(described, "html.parser"), data))
     assert any("lists" in error for error in check_page.check_setup_groups(page([("GB", "established")]), data))
-    assert any("marks differ" in error for error in check_page.check_setup_groups(page([("NO", "established"), ("GB", "established")]), data))
+    assert any("marks differ" in error for error in check_page.check_setup_groups(page([("GB", "established"), ("NO", "established")]), data))
 
 
 def test_uncited_values_need_a_citation_link_except_absence_and_known_gaps(monkeypatch):
@@ -554,16 +558,17 @@ def interval_case(credit="2024-02-09", lineage_date=None, kind="published_work")
     return {"dataset": {"as_of": "2026-10-20"}, "jurisdictions": [jurisdiction], "institutes": [institute], "sources": []}
 
 
-def interval_html(status="7 days after announcement", activity="about 3 months after establishment", cites=("designation", "speech"),
+def interval_html(status="Announced on 26 Oct 2023, 7 days earlier", activity="Published work began about 3 months after it was established", cites=("designation", "speech"),
                   caveat="It does not measure speed or quality.", table="",
                   activity_caveat="It is not a measure of speed or quality."):
     links = "".join(f'<a class="cn" data-source-id="{sid}">{n}</a>' for n, sid in enumerate(cites, 1))
-    amount, _, words = (status or "").partition(" after ")
-    gap = f'<abbr class="g interval" data-exp="{caveat}">{amount}</abbr> after <span class="cite-glue">{words}' if status else ""
+    head, comma, amount = (status or "").partition(", ")
+    amount, _, tail = amount.rpartition(" ")
+    gap = (f'{head}, <abbr class="g interval" data-exp="{caveat}">{amount}</abbr> <span class="cite-glue">{tail}' if comma else f'<span class="cite-glue">{head}') if status else ""
     line = f'<span class="small qualifiers activity-interval">{activity}</span>' if activity else ""
     return (
         '<article class="card" data-j="GB">'
-        f'<div class="row"><div class="k">Status since</div><div class="v"><span class="qualified"><span class="value-line">2 Nov 2023</span>'
+        f'<div class="row"><div class="k">Status</div><div class="v"><span class="qualified"><span class="value-line">Established since 2 Nov 2023</span>'
         f'<span class="small qualifiers">{gap}<span class="cites">{links}</span>{"</span>" if status else ""}</span></span></div></div>'
         f'<div class="row"><div class="k">Known activity</div><div class="v"><span class="smark value activity" title="{activity_caveat}"><span class="activity-kinds">'
         '<span class="qualified activity-kind"><span class="value-line activity-clause" data-kind="published_work">Published work</span>'
@@ -573,16 +578,16 @@ def interval_html(status="7 days after announcement", activity="about 3 months a
 
 
 def test_interval_oracle_accepts_exact_intervals_with_caveat_and_citations():
-    hand = {"GB": ("7 days after announcement", "about 3 months after establishment")}
+    hand = {"GB": ("Announced on 26 Oct 2023, 7 days earlier", "about 3 months after it was established")}
     assert check_page.check_interval_output(interval_html(), interval_case(), hand) == []
 
 
 @pytest.mark.parametrize(
     ("html", "data", "message"),
     [
-        (interval_html(status="7 days after proposal"), interval_case(), "Status since interval"),
-        (interval_html(status="8 days after announcement"), interval_case(), "Status since interval"),
-        (interval_html(activity="about 4 months after establishment"), interval_case(), "Known activity interval"),
+        (interval_html(status="Proposed on 26 Oct 2023, 7 days earlier"), interval_case(), "Status interval"),
+        (interval_html(status="Announced on 26 Oct 2023, 8 days earlier"), interval_case(), "Status interval"),
+        (interval_html(activity="Published work began about 4 months after it was established"), interval_case(), "Known activity interval"),
         (interval_html(activity=None), interval_case(), "Known activity interval"),
         (interval_html(cites=("designation",)), interval_case(), "citations do not cover the announcement"),
         (interval_html(caveat="Counted from the dates."), interval_case(), "caveat"),
@@ -601,15 +606,28 @@ def test_interval_oracle_rejects_mutations(html, data, message):
 
 def test_interval_oracle_counts_to_the_institute_credit_date_not_the_lineage_date():
     data = interval_case(credit="2024-05-01", lineage_date="2024-02-09")
-    html = interval_html(activity="about 6 months after establishment").replace("since 9 Feb 2024", "since 1 May 2024")
+    html = interval_html(activity="Published work began about 6 months after it was established").replace("since 9 Feb 2024", "since 1 May 2024")
     assert check_page.check_interval_output(html, data) == []
 
 
 def test_interval_oracle_keeps_negative_intervals_and_pins_hand_worked_wording():
     since, line, counted = check_page.expected_intervals(*interval_case(credit="2023-09-07")["jurisdictions"], interval_case(credit="2023-09-07")["institutes"][0], "2026-10-20")
-    assert (since, line, counted) == ("7 days after announcement", {"kind": "published_work", "text": "56 days before establishment"}, [0, 1])
-    errors = check_page.check_interval_output(interval_html(), interval_case(), {"GB": ("7 days after announcement", None)})
+    assert (since, line, counted) == ("Announced on 26 Oct 2023, 7 days earlier", {"kind": "published_work", "text": "56 days before it was established"}, [0, 1])
+    errors = check_page.check_interval_output(interval_html(), interval_case(), {"GB": ("Announced on 26 Oct 2023, 7 days earlier", None)})
     assert any("differs from the hand-worked" in error for error in errors)
+
+
+@pytest.mark.parametrize("status", ["Announced on Oct 2023, 7 days earlier", "Announced on 2023, 7 days earlier", "Announced on 26 Oct 2023"])
+def test_status_qualifier_rejects_inexact_or_missing_interval_wording(status):
+    assert any("Status interval" in e for e in check_page.check_interval_output(interval_html(status=status), interval_case()))
+
+
+@pytest.mark.parametrize("status", ["Announced on Mar 2025", "Announced on 2025", "Proposed on 26 Oct 2023"])
+def test_status_qualifier_must_be_absent_when_none_is_expected(status):
+    data = interval_case()
+    data["jurisdictions"][0]["timeline"] = data["jurisdictions"][0]["timeline"][1:]  # no announcement: no qualifier
+    html = interval_html(status=status, cites=("designation",))
+    assert any("Status interval" in e and "differs from None" in e for e in check_page.check_interval_output(html, data))
 
 
 def test_interval_oracle_cites_every_tied_designation():
@@ -1004,3 +1022,19 @@ def test_no_rate_amounts_stay_in_their_currency_and_say_why():
     assert any("not shown" in e for e in check_page.check_no_rate_amounts("<p></p>", data))
     data["institutes"][0]["display"]["comparison_funding"] = "f-ke"
     assert any("never converted or compared" in e for e in check_page.check_no_rate_amounts(good, data))
+
+
+def test_euro_amounts_follow_the_rate_and_cite_it():
+    """Every amount with an ECB rate is also shown in euros, from an independent oracle, citing the rate (rule currency-rounding)."""
+    data = {"dataset": {"exchange_rates": [{"currency": "JPY", "eur_per_unit": 0.00591563881476, "source_ids": ["ecb"]}]},
+            "institutes": [{"id": "jp", "display": {"comparison_funding": None},
+                            "funding": [{"id": "f-jp", "currency": "JPY", "amount": 8_800_000_000}, {"id": "f-ke", "currency": "KES", "amount": 2_000_000_000}]}]}
+    assert check_page.expected_shown_funding_value(data["institutes"][0]["funding"][0], data) == "~EUR 52m (JPY 8.8bn)"
+    assert check_page.expected_shown_funding_value(data["institutes"][0]["funding"][1], data) == "KES 2.0bn"  # no ECB rate: native, as in 1.0.2
+    good = ('<div class="v"><span class="budget-value" data-funding-id="f-jp"><span class="budget-amount">~EUR 52m (JPY 8.8bn)</span></span><span class="cites"><a class="cn" data-source-id="amount">1</a>,<a class="cn" data-source-id="ecb">2</a></span></div>'
+            '<span class="related-funding-item" data-funding-id="f-jp"><span class="related-funding-eur">~EUR 52m</span>: JPY 8.8bn<span class="cites"><a class="cn" data-source-id="ecb">2</a></span></span>')
+    assert check_page.check_euro_amounts(good, data) == []
+    assert any("expected '~EUR 52m'" in e for e in check_page.check_euro_amounts(good.replace('"related-funding-eur">~EUR 52m<', '"related-funding-eur">~EUR 52m (JPY 8.8bn)<'), data))  # the wording states the native amount
+    assert any("expected '~EUR 52m (JPY 8.8bn)'" in e for e in check_page.check_euro_amounts(good.replace("~EUR 52m", "~EUR 51m", 1), data))
+    assert any("does not cite the amount and exchange-rate sources" in e for e in check_page.check_euro_amounts(good.replace('<a class="cn" data-source-id="ecb">2</a>', "", 1), data))
+    assert any("does not lead with its euro figure" in e for e in check_page.check_euro_amounts(good.replace('<span class="related-funding-eur">~EUR 52m</span>: ', ""), data))

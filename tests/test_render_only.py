@@ -454,7 +454,8 @@ def card_table_citation_gaps(data):
             "      var net =", source.index("      var instLabel =")
         )
     ]
-    stub = r"""
+    label = source[source.index("  var LABEL = {") : source.index("\n", source.index("  var LABEL = {"))]
+    stub = label + r"""
 function el(tag,cls,text){return {tag, className:cls||'', dataset:{}, children:[],
  textContent:text||'', setAttribute(){}, appendChild(child){this.children.push(child);return child;}};}
 const document={createTextNode:text=>el('text','',text)};
@@ -513,8 +514,9 @@ console.log(JSON.stringify(rows));
     rows = json.loads(result.stdout)
     fields = {row["field"] for row in rows}
     # Head, Reports to and Partners appear only for institutes that have the fields (tests/test_rows.py).
-    assert {"Institute", "Status since", "Form", "Mandate", "Finding", "Budget", "Staff"} <= fields <= {
-        "Institute", "Status since", "Form", "Mandate", "Finding", "Budget", "Staff", "Head", "Reports to", "Partners",
+    # Cards label the row "Status"; the table's column is "Status since".
+    assert {"Institute", "Status", "Status since", "Form", "Mandate", "Finding", "Budget", "Staff"} <= fields <= {
+        "Institute", "Status", "Status since", "Form", "Mandate", "Finding", "Budget", "Staff", "Head", "Reports to", "Partners",
     }
     sources = {item["id"] for item in data["sources"]}
     return [
@@ -549,7 +551,7 @@ def test_funding_descriptions_never_append_bracketed_periods(record, description
     assert 'text += " ("' not in body
 
 
-def funding_record_tree(record):
+def funding_record_tree(record, rates=()):
     source = PAGE.read_text()
     helpers = source[source.index("  function fieldCitations("):source.index("  // Citations follow the last word;")]
     stub = """
@@ -561,7 +563,7 @@ function confTerms(qualifiers){return qualifiers;}
 function fmtDate(text){return text;}
 function cite(ids){return el('span','cites',ids.join(','));}
 """
-    result = subprocess.run(["node", "-e", stub + helpers + "\nconsole.log(JSON.stringify(fundingRecord(" + json.dumps(record) + ",cite)));"], capture_output=True, text=True, check=True)
+    result = subprocess.run(["node", "-e", stub + helpers + "\nuseRates(" + json.dumps(list(rates)) + ");\nconsole.log(JSON.stringify(fundingRecord(" + json.dumps(record) + ",cite)));"], capture_output=True, text=True, check=True)
     return json.loads(result.stdout)
 
 
@@ -571,18 +573,20 @@ def tree_text(node):
 
 def test_all_real_funding_disclosures_separate_native_figures_from_source_statements():
     from scripts.published import publish
-    from scripts.check_page import expected_native_funding_value
+    from scripts.check_page import expected_shown_funding_value, rate_sources
 
     data = publish(json.loads((PAGE.parents[1] / "data/aisi.json").read_text()), strict=True)
     records = {record["id"]: record for institute in data["institutes"] for record in institute.get("funding", []) if record.get("amount") is not None}
     assert len(records) >= 15
     for record in records.values():
-        tree = funding_record_tree(record)
+        tree = funding_record_tree(record, data["dataset"]["exchange_rates"])
         native = next(child for child in tree["children"] if child["className"] == "funding-native")
-        assert native["children"][0]["text"] == expected_native_funding_value(record)
-        expected_citations = list(dict.fromkeys(sid for field in ("amount", "currency", "amount_qualifier", "period", "commitment", "kind", "coverage") for sid in record.get("citations", {}).get(field, [])))
+        shown = expected_shown_funding_value(record, data)
+        assert native["children"][0]["text"] == shown
+        # The euro figure cites the rate's source after the amount's own (rule currency-rounding).
+        expected_citations = list(dict.fromkeys([sid for field in ("amount", "currency", "amount_qualifier", "period", "commitment", "kind", "coverage") for sid in record.get("citations", {}).get(field, [])] + rate_sources(record, data)))
         assert native["children"][-1]["children"][-1]["text"] == ",".join(expected_citations)
-        assert tree_text(native) == record["display"]["native_value"] + " " + " · ".join(record["display"]["native_qualifiers"])
+        assert tree_text(native) == shown + " " + " · ".join(record["display"]["native_qualifiers"])
         metadata = next(child for child in tree["children"] if child["className"] == "funding-metadata")
         assert record.get("notes", "") in tree_text(metadata)
         statements = [child for child in tree["children"] if child["className"] == "more quiet source-statement"]
@@ -604,22 +608,33 @@ def test_all_real_funding_disclosures_separate_native_figures_from_source_statem
         "funding-8f4ea7ceaf9d5be69600d6df1c6fa215": ("JPY 380m", ["one-off", "FY2024 supplementary", "adopted"]),
         "funding-7d0b36a48cc65315865a6d6ec83ddeb6": ("JPY 8.8bn", ["one-off", "FY2025 supplementary", "adopted"]),
         "funding-0475119a71cc5e2099e293d3a48356b0": ("NOK 30m", ["a year", "2027 budget proposal"]),
-        "funding-443aa6a31d205192966af69e21022fb1": ("Up to USD 10m", ["a year", "FY2026 enacted"]),
+        "funding-443aa6a31d205192966af69e21022fb1": ("up to USD 10m", ["a year", "FY2026 enacted"]),
         "funding-a4935c40a4e750e8844af6de22176e13": ("~KRW 4.0bn", ["a year", "2026 R&D component", "adopted"]),
         "funding-d0f61d15548153b9830f74f6e14ec324": ("~KRW 13bn", ["a year", "2026 total", "adopted"]),
         "funding-0d5ffdbe6b0c59dabb6edfc221aa4956": ("AUD 7.9m", ["a year", "From 2029-30 (ongoing)", "announced"]),
     }
     assert {identity: (records[identity]["display"]["native_value"], records[identity]["display"]["native_qualifiers"]) for identity in expected} == expected
+    # The page shows these in euros too; the downloads keep the labels above (rule currency-rounding).
+    shown = {
+        "funding-f9ea264762c8593293364a58539295d9": "~EUR 32m (CAD 50m)",
+        "funding-7d0b36a48cc65315865a6d6ec83ddeb6": "~EUR 52m (JPY 8.8bn)",
+        "funding-443aa6a31d205192966af69e21022fb1": "up to ~EUR 8.9m (USD 10m)",
+        "funding-a4935c40a4e750e8844af6de22176e13": "~EUR 2.5m (~KRW 4.0bn)",
+        "funding-618ed3226ee75def870a5fb0f9501479": "~EUR 140m (GBP 120m)",
+        "funding-b60809279d92488ebf5dcea4813d9da9": "KES 2.0bn",
+    }
+    assert {identity: expected_shown_funding_value(records[identity], data) for identity in shown} == shown
 
 
 @pytest.mark.parametrize(
     "amount,qualifier,currency,label",
     [
         (10, None, "EUR", "EUR 10"),
-        (9_150_000, "about", "EUR", "About EUR 9.2m"),
+        (9_150_000, "about", "EUR", "about EUR 9.2m"),
         (9_150_000, None, "EUR", "~EUR 9.2m"),
-        (10, None, "USD", "USD 10"),
-        (9_150_000, "about", "USD", "About USD 9.2m"),
+        # Another currency is also shown in euros, here at 0.5 EUR per USD (rule currency-rounding).
+        (10, None, "USD", "~EUR 5 (USD 10)"),
+        (9_150_000, "about", "USD", "about EUR 4.6m (USD 9.2m)"),
     ],
 )
 def test_native_funding_gate_rejects_wrong_amount_and_wrong_field_evidence(
@@ -627,7 +642,7 @@ def test_native_funding_gate_rejects_wrong_amount_and_wrong_field_evidence(
 ):
     from scripts.check_page import check_source_alignment
     record = {"id": "budget", "amount": amount, "amount_qualifier": qualifier, "currency": currency, "description": "A sourced statement.", "source_ids": ["amount", "statement"], "citations": {"amount": ["amount"], "description": ["statement"]}}
-    data = {"sources": [{"id": identity, "url": "https://example.org/" + identity} for identity in ("amount", "statement")], "jurisdictions": [{"id": "XX", "source_ids": []}], "institutes": [{"id": "institute", "jurisdiction_id": "XX", "funding": [record], "staff": []}]}
+    data = {"dataset": {"exchange_rates": [{"currency": "USD", "eur_per_unit": 0.5}]}, "sources": [{"id": identity, "url": "https://example.org/" + identity} for identity in ("amount", "statement")], "jurisdictions": [{"id": "XX", "source_ids": []}], "institutes": [{"id": "institute", "jurisdiction_id": "XX", "funding": [record], "staff": []}]}
     listing = '<div class="srcs"><ol><li data-source-id="amount"><a href="https://example.org/amount">Amount</a></li><li data-source-id="statement"><a href="https://example.org/statement">Statement</a></li></ol></div>'
     html = f'<article class="card" data-j="XX">{listing}</article><article class="fund-item" data-j="XX">{listing}<div data-record="funding" data-record-id="budget"><p class="funding-native"><span class="budget-amount">{label}</span><a class="cn" data-source-id="amount" href="https://example.org/amount">1</a></p><details class="source-statement"><summary>Source statement</summary><p>A sourced statement.<a class="cn" data-source-id="statement" href="https://example.org/statement">2</a></p></details><p class="funding-metadata"></p></div></article>'
     def errors(text):
@@ -688,4 +703,102 @@ def test_format_fixture_is_independent_of_live_exchange_rates():
         institute["display"]["comparison_funding"]
     ]
     assert record["eur_per_year_est"] == 10_800_000
-    assert record["display"]["value"] == case["figure"] == "Up to ~EUR 11m (GBP 9.0m)"
+    assert record["display"]["value"] == case["figure"] == "up to ~EUR 11m (GBP 9.0m)"
+
+
+def figures_note(institutes):
+    """Run the page's figures-row block in Node on a synthetic dataset; return the (i) text it builds."""
+    source = PAGE.read_text()
+    start = source.index("    // Figures below the map:")
+    block = source[start : source.index("    m.display.developments.forEach", start)]
+    stub = r"""
+function el(tag,cls,text){return {children:[],textContent:text||'',appendChild(c){this.children.push(c);return c;},querySelector(){return this;},get lastChild(){return this.children[this.children.length-1]||this;}};}
+const document={createTextNode:t=>el('text','',t)};
+const box=el('div'); const $=()=>box; let note=null;
+function info(text){note=text;return el('button');}
+function infoAfterText(){} function term(t){return document.createTextNode(t);}
+const MEDIAN_CEILING='x';
+"""
+    jurisdictions = {i["jurisdiction_id"]: {"id": i["jurisdiction_id"], "name": i.pop("name"), "kind": "state"} for i in institutes}
+    script = (
+        stub
+        + "const J=" + json.dumps(jurisdictions) + ";\n"
+        + "const d={institutes:" + json.dumps(institutes) + "};\n"
+        + "const m={display:{counts:{}}};\n"
+        + block
+        + "\nconsole.log(JSON.stringify(note));"
+    )
+    result = subprocess.run(["node"], input=script, text=True, capture_output=True)
+    assert result.returncode == 0, result.stderr
+    return json.loads(result.stdout)
+
+
+def leftover(jid, name, kind="one_off", commitment="adopted"):
+    """An established institute whose card shows a budget that is not compared."""
+    return {"jurisdiction_id": jid, "name": name, "status": "established", "display": {
+        "budget": "f", "comparison_funding": None, "funding_records": {"f": {"kind": kind, "commitment": commitment}}}}
+
+
+def compared(jid, name):
+    return {"jurisdiction_id": jid, "name": name, "status": "established", "display": {
+        "budget": "g", "comparison_funding": "g", "funding_records": {"g": {"kind": "annual", "commitment": "adopted"}}}}
+
+
+@pytest.mark.parametrize(
+    "institutes,note",
+    [
+        ([compared("AA", "Alpha"), compared("BB", "Beta")], "Counts cover the 2 established state institutes."),
+        ([compared("AA", "Alpha"), leftover("JP", "Japan")], "Counts cover the 2 established state institutes. Japan's budget is a one-off amount, so it counts neither in the budget median nor among those with no budget."),
+        ([leftover("GB", "United Kingdom", commitment="proposed")], "Counts cover the 1 established state institutes. UK's budget is a proposal, so it counts neither in the budget median nor among those with no budget."),
+        ([leftover("JP", "Japan"), leftover("KR", "Korea"), leftover("NO", "Norway")],
+         "Counts cover the 3 established state institutes. The budgets of Japan, Korea and Norway are one-off amounts, so they count neither in the budget median nor among those with no budget."),
+        ([leftover("JP", "Japan"), leftover("SE", "Sweden", kind="annual", commitment="proposed")],
+         "Counts cover the 2 established state institutes. The budgets of Japan and Sweden are not compared, so they count neither in the budget median nor among those with no budget."),
+        ([leftover("JP", "Japan"), leftover("FI", "Finland", kind="annual")],
+         "Counts cover the 2 established state institutes. The budgets of Japan and Finland are not compared, so they count neither in the budget median nor among those with no budget."),
+    ],
+)
+def test_figures_note_names_the_institutes_outside_both_budget_numbers(institutes, note):
+    assert figures_note(institutes) == note
+
+
+def page_eur_rounded(triples):
+    source = PAGE.read_text()
+    helpers = source[source.index("  var RATED ="):source.index("  function publishedFunding(")]
+    script = helpers + "\nconsole.log(JSON.stringify(" + json.dumps(triples) + ".map(function (p) { return eurRounded(p[0], p[1], p[2]); })));"
+    return json.loads(subprocess.run(["node", "-e", script], capture_output=True, text=True, check=True).stdout)
+
+
+def test_page_rounding_matches_the_producer():
+    """The page's euro figure rounds amount x rate with display.round2's rule (rule currency-rounding)."""
+    from decimal import Decimal
+    from scripts.display import round2
+    from scripts.published import publish
+
+    data = publish(json.loads((PAGE.parents[1] / "data/aisi.json").read_text()), strict=True)
+    rates = [r["eur_per_unit"] for r in data["dataset"]["exchange_rates"]]
+    amounts = [0, 5, 10, 999, 1_250, 9_150_000, 10_000_000, 15_000_000, 3_975_000_000, 8_800_000_000, 20_100_000_000]
+    triples = [(a, r, q) for a in amounts for r in rates for q in (None, "at_most", "at_least", "nearly", "about")]
+    triples += [(x, 1, q) for x in (0.455, 1.25, 2.65, 95, 99.5, 125, 135, 8.05e6, 1.15e9) for q in (None, "at_most", "at_least")]
+    # A remainder past twelve digits still rounds a bound outward (float snapping used to drop it).
+    triples += [(52_000_000_004, 0.001, q) for q in (None, "at_most", "at_least")]
+    assert page_eur_rounded(triples) == [float(round2(Decimal(str(a)) * Decimal(str(r)), q)) for a, r, q in triples]
+
+
+def test_source_lists_put_the_english_title_right_after_the_original():
+    """Method: a non-English source title keeps the original, with our English translation beside it."""
+    from scripts.check_page import check_source_alignment
+
+    data = {"sources": [{"id": "fr", "url": "https://example.org/fr", "title_en": "The announcement"}, {"id": "en", "url": "https://example.org/en"}],
+            "jurisdictions": [{"id": "XX"}], "institutes": []}
+
+    def errors(fr_item):
+        html = f'<article class="card" data-j="XX"><div class="srcs"><ol>{fr_item}<li data-source-id="en"><a href="https://example.org/en">Report</a></li></ol></div></article>'
+        return [e for e in check_source_alignment(html, data) if "English title" in e]
+
+    link, en, archive = '<a href="https://example.org/fr">L’annonce</a>', '<span class="title-en"> [The announcement]</span>', '<span class="archive-copy"> (<a class="archive" href="x">archived copy</a>)</span>'
+    assert errors(f'<li data-source-id="fr">{link}{en}{archive}</li>') == []
+    assert errors(f'<li data-source-id="fr">{link}{archive}</li>')  # missing
+    assert errors(f'<li data-source-id="fr">{link}{archive}{en}</li>')  # after the archived copy
+    assert errors(f'<li data-source-id="fr">{en}{link}</li>')  # before the original
+    assert errors(f'<li data-source-id="fr">{link}<span class="title-en"> [Other]</span></li>')  # wrong text

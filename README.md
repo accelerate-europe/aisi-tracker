@@ -1,5 +1,7 @@
 # AI Security Institutes tracker
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23600431.svg)](https://doi.org/10.5281/zenodo.23600431) · Browse the tracker at [aisi.accelerate-europe.org](https://aisi.accelerate-europe.org)
+
 Which states have an AI Security Institute (AISI), with funding, staff and leadership where published. Every record cites its sources and the date of its last recorded full check, with uncertain historical dates marked; funding, staff and leadership facts also carry a confidence rating. Published by Accelerate Europe under CC BY 4.0. DOI [10.5281/zenodo.23600431](https://doi.org/10.5281/zenodo.23600431), which always resolves to the latest version.
 
 <!-- definition:start -->
@@ -10,7 +12,7 @@ We count a body as an AI Security Institute (AISI) if a national government or a
 
 <!-- counts:start -->
 
-Version 1.0.2, data as of 2026-11-04. 195 jurisdictions, 15 institutes and 1154 sources. The Europe view covers 32 states.
+Version 1.0.3, data as of 2026-11-05. 195 jurisdictions, 15 institutes and 1154 sources. The Europe view covers 32 states.
 
 126 output records, 54 agreements and 9 network milestones. Negative findings by confidence: 0 high, 144 medium, 34 low.
 
@@ -53,7 +55,7 @@ Generated from the published dataset by `scripts/agent_files.py`, the one home o
 
 ### What this is
 
-Which states have an AI Security Institute (AISI), covering all 193 UN member states plus Taiwan and the EU AI Office, with funding, staff and leadership where published. Every record cites its sources. Published by Accelerate Europe; version 1.0.2, data as of 2026-11-04.
+Which states have an AI Security Institute (AISI), covering all 193 UN member states plus Taiwan and the EU AI Office, with funding, staff and leadership where published. Every record cites its sources. Published by Accelerate Europe; version 1.0.3, data as of 2026-11-05.
 
 ### Answering from this data
 
@@ -89,7 +91,7 @@ Code: MIT (`LICENSE`). Data, page text and documentation: CC BY 4.0 (`LICENSE-DA
 
 ### Cite as
 
-Accelerate Europe (2026). AI Security Institutes tracker, version 1.0.2, data as of 4 November 2026. Compiled by Jason Hoelscher-Obermaier. https://doi.org/10.5281/zenodo.23600431
+Accelerate Europe (2026). AI Security Institutes tracker, version 1.0.3, data as of 5 November 2026. Compiled by Jason Hoelscher-Obermaier. https://doi.org/10.5281/zenodo.23600431
 
 <!-- agents:end -->
 
@@ -154,7 +156,7 @@ The citation, current counts, agents and definition blocks, and `CITATION.cff` (
 
 <!-- citation:start -->
 
-Accelerate Europe (2026). AI Security Institutes tracker, version 1.0.2, data as of 4 November 2026. Compiled by Jason Hoelscher-Obermaier. https://doi.org/10.5281/zenodo.23600431
+Accelerate Europe (2026). AI Security Institutes tracker, version 1.0.3, data as of 5 November 2026. Compiled by Jason Hoelscher-Obermaier. https://doi.org/10.5281/zenodo.23600431
 
 <!-- citation:end -->
 

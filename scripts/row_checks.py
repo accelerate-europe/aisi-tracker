@@ -26,6 +26,18 @@ SENTENCE_BREAK = re.compile(
 DATED_NOTE = re.compile(r"\b(?:19|20)\d\d\b")
 
 
+def own_card_role(role: str, institute: dict) -> str:
+    """The Head row sits on the institute's own card, so a role ending in that institute's name drops it
+    ("General Manager, Australian AI Safety Institute" reads "General Manager"); the people record keeps the full role."""
+    words = institute["name"].split()
+    full = [n for n in (institute["name"], institute.get("short_name")) if n]
+    endings = [", " + n for n in full] + [" of " + n for n in full] + [" of the " + " ".join(words[k:]) for k in range(1, len(words) - 1)]
+    for ending in endings:
+        if role.endswith(ending) and len(role) > len(ending):
+            return role[: -len(ending)]
+    return role
+
+
 def partner_order(entries: list[dict]) -> list[dict]:
     """Card order: cyber agency first, then member, works with, planned; authored order is the tie-break (sorted is stable)."""
     return sorted(
@@ -230,7 +242,7 @@ def row_display(institute: dict, vocabularies: dict) -> dict | None:
             person = next(
                 p for p in institute["people"] if p["id"] == head["person_id"]
             )
-            text = f"{person['name']}, {person['role']}"
+            text = f"{person['name']}, {own_card_role(person['role'], institute)}"
         out["head"] = {
             "state": head["state"],
             "text": text,

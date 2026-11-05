@@ -116,9 +116,9 @@ def test_full_method_preserves_every_rule_and_escapes_text():
     soup = BeautifulSoup(
         full_method_page(data, "<style>body { color: red; }</style>"), "html.parser"
     )
-    assert soup.script is None
+    assert all("bad" not in script.get_text() for script in soup.find_all("script"))  # only the theme toggle's own script
     for rule in data["method"]:
-        assert soup.select_one(f"#{rule['id']} p").get_text() == rule["text"]
+        assert " ".join(p.get_text() for p in soup.select(f"#{rule['id']} p")) == rule["text"]
     assert len(soup.select("main section")) == 2
     assert soup.style is not None
 
@@ -133,8 +133,22 @@ def test_full_method_footer_has_licence_notice_and_back_link():
     assert footer.a.get_text() == "Back to the tracker"
     data["license_note"] = '<script>bad</script> & "rights"'
     soup = BeautifulSoup(full_method_page(data, ""), "html.parser")
-    assert soup.script is None
+    assert all("bad" not in script.get_text() for script in soup.find_all("script"))
     assert soup.select("footer p")[1].get_text() == data["license_note"]
+
+
+def test_full_method_splits_run_in_terms_into_paragraphs():
+    data = fixture()
+    data["method"][0]["text"] = "Ladder: one. Established: two, three. A sentence of six words here: stays. Planned: four."
+    soup = BeautifulSoup(full_method_page(data, ""), "html.parser")
+    assert [p.get_text() for p in soup.select(f"#{data['method'][0]['id']} p")] == ["Ladder: one.", "Established: two, three. A sentence of six words here: stays.", "Planned: four."]
+
+
+def test_full_method_header_is_the_section_bar():
+    soup = BeautifulSoup(full_method_page(fixture(), ""), "html.parser")
+    assert soup.select_one("header nav.secnav a.navtitle")["href"] == "index.html#method-sec"
+    assert soup.select_one("header nav.secnav #theme-toggle") is not None
+    assert soup.select("header p") == []
 
 
 @pytest.mark.parametrize(

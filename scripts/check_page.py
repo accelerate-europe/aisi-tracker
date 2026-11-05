@@ -186,9 +186,11 @@ def check_dom(html: str, data: dict, dist: Path, base_url: str) -> list[str]:
     for card in soup.select(".card:not(.mini)"):
         jid = card.get("data-j")
         group = card.find_parent(class_="statusgroup")  # under a status heading the card says its status in its accessible name only
+        eu_level = card.find_parent(class_="eu-level") is not None  # the EU entry: its dated Status row says it, so the title row has no mark either (owner, 5 Nov 2026)
         if jid in positive and not (
             group.get("data-status") == positive[jid]["status"] and card.select_one(".top > .vh")
-            if group else card.select_one(f".smark .st-{positive[jid]['status']}")
+            if group else (lambda said: said is not None and said.get_text() == ", " + STATUS_LABELS[positive[jid]["status"]])(card.select_one(".top > .vh")) and not card.select_one(".top > .smark") if eu_level
+            else card.select_one(f".smark .st-{positive[jid]['status']}")
         ):
             errors.append(f"card {jid}: missing or incorrect status mark")
 
@@ -412,6 +414,10 @@ def check_form_basis(soup, data) -> list[str]:
         if not inst or not inst.get("legal_basis"):
             continue
         text = " ".join(card.get_text(" ").split())
+        # A founding act alone is no form: without a known legal form or host type the Form row says Not published first.
+        form_known = inst.get("legal_form") in {"new_body", "unit_in_existing_body", "federation_of_existing_bodies", "university_centre"} or (inst.get("placement") or {}).get("host_type") in {"ministry", "government_agency", "public_research_body", "university", "supranational"}
+        if not form_known and "Form Not published; " not in text:
+            errors.append(f"{card.get('data-j')}: Form gives only the founding act; it should open with 'Not published'")
         if "set up by law" in text:
             errors.append(f"{card.get('data-j')}: Form says 'set up by law'; a law gives the mandate")
         if inst["legal_basis"]["type"] == "law":
@@ -782,6 +788,8 @@ def check_feed(soup, dist: Path) -> list[str]:
     link = soup.select_one("#news ~ a#news-feed")  # the saved page; its template copy repeats it
     if not link or link.get("href") != "feed.xml":
         errors.append("News: no Atom feed link beside its heading")
+    elif link.get("data-tip") or link.get("title"):
+        errors.append("News: the Atom feed link carries a tooltip (its text says what it is)")
     try:
         root = ElementTree.parse(dist / "feed.xml").getroot()
     except (OSError, ElementTree.ParseError) as exc:
@@ -1029,7 +1037,7 @@ def check_source_alignment(html: str, data: dict) -> list[str]:
         if table:
             columns = {
                 "Institute": "inst",
-                "Status since": "since",
+                "Status": "since",
                 "Budget": "budget",
                 "Staff": "staff",
                 "Known activity": "op",
@@ -1043,7 +1051,7 @@ def check_source_alignment(html: str, data: dict) -> list[str]:
                     continue
                 cell = table.select_one(f'[data-col="{column}"]')
                 card_ids = [a.get("data-source-id") for a in row.select(".cn")]
-                if row.select_one(".interval"):
+                if row.select_one(".interval") or re.search(r"\b(?:Announced|Proposed) on ", row.get_text()):
                     # A card interval adds its announcement's sources (check_interval_output); the table's must remain.
                     card_ids = [sid for sid in card_ids if cell is None or sid in {a.get("data-source-id") for a in cell.select(".cn")}]
                 if cell and card_ids != [
@@ -1066,6 +1074,13 @@ def check_source_alignment(html: str, data: dict) -> list[str]:
         link = li.select_one("a[href]")
         if sid not in sources or not link or link["href"] != sources[sid]["url"]:
             errors.append(f"source list {sid}: URL does not match data")
+            continue
+        en = li.select_one(":scope > .title-en")
+        if en is not None and en.find_previous_sibling() is not link:
+            errors.append(f"source list {sid}: the English title does not follow the original title's link")
+        want_en = f" [{sources[sid]['title_en']}]" if sources[sid].get("title_en") else None  # Method: our English translation beside the original title
+        if (en.get_text() if en else None) != want_en:
+            errors.append(f"source list {sid}: English title {en.get_text() if en else None!r}, expected {want_en!r}")
     for cite in soup.select(".cn"):
         host = cite.find_parent(attrs={"data-j": True})
         jid = str(host.get("data-j") or "") if host else ""
@@ -1111,7 +1126,8 @@ def check_source_alignment(html: str, data: dict) -> list[str]:
                         if part is None and selector == ".source-statement":
                             continue
                         actual = [a.get("data-source-id") for a in part.select(".cn")] if part else None
-                        if actual != in_numeral_order(citation_fields(record, fields), orders.get(jid, [])):
+                        wanted = citation_fields(record, fields) + (rate_sources(record, data) if selector == ".funding-native" else [])
+                        if actual != in_numeral_order(list(dict.fromkeys(wanted)), orders.get(jid, [])):
                             errors.append(f"{jid}: funding {selector} citations differ from data")
                     statement = rendered.select_one(".source-statement")
                     expected_statement = expected_funding_statement(record)
@@ -1126,7 +1142,7 @@ def check_source_alignment(html: str, data: dict) -> list[str]:
                         if text is None or " ".join(text.get_text().split()) != " ".join(expected_statement.split()):
                             errors.append(f"{jid}: funding source statement loses source wording")
                     amount = rendered.select_one(".funding-native .budget-amount")
-                    if amount is None or amount.get_text(strip=True) != expected_native_funding_value(record):
+                    if amount is None or amount.get_text(strip=True) != expected_shown_funding_value(record, data):
                         errors.append(f"{jid}: native funding amount differs from primary value")
                     continue
                 actual = [a.get("data-source-id") for a in rendered.select(".cn")]
@@ -1240,8 +1256,42 @@ def expected_native_funding_value(record):
     amount = half_up_two(record["amount"], qualifier)
     marker = "~" if qualifier != "about" and amount != Decimal(str(record["amount"])) else ""
     number = short_amount(amount) if amount >= 1000 else format(amount.normalize(), "f")
-    prefix = {"about": "About ", "at_most": "Up to ", "at_least": "At least ", "nearly": "Nearly ", "more_than": "More than ", "less_than": "Less than "}.get(qualifier, "")
+    prefix = {"about": "about ", "at_most": "up to ", "at_least": "at least ", "nearly": "nearly ", "more_than": "more than ", "less_than": "less than "}.get(qualifier, "")
     return prefix + marker + record["currency"] + " " + number
+
+
+def ecb_rate(record, data):
+    """The data's ECB rate row for the amount's currency, or None for EUR or a currency the ECB does not publish."""
+    if record.get("currency") in (None, "EUR"):
+        return None
+    return next((r for r in (data.get("dataset") or {}).get("exchange_rates", []) if r["currency"] == record["currency"]), None)
+
+
+def rate_sources(record, data):
+    """The sources a euro figure rests on, cited beside an amount the page also shows in euros (rule currency-rounding):
+    the amount's own (amount, currency, qualifier) and the rate row's."""
+    rate = ecb_rate(record, data)
+    if not rate or record.get("amount") is None:
+        return []
+    own = [i for field in ("amount", "currency", "amount_qualifier") for i in (record.get("citations") or {}).get(field, [])]
+    return own + list(rate.get("source_ids", []))
+
+
+def expected_shown_funding_value(record, data):
+    """Independent text of a non-compared amount: every amount in a currency with an ECB rate is also shown in euros,
+    "~EUR 52m (JPY 8.8bn)", converted at the data's rate and rounded to two figures (rule currency-rounding).
+    EUR, and a currency with no ECB rate (KES), keep the native text."""
+    native = expected_native_funding_value(record)
+    rate = ecb_rate(record, data)
+    if rate is None:
+        return native
+    qualifier = record.get("amount_qualifier")
+    with localcontext() as context:
+        context.prec = 50
+        eur = half_up_two(Decimal(str(record["amount"])) * Decimal(str(rate["eur_per_unit"])), qualifier)
+    prefix = {"about": "about ", "at_most": "up to ", "at_least": "at least ", "nearly": "nearly ", "more_than": "more than ", "less_than": "less than "}.get(qualifier, "")
+    figure = short_amount(eur) if eur >= 1000 else format(eur.normalize(), "f")
+    return prefix + ("" if qualifier == "about" else "~") + "EUR " + figure + " (" + native[len(prefix):] + ")"
 
 
 def detail_citation_sources(record, kind):
@@ -1317,7 +1367,7 @@ def expected_operating_lines(jurisdiction: dict, institute: dict | None, credit_
         line
         for item in evidence
         for line in (kind_label(item["kind"], True), "since " + expected_date(item["date"]))
-        + ((interval["text"],) if interval and interval["kind"] == item["kind"] else ())
+        + ((f'{kind_label(item["kind"], True)} began {interval["text"]}',) if interval and interval["kind"] == item["kind"] else ())
     ]
 
 
@@ -1341,21 +1391,21 @@ def operating_lines(node) -> list[str]:
 INTERVAL_CAVEAT = "not a measure of speed or quality"  # Known activity tooltip
 STATUS_INTERVAL_CAVEAT = "It does not measure speed or quality"  # Status since interval tooltip (owner copy, 23 Oct)
 INTERVAL_MONTH = 30.4375
-# Hand-worked card wording for the real records at as_of 2026-10-20 (day counts worked in
+# Hand-worked card wording for the real records (Status qualifier "Announced on <date>, <interval> earlier", owner 1.0.3) at as_of 2026-10-20 (day counts worked in
 # tests/test_intervals.py). New dates change these: update them in a separately reviewed CODE change.
 HAND_WORKED_INTERVALS = {
-    "GB": ("7 days after announcement", "about 3 months after establishment"),
-    "FR": (None, "about 5 months after establishment"),
-    "DE": ("about 3 months after announcement", None),
-    "EU": ("28 days after announcement", "about 17 months after establishment"),
-    "US": ("about 3 months after announcement", "about 9 months after establishment"),
-    "CA": ("about 7 months after proposal", "about 7 months after establishment"),
-    "JP": ("55 days after announcement", "about 14 months after establishment"),
-    "KR": ("about 6 months after announcement", "about 7 months after establishment"),
-    "SG": (None, "about 6 months after establishment"),
-    "AU": (None, None),
+    "GB": ("Announced on 26 Oct 2023, 7 days earlier", "about 3 months after it was established"),
+    "FR": (None, "about 5 months after it was established"),
+    "DE": ("Announced on 8 Jun 2026, about 3 months earlier", None),
+    "EU": ("Announced on 24 Jan 2024, 28 days earlier", "about 17 months after it was established"),
+    "US": ("Announced on 1 Nov 2023, about 3 months earlier", "about 9 months after it was established"),
+    "CA": ("Proposed on 16 Apr 2024, about 7 months earlier", "about 7 months after it was established"),
+    "JP": ("Announced on 21 Dec 2023, 55 days earlier", "about 14 months after it was established"),
+    "KR": ("Announced on 22 May 2024, about 6 months earlier", "about 7 months after it was established"),
+    "SG": (None, "about 6 months after it was established"),
+    "AU": ("Announced on 25 Nov 2025", None),
     "MY": (None, None),
-    "IN": (None, None),
+    "IN": ("Announced on 30 Jan 2025", None),
 }
 
 
@@ -1377,16 +1427,36 @@ def oracle_first(days: list[str], as_of: str | None) -> tuple[date, date] | None
     return (min(r[0] for r in ranges), min(r[1] for r in ranges)) if ranges else None
 
 
-def oracle_phrase(start, end, word: str) -> str | None:
-    """Card wording, exact intervals only: days under 60, else about N months (half up); signed."""
+def oracle_amount(start, end) -> tuple[str, int] | None:
+    """An exact interval's amount and signed days: days under 60, else about N months (half up)."""
     if start is None or end is None or start[0] != start[1] or end[0] != end[1]:
         return None
     days = (end[0] - start[0]).days
     size = abs(days)
+    return ((f"{size} days" if size != 1 else "1 day") if size < 60 else f"about {int(size / INTERVAL_MONTH + 0.5)} months"), days
+
+
+def oracle_phrase(start, end, word: str) -> str | None:
+    """Known activity wording, exact intervals only; signed."""
+    found = oracle_amount(start, end)
+    if found is None:
+        return None
+    amount, days = found
     if days == 0:
-        return "same day as " + word
-    amount = (f"{size} days" if size != 1 else "1 day") if size < 60 else f"about {int(size / INTERVAL_MONTH + 0.5)} months"
+        return "on the same day as " + word
     return f"{amount} {'before' if days < 0 else 'after'} {word}"
+
+
+def oracle_announced(start, end, word: str) -> str | None:
+    """Status qualifier: "Announced on 24 Jan 2024, 28 days earlier"; the date alone for a range; nothing for an inexact date."""
+    if start is None or start[0] != start[1]:
+        return None
+    text = f"{word.capitalize()} on {start[0].day} {start[0].strftime('%b')} {start[0].year}"
+    found = oracle_amount(start, end)
+    if found is None:
+        return text
+    amount, days = found
+    return text + ", " + ("the same day" if days == 0 else f"{amount} {'earlier' if days > 0 else 'later'}")
 
 
 def expected_intervals(jurisdiction: dict, institute: dict | None, as_of: str | None) -> tuple[str | None, dict | None, list[int]]:
@@ -1401,13 +1471,13 @@ def expected_intervals(jurisdiction: dict, institute: dict | None, as_of: str | 
     established = oracle_first(designations, as_of)
     qualifying = [o["credit"]["date"] for o in institute.get("outputs", []) if o["qualifies_as"] != "none"]
     first = oracle_first(qualifying, as_of)
-    words = {"proposal" if events[n]["event"] == "proposed" else "announcement" for n in announcing
+    words = {"proposed" if events[n]["event"] == "proposed" else "announced" for n in announcing
              if announced and oracle_day_range(events[n]["date"], as_of)[0] <= announced[1]}
     since = None
-    if not any(e["event"] == "closed" for e in events):
-        since = oracle_phrase(announced, established, words.pop() if len(words) == 1 else "announcement")
+    if established and not any(e["event"] == "closed" for e in events):
+        since = oracle_announced(announced, established, words.pop() if len(words) == 1 else "announced")
     line = None
-    text = oracle_phrase(established, first, "establishment")
+    text = oracle_phrase(established, first, "it was established")
     if text:
         day = first[0].isoformat()
         item = next((e for e in expected_activity(institute, {(institute["id"], o["lineage"]): [] for o in institute.get("outputs", [])}) if e["date"] == day), None)
@@ -1438,31 +1508,35 @@ def check_interval_output(html: str, data: dict, hand_worked: dict | None = None
         if card is None:
             continue
         rows = {r.select_one(".k").get_text(strip=True): r for r in card.select(".row") if r.select_one(".k")}
-        status = rows.get("Status since")
+        status = rows.get("Status")
         shown = status.select(".interval") if status else []
-        # The amount is the caveated term; the milestone words follow it as plain text on the same muted line.
+        # The qualifier names the announcement and its date; the amount is the caveated term, the other words plain text on the same muted line.
         text = []
-        for node in shown:
-            holder = copy.copy(node.find_parent(class_="qualifiers") or node)
+        for holder in status.select(".qualifiers") if status else []:
+            holder = copy.copy(holder)
             for cites in holder.select(".cites"):
                 cites.decompose()
-            words = " ".join(holder.get_text().split())
-            text.append(words[words.index(node.get_text()):] if node.get_text() in words else words)
+            # Any announcement or proposal wording counts, so a month-only or year-only date ("Announced on Mar 2025") cannot slip through.
+            text += re.findall(r"(?:Announced|Proposed) on [^;·]+", " ".join(holder.get_text().split()))
+        text = [t.strip() for t in text]
+        for node in shown:
             if not node.find_parent(class_="qualifiers") or STATUS_INTERVAL_CAVEAT not in (node.get("data-exp") or ""):
-                errors.append(f"{j['id']}: Status since interval is not a muted qualifier with its caveat")
+                errors.append(f"{j['id']}: Status interval is not a muted qualifier with its caveat")
+        if len(shown) != (1 if since and ", " in since else 0):
+            errors.append(f"{j['id']}: Status shows {len(shown)} caveated intervals for {since!r}")
         if text != ([since] if since else []):
-            errors.append(f"{j['id']}: Status since interval {text!r} differs from {since!r}")
+            errors.append(f"{j['id']}: Status interval {text!r} differs from {since!r}")
         if since and status is not None:
             # The qualifier counts from the announcement, so its date's sources join the row's citations (numeral order: check_citations).
             wanted = set(j.get("citations", {}).get("since", [])) | {
                 sid for n in counted for sid in j["timeline"][n].get("citations", {}).get("date", [])
             }
             if {a.get("data-source-id") for a in status.select(".cn")} != wanted:
-                errors.append(f"{j['id']}: Status since citations do not cover the announcement and establishment")
+                errors.append(f"{j['id']}: Status citations do not cover the announcement and establishment")
         activity = rows.get("Known activity")
         lines = activity.select(".activity-interval") if activity else []
         found = [(n.find_parent(class_="activity-kind").select_one(".activity-clause").get("data-kind"), " ".join(n.get_text().split())) for n in lines]
-        if found != ([(line["kind"], line["text"])] if line else []):
+        if found != ([(line["kind"], f"{kind_label(line['kind'], True)} began {line['text']}")] if line else []):
             errors.append(f"{j['id']}: Known activity interval {found!r} differs from {line!r}")
         for n in lines:
             if n.select(".cn") or "qualifiers" not in n.get("class", []):
@@ -1560,7 +1634,7 @@ def check_operating_output(
                     errors.append(
                         f"{j['id']}: {view} operational tooltip lacks finding wording"
                     )
-                if ACTIVITY_SINCE_DEFINITION not in tip:
+                if evidence and ACTIVITY_SINCE_DEFINITION not in tip:  # None found yet has no since line to define
                     errors.append(f"{j['id']}: {view} operational tooltip lacks the definition of since")
         if table is not None:
             for label in ("Budget", "Staff"):  # a dash only where the state has no institute (principle: Scope)
@@ -1674,8 +1748,8 @@ SORT_ROWS_JS = r"""
     else if (key === 'status') v = ORDER.findIndex(s => td.querySelector('.sw.st-' + s));
     else if (key === 'since') v = date(t);
     else if (key === 'op') { const m = / since ((?:\d{1,2} )?(?:[A-Z][a-z]{2} )?\d{4})/.exec(t); v = m ? date(m[1]) : null; }  // kinds are in date order: the first since is the earliest
-    else if (key === 'eur') { const m = /^(?:(?:Up to|At least|About|Nearly|More than|Less than) )?~?EUR ([\d.,]+)(bn|m|k)?(?= )/.exec(t); v = m ? parseFloat(m[1].replace(/,/g, '')) * (m[2] === 'bn' ? 1e9 : m[2] === 'm' ? 1e6 : m[2] === 'k' ? 1e3 : 1) : null; }
-    else if (key === 'staff') { const m = /^(?:up to )?~?(\d[\d,]*)\+?(?= \(| as of |,|$)/.exec(t); v = m ? parseInt(m[1].replace(/,/g, ''), 10) : null; }
+    else if (key === 'eur') { const m = /^(?:(?:up to|at least|about|nearly|more than|less than) )?~?EUR ([\d.,]+)(bn|m|k)?(?= )/.exec(t); v = m ? parseFloat(m[1].replace(/,/g, '')) * (m[2] === 'bn' ? 1e9 : m[2] === 'm' ? 1e6 : m[2] === 'k' ? 1e3 : 1) : null; }
+    else if (key === 'staff') { const m = /^(?:up to )?~?(\d[\d,]*)\+?(?= \(| as of | reported |,|$)/.exec(t); v = m ? parseInt(m[1].replace(/,/g, ''), 10) : null; }
     return v == null || v === -1 ? { jid, name, tier: 1, text: t } : { jid, name, tier: 0, v, text: t };
   });
   // Text compares in the page's locale collation, as ranks, so the gate compares numbers only.
@@ -1731,7 +1805,7 @@ def sort_errors_for(rows: list[dict], key: str, direction: int, data=None) -> li
                         f"{label}: {jid} native budget label/data presence differs"
                     )
                 else:
-                    expected = expected_native_funding_value(record)
+                    expected = expected_shown_funding_value(record, data)
                     if not re.match(re.escape(expected) + r"(?= |$)", row["text"]):
                         errors.append(
                             f"{label}: {jid} native budget label differs from primary value"
@@ -1746,7 +1820,7 @@ def sort_errors_for(rows: list[dict], key: str, direction: int, data=None) -> li
                     else expected_staff_total(record)
                 )
                 if not re.match(
-                    re.escape(expected) + r"(?= \(| as of |,|$| a (?:financial )?year)",
+                    re.escape(expected) + r"(?= \(| as of | reported |,|$| a (?:financial )?year)",
                     row["text"],
                 ):
                     errors.append(
@@ -1843,6 +1917,7 @@ def check_state_counts(soup, data: dict) -> list[str]:
     ]
     del expected, members, small  # the counts row is gone: the headline carries the European count
     errors.extend(check_headline(soup, data))
+    errors.extend(region_partition_errors(data))
     if soup.select("#findings, .finding"):
         errors.append("the old counts row is back; the headline carries the counts and the figures row the medians")
     for group in soup.select(".statusgroup[data-status]"):
@@ -1865,7 +1940,7 @@ def check_state_counts(soup, data: dict) -> list[str]:
         errors.append("the EU appears under Worldwide")
     # Principle Supporting text: the note is the (i) after the heading, never a line under it.
     note = first.select_one(".eu-head > button.info#eu-scope") if first else None
-    if not note or not note.get("data-tip", "").startswith("Not a state, so in none of the counts. The EU AI Office evaluates"):
+    if not note or not note.get("data-tip", "").startswith("The EU AI Office tests the most capable general-purpose models"):
         errors.append("EU level heading lacks its (i) saying the EU is not a state")
     if first and first.select(":scope > p"):
         errors.append("EU level entry keeps a text line under its heading; it belongs in the (i)")
@@ -1879,8 +1954,27 @@ LIST_REGIONS = ("Europe", "Americas", "Asia", "Oceania", "Africa")
 MOVING_STATUSES = ("planned", "proposed", "exploring")
 
 
+def region_map_pool(data: dict, region: str) -> list[dict]:
+    """States on a region's map: the counted pool, plus for Europe the European states (UN M49) outside the 32, listed apart and never counted (owner, 5 Nov 2026)."""
+    extra = [j for j in data["jurisdictions"] if region == "Europe" and j["kind"] != "supranational" and not j["europe_scope"] and (j.get("region") or {}).get("name") == "Europe"]
+    return region_pool(data, region) + extra
+
+
+ELSEWHERE = "Elsewhere in Europe, not in the European counts"  # owner copy (Jason, 5 Nov 2026)
+
+
+def region_partition_errors(data: dict) -> list[str]:
+    """Every state and territory is on exactly one listed region's map, so the regions together cover the World view's states."""
+    seen: dict[str, list[str]] = {}
+    for region in LIST_REGIONS:
+        for j in region_map_pool(data, region):
+            seen.setdefault(j["id"], []).append(region)
+    states = [j["id"] for j in data["jurisdictions"] if j["kind"] != "supranational"]
+    return [f"regions: {jid} is in {seen.get(jid, [])}, expected exactly one region" for jid in states if len(seen.get(jid, [])) != 1]
+
+
 def region_pool(data: dict, region: str) -> list[dict]:
-    """States in a map region: Europe is the 32-state scope; the others are UN regions without those states."""
+    """States a region counts: Europe is the 32-state scope; the others are UN regions without those states."""
     states = [j for j in data["jurisdictions"] if j["kind"] != "supranational"]
     if region == "World":
         return states
@@ -2022,7 +2116,7 @@ def expected_annual_funding_value(record, data):
     return text
 
 
-TWO_FIGURE_SELECTORS = (".fund-budget > .fund-value strong", "#world-rows td[data-col=budget] .budget-amount", "#world-rows td[data-col=staff]", ".fund-staff > .fund-value strong", "#fund-scale", ".funding-native .budget-amount", ".fund-staff .fund-context")
+TWO_FIGURE_SELECTORS = (".fund-budget > .fund-value strong", "#world-rows td[data-col=budget] .budget-amount", "#world-rows td[data-col=staff]", ".fund-staff > .fund-value strong", ".funding-native .budget-amount", ".fund-staff .fund-context")
 
 
 def expected_staff_total(record) -> str:
@@ -2063,7 +2157,7 @@ def check_two_significant_figures(soup) -> list[str]:
         if not any(n.get_text(strip=True) for n in nodes):
             errors.append(f"{selector}: matches no node with text, so the two-figure check would pass vacuously")
         for node in nodes:
-            text = re.sub(r"\bas of .*|\(.*? technical\)", "", node.get_text(" ", strip=True))
+            text = re.sub(r"\b(?:as of|reported) .*|\(.*? technical\)", "", node.get_text(" ", strip=True))
             if not two_figures(text):
                 errors.append(f"{selector}: {text!r} shows more than two significant figures")
     return errors
@@ -2089,8 +2183,8 @@ def check_glyphs(soup) -> list[str]:
     return errors
 
 
-MISSING_TIP = "No figure found in the sources we searched."
-NOT_MEMBER_TIP = "Not among the network's members; its member list is complete."
+MISSING_TIP = "Not found in the sources we searched."
+NOT_MEMBER_TIP = "Not a member of the International Network for Advanced AI Measurement, Evaluation and Science, whose member list is complete."
 NOTHING_FOUND_TIP = "No published work or joint testing found in the sources we searched."
 NONE_TIP = "None identified means our searches found nothing, not that nothing exists."
 DASH_TIP = "A dash means there is no institute yet."
@@ -2120,6 +2214,10 @@ def check_absence_wording(soup) -> list[str]:
                 found["None found yet"] += 1
                 if not (node.get("data-tip") or "").startswith(NOTHING_FOUND_TIP + " ") or node.get("tabindex") != "0":
                     errors.append(f"{place}: a None found yet value's focusable tooltip does not open with {NOTHING_FOUND_TIP!r}")
+            for node in root.select('.smark[data-tip], .smark[data-state="not_confirmed"]'):  # rule 12: a tooltip is one or two short sentences
+                tip = node.get("data-tip") or ""
+                if len(re.findall(r"[.!?](?:\s|$)", tip)) > 2:
+                    errors.append(f"{place}: an activity tooltip runs to more than two sentences: {tip[:80]!r}")
         for term, count in found.items():
             if not count:
                 errors.append(f"{place}: no {term} value to check its tooltip")
@@ -2264,9 +2362,9 @@ SHORT_DEFINITIONS = {
     "none_identified": "No decision, plan, proposal or study found.",
 }
 # The map's (i) after the legend: how to read the dots and statuses (owner decision 4 Nov 2026: no meta lines on the page).
-MAP_INFO = "One dot per state, near its centre; the World view leaves out states with none identified. Select a state to see its record. Each status is dated by the government act that set it."
+MAP_INFO = "The World view shows only states with an institute or a plan; pick a region to see every state."
 RECHECK_LINE = "Every state has a planned re-check date, sooner where a decision is pending; the dates are in the downloads."  # owner decision 24 Oct
-SCOPE_NOTES = {"testing": ("test-scope", "Every institute, whatever its status. Leading AI developers' models only. Access counted only if confirmed in published sources."), "set-up": ("setup-scope", "Every institute, whatever its status."), "funding": ("fund-scope", "Every institute, whatever its status.")}  # owner decision 23 Oct: no section subtitles; scope as a muted note after the groups
+SCOPE_NOTES = {"testing": ("test-scope", "This section covers every institute, whatever its status, and only leading AI developers' models. Access counts only when published sources confirm it."), "set-up": ("setup-scope", "Every institute, whatever its status."), "funding": ("fund-scope", "Every institute, whatever its status.")}  # owner decision 23 Oct: no section subtitles; scope as a muted note after the groups
 
 
 def check_supporting_text(soup, data: dict) -> list[str]:
@@ -2284,9 +2382,19 @@ def check_supporting_text(soup, data: dict) -> list[str]:
             errors.append(f"{heading}: the scope is not one (i) after the heading whose tooltip reads {text!r}")
     if soup.select("p.scope-note"):
         errors.append("a scope note line is back under a section (owner decision 4 Nov 2026: scope in an (i))")
-    recheck = soup.select_one("#recheck-line")
-    if not recheck or " ".join(recheck.get_text().split()) != RECHECK_LINE:
-        errors.append(f"Data section re-check line is not {RECHECK_LINE!r}")
+    # Links that say what they are carry no tooltip (owner, 4 Nov 2026): the version link, the News feed link, the institutes' official sites.
+    sites = {i["website"] for i in data["institutes"] if i.get("website")}  # citation numerals to the same page keep their source tooltip
+    tipped = [a.get("href") for a in soup.select("a[href]:not(.cn)") if a.get("href") in sites and (a.get("title") or a.get("data-tip"))]
+    if tipped:
+        errors.append(f"an institute's website link carries a tooltip (its arrow and new-tab text say what it is): {tipped[:3]}")
+    # A term spelt out just before its abbreviation ("AI Security Institute (AISI)") carries no glossary tooltip; elsewhere it does.
+    if any(ab.get_text() == "AISI" for ab in soup.select("#definition abbr.g[data-exp]")):
+        errors.append("the definition's '(AISI)' carries a glossary tooltip right after the spelt-out term")
+    if not any(ab.get_text() == "AISI" for ab in soup.select("main abbr.g[data-exp]")):
+        errors.append("AISI no longer carries its glossary tooltip anywhere on the page")
+    recheck = soup.select(".head-line > h3#corrections + button.info#recheck-line")
+    if len(recheck) != 1 or recheck[0].get("data-tip") != RECHECK_LINE:
+        errors.append(f"Corrections heading lacks one (i) reading {RECHECK_LINE!r}")
     label = soup.select_one("#europe")
     if soup.select("#defn") or not label or label.parent.select("a"):
         errors.append("Europe, state by state: no section keeps a lone explainer link under its heading (Method is in the Data group row)")
@@ -2386,7 +2494,7 @@ ACCESS_GROUPS = (
     ("privileged", ("recent_access", "earlier_access"), "Privileged access on record"),
     ("law", ("by_law",), "Can require access by law"),
     ("agreed", ("access_agreed",), "Access agreed"),
-    ("none", ("none_found",), "No access found"),
+    ("none", ("none_found",), "No privileged access found"),
 )
 PRIVILEGED_HELP = "Before public release, or with safeguards reduced or removed"
 ACT_SHORT = {"Regulation (EU) 2024/1689": "AI Act"}  # the page's short form for a cited act, held here independently
@@ -2414,7 +2522,7 @@ def expected_access_tips(institute: dict) -> list[tuple[str, str]]:
         for event in access["access_events"]:
             if event["developer"] not in latest or event["date"] > latest[event["developer"]]["date"]:
                 latest[event["developer"]] = event
-        return [(d, f"{d}, latest: {latest[d]['model']}, {EVENT_KIND[latest[d]['kind']]}, on or before {expected_date(latest[d]['date'])}") for d in sorted(sorted(latest), key=lambda d: latest[d]["date"], reverse=True)]
+        return [(d, f"{EVENT_KIND[latest[d]['kind']][0].upper()}{EVENT_KIND[latest[d]['kind']][1:]} to {latest[d]['model']} is the latest on record, on or before {expected_date(latest[d]['date'])}.") for d in sorted(sorted(latest), key=lambda d: latest[d]["date"], reverse=True)]
     if value == "by_law":
         power = access["legal_power"]
         help_text = LAW_HELP.get(f"{power['act']} {power['provision']}")
@@ -2472,7 +2580,7 @@ def check_access_groups(soup, data: dict) -> list[str]:
         block = soup.select_one(f'#access .group-block[data-group="{key}"]')
         if block is None:
             continue
-        column = "access-long" if key == "none" else "access-short"
+        column = "groups-long" if key == "none" else "groups-short"
         if not block.find_parent(class_=column):
             errors.append(f"access group {key} is not in {column}")
         heading = block.select_one("h3")
@@ -2498,6 +2606,9 @@ def check_access_groups(soup, data: dict) -> list[str]:
         marks = [m.get("class", []) for m in block.select(".marks > i")]
         if marks != [["sw", "st-" + jurisdictions[i["jurisdiction_id"]]["status"]] for i in members]:
             errors.append(f"access group {key}: marks {marks} differ from its members' statuses")
+        tips = [(m.get("data-tip"), m.get("data-tip-sub"), m.get("title")) for m in block.select(".marks > i")]
+        if tips != [(jurisdictions[i["jurisdiction_id"]]["name"], STATUS_LABELS[jurisdictions[i["jurisdiction_id"]]["status"]], None) for i in members]:
+            errors.append(f"access group {key}: a status square's tooltip is not the map dots' form (name, then the status line): {tips}")
         for li, institute in zip(rows, members):
             jid = institute["jurisdiction_id"]
             link = li.select_one("a")
@@ -2524,7 +2635,12 @@ def check_access_groups(soup, data: dict) -> list[str]:
 FIGURE_NAMES = {"GB": "UK"}  # short state names in the figures row, held here independently of the page
 
 
-FIGURES_NOTE = "Counts cover the {n} established state institutes."  # owner-approved copy (figures row); n computed from the data
+FIGURES_NOTE = "Counts cover the {n} established state institutes."  # owner-approved copy (figures row) when every institute is in one of the numbers; n computed from the data
+FIGURES_NO_BUDGET = "established institutes publish no budget."  # owner copy, 1.0.3
+# The (i) when established institutes show a budget that is not compared, so they count in neither the budget median nor the no-budget figure; reasons as the funding section's.
+FIGURES_LEFT_ONE = FIGURES_NOTE + " {names}'s budget is {reason}, so it counts neither in the budget median nor among those with no budget."
+FIGURES_LEFT_MANY = FIGURES_NOTE + " The budgets of {names} are {reasons}, so they count neither in the budget median nor among those with no budget."
+FIGURES_REASONS = {"proposal": ("a proposal", "proposals"), "one_off": ("a one-off amount", "one-off amounts"), "other": ("not for the reference year", "not for the reference year")}
 
 
 def check_figures_row(soup, data: dict) -> list[str]:
@@ -2532,7 +2648,7 @@ def check_figures_row(soup, data: dict) -> list[str]:
     The note under the row says the counts are of established state institutes, so every median input must be one."""
     jurisdictions = {j["id"]: j for j in data["jurisdictions"]}
     bars, totals, counted, upper, lower = [], [], [], False, False
-    unestablished = []
+    unestablished, left = [], []
     for inst in data["institutes"]:
         if jurisdictions[inst["jurisdiction_id"]]["kind"] == "supranational":
             continue  # counts count states only
@@ -2547,6 +2663,10 @@ def check_figures_row(soup, data: dict) -> list[str]:
             totals.append((Decimal(staff["total"]), inst["id"], inst["jurisdiction_id"], staff["display"]["total"]))
         if inst.get("status") == "established":
             counted.append(inst["jurisdiction_id"])
+            shown = display["funding_records"].get(display.get("budget")) if display.get("budget") else None
+            if shown and not display.get("comparison_funding"):
+                reason = "proposal" if shown.get("commitment") == "proposed" else "one_off" if shown.get("kind") == "one_off" else "other"
+                left.append((FIGURE_NAMES.get(inst["jurisdiction_id"], jurisdictions[inst["jurisdiction_id"]]["name"]), reason))
         elif (funding and funding.get("eur_per_year_est") is not None) or (staff and staff.get("total") is not None):
             unestablished.append(inst["id"])
     def words(node):  # the figure's text without its (i), which joins the last word in one unbreakable box
@@ -2569,8 +2689,11 @@ def check_figures_row(soup, data: dict) -> list[str]:
             errors.append(f"{label} figure shown with fewer than two institutes")
             continue
         top = max(rows, key=lambda r: (r[0], r[1]))
-        highest = re.sub(r"^(Up to|At least|About|Nearly|More than|Less than)", lambda m: m[0].lower(), top[3])
-        want = f"{noun} of {len(rows)} institutes. {FIGURE_NAMES.get(top[2], jurisdictions[top[2]]['name'])} {highest}."
+        # A qualifier is part of the figure, so lower case wherever it stands (display.py AMOUNT_PREFIX); held here independently.
+        highest = re.sub(r"^(Up to|At least|About|Nearly|More than|Less than)\b", lambda m: m[0].lower(), top[3])
+        if highest != top[3]:
+            errors.append(f"{label} highest figure {top[3]!r} capitalises its qualifier; expected {highest!r}")
+        want = f"{noun} of {len(rows)} institutes. {FIGURE_NAMES.get(top[2], jurisdictions[top[2]]['name'])} highest at {highest}."  # owner copy, 1.0.3: the named state is the highest
         if text != want:
             errors.append(f"{label} figure text {text!r}, expected {want!r}")
         # A median over upper-bound budgets is an upper bound and rounds up, over lower bounds a lower bound rounding down (dataset.method budget-ratios).
@@ -2596,13 +2719,20 @@ def check_figures_row(soup, data: dict) -> list[str]:
         row = next((r for r in cards.all(jid, ".row") if r.select_one(".k") and r.select_one(".k").get_text(strip=True) == "Budget"), None)
         value = row.select_one(".v").get_text(" ", strip=True) if row else ""
         missing += value == MISSING_TEXT
-    want = (f"{missing} of {len(counted)}", "institutes: budget not published.")
+    want = (f"{missing} of {len(counted)}", FIGURES_NO_BUDGET)
     if tiles[2] != want:
         errors.append(f"no-budget figure {tiles[2]}, expected {want}")
     if unestablished:
         errors.append(f"figures row medians include institutes that are not established ({', '.join(unestablished)}); the note says counts are of established state institutes")
     note = soup.select("#figures > .figure:last-child > span > .info-glue:last-child > button.info#figures-scope:last-child")
-    want_note = FIGURES_NOTE.format(n=len(counted))
+    names = [name for name, _ in left]
+    names = " and ".join([", ".join(names[:-1]), names[-1]]) if len(names) > 1 else "".join(names)
+    reasons = {reason for _, reason in left}
+    want_note = (
+        FIGURES_NOTE.format(n=len(counted)) if not left
+        else FIGURES_LEFT_ONE.format(n=len(counted), names=names, reason=FIGURES_REASONS[left[0][1]][0]) if len(left) == 1
+        else FIGURES_LEFT_MANY.format(n=len(counted), names=names, reasons=FIGURES_REASONS[left[0][1]][1] if len(reasons) == 1 else "not compared")
+    )
     if len(note) != 1 or note[0].get("data-tip") != want_note or len(soup.select("#figures-scope")) != 1:
         errors.append(f"figures row: the last figure does not end with one (i) reading {want_note!r}")
     return errors
@@ -2611,7 +2741,7 @@ def check_figures_row(soup, data: dict) -> list[str]:
 # Institutional set-up (decisions: copy from Bahadir's feedback): every institute by form (principle: Scope), host as the note.
 SETUP_HEADING = "Institutional set-up"
 FORM_LABELS = {"unit_in_existing_body": "Unit in an existing body", "federation_of_existing_bodies": "Network of existing bodies", "university_centre": "University centre", "new_body": "New body"}
-FORM_HELP = {
+FORM_HELP = {  # retired page copy: the heading alone names the form, so none of these shows on the page (owner, 4 Nov 2026)
     "unit_in_existing_body": "A team inside an existing ministry, agency or other public body.",
     "federation_of_existing_bodies": "Several existing agencies share the work; no new body.",  # D4 wording
     "university_centre": "Hosted by a university.",
@@ -2633,17 +2763,20 @@ def check_setup_groups(soup, data: dict) -> list[str]:
     for inst in data["institutes"]:  # every institute, whatever its status (principle: Scope)
         groups.setdefault(inst["legal_form"] if inst["legal_form"] in FORM_LABELS else "unknown", []).append(inst)
     order = sorted(groups, key=lambda f: (f == "unknown", -len(groups[f]), FORM_LABELS.get(f, FORM_UNKNOWN)))
-    blocks = soup.select("#setup .group-block")
-    if [b.get("data-form") for b in blocks] != order:
-        return errors + [f"set-up groups {[b.get('data-form') for b in blocks]}, expected {order}"]
+    # Laid out as Testing and access (principle: Groups): the largest group alone in the long column, the others stacked before it.
+    blocks = soup.select("#setup .groups-short > .group-block") + soup.select("#setup .groups-long > .group-block")
+    if [b.get("data-form") for b in blocks] != order[1:] + order[:1] or len(soup.select("#setup .group-block")) != len(order):
+        return errors + [f"set-up groups {[b.get('data-form') for b in blocks]} (short column, then long), expected {order[1:] + order[:1]}"]
+    blocks = [blocks[-1]] + blocks[:-1]  # back to size order
     by_id = Keyed(soup, "[id]", "id")
     for block, form in zip(blocks, order):
-        members = sorted(groups[form], key=lambda i: (jurisdictions[i["jurisdiction_id"]]["name"], i["jurisdiction_id"]))
+        # Squares and list alike by status on the ladder, then name (principle: Groups).
+        members = sorted(groups[form], key=lambda i: (STATUS_ORDER.index(jurisdictions[i["jurisdiction_id"]]["status"]), jurisdictions[i["jurisdiction_id"]]["name"], i["jurisdiction_id"]))
         if block.select_one("h3").get_text(strip=True) != FORM_LABELS.get(form, FORM_UNKNOWN):
             errors.append(f"set-up group {form} heading differs")
-        help_node = block.select_one(".group-help")
-        if (help_node.get_text() if help_node else None) != FORM_HELP.get(form):
-            errors.append(f"set-up group {form} description {help_node.get_text() if help_node else None!r}, expected {FORM_HELP.get(form)!r}")
+        # The heading alone names the form: no description, as a line or a tooltip (principle: Groups).
+        if block.select(".group-help, h3 abbr.g") or any(text in str(block) for text in FORM_HELP.values()):
+            errors.append(f"set-up group {form} still describes its form on the page")
         rows = block.select(".group-list > li")
         if [li.get("data-state") for li in rows] != [i["jurisdiction_id"] for i in members]:
             errors.append(f"set-up group {form} lists {[li.get('data-state') for li in rows]}")
@@ -2667,31 +2800,35 @@ def check_setup_groups(soup, data: dict) -> list[str]:
 
 def check_funding_key(page) -> list[str]:
     """The funding chart's key: two swatches drawn exactly like the solid and hatched bars, labelled adopted and
-    announced; the scale's two ends (0, the common maximum) over the bars' track; the minimum-width caveat as every
-    bar's tooltip; no note sentences left under or beside the chart."""
+    announced, each swatch clear of its label; no axis labels over the bars (each bar prints its value); the minimum-width caveat as every bar's tooltip; no note sentences left
+    under or beside the chart."""
     got = page.evaluate("""() => {
       const axis = document.querySelector('.fund-axis'), key = [...document.querySelectorAll('.fund-key .key-item')];
       const bg = sel => { const n = document.querySelector(sel); return n ? getComputedStyle(n).backgroundImage + '|' + getComputedStyle(n).backgroundColor : null; };
-      const scale = document.getElementById('fund-scale'), ends = scale ? [...scale.children].filter(n => !n.classList.contains('vh')) : [];
-      const track = document.querySelector('#fund-rows .fund-bar'), t = track && track.getBoundingClientRect();
-      const r = ends.map(n => n.getBoundingClientRect());
-      return { key: key.map(k => k.textContent.trim()),
+      const clear = key.every(k => { const sw = k.querySelector('.key-swatch').getBoundingClientRect(), r = document.createRange(); r.selectNodeContents(k); r.setStartAfter(k.querySelector('.key-swatch')); const t = r.getBoundingClientRect(); return sw.width > 0 && sw.right <= t.left + .5; });
+      return { key: key.map(k => k.textContent.trim()), clear,
         solid: [bg('.fund-key .key-swatch:not(.pending)'), bg('#fund-rows .bar-value:not(.pending)')],
         hatch: [bg('.fund-key .key-swatch.pending'), bg('#fund-rows .bar-value.pending')],
-        scale: scale ? scale.textContent : null, ends: ends.map(n => n.textContent),
-        aligned: !!t && r.length === 2 && Math.abs(r[0].left - t.left) < 2 && Math.abs(r[1].right - t.right) < 2,
+        scale: !!document.getElementById('fund-scale'),
         text: axis ? axis.textContent : '', tips: [...document.querySelectorAll('#fund-rows .fund-bar')].map(b => b.dataset.tip) };
     }""")
     errors = []
     if got["key"] != ["adopted", "announced"]:
         errors.append(f"funding key is not two swatches labelled adopted and announced: {got['key']}")
+    if not got["clear"]:
+        errors.append("funding key: a swatch is hidden or overlapped by its label")
+    # Stacked rows (phones): one left edge for labels, values and qualifier lines (principle: Values and qualifiers).
+    ragged = page.evaluate("""() => [...document.querySelectorAll('#fund-rows > .fund-item')].filter(row => getComputedStyle(row).display === 'flex').filter(row => {
+      const left = row.getBoundingClientRect().left;
+      return [...row.querySelectorAll('.fund-budget-label, .fund-budget > .fund-value, .budget-qualifiers, .fund-staff > .label, .fund-staff > .fund-value, .fund-staff > .fund-context')].filter(n => n.getClientRects().length).some(n => Math.abs(n.getBoundingClientRect().left - left) > 1);
+    }).map(row => row.dataset.j)""")
+    if ragged:
+        errors.append(f"stacked funding rows lack one left edge: {ragged}")
     for kind in ("solid", "hatch"):
         if not got[kind][0] or got[kind][0] != got[kind][1]:
             errors.append(f"funding key {kind} swatch is not drawn like its bars: {got[kind]}")
-    if not re.fullmatch(r"0 to EUR \S+ a year", got["scale"] or "") or len(got["ends"]) != 2:
-        errors.append(f"funding scale is not the two axis ends '0' and 'EUR ... a year': {got['scale']!r}")
-    if not got["aligned"]:
-        errors.append("funding scale ends do not sit over the bars' track")
+    if got["scale"] or re.search(r"\d", got["text"]):
+        errors.append(f"funding chart still shows axis labels over the bars: {got['text'][:80]!r}")
     if any(w in got["text"] for w in ("Solid means", "minimum width", "Common scale")):
         errors.append(f"funding chart still carries note sentences: {got['text'][:80]!r}")
     if not got["tips"] or any(t != BAR_TIP for t in got["tips"]):
@@ -2741,12 +2878,18 @@ def check_state_download_buttons(html: str, dist: Path, data: dict) -> list[str]
     return errors
 
 
-ACCESS_LAYOUT_JS = """() => {
-  const box = document.querySelector('#access'), short = box.querySelector('.access-short'), long = box.querySelector('.access-long');
+ACCESS_LAYOUT_JS = """(sel) => {
+  const box = document.querySelector(sel), short = box.querySelector('.groups-short'), long = box.querySelector('.groups-long');
   const xs = [...long.querySelectorAll('.group-list > li')].map(li => Math.round(li.getBoundingClientRect().left));
   const columns = [...new Set(xs)].sort((a, b) => a - b), per = columns.map(x => xs.filter(v => v === x).length);
   const shortGroups = [...short.querySelectorAll('.group-block')].map(g => g.getBoundingClientRect());
-  return { columns: columns.length, per, longLeft: long.getBoundingClientRect().left, shortRight: short.getBoundingClientRect().right,
+  const sr = short.getBoundingClientRect(), lr = long.getBoundingClientRect();
+  const groups = [...box.querySelectorAll('.group-block')].map(g => { const r = g.getBoundingClientRect(), lefts = new Set([...g.querySelectorAll('.group-list > li')].map(li => Math.round(li.getBoundingClientRect().left))); return { left: r.left, top: r.top, bottom: r.bottom, listColumns: lefts.size }; });
+  // Lines (rule 15): a thin rule opens each group; no hairline after a group's last member. Phones (rule 6): every note starts at one left edge.
+  const px = v => parseFloat(v) || 0;
+  const rules = [...box.querySelectorAll('.group-block')].map(g => ({ top: px(getComputedStyle(g).borderTopWidth), last: px(getComputedStyle(g.querySelector('.group-list > li:last-child')).borderBottomWidth) }));
+  const noteLefts = new Set([...box.querySelectorAll('.group-list > li')].map(li => { const a = li.querySelector(':scope > a'), n = li.querySelector('.group-note'); return n ? Math.round(n.getBoundingClientRect().left - a.getBoundingClientRect().left) : 0; }));
+  return { rules, noteOffsets: [...noteLefts], columns: columns.length, per, groups, longLeft: lr.left, shortRight: sr.right, shortLeft: sr.left, shortBottom: sr.bottom, longTop: lr.top,
     stacked: shortGroups.every((r, k) => !k || r.top >= shortGroups[k - 1].bottom - 1), longWidth: long.getBoundingClientRect().width, shortWidth: short.getBoundingClientRect().width };
 }"""
 
@@ -2794,40 +2937,53 @@ def figures_note_layout_errors(m: dict | None) -> list[str]:
     return [] if m["visible"] else ["figures row: counts (i) is not visible"]
 
 
-def check_access_layout(page, width: int) -> list[str]:
-    """Short groups stack on the left; the long group spans two columns with its list in halves; phones keep one column."""
-    m = page.evaluate(ACCESS_LAYOUT_JS)
+def one_column_errors(name: str, m: dict, width: int) -> list[str]:
+    """Phones: the short groups and the long group share one left edge, the long group below them, its list in one column."""
     errors = []
-    if not m["stacked"]:
-        errors.append("short access groups are not stacked")
-    if width > 640:
-        if m["longLeft"] < m["shortRight"] or m["longWidth"] < 1.8 * m["shortWidth"]:
-            errors.append(f"long access group is not the right column spanning two: {m}")
-        if m["columns"] != 2 or max(m["per"]) - min(m["per"]) > 1:
-            errors.append(f"long access list is not in halves: {m['per']}")
-    elif m["columns"] != 1:
-        errors.append(f"long access list keeps {m['columns']} columns on a phone")
+    if m["columns"] != 1:
+        errors.append(f"{width}px: long {name} list keeps {m['columns']} columns")
+    if abs(m["shortLeft"] - m["longLeft"]) > 1 or m["longTop"] < m["shortBottom"] - 1:
+        errors.append(f"{width}px: {name} groups do not share one column (short left {m['shortLeft']}, long left {m['longLeft']}, short bottom {m['shortBottom']}, long top {m['longTop']})")
+    groups = m["groups"]  # every group, in reading order: one left edge, each below the one before, each list in one column
+    if any(abs(g["left"] - groups[0]["left"]) > 1 for g in groups) or any(g["top"] < p["bottom"] - 1 for p, g in zip(groups, groups[1:])):
+        errors.append(f"{width}px: {name} groups are not stacked on one left edge: {[(round(g['left']), round(g['top'])) for g in groups]}")
+    if any(g["listColumns"] > 1 for g in groups):
+        errors.append(f"{width}px: a {name} group list keeps several columns: {[g['listColumns'] for g in groups]}")
+    return errors
+
+
+def check_access_layout(page, width: int) -> list[str]:
+    """Testing and access and Institutional set-up share one layout (principle: Groups): short groups stack on the left; the long group spans two columns with its list in halves; phones keep one column."""
+    errors = []
+    for name, sel in (("access", "#access"), ("set-up", "#setup")):
+        m = page.evaluate(ACCESS_LAYOUT_JS, sel)
+        if not m["stacked"]:
+            errors.append(f"short {name} groups are not stacked")
+        if any(abs(r["top"] - 1) > 0.01 or r["last"] for r in m["rules"]):
+            errors.append(f"{name} groups: expected a thin top rule and no hairline after the last member, got {m['rules']}")
+        if width <= 640 and m["noteOffsets"] != [0]:
+            errors.append(f"{name} groups on a phone: notes do not start at their state's left edge (offsets {m['noteOffsets']})")
+        if width > 640:
+            if m["longLeft"] < m["shortRight"] or m["longWidth"] < 1.8 * m["shortWidth"]:
+                errors.append(f"long {name} group is not the right column spanning two: {m}")
+            if m["columns"] != 2 or max(m["per"]) - min(m["per"]) > 1:
+                errors.append(f"long {name} list is not in halves: {m['per']}")
+        else:
+            errors += one_column_errors(name, m, width)
     errors += check_funding_key(page)
     errors += figures_note_layout_errors(page.evaluate(FIGURES_NOTE_JS))
-    # Set-up groups flow in balanced columns: on a wide screen more than one column is used and none is empty.
-    lefts = page.evaluate("() => [...document.querySelectorAll('#setup .group-block')].map(g => Math.round(g.getBoundingClientRect().left))")
-    if width >= 1000 and len(set(lefts)) < 2:
-        errors.append(f"set-up groups are not in balanced columns: {lefts}")
-    if width <= 640 and len(set(lefts)) != 1:
-        errors.append(f"set-up groups keep several columns on a phone: {lefts}")
     if width == 390:  # the phone layout's upper edge
         size = page.viewport_size
         page.set_viewport_size({"width": 640, "height": size["height"]})
         page.wait_for_timeout(100)
-        edge = page.evaluate(ACCESS_LAYOUT_JS)
-        lefts = page.evaluate("() => [...document.querySelectorAll('#setup .group-block')].map(g => Math.round(g.getBoundingClientRect().left))")
-        if edge["columns"] != 1 or len(set(lefts)) != 1:
-            errors.append(f"at 640px the grouped lists keep several columns: access {edge['columns']}, set-up {lefts}")
+        for name, sel in (("access", "#access"), ("set-up", "#setup")):
+            errors += one_column_errors(name, page.evaluate(ACCESS_LAYOUT_JS, sel), 640)
         page.set_viewport_size(size)
         page.wait_for_timeout(100)
     return errors
 
 
+GENERIC_PARTNER_HOW = {"Is listed among the institute's partners.", "Is named as a technical partner that the institute works with."}  # owner decision 05.11.2026: the page shows these partners as names only
 FIRST_OUTPUT_LINE = "First published work credited to the institute."  # owner-approved development line (decisions 21 Oct), one template for every first output
 
 
@@ -2904,18 +3060,18 @@ def check_summary_data(html: str, data: dict) -> list[str]:
     if (
         not updated
         or updated.get_text()
-        != f"Updated {expected_date} · version {dataset['version']} · Atom feed"
+        != f"Updated {expected_date} · v{dataset['version']}"
     ):
-        errors.append("hero metadata is not just update date, version and feed link")
-    feed = soup.select_one('#updated a[href="feed.xml"]')
-    if not feed or feed.get_text() != "Atom feed" or feed.get("data-tip") != "News and new versions in a feed reader":
-        errors.append("hero feed link lacks feed.xml or its instant tooltip")
+        errors.append("hero metadata is not just update date and version")
+    if soup.select('#updated a[href="feed.xml"]'):
+        errors.append("hero metadata still links the feed (News and the head link it)")
     if (
         not version
-        or version.get_text() != dataset["version"]
-        or version.get("data-tip") != "What changed in each version"
+        or version.get_text() != "v" + dataset["version"]
+        or version.get("data-tip")
+        or version.get("title")
     ):
-        errors.append("hero version lacks its changelog link and instant tooltip")
+        errors.append("hero version is not 'v<version>' linking the changelog without a tooltip")
     changes = soup.select_one("#changes")
     section = changes.find_parent("section") if changes else None
     if (
@@ -3181,19 +3337,19 @@ def check_baselines_and_rhythm(page) -> list[str]:
       const rowTypes = [
         ['.card .row', '.k, .v'], ['.card .top', ':scope > span:not(.vh), :scope > .name'],
         ['.card.mini > summary', ':scope > span, :scope > .name'], ['.meta', ':scope > *'],
-        ['.fund-staff', ':scope > .label, :scope > .fund-value'],
+        ...(document.querySelector('.fund-staff') && getComputedStyle(document.querySelector('.fund-staff')).display === 'grid' ? [['.fund-staff', ':scope > .label, :scope > .fund-value']] : []),  // stacked rows put the label above
         ['.dlist a', innerWidth <= 640 ? ':scope > .dl-title, :scope > .dl-file' : ':scope > .dl-title, :scope > .dl-file, :scope > .d'],
         ['table.world tr', ':scope > th, :scope > td'],
         ['.secnav .measure', ':scope > a'], ['.region-chips', ':scope > button'],
         ['.legend-entry', ':scope > .legend-copy'],
         ['.development-row', innerWidth <= 640 ? ':scope > .development-date, :scope > .development-name' : ':scope > .development-date, :scope > .development-name, :scope > .development-text'],
       ];
-      if (innerWidth > 640) rowTypes.push(['.fund-item', ':scope > div'], ['.fund-axis', ':scope > span']);
+      if (innerWidth > 640) rowTypes.push(['.fund-item', ':scope > div']);  // the chart key alone sits over the bars, no axis labels
       for (const [selector, items] of rowTypes) {
         document.querySelectorAll(selector).forEach(row => {
           if (!visible(row)) return;
           const nodes = [...row.querySelectorAll(items)].filter(visible);
-          if (nodes.length < (['.legend-entry', '.meta'].includes(selector) || (selector === '.card .top' && row.closest('.statusgroup')) || (selector === '.card.mini > summary' && row.parentElement.open && row.querySelector('.find-whole')) ? 1 : 2)) errors.push(`missing baseline items: ${selector}`);
+          if (nodes.length < (['.legend-entry', '.meta'].includes(selector) || (selector === '.card .top' && row.closest('.statusgroup, .eu-level')) || (selector === '.card.mini > summary' && row.parentElement.open && row.querySelector('.find-whole')) ? 1 : 2)) errors.push(`missing baseline items: ${selector}`);
           const lines = [];
           nodes.forEach(node => {
             const rect = node.getBoundingClientRect();
@@ -3390,7 +3546,8 @@ def check_design_roles(page) -> list[str]:
         if (visible(n) && getComputedStyle(n).lineHeight !== metaLeading) errors.push(`meta line height differs from token: ${n.className}`);
       });
       document.querySelectorAll('details.more').forEach(n => {
-        const previous = n.previousElementSibling;
+        const row = n.closest('.fund-item'), stacked = row && getComputedStyle(row).display === 'flex';
+        const previous = stacked && n.matches('.fund-detail') ? row.querySelector('.fund-staff') : n.previousElementSibling;  // stacked funding rows: Sources follows Staff (principle: Funding rows)
         if (!visible(n) || !previous || !visible(previous)) return;
         // The content's own extent: an inline line's box leaves out an item box that wraps below its first line.
         const bottom = Math.max(previous.getBoundingClientRect().bottom, ...[...previous.querySelectorAll('.meta-item')].filter(visible).map(i => i.getBoundingClientRect().bottom));
@@ -3500,11 +3657,11 @@ def check_card_grid(page) -> list[str]:
         + """
       // Three card shapes; structurally absent fields are omitted. Each field owns a fixed track so shapes stay aligned.
       const SHAPES = {
-        established: ['Institute', 'Status since', 'Form', 'Mandate', 'Budget', 'Staff', 'Known activity'],  // Head, Reports to and Partners are optional here: check_leadership_rows holds them to the data
-        record: ['Institute', 'Status since', 'Form', 'Mandate', 'Budget', 'Staff'],
-        none: ['Status since', 'Finding'],
+        established: ['Institute', 'Status', 'Form', 'Mandate', 'Budget', 'Staff', 'Known activity'],  // Head, Reports to and Partners are optional here: check_leadership_rows holds them to the data
+        record: ['Institute', 'Status', 'Form', 'Mandate', 'Budget', 'Staff'],
+        none: ['Status', 'Finding'],
       };
-      const TRACK = { Institute: 2, 'Status since': 3, Form: 4, Head: 5, 'Reports to': 6, Partners: 7, Mandate: 8, Finding: 8, Budget: 9, Staff: 10, 'Known activity': 11, 'Related funding': 12 };
+      const TRACK = { Institute: 2, 'Status': 3, Form: 4, Head: 5, 'Reports to': 6, Partners: 7, Mandate: 8, Finding: 8, Budget: 9, Staff: 10, 'Known activity': 11, 'Related funding': 12 };
       const OPTIONAL = ['Related funding', 'Head', 'Reports to', 'Partners'];
       const errors = [];
       document.querySelectorAll('.cards:not(.minis)').forEach(grid => {
@@ -3512,6 +3669,10 @@ def check_card_grid(page) -> list[str]:
         const columns = Number(getComputedStyle(grid).getPropertyValue('--columns'));
         if (columns !== (innerWidth > 1100 ? 3 : innerWidth > 640 ? 2 : 1)) errors.push('card column count differs from breakpoint contract');
         if (!cards.length || rows.some(r => !r.matches('.card-row'))) errors.push('card row wrappers missing');
+        if (columns === 3 && cards.length === 1) {  // a lone card spans two of the three tracks (principle: Card grids)
+          const gap = parseFloat(getComputedStyle(grid).columnGap), track = (grid.getBoundingClientRect().width - 2 * gap) / 3;
+          if (Math.abs(cards[0].getBoundingClientRect().width - (2 * track + gap)) > 1) errors.push(`lone card does not span two tracks: ${cards[0].id}`);
+        }
         const names = cards.map(c => c.querySelector('.name').textContent);
         if (names.some((n, i) => i && n.localeCompare(names[i-1], 'en') < 0)) errors.push('cards are not alphabetical in row reading order');
         rows.forEach((row, i) => {
@@ -3523,7 +3684,7 @@ def check_card_grid(page) -> list[str]:
             if (i && r.top < rows[i-1].getBoundingClientRect().bottom) errors.push('comparison rows overlap');
             const fieldRows = [...card.querySelectorAll(':scope > .row')];
             const labels = fieldRows.map(n => n.querySelector('.k').textContent);
-            const shape = labels[0] !== 'Institute' ? 'none' : (card.querySelector('.top .sw.st-established') || card.closest('.statusgroup[data-status="established"]')) ? 'established' : 'record';
+            const shape = labels[0] !== 'Institute' ? 'none' : (card.querySelector('.top .sw.st-established') || card.closest('.statusgroup[data-status="established"]') || (card.closest('.eu-level') && card.querySelector(':scope > .top > .vh')?.textContent === ', Established')) ? 'established' : 'record';  // the EU entry says its status in its accessible name only
             if (JSON.stringify(labels.filter(label => !OPTIONAL.includes(label))) !== JSON.stringify(SHAPES[shape])) errors.push(`missing or misplaced card fields: ${card.id} (${labels.join(', ')})`);
             card.querySelectorAll(':scope > .row > .k').forEach(k => { if (visible(k) && k.getBoundingClientRect().height > parseFloat(getComputedStyle(k).lineHeight) * 1.5) errors.push(`card label wraps: ${k.textContent}`); });
             const body = card.cloneNode(true); body.querySelectorAll(':scope > .row').forEach(r => { if (['Head', 'Reports to', 'Partners'].includes(r.querySelector('.k').textContent)) r.remove(); });
@@ -3639,10 +3800,14 @@ def check_card_grid_edges(browser, base_url: str, data: dict) -> list[str]:
                 f"{width}px: empty-source fixture did not render its plain footer"
             )
         card = page.locator(f"#c-{target['id'].lower()}")
-        if card.locator(".row .v .missing").count() != 6:
+        # Without a date the Status row still names the status, so five fields show a placeholder.
+        if card.locator(".row .v .missing").count() != 5:
             errors.append(
-                f"{width}px: missing-field fixture did not render six placeholders"
+                f"{width}px: missing-field fixture did not render five placeholders"
             )
+        status_row = card.locator(".row").filter(has=page.locator(".k", has_text="Status"))
+        if status_row.count() != 1 or " ".join(status_row.locator(".v").inner_text().split()) != STATUS_LABELS[target["status"]]:
+            errors.append(f"{width}px: missing-field fixture Status row does not read {STATUS_LABELS[target['status']]!r} without a date")
         if (
             not card.locator(".row")
             .first.locator(".v")
@@ -3654,7 +3819,7 @@ def check_card_grid_edges(browser, base_url: str, data: dict) -> list[str]:
         finding = page.locator(f"#c-{without_institute['id'].lower()}")
         labels = finding.locator(".row > .k").all_inner_texts()
         if (
-            labels != ["Status since", "Finding"]
+            labels != ["Status", "Finding"]
             or finding.locator(".row")
             .nth(1)
             .locator(".v")
@@ -4177,6 +4342,160 @@ def check_highlight_fill(browser, base_url: str) -> list[str]:
     return [f"highlight: {e}" for e in errors]
 
 
+PALETTE_SECTIONS = [("Map", "map"), ("Testing", "testing"), ("Set-up", "set-up"), ("Funding", "funding"), ("News", "news"), ("Europe", "europe"),
+                    ("The world", "world"), ("Data", "data"), ("Method", "method"), ("Definition", "definition")]  # principle Anchors
+PALETTE_GROUPS = ["Sections", "Regions", "Actions", "States and territories"]  # empty field: Sections and Regions first
+PALETTE_LABEL = "Find a state, section or action"
+PALETTE_JS = """() => {
+  const canvas = document.createElement('canvas').getContext('2d', { willReadFrequently: true });
+  const rgb = c => { canvas.clearRect(0, 0, 1, 1); canvas.fillStyle = c; canvas.fillRect(0, 0, 1, 1); return [...canvas.getImageData(0, 0, 1, 1).data].slice(0, 3); };
+  const lum = c => { const f = v => { v /= 255; return v <= .03928 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4; }; const [r, g, b] = rgb(c).map(f); return .2126 * r + .7152 * g + .0722 * b; };
+  const ratio = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y) + .05) / (Math.min(x, y) + .05); };
+  const token = name => { const p = document.createElement('span'); p.style.color = `var(${name})`; document.body.appendChild(p); const c = getComputedStyle(p).color; p.remove(); return c; };
+  const box = document.getElementById('palette'), q = document.getElementById('palette-q'), list = document.getElementById('palette-list');
+  const active = q && document.getElementById(q.getAttribute('aria-activedescendant') || '-');
+  const fill = active ? getComputedStyle(active).backgroundColor : '';
+  return { open: !!box && box.open, focus: document.activeElement && document.activeElement.id, value: q ? q.value : null,
+    roles: box && [box.getAttribute('role'), box.getAttribute('aria-modal'), q.getAttribute('role'), q.getAttribute('aria-controls'), q.getAttribute('aria-expanded'), q.getAttribute('aria-label'), list.getAttribute('role')],
+    active: active ? [active.getAttribute('role'), active.getAttribute('aria-selected'), list.contains(active), active.querySelector('.sname').firstChild.textContent] : null,
+    selected: [...list.querySelectorAll('[aria-selected="true"]')].length,
+    groups: [...list.querySelectorAll('[role="group"]')].map(g => [g.querySelector('.palette-group').textContent, [...g.querySelectorAll('[role="option"]')].map(o => o.querySelector('.sname').firstChild.textContent), [...g.querySelectorAll('[role="option"]')].map(o => o.textContent)]),
+    options: [...list.querySelectorAll('[role="option"]')].map(o => o.id),
+    fill, token: token('--highlight-fill'),
+    texts: active ? [active, ...active.querySelectorAll('*')].filter(n => [...n.childNodes].some(c => c.nodeType === 3 && c.textContent.trim())).map(n => ratio(getComputedStyle(n).color, fill)) : [] };
+}"""
+
+
+def check_command_palette(browser, base_url: str) -> list[str]:
+    """Principle Command palette: Cmd/Ctrl+K and "/" open a modal dialog with focus in its labelled combobox; an empty field
+    lists Sections and Regions first; a state name and Enter open its record as the map search does; institute and former
+    names find their state; a section row lands on its anchor and a region row presses its tab; Esc returns focus; the
+    current row takes --highlight-fill with text at least 4.5:1 in both themes; "/" in a text field types a slash; the
+    hint names the platform's key and hides on phones; the saved page holds the dialog closed."""
+    errors = []
+
+    def palette(page):
+        return page.evaluate(PALETTE_JS)
+
+    def open_with(page, key, where):
+        page.keyboard.press(key)
+        got = palette(page)
+        if not got["open"] or got["focus"] != "palette-q" or got["value"] != "":
+            errors.append(f"{where}: {key} does not open the palette with focus in its empty field ({got['open']}, {got['focus']}, {got['value']!r})")
+        return got
+
+    def typed(page, text):
+        page.locator("#palette-q").fill(text)
+        return palette(page)
+
+    for theme in ("light", "dark"):
+        page = themed_page(browser, theme, viewport={"width": 1280, "height": 900})
+        try:
+            hydrated(page, base_url)
+            raw = page.request.get(base_url).text()
+            if not re.search(r'<dialog class="palette" id="palette"(?![^>]*\sopen)[^>]*>', raw):
+                errors.append(f"{theme}: the saved page does not hold the palette as a closed dialog")
+            mac = page.evaluate("document.documentElement.hasAttribute('data-mac')")
+            hint = page.locator("#palette-open").inner_text().strip()
+            if hint != ("⌘K" if mac else "Ctrl K"):
+                errors.append(f"{theme}: the shortcut hint reads {hint!r} on {'a Mac' if mac else 'this platform'}")
+            tab = page.locator('#region-chips button[data-region="Asia"]')
+            tab.focus()
+            got = open_with(page, "ControlOrMeta+k", theme)
+            if got["roles"] != ["dialog", "true", "combobox", "palette-list", "true", PALETTE_LABEL, "listbox"]:
+                errors.append(f"{theme}: the dialog's roles are {got['roles']}")
+            if not got["active"] or got["active"][:3] != ["option", "true", True] or got["selected"] != 1:
+                errors.append(f"{theme}: aria-activedescendant does not name the one selected option ({got['active']}, {got['selected']} selected)")
+            if [g[0] for g in got["groups"]] != PALETTE_GROUPS:
+                errors.append(f"{theme}: the empty palette's groups are {[g[0] for g in got['groups']]}, not {PALETTE_GROUPS}")
+            elif got["groups"][0][1] != [name for name, _ in PALETTE_SECTIONS] or got["groups"][1][1] != ["World", "Europe", "Americas", "Asia", "Oceania", "Africa"]:
+                errors.append(f"{theme}: the Sections and Regions rows are {got['groups'][0][1]} and {got['groups'][1][1]}")
+            if got["fill"] != got["token"]:
+                errors.append(f"{theme}: the current row is {got['fill']}, not --highlight-fill {got['token']}")
+            if not got["texts"] or min(got["texts"]) < 4.5:
+                errors.append(f"{theme}: text on the current row is {min(got['texts'] or [0]):.2f}:1, below 4.5:1")
+            moved = []
+            for key in ("End", "Home", "ArrowDown", "ArrowUp"):
+                page.keyboard.press(key)
+                moved.append(page.locator("#palette-q").get_attribute("aria-activedescendant"))
+            ids = got["options"]
+            if not ids or moved != [ids[-1], ids[0], ids[1], ids[0]]:
+                errors.append(f"keyboard: End, Home, ArrowDown and ArrowUp move the current row to {moved}, not the last, first, second and first")
+            # Modified keys and input-method composition stay with the text field.
+            page.locator("#palette-q").fill("ma")
+            before = page.locator("#palette-q").get_attribute("aria-activedescendant")
+            page.keyboard.press("ArrowDown")
+            current = page.locator("#palette-q").get_attribute("aria-activedescendant")
+            page.keyboard.press("Shift+Home")
+            if page.locator("#palette-q").get_attribute("aria-activedescendant") != current or current == before:
+                errors.append("keyboard: Shift+Home moves the current row instead of selecting text")
+            page.locator("#palette-q").dispatch_event("keydown", {"key": "Enter", "isComposing": True, "keyCode": 229, "bubbles": True})
+            if not palette(page)["open"] or page.locator("#palette-q").input_value() != "ma":
+                errors.append("keyboard: Enter during input-method composition acts on the current row")
+            page.locator("#palette-q").fill("")
+            page.keyboard.press("Tab")
+            if palette(page)["focus"] != "palette-q":
+                errors.append("focus: Tab leaves the palette's field")
+            page.keyboard.press("Escape")
+            got = palette(page)
+            if got["open"] or page.evaluate("document.activeElement && document.activeElement.dataset.region") != "Asia":
+                errors.append(f"{theme}: Esc does not close the palette and return focus to the Asia tab")
+            if theme == "dark":
+                continue
+            # "/" outside a text field opens it; inside one it types a slash.
+            page.evaluate("document.activeElement.blur()")
+            open_with(page, "/", "slash")
+            # A state's name, its institute's short form and a former name find it; accents are ignored.
+            for text, want in (("france", ["France"]), ("INESIA", ["France"]), ("CAISI", ["Canada", "United States"]), ("sao tome", ["São Tomé and Príncipe"])):
+                got = typed(page, text)
+                first = got["groups"][0] if got["groups"] else ["", [], []]
+                if first[0] != "States and territories" or first[1][:len(want)] != want:
+                    errors.append(f"matching: {text!r} lists {first[1][:3]} under {first[0]!r} first, not {want}")
+                if text == "CAISI" and not any("formerly" in row for row in first[2][1:2]):
+                    errors.append(f"matching: the United States row found by a former name does not say formerly ({first[2]})")
+            typed(page, "france")
+            page.keyboard.press("Enter")
+            if palette(page)["open"] or page.locator("#record-name").text_content() != "France":
+                errors.append("state: typing France and Enter does not close the palette and open France's record")
+            page.locator("#record .record-close").click()
+            # A section row lands on its anchor, below the section bar.
+            open_with(page, "ControlOrMeta+k", "section")
+            typed(page, "funding")
+            page.keyboard.press("Enter")
+            page.wait_for_timeout(200)
+            landed = page.evaluate("() => { const r = document.getElementById('funding').getBoundingClientRect(); return [location.hash, r.top > 0 && r.top < innerHeight / 2, document.activeElement && document.activeElement.id]; }")
+            if landed != ["#funding", True, "funding"]:
+                errors.append(f"section: the Funding row lands at {landed}, not on #funding in view with its heading focused")
+            # A region row switches the map as its tab does.
+            open_with(page, "ControlOrMeta+k", "region")
+            typed(page, "oceania")
+            page.keyboard.press("Enter")
+            pressed = page.evaluate("[...document.querySelectorAll('#region-chips button[aria-pressed=\"true\"]')].map(b => b.dataset.region)")
+            if pressed != ["Oceania"] or page.locator("#headline").get_attribute("data-region") != "Oceania":
+                errors.append(f"region: the Oceania row leaves the pressed tabs at {pressed}")
+            page.locator("#world-filter").focus()
+            page.keyboard.press("/")
+            if palette(page)["open"] or page.locator("#world-filter").input_value() != "/":
+                errors.append("slash: '/' in a text field opens the palette instead of typing a slash")
+            page.locator("#world-filter").fill("")
+            # The theme row moves the toggle's cycle and the palette stays open on it.
+            page.locator("#palette-open").click()
+            typed(page, "theme")
+            page.keyboard.press("Enter")
+            if page.evaluate("document.documentElement.getAttribute('data-theme')") != "dark" or not palette(page)["open"]:
+                errors.append("theme: the theme row does not move light to dark with the palette left open")
+        finally:
+            page.close()
+    page = browser.new_page(viewport={"width": 390, "height": 800})
+    try:
+        hydrated(page, base_url)
+        if page.locator("#palette-open").is_visible():
+            errors.append("390px: the shortcut hint shows on a phone")
+    finally:
+        page.close()
+    return [f"command palette: {e}" for e in errors]
+
+
 def check_toggle_place(browser, base_url: str) -> list[str]:
     """Principles Theme and Phone: one theme toggle, at the right end of the sticky section bar above 430px (still there
     when the page is scrolled), in the header on phones; the bar row keeps fitting without sideways scroll."""
@@ -4431,7 +4750,7 @@ def touch_control_tips(browser, base_url: str, viewport: dict, scale: float) -> 
         page.wait_for_timeout(400)
         return opened
 
-    for selector in ("#c-fr a.standalone[data-tip]", "#downloads a.ico[data-tip]", "#theme-toggle", "#world-scroll button[data-tip]", "#updated a.meta-link"):
+    for selector in ("#world-rows td:first-child a[data-tip]", "#downloads a.ico", "#theme-toggle", "#world-scroll button[data-tip]", "#updated a.meta-link"):
         if not tap(selector):
             continue
         if page.evaluate(shown):
@@ -4587,7 +4906,8 @@ def check_access_fixes(browser, base_url: str) -> list[str]:
     # A tooltip taller than a short window scrolls, and scrolling it keeps it open.
     page.set_viewport_size({"width": 800, "height": 220})
     phrase = page.locator('#world-rows .smark[data-state="confirmed"]').first
-    phrase.evaluate("n => n.scrollIntoView({ block: 'center', behavior: 'instant' })")
+    # Tooltips are short now (rule 12), so the probe carries a long text: this tests the scrolling mechanism, not the copy.
+    phrase.evaluate("n => { const long = Array(12).fill(n.dataset.tip || n.title).join(' '); n.dataset.tip = long; if (n.title) n.title = long; n.scrollIntoView({ block: 'center', behavior: 'instant' }); }")
     page.wait_for_timeout(100)
     p = phrase.bounding_box()
     page.mouse.move(p["x"] + 4, p["y"] + p["height"] / 2)
@@ -4629,13 +4949,37 @@ def check_access_fixes(browser, base_url: str) -> list[str]:
     dots = page.evaluate("() => [...document.querySelectorAll('#worldmap .tgt')].filter(t => t.hasAttribute('tabindex') || t.hasAttribute('role')).length")
     if dots:
         errors.append(f"without scripting, {dots} saved map dots are still buttons")
+    # Supporting text: without scripting each (i) shows its note, since no tooltip can open.
+    notes = page.evaluate(NOSCRIPT_NOTES_JS)
+    if sorted(n["id"] for n in notes) != sorted(NOSCRIPT_INFO_IDS):
+        errors.append(f"without scripting, (i) notes {sorted(n['id'] for n in notes)}, expected {sorted(NOSCRIPT_INFO_IDS)}")
+    silent = [n["id"] for n in notes if not n["ok"]]
+    if silent:
+        errors.append(f"without scripting, (i) notes are not shown as visible text: {silent}")
+    # Regression case: a hidden note (the button still visible) must fail this check.
+    page.evaluate("() => { const s = document.createElement('style'); s.textContent = 'button.info::after { display: none !important; }'; document.head.appendChild(s); }")  # not add_style_tag, which waits for a load event
+    if any(n["ok"] for n in page.evaluate(NOSCRIPT_NOTES_JS)):
+        errors.append("without scripting: the (i) note check passes a note hidden with ::after { display: none }")
     page.close()
     return errors
 
 
+# Each (i)'s note as rendered without scripting: its ::after carries the tip text, is displayed, visible and opaque, and gives
+# the button (whose own "i" is at font size 0) at least one note line of height; the button is visible and on top.
+NOSCRIPT_NOTES_JS = """() => [...document.querySelectorAll('button.info')].map(n => {
+  n.scrollIntoView({ block: 'center' });
+  const r = n.getBoundingClientRect(), c = getComputedStyle(n), a = getComputedStyle(n, '::after'), x = r.left + Math.min(8, r.width / 2), y = r.top + r.height / 2, hit = document.elementFromPoint(x, y);
+  const line = parseFloat(a.lineHeight) || parseFloat(a.fontSize) * 1.2;
+  const note = a.content === JSON.stringify(n.dataset.tip) && a.display !== 'none' && a.visibility === 'visible' && parseFloat(a.opacity) > 0 && parseFloat(a.fontSize) > 0 && r.height >= line - 1 && r.width > parseFloat(a.fontSize);
+  const visible = n.checkVisibility({ visibilityProperty: true, opacityProperty: true }) && c.clipPath === 'none';
+  return { id: n.id, ok: note && visible && !!hit && (hit === n || n.contains(hit)) };
+})"""
+NOSCRIPT_INFO_IDS = ("map-info", "figures-scope", "test-scope", "setup-scope", "fund-scope", "eu-scope", "recheck-line")  # every (i) in the saved page (principle: Supporting text)
+
+
 def check_arrival(browser, base_url: str) -> list[str]:
-    """Principle Arrival: a card reached from the record beside the map, a repeated click or a shared link keeps its
-    outline and takes focus; a card reached from the record has one "Back to map" link, which returns to the first
+    """Principle Arrival: a card reached from the record beside the map, a repeated click or a shared link keeps the
+    --highlight-fill tint with no outline while it is the target, and takes focus; a card reached from the record has one "Back to map" link, which returns to the first
     screen with the same region and record open, focus on the record's link.
 
     Records are opened from the page: the first Europe list row whose card is a full card (list click) and the first
@@ -4644,7 +4988,9 @@ def check_arrival(browser, base_url: str) -> list[str]:
     """
     errors: list[str] = []
     state = """id => { const c = document.getElementById(id), s = getComputedStyle(c), nav = document.querySelector('.secnav').getBoundingClientRect(), r = c.getBoundingClientRect();
-        return { hash: location.hash, outline: s.outlineStyle !== 'none' && parseFloat(s.outlineWidth) >= 2, arrived: c.classList.contains('arrived'),
+        const probe = document.createElement('span'); probe.style.backgroundColor = 'var(--highlight-fill)'; document.body.appendChild(probe); const fill = getComputedStyle(probe).backgroundColor; probe.remove();
+        const alpha = (s.backgroundColor.match(/[\d.]+/g) || []).map(Number), seen = alpha.length === 4 ? alpha[3] > 0 : alpha.length === 3;
+        return { hash: location.hash, marked: seen && s.outlineStyle === 'none', tinted: seen, tint: s.backgroundColor === fill, ring: s.outlineStyle !== 'none', arrived: c.classList.contains('arrived'),
           focused: document.activeElement === c, visible: r.top >= nav.bottom - 1 && r.top < innerHeight, open: c.tagName !== 'DETAILS' || c.open,
           named: !!c.getAttribute('aria-labelledby') && c.getAttribute('aria-labelledby').split(' ').every(n => document.getElementById(n)), animation: s.animationName }; }"""
     for width in (1440, 1000, 390):
@@ -4690,7 +5036,9 @@ def check_arrival(browser, base_url: str) -> list[str]:
                 def expect(card_id, step, *, motion=motion):
                     page.wait_for_timeout(150)
                     got = page.evaluate(state, card_id)
-                    for key, message in (("outline", "has no outline"), ("arrived", "is not marked as arrived"), ("focused", "does not take focus"),
+                    if got["ring"]:
+                        errors.append(f"{label}: {step}: #{card_id} arrives with an outline; arrival is the tint alone")
+                    for key, message in (("marked", "is not visibly tinted"), ("arrived", "is not marked as arrived"), ("focused", "does not take focus"),
                                          ("visible", "is not in view below the nav"), ("open", "fold is not open"), ("named", "has no accessible name")):
                         if not got[key]:
                             errors.append(f"{label}: {step}: #{card_id} {message}")
@@ -4709,8 +5057,8 @@ def check_arrival(browser, base_url: str) -> list[str]:
                     continue  # the rest of this run needs the record
                 if motion == "no-preference":
                     page.wait_for_timeout(1700)  # past the 1.5 s fade: the outline lasts
-                    if page.evaluate("id => getComputedStyle(document.getElementById(id)).outlineStyle", full) == "none":
-                        errors.append(f"{label}: #{full} loses its arrival outline when the fade ends")
+                    if not page.evaluate(state, full)["tint"]:
+                        errors.append(f"{label}: #{full} loses its arrival tint when the flash ends")
                 page.evaluate("() => { document.activeElement.blur(); scrollTo(0, 0); }")
                 page.wait_for_timeout(100)
                 page.locator("#record .record-more").click()
@@ -4720,8 +5068,8 @@ def check_arrival(browser, base_url: str) -> list[str]:
                     page.wait_for_timeout(150)
                     back = page.evaluate("""id => { const s = document.querySelector('section.first').getBoundingClientRect(), nav = document.querySelector('.secnav').getBoundingClientRect(), record = document.querySelector('#record'), more = record.querySelector('.record-more');
                       const m = more.getBoundingClientRect();
-                      return [location.hash, s.bottom > nav.bottom && s.top < innerHeight && m.top >= nav.bottom - 1 && m.bottom <= innerHeight + 1, !record.hidden && record.dataset.j, document.activeElement === more, getComputedStyle(document.getElementById(id)).outlineStyle, document.querySelectorAll('.back-map').length]; }""", full)
-                    if back != ["#map", True, full_id, True, "none", 0]:
+                      return [location.hash, s.bottom > nav.bottom && s.top < innerHeight && m.top >= nav.bottom - 1 && m.bottom <= innerHeight + 1, !record.hidden && record.dataset.j, document.activeElement === more, document.getElementById(id).classList.contains('arrived'), document.querySelectorAll('.back-map').length]; }""", full)
+                    if back != ["#map", True, full_id, True, False, 0]:
                         errors.append(f"{label}: Back to map does not return to the first screen with the record open and focused, arrival ended ({back})")
                     # The browser's Back returns to the card as it was reached: from the record, so with its link.
                     page.go_back()
@@ -4743,20 +5091,20 @@ def check_arrival(browser, base_url: str) -> list[str]:
                             errors.append(f"{label}: Back to map after a reload does not reopen the record with focus on its link ({got})")
                 open_record(mini_id, "map")
                 expect(mini, "none-identified record link")
-                if page.evaluate("id => document.getElementById(id).matches('.arrived, :target') || getComputedStyle(document.getElementById(id)).outlineStyle !== 'none'", full):
-                    errors.append(f"{label}: #{full} keeps its arrival outline after another card is the target")
+                if page.evaluate("id => document.getElementById(id).matches('.arrived, :target')", full) or page.evaluate(state, full)["tinted"] or page.evaluate(state, full)["ring"]:
+                    errors.append(f"{label}: #{full} keeps its arrival tint after another card is the target")
                 # Section navigation changes the address without a hashchange; the arrival ends there too.
                 page.locator('.secnav a[href="#europe"]').click()
                 page.wait_for_timeout(100)
-                if page.evaluate("id => getComputedStyle(document.getElementById(id)).outlineStyle !== 'none'", mini):
-                    errors.append(f"{label}: #{mini} keeps its arrival outline after section navigation")
+                if page.evaluate(state, mini)["tinted"] or page.evaluate(state, mini)["ring"]:
+                    errors.append(f"{label}: #{mini} keeps its arrival tint after section navigation")
                 # A shared link: the saved page is swapped for a fresh copy; the outline must survive the swap.
                 hydrated(page, base_url + "#" + full)
                 page.evaluate("document.fonts.ready")
                 page.wait_for_timeout(150)
                 got = page.evaluate(state, full)
-                if not (got["outline"] and got["arrived"]):
-                    errors.append(f"{label}: shared link #{full} has no arrival outline after the page script takes over")
+                if not (got["marked"] and got["arrived"]):
+                    errors.append(f"{label}: shared link #{full} has no arrival tint after the page script takes over")
                 if not got["visible"]:
                     errors.append(f"{label}: shared link #{full} does not arrive below the nav")
                 # The same link percent-encoded names the same card.
@@ -4765,7 +5113,7 @@ def check_arrival(browser, base_url: str) -> list[str]:
                 page.evaluate("document.fonts.ready")
                 page.wait_for_timeout(150)
                 got = page.evaluate(state, full)
-                if not (got["outline"] and got["arrived"] and got["focused"] and got["open"]):
+                if not (got["marked"] and got["arrived"] and got["focused"] and got["open"]):
                     errors.append(f"{label}: shared link #{encoded} does not arrive at #{full} ({got})")
                 if width == 1440:
                     # Fonts that load after the reader followed the record's link: the card keeps its Back to map link.
@@ -4859,6 +5207,29 @@ def status_marks(page) -> list[dict]:
     )
 
 
+VALUE_TIP_CLASSES = ("conf", "interval", "per-person", "developer", "provision")  # values with a tooltip, held here independently of the page
+
+
+def check_tooltip_cues(page) -> list[str]:
+    """Principle Tooltip cues (owner, 5 Nov 2026): the dotted underline marks abbreviations and terms only; a value with a
+    tooltip keeps its tooltip and focus without it. Developer names, provisions and a median ceiling in the figures row are values too."""
+    got = page.evaluate("""cls => [...document.querySelectorAll('abbr.g')].filter(n => n.getClientRects().length).map(n => {
+        const value = cls.some(c => n.classList.contains(c)) || !!n.closest('#figures .figure > b');
+        const c = getComputedStyle(n);
+        return [n.textContent.trim().slice(0, 40), value, c.textDecorationLine, c.textDecorationStyle, n.tabIndex === 0 && !!n.dataset.exp]; })""", list(VALUE_TIP_CLASSES))
+    errors = []
+    for text, value, line, style, tip in got:
+        if not tip:
+            errors.append(f"tooltip cues: {text!r} has no focusable tooltip")
+        if value and line != "none":
+            errors.append(f"tooltip cues: the value {text!r} is underlined; values keep their tooltip without the dotted mark")
+        if not value and (line != "underline" or style != "dotted"):
+            errors.append(f"tooltip cues: the term {text!r} lacks its dotted underline")
+    if not any(value for _, value, *_ in got):
+        errors.append("tooltip cues: no value with a tooltip to check")
+    return errors
+
+
 def check_status_contrast(page) -> list[str]:
     """Principle Status: every mark's edge is at least 3:1 on the ground, tile text at least 4.5:1 on what is behind
     it (never on a hatch), no status fill is near-black (at least 2:1 against black, Salvatore's rule), and planned
@@ -4889,6 +5260,13 @@ def check_status_contrast(page) -> list[str]:
     if "planned" in swatch and "established" in swatch and not (swatch["planned"].get("squareCentre") and swatch["planned"]["centre"] > 1.5 and swatch["planned"]["image"] == "none" and swatch["established"]["image"] == "none" and not swatch["established"]["ring"]):
         errors.append("status contrast: planned is not drawn as a square centre inside a page-colour ring, distinct from established's solid fill")
     errors.extend(check_planned_swatches(page))
+    dashless = page.evaluate("() => [...document.querySelectorAll('.sw.st-none_identified')].filter(n => n.getClientRects().length && !/linear-gradient/.test(getComputedStyle(n).backgroundImage)).length")
+    if dashless:
+        errors.append(f"status contrast: {dashless} none-identified swatches lack their centre dash (a status mark, not an empty checkbox)")
+    # Map land must read as land, not a stray tint (owner, 5 Nov 2026): the region's land at least 1.25:1 on the sea, while the marks stay ahead of it.
+    land = page.evaluate("() => {" + CONTRAST_JS + " const svg = [...document.querySelectorAll('#worldmap svg')].find(n => n.getClientRects().length); const a = svg && svg.querySelector('.land-in'), b = svg && svg.querySelector('.sea'); return a && b ? ratio(getComputedStyle(a).fill, getComputedStyle(b).fill) : null; }")
+    if land is not None and land < 1.25:
+        errors.append(f"map: region land is only {land:.2f}:1 on the sea (needs 1.25:1 so it reads as land)")
     return errors
 
 
@@ -5033,7 +5411,8 @@ def check_first_screen(page, data: dict) -> list[str]:
       return { headline: document.querySelector('#headline .hl-version.current').textContent.replace(/\u00a0/g, ' '), mapTop: document.getElementById('worldmap').getBoundingClientRect().top + scrollY, svgs: document.querySelectorAll('#worldmap svg').length,
         shown: [...document.querySelectorAll('#worldmap svg')].filter(n => n.getClientRects().length).length, dots,
         open: groups.filter(g => g.classList.contains('open') && g.querySelector('.region-head').getAttribute('aria-expanded') === 'true' && !g.querySelector('.region-rows').hidden).map(g => g.dataset.region),
-        rows: Object.fromEntries(groups.map(g => [g.dataset.region, [...g.querySelectorAll('.region-rows .pick')].map(b => b.dataset.pick)])),
+        rows: Object.fromEntries(groups.map(g => [g.dataset.region, [...g.querySelectorAll(':scope > .region-rows .pick')].map(b => b.dataset.pick)])),
+        apart: Object.fromEntries(groups.map(g => { const box = g.querySelector('.region-elsewhere'); return [g.dataset.region, box ? { shown: box.getClientRects().length > 0, sub: box.querySelector('.region-sub')?.textContent, rows: [...box.querySelectorAll('.pick')].map(b => b.dataset.pick) } : null]; })),
         briefs: Object.fromEntries(groups.map(g => [g.dataset.region, g.querySelector('.region-brief').getClientRects().length > 0])),
         counts: Object.fromEntries(groups.map(g => [g.dataset.region, g.querySelector('.region-head .rcount').textContent.trim()]).concat([['World', (document.querySelector('.region-world .region-head .rcount') || {}).textContent?.trim()]])),
         controls: groups.every(g => document.getElementById(g.querySelector('.region-head').getAttribute('aria-controls')) === g.querySelector('.region-rows')),
@@ -5074,7 +5453,12 @@ def check_first_screen(page, data: dict) -> list[str]:
                 errors.append(f"first screen {label}: {name} rows {got['rows'][name]} differ from the data {expected_region_rows(data, name)}")
             if got["briefs"][name] == (name in want_open):
                 errors.append(f"first screen {label}: {name} {'shows' if name in want_open else 'lacks'} its muted names line")
-        pool = [j for j in region_pool(data, region) if region != "World" or j["status"] != "none_identified"]
+        for name in LIST_REGIONS:  # states on the map but outside the counts: listed apart under their subheading, shown only in their region's view
+            apart = sorted((j for j in region_map_pool(data, name) if j not in region_pool(data, name)), key=lambda j: (STATUS_ORDER.index(j["status"]), j["name"], j["id"]))
+            want = {"shown": region == name, "sub": ELSEWHERE, "rows": [j["id"] for j in apart]} if apart else None
+            if got["apart"][name] != want:
+                errors.append(f"first screen {label}: {name} lists {got['apart'][name]} apart, expected {want}")
+        pool = [j for j in region_map_pool(data, region) if region != "World" or j["status"] != "none_identified"]
         dots = got["dots"] or []
         if sorted(d[0] for d in dots) != sorted(j["id"] for j in pool):
             errors.append(f"first screen {label}: map dots differ from the region's states: extra {sorted({d[0] for d in dots} - {j['id'] for j in pool})}, missing {sorted({j['id'] for j in pool} - {d[0] for d in dots})}")
@@ -5228,6 +5612,12 @@ def check_first_screen(page, data: dict) -> list[str]:
         errors.append(f"search: options do not name their status to assistive technology ({names[:3]})")
     if len(options) < 2 or options[0][0] != "Germany" or not all(o[1] and o[2] for o in options) or box.get_attribute("aria-expanded") != "true":
         errors.append(f"search: 'ger' does not list Germany first, then others, with status marks and regions ({options})")
+    # One ranking with the command palette: names starting with the text, then a word in a name starting so, then text inside a name.
+    box.fill("gu")
+    ranked = page.evaluate("[...document.querySelectorAll('#map-search-list [role=option] .sname')].map(o => o.textContent)")
+    if ranked[:4] != ["Guatemala", "Guinea", "Guinea-Bissau", "Guyana"] or "Equatorial Guinea" not in ranked or ("Antigua and Barbuda" in ranked and ranked.index("Antigua and Barbuda") < ranked.index("Equatorial Guinea")):
+        errors.append(f"search: 'gu' does not list name starts, then word starts (Equatorial Guinea), before text inside a name (Antigua and Barbuda): {ranked}")
+    box.fill("ger")
     box.press("ArrowDown")
     if box.get_attribute("aria-activedescendant") != "map-search-1" or page.locator("#map-search-1").get_attribute("aria-selected") != "true":
         errors.append("search: ArrowDown does not move the active option")
@@ -5239,7 +5629,7 @@ def check_first_screen(page, data: dict) -> list[str]:
         errors.append("search: Enter does not open the active option's record and close the list")
     de = next(j for j in data["jurisdictions"] if j["name"] == "Germany")
     link = page.locator("#record .record-more")
-    if link.text_content() != "Sources and full record \u2193" or link.get_attribute("href") != f"#c-{de['id'].lower()}":
+    if link.text_content() != "Full record \u2193" or link.get_attribute("href") != f"#c-{de['id'].lower()}":
         errors.append(f"record: Germany's link down reads {link.text_content()!r} to {link.get_attribute('href')!r}")
     # A citation's tooltip in the record takes the first Escape; the second closes the record.
     page.locator("#record .cn").first.focus()
@@ -5524,9 +5914,10 @@ def check_link_states(page) -> list[str]:
                 page.mouse.move(0, 0)
                 page.keyboard.press("Shift")
                 (link.locator("xpath=..") if selector.endswith(".pname") else link).focus()
+            want = "underline" if state == "focus" and selector.startswith(".secnav") else decoration  # Focus: keyboard focus underlines nav links too (tint plus underline)
             if (
                 link.evaluate("n => getComputedStyle(n).textDecorationLine")
-                != decoration
+                != want
             ):
                 errors.append(f"{selector} has wrong {state} decoration")
             if selector.startswith(".secnav") and not link.evaluate(
@@ -5602,7 +5993,7 @@ def check_value_qualifiers(page) -> list[str]:
         const leadText = n => { const copy = n.cloneNode(true); copy.querySelectorAll('.cites, .qualifiers, .vh, .small').forEach(x => x.remove()); return copy.textContent; };
         // Fields that carry qualifiers keep their lead free of them: no separator dot, confidence, advisory, scope or as-of wording.
         const key = field.closest('.row')?.querySelector('.k')?.textContent || field.closest('td')?.dataset.col;
-        if (['Institute', 'Status since', 'Budget', 'Staff', 'since', 'budget', 'staff'].includes(key) && /·|\bconfidence\b|advisory|supranational|\bas of\b/.test(leadText(field))) errors.push(`qualifier written inline: ${name(field)}`);
+        if (['Institute', 'Status', 'Budget', 'Staff', 'since', 'budget', 'staff'].includes(key) && /·|\bconfidence\b|advisory|supranational|\bas of\b|\breported\b/.test(leadText(field))) errors.push(`qualifier written inline: ${name(field)}`);
         const lead = field.querySelector('.value-line, .budget-amount') || (field.matches('.card .v, #world-rows td') ? field : null);
         if (lead && /, (?:\d{1,2} )?(?:(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) )?\d{4}\s*$/.test(leadText(lead))) errors.push(`as-of date written inline: ${name(field)}`);
       }
@@ -5725,7 +6116,7 @@ def check_institute_names(html, data: dict) -> list[str]:
         if card is None:
             errors.append(f"{jid} card has no Institute row")
             continue
-        text = re.sub(r"\(opens in a new tab\)|\d+(?:,\d+)*$|supranational", "", " ".join(card.get_text().split())).strip()
+        text = re.sub(r"\(opens in a new tab\)|\d+(?:,\d+)*$", "", " ".join(card.get_text().split())).strip()  # no qualifier: the EU's 'supranational' is said by its heading
         if text != names[iid]:
             errors.append(f"{jid} card names its institute {text!r}, expected {names[iid]!r}")
     # Tight places show the recorded short form; hovering gives the full name.
@@ -5804,6 +6195,14 @@ def partners_entries(data: dict, institute: dict) -> list:
     return institute.get("national_partners", {}).get("entries", [])
 
 
+# Hand-worked Head roles on the institute's own card, where the published role ends in that institute's name (rule: nothing restates its context).
+OWN_CARD_HEAD_ROLES = {"AU": "General Manager", "CA": "Executive Director", "SG": "Executive Director", "KR": "Director", "NO": "Director"}
+
+
+def expected_head_role(role: str, institute: dict) -> str:
+    return OWN_CARD_HEAD_ROLES.get(institute["jurisdiction_id"], role)
+
+
 def expected_leadership(data: dict) -> dict[str, dict[str, tuple[str, list[str], list[str], list[tuple[str, str, list[str]]]]]]:
     """Hand-worked rows: label -> (text or state word, partner texts, row sources, fold-out (name, how, sources) items)."""
     vocabularies = data["dataset"]["vocabularies"]
@@ -5814,7 +6213,7 @@ def expected_leadership(data: dict) -> dict[str, dict[str, tuple[str, list[str],
         if head:
             if head["state"] == "stated":
                 person = next(p for p in institute["people"] if p["id"] == head["person_id"])
-                rows["Head"] = (f"{person['name']}, {person['role']}", [], row_sources(data, n, ["head/person_id"]), [])
+                rows["Head"] = (f"{person['name']}, {expected_head_role(person['role'], institute)}", [], row_sources(data, n, ["head/person_id"]), [])
             else:
                 rows["Head"] = ("NA" if head["state"] == "not_applicable" else MISSING_TEXT, [], [], [])
         reports = institute.get("reports_to")
@@ -5937,6 +6336,41 @@ def check_no_rate_amounts(html, data: dict) -> list[str]:
     return errors
 
 
+def check_euro_amounts(html, data: dict) -> list[str]:
+    """Every shown amount in a currency with an ECB rate is also in euros, "~EUR 52m (JPY 8.8bn)", and its value cites
+    the rate's source beside the amount's own (rule currency-rounding); a compared figure keeps its annual label."""
+    soup = BeautifulSoup(html, "html.parser")
+    errors = []
+    for institute in data["institutes"]:
+        compared = institute.get("display", {}).get("comparison_funding")
+        for record in institute.get("funding", []) or []:
+            identity, wanted_sources = record["id"], rate_sources(record, data)
+            if not wanted_sources:
+                continue
+            expected = expected_shown_funding_value(record, data)
+            figures = soup.select(f'.funding-record[data-record-id="{identity}"] .budget-amount, .related-funding-item[data-funding-id="{identity}"] .related-funding-eur')
+            if identity != compared:
+                figures += soup.select(f'.budget-value[data-funding-id="{identity}"] .budget-amount')
+            native = re.compile(rf"\b{re.escape(record['currency'])} \d")
+            for line in soup.select(f'.related-funding-item[data-funding-id="{identity}"]'):
+                if line.select_one(".related-funding-eur") is None:
+                    errors.append(f"{identity}: related funding does not lead with its euro figure: {line.get_text(strip=True)!r}")
+                # The stated amount is always on the line, in the bracket or in the source wording (rule currency-rounding).
+                if record["currency"] != "EUR" and not native.search(" ".join(line.get_text(" ").split())):
+                    errors.append(f"{identity}: related funding never states the {record['currency']} amount: {line.get_text(strip=True)!r}")
+            for figure in figures:
+                after = figure.next_sibling
+                # Related funding whose source wording states the native amount: the euro figure alone, without its bracket (rule 8).
+                want = re.sub(r" \([^()]*\)$", "", expected) if "related-funding-eur" in figure.get("class", []) and isinstance(after, str) and after.startswith(": ") and native.search(after) else expected
+                if figure.get_text(strip=True) != want:
+                    errors.append(f"{identity}: amount shown as {figure.get_text(strip=True)!r}, expected {want!r}")
+                value = figure.find_parent(lambda n: n.name == "td" or bool(set(n.get("class", [])) & {"v", "fund-value", "funding-native", "related-funding-item"}))
+                cited = {a.get("data-source-id") for a in value.select(".cn")} if value else set()
+                if not set(wanted_sources) <= cited:
+                    errors.append(f"{identity}: euro figure {expected!r} does not cite the amount and exchange-rate sources")
+    return errors
+
+
 def check_leadership_rows(html, data: dict) -> list[str]:
     """Head, Reports to and Partners: present with the data, in order after Form, with the stated words, order and citations.
 
@@ -5988,18 +6422,21 @@ def check_leadership_rows(html, data: dict) -> list[str]:
                 # Every partner is in the fold, in the same priority order, with its own name/how sources.
                 folded = []
                 for li in value.select("details.partner-how li"):
-                    how = copy.copy(li.select_one(".phow"))
-                    for mark in how.select(".cites"):
+                    name, how = copy.copy(li.select_one(".pname")), copy.copy(li.select_one(".phow"))
+                    for mark in name.select(".cites") + (how.select(".cites") if how else []):
                         mark.decompose()
-                    folded.append((" ".join(li.select_one(".pname").get_text().split()), " ".join(how.get_text().split())))
-                if folded != [(name, how) for name, how, _ in hows]:
-                    errors.append(f"{jid} Partners: fold-out shows {folded}, expected {[(name, how) for name, how, _ in hows]}")
+                    folded.append((" ".join(name.get_text().split()), " ".join(how.get_text().split()) if how else ""))
+                # One item per partner, in priority order; a how sentence that only restates the heading shows as the name alone (hand-written list).
+                want_fold = [(name, "" if how in GENERIC_PARTNER_HOW else how) for name, how, _ in hows]
+                if folded != want_fold:
+                    errors.append(f"{jid} Partners: fold-out shows {folded}, expected {want_fold}")
                 fold_cites = [
                     sorted({a.get("data-source-id") for a in li.select(".cn")})
                     for li in value.select("details.partner-how li")
                 ]
-                if fold_cites != [cites for _, _, cites in hows]:
-                    errors.append(f"{jid} Partners: fold-out citations {fold_cites}, expected {[cites for _, _, cites in hows]}")
+                want_cites = [sorted(set(ids)) for _, _, ids in hows]
+                if fold_cites != want_cites:
+                    errors.append(f"{jid} Partners: fold-out citations {fold_cites}, expected {want_cites}")
                 fold = value.select_one("details.partner-how")
                 if fold is not None:
                     if any(a.find_parent("li") is None for a in fold.select(".cn")):
@@ -6136,7 +6573,8 @@ def check_method_pages(html: str, data: dict, dist: Path) -> list[str]:
         sid = summary["id"]
         item = soup.find(id="method-summary-" + sid)
         text = item.select_one(".method-copy") if item else None
-        if text is None or " ".join(text.get_text().split()) != " ".join(summary["summary"].split()):
+        want = f"{summary['title']} is the definition above." if summary["summary"] == data["dataset"].get("definition") else summary["summary"]  # never the definition twice
+        if text is None or " ".join(text.get_text().split()) != " ".join(want.split()):
             errors.append(f"Method summary {sid}: reader copy differs")
         links = [(a.get("href"), a.get_text()) for a in item.select("a")] if item else []
         rules = {r["id"]: r for r in data["dataset"]["method"]}
@@ -6164,10 +6602,65 @@ def check_method_pages(html: str, data: dict, dist: Path) -> list[str]:
             errors.append(f"{where}: names the internal 'counts row'")
     for rule in data["dataset"]["method"]:
         section = full.find(id=rule["id"])
-        text = section.find("p") if section else None
-        if text is None or text.get_text() != rule["text"]:
+        parts = [p.get_text() for p in section.select(".section-body > p")] if section else []
+        # Rule 1: the first paragraph does not visibly repeat its heading; the hidden lead-in keeps the verbatim text.
+        first = copy.copy(section.select_one(".section-body > p")) if section and section.select_one(".section-body > p") else None
+        heading = section.select_one("h2").get_text(strip=True) if section and section.select_one("h2") else ""
+        if first is not None:
+            for hidden in first.select(".vh"):
+                hidden.decompose()
+            if heading and re.match(re.escape(heading) + r"[.:]\s", first.get_text()):
+                errors.append(f"Full method rule {rule['id']}: the first paragraph visibly repeats its heading {heading!r}")
+        if " ".join(parts) != rule["text"]:
             errors.append(f"Full method rule {rule['id']}: text differs from the full rule")
+        elif rule["id"] in METHOD_RUN_INS:
+            starts, inline = METHOD_RUN_INS[rule["id"]]
+            if len(parts) != len(starts) or not all(part.startswith(start) for part, start in zip(parts, starts)):
+                errors.append(f"Full method rule {rule['id']}: paragraphs open with {[part[:24] for part in parts]}, expected the run-in terms {starts}")
+            for term in inline:
+                if any(part.startswith(term) for part in parts) or not any(term in part for part in parts):
+                    errors.append(f"Full method rule {rule['id']}: {term!r} should stay inside its paragraph")
+    # The main page's section bar: the title back to the tracker and the theme toggle; no meta line under the title.
+    bar = full.select_one("header nav.secnav .measure")
+    kids = [n for n in bar.children if getattr(n, "name", None)] if bar else []
+    if [(n.name, n.get("href") or n.get("id")) for n in kids] != [("a", "index.html#method-sec"), ("button", "theme-toggle")] or "navtitle" not in kids[0].get("class", []):
+        errors.append("Full method: the header is not the section bar with the title link back to the tracker and the theme toggle")
+    if full.select("header p"):
+        errors.append("Full method: a meta line sits under the title")
     return errors
+
+
+def check_name_roles(page) -> list[str]:
+    """One style per role for state names in lists: names in linked lists (Testing and access, Institutional set-up,
+    Budget not published) take the accent link style; News and None identified names take the card title's type.
+    On phones a None identified row stacks its name above a full-width summary."""
+    return page.evaluate("""() => {
+      const errors = [], look = n => { const c = getComputedStyle(n); return [c.fontFamily, c.fontWeight, c.fontSize, c.color].join('|'); };
+      const title = document.querySelector('.card .top .name'), link = document.querySelector('#access .group-list a.standalone');
+      if (!title || !link) return ['name roles: no card title or linked list name to compare'];
+      const linkLook = look(link), titleType = look(title).split('|').slice(0, 3).join('|');
+      document.querySelectorAll('#setup .group-list a.standalone, #fund-none li > a').forEach(a => { if (look(a) !== linkLook) errors.push('linked list name not in the accent link style: ' + a.textContent); });
+      document.querySelectorAll('.development-name, .card.mini > summary .name').forEach(n => { if (look(n).split('|').slice(0, 3).join('|') !== titleType) errors.push('list name not in the card title type: ' + n.textContent); });
+      if (innerWidth <= 640) document.querySelectorAll('.card.mini > summary').forEach(s => {
+        const name = s.querySelector('.name').getBoundingClientRect(), find = s.querySelector('.find');
+        if (!find || !find.getClientRects().length) return;
+        const f = find.getBoundingClientRect();
+        if (f.top < name.bottom - 1 || Math.abs(f.left - name.left) > 1) errors.push('phone None identified row keeps its name beside the summary: ' + s.textContent.slice(0, 30));
+        // Full width: the summary runs to the chevron (the summary's content edge less the chevron, its margin and the gap).
+        const sc = getComputedStyle(s), chev = getComputedStyle(s, '::after'), right = s.getBoundingClientRect().right - parseFloat(sc.paddingRight) - parseFloat(chev.width) - parseFloat(chev.marginLeft) - parseFloat(sc.columnGap);
+        if (right - f.right > 1) errors.push('phone None identified summary is not full width: ' + s.textContent.slice(0, 30));
+      });
+      return [...new Set(errors)].slice(0, 10);
+    }""")
+
+
+# Hand-worked from dataset.method (4 Nov 2026): the run-in terms that open the full rules' paragraphs, in order,
+# and terms that must stay inline (a comma in the term, or more than five words).
+METHOD_RUN_INS = {
+    "qualifying-body": (["Qualifying body:", "Ladder:", "Established:", "Planned:", "Proposed:", "Exploring:", "Dates and precision:"], ["These do not qualify a body on their own:"]),
+    "testing-and-access": (["Testing capacity and model access:", "In house:", "Via other bodies:", "Not published:"], ["Planned, for testing capacity"]),
+    "staffing-model": (["Staffing model:", "Staff of existing bodies:", "Core team with partners:", "Unit in a host body:", "Own staff:", "Planned:", "Not published:"], []),
+}
 
 
 def check_nonidentified_style(page) -> list[str]:
@@ -6251,6 +6744,8 @@ def check_archive_links(html, data: dict) -> list[str]:
         nonlocal expected
         archive = sources[sid].get("archive_url") or ""
         after = link.find_next_sibling()
+        if after is not None and "title-en" in (after.get("class") or []):
+            after = after.find_next_sibling()  # a source list puts our English title between the link and its archived copy
         has = after is not None and after.select_one("a.archive") is not None
         if not archive:
             if has:
@@ -6580,7 +7075,11 @@ def check_controls(page) -> list[str]:
         if (s.color === 'rgba(0, 0, 0, 0)' || r.width-parseFloat(s.paddingLeft)-parseFloat(s.paddingRight)-2 < ctx.measureText('Region').width) errors.push('phone region filter has no room for a visible label');
         const statusBox = document.querySelector('#world-status').getBoundingClientRect();
         if (statusBox.left < tr.left-1 || statusBox.right > tr.right+1 || statusBox.height < 40) errors.push('phone status select does not fit the toolbar or is too short to tap');
-        if (!visible(document.querySelector('#world-download .control-label'))) errors.push('phone Download label is hidden');
+        if (document.querySelector('#world-download > summary').getAttribute('aria-label') !== 'Download' || document.querySelector('#world-download .control-label').getBoundingClientRect().width > 1) errors.push('phone Download is not icon-only with its accessible name');
+      } else if (!document.querySelector('#world-download > summary.ico.i-dl') || !visible(document.querySelector('#world-download .control-label'))) {
+        errors.push('Download lacks its download icon and visible label');
+      }
+      if (innerWidth <= 640) {
         if ([...document.querySelector('.toolbar-actions').children].some(n => { const r = n.getBoundingClientRect(); return r.left < tr.left-1 || r.right > tr.right+1; })) errors.push('phone toolbar actions overflow');
       }
       const inline = document.querySelector('#world-count button');
@@ -6791,15 +7290,15 @@ def make_format_fixture(data: dict) -> tuple[dict, list[dict]]:
             "budget": "~EUR 0 (GBP 0) a financial year · adopted",
             "staff": "0 (0 technical) as of 2025",
             "figure": "~EUR 0 (GBP 0)",
-            "published": "GBP 0 a financial year",
+            "published": "~EUR 0 (GBP 0) a financial year",
         },
         {
             "date": "2025-03",
             "since": "Mar 2025",
-            "budget": "Up to ~EUR 11m (GBP 9.0m) a year · 2025–2027 · adopted",
+            "budget": "up to ~EUR 11m (GBP 9.0m) a year · 2025–2027 · adopted",
             "staff": "~12 (4+ technical) as of Mar 2025",
-            "figure": "Up to ~EUR 11m (GBP 9.0m)",
-            "published": "Up to GBP 9.0m a year · 2025–2027 · adopted",
+            "figure": "up to ~EUR 11m (GBP 9.0m)",
+            "published": "up to ~EUR 11m (GBP 9.0m) a year · 2025–2027 · adopted",
             "technical": "~7 technical · as of Apr 2026",
         },
         {
@@ -7010,7 +7509,7 @@ def check_format_output(html: str, data: dict, cases: list[dict]) -> list[str]:
             for row in card.select(".row")
         }
         for label, key in (
-            ("Status since", "since"),
+            ("Status", "since"),
             ("Budget", "budget"),
             ("Staff", "staff"),
         ):
@@ -7022,6 +7521,13 @@ def check_format_output(html: str, data: dict, cases: list[dict]) -> list[str]:
                     and case["commitment"] in actual.lower()
                     and case["budget_period"] in actual
                 )
+            elif key == "since":
+                # The card names the status before its date ("Established since 9 Apr 2025"); the table column holds the date alone.
+                status = next(j["status"] for j in data["jurisdictions"] if j["id"] == jid)
+                row = next((r for r in card.select(".row") if prose(r.select_one(".k")) == label), None)
+                actual = prose(row.select_one(".v .value-line")) if row else ""
+                matches = actual == f"{STATUS_LABELS[status]} since {case[key]}"
+                actual = case[key] if matches else actual
             else:
                 matches = actual == case[key]
             if not matches or table_value != actual:
@@ -7176,8 +7682,8 @@ def check_budget_output(html, data, expected=None):
                 errors.append(f"{jid}: {view} Budget must be Not published")
             if selected and (not selected.select_one(".budget-amount") or not selected.select_one(".budget-qualifiers")):
                 errors.append(f"{jid}: {view} Budget must separate amount and qualifiers")
-            if jid == "JP" and selected and selected.select_one(".budget-amount") and selected.select_one(".budget-amount").get_text(strip=True) != "JPY 8.8bn":
-                errors.append("JP: Budget must show latest own JPY 8.8bn allocation")
+            if jid == "JP" and selected and selected.select_one(".budget-amount") and selected.select_one(".budget-amount").get_text(strip=True) != "~EUR 52m (JPY 8.8bn)":
+                errors.append("JP: Budget must show latest own JPY 8.8bn allocation, as ~EUR 52m (JPY 8.8bn)")
         if card and any(row.get("coverage") == "not_institute_specific" for row in institute.get("funding", [])):
             if not any(row.select_one(".k").get_text(strip=True) == "Related funding" for row in card.select(".row")):
                 errors.append(f"{jid}: wider funding must use a separate Related funding line")
@@ -7221,6 +7727,11 @@ def check_funding_outside(html, data: dict) -> list[str]:
     has_total = {
         i["jurisdiction_id"] for i in data["institutes"] if any(s.get("total") is not None for s in i.get("staff", []))
     }
+    described_only = {}
+    for i in data["institutes"]:
+        shown_staff = i["display"]["staff_records"].get(i["display"].get("staff") or "")
+        if shown_staff and shown_staff.get("total") is None and shown_staff.get("technical") is None and shown_staff.get("description"):
+            described_only[i["jurisdiction_id"]] = shown_staff
     own_ids = {institutes[iid]: fid for iid, fid in EXPECTED_BUDGET_IDS.items() if fid is not None and iid in institutes}
     got_bars = [str(n["data-j"]) for n in soup.select("#fund-rows > .fund-item:not(.fund-nobar)[data-j]")]
     rows = soup.select("#fund-rows > .fund-item[data-j]")
@@ -7255,20 +7766,22 @@ def check_funding_outside(html, data: dict) -> list[str]:
                 errors.append(f"{jid}: row without a bar shows the wrong own Budget record")
             if not row.select(".fund-budget .fund-value .cn"):
                 errors.append(f"{jid}: own funding without a bar has no citation")
-            record = next(f for f in by_id[next(i for i, j in institutes.items() if j == jid)].get("funding", []) if f["id"] == own_ids[jid])
-            reason = (
-                "A proposal, so not charted"
-                if record["commitment"] == "proposed"
-                else "A one-off amount, so not charted"
-                if record["kind"] == "one_off"
-                else "Not for the reference year, so not charted"
-            )
-            shown = row.select_one(".fund-reason")
-            if not shown or shown.get_text(strip=True) != reason:
-                errors.append(f"{jid}: row without a bar should say {reason!r}")
+            # Why it has no bar is the last qualifier on the value's own line, never a sentence of its own (principle: Values and qualifiers).
+            shown = row.select_one(".fund-budget .budget-qualifiers")
+            # The qualifier words without the citation numerals that follow them (an amount in euros cites the rate too).
+            words = " ".join(" ".join(t for t in shown.find_all(string=True) if not t.find_parent(class_=["cites", "cn"])).split()) if shown else ""
+            if row.select(".fund-reason") or not words.endswith("· not charted"):
+                errors.append(f"{jid}: row without a bar should end its qualifier line with 'not charted', got {words!r}")
         elif not row.select_one(".fund-budget .fund-value > .missing"):
             errors.append(f"{jid}: row without a bar or own funding must say Not published")
         staff_cell = row.select_one(".fund-staff .fund-value")
+        described = described_only.get(jid)
+        if described is not None:
+            # A description-only staff record (a published range) shows its text, as the card does, with citations and its as-of line.
+            shown = " ".join(" ".join(t for t in staff_cell.find_all(string=True) if not t.find_parent(class_=["cites", "cn"])).split()) if staff_cell else ""
+            context = row.select_one(".fund-staff .fund-context")
+            if shown != described["description"] or not staff_cell.select(".cites a, .cn") or (described.get("as_of") and not (context and "as of" in context.get_text())):
+                errors.append(f"{jid}: funding Staff should show {described['description']!r} with citations and its date, got {shown!r}")
         if (jid in has_total) == (staff_cell is None or staff_cell.select_one(".missing") is not None or staff_cell.select_one("strong") is None):
             errors.append(f"{jid}: Staff cell differs from the staff records")
     return errors
@@ -7292,21 +7805,27 @@ def check_label_ladder(page) -> list[str]:
         const want = ', ' + card.closest('.statusgroup').querySelector(':scope > h3 .smark > span').textContent.replace(/ \\(\\d+\\)$/, '');
         if (!said || said.textContent !== want || !ids.includes(said.id)) errors.push(`card in a status group lacks its status in the accessible name: ${card.id}`);
       }
-      for (const mark of document.querySelectorAll('.eu-level .card .top > .smark')) {
-        if (visible(mark) && parseFloat(css(mark, 'fontSize')) < parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--size-label')) * 16 - .5) errors.push('the EU entry has no group heading, so its status mark must stay full weight');
+      // The EU entry's dated Status row says its status, so its title row shows none either; the accessible name keeps it (owner, 5 Nov 2026).
+      for (const card of document.querySelectorAll('.eu-level .card:not(.mini)')) {
+        if (card.querySelector(':scope > .top > .smark')) errors.push('the EU entry repeats its status in the title row; its Status row says it');
+        const said = card.querySelector(':scope > .top > .vh'), ids = (card.getAttribute('aria-labelledby') || '').split(' ');
+        const row = [...card.querySelectorAll('.row')].find(r => r.querySelector('.k')?.textContent.trim() === 'Status'), shown = row ? row.querySelector('.v').textContent.trim().split(' since ')[0] : null;
+        if (!said || !shown || said.textContent !== ', ' + shown || !ids.includes(said.id)) errors.push(`the EU entry's accessible status ${said && said.textContent} does not match its Status row ${shown}`);
       }
       const labelled = '.label, .card .k, h2, h3, h4, th, .gl, .legend-name, summary:not(.source-footer-line)';
       for (const n of document.querySelectorAll(labelled)) if (visible(n) && /:\\s*$/.test(n.textContent.trim())) errors.push(`label ends in a colon: ${n.textContent.trim().slice(0, 40)}`);
       // Lead-in labels inside running text: no colon either (the skip list names what is not scanned).
       const skip = '#method-details, #changes, .source-list, .popover';
-      const lead = /\\b(Closest|Supports|Not counted|Known activity|Related funding|Solid|Budget|Staff|Target|Status since|Institute|Form|Mandate)\\s*:/;
+      const lead = /\\b(Closest|Supports|Not counted|Known activity|Related funding|Solid|Budget|Staff|Target|Status|Institute|Form|Mandate)\\s*:/;
       for (const n of document.querySelectorAll('main p, main span, main div, main li')) {
         if (n.closest(skip)) continue;
         const own = [...n.childNodes].filter(c => c.nodeType === 3).map(c => c.textContent).join('');
         if (visible(n) && lead.test(own)) errors.push(`label lead-in with a colon: ${own.trim().slice(0, 50)}`);
       }
       // The group heading says "None identified"; the row does not repeat it. Source lists mark neither primary nor secondary (figure grades carry the evidence).
-      for (const n of document.querySelectorAll('.card.mini > summary .find')) if (/^No qualifying institute identified/.test(n.textContent.trim())) errors.push(`none-identified row repeats its group heading: ${n.textContent.trim().slice(0, 40)}`);
+      for (const n of document.querySelectorAll('.card.mini > summary .find')) if (/^No qualifying [^.;]*\b(?:identified|confirmed)[.;]/.test(n.textContent.trim())) errors.push(`none-identified row repeats its group heading: ${n.textContent.trim().slice(0, 40)}`);
+      // Wherever the status shows beside a finding (card Finding rows, the worldwide table's name tooltip), the finding starts with what was found.
+      for (const n of document.querySelectorAll('.card .row .v, #world-rows td [title], #world-rows td[title]')) { const t = (n.getAttribute('title') || n.textContent).trim(); if (/^No qualifying [^.;]*\b(?:identified|confirmed)[.;]/.test(t)) errors.push(`finding repeats the None identified status: ${t.slice(0, 40)}`); }
       for (const n of document.querySelectorAll('.srcs li, .source-footer-line, .cites a')) if (/[(]secondary[)]/.test(n.textContent)) errors.push("source list marks a source '(secondary)'; source lists carry no type marks");
       for (const n of document.querySelectorAll('#limits li')) if (/secondary sources are marked/i.test(n.textContent)) errors.push('Method says secondary sources are marked, but source lists mark neither kind');
       return errors;
@@ -7360,7 +7879,7 @@ def check_funding_bars(page, data: dict, expected_ids=None) -> list[str]:
             bracket = f" ({'~' if kept != Decimal(str(stated)) else ''}{currency} {short_amount(kept)})"
         if (bracket and not figure.endswith(bracket)) or (not bracket and "(" in figure):
             errors.append(f"{jid}: original-currency figure differs from the data: expected {bracket!r} at the end of {figure!r}")
-        match = re.fullmatch(r"(?:Up to |At least |About |Nearly |More than |Less than )?~?EUR ([0-9.,]+)(k|m|bn)?(?: \(~?[A-Z]{3} [0-9.,]+(?:k|m|bn)?\))?", figure)
+        match = re.fullmatch(r"(?:up to |at least |about |nearly |more than |less than )?~?EUR ([0-9.,]+)(k|m|bn)?(?: \(~?[A-Z]{3} [0-9.,]+(?:k|m|bn)?\))?", figure)
         amount = Decimal(match[1].replace(",", "")) * {None: 1, "k": 10**3, "m": 10**6, "bn": 10**9}[match[2]] if match else None
         raw = expected_annual_amount(funding, data)
         rounded = half_up_two(raw, funding.get("amount_qualifier"))
@@ -7432,6 +7951,40 @@ def refresh_fixture_selections(fixture):
     fixture.update(refreshed)
 
 
+def check_funding_large_text(browser, base_url: str) -> list[str]:
+    """Funding rows stack where their tracks no longer fit, also with text 25% larger just above the phone width (principle: Funding rows)."""
+    errors = []
+    for width in (641, 700, 760):
+        page = browser.new_page(viewport={"width": width, "height": 900})
+        page.route(base_url, lambda route: route.fulfill(response=(r := route.fetch()), body=r.text().replace("</head>", "<style>html { font-size: 125% !important; }</style></head>", 1)))
+        hydrated(page, base_url)
+        got = page.evaluate("""() => {
+          const rem = parseFloat(getComputedStyle(document.documentElement).fontSize), list = document.getElementById('fund-rows'), edge = list.getBoundingClientRect().right;
+          const fits = list.getBoundingClientRect().width >= 36.5 * rem;  // the three tracks: 10rem + 12.5rem + 11rem and two 1.5rem gaps
+          const rows = [...document.querySelectorAll('#fund-rows > .fund-item')], bad = [];
+          rows.forEach(row => {
+            const j = row.dataset.j, grid = getComputedStyle(row).display === 'grid';
+            if ([...row.querySelectorAll('*')].some(n => n.getClientRects().length && n.getBoundingClientRect().right > edge + 1)) bad.push(j + ': overflows its section');
+            if (grid !== fits) bad.push(j + (fits ? ': stacked although its tracks fit' : ': keeps its tracks although they do not fit'));
+            if (grid) {
+              const b = row.querySelector('.fund-budget').getBoundingClientRect(), s = row.querySelector('.fund-staff').getBoundingClientRect(), i = row.querySelector('.fund-identity').getBoundingClientRect();
+              if (i.right > b.left + 1 || b.right > s.left + 1) bad.push(j + ': budget and staff tracks overlap');
+            } else {
+              const left = row.getBoundingClientRect().left;
+              if ([...row.querySelectorAll('.fund-budget-label, .fund-budget > .fund-value, .budget-qualifiers, .fund-staff > .label, .fund-staff > .fund-value, .fund-staff > .fund-context')].filter(n => n.getClientRects().length).some(n => Math.abs(n.getBoundingClientRect().left - left) > 1)) bad.push(j + ': stacked row lacks one left edge');
+            }
+          });
+          return { rem, count: rows.length, bad };
+        }""")
+        if got["rem"] != 20:
+            errors.append(f"{width}px: the large-text check ran at a {got['rem']}px root font, not 125% (20px)")
+        if not got["count"]:
+            errors.append(f"{width}px, text 125%: no funding rows to check")
+        errors += [f"{width}px, text 125%: funding row {e}" for e in got["bad"]]
+        page.close()
+    return errors
+
+
 def check_funding_edges(browser, base_url: str, data: dict) -> list[str]:
     """Serve an in-memory subset of real records; never alter the source dataset."""
     fixture = copy.deepcopy(data)
@@ -7472,6 +8025,7 @@ def check_funding_edges(browser, base_url: str, data: dict) -> list[str]:
         )
         for field in ("total", "technical")
     }
+    expected["both"] = sum(all(any(staff.get(field) is not None for staff in i.get("staff", [])) for field in ("total", "technical")) for i in fixture["institutes"])
     if not all(expected.values()):
         return [
             "funding fixture needs comparable institutes with total and technical staff records"
@@ -7487,8 +8041,8 @@ def check_funding_edges(browser, base_url: str, data: dict) -> list[str]:
     if page.locator("#fund-none").is_visible():
         errors.append("funding fixture: empty Not published line is visible")
     latest = page.locator(".fund-staff .fund-context").filter(has_text="Latest total")
-    if latest.count() != expected["total"]:
-        errors.append("funding fixture: latest total records are missing")
+    if latest.count() != expected["both"]:  # the label only beside a technical figure (principle: Values and qualifiers)
+        errors.append(f"funding fixture: {latest.count()} 'Latest total' labels, expected {expected['both']} (one per row with a technical figure beside the total)")
     grade = r"\s*·\s*(?:indirect or secondary|secondary sources|press report|our estimate)"
     if any(re.sub(grade, "", " ".join(text.split())) != "Latest total" for text in latest.all_text_contents()):
         errors.append("funding fixture: undated latest total has dangling punctuation")
@@ -7670,6 +8224,7 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
         check_external_markers,
         check_status_contrast,
         check_status_states,
+        check_tooltip_cues,
     ):
         for error in check(page):
             require(False, error)
@@ -7720,13 +8275,13 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
     r2_soup = BeautifulSoup(page.content(), "html.parser")
     for error in check_section_bar(r2_soup) + check_access_groups(r2_soup, data) + check_figures_row(r2_soup, data) + check_setup_groups(r2_soup, data) + check_per_person(r2_soup, data) + check_access_layout(page, width) + check_access_tips(page):
         require(False, error)
-    for error in check_institute_names(page.content(), data) + check_former_names(page.content(), data) + check_no_rate_amounts(page.content(), data):
+    for error in check_institute_names(page.content(), data) + check_former_names(page.content(), data) + check_no_rate_amounts(page.content(), data) + check_euro_amounts(page.content(), data):
         require(False, error)
     for error in check_leadership_rows(page.content(), data):
         require(False, error)
     for error in check_generic_sources(page.content(), data) + check_archive_wrap(page):
         require(False, error)
-    for error in check_nonidentified_folds(page.content(), data) + check_nonidentified_style(page):
+    for error in check_nonidentified_folds(page.content(), data) + check_nonidentified_style(page) + check_name_roles(page):
         require(False, error)
     require(
         page.locator(".cards").evaluate_all(
@@ -7862,10 +8417,8 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
             page.keyboard.press("Shift")
             version_link.focus()
         require(
-            page.locator("#tip").is_visible()
-            and page.locator("#tip").inner_text()
-            == "What changed in each version",
-            "version tooltip missing on " + state,
+            not page.locator("#tip").is_visible(),
+            "version link shows a tooltip on " + state + " (its text says where it goes)",
         )
     version_link.click()
     require(
@@ -8008,9 +8561,9 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
         fold.evaluate("e => e.open = false")
     require(
         page.locator(".fund-detail").evaluate_all(
-            "folds => folds.every(f => f.getBoundingClientRect().top - f.previousElementSibling.getBoundingClientRect().bottom < 32)"
+            "folds => folds.every(f => { const row = f.closest('.fund-item'), before = getComputedStyle(row).display === 'flex' ? row.querySelector('.fund-staff') : f.previousElementSibling; return f.getBoundingClientRect().top - before.getBoundingClientRect().bottom < 32; })"
         ),
-        "funding disclosure is separated from its budget by staff height",
+        "funding disclosure is separated from the content before it (the budget, or Staff where the row stacks)",
     )
 
     # Production bindings: filters, column preference, CSV, glossary, downloads.
@@ -8160,16 +8713,12 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
         "Columns cannot override defaults",
     )
     page.locator("details.cols > summary").click()
-    # The hint: on a phone with a phone-default column hidden, "More columns on a wider
-    # screen."; otherwise "Scroll sideways" exactly when the table overflows.
+    # The hint "Scroll sideways" shows exactly when the table overflows.
     hint = page.locator("#world-scroll-hint")
     overflow = page.locator("#world-scroll").evaluate("e => e.scrollWidth > e.clientWidth + 1")
-    narrowed = width <= 640 and page.locator("table.world").evaluate(
-        "t => ['since', 'op', 'budget'].some(k => t.classList.contains('hide-' + k))"
-    )
-    require(hint.is_visible() == (overflow or narrowed), "scroll hint does not reflect hidden columns or table overflow")
+    require(hint.is_visible() == overflow, "scroll hint does not reflect table overflow")
     if hint.is_visible():
-        want_hint = "More columns on a wider screen." if narrowed else "Scroll sideways for more columns \u2192"
+        want_hint = "Scroll sideways for more columns \u2192"
         require(" ".join(hint.inner_text().split()) == want_hint, f"scroll hint reads {hint.inner_text()!r}, expected {want_hint!r}")
     if width <= 640:
         require(
@@ -8370,6 +8919,41 @@ def shared_links(browser, base_url: str) -> list[str]:
         )
     if page.evaluate("document.activeElement.id") != "data":
         errors.append("section navigation does not transfer keyboard focus")
+    # Focus: a jump focuses the section heading with the tint and no ring; keyboard focus on text controls is the tint plus a 2px
+    # underline in the focus colour at 3:1 or more on the ground, in both themes (principle: Focus).
+    for scheme in ("light", "dark"):
+        set_theme(page, scheme)
+        page.locator('.secnav a[href="#testing"]').focus(timeout=5_000)
+        page.keyboard.press("Enter")
+        page.wait_for_timeout(100)
+        got = page.evaluate("() => {" + CONTRAST_JS + " const n = document.activeElement, c = getComputedStyle(n); return [n.id, n.tagName, c.outlineStyle, rgb(c.backgroundColor).join() === rgb(token('--highlight-fill')).join()]; }")
+        if got != ["testing", "H2", "none", True]:
+            errors.append(f"{scheme}: after a jump to Testing the focused heading is {got} (expected the #testing h2 with the tint and no outline)")
+        # The palette's Definition destination is a paragraph, not a control: the same tint, no ring (rule 14).
+        got = page.evaluate("() => {" + CONTRAST_JS + " const n = document.getElementById('definition'); n.tabIndex = -1; n.focus({ preventScroll: true }); const c = getComputedStyle(n); return [c.outlineStyle, rgb(c.backgroundColor).join() === rgb(token('--highlight-fill')).join()]; }")
+        if got != ["none", True]:
+            errors.append(f"{scheme}: the focused Definition paragraph shows {got} (expected the tint and no outline)")
+        for selector in ('.secnav a[href="#news"]', '#world-rows td:first-child a'):
+            page.keyboard.press("Shift")
+            page.locator(selector).first.focus(timeout=5_000)
+            look = page.evaluate("s => {" + CONTRAST_JS + """
+              const n = document.activeElement, c = getComputedStyle(n), ground = token('--ground');
+              // The tint is the --highlight-fill token, the underline the --focus token, and the underline holds 3:1 against the tint it sits on.
+              return { visible: n.matches(':focus-visible'), outline: c.outlineStyle, tint: rgb(c.backgroundColor).join() === rgb(token('--highlight-fill')).join(), line: c.textDecorationLine,
+                colour: rgb(c.textDecorationColor).join() === rgb(token('--focus')).join(), thick: parseFloat(c.textDecorationThickness), edge: ratio(c.textDecorationColor, c.backgroundColor) }; }""", selector)
+            if not (look["visible"] and look["outline"] == "none" and look["tint"] and look["colour"] and "underline" in look["line"] and look["thick"] >= 2 and look["edge"] >= 3):
+                errors.append(f"{scheme}: keyboard focus on {selector} is not the tint with a 2px focus-colour underline at 3:1: {look}")
+        # Region tabs (owner, 5 Nov 2026): focus is the tint alone; the underline marks the selected tab only, focused or not.
+        for pressed in ("false", "true"):
+            page.keyboard.press("Shift")
+            page.locator(f'.region-chips button[aria-pressed="{pressed}"]').first.focus(timeout=5_000)
+            look = page.evaluate("() => {" + CONTRAST_JS + """
+              const n = document.activeElement, c = getComputedStyle(n);
+              return { visible: n.matches(':focus-visible'), outline: c.outlineStyle, tint: rgb(c.backgroundColor).join() === rgb(token('--highlight-fill')).join(),
+                line: c.textDecorationLine, inset: /inset/.test(c.boxShadow) }; }""")
+            if not (look["visible"] and look["outline"] == "none" and look["tint"] and look["line"] == "none" and look["inset"] == (pressed == "true")):
+                errors.append(f"{scheme}: a focused {'selected' if pressed == 'true' else 'unselected'} region tab is not the tint {'with' if pressed == 'true' else 'without'} the selection underline: {look}")
+    set_theme(page, "light")
     for target in ("c-fr", "world", "funding", "method", "changes"):
         hydrated(page, base_url + "#" + target)
         page.wait_for_selector("#world-rows tr")
@@ -8453,6 +9037,7 @@ def browser_jobs(dist: Path, data: dict, screenshots: Path | None) -> list[tuple
         ("interactions", check_development_edges, (data,)),
         ("interactions", check_access_edges, (data,)),
         ("interactions", check_funding_edges, (data,)),
+        ("interactions", check_funding_large_text, ()),
         ("interactions", check_published_amount_fallback, (data,)),
         ("interactions", check_menu_touch, ()),
         ("interactions", check_arrival, ()),
@@ -8466,6 +9051,7 @@ def browser_jobs(dist: Path, data: dict, screenshots: Path | None) -> list[tuple
         ("interactions", check_theme_parity, ()),
         ("interactions", check_highlight_fill, ()),
         ("interactions", check_toggle_place, ()),
+        ("interactions", check_command_palette, ()),
         ("interactions", check_anchor_aliases, ()),
         ("interactions", check_format_edges, (data,)),
         ("interactions", check_operating_edges, (data,)),
@@ -8574,7 +9160,7 @@ JOB_COST = {
     "interactions/interaction_pass/1000/light": 59.4, "interactions/interaction_pass/1000/dark": 59.6,
     "interactions/interaction_pass/390/light": 59.1, "interactions/interaction_pass/390/dark": 57.8,
     "interactions/shared_links": 6.5, "interactions/check_development_edges": 22.4, "interactions/check_access_edges": 8.8,
-    "interactions/check_funding_edges": 2.9, "interactions/check_published_amount_fallback": 2.8,
+    "interactions/check_funding_edges": 2.9, "interactions/check_funding_large_text": 4.0, "interactions/check_published_amount_fallback": 2.8,
     "interactions/check_menu_touch": 2.9, "interactions/check_arrival": 45.8, "interactions/check_access_fixes": 14.4,
     "interactions/check_group_rows": 25.1, "interactions/check_touch_tips": 46.2, "interactions/check_theme_default": 10.0,
     "interactions/check_wide_layout": 22.5, "interactions/check_text_measure": 7.7,

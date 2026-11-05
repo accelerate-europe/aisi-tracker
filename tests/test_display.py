@@ -524,7 +524,7 @@ def test_real_comparison_matches_hand_checked_owner_choices():
     assert actual == {
         "GB": ("2026/27 to 2029/30", 70_028_600),
         "US": ("FY2026 enacted", 8_849_690),
-        "CA": ("from 2024-25", 6_334_220),
+        "CA": ("2024-25 to 2028-29", 6_334_220),
         "KR": ("2026 total", 8_019_550),
         "AU": ("2025-26 to 2028-29", 5_993_970),
     }
@@ -579,7 +579,7 @@ def test_staff_and_development_equal_date_ties_use_ids():
     assert recent_developments([{"id": "XX", "timeline": events}], lambda *values: [])[0]["events"] == ["a", "b"]
 
 
-@pytest.mark.parametrize("qualifier,prefix", [("at_most", "Up to "), ("at_least", "At least "), ("more_than", "More than "), ("less_than", "Less than "), ("nearly", "Nearly "), ("about", "About ")])
+@pytest.mark.parametrize("qualifier,prefix", [("at_most", "up to "), ("at_least", "at least "), ("more_than", "more than "), ("less_than", "less than "), ("nearly", "nearly "), ("about", "about ")])
 def test_structured_budget_bounds_survive_annual_conversion(qualifier, prefix):
     from scripts.display import funding_label
 

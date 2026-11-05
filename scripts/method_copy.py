@@ -72,6 +72,33 @@ def rule_label(rule: dict) -> str:
     return rule["id"].replace("-", " ").capitalize()
 
 
+RUN_IN = re.compile(r"(?<=\. )(?=[A-Z][A-Za-z()'-]*(?: [A-Za-z()'-]+){0,4}: )")  # a sentence led by a term of at most five words and a colon ("Ladder: ", "Own staff: ")
+
+# The theme toggle of the main page's section bar, for this page alone: the same three steps and stored choice (principle: Theme).
+THEME_SCRIPT = (
+    '<script>(function () { var b = document.getElementById("theme-toggle"), NEXT = { system: "light", light: "dark", dark: "system" }, NAME = { system: "follows system", light: "light", dark: "dark" };'
+    ' function now() { var t = document.documentElement.getAttribute("data-theme"); return t === "light" || t === "dark" ? t : "system"; }'
+    ' function sync() { var t = now(); b.setAttribute("aria-label", "Theme: " + NAME[t]); b.title = "Theme: " + NAME[t] + ". Click for " + NEXT[t]; }'
+    ' b.addEventListener("click", function () { var next = NEXT[now()]; if (next === "system") document.documentElement.removeAttribute("data-theme"); else document.documentElement.setAttribute("data-theme", next);'
+    ' try { if (next === "system") localStorage.removeItem("aisi-theme"); else localStorage.setItem("aisi-theme", next); } catch (e) {} sync(); }); sync(); })();</script>'
+)
+
+
+def rule_paragraphs(text: str) -> list[str]:
+    """A rule's text split before each run-in term, so "Ladder:", "Established:" and the like each start a short paragraph; joined with spaces they are the rule's text."""
+    return [part.rstrip() for part in RUN_IN.split(text)]
+
+
+def lead_in(part: str, label: str) -> str:
+    """A rule's first paragraph under its heading: a lead-in that repeats the heading ("Freshness: the ...") stays in the text for
+    screen readers and copying but is not shown, and the next word takes a capital, so the heading is not said twice (rule 1)."""
+    for mark in (": ", ". "):
+        if part.startswith(label + mark) and len(part) > len(label) + 2:
+            rest = part[len(label) + 2:]
+            return f'<span class="vh">{html.escape(label + mark)}</span><span class="cap">{html.escape(rest[0])}</span>{html.escape(rest[1:])}'
+    return html.escape(part)
+
+
 def full_method_page(dataset: dict, site: str) -> str:
     """Static, escaped full rules. Reuse the main page's style rather than fork it."""
     style = re.search(r"<style>.*?</style>", site, re.S)
@@ -83,7 +110,9 @@ def full_method_page(dataset: dict, site: str) -> str:
         rid = html.escape(rule["id"], quote=True)
         label = html.escape(rule_label(rule))
         sections.append(
-            f'<section id="{rid}" aria-labelledby="heading-{rid}"><h2 id="heading-{rid}">{label}</h2><p>{html.escape(rule["text"])}</p></section>'
+            f'<section id="{rid}" aria-labelledby="heading-{rid}"><h2 id="heading-{rid}">{label}</h2><div class="section-body">'
+            + "".join(f"<p>{lead_in(part, rule_label(rule)) if n == 0 else html.escape(part)}</p>" for n, part in enumerate(rule_paragraphs(rule["text"])))
+            + "</div></section>"
         )
     return (
         '<!doctype html><html lang="en"><head><meta charset="utf-8">'
@@ -93,15 +122,19 @@ def full_method_page(dataset: dict, site: str) -> str:
         + (theme.group() if theme else "")
         + "".join(fonts)
         + (style.group() if style else "")
-        + '</head><body class="full-method"><header class="gutter"><div class="measure">'
-        '<a href="index.html#method-sec">Back to the tracker</a>'
-        f"<h1>{title}</h1><p>The full rules used to compile the data.</p></div></header>"
+        + '</head><body class="full-method"><header class="masthead">'
+        # The main page's section bar: its title links back to the tracker, the theme toggle at its end.
+        '<nav class="secnav gutter" aria-label="Site"><div class="measure"><a href="index.html#method-sec" class="navtitle" aria-label="Back to the tracker"><span class="long">AI Security Institutes</span><span class="short">AISIs</span></a>'
+        '<button type="button" class="btn ico i-theme theme-toggle" id="theme-toggle" aria-label="Theme: follows system"></button></div></nav>'
+        f'<div class="panel gutter"><div class="measure"><h1>{title}</h1></div></div></header>'
         '<main class="gutter"><div class="measure">'
         + "".join(sections)
         + '</div></main><footer class="gutter"><div class="measure" id="foot">'
         f'<p>Code: MIT; data, page text and documentation: {html.escape(dataset["license"])}</p>'
         f'<p>{html.escape(dataset["license_note"])}</p>'
-        '<a href="index.html#method-sec">Back to the tracker</a></div></footer></body></html>\n'
+        '<a href="index.html#method-sec">Back to the tracker</a></div></footer>'
+        + THEME_SCRIPT
+        + "</body></html>\n"
     )
 
 

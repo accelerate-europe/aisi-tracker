@@ -2000,14 +2000,14 @@
                   "known_activity"
                 ],
                 "additionalProperties": false,
-                "description": "Card wording for exact intervals only (equal bounds); null otherwise. Ranges stay in intervals.",
+                "description": "Card wording for the milestones; an interval appears only when exact (equal bounds). Ranges stay in intervals.",
                 "properties": {
                   "status_since": {
                     "type": [
                       "string",
                       "null"
                     ],
-                    "description": "Interval from the announcement or proposal to the establishment, shown under Status since when that date is the establishment."
+                    "description": "The announcement or proposal date, with its interval to the establishment when exact (\"Announced on 24 Jan 2024, 28 days earlier\"), shown under Status while its date is the establishment; null without an exact announcement date."
                   },
                   "known_activity": {
                     "type": [
@@ -2020,7 +2020,7 @@
                       "text"
                     ],
                     "additionalProperties": false,
-                    "description": "Interval from the establishment to the first qualifying activity, shown under the Known activity item dated that day.",
+                    "description": "Interval from the establishment to the first qualifying activity (\"about 17 months after it was established\"), shown under the Known activity item dated that day after its kind and \"began\".",
                     "properties": {
                       "kind": {
                         "enum": [

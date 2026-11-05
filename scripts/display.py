@@ -5,6 +5,7 @@ are never evidence fallbacks. This layer copies its input and performs no I/O.
 """
 
 import copy
+import datetime as dt
 import re
 from decimal import Decimal, ROUND_HALF_UP
 
@@ -153,13 +154,14 @@ COMMITMENT_STATED = {
 }
 
 
+# A figure's qualifier is part of the figure, so it is lower case wherever the figure stands, like "up to ~1,300" staff.
 AMOUNT_PREFIX = {
-    "about": "About ",
-    "at_most": "Up to ",
-    "at_least": "At least ",
-    "nearly": "Nearly ",
-    "more_than": "More than ",
-    "less_than": "Less than ",
+    "about": "about ",
+    "at_most": "up to ",
+    "at_least": "at least ",
+    "nearly": "nearly ",
+    "more_than": "more than ",
+    "less_than": "less than ",
 }
 
 
@@ -290,7 +292,7 @@ def per_person_label(record, jurisdiction, rates):
     else:
         rounded = value
     marker = "~" if record.get("currency") != "EUR" or rounded != value else ""
-    prefix = AMOUNT_PREFIX.get(bound, "").lower()
+    prefix = AMOUNT_PREFIX.get(bound, "")
     if bound == "about":
         marker = ""
     return f"{prefix}{marker}EUR {format(rounded, ',f')} per person"
@@ -349,8 +351,6 @@ def summary_figures(data):
         if record and record.get("eur_per_year_est") is not None:
             value = display_annual_amount(record, rates)
             text = funding_label(record, annual=True, rates=rates)[0].split(" (")[0]
-            if record.get("amount_qualifier") in AMOUNT_PREFIX:
-                text = text[0].lower() + text[1:]
             budgets.append((value, institute["jurisdiction_id"], institute["id"], text))
             bounds.add(record.get("amount_qualifier"))
         record = shown["staff_records"].get(shown["total_staff"])
@@ -365,7 +365,7 @@ def summary_figures(data):
             )
     bound = median_bound(bounds)
     return {
-        "budget": summary(budgets, lambda v: AMOUNT_PREFIX.get(bound, "").lower() + "EUR " + money(round2(v, bound))),
+        "budget": summary(budgets, lambda v: AMOUNT_PREFIX.get(bound, "") + "EUR " + money(round2(v, bound))),
         "headcount": summary(staff, lambda v: format(round2(v), ",")),
     }
 
@@ -458,27 +458,50 @@ def recent_developments(jurisdictions, union):
 
 
 MONTH_DAYS = Decimal("30.4375")  # average Gregorian month
-ANNOUNCEMENT_WORD = {"commitment": "announcement", "proposed": "proposal"}
+ANNOUNCEMENT_WORD = {"commitment": "announced", "proposed": "proposed"}
+MONTH_ABBR = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+
+
+def card_date(day):
+    """An exact ISO date as the cards write it: "24 Jan 2024"."""
+    parsed = dt.date.fromisoformat(day)
+    return f"{parsed.day} {MONTH_ABBR[parsed.month - 1]} {parsed.year}"
+
+
+def interval_amount(span):
+    """The amount of an exact interval: under 60 days in days, otherwise about N months (days / 30.4375, half up); None for a range."""
+    if span is None or span["days_min"] != span["days_max"]:
+        return None
+    count = abs(span["days_min"])
+    if count < 60:
+        return f"{count} day" if count == 1 else f"{count} days"
+    return f"about {int((Decimal(count) / MONTH_DAYS).quantize(Decimal(1), ROUND_HALF_UP))} months"
 
 
 def interval_phrase(span, milestone):
     """Card wording for an exact interval only; a range stays in the downloads.
 
-    Under 60 days in days, otherwise about N months (days / 30.4375, half up).
-    Signed: a negative interval reads "before".
+    milestone names the subject and event: "it was established". Signed: a negative interval reads "before".
     """
-    if span is None or span["days_min"] != span["days_max"]:
+    amount = interval_amount(span)
+    if amount is None:
         return None
     days = span["days_min"]
-    count = abs(days)
     if not days:
-        return f"same day as {milestone}"
-    if count < 60:
-        amount = f"{count} day" if count == 1 else f"{count} days"
-    else:
-        months = int((Decimal(count) / MONTH_DAYS).quantize(Decimal(1), ROUND_HALF_UP))
-        amount = f"about {months} months"
+        return f"on the same day as {milestone}"
     return f"{amount} {'before' if days < 0 else 'after'} {milestone}"
+
+
+def announced_qualifier(day, word, span):
+    """The Status qualifier: "Announced on 24 Jan 2024, 28 days earlier"; the interval only when exact, the line only for an exact date."""
+    if not day or len(day) != 10:
+        return None
+    text = f"{word.capitalize()} on {card_date(day)}"
+    amount = interval_amount(span)
+    if amount is None:
+        return text
+    days = span["days_min"]
+    return f"{text}, " + ("the same day" if not days else f"{amount} {'earlier' if days > 0 else 'later'}")
 
 
 def derive_display(published_data):
@@ -729,7 +752,7 @@ def derive_display(published_data):
             }
         known = None
         phrase = interval_phrase(
-            spans.get("established_to_first_qualifying_activity"), "establishment"
+            spans.get("established_to_first_qualifying_activity"), "it was established"
         )
         first_activity = found["first_qualifying_activity"][0]
         if phrase and operating:
@@ -737,13 +760,14 @@ def derive_display(published_data):
             item = next((x for x in operating["items"] if x["date"] == day), None)
             if item is not None:
                 known = {"kind": item["kind"], "lineage": item["lineage"], "text": phrase}
-        # Under Status since only while that date is the establishment: no closure has reset it.
+        # Under Status only while its date is the establishment: no closure has reset it.
         since = None
-        if found["announced"][1] and not any(e["event"] == "closed" for e in events):
+        if found["announced"][1] and found["established"][1] and not any(e["event"] == "closed" for e in events):
             words = {ANNOUNCEMENT_WORD[events[k]["event"]] for k in found["announced"][1]}
-            since = interval_phrase(
+            since = announced_qualifier(
+                institute.get("announced"),
+                words.pop() if len(words) == 1 else "announced",
                 spans.get("announced_to_established"),
-                words.pop() if len(words) == 1 else "announcement",
             )
         institute["display"] = {
             "intervals": {"status_since": since, "known_activity": known},

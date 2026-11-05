@@ -32,8 +32,8 @@ EXPECTED = {
     "jp-aisi": ((55, 55), (411, 411), (466, 466)),  # 21 Dec 2023, 14 Feb 2024, 31 Mar 2025
     "kr-aisi": ((189, 189), (211, 211), (400, 400)),  # 22 May 2024, 27 Nov 2024 (not the 2026 redesignation), 26 Jun 2025
     "sg-aisi": (None, (182, 182), None),  # no commitment or proposal; 22 May 2024, 20 Nov 2024
-    # 25 Nov 2025; "2026" read as 1 Jan to 4 Nov 2026 (as_of cap); 10 Aug 2026.
-    "au-aisi": ((37, 344), (-86, 221), (258, 258)),
+    # 25 Nov 2025; "2026" read as 1 Jan to 5 Nov 2026 (as_of cap); 10 Aug 2026.
+    "au-aisi": ((37, 345), (-87, 221), (258, 258)),
     "my-aisafe": (None, None, None),  # no commitment or proposal; nothing qualifying yet
     "in-aisi": ((-29, 335), None, None),  # 30 Jan 2025; "2025" read as the whole year
     # Planned: qualifying network credit (26 Jun 2025) is not an institute interval.
@@ -41,18 +41,18 @@ EXPECTED = {
 }
 
 CARD = {
-    "gb-aisi": ("7 days after announcement", "about 3 months after establishment"),
-    "fr-inesia": (None, "about 5 months after establishment"),
-    "de-aisi": ("about 3 months after announcement", None),
-    "eu-ai-office": ("28 days after announcement", "about 17 months after establishment"),
-    "us-caissi": ("about 3 months after announcement", "about 9 months after establishment"),
-    "ca-caisi": ("about 7 months after proposal", "about 7 months after establishment"),
-    "jp-aisi": ("55 days after announcement", "about 14 months after establishment"),
-    "kr-aisi": ("about 6 months after announcement", "about 7 months after establishment"),
-    "sg-aisi": (None, "about 6 months after establishment"),
-    "au-aisi": (None, None),
+    "gb-aisi": ("Announced on 26 Oct 2023, 7 days earlier", "about 3 months after it was established"),
+    "fr-inesia": (None, "about 5 months after it was established"),
+    "de-aisi": ("Announced on 8 Jun 2026, about 3 months earlier", None),
+    "eu-ai-office": ("Announced on 24 Jan 2024, 28 days earlier", "about 17 months after it was established"),
+    "us-caissi": ("Announced on 1 Nov 2023, about 3 months earlier", "about 9 months after it was established"),
+    "ca-caisi": ("Proposed on 16 Apr 2024, about 7 months earlier", "about 7 months after it was established"),
+    "jp-aisi": ("Announced on 21 Dec 2023, 55 days earlier", "about 14 months after it was established"),
+    "kr-aisi": ("Announced on 22 May 2024, about 6 months earlier", "about 7 months after it was established"),
+    "sg-aisi": (None, "about 6 months after it was established"),
+    "au-aisi": ("Announced on 25 Nov 2025", None),
     "my-aisafe": (None, None),
-    "in-aisi": (None, None),
+    "in-aisi": ("Announced on 30 Jan 2025", None),
 }
 
 
@@ -137,7 +137,7 @@ def test_signed_ranges():
 @pytest.mark.parametrize(
     "days,text",
     [
-        (0, "same day as announcement"),
+        (0, "on the same day as announcement"),
         (1, "1 day after announcement"),
         (59, "59 days after announcement"),
         (60, "about 2 months after announcement"),

@@ -1,6 +1,7 @@
 """Independent expected labels and deliberate failures of the rendered-page gate."""
 
 import json
+import re
 import subprocess
 from pathlib import Path
 
@@ -373,7 +374,7 @@ def test_actual_page_renderer_attaches_each_clause_citation(shared_source):
         {"kind": "published_work", "clauseClass": "value-line activity-clause", "text": "Published work", "sources": [[report_source]], "since": "since Mar 2025", "sinceClass": "small qualifiers activity-since"},
     ]
     assert actual["swatches"] == []  # Known activity is text: squares are for status only
-    assert "'Since' gives the date of the earliest known item of that kind." in actual["tooltip"]
+    assert "'since' gives the earliest known item of that kind" in actual["tooltip"] and len(re.findall(r"[.!?](?:\s|$)", actual["tooltip"])) <= 2  # rule 12: two sentences at most
 
 
 def test_oracle_rejects_dropped_date_swapped_kinds_and_missing_citation():

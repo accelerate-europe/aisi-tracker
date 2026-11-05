@@ -67,7 +67,7 @@ def figures_row(budget, budget_top, staff, staff_top):
     """The page's figures row for two established institutes in states A and B (B the highest), neither with a card."""
     def fig(figure, text):
         return f'<div class="figure"><b>{figure}</b><span>{text}</span></div>'
-    return BeautifulSoup('<div id="figures">' + fig(budget, f"median annual budget of 2 institutes. <em>B {budget_top}.</em>") + fig(staff, f"median staff of 2 institutes. <em>B {staff_top}.</em>") + fig("0 of 2", 'institutes: budget not <span class="info-glue">published.<button type="button" class="info" id="figures-scope" data-tip="Counts cover the 2 established state institutes.">i</button></span>') + '</div>', "html.parser")
+    return BeautifulSoup('<div id="figures">' + fig(budget, f"median annual budget of 2 institutes. <em>B highest at {budget_top}.</em>") + fig(staff, f"median staff of 2 institutes. <em>B highest at {staff_top}.</em>") + fig("0 of 2", 'established institutes publish no <span class="info-glue">budget.<button type="button" class="info" id="figures-scope" data-tip="Counts cover the 2 established state institutes.">i</button></span>') + '</div>', "html.parser")
 
 
 def counts(rows):
@@ -127,8 +127,8 @@ def test_rounded_native_figures_are_marked_and_exact_ones_are_not():
     assert shown(3_975_000_000) == "~KRW 4.0bn"
     assert shown(13_500_000, currency="EUR") == "~EUR 14m"
     assert shown(8_800_000_000) == "KRW 8.8bn"
-    assert shown(9_000_000, amount_qualifier="at_most") == "Up to KRW 9.0m"
-    assert shown(9_150_000, amount_qualifier="at_most") == "Up to ~KRW 9.2m"
+    assert shown(9_000_000, amount_qualifier="at_most") == "up to KRW 9.0m"
+    assert shown(9_150_000, amount_qualifier="at_most") == "up to ~KRW 9.2m"
     converted = {**base, "currency": "USD", "annual_amount": 10_000_000, "eur_per_year_est": 8_849_690, "kind": "annual"}
     assert funding_label(converted, annual=True, rates={"USD": 0.884969})[0] == "~EUR 8.8m (USD 10m)"
     converted["annual_amount"] = 12_875_000
@@ -144,10 +144,10 @@ def test_two_figure_gate_fails_when_a_selector_matches_nothing():
     ("EUR", 9_000_000, None, "EUR 9.0m"),
     ("EUR", 9_150_000, None, "~EUR 9.2m"),
     ("USD", 9_000_000, None, "~EUR 9.0m"),
-    ("EUR", 9_000_000, "about", "About EUR 9.0m"),
-    ("EUR", 9_150_000, "about", "About EUR 9.2m"),
-    ("USD", 9_150_000, "about", "About EUR 9.2m"),
-    ("EUR", 9_000_000, "at_most", "Up to EUR 9.0m"),
+    ("EUR", 9_000_000, "about", "about EUR 9.0m"),
+    ("EUR", 9_150_000, "about", "about EUR 9.2m"),
+    ("USD", 9_150_000, "about", "about EUR 9.2m"),
+    ("EUR", 9_000_000, "at_most", "up to EUR 9.0m"),
 ])
 def test_annual_markers_and_highest_summary(currency, amount, qualifier, expected):
     record = {
@@ -191,11 +191,11 @@ def test_staff_median_gate_and_truncation_mutation(staff, expected):
         ("EUR", 9_000_000, None, "EUR 9m"),
         ("EUR", 9_150_000, None, "~EUR 9.2m"),
         ("USD", 9_000_000, None, "~EUR 9m"),
-        ("EUR", 9_150_000, "about", "About EUR 9.2m"),
-        ("USD", 9_000_000, "about", "About EUR 9m"),
+        ("EUR", 9_150_000, "about", "about EUR 9.2m"),
+        ("USD", 9_000_000, "about", "about EUR 9m"),
         ("EUR", 1_249_999, None, "~EUR 1.2m"),
-        ("EUR", 1_299_999, "at_least", "At least ~EUR 1.2m"),
-        ("EUR", 1_200_001, "at_most", "Up to ~EUR 1.3m"),
+        ("EUR", 1_299_999, "at_least", "at least ~EUR 1.2m"),
+        ("EUR", 1_200_001, "at_most", "up to ~EUR 1.3m"),
     ],
 )
 def test_funding_gate_approximation_marker_mutation(currency, amount, qualifier, figure):
@@ -255,7 +255,7 @@ def test_sort_oracle_reads_exact_rounded_and_about_euros():
 
     # Minimal DOM interface: execute the actual browser oracle, not a copied regex.
     script = r'''
-    const labels = ['EUR 9m a year', '~EUR 9.2m a year', 'About EUR 9m a year'];
+    const labels = ['EUR 9m a year', '~EUR 9.2m a year', 'about EUR 9m a year'];
     const cell = textContent => ({textContent, querySelector: () => null,
       querySelectorAll: () => [], cloneNode() { return this; }});
     global.document = {querySelectorAll: () => labels.map((label, i) => ({dataset: {j: String(i)}, children:
@@ -273,10 +273,10 @@ def test_sort_oracle_reads_exact_rounded_and_about_euros():
     [
         (1_249_999, None, "~EUR 1.2m"),
         (1_299_999, None, "~EUR 1.3m"),
-        (1_299_999, "at_least", "At least ~EUR 1.2m"),
-        (1_200_001, "at_most", "Up to ~EUR 1.3m"),
-        (1_300_000, "at_least", "At least EUR 1.3m"),
-        (1_200_000, "at_most", "Up to EUR 1.2m"),
+        (1_299_999, "at_least", "at least ~EUR 1.2m"),
+        (1_200_001, "at_most", "up to ~EUR 1.3m"),
+        (1_300_000, "at_least", "at least EUR 1.3m"),
+        (1_200_000, "at_most", "up to EUR 1.2m"),
     ],
 )
 def test_annual_display_rounds_primary_amount_once(amount, qualifier, expected):
@@ -406,7 +406,7 @@ def sort_data(key, entries, status="established"):
         (
             "eur",
             [("Z", 1_200_001, "at_most"), ("A", 1_500_000, None)],
-            ["Up to ~EUR 1.3m a year", "EUR 1.5m a year"],
+            ["up to ~EUR 1.3m a year", "EUR 1.5m a year"],
         ),
     ],
 )
@@ -486,9 +486,9 @@ def test_numeric_sort_rejects_missing_data_and_jurisdiction():
             "at_least",
             "1299999.0",
             1_299_990,  # a lower bound exports rounded down, never up to 1.3m
-            "At least ~EUR 1.2m (~USD 2.5m)",
+            "at least ~EUR 1.2m (~USD 2.5m)",
         ),
-        (2_400_002, "at_most", "1200001.0", 1_200_010, "Up to ~EUR 1.3m (~USD 2.5m)"),
+        (2_400_002, "at_most", "1200001.0", 1_200_010, "up to ~EUR 1.3m (~USD 2.5m)"),
     ],
 )
 def test_converted_boundary_uses_raw_product(
@@ -517,8 +517,8 @@ def test_converted_boundary_uses_raw_product(
         shown["native_value"]
         == {
             None: "~USD 2.5m",
-            "at_least": "At least ~USD 2.5m",
-            "at_most": "Up to ~USD 2.5m",
+            "at_least": "at least ~USD 2.5m",
+            "at_most": "up to ~USD 2.5m",
         }[qualifier]
     )
 
@@ -552,6 +552,32 @@ def test_summary_median_avoids_export_double_rounding():
         for e in check_figures_row(BeautifulSoup(broken, "html.parser"), data)
     )
     assert check_figures_row(BeautifulSoup(html, "html.parser"), data) == []
+
+
+def test_figures_note_names_institutes_in_neither_number():
+    from scripts.check_page import check_figures_row
+
+    rows = [institute("a", "A", 1_000_000, 10), institute("b", "B", 2_000_000, 20), institute("c", "C", None, None)]
+    for row in rows[:2]:
+        row["display"]["funding_records"]["x"]["display"] = {"value": "EUR 1.0m"}
+    rows[2]["display"].update(budget="y", funding_records={"y": {"kind": "one_off", "commitment": "adopted"}})
+    data = {"institutes": rows, "jurisdictions": [{"id": key, "name": key, "kind": "state"} for key in "ABC"]}
+    note = "Counts cover the 3 established state institutes. C's budget is a one-off amount, so it counts neither in the budget median nor among those with no budget."
+    html = str(figures_row("EUR 1.5m", "EUR 1.0m", "15", "20")).replace("0 of 2", "0 of 3").replace("Counts cover the 2 established state institutes.", note)
+    assert [e for e in check_figures_row(BeautifulSoup(html, "html.parser"), data) if "figures row" in e] == []
+    stale = html.replace(note, "Counts cover the 3 established state institutes.")
+    assert any("(i) reading" in e and note in e for e in check_figures_row(BeautifulSoup(stale, "html.parser"), data))
+
+
+def test_figures_row_rejects_a_capitalised_highest_qualifier():
+    from scripts.check_page import check_figures_row
+
+    rows = [institute("a", "A", 1_000_000, 10), institute("b", "B", 2_000_000, 20)]
+    for row in rows:
+        row["display"]["funding_records"]["x"]["display"] = {"value": "Up to EUR 2.0m"}
+    data = {"institutes": rows, "jurisdictions": [{"id": key, "name": key, "kind": "state"} for key in "AB"]}
+    html = str(figures_row("EUR 1.5m", "up to EUR 2.0m", "15", "20"))
+    assert any("capitalises its qualifier" in e for e in check_figures_row(BeautifulSoup(html, "html.parser"), data))
 
 
 def test_native_eur_one_off_is_not_a_comparable_sort_value():
@@ -595,7 +621,7 @@ def test_budget_median_over_a_bound_keeps_it_and_rounds_towards_it():
     tipped = lambda budget, tip=True: f'<abbr class="g" data-exp="{MEDIAN_CEILING}">{budget}</abbr>' if tip and budget.startswith("up to") else budget  # noqa: E731
     figures = lambda budget, tip=True: BeautifulSoup(  # noqa: E731
         '<div id="figures"><div class="figure"><b>' + tipped(budget, tip) + '</b><span>median annual budget of 4 institutes. D EUR 1.0m.</span></div>'
-        '<div class="figure"><b>0</b><span>x</span></div><div class="figure"><b>0 of 0</b><span>institutes: budget not published.</span></div></div>',
+        '<div class="figure"><b>0</b><span>x</span></div><div class="figure"><b>0 of 0</b><span>established institutes publish no budget.</span></div></div>',
         "html.parser",
     )
     budget_errors = lambda soup: [e for e in check_figures_row(soup, data) if e.startswith("budget median")]  # noqa: E731
