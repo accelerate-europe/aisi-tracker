@@ -4,8 +4,8 @@
     "title": "AI Security Institutes tracker",
     "description": "Which states have an AI Security Institute (AISI), covering all 193 UN member states plus Taiwan and the EU AI Office, with funding, staff and leadership where published. Every record cites its sources.",
     "definition": "We count a body as an AI Security Institute (AISI) if a national government or an international organisation, such as the EU, has tasked it with testing general-purpose or frontier AI models for their capabilities and risks, or has named it its AI safety institute or its AI security institute. A regulator, certification body or cyber security agency does not count for that role alone.",
-    "version": "1.0.3",
-    "as_of": "2026-11-05",
+    "version": "1.0.4",
+    "as_of": "2026-11-08",
     "license": "CC BY 4.0",
     "license_note": "Quotations from sources remain with their rights holders and are reproduced as quotations; the licence covers our own compilation, text and data.",
     "publisher": "Accelerate Europe",
@@ -18,7 +18,7 @@
     ],
     "contact": "contact@accelerate-europe.org",
     "repository": "https://github.com/accelerate-europe/aisi-tracker",
-    "citation": "Accelerate Europe (2026). AI Security Institutes tracker, version 1.0.3, data as of 5 November 2026. Compiled by Jason Hoelscher-Obermaier. https://doi.org/10.5281/zenodo.23600431",
+    "citation": "Accelerate Europe (2026). AI Security Institutes tracker, version 1.0.4, data as of 8 November 2026. Compiled by Jason Hoelscher-Obermaier. https://doi.org/10.5281/zenodo.23600431",
     "doi": "10.5281/zenodo.23600431",
     "scope": "Status is tracked for all 193 UN member states, Taiwan (as a territory) and the EU AI Office. The Europe page counts the 27 EU member states, Iceland, Liechtenstein, Norway, the United Kingdom and Switzerland.",
     "method": [
@@ -3305,9 +3305,12 @@
         {
           "name": "Agenzia per la cybersicurezza nazionale (ACN)",
           "name_en": "National Cybersecurity Agency (ACN)",
-          "role": "Its AI Act roles are assigned under Article 20(2), Law 132/2025, effective 10 October 2025.",
+          "role": "Its market surveillance role is assigned under Article 5(1)(a), Legislative Decree 179/2026, in force 23 October 2026; Article 6 sets how it acts as single point of contact.",
           "counts_as_aisi": false,
           "source_ids": [
+            "it-dlgs179-2026",
+            "it-dlgs179-2026-art5",
+            "it-dlgs179-2026-art6",
             "it-law132-article20",
             "eu-ai-act-authorities-2026"
           ],
@@ -3316,16 +3319,19 @@
             "single_point_of_contact"
           ],
           "designation_state": "designated",
-          "designation_basis": "law",
+          "designation_basis": "decree",
           "kind": "ai_act_authority",
-          "id": "related_bodies-d0f364f988eb57f3ae4326d78d0df766"
+          "id": "related_bodies-d0f364f988eb57f3ae4326d78d0df766",
+          "designation_note": "Article 20(2), Law 132/2025, first assigned these roles, effective 10 October 2025."
         },
         {
           "name": "Agenzia per l'Italia digitale (AgID)",
           "name_en": "Agency for Digital Italy (AgID)",
-          "role": "Its AI Act role is assigned under Article 20(2), Law 132/2025.",
+          "role": "Its AI Act role is assigned under Article 4, Legislative Decree 179/2026, in force 23 October 2026.",
           "counts_as_aisi": false,
           "source_ids": [
+            "it-dlgs179-2026",
+            "it-dlgs179-2026-art4",
             "it-law132-article20",
             "eu-ai-act-authorities-2026"
           ],
@@ -3333,16 +3339,19 @@
             "notifying"
           ],
           "designation_state": "designated",
-          "designation_basis": "law",
+          "designation_basis": "decree",
           "kind": "ai_act_authority",
-          "id": "related_bodies-86ccb972e5f052fb83f1cd9a4847f890"
+          "id": "related_bodies-86ccb972e5f052fb83f1cd9a4847f890",
+          "designation_note": "Article 20(2), Law 132/2025, first assigned the role."
         },
         {
           "name": "Banca d'Italia",
           "name_en": "Bank of Italy",
-          "role": "It covers the financial sector under Article 20, Law 132/2025 and Article 74(6) of the AI Act.",
+          "role": "It covers high-risk AI systems used in lending and other financial services governed by the Consolidated Banking Act, under Article 5(1)(b), Legislative Decree 179/2026, in force 23 October 2026.",
           "counts_as_aisi": false,
           "source_ids": [
+            "it-dlgs179-2026",
+            "it-dlgs179-2026-art5",
             "it-law132-article20",
             "eu-ai-act-authorities-2026"
           ],
@@ -3350,15 +3359,18 @@
             "market_surveillance"
           ],
           "designation_state": "designated",
-          "designation_basis": "law",
+          "designation_basis": "decree",
           "kind": "ai_act_authority",
-          "id": "related_bodies-cfb18691f52652f9b1cf8001f6aa073a"
+          "id": "related_bodies-cfb18691f52652f9b1cf8001f6aa073a",
+          "designation_note": "Article 20, Law 132/2025, kept the market surveillance role of the Banca d'Italia, CONSOB and IVASS under Article 74(6) of the AI Act."
         },
         {
           "name": "CONSOB",
-          "role": "It covers the financial sector under Article 20, Law 132/2025 and Article 74(6) of the AI Act.",
+          "role": "It covers high-risk AI systems used in financial services governed by the Consolidated Law on Financial Intermediation, under Article 5(1)(b), Legislative Decree 179/2026, in force 23 October 2026.",
           "counts_as_aisi": false,
           "source_ids": [
+            "it-dlgs179-2026",
+            "it-dlgs179-2026-art5",
             "it-law132-article20",
             "eu-ai-act-authorities-2026"
           ],
@@ -3366,15 +3378,18 @@
             "market_surveillance"
           ],
           "designation_state": "designated",
-          "designation_basis": "law",
+          "designation_basis": "decree",
           "kind": "ai_act_authority",
-          "id": "related_bodies-51b3a2a2081650b98424fc5125a8ce28"
+          "id": "related_bodies-51b3a2a2081650b98424fc5125a8ce28",
+          "designation_note": "Article 20, Law 132/2025, kept the market surveillance role of the Banca d'Italia, CONSOB and IVASS under Article 74(6) of the AI Act."
         },
         {
           "name": "IVASS",
-          "role": "It covers the financial sector under Article 20, Law 132/2025 and Article 74(6) of the AI Act.",
+          "role": "It covers high-risk AI systems used in insurance, reinsurance and insurance distribution governed by the Private Insurance Code, under Article 5(1)(b), Legislative Decree 179/2026, in force 23 October 2026.",
           "counts_as_aisi": false,
           "source_ids": [
+            "it-dlgs179-2026",
+            "it-dlgs179-2026-art5",
             "it-law132-article20",
             "eu-ai-act-authorities-2026"
           ],
@@ -3382,9 +3397,28 @@
             "market_surveillance"
           ],
           "designation_state": "designated",
-          "designation_basis": "law",
+          "designation_basis": "decree",
           "kind": "ai_act_authority",
-          "id": "related_bodies-4e74849e95025a8a87dd5a67d9253985"
+          "id": "related_bodies-4e74849e95025a8a87dd5a67d9253985",
+          "designation_note": "Article 20, Law 132/2025, kept the market surveillance role of the Banca d'Italia, CONSOB and IVASS under Article 74(6) of the AI Act."
+        },
+        {
+          "name": "Garante per la protezione dei dati personali",
+          "name_en": "Italian Data Protection Authority",
+          "role": "It is a market surveillance authority only for the uses covered by Article 74(8) of the AI Act, under Article 5(1)(c), Legislative Decree 179/2026, in force 23 October 2026.",
+          "counts_as_aisi": false,
+          "source_ids": [
+            "it-dlgs179-2026",
+            "it-dlgs179-2026-art5",
+            "eu-ai-act-authorities-2026"
+          ],
+          "authority_roles": [
+            "market_surveillance"
+          ],
+          "designation_state": "designated",
+          "designation_basis": "decree",
+          "kind": "ai_act_authority",
+          "id": "related_bodies-9542f4c8ca8d43fba362f5198c45c7e6"
         }
       ],
       "next_check": {
@@ -3406,6 +3440,10 @@
           {
             "date": "2026-10-17",
             "scope": "Attempted preservation of cited source copies and checked saved-copy hashes; failures remain in source access notes. This source-evidence work is not a full factual recheck of the record."
+          },
+          {
+            "date": "2026-11-07",
+            "scope": "Read Legislative Decree 179/2026 (Articles 4 to 6 and its entry into force) for the AI Act authorities: the decree is now their designation basis, the financial supervisors have their own sectors and the Garante is added; Law 132/2025 is kept as history. Partial check; the last full-check date is unchanged."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -3444,7 +3482,11 @@
       "source_ids": [
         "it-law132-article20",
         "negative-second-it-2026",
-        "ai-act-tracker"
+        "ai-act-tracker",
+        "it-dlgs179-2026",
+        "it-dlgs179-2026-art4",
+        "it-dlgs179-2026-art5",
+        "it-dlgs179-2026-art6"
       ],
       "region": {
         "id": "150",
@@ -3463,7 +3505,7 @@
         "un-m49",
         "wikidata-jurisdiction-identifiers"
       ],
-      "notes": "Article 20 of Law 132/2025 designates AgID and ACN as national AI authorities. Article 20 designates AgID as notifying authority. Searched in English and Italian for a body its government has tasked with testing general-purpose or frontier AI models or named its AI safety or security institute."
+      "notes": "Legislative Decree 179/2026, in force 23 October 2026, now assigns the AI Act authority roles: AgID as notifying authority; ACN, the Banca d'Italia, CONSOB and IVASS for market surveillance, with the financial sector split among the three supervisors; the Garante for the uses covered by Article 74(8). Article 20 of Law 132/2025 first designated AgID and ACN as national AI authorities. Searched in English and Italian for a body its government has tasked with testing general-purpose or frontier AI models or named its AI safety or security institute."
     },
     {
       "id": "PL",
@@ -3560,6 +3602,10 @@
           {
             "date": "2026-10-18",
             "scope": "Changed status confidence from low to medium because the individual check has recorded English and national or official-language queries and retrieved primary governance evidence; classification disagreement no longer lowers confidence. Partial check; the last full-check date is unchanged."
+          },
+          {
+            "date": "2026-11-07",
+            "scope": "Re-read Resolution 130 of the Council of Ministers of 9 June 2026 (Monitor Polski, 18 June 2026, position 620): it adopts the State Digitalisation Strategy and contains both passages on NASK's AI Safety Research Centre that the record quotes. The strategy names the AI policy of 2020 (Resolution 196 of 28 December 2020) as the one in force, with an update planned for 2026; no record text says an AI policy to 2030 was adopted. No change. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -6223,10 +6269,11 @@
       "related_bodies": [
         {
           "name": "Minister responsible for enterprise development",
-          "role": "The Minister's AI Act roles are assigned under § 1(1)(b)-(c), Government Decree 344/2025. The Minister runs the planned AI sandbox.",
+          "role": "The Minister's AI Act roles are assigned under § 1(1)(b)-(c), Government Decree 344/2025. The AI market surveillance authority (MI Piacfelügyeleti Hatóság) operates as a unit of the Ministry of Science and Technology, its website says. The Minister runs the planned AI sandbox.",
           "counts_as_aisi": false,
           "source_ids": [
             "hu-njt-344-2025",
+            "hu-mihivatal-rolunk",
             "eu-ai-act-authorities-2026"
           ],
           "authority_roles": [
@@ -6289,6 +6336,10 @@
           {
             "date": "2026-10-17",
             "scope": "English searches for a national AI safety, security or evaluation institute, commitment, proposal or study. The English query did not identify a qualifying institute, commitment, proposal or institute-specific study. The reviewed law defines an advisory Hungarian AI Council and AI Act governance. Research funding and national AI development programmes do not by themselves establish an evaluator. Partial check only; the last full-check date is unchanged."
+          },
+          {
+            "date": "2026-11-07",
+            "scope": "Read the AI market surveillance authority's About page: it operates as a unit of the Ministry of Science and Technology. Partial check; the last full-check date is unchanged."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -6323,7 +6374,8 @@
         "hu-njt-2025-75",
         "hu-mmit-declaration",
         "hu-economx-ai-council",
-        "ai-act-tracker"
+        "ai-act-tracker",
+        "hu-mihivatal-rolunk"
       ],
       "notes": "The enacted Act LXXV of 2025 and Decree 344/2025 designate existing accredited bodies for conformity assessment and create no testing institute. The Act (section 8) sets up the Hungarian AI Council as a body without decision-making power. Decree 344/2025 was amended by Decree 224/2026 (1 October 2026); the amendment was not read.",
       "region": {
@@ -6795,6 +6847,10 @@
           {
             "date": "2026-10-17",
             "scope": "English searches for a national AI safety, security or evaluation institute, commitment, proposal or study. The English query found INSAIT support and a proposal for a university institute on AI in economics, without a qualifying mandate to evaluate advanced models. The selected scanned parliamentary AI Act bill failed both direct retrieval and retrieval of a text copy in this pass; no new full review of its text is claimed. The newly surfaced INSAIT and university-proposal results were search excerpts only. Partial check only; the last full-check date is unchanged."
+          },
+          {
+            "date": "2026-11-07",
+            "scope": "Read BTA's report of the innovation committee's vote of 4 November 2026 on the AI bill; the bill remains a proposal. Partial check; the last full-check date is unchanged."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -6830,9 +6886,10 @@
         "bg-ai-bill151-2026-authorities",
         "bg-cabinet-ai-legislation-plan-2026",
         "bg-regulations-ai",
-        "ai-act-tracker"
+        "ai-act-tracker",
+        "bg-bta-2026-11-04"
       ],
-      "notes": "The parliamentary bill PDF was read, including Article 5 on pages 5–6. It proposes ten market-surveillance authorities, the Minister of Innovation and Digital Transformation as notifying authority, and the Communications Regulation Commission as single point of contact. These allocations remain proposals in the retrieved bill.\n\nThe July 2026 cabinet account envisages a new law implementing the AI Act; the September parliamentary bill provides the later proposed allocation described here. The secondary regulations.ai overview instead attributes national strategy leadership to the Ministry of Electronic Governance; that account conflicts with the later bill's proposed ministry name. No enacted reorganisation was established by these sources.",
+      "notes": "The parliamentary bill PDF was read, including Article 5 on pages 5–6. It proposes ten market-surveillance authorities, the Minister of Innovation and Digital Transformation as notifying authority, and the Communications Regulation Commission as single point of contact. These allocations remain proposals in the retrieved bill. On 4 November 2026 the National Assembly's Committee on Innovation and Digital Transformation rejected the bill at first reading, with nine abstentions, five votes in favour and none against, the national news agency BTA reported.\n\nThe July 2026 cabinet account envisages a new law implementing the AI Act; the September parliamentary bill provides the later proposed allocation described here. The secondary regulations.ai overview instead attributes national strategy leadership to the Ministry of Electronic Governance; that account conflicts with the later bill's proposed ministry name. No enacted reorganisation was established by these sources.",
       "region": {
         "id": "150",
         "name": "Europe",
@@ -9078,10 +9135,11 @@
       "related_bodies": [
         {
           "name": "AI Safety Institute Indonesia (AISII)",
-          "role": "It is an initiative of KORIKA, a research and industry collaboration body; no government mandate was found.",
+          "role": "It is an initiative of KORIKA, an independent membership association (perkumpulan); no government mandate was found.",
           "counts_as_aisi": false,
           "source_ids": [
-            "id-aisii"
+            "id-aisii",
+            "id-korika-rua-2026"
           ],
           "kind": "other",
           "id": "related_bodies-aad469c6d98155afafe04c3684084aa5"
@@ -9128,6 +9186,10 @@
           {
             "date": "2026-10-18",
             "scope": "Changed status confidence from low to medium because the individual check has recorded English and national or official-language queries and retrieved primary governance evidence; classification disagreement no longer lowers confidence. Partial check; the last full-check date is unchanged."
+          },
+          {
+            "date": "2026-11-07",
+            "scope": "Read KORIKA's report of its first members' meeting of 2026 (30 April 2026) for KORIKA's legal form; the AISII role now names it as an independent membership association. Partial check; the last full-check date is unchanged."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -9172,7 +9234,8 @@
         "id-aisii",
         "id-rri-brin-2026",
         "id-r8-komdigi-berkeley",
-        "id-komdigi-rperpres-2026-05"
+        "id-komdigi-rperpres-2026-05",
+        "id-korika-rua-2026"
       ],
       "notes": "In September 2026 a member of the steering committee of the research agency BRIN proposed a government AI Safety Institute for testing AI systems; this is an individual proposal, not a government plan.\n\nKomdigi's release on a meeting with a UC Berkeley academic has a Singapore dateline of 28 May 2025 and a publication date of 30 May 2025 in both its header and footer. It says the ministry will explore an AI Safety Institute Network, described as an international network, or an AI laboratory in Indonesia with no stated model-evaluation remit. This is not a government study of a qualifying national institute. AI Safety Institute Indonesia's (AISII) government designation also remains unverified; the status 'None identified' is retained with medium confidence in the recorded evidence.",
       "region": {
@@ -27983,14 +28046,15 @@
           "source_ids": [
             "gb-about",
             "r4-gb-dsit-rd-allocations-2025",
-            "gb-dsit-supp-estimate-memo-2025-26"
+            "gb-dsit-supp-estimate-memo-2025-26",
+            "gb-pq-37339-2026"
           ],
           "confidence": "high",
           "commitment": "announced",
           "funding_source": "national_government",
           "annual_amount": 66000000,
           "annual_basis": "Historical planned allocation for 2025/26, not the current fiscal year or expenditure. Rounded to the nearest £1m.",
-          "notes": "The institute's undated About page states £66m per financial year. DSIT's dated profile is used for fiscal comparisons; the 2025/26 figure is from that published table, not final outturn. The 2025/26 Supplementary Estimate later gave £69.0m for the same year (a separate record), so the two figures are successive plans for one year, not two budgets.",
+          "notes": "The institute's undated About page states £66m per financial year. DSIT's dated profile is used for fiscal comparisons; the 2025/26 figure is from that published table, not final outturn. The 2025/26 Supplementary Estimate later gave £69.0m for the same year (a separate record), so the two figures are successive plans for one year, not two budgets. A written answer of 2 November 2026 says the institute spent £3.34m on compute in 2025-26; that is spending on one item, not a budget.",
           "annual_basis_code": "other",
           "annual_period": {
             "start": "2025-04-01",
@@ -28146,6 +28210,10 @@
           {
             "date": "2026-10-24",
             "scope": "Post-release re-check of the institute's blog and research pages, its GOV.UK organisation page and Cabinet Office and DSIT news: Jade Leung recorded as Vice-Chair, the £120m Budget investment, the Mythos 5 alignment report and one research paper added. A minister's statement on evaluating Gemini 4 Argon, the UK-Japan statement on the two institutes and the July 2026 transfer to the Cabinet Office are left for review. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-07",
+            "scope": "News re-check since 24 October 2026: the institute's blog and research pages, GOV.UK search, the Budget 2026 document, written statements HCWS412, HCWS357 and HLWS298, the Minister for AI's speech of 12 October, Google's Gemini 4 Argon report and written answers. The £120m announcement date of 24 October 2026 is confirmed. Added two research outputs, the Gemini 4 Argon access event (dated from the announcement of 30 September 2026, with its limited first rollout in the notes), the 2025-26 compute spend in the funding notes and the June 2026 UK-Japan Frontier Technology Partnership. Left for review: the July 2026 transfer to the Cabinet Office (date of effect), the £120m period from a written answer of 6 November, and a written answer of 2 November that all current developer agreements are with UK and US developers. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -28259,7 +28327,16 @@
         "gb-dsit-supp-estimate-memo-2025-26",
         "gb-dsit-main-estimate-memo-2026-27",
         "gb-aisi-best-practice-2026",
-        "gb-jp-joint-committee-2026"
+        "gb-jp-joint-committee-2026",
+        "gb-protein-lm-filtering-2026",
+        "gb-protein-lm-filtering-arxiv-2026",
+        "gb-reprobait-2026",
+        "gb-reprobait-arxiv-2026",
+        "gb-pq-37339-2026",
+        "gb-jp-frontier-tech-partnership-2026",
+        "google-gemini-4-argon-safety-2026",
+        "gb-minister-speech-2026-10-12",
+        "google-gemini-4-argon-2026"
       ],
       "people": [
         {
@@ -28584,6 +28661,19 @@
           "participation": "named_implementer",
           "domestic_interagency": false,
           "id": "agreements-45971d777b924729a9fe2aeec368c70e"
+        },
+        {
+          "counterparty_type": "government",
+          "counterparty": "Government of Japan, for the Japan AI Safety Institute",
+          "state": "announced",
+          "date": "2026-06-14",
+          "scope": "UK-Japan Frontier Technology Partnership, announced by the Prime Minister's Office: the two countries will deepen cooperation between the two institutes in driving forward the science of AI evaluation through the International Network for Advanced AI Measurement, Evaluation and Science.",
+          "source_ids": [
+            "gb-jp-frontier-tech-partnership-2026"
+          ],
+          "participation": "named_implementer",
+          "domestic_interagency": false,
+          "id": "agreements-c99fd9e6b1004ac788e92192bad1f16d"
         }
       ],
       "wikidata": "Q126284597",
@@ -29621,6 +29711,42 @@
             "institute_id": "gb-aisi",
             "date": "2026-08-26"
           }
+        },
+        {
+          "date": "2026-10-19",
+          "type": "report",
+          "title": "The Effectiveness and Durability of Pretraining Data Filtering in Protein Language Models",
+          "source_ids": [
+            "gb-protein-lm-filtering-2026",
+            "gb-protein-lm-filtering-arxiv-2026"
+          ],
+          "lineage": "the-effectiveness-and-durability-of-pretraining-data-filtering-in-protein-language-models",
+          "attribution": "own_publication",
+          "attribution_note": "Listed with the date 26 October 2026 on the institute's research page, which credits the paper to the institute. The catalogue date follows arXiv's recorded first-submission date as a bibliographic version date. credited_from is the dated institute listing.",
+          "qualifies_as": "published_work",
+          "qualification_note": "Institute-credited technical research with methods or findings, rather than policy, programme reporting or guidance alone.",
+          "credit": {
+            "institute_id": "gb-aisi",
+            "date": "2026-10-26"
+          }
+        },
+        {
+          "date": "2026-10-14",
+          "type": "report",
+          "title": "ReproBAIT: Can coding agents build their own biological AI tools?",
+          "source_ids": [
+            "gb-reprobait-2026",
+            "gb-reprobait-arxiv-2026"
+          ],
+          "lineage": "reprobait-can-coding-agents-build-their-own-biological-ai-tools",
+          "attribution": "own_publication",
+          "attribution_note": "Listed with the date 26 October 2026 on the institute's research page, which credits the paper to the institute. The catalogue date follows arXiv's recorded first-submission date as a bibliographic version date. credited_from is the dated institute listing.",
+          "qualifies_as": "published_work",
+          "qualification_note": "Institute-credited technical research with methods or findings, rather than policy, programme reporting or guidance alone.",
+          "credit": {
+            "institute_id": "gb-aisi",
+            "date": "2026-10-26"
+          }
         }
       ],
       "head": {
@@ -29966,6 +30092,26 @@
               "epoch-frontier-models",
               "epoch-ai-models"
             ]
+          },
+          {
+            "id": "gb-access-gemini-4-argon",
+            "model": "Gemini 4 Argon",
+            "developer": "Google DeepMind",
+            "date": "2026-09-30",
+            "kind": "deeper_than_public",
+            "epoch_basis": "leading_developer",
+            "epoch_model": "Gemini 1.0 Ultra",
+            "epoch_model_date": "2023-12-06",
+            "epoch_notable_model": "Gemini 3.5 Flash",
+            "epoch_notable_date": "2026-05-19",
+            "epoch_source_id": "epoch-notable-models",
+            "named_as": "UK Artificial Intelligence Security Institute",
+            "source_ids": [
+              "google-gemini-4-argon-safety-2026",
+              "gb-minister-speech-2026-10-12",
+              "epoch-notable-models",
+              "epoch-frontier-models"
+            ]
           }
         ],
         "developer_agreements": [
@@ -30003,14 +30149,17 @@
             "named_as": "Taskforce"
           }
         ],
-        "notes": "Event dates are the model's public release date in Epoch AI's data unless the source dates the access itself; the sources state that the access came before release, so the access took place on or before that date. The Epoch AI models cited for the leading-developer test were released at least a month before each such date. Not counted: Kimi K3 (Moonshot, July 2026), as Moonshot has never had a model in Epoch AI's frontier set and the access route is not stated; the Llama 3.1-405B network pilot (October to November 2024), as its weights are public. The developer agreements are the commitments of Anthropic, Google DeepMind and OpenAI to give the institute's predecessor 'deep model access', announced in 2023. No statutory power: no AI bill has been laid. The institute says it has independently evaluated more than 55 models before release, working with industry; the post names no models, so they are not counted as access events.",
+        "notes": "Event dates are the model's public release date in Epoch AI's data unless the source dates the access itself; for every event except Gemini 4 Argon the sources state that the access came before release, so the access took place on or before that date. The Epoch AI models cited for the leading-developer test were released at least a month before each such date. Not counted: Kimi K3 (Moonshot, July 2026), as Moonshot has never had a model in Epoch AI's frontier set and the access route is not stated; the Llama 3.1-405B network pilot (October to November 2024), as its weights are public. The developer agreements are the commitments of Anthropic, Google DeepMind and OpenAI to give the institute's predecessor 'deep model access', announced in 2023. No statutory power: no AI bill has been laid. The institute says it has independently evaluated more than 55 models before release, working with industry; the post names no models, so they are not counted as access events. Gemini 4 Argon is dated 30 September 2026, the day Google announced it and Epoch AI's release date; that day it was rolling out to a set of trusted cyber defenders through Google's Fairwind Program, with an initial cohort of cyber defenders and trusted testers, and release to developers, enterprises and consumers, starting with paid API customers and Google AI Ultra subscribers, was to follow. The sources do not date the institute's access.",
         "source_ids": [
           "depth-us-kimi",
           "sg-pilot-2024",
           "gb-taskforce-rename",
           "epoch-frontier-models",
           "epoch-notable-models",
-          "gb-aisi-best-practice-2026"
+          "gb-aisi-best-practice-2026",
+          "google-gemini-4-argon-safety-2026",
+          "gb-minister-speech-2026-10-12",
+          "google-gemini-4-argon-2026"
         ],
         "searches": [
           {
@@ -30183,6 +30332,10 @@
           {
             "date": "2026-10-24",
             "scope": "Post-release re-check of SGDSN publications and the INESIA page, DGE, ministry and numerique.gouv.fr press pages: the Franco-German joint statement of 17 July 2026 added as a source for the agreement. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-07",
+            "scope": "News re-check since 24 October 2026: SGDSN publications, the enterprise directorate's and the digital ministry's press, the economy ministry's press through search, Senate question 10119 (unanswered) and coverage of the minister's Senate hearing of 4 November. Nothing new found. Left for review: the body of SGDSN's INESIA page (not retrievable). Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -30583,6 +30736,10 @@
           {
             "date": "2026-11-02",
             "scope": "Read the government's answer 21/8727 of 19 October 2026 on staffing, funds, testing, model access, parliamentary scrutiny and further build-up; added its source and excerpts. No confirmation of network membership or phase 2 completion found. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-07",
+            "scope": "News re-check since 2 November 2026: BSI's institute page and digests 09 and 10/2026, ministry press, the AI taskforce report 'Deutschland als KI-Nation 2030' (2 November) and Bundestag Drucksache 21/8810. Added the build-up phase II plan and the 75 per cent frontier-model target to the notes; the digests are cited as sources, not outputs. The latest network member list does not include Germany. Left for review: interior ministry press and further parliamentary documents after 2 November. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -30597,9 +30754,12 @@
         "de-bt-wa-153-2026",
         "de-hib-653-2026",
         "de-bsi-ki-themen-2026-08",
-        "de-bt-8727-2026"
+        "de-bt-8727-2026",
+        "de-bsi-ki-themen-2026-09",
+        "de-bsi-ki-themen-2026-10",
+        "de-ki-taskforce-2030"
       ],
-      "notes": "Intends to take an active part in the international network. The BSI institute page describes AISI Deutschland as still being set up. BSI published the digest 'Aktuelle KI-Sicherheitsthemen 08/2026' as part of setting up the institute; it names AISI Deutschland as recommending in-depth investigation of frontier models but not their broad deployment. The government's answer of 19 October 2026 leaves the institute's further design, remit, organisational and legal form, staffing, technical equipment and budget under discussion. No completion date is fixed for its stepwise build-up. Parliamentary scrutiny runs through the responsible ministries; no separate regular institute report to the Bundestag is envisaged.",
+      "notes": "Intends to take an active part in the international network. The BSI institute page describes AISI Deutschland as still being set up. BSI publishes a monthly digest, 'Aktuelle KI-Sicherheitsthemen' (issues 08, 09 and 10/2026), as part of setting up the institute; the August issue names AISI Deutschland as recommending in-depth investigation of frontier models but not their broad deployment. The digests are BSI's, not counted as institute outputs. The government's answer of 19 October 2026 leaves the institute's further design, remit, organisational and legal form, staffing, technical equipment and budget under discussion. No completion date is fixed for its stepwise build-up. Parliamentary scrutiny runs through the responsible ministries; no separate regular institute report to the Bundestag is envisaged. The federal government's AI taskforce report of 2 November 2026 calls the current stage an initiation phase and plans to expand the institute step by step into an independent national competence and evaluation institute (build-up phase II).",
       "name_local": "AI Safety and Security Institute Deutschland",
       "short_name": "AISI Deutschland",
       "mandate_short": "Analyses leading AI models, especially their cyber capabilities and risks.",
@@ -30699,13 +30859,14 @@
       },
       "testing_capacity": {
         "state": "planned",
-        "notes": "Focus statement, not counted as testing: in the first phase of operation 'liegt ein wichtiger Schwerpunkt in der Analyse und Bewertung führender KI-Modelle' (an important focus is the analysis and assessment of leading AI models). In a first phase the Federal Office for Information Security (BSI) and the Federal Network Agency form a virtual nucleus of the institute. BSI's institute page says 'Zurzeit befindet sich das Institut noch im Aufbau. Der Fokus liegt zunächst auf der Beratung von Verwaltung und Politik' (the institute is still being set up; the initial focus is advising government and policy-makers). The government's answer of 19 October 2026 says the institute initially pools existing BSI and BNetzA capabilities and uses and develops existing testing and evaluation methods. It names no completed or ongoing model evaluation by the institute. No separate posts are allocated for the first phase, and technical equipment and further capacity remain under discussion; no joint network testing is credited. The UK-Germany joint statement of 30 June 2026 says both countries 'will share best practice on AI evaluation'.",
+        "notes": "Focus statement, not counted as testing: in the first phase of operation 'liegt ein wichtiger Schwerpunkt in der Analyse und Bewertung führender KI-Modelle' (an important focus is the analysis and assessment of leading AI models). In a first phase the Federal Office for Information Security (BSI) and the Federal Network Agency form a virtual nucleus of the institute. BSI's institute page says 'Zurzeit befindet sich das Institut noch im Aufbau. Der Fokus liegt zunächst auf der Beratung von Verwaltung und Politik' (the institute is still being set up; the initial focus is advising government and policy-makers). The government's answer of 19 October 2026 says the institute initially pools existing BSI and BNetzA capabilities and uses and develops existing testing and evaluation methods. It names no completed or ongoing model evaluation by the institute. No separate posts are allocated for the first phase, and technical equipment and further capacity remain under discussion; no joint network testing is credited. The UK-Germany joint statement of 30 June 2026 says both countries 'will share best practice on AI evaluation'. The federal government's AI taskforce report 'Deutschland als KI-Nation 2030' of 2 November 2026 sets a target for 2030 that the institute examine and assess at least 75 per cent of new frontier AI models for security-policy impact within four months; it reports no testing.",
         "source_ids": [
           "de-breg",
           "de-bmds",
           "de-bsi-aisi",
           "de-uk-statement-full-2026",
-          "de-bt-8727-2026"
+          "de-bt-8727-2026",
+          "de-ki-taskforce-2030"
         ]
       },
       "model_access": {
@@ -30842,6 +31003,10 @@
           {
             "date": "2026-11-02",
             "scope": "Searched BOE and AESIA for a constitutive act or institute appointment. BOE-A-2026-22898, published 2 November 2026, appoints an AESIA deputy director-general, not an institute head. No constitutive act found; no factual record change. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-07",
+            "scope": "News re-check since 2 November 2026: AESIA news, Official State Gazette searches and the Council of Ministers' references. No constitutive act and no institute appointment found. Left for review: the gazette's daily summaries for 3 to 7 November (searched, not opened). Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -31025,7 +31190,7 @@
       "jurisdiction_id": "NO",
       "host": "KI Norge, Norwegian Digitalisation Agency (Digitaliseringsdirektoratet)",
       "legal_form": "unit_in_existing_body",
-      "mandate": "Would extend KI Norge's mandate to AI safety: capacity to evaluate AI models, with research institutions, and to give guidance on risks and suitable use when choosing models; contact point for AI Safety Institutes.",
+      "mandate": "Would extend KI Norge's mandate to AI safety: capacity to evaluate AI models and to build knowledge of the consequences and risks of advanced AI, with research communities and other actors, and to give guidance on suitable models for different uses; contact point for AI Safety Institutes.",
       "website": null,
       "funding": [
         {
@@ -31130,6 +31295,10 @@
           {
             "date": "2026-10-24",
             "scope": "Post-release re-check of KI Norge and Digdir news: nothing new. The 2027 budget proposition and a government press release describe the measure further; regjeringen.no refused automated access, so they are left for review. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-07",
+            "scope": "News re-check since 24 October 2026: ki.norge.no, the ministry's budget press release and its budget bill (Prop. 1 S (2026-2027), section 2.3), ministry releases of 30 October and 5 and 6 November, and Digitalisation Agency items through search. The mandate now follows the budget bill's wording; status stays proposed. Left for review: the original procurement notice for the executive-assistant contract. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -31416,6 +31585,10 @@
           {
             "date": "2026-10-24",
             "scope": "Post-release re-check of the AI Office page, its library and Commission digital news: the external evaluators workshop report of 21 October 2026 added. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-07",
+            "scope": "News re-check since 24 October 2026: the AI Office page (still more than 125 staff), the library listing, news, the Commissioner's progress-report page and Capgemini's release of 5 November on its tender lot. Nothing new found. Left for review: the progress report itself. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -31988,6 +32161,10 @@
           {
             "date": "2026-10-25",
             "scope": "Saved the full FY2027 NIST budget submission PDF (r5-us-fy2027-request) through a browser and matched its excerpts on printed page NIST-16; raised the FY2027 request confidence to high now that the complete primary document is held. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-07",
+            "scope": "News re-check since 25 October 2026: the institute's pages, news tag, research blog and guidelines, NIST news, NIST IR 8621, Commerce news, Semafor, FedScoop, Puck, Scale AI's DualChem post and the Great American AI Act draft. No new institute output since 25 October; added three earlier research-blog posts as outputs and a press-reported White House statement on the Super Intelligence Force to the reporting-line notes. Left for review: Scale AI's account of a February 2025 research agreement with the institute (no NIST source yet), press reports that the former director resigned in July 2026 and that staff number fewer than 50, and the blog post 'Accelerating AI Innovation Through Measurement Science' (2 December 2025), a research agenda rather than a technical result. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -32042,7 +32219,11 @@
         "us-csis-about",
         "us-hrpt-119-652",
         "r11-us-fiscal-year",
-        "us-gsa-tmf-2024-07-19"
+        "us-gsa-tmf-2024-07-19",
+        "us-blog-cheating-2025",
+        "us-blog-transcripts-2026",
+        "us-blog-red-teaming-2026",
+        "us-semafor-2026-10-28"
       ],
       "notes": "The current NIST pages use CAISSI. The name-history start is the earliest archived use of the name found, NIST's page for the centre as captured on 3 October 2026. Executive Order 14434 of 29 September 2026, which directs the executive branch to use 'Super Intelligence' in place of 'Artificial Intelligence', is the likely trigger, but it does not name this centre or set a date for its rename. The current ministerial basis refers to the June 2025 CAISI decision; the retained establishment date refers to its US AISI predecessor. Canada's CAISI, the Canadian AI Safety Institute, is a different body.",
       "mandate_short": "Leads national security evaluations of superintelligence (SI) systems and develops guidelines to measure and improve their security.",
@@ -32466,6 +32647,57 @@
             "institute_id": "us-caissi",
             "date": "2026-10-16"
           }
+        },
+        {
+          "date": "2025-12-02",
+          "type": "report",
+          "title": "Cheating On AI Agent Evaluations",
+          "source_ids": [
+            "us-blog-cheating-2025"
+          ],
+          "lineage": "cheating-ai-agent-evaluations",
+          "attribution": "own_publication",
+          "attribution_note": "Post on the institute's research blog on NIST's site.",
+          "qualifies_as": "published_work",
+          "qualification_note": "The post reports what the institute found when it searched its own past evaluation transcripts for cheating, a technical result of its own evaluations.",
+          "credit": {
+            "institute_id": "us-caissi",
+            "date": "2025-12-02"
+          }
+        },
+        {
+          "date": "2026-02-18",
+          "type": "report",
+          "title": "Analyzing Transcripts from AI Agent Evaluations",
+          "source_ids": [
+            "us-blog-transcripts-2026"
+          ],
+          "lineage": "analyzing-transcripts-ai-agent-evaluations",
+          "attribution": "own_publication",
+          "attribution_note": "Post on the institute's research blog on NIST's site.",
+          "qualifies_as": "published_work",
+          "qualification_note": "The post reports the institute's contribution of transcript-review practices from its own research to a joint paper with the UK AI Security Institute and other evaluators, technical work on evaluation methods.",
+          "credit": {
+            "institute_id": "us-caissi",
+            "date": "2026-02-18"
+          }
+        },
+        {
+          "date": "2026-03-23",
+          "type": "report",
+          "title": "Insights into AI Agent Security from a Large-Scale Red-Teaming Competition",
+          "source_ids": [
+            "us-blog-red-teaming-2026"
+          ],
+          "lineage": "insights-ai-agent-security-large-scale-red-teaming-competition",
+          "attribution": "own_publication",
+          "attribution_note": "Post on the institute's research blog on NIST's site.",
+          "qualifies_as": "published_work",
+          "qualification_note": "The post reports findings on the robustness of leading AI models from a research paper the institute published with partners, a technical result credited to it.",
+          "credit": {
+            "institute_id": "us-caissi",
+            "date": "2026-03-23"
+          }
         }
       ],
       "people": [
@@ -32496,8 +32728,10 @@
         "name_en": "U.S. Department of Commerce",
         "source_ids": [
           "us-nist-about",
-          "us-trains"
-        ]
+          "us-trains",
+          "us-semafor-2026-10-28"
+        ],
+        "notes": "Semafor reported on 28 October 2026 a White House official's statement that senior institute officials will collaborate with White House colleagues within the Super Intelligence Force; the reporting line is unchanged."
       },
       "national_partners": {
         "state": "stated",
@@ -32509,7 +32743,7 @@
             "what": "national cyber defence agency",
             "relation": "works_with",
             "cyber_agency": true,
-            "how": "Takes part, within the Department of Homeland Security, in the TRAINS Taskforce chaired by the then US AI Safety Institute.",
+            "how": "Has initial representation on the TRAINS Taskforce chaired by the then US AI Safety Institute.",
             "source_ids": [
               "us-trains",
               "rows-what-us-cisa"
@@ -32521,7 +32755,7 @@
             "acronym": "DoD / CDAO",
             "what": "US defence department",
             "relation": "works_with",
-            "how": "Has initial representation, including its Chief Digital and Artificial Intelligence Office, on the TRAINS Taskforce chaired by the then US AI Safety Institute.",
+            "how": "Has initial representation on the TRAINS Taskforce chaired by the then US AI Safety Institute.",
             "source_ids": [
               "us-trains"
             ]
@@ -32532,7 +32766,7 @@
             "acronym": "NSA",
             "what": "signals intelligence and cryptologic agency",
             "relation": "works_with",
-            "how": "Is represented within the Department of Defense on the TRAINS Taskforce chaired by the then US AI Safety Institute.",
+            "how": "Has initial representation on the TRAINS Taskforce chaired by the then US AI Safety Institute.",
             "source_ids": [
               "us-trains",
               "rows-what-us-nsa"
@@ -32544,7 +32778,7 @@
             "acronym": "DOE labs",
             "what": "US energy department and laboratories",
             "relation": "works_with",
-            "how": "Takes part with ten of its National Laboratories in the TRAINS Taskforce chaired by the then US AI Safety Institute.",
+            "how": "Has initial representation on the TRAINS Taskforce chaired by the then US AI Safety Institute.",
             "source_ids": [
               "us-trains"
             ]
@@ -32555,7 +32789,7 @@
             "acronym": "NIH",
             "what": "health agency",
             "relation": "works_with",
-            "how": "Is represented on the TRAINS Taskforce chaired by the then US AI Safety Institute.",
+            "how": "Has initial representation on the TRAINS Taskforce chaired by the then US AI Safety Institute.",
             "source_ids": [
               "us-trains"
             ]
@@ -33132,6 +33366,10 @@
           {
             "date": "2026-10-24",
             "scope": "Post-release re-check of the institute page, ISED and NRC news, CIFAR and aisafety.ca: nothing new. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-07",
+            "scope": "News re-check since 24 October 2026: the ISED institute page, ISED news, the Prime Minister's Cohere release of 29 October, the Canada-EU summit statements of 30 October, the Digital Partnership Council statement of December 2025, the aisafety.ca and CIFAR items and the National Research Council's AI safety page. Testing capacity now records the National Research Council as testing through the institute. Left for review: Cohere's commitment of 29 October to keep working with the institute, the December 2025 Canada-EU intent to deepen engagement between the institute and the EU AI Office, and the period of CIFAR's CAD 27m. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -33162,7 +33400,8 @@
         "ca-cse-annual-en",
         "ca-cse-annual-fr",
         "ca-ised-dp-2025-26-tpp",
-        "r11-ca-fiscal-year"
+        "r11-ca-fiscal-year",
+        "ca-nrc-ai-safety"
       ],
       "mandate_short": "Researches risks from advanced artificial intelligence and ways to reduce them.",
       "legal_basis": {
@@ -33486,8 +33725,7 @@
         "notes": "Cyber agency searched: Canadian Centre for Cyber Security (CCCS) and its parent Communications Security Establishment Canada (CSE), 2026-10-20 (en, fr). The CSE annual report names strategic direction for CAISI; no separate CCCS cooperation was found in its English or French about pages or targeted searches."
       },
       "testing_capacity": {
-        "state": "planned",
-        "notes": "Function statement, not counted as testing: 'We conduct projects supporting the government's priorities on AI safety, including joint testing with international counterparts' (ISED institute page). ISED says the institute 'directly conducts projects supporting the Government's priorities on AI safety through the National Research Council', a stream 'implemented through a Memorandum of Understanding (MOU) with the National Research Council (NRC)'; no source says the National Research Council tests models for the institute. No headcount or technical staff is published. Joint network testing reported, 2025-06-26 (multilingual exercise, Canada contributing analysis) and 2025-07-17 (agentic exercise, Canada contributing to the analysis phase), neither crediting Canada with running tests. The renewed UK-Canada partnership of 13 October 2026 mentions 'exploring staff exchanges and coordinated evaluation activities'.",
+        "notes": "Function statement, not counted as testing: 'We conduct projects supporting the government's priorities on AI safety, including joint testing with international counterparts' (ISED institute page). ISED says the institute 'directly conducts projects supporting the Government's priorities on AI safety through the National Research Council', a stream 'implemented through a Memorandum of Understanding (MOU) with the National Research Council (NRC)'. The National Research Council says its researchers took part in a joint testing exercise through the institute, evaluating AI agents and how well AI prevents harmful content in nine languages. No headcount or technical staff is published. Joint network testing reported, 2025-06-26 (multilingual exercise) and 2025-07-17 (agentic exercise); the network reports credit Canada with analysis. The renewed UK-Canada partnership of 13 October 2026 mentions 'exploring staff exchanges and coordinated evaluation activities'. The national AI strategy says Canada will invest $50 million to expand the institute's capabilities, including to conduct transparent evaluations of AI models.",
         "source_ids": [
           "r5-ca-ai-for-all",
           "ca-ised",
@@ -33495,7 +33733,17 @@
           "ca-qp-caisi-2025",
           "network-multilingual-2025",
           "catalogue-agentic-report",
-          "gb-ca-renewal-2026"
+          "gb-ca-renewal-2026",
+          "ca-nrc-ai-safety"
+        ],
+        "modes": [
+          {
+            "code": "via_other_bodies",
+            "source_ids": [
+              "ca-nrc-ai-safety"
+            ],
+            "named_as": "Canadian Artificial Intelligence Safety Institute"
+          }
         ]
       },
       "model_access": {
@@ -33705,6 +33953,14 @@
           {
             "date": "2026-10-24",
             "scope": "Search-protocol pilot: institute output census to April 2024, activity and notes, IPA press, Cabinet Office AI budget summaries, METI budget request and Diet records read, then logged queries in Japanese and English; no change to the record. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-07",
+            "scope": "Added the June 2026 UK-Japan Frontier Technology Partnership on the two institutes as an announced agreement. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-07",
+            "scope": "News re-check since 24 October 2026: the institute's activity and output indexes, the 30 October evaluation note and its report, the IPA press list, the Cabinet Office AI pages and expert panel papers of 26 October, the minister's visit of 27 October and the foreign ministry's release on the UK-Japan Joint Committee. Added the GLM-5.3 evaluation as an output, with its API use in the model access notes. The minister's call of 27 October to strengthen the institute and the Chief Cabinet Secretary's instruction of 22 October to review the AI Act are context; no field records them. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -33776,7 +34032,10 @@
         "jp-ipa-oct9",
         "jp-mic-telecommunications",
         "jp-mic-about",
-        "gb-jp-joint-committee-2026"
+        "gb-jp-joint-committee-2026",
+        "gb-jp-frontier-tech-partnership-2026",
+        "jp-aisi-note-glm-2026",
+        "jp-aisi-note-glm-pdf-2026"
       ],
       "people": [
         {
@@ -33889,6 +34148,19 @@
           "participation": "named_implementer",
           "domestic_interagency": false,
           "id": "agreements-0de799faa70640d78c37d2c4d5f0f6fe"
+        },
+        {
+          "counterparty_type": "government",
+          "counterparty": "UK Government, for the UK AI Security Institute",
+          "state": "announced",
+          "date": "2026-06-14",
+          "scope": "UK-Japan Frontier Technology Partnership, announced by the Prime Minister's Office: the two countries will deepen cooperation between the two institutes in driving forward the science of AI evaluation through the International Network for Advanced AI Measurement, Evaluation and Science.",
+          "source_ids": [
+            "gb-jp-frontier-tech-partnership-2026"
+          ],
+          "participation": "named_implementer",
+          "domestic_interagency": false,
+          "id": "agreements-e3b3a4e8db5844b7ad4d6b330bad895f"
         }
       ],
       "wikidata": "Q139585178",
@@ -34472,6 +34744,24 @@
             "institute_id": "jp-aisi",
             "date": "2026-01-09"
           }
+        },
+        {
+          "date": "2026-10-30",
+          "type": "evaluation",
+          "title": "AI Experiment Notes: How the Cyber Capabilities of Open-Weight AI Models Are Changing (What the GLM-5.3 Evaluation Means for Vulnerability Management)",
+          "source_ids": [
+            "jp-aisi-note-glm-2026",
+            "jp-aisi-note-glm-pdf-2026"
+          ],
+          "lineage": "glm-5-3-cyber-capabilities",
+          "attribution": "own_publication",
+          "attribution_note": "Evaluation note on the institute's own site; the full report it links names the institute on its cover and is dated 30 October 2026.",
+          "qualifies_as": "published_work",
+          "qualification_note": "Reports the method and results of the institute's own cyber capability evaluation of models.",
+          "credit": {
+            "institute_id": "jp-aisi",
+            "date": "2026-10-30"
+          }
         }
       ],
       "notes": "Historical staffing figures were checked against the underlying Cabinet Office PDFs. The April comparison table gives 31; the governing-party (LDP) recommendation of 19 December 2025 that the same document reproduces gives 30; their different wording is retained rather than silently reconciled.",
@@ -34565,12 +34855,13 @@
         ]
       },
       "model_access": {
-        "notes": "The June 2026 evaluation of Claude Opus 4.8 ran with the real-time cyber safeguards normally applied in deployment removed; the note does not say how that access was provided. No legal power, and no agreement providing for access to or evaluation of a frontier developer's models, was found. Agreements with such developers provide for neither access to nor evaluation of their models: the Anthropic memorandum of cooperation (29 October 2025) is 'an agreement to conduct the exchange of information and best practices on methods for companies to evaluate capabilities, limitations, and risks of AI models', and the OpenAI memorandum (29 May 2026) only explores cooperation on safety evaluation and benchmarks. Anthropic's announcement of 31 March 2026 refers to 'the arrangements we have with safety institutes in the US, UK, and Japan, where early access and technical information sharing has helped governments', which is undated and names no model. The AI Promotion Act (Act No. 53 of 2025) does not mention the institute.",
+        "notes": "The June 2026 evaluation of Claude Opus 4.8 ran with the real-time cyber safeguards normally applied in deployment removed; the note does not say how that access was provided. No legal power, and no agreement providing for access to or evaluation of a frontier developer's models, was found. Agreements with such developers provide for neither access to nor evaluation of their models: the Anthropic memorandum of cooperation (29 October 2025) is 'an agreement to conduct the exchange of information and best practices on methods for companies to evaluate capabilities, limitations, and risks of AI models', and the OpenAI memorandum (29 May 2026) only explores cooperation on safety evaluation and benchmarks. Anthropic's announcement of 31 March 2026 refers to 'the arrangements we have with safety institutes in the US, UK, and Japan, where early access and technical information sharing has helped governments', which is undated and names no model. The AI Promotion Act (Act No. 53 of 2025) does not mention the institute. The report of 30 October 2026 says GLM-5.3, GLM-5.2 and Claude Opus 4.8 were used via API; it describes no access beyond that, so it is not counted as an access event.",
         "source_ids": [
           "jp-anthropic-moc-2025",
           "jp-openai-moc-2026",
           "au-anthropic-news-2026",
-          "jp-ai-promotion-act"
+          "jp-ai-promotion-act",
+          "jp-aisi-note-glm-pdf-2026"
         ],
         "searches": [
           {
@@ -34853,6 +35144,10 @@
           {
             "date": "2026-10-24",
             "scope": "Post-release re-check of the institute's Korean and English news boards and MSIT press releases: the MoU with the Singapore institute and Forecast Report No. 5 added; the ROK-FORTRESS benchmark is left for review. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-07",
+            "scope": "News re-check since 24 October 2026: the institute's Korean and English news boards, the ROK-FORTRESS paper on arXiv, Scale AI's blog, an Edaily interview of 2 November and ministry releases through a mirror. Added ROK-FORTRESS (credited from the institute's post of 18 September 2026) and the Korean edition of the Frontier AI Risk Update as outputs, and the evaluation reported on 3 November, whose results are withheld, as in-house testing. Left for review: an interview figure of about 27 permanent staff. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -34874,7 +35169,11 @@
         "gb-joint-testing",
         "kr-aisi-sub31",
         "kr-policy-briefing-2024-10-18",
-        "kr-msit-2024-11-pdf"
+        "kr-msit-2024-11-pdf",
+        "kr-rok-fortress-2026",
+        "kr-rok-fortress-arxiv-2026",
+        "kr-aire-risk-update-2026",
+        "kr-uncensored-eval-2026"
       ],
       "people": [
         {
@@ -35056,6 +35355,41 @@
             "institute_id": "kr-aisi",
             "date": "2026-09-03"
           }
+        },
+        {
+          "date": "2026-05-13",
+          "type": "evaluation",
+          "title": "ROK-FORTRESS: Measuring the Effect of Geopolitical Transcreation for National Security and Public Safety",
+          "source_ids": [
+            "kr-rok-fortress-2026",
+            "kr-rok-fortress-arxiv-2026"
+          ],
+          "lineage": "rok-fortress",
+          "attribution": "named_contributor",
+          "attribution_note": "The institute's Korean news board post of 18 September 2026 says Scale AI and the institute developed the benchmark jointly. The catalogue date follows arXiv's recorded first-submission date as a bibliographic version date. The arXiv record alone does not credit the institute, so the credit date is the institute's post.",
+          "qualifies_as": "published_work",
+          "qualification_note": "A benchmark with published results that the institute credits as its joint work, an evaluation artefact rather than policy or guidance.",
+          "credit": {
+            "institute_id": "kr-aisi",
+            "date": "2026-09-18"
+          }
+        },
+        {
+          "date": "2026-10-02",
+          "type": "report",
+          "title": "Frontier AI Risk Update, First Half of 2026",
+          "source_ids": [
+            "kr-aire-risk-update-2026"
+          ],
+          "lineage": "frontier-ai-risk-update-2026-h1",
+          "attribution": "named_contributor",
+          "attribution_note": "The institute's Korean news board says it took part in drafting the update with AI Risk Explorer (AIRE) and prepared the Korean edition.",
+          "qualifies_as": "none",
+          "qualification_note": "A review of published model evaluations, benchmarks, incidents and research; it reports no evaluation or test result of the institute's own.",
+          "credit": {
+            "institute_id": "kr-aisi",
+            "date": "2026-10-02"
+          }
         }
       ],
       "head": {
@@ -35109,17 +35443,19 @@
           {
             "code": "in_house",
             "source_ids": [
-              "sg-kr-agent-2026"
+              "sg-kr-agent-2026",
+              "kr-uncensored-eval-2026"
             ],
             "named_as": "KR AISI"
           }
         ],
-        "notes": "Kakao says it carried out a joint safety evaluation of its own language model with the institute in 2025: '카카오는 지난해 인공지능안전연구소와 함께 자체 언어모델 'Kanana-1.5-9.8B'를 대상으로 공동 안전성 평가를 진행했으며' (last year Kakao, together with the AI Safety Institute, carried out a joint safety evaluation of its own language model Kanana-1.5-9.8B). Article 10(1) of the Enforcement Decree of the AI Basic Act lists '인공지능안전 관련 평가 시스템의 구축 및 운영' (building and operating AI safety evaluation systems) among the institute's tasks. Joint network testing reported, 2025-06-26 (multilingual exercise) and 2025-07-17 (agentic exercise).",
+        "notes": "Kakao says it carried out a joint safety evaluation of its own language model with the institute in 2025: '카카오는 지난해 인공지능안전연구소와 함께 자체 언어모델 'Kanana-1.5-9.8B'를 대상으로 공동 안전성 평가를 진행했으며' (last year Kakao, together with the AI Safety Institute, carried out a joint safety evaluation of its own language model Kanana-1.5-9.8B). Article 10(1) of the Enforcement Decree of the AI Basic Act lists '인공지능안전 관련 평가 시스템의 구축 및 운영' (building and operating AI safety evaluation systems) among the institute's tasks. Joint network testing reported, 2025-06-26 (multilingual exercise) and 2025-07-17 (agentic exercise). On 3 November 2026 the institute said it had evaluated the harmfulness of two open-weight models against versions with their refusal training removed; it keeps the detailed results private and published only the SHA-256 hash of the report.",
         "source_ids": [
           "kr-kakao-mou-2026",
           "kr-ai-basic-act-decree",
           "network-multilingual-2025",
-          "catalogue-agentic-report"
+          "catalogue-agentic-report",
+          "kr-uncensored-eval-2026"
         ]
       },
       "model_access": {
@@ -35274,6 +35610,10 @@
           {
             "date": "2026-10-24",
             "scope": "Post-release re-check of the institute's resources, MDDI and IMDA news: the MoU with the Korean institute added from the Korean source; nothing new on the institute's own pages since 23 July 2026. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-07",
+            "scope": "News re-check since 24 October 2026: the institute's resources page, the digital ministry's newsroom and three written answers of 4 November, IMDA items through reposts, the Anthropic memorandum of 13 and 14 October, the institute's LinkedIn post and the NTU-Google memorandum. Nothing new found; the Anthropic memorandum does not name the institute. Left for review: IMDA's press index (not retrievable). Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -35733,6 +36073,10 @@
           {
             "date": "2026-10-24",
             "scope": "Post-release re-check of the institute page, department news and publications: the April 2026 government MOU with Microsoft added. The minister's media page could not be read after 6 October 2026. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-07",
+            "scope": "News re-check since 24 October 2026: the institute page, the department's news and publications, the ministers' media pages, the minister's speech of 8 October, the department's annual report 2025-26 (23 October, highlights only) and the Joint Select Committee on AI hearing of 30 October. The annual report's statement that the institute was formally launched on 1 June 2026 is left for the set-up date review. No funding decision found; the evaluation agreement with Anthropic is still not final. Left for review: the full annual report, the launch speech and the committee's answers on notice. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -36168,6 +36512,10 @@
           {
             "date": "2026-10-24",
             "scope": "Post-release re-check of the AI Malaysia institute page and news and Ministry of Digital releases: nothing new. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-07",
+            "scope": "News re-check since 24 October 2026: the institute page and ai.gov.my, the digital ministry's releases, the Dewan Rakyat Hansard for 5, 28 and 29 October and press coverage. The minister's answer of 5 October on the institute's remit (safety benchmarking, risk assessment, incident reporting) is a further source, left for review; the AI bill is still pending. Left for review: passage of the Supply Bill 2027 and the final Hansard for 28 October. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -36400,6 +36748,10 @@
           {
             "date": "2026-10-24",
             "scope": "Post-release re-check of IndiaAI and MeitY news through searches, since the IndiaAI pages refused automated access: nothing new from an official source. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-07",
+            "scope": "News re-check since 24 October 2026: press releases of 30 and 31 October and 3 November, press coverage, and searches for the head, calls for interest, outputs and agreements. Nothing official on the institute found. Left for review: a press report of 7 October that the IndiaAI COO spoke of the institute's formal constitution as still to come; the IndiaAI news pages (blocked on every route) and the ministry's consultation paper (not yet released). Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -36572,6 +36924,10 @@
           {
             "date": "2026-10-24",
             "scope": "Search-protocol pilot: ministry news and policy pages, Cabinet briefs, Parliament papers and the 2026/27 programme budget read, then logged queries in English and Swahili; the draft AI policy is still not adopted. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-07",
+            "scope": "News re-check since 24 October 2026: the Cabinet Office despatches and Cabinet News of 9 October, the President's cabinet briefs, the ICT ministry homepage, the KICA amendment bill notice, Parliament's AI bill page and press coverage. The draft AI policy is not adopted; the Senate ICT committee recommended against the AI Bill 2026, which would create an AI Commissioner, not the institute. Left for review: the Senate committee report (not retrievable). Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -73654,10 +74010,68 @@
               {
                 "id": "related_bodies-d0f364f988eb57f3ae4326d78d0df766"
               },
-              "role"
+              "designation_note"
             ]
           ],
           "gloss": "Market surveillance authority and single point of contact."
+        },
+        {
+          "text": "ferma restando l'attribuzione alla Banca d'Italia, alla CONSOB e all'IVASS del ruolo di autorità di vigilanza del mercato ai sensi e secondo quanto previsto dall' articolo 74",
+          "gloss": "without prejudice to the attribution to the Banca d'Italia, CONSOB and IVASS of the role of market surveillance authority under and as provided by Article 74",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "IT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-cfb18691f52652f9b1cf8001f6aa073a"
+              },
+              "designation_note"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "IT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-51b3a2a2081650b98424fc5125a8ce28"
+              },
+              "designation_note"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "IT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-4e74849e95025a8a87dd5a67d9253985"
+              },
+              "designation_note"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        },
+        {
+          "text": "designata quale autorità di notifica ai sensi dell'articolo 70 del medesimo regolamento",
+          "gloss": "designated as notifying authority under Article 70 of the same Regulation",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "IT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-86ccb972e5f052fb83f1cd9a4847f890"
+              },
+              "designation_note"
+            ]
+          ],
+          "accessed": "2026-11-07"
         }
       ],
       "origin": "IT",
@@ -87032,7 +87446,7 @@
                 "id": "ca-caisi"
               },
               "testing_capacity",
-              "state"
+              "notes"
             ]
           ],
           "accessed": "2026-10-21"
@@ -99089,6 +99503,116 @@
             ]
           ],
           "accessed": "2026-10-21"
+        },
+        {
+          "text": "Gemini 1.0 Ultra,Google DeepMind,2023-12-06",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "model_access",
+              "access_events",
+              {
+                "id": "gb-access-gemini-4-argon"
+              },
+              "epoch_model"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "model_access",
+              "access_events",
+              {
+                "id": "gb-access-gemini-4-argon"
+              },
+              "epoch_model_date"
+            ]
+          ],
+          "accessed": "2026-10-21"
+        },
+        {
+          "text": "Gemini 3.5 Flash,Google DeepMind,2026-05-19",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "model_access",
+              "access_events",
+              {
+                "id": "gb-access-gemini-4-argon"
+              },
+              "epoch_notable_model"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "model_access",
+              "access_events",
+              {
+                "id": "gb-access-gemini-4-argon"
+              },
+              "epoch_notable_date"
+            ]
+          ],
+          "accessed": "2026-10-21"
+        },
+        {
+          "text": "Gemini 4 Argon,Google DeepMind,2026-09-30",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "model_access",
+              "access_events",
+              {
+                "id": "gb-access-gemini-4-argon"
+              },
+              "developer"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "model_access",
+              "access_events",
+              {
+                "id": "gb-access-gemini-4-argon"
+              },
+              "date"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "model_access",
+              "access_events",
+              {
+                "id": "gb-access-gemini-4-argon"
+              },
+              "model"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "model_access",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-10-21"
         }
       ],
       "snapshot": {
@@ -103841,6 +104365,48 @@
             ]
           ],
           "accessed": "2026-10-24"
+        },
+        {
+          "text": "Det blir foreslått 30 mill. kroner til å styrkje KI Noreg med kapasitet til å evaluere KI-modellar samt skaffe kunnskap om konsekvensar og risiko knytt til avansert kunstig intelligens.",
+          "gloss": "NOK 30 million is proposed to strengthen KI Norge with capacity to evaluate AI models and to acquire knowledge of the consequences and risks of advanced artificial intelligence.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "mandate"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        },
+        {
+          "text": "Arbeidet skal skje i samarbeid med forskingsmiljø og andre relevante aktørar.",
+          "gloss": "The work is to be done in cooperation with research communities and other relevant actors.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "mandate"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        },
+        {
+          "text": "KI Noreg skal rettleie om eignaheit ved val av konkrete modellar til ulike bruksområde.",
+          "gloss": "KI Norge is to give guidance on suitability when choosing specific models for different uses.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "mandate"
+            ]
+          ],
+          "accessed": "2026-11-07"
         }
       ],
       "snapshot": {
@@ -107330,6 +107896,2290 @@
         "text_sha256": "af6b66b3963bce102a5f63165565ca1cc502b1630d63ba726e46c58d327f41f0",
         "text_scheme": 1
       }
+    },
+    {
+      "id": "id-korika-rua-2026",
+      "url": "https://korika.id/liputan-media/korika-sukses-gelar-rapat-umum-anggota-pertama-memperkuat-ekosistem-ai-indonesia-menuju-kolaborasi-multi-helix-yang-berdampak-nyata/",
+      "title": "KORIKA Sukses Gelar Rapat Umum Anggota Pertama: Memperkuat Ekosistem AI Indonesia Menuju Kolaborasi Multi-Helix yang Berdampak Nyata",
+      "title_en": "KORIKA successfully holds its first General Members' Meeting: strengthening Indonesia's AI ecosystem towards multi-helix collaboration with real impact",
+      "publisher": "KORIKA",
+      "type": "primary",
+      "published": "2026-04-30",
+      "language": "id",
+      "origin": "ID",
+      "excerpts": [
+        {
+          "text": "KORIKA ditetapkan sebagai organisasi masyarakat yang independen",
+          "gloss": "KORIKA is established as an independent civil-society organisation",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "ID"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-aad469c6d98155afafe04c3684084aa5"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        },
+        {
+          "text": "135 peserta dari total 179 anggota terdaftar",
+          "gloss": "135 participants out of a total of 179 registered members",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "ID"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-aad469c6d98155afafe04c3684084aa5"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        },
+        {
+          "text": "Pengesahan Rencana Kerja dan Anggaran Perkumpulan (RKAP) 2026",
+          "gloss": "Approval of the 2026 Work Plan and Budget of the Association (RKAP)",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "ID"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-aad469c6d98155afafe04c3684084aa5"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        }
+      ],
+      "accessed": "2026-11-07",
+      "snapshot": {
+        "retrieved": "2026-11-07T23:13:47Z",
+        "sha256": "371c1e8b6f05d680bba42c3adf59f46fe282183b4ef8cb76af4019945ba0b79e",
+        "text_sha256": "9443dcbfe935ac2ae442528a1b32f900b0cce0b9f220d9a60f45129bb0ad8ae1",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "gb-protein-lm-filtering-2026",
+      "url": "https://www.aisi.gov.uk/research/the-effectiveness-and-durability-of-pretraining-data-filtering-in-protein-language-models",
+      "title": "The Effectiveness and Durability of Pretraining Data Filtering in Protein Language Models",
+      "publisher": "AI Security Institute",
+      "type": "primary",
+      "published": "2026-10-26",
+      "language": "en",
+      "origin": "GB",
+      "output_role": "document",
+      "output_lineage": "the-effectiveness-and-durability-of-pretraining-data-filtering-in-protein-language-models",
+      "excerpts": [
+        {
+          "text": "This work establishes pretraining filtering as moderately effective at selectively degrading performance on viral proteins, but not durable against fine-tuning with modest computational resources and access to relevant data.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "the-effectiveness-and-durability-of-pretraining-data-filtering-in-protein-language-models"
+              },
+              "credit",
+              "institute_id"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        },
+        {
+          "text": "The Effectiveness and Durability of Pretraining Data Filtering in Protein Language Models Oct 26, 2026",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "the-effectiveness-and-durability-of-pretraining-data-filtering-in-protein-language-models"
+              },
+              "title"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "the-effectiveness-and-durability-of-pretraining-data-filtering-in-protein-language-models"
+              },
+              "credit",
+              "date"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        }
+      ],
+      "accessed": "2026-11-07",
+      "snapshot": {
+        "retrieved": "2026-11-07T23:32:18Z",
+        "sha256": "c0a3c1d490a3d95ec7a428a954c1402e3e3f9dad9c73395d0d4093fe95a17eb2",
+        "text_sha256": "702c6f910207cadf07a1c3e66dd61abc87bb026c03e3aa198cab6d57922a5ad4",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "gb-protein-lm-filtering-arxiv-2026",
+      "url": "https://arxiv.org/abs/2610.26651",
+      "title": "The Effectiveness and Durability of Pretraining Data Filtering in Protein Language Models",
+      "publisher": "arXiv",
+      "type": "primary",
+      "published": "2026-10-19",
+      "language": "en",
+      "origin": "GB",
+      "output_role": "document",
+      "output_lineage": "the-effectiveness-and-durability-of-pretraining-data-filtering-in-protein-language-models",
+      "excerpts": [
+        {
+          "text": "Submitted on 19 Oct 2026",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "the-effectiveness-and-durability-of-pretraining-data-filtering-in-protein-language-models"
+              },
+              "date"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        }
+      ],
+      "accessed": "2026-11-07",
+      "snapshot": {
+        "retrieved": "2026-11-07T23:32:18Z",
+        "sha256": "b6801c4262b413cb826738010df7cf8fae82b219122258cc41382dd33e09e23b",
+        "text_sha256": "a5109671bad6d2a24ab0f6bcf7b4fbfc99df64036d7033a4372d078d8ac172f6",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "gb-reprobait-2026",
+      "url": "https://www.aisi.gov.uk/research/reprobait-can-coding-agents-build-their-own-biological-ai-tools",
+      "title": "ReproBAIT: Can coding agents build their own biological AI tools?",
+      "publisher": "AI Security Institute",
+      "type": "primary",
+      "published": "2026-10-26",
+      "language": "en",
+      "origin": "GB",
+      "output_role": "document",
+      "output_lineage": "reprobait-can-coding-agents-build-their-own-biological-ai-tools",
+      "excerpts": [
+        {
+          "text": "We introduce an evaluation titled ReproBAIT (Reproducing Biological AI Tools), which measures the ability of coding agents to design, implement, and train biological AI tools taken from published research across a range of information access conditions.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "reprobait-can-coding-agents-build-their-own-biological-ai-tools"
+              },
+              "credit",
+              "institute_id"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        },
+        {
+          "text": "ReproBAIT: Can coding agents build their own biological AI tools? Oct 26, 2026",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "reprobait-can-coding-agents-build-their-own-biological-ai-tools"
+              },
+              "title"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "reprobait-can-coding-agents-build-their-own-biological-ai-tools"
+              },
+              "credit",
+              "date"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        }
+      ],
+      "accessed": "2026-11-07",
+      "snapshot": {
+        "retrieved": "2026-11-07T23:32:20Z",
+        "sha256": "f264832737e44f3355298c3e61338468c300847f9c75a44dc8d3434f9e14ef11",
+        "text_sha256": "3bb8d3a670a6b8cd35e6cf2c4a03588026bd7e36ba46beb3487e0ddb6c3df7ed",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "gb-reprobait-arxiv-2026",
+      "url": "https://arxiv.org/abs/2610.19810",
+      "title": "ReproBAIT: Can coding agents build their own biological AI tools?",
+      "publisher": "arXiv",
+      "type": "primary",
+      "published": "2026-10-14",
+      "language": "en",
+      "origin": "GB",
+      "output_role": "document",
+      "output_lineage": "reprobait-can-coding-agents-build-their-own-biological-ai-tools",
+      "excerpts": [
+        {
+          "text": "Submitted on 14 Oct 2026",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "reprobait-can-coding-agents-build-their-own-biological-ai-tools"
+              },
+              "date"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        }
+      ],
+      "accessed": "2026-11-07",
+      "snapshot": {
+        "retrieved": "2026-11-07T23:32:21Z",
+        "sha256": "95fadc0e7098ad00537d72cc5dc4e665a3478ff6e4cf9e5e8e39ee471e5c0c14",
+        "text_sha256": "3f6228d3524293ad3b99d94b43a2923b3bcca24b6b5cb70260f7f972e9b5043d",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "gb-pq-37339-2026",
+      "url": "https://questions-statements.parliament.uk/written-questions/detail/2026-10-22/37339",
+      "title": "AI Security Institute: ICT (UIN 37339)",
+      "publisher": "UK Parliament, House of Commons (answer by the Cabinet Office)",
+      "type": "primary",
+      "published": "2026-11-02",
+      "language": "en",
+      "origin": "GB",
+      "excerpts": [
+        {
+          "text": "The AI Security Institute spent £3.34 million on compute in the 2025-26 financial year (April 2025 to March 2026).",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-2da3817e81915eca86fd0a0799453a97"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        }
+      ],
+      "accessed": "2026-11-07",
+      "snapshot": {
+        "retrieved": "2026-11-07T23:32:23Z",
+        "sha256": "46007e6d1221184f0a9c5bd0fc4706e1b898925bdb29c0bf951abb27d9527361",
+        "text_sha256": "25c91488ea17db57c3f5b937e2417fe4c2acf9572f1c1e2c434858b78f15650f",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "gb-jp-frontier-tech-partnership-2026",
+      "url": "https://www.gov.uk/government/news/uk-japan-frontier-technology-partnership",
+      "title": "UK-Japan Frontier Technology Partnership",
+      "publisher": "Prime Minister's Office, 10 Downing Street",
+      "type": "primary",
+      "published": "2026-06-14",
+      "language": "en",
+      "origin": "GB",
+      "excerpts": [
+        {
+          "text": "We will deepen cooperation between Japan AISI and UK AISI in driving forward the science of AI evaluation through the International Network for Advanced AI Measurement, Evaluation and Science.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-c99fd9e6b1004ac788e92192bad1f16d"
+              },
+              "state"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-c99fd9e6b1004ac788e92192bad1f16d"
+              },
+              "counterparty"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-c99fd9e6b1004ac788e92192bad1f16d"
+              },
+              "scope"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-c99fd9e6b1004ac788e92192bad1f16d"
+              },
+              "participation"
+            ],
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-e3b3a4e8db5844b7ad4d6b330bad895f"
+              },
+              "state"
+            ],
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-e3b3a4e8db5844b7ad4d6b330bad895f"
+              },
+              "counterparty"
+            ],
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-e3b3a4e8db5844b7ad4d6b330bad895f"
+              },
+              "scope"
+            ],
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-e3b3a4e8db5844b7ad4d6b330bad895f"
+              },
+              "participation"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        },
+        {
+          "text": "14 June 2026",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-c99fd9e6b1004ac788e92192bad1f16d"
+              },
+              "date"
+            ],
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-e3b3a4e8db5844b7ad4d6b330bad895f"
+              },
+              "date"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        }
+      ],
+      "accessed": "2026-11-07",
+      "snapshot": {
+        "retrieved": "2026-11-07T23:32:23Z",
+        "sha256": "73b55340a09d4edc427882578fc650f128db9c98f34e5bc9804f4f6b60b77df7",
+        "text_sha256": "bbbcba9dcdc9fa1f88b93ff9c6b0b3f8e213ee506791fa0547d25b7c3c865e94",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "kr-rok-fortress-2026",
+      "url": "https://www.aisi.re.kr/kor/article/ATCL75b4fb0a5/124",
+      "title": "언어만의 문제가 아니다, ROK-FORTRESS가 보여주는 다국어 AI 안전의 과제",
+      "title_en": "Not just a language problem: the challenges of multilingual AI safety that ROK-FORTRESS shows",
+      "publisher": "Korea AI Safety Institute",
+      "type": "primary",
+      "published": "2026-09-18",
+      "language": "ko",
+      "origin": "KR",
+      "output_role": "document",
+      "output_lineage": "rok-fortress",
+      "excerpts": [
+        {
+          "text": "ROK-FORTRESS는 Scale AI와 한국 인공지능안전연구소가 공동으로 개발하였다.",
+          "gloss": "ROK-FORTRESS was developed jointly by Scale AI and the Korea AI Safety Institute.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "rok-fortress"
+              },
+              "attribution"
+            ],
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "rok-fortress"
+              },
+              "credit",
+              "institute_id"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        },
+        {
+          "text": "등록일 2026-09-18 12:24:06",
+          "gloss": "Posted 2026-09-18 12:24:06",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "rok-fortress"
+              },
+              "credit",
+              "date"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        },
+        {
+          "text": "ROK-FORTRESS는 Scale AI와 한국 인공지능안전연구소 간의 더 폭넓은 협력의 일환으로 개발된 최신 벤치마크이다.",
+          "gloss": "ROK-FORTRESS is the latest benchmark developed as part of a broader collaboration between Scale AI and the Korea AI Safety Institute.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "rok-fortress"
+              },
+              "qualification_note"
+            ],
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "rok-fortress"
+              },
+              "type"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        }
+      ],
+      "accessed": "2026-11-07",
+      "snapshot": {
+        "retrieved": "2026-11-07T23:46:21Z",
+        "sha256": "1d1ca46314fcedee4d4f97dcb77e1026ef42b8c078190fc4835e66f47a698bfd",
+        "text_sha256": "631ef609f458931b4a321ed97cc65def4b00506138a64465e1282c312fa8dabf",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "kr-rok-fortress-arxiv-2026",
+      "url": "https://arxiv.org/abs/2605.14152",
+      "title": "ROK-FORTRESS: Measuring the Effect of Geopolitical Transcreation for National Security and Public Safety",
+      "publisher": "arXiv",
+      "type": "primary",
+      "published": "2026-05-13",
+      "language": "en",
+      "origin": "US",
+      "output_role": "document",
+      "output_lineage": "rok-fortress",
+      "excerpts": [
+        {
+          "text": "Submitted on 13 May 2026",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "rok-fortress"
+              },
+              "date"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        },
+        {
+          "text": "ROK-FORTRESS: Measuring the Effect of Geopolitical Transcreation for National Security and Public Safety",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "rok-fortress"
+              },
+              "title"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        },
+        {
+          "text": "Across a dual-track set of frontier and Korean-optimized models, we find a consistent suppression effect in Korean variants",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "rok-fortress"
+              },
+              "qualification_note"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        }
+      ],
+      "accessed": "2026-11-07",
+      "snapshot": {
+        "retrieved": "2026-11-07T23:46:21Z",
+        "sha256": "851e9fc6885e3ef4706316bd0c8e8f929e496a8f70d072ba50977ba1d38e54fa",
+        "text_sha256": "5b0e43d756945f147ece69c86bf5b5ba774ace1d60bff899624a80b020872687",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "kr-aire-risk-update-2026",
+      "url": "https://www.aisi.re.kr/kor/article/ATCL75b4fb0a5/126",
+      "title": "프론티어 AI의 위험은 지금 어디까지 왔나, 「프론티어 AI 위험 업데이트 2026년 상반기」 한국어본 공개",
+      "title_en": "How far have the risks of frontier AI come? Korean edition of the Frontier AI Risk Update, first half of 2026, released",
+      "publisher": "Korea AI Safety Institute",
+      "type": "primary",
+      "published": "2026-10-02",
+      "language": "ko",
+      "origin": "KR",
+      "output_role": "document",
+      "output_lineage": "frontier-ai-risk-update-2026-h1",
+      "excerpts": [
+        {
+          "text": "인공지능안전연구소(AISI)는 AI Risk Explorer(AIRE)와 함께 「프론티어 AI 위험 업데이트 2026년 상반기」의 작성 과정에 참여하고, 한국어본을 마련하였습니다.",
+          "gloss": "The AI Safety Institute (AISI) took part, together with AI Risk Explorer (AIRE), in drafting the Frontier AI Risk Update, first half of 2026, and prepared the Korean edition.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "frontier-ai-risk-update-2026-h1"
+              },
+              "title"
+            ],
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "frontier-ai-risk-update-2026-h1"
+              },
+              "attribution"
+            ],
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "frontier-ai-risk-update-2026-h1"
+              },
+              "attribution_note"
+            ],
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "frontier-ai-risk-update-2026-h1"
+              },
+              "credit",
+              "institute_id"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        },
+        {
+          "text": "본 자료는 공개된 모델 평가, 벤치마크, 사고 사례 및 연구 결과를 바탕으로 빠르게 발전하는 프론티어 AI의 역량과 이에 따른 위험 동향을 살펴봅니다.",
+          "gloss": "This material examines the rapidly advancing capabilities of frontier AI and the resulting risk trends, based on published model evaluations, benchmarks, incident cases and research results.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "frontier-ai-risk-update-2026-h1"
+              },
+              "qualification_note"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        },
+        {
+          "text": "등록일 2026-10-02 17:58:54",
+          "gloss": "Posted 2026-10-02 17:58:54",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "frontier-ai-risk-update-2026-h1"
+              },
+              "date"
+            ],
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "frontier-ai-risk-update-2026-h1"
+              },
+              "credit",
+              "date"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        }
+      ],
+      "accessed": "2026-11-07",
+      "snapshot": {
+        "retrieved": "2026-11-07T23:46:23Z",
+        "sha256": "2d40e4a73e606609d235b8f96dd23dc32f2379ac663a03adea6b8ce8abc1a112",
+        "text_sha256": "a7903ca20b2c7a871fcccd10eb5456b903ccb8163fc9e47cec48a3bb3c22441c",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "kr-uncensored-eval-2026",
+      "url": "https://www.aisi.re.kr/kor/article/ATCL75b4fb0a5/131",
+      "title": "인공지능안전연구소, 거부 정렬 제거 AI 모델 유해성 평가 수행",
+      "title_en": "AI Safety Institute carries out harmfulness evaluation of AI models with refusal alignment removed",
+      "publisher": "Korea AI Safety Institute",
+      "type": "primary",
+      "published": "2026-11-03",
+      "language": "ko",
+      "origin": "KR",
+      "excerpts": [
+        {
+          "text": "인공지능안전연구소는 오픈웨이트(Open-weight) AI 모델의 안전성을 점검하기 위해 거부 정렬이 제거된 AI 모델에 대한 유해성 평가를 수행하였습니다.",
+          "gloss": "To check the safety of open-weight AI models, the AI Safety Institute carried out a harmfulness evaluation of AI models with refusal alignment removed.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "testing_capacity",
+              "modes",
+              {
+                "code": "in_house"
+              },
+              "code"
+            ],
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "testing_capacity",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        },
+        {
+          "text": "세부 평가 결과를 비공개로 관리합니다",
+          "gloss": "keeps the detailed evaluation results private",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "testing_capacity",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        },
+        {
+          "text": "오픈웨이트 AI 모델 2종과 각 모델의 거부 정렬 제거 변종 2종을 대상으로 평가를 수행하였습니다.",
+          "gloss": "The evaluation covered two open-weight AI models and, for each, a variant with its refusal alignment removed.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "testing_capacity",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        },
+        {
+          "text": "원본 모델과 거부 정렬 제거 모델에 동일한 평가 조건을 적용하여 유해 요청에 대한 응답 양상을 비교 평가하였습니다.",
+          "gloss": "The same evaluation conditions were applied to the original models and the models with refusal alignment removed, comparing how they respond to harmful requests.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "testing_capacity",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        },
+        {
+          "text": "평가보고서의 SHA-256 해시값을 아래와 같이 공개합니다",
+          "gloss": "we publish the SHA-256 hash of the evaluation report as follows",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "testing_capacity",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        }
+      ],
+      "accessed": "2026-11-07",
+      "snapshot": {
+        "retrieved": "2026-11-07T23:46:22Z",
+        "sha256": "39343cdb180673306dfb03a2a98662d2e8f89ae26a1065012c91eaeeeb98dcdb",
+        "text_sha256": "4eaf5ae170b7480eaff054f2be0d7c7d44525913f1f288955e62a8e579e7760b",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "jp-aisi-note-glm-2026",
+      "url": "https://aisi.go.jp/activity/activity_notes/261030/",
+      "title": "AI検証ノート：オープンウェイトモデルのAIサイバー能力の変化を捉える～GLM-5.3の評価から考える脆弱性対策への示唆～",
+      "title_en": "AI Experiment Notes: How the Cyber Capabilities of Open-Weight AI Models Are Changing (What the GLM-5.3 Evaluation Means for Vulnerability Management)",
+      "publisher": "Japan AI Safety Institute",
+      "type": "primary",
+      "published": "2026-10-30",
+      "language": "ja",
+      "origin": "JP",
+      "output_role": "document",
+      "output_lineage": "glm-5-3-cyber-capabilities",
+      "excerpts": [
+        {
+          "text": "AI検証ノート：オープンウェイトモデルのAIサイバー能力の変化を捉える～GLM-5.3の評価から考える脆弱性対策への示唆～",
+          "gloss": "AI Experiment Notes: capturing changes in the AI cyber capabilities of open-weight models (implications for vulnerability countermeasures from the evaluation of GLM-5.3)",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "glm-5-3-cyber-capabilities"
+              },
+              "title"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        },
+        {
+          "text": "ExploitBenchによる評価の結果、GLM-5.3では前モデルのGLM-5.2で確認されなかった高度な攻撃コード開発能力が確認された。",
+          "gloss": "An ExploitBench evaluation found in GLM-5.3 advanced exploit-development capabilities not seen in its predecessor, GLM-5.2.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "glm-5-3-cyber-capabilities"
+              },
+              "type"
+            ],
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "glm-5-3-cyber-capabilities"
+              },
+              "qualification_note"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        }
+      ],
+      "accessed": "2026-11-07",
+      "snapshot": {
+        "retrieved": "2026-11-07T23:46:21Z",
+        "sha256": "76243db3cef62d0b4c9e46ba9d03112479ee1ad7f7e5035c799b31a52ef70373",
+        "text_sha256": "d0ade9880ebb14f52dddc3098529f2fca78ea9cab77b138830a4bf1c108c49df",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "jp-aisi-note-glm-pdf-2026",
+      "url": "https://aisi.go.jp/assets/pdf/AIEvalNotes_20261030.ja.pdf",
+      "title": "AI検証ノート：オープンウェイトモデルの AI サイバー能力の高度化と脆弱性対策への示唆",
+      "title_en": "AI Experiment Notes: Advancing AI Cyber Capabilities of Open-Weight Models and Implications for Vulnerability Countermeasures",
+      "publisher": "Japan AI Safety Institute",
+      "type": "primary",
+      "published": "2026-10-30",
+      "language": "ja",
+      "origin": "JP",
+      "output_role": "document",
+      "output_lineage": "glm-5-3-cyber-capabilities",
+      "excerpts": [
+        {
+          "text": "2026 年 10 月 30 日 AI セーフティ・インスティテュート",
+          "gloss": "30 October 2026, AI Safety Institute",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "glm-5-3-cyber-capabilities"
+              },
+              "date"
+            ],
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "glm-5-3-cyber-capabilities"
+              },
+              "credit",
+              "date"
+            ],
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "glm-5-3-cyber-capabilities"
+              },
+              "credit",
+              "institute_id"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        },
+        {
+          "text": "3 モデルとも API を通じて利用し、ExploitBench による共通の 41 課題で評価しました。",
+          "gloss": "All three models were used via API and evaluated on the same 41 ExploitBench tasks.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "model_access",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        }
+      ],
+      "accessed": "2026-11-07",
+      "snapshot": {
+        "retrieved": "2026-11-07T23:46:22Z",
+        "sha256": "81f1b0b101adab932f7bf3368680ea7d44a1895b937a86179fc12c5c1999c79f",
+        "text_sha256": "8ec51a9aa1b3dd59d1b92bc877399f22e0962bd55664892df2438199619b6830",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "us-blog-cheating-2025",
+      "url": "https://www.nist.gov/blogs/caissi-research-blog/cheating-ai-agent-evaluations",
+      "title": "Cheating On AI Agent Evaluations",
+      "publisher": "NIST (CAISSI research blog)",
+      "type": "primary",
+      "published": "2025-12-02",
+      "language": "en",
+      "origin": "US",
+      "output_role": "document",
+      "output_lineage": "cheating-ai-agent-evaluations",
+      "excerpts": [
+        {
+          "text": "we found several examples of how models were able to successfully cheat on agentic coding and cyber benchmarks",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "outputs",
+              {
+                "lineage": "cheating-ai-agent-evaluations"
+              },
+              "qualification_note"
+            ],
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "outputs",
+              {
+                "lineage": "cheating-ai-agent-evaluations"
+              },
+              "credit",
+              "institute_id"
+            ],
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "outputs",
+              {
+                "lineage": "cheating-ai-agent-evaluations"
+              },
+              "attribution"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        },
+        {
+          "text": "Cheating On AI Agent Evaluations",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "outputs",
+              {
+                "lineage": "cheating-ai-agent-evaluations"
+              },
+              "title"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        },
+        {
+          "text": "December 2, 2025",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "outputs",
+              {
+                "lineage": "cheating-ai-agent-evaluations"
+              },
+              "date"
+            ],
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "outputs",
+              {
+                "lineage": "cheating-ai-agent-evaluations"
+              },
+              "credit",
+              "date"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        },
+        {
+          "text": "we built an AI transcript analysis tool to search through our historical evaluation transcripts for cheating",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "outputs",
+              {
+                "lineage": "cheating-ai-agent-evaluations"
+              },
+              "qualification_note"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        }
+      ],
+      "accessed": "2026-11-07",
+      "snapshot": {
+        "retrieved": "2026-11-07T23:55:32Z",
+        "sha256": "3a88901114e19761614414ac8d04d6de4f0856712705aa6ce05bc775eb2b8244",
+        "text_sha256": "9a82db727b30f7c5660ac77e950c032822617b29e34a7f3c7349483fd480e2cc",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "us-blog-transcripts-2026",
+      "url": "https://www.nist.gov/blogs/caissi-research-blog/analyzing-transcripts-ai-agent-evaluations",
+      "title": "Analyzing Transcripts from AI Agent Evaluations",
+      "publisher": "NIST (CAISSI research blog)",
+      "type": "primary",
+      "published": "2026-02-18",
+      "language": "en",
+      "origin": "US",
+      "output_role": "document",
+      "output_lineage": "analyzing-transcripts-ai-agent-evaluations",
+      "excerpts": [
+        {
+          "text": "Recently, we contributed several of the practices and takeaways we identified in our research to a new joint research paper with the UK AI Security Institute and other AI evaluators.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "outputs",
+              {
+                "lineage": "analyzing-transcripts-ai-agent-evaluations"
+              },
+              "qualification_note"
+            ],
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "outputs",
+              {
+                "lineage": "analyzing-transcripts-ai-agent-evaluations"
+              },
+              "credit",
+              "institute_id"
+            ],
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "outputs",
+              {
+                "lineage": "analyzing-transcripts-ai-agent-evaluations"
+              },
+              "attribution"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        },
+        {
+          "text": "Analyzing Transcripts from AI Agent Evaluations",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "outputs",
+              {
+                "lineage": "analyzing-transcripts-ai-agent-evaluations"
+              },
+              "title"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        },
+        {
+          "text": "February 18, 2026",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "outputs",
+              {
+                "lineage": "analyzing-transcripts-ai-agent-evaluations"
+              },
+              "date"
+            ],
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "outputs",
+              {
+                "lineage": "analyzing-transcripts-ai-agent-evaluations"
+              },
+              "credit",
+              "date"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        }
+      ],
+      "accessed": "2026-11-07",
+      "snapshot": {
+        "retrieved": "2026-11-07T23:55:33Z",
+        "sha256": "34185816b604e430224bd79be95765e197eb473f5c49af4af26ae9ca6987b16e",
+        "text_sha256": "9798fd47ad12090228d7584cc7d520cc7fd1bb1ccc19f5b47ea4716779f4e900",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "us-blog-red-teaming-2026",
+      "url": "https://www.nist.gov/blogs/caissi-research-blog/insights-ai-agent-security-large-scale-red-teaming-competition",
+      "title": "Insights into AI Agent Security from a Large-Scale Red-Teaming Competition",
+      "publisher": "NIST (CAISSI research blog)",
+      "type": "primary",
+      "published": "2026-03-23",
+      "language": "en",
+      "origin": "US",
+      "output_role": "document",
+      "output_lineage": "insights-ai-agent-security-large-scale-red-teaming-competition",
+      "excerpts": [
+        {
+          "text": "CAISI recently partnered with Gray Swan, the UK AI Security Institute (UK AISI), and several frontier AI labs to publish a new research paper based on data from a large-scale public AI agent red-teaming competition, revealing several insights into the robustness of current leading AI models.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "outputs",
+              {
+                "lineage": "insights-ai-agent-security-large-scale-red-teaming-competition"
+              },
+              "qualification_note"
+            ],
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "outputs",
+              {
+                "lineage": "insights-ai-agent-security-large-scale-red-teaming-competition"
+              },
+              "credit",
+              "institute_id"
+            ],
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "outputs",
+              {
+                "lineage": "insights-ai-agent-security-large-scale-red-teaming-competition"
+              },
+              "attribution"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        },
+        {
+          "text": "Insights into AI Agent Security from a Large-Scale Red-Teaming Competition",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "outputs",
+              {
+                "lineage": "insights-ai-agent-security-large-scale-red-teaming-competition"
+              },
+              "title"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        },
+        {
+          "text": "March 23, 2026",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "outputs",
+              {
+                "lineage": "insights-ai-agent-security-large-scale-red-teaming-competition"
+              },
+              "date"
+            ],
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "outputs",
+              {
+                "lineage": "insights-ai-agent-security-large-scale-red-teaming-competition"
+              },
+              "credit",
+              "date"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        }
+      ],
+      "accessed": "2026-11-07",
+      "snapshot": {
+        "retrieved": "2026-11-07T23:55:34Z",
+        "sha256": "fc1a862f0b4af2bb46b10dd4c63a9a1e785c740a92f40b1f854860661d5529fe",
+        "text_sha256": "c4a57b18a0df640ec6e5576fc99340c17a819ca0cd864aac5bdaad1048e26d66",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "us-semafor-2026-10-28",
+      "url": "https://www.semafor.com/article/10/27/2026/britains-ai-testing-agency-outguns-us",
+      "title": "Britain's AI testing agency outguns US",
+      "publisher": "Semafor",
+      "type": "secondary",
+      "published": "2026-10-28",
+      "language": "en",
+      "origin": "US",
+      "excerpts": [
+        {
+          "text": "CAISSI will continue to play a role in both pre-deployment testing and the Super Intelligence Force. To ensure all components of the SI Force are under one roof, senior CAISSI officials will collaborate with relevant colleagues from the White House,",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "reports_to",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        }
+      ],
+      "accessed": "2026-11-07",
+      "snapshot": {
+        "retrieved": "2026-11-07T23:55:33Z",
+        "sha256": "110a7ca6345146bed60502ff379b85ee4ae5b1deca24692abe15d5d422130c41",
+        "text_sha256": "37150d065adada1211c8e851dae3a6fa6fc34412db5e08ae3959a919c4c20523",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "ca-nrc-ai-safety",
+      "url": "https://nrc.canada.ca/en/research-development/products-services/technical-advisory-services/ai-safety-responsible-ai",
+      "title": "AI safety and responsible AI",
+      "publisher": "National Research Council Canada",
+      "type": "primary",
+      "published": "2026-05-21",
+      "language": "en",
+      "origin": "CA",
+      "excerpts": [
+        {
+          "text": "Through the Canadian Artificial Intelligence Safety Institute, we're working with an international network of AI safety institutes to develop globally recognized methods for testing the safety and security of AI systems.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "testing_capacity",
+              "modes",
+              {
+                "code": "via_other_bodies"
+              },
+              "code"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "testing_capacity",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        },
+        {
+          "text": "In a recent joint testing exercise, NRC researchers worked with experts from 8 other countries to evaluate autonomous AI systems that can interact with the world and make decisions, known as AI agents.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "testing_capacity",
+              "modes",
+              {
+                "code": "via_other_bodies"
+              },
+              "code"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "testing_capacity",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        },
+        {
+          "text": "Our experts helped the international research team evaluate the effectiveness of AI at preventing harmful content in 9 different languages",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "testing_capacity",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        }
+      ],
+      "accessed": "2026-11-07",
+      "snapshot": {
+        "retrieved": "2026-11-07T23:55:34Z",
+        "sha256": "d6a3623647a7610404f957b7d6c9b0b2b1c999e3ebf1815f2ffda0fd1e620537",
+        "text_sha256": "27da3077132fec7c689ab22bc4d5110627a4ab45f6f9b8ba1e7e8a677c17b629",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "de-bsi-ki-themen-2026-09",
+      "url": "https://www.bsi.bund.de/DE/Themen/Unternehmen-und-Organisationen/Informationen-und-Empfehlungen/AISI/Blogeintraege/AISI-News_2026-09.html",
+      "title": "Aktuelle KI-Sicherheitsthemen 09/2026",
+      "title_en": "Current AI security topics 09/2026",
+      "publisher": "Bundesamt für Sicherheit in der Informationstechnik (BSI)",
+      "type": "primary",
+      "published": "2026-10-13",
+      "language": "de",
+      "origin": "DE",
+      "excerpts": [
+        {
+          "text": "Ein Produkt des BSI im Rahmen des Aufbaus des AISI Deutschland.",
+          "gloss": "A BSI product as part of setting up AISI Deutschland.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "de-aisi"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        }
+      ],
+      "accessed": "2026-11-07",
+      "snapshot": {
+        "retrieved": "2026-11-07T23:55:34Z",
+        "sha256": "918a3a1f3fef1f57ed2bd081c2d81a9b940b897abff3aa3d2324974c2af606fe",
+        "text_sha256": "e8608802e298c61ed264fec1466f45bce94322e98fb9a59f4f566ff3e136364a",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "de-bsi-ki-themen-2026-10",
+      "url": "https://www.bsi.bund.de/DE/Themen/Unternehmen-und-Organisationen/Informationen-und-Empfehlungen/AISI/Blogeintraege/AISI-News_2026-10.html",
+      "title": "Aktuelle KI-Sicherheitsthemen 10/2026",
+      "title_en": "Current AI security topics 10/2026",
+      "publisher": "Bundesamt für Sicherheit in der Informationstechnik (BSI)",
+      "type": "primary",
+      "published": "2026-11-01",
+      "language": "de",
+      "origin": "DE",
+      "excerpts": [
+        {
+          "text": "Ein Produkt des BSI im Rahmen des Aufbaus des AISI Deutschland.",
+          "gloss": "A BSI product as part of setting up AISI Deutschland.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "de-aisi"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        }
+      ],
+      "accessed": "2026-11-07",
+      "snapshot": {
+        "retrieved": "2026-11-07T23:55:35Z",
+        "sha256": "942bedaaf1fe10e0c059b10be58d9aff8bf0f46fd03f918acff96fd74bfedff3",
+        "text_sha256": "770df301af919008817561b3f899ac4340482b646046914d7b2eb8cf9864aba5",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "de-ki-taskforce-2030",
+      "url": "https://bmds.bund.de/fileadmin/BMDS/Dokumente/Publikationen/Deutschland_als_KI-Nation_2030_barrierefrei-Nov2026.pdf",
+      "title": "Deutschland als KI-Nation 2030",
+      "title_en": "Germany as an AI nation 2030",
+      "publisher": "Bundesministerium für Digitales und Staatsmodernisierung (report of the federal government's AI taskforce)",
+      "type": "primary",
+      "published": "2026-11-02",
+      "language": "de",
+      "origin": "DE",
+      "excerpts": [
+        {
+          "text": "Wir bauen das vom Nationalen Sicherheitsrat am 8. Juni 2026 beschlossene und am 31. August 2026 offiziell gestartete AISI Deutschland (Initiierungsphase) schrittweise zu einem eigenständigen und leistungsfähigen nationalen Kompetenz- und Evaluierungsinstitut aus (Aufbauphase II).",
+          "gloss": "We are expanding AISI Deutschland, decided by the National Security Council on 8 June 2026 and officially launched on 31 August 2026 (initiation phase), step by step into an independent and capable national competence and evaluation institute (build-up phase II).",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "de-aisi"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        },
+        {
+          "text": "Anteil von neuen Frontier AI Modellen, die das AISI auf sicherheitspolitische Auswirkungen innerhalb von 4 Monaten untersucht und bewertet ≥ 75 Prozent",
+          "gloss": "Share of new frontier AI models that the AISI examines and assesses for security-policy impact within 4 months: at least 75 per cent",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "de-aisi"
+              },
+              "testing_capacity",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        }
+      ],
+      "accessed": "2026-11-07",
+      "snapshot": {
+        "retrieved": "2026-11-07T23:55:35Z",
+        "sha256": "a86512961cf3bdcbb18806363cf6af1fcc94aaa2090d471a50a281cc2fd165ae",
+        "text_sha256": "59f9cfdc53ffbd951dd5ef18df17b50ee5fb71877fb89bcf248a54e912970591",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "it-dlgs179-2026",
+      "url": "https://www.gazzettaufficiale.it/atto/serie_generale/caricaDettaglioAtto/originario?atto.dataPubblicazioneGazzetta=2026-10-08&atto.codiceRedazionale=26G00200",
+      "title": "Decreto legislativo 7 ottobre 2026, n. 179",
+      "title_en": "Legislative Decree No. 179 of 7 October 2026",
+      "publisher": "Istituto Poligrafico e Zecca dello Stato (Gazzetta Ufficiale)",
+      "type": "primary",
+      "published": "2026-10-08",
+      "language": "it",
+      "origin": "IT",
+      "legal_text": true,
+      "instrument_status_checked": "2026-11-07",
+      "excerpts": [
+        {
+          "text": "Entrata in vigore del provvedimento: 23/10/2026",
+          "gloss": "Entry into force of the measure: 23/10/2026",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "IT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-d0f364f988eb57f3ae4326d78d0df766"
+              },
+              "role"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "IT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-86ccb972e5f052fb83f1cd9a4847f890"
+              },
+              "role"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "IT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-cfb18691f52652f9b1cf8001f6aa073a"
+              },
+              "role"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "IT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-51b3a2a2081650b98424fc5125a8ce28"
+              },
+              "role"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "IT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-4e74849e95025a8a87dd5a67d9253985"
+              },
+              "role"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "IT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-9542f4c8ca8d43fba362f5198c45c7e6"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        }
+      ],
+      "accessed": "2026-11-07",
+      "snapshot": {
+        "retrieved": "2026-11-08T00:08:47Z",
+        "sha256": "8d85b57d195c61b7c575650a6b9dfae4a49c16f03114debe5902d5a5741356a9",
+        "text_sha256": "9ba8cc8c8d56810b2fcc82bc56ce64107584c8a187bfa39bd78e9ca3a312f2c6",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "it-dlgs179-2026-art4",
+      "url": "https://www.gazzettaufficiale.it/atto/serie_generale/caricaArticolo?art.codiceRedazionale=26G00200&art.dataPubblicazioneGazzetta=2026-10-08&art.flagTipoArticolo=0&art.idArticolo=4&art.idGruppo=3&art.idSottoArticolo=1&art.idSottoArticolo1=10&art.progressivo=0&art.versione=1",
+      "title": "Decreto legislativo 7 ottobre 2026, n. 179, art. 4",
+      "title_en": "Legislative Decree No. 179 of 7 October 2026, Article 4",
+      "publisher": "Istituto Poligrafico e Zecca dello Stato (Gazzetta Ufficiale)",
+      "type": "primary",
+      "published": "2026-10-08",
+      "language": "it",
+      "origin": "IT",
+      "legal_text": true,
+      "instrument_status_checked": "2026-11-07",
+      "excerpts": [
+        {
+          "text": "l'AgID e' l'autorita' nazionale di notifica",
+          "gloss": "AgID is the national notifying authority",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "IT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-86ccb972e5f052fb83f1cd9a4847f890"
+              },
+              "role"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "IT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-86ccb972e5f052fb83f1cd9a4847f890"
+              },
+              "designation_basis"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        }
+      ],
+      "accessed": "2026-11-07",
+      "snapshot": {
+        "retrieved": "2026-11-08T00:08:50Z",
+        "sha256": "cd8242145ec6f0a4278f4ce9b1279e0373dd696e2fd271fea90ad59d6b86a44f",
+        "text_sha256": "0b02c3a1bc45a96a59df1bd5b8506a0988fd2cd63e29772bf748f4394e1ac2a7",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "it-dlgs179-2026-art5",
+      "url": "https://www.gazzettaufficiale.it/atto/serie_generale/caricaArticolo?art.codiceRedazionale=26G00200&art.dataPubblicazioneGazzetta=2026-10-08&art.flagTipoArticolo=0&art.idArticolo=5&art.idGruppo=3&art.idSottoArticolo=1&art.idSottoArticolo1=10&art.progressivo=0&art.versione=1",
+      "title": "Decreto legislativo 7 ottobre 2026, n. 179, art. 5",
+      "title_en": "Legislative Decree No. 179 of 7 October 2026, Article 5",
+      "publisher": "Istituto Poligrafico e Zecca dello Stato (Gazzetta Ufficiale)",
+      "type": "primary",
+      "published": "2026-10-08",
+      "language": "it",
+      "origin": "IT",
+      "legal_text": true,
+      "instrument_status_checked": "2026-11-07",
+      "excerpts": [
+        {
+          "text": "sono autorita' nazionali di vigilanza del mercato ai sensi del medesimo regolamento",
+          "gloss": "the following are national market surveillance authorities under the same Regulation",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "IT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-d0f364f988eb57f3ae4326d78d0df766"
+              },
+              "role"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "IT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-d0f364f988eb57f3ae4326d78d0df766"
+              },
+              "designation_basis"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "IT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-cfb18691f52652f9b1cf8001f6aa073a"
+              },
+              "role"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "IT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-cfb18691f52652f9b1cf8001f6aa073a"
+              },
+              "designation_basis"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "IT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-51b3a2a2081650b98424fc5125a8ce28"
+              },
+              "role"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "IT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-51b3a2a2081650b98424fc5125a8ce28"
+              },
+              "designation_basis"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "IT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-4e74849e95025a8a87dd5a67d9253985"
+              },
+              "role"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "IT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-4e74849e95025a8a87dd5a67d9253985"
+              },
+              "designation_basis"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "IT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-9542f4c8ca8d43fba362f5198c45c7e6"
+              },
+              "role"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "IT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-9542f4c8ca8d43fba362f5198c45c7e6"
+              },
+              "designation_basis"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        },
+        {
+          "text": "a) l'ACN, per la vigilanza del mercato sui sistemi di IA",
+          "gloss": "(a) ACN, for market surveillance of AI systems",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "IT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-d0f364f988eb57f3ae4326d78d0df766"
+              },
+              "role"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "IT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-d0f364f988eb57f3ae4326d78d0df766"
+              },
+              "designation_basis"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        },
+        {
+          "text": "la Banca d'Italia, quale autorita' competente sui sistemi di IA ad alto rischio utilizzati nell'erogazione di finanziamenti o di altri servizi finanziari disciplinati ai sensi del testo unico delle leggi in materia bancaria e creditizia",
+          "gloss": "the Banca d'Italia, as the authority competent for high-risk AI systems used in providing loans or other financial services governed by the Consolidated Law on Banking and Credit",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "IT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-cfb18691f52652f9b1cf8001f6aa073a"
+              },
+              "role"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "IT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-cfb18691f52652f9b1cf8001f6aa073a"
+              },
+              "designation_basis"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        },
+        {
+          "text": "la CONSOB, quale autorita' competente sui sistemi di IA ad alto rischio utilizzati nell'erogazione dei servizi finanziari disciplinati ai sensi del testo unico delle disposizioni in materia di intermediazione finanziaria",
+          "gloss": "CONSOB, as the authority competent for high-risk AI systems used in providing financial services governed by the Consolidated Law on Financial Intermediation",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "IT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-51b3a2a2081650b98424fc5125a8ce28"
+              },
+              "role"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "IT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-51b3a2a2081650b98424fc5125a8ce28"
+              },
+              "designation_basis"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        },
+        {
+          "text": "l'IVASS, quale autorita' competente sui sistemi di IA ad alto rischio utilizzati nell'esercizio dell'attivita' assicurativa o riassicurativa e di distribuzione di prodotti assicurativi disciplinati ai sensi del codice delle assicurazioni private",
+          "gloss": "IVASS, as the authority competent for high-risk AI systems used in insurance or reinsurance business and in the distribution of insurance products governed by the Private Insurance Code",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "IT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-4e74849e95025a8a87dd5a67d9253985"
+              },
+              "role"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "IT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-4e74849e95025a8a87dd5a67d9253985"
+              },
+              "designation_basis"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        },
+        {
+          "text": "il Garante per la protezione dei dati personali, limitatamente a quanto previsto dall'articolo 74, paragrafo 8, del regolamento IA",
+          "gloss": "the Italian Data Protection Authority, limited to what Article 74(8) of the AI Regulation provides",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "IT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-9542f4c8ca8d43fba362f5198c45c7e6"
+              },
+              "role"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "IT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-9542f4c8ca8d43fba362f5198c45c7e6"
+              },
+              "designation_basis"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "IT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-9542f4c8ca8d43fba362f5198c45c7e6"
+              },
+              "name"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        }
+      ],
+      "accessed": "2026-11-07",
+      "snapshot": {
+        "retrieved": "2026-11-08T00:08:48Z",
+        "sha256": "8fdb6b26385b0000d6be596199d73be8ae91d8438fb9358c70dbe4d6b12570c4",
+        "text_sha256": "b5deb92bc35780309fe5a9b951147f3c169e9e87b5409cc9a3adc2f45d418e4a",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "it-dlgs179-2026-art6",
+      "url": "https://www.gazzettaufficiale.it/atto/serie_generale/caricaArticolo?art.codiceRedazionale=26G00200&art.dataPubblicazioneGazzetta=2026-10-08&art.flagTipoArticolo=0&art.idArticolo=6&art.idGruppo=3&art.idSottoArticolo=1&art.idSottoArticolo1=10&art.progressivo=0&art.versione=1",
+      "title": "Decreto legislativo 7 ottobre 2026, n. 179, art. 6",
+      "title_en": "Legislative Decree No. 179 of 7 October 2026, Article 6",
+      "publisher": "Istituto Poligrafico e Zecca dello Stato (Gazzetta Ufficiale)",
+      "type": "primary",
+      "published": "2026-10-08",
+      "language": "it",
+      "origin": "IT",
+      "legal_text": true,
+      "instrument_status_checked": "2026-11-07",
+      "excerpts": [
+        {
+          "text": "L'ACN, nello svolgimento delle funzioni di punto di contatto unico ai sensi dell'articolo 70 del regolamento IA",
+          "gloss": "ACN, in performing the functions of single point of contact under Article 70 of the AI Regulation",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "IT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-d0f364f988eb57f3ae4326d78d0df766"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        }
+      ],
+      "accessed": "2026-11-07",
+      "snapshot": {
+        "retrieved": "2026-11-08T00:08:49Z",
+        "sha256": "b803c386a7857eef3306a656aa24d763c2b36f11ca3adbe5c2fee81e82a89054",
+        "text_sha256": "29e3ba9727ab4bc499f422316ae4a50996a999c23969834a2b0212c35bb17844",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "bg-bta-2026-11-04",
+      "url": "https://www.bta.bg/bg/news/economy/1240041-parlamentarnata-komisiya-po-inovatsii-ne-prie-na-parvo-chetene-zakonoproekt-za-i",
+      "title": "Парламентарната комисия по иновации не прие на първо четене Законопроект за използването и развитието на изкуствения интелект",
+      "title_en": "The parliamentary committee on innovation did not adopt at first reading the Bill on the Use and Development of Artificial Intelligence",
+      "publisher": "Bulgarian News Agency (BTA)",
+      "type": "secondary",
+      "published": "2026-11-04",
+      "language": "bg",
+      "origin": "BG",
+      "excerpts": [
+        {
+          "text": "Членовете на постоянната парламентарна Комисия по иновации и дигитална трансформация отхвърлиха на първо четене проект на Закон за използването и развитието на изкуствения интелект (ИИ).",
+          "gloss": "The members of the standing parliamentary Committee on Innovation and Digital Transformation rejected at first reading the draft Law on the Use and Development of Artificial Intelligence (AI).",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "BG"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        },
+        {
+          "text": "Деветима гласуваха „въздържал се“, петима – „за“, а гласове „против“ нямаше.",
+          "gloss": "Nine voted to abstain, five in favour, and there were no votes against.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "BG"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        }
+      ],
+      "accessed": "2026-11-07",
+      "snapshot": {
+        "retrieved": "2026-11-08T00:08:47Z",
+        "sha256": "1d5b501d5d8fa1c2cc0f379d9923fd1b057debe07321a0b80fa44b815c5a7ab4",
+        "text_sha256": "065108506924f91da25039024a92409de5d47b92c2149dcc575aa6f11280364a",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "hu-mihivatal-rolunk",
+      "url": "https://mihivatal.gov.hu/rolunk",
+      "title": "Rólunk",
+      "title_en": "About us",
+      "publisher": "MI Piacfelügyeleti Hatóság (Mesterséges Intelligencia Hivatal)",
+      "type": "primary",
+      "language": "hu",
+      "origin": "HU",
+      "excerpts": [
+        {
+          "text": "A Hatóság a Tudományos és Technológiai Minisztérium szervezeti egységeként működik.",
+          "gloss": "The Authority operates as an organisational unit of the Ministry of Science and Technology.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "HU"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-561ab77228a354879fd8de3926340be1"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        }
+      ],
+      "accessed": "2026-11-07",
+      "snapshot": {
+        "retrieved": "2026-11-08T00:08:48Z",
+        "sha256": "dab768e1bff89d2614f0498c67241c7373e4851bb5cce344dc2b2af38cdd7948",
+        "text_sha256": "fe05fdd24eda447606410fee1940919cd46bfecdfb6ad570c3930c7ba0288539",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "google-gemini-4-argon-safety-2026",
+      "url": "https://www.datocms-assets.com/142357/1792511849-gemini_4_safety_report.pdf",
+      "title": "Gemini 4 Argon Safety & Security Report",
+      "publisher": "Google DeepMind",
+      "type": "primary",
+      "published": "2026-10-13",
+      "language": "en",
+      "origin": "US",
+      "excerpts": [
+        {
+          "text": "We collaborated with the UK Artificial Intelligence Security Institute (AISI). AISI conducted evaluations of Gemini 4 Argon, having been given both a version of the model without our full set of safety mitigations and a version which had mitigations applied.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "model_access",
+              "access_events",
+              {
+                "id": "gb-access-gemini-4-argon"
+              },
+              "kind"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "model_access",
+              "access_events",
+              {
+                "id": "gb-access-gemini-4-argon"
+              },
+              "model"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        }
+      ],
+      "accessed": "2026-11-07",
+      "snapshot": {
+        "retrieved": "2026-11-07T23:32:21Z",
+        "sha256": "33e2583627db65db9eeb4fca42e3982c971e18d3d61a899452752c49c50f1f2a",
+        "text_sha256": "c145cf2c2f1bf1887703db1529d32f732aa05be37be8854ad6d4df3977faeec6",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "gb-minister-speech-2026-10-12",
+      "url": "https://www.gov.uk/government/speeches/building-a-safer-more-secure-britain-in-the-age-of-ai",
+      "title": "Building a Safer, More Secure Britain in the age of AI",
+      "publisher": "Cabinet Office (speech by the Minister for AI)",
+      "type": "primary",
+      "published": "2026-10-12",
+      "language": "en",
+      "origin": "GB",
+      "excerpts": [
+        {
+          "text": "AI scientists at the AI Security Institute are now conducting rigorous evaluations of the latest generation of models, including Gemini 4 Argon",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "model_access",
+              "access_events",
+              {
+                "id": "gb-access-gemini-4-argon"
+              },
+              "model"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        }
+      ],
+      "accessed": "2026-11-07",
+      "snapshot": {
+        "retrieved": "2026-11-07T23:32:22Z",
+        "sha256": "477c36ad423a9253bfc88df518eae9360678c58d1b910dd4c3b47bdcd6aa9dfa",
+        "text_sha256": "93f6d433a57edce1427b4317143a11337e0935cfba742c8d1b1e716570726a97",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "google-gemini-4-argon-2026",
+      "url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-4-argon/",
+      "title": "Gemini 4 Argon: our next era of frontier intelligence",
+      "publisher": "Google",
+      "type": "primary",
+      "published": "2026-09-30",
+      "language": "en",
+      "origin": "US",
+      "excerpts": [
+        {
+          "text": "Today, we’re announcing our new frontier model, Gemini 4 Argon, which is rolling out to a set of trusted cyber defenders through our Fairwind Program.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "model_access",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        },
+        {
+          "text": "We’re grateful for the initial cohort of cyber defenders and trusted testers whose real-world evaluations and feedback will help us strengthen our systems before we release to developers, enterprises, and consumers, starting with paid API customers and Google AI Ultra subscribers.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "model_access",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        }
+      ],
+      "accessed": "2026-11-07",
+      "snapshot": {
+        "retrieved": "2026-11-08T06:39:22Z",
+        "sha256": "946481c61231dc93bcfaf8f4f7817c4ce223da343a4621d1b699296cd4a6b3ca",
+        "text_sha256": "3b9d25100bd382d8070860fa1f4d9542f06a73c36af35c2e7eddfd27a9bcb4dc",
+        "text_scheme": 1
+      }
     }
   ],
   "changelog": [
@@ -107413,9 +110263,33 @@
         "Page: \"No privileged access found\" now says which access it means; the figures note names what its numbers count; English translations appear beside non-English source titles.",
         "Norway: the funding row shows the 12 to 15 staff the card shows. Canada: the budget period reads 2024-25 to 2028-29. India and Malaysia: Form reads \"Not published; set up by administrative act\".",
         "Page: partners whose description only says they are partners show by name. The US, Japan and Korea staff notes say the source gives the count as current in that month.",
-      "State summaries, AI Act authority descriptions, closest candidates and funding notes rewritten as sentences that lead with what was found; legal references spelled out. Finland and Ireland name their single points of contact; Slovenia's authorities state their own remits; Kenya's funding note says its plan gives no start for the 0 to 24 months.",
+        "State summaries, AI Act authority descriptions, closest candidates and funding notes rewritten as sentences that lead with what was found; legal references spelled out. Finland and Ireland name their single points of contact; Slovenia's authorities state their own remits; Kenya's funding note says its plan gives no start for the 0 to 24 months.",
         "Method: the currency rule says plainly that only amounts with an ECB rate are shown in euros.",
-      "Downloads: no fields added or removed. institutes[].display.intervals.status_since now also carries the announcement date when the interval to establishment is not exact (\"Announced on 25 Nov 2025\"), and several summaries, descriptions and notes have new wording."
+        "Downloads: no fields added or removed. institutes[].display.intervals.status_since now also carries the announcement date when the interval to establishment is not exact (\"Announced on 25 Nov 2025\"), and several summaries, descriptions and notes have new wording."
+      ]
+    },
+    {
+      "date": "2026-11-08",
+      "version": "1.0.4",
+      "summary": "New outputs, notes and access events for the UK, US, Korea, Japan and other institutes from a re-check of their news on 7 November; Italy's AI Act authorities under Legislative Decree 179/2026; partners that share an explanation listed together; a page title and description that say what the tracker covers.",
+      "changes": [
+        "Indonesia: AISII's role names KORIKA as an independent membership association, from KORIKA's report of its first members' meeting of 2026.",
+        "UK: two research outputs (ReproBAIT; pretraining data filtering in protein language models), the 2025-26 compute spend in the funding notes and the UK-Japan Frontier Technology Partnership of 14 June 2026 as an agreement, also on Japan's card.",
+        "Korea: ROK-FORTRESS (with Scale AI, credited from 18 September 2026) and the Korean edition of the Frontier AI Risk Update as outputs; the evaluation the institute reported on 3 November 2026, with results withheld, as in-house testing.",
+        "Japan: the institute's GLM-5.3 cyber capability evaluation of 30 October 2026 as an output; its models were used via API, with no access beyond that described, so no access event.",
+        "US: three research-blog posts as outputs (cheating on agent evaluations, transcript analysis, red-teaming competition insights); the reporting-line notes report a White House statement, reported by Semafor, on the Super Intelligence Force.",
+        "Canada: testing capacity records the National Research Council as testing models through the institute, from the council's AI safety page.",
+        "Germany: the notes cite BSI's monthly digests (not counted as outputs) and the AI taskforce report of 2 November 2026, with its plan for a second build-up phase and its target that the institute assess at least 75 per cent of new frontier models within four months.",
+        "Norway: KI Norge's mandate follows the wording of the budget bill (Prop. 1 S), which adds knowledge of the consequences and risks of advanced AI and names research communities and other actors as partners.",
+        "Italy: Legislative Decree 179/2026 (in force 23 October 2026) is now the designation basis of the AI Act authorities; the Banca d'Italia, CONSOB and IVASS have their own sectors, and the Garante is added for Article 74(8) uses. Law 132/2025 stays as history.",
+        "Bulgaria: the notes record that the parliamentary committee on innovation rejected the AI bill at first reading on 4 November 2026; its authority allocations stay proposals.",
+        "Hungary: the AI market surveillance authority operates as a unit of the Ministry of Science and Technology, its website says.",
+        "UK: adds the Gemini 4 Argon access event, dated 30 September 2026 (Google's announcement and Epoch AI's release date), with its limited first rollout to trusted cyber defenders and trusted testers in the notes.",
+        "News and publications of all 15 institutes re-checked on 7 November 2026, each with a dated note of what was read.",
+        "Page: partners that share an explanation are listed once under it, each name with its citation (Spain, the US, France, Japan and Canada).",
+        "Page: the (i) notes say what a section is; the Set-up and Funding scope notes are plain sentences.",
+        "Page: the title and description name AI safety and security institutes. The saved map is a separate file, so search engines index the whole page, and the sitemap lists pages only.",
+        "Downloads: no fields added or removed."
       ]
     }
   ]

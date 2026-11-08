@@ -457,7 +457,14 @@ def test_six_figure_export_ties_remain_page_sort_ties():
 
 
 @pytest.mark.parametrize(
-    "label", ["~~120", "up to up to ~120", "Not published", "~130"]
+    "label",
+    [
+        "~~120",
+        "up to up to ~120",
+        "Not published",
+        "~130",
+        "~120 reported 5 November 2026",
+    ],
 )
 def test_numeric_sort_rejects_bad_or_mismatched_labels(label):
     from scripts.check_page import sort_errors_for
@@ -465,6 +472,21 @@ def test_numeric_sort_rejects_bad_or_mismatched_labels(label):
     data = sort_data("staff", [("A", 121, None)])
     rows = figure_sort_rows([("A", "A", label)], "staff")
     assert any("numeric label" in e for e in sort_errors_for(rows, "staff", 1, data))
+
+
+def test_staff_date_label_accepts_as_of_and_rejects_reported():
+    from scripts.check_page import sort_errors_for
+
+    data = sort_data("staff", [("A", 121, None)])
+    rows = figure_sort_rows([("A", "A", "~120 as of 5 November 2026")], "staff")
+    assert rows[0]["tier"] == 0
+    assert sort_errors_for(rows, "staff", 1, data) == []
+    # Keep the parsed numeric tier to exercise the independent Python label check.
+    rows[0]["text"] = "~120 reported 5 November 2026"
+    assert any(
+        "numeric label differs from primary value" in error
+        for error in sort_errors_for(rows, "staff", 1, data)
+    )
 
 
 def test_numeric_sort_rejects_missing_data_and_jurisdiction():

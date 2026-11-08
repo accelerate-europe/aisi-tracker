@@ -5,13 +5,10 @@
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script id="theme-boot">document.documentElement.setAttribute("data-js", ""); document.documentElement.toggleAttribute("data-mac", /Mac|iPhone|iPad|iPod/.test(navigator.platform)); try { var t = localStorage.getItem("aisi-theme"); if (t === "dark" || t === "light") document.documentElement.setAttribute("data-theme", t); } catch (e) {}</script>
-<title>AI Security Institutes worldwide</title>
-<meta name="description" content="Which states have an AI Security Institute, covering all 193 UN member states plus Taiwan and the EU AI Office, with Europe in detail. Budgets, staff and sources for every entry.">
-<meta property="og:title" content="AI Security Institutes worldwide">
-<meta property="og:description" content="Which states have an AI Security Institute, covering all 193 UN member states plus Taiwan and the EU AI Office, with Europe in detail. Every entry links to its source; data free to reuse.">
-<meta property="og:type" content="website">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:description" content="Which states have an AI Security Institute, covering all 193 UN member states plus Taiwan and the EU AI Office, with Europe in detail. Every entry links to its source; data free to reuse.">
+<title>AI Security Institutes tracker: AI safety and security institutes worldwide</title>
+<meta name="description" content="Tracks which countries have set up or plan an AI safety or security institute (AISI). Covers all 193 UN member states, Taiwan and the EU, with sources and open data.">
+<meta property="og:description" content="Tracks which countries have set up or plan an AI safety or security institute (AISI). Covers all 193 UN member states, Taiwan and the EU, with sources and open data.">
+<meta name="twitter:description" content="Tracks which countries have set up or plan an AI safety or security institute (AISI). Covers all 193 UN member states, Taiwan and the EU, with sources and open data.">
 <link rel="preload" href="assets/fonts/inter-v20-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/source-sans-3-v20-latin.woff2" as="font" type="font/woff2" crossorigin>
 <!-- build:head -->
@@ -24,14 +21,14 @@
  * Sources: a collapsed card ends with the counted sources control alone (muted meta, no top rule, inline hit height); the check date and correction follow the expanded list.
  * Separators: each item of a dot-separated line is one unbreakable box, so lines break only between items (an item wraps inside only when it alone is wider than its container); middle dots stay with the preceding item's final word and are hidden where a line breaks.
  * Citations: every displayed value a quotation can support carries one (absence and an institute name linking to its own site need none); superscript at value end, three quarters of the text it annotates and never larger than meta (so a big figure keeps small numerals); comma-tight groups; card-local Sources order; hit area one text line high, never covering adjacent lines or preceding text.
- * Partners: the card line shows at most six; the closed fold-out lists every partner in the same order, with each name/how claim cited.
+ * Partners: the card line shows at most six; the closed fold-out groups partners sharing an explanation, with explicit plural wording and a citation on every name. Groups follow the first member's priority order; names within a group keep that order. Generic explanations that only repeat the partner relation are omitted.
  * Card grids: alphabetical rows share field tracks through subgrid; every field keeps a fixed shared track (Mandate and Finding share the descriptive-text track); a structurally absent field leaves its track empty; where a row has three tracks, a group's only card spans two (check_page check_card_grid), while a single trailing card in a fuller group's last row keeps the usual card width; phones keep one column.
  * Alignment: every text row shares its first baseline, including wrapped text, smaller labels, icons and format tags; within a card every field's value starts at one x.
  * Funding rows: the state name leads with its status swatch; only a status other than established is named, in brackets in muted ink ("Norway (proposed)"); established stays in the accessible name. The row's three tracks stack where they no longer fit the section (a container query in rem, so enlarged text stacks them earlier); stacked, the Sources control closes the row after Staff.
  * Status: square swatch plus name; the AE fill ladder, never black and never colour alone: established solid fill, planned an edge, a page-colour ring inside it and a solid centre of the mark's own shape (square on swatches, round on map dots), proposed hatch, exploring an empty ring, none identified a thin grey outline on the page colour, the square swatch with a short grey dash across its centre so it never reads as an empty checkbox (map dots keep the plain outline); every mark's edge is at least 3:1 on the ground and its text at least 4.5:1 on what is behind it, in both themes (check_page check_status_contrast); each map legend name carries its short definition as a tooltip (hover, focus or tap); a status square's tooltip takes the map dot's form, the state's name, then its status on a muted line; a card under a status group heading shows no status in its title row, which keeps it in the accessible name (as the funding rows do); the EU entry shows none either: its dated Status row says it, as on every other card (owner, 5 Nov 2026; check_page check_label_ladder); Known activity shows no swatch (squares are for status), only each kind found on its own line in date order ("Joint testing", with its own citations) and its muted "since <earliest date of that kind>" beneath; its tooltip defines "since"; with nothing found it says "None found yet" on one line; no line breaks mid-phrase.
  * Headline: full width above the map and the region list, following the selected region, World by default: "N of M [European] states have an AI Security Institute. K more are planning, proposing or exploring one." ("European" defines the 32-state scope on hover, focus or tap); worded from the data, never activist; each sentence wraps as a unit and a number never ends a line; room for its longest form, so a region switch moves nothing below (check_page check_headline, check_first_screen).
  * Map: one geographic map re-centred per region (the World view by default, cropped to the inhabited latitudes and the institutes' longitudes so it fills the shared frame (on phones, where the list sits below the map, the World view has its own shorter frame); Europe is the UN region, its 32-state scope counted and the other European states listed apart under their own subheading, uncounted; the region list's World view row shows only while another region is selected and moves to World), one dot per state near its country's centre, with the Status ladder as round marks drawn by one function; a hover, focus or selection highlight is the same mark, larger, with an ink ring around it, never a changed mark (check_page check_status_states); selecting the EU outlines the members' merged outer border; in region views each state's name sits beside its own dot, clearly nearer it than any other dot, edge to edge (every other dot at least 1.5 times as far), or takes its short name (NL) where the full name has no such place; a thin leader line to a name set further out is allowed only where that name still meets the same rule, since readers match a name to the nearest dot; no name covers another state's dot or name (check_page check_map_labels); vendored d3 and topology (site/assets), no third-party scripts; one drawing for wide screens and one for phones, both saved in the pre-rendered page, so nothing flashes.
- * Supporting text: no meta or caveat lines under headings, maps or figures; a scope or reading note is an (i) (a muted ring with an italic i, hit height --hit) whose tooltip holds it, never alone on a line: it shares its line with the last word of the heading or text before it (check_page check_info_lines); without scripting, where no tooltip can open, the note shows as a muted line in its place (check_page check_access_fixes); the definition lives once, at the top of Method.
+ * Supporting text: use an (i) only for an answer of at most two sentences that says what the thing is first; link with words when the answer is a full text elsewhere. Set-up and Funding scope notes are plain sentences. An (i) is a muted ring with an italic i, hit height --hit, never alone on a line: it shares its line with the last word of the heading or text before it (check_page check_info_lines); without scripting, where no tooltip can open, the note shows as a muted line in its place (check_page check_access_fixes); the definition lives once, at the top of Method.
  * Anchors: each section a reader would link to has one anchor named by what the reader sees (#map, #testing, #set-up, #funding, #news, #europe, #world, #data, #method, #definition; state cards #c-<id>); the names used before 1.0.2 stay as aliases in the page script (check_page check_anchor_aliases).
  * Region tabs: one text tab per view on one hairline, World first and selected by default, then the region list's regions; the selected tab in ink with an accent underline, the others muted; a tab only moves to its view; the row sits over the map column with its text on the column edge, and the search fills the list column exactly, so the first screen keeps two column axes; where the list stacks under the map, the tabs (hairline under them only) and the search share the map's column, the search ending on the map's right edge or dropping below at full width; they wrap on phones and are hidden without scripting.
  * Controls: buttons and fields are soft fills (--field-fill) without a drawn edge; a field shows focus on its own edge.
@@ -51,7 +48,7 @@
  * Groups: a grouped list (Testing and access; Institutional set-up, by form with the host as note; the heading alone names the form, with no description on the page) shows a heading, one status square per member in list order, then each member's name linking to its card with a muted note; both share one layout: short groups stack in one column beside a long group (No privileged access found; the largest form) that spans two with its list in halves; a thin ink rule opens each group and hairlines separate members, none after the last; phones keep one column, each note under its state at one left edge (check_page check_access_groups, check_setup_groups, check_access_layout). Institutional set-up orders squares and list alike by status on the ladder, then name; Testing and access orders squares and list alike (testing: in house, in house and other bodies, other bodies, planned, not published; then status; then name), cites every counterpart from its own source list, so flag-only sources stay off the cards, and explains developers (latest event), provisions and MOU in tooltips (check_page check_access_tips).
  * Tooltip cues: the dotted underline marks abbreviations and glossary terms only (abbr.g, the legend names, "Privileged", "European", MOU, institute short names); a value with a tooltip ("Medium confidence", "28 days", "~EUR 1.0 per person", a median ceiling, a developer, a provision; "Not published") keeps its tooltip and focus with no underline (owner, 5 Nov 2026; check_page check_tooltip_cues).
  * Missing: absence found by research is written out ("Not published" for unknown values with a tooltip, never zero; "None found yet"); absence by category (no institute yet) is structural: cards omit the row, the table shows a muted dash and hides a column that is inapplicable to every visible row. Each term explains itself in its tooltip, alike in cards and table (Not published, None found yet, None identified, and the dash once in the table's column headers); a complete list is no research gap, so the Network column says "Not a member" with its own tooltip and sorts it after members; no legend lines (check_page check_absence_wording).
- * Scope: each comparison section states which states it covers, and a state outside it shows a dash in every section, never Not published. Testing and access, Institutional set-up, and Funding and staff cover every institute whatever its status, which an (i) after each heading says. So Budget and Staff show on every institute's card, record and table row, Not published where nothing is found, and the table's dash means the state has no institute; Known activity stays with established institutes (check_page check_supporting_text, check_operating_output).
+ * Scope: each comparison section states which states it covers, and a state outside it shows a dash in every section, never Not published. Testing and access, Institutional set-up, and Funding and staff cover every institute whatever its status, stated in the Testing explanation and in plain sentences for Set-up and Funding. So Budget and Staff show on every institute's card, record and table row, Not published where nothing is found, and the table's dash means the state has no institute; Known activity stays with established institutes (check_page check_supporting_text, check_operating_output).
  * Figures: ISO currency + amount; ~ estimates to 3 significant figures, + lower bound, "up to" upper bound; technical counts labelled.
  * Values and qualifiers: in cards, table and funding alike, a field's value leads on its own line and its qualifiers (as-of date, scope, basis, confidence: 'as of Apr 2026', 'FY2024 supplementary') sit on one small muted line beneath; the unit named by the label is not repeated; a staff total is labelled "Latest total" only where a technical figure sits beside it; a funding row's amount without a bar ends its qualifier line with "not charted"; where funding rows stack, Budget and Staff each take a label above the value, with labels, values and qualifiers on one left edge (check_page check_funding_key).
  * Intervals: cards only, and only an exact interval (equal bounds; a range from a month-only or year-only date stays in the downloads): a muted qualifier under Status ("Established since 21 Feb 2024") giving the announcement or proposal date and the interval to it ("Announced on 24 Jan 2024, 28 days earlier"; the date alone when the interval is a range, nothing when the date is not exact), and its own muted line under the first qualifying Known activity item, counted from establishment ("Joint testing began about 17 months after it was established"); producer wording (display.intervals), the kind label and "began" added by the page, each with a tooltip saying it is not a measure of speed or quality.
@@ -508,8 +505,8 @@ main section.first { display: flex; flex-direction: column; gap: var(--sp-5); bo
 .missing, .nonmember { font: var(--type-body); color: var(--ink); }
 .nonmember { white-space: nowrap; } /* a two-word value stays on one line, like Member */
 .partner-how { margin-top: var(--gap-row); }
-.partner-how ul { list-style: none; margin: 0; padding: 0; display: grid; row-gap: var(--sp-2); } /* the fold-out under the Partners line: one sentence per partner */
-.partner-how .pname { font: var(--type-meta); color: var(--ink); } .partner-how .phow { font: var(--type-meta); color: var(--muted); }
+.partner-how ul { list-style: none; margin: 0; padding: 0; display: grid; row-gap: var(--sp-2); } /* one explanation per group of partners */
+.partner-how li { font: var(--type-meta); color: var(--muted); } .partner-how .pname { color: var(--ink); } /* separators between grouped names take the item's type, not the body's */
 .partners-none { color: var(--muted); } /* the cyber search found no published agency: a quiet tail on the Partners line */
 .card .foot { font: var(--type-meta); color: var(--muted); }
 .source-footer-line { font: var(--type-meta); color: var(--muted); display: block; min-height: var(--hit); width: fit-content; max-width: 100%; }
@@ -794,7 +791,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     </div>
     <div class="explore">
       <div class="map-col">
-        <div class="worldmap" id="worldmap"></div>
+        <div class="worldmap" id="worldmap"><noscript><style>#worldmap svg { display: none; }</style><p class="small">The map needs JavaScript. The lists below give the same information state by state.</p></noscript></div>
         <div class="map-aside"><div class="legend" id="legend"></div></div>
       </div>
       <div class="side">
@@ -1210,16 +1207,35 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   function partnersFold(p, cite) {
     // The how sentences that only say the body is a partner (owner decision 05.11.2026); listed exactly, not matched by pattern.
     var GENERIC_HOW = ["Is listed among the institute's partners.", "Is named as a technical partner that the institute works with."];
+    // Explicit agreement for shared sentences, including changes inside them; never guess a verb's plural.
+    var PLURAL_HOW = {
+      "Is to be tied to the institute by agreement and can contribute staff, computing capacity and specialist knowledge.": "Are to be tied to the institute by agreement and can contribute staff, computing capacity and specialist knowledge.",
+      "Is named among the institute’s partners whose agreements enable evaluations of the latest AI capabilities.": "Are named among the institute’s partners whose agreements enable evaluations of the latest AI capabilities.",
+      "Is one of the national evaluation and security bodies the institute federates without a new legal structure.": "Are among the national evaluation and security bodies the institute federates without a new legal structure.",
+      "Takes part in the institute as a participating organisation of the AISI Partnership Agreement.": "Take part in the institute as participating organisations of the AISI Partnership Agreement.",
+      "Has initial representation on the TRAINS Taskforce chaired by the then US AI Safety Institute.": "Have initial representation on the TRAINS Taskforce chaired by the then US AI Safety Institute."
+    };
     if (p.state !== "stated" || !(p.fold_items || []).length) return null;
     var det = el("details", "more quiet partner-how"), ul = el("ul");
     det.appendChild(el("summary", null, "How they work together"));
-    // One item per partner, in priority order: its name, then its own how sentence (grouping names under one sentence broke its singular verb).
+    // First occurrence orders groups; members keep producer order (cyber first, relation, authored tie-break).
+    var groups = [];
     p.fold_items.forEach(function (item) {
-      var li = el("li"), pname = el("span", "pname", item.name);
-      // A how sentence that only restates the heading (the data keeps it; the schema requires one) shows as the name alone, cited on the name (rule 1).
-      if (GENERIC_HOW.indexOf(item.how) >= 0) { pname.appendChild(cite(item.cited, "Partners")); li.appendChild(pname); ul.appendChild(li); return; }
-      var how = el("span", "phow", item.how); how.appendChild(cite(item.cited, "Partners"));
-      li.appendChild(pname); li.appendChild(document.createTextNode(" ")); li.appendChild(how); ul.appendChild(li);
+      var group = groups.find(function (g) { return g.how === item.how && (PLURAL_HOW[item.how] || GENERIC_HOW.indexOf(item.how) >= 0); });
+      if (group) group.items.push(item); else groups.push({ how: item.how, items: [item] });
+    });
+    groups.forEach(function (group) {
+      var li = el("li");
+      group.items.forEach(function (item, n) {
+        if (n) li.appendChild(document.createTextNode(n === group.items.length - 1 ? " and " : ", "));
+        var pname = el("span", "pname", item.name); pname.appendChild(cite(item.cited, "Partners")); li.appendChild(pname);
+      });
+      if (GENERIC_HOW.indexOf(group.how) < 0) {
+        li.appendChild(document.createTextNode(" "));
+        var sentence = group.items.length > 1 ? PLURAL_HOW[group.how] : group.how;
+        li.appendChild(el("span", "phow", sentence.charAt(0).toLowerCase() + sentence.slice(1)));
+      }
+      ul.appendChild(li);
     });
     det.appendChild(ul); return det;
   }
@@ -1276,8 +1292,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   // A None identified state's finding opens with its status in words; wherever the status shows beside it, the finding starts with what was found (rule: nothing restates its context).
   function findingText(j) { var t = j.status === "none_identified" ? j.summary.replace(/^No qualifying (?:national )?(?:government )?(?:institute|designation)(?: or commitment)? (?:identified|confirmed)[.;]\s*/, "") : j.summary; t = t || j.summary; return t.charAt(0).toUpperCase() + t.slice(1); }
   function asOf(day, word) { var span = el("span", "date-text", (word || "as of") + " "); span.appendChild(dated(day)); return span; } // the word stays with its date
-  function reported(day) { return asOf(day); } // staff dates read "as of" too: the data says, per figure, whether the source dates the count or only its report (#14; owner decision 05.11.2026)
-  function staffValue(st) { var text = st && staffText(st); return text ? qualified(text, [st.as_of ? reported(st.as_of) : null, confTag(st)]) : null; }
+  function staffValue(st) { var text = st && staffText(st); return text ? qualified(text, [st.as_of ? asOf(st.as_of) : null, confTag(st)]) : null; }
   function datedStaff(st) { var text = st && staffText(st); return text ? text + (st.as_of ? ", " + fmtDate(st.as_of) : "") : ""; }
   function staffCitations(st) { return fieldCitations(st, st && st.total != null ? ["total", "total_qualifier", "technical", "technical_qualifier", "as_of"] : st && st.technical != null ? ["technical", "technical_qualifier", "as_of"] : ["description", "as_of"]); }
   function publishedCitations(fu) { return fieldCitations(fu, (fu.description ? ["description"] : ["amount", "currency"]).concat(["period", "commitment"])); }
@@ -1631,9 +1646,9 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     states.forEach(function (j) { var i = el("i", "sw st-" + j.status); i.dataset.tip = j.name; i.dataset.tipSub = LABEL[j.status]; row.appendChild(i); }); // tooltips in the map dots' form: name, then a muted status line
     return row;
   }
-  var ACCESS_SCOPE = "This section covers every institute, whatever its status, and only leading AI developers' models. Access counts only when published sources confirm it.";
+  var ACCESS_SCOPE = "Which institutes test AI models themselves, and which get privileged access to leading developers' models. It covers every institute, whatever its status, and counts access only where published sources confirm it.";
   var PRIVILEGED_HELP = "Before public release, or with safeguards reduced or removed";
-  var SETUP_SCOPE = "Every institute, whatever its status.";
+  var SETUP_SCOPE = "This section covers every institute, whatever its status.";
   var MAP_INFO = "The World view shows only states with an institute or a plan; pick a region to see every state.";
   var RECHECK_NOTE = "Every state has a planned re-check date, sooner where a decision is pending; the dates are in the downloads."; // owner decision 24 Oct
   var MEDIAN_CEILING = "Some of these budgets are ceilings, so the median is a ceiling too and is rounded up.";
@@ -2643,8 +2658,10 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         grp.appendChild(ul); (right.childElementCount ? left : right).appendChild(grp);
       });
       box.appendChild(left); box.appendChild(right);
-      infoAfterHeading($("set-up"), info(SETUP_SCOPE, "setup-scope"));
-      infoAfterHeading($("funding"), info(SETUP_SCOPE, "fund-scope"));
+      [["set-up", "setup-scope"], ["funding", "fund-scope"]].forEach(function (pair) {
+        var note = el("p", "small scope-note", SETUP_SCOPE); note.id = pair[1];
+        $(pair[0]).closest("section").querySelector(".section-body").prepend(note);
+      });
       if (order.length) box.appendChild(groupSources(order, S));
     })();
     // Figures below the map: the producer's medians (dataset.display.counts) and the institutes with no budget. Counts count established state institutes only; the note says so with their number.
@@ -2886,7 +2903,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
             }
             var descriptionAndPeriod = pair[2] === "funding" ? description : withPeriod(description, item.period);
             // Value, then one qualifier line: published qualifiers, as-of date and confidence; notes follow on their own line.
-            var p = el("p"), recordQualifiers = (pair[2] === "funding" ? item.display.native_qualifiers.slice() : []).concat([item.as_of ? (pair[2] === "funding" ? asOf : reported)(item.as_of) : null, confTag(item)]);
+            var p = el("p"), recordQualifiers = (pair[2] === "funding" ? item.display.native_qualifiers.slice() : []).concat([item.as_of ? asOf(item.as_of) : null, confTag(item)]);
             p.appendChild(qualified(descriptionAndPeriod || missing(), recordQualifiers));
             p.dataset.record = pair[2]; p.dataset.recordId = item.id;
             var citeLine = p.lastChild.lastChild;
@@ -2936,11 +2953,11 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       var described = !latest && !technical ? selectedRecord(i, "staff", "staff") : null; if (described && !described.description) described = null;
       var count = el("div", "fund-value"); count.appendChild(latest ? el("strong", null, latest.display.total) : described ? el("span", "fund-staff-text", described.description) : missing());
       if (latest) count.appendChild(fundingCites(fieldCitations(latest, ["total", "total_qualifier", "as_of"]))); else if (described) count.appendChild(fundingCites(staffCitations(described))); staffBox.appendChild(count);
-      if (described) { var describedParts = [described.as_of ? reported(described.as_of) : null, confTag(described)].filter(Boolean); if (describedParts.length) { var describedLine = el("p", "fund-context"); describedLine.appendChild(separated(describedParts, true)); staffBox.appendChild(describedLine); } }
+      if (described) { var describedParts = [described.as_of ? asOf(described.as_of) : null, confTag(described)].filter(Boolean); if (describedParts.length) { var describedLine = el("p", "fund-context"); describedLine.appendChild(separated(describedParts, true)); staffBox.appendChild(describedLine); } }
       // "Latest total" only tells the total from a technical figure beside it; a lone total needs no label (principle: Values and qualifiers).
-      var latestParts = latest ? [technical ? "Latest total" : null, latest.as_of ? reported(latest.as_of) : null, confTag(latest)].filter(Boolean) : [];
+      var latestParts = latest ? [technical ? "Latest total" : null, latest.as_of ? asOf(latest.as_of) : null, confTag(latest)].filter(Boolean) : [];
       if (latestParts.length) { var latestLine = el("p", "fund-context"); latestLine.appendChild(separated(latestParts, true)); staffBox.appendChild(latestLine); }
-      if (technical) { var tech = el("p", "fund-context"), techParts = [technical.display.technical + " technical"]; if (technical.as_of) techParts.push(reported(technical.as_of)); if (confTag(technical)) techParts.push(confTag(technical)); tech.appendChild(separated(techParts, true)); tech.appendChild(fundingCites(fieldCitations(technical, ["technical", "technical_qualifier", "as_of"]))); staffBox.appendChild(tech); }
+      if (technical) { var tech = el("p", "fund-context"), techParts = [technical.display.technical + " technical"]; if (technical.as_of) techParts.push(asOf(technical.as_of)); if (confTag(technical)) techParts.push(confTag(technical)); tech.appendChild(separated(techParts, true)); tech.appendChild(fundingCites(fieldCitations(technical, ["technical", "technical_qualifier", "as_of"]))); staffBox.appendChild(tech); }
       row.appendChild(staffBox);
       var det = el("details", "more quiet fund-detail"); det.appendChild(el("summary", null, "Sources"));
       det.appendChild(detailsBody()); budget.appendChild(det); $("fund-rows").appendChild(row);
@@ -3073,6 +3090,11 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       // The saved map is a picture until the script takes over (or stands in for a map that fails): its dots are no
       // controls, so keyboard and assistive technology never meet a button that does nothing; a click still opens a record.
       [].forEach.call(document.querySelectorAll("#worldmap .tgt"), function (t) { ["role", "tabindex", "aria-controls", "aria-expanded", "aria-label"].forEach(function (a) { t.removeAttribute(a); }); });
+      // Attributes that only the running script uses, which draws them again when it takes over, stay out of the saved page: it
+      // must stay under the 2 MB that search engines read (check_page check_page_size). Links keep their href and accessible
+      // name; before the script runs they open in place and a citation shows no tooltip.
+      [].forEach.call(document.querySelectorAll("a.cn"), function (a) { ["data-tip", "data-tip-sub", "data-tip-ext"].forEach(function (n) { a.removeAttribute(n); }); });
+      [].forEach.call(document.querySelectorAll("a[data-ext]"), function (a) { ["data-ext", "target", "rel"].forEach(function (n) { a.removeAttribute(n); }); });
       var rest = el("tbody"); rest.id = "world-rest"; rest.hidden = true;
       W.filter(function (r) { return shown.indexOf(r) < 0; }).sort(function (a, b) { return a.name.localeCompare(b.name) || a.id.localeCompare(b.id); })
         .forEach(function (r) { rest.appendChild(r.tr); });
@@ -3138,6 +3160,21 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   var dataMeta = document.querySelector('meta[name="aisi-page-data"]'), MAP_WAIT = 10000;
   var PKG = fetch(dataMeta ? dataMeta.getAttribute("data-package") : "data/datapackage.json").then(json);
   if (PRERENDERED) arrangeCards(); // regroup the saved card rows for this window's width before the data arrives
+  if (PRERENDERED) { loadSavedMap(); window.addEventListener("resize", loadSavedMap); }
+  // The saved map drawings live in their own files (the build moves them out of the page, which stays under the 2 MB that
+  // search engines read): fill the one this window shows into its empty <svg>, which keeps the page's styles on it. A
+  // window that crosses the width where the layouts swap loads the other one then; each loads once (data-saved).
+  function loadSavedMap() {
+    [].forEach.call(document.querySelectorAll("#worldmap svg[data-src]:not([data-saved])"), function (shell) {
+      if (getComputedStyle(shell).display === "none") return;
+      shell.setAttribute("data-saved", "loading");
+      fetch(shell.getAttribute("data-src")).then(function (r) { if (!r.ok) throw new Error(String(r.status)); return r.text(); }).then(function (text) {
+        var t = document.createElement("template"); t.innerHTML = text;
+        var drawing = t.content.firstChild; while (drawing.firstChild) shell.appendChild(drawing.firstChild);
+        shell.setAttribute("data-saved", "done");
+      }).catch(function (error) { shell.removeAttribute("data-saved"); console.warn("The saved map could not be loaded", error); });
+    });
+  }
   var LIBS = new Promise(function (done) { if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", done); else done(); })
     .then(function () { if (typeof d3 === "undefined" || typeof topojson === "undefined") throw new Error("map scripts unavailable"); });
   var MAP = Promise.all([LIBS, fetch("assets/world-50m.v2.0.2.json").then(json)]).then(function (loaded) { return loaded[1]; });

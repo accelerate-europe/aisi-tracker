@@ -691,13 +691,13 @@ def cite(n="gb-source", *more):
     return f'<span class="cites">{anchors}</span>'
 
 
-HOW_SCA = "Works with the institute on synthetic evaluation task sca."
-HOW_LAB = "Works with the institute on synthetic evaluation task lab."
+HOW_SCA = "works with the institute on synthetic evaluation task sca."
+HOW_LAB = "works with the institute on synthetic evaluation task lab."
 
 
 def fold(*pairs):
     items = "".join(
-        f'<li><span class="pname">{n}</span> <span class="phow">{h}{cite()}</span></li>'
+        f'<li><span class="pname">{n}{cite()}</span> <span class="phow">{h[:1].lower() + h[1:]}</span></li>'
         for n, h in pairs
     )
     return f'<details class="more quiet partner-how"><summary>How they work together</summary><ul>{items}</ul></details>'
@@ -786,6 +786,47 @@ def test_page_oracle_fold_out_follows_card_order(rows):
     assert any("fold-out shows" in e for e in page_errors(rows, html))
 
 
+@pytest.mark.parametrize(
+    ("singular", "plural"),
+    [
+        ("Is to be tied to the institute by agreement and can contribute staff, computing capacity and specialist knowledge.", "are to be tied to the institute by agreement and can contribute staff, computing capacity and specialist knowledge."),
+        ("Is named among the institute’s partners whose agreements enable evaluations of the latest AI capabilities.", "are named among the institute’s partners whose agreements enable evaluations of the latest AI capabilities."),
+        ("Is one of the national evaluation and security bodies the institute federates without a new legal structure.", "are among the national evaluation and security bodies the institute federates without a new legal structure."),
+        ("Takes part in the institute as a participating organisation of the AISI Partnership Agreement.", "take part in the institute as participating organisations of the AISI Partnership Agreement."),
+        ("Is listed among the institute's partners.", ""),
+        ("Is named as a technical partner that the institute works with.", ""),
+    ],
+)
+def test_page_oracle_groups_shared_how_with_cited_names(rows, singular, plural):
+    for partner in partners(rows)["entries"]:
+        partner["how"] = singular
+    grouped = (
+        '<details class="more quiet partner-how"><summary>How they work together</summary><ul><li>'
+        f'<span class="pname">SCA{cite()}</span> and <span class="pname">LAB{cite()}</span>'
+        + (f' <span class="phow">{plural}</span>' if plural else "")
+        + "</li></ul></details>"
+    )
+    html = card(good_rows().replace(fold(("SCA", HOW_SCA), ("LAB", HOW_LAB)), grouped))
+    assert page_errors(rows, html) == []
+    assert check_page.check_citation_ends(BeautifulSoup(html, "html.parser")) == []
+    # A citation for the group cannot substitute for the second name's own citation.
+    missing = html.replace(f"LAB{cite()}</span>", "LAB</span>")
+    assert any("fold-out citations" in e for e in page_errors(rows, missing))
+    if plural:
+        bad_agreement = html.replace(plural, singular[:1].lower() + singular[1:])
+        assert any("fold-out shows" in e for e in page_errors(rows, bad_agreement))
+    repeated = html.replace(grouped, fold(("SCA", singular), ("LAB", singular)))
+    assert any("fold-out shows" in e for e in page_errors(rows, repeated))
+
+
+def test_page_oracle_rejects_unreviewed_plural_wording(rows):
+    singular = "Works with the institute on synthetic evaluation tasks."
+    for partner in partners(rows)["entries"]:
+        partner["how"] = singular
+    html = card(good_rows().replace(fold(("SCA", HOW_SCA), ("LAB", HOW_LAB)), fold(("SCA", singular), ("LAB", singular))))
+    assert any("shared explanation needs explicit plural wording" in e for e in page_errors(rows, html))
+
+
 def test_page_oracle_requires_the_order_after_form(rows):
     html = card("").replace("</article>", "") + good_rows() + "</article>"
     assert any("must follow Form directly" in e for e in page_errors(rows, html))
@@ -868,8 +909,8 @@ def test_page_oracle_card_cap_is_six(rows):
     assert folded["np-test-x5"]["cited"] == ["gb-source", "detail-source"]
     assert any("fold-out citations" in e for e in page_errors(rows, ok))
     cited = ok.replace(
-        f"task x5.{cite()}</span>",
-        f"task x5.{cite('gb-source', 'detail-source')}</span>",
+        f"X5{cite()}</span>",
+        f"X5{cite('gb-source', 'detail-source')}</span>",
     )
     assert page_errors(rows, cited) == []
 
@@ -1034,10 +1075,10 @@ def test_citation_must_end_its_value_but_not_before_the_partner_fold_out(rows):
     )  # only the partner fold-out is exempt
 
 
-def test_fold_citation_must_end_its_own_item():
+def test_fold_citation_must_end_its_own_name():
     html = fold(("SCA", HOW_SCA))
     assert check_page.check_citation_ends(BeautifulSoup(html, "html.parser")) == []
-    broken = html.replace("</li>", " trailing words</li>")
+    broken = html.replace(f"SCA{cite()}", f"SCA{cite()} trailing words")
     assert "citation group is not at the end of its value" in check_page.check_citation_ends(
         BeautifulSoup(broken, "html.parser")
     )

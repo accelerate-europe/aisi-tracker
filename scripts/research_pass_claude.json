@@ -1,0 +1,28 @@
+{
+  "env": {
+    "ENABLE_CLAUDEAI_MCP_SERVERS": "false",
+    "CLAUDE_CODE_DISABLE_AUTO_MEMORY": "1"
+  },
+  "claudeMdExcludes": [
+    "**/CLAUDE.md",
+    "**/CLAUDE.local.md",
+    "**/AGENTS.md",
+    "**/.claude/rules/**"
+  ],
+  "permissions": {
+    "defaultMode": "dontAsk",
+    "allow": [
+      "WebSearch",
+      "WebFetch",
+      "mcp__exa__web_search_exa",
+      "mcp__exa__web_fetch_exa",
+      "Agent",
+      "Edit(./**)"
+    ],
+    "deny": [
+      "Bash",
+      "NotebookEdit",
+      "Skill"
+    ]
+  }
+}

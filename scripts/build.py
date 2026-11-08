@@ -36,20 +36,20 @@ if __package__:
     from .references import authored_schema, excerpt_identity, materialise_references, pointer_ancestors
     from .published import INTERVAL_KEYS, NO_ECB_RATE, budget_ratios, comparable_funding, annual_eur_estimate as annual_eur_estimate, known_activity as known_activity, output_activity_kind as output_activity_kind, publish, prepared_facts, timeline_status as timeline_status, eur_per_unit as eur_per_unit, significant as significant
     from .shared_claims import check_shared_claims, shared_claim_coverage  # type: ignore[import-not-found]
-    from .method_copy import full_method_page
+    from .method_copy import METHOD_TITLE, full_method_page
     from .method_checks import check_method_rules  # type: ignore[import-not-found]
     from .source_origins import source_origin_report, write_source_origin_report
-    from .agent_files import LICENSES, doi_url, api_files, api_landing_html, api_root, citation_cff, zenodo_json, head_links, json_ld_script, llms_txt, robots_txt, sitemap_xml, feed_xml, FEED_PATH, orientation_html, orientation_markdown, definition_markdown, public_url_errors
+    from .agent_files import LICENSES, doi_url, api_files, api_landing_html, api_root, citation_cff, zenodo_json, head_links, share_tags, image_alt_text, json_ld_script, llms_txt, robots_txt, sitemap_xml, feed_xml, FEED_PATH, orientation_html, orientation_markdown, definition_markdown, public_url_errors
     from .release_checks import check_metadata, check_readme_licence, check_readme_doi, check_markdown, generated_block, generated_citation, generated_counts, check_launch_wording, write_citation, check_instrument_status_dates, instrument_status_warnings, dates_after_as_of
 else:  # Direct script execution.
     import published as fact_pipeline
     from references import authored_schema, excerpt_identity, materialise_references, pointer_ancestors
     from published import INTERVAL_KEYS, NO_ECB_RATE, budget_ratios, comparable_funding, annual_eur_estimate as annual_eur_estimate, known_activity as known_activity, output_activity_kind as output_activity_kind, publish, prepared_facts, timeline_status as timeline_status, eur_per_unit as eur_per_unit, significant as significant
     from shared_claims import check_shared_claims, shared_claim_coverage
-    from method_copy import full_method_page
+    from method_copy import METHOD_TITLE, full_method_page
     from method_checks import check_method_rules
     from source_origins import source_origin_report, write_source_origin_report
-    from agent_files import LICENSES, doi_url, api_files, api_landing_html, api_root, citation_cff, zenodo_json, head_links, json_ld_script, llms_txt, robots_txt, sitemap_xml, feed_xml, FEED_PATH, orientation_html, orientation_markdown, definition_markdown, public_url_errors
+    from agent_files import LICENSES, doi_url, api_files, api_landing_html, api_root, citation_cff, zenodo_json, head_links, share_tags, image_alt_text, json_ld_script, llms_txt, robots_txt, sitemap_xml, feed_xml, FEED_PATH, orientation_html, orientation_markdown, definition_markdown, public_url_errors
     from release_checks import check_metadata, check_readme_licence, check_readme_doi, check_markdown, generated_block, generated_citation, generated_counts, check_launch_wording, write_citation, check_instrument_status_dates, instrument_status_warnings, dates_after_as_of
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -963,18 +963,25 @@ def versioned(path: str, text: str, version: str) -> str:
     return f"{path}?v={version}-{hashlib.sha256(text.encode('utf-8')).hexdigest()[:10]}"
 
 
+def page_heading(page: str) -> str | None:
+    """The page's visible h1, which the social preview image shows (the title in the head may be longer)."""
+    found = re.search(r"<h1>([^<]+)</h1>", page)
+    return html.unescape(found[1]) if found else None
+
+
 def generated_page(page: str, published: dict, resources: list[dict], data_urls: tuple[str, str] = ("data/page.json", "data/datapackage.json")) -> str:
     """Build-time insertions into site/index.html: each <!-- build:NAME --> marker appears once."""
     found = re.search(r"<title>([^<]+)</title>", page)
     title = html.unescape(found[1]) if found else published["dataset"]["title"]
     data_meta = f'<meta name="aisi-page-data" content="{html.escape(data_urls[0])}" data-package="{html.escape(data_urls[1])}">'
-    inserts = {"head": head_links(published, title) + "\n" + json_ld_script(published, resources) + "\n" + data_meta, "using-data": orientation_html(published)}
+    inserts = {"head": head_links(published, title, page_heading(page) or title) + "\n" + json_ld_script(published, resources) + "\n" + data_meta, "using-data": orientation_html(published)}
     for name, text in inserts.items():
         marker = f"<!-- build:{name} -->"
         if page.count(marker) != 1:
             raise ValueError(f"site/index.html needs exactly one {marker}")
         page = page.replace(marker, text)
-    return page
+    # The served page carries no CSS comments (the design principles stay in the source): search engines read only its first 2 MB.
+    return re.sub(r"<style>.*?</style>", lambda found: re.sub(r"/\*.*?\*/", "", found[0], flags=re.S), page, count=1, flags=re.S)
 
 
 RELEASE_WARNINGS = "release-warnings.md"
@@ -1155,7 +1162,9 @@ def main() -> None:
         for name in ("LICENSE", "LICENSE-DATA"):
             shutil.copy(ROOT / name, build / name)
         (build / "index.html").write_text(generated_page(SITE.read_text(encoding="utf-8"), d, resources, data_urls), encoding="utf-8")
-        (build / "method.html").write_text(full_method_page(m, SITE.read_text(encoding="utf-8")), encoding="utf-8")
+        page_source = SITE.read_text(encoding="utf-8")
+        method_share = share_tags(METHOD_TITLE, "method.html", image_alt_text(d, page_heading(page_source) or METHOD_TITLE))
+        (build / "method.html").write_text(full_method_page(m, page_source, method_share), encoding="utf-8")
         (build / "llms.txt").write_text(llms_txt(d), encoding="utf-8")
         (build / FEED_PATH).write_text(feed_xml(d), encoding="utf-8")
         prerender(build)

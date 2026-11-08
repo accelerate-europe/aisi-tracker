@@ -5,7 +5,7 @@
 """One check command for agents, the pre-commit hook and CI.
 
   uv run scripts/check.py                       # every step on the staged snapshot, compared with HEAD
-  uv run scripts/check.py --base global-expansion
+  uv run scripts/check.py --base main           # compared with main, when handing back a branch
   uv run scripts/check.py --only fast           # validate,lint,tests: the pre-commit hook
   uv run scripts/check.py --preflight           # can this agent run every step?
 
@@ -44,7 +44,7 @@ def toplevel() -> Path:
 
 
 ROOT = toplevel()
-STEPS = ("validate", "lint", "tests", "copies", "build", "gate", "compare", "sheet")
+STEPS = ("validate", "lint", "tests", "copies", "passes", "build", "gate", "compare", "sheet")
 # The pre-commit hook runs "fast"; CI runs "fast,build,gate". One definition for both.
 GROUPS = {"fast": ("validate", "lint", "tests")}
 NOT_RUN = 3  # check_page.py's exit code when Chrome is missing
@@ -209,6 +209,25 @@ def step_copies(ctx: Context) -> Result:
         return Result("copies", "FAIL", seconds, f"{len(missing)} recorded snapshots have no matching file in {store} "
                       f"(save source copies there, see AGENTS.md): {', '.join(missing)}")
     return Result("copies", "PASS", seconds, f"{len(wanted)} recorded snapshots held in {store}")
+
+
+def pass_store(snapshots: Path | None) -> Path | None:
+    """Research passes: AISI_PASSES, else passes/ beside the source store (as research_pass.py resolves it)."""
+    if os.environ.get("AISI_PASSES"):
+        return Path(os.environ["AISI_PASSES"]).expanduser()
+    return snapshots.parent / "passes" if snapshots else None
+
+
+def step_passes(ctx: Context) -> Result:
+    """Every data commit since the base names a closed, valid research pass, or none with a reason (docs/research-passes.md)."""
+    store = pass_store(ctx.snapshots)
+    cmd = ["uv", "run", "--locked", "-q", "python", "scripts/research_pass.py"] + (["--store", str(store)] if store else []) + [
+        "commits", "--base", ctx.base or "HEAD", "--repo", str(ctx.repo), "--data", "data/aisi.json"]
+    code, seconds, log = run(ctx, "passes", cmd)
+    detail = tail(log)
+    if code == 3:
+        return Result("passes", "NOT RUN", seconds, f"{detail}; a maintainer with the private store must run this step", log)
+    return Result("passes", "PASS" if code == 0 else "FAIL", seconds, detail, log)
 
 
 def step_build(ctx: Context) -> Result:
@@ -583,6 +602,10 @@ def preflight(cache: Path, snapshots: Path | None) -> int:
     store_detail = str(snapshots) if snapshots is not None else snapshot_location(None)
     rows.append(("private store (copies step; seeds quote verification)", bool(snapshots and snapshots.is_dir()), store_detail))
     print(f"| {rows[-1][0]} | {'yes' if rows[-1][1] else 'NO'} | {store_detail} |")
+    passes = pass_store(snapshots)
+    rows.append(("pass store (passes step, for commits naming a pass)", bool(passes and passes.is_dir()),
+                 str(passes) if passes else "not configured (set AISI_PASSES or AISI_SNAPSHOTS)"))
+    print(f"| {rows[-1][0]} | {'yes' if rows[-1][1] else 'NO'} | {rows[-1][2]} |")
     return 0 if all(ok for _, ok, _ in rows) else 1
 
 
@@ -600,7 +623,7 @@ def blocking(results: list[Result], allow_skip: bool) -> list[Result]:
 
 
 RUNNERS = {
-    "validate": step_validate, "lint": step_lint, "tests": step_tests, "copies": step_copies, "build": step_build,
+    "validate": step_validate, "lint": step_lint, "tests": step_tests, "copies": step_copies, "passes": step_passes, "build": step_build,
     "gate": step_gate, "compare": step_compare, "sheet": step_sheet,
 }
 
@@ -662,7 +685,7 @@ def main() -> int:
         ap.error(f"--gate-shard expects K/N with 1 <= K <= N, not {args.gate_shard!r}")
     if args.gate_shard and int(args.gate_shard.split("/")[0]) > int(args.gate_shard.split("/")[1]):
         ap.error(f"--gate-shard expects K/N with 1 <= K <= N, not {args.gate_shard!r}")
-    base = git(ROOT, "rev-parse", "--verify", f"{args.base}^{{commit}}").strip() if {"compare", "sheet"} & set(steps) else None
+    base = git(ROOT, "rev-parse", "--verify", f"{args.base}^{{commit}}").strip() if {"compare", "sheet", "passes"} & set(steps) else None
     report = (args.report_dir or Path(tempfile.mkdtemp(prefix="aisi-check-report-"))).resolve()
     if report.exists() and any(report.iterdir()):
         ap.error(f"--report-dir {report} is not empty; every report starts from an empty directory")

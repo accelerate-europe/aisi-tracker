@@ -21,6 +21,8 @@ from urllib.parse import urlsplit
 
 # Every absolute site URL the build writes derives from this address, ending in "/".
 PUBLIC_URL = "https://aisi.accelerate-europe.org/"
+SITE_NAME = "AI Security Institutes tracker"
+SOCIAL_IMAGE = "social-preview.png"
 
 # Licence names in dataset.license as Frictionless licence objects (datapackage.json uses them too).
 LICENSES = {"CC BY 4.0": {"name": "CC-BY-4.0", "path": "https://creativecommons.org/licenses/by/4.0/", "title": "Creative Commons Attribution 4.0"}}
@@ -241,19 +243,40 @@ def llms_txt(published: dict) -> str:
     return "\n".join(body) + "\n"
 
 
-def head_links(published: dict, page_title: str) -> str:
-    api = api_root(published)
-    dataset = published["dataset"]
-    # The text drawn on social-preview.png (scripts/social_preview.py): page title, publisher, credits.
-    credit = ", ".join(p["name"] for p in dataset["maintainers"])
-    image_alt = html.escape(f"{page_title}. {dataset['publisher']}, compiled by {credit}.", quote=True)
-    url = html.escape(PUBLIC_URL, quote=True)
-    return (f'<link rel="canonical" href="{url}">\n'
+def share_tags(title: str, path: str, image_alt: str) -> str:
+    """The Open Graph and Twitter tags every page shares (the pages add their own descriptions): title, site name,
+    address and the preview image, for the page at PUBLIC_URL + path."""
+    def e(text: str) -> str:
+        return html.escape(text, quote=True)
+
+    url, image = e(PUBLIC_URL + path), e(PUBLIC_URL + SOCIAL_IMAGE)
+    return (f'<meta property="og:title" content="{e(title)}">\n'
+            '<meta property="og:type" content="website">\n'
+            f'<meta property="og:site_name" content="{e(SITE_NAME)}">\n'
             f'<meta property="og:url" content="{url}">\n'
-            f'<meta property="og:image" content="{url}social-preview.png">\n'
+            f'<meta property="og:image" content="{image}">\n'
             '<meta property="og:image:width" content="1200">\n'
             '<meta property="og:image:height" content="630">\n'
-            f'<meta property="og:image:alt" content="{image_alt}">\n'
+            f'<meta property="og:image:alt" content="{e(image_alt)}">\n'
+            '<meta name="twitter:card" content="summary_large_image">\n'
+            f'<meta name="twitter:title" content="{e(title)}">\n'
+            f'<meta name="twitter:image" content="{image}">')
+
+
+def image_alt_text(published: dict, image_title: str) -> str:
+    """What social-preview.png says (scripts/social_preview.py): the page's heading, publisher and credits."""
+    dataset = published["dataset"]
+    credit = ", ".join(p["name"] for p in dataset["maintainers"])
+    return f"{image_title}. {dataset['publisher']}, compiled by {credit}."
+
+
+def head_links(published: dict, page_title: str, image_title: str | None = None) -> str:
+    """The index page's head insertions: canonical address, share tags (titled page_title; the preview image shows
+    image_title, the page's heading) and the alternate links."""
+    api = api_root(published)
+    url = html.escape(PUBLIC_URL, quote=True)
+    return (f'<link rel="canonical" href="{url}">\n'
+            + share_tags(page_title, "", image_alt_text(published, image_title or page_title)) + "\n"
             f'<link rel="alternate" type="application/json" href="{api}/index.json" title="Per-record API">\n'
             '<link rel="alternate" type="application/json" href="data/datapackage.json" title="Data package">\n'
             f'<link rel="alternate" type="application/atom+xml" href="{FEED_PATH}" title="News and new versions (Atom feed)">')
@@ -309,9 +332,11 @@ def robots_txt() -> str:
 
 
 def sitemap_xml(published: dict, paths: list[str]) -> str:
-    """The page and built files except the noindex error page, dated as_of, sorted."""
+    """The HTML pages among the built files (the page at its directory URL, method.html, the API landing page) except
+    the noindex error page, dated as_of, sorted. Fonts, scripts, data and licences are not pages."""
     as_of = published["dataset"]["as_of"]
-    entries = "".join(f"<url><loc>{html.escape(PUBLIC_URL + path)}</loc><lastmod>{as_of}</lastmod></url>\n" for path in sorted(paths) if path != "404.html")
+    pages = sorted({path.removesuffix("index.html") for path in paths if (path == "" or path.endswith(".html")) and path != "404.html"})
+    entries = "".join(f"<url><loc>{html.escape(PUBLIC_URL + path)}</loc><lastmod>{as_of}</lastmod></url>\n" for path in pages)
     return f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n{entries}</urlset>\n'
 
 

@@ -11,6 +11,33 @@ from conftest import SOURCE_URL
 from scripts import check_page
 
 
+def test_scope_notes_are_short_explanations_or_plain_sentences():
+    testing = "Which institutes test AI models themselves, and which get privileged access to leading developers' models. It covers every institute, whatever its status, and counts access only where published sources confirm it."
+    scope = "This section covers every institute, whatever its status."
+    html = (
+        f'<h2 id="testing">Testing and access</h2><button class="info" id="test-scope" data-tip="{testing}">i</button>'
+        f'<section aria-labelledby="set-up"><h2 id="set-up">Institutional set-up</h2><div class="section-body"><p class="small scope-note" id="setup-scope">{scope}</p></div></section>'
+        f'<section aria-labelledby="funding"><h2 id="funding">Funding and staff</h2><div class="section-body"><p class="small scope-note" id="fund-scope">{scope}</p></div></section>'
+    )
+    data = {"institutes": [], "dataset": {"definition": "Example.", "status_definitions": {}}}
+
+    def errors(markup):
+        return [
+            error for error in check_page.check_supporting_text(BeautifulSoup(markup, "html.parser"), data)
+            if error.startswith(("testing:", "set-up:", "funding:", "test-scope:"))
+        ]
+
+    assert errors(html) == []
+    assert any("at most two sentences" in e for e in errors(html.replace(testing, testing + " A third sentence.")))
+    assert any("scope is not one (i)" in e for e in errors(html.replace(testing, "Only a scope note.")))
+    for note_id, heading in (("setup-scope", "set-up"), ("fund-scope", "funding")):
+        hidden = html.replace(
+            f'<p class="small scope-note" id="{note_id}">{scope}</p>',
+            f'<button class="info" id="{note_id}" data-tip="{scope}">i</button>',
+        )
+        assert any(e.startswith(heading + ": the scope must be a plain sentence") for e in errors(hidden))
+
+
 @pytest.fixture
 def rendered(tmp_path):
     dist = tmp_path / "dist"

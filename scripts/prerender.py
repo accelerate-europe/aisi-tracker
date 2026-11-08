@@ -11,6 +11,8 @@ Chrome is a build requirement: without it this exits with NOT_RUN (3) and the bu
 """
 
 import argparse
+import hashlib
+import re
 import sys
 import tempfile
 import threading
@@ -84,6 +86,24 @@ def prerender(dist: Path, chrome: str) -> str:
             thread.join(timeout=5)
 
 
+def split_map(html: str, dist: Path) -> str:
+    """Move each saved map drawing out of the page into assets/map-<layout>.svg and leave an empty <svg> carrying the
+    attributes and a data-src URL (versioned by content): the drawing is about a third of the page's bytes and no
+    text, and search engines read only the first 2 MB of a page. The page script fills the shell from the file
+    (loadSavedMap in site/index.html) and keeps the page's own styles on it."""
+    def move(found: re.Match) -> str:
+        attrs, body = found["attrs"], found["body"]
+        name = f"map-{found['layout']}.svg"
+        text = f'<svg xmlns="http://www.w3.org/2000/svg"{attrs}>{body}</svg>\n'
+        (dist / "assets" / name).write_text(text, encoding="utf-8")
+        return f'<svg{attrs} data-src="assets/{name}?v={hashlib.sha256(text.encode()).hexdigest()[:10]}"></svg>'
+
+    html, moved = re.subn(r'<svg(?P<attrs>[^>]*class="map-(?P<layout>wide|narrow)"[^>]*)>(?P<body>.*?)</svg>', move, html, flags=re.S)
+    if moved != 2:
+        raise RuntimeError(f"expected the saved page to hold two map drawings, found {moved}")
+    return html
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--dist", type=Path, required=True, help="built site whose index.html is replaced")
@@ -93,7 +113,7 @@ def main() -> int:
         print("NOT RUN: Chrome/Chromium is required to pre-render the page and is not installed.", file=sys.stderr)
         return NOT_RUN
     page = args.dist / "index.html"
-    html = prerender(args.dist, chrome)
+    html = split_map(prerender(args.dist, chrome), args.dist)
     if "data-prerendered" not in html or '<template id="page-template">' not in html:
         print("error: the rendered page lacks its pre-rendering markers", file=sys.stderr)
         return 1

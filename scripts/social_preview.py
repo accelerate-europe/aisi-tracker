@@ -1,6 +1,6 @@
 """Generate site/social-preview.png: uv run --locked scripts/social_preview.py.
 
-Uses the page title and dataset credits. The bundled, unmodified Inter Regular
+Uses the page heading (the h1; the title in the head is longer) and dataset credits. The bundled, unmodified Inter Regular
 and Bold fonts are version 4.001 (git-9221beed3), Copyright 2016 The Inter Project
 Authors, under SIL OFL 1.1; see fonts/OFL.txt. Their embedded licence and version
 metadata identify the installed originals; SHA-256 pins below prevent silent
@@ -9,7 +9,7 @@ substitution. Upstream: https://github.com/rsms/inter/tree/9221beed3
 Pillow is already pinned in the repository's uv.lock. No network or system fonts
 are needed. The PNG has no timestamp; repeat runs in the locked environment on
 the same platform produce identical bytes. Regenerate when publisher or
-maintainer credits change as well as when the page title changes.
+maintainer credits change as well as when the page heading changes.
 """
 
 import argparse
@@ -37,7 +37,7 @@ def font(weight: str, size: int) -> ImageFont.FreeTypeFont:
 
 def generate(output: Path) -> None:
     page = (ROOT / "site/index.html").read_text(encoding="utf-8")
-    title = html.unescape(re.search(r"<title>([^<]+)</title>", page)[1])
+    title = html.unescape(re.search(r"<h1>([^<]+)</h1>", page)[1])
     data = json.loads((ROOT / "data/aisi.json").read_text(encoding="utf-8"))["dataset"]
     image = Image.new("RGB", (1200, 630), "#faf7f2")
     draw = ImageDraw.Draw(image)
@@ -56,7 +56,7 @@ def generate(output: Path) -> None:
     if len(lines) > 2 or any(
         draw.textlength(line, font=heading) > 1056 for line in lines
     ):
-        raise ValueError("Page title does not fit the social image")
+        raise ValueError("Page heading does not fit the social image")
     draw.multiline_text(
         (72, 140), "\n".join(lines), font=heading, fill="#1b1b1b", spacing=16
     )

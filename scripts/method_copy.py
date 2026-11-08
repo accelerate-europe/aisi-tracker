@@ -99,12 +99,17 @@ def lead_in(part: str, label: str) -> str:
     return html.escape(part)
 
 
-def full_method_page(dataset: dict, site: str) -> str:
-    """Static, escaped full rules. Reuse the main page's style rather than fork it."""
+METHOD_TITLE = "Full method | AI Security Institutes tracker"
+METHOD_DESCRIPTION = "The full editorial rules behind the AI Security Institutes tracker: what counts as an institute, how status, dates, funding and sources are recorded and checked."
+
+
+def full_method_page(dataset: dict, site: str, share: str = "") -> str:
+    """Static, escaped full rules. Reuse the main page's style rather than fork it. share: the page's Open Graph and Twitter tags."""
     style = re.search(r"<style>.*?</style>", site, re.S)
     theme = re.search(r'<script id="theme-boot">.*?</script>', site, re.S)  # the tracker's theme choice, before the style
     fonts = re.findall(r'<link rel="preload"[^>]+as="font"[^>]*>', site)  # the vendored fonts' @font-face rules travel in the style
     title = "Full method"
+    description = html.escape(METHOD_DESCRIPTION, quote=True)
     sections = []
     for rule in dataset["method"]:
         rid = html.escape(rule["id"], quote=True)
@@ -117,8 +122,11 @@ def full_method_page(dataset: dict, site: str) -> str:
     return (
         '<!doctype html><html lang="en"><head><meta charset="utf-8">'
         '<meta name="viewport" content="width=device-width, initial-scale=1">'
-        f"<title>{title} | AI Security Institutes tracker</title>"
-        '<link rel="icon" href="favicon.svg" type="image/svg+xml">'
+        f"<title>{html.escape(METHOD_TITLE)}</title>"
+        f'<meta name="description" content="{description}">'
+        f'<meta property="og:description" content="{description}"><meta name="twitter:description" content="{description}">'
+        + share
+        + '<link rel="icon" href="favicon.svg" type="image/svg+xml">'
         + (theme.group() if theme else "")
         + "".join(fonts)
         + (style.group() if style else "")

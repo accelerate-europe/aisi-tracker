@@ -1,0 +1,34 @@
+# Codex home for research passes (docs/research-passes.md): search, fetch and
+# write in the pass folder; no shell, no other MCP server, no plugins or hooks.
+model = "gpt-6-astra"
+model_reasoning_effort = "high"
+approval_policy = "never"
+sandbox_mode = "workspace-write"
+web_search = "live"
+# No project instructions (AGENTS.md) from the pass folder or a repository around it.
+project_doc_max_bytes = 0
+# MCP logins in this home's own file: the shared keychain can hold a stale Exa login.
+mcp_oauth_credentials_store = "file"
+
+[sandbox_workspace_write]
+network_access = false
+exclude_slash_tmp = true
+exclude_tmpdir_env_var = true
+
+[features]
+shell_tool = false
+unified_exec = false
+apps = false
+plugins = false
+hooks = false
+browser_use = false
+in_app_browser = false
+computer_use = false
+memories = false
+view_image = false
+image_generation = false
+
+[mcp_servers.exa]
+url = "https://mcp.exa.ai/mcp?tools=web_search_exa,web_fetch_exa"
+bearer_token_env_var = "EXA_API_KEY"
+default_tools_approval_mode = "approve"

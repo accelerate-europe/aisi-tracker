@@ -7,20 +7,15 @@ from pathlib import Path
 
 import pytest
 
-from scripts.check_page import expected_activity
+from scripts.check_page import GENERIC_PARTNER_HOW, PLURAL_PARTNER_HOW, expected_activity
 
 PAGE = Path(__file__).resolve().parents[1] / "site/index.html"
 
 
-def test_partner_fold_renders_every_item_with_its_citations():
+def partner_fold(items):
     source = PAGE.read_text()
     helper = source[
         source.index("  function partnersFold(") : source.index("  function recordSources(")
-    ]
-    # Hand-worked eight-item order: the first six also appear on the card.
-    items = [
-        {"name": f"Body {n}", "how": f"Does task {n}.", "cited": [f"source-{n}"]}
-        for n in range(8)
     ]
     data = {"state": "stated", "items": items[:6], "fold_items": items}
     stub = """
@@ -40,15 +35,83 @@ for (const state of ["not_published", "not_applicable"]) {
 }
 const items = fold.children.find(child => child.tag === "ul").children;
 console.log(JSON.stringify(items.map(item => ({
-  name: item.children.find(child => child.className === "pname").text,
-  how: item.children.find(child => child.className === "phow").text,
-  cited: item.children.find(child => child.className === "phow").children.find(child => child.className === "cites").ids
+  names: item.children.filter(child => child.className === "pname").map(name => ({
+    name: name.text, cited: name.children.find(child => child.className === "cites").ids
+  })),
+  how: item.children.find(child => child.className === "phow")?.text || ""
 }))));
 """
     result = subprocess.run(
         ["node", "-e", script], check=True, capture_output=True, text=True
     )
-    assert json.loads(result.stdout) == items
+    return json.loads(result.stdout)
+
+
+def test_partner_fold_renders_every_item_with_its_citations():
+    # Hand-worked eight-item order: the first six also appear on the card.
+    items = [
+        {"name": f"Body {n}", "how": f"Does task {n}.", "cited": [f"source-{n}"]}
+        for n in range(8)
+    ]
+    assert partner_fold(items) == [
+        {"names": [{"name": f"Body {n}", "cited": [f"source-{n}"]}], "how": f"does task {n}."}
+        for n in range(8)
+    ]
+
+
+@pytest.mark.parametrize(
+    ("singular", "plural"),
+    [
+        ("Is to be tied to the institute by agreement and can contribute staff, computing capacity and specialist knowledge.", "are to be tied to the institute by agreement and can contribute staff, computing capacity and specialist knowledge."),
+        ("Is named among the institute’s partners whose agreements enable evaluations of the latest AI capabilities.", "are named among the institute’s partners whose agreements enable evaluations of the latest AI capabilities."),
+        ("Is one of the national evaluation and security bodies the institute federates without a new legal structure.", "are among the national evaluation and security bodies the institute federates without a new legal structure."),
+        ("Takes part in the institute as a participating organisation of the AISI Partnership Agreement.", "take part in the institute as participating organisations of the AISI Partnership Agreement."),
+        ("Has initial representation on the TRAINS Taskforce chaired by the then US AI Safety Institute.", "have initial representation on the TRAINS Taskforce chaired by the then US AI Safety Institute."),
+        ("Is listed among the institute's partners.", ""),
+        ("Is named as a technical partner that the institute works with.", ""),
+    ],
+)
+def test_partner_fold_groups_without_losing_name_citations(singular, plural):
+    items = [
+        {"name": "A", "how": singular, "cited": ["a-name", "a-how"]},
+        {"name": "B", "how": "Does another task.", "cited": ["b"]},
+        {"name": "C", "how": singular, "cited": ["c-name", "c-how"]},
+    ]
+    assert partner_fold(items) == [
+        {"names": [{"name": "A", "cited": ["a-name", "a-how"]}, {"name": "C", "cited": ["c-name", "c-how"]}], "how": plural},
+        {"names": [{"name": "B", "cited": ["b"]}], "how": "does another task."},
+    ]
+    # A singleton must retain the singular wording; generic claims remain names only.
+    assert partner_fold(items[:1])[0]["how"] == (singular[:1].lower() + singular[1:] if plural else "")
+
+
+def page_partner_maps():
+    """The page's GENERIC_HOW list and PLURAL_HOW keys, read from its source."""
+    source = PAGE.read_text()
+    fold = source[source.index("  function partnersFold(") : source.index("  function recordSources(")]
+    generic = fold[fold.index("var GENERIC_HOW = [") : fold.index("];", fold.index("var GENERIC_HOW = ["))]
+    plural = fold[fold.index("var PLURAL_HOW = {") : fold.index("};", fold.index("var PLURAL_HOW = {"))]
+    return (
+        set(re.findall(r'"([^"]+)"', generic)),
+        set(re.findall(r'^\s*"([^"]+)":', plural, re.M)),
+    )
+
+
+def test_partner_how_maps_match_current_data():
+    # The page keys these maps on exact data sentences (moving them into the producer is planned for 1.1.0);
+    # a mapped sentence that no longer occurs means an edit silently stopped the grouping.
+    data = json.loads((PAGE.parents[1] / "data/aisi.json").read_text())
+    shared, used = set(), set()
+    for institute in data["institutes"]:
+        hows = [e["how"] for e in (institute.get("national_partners") or {}).get("entries", [])]
+        used.update(hows)
+        shared.update(h for h in hows if hows.count(h) > 1)
+    generic, plural = page_partner_maps()
+    assert generic and plural
+    assert generic == GENERIC_PARTNER_HOW, "page and gate disagree on the generic sentences"
+    assert plural == set(PLURAL_PARTNER_HOW), "page and gate disagree on the plural sentences"
+    assert sorted(generic - used) == [], "generic sentence matches no partner"
+    assert sorted(plural - shared) == [], "plural sentence is shared by no two partners of one institute"
 
 
 def page_call(expression):

@@ -1,0 +1,9 @@
+#!/bin/sh
+# A commit that changes records in data/aisi.json names its research pass: 'Research-pass: <pass-id>'
+# or 'Research-pass: none (<reason>)' (docs/research-passes.md). Named passes are checked in the
+# private store when it is configured; check.py's passes step checks them for a branch.
+set -eu
+cd "$(git rev-parse --show-toplevel)"
+unset UV_WORKING_DIR UV_PROJECT UV_PROJECT_ENVIRONMENT
+git diff --cached --quiet -- data/aisi.json && exit 0
+exec uv run --locked -q python scripts/research_pass.py message "$1"

@@ -111,6 +111,13 @@
         "network-multilingual-2025",
         "r5-sg-multilingual-full-report-page"
       ]
+    },
+    {
+      "institute_id": "kr-aisi",
+      "lineage": "rok-fortress",
+      "source_ids": [
+        "kr-rok-fortress-2026"
+      ]
     }
   ],
   "first_output": [

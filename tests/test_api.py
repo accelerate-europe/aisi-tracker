@@ -271,11 +271,17 @@ def test_social_metadata_urls_and_shipped_image(site):
     with Image.open(site / "social-preview.png") as image:
         assert image.format == "PNG"
         assert image.size == (1200, 630)
-        assert image.info["Title"] == page.title.get_text()
-    assert (
-        agent_files.PUBLIC_URL + "social-preview.png"
-        in (site / "sitemap.xml").read_text()
-    )
+        assert image.info["Title"] == page.h1.get_text()  # the image shows the heading; the title in the head is longer
+    assert [n["content"] for n in page.select('meta[name="twitter:image"]')] == [agent_files.PUBLIC_URL + "social-preview.png"]
+    assert [n["content"] for n in page.select('meta[property="og:site_name"]')] == [agent_files.SITE_NAME]
+    for selector in ('meta[property="og:title"]', 'meta[name="twitter:title"]'):
+        assert [n["content"] for n in page.select(selector)] == [page.title.get_text()]
+    method = BeautifulSoup((site / "method.html").read_text(), "html.parser")
+    for prop, want in (("og:title", method.title.get_text()), ("twitter:title", method.title.get_text()), ("og:url", agent_files.PUBLIC_URL + "method.html"),
+                       ("og:image", agent_files.PUBLIC_URL + "social-preview.png"), ("twitter:image", agent_files.PUBLIC_URL + "social-preview.png")):
+        assert [n["content"] for n in method.select(f'meta[property="{prop}"], meta[name="{prop}"]')] == [want], prop
+    for selector in ('meta[property="og:description"]', 'meta[name="twitter:description"]', 'meta[name="description"]'):
+        assert method.select_one(selector)["content"]
 
 
 def test_head_urls_follow_public_url(dataset, monkeypatch):
@@ -426,10 +432,10 @@ def test_legal_code_packaged_verbatim_and_error_page_not_indexed(site, dataset):
     for name in ("LICENSE", "LICENSE-DATA"):
         assert (site / name).read_bytes() == (build.ROOT / name).read_bytes(), name
     sitemap = agent_files.sitemap_xml(
-        dataset, ["", "404.html", "LICENSE-DATA", "favicon.svg"]
+        dataset, ["", "404.html", "method.html", "api/v1/index.html", "LICENSE-DATA", "favicon.svg", "feed.xml", "assets/d3.js", "data/aisi.json"]
     )
     assert "404.html" not in sitemap
-    assert "LICENSE-DATA" in sitemap and "favicon.svg" in sitemap
+    assert re.findall(r"<loc>([^<]*)</loc>", sitemap) == [agent_files.PUBLIC_URL + path for path in ("", "api/v1/", "method.html")]
 
 
 @pytest.mark.parametrize(
@@ -547,7 +553,7 @@ def test_feed_has_one_entry_per_release_with_stable_ids(dataset, site):
     # The built site carries the feed, linked from the head, and the gate accepts it.
     page = BeautifulSoup((site / "index.html").read_text(encoding="utf-8"), "html.parser")
     assert check_page.check_feed(page, site) == []
-    assert agent_files.PUBLIC_URL + "feed.xml" in (site / "sitemap.xml").read_text()
+    assert agent_files.PUBLIC_URL + "feed.xml" not in (site / "sitemap.xml").read_text()  # the sitemap lists pages only
 
 
 def test_feed_carries_each_news_item_with_a_permanent_id(site, tmp_path):

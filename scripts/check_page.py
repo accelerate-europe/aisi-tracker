@@ -21,6 +21,7 @@ import re
 import shutil
 import subprocess
 import sys
+from html.parser import HTMLParser
 import tempfile
 import threading
 from collections import Counter, defaultdict
@@ -369,18 +370,97 @@ def check_download_layout(page) -> list[str]:
 USING_THE_DATA = "Using the data"
 
 
+META_TITLE = "AI Security Institutes tracker: AI safety and security institutes worldwide"  # the head title; the visible h1 stays "AI Security Institutes worldwide"
+PAGE_HEADING = "AI Security Institutes worldwide"
+PAGE_BYTES_BUDGET = 2_000_000  # search engines read only the first 2 MB of a page, so everything a reader should find must sit within it
+
+
 def check_meta_descriptions(soup, data: dict) -> list[str]:
-    """Owner decision D1: the title stays European; search and social descriptions state the worldwide coverage, counted here."""
+    """Owner decision D1: the heading stays European; the title and the search and social descriptions say what the tracker covers (counted here)."""
     states = sum(j["kind"] == "state" for j in data["jurisdictions"])
-    coverage = f"all {states} UN member states plus Taiwan and the EU AI Office, with Europe in detail"
+    coverage = f"Covers all {states} UN member states, Taiwan and the EU, with sources and open data"
     errors = []
-    if (soup.title.get_text() if soup.title else "") != "AI Security Institutes worldwide":
-        errors.append("page title is not 'AI Security Institutes worldwide'")
+    if (soup.title.get_text() if soup.title else "") != META_TITLE:
+        errors.append(f"page title is not {META_TITLE!r}")
     for selector in ('meta[name="description"]', 'meta[property="og:description"]', 'meta[name="twitter:description"]'):
         nodes = soup.select(selector)
         if len(nodes) != 1 or coverage not in nodes[0].get("content", ""):
             errors.append(f"{selector} must appear once and say '{coverage}'")
     return errors
+
+
+def check_share_tags(soup, name: str, title: str, address: str) -> list[str]:
+    """The Open Graph and Twitter tags of one built page: each once, titled like the page, one site name, and the
+    same preview image and address on both networks."""
+    def one(selector):
+        return [str(n.get("content")) for n in soup.select(selector)]
+
+    want = {'meta[property="og:title"]': title, 'meta[name="twitter:title"]': title, 'meta[property="og:site_name"]': "AI Security Institutes tracker",
+            'meta[property="og:url"]': address, 'meta[property="og:image"]': address.rsplit("/", 1)[0] + "/social-preview.png",
+            'meta[name="twitter:image"]': address.rsplit("/", 1)[0] + "/social-preview.png", 'meta[name="twitter:card"]': "summary_large_image", 'meta[property="og:type"]': "website"}
+    errors = [f"{name}: {selector} is {one(selector)}, expected [{value!r}]" for selector, value in want.items() if one(selector) != [value]]
+    for selector in ('meta[property="og:description"]', 'meta[name="twitter:description"]', 'meta[property="og:image:alt"]'):
+        if len(one(selector)) != 1 or not one(selector)[0]:
+            errors.append(f"{name}: {selector} must appear once and not be empty")
+    return errors
+
+
+class _WorldSectionEnd(HTMLParser):
+    """Walks the page keeping the stack of open <section> elements (as start offsets) and records the offset after the
+    end tag that closes the innermost section open where the element with id="world" starts. Offsets are into the
+    page decoded as latin-1, which is one character per byte."""
+
+    def __init__(self, text: str):
+        super().__init__(convert_charrefs=False)
+        self.text = text
+        self.lines = [0]
+        for line in text.split("\n"):  # as the parser counts lines: only at \n, not at other separators such as \x85
+            self.lines.append(self.lines[-1] + len(line) + 1)
+        self.stack: list[int] = []
+        self.world: int | None = None  # start offset of the section holding the world heading
+        self.found = False  # the element with id="world" was seen
+        self.end: int | None = None
+
+    def position(self) -> int:
+        line, column = self.getpos()
+        return self.lines[line - 1] + column
+
+    def handle_starttag(self, tag, attrs):
+        if tag == "section":
+            self.stack.append(self.position())
+        if ("id", "world") in attrs and not self.found:
+            self.found = True
+            self.world = self.stack[-1] if self.stack else None
+
+    def handle_endtag(self, tag):
+        if tag == "section" and self.stack:
+            start = self.stack.pop()
+            if self.end is None and self.world is not None and start == self.world:
+                self.end = self.text.index(">", self.position()) + 1
+
+
+def world_section_end(page: bytes) -> int | None:
+    """The byte offset where the section that holds the element with id="world" closes; None if that element is
+    missing, is not inside a section, or its section never closes."""
+    parser = _WorldSectionEnd(page.decode("latin-1"))
+    parser.feed(parser.text)
+    parser.close()
+    return parser.end
+
+
+def check_page_size(dist: Path) -> list[str]:
+    """Search engines read only the first PAGE_BYTES_BUDGET bytes of a page: the state-by-state content (the world
+    section) must end within them, or the check fails; a page that is longer in total only warns, because what
+    follows is not content to find."""
+    page = (dist / "index.html").read_bytes()
+    end = world_section_end(page)
+    if end is None:
+        return ["index.html: cannot find where the world section (id=\"world\") ends"]
+    if len(page) > PAGE_BYTES_BUDGET:
+        print(f"warning: index.html is {len(page)} bytes, beyond the {PAGE_BYTES_BUDGET} that search engines read", file=sys.stderr)
+    if end > PAGE_BYTES_BUDGET:
+        return [f"index.html: the world section ends at byte {end}, beyond the {PAGE_BYTES_BUDGET} that search engines read"]
+    return []
 
 
 def check_network_cells(soup, data) -> list[str]:
@@ -487,7 +567,9 @@ def mapless_controls(page, failed: bool) -> list[str]:
     """On a page that took over without the map: the saved World drawing stands in and its dots open records;
     search, the region list, table sort and filter work; another region says the map is loading or failed."""
     errors = []
-    if not page.locator("#worldmap svg.map-wide .tgt").count():
+    try:
+        page.wait_for_selector("#worldmap svg.map-wide .tgt", state="attached", timeout=10_000)
+    except Exception:  # noqa: BLE001 - the Playwright timeout
         errors.append("the saved map drawing is gone")
     page.locator("#map-search").fill("ger")
     page.locator("#map-search").press("Enter")
@@ -607,6 +689,30 @@ def hydration_edges(browser, base_url: str, dist: Path) -> list[str]:
         errors.extend(f"hydration without the map: {e}" for e in mapless_controls(page, failed=True))
     except PlaywrightTimeout:
         errors.append("hydration: without the map topology and d3 the page script does not take over")
+    page.close()
+    # The saved drawing follows the window across the width where the layouts swap, also while its file is still loading.
+    page = browser.new_page(viewport={"width": 1440, "height": 1000})
+    page.route("**/assets/world-*.json", lambda route: route.abort())
+    page.route("**/assets/d3.*.js", lambda route: route.abort())
+    held = []
+    page.route("**/assets/map-narrow.svg*", lambda route: held.append(route))
+    page.goto(base_url, wait_until="load")
+    try:
+        page.wait_for_function("!document.documentElement.hasAttribute('data-prerendered')", timeout=15_000)
+        page.wait_for_selector("#worldmap svg.map-wide .tgt", state="attached", timeout=10_000)
+        for width in (390, 1440, 390):  # the narrow file stays pending across these
+            page.set_viewport_size({"width": width, "height": 1000})
+            page.wait_for_timeout(300)
+        for route in held:
+            route.continue_()
+        page.wait_for_selector("#worldmap svg.map-narrow .tgt", state="attached", timeout=10_000)
+        page.set_viewport_size({"width": 1440, "height": 1000})
+        page.wait_for_timeout(500)
+        counts = page.evaluate("() => ['wide', 'narrow'].map(l => [document.querySelectorAll('#worldmap svg.map-' + l + ' pattern').length, document.querySelectorAll('#worldmap svg.map-' + l + ' .tgt').length > 0])")
+        if counts != [[1, True], [1, True]]:
+            errors.append(f"hydration without the map: the saved drawings after crossing the layout width are {counts}, expected one filled drawing per layout")
+    except PlaywrightTimeout:
+        errors.append("hydration without the map: the saved drawing does not follow the window across the layout width")
     page.close()
     # A map that is slow: the page takes over without it, says so after the wait, and draws it when it comes.
     page = browser.new_page(viewport={"width": 1440, "height": 1000})
@@ -739,7 +845,14 @@ def check_agent_files(dist: Path) -> list[str]:
     for href in alternates:
         if not (dist / href).is_file():
             errors.append(f"head: alternate link {href!r} has no file in the build")
-    errors += check_json_ld(soup, dist) + check_crawl_files(dist) + check_feed(soup, dist)
+    errors += check_json_ld(soup, dist) + check_crawl_files(dist) + check_feed(soup, dist) + check_page_size(dist)
+    canonical = soup.select_one('head link[rel="canonical"]')
+    if canonical:
+        site = str(canonical.get("href"))
+        errors += check_share_tags(soup, "index.html", META_TITLE, site)
+        if (dist / "method.html").is_file():
+            method = BeautifulSoup((dist / "method.html").read_text(encoding="utf-8"), "html.parser")
+            errors += check_share_tags(method, "method.html", "Full method | AI Security Institutes tracker", site + "method.html")
     if len(indexes) != 1 or not (dist / indexes[0]).is_file():
         return errors
     orientation = json.loads((dist / indexes[0]).read_text(encoding="utf-8")).get("orientation") or []
@@ -850,7 +963,7 @@ AI_CRAWLERS = ("GPTBot", "ClaudeBot", "PerplexityBot", "Google-Extended", "CCBot
 
 
 def check_crawl_files(dist: Path) -> list[str]:
-    """The sitemap lists public files except the noindex error page; robots allows crawlers."""
+    """The sitemap lists the HTML pages except the noindex error page, each once; robots allows crawlers."""
     errors = []
     try:
         root = ElementTree.parse(dist / "sitemap.xml").getroot()
@@ -859,11 +972,10 @@ def check_crawl_files(dist: Path) -> list[str]:
     ns = "{http://www.sitemaps.org/schemas/sitemap/0.9}"
     locs = [loc.text or "" for loc in root.iter(f"{ns}loc")]
     site = min(locs, key=len) if locs else ""
-    built = {"" if p == dist / "index.html" else p.relative_to(dist).as_posix() for p in dist.rglob("*") if p.is_file()}
+    pages = {"" if p == dist / "index.html" else p.relative_to(dist).as_posix().removesuffix("index.html") for p in dist.rglob("*.html")} - {"404.html"}
     listed = [loc[len(site):] for loc in locs if loc.startswith(site)]
-    expected = built - {"sitemap.xml", "robots.txt", "404.html"}
-    if not site.endswith("/") or len(listed) != len(locs) or sorted(listed) != sorted(expected):
-        errors.append(f"sitemap.xml: expected public files except 404.html once under one address, got {len(locs)} entries for {len(expected)} files")
+    if not site.endswith("/") or len(listed) != len(locs) or sorted(listed) != sorted(pages):
+        errors.append(f"sitemap.xml: expected the HTML pages {sorted(pages)} except 404.html once under one address, got {sorted(locs)}")
     try:
         robots = (dist / "robots.txt").read_text(encoding="utf-8")
     except OSError:
@@ -995,12 +1107,13 @@ def in_numeral_order(ids, order):
 
 
 def check_citation_ends(soup) -> list[str]:
-    """Every citation group ends its value; partner fold items are separate values from the card line."""
+    """Every citation group ends its value; partner names carry their own citations in the fold."""
     errors: list[str] = []
     for group in soup.select(".cites"):
         host = group.find_parent(
             lambda n: (
                 n.name in ("td", "p")  # a funding record's parts are separate paragraphs
+                or ("pname" in n.get("class", []) and n.find_parent("details", class_="partner-how"))
                 or (n.name == "li" and n.find_parent("details", class_="partner-how"))
                 or n.has_attr("data-record")
                 or bool(set(n.get("class", [])) & {"v", "fund-value", "fund-context", "activity-clause", "activity-since"})
@@ -1749,7 +1862,7 @@ SORT_ROWS_JS = r"""
     else if (key === 'since') v = date(t);
     else if (key === 'op') { const m = / since ((?:\d{1,2} )?(?:[A-Z][a-z]{2} )?\d{4})/.exec(t); v = m ? date(m[1]) : null; }  // kinds are in date order: the first since is the earliest
     else if (key === 'eur') { const m = /^(?:(?:up to|at least|about|nearly|more than|less than) )?~?EUR ([\d.,]+)(bn|m|k)?(?= )/.exec(t); v = m ? parseFloat(m[1].replace(/,/g, '')) * (m[2] === 'bn' ? 1e9 : m[2] === 'm' ? 1e6 : m[2] === 'k' ? 1e3 : 1) : null; }
-    else if (key === 'staff') { const m = /^(?:up to )?~?(\d[\d,]*)\+?(?= \(| as of | reported |,|$)/.exec(t); v = m ? parseInt(m[1].replace(/,/g, ''), 10) : null; }
+    else if (key === 'staff') { const m = /^(?:up to )?~?(\d[\d,]*)\+?(?= \(| as of |,|$)/.exec(t); v = m ? parseInt(m[1].replace(/,/g, ''), 10) : null; }
     return v == null || v === -1 ? { jid, name, tier: 1, text: t } : { jid, name, tier: 0, v, text: t };
   });
   // Text compares in the page's locale collation, as ranks, so the gate compares numbers only.
@@ -1820,7 +1933,7 @@ def sort_errors_for(rows: list[dict], key: str, direction: int, data=None) -> li
                     else expected_staff_total(record)
                 )
                 if not re.match(
-                    re.escape(expected) + r"(?= \(| as of | reported |,|$| a (?:financial )?year)",
+                    re.escape(expected) + r"(?= \(| as of |,|$| a (?:financial )?year)",
                     row["text"],
                 ):
                     errors.append(
@@ -2041,7 +2154,7 @@ def check_headline(soup, data: dict) -> list[str]:
         errors.append("first screen: the header is not the title then the meta line, before the first screen")
     titles = {"h1": soup.select_one("#top h1"), "og:title": soup.select_one('meta[property="og:title"]'), "bar": soup.select_one(".secnav .navtitle .long"), "bar short": soup.select_one(".secnav .navtitle .short")}
     got_titles = {k: (v.get("content") if k == "og:title" else v.get_text()) if v else None for k, v in titles.items()}
-    if got_titles != {"h1": "AI Security Institutes worldwide", "og:title": "AI Security Institutes worldwide", "bar": "AI Security Institutes", "bar short": "AISIs"}:
+    if got_titles != {"h1": PAGE_HEADING, "og:title": META_TITLE, "bar": "AI Security Institutes", "bar short": "AISIs"}:
         errors.append(f"title forms differ from the owner's: {got_titles}")
     first = soup.select_one("section.first")
     order = [c.get("id") or " ".join(c.get("class") or []) for c in first.find_all(recursive=False) if c.name != "h2"] if first else []
@@ -2157,7 +2270,7 @@ def check_two_significant_figures(soup) -> list[str]:
         if not any(n.get_text(strip=True) for n in nodes):
             errors.append(f"{selector}: matches no node with text, so the two-figure check would pass vacuously")
         for node in nodes:
-            text = re.sub(r"\b(?:as of|reported) .*|\(.*? technical\)", "", node.get_text(" ", strip=True))
+            text = re.sub(r"\bas of .*|\(.*? technical\)", "", node.get_text(" ", strip=True))
             if not two_figures(text):
                 errors.append(f"{selector}: {text!r} shows more than two significant figures")
     return errors
@@ -2364,7 +2477,7 @@ SHORT_DEFINITIONS = {
 # The map's (i) after the legend: how to read the dots and statuses (owner decision 4 Nov 2026: no meta lines on the page).
 MAP_INFO = "The World view shows only states with an institute or a plan; pick a region to see every state."
 RECHECK_LINE = "Every state has a planned re-check date, sooner where a decision is pending; the dates are in the downloads."  # owner decision 24 Oct
-SCOPE_NOTES = {"testing": ("test-scope", "This section covers every institute, whatever its status, and only leading AI developers' models. Access counts only when published sources confirm it."), "set-up": ("setup-scope", "Every institute, whatever its status."), "funding": ("fund-scope", "Every institute, whatever its status.")}  # owner decision 23 Oct: no section subtitles; scope as a muted note after the groups
+SCOPE_NOTES = {"testing": ("test-scope", "Which institutes test AI models themselves, and which get privileged access to leading developers' models. It covers every institute, whatever its status, and counts access only where published sources confirm it."), "set-up": ("setup-scope", "This section covers every institute, whatever its status."), "funding": ("fund-scope", "This section covers every institute, whatever its status.")}  # Testing explains the distinction; Set-up and Funding state their scope in plain sentences.
 
 
 def check_supporting_text(soup, data: dict) -> list[str]:
@@ -2377,11 +2490,18 @@ def check_supporting_text(soup, data: dict) -> list[str]:
         errors.append(f"section subtitle still on the page (owner decision: none): {stray.get('id') or stray.get('class')}")
     for heading, (note_id, text) in SCOPE_NOTES.items():
         h2 = soup.select_one(f"#{heading}")
-        mark = h2.find_next_sibling() if h2 else None
-        if not mark or mark.name != "button" or mark.get("id") != note_id or "info" not in (mark.get("class") or []) or mark.get("data-tip") != text:
-            errors.append(f"{heading}: the scope is not one (i) after the heading whose tooltip reads {text!r}")
-    if soup.select("p.scope-note"):
-        errors.append("a scope note line is back under a section (owner decision 4 Nov 2026: scope in an (i))")
+        if heading == "testing":
+            mark = h2.find_next_sibling() if h2 else None
+            if not mark or mark.name != "button" or mark.get("id") != note_id or "info" not in (mark.get("class") or []) or mark.get("data-tip") != text:
+                errors.append(f"{heading}: the scope is not one (i) after the heading whose tooltip reads {text!r}")
+        else:
+            notes = soup.select(f'section[aria-labelledby="{heading}"] > .section-body > p.scope-note#{note_id}:first-child')
+            if len(notes) != 1 or notes[0].get_text() != text or notes[0].get("data-tip") or soup.select(f"button#{note_id}"):
+                errors.append(f"{heading}: the scope must be a plain sentence reading {text!r}")
+    for mark in soup.select("button.info"):
+        sentences = re.split(r"[.!?](?:\s+|$)", mark.get("data-tip", "").strip())
+        if len([s for s in sentences if s]) > 2:
+            errors.append(f"{mark.get('id')}: an (i) must answer in at most two sentences; use a word link for a full text elsewhere")
     # Links that say what they are carry no tooltip (owner, 4 Nov 2026): the version link, the News feed link, the institutes' official sites.
     sites = {i["website"] for i in data["institutes"] if i.get("website")}  # citation numerals to the same page keep their source tooltip
     tipped = [a.get("href") for a in soup.select("a[href]:not(.cn)") if a.get("href") in sites and (a.get("title") or a.get("data-tip"))]
@@ -2984,6 +3104,13 @@ def check_access_layout(page, width: int) -> list[str]:
 
 
 GENERIC_PARTNER_HOW = {"Is listed among the institute's partners.", "Is named as a technical partner that the institute works with."}  # owner decision 05.11.2026: the page shows these partners as names only
+PLURAL_PARTNER_HOW = {
+    "Is to be tied to the institute by agreement and can contribute staff, computing capacity and specialist knowledge.": "Are to be tied to the institute by agreement and can contribute staff, computing capacity and specialist knowledge.",
+    "Is named among the institute’s partners whose agreements enable evaluations of the latest AI capabilities.": "Are named among the institute’s partners whose agreements enable evaluations of the latest AI capabilities.",
+    "Is one of the national evaluation and security bodies the institute federates without a new legal structure.": "Are among the national evaluation and security bodies the institute federates without a new legal structure.",
+    "Takes part in the institute as a participating organisation of the AISI Partnership Agreement.": "Take part in the institute as participating organisations of the AISI Partnership Agreement.",
+    "Has initial representation on the TRAINS Taskforce chaired by the then US AI Safety Institute.": "Have initial representation on the TRAINS Taskforce chaired by the then US AI Safety Institute.",
+}  # independent copy oracle, including agreement inside the sentence
 FIRST_OUTPUT_LINE = "First published work credited to the institute."  # owner-approved development line (decisions 21 Oct), one template for every first output
 
 
@@ -4974,7 +5101,7 @@ NOSCRIPT_NOTES_JS = """() => [...document.querySelectorAll('button.info')].map(n
   const visible = n.checkVisibility({ visibilityProperty: true, opacityProperty: true }) && c.clipPath === 'none';
   return { id: n.id, ok: note && visible && !!hit && (hit === n || n.contains(hit)) };
 })"""
-NOSCRIPT_INFO_IDS = ("map-info", "figures-scope", "test-scope", "setup-scope", "fund-scope", "eu-scope", "recheck-line")  # every (i) in the saved page (principle: Supporting text)
+NOSCRIPT_INFO_IDS = ("map-info", "figures-scope", "test-scope", "eu-scope", "recheck-line")  # every (i) in the saved page (principle: Supporting text)
 
 
 def check_arrival(browser, base_url: str) -> list[str]:
@@ -6419,22 +6546,37 @@ def check_leadership_rows(html, data: dict) -> list[str]:
                 ids = sorted({a.get("data-source-id") for a in value.select(".cn") if a.find_parent("details", class_="partner-how") is None})
                 if ids != cites:
                     errors.append(f"{jid} Partners: citations {ids}, expected {cites}")
-                # Every partner is in the fold, in the same priority order, with its own name/how sources.
+                # Groups and names follow first occurrence in priority order; every name keeps its own sources.
                 folded = []
+                fold_cites = []
                 for li in value.select("details.partner-how li"):
-                    name, how = copy.copy(li.select_one(".pname")), copy.copy(li.select_one(".phow"))
-                    for mark in name.select(".cites") + (how.select(".cites") if how else []):
-                        mark.decompose()
-                    folded.append((" ".join(name.get_text().split()), " ".join(how.get_text().split()) if how else ""))
-                # One item per partner, in priority order; a how sentence that only restates the heading shows as the name alone (hand-written list).
-                want_fold = [(name, "" if how in GENERIC_PARTNER_HOW else how) for name, how, _ in hows]
+                    names = []
+                    # Citation glue is nested inside the name, so remove only citation text.
+                    clone = copy.copy(li)
+                    for name in clone.select(".pname"):
+                        fold_cites.append(sorted({a.get("data-source-id") for a in name.select(".cn")}))
+                        for mark in name.select(".cites"):
+                            mark.decompose()
+                        names.append(" ".join(name.get_text().split()))
+                    how = clone.select_one(".phow")
+                    folded.append((names, " ".join(how.get_text().split()) if how else ""))
+                grouped = {}
+                for name, how, source_ids in hows:
+                    grouped.setdefault(how, []).append((name, source_ids))
+                want_fold, want_cites = [], []
+                for how, members in grouped.items():
+                    if how in GENERIC_PARTNER_HOW:
+                        sentence = ""
+                    elif len(members) > 1:
+                        sentence = PLURAL_PARTNER_HOW.get(how, how)
+                        if how not in PLURAL_PARTNER_HOW:
+                            errors.append(f"{jid} Partners: shared explanation needs explicit plural wording: {how!r}")
+                    else:
+                        sentence = how
+                    want_fold.append(([name for name, _ in members], sentence[:1].lower() + sentence[1:]))
+                    want_cites.extend(sorted(set(ids)) for _, ids in members)
                 if folded != want_fold:
                     errors.append(f"{jid} Partners: fold-out shows {folded}, expected {want_fold}")
-                fold_cites = [
-                    sorted({a.get("data-source-id") for a in li.select(".cn")})
-                    for li in value.select("details.partner-how li")
-                ]
-                want_cites = [sorted(set(ids)) for _, _, ids in hows]
                 if fold_cites != want_cites:
                     errors.append(f"{jid} Partners: fold-out citations {fold_cites}, expected {want_cites}")
                 fold = value.select_one("details.partner-how")

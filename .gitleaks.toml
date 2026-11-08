@@ -12,3 +12,12 @@ condition = "AND"
 paths = ['''^data/aisi\.json$''']
 regexTarget = "line"
 regexes = ['''^\s*"(qualifying-body|why-this-bar|state-checks|european-population|missing-values|world-population-regions|known-activity|freshness|rescinded-instruments|status-confidence|excerpts|outputs|first-output|intervals|agreements|annual-funding|ai-act-authorities|leadership|reporting-line|national-partners|testing-and-access|staffing-model|source-preference|source-titles|consistency-checks|quotation-checks|private-evidence-copies|closest-candidate|none-identified|currency-rounding|budget-display|budget-ratios)": "[0-9a-f]{64}",?$''']
+
+# Synthetic credentials in the redaction test; the test asserts they are removed.
+[[allowlists]]
+description = "fake credentials in the research-log redaction test"
+targetRules = ["curl-auth-header", "generic-api-key"]
+condition = "AND"
+paths = ['''^tests/test_research_log\.py$''']
+regexTarget = "line"
+regexes = ['''^\s*'curl -H "X-Algolia-API-Key: abcdef1234567890" "https://x\.example/q\?apikey=SECRET123&f=1"'$''']

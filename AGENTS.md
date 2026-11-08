@@ -14,7 +14,7 @@ The staged `check.py` command and shared pre-commit/CI steps run the automated c
 - `scripts/agent_files.py`: files for agents and scripts that `build.py` generates from the published data: the static per-record API under `api/v<major>/`, the orientation text (page "Using the data", README "For agents and scripts", the API index, `llms.txt`), the page-head JSON-LD, `sitemap.xml`, `robots.txt`, the Atom feed of releases `feed.xml` (from `changelog`), the tracked `CITATION.cff` and `.zenodo.json`, the Zenodo record metadata that `scripts/zenodo_metadata.py` sets after each release, and the `PUBLIC_URL` site address. `tests/test_api.py` checks the API against `aisi.json`.
 - `site/index.html`: the page. The build saves it pre-rendered (`scripts/prerender.py`); the comment at the top of its script says how the script takes over. Its design principles are the comment at the top of its `<style>`.
 - `scripts/check.py`: the one check command. `scripts/check_page.py`: the browser gate it runs. `scripts/contact_sheet.py`: the screenshot sheet.
-- `docs/design/schema-1.0.md`: the download contract and how rules are represented. `docs/consistency.md`: what the consistency checks cover. `docs/source-snapshots.md`: private source copies.
+- `docs/design/schema-1.0.md`: the download contract and how rules are represented. `docs/consistency.md`: what the consistency checks cover. `docs/source-snapshots.md`: private source copies. `docs/research-passes.md`: research passes, their private folders and `scripts/research_pass.py`.
 - `docs/history/`, `docs/review.md`, `docs/decisions.md` and `docs/claims.csv`, when present in a development checkout: superseded notes, not current rules (do not act on them), the maintainers' review protocol, the owner's binding decisions, one line each, and the public claims re-checked at each minor release. Public source exports exclude all four.
 - `work/` (gitignored): reports, caches, screenshots and scratch files. Never commit them.
 
@@ -22,7 +22,7 @@ The staged `check.py` command and shared pre-commit/CI steps run the automated c
 
 | Change | Edit | Also |
 | --- | --- | --- |
-| A fact | the record in `data/aisi.json`, its `sources` entry and an excerpt whose `supports` points at the claim | when you open a source, record every fact it carries for the record before filling a field, and list leftovers in the handback; advance `check.last_checked` only after a full re-check; version, `as_of` and changelog per README "Update the data" |
+| A fact | the record in `data/aisi.json`, its `sources` entry and an excerpt whose `supports` points at the claim | name the research pass in a `Research-pass:` trailer ([research passes](docs/research-passes.md)); when you open a source, record every fact it carries for the record before filling a field, and list leftovers in the handback; advance `check.last_checked` only after a full re-check; version, `as_of` and changelog per README "Update the data" |
 | A status | the jurisdiction `timeline` event; the build derives status and dates ([timeline rules](docs/design/schema-1.0.md#timeline-and-status)) | excerpt on the event |
 | Funding amount or exchange rates | primary amounts or ECB rate inputs in `data/aisi.json`; EUR results are generated | |
 | A field | schema, `build.py` export and tables, tests | from public 1.0.0: minor for additive fields, major for breaking changes |
