@@ -90,17 +90,25 @@ def split_map(html: str, dist: Path) -> str:
     """Move each saved map drawing out of the page into assets/map-<layout>.svg and leave an empty <svg> carrying the
     attributes and a data-src URL (versioned by content): the drawing is about a third of the page's bytes and no
     text, and search engines read only the first 2 MB of a page. The page script fills the shell from the file
-    (loadSavedMap in site/index.html) and keeps the page's own styles on it."""
+    (loadSavedMap in site/index.html) and keeps the page's own styles on it; the head script saved-map-early, given
+    both URLs here, starts the visible one's download before the page body is parsed."""
+    urls = {}
+
     def move(found: re.Match) -> str:
         attrs, body = found["attrs"], found["body"]
         name = f"map-{found['layout']}.svg"
         text = f'<svg xmlns="http://www.w3.org/2000/svg"{attrs}>{body}</svg>\n'
         (dist / "assets" / name).write_text(text, encoding="utf-8")
-        return f'<svg{attrs} data-src="assets/{name}?v={hashlib.sha256(text.encode()).hexdigest()[:10]}"></svg>'
+        urls[found["layout"]] = f"assets/{name}?v={hashlib.sha256(text.encode()).hexdigest()[:10]}"
+        return f'<svg{attrs} data-src="{urls[found["layout"]]}"></svg>'
 
     html, moved = re.subn(r'<svg(?P<attrs>[^>]*class="map-(?P<layout>wide|narrow)"[^>]*)>(?P<body>.*?)</svg>', move, html, flags=re.S)
-    if moved != 2:
-        raise RuntimeError(f"expected the saved page to hold two map drawings, found {moved}")
+    if moved != 2 or set(urls) != {"wide", "narrow"}:
+        raise RuntimeError(f"expected the saved page to hold one wide and one narrow map drawing, found {moved}")
+    # The head script starts the visible drawing's download before the body is parsed (site/index.html, saved-map-early).
+    html, named = re.subn(r'<script id="saved-map-early"', f'<script id="saved-map-early" data-wide="{urls["wide"]}" data-narrow="{urls["narrow"]}"', html)
+    if named != 1:
+        raise RuntimeError(f"expected one saved-map-early script in the page, found {named}")
     return html
 
 

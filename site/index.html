@@ -11,6 +11,19 @@
 <meta name="twitter:description" content="Tracks which countries have set up or plan an AI safety or security institute (AISI). Covers all 193 UN member states, Taiwan and the EU, with sources and open data.">
 <link rel="preload" href="assets/fonts/inter-v20-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/source-sans-3-v20-latin.woff2" as="font" type="font/woff2" crossorigin>
+<script id="saved-map-early" data-narrow-media="(max-width: 640px)">
+// The saved map drawing this window shows starts downloading here, before the long page body is parsed; loadSavedMap
+// takes the response. prerender.py sets data-wide and data-narrow to the drawings' versioned URLs (the shells' data-src),
+// and data-narrow-media is the query under which the page shows the narrow drawing. Not a <link rel="preload">: Safari
+// downloads a preloaded fetch a second time (WebKit bug 236009).
+(function () {
+  var s = document.currentScript, url = s.getAttribute(matchMedia(s.dataset.narrowMedia).matches ? "data-narrow" : "data-wide");
+  if (!url) return;
+  var text = fetch(url).then(function (r) { if (!r.ok) throw new Error(String(r.status)); return r.text(); });
+  text.catch(function () {}); // a failure is reported where the drawing is used
+  window.SAVED_MAP_EARLY = { url: url, text: text, used: false };
+})();
+</script>
 <!-- build:head -->
 <style>
 /* Design principles
@@ -1856,10 +1869,76 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       var countries = world.objects.countries, feats = topojson.feature(world, countries).features.filter(function (f) { return f.id !== "010"; }); // without Antarctica
       var byId = {}; feats.forEach(function (f) { byId[f.id] = f; });
       var euIds = {}; states.forEach(function (j) { if (j.eu_member) euIds[j.m49] = true; });
-      return { feats: feats, byId: byId, land: topojson.merge(world, countries.geometries.filter(function (g) { return g.id !== "010"; })),
+      return { topology: world, feats: feats, byId: byId, land: topojson.merge(world, countries.geometries.filter(function (g) { return g.id !== "010"; })),
         borders: topojson.mesh(world, countries, function (a, b) { return a !== b; }), eu: topojson.merge(world, countries.geometries.filter(function (g) { return euIds[g.id]; })) };
     }
     if (world) geo = makeGeo(world);
+    // The topology with its arcs simplified for one projection (Douglas-Peucker): a point goes when it lies within eps
+    // user units of the great-circle arc that d3 draws between the points kept either side of it, so no line moves by
+    // more than eps. A shared border is one arc, simplified once, so neighbours stay joined. Arc ends (junctions) stay;
+    // every arc keeps its farthest point and a closed arc a third, so a small island keeps a shape; a span the
+    // projection cuts (the antimeridian) is split until it keeps its own points; a ring turned inside out (which d3 would
+    // fill around the globe) keeps its full arcs. Uses only d3; tests/test_map_simplify.py runs it on its own.
+    function simplifyTopology(world, proj, eps) {
+      var t = world.transform, e2 = eps * eps, full = [], line, pieces;
+      var sink = proj.stream({ point: function (x, y) { line.push([x, y]); }, lineStart: function () { pieces++; }, lineEnd: function () {}, polygonStart: function () {}, polygonEnd: function () {}, sphere: function () {} });
+      function drawn(a, b) { // the projected, resampled line d3 draws from a to b, or null where the projection cuts it
+        line = []; pieces = 0; d3.geoStream({ type: "LineString", coordinates: [a, b] }, sink);
+        return pieces === 1 && line.length ? line : null;
+      }
+      function dist2(q, a, b) {
+        var dx = b[0] - a[0], dy = b[1] - a[1], l2 = dx * dx + dy * dy, k = l2 ? Math.max(0, Math.min(1, ((q[0] - a[0]) * dx + (q[1] - a[1]) * dy) / l2)) : 0, x = a[0] + k * dx - q[0], y = a[1] + k * dy - q[1];
+        return x * x + y * y;
+      }
+      var arcs = world.arcs.map(function (arc) {
+        var x = 0, y = 0, ll = arc.map(function (q) { if (!t) return q; x += q[0]; y += q[1]; return [x * t.scale[0] + t.translate[0], y * t.scale[1] + t.translate[1]]; });
+        var xy = ll.map(function (q) { return proj(q); }), n = ll.length - 1, keep = new Uint8Array(n + 1);
+        full.push(ll); keep[0] = keep[n] = 1;
+        // The point between a and b farthest from the line d3 draws from a to b, and its squared distance (the middle one,
+        // at Infinity, where the projection cuts that line). A span under 4 user units bows away from its chord by less
+        // than a hundredth of a unit at the page's scales, so the chord stands in for it.
+        function far(a, b) {
+          var cx = xy[b][0] - xy[a][0], cy = xy[b][1] - xy[a][1], path = cx * cx + cy * cy < 16 ? [xy[a], xy[b]] : drawn(ll[a], ll[b]), best = -1, bd = -1, i, k, d;
+          if (!path) return [(a + b) >> 1, Infinity];
+          for (i = a + 1; i < b; i++) { for (d = dist2(xy[i], path[0], path[0]), k = 1; k < path.length; k++) d = Math.min(d, dist2(xy[i], path[k - 1], path[k])); if (d > bd) { bd = d; best = i; } }
+          return [best, bd];
+        }
+        if (n > 1) {
+          var first = far(0, n)[0]; keep[first] = 1;
+          if (ll[0][0] === ll[n][0] && ll[0][1] === ll[n][1]) { var u = far(0, first), v = far(first, n); if (u[0] > 0 || v[0] > 0) keep[u[1] >= v[1] ? u[0] : v[0]] = 1; }
+        }
+        for (var stack = [[0, n]]; stack.length;) {
+          var seg = stack.pop(), a = seg[0], b = seg[1]; if (b - a < 2) continue;
+          var f = far(a, b); if (f[1] > e2 || keep[f[0]]) { keep[f[0]] = 1; stack.push([a, f[0]], [f[0], b]); continue; }
+          for (var i = a + 1; i < b; i++) if (keep[i]) { stack.push([a, i], [i, b]); break; }
+        }
+        return ll.filter(function (q, i) { return keep[i]; });
+      });
+      function inverted(source, ids) {
+        var ring = []; ids.forEach(function (i, k) { var a = source[i < 0 ? ~i : i], n = a.length; for (var j = k ? 1 : 0; j < n; j++) ring.push(a[i < 0 ? n - 1 - j : j]); });
+        return d3.geoArea({ type: "Polygon", coordinates: [ring] }) > 2 * Math.PI;
+      }
+      var rings = [];
+      (function collect(o) { if (o.type === "GeometryCollection") o.geometries.forEach(collect); else if (o.type === "Polygon") rings = rings.concat(o.arcs); else if (o.type === "MultiPolygon") o.arcs.forEach(function (p) { rings = rings.concat(p); }); })({ type: "GeometryCollection", geometries: Object.keys(world.objects).map(function (k) { return world.objects[k]; }) });
+      var was = rings.map(function (ids) { return inverted(full, ids); });
+      for (var changed = true; changed;) { // restoring an arc can only move other rings back towards their full shapes
+        changed = false;
+        rings.forEach(function (ids, r) {
+          if (inverted(arcs, ids) === was[r]) return;
+          ids.forEach(function (i) { var k = i < 0 ? ~i : i; if (arcs[k] !== full[k]) { arcs[k] = full[k]; changed = true; } });
+        });
+      }
+      return { type: "Topology", bbox: world.bbox, objects: world.objects, arcs: arcs };
+    }
+    // The default view, which the build saves as the first screen's drawing, draws a simplified copy per layout, within
+    // SIMPLIFY user units (below a pixel at every width); the saved and the drawn map are the same. The other regions
+    // are drawn at about four times the scale, where simplifying keeps most points and costs a pause on the first
+    // switch, so they draw the full shapes. Dots are always placed from the full shapes (geo), so they do not move.
+    var SIMPLIFY = 0.35, DRAWN = {};
+    function drawGeo(L, r, proj) {
+      if (r !== DEFAULT_REGION) return geo;
+      var key = L.cls + " " + L.H; return DRAWN[key] || (DRAWN[key] = makeGeo(simplifyTopology(geo.topology, proj, SIMPLIFY)));
+    }
     var FALLBACK = { "798": [179.2, -8.5] }; // Tuvalu has no shape at this scale: Funafuti
     var CENTRE = { "458": [102, 4], "643": [38, 56] }; // Malaysia: the peninsula, where the capital is, not the larger Borneo part; Russia: near Moscow, inside the Europe frame, which cuts the country off (presentation only)
     // Centre of the largest land part, so overseas territories do not pull a state's dot away.
@@ -2011,23 +2090,23 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     var MAPS = [];
     function drawLayout(L) {
       if (view.region === "World" && L.worldH) L = Object.assign({}, L, { H: L.worldH }); // phones: a shorter frame for the wide world, so it fills the width without empty bands
-      var r = view.region, whole = r === "World", proj = projectionFor(L, r), path = d3.geoPath(proj).digits(1), hatch = "hatch-" + L.cls;
+      var r = view.region, whole = r === "World", proj = projectionFor(L, r), path = d3.geoPath(proj).digits(1), hatch = "hatch-" + L.cls, G = drawGeo(L, r, proj);
       var s = svgEl("svg", { viewBox: "0 0 " + L.W + " " + L.H, "class": L.cls, role: "group", "aria-label": whole ? "World map" : r === "Europe" ? "Map of the European states" : "Map of " + r });
       var pattern = svgEl("pattern", { id: hatch, width: 4, height: 4, patternUnits: "userSpaceOnUse", patternTransform: "rotate(45)" }, svgEl("defs", {}, s));
       svgEl("rect", { width: 4, height: 4, "class": "hatch-bg" }, pattern); svgEl("rect", { width: 1.7, height: 4, "class": "hatch-line" }, pattern);
       svgEl("rect", { width: L.W, height: L.H, "class": "sea" }, s);
-      if (!whole) svgEl("path", { d: path(geo.land), "class": "land" }, s);
-      var M = { svg: s, path: path, hatch: hatch, nodeOf: {}, nodes: [], labels: [], layout: L, over: null };
+      if (!whole) svgEl("path", { d: path(G.land), "class": "land" }, s);
+      var M = { svg: s, path: path, geo: G, hatch: hatch, nodeOf: {}, nodes: [], labels: [], layout: L, over: null };
       var inRegion = {}; states.forEach(function (j) { if (REGIONS[r].has(j)) inRegion[j.m49] = j; });
       var shapes = svgEl("g", {}, s);
       // Whole countries are targets too: pointing at one acts on its dot.
-      geo.feats.forEach(function (feature) {
+      G.feats.forEach(function (feature) {
         var j = inRegion[feature.id]; if (!j && !whole) return;
         var d = path(feature); if (!d) return;
         var p = svgEl("path", { d: d, "class": "land-in" }, shapes);
         if (j) { p.dataset.j = j.id; p.addEventListener("mouseenter", function () { hover(j.id, true); }); p.addEventListener("mouseleave", function () { hover(j.id, false); }); p.addEventListener("mousedown", function (e) { e.preventDefault(); }); p.addEventListener("click", function (e) { var dot = M.nodeOf[j.id]; if (dot && dot.tgt) pointerPick(M, e, dot, true); else choose(j.id); }); p.style.cursor = "pointer"; }
       });
-      svgEl("path", { d: path(geo.borders), "class": "borders", "pointer-events": "none" }, s);
+      svgEl("path", { d: path(G.borders), "class": "borders", "pointer-events": "none" }, s);
       var dots = svgEl("g", {}, s); M.hl = svgEl("g", { "pointer-events": "none" }, s); var labels = svgEl("g", {}, s);
       placeDots(L, r, proj).forEach(function (n) {
         var j = n.j; M.nodeOf[j.id] = n;
@@ -2062,8 +2141,8 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     // Highlight: the country tinted and outlined, a pin for states too small to see, and the status mark itself, larger and unchanged, with an ink ring.
     function highlight(M, j, strong) {
       var g = svgEl("g", { "class": strong ? "hl-sel" : "hl-temp" }, M.hl);
-      if (j.kind === "supranational") { if (view.region === "Europe" || view.region === "World") svgEl("path", { d: M.path(geo.eu), "class": "hl-shape strong" }, g); return g; } // the EU's merged outer border
-      var f = geo.byId[j.m49], n = M.nodeOf[j.id];
+      if (j.kind === "supranational") { if (view.region === "Europe" || view.region === "World") svgEl("path", { d: M.path(M.geo.eu), "class": "hl-shape strong" }, g); return g; } // the EU's merged outer border
+      var f = M.geo.byId[j.m49], n = M.nodeOf[j.id];
       if (f) {
         var d = M.path(f);
         if (d) {
@@ -2124,7 +2203,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     // The saved drawing's dots (no map script yet): a click opens the record, as on the drawn map (keyboard: the list and search).
     $("worldmap").addEventListener("click", function (e) { var t = !geo && e.target.closest && e.target.closest(".tgt[data-j]"); if (t) { e.stopPropagation(); choose(t.dataset.j); } });
     // The map arriving after the page has taken over, or failing to: draw it, or say so where no saved drawing stands in.
-    mapArrived = function (w) { if (w) geo = makeGeo(w); drawMap(); };
+    mapArrived = function (w) { if (w) { geo = makeGeo(w); DRAWN = {}; } drawMap(); };
 
     // Selecting a state opens its record beside the map; a state outside the region in view moves the map to its region.
     function choose(id) { pick(view.sel === id ? null : id, "map"); }
@@ -3168,7 +3247,9 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     [].forEach.call(document.querySelectorAll("#worldmap svg[data-src]:not([data-saved])"), function (shell) {
       if (getComputedStyle(shell).display === "none") return;
       shell.setAttribute("data-saved", "loading");
-      fetch(shell.getAttribute("data-src")).then(function (r) { if (!r.ok) throw new Error(String(r.status)); return r.text(); }).then(function (text) {
+      var url = shell.getAttribute("data-src"), early = window.SAVED_MAP_EARLY, reuse = early && !early.used && early.url === url; // the download the head started, once
+      if (reuse) early.used = true;
+      (reuse ? early.text : fetch(url).then(function (r) { if (!r.ok) throw new Error(String(r.status)); return r.text(); })).then(function (text) {
         var t = document.createElement("template"); t.innerHTML = text;
         var drawing = t.content.firstChild; while (drawing.firstChild) shell.appendChild(drawing.firstChild);
         shell.setAttribute("data-saved", "done");

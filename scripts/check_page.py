@@ -389,6 +389,17 @@ USING_THE_DATA = "Using the data"
 META_TITLE = "AI Security Institutes tracker: AI safety and security institutes worldwide"  # the head title; the visible h1 stays "AI Security Institutes worldwide"
 PAGE_HEADING = "AI Security Institutes worldwide"
 PAGE_BYTES_BUDGET = 2_000_000  # search engines read only the first 2 MB of a page, so everything a reader should find must sit within it
+# What a first visit downloads, in gzip bytes (level 6, as the host compresses text; woff2 counts as stored). Budgets,
+# not timings, so the check is deterministic: a saved map drawing past its budget, or the data the page reads, or the
+# whole first load, fails the gate and asks for a decision instead of slowing the first screen unnoticed. Set about a
+# quarter (maps) or a tenth (the rest) above the sizes on 8 Nov 2026: map-wide 71 KB, map-narrow 44 KB, page.json
+# 541 KB, first load 1.51 MB (all font subsets counted, the larger map once).
+SAVED_MAP_GZIP_BUDGET = {"assets/map-wide.svg": 90_000, "assets/map-narrow.svg": 56_000}
+PAGE_DATA_GZIP_BUDGET = 600_000
+FIRST_LOAD_GZIP_BUDGET = 1_650_000
+# Every file a first visit requests, as patterns relative to the site; check_first_load fails on a request outside them.
+FIRST_LOAD = ("index.html", "data/page.json", "data/datapackage.json", "assets/map-wide.svg", "assets/map-narrow.svg", "assets/d3.*.js",
+              "assets/topojson-client.*.js", "assets/world-*.json", "assets/fonts/*.woff2", "favicon.svg")
 
 
 def check_meta_descriptions(soup, data: dict) -> list[str]:
@@ -464,6 +475,56 @@ def world_section_end(page: bytes) -> int | None:
     return parser.end
 
 
+def gzip_size(path: Path) -> int:
+    """The bytes the host sends: gzip level 6 for text, the stored size for woff2, which is compressed already."""
+    import gzip
+
+    return path.stat().st_size if path.suffix == ".woff2" else len(gzip.compress(path.read_bytes(), 6, mtime=0))
+
+
+def check_transfer_budgets(dist: Path) -> list[str]:
+    """The first visit's download stays within its budgets (SAVED_MAP_GZIP_BUDGET, PAGE_DATA_GZIP_BUDGET,
+    FIRST_LOAD_GZIP_BUDGET): each saved map drawing, the page data and the sum over FIRST_LOAD, counting one map."""
+    from fnmatch import fnmatch
+
+    errors, files = [], [p.relative_to(dist).as_posix() for p in dist.rglob("*") if p.is_file()]
+    sizes = {}
+    for pattern in FIRST_LOAD:
+        found = [f for f in files if fnmatch(f, pattern)]
+        if not found:
+            errors.append(f"first load: no file in the build matches {pattern!r}")
+        sizes.update({f: gzip_size(dist / f) for f in found})
+    for name, budget in [*SAVED_MAP_GZIP_BUDGET.items(), ("data/page.json", PAGE_DATA_GZIP_BUDGET)]:
+        if sizes.get(name, 0) > budget:
+            errors.append(f"{name}: {sizes[name]} bytes gzip, over its budget of {budget}")
+    total = sum(sizes.values()) - min(sizes.get(name, 0) for name in SAVED_MAP_GZIP_BUDGET)  # a visit loads one drawing
+    if total > FIRST_LOAD_GZIP_BUDGET:
+        errors.append(f"first load: {total} bytes gzip, over its budget of {FIRST_LOAD_GZIP_BUDGET}")
+    return errors
+
+
+def check_saved_map_early(html: str, soup) -> list[str]:
+    """The head script that starts the visible saved map drawing's download (saved-map-early in site/index.html) comes
+    before every stylesheet and external script, names exactly the files the map shells load, and picks the narrow one
+    under the query where the page's CSS shows the narrow drawing."""
+    script, errors = soup.select_one("head > script#saved-map-early"), []
+    if script is None:
+        return ["head: no script#saved-map-early to start the saved map drawing's download"]
+    first = soup.head.find(lambda tag: tag is script or (tag.name == "script" and tag.get("src")) or (tag.name == "link" and "stylesheet" in (tag.get("rel") or [])) or tag.name == "style")
+    if first is not script:
+        errors.append("head: script#saved-map-early does not come before every stylesheet and external script")
+    shells = {layout: [str(s.get("data-src")) for s in soup.select(f"#worldmap svg.map-{layout}[data-src]")] for layout in ("wide", "narrow")}
+    named = {layout: [str(script.get(f"data-{layout}"))] for layout in ("wide", "narrow")}
+    if shells != named:
+        errors.append(f"head: script#saved-map-early names {named}, the map shells load {shells}")
+    swap = html.find(".worldmap .map-narrow { display: block; }")
+    media = html.rfind("@media", 0, swap)
+    query = html[media + len("@media"):html.find("{", media)].strip() if swap > 0 and media >= 0 else None
+    if query != script.get("data-narrow-media"):
+        errors.append(f"head: script#saved-map-early picks the narrow drawing under {script.get('data-narrow-media')!r}, the CSS shows it under {query!r}")
+    return errors
+
+
 def check_page_size(dist: Path) -> list[str]:
     """Search engines read only the first PAGE_BYTES_BUDGET bytes of a page: the state-by-state content (the world
     section) must end within them, or the check fails; a page that is longer in total only warns, because what
@@ -524,9 +585,11 @@ def check_form_basis(soup, data) -> list[str]:
 
 
 def check_static_page(dist: Path, data: dict) -> list[str]:
-    """The pre-rendered page as saved, before any script runs: every jurisdiction, the stat row, the download links."""
-    soup = BeautifulSoup((dist / "index.html").read_text(encoding="utf-8"), "html.parser")
-    errors = check_meta_descriptions(soup, data)
+    """The pre-rendered page as saved, before any script runs: every jurisdiction, the stat row, the download links,
+    the saved map's early download and the first visit's byte budgets."""
+    html = (dist / "index.html").read_text(encoding="utf-8")
+    soup = BeautifulSoup(html, "html.parser")
+    errors = check_meta_descriptions(soup, data) + check_saved_map_early(html, soup) + check_transfer_budgets(dist)
     if not soup.html or not soup.html.has_attr("data-prerendered") or not soup.select_one("template#page-template"):
         errors.append("static page: not pre-rendered (no data-prerendered marker or page template)")
     for node in soup.select("script, style, template"):
@@ -743,6 +806,43 @@ def hydration_edges(browser, base_url: str, dist: Path) -> list[str]:
     except PlaywrightTimeout as exc:
         errors.append(f"hydration: a late map: {exc}")
     page.close()
+    return errors
+
+
+def check_first_load(browser, base_url: str) -> list[str]:
+    """A cold first visit at 390, 640, 641 and 1440 px: the visible saved map drawing is downloaded once, by the head
+    script (whose download the page then uses), and nothing else a visit requests falls outside FIRST_LOAD, the
+    inventory the byte budgets count."""
+    from fnmatch import fnmatch
+
+    errors = []
+    for width in (390, 640, 641, 1440):
+        context = browser.new_context(viewport={"width": width, "height": 1000})
+        page, requested = context.new_page(), []
+        page.on("request", lambda request: requested.append(request.url))
+        # The drawn map replaces the saved drawing once it arrives: note each drawing as it is filled in.
+        page.add_init_script("""window.__filled = []; new MutationObserver(records => records.forEach(r => { const s = r.target;
+          if (s.getAttribute('data-saved') === 'done') window.__filled.push([s.getAttribute('data-src'), getComputedStyle(s).display !== 'none']); }))
+          .observe(document, { subtree: true, attributes: true, attributeFilter: ['data-saved'] });""")
+        # The world topology is held until the saved drawing is filled in: once it arrives the drawn map replaces the
+        # shells, and a shell replaced before its file came in is never filled (a valid order, not the one tested here).
+        topology = Held(page, "**/assets/world-*.json")
+        page.goto(base_url, wait_until="load")
+        try:
+            page.wait_for_function("window.__filled.length > 0", timeout=15_000)
+        except Exception:  # noqa: BLE001 - the Playwright timeout; the check below reports what is missing
+            pass
+        topology.release()
+        page.wait_for_load_state("networkidle")
+        state = page.evaluate("() => ({ filled: window.__filled, early: window.SAVED_MAP_EARLY ? [SAVED_MAP_EARLY.url, SAVED_MAP_EARLY.used] : null })")
+        maps = [url[len(base_url):] for url in requested if "/assets/map-" in url]
+        filled = [src for src, shown in state["filled"] if shown]
+        if len(state["filled"]) != 1 or len(filled) != 1 or maps != filled or state["early"] != [filled[0], True]:
+            errors.append(f"first load {width}px: the visible drawing should be requested once, by the head script, and filled in from that download; requested {maps}, head script {state['early']}, filled (src, visible) {state['filled']}")
+        paths = {urlsplit(url).path.lstrip("/") or "index.html" for url in requested if url.startswith(base_url)}
+        if outside := sorted(p for p in paths if not any(fnmatch(p, pattern) for pattern in FIRST_LOAD)):
+            errors.append(f"first load {width}px: requests outside the budgeted FIRST_LOAD inventory: {outside}")
+        context.close()
     return errors
 
 
@@ -9236,6 +9336,7 @@ def browser_jobs(dist: Path, data: dict, screenshots: Path | None) -> list[tuple
         ("hydration", hydration_paint, ()),
         ("hydration", hydration_edges, (dist,)),
         ("origins", check_origins, (dist,)),
+        ("origins", check_first_load, ()),
         ("interactions", check_recovery_page, (dist, screenshots)),
         *(("interactions", check, args) for check, args in passes),
         ("interactions", shared_links, ()),
@@ -9359,7 +9460,7 @@ CAUGHT = (OSError, subprocess.SubprocessError, ValueError, RuntimeError)  # what
 # Seconds per job on GitHub's ubuntu-latest, one job at a time (bench run 40025105295, 24 Oct 2026); shards are
 # balanced by them, so they affect only how long each shard takes. A job not listed counts DEFAULT_COST.
 JOB_COST = {
-    "hydration/hydration_paint": 27.8, "hydration/hydration_edges": 23.8, "origins/check_origins": 2.8,
+    "hydration/hydration_paint": 27.8, "hydration/hydration_edges": 23.8, "origins/check_origins": 2.8, "origins/check_first_load": 6.0,
     "interactions/check_recovery_page": 3.2,
     "interactions/interaction_pass/1440/light": 65.6, "interactions/interaction_pass/1440/dark": 65.6,
     "interactions/interaction_pass/1000/light": 59.4, "interactions/interaction_pass/1000/dark": 59.6,
