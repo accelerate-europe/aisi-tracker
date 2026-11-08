@@ -21,7 +21,7 @@ from functools import partial
 from http.server import ThreadingHTTPServer
 from pathlib import Path
 
-from check_page import NOT_RUN, QuietHandler, find_chrome
+from check_page import INSTALL_CHROME, NOT_RUN, QuietHandler, browser_env, find_chrome
 
 WIDTH, HEIGHT = 1440, 900  # desktop; at other widths the page regroups its card rows before the data arrives
 TIMEOUT_MS = 60_000
@@ -37,7 +37,7 @@ def prerender(dist: Path, chrome: str) -> str:
         try:
             with tempfile.TemporaryDirectory(prefix="prerender-") as profile, sync_playwright() as playwright:
                 browser = playwright.chromium.launch_persistent_context(
-                    profile, executable_path=chrome, headless=True,
+                    profile, executable_path=chrome, headless=True, env=browser_env(),
                     viewport={"width": WIDTH, "height": HEIGHT}, color_scheme="light")
                 try:
                     page = browser.new_page()
@@ -110,7 +110,7 @@ def main() -> int:
     args = parser.parse_args()
     chrome = find_chrome()
     if chrome is None:
-        print("NOT RUN: Chrome/Chromium is required to pre-render the page and is not installed.", file=sys.stderr)
+        print(f"NOT RUN: Playwright's Chromium is required to pre-render the page and is not installed ({INSTALL_CHROME}).", file=sys.stderr)
         return NOT_RUN
     page = args.dist / "index.html"
     html = split_map(prerender(args.dist, chrome), args.dist)

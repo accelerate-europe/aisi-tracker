@@ -12,7 +12,7 @@ We count a body as an AI Security Institute (AISI) if a national government or a
 
 <!-- counts:start -->
 
-Version 1.0.4, data as of 2026-11-08. 195 jurisdictions, 15 institutes and 1184 sources. The Europe view covers 32 states.
+Version 1.0.5, data as of 2026-11-08. 195 jurisdictions, 15 institutes and 1193 sources. The Europe view covers 32 states.
 
 134 output records, 56 agreements and 9 network milestones. Negative findings by confidence: 0 high, 144 medium, 34 low.
 
@@ -22,7 +22,7 @@ Covers all UN member states, Taiwan (as a territory) and the EU AI Office. The E
 
 ## Setup
 
-Install Git, [uv](https://docs.astral.sh/uv/getting-started/installation/), Python 3.11 or newer, Node.js and Chrome or Chromium. Chrome is required for the build and browser gate; Node runs the JavaScript checks. Run these commands from the repository root.
+Install Git, [uv](https://docs.astral.sh/uv/getting-started/installation/), Python 3.11 or newer and Node.js, then the browser with `uv run --locked scripts/check_page.py --install-chrome`: the Chromium of the locked Playwright version, in Playwright's default browser folder, which the build, browser gate and contact sheet use on every host. On Linux it needs some system libraries; `python -m playwright install-deps chromium` in that environment installs them (as root). Node runs the JavaScript checks. Run these commands from the repository root.
 
 ```sh
 uv sync --locked --group dev
@@ -55,7 +55,7 @@ Generated from the published dataset by `scripts/agent_files.py`, the one home o
 
 ### What this is
 
-Which states have an AI Security Institute (AISI), covering all 193 UN member states plus Taiwan and the EU AI Office, with funding, staff and leadership where published. Every record cites its sources. Published by Accelerate Europe; version 1.0.4, data as of 2026-11-08.
+Which states have an AI Security Institute (AISI), covering all 193 UN member states plus Taiwan and the EU AI Office, with funding, staff and leadership where published. Every record cites its sources. Published by Accelerate Europe; version 1.0.5, data as of 2026-11-08.
 
 ### Answering from this data
 
@@ -91,7 +91,7 @@ Code: MIT (`LICENSE`). Data, page text and documentation: CC BY 4.0 (`LICENSE-DA
 
 ### Cite as
 
-Accelerate Europe (2026). AI Security Institutes tracker, version 1.0.4, data as of 8 November 2026. Compiled by Jason Hoelscher-Obermaier. https://doi.org/10.5281/zenodo.23600431
+Accelerate Europe (2026). AI Security Institutes tracker, version 1.0.5, data as of 8 November 2026. Compiled by Jason Hoelscher-Obermaier. https://doi.org/10.5281/zenodo.23600431
 
 <!-- agents:end -->
 
@@ -156,7 +156,7 @@ The citation, current counts, agents and definition blocks, and `CITATION.cff` (
 
 <!-- citation:start -->
 
-Accelerate Europe (2026). AI Security Institutes tracker, version 1.0.4, data as of 8 November 2026. Compiled by Jason Hoelscher-Obermaier. https://doi.org/10.5281/zenodo.23600431
+Accelerate Europe (2026). AI Security Institutes tracker, version 1.0.5, data as of 8 November 2026. Compiled by Jason Hoelscher-Obermaier. https://doi.org/10.5281/zenodo.23600431
 
 <!-- citation:end -->
 
@@ -205,7 +205,7 @@ Follow the [launch runbook](docs/launch.md) for the public source export, hostin
 - At each minor release, in a development checkout: re-check the public claims in `docs/claims.csv` (claim, source, verdict and the record that decides it, from the 24 Oct 2026 landscape check) against the release data; a verdict that flips points at a fix or a mistake. Update `verdict`, `our_record` and `checked`.
 - Blind re-check: re-derive three to five randomly chosen records from their sources without looking at the stored values first; record the differences and adapt the number to what it finds.
 - Fresh-eyes audit, the last review before release: auditors never see the diff; each takes two or three records, sampled by risk (changed institutes, high-visibility records, random controls), checks bound quotations against the private copies, searches for what is new since the last check and reads the rendered card, table row and API file.
-- Run `uv run scripts/check.py --release --out dist`; every step must pass, none NOT RUN, and `dist/` is the build to publish.
+- Run `uv run scripts/check.py --release --out dist`, which compares with the last `v*` release tag (or pass `--base origin/main`, never a local `main`); every step must pass, none NOT RUN, and `dist/` is the build to publish.
 - Create the GitHub release on the pushed public commit with the tag from `uv run scripts/release_tag.py` (`v` plus `dataset.version`) and `--target` set to that commit; the script fails if `.zenodo.json` at HEAD carries another version, HEAD has another version tag, or the tag exists elsewhere locally or on `origin`.
 - Once Zenodo has archived the release, run `uv run scripts/zenodo_metadata.py` (diff against the new Zenodo version), then with `ZENODO_TOKEN` set `uv run scripts/zenodo_metadata.py --apply` (adds Accelerate Europe as organisational creator and the MIT licence, which `.zenodo.json` cannot carry), then the diff again, which must report nothing to do. Zenodo's public API can serve the old record for about a minute after `--apply`: the script reads it again for up to 2 minutes while it is older than the publish, and a later diff that shows the old values right after "published; record ... now matches" is that lag, not a failure, so wait a minute before the final diff.
 - Owner, at launch: enable branch protection requiring the `build` job and GitHub secret scanning with push protection, and run a one-off secrets scan of the full repository history.

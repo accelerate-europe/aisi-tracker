@@ -1,30 +1,5 @@
 #!/usr/bin/env python3
-"""Search-log basis for the research done before passes began (standard library only).
-
-`build` lists the past session transcripts of the tracker work on this host, records
-each one's path, size and SHA-256 (a live file is hashed up to its size at that
-moment) and extracts their log with research_log.py, keeping only executions that
-started before the cutoff. It never copies a transcript: past sessions mix the
-research with personal data, so the basis holds only the inventory and the log,
-and the originals (kept indefinitely) can be re-extracted and checked by hash.
-
-The inclusion rule (RULE) is path based: Claude Code project folders and Codex
-sessions whose working folder matches it, subagents included through
-research_log.py. Transcripts elsewhere that mention the tracker and contain research
-calls are listed as residual, not included, for a person to check.
-
-`merge` combines the per-host outputs (run `build` on each host) into one basis.
-Output is private: it goes to the private store, never into the repository. Before
-the cutoff a build is marked provisional; the basis is built once after it:
-
-    uv run scripts/research_backfill.py build --out work/part-this.json
-    ssh other-host mkdir -p /tmp/aisi-backfill
-    scp scripts/research_log.py scripts/research_backfill.py other-host:/tmp/aisi-backfill/
-    ssh other-host 'cd /tmp/aisi-backfill && python3 research_backfill.py build --out part-other-host.json'
-    scp other-host:/tmp/aisi-backfill/part-other-host.json work/
-    uv run scripts/research_backfill.py merge work/part-this.json work/part-other-host.json \
-        --out "$AISI_SNAPSHOTS/../backfill/2026-11-07-before-passes"
-"""
+"""Search-log basis for the research done before passes began: run `build` on each machine, then `merge` the outputs into one private basis."""
 
 from __future__ import annotations
 
@@ -119,6 +94,8 @@ def event_time(ev: Json) -> datetime | None:
 
 
 def build(home: Path, cutoff: str) -> Json:
+    """Inventory (path, size, SHA-256) and extracted log of this machine's transcripts that match RULE, before the
+    cutoff. Never a transcript copy: past sessions mix the research with personal data; the hashes let them be re-checked."""
     built = datetime.now(timezone.utc)
     limit = datetime.fromisoformat(cutoff)
     inputs, residual = candidates(home)

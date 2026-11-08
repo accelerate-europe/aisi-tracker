@@ -23,6 +23,17 @@ def site(tmp_path_factory):
     return out
 
 
+def test_module_fixture_build_skips_the_browser(site):
+    """The module-scoped build must not pre-render: the fast check starts no Chrome."""
+    assert not re.search(r"<html[^>]*data-prerendered", (site / "index.html").read_text(encoding="utf-8"))
+
+
+def unrendered(errors):
+    """Gate errors bar card presence: cards exist only in the pre-rendered page, which tests never make
+    (no browser in the fast check); the gate checks card links on the real pre-rendered build."""
+    return [e for e in errors if not e.endswith("links to a card the page lacks")]
+
+
 def load(path):
     return json.loads(path.read_text(encoding="utf-8"))
 
@@ -228,7 +239,7 @@ def test_orientation_is_one_text_in_four_places(site):
 def test_gate_accepts_the_built_agent_files(site):
     from scripts import check_page
 
-    assert check_page.check_agent_files(site) == []
+    assert unrendered(check_page.check_agent_files(site)) == []
 
 
 @pytest.mark.parametrize(("url", "message"), [
@@ -552,7 +563,7 @@ def test_feed_has_one_entry_per_release_with_stable_ids(dataset, site):
     assert entries[1].findtext(ns + "id") == f"tag:aisi.accelerate-europe.org,2026:release/{previous}"
     # The built site carries the feed, linked from the head, and the gate accepts it.
     page = BeautifulSoup((site / "index.html").read_text(encoding="utf-8"), "html.parser")
-    assert check_page.check_feed(page, site) == []
+    assert unrendered(check_page.check_feed(page, site)) == []
     assert agent_files.PUBLIC_URL + "feed.xml" not in (site / "sitemap.xml").read_text()  # the sitemap lists pages only
 
 
@@ -593,19 +604,19 @@ def test_feed_carries_each_news_item_with_a_permanent_id(site, tmp_path):
     page = BeautifulSoup((site / "index.html").read_text(encoding="utf-8"), "html.parser")
     good = (site / "feed.xml").read_text(encoding="utf-8")
     (built / "feed.xml").write_text(good, encoding="utf-8")
-    assert check_page.check_feed(page, built) == []
+    assert unrendered(check_page.check_feed(page, built)) == []
     link = re.search(r'&lt;a href=&quot;[^&]+', good)
     assert link, "the built feed has a News source link"
     (built / "feed.xml").write_text(good.replace(link[0], link[0] + "x", 1), encoding="utf-8")
-    assert any("source links differ" in e for e in check_page.check_feed(page, built))
+    assert any("source links differ" in e for e in unrendered(check_page.check_feed(page, built)))
     # The same-date pair through the gate: accepted as generated, rejected with the release first.
     (built / "data/aisi.json").write_text(json.dumps(published), encoding="utf-8")
     pair = agent_files.feed_xml(published)
     (built / "feed.xml").write_text(pair, encoding="utf-8")
-    assert check_page.check_feed(page, built) == []
+    assert unrendered(check_page.check_feed(page, built)) == []
     one, two = re.findall(r"<entry>.*?</entry>\n", pair, flags=re.S)[:2]
     (built / "feed.xml").write_text(pair.replace(one + two, two + one, 1), encoding="utf-8")
-    assert any("release precedes a News item" in e for e in check_page.check_feed(page, built))
+    assert any("release precedes a News item" in e for e in unrendered(check_page.check_feed(page, built)))
 
 
 def test_feed_ids_survive_a_site_move_and_the_gate_rejects_wrong_entries(dataset, site, tmp_path, monkeypatch):
@@ -633,8 +644,8 @@ def test_feed_ids_survive_a_site_move_and_the_gate_rejects_wrong_entries(dataset
     ):
         assert old in good
         (built / "feed.xml").write_text(good.replace(old, new, 1), encoding="utf-8")
-        assert check_page.check_feed(page, built), new
+        assert unrendered(check_page.check_feed(page, built)), new
     # A release listed twice (two changelog entries with one version) gives two entries with one id.
     first = re.search(r"<entry>.*?</entry>\n", good, flags=re.S)[0]
     (built / "feed.xml").write_text(good.replace(first, first + first, 1), encoding="utf-8")
-    assert any("repeat" in e for e in check_page.check_feed(page, built))
+    assert any("repeat" in e for e in unrendered(check_page.check_feed(page, built)))

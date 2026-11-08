@@ -5,7 +5,8 @@
 """One check command for agents, the pre-commit hook and CI.
 
   uv run scripts/check.py                       # every step on the staged snapshot, compared with HEAD
-  uv run scripts/check.py --base main           # compared with main, when handing back a branch
+  uv run scripts/check.py --base origin/main    # compared with origin/main, when handing back a branch
+  uv run scripts/check.py --release             # a release, compared with the last v* tag
   uv run scripts/check.py --only fast           # validate,lint,tests: the pre-commit hook
   uv run scripts/check.py --preflight           # can this agent run every step?
 
@@ -102,6 +103,38 @@ def clean_env() -> dict:
 
 def git(repo: Path, *args: str, check: bool = True) -> str:
     return subprocess.run(["git", "-C", str(repo), *args], capture_output=True, text=True, check=check).stdout
+
+
+def resolve_base(repo: Path, base: str | None, release: bool) -> str:
+    """The commit the staged snapshot is compared with. Without --base: HEAD, or for a release the latest v* tag
+    reachable from HEAD (the last release). A local branch that differs from its upstream is refused: it is
+    usually stale, and compare would report changes that are not in the release, so the caller names the ref they mean."""
+    if base is None and release:
+        tag = git(repo, "describe", "--tags", "--abbrev=0", "--match", "v[0-9]*", "HEAD", check=False).strip()
+        if not tag:
+            raise ValueError("--release without --base compares with the last v* release tag, and HEAD has none; pass --base")
+        base = f"refs/tags/{tag}"  # qualified: a branch of the same name must not stand in
+    if base is None:
+        base = "HEAD"
+    full = ""  # the ref git resolves the name to; HEAD (the checked-out work itself) is never a stale branch
+    if base not in ("HEAD", "@"):
+        found = subprocess.run(["git", "-C", str(repo), "-c", "core.warnAmbiguousRefs=true", "rev-parse", "--verify", "--quiet", "--symbolic-full-name", base],
+                               capture_output=True, text=True)
+        if "ambiguous" in found.stderr:
+            raise ValueError(f"--base {base} is ambiguous (a local branch and another ref share the name); "
+                             f"name it fully, for example refs/remotes/{base} or refs/tags/{base}")
+        full = found.stdout.strip() if found.returncode == 0 else ""
+    if full.startswith("refs/heads/"):
+        upstream = git(repo, "for-each-ref", "--format=%(upstream:short)", full, check=False).strip()
+        here = git(repo, "rev-parse", full).strip()
+        there = git(repo, "rev-parse", "--verify", "--quiet", f"{upstream}^{{commit}}", check=False).strip() if upstream else ""
+        if there and there != here:
+            raise ValueError(f"--base {base} is the local branch at {here[:12]}, but its upstream {upstream} is at {there[:12]}; "
+                             f"name the ref you mean, for example --base {upstream} (after git fetch), or a tag or commit")
+    resolved = git(repo, "rev-parse", "--verify", "--quiet", f"{base}^{{commit}}", check=False).strip()
+    if not resolved:
+        raise ValueError(f"--base {base} is not a commit in this repository")
+    return resolved
 
 
 def run(ctx: Context, step: str, cmd: list[str], cwd: Path | None = None) -> tuple[int, float, Path]:
@@ -240,7 +273,7 @@ def gate_result(step: str, code: int, seconds: float, log: Path) -> Result:
     if code == 0:
         return Result(step, "PASS", seconds, log=log)
     if code == NOT_RUN:
-        return Result(step, "NOT RUN", seconds, "Chrome/Chromium is not installed", log)
+        return Result(step, "NOT RUN", seconds, "Playwright's Chromium is not installed (uv run --locked scripts/check_page.py --install-chrome)", log)
     return Result(step, "FAIL", seconds, tail(log), log)
 
 
@@ -251,7 +284,9 @@ def step_gate(ctx: Context) -> Result:
     return gate_result("gate", code, seconds, log)
 
 
-RENDERING_PATHS = ("site/", "scripts/build.py", "scripts/published.py", "scripts/display.py", "scripts/references.py", "scripts/row_checks.py")
+# The pre-render and the locks that pin its browser count too: a new browser can draw the page differently.
+RENDERING_PATHS = ("site/", "scripts/build.py", "scripts/published.py", "scripts/display.py", "scripts/references.py", "scripts/row_checks.py",
+                   "scripts/prerender.py", "scripts/prerender.py.lock", "scripts/check_page.py.lock")
 
 
 def extremes(data, pointer: str = "", out: dict | None = None) -> dict:
@@ -594,7 +629,7 @@ def preflight(cache: Path, snapshots: Path | None) -> int:
                                 capture_output=True, text=True, timeout=300).stdout.strip()
     except (OSError, subprocess.SubprocessError):
         chrome = ""
-    rows.append(("Chrome/Chromium (build, gate, sheet)", bool(chrome), chrome or "missing: the build fails (pre-rendering needs Chrome), so gate and sheet cannot run"))
+    rows.append(("Playwright Chromium (build, gate, sheet)", bool(chrome), chrome or "missing: install with uv run --locked scripts/check_page.py --install-chrome; without it the build fails (pre-rendering needs it), so gate and sheet cannot run"))
     print("| Capability | OK | Detail |\n| --- | --- | --- |")
     for name, ok, detail in rows:
         print(f"| {name} | {'yes' if ok else 'NO'} | {detail} |")
@@ -639,7 +674,8 @@ def gate_arguments(args) -> list[str]:
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--base", default="HEAD", help="revision to compare the staged snapshot with (default: HEAD)")
+    ap.add_argument("--base", help="revision to compare the staged snapshot with: a remote branch (origin/main), tag or commit; "
+                    "a local branch that differs from its upstream is refused (default: HEAD; with --release, the last v* tag)")
     ap.add_argument("--only", help=f"comma-separated steps from {','.join(STEPS)}, or fast (default: all)")
     ap.add_argument("--out", type=Path, help="build into this directory instead of a temporary one (CI publishes it)")
     ap.add_argument("--allow-skip", action="store_true", help="let NOT RUN steps pass (local only; refused in CI)")
@@ -685,7 +721,10 @@ def main() -> int:
         ap.error(f"--gate-shard expects K/N with 1 <= K <= N, not {args.gate_shard!r}")
     if args.gate_shard and int(args.gate_shard.split("/")[0]) > int(args.gate_shard.split("/")[1]):
         ap.error(f"--gate-shard expects K/N with 1 <= K <= N, not {args.gate_shard!r}")
-    base = git(ROOT, "rev-parse", "--verify", f"{args.base}^{{commit}}").strip() if {"compare", "sheet", "passes"} & set(steps) else None
+    try:
+        base = resolve_base(ROOT, args.base, args.release) if {"compare", "sheet", "passes"} & set(steps) else None
+    except ValueError as exc:
+        ap.error(str(exc))
     report = (args.report_dir or Path(tempfile.mkdtemp(prefix="aisi-check-report-"))).resolve()
     if report.exists() and any(report.iterdir()):
         ap.error(f"--report-dir {report} is not empty; every report starts from an empty directory")

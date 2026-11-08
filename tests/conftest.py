@@ -59,10 +59,15 @@ def write_roster(path, ids=("GB",)):
     return {row["id"]: row for row in rows}
 
 
-@pytest.fixture(autouse=True)
-def no_prerender(monkeypatch):
-    """Builds in tests skip headless Chrome; the browser gate checks the pre-rendered page."""
-    monkeypatch.setattr(build, "prerender", lambda site: None)
+@pytest.fixture(scope="session", autouse=True)
+def no_prerender():
+    """Builds in tests skip headless Chrome; the browser gate checks the pre-rendered page.
+
+    Session scope, so the stub is in place before any module- or session-scoped fixture builds
+    (a function-scoped stub is not yet applied there, and each xdist worker then starts Chrome)."""
+    with pytest.MonkeyPatch.context() as patch:
+        patch.setattr(build, "prerender", lambda site: None)
+        yield
 
 
 @pytest.fixture

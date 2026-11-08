@@ -6,7 +6,7 @@
 
 Run from any directory: uv run scripts/build.py --out DIR && uv run scripts/check_page.py --dist DIR
 (--dist defaults to dist/). Exit 0 when every check passed, 1 on any failure, and NOT_RUN (3)
-when Chrome/Chromium is missing, so callers can tell "not run" from "passed".
+when Playwright's Chromium is missing, so callers can tell "not run" from "passed".
 """
 
 import argparse
@@ -18,14 +18,13 @@ import json
 import math
 import os
 import re
-import shutil
 import subprocess
 import sys
 from html.parser import HTMLParser
-import tempfile
 import threading
+import time
 from collections import Counter, defaultdict
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 from datetime import date
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
@@ -43,7 +42,9 @@ from method_copy import rule_label  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 NOT_RUN = 3
-MAC_CHROME = Path("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome")
+# One browser for build, gate and contact sheet on every host: the Chromium of the Playwright version this
+# script's lock pins (prerender.py's lock pins the same, a test checks), in Playwright's default browser folder.
+INSTALL_CHROME = "uv run --locked scripts/check_page.py --install-chrome"
 
 
 PLAIN_KEY = re.compile(r"[A-Za-z0-9_-]+")
@@ -85,17 +86,32 @@ class Keyed:
 
 
 def find_chrome() -> str | None:
-    if MAC_CHROME.is_file() and os.access(MAC_CHROME, os.X_OK):
-        return str(MAC_CHROME)
-    for name in (
-        "google-chrome",
-        "google-chrome-stable",
-        "chromium",
-        "chromium-browser",
-    ):
-        if path := shutil.which(name):
-            return path
-    return None
+    """The locked Playwright's Chromium, or None when it is not installed (INSTALL_CHROME). It runs as an ordinary
+    child process, so a memory cap on the job holds it; a snap browser moved into its own scope."""
+    from playwright.sync_api import sync_playwright
+
+    with sync_playwright() as playwright:
+        path = playwright.chromium.executable_path
+    return path if os.path.isfile(path) and os.access(path, os.X_OK) else None
+
+
+def browser_env() -> dict:
+    """The environment every browser starts in: without a session bus, since Chromium otherwise registers its
+    browser process as a systemd scope of its own (app-org.chromium.Chromium-PID.scope), out of a job's memory cap.
+    Measured with Chrome for Testing 153 under a systemd memory cap: with the bus, the browser process left the
+    job's scope; without it, every process stayed."""
+    return {**os.environ, "DBUS_SESSION_BUS_ADDRESS": "disabled:"}
+
+
+def install_chrome() -> int:
+    """Download the locked Playwright's Chromium (no headless shell: every launch names this browser). On Linux
+    its system libraries are a separate, root step: python -m playwright install-deps chromium."""
+    code = subprocess.run([sys.executable, "-m", "playwright", "install", "--no-shell", "chromium"]).returncode
+    if code:
+        return code
+    found = find_chrome()
+    print(found or "error: the install finished but no Chromium was found", file=sys.stderr)
+    return 0 if found else 1
 
 
 # How we fetched or processed a source is for the data and the repository, not
@@ -609,16 +625,14 @@ def hydration_paint(browser, base_url: str) -> list[str]:
         for theme in ("light", "dark"):
             for place in ("top", "#world-cards"):
                 page = themed_page(browser, theme, viewport={"width": width, "height": 1000})
-                held = []
-                page.route(PAGE_DATA, lambda route: held.append(route))
+                held = Held(page, PAGE_DATA)
                 page.goto(base_url, wait_until="load")
                 page.evaluate("document.fonts.ready")
                 if place != "top":
                     page.evaluate(f"window.scrollTo(0, document.querySelector('{place}').getBoundingClientRect().top + window.scrollY)")
                 page.wait_for_timeout(300)
                 before = page.screenshot(mask=[page.locator(".secnav, .group-nav")])
-                for route in held:
-                    route.continue_()
+                held.release()
                 page.wait_for_function("!document.documentElement.hasAttribute('data-prerendered')", timeout=30_000)
                 page.wait_for_timeout(300)
                 if page.evaluate("getComputedStyle(document.body).backgroundColor") != GROUNDS[theme]:
@@ -638,14 +652,12 @@ def hydration_edges(browser, base_url: str, dist: Path) -> list[str]:
     errors = []
     # What a reader does before the script takes over survives it: an opened disclosure, a typed filter.
     page = browser.new_page(viewport={"width": 1440, "height": 1000})
-    held = []
-    page.route(PAGE_DATA, lambda route: held.append(route))
+    held = Held(page, PAGE_DATA)
     page.goto(base_url, wait_until="load")
     page.locator("#world-cards details summary").first.click()
     page.fill("#world-filter", "fra")
     page.locator("#method-details > summary").focus()  # a control below the table, without an id
-    for route in held:
-        route.continue_()
+    held.release()
     page.wait_for_function("!document.documentElement.hasAttribute('data-prerendered')", timeout=30_000)
     state = page.evaluate("[document.querySelector('#world-cards details').open, document.getElementById('world-filter').value, document.activeElement === document.querySelector('#method-details > summary')]")
     if state != [True, "fra", True]:
@@ -657,15 +669,14 @@ def hydration_edges(browser, base_url: str, dist: Path) -> list[str]:
     mini = sorted(j["id"] for j in data["jurisdictions"] if j["europe_scope"] and j["status"] == "none_identified")[0]
     for target in ("method-details", "changes", f"c-{mini.lower()}"):
         page = browser.new_page(viewport={"width": 1440, "height": 1000})
-        held = []
-        page.route(PAGE_DATA, lambda route: held.append(route))
+        held = Held(page, PAGE_DATA)
         page.goto(f"{base_url}#{target}", wait_until="load")
         fonts = page.evaluate("document.fonts.ready.then(() => document.fonts.status)")
-        if len(held) != 1:
-            errors.append(f"hydration: the data request for #{target} was not held ({len(held)} held)")
+        held.wait()
+        if len(held.routes) != 1:
+            errors.append(f"hydration: the data request for #{target} was not held once ({len(held.routes)} held)")
         before = page.evaluate("window.scrollY")
-        for route in held:
-            route.continue_()
+        held.release()
         page.wait_for_function("!document.documentElement.hasAttribute('data-prerendered')", timeout=30_000)
         page.evaluate("new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)))")
         state = page.evaluate(f"[document.getElementById('{target}')?.open, window.scrollY]")
@@ -694,8 +705,7 @@ def hydration_edges(browser, base_url: str, dist: Path) -> list[str]:
     page = browser.new_page(viewport={"width": 1440, "height": 1000})
     page.route("**/assets/world-*.json", lambda route: route.abort())
     page.route("**/assets/d3.*.js", lambda route: route.abort())
-    held = []
-    page.route("**/assets/map-narrow.svg*", lambda route: held.append(route))
+    held = Held(page, "**/assets/map-narrow.svg*")
     page.goto(base_url, wait_until="load")
     try:
         page.wait_for_function("!document.documentElement.hasAttribute('data-prerendered')", timeout=15_000)
@@ -703,8 +713,7 @@ def hydration_edges(browser, base_url: str, dist: Path) -> list[str]:
         for width in (390, 1440, 390):  # the narrow file stays pending across these
             page.set_viewport_size({"width": width, "height": 1000})
             page.wait_for_timeout(300)
-        for route in held:
-            route.continue_()
+        held.release()
         page.wait_for_selector("#worldmap svg.map-narrow .tgt", state="attached", timeout=10_000)
         page.set_viewport_size({"width": 1440, "height": 1000})
         page.wait_for_timeout(500)
@@ -716,8 +725,7 @@ def hydration_edges(browser, base_url: str, dist: Path) -> list[str]:
     page.close()
     # A map that is slow: the page takes over without it, says so after the wait, and draws it when it comes.
     page = browser.new_page(viewport={"width": 1440, "height": 1000})
-    late = []
-    page.route("**/assets/world-*.json", lambda route: late.append(route))
+    late = Held(page, "**/assets/world-*.json")
     page.goto(base_url, wait_until="load")
     try:
         page.wait_for_function("!document.documentElement.hasAttribute('data-prerendered')", timeout=15_000)
@@ -726,8 +734,7 @@ def hydration_edges(browser, base_url: str, dist: Path) -> list[str]:
         page.wait_for_timeout(MAP_WAIT_MS + 500)
         if "could not be loaded" not in page.locator("#worldmap").inner_text():
             errors.append(f"hydration: {MAP_WAIT_MS} ms without the map, Asia's map box reads {page.locator('#worldmap').inner_text()!r}")
-        for route in late:
-            route.continue_()
+        late.release()
         page.wait_for_function("document.querySelector('#worldmap svg.map-wide .land')", timeout=10_000)
         page.locator('#regions .region-head[data-region="Europe"]').first.click()
         page.locator('#worldmap svg.map-wide .tgt[data-j="FR"]').dispatch_event("click")
@@ -1027,6 +1034,34 @@ def check_json_ld(soup, dist: Path) -> list[str]:
 
 PAGE_ONLY_DATA = "page.json"  # the page's own data file (build.page_data), not a download
 PAGE_DATA = "**/data/page.json*"  # the page's data file, fetched with a version query (build.page_data)
+
+
+class Held:
+    """Requests for `pattern` held on `page` until release(): a check acts while they are pending, never after a
+    pause that is only hoped to be long enough. wait() and release() first wait (bounded) until one was actually
+    held, so a check whose hold missed its request fails instead of passing on the wrong state."""
+
+    def __init__(self, page, pattern: str):
+        self.page, self.pattern, self.routes = page, pattern, []
+        page.route(pattern, self._hold)
+
+    def _hold(self, route) -> None:
+        self.routes.append(route)
+
+    def wait(self, timeout_ms: int = 30_000) -> None:
+        deadline = time.monotonic() + timeout_ms / 1000
+        while not self.routes:
+            if time.monotonic() > deadline:
+                raise AssertionError(f"no request for {self.pattern} was held within {timeout_ms} ms")
+            self.page.wait_for_timeout(50)
+
+    def release(self, abort: bool = False) -> None:
+        """Let the held requests go on (or fail them), then stop holding new ones (in this order: unrouting first
+        settles the held routes itself, and continuing them then fails with "Route is already handled")."""
+        self.wait()
+        for route in self.routes:
+            route.abort() if abort else route.continue_()
+        self.page.unroute(self.pattern, self._hold)
 THEME_KEY = "aisi-theme"  # the page's stored theme choice (principle: Theme)
 GROUNDS = {"light": "rgb(250, 247, 242)", "dark": "rgb(23, 25, 26)"}  # --ground per theme, the evidence that a theme applied
 
@@ -3283,37 +3318,20 @@ def check_summary_data(html: str, data: dict) -> list[str]:
     return errors
 
 
-def render(chrome: str, dist: Path, temporary_root: Path) -> tuple[str, str]:
-    """Serve only this dist directory on a kernel-selected loopback port."""
-    handler = partial(QuietHandler, directory=str(dist))
-    with ThreadingHTTPServer(("127.0.0.1", 0), handler) as server:
-        thread = threading.Thread(target=server.serve_forever, daemon=True)
-        thread.start()
-        base_url = f"http://127.0.0.1:{server.server_port}/"
-        try:
-            with tempfile.TemporaryDirectory(
-                prefix="check-page-", dir=temporary_root
-            ) as profile:
-                result = subprocess.run(
-                    [
-                        chrome,
-                        "--headless=new",
-                        "--dump-dom",
-                        "--virtual-time-budget=5000",
-                        "--no-first-run",
-                        "--no-default-browser-check",
-                        f"--user-data-dir={profile}",
-                        base_url,
-                    ],
-                    text=True,
-                    capture_output=True,
-                    check=True,
-                    timeout=45,
-                )
-                return result.stdout, base_url
-        finally:
-            server.shutdown()
-            thread.join(timeout=5)
+def render(chrome: str, dist: Path) -> tuple[str, str]:
+    """The page as the static checks read it: served from this dist on a loopback port and rendered in the locked
+    Chromium until its script has taken over and the network is quiet (readiness, not a time budget; Chrome for
+    Testing's --dump-dom does not return on Linux)."""
+    from playwright.sync_api import Error as PlaywrightError
+
+    try:
+        with chrome_session(chrome, dist) as (browser, base_url):
+            page = browser.new_page()
+            hydrated(page, base_url)
+            page.wait_for_load_state("networkidle")
+            return page.content(), base_url
+    except PlaywrightError as exc:
+        raise RuntimeError(f"rendering the page failed: {exc}") from exc
 
 
 BROWSER_GEOMETRY = """
@@ -4838,114 +4856,163 @@ def touch_control_tips(browser, base_url: str, viewport: dict, scale: float) -> 
     """Touch (owner report from a Pixel phone): a tap's emulated mouseover and the focus it leaves (which comes back with
     the tab after a link opened another one) never open a tip. A tap on a control (link, button) does its job with no
     tip; a tap on a citation opens its tip instead of the source, the tip's host link opens the source in a new tab, and
-    a tap on the tip's text closes it."""
+    a tap on the tip's text closes it.
+
+    A tab a tap should open is awaited as an event armed before the tap, never sampled after a pause, and the tip-text
+    scenario runs in a context of its own, so a tab that arrives late cannot be missed or counted by a later tap."""
+    from playwright.sync_api import Error as PlaywrightError, TimeoutError as PlaywrightTimeout
+
     errors: list[str] = []
-    context = browser.new_context(viewport=viewport, device_scale_factor=scale, has_touch=True, is_mobile=True)
     local = base_url.split("/")[2]
-    context.route(lambda url: url.split("/")[2] != local, lambda route: route.fulfill(status=200, content_type="text/html", body=""))
-    page = context.new_page()
-    popups: list = []
-    context.on("page", lambda p: popups.append(p))
-    hydrated(page, base_url)
-    page.evaluate("document.fonts.ready")
     shown = "() => { const t = document.getElementById('tip'); return !!t && !t.hidden; }"
 
-    def tap(selector: str) -> bool:
-        """Tap the first rendered match (a citation is a zero-height box whose hit area reaches above the baseline)."""
-        point = page.evaluate("""s => { const n = [...document.querySelectorAll(s)].find(n => n.getClientRects().length); if (!n) return null;
-          n.scrollIntoView({ block: 'center', inline: 'center' }); const r = n.getBoundingClientRect(), x = r.left + r.width / 2, y = r.height ? r.top + r.height / 2 : r.top - 4;
-          const h = document.elementFromPoint(x, y); return h && n.contains(h) ? [x, y] : null; }""", selector)
-        if not point:
-            errors.append(f"no tappable {selector}")
-            return False
-        page.wait_for_timeout(150)
-        page.touchscreen.tap(*point)
-        page.wait_for_timeout(400)
-        return True
+    @contextmanager
+    def touch_page():
+        context = browser.new_context(viewport=viewport, device_scale_factor=scale, has_touch=True, is_mobile=True)
+        try:
+            context.route(lambda url: url.split("/")[2] != local, lambda route: route.fulfill(status=200, content_type="text/html", body=""))
+            page = context.new_page()
+            page.opened = []  # every tab opened beside the page, recorded until the context closes
+            context.on("page", lambda new: page.opened.append(new))
+            hydrated(page, base_url)
+            page.evaluate("document.fonts.ready")
+            yield page
+        finally:
+            context.close()  # closes any tab left open, too
 
-    def come_back() -> list[str]:
-        """Close any tab the tap opened and return to the page, as a reader does (focus comes back to the tapped link)."""
+    def point_of(page, selector: str):
+        """Where to tap the first rendered match (a citation is a zero-height box whose hit area reaches above the
+        baseline), and whether it is a link that opens a new tab; None, with an error, when nothing is tappable."""
+        found = page.evaluate("""s => { const n = [...document.querySelectorAll(s)].find(n => n.getClientRects().length); if (!n) return null;
+          n.scrollIntoView({ block: 'center', inline: 'center' }); const r = n.getBoundingClientRect(), x = r.left + r.width / 2, y = r.height ? r.top + r.height / 2 : r.top - 4;
+          const h = document.elementFromPoint(x, y), a = n.closest('a'); return h && n.contains(h) ? [x, y, !!a && a.target === '_blank'] : null; }""", selector)
+        if not found:
+            errors.append(f"no tappable {selector}")
+        return found
+
+    def tap(page, point, tab: bool) -> tuple[int, bool]:
+        """Tap; return where this tap's tabs start in page.opened (read that slice at the assertion, so a tab is
+        counted however late it comes) and whether a tip shows 400 ms after the tap, sampled before any new tab
+        takes focus. With `tab`, the new tab is awaited (bounded) from before the tap."""
+        mark, tipped = len(page.opened), False
+        page.wait_for_timeout(150)
+        try:
+            with page.context.expect_page(timeout=15_000) if tab else nullcontext():
+                page.touchscreen.tap(*point[:2])
+                page.wait_for_timeout(400)
+                tipped = page.evaluate(shown)
+        except PlaywrightTimeout:
+            pass
+        return mark, tipped
+
+    def come_back(page, tabs: list, url: str | None = None) -> list[str]:
+        """Close the tabs a tap opened and return to the page, as a reader does (focus comes back to the tapped link);
+        return their addresses, once each has reached `url` (a new tab starts at about:blank) or loaded. A tab that
+        closes by itself on the way is still listed."""
         opened = []
-        for p in popups:
-            p.wait_for_load_state()
+        for p in tabs:
+            try:
+                if not p.is_closed():
+                    if url:
+                        p.wait_for_url(lambda u: u == url, timeout=15_000)
+                    else:
+                        p.wait_for_load_state()
+            except PlaywrightError:  # timed out or closed
+                pass
             opened.append(p.url)
-            p.bring_to_front()
-            page.wait_for_timeout(150)
-            p.close()
-        popups.clear()
+            try:
+                if not p.is_closed():
+                    p.bring_to_front()
+                    page.wait_for_timeout(150)
+                    p.close()
+            except PlaywrightError:  # closed meanwhile
+                pass
         page.bring_to_front()
         page.wait_for_timeout(400)
         return opened
 
-    for selector in ("#world-rows td:first-child a[data-tip]", "#downloads a.ico", "#theme-toggle", "#world-scroll button[data-tip]", "#updated a.meta-link"):
-        if not tap(selector):
-            continue
-        if page.evaluate(shown):
-            errors.append(f"a tap on the control {selector} shows a tooltip")
-        come_back()
-        if page.evaluate(shown):
-            errors.append(f"after a tap on the control {selector} and a return to the tab, a tooltip shows")
-        hydrated(page, base_url)
-    # A map dot is a control: its tap opens the record, which names the state, with no tip over the map.
-    page.evaluate("document.querySelector('#worldmap').scrollIntoView({ block: 'center' })")
-    page.wait_for_timeout(200)
-    dot = page.evaluate("""() => { const t = [...document.querySelectorAll('#worldmap svg')].find(n => n.getClientRects().length).querySelector('.tgt[data-j="FR"]'), r = t.getBoundingClientRect(),
-      x = r.left + r.width / 2, y = r.top + r.height / 2, h = document.elementFromPoint(x, y); return h && h.closest('#worldmap') ? [x, y] : null; }""")
-    if not dot:
-        errors.append("no tappable map dot for France")
-    else:
-        page.touchscreen.tap(*dot)
+    def open_france(page) -> None:
+        """The owner's case: the France record panel, opened from the map search."""
+        page.locator("#map-search").fill("fra")
+        page.locator("#map-search-0").tap()
         page.wait_for_timeout(400)
-        hidden, tipped = page.evaluate("document.getElementById('record').hidden"), page.evaluate(shown)
-        if hidden or tipped:
-            errors.append(f"a tap on a map dot does not open the record without a tooltip (record hidden: {hidden}, tooltip shown: {tipped})")
-        page.locator("#record .record-close").tap()
-        page.wait_for_timeout(200)
-    # The owner's case: the France record panel's first citation.
-    page.locator("#map-search").fill("fra")
-    page.locator("#map-search-0").tap()
-    page.wait_for_timeout(400)
+
     cite = "#record a.cn"
-    if tap(cite):
-        href = page.evaluate("s => [...document.querySelectorAll(s)].find(n => n.getClientRects().length).href", cite)
-        if popups or not page.evaluate(shown):
-            errors.append(f"a tap on a citation does not open its tooltip in place (tooltip shown: {page.evaluate(shown)}, tabs opened: {len(popups)})")
-        come_back()
-        if not page.evaluate(shown):
-            errors.append("a citation's tooltip closes on a return to the tab")
-        link = page.evaluate("""h => { const a = [...document.querySelectorAll('#tip a')].find(a => a.href === h); if (!a || document.getElementById('tip').hidden) return null;
-          const r = a.getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2; return a.contains(document.elementFromPoint(x, y)) ? [x, y] : null; }""", href)
-        if not link:
-            errors.append("a citation's tooltip has no tappable link to its source")
-        else:
-            page.touchscreen.tap(*link)
-            page.wait_for_timeout(600)
-            opened = come_back()
-            if opened != [href]:
-                errors.append(f"a tap on the source link in a citation's tooltip does not open the source in a new tab (opened: {opened})")
+    with touch_page() as page:
+        for selector in ("#world-rows td:first-child a[data-tip]", "#downloads a.ico", "#theme-toggle", "#world-scroll button[data-tip]", "#updated a.meta-link"):
+            point = point_of(page, selector)
+            if not point:
+                continue
+            mark, tipped = tap(page, point, tab=point[2])
+            if tipped:
+                errors.append(f"a tap on the control {selector} shows a tooltip")
+            come_back(page, page.opened[mark:])
             if page.evaluate(shown):
-                errors.append("a citation's tooltip stays (or comes back) after its source link was followed")
-    if tap(cite):
-        corner = page.evaluate("() => { const t = document.getElementById('tip'), r = t.getBoundingClientRect(); return t.hidden ? null : [r.left + 6, r.top + 6]; }")
-        if corner:
-            page.touchscreen.tap(*corner)
+                errors.append(f"after a tap on the control {selector} and a return to the tab, a tooltip shows")
+            hydrated(page, base_url)
+        # A map dot is a control: its tap opens the record, which names the state, with no tip over the map.
+        page.evaluate("document.querySelector('#worldmap').scrollIntoView({ block: 'center' })")
+        page.wait_for_timeout(200)
+        dot = page.evaluate("""() => { const t = [...document.querySelectorAll('#worldmap svg')].find(n => n.getClientRects().length).querySelector('.tgt[data-j="FR"]'), r = t.getBoundingClientRect(),
+          x = r.left + r.width / 2, y = r.top + r.height / 2, h = document.elementFromPoint(x, y); return h && h.closest('#worldmap') ? [x, y] : null; }""")
+        if not dot:
+            errors.append("no tappable map dot for France")
+        else:
+            page.touchscreen.tap(*dot)
             page.wait_for_timeout(400)
-        if not corner or page.evaluate(shown) or popups:
-            errors.append(f"a tap on a citation tooltip's text does not close it (tooltip was shown: {bool(corner)}, tabs opened: {len(popups)})")
-        come_back()
-        page.evaluate("scrollBy(0, 200)")
-        page.wait_for_timeout(400)
-        if page.evaluate(shown):
-            errors.append("a closed citation tooltip comes back after a return to the tab or a scroll")
-    # A mouse on a touch screen: after a tap, hovering with the mouse shows tips again.
-    if tap("#world-rows abbr.g"):
-        page.touchscreen.tap(3, viewport["height"] // 2)
-        box = page.locator("#world-rows abbr.g").first.bounding_box()
-        page.mouse.move(box["x"] + box["width"] / 2, box["y"] + box["height"] / 2, steps=3)
-        page.wait_for_timeout(300)
-        if not page.evaluate(shown):
-            errors.append("after a tap, hovering a term with a mouse shows no tooltip")
-    context.close()
+            hidden, tipped = page.evaluate("document.getElementById('record').hidden"), page.evaluate(shown)
+            if hidden or tipped:
+                errors.append(f"a tap on a map dot does not open the record without a tooltip (record hidden: {hidden}, tooltip shown: {tipped})")
+            page.locator("#record .record-close").tap()
+            page.wait_for_timeout(200)
+        open_france(page)
+        point = point_of(page, cite)
+        if point:
+            href = page.evaluate("s => [...document.querySelectorAll(s)].find(n => n.getClientRects().length).href", cite)
+            cited, tipped = tap(page, point, tab=False)
+            if page.opened[cited:] or not tipped:
+                errors.append(f"a tap on a citation does not open its tooltip in place (tooltip shown: {tipped}, tabs opened: {len(page.opened[cited:])})")
+            come_back(page, page.opened[cited:])
+            if not page.evaluate(shown):
+                errors.append("a citation's tooltip closes on a return to the tab")
+            link = page.evaluate("""h => { const a = [...document.querySelectorAll('#tip a')].find(a => a.href === h); if (!a || document.getElementById('tip').hidden) return null;
+              const r = a.getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2; return a.contains(document.elementFromPoint(x, y)) ? [x, y] : null; }""", href)
+            if not link:
+                errors.append("a citation's tooltip has no tappable link to its source")
+            else:
+                mark, _ = tap(page, link, tab=True)
+                opened = come_back(page, page.opened[mark:], href)
+                # One tab from the citation's tap on: none late from the citation itself, none more while coming back.
+                if opened != [href] or len(page.opened) - cited != 1:
+                    errors.append(f"a tap on the source link in a citation's tooltip does not open the source in one new tab (opened: {opened}, tabs since the citation's tap: {len(page.opened) - cited})")
+                if page.evaluate(shown):
+                    errors.append("a citation's tooltip stays (or comes back) after its source link was followed")
+    # Its own context: no tab from the taps above can reach these counts.
+    with touch_page() as page:
+        open_france(page)
+        point = point_of(page, cite)
+        if point:
+            mark, _ = tap(page, point, tab=False)
+            corner = page.evaluate("() => { const t = document.getElementById('tip'), r = t.getBoundingClientRect(); return t.hidden ? null : [r.left + 6, r.top + 6]; }")
+            if corner:
+                tap(page, corner, tab=False)
+            if not corner or page.evaluate(shown) or page.opened[mark:]:
+                errors.append(f"a tap on a citation tooltip's text does not close it (tooltip was shown: {bool(corner)}, tabs opened: {len(page.opened[mark:])})")
+            come_back(page, page.opened[mark:])
+            page.evaluate("scrollBy(0, 200)")
+            page.wait_for_timeout(400)
+            if page.evaluate(shown):
+                errors.append("a closed citation tooltip comes back after a return to the tab or a scroll")
+        # A mouse on a touch screen: after a tap, hovering with the mouse shows tips again.
+        point = point_of(page, "#world-rows abbr.g")
+        if point:
+            tap(page, point, tab=False)
+            page.touchscreen.tap(3, viewport["height"] // 2)
+            box = page.locator("#world-rows abbr.g").first.bounding_box()
+            page.mouse.move(box["x"] + box["width"] / 2, box["y"] + box["height"] / 2, steps=3)
+            page.wait_for_timeout(300)
+            if not page.evaluate(shown):
+                errors.append("after a tap, hovering a term with a mouse shows no tooltip")
     return errors
 
 
@@ -5114,7 +5181,7 @@ def check_arrival(browser, base_url: str) -> list[str]:
     with reduced motion.
     """
     errors: list[str] = []
-    state = """id => { const c = document.getElementById(id), s = getComputedStyle(c), nav = document.querySelector('.secnav').getBoundingClientRect(), r = c.getBoundingClientRect();
+    state = r"""id => { const c = document.getElementById(id), s = getComputedStyle(c), nav = document.querySelector('.secnav').getBoundingClientRect(), r = c.getBoundingClientRect();
         const probe = document.createElement('span'); probe.style.backgroundColor = 'var(--highlight-fill)'; document.body.appendChild(probe); const fill = getComputedStyle(probe).backgroundColor; probe.remove();
         const alpha = (s.backgroundColor.match(/[\d.]+/g) || []).map(Number), seen = alpha.length === 4 ? alpha[3] > 0 : alpha.length === 3;
         return { hash: location.hash, marked: seen && s.outlineStyle === 'none', tinted: seen, tint: s.backgroundColor === fill, ring: s.outlineStyle !== 'none', arrived: c.classList.contains('arrived'),
@@ -5246,17 +5313,14 @@ def check_arrival(browser, base_url: str) -> list[str]:
                     # Fonts that load after the reader followed the record's link: the card keeps its Back to map link.
                     late = themed_page(browser, theme, viewport={"width": width, "height": 1000}, reduced_motion=motion)
                     try:
-                        held = []
-                        late.route("**/assets/fonts/**", lambda route: held.append(route))
+                        held = Held(late, "**/assets/fonts/**")
                         late.goto(base_url, wait_until="commit")  # held fonts hold the load event
                         late.wait_for_function("!document.documentElement.hasAttribute('data-prerendered')", timeout=30_000)
                         late.locator(f'#region-rows-europe .pick[data-pick="{full_id}"]').click()
                         late.locator("#record .record-more").click()
                         late.wait_for_timeout(150)
                         pending = late.evaluate("document.fonts.status")
-                        for route in held:
-                            route.continue_()
-                        late.unroute("**/assets/fonts/**")
+                        held.release()
                         late.evaluate("document.fonts.ready")
                         late.wait_for_timeout(150)
                         if pending != "loading" or late.locator(f"#{full} .back-map").count() != 1 or not late.evaluate("id => document.getElementById(id).classList.contains('arrived')", full):
@@ -5267,10 +5331,14 @@ def check_arrival(browser, base_url: str) -> list[str]:
                     # Slow data: a control the reader focused on the saved page keeps focus after the swap, also one without an id.
                     slow = themed_page(browser, theme, viewport={"width": width, "height": 1000}, reduced_motion=motion)
                     try:
-                        slow.add_init_script("{ const f = window.fetch; window.fetch = (u, ...a) => String(u).includes('data/page.json') ? new Promise(r => setTimeout(r, 1500)).then(() => f(u, ...a)) : f(u, ...a); }")
+                        data = Held(slow, PAGE_DATA)
                         slow.goto(base_url + "#" + full)
+                        data.wait()
                         slow.evaluate("document.fonts.ready")
                         slow.focus("#changes > summary")
+                        if not slow.evaluate("document.documentElement.hasAttribute('data-prerendered')"):
+                            errors.append(f"{label}: the page script took over while its data was held")
+                        data.release()
                         slow.wait_for_function("!document.documentElement.hasAttribute('data-prerendered')", timeout=30_000)
                         slow.wait_for_timeout(200)
                         if slow.evaluate("getComputedStyle(document.body).backgroundColor") != GROUNDS[theme]:
@@ -5888,16 +5956,13 @@ def check_theme_default(browser, base_url: str, dist: Path) -> list[str]:
         if state(page) != ["light", GROUNDS["light"], "Theme: light"]:
             errors.append(f"theme: a light choice is not kept after a reload ({state(page)})")
         # Before the script takes over: the saved page's toggle shows the stored state and works.
-        held = []
-        page.route(PAGE_DATA, lambda route: held.append(route))
+        held = Held(page, PAGE_DATA)
         page.goto(base_url, wait_until="load")
         if page.evaluate(label) != "Theme: light":
             errors.append("theme: the saved page's toggle does not show the stored light theme")
         page.locator("#theme-toggle").click(timeout=5_000)
-        for route in held:
-            route.continue_()
+        held.release()
         page.wait_for_function("!document.documentElement.hasAttribute('data-prerendered')", timeout=30_000)
-        page.unroute(PAGE_DATA)
         if state(page) != ["dark", GROUNDS["dark"], "Theme: dark"] or page.evaluate(stored) != "dark":
             errors.append(f"theme: a toggle before the script takes over is lost ({state(page)})")
         # The other pages follow the choice.
@@ -5958,13 +6023,11 @@ def check_theme_default(browser, base_url: str, dist: Path) -> list[str]:
           window.__firstPaint = {{}};
           new MutationObserver((records, observer) => {{ for (const r of records) for (const n of r.addedNodes) if (n.nodeName === 'STYLE' || (n.nodeName === 'LINK' && n.rel === 'stylesheet')) {{ window.__firstPaint.style = document.documentElement.getAttribute('data-theme'); observer.disconnect(); return; }} }}).observe(document, {{ childList: true, subtree: true }});
           (function frame() {{ requestAnimationFrame(() => {{ if (document.body) window.__firstPaint.ground = getComputedStyle(document.body).backgroundColor; else frame(); }}); }})();""")
-        held = []
-        page.route(PAGE_DATA, lambda route: held.append(route))  # the saved page alone
+        held = Held(page, PAGE_DATA)  # the saved page alone
         page.goto(base_url, wait_until="load")
         page.wait_for_timeout(200)
         first = page.evaluate("window.__firstPaint")
-        for route in held:
-            route.abort()
+        held.release(abort=True)
         if first.get("style") != "dark" or first.get("ground") != GROUNDS["dark"]:
             errors.append(f"theme: stored dark is not set before first paint ({first})")
     finally:
@@ -7151,7 +7214,7 @@ def capture_states(chrome: str, dist: Path, out: Path) -> None:
         thread.start()
         try:
             with sync_playwright() as playwright:
-                browser = playwright.chromium.launch(executable_path=chrome, headless=True, args=STABLE_RASTER)
+                browser = playwright.chromium.launch(executable_path=chrome, headless=True, args=STABLE_RASTER, env=browser_env())
                 for width in (1440, 1000, 390):
                     for theme in ("light", "dark"):
                         page = themed_page(
@@ -9157,7 +9220,7 @@ def chrome_session(chrome: str, dist: Path):
         thread.start()
         try:
             with sync_playwright() as playwright:
-                browser = playwright.chromium.launch(executable_path=chrome, headless=True)
+                browser = playwright.chromium.launch(executable_path=chrome, headless=True, env=browser_env())
                 yield browser, f"http://127.0.0.1:{server.server_port}/"
                 browser.close()
         finally:
@@ -9769,7 +9832,7 @@ def main(dist: Path = ROOT / "dist", screenshots: Path | None = None, capture: P
     chrome = find_chrome()
     if chrome is None:
         print(
-            "NOT RUN: Chrome/Chromium is not installed; rendered page checks were not run.",
+            f"NOT RUN: Playwright's Chromium is not installed ({INSTALL_CHROME}); rendered page checks were not run.",
             file=sys.stderr,
         )
         return NOT_RUN
@@ -9785,8 +9848,7 @@ def main(dist: Path = ROOT / "dist", screenshots: Path | None = None, capture: P
         data = json.loads((dist / "data/aisi.json").read_text(encoding="utf-8"))
         if shard:
             return write_shard(chrome, dist, data, shard, results, jobs)
-        with tempfile.TemporaryDirectory(prefix="check-page-") as temporary_root:
-            html, base_url = render(chrome, dist, Path(temporary_root))
+        html, base_url = render(chrome, dist)
         errors = check_method_pages(html, data, dist) + check_dom(html, data, dist, base_url) + check_agent_files(dist) + check_static_page(dist, data) + check_hydrated(html) + check_archive_links(html, data) + check_launch_assets(dist) + check_page_data(dist, data) + check_budget_ratio_downloads(dist, data) + check_state_downloads(dist, data) + check_state_download_buttons(html, dist, data)
         if not errors:
             errors.extend(check_merged(dist, data, merge) if merge else check_browser(chrome, dist, data, screenshots, jobs))
@@ -9820,6 +9882,17 @@ def job_count(text: str) -> int:
     return int(text)
 
 
+def default_jobs(environ=os.environ) -> int:
+    """Browser jobs at once when --jobs is not given: AISI_GATE_JOBS where a host sets it (1 where its memory
+    holds one browser at a time), else the CPUs, at most 8."""
+    if text := environ.get("AISI_GATE_JOBS", "").strip():
+        try:
+            return job_count(text)
+        except (ValueError, argparse.ArgumentTypeError) as exc:
+            raise SystemExit(f"AISI_GATE_JOBS={text!r}: {exc}") from exc
+    return min(os.cpu_count() or 1, 8)
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -9841,8 +9914,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "--jobs",
         type=job_count,
-        default=min(os.cpu_count() or 1, 8),
-        help="browser checks in this many parallel processes (default: CPUs, at most 8); 1 runs them one after another",
+        default=default_jobs(),
+        help="browser checks in this many parallel processes (default: AISI_GATE_JOBS, else the CPUs, at most 8); 1 runs them one after another",
     )
     parser.add_argument("--shard", type=shard_spec, help="CI: run only shard K/N of the browser jobs, no static checks, and write --results")
     parser.add_argument("--results", type=Path, help="with --shard: where to write the shard's results (JSON)")
@@ -9850,13 +9923,20 @@ if __name__ == "__main__":
     parser.add_argument(
         "--find-chrome",
         action="store_true",
-        help="only print the Chrome/Chromium path this check would use; exit NOT_RUN if none",
+        help="only print the Chromium path this check would use; exit NOT_RUN if none",
+    )
+    parser.add_argument(
+        "--install-chrome",
+        action="store_true",
+        help="only install the locked Playwright's Chromium, which build, gate and contact sheet use",
     )
     args = parser.parse_args()
     if sum(bool(x) for x in (args.shard, args.merge, args.capture)) > 1:
         parser.error("--shard, --merge and --capture exclude each other")
     if bool(args.shard) != bool(args.results):
         parser.error("--shard and --results go together")
+    if args.install_chrome:
+        sys.exit(install_chrome())
     if args.find_chrome:
         found = find_chrome()
         print(found or "")

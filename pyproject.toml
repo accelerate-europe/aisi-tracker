@@ -34,4 +34,5 @@ extend-exclude = ["work", "dist"]
 
 [tool.ruff.lint]
 # Correctness rules only; formatting existing files is deferred (about 3,300 changed lines).
-select = ["E4", "E7", "E9", "F"]
+# W605: an invalid escape such as "\d" in a normal string is a SyntaxWarning today and an error in a later Python.
+select = ["E4", "E7", "E9", "F", "W605"]

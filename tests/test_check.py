@@ -431,3 +431,94 @@ def test_validate_carries_release_warnings_into_the_report_without_failing(tmp_p
     result = check.step_validate(ctx)
     assert (result.status, result.detail) == ("PASS", detail)
     assert ctx.sections["warnings"] == section
+
+
+def commit(repo: Path, text: str) -> str:
+    (repo / "a.txt").write_text(text)
+    git(repo, "add", "a.txt")
+    git(repo, "-c", "user.name=t", "-c", "user.email=t@example.org", "-c", "commit.gpgsign=false", "commit", "-q", "-m", text)
+    return subprocess.run(["git", "-C", str(repo), "rev-parse", "HEAD"], capture_output=True, text=True, check=True).stdout.strip()
+
+
+def isolated_git(tmp_path, monkeypatch):
+    """Git without the user's, system or command-scope configuration and with no templates (no signing or hooks)."""
+    monkeypatch.setenv("GIT_CONFIG_GLOBAL", str(tmp_path / "gitconfig"))
+    monkeypatch.setenv("GIT_CONFIG_NOSYSTEM", "1")
+    for name in ("GIT_CONFIG", "GIT_CONFIG_PARAMETERS", "GIT_CONFIG_COUNT"):
+        monkeypatch.delenv(name, raising=False)
+    (tmp_path / "templates").mkdir(exist_ok=True)
+    monkeypatch.setenv("GIT_TEMPLATE_DIR", str(tmp_path / "templates"))
+
+
+@pytest.fixture
+def clone(tmp_path, monkeypatch):
+    """A clone whose main tracks origin/main, both at the second of two tagged releases. Git runs without the
+    user's or system configuration (no signing, hooks or templates), with a fixed identity."""
+    isolated_git(tmp_path, monkeypatch)
+    for role in ("AUTHOR", "COMMITTER"):
+        monkeypatch.setenv(f"GIT_{role}_NAME", "t")
+        monkeypatch.setenv(f"GIT_{role}_EMAIL", "t@example.org")
+    origin = tmp_path / "origin"
+    origin.mkdir()
+    git(origin, "init", "-q", "-b", "main")
+    first = commit(origin, "1.0.1")
+    git(origin, "tag", "v1.0.1")
+    second = commit(origin, "1.0.2")
+    git(origin, "tag", "-a", "v1.0.2", "-m", "release")
+    git(tmp_path, "clone", "-q", str(origin), "clone")
+    return tmp_path / "clone", origin, first, second
+
+
+def test_release_compares_with_the_last_release_tag_by_default(clone):
+    repo, _, first, second = clone
+    work = commit(repo, "1.0.3 work")
+    assert check.resolve_base(repo, None, release=True) == second  # an annotated tag resolves to its commit
+    assert check.resolve_base(repo, None, release=False) == work  # HEAD, as before, though main is now ahead of origin/main
+    assert check.resolve_base(repo, "HEAD", release=False) == work
+    assert check.resolve_base(repo, "v1.0.1", release=True) == first  # an explicit --base wins
+    with pytest.raises(ValueError, match="not a commit"):
+        check.resolve_base(repo, "", release=True)  # an empty --base is not "no --base"
+    # A stale local branch named like the release tag does not stand in for the tag.
+    git(repo, "branch", "-q", "v1.0.2", first)
+    git(repo, "branch", "-q", "--set-upstream-to=origin/main", "v1.0.2")
+    assert check.resolve_base(repo, None, release=True) == second
+    bare = repo.parent / "untagged"
+    bare.mkdir()
+    git(bare, "init", "-q")
+    commit(bare, "only")
+    with pytest.raises(ValueError, match="no.*v\\* release tag|HEAD has none"):
+        check.resolve_base(bare, None, release=True)
+
+
+def test_a_local_branch_that_differs_from_its_upstream_is_refused(clone):
+    """A stale local main behind origin/main would make compare report changes that are not in the release."""
+    repo, origin, _, second = clone
+    assert check.resolve_base(repo, "main", release=False) == second  # in step with origin/main: fine
+    newer = commit(origin, "1.0.3")
+    git(repo, "fetch", "-q")
+    with pytest.raises(ValueError, match=r"--base main is the local branch at .* its upstream origin/main is at .*--base origin/main"):
+        check.resolve_base(repo, "main", release=False)
+    with pytest.raises(ValueError, match="upstream origin/main"):
+        check.resolve_base(repo, "refs/heads/main", release=False)  # the full spelling is the same branch
+    assert check.resolve_base(repo, "origin/main", release=False) == newer
+    git(repo, "branch", "-q", "--no-track", "scratch")
+    assert check.resolve_base(repo, "scratch", release=False) == second  # no upstream: nothing to differ from
+    for missing in ("no-such-ref", "refs/heads/missing", ""):
+        with pytest.raises(ValueError, match="not a commit"):
+            check.resolve_base(repo, missing, release=False)
+    # A stale local branch that shares its name with the remote branch: refused, not silently preferred.
+    git(repo, "branch", "-q", "origin/main", second)
+    with pytest.raises(ValueError, match="ambiguous"):
+        check.resolve_base(repo, "origin/main", release=False)
+    git(repo, "config", "--local", "core.warnAmbiguousRefs", "false")  # the repository's setting does not hide it
+    with pytest.raises(ValueError, match="ambiguous"):
+        check.resolve_base(repo, "origin/main", release=False)
+    assert check.resolve_base(repo, "refs/remotes/origin/main", release=False) == newer
+
+
+def test_an_unborn_branch_is_not_a_base(tmp_path, monkeypatch):
+    isolated_git(tmp_path, monkeypatch)
+    git(tmp_path, "init", "-q", "-b", "main", "empty")
+    for base in ("main", "refs/heads/main"):
+        with pytest.raises(ValueError, match="not a commit"):
+            check.resolve_base(tmp_path / "empty", base, release=False)

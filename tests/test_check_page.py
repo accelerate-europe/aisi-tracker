@@ -1,13 +1,13 @@
+import re
 import subprocess
 import json
 from collections import Counter
 from pathlib import Path
-from urllib.request import urlopen
 
 from bs4 import BeautifulSoup
 import pytest
 
-from conftest import SOURCE_URL
+from conftest import ROOT, SOURCE_URL
 from scripts import check_page
 
 
@@ -144,12 +144,43 @@ def test_empty_dom_fails(rendered):
     assert len(check_page.check_dom("", data, dist, "http://127.0.0.1/")) >= 5
 
 
-def test_chrome_discovery_linux_and_missing(monkeypatch, tmp_path):
-    monkeypatch.setattr(check_page, "MAC_CHROME", tmp_path / "absent")
-    monkeypatch.setattr(check_page.shutil, "which", lambda name: "/usr/bin/chromium" if name == "chromium" else None)
-    assert check_page.find_chrome() == "/usr/bin/chromium"
-    monkeypatch.setattr(check_page.shutil, "which", lambda name: None)
-    assert check_page.find_chrome() is None
+def test_chrome_is_the_locked_playwright_chromium_or_missing(monkeypatch, tmp_path):
+    """Only the locked Playwright's own Chromium counts, never a browser on PATH (a snap browser escapes a job's memory cap)."""
+    import sys
+    import types
+    from contextlib import contextmanager
+
+    chrome = tmp_path / "chromium-1243" / "chrome"
+
+    @contextmanager
+    def sync_playwright():
+        yield types.SimpleNamespace(chromium=types.SimpleNamespace(executable_path=str(chrome)))
+
+    module = types.ModuleType("playwright.sync_api")
+    module.sync_playwright = sync_playwright
+    monkeypatch.setitem(sys.modules, "playwright", types.ModuleType("playwright"))
+    monkeypatch.setitem(sys.modules, "playwright.sync_api", module)
+    monkeypatch.setenv("PATH", str(tmp_path))
+    (tmp_path / "chromium").write_text("#!/bin/sh\n")
+    (tmp_path / "chromium").chmod(0o755)
+    assert check_page.find_chrome() is None  # not installed: a Chromium on PATH does not stand in
+    chrome.parent.mkdir()
+    chrome.write_text("#!/bin/sh\n")
+    chrome.chmod(0o755)
+    assert check_page.find_chrome() == str(chrome)
+
+
+def test_build_gate_and_capture_lock_one_playwright():
+    """prerender.py (the build) and check_page.py (gate and contact sheet) pin the same Playwright, so one browser."""
+    import tomllib
+
+    pins = {}
+    for lock in sorted((ROOT / "scripts").glob("*.py.lock")):
+        packages = {p["name"]: p["version"] for p in tomllib.loads(lock.read_text(encoding="utf-8")).get("package", [])}
+        if "playwright" in packages:
+            pins[lock.name] = packages["playwright"]
+    assert {"check_page.py.lock", "prerender.py.lock"} <= set(pins)
+    assert len(set(pins.values())) == 1, pins
 
 
 @pytest.mark.parametrize("ci", [None, "true"])
@@ -191,28 +222,62 @@ def test_browser_failure_is_not_a_skip(rendered, monkeypatch, capsys, failure):
     assert "error:" in capsys.readouterr().err
 
 
-def test_render_uses_loopback_free_port_isolated_profile_and_required_flags(tmp_path, monkeypatch):
-    dist = tmp_path / "dist"
-    dist.mkdir()
-    (dist / "index.html").write_text("Fixture page")
-    profiles = []
+def test_render_reads_the_hydrated_page_and_reports_browser_errors(tmp_path, monkeypatch):
+    """render() reads the page once its script has taken over and the network is quiet, in a session that serves
+    only this dist; a browser error is reported as a page-check failure (RuntimeError), never a crash or a skip."""
+    import sys
+    import types
+    from contextlib import contextmanager
 
-    def fake_chrome(command, **kwargs):
-        assert command[0] == "chrome"
-        assert {"--headless=new", "--dump-dom", "--virtual-time-budget=5000"} <= set(command)
-        profile = Path(next(x.split("=", 1)[1] for x in command if x.startswith("--user-data-dir=")))
-        assert profile.is_dir()
-        profiles.append(profile)
-        assert command[-1].startswith("http://127.0.0.1:")
-        with urlopen(command[-1], timeout=5) as response:
-            assert response.read().decode() == "Fixture page"
-        assert kwargs["timeout"] == 45
-        return subprocess.CompletedProcess(command, 0, stdout="<html>Rendered</html>")
+    class PlaywrightError(Exception):
+        pass
 
-    monkeypatch.setattr(subprocess, "run", fake_chrome)
-    html, _ = check_page.render("chrome", dist, tmp_path)
-    assert html == "<html>Rendered</html>"
-    assert all(not path.exists() for path in profiles)
+    module = types.ModuleType("playwright.sync_api")
+    module.Error = PlaywrightError
+    monkeypatch.setitem(sys.modules, "playwright", types.ModuleType("playwright"))
+    monkeypatch.setitem(sys.modules, "playwright.sync_api", module)
+    calls = []
+
+    class Page:
+        def goto(self, url):
+            calls.append(("goto", url))
+
+        def wait_for_function(self, script, timeout):
+            calls.append(("hydrated", script))
+
+        def wait_for_load_state(self, state):
+            calls.append(("load", state))
+
+        def content(self):
+            return "<html>Rendered</html>"
+
+    @contextmanager
+    def session(chrome, dist):
+        calls.append(("session", chrome, dist))
+        yield types.SimpleNamespace(new_page=Page), "http://127.0.0.1:1234/"
+
+    monkeypatch.setattr(check_page, "chrome_session", session)
+    assert check_page.render("chrome", tmp_path) == ("<html>Rendered</html>", "http://127.0.0.1:1234/")
+    assert calls[0] == ("session", "chrome", tmp_path) and ("load", "networkidle") in calls
+    assert any(c[0] == "hydrated" and "data-prerendered" in c[1] for c in calls)
+
+    def broken(self, url):
+        raise PlaywrightError("Target closed")
+
+    monkeypatch.setattr(Page, "goto", broken)
+    with pytest.raises(RuntimeError, match="rendering the page failed: Target closed"):
+        check_page.render("chrome", tmp_path)
+    assert RuntimeError in check_page.CAUGHT
+
+
+def test_every_browser_starts_without_a_session_bus(monkeypatch):
+    """Chromium with a session bus moves its browser process into a systemd scope of its own, out of a job's memory cap."""
+    monkeypatch.setenv("DBUS_SESSION_BUS_ADDRESS", "unix:path=/run/user/1000/bus")
+    assert check_page.browser_env()["DBUS_SESSION_BUS_ADDRESS"] == "disabled:"
+    source = (ROOT / "scripts/check_page.py").read_text(encoding="utf-8") + (ROOT / "scripts/prerender.py").read_text(encoding="utf-8")
+    launches = re.findall(r"chromium\.launch(?:_persistent_context)?\((?:[^()]|\([^()]*\))*\)", source, flags=re.S)
+    assert len(launches) == 3 and all("env=browser_env()" in call for call in launches), launches
+
 
 
 def test_budget_oracle_rejects_wrong_id_and_missing_value_structure():
@@ -1065,3 +1130,58 @@ def test_euro_amounts_follow_the_rate_and_cite_it():
     assert any("expected '~EUR 52m (JPY 8.8bn)'" in e for e in check_page.check_euro_amounts(good.replace("~EUR 52m", "~EUR 51m", 1), data))
     assert any("does not cite the amount and exchange-rate sources" in e for e in check_page.check_euro_amounts(good.replace('<a class="cn" data-source-id="ecb">2</a>', "", 1), data))
     assert any("does not lead with its euro figure" in e for e in check_page.check_euro_amounts(good.replace('<span class="related-funding-eur">~EUR 52m</span>: ', ""), data))
+
+
+def test_gate_jobs_default_follows_the_host_setting(monkeypatch):
+    """A host whose memory holds one browser sets AISI_GATE_JOBS=1; elsewhere the CPUs, at most 8."""
+    monkeypatch.setattr(check_page.os, "cpu_count", lambda: 16)
+    assert check_page.default_jobs({}) == 8
+    assert check_page.default_jobs({"AISI_GATE_JOBS": " "}) == 8
+    assert check_page.default_jobs({"AISI_GATE_JOBS": "1"}) == 1
+    assert check_page.default_jobs({"AISI_GATE_JOBS": "12"}) == 12  # explicit: no cap
+    for bad in ("0", "two"):
+        with pytest.raises(SystemExit, match="AISI_GATE_JOBS"):
+            check_page.default_jobs({"AISI_GATE_JOBS": bad})
+
+
+def test_a_held_request_must_have_been_held_before_release():
+    """Held: a check acts while the request is pending; a hold that never caught its request fails, never passes."""
+    class Route:
+        def __init__(self):
+            self.done = None
+
+        def continue_(self):
+            assert self.done is None, "Route is already handled!"  # Playwright: unroute settles a held route
+            self.done = "continued"
+
+        def abort(self):
+            assert self.done is None, "Route is already handled!"
+            self.done = "aborted"
+
+    class Page:
+        def __init__(self, arrives_after=None):
+            self.handlers, self.waited, self.arrives_after, self.route_obj = {}, 0, arrives_after, Route()
+
+        def route(self, pattern, handler):
+            self.handlers[pattern] = handler
+
+        def unroute(self, pattern, handler):
+            assert self.handlers.pop(pattern) == handler  # a bound method: equal, not identical (Playwright keys it so)
+            if self.route_obj.done is None:
+                self.route_obj.done = "unrouted"  # as Playwright does with a route still held (measured, 1.63)
+
+        def wait_for_timeout(self, ms):
+            self.waited += ms
+            if self.arrives_after is not None and self.waited >= self.arrives_after and self.handlers:
+                next(iter(self.handlers.values()))(self.route_obj)
+
+    page = Page(arrives_after=100)  # the request arrives while the check waits for it
+    held = check_page.Held(page, check_page.PAGE_DATA)
+    held.release()
+    assert page.route_obj.done == "continued" and not page.handlers
+    page = Page(arrives_after=0)
+    held = check_page.Held(page, check_page.PAGE_DATA)
+    held.release(abort=True)
+    assert page.route_obj.done == "aborted"
+    with pytest.raises(AssertionError, match="no request for"):
+        check_page.Held(Page(), check_page.PAGE_DATA).wait(timeout_ms=120)

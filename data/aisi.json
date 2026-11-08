@@ -4,7 +4,7 @@
     "title": "AI Security Institutes tracker",
     "description": "Which states have an AI Security Institute (AISI), covering all 193 UN member states plus Taiwan and the EU AI Office, with funding, staff and leadership where published. Every record cites its sources.",
     "definition": "We count a body as an AI Security Institute (AISI) if a national government or an international organisation, such as the EU, has tasked it with testing general-purpose or frontier AI models for their capabilities and risks, or has named it its AI safety institute or its AI security institute. A regulator, certification body or cyber security agency does not count for that role alone.",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "as_of": "2026-11-08",
     "license": "CC BY 4.0",
     "license_note": "Quotations from sources remain with their rights holders and are reproduced as quotations; the licence covers our own compilation, text and data.",
@@ -18,7 +18,7 @@
     ],
     "contact": "contact@accelerate-europe.org",
     "repository": "https://github.com/accelerate-europe/aisi-tracker",
-    "citation": "Accelerate Europe (2026). AI Security Institutes tracker, version 1.0.4, data as of 8 November 2026. Compiled by Jason Hoelscher-Obermaier. https://doi.org/10.5281/zenodo.23600431",
+    "citation": "Accelerate Europe (2026). AI Security Institutes tracker, version 1.0.5, data as of 8 November 2026. Compiled by Jason Hoelscher-Obermaier. https://doi.org/10.5281/zenodo.23600431",
     "doi": "10.5281/zenodo.23600431",
     "scope": "Status is tracked for all 193 UN member states, Taiwan (as a territory) and the EU AI Office. The Europe page counts the 27 EU member states, Iceland, Liechtenstein, Norway, the United Kingdom and Switzerland.",
     "method": [
@@ -30336,6 +30336,10 @@
           {
             "date": "2026-11-07",
             "scope": "News re-check since 24 October 2026: SGDSN publications, the enterprise directorate's and the digital ministry's press, the economy ministry's press through search, Senate question 10119 (unanswered) and coverage of the minister's Senate hearing of 4 November. Nothing new found. Left for review: the body of SGDSN's INESIA page (not retrievable). Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-08",
+            "scope": "Staff and budget pass of 7 November 2026: Inria's PentestIA vacancy, which works with INESIA's members, added to the staffing-model notes. A second Inria vacancy (2026-10579, LLM evaluation) found by the pass had been removed when re-read on 8 November and is not cited. Staffing only, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -30636,8 +30640,10 @@
         "code": "member_bodies",
         "source_ids": [
           "fr-sgdsn-aisi",
-          "fr-dge"
-        ]
+          "fr-dge",
+          "fr-inria-vacancy-2026-10640"
+        ],
+        "notes": "Inria recruits for its part in INESIA: an Inria vacancy for an AI evaluation engineer (PentestIA, Rennes; two-year contract; applications until 20 December 2026) is to work with INESIA's members on agentic benchmarks for the AI evaluation platform. These are posts of a member body, not INESIA headcount."
       }
     },
     {
@@ -31589,6 +31595,14 @@
           {
             "date": "2026-11-07",
             "scope": "News re-check since 24 October 2026: the AI Office page (still more than 125 staff), the library listing, news, the Commissioner's progress-report page and Capgemini's release of 5 November on its tender lot. Nothing new found. Left for review: the progress report itself. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-08",
+            "scope": "Staff and budget pass of 7 November 2026: POLITICO's report of 31 July 2026 on two units' combined staff and expected 2027 openings, and the EUR 9m GPAI-safety tender with its lot ceilings, added to the notes; staff figure and funding unchanged. Staff and funding only, not a full record re-check."
+          },
+          {
+            "date": "2026-11-08",
+            "scope": "Staff and budget pass of 7 November 2026: POLITICO's report of 6 March 2024 on the Office's EUR 46.5m starting budget, as stated by an MEP and not confirmed by the Commission, added to the notes; no funding record. Funding only, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -31610,7 +31624,11 @@
         "catalogue-agentic-report",
         "r5-eu-code-first-draft",
         "eu-enisa-about",
-        "eu-pq-p001672-2026"
+        "eu-pq-p001672-2026",
+        "eu-politico-ai-office-hiring-2026",
+        "eu-ai-office-tender-gpai-2025",
+        "eu-tender-op-0032-specifications",
+        "eu-politico-tudorache-2024"
       ],
       "staff": [
         {
@@ -31729,7 +31747,7 @@
           "id": "agreements-8ca5744acde3539a888e75c7d1c28dcb"
         }
       ],
-      "notes": "The first General-Purpose AI Code of Practice draft is excluded from the output catalogue: independent experts drafted it and the AI Office published it as facilitator. This does not meet the institute-authorship or own-work credit rule. The announcement-to-establishment interval counts from the Commission decision of 24 January 2024, the first government act on the Office; earlier announcements of the AI Act's political agreement are not counted.",
+      "notes": "The first General-Purpose AI Code of Practice draft is excluded from the output catalogue: independent experts drafted it and the AI Office published it as facilitator. This does not meet the institute-authorship or own-work credit rule. The announcement-to-establishment interval counts from the Commission decision of 24 January 2024, the first government act on the Office; earlier announcements of the AI Act's political agreement are not counted. POLITICO reported on 31 July 2026 that the Commission was hiring contract agents for two units of the Office, one for AI regulation and compliance and one for the risks of cutting-edge models, which had a combined staff of 71, and that it expected 40 jobs to open in the two units during 2027; this press report does not change the staff figure. The Office's call for tenders EC-CNECT/2025/OP/0032 of 10 July 2025 for technical support on general-purpose AI safety has a total budget of EUR 9m from the Digital Europe Programme, in six lots with maximum values of EUR 1.08m to EUR 2m and durations of 24 or 36 months. This is a procurement ceiling, not a funding record. POLITICO reported on 6 March 2024 that the MEP Dragoș Tudorache, citing conversations with Commission officials, said the Office's starting budget would be EUR 46.5m; a Commission spokesperson said its funding would be reallocated from the Digital Europe Programme but declined to give specifics. This press report is not a funding record. The same report said that a Commission spokesperson had put the Office's planned total staff at 98, two of them working at the European Data Protection Supervisor, with 18 coming from other Commission units and 80 hired externally as contract staff or seconded national experts; this press report does not change the staff figure.",
       "head": {
         "state": "stated",
         "person_id": "people-ff3044c04c6d5bc490489df29a84f83a",
@@ -33264,26 +33282,42 @@
         },
         {
           "kind": "multi_year",
-          "amount": 18000000,
+          "amount": 26999545,
           "currency": "CAD",
-          "years": 3,
-          "period": "2025-26 to 2027-28 planned spending",
-          "description": "CAD 6m a year in planned contributions to CIFAR for CAISI's applied and investigator-led research stream, 2025-26 to 2027-28.",
+          "years": 5,
+          "period": "2024-25 to 2028-29 (2024-25 and 2025-26 actual spending, later years planned spending)",
+          "description": "Contributions to CIFAR for CAISI's applied and investigator-led research stream, 2024-25 to 2028-29: CAD 2,999,545 actual spending in 2024-25 (funding received in-year, none planned), CAD 6m actual spending in 2025-26 and CAD 6m planned for each later year.",
           "source_ids": [
+            "ca-ised-dp-2026-27-tpp",
+            "ca-ised-drr-2024-25-tpp",
+            "ca-ised-drr-2025-26-tpp",
             "ca-ised-dp-2025-26-tpp",
-            "r11-ca-fiscal-year"
+            "r11-ca-fiscal-year",
+            "ca-cifar-year-of-impact-2026"
           ],
           "confidence": "high",
           "commitment": "announced",
           "funding_source": "national_government",
-          "annual_basis": "Planned contribution for 2026-27, the fiscal year containing the dataset date, in ISED's 2025-26 Departmental Plan; planned spending, not expenditure. One research stream only.",
+          "annual_basis": "Planned contribution for 2026-27, the fiscal year containing the dataset date, in ISED's 2026-27 Departmental Plan; planned spending, not expenditure. One research stream only.",
           "annual_basis_code": "allocation_current_year",
           "annual_profile": [
+            {
+              "start": "2024-04-01",
+              "end": "2025-03-31",
+              "amount": 2999545,
+              "source_ids": [
+                "ca-ised-drr-2024-25-tpp",
+                "r11-ca-fiscal-year"
+              ],
+              "id": "annual_profile-a33b0f9c8ee141ffb043b6d9a2fcb563"
+            },
             {
               "start": "2025-04-01",
               "end": "2026-03-31",
               "amount": 6000000,
               "source_ids": [
+                "ca-ised-drr-2025-26-tpp",
+                "ca-ised-dp-2026-27-tpp",
                 "ca-ised-dp-2025-26-tpp",
                 "r11-ca-fiscal-year"
               ],
@@ -33294,6 +33328,7 @@
               "end": "2027-03-31",
               "amount": 6000000,
               "source_ids": [
+                "ca-ised-dp-2026-27-tpp",
                 "ca-ised-dp-2025-26-tpp",
                 "r11-ca-fiscal-year"
               ],
@@ -33304,13 +33339,24 @@
               "end": "2028-03-31",
               "amount": 6000000,
               "source_ids": [
+                "ca-ised-dp-2026-27-tpp",
                 "ca-ised-dp-2025-26-tpp",
                 "r11-ca-fiscal-year"
               ],
               "id": "annual_profile-2c8f5a1e9d3b47c6b1e4a7d0f9c3e582"
+            },
+            {
+              "start": "2028-04-01",
+              "end": "2029-03-31",
+              "amount": 6000000,
+              "source_ids": [
+                "ca-ised-dp-2026-27-tpp",
+                "r11-ca-fiscal-year"
+              ],
+              "id": "annual_profile-a6cb2b90cb4c464a9be20f9b57f9bf3d"
             }
           ],
-          "notes": "The table lists the CAISI project under the Advanced and Emerging Technology programme with a start of 2025-26 and an end of 2028-29 (CAISI Budget 2024), so this stream sits inside the CAD 50m five-year allocation and is not additional to it. The 2028-29 amount is not given in this plan.",
+          "notes": "ISED's 2026-27 Departmental Plan lists the CAISI project under the Advanced and Emerging Technology programme with a start of 2024-25 and an end of 2028-29 (CAISI Budget 2024), as does its 2025-26 results report, so this stream sits inside the CAD 50m five-year allocation and is not additional to it. ISED's 2024-25 results report and its 2025-26 Departmental Plan give the start as 2025-26, but the 2024-25 results report also records CAD 2,999,545 of actual spending in 2024-25 against nothing planned, as funding received in-year, and says the stream was launched in November 2024; the record therefore starts in 2024-25. ISED's 2025-26 Departmental Results Report gives CAD 6m as 2025-26 actual spending (authorities used), equal to planned spending. CIFAR reported on 21 January 2026 that the government awarded it CAD 27m through the institute for its AI safety research programme, with no period stated, and that the programme awarded CAD 2.4m in 2025 to 12 projects; both concern this stream and are not added to it.",
           "coverage": "component",
           "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
         }
@@ -33370,6 +33416,18 @@
           {
             "date": "2026-11-07",
             "scope": "News re-check since 24 October 2026: the ISED institute page, ISED news, the Prime Minister's Cohere release of 29 October, the Canada-EU summit statements of 30 October, the Digital Partnership Council statement of December 2025, the aisafety.ca and CIFAR items and the National Research Council's AI safety page. Testing capacity now records the National Research Council as testing through the institute. Left for review: Cohere's commitment of 29 October to keep working with the institute, the December 2025 Canada-EU intent to deepen engagement between the institute and the EU AI Office, and the period of CIFAR's CAD 27m. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-08",
+            "scope": "Staff and budget pass of 7 November 2026: re-read ISED's 2025-26 results tables (the CIFAR stream's 2025-26 outturn added to the funding notes; the duplicated year header affects only the other actual-spending column, not used) and CIFAR's report of 21 January 2026 (CAD 27m award and CAD 2.4m of 2025 grants added to the notes, not to the amount). Funding only, not a full record re-check."
+          },
+          {
+            "date": "2026-11-08",
+            "scope": "Staff and budget pass of 7 November 2026: ISED's 2026-27 Departmental Plan re-read; the CIFAR stream now runs 2025-26 to 2028-29 (CAD 6m forecast for 2025-26 and CAD 6m planned for each later year) and the stream's start year is corrected to 2024-25. Funding only, not a full record re-check."
+          },
+          {
+            "date": "2026-11-08",
+            "scope": "Added ISED's 2024-25 results report for the CIFAR research stream's 2024-25 actual spending; funding only, not a full re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -35562,17 +35620,26 @@
           "kind": "not_institute_specific",
           "amount": 50000000,
           "currency": "SGD",
-          "description": "S$50m initial funding for the Digital Trust Centre",
+          "description": "S$50m over five years from 1 October 2022 for the Digital Trust Centre",
           "source_ids": [
             "sg-imda",
-            "sg-site"
+            "sg-site",
+            "sg-ntu-dtc-about"
           ],
           "confidence": "high",
           "commitment": "adopted",
           "funding_source": "national_government",
-          "notes": "The source dates the establishment of the Digital Trust Centre to June 2022 and states initial funding of SGD 50m. It gives no funding duration or annual disbursement profile. The founding year is not treated as a one-year spending period, so no annual amount is inferred. DTC itself was later designated Singapore AISI. The earlier allocation covered trust technologies, including AI testing and privacy-enhancing technologies; the source does not state an AI-safety allocation. This broader pre-designation funding remains related funding.",
+          "notes": "The source dates the establishment of the Digital Trust Centre to June 2022 and states initial funding of SGD 50m. NTU's page on the centre states that the SGD 50m grant from IMDA and the National Research Foundation started on 1 October 2022 and that they invested it over the next five years; the annual figure is the mean over five years counted from that start, and the founding year is not treated as a spending period. DTC itself was later designated Singapore AISI. The earlier allocation covered trust technologies, including AI testing and privacy-enhancing technologies; the source does not state an AI-safety allocation. This broader pre-designation funding remains related funding.",
           "id": "funding-aa4eb9dd0f8e5c199d30dbd5b4354075",
-          "coverage": "not_institute_specific"
+          "coverage": "not_institute_specific",
+          "years": 5,
+          "period": "Five years from 1 October 2022",
+          "annual_basis": "Arithmetic mean of the SGD 50m grant over the five years NTU states, counted from the grant's start on 1 October 2022; annual disbursements are not stated. Related funding for the Digital Trust Centre before its designation, not the institute budget.",
+          "annual_basis_code": "period_mean",
+          "annual_period": {
+            "start": "2022-10-01",
+            "end": "2027-09-30"
+          }
         }
       ],
       "check": {
@@ -35614,6 +35681,10 @@
           {
             "date": "2026-11-07",
             "scope": "News re-check since 24 October 2026: the institute's resources page, the digital ministry's newsroom and three written answers of 4 November, IMDA items through reposts, the Anthropic memorandum of 13 and 14 October, the institute's LinkedIn post and the NTU-Google memorandum. Nothing new found; the Anthropic memorandum does not name the institute. Left for review: IMDA's press index (not retrievable). Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-08",
+            "scope": "Staff and budget pass of 7 November 2026: NTU's page on the Digital Trust Centre states the SGD 50m grant runs five years from 1 October 2022; the related-funding record now has that period and its annual mean. Funding only, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -47124,21 +47195,21 @@
     },
     {
       "id": "ru-law-243fz",
-      "url": "https://www.v2b.ru/documents/federalnyy-zakon-ot-26-07-2026-243-fz/",
-      "title": "Federal Law No. 243-FZ of 26 Jul 2026 on supporting the development of AI technologies",
-      "publisher": "v2b.ru (text of federal law)",
-      "type": "secondary",
+      "url": "http://publication.pravo.gov.ru/document/0001202607260003",
+      "title": "Федеральный закон от 26.07.2026 № 243-ФЗ \"О поддержке развития технологий искусственного интеллекта в Российской Федерации\"",
+      "publisher": "Official Internet Portal of Legal Information (publication.pravo.gov.ru)",
+      "type": "primary",
       "published": "2026-07-26",
       "language": "ru",
-      "access_note": "Law text as republished; official publication on pravo.gov.ru not checked.",
-      "accessed": "2026-10-16",
+      "access_note": "Official publication record, publication number 0001202607260003 of 26 July 2026; the official PDF is an image scan. The full text is also in the President's acts bank (http://kremlin.ru/acts/bank/53467). Under article 13 the law is in force from 1 September 2026, and some provisions from 1 March 2027. The portal has no status field. It replaces a republication cited earlier.",
+      "accessed": "2026-11-08",
       "legal_text": true,
-      "archive_url": "https://web.archive.org/web/20261016233852/https://www.v2b.ru/documents/federalnyy-zakon-ot-26-07-2026-243-fz/",
       "origin": "RU",
+      "title_en": "Federal Law No. 243-FZ of 26 July 2026 on supporting the development of artificial intelligence technologies in the Russian Federation",
       "snapshot": {
-        "retrieved": "2026-10-17T14:20:18Z",
-        "sha256": "f0173f37c056325f72964f02a97a0e7776efea390e2499c3f6dbc2051790af7d",
-        "text_sha256": "064484fec3bbde6a8f69c049c1181ce20a4a629d67ddaf9f6ffcfe58890b9c43",
+        "retrieved": "2026-11-08T14:18:08Z",
+        "sha256": "070e51183dee98dcad920c5727c1188ea00406e60bea7d6972db45392d4e92a3",
+        "text_sha256": "da8303e776aa2067eea8f502feca343f879a68dfa6425580ca409a6b1ee2d09f",
         "text_scheme": 1
       }
     },
@@ -49543,14 +49614,14 @@
     },
     {
       "id": "et-aii-regulation-2022",
-      "url": "https://www.metaappz.com/pdf/ethiopian_laws/federal/2022/re_510_2022.pdf",
+      "url": "https://justice.gov.et/wp-content/uploads/2025/02/%E1%8B%B0%E1%8A%95%E1%89%A5-%E1%89%81%E1%8C%A5%E1%88%AD-510-2014.pdf",
       "title": "Council of Ministers Regulation 510/2022 establishing the Ethiopian Artificial Intelligence Institute",
-      "publisher": "Federal Negarit Gazeta (mirror copy)",
+      "publisher": "Federal Negarit Gazeta (Ministry of Justice copy)",
       "type": "primary",
-      "accessed": "2026-10-16",
+      "accessed": "2026-11-08",
       "legal_text": true,
-      "published": "2022",
-      "access_note": "Mirror of the official gazette text. On 19 October 2026 the linked Wayback capture of 17 October 2026 was checked against this URL and every bound quotation; the recorded title was compared with the document by hand. A separate retrieval of the regulation mirror failed. The separate official Ministry of Justice landing page returned HTTP 403; its single text-only fallback also failed. Existing snapshot metadata remain historical evidence. In another attempt, the Ministry of Justice landing page at https://justice.gov.et/en/law/artificial-intelligence-institute-establishment-council-of-ministers-regulation-customs-regulation-council-of-ministers-regulation-no-510-2022/ returned HTTP 403, its single text-only fallback timed out, and the discovered mojcdn.com document URL returned HTTP 500. No official-host replacement was retrieved.",
+      "published": "2022-04-23",
+      "access_note": "Bilingual Amharic and English text of Federal Negarit Gazette No. 32 of 23 April 2022, linked from the Ministry of Justice's law register (https://justice.gov.et/en/law/artificial-intelligence-institute-establishment-council-of-ministers-regulation-customs-regulation-council-of-ministers-regulation-no-510-2022/), which lists Regulation No. 510/2022 as In Force; both were retrieved on 8 November 2026. The file is a text export of the gazette, not a page scan. It replaces a mirror copy cited earlier.",
       "language": "en",
       "origin": "ET",
       "excerpts": [
@@ -49606,13 +49677,13 @@
           "accessed": "2026-10-17"
         }
       ],
+      "instrument_status_checked": "2026-11-08",
       "snapshot": {
-        "retrieved": "2026-10-17T14:21:03Z",
-        "sha256": "11176ad77aadcf351d2d2cfd861b9512c63ffa738415635f4a843480dff59b7e",
+        "retrieved": "2026-11-08T14:18:08Z",
+        "sha256": "79a282a65fb633ca1efd859a394cc22cb6c23d3c0f6eb15488a8a634331227b0",
         "text_sha256": "1eac3a21d40eb58c79aa1c2610e5383667d29fe91b3fe019e66b079e614b2f26",
         "text_scheme": 1
-      },
-      "archive_url": "https://web.archive.org/web/20261017004158/https://www.metaappz.com/pdf/ethiopian_laws/federal/2022/re_510_2022.pdf"
+      }
     },
     {
       "id": "et-unesco-ram-2026",
@@ -52763,8 +52834,8 @@
       "accessed": "2026-10-17",
       "legal_text": true,
       "language": "es",
-      "published": "2025",
-      "access_note": "A source copy was read on 17 October 2026 for the attached excerpts. Earlier access limitations: Compressed PDF; read as text after download. The publication year is taken from the file path and metadata (created 3 Sep 2025).",
+      "published": "2025-08-25",
+      "access_note": "A source copy was read on 17 October 2026 for the attached excerpts. Earlier access limitations: Compressed PDF; read as text after download. Published in Diario Oficial No. 158, Tomo 448, of 25 August 2025, pages 59 to 73 (https://www.diariooficial.gob.sv/seleccion/31584, retrieved on 8 November 2026); article 30 brings it into force eight days after publication.",
       "excerpts": [
         {
           "text": "se creó la Agencia Nacional de Inteligencia Artificial como una institución descentralizada",
@@ -61958,7 +62029,9 @@
         "sha256": "e8cccc2b00c18f81ee5b5c5d6927c3bfbdeec49824ee9da240cf59d25dacdf34",
         "text_sha256": "7c81cb47b2c69b2039aa429408dbba233d1b142f71637f54274b989077daaf02",
         "text_scheme": 1
-      }
+      },
+      "instrument_status_checked": "2026-11-08",
+      "access_note": "Order No. 530 of 19 March 2025. Its status was confirmed in the Ministry of Justice's register of legal acts, e-qanun.az (https://e-qanun.az/framework/59218), on 8 November 2026: Qüvvədədir (in force), with no later versions."
     },
     {
       "id": "bd-fe-2026-primary-proposal",
@@ -74350,7 +74423,8 @@
         "sha256": "f5d3ccb03a811b872a7babd4733c523a66e2635f6e05e36fa2f8e74e1dd8e73b",
         "text_sha256": "1405043ff301baab3f3848b8c4cabd02ab2fab22eeeae0126b8893cb3f509ffe",
         "text_scheme": 1
-      }
+      },
+      "instrument_status_checked": "2026-11-08"
     },
     {
       "id": "be-parliament-ai-designation-oct2026",
@@ -91767,6 +91841,66 @@
                 "id": "annual_profile-2c8f5a1e9d3b47c6b1e4a7d0f9c3e582"
               },
               "end"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "annual_profile",
+              {
+                "id": "annual_profile-a6cb2b90cb4c464a9be20f9b57f9bf3d"
+              },
+              "start"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "annual_profile",
+              {
+                "id": "annual_profile-a6cb2b90cb4c464a9be20f9b57f9bf3d"
+              },
+              "end"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "annual_profile",
+              {
+                "id": "annual_profile-a33b0f9c8ee141ffb043b6d9a2fcb563"
+              },
+              "start"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "annual_profile",
+              {
+                "id": "annual_profile-a33b0f9c8ee141ffb043b6d9a2fcb563"
+              },
+              "end"
             ]
           ],
           "accessed": "2026-10-18"
@@ -100681,6 +100815,84 @@
             ]
           ],
           "accessed": "2026-10-21"
+        },
+        {
+          "text": "The volumes/values of the purchases for each lot over the total duration of the contract are:",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-08"
+        },
+        {
+          "text": "Lot 2 - Cyber Offence Risk Modelling and Evaluation 2,000,000€",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-08"
+        },
+        {
+          "text": "Lot 6 - Agentic Evaluation Interface 1,080,000€",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-08"
+        },
+        {
+          "text": "Lot 1 - CBRN Risk Modelling and Evaluation 36 months",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-08"
+        },
+        {
+          "text": "Lot 6 - Agentic Evaluation Interface 24 months",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-08"
+        },
+        {
+          "text": "Lot Maximum value",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-08"
         }
       ],
       "snapshot": {
@@ -100890,7 +101102,8 @@
         "sha256": "c429649ec8e4271a3466334e3371012b3180a2a8f284ef731b39da7a98d13760",
         "text_sha256": "a54929ca999f56bd36b9a7ead60014468606b22b38d9806bc3a69dc1006da777",
         "text_scheme": 1
-      }
+      },
+      "instrument_status_checked": "2026-11-08"
     },
     {
       "id": "kr-kakao-mou-2026",
@@ -103963,39 +104176,6 @@
               {
                 "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
               },
-              "amount"
-            ],
-            [
-              "institutes",
-              {
-                "id": "ca-caisi"
-              },
-              "funding",
-              {
-                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
-              },
-              "years"
-            ],
-            [
-              "institutes",
-              {
-                "id": "ca-caisi"
-              },
-              "funding",
-              {
-                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
-              },
-              "period"
-            ],
-            [
-              "institutes",
-              {
-                "id": "ca-caisi"
-              },
-              "funding",
-              {
-                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
-              },
               "description"
             ],
             [
@@ -104049,28 +104229,6 @@
         {
           "text": "2024–25 forecast spending 2025–26 planned spending 2026–27 planned spending 2027-28 planned spending",
           "supports": [
-            [
-              "institutes",
-              {
-                "id": "ca-caisi"
-              },
-              "funding",
-              {
-                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
-              },
-              "period"
-            ],
-            [
-              "institutes",
-              {
-                "id": "ca-caisi"
-              },
-              "funding",
-              {
-                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
-              },
-              "annual_basis"
-            ],
             [
               "institutes",
               {
@@ -110180,6 +110338,1307 @@
         "text_sha256": "3b9d25100bd382d8070860fa1f4d9542f06a73c36af35c2e7eddfd27a9bcb4dc",
         "text_scheme": 1
       }
+    },
+    {
+      "id": "ca-ised-drr-2024-25-tpp",
+      "url": "https://ised-isde.canada.ca/site/planning-performance-reporting/en/departmental-results-reports/iseds-supplementary-information-tables-2024-25",
+      "title": "ISED's Supplementary Information Tables: 2024–25",
+      "publisher": "Innovation, Science and Economic Development Canada",
+      "type": "primary",
+      "published": "2025-10-21",
+      "accessed": "2026-11-08",
+      "language": "en",
+      "origin": "CA",
+      "access_note": "Publication date from the page's dcterms.issued metadata (date modified 7 November 2025). The CIFAR table for the Canadian Artificial Intelligence Safety Institute is used: its 2024‑25 actual spending (authorities used) column, its variance explanation and results text, and its stated start date.",
+      "excerpts": [
+        {
+          "text": "Canadian Institute for Advanced Research – Advanced and Emerging Technology – Canadian Artificial Intelligence Safety Institute",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "description"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "amount"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "annual_profile",
+              {
+                "id": "annual_profile-a33b0f9c8ee141ffb043b6d9a2fcb563"
+              },
+              "amount"
+            ]
+          ],
+          "accessed": "2026-11-08"
+        },
+        {
+          "text": "2024‑25 planned spending 2024‑25 total authorities available for use 2024‑25 actual spending (authorities used)",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "period"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "amount"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "description"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "annual_profile",
+              {
+                "id": "annual_profile-a33b0f9c8ee141ffb043b6d9a2fcb563"
+              },
+              "amount"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "annual_profile",
+              {
+                "id": "annual_profile-a33b0f9c8ee141ffb043b6d9a2fcb563"
+              },
+              "start"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "annual_profile",
+              {
+                "id": "annual_profile-a33b0f9c8ee141ffb043b6d9a2fcb563"
+              },
+              "end"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-08"
+        },
+        {
+          "text": "Total contributions 0 0 0 3,000,000 2,999,545 2,999,545",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "amount"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "years"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "period"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "description"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "annual_profile",
+              {
+                "id": "annual_profile-a33b0f9c8ee141ffb043b6d9a2fcb563"
+              },
+              "amount"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-08"
+        },
+        {
+          "text": "Variance represents funding received in-year to enhance AI safety research capacity in Canada and support government policy priorities related to AI safety.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "description"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "notes"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "annual_profile",
+              {
+                "id": "annual_profile-a33b0f9c8ee141ffb043b6d9a2fcb563"
+              },
+              "amount"
+            ]
+          ],
+          "accessed": "2026-11-08"
+        },
+        {
+          "text": "The CAISI CIFAR research stream was launched in November 2024.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "notes"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "period"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "annual_profile",
+              {
+                "id": "annual_profile-a33b0f9c8ee141ffb043b6d9a2fcb563"
+              },
+              "start"
+            ]
+          ],
+          "accessed": "2026-11-08"
+        },
+        {
+          "text": "Start date 2025-26 End date 2028-29 (CAISI Budget 2024)",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-08"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-08T14:05:35Z",
+        "sha256": "24a48b9b86a716ec95d5a4ca71ad7e72c6ee8f05a71393185951931abff1795d",
+        "text_sha256": "d3f167bf74ca75c5c0c1650317866d28ec0895dc039682eaaea74fe92f4203f8",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "ca-ised-drr-2025-26-tpp",
+      "url": "https://ised-isde.canada.ca/site/planning-performance-reporting/en/planning-and-performance-reporting/departmental-results-reports/2025-26-departmental-results-report/2025-26-supplementary-information-tables",
+      "title": "2025–26 Supplementary information tables",
+      "publisher": "Innovation, Science and Economic Development Canada",
+      "type": "primary",
+      "published": "2026-10-06",
+      "accessed": "2026-11-08",
+      "language": "en",
+      "origin": "CA",
+      "access_note": "Publication date from the page's dcterms.issued metadata (date modified 6 November 2026). Every financial table on the page labels its second column 2025‑26 actual spending, beside 2023‑24 actual spending; only the column headed 2025‑26 actual spending (authorities used) is used here.",
+      "excerpts": [
+        {
+          "text": "Contributions to the Canadian Institute for Advanced Research—Canadian Artificial Intelligence Safety Institute",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-08"
+        },
+        {
+          "text": "2025‑26 actual spending (authorities used)",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "notes"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "period"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "description"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "annual_profile",
+              {
+                "id": "annual_profile-4f1a9c2e7b3d46e08a5c1f9d2b7e6a13"
+              },
+              "amount"
+            ]
+          ],
+          "accessed": "2026-11-08"
+        },
+        {
+          "text": "Total contributions 0 2,999,545 6,000,000 6,000,000 6,000,000 0",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "notes"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "description"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "period"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "annual_profile",
+              {
+                "id": "annual_profile-4f1a9c2e7b3d46e08a5c1f9d2b7e6a13"
+              },
+              "amount"
+            ]
+          ],
+          "accessed": "2026-11-08"
+        },
+        {
+          "text": "Start date 2024-25 End date 2028-29 (CAISI Budget 2024)",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-08"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-08T08:06:29Z",
+        "sha256": "34cd74716fb0b14b3fb70c1af30753a9049d07071a7b4eb1ad9979ee60601cdb",
+        "text_sha256": "1817f68d0532a92a593b5af3d8da6ca2d6d00db8841b035b0f045a1abf4de7bf",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "ca-cifar-year-of-impact-2026",
+      "url": "https://cifar.ca/cifarnews/2026/01/21/a-year-of-impact-for-ai-safety-in-canada/",
+      "title": "A Year of Impact for AI Safety in Canada",
+      "publisher": "CIFAR",
+      "type": "primary",
+      "published": "2026-01-21",
+      "accessed": "2026-11-08",
+      "language": "en",
+      "origin": "CA",
+      "excerpts": [
+        {
+          "text": "Through CAISI, the government awarded CIFAR $27M to lead an independent, multidisciplinary program dedicated to advancing AI safety research.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-08"
+        },
+        {
+          "text": "In 2025, the CAISI Research Program at CIFAR awarded $2.4M in funding to advance innovative research in AI safety",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-08"
+        },
+        {
+          "text": "$2.4M was deployed to catalyze 12 groundbreaking research projects designed to identify and mitigate the risks of advanced artificial intelligence (AI) systems.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-08"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-08T08:06:29Z",
+        "sha256": "0fd8ca95252ea18853f27d2a6afe7b4117976ac63412fa07a6f3ece686deef22",
+        "text_sha256": "fa8e1cc505e386b5f6653ce9405874ebe4cc33a1dd77202ba4a949737030bc33",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "fr-inria-vacancy-2026-10640",
+      "url": "https://recrutement.inria.fr/public/classic/fr/offres/2026-10640",
+      "title": "2026-10640 - Ingénieur.e évaluation de l'IA / PentestIA",
+      "publisher": "Inria",
+      "type": "primary",
+      "accessed": "2026-11-08",
+      "language": "fr",
+      "origin": "FR",
+      "access_note": "The vacancy shows no publication date; read on 8 November 2026. Its desired start date (2026-02-01) is earlier than its closing date and is not used.",
+      "excerpts": [
+        {
+          "text": "Dans ce cadre Inria contribue principalement sur les axes de l'analyse des risques systémiques dans le champ de la sécurité nationale et l'évaluation de la performance et de la fiabilité des modèles d'IA.",
+          "gloss": "In this context Inria contributes mainly to the analysis of systemic risks in the field of national security and to evaluating the performance and reliability of AI models.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "fr-inesia"
+              },
+              "staffing_model",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-08"
+        },
+        {
+          "text": "en collaboration avec les membres de l'INESIA, l’ingénieur aura pour mission principale de maintenir et faire évoluer la chaine de développement pour faire des benchmarks agentiques",
+          "gloss": "in collaboration with INESIA's members, the engineer's main task will be to maintain and develop the development pipeline for agentic benchmarks",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "fr-inesia"
+              },
+              "staffing_model",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-08"
+        },
+        {
+          "text": "Il devra porter cette chaine de développement dans le cadre de production de la plateforme d’évaluation de l’IA.",
+          "gloss": "He or she will carry this pipeline into production on the AI evaluation platform.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "fr-inesia"
+              },
+              "staffing_model",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-08"
+        },
+        {
+          "text": "Ville : Rennes Centre Inria : Centre Inria de l'Université de Rennes",
+          "gloss": "City: Rennes. Inria centre: Inria Centre at the University of Rennes",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "fr-inesia"
+              },
+              "staffing_model",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-08"
+        },
+        {
+          "text": "Durée de contrat : 2 ans Date limite pour postuler : 2026-12-20",
+          "gloss": "Contract length: 2 years. Closing date for applications: 2026-12-20",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "fr-inesia"
+              },
+              "staffing_model",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-08"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-08T08:06:29Z",
+        "sha256": "f9fd532f60630081813a44b8006259761e964f9a643036d1bbe29ef76b46e9bb",
+        "text_sha256": "4eb557199dfefebc1bd55a80eb2b9a0eeed3d872f12fa4a921eef423e028bc96",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "eu-politico-ai-office-hiring-2026",
+      "url": "https://www.politico.eu/article/commission-launches-major-hiring-push-for-ai-office/",
+      "title": "Commission launches major hiring push for AI Office",
+      "publisher": "POLITICO Europe",
+      "type": "secondary",
+      "published": "2026-07-31",
+      "accessed": "2026-11-08",
+      "language": "en",
+      "origin": "BE",
+      "access_note": "The site refuses automated requests (HTTP 403); the text was read through https://r.jina.ai/ on 8 November 2026, with the Published Time metadata header.",
+      "excerpts": [
+        {
+          "text": "The EU's executive confirmed Friday that it is seeking contract agents for two units within the two-year-old Artificial Intelligence Office",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-08"
+        },
+        {
+          "text": "One of the units seeking staffing is in charge of AI regulation and compliance, while another is specifically focused on policing how cutting-edge AI models handle risks such as cybersecurity attacks or loss of control.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-08"
+        },
+        {
+          "text": "Both units currently have a combined staff of 71 people. The Commission expects 40 jobs to open up in both units over the course of 2027.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-08"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-08T08:06:31Z",
+        "sha256": "71354739830bba2ef3714d01ba390ae679008905cfd6295fafb079c23c5bfc0d",
+        "text_sha256": "281a1ea667130224557363d82749682e28e88921483f7c84b2877a6a8535160c",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "eu-ai-office-tender-gpai-2025",
+      "url": "https://digital-strategy.ec.europa.eu/en/funding/eu-ai-office-launches-eu9-million-tender-technical-support-gpai-safety",
+      "title": "EU AI Office Launches €9 million tender for Technical Support on GPAI Safety",
+      "publisher": "European Commission, DG CNECT",
+      "type": "primary",
+      "published": "2025-07-10",
+      "accessed": "2026-11-08",
+      "language": "en",
+      "origin": "EU",
+      "access_note": "Last updated 6 August 2025.",
+      "excerpts": [
+        {
+          "text": "The AI Office has launched a call for tenders to procure technical support for the enforcement of the AI Act, focusing on assessing and monitoring systemic risks posed by General-Purpose AI (GPAI) models at EU level.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-08"
+        },
+        {
+          "text": "This project will be funded under the Digital Europe Programme, with a total budget of €9 million",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-08"
+        },
+        {
+          "text": "The call is divided into 6 lots",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-08"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-08T08:06:31Z",
+        "sha256": "3ba09b785ffb7eca503e38be0ac3d206e366a4b8cf44866e28c0029afd43f4b7",
+        "text_sha256": "24b7756b6a7f2e8942666a38868b5bced4239e162fd9b7dfc42e1f524c781ce0",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "ca-ised-dp-2026-27-tpp",
+      "url": "https://ised-isde.canada.ca/site/planning-performance-reporting/en/departmental-plans/2026-27-departmental-plan/2026-27-departmental-plan-supplementary-information-tables",
+      "title": "2026–27 Departmental Plan: Supplementary information tables",
+      "publisher": "Innovation, Science and Economic Development Canada",
+      "type": "primary",
+      "published": "2026-02-11",
+      "accessed": "2026-11-08",
+      "language": "en",
+      "origin": "CA",
+      "access_note": "Publication date from the page's dcterms.issued metadata (date modified 13 March 2026).",
+      "excerpts": [
+        {
+          "text": "ISED provides a non-repayable contribution to the Canadian Institute for Advanced Research (CIFAR) to support the Canadian Artificial Intelligence Safety Institute (CAISI) project.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "description"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "coverage"
+            ]
+          ],
+          "accessed": "2026-11-08"
+        },
+        {
+          "text": "2025-26 forecast spending 2026-27 planned spending 2027-28 planned spending 2028-29 planned spending",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "period"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "annual_basis"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "commitment"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "annual_profile",
+              {
+                "id": "annual_profile-a6cb2b90cb4c464a9be20f9b57f9bf3d"
+              },
+              "start"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "annual_profile",
+              {
+                "id": "annual_profile-a6cb2b90cb4c464a9be20f9b57f9bf3d"
+              },
+              "end"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "description"
+            ]
+          ],
+          "accessed": "2026-11-08"
+        },
+        {
+          "text": "Total contributions 6,000,000 6,000,000 6,000,000 6,000,000",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "amount"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "years"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "period"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "description"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "annual_profile",
+              {
+                "id": "annual_profile-4f1a9c2e7b3d46e08a5c1f9d2b7e6a13"
+              },
+              "amount"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "annual_profile",
+              {
+                "id": "annual_profile-9e2b7d4a1c6f48b3a0d5e8c2f7a1b964"
+              },
+              "amount"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "annual_profile",
+              {
+                "id": "annual_profile-2c8f5a1e9d3b47c6b1e4a7d0f9c3e582"
+              },
+              "amount"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "annual_profile",
+              {
+                "id": "annual_profile-a6cb2b90cb4c464a9be20f9b57f9bf3d"
+              },
+              "amount"
+            ]
+          ],
+          "accessed": "2026-11-08"
+        },
+        {
+          "text": "Start date 2024-25 End date 2028-29 (CAISI Budget 2024)",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-08"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-08T08:28:14Z",
+        "sha256": "7b4693aa760bd72e62fef2342c1d90ddffca58c8587d13c2d0cb8d1879739280",
+        "text_sha256": "df1e6e15663853ed4ebccd0ca02e9c148206f7962780031f945e99ea535955bc",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "sg-ntu-dtc-about",
+      "url": "https://www.ntu.edu.sg/dtc/about-us",
+      "title": "About Us | Digital Trust Centre (DTC) | NTU Singapore",
+      "publisher": "Nanyang Technological University, Digital Trust Centre",
+      "type": "primary",
+      "accessed": "2026-11-08",
+      "language": "en",
+      "origin": "SG",
+      "access_note": "The page shows no publication date; read on 8 November 2026. Amounts are in Singapore dollars (Singapore context).",
+      "excerpts": [
+        {
+          "text": "Our work is funded by a $50 million grant from Infocomm Media Development Authority (IMDA) and the National Research Foundation (NRF), starting from 1 October 2022.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "sg-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-aa4eb9dd0f8e5c199d30dbd5b4354075"
+              },
+              "amount"
+            ],
+            [
+              "institutes",
+              {
+                "id": "sg-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-aa4eb9dd0f8e5c199d30dbd5b4354075"
+              },
+              "period"
+            ],
+            [
+              "institutes",
+              {
+                "id": "sg-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-aa4eb9dd0f8e5c199d30dbd5b4354075"
+              },
+              "annual_period"
+            ],
+            [
+              "institutes",
+              {
+                "id": "sg-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-aa4eb9dd0f8e5c199d30dbd5b4354075"
+              },
+              "description"
+            ],
+            [
+              "institutes",
+              {
+                "id": "sg-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-aa4eb9dd0f8e5c199d30dbd5b4354075"
+              },
+              "notes"
+            ],
+            [
+              "institutes",
+              {
+                "id": "sg-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-aa4eb9dd0f8e5c199d30dbd5b4354075"
+              },
+              "annual_basis"
+            ]
+          ],
+          "accessed": "2026-11-08"
+        },
+        {
+          "text": "has invested $50 million in DTC over the next five years.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "sg-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-aa4eb9dd0f8e5c199d30dbd5b4354075"
+              },
+              "years"
+            ],
+            [
+              "institutes",
+              {
+                "id": "sg-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-aa4eb9dd0f8e5c199d30dbd5b4354075"
+              },
+              "period"
+            ],
+            [
+              "institutes",
+              {
+                "id": "sg-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-aa4eb9dd0f8e5c199d30dbd5b4354075"
+              },
+              "annual_basis"
+            ],
+            [
+              "institutes",
+              {
+                "id": "sg-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-aa4eb9dd0f8e5c199d30dbd5b4354075"
+              },
+              "annual_period"
+            ],
+            [
+              "institutes",
+              {
+                "id": "sg-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-aa4eb9dd0f8e5c199d30dbd5b4354075"
+              },
+              "notes"
+            ],
+            [
+              "institutes",
+              {
+                "id": "sg-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-aa4eb9dd0f8e5c199d30dbd5b4354075"
+              },
+              "description"
+            ]
+          ],
+          "accessed": "2026-11-08"
+        },
+        {
+          "text": "The objectives of the DTC, which also houses the Singapore AI Safety Institute,",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "sg-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-aa4eb9dd0f8e5c199d30dbd5b4354075"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-08"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-08T08:28:14Z",
+        "sha256": "030407e2b53d4ce8e6c34e0b7a7a6a6dce8fc290bd2eb1a450d9df1a04bcaca9",
+        "text_sha256": "16a363756edf548510f1140ddb2fa3a37e2076a0f9a30462051b078c619386b4",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "eu-politico-tudorache-2024",
+      "url": "https://www.politico.eu/article/eu-needs-oppenheimer-to-run-ai-policy-key-lawmaker-tudorache-romania-says/",
+      "title": "EU needs ‘Oppenheimers’ to run AI policy",
+      "publisher": "POLITICO Europe",
+      "type": "secondary",
+      "published": "2024-03-06",
+      "accessed": "2026-11-08",
+      "language": "en",
+      "origin": "BE",
+      "access_note": "The site refuses automated requests (HTTP 403); the text was read through https://r.jina.ai/ on 8 November 2026, with the Published Time metadata header.",
+      "excerpts": [
+        {
+          "text": "Tudorache, based on conversations with Commission officials, said the AI Office’s starting budget will be €46.5 million",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-08"
+        },
+        {
+          "text": "Commission spokesperson Bahrke said that the funding for the AI Office would be reallocated from the EU tech-funding initiative Digital Europe Programme, but declined to give specifics about the budget.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-08"
+        },
+        {
+          "text": "Commission spokesperson Johannes Bahrke said its total staff would number 98 people",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-08"
+        },
+        {
+          "text": "with two working out of the EU’s privacy regulator, the European Data Protection Supervisor.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-08"
+        },
+        {
+          "text": "Of those 98, 18 people will come from other Commission units and 80 will be hired externally, either as fixed-term contractors or as national experts dispatched from EU countries.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-08"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-08T08:28:15Z",
+        "sha256": "05d0f4832bead88d7da3c51a3ac1f49743728ab13060cff5c60eca2e05b83a2d",
+        "text_sha256": "53174dc0c2dfeff158576c9f1f41fbdc0e19fd860ecd06698c4e4173ec7801f5",
+        "text_scheme": 1
+      }
     }
   ],
   "changelog": [
@@ -110290,6 +111749,18 @@
         "Page: the (i) notes say what a section is; the Set-up and Funding scope notes are plain sentences.",
         "Page: the title and description name AI safety and security institutes. The saved map is a separate file, so search engines index the whole page, and the sitemap lists pages only.",
         "Downloads: no fields added or removed."
+      ]
+    },
+    {
+      "date": "2026-11-08",
+      "version": "1.0.5",
+      "summary": "Staff and budget notes for Canada, France and the EU AI Office, Canada's CIFAR research stream from 2024-25, Singapore's Digital Trust Centre grant period, four laws verified in force against official records, and official copies for Russia's and Ethiopia's laws.",
+      "changes": [
+        "Canada: the CIFAR research stream runs from 2024-25 to 2028-29 (CAD 27.0m over five years: CAD 2,999,545 actual spending in 2024-25, received in-year, CAD 6m actual in 2025-26, as planned, and CAD 6m planned for each later year), from ISED's 2024-25 and 2025-26 results reports and its 2026-27 Departmental Plan. CIFAR's CAD 27m award and CAD 2.4m of 2025 grants are in the funding notes, not added to the amount.",
+        "EU AI Office: the notes report POLITICO's figures: a planned staff of 98 in 2024 (two at the European Data Protection Supervisor), 71 staff in two units with 40 expected openings in 2027, and a 2024 account of a EUR 46.5m starting budget that the Commission did not confirm (no funding record); the EUR 9m GPAI-safety tender is a procurement ceiling. Staff figure and funding are unchanged. POLITICO Europe sources now have origin Belgium, where its publisher is registered.",
+        "France: INESIA's staffing notes cite an Inria vacancy that works with INESIA's members; these are member-body posts, not INESIA headcount.",
+        "Singapore: the Digital Trust Centre's SGD 50m grant runs five years from 1 October 2022, from NTU's page on the centre; the related-funding record now has that period and an annual mean.",
+        "Sources: the legal status of Japan's AI Promotion Act, Ethiopia's Regulation 510/2022, Greece's Law 5321/2026 (articles 3 to 5) and Azerbaijan's AI Strategy order (No. 530 of 2025) was verified on 8 November 2026 against official records; all are in force. Russia's Law 243-FZ and Ethiopia's regulation are now cited from official copies (publication.pravo.gov.ru, the Ministry of Justice) instead of a republication and a mirror; El Salvador's ANIA resolution has its Diario Oficial publication date."
       ]
     }
   ]
