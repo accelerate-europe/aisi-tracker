@@ -1628,7 +1628,7 @@ def test_a_recorded_exception_prints_as_the_original_through_main(rendered, monk
     assert printed[0] == printed[1] and "line one" in printed[0]
 
 
-STATIC_CHECKS = ("check_method_pages", "check_rendered_content", "check_dom", "check_agent_files", "check_static_page", "check_hydrated", "check_archive_links",
+STATIC_CHECKS = ("check_method_pages", "check_dom", "check_agent_files", "check_static_page", "check_hydrated", "check_archive_links",
                  "check_launch_assets", "check_page_data", "check_budget_ratio_downloads", "check_state_downloads", "check_state_download_buttons")
 
 
@@ -1798,10 +1798,10 @@ def test_a_run_of_named_jobs_never_reads_as_the_gate(rendered, monkeypatch, caps
     assert "not the full gate" in capsys.readouterr().out
 
 
-def test_rendered_content_runs_once_in_the_static_checks_not_per_state():
+def test_content_checks_run_in_the_content_step_not_per_state():
     import inspect
 
-    assert "check_rendered_content(html, data)" in inspect.getsource(check_page.main)
+    assert not hasattr(check_page, "check_rendered_content")  # D2: every family moved to tests/content
     passed = inspect.getsource(check_page.interaction_pass)
     for helper in ("check_budget_output", "check_staff_figures", "check_generic_sources", "check_nonidentified_folds", "BeautifulSoup("):
         assert helper not in passed, helper  # no per-state copy of a content check (filtered views keep their own)
@@ -1814,11 +1814,6 @@ def test_rendered_content_runs_once_in_the_static_checks_not_per_state():
         assert any(colour in line for line in unguarded), colour  # read colours: still in both themes
     for invariant in ("check_typography", "check_card_grid", "check_source_keyboard", "check_hit_targets"):
         assert not any(invariant in line for line in unguarded), invariant  # geometry and order only: light only
-
-
-def test_rendered_content_reports_what_its_helpers_find(monkeypatch):
-    monkeypatch.setattr(check_page, "check_staff_figures", lambda soup, data: ["staff off"])
-    assert check_page.check_rendered_content("<html></html>", {}) == ["staff off"]
 
 
 def test_laps_time_each_step_and_reach_the_job_line(tmp_path, monkeypatch):
@@ -2052,6 +2047,7 @@ MOVED_TO_CONTENT = {  # content family module -> the check_page helpers it now r
     "summary": ("check_summary_data", "check_figures_row", "check_two_significant_figures"),
     "activity": ("check_operating_output",),
     "names": ("check_section_bar", "check_institute_names", "check_former_names", "check_nonidentified_folds"),
+    "staff": ("check_staff_figures",),
 }
 MOVED_HELPERS = tuple(h for helpers in MOVED_TO_CONTENT.values() for h in helpers)
 
@@ -2069,9 +2065,41 @@ def test_each_moved_content_family_has_one_home(monkeypatch):
         for helper in importlib.import_module(f"content.test_{module}").FAMILY.values():
             helper("<html></html>", {})
         assert sorted(calls) == sorted(helpers), module  # each once, none missing, none twice
-    calls.clear()
-    rendered = check_page.check_rendered_content  # the real browser-path function; its other callees stubbed
-    for name in [n for n in dir(check_page) if n.startswith("check_") and n not in MOVED_HELPERS and n != "check_rendered_content"]:
-        monkeypatch.setattr(check_page, name, lambda *args, **kwargs: [])
-    rendered("<html></html>", {})
-    assert calls == []  # no moved helper runs in the browser gate any more
+    # The browser gate's static pass (main) no longer calls any of them; the calls that remain elsewhere run them on
+    # planted fixtures or filtered views inside browser jobs.
+    import inspect
+
+    static = inspect.getsource(check_page.main)
+    assert not [name for name in MOVED_HELPERS if name + "(" in static]
+
+
+def test_staff_totals_come_from_the_reviewed_fixture_not_the_producer():
+    row = '<div id="fund-rows"><article class="fund-item" data-j="AU"><div class="fund-staff"><span class="fund-value"><strong>25</strong></span></div></article></div>'
+    soup = BeautifulSoup(row, "html.parser")
+    entry = {"institute_id": "au-aisi", "as_of": "2026-09-18", "total": 25, "total_qualifier": "exact"}
+    data = {"institutes": [{"id": "au-aisi", "jurisdiction_id": "AU", "staff": [{"total": 25, "total_qualifier": "exact", "as_of": "2026-09-18"}],
+                            "display": {"total_staff": "producer-says-something-else"}}]}
+    assert check_page.check_staff_figures(soup, data, {"au-aisi": entry}) == []
+    assert check_page.check_staff_figures(soup, data, {}) == ["au-aisi: staff total needs a reviewed entry in tests/fixtures/staff_figures.json"]
+    newer = check_page.copy.deepcopy(data)
+    newer["institutes"][0]["staff"].append({"total": 40, "total_qualifier": "exact", "as_of": "2026-11-01"})
+    assert "differs from the reviewed entry" in check_page.check_staff_figures(soup, newer, {"au-aisi": entry})[0]
+    assert check_page.check_staff_figures(soup, data, {"au-aisi": entry, "gone-aisi": entry})[0] == "gone-aisi: staff fixture entry for an institute the data does not have"
+    for rival in ("2026-09-18", "2026-09", "2026"):  # the same date, or one that overlaps it: which is latest is not settled
+        tied = check_page.copy.deepcopy(data)
+        tied["institutes"][0]["staff"].append({"total": 30, "total_qualifier": "exact", "as_of": rival})
+        assert "needs review" in check_page.check_staff_figures(soup, tied, {"au-aisi": entry})[0], rival
+    shown = BeautifulSoup(row.replace(">25<", ">26<"), "html.parser")
+    assert check_page.check_staff_figures(shown, data, {"au-aisi": entry}) == ["AU: staff total shown as '26', expected '25'"]
+
+
+def test_the_staff_fixture_names_its_source_and_quote_for_every_entry():
+    import json
+
+    entries = json.loads(check_page.STAFF_FIGURES.read_text(encoding="utf-8"))["staff"]
+    assert entries and all(e.get("source_id") and e.get("quote", "").strip() for e in entries)  # the reviewer checks each quote against its source
+    assert len({e["institute_id"] for e in entries}) == len(entries)
+    # Each quote is a recorded excerpt of its source in the authored data (the evidence, not the export).
+    data = json.loads((ROOT / "data/aisi.json").read_text(encoding="utf-8"))
+    excerpts = {s["id"]: [x["text"] for x in s.get("excerpts", [])] for s in data["sources"]}
+    assert [e["institute_id"] for e in entries if e["quote"] not in excerpts.get(e["source_id"], [])] == []

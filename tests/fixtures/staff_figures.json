@@ -1,0 +1,53 @@
+{
+ "about": "Hand-worked staff totals for each institute's latest staff record with a total, read from the quotation that supports it, never from the export or display.total_staff. The content step checks each chart row's staff total against these entries; an institute whose data carries a staff total with no entry here, or whose latest record no longer matches its entry, fails with its key. Edit with the DATA change that adds or changes such a figure; the reviewer checks each entry against its source.",
+ "staff": [
+  {
+   "institute_id": "gb-aisi",
+   "as_of": "2026-10-12",
+   "total": 241,
+   "total_qualifier": "exact",
+   "source_id": "gb-pq-30890-2026",
+   "quote": "The headcount of the AI Security Institute is 241, equivalent to 211.2 full time equivalent (FTE) posts (as of 12 October 2026)."
+  },
+  {
+   "institute_id": "eu-ai-office",
+   "as_of": "2026-06-03",
+   "total": 140,
+   "total_qualifier": "at_least",
+   "source_id": "eu-pq-p001672-2026",
+   "quote": "The AI Office employs more than 140 staff members, including over 40 in its AI safety unit, the majority of whom have technical profiles, including in cybersecurity."
+  },
+  {
+   "institute_id": "us-caissi",
+   "as_of": "2026-09",
+   "total": 34,
+   "total_qualifier": "exact",
+   "source_id": "kr-zdnet",
+   "quote": "의원실 자료에 따르면 미국의 관련 인력은 34명으로 향후 80명까지 확대할 계획이다."
+  },
+  {
+   "institute_id": "jp-aisi",
+   "as_of": "2026-04",
+   "total": 31,
+   "total_qualifier": "exact",
+   "source_id": "jp-cao-2604",
+   "quote": "31人（併任含む＊）"
+  },
+  {
+   "institute_id": "kr-aisi",
+   "as_of": "2026-10",
+   "total": 38,
+   "total_qualifier": "exact",
+   "source_id": "kr-nate",
+   "quote": "국내 평가 역량을 담당할 AI안전연구소의 인력 문제도 제기됐다. 이 의원은 인력이 26명에서 38명으로 늘었지만 해외 주요국보다 부족하다며 확충을 요구했다."
+  },
+  {
+   "institute_id": "au-aisi",
+   "as_of": "2026-09-18",
+   "total": 25,
+   "total_qualifier": "exact",
+   "source_id": "au-jsc-ai-2026-09-18",
+   "quote": "We have 25 staff at the Australian AI Safety Institute."
+  }
+ ]
+}

@@ -2564,14 +2564,48 @@ def expected_staff_total(record) -> str:
     return {"about": "~" + number, "at_least": mark + number + "+", "at_most": "up to " + mark + number}.get(qualifier, mark + number)
 
 
-def check_staff_figures(soup, data: dict) -> list[str]:
-    """Each chart row's staff total is the data's total at two figures, marked ~ exactly when rounding changed it."""
+STAFF_FIGURES = ROOT / "tests" / "fixtures" / "staff_figures.json"  # hand-worked from the quotations, never the export
+
+
+def latest_staff_total(institute: dict) -> tuple[dict | None, bool]:
+    """The institute's latest authored staff record with a total, by as_of (ISO dates, months or years compare as
+    text), and whether that choice is ambiguous: another record with a total has the same as_of, or one is a prefix
+    of the other (2026 against 2026-10-12), so text order does not settle which is later."""
+    records = [r for r in institute.get("staff") or [] if r.get("total") is not None]
+    if not records:
+        return None, False
+    latest = max(records, key=lambda r: str(r.get("as_of") or ""))
+    when = str(latest.get("as_of") or "")
+    rivals = [r for r in records if r is not latest and (str(r.get("as_of") or "").startswith(when) or when.startswith(str(r.get("as_of") or "")))]
+    return latest, bool(rivals)
+
+
+def check_staff_figures(soup, data: dict, expected: dict | None = None) -> list[str]:
+    """Each chart row's staff total is the hand-worked figure (tests/fixtures/staff_figures.json) at two figures, marked
+    ~ exactly when rounding changed it. The expectation is read from the quotation that supports the latest staff
+    record, never from display.total_staff; an institute with a staff total and no entry, or whose latest record no
+    longer matches its entry, fails with its key until the fixture is reviewed."""
+    if expected is None:
+        expected = {e["institute_id"]: e for e in json.loads(STAFF_FIGURES.read_text(encoding="utf-8"))["staff"]}
     errors = []
     chart_rows = Keyed(soup, "#fund-rows article.fund-item[data-j]")
+    known = {inst["id"] for inst in data["institutes"]}
+    errors += [f"{iid}: staff fixture entry for an institute the data does not have" for iid in sorted(set(expected) - known)]
     for inst in data["institutes"]:
-        display = inst["display"]
-        record = display["staff_records"].get(display["total_staff"]) if display.get("total_staff") else None
-        if not record or record.get("total") is None:
+        latest, ambiguous = latest_staff_total(inst)
+        entry = expected.get(inst["id"])
+        if ambiguous:
+            errors.append(f"{inst['id']}: two staff records with a total share or overlap the latest as_of ({latest.get('as_of')}); which is latest needs review")
+            continue
+        if latest is None:
+            if entry is not None:
+                errors.append(f"{inst['id']}: staff fixture has a total, the data has none")
+            continue
+        if entry is None:
+            errors.append(f"{inst['id']}: staff total needs a reviewed entry in tests/fixtures/staff_figures.json")
+            continue
+        if (str(latest.get("as_of")), latest["total"], latest.get("total_qualifier")) != (entry["as_of"], entry["total"], entry["total_qualifier"]):
+            errors.append(f"{inst['id']}: latest staff record {latest.get('as_of')} {latest['total']} {latest.get('total_qualifier')} differs from the reviewed entry {entry['as_of']} {entry['total']} {entry['total_qualifier']}")
             continue
         node = chart_rows.one(inst["jurisdiction_id"], ".fund-staff > .fund-value strong")
         if node:
@@ -2579,8 +2613,8 @@ def check_staff_figures(soup, data: dict) -> list[str]:
             for cites in node.select(".cites"):
                 cites.decompose()
         shown = node.get_text(strip=True) if node else None
-        if shown != expected_staff_total(record):
-            errors.append(f"{inst['jurisdiction_id']}: staff total shown as {shown!r}, expected {expected_staff_total(record)!r}")
+        if shown != expected_staff_total(entry):
+            errors.append(f"{inst['jurisdiction_id']}: staff total shown as {shown!r}, expected {expected_staff_total(entry)!r}")
     return errors
 
 
@@ -8749,28 +8783,6 @@ def click_control_text(page, control) -> None:
     page.mouse.up()
 
 
-def check_rendered_content(html: str, data: dict) -> list[str]:
-    """The hydrated page's content against the data, once: staff figures. These read text and data attributes that hydration
-    writes the same at every width and in both themes (the page's script reads neither before it renders), so
-    interaction_pass no longer repeats them in each of its six states.
-
-    Test strategy D2 moves these families one at a time to check.py's content step (tests/content), which reads the
-    saved page once, after a parity check on both pages. Moved: funding output (budget, funding outside the chart,
-    intervals, per-person figures, amounts without a rate, euro amounts), in tests/content/test_funding.py; sources
-    (source alignment, generic sources), in tests/content/test_sources.py; record rows (Head, Reports to and Partners
-    rows, Testing and access groups, Institutional set-up groups), in tests/content/test_record_rows.py; the summary
-    (hero, legend and developments, the figures row, two significant figures), in tests/content/test_summary.py; Known activity (operating output),
-    in tests/content/test_activity.py; names and navigation (section bar, institute names, former names,
-    none-identified folds), in tests/content/test_names.py. The content step reads the saved page without its
-    template's inert copy (tests/content/page.py).
-
-    What stays: check_staff_figures until it has a hand-worked fixture (today its expectation comes from
-    display.total_staff, the producer's own figure).
-"""
-    soup = BeautifulSoup(html, "html.parser")
-    return check_staff_figures(soup, data)
-
-
 def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots: Path | None, width: int, theme: str) -> list[str]:
     """Layout and behaviour of the hydrated page at one width in one theme, step after step on one page: later steps
     rely on the filters, scroll position and open disclosures that earlier ones leave."""
@@ -8860,8 +8872,9 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
     for error in check_version_history(page, data) + check_legend_place(page, width) + check_info_lines(page, width):
         require(False, error)
     lap("filter, weights, ladder, downloads, history")
-    # The content of the hydrated page (check_rendered_content) is checked once, on main()'s rendered page, not here
-    # in every width and theme: it is the same in each. What remains reads layout, style or behaviour.
+    # The page's content (facts, counts, sources, rows, names) is checked once, on the saved page, in check.py's
+    # content step (tests/content; test strategy D2), not here in every width and theme. What remains reads layout,
+    # style or behaviour.
     for error in check_funding_bars(page, data) + check_access_layout(page, width) + check_access_tips(page):
         require(False, error)
     for error in check_archive_wrap(page) + check_nonidentified_style(page) + check_name_roles(page):
@@ -10547,7 +10560,7 @@ def main(dist: Path = ROOT / "dist", screenshots: Path | None = None, capture: P
         if reserved := check_reserved_mark(dist, html):  # fails outright: a finding quoting such text could pass for a report line
             print(f"error: {reserved[0]}", file=sys.stderr)
             return 1
-        errors = [] if skip_static else check_method_pages(html, data, dist) + check_rendered_content(html, data) + check_dom(html, data, dist, base_url) + check_agent_files(dist) + check_static_page(dist, data) + check_hydrated(html) + check_archive_links(html, data) + check_launch_assets(dist) + check_page_data(dist, data) + check_budget_ratio_downloads(dist, data) + check_state_downloads(dist, data) + check_state_download_buttons(html, dist, data)
+        errors = [] if skip_static else check_method_pages(html, data, dist) + check_dom(html, data, dist, base_url) + check_agent_files(dist) + check_static_page(dist, data) + check_hydrated(html) + check_archive_links(html, data) + check_launch_assets(dist) + check_page_data(dist, data) + check_budget_ratio_downloads(dist, data) + check_state_downloads(dist, data) + check_state_download_buttons(html, dist, data)
         if not blocking(errors):
             errors.extend(check_merged(dist, data, merge, timings, quarantine) if merge else check_browser(chrome, dist, data, screenshots, jobs, timings, only, quarantine, job_limit(deadline)))
     except DeadlinePassed as exc:
