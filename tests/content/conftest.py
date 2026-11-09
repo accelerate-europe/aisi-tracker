@@ -6,6 +6,8 @@ from pathlib import Path
 import pytest
 from bs4 import BeautifulSoup
 
+from .page import without_templates
+
 CONTENT = Path(__file__).resolve().parent
 ROOT = CONTENT.parents[1]
 
@@ -40,7 +42,8 @@ def site(pytestconfig):
 
 @pytest.fixture(scope="session")
 def saved_html(site):
-    return (site / "index.html").read_text(encoding="utf-8")
+    """The saved page without its template's inert copy (tests/content/page.py)."""
+    return without_templates((site / "index.html").read_text(encoding="utf-8"))
 
 
 @pytest.fixture(scope="session")

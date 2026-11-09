@@ -1818,8 +1818,7 @@ def test_rendered_content_runs_once_in_the_static_checks_not_per_state():
 
 def test_rendered_content_reports_what_its_helpers_find(monkeypatch):
     monkeypatch.setattr(check_page, "check_staff_figures", lambda soup, data: ["staff off"])
-    monkeypatch.setattr(check_page, "check_section_bar", lambda soup: ["bar off"])
-    assert check_page.check_rendered_content("<html></html>", {}) == ["staff off", "bar off"]
+    assert check_page.check_rendered_content("<html></html>", {}) == ["staff off"]
 
 
 def test_laps_time_each_step_and_reach_the_job_line(tmp_path, monkeypatch):
@@ -2052,7 +2051,7 @@ MOVED_TO_CONTENT = {  # content family module -> the check_page helpers it now r
     "record_rows": ("check_leadership_rows", "check_access_groups", "check_setup_groups"),
     "summary": ("check_summary_data", "check_figures_row", "check_two_significant_figures"),
     "activity": ("check_operating_output",),
-    "names": ("check_institute_names", "check_former_names", "check_nonidentified_folds"),
+    "names": ("check_section_bar", "check_institute_names", "check_former_names", "check_nonidentified_folds"),
 }
 MOVED_HELPERS = tuple(h for helpers in MOVED_TO_CONTENT.values() for h in helpers)
 

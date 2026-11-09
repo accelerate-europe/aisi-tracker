@@ -16,7 +16,7 @@ CONTENT = Path(__file__).parent / "content"
 def content_repo(tmp_path):
     root = tmp_path / "snapshot"
     (root / "tests/content").mkdir(parents=True)
-    for name in ("__init__.py", "conftest.py", "test_saved_page.py"):  # the step itself; family tests need the real scripts
+    for name in ("__init__.py", "conftest.py", "page.py", "test_saved_page.py"):  # the step itself; family tests need the real scripts
         shutil.copy(CONTENT / name, root / "tests/content" / name)
     (root / "pytest.ini").write_text("[pytest]\ntestpaths = tests\n", encoding="utf-8")
     authored = {"dataset": {"version": "1.2.3", "as_of": "2026-11-08"},
@@ -128,3 +128,20 @@ def test_unit_collection_does_not_import_content_tests(content_repo, targets):
     assert result.returncode == 0, result.stdout
     assert "tests/test_unit.py::test_unit" in result.stdout
     assert "tests/content/" not in result.stdout and "1 test collected" in result.stdout
+
+
+def test_without_templates_drops_only_the_inert_copy():
+    from content.page import without_templates
+
+    html = '<html data-prerendered><body><p id="x">shown</p><template id="page-template"><p id="x">inert</p></template></body></html>'
+    out = without_templates(html)
+    assert "shown" in out and "inert" not in out and "data-prerendered" in out
+
+
+def test_a_template_copy_is_not_counted(content_repo):
+    root, site = content_repo
+    path = site / "index.html"
+    # The page template holds a second copy of the cards; counted, they would fail "exactly one card each".
+    path.write_text(path.read_text().replace("</body>", '<template id="page-template"><article class="card" data-j="GB"></article></template></body>'), encoding="utf-8")
+    result = run_content(root, "tests/content", "--site", site)
+    assert result.returncode == 0, result.stdout

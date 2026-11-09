@@ -8750,7 +8750,7 @@ def click_control_text(page, control) -> None:
 
 
 def check_rendered_content(html: str, data: dict) -> list[str]:
-    """The hydrated page's content against the data, once: staff figures and the section bar. These read text and data attributes that hydration
+    """The hydrated page's content against the data, once: staff figures. These read text and data attributes that hydration
     writes the same at every width and in both themes (the page's script reads neither before it renders), so
     interaction_pass no longer repeats them in each of its six states.
 
@@ -8760,15 +8760,15 @@ def check_rendered_content(html: str, data: dict) -> list[str]:
     (source alignment, generic sources), in tests/content/test_sources.py; record rows (Head, Reports to and Partners
     rows, Testing and access groups, Institutional set-up groups), in tests/content/test_record_rows.py; the summary
     (hero, legend and developments, the figures row, two significant figures), in tests/content/test_summary.py; Known activity (operating output),
-    in tests/content/test_activity.py; names (institute names, former names, none-identified folds), in
-    tests/content/test_names.py.
+    in tests/content/test_activity.py; names and navigation (section bar, institute names, former names,
+    none-identified folds), in tests/content/test_names.py. The content step reads the saved page without its
+    template's inert copy (tests/content/page.py).
 
     What stays: check_staff_figures until it has a hand-worked fixture (today its expectation comes from
-    display.total_staff, the producer's own figure), and check_section_bar, because the saved page also holds the page
-    template the script hydrates from, whose group rows a parser counts too (its parity failed: 6 group rows against
-    3)."""
+    display.total_staff, the producer's own figure).
+"""
     soup = BeautifulSoup(html, "html.parser")
-    return check_staff_figures(soup, data) + check_section_bar(soup)
+    return check_staff_figures(soup, data)
 
 
 def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots: Path | None, width: int, theme: str) -> list[str]:
