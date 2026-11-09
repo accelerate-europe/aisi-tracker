@@ -17976,6 +17976,10 @@
           {
             "date": "2026-10-18",
             "scope": "Aligned current rationale wording with the consolidated capability-or-behaviour-risk test, removing the old severity requirement. This editorial consistency pass adds no research claim and does not change status or the last full-check date."
+          },
+          {
+            "date": "2026-11-09",
+            "scope": "Added Legislative Decree 674 (Diario Oficial No. 178, 25 September 2026) on national AI and robotics projects to the notes. Screened the Diario Oficial contents of Tomo 453 No. 199 (26 October 2026): nothing on the agency or AI. Later issues were not yet readable on 9 November. Partial check; the last full-check date is unchanged."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -18012,7 +18016,8 @@
       },
       "source_ids": [
         "sv-ania-resolucion-2025",
-        "sv-elmundo-vigencia"
+        "sv-elmundo-vigencia",
+        "sv-do-178-2026-dl-674"
       ],
       "related_bodies": [
         {
@@ -18026,7 +18031,7 @@
           "id": "related_bodies-d470e1c4f038548081155e8ee2182a9c"
         }
       ],
-      "notes": "Borderline case, kept as none identified. The agency (ANIA, created by Legislative Decree 234 of 26 February 2025 and now a decentralised public body) has a division for technical standards, risk frameworks and safety criteria, a voluntary registry with legal safeguards, a mandatory registry for consequential decisions in health, finance, public biometrics and public services, and a supervised sandbox. Its Resolution 0001/2025 (primary, read in full as text) says compliance checks focus on confirming that controls exist 'rather than a detailed technical review' (Art. 17) and that algorithmic impact assessments are done by the operators (Art. 15). No testing or evaluation of AI models by the agency is provided for. The law text itself (Decree 234) was not read; its description comes from the resolution and a press report. Resolution 0001/2025 Art. 19 prohibits requiring disclosure of source code, model architecture, weights or training data and bars mandatory third-party audits of these, and Art. 12(a) exempts providers of models, APIs and cloud services from mandatory registration on that basis alone; Art. 19 also limits ANIA to requesting high-level system descriptions, statistical summaries, performance metrics, dataset hashes and compliance statements; so ANIA cannot review models.",
+      "notes": "Borderline case, kept as none identified. The agency (ANIA, created by Legislative Decree 234 of 26 February 2025 and now a decentralised public body) has a division for technical standards, risk frameworks and safety criteria, a voluntary registry with legal safeguards, a mandatory registry for consequential decisions in health, finance, public biometrics and public services, and a supervised sandbox. Its Resolution 0001/2025 (primary, read in full as text) says compliance checks focus on confirming that controls exist 'rather than a detailed technical review' (Art. 17) and that algorithmic impact assessments are done by the operators (Art. 15). No testing or evaluation of AI models by the agency is provided for. The law text itself (Decree 234) was not read; its description comes from the resolution and a press report. Resolution 0001/2025 Art. 19 prohibits requiring disclosure of source code, model architecture, weights or training data and bars mandatory third-party audits of these, and Art. 12(a) exempts providers of models, APIs and cloud services from mandatory registration on that basis alone; Art. 19 also limits ANIA to requesting high-level system descriptions, statistical summaries, performance metrics, dataset hashes and compliance statements; so ANIA cannot review models. Legislative Decree 674 (Diario Oficial No. 178, 25 September 2026) sets special rules for carrying out national AI, robotics and similar technology projects; as read on 9 November 2026 it neither amends nor repeals Resolution 0001/2025.",
       "next_check": {
         "date": "2027-04-16",
         "reason": "Check whether ANIA starts evaluating or certifying models directly."
@@ -23079,6 +23084,10 @@
           {
             "date": "2026-10-24",
             "scope": "Re-ran searches in English and French for a government-designated institute that evaluates advanced models, or a commitment, proposal or study naming one. No qualifying institute or commitment was identified; results described the technical committee drafting the national AI strategy with UNDP (May 2026), a January 2026 ARPCE digital-regulation seminar covering AI, and the statutes of the African Research Centre for AI. Retrieved the decree approving ARCAI's statutes as new primary governance evidence. Raised confidence to medium under the status-confidence rule: recorded queries in English and a national or official language, and cited primary governance evidence consistent with no qualifying institute. Partial check; the last full-check date is unchanged."
+          },
+          {
+            "date": "2026-11-09",
+            "scope": "Read Law 14-2024 of 23 May 2024 (Journal officiel n° 23 of 6 June 2024), which creates the African Research Centre for AI (CARIA), and the visas of décret 2025-279, which cite it. Its missions are research, certified training, strategy proposals and laboratories; none is to test or evaluate AI models. Added the law and the French acronym. Partial check; the last full-check date is unchanged."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -23161,7 +23170,8 @@
       "source_ids": [
         "cg-allafrica-2026",
         "cg-aipolicy-2026",
-        "cg-jo-decree-2025-279-arcai"
+        "cg-jo-decree-2025-279-arcai",
+        "cg-jo-2024-23-law-14-2024"
       ],
       "related_bodies": [
         {
@@ -23183,17 +23193,18 @@
           "id": "related_bodies-87e8f9bcf58d58e692aca98393a53954"
         },
         {
-          "name": "African Research Centre for Artificial Intelligence (ARCAI)",
-          "role": "It is a public research, training and development establishment under the digital economy minister's supervision; it is not an evaluation body.",
+          "name": "African Research Centre for Artificial Intelligence (CARIA)",
+          "role": "Created by Law 14-2024 as a public research, training and development establishment, under the digital economy minister's administrative and technical supervision and the scientific research minister's scientific supervision; it is not an evaluation body.",
           "counts_as_aisi": false,
           "kind": "other",
           "id": "related_bodies-315abbc04ab2562297161007b0e7d39d",
           "source_ids": [
+            "cg-jo-2024-23-law-14-2024",
             "cg-jo-decree-2025-279-arcai"
           ]
         }
       ],
-      "notes": "Evidence is a press report of the committee's inaugural meeting plus a secondary profile; no government text on the strategy was found. A July 2025 decree approving its statutes makes the African Research Centre for AI (ARCAI) a public research, training and development establishment under the digital economy minister's supervision. Searched in French.",
+      "notes": "Evidence is a press report of the committee's inaugural meeting plus a secondary profile; no government text on the strategy was found. Law 14-2024 of 23 May 2024 creates the African Research Centre for AI (CARIA, its French acronym) as a public research, training and development establishment under the digital economy minister's supervision, and a July 2025 decree approves its statutes. Neither text gives it a task to test or evaluate AI models. Searched in French.",
       "next_check": {
         "date": "2027-03-31",
         "reason": "The committee has six months from May 2026; check whether a strategy is adopted."
@@ -24348,6 +24359,10 @@
           {
             "date": "2026-10-24",
             "scope": "Re-ran searches in Spanish and English for a government-designated institute that evaluates advanced models, or a commitment, proposal or study naming one. No qualifying institute or commitment was identified; Spanish and English searches returned no Equatorial Guinea results on an AI law, strategy or body, only material on Ecuador and on Guinea. Retrieved the presidential decree appointing the Secretary of State responsible for AI systems as new primary governance evidence, found by the independent review. Raised confidence to medium under the status-confidence rule: recorded queries in English and a national or official language, and cited primary governance evidence consistent with no qualifying institute. Partial check; the last full-check date is unchanged."
+          },
+          {
+            "date": "2026-11-09",
+            "scope": "Confirmed from Decree 61/2026 (the official Boletín Oficial copy and the government press text) that Óscar Ondo Ngomo was appointed Secretary of State responsible for AI Systems; government press of 7 July 2026 reports him taking office. No later replacement, adopted AI law or evaluation body found; the Boletín Oficial's search needs a browser. Partial check; the last full-check date is unchanged."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -24434,7 +24449,7 @@
           "id": "related_bodies-77fbe0b67f595964b0b6eddc6ef3fa35"
         }
       ],
-      "notes": "The June 2026 government account names the Ministry of Transport, Telecommunications and Civil Aviation and a Secretary of State responsible for AI Systems. UNESCO names the Ministry of Transport, Telecommunications and Artificial Intelligence Systems; this differs from the government account, and the titles have not been reconciled. No primary confirmation of the draft AI bill or an evaluation institute was retrieved. Earlier searches covered Spanish, French and English; only the Spanish query is retained in the structured search log.",
+      "notes": "The June 2026 government account names the Ministry of Transport, Telecommunications and Civil Aviation and a Secretary of State responsible for AI Systems; Decree 61/2026 of 23 June 2026 appoints Óscar Ondo Ngomo to that office. UNESCO names the Ministry of Transport, Telecommunications and Artificial Intelligence Systems; this differs from the government account, and the titles have not been reconciled. No primary confirmation of the draft AI bill or an evaluation institute was retrieved. Earlier searches covered Spanish, French and English; only the Spanish query is retained in the structured search log.",
       "next_check": {
         "date": "2027-03-31",
         "reason": "Check for the digital economy strategy and any AI bill."
@@ -30344,6 +30359,10 @@
           {
             "date": "2026-11-08",
             "scope": "Staff and budget pass of 7 November 2026: Inria's PentestIA vacancy, which works with INESIA's members, added to the staffing-model notes. A second Inria vacancy (2026-10579, LLM evaluation) found by the pass had been removed when re-read on 8 November and is not cited. Staffing only, not a full record re-check."
+          },
+          {
+            "date": "2026-11-09",
+            "scope": "Post-release news re-check from 6 November 2026: SGDSN publications and its INESIA page, the economy ministry's press pages and the digital minister's agenda for 9 to 13 November, and the DGE and DINUM news pages, whose newest items were from June and August, supplemented by searches. Nothing new on the institute; the public AI procurement guide of 6 November is credited to other bodies. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -30750,6 +30769,10 @@
           {
             "date": "2026-11-07",
             "scope": "News re-check since 2 November 2026: BSI's institute page and digests 09 and 10/2026, ministry press, the AI taskforce report 'Deutschland als KI-Nation 2030' (2 November) and Bundestag Drucksache 21/8810. Added the build-up phase II plan and the 75 per cent frontier-model target to the notes; the digests are cited as sources, not outputs. The latest network member list does not include Germany. Left for review: interior ministry press and further parliamentary documents after 2 November. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-09",
+            "scope": "Post-release news re-check from 6 November 2026: BSI's institute page (newest digest 10/2026) and its news list to 4 November, and the digital ministry's press releases to 4 November. Nothing new. Left for review: the interior ministry's press pages, BSI's press-release list and Bundestag documents after 2 November, which could not be read. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -31017,6 +31040,10 @@
           {
             "date": "2026-11-07",
             "scope": "News re-check since 2 November 2026: AESIA news, Official State Gazette searches and the Council of Ministers' references. No constitutive act and no institute appointment found. Left for review: the gazette's daily summaries for 3 to 7 November (searched, not opened). Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-09",
+            "scope": "Post-release news re-check from 6 November 2026: AESIA news, the digital ministry's press releases to 4 November, and the Official State Gazette summaries for 3 to 9 November (no issue on 8 November). No constitutive act and no institute appointment found. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -31309,6 +31336,10 @@
           {
             "date": "2026-11-07",
             "scope": "News re-check since 24 October 2026: ki.norge.no, the ministry's budget press release and its budget bill (Prop. 1 S (2026-2027), section 2.3), ministry releases of 30 October and 5 and 6 November, and Digitalisation Agency items through search. The mandate now follows the budget bill's wording; status stays proposed. Left for review: the original procurement notice for the executive-assistant contract. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-09",
+            "scope": "Post-release news re-check from 6 November 2026: ki.norge.no, the Digitalisation Agency's news and the government's news list to 9 November. Nothing new on the mandate. Added the contract award notice of 22 October 2026 for an executive assistant to KI Norge's management to the staffing-model notes as a contractor. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -31323,7 +31354,8 @@
         "r11-no-fiscal-year",
         "no-altinget-holte-2026",
         "no-techwatch-2026-05",
-        "no-karrierestart-kin-2026"
+        "no-karrierestart-kin-2026",
+        "no-doffin-2026-116502"
       ],
       "mandate_short": "Would add AI safety and model evaluation to KI Norge's remit.",
       "placement": {
@@ -31506,9 +31538,10 @@
         "code": "not_published",
         "source_ids": [
           "no-budget",
-          "no-ki-about"
+          "no-ki-about",
+          "no-doffin-2026-116502"
         ],
-        "notes": "proposed: 'foreslår 30 millionar kroner' (proposes NOK 30 million) to give KI Norge capacity to evaluate AI models, with the work done 'i samarbeid med forskingsinstitusjonane' (in cooperation with the research institutions), budget press release of the Ministry of Digitalisation and Public Governance, 7 October 2026, not yet voted. KI Norge is a unit of the Norwegian Digitalisation Agency.",
+        "notes": "proposed: 'foreslår 30 millionar kroner' (proposes NOK 30 million) to give KI Norge capacity to evaluate AI models, with the work done 'i samarbeid med forskingsinstitusjonane' (in cooperation with the research institutions), budget press release of the Ministry of Digitalisation and Public Governance, 7 October 2026, not yet voted. KI Norge is a unit of the Norwegian Digitalisation Agency. Contractor: under a contract award notice of 22 October 2026, the Digitalisation Agency procured one consultant as executive assistant to KI Norge's management, a new role, full time for one year with options.",
         "searches": [
           {
             "date": "2026-10-21",
@@ -31607,6 +31640,10 @@
           {
             "date": "2026-11-08",
             "scope": "Staff and budget pass of 7 November 2026: POLITICO's report of 6 March 2024 on the Office's EUR 46.5m starting budget, as stated by an MEP and not confirmed by the Commission, added to the notes; no funding record. Funding only, not a full record re-check."
+          },
+          {
+            "date": "2026-11-09",
+            "scope": "Post-release news re-check from 6 November 2026: the AI Office page, the digital-strategy library and news to 6 November, and the Official Journal for 6 and 9 November. No new act under the AI Act and no new output. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -103578,6 +103615,21 @@
           "accessed": "2026-11-09",
           "gloss": "Secretary of State of the Ministry of Transport, Telecommunications and Civil Aviation, responsible for Artificial Intelligence Systems",
           "url": "https://www.guineaecuatorialpress.com/noticias/decreto_presidencial_de_nombramiento_de_los_secretarios_de_estado"
+        },
+        {
+          "text": "Óscar Ondo Ngomo",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "GQ"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-09",
+          "url": "https://www.guineaecuatorialpress.com/noticias/decreto_presidencial_de_nombramiento_de_los_secretarios_de_estado",
+          "gloss": "Óscar Ondo Ngomo (the office holder named in item 16)"
         }
       ],
       "snapshot": {
@@ -103587,7 +103639,7 @@
         "text_scheme": 1
       },
       "legal_text": true,
-      "access_note": "Official Boletín Oficial del Estado copy: an electronically signed image scan of five pages without a text layer. Both quotations are item 16 on page 4, checked by eye against the page image on 9 November 2026; there the item reads 'Ministerio de de Transportes', with the word 'de' doubled. They are verified by machine against the government press copy of the same decree (https://www.guineaecuatorialpress.com/noticias/decreto_presidencial_de_nombramiento_de_los_secretarios_de_estado), which was the source cited earlier. The document link was read from the BOE search results (https://boe.gob.gq/buscador), which need a browser."
+      "access_note": "Official Boletín Oficial del Estado copy: an electronically signed image scan of five pages without a text layer. The quotations are item 16 on page 4, checked by eye against the page image on 9 November 2026; there the item reads 'Ministerio de de Transportes', with the word 'de' doubled. The name is in capitals there, without the accent ('OSCAR ONDO NGOMO'); checked by eye on 9 November 2026. They are verified by machine against the government press copy of the same decree (https://www.guineaecuatorialpress.com/noticias/decreto_presidencial_de_nombramiento_de_los_secretarios_de_estado), which was the source cited earlier. The document link was read from the BOE search results (https://boe.gob.gq/buscador), which need a browser."
     },
     {
       "id": "gb-dsit-supp-estimate-memo-2025-26",
@@ -111675,6 +111727,248 @@
         "retrieved": "2026-11-08T08:28:15Z",
         "sha256": "05d0f4832bead88d7da3c51a3ac1f49743728ab13060cff5c60eca2e05b83a2d",
         "text_sha256": "53174dc0c2dfeff158576c9f1f41fbdc0e19fd860ecd06698c4e4173ec7801f5",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "cg-jo-2024-23-law-14-2024",
+      "url": "https://sgg.cg/JO/2024/congo-jo-2024-23.pdf",
+      "title": "Loi n° 14-2024 du 23 mai 2024 portant création du centre africain de recherche en intelligence artificielle",
+      "title_en": "Law No. 14-2024 of 23 May 2024 creating the African Research Centre for Artificial Intelligence",
+      "publisher": "Journal officiel de la République du Congo (Secrétariat général du Gouvernement)",
+      "type": "primary",
+      "published": "2024-06-06",
+      "accessed": "2026-11-09",
+      "language": "fr",
+      "origin": "CG",
+      "legal_text": true,
+      "access_note": "Journal officiel n° 23 of 6 June 2024; the law is on page 619 (PDF pages 3 and 4). The ligature 'fi' is extracted from this PDF as a separate glyph, so quotations avoid words containing it. Article 3, checked by eye against the page image on 9 November 2026, reads in full: 'Le centre africain de recherche en intelligence artificielle est placé sous la tutelle administrative et technique du ministre chargé de l’économie numérique, sous la tutelle scientifique du ministre chargé de la recherche scientifique.'",
+      "excerpts": [
+        {
+          "text": "Loi n° 14-2024 du 23 mai 2024 portant création du centre africain de recherche en intelligence",
+          "gloss": "Law No. 14-2024 of 23 May 2024 creating the African Research Centre for Artificial Intelligence",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "CG"
+              },
+              "notes"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "CG"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-315abbc04ab2562297161007b0e7d39d"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-09"
+        },
+        {
+          "text": "en sigle « CARIA »",
+          "gloss": "abbreviated CARIA",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "CG"
+              },
+              "notes"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "CG"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-315abbc04ab2562297161007b0e7d39d"
+              },
+              "name"
+            ]
+          ],
+          "accessed": "2026-11-09"
+        },
+        {
+          "text": "est un établissement de recherche, de formation et de développement",
+          "gloss": "is a research, training and development establishment",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "CG"
+              },
+              "notes"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "CG"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-315abbc04ab2562297161007b0e7d39d"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-09"
+        },
+        {
+          "text": "placé sous la tutelle administrative et technique du ministre chargé de l’économie numérique",
+          "gloss": "placed under the administrative and technical supervision of the minister responsible for the digital economy",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "CG"
+              },
+              "notes"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "CG"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-315abbc04ab2562297161007b0e7d39d"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-09"
+        },
+        {
+          "text": "du ministre chargé de la recherche",
+          "gloss": "(scientific supervision) of the minister responsible for scientific research",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "CG"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-315abbc04ab2562297161007b0e7d39d"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-09"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-09T21:55:09Z",
+        "sha256": "cd495bf43ea222228739ce3417cb7d699806161006cfe4b769fa20ad289e2a9b",
+        "text_sha256": "38fb5036ba94470f82c05d570ba39c2d4cbfef904045a2a02041ee0a037d9fdb",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "sv-do-178-2026-dl-674",
+      "url": "https://www.diariooficial.gob.sv/seleccion/31855",
+      "title": "Decreto No. 674.- Disposiciones Especiales para la Ejecución de los Proyectos Nacionales de Inteligencia Artificial, Robótica y Otras Tecnologías Similares (Diario Oficial No. 178, Tomo 452)",
+      "title_en": "Legislative Decree No. 674: special provisions for carrying out national artificial intelligence, robotics and similar technology projects (Diario Oficial No. 178, Volume 452)",
+      "publisher": "Diario Oficial de la República de El Salvador (Imprenta Nacional)",
+      "type": "primary",
+      "published": "2026-09-25",
+      "accessed": "2026-11-09",
+      "language": "es",
+      "origin": "SV",
+      "legal_text": true,
+      "access_note": "The full Diario Oficial issue of 25 September 2026; the decree is on pages 21 to 29, which are image scans without a text layer. They were read from the page images in research pass 2026-11-09-leftovers-a (the pass that read the decree in full): the decree has no derogation clause and does not amend Resolution 0001/2025 or Legislative Decree 234. The quotation is from the issue's machine-readable contents page.",
+      "excerpts": [
+        {
+          "text": "Decreto No. 674.- Disposiciones Especiales para la Ejecución de los Proyectos Nacionales de Inteligencia Artificial, Robótica y Otras Tecnologías Similares",
+          "gloss": "Decree No. 674: special provisions for carrying out national artificial intelligence, robotics and similar technology projects",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "SV"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-09"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-09T21:55:09Z",
+        "sha256": "48c7123d829932d6af0ad7fef85430cabbcb98be547b240d59575d9abd14e3e4",
+        "text_sha256": "2aa75749a014b2d4ef525d9e087370d844dd9e6c3bc92c37438224d722d88ffe",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "no-doffin-2026-116502",
+      "url": "https://www.doffin.no/notices/2026-116502",
+      "title": "Kontraktstildeling - Administrativ støtte/Executive assistant til KI Norge - Dynamisk innkjøpsordning",
+      "title_en": "Contract award: administrative support/executive assistant for KI Norge (dynamic purchasing system)",
+      "publisher": "Digitaliseringsdirektoratet (Doffin, national procurement database)",
+      "type": "primary",
+      "published": "2026-10-22",
+      "accessed": "2026-11-09",
+      "language": "nb",
+      "origin": "NO",
+      "access_note": "Contract award notice; the notice dispatch date is 22 October 2026 and the contract was concluded on 6 October 2026. The page needs JavaScript; it was read through a web reader.",
+      "excerpts": [
+        {
+          "text": "har behov for 1 administrativ støtte for ledelsen – executive assistant-funksjon",
+          "gloss": "needs one administrative support for the management, an executive assistant function",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "staffing_model",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-09"
+        },
+        {
+          "text": "Dette er en ny rolle for 1 konsulent.",
+          "gloss": "This is a new role for one consultant.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "staffing_model",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-09"
+        },
+        {
+          "text": "Stilling er 100 % i 1 år; opsjon på 6+6 måneder.",
+          "gloss": "The position is 100 per cent for one year; option of 6+6 months.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "staffing_model",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-09"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-09T21:55:10Z",
+        "sha256": "6b1276621ca10787804e0bf060d0f83aa5c8b53b81ae45928d9ff767b694f151",
+        "text_sha256": "25f1c4fe47bb6a752d6a91c733e298fe5f3e9140e7366206014c776f2cce87b0",
         "text_scheme": 1
       }
     }
