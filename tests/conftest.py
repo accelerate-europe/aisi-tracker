@@ -36,10 +36,9 @@ def write_json(path, value):
         # Stale-block tests write their malformed README explicitly afterwards.
         if all("status" in j for j in value.get("jurisdictions", [])):
             readme.write_bytes(release_checks.generated_counts(readme.read_bytes(), value))
-        if b"<!-- agents:start -->" in readme.read_bytes():
+        if b"<!-- citation:start -->" in readme.read_bytes():
             (readme.parent / "CITATION.cff").write_text(agent_files.citation_cff(value), encoding="utf-8")
             (readme.parent / ".zenodo.json").write_text(agent_files.zenodo_json(value), encoding="utf-8")
-            readme.write_bytes(release_checks.generated_block(readme.read_bytes(), agent_files.orientation_markdown(value), "agents"))
         if b"<!-- definition:start -->" in readme.read_bytes() and "definition" in value["dataset"]:
             readme.write_bytes(release_checks.generated_block(readme.read_bytes(), agent_files.definition_markdown(value["dataset"]), "definition"))
     return path
@@ -70,6 +69,29 @@ def no_prerender():
         yield
 
 
+@pytest.fixture(scope="session", autouse=True)
+def isolated_git(tmp_path_factory):
+    """Every git a test starts runs without the user's, system or command-scope configuration and without
+    templates (no signing, hooks or default-branch settings), with a fixed identity; the repository's own
+    configuration still applies. Session scope, so module- and session-scoped fixtures run inside it too.
+
+    Children that check.py starts through clean_env() drop GIT_* variables and so read the user's ~/.gitconfig;
+    that is the coordinator's behaviour on a maintainer's host, not something the tests can isolate without
+    replacing HOME."""
+    home = tmp_path_factory.mktemp("git")
+    (home / "templates").mkdir()
+    with pytest.MonkeyPatch.context() as patch:
+        patch.setenv("GIT_CONFIG_GLOBAL", str(home / "gitconfig"))
+        patch.setenv("GIT_CONFIG_NOSYSTEM", "1")
+        for name in ("GIT_CONFIG", "GIT_CONFIG_PARAMETERS", "GIT_CONFIG_COUNT"):
+            patch.delenv(name, raising=False)
+        patch.setenv("GIT_TEMPLATE_DIR", str(home / "templates"))
+        for role in ("AUTHOR", "COMMITTER"):
+            patch.setenv(f"GIT_{role}_NAME", "t")
+            patch.setenv(f"GIT_{role}_EMAIL", "t@example.org")
+        yield
+
+
 @pytest.fixture
 def build_env(tmp_path, monkeypatch):
     """Redirect every build path, including README and roster, into this test."""
@@ -81,7 +103,7 @@ def build_env(tmp_path, monkeypatch):
         monkeypatch.setattr(build, name, path)
     monkeypatch.setattr(build, "EUROPE", {"GB"})
     monkeypatch.setattr(build.fact_pipeline, "AUTHORING_STRICT", False)  # Explicit legacy migration fixtures.
-    (tmp_path / "README.md").write_text("<!-- citation:start -->\n\nSynthetic tracker, version 1.0.0, 17 October 2026\n\n<!-- citation:end -->\n\n<!-- counts:start -->\n\n<!-- counts:end -->\n\n<!-- agents:start -->\n\n<!-- agents:end -->\n\n<!-- definition:start -->\n\n<!-- definition:end -->\n")
+    (tmp_path / "README.md").write_text("<!-- citation:start -->\n\nSynthetic tracker, version 1.0.0, 17 October 2026\n\n<!-- citation:end -->\n\n<!-- counts:start -->\n\n<!-- counts:end -->\n\n<!-- definition:start -->\n\n<!-- definition:end -->\n")
     with (tmp_path / "README.md").open("a") as stream:
         stream.write(
             "\n## Licences\n\nQuotations from sources remain with their rights holders "

@@ -671,7 +671,7 @@ def test_api_record_carries_the_rows_and_their_excerpts(rows):
 
 
 def test_orientation_names_the_new_rows(rows):
-    text = agent_files.orientation_markdown(publish(rows))
+    text = agent_files.llms_txt(publish(rows))
     assert "national_partners.csv" in text and "`cyber_agency`" in text
 
 

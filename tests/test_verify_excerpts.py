@@ -517,9 +517,9 @@ def test_failed_cache_write_does_not_repeat_download_in_same_instance(
     assert calls == [url]
 
 
-def test_same_host_requests_are_paced_and_same_url_is_downloaded_once(
-    tmp_path, monkeypatch
-):
+def test_same_host_requests_are_paced(tmp_path, monkeypatch):
+    """Pacing arithmetic, one thread at a time: concurrent fetches record their starts after the host lock is
+    released, so a shared fake clock would measure scheduling, not pacing."""
     clock = [100.0]
     sleeps, starts = [], []
     monkeypatch.setattr(verify.time, "monotonic", lambda: clock[0])
@@ -536,19 +536,54 @@ def test_same_host_requests_are_paced_and_same_url_is_downloaded_once(
         return {"url": url, "method": method, "status": "http_error"}
 
     monkeypatch.setattr(fetcher, "_download", download)
+    fetcher.fetch("https://example.org/a")
+    fetcher.fetch("https://example.org/b")
+    assert sleeps == [0, 2]  # the first request on a host waits for nothing, the second for the full delay
+    assert starts == [("https://example.org/a", 100.0), ("https://example.org/b", 102.0)]
+
+
+def test_same_url_is_downloaded_once_when_fetches_overlap(tmp_path, monkeypatch):
+    """Three fetches of one URL overlap: the first download is held until the other two wait on the URL's lock,
+    so the test cannot pass on serial cache hits. The lock is the one Fetcher registers itself, counted on the
+    way in: a registry that stopped storing its locks leaves the count short and fails the guard."""
+    import threading
+
+    url = "https://example.org/a"
+    fetcher = verify.Fetcher(tmp_path, delay=0)
+
+    class CountingLock:
+        def __init__(self, lock):
+            self.lock, self.count, self.entered, self.all_waiting = lock, threading.Lock(), 0, threading.Event()
+
+        def __enter__(self):
+            with self.count:
+                self.entered += 1
+                if self.entered == 3:
+                    self.all_waiting.set()
+            self.lock.acquire()
+
+        def __exit__(self, *exc):
+            self.lock.release()
+
+    class Registry(dict):
+        def setdefault(self, key, default=None):
+            if key not in self:
+                self[key] = CountingLock(default)
+            return self[key]
+
+    fetcher.url_locks = Registry()
+    downloads = []
+
+    def download(url, method, folder):
+        downloads.append(url)
+        assert fetcher.url_locks[url].all_waiting.wait(30), "the other fetches never reached the URL lock"  # a deadlock guard
+        return {"url": url, "method": method, "status": "http_error"}
+
+    monkeypatch.setattr(fetcher, "_download", download)
     with ThreadPoolExecutor(max_workers=3) as pool:
-        list(
-            pool.map(
-                fetcher.fetch,
-                [
-                    "https://example.org/a",
-                    "https://example.org/a",
-                    "https://example.org/b",
-                ],
-            )
-        )
-    assert len(starts) == 2
-    assert starts[1][1] - starts[0][1] >= 2
+        results = list(pool.map(fetcher.fetch, [url] * 3))
+    assert downloads == [url]
+    assert results[0]["status"] == "http_error" and results.count(results[0]) == 3
 
 
 def test_report_records_input_hash_and_mismatches(tmp_path):
@@ -582,7 +617,7 @@ def test_same_host_response_wait_does_not_hold_start_lock(tmp_path, monkeypatch)
     def download(url, method, folder):
         if url.endswith("/first"):
             first_started.set()
-            assert second_started.wait(2), (
+            assert second_started.wait(30), (  # a generous deadlock guard, not a speed requirement
                 "Second request blocked by first response lifetime"
             )
         else:
@@ -592,7 +627,7 @@ def test_same_host_response_wait_does_not_hold_start_lock(tmp_path, monkeypatch)
     monkeypatch.setattr(fetcher, "_download", download)
     with ThreadPoolExecutor(max_workers=2) as pool:
         first = pool.submit(fetcher.fetch, "https://example.org/first")
-        assert first_started.wait(2)
+        assert first_started.wait(30)
         second = pool.submit(fetcher.fetch, "https://example.org/second")
         assert first.result()["status"] == "http_error"
         assert second.result()["status"] == "http_error"

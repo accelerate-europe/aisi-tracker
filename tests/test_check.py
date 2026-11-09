@@ -440,24 +440,10 @@ def commit(repo: Path, text: str) -> str:
     return subprocess.run(["git", "-C", str(repo), "rev-parse", "HEAD"], capture_output=True, text=True, check=True).stdout.strip()
 
 
-def isolated_git(tmp_path, monkeypatch):
-    """Git without the user's, system or command-scope configuration and with no templates (no signing or hooks)."""
-    monkeypatch.setenv("GIT_CONFIG_GLOBAL", str(tmp_path / "gitconfig"))
-    monkeypatch.setenv("GIT_CONFIG_NOSYSTEM", "1")
-    for name in ("GIT_CONFIG", "GIT_CONFIG_PARAMETERS", "GIT_CONFIG_COUNT"):
-        monkeypatch.delenv(name, raising=False)
-    (tmp_path / "templates").mkdir(exist_ok=True)
-    monkeypatch.setenv("GIT_TEMPLATE_DIR", str(tmp_path / "templates"))
-
-
 @pytest.fixture
-def clone(tmp_path, monkeypatch):
+def clone(tmp_path):
     """A clone whose main tracks origin/main, both at the second of two tagged releases. Git runs without the
-    user's or system configuration (no signing, hooks or templates), with a fixed identity."""
-    isolated_git(tmp_path, monkeypatch)
-    for role in ("AUTHOR", "COMMITTER"):
-        monkeypatch.setenv(f"GIT_{role}_NAME", "t")
-        monkeypatch.setenv(f"GIT_{role}_EMAIL", "t@example.org")
+    user's or system configuration (conftest isolated_git)."""
     origin = tmp_path / "origin"
     origin.mkdir()
     git(origin, "init", "-q", "-b", "main")
@@ -516,9 +502,14 @@ def test_a_local_branch_that_differs_from_its_upstream_is_refused(clone):
     assert check.resolve_base(repo, "refs/remotes/origin/main", release=False) == newer
 
 
-def test_an_unborn_branch_is_not_a_base(tmp_path, monkeypatch):
-    isolated_git(tmp_path, monkeypatch)
+def test_an_unborn_branch_is_not_a_base(tmp_path):
     git(tmp_path, "init", "-q", "-b", "main", "empty")
     for base in ("main", "refs/heads/main"):
         with pytest.raises(ValueError, match="not a commit"):
             check.resolve_base(tmp_path / "empty", base, release=False)
+
+
+def test_the_coordinator_and_release_checks_share_the_run_date_setting():
+    from scripts import release_checks
+
+    assert (check.RUN_DATE_ENV, check.RUN_ZONE) == (release_checks.RUN_DATE_ENV, release_checks.RUN_ZONE)

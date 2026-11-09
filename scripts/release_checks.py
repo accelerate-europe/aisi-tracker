@@ -1,12 +1,14 @@
 """Release metadata and repository prose checks, shared by check and build."""
 
 import datetime as dt
+import functools
 import json
 import os
 import re
 import subprocess
 import tempfile
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 try:
     from .agent_files import doi_url
@@ -25,20 +27,11 @@ QUOTATIONS_NOTICE = (
 
 
 def check_readme_licence(readme: str) -> list[str]:
-    """Both README licence statements must preserve the source-rights notice."""
-    sections = {
-        "agents block": re.search(
-            r"<!-- agents:start -->(.*?)<!-- agents:end -->", readme, re.S
-        ),
-        "Licences section": re.search(
-            r"^## Licences\s*\n(.*?)(?=^## |\Z)", readme, re.M | re.S
-        ),
-    }
-    return [
-        f"README.md {label}: missing quotations licence notice"
-        for label, match in sections.items()
-        if match is None or QUOTATIONS_NOTICE not in match.group(1)
-    ]
+    """The README Licences section must preserve the source-rights notice."""
+    match = re.search(r"^## Licences\s*\n(.*?)(?=^## |\Z)", readme, re.M | re.S)
+    if match is None or QUOTATIONS_NOTICE not in match.group(1):
+        return ["README.md Licences section: missing quotations licence notice"]
+    return []
 
 
 def check_readme_doi(readme: str, doi: str | None) -> list[str]:
@@ -50,9 +43,22 @@ def check_readme_doi(readme: str, doi: str | None) -> list[str]:
     return [] if link in intro else [f"README.md introduction: missing the DOI link {link}"]
 
 
+RUN_DATE_ENV = "AISI_RUN_DATE"  # check.py sets it once for all its steps
+RUN_ZONE = "Europe/Vienna"  # the maintainers' and the release date's timezone
+
+
+def run_date(now: dt.datetime) -> dt.date:
+    """The calendar date of an aware moment in RUN_ZONE."""
+    return now.astimezone(ZoneInfo(RUN_ZONE)).date()
+
+
+@functools.cache
 def today() -> dt.date:
-    """The machine's local date; a separate function so tests can fix it."""
-    return dt.date.today()
+    """The run's date: AISI_RUN_DATE when the check coordinator set it for all its steps, otherwise the date in
+    Europe/Vienna when first asked. So a server, a Mac and a UTC CI runner give the same answer, and a run that spans
+    midnight sees one date. A function so tests can fix it."""
+    given = os.environ.get(RUN_DATE_ENV)
+    return dt.date.fromisoformat(given) if given else run_date(dt.datetime.now(dt.timezone.utc))
 
 
 def check_metadata(data: dict) -> list[str]:
@@ -201,27 +207,39 @@ def generated_citation(readme: bytes, citation: str) -> bytes:
     return generated_block(readme, citation, "citation")
 
 
+def plain_list(items: list[str]) -> str:
+    """"a", "a and b", "a, b and c"."""
+    return items[0] if len(items) == 1 else ", ".join(items[:-1]) + " and " + items[-1]
+
+
 def generated_counts(readme: bytes, published: dict) -> bytes:
     """Current coverage from published records; changelog history is untouched."""
     jurisdictions = published["jurisdictions"]
     institutes = published["institutes"]
     metadata = published["dataset"]
+    as_of = dt.date.fromisoformat(metadata["as_of"])
+    totals = [
+        f"{len(jurisdictions):,} jurisdictions",
+        f"{len(institutes):,} AISIs",
+        f"{sum(len(i.get('outputs', [])) for i in institutes):,} outputs",
+        f"{sum(len(i.get('agreements', [])) for i in institutes):,} agreements",
+        f"{len(metadata.get('network_milestones', [])):,} network milestones",
+        f"{len(published['sources']):,} sources",
+    ]
+    content = f"Version {metadata['version']}, data as of {as_of.day} {as_of:%B %Y}: {plain_list(totals)}."
     negatives = [j for j in jurisdictions if j["status"] == "none_identified"]
-    confidence_counts = [f"{sum(j.get('status_confidence') == level for j in negatives)} {level}" for level in ("high", "medium", "low")]
-    unrecorded = sum("status_confidence" not in j for j in negatives)
-    if unrecorded:
-        confidence_counts.append(f"{unrecorded} not recorded")
-    content = (
-        f"Version {metadata['version']}, data as of {metadata['as_of']}. "
-        f"{len(jurisdictions)} jurisdictions, {len(institutes)} institutes and {len(published['sources'])} sources. "
-        f"The Europe view covers {sum(bool(j['europe_scope']) for j in jurisdictions)} states.\n\n"
-        f"{sum(len(i.get('outputs', [])) for i in institutes)} output records, "
-        f"{sum(len(i.get('agreements', [])) for i in institutes)} agreements and "
-        f"{len(metadata.get('network_milestones', []))} network milestones. "
-        "Negative findings by confidence: "
-        + ", ".join(confidence_counts)
-        + "."
-    )
+    if negatives:
+        levels = []
+        for level in ("low", "medium", "high"):
+            count = sum(j.get("status_confidence") == level for j in negatives)
+            levels.append(f"{level} for {count:,}" if count else f"{level} for none")
+        unrecorded = sum("status_confidence" not in j for j in negatives)
+        if unrecorded:
+            levels.append(f"not recorded for {unrecorded:,}")
+        content += (
+            f" For the {len(negatives):,} jurisdictions where our searches found no qualifying government step towards an AISI, "
+            f"our confidence in that finding is {plain_list(levels)}."
+        )
     return generated_block(readme, content, "counts")
 
 
@@ -240,6 +258,51 @@ def check_release_tag(data: dict, zenodo: str, head_tags: list[str], tag_commit:
     errors.extend(f"HEAD carries tag {other}, expected {tag}" for other in head_tags if other.startswith("v") and other != tag)
     if tag_commit is not None and tag_commit != head:
         errors.append(f"tag {tag} already exists on {tag_commit[:12]}, not on HEAD {head[:12]}")
+    return errors
+
+
+# The summary is the release's headline on the page, in feed.xml and in the GitHub and Zenodo release
+# notes; the detail belongs in `changes`. The schema asks for one or two sentences.
+CHANGELOG_SUMMARY_MAX_SENTENCES = 2
+CHANGELOG_SUMMARY_MAX_WORDS = 60
+# A scaffolded entry labels itself: "Draft (edits before release): ...", "Draft: ...", "(draft)", or a TODO.
+# "Draft bill status is recorded" is data about a draft law, not a draft entry.
+DRAFT_SUMMARY = re.compile(r"^\W*draft\s*[:(\[-]|[(\[]\s*draft\s*[)\]]|\b(?:TODO|TBD|FIXME)\b", re.I)
+# Inner full stops of an initialism (U.S., E.U.) and the stops of e.g., i.e. and vs. do not end a sentence. An
+# initialism's last stop still can: "cover the U.S. Staffing was corrected." is two sentences.
+INNER_STOP = re.compile(r"(?<=\b[A-Z])\.(?=[A-Z]\.)|(?<=\be\.g)\.|(?<=\bi\.e)\.|(?<=\b[eiEI])\.(?=[eg]\.)|(?<=\bvs)\.")
+# A sentence ends at . ! or ? followed by the end or by a space and a capital, digit or opening bracket.
+SENTENCE_END = re.compile(r"[.!?](?=\s*$|\s+[\"'(\[A-Z0-9])")
+
+
+def sentence_count(text: str) -> int:
+    """Sentences in plain prose; an unpunctuated last sentence counts too."""
+    return sum(1 for part in SENTENCE_END.split(INNER_STOP.sub("\u2024", text)) if part.strip())
+
+
+def check_changelog_entry(data: dict) -> list[str]:
+    """The release version needs a finished changelog entry: one exists, it lists changes and its summary is short."""
+    version = data["dataset"]["version"]
+    entries = [entry for entry in data.get("changelog", []) if entry.get("version") == version]
+    if not entries:
+        return [f"changelog: no entry for dataset.version {version}"]
+    errors = []
+    entry = entries[-1]
+    summary = " ".join((entry.get("summary") or "").split())
+    where = f"changelog/{version}"
+    if not summary:
+        errors.append(f"{where}: the summary is empty")
+    elif DRAFT_SUMMARY.search(summary):
+        errors.append(f"{where}: the summary is still a draft ({DRAFT_SUMMARY.search(summary).group(0).strip()!r})")
+    if not [text for text in entry.get("changes", []) if text.strip()]:
+        errors.append(f"{where}: no changes listed")
+    sentences = sentence_count(summary)
+    words = len(summary.split())
+    if sentences > CHANGELOG_SUMMARY_MAX_SENTENCES or words > CHANGELOG_SUMMARY_MAX_WORDS:
+        errors.append(
+            f"{where}: the summary has {sentences} sentence{'' if sentences == 1 else 's'} and {words} words; at most "
+            f"{CHANGELOG_SUMMARY_MAX_SENTENCES} sentences and {CHANGELOG_SUMMARY_MAX_WORDS} words, the detail goes in changes"
+        )
     return errors
 
 

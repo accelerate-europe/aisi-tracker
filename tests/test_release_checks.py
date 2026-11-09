@@ -31,27 +31,19 @@ def test_missing_licence_notice_reaches_build(dataset, note):
     )
 
 
-@pytest.mark.parametrize("section", ["agents block", "Licences section"])
-def test_readme_licence_notice_mutations(dataset, build_env, monkeypatch, capsys, section):
+def test_readme_licence_notice_mutations(dataset, build_env, monkeypatch, capsys):
     write_json(build.DATA, dataset)
     readme = build_env / "README.md"
     original = readme.read_text()
     assert release_checks.check_readme_licence(original) == []
-    position = (
-        original.index(QUOTATIONS_NOTICE)
-        if section == "agents block"
-        else original.rindex(QUOTATIONS_NOTICE)
-    )
-    broken = original[:position] + original[position:].replace(QUOTATIONS_NOTICE, "", 1)
-    expected = f"README.md {section}: missing quotations licence notice"
+    broken = original.replace(QUOTATIONS_NOTICE, "", 1)
+    expected = "README.md Licences section: missing quotations licence notice"
     assert release_checks.check_readme_licence(broken) == [expected]
     readme.write_text(broken)
     monkeypatch.setattr(sys, "argv", ["build.py", "--check"])
     with pytest.raises(SystemExit):
         build.main()
-    errors = capsys.readouterr().err
-    # Generated text is checked for staleness before the proposed regeneration.
-    assert ("agents block is stale" if section == "agents block" else expected) in errors
+    assert expected in capsys.readouterr().err
     readme.write_text(original)
     build.main()
 
@@ -164,11 +156,25 @@ def test_only_update_readme_writes_the_stale_citation(
 
 
 def test_as_of_cannot_be_after_today(dataset, monkeypatch):
-    assert release_checks.check_metadata(dataset) == []
     monkeypatch.setattr(release_checks, "today", lambda: build.dt.date(2026, 10, 16))
     assert "dataset.as_of 2026-10-17 is after today (2026-10-16)" in release_checks.check_metadata(dataset)
     monkeypatch.setattr(release_checks, "today", lambda: build.dt.date(2026, 10, 17))
     assert release_checks.check_metadata(dataset) == []
+
+
+def test_run_date_is_the_vienna_date_read_once(monkeypatch):
+    utc = build.dt.timezone.utc
+    # 23:30 UTC on 8 November is already 9 November in Vienna, whatever the host's timezone.
+    assert release_checks.run_date(build.dt.datetime(2026, 11, 8, 23, 30, tzinfo=utc)) == build.dt.date(2026, 11, 9)
+    assert release_checks.run_date(build.dt.datetime(2026, 11, 8, 22, 30, tzinfo=utc)) == build.dt.date(2026, 11, 8)
+    release_checks.today.cache_clear()
+    monkeypatch.setenv(release_checks.RUN_DATE_ENV, "2026-01-02")
+    try:
+        assert release_checks.today() == build.dt.date(2026, 1, 2)
+        monkeypatch.setenv(release_checks.RUN_DATE_ENV, "2026-01-03")
+        assert release_checks.today() == build.dt.date(2026, 1, 2)  # read once per process
+    finally:
+        release_checks.today.cache_clear()
 
 
 def test_citation_cff_is_generated_and_stale_copies_fail(dataset, build_env, monkeypatch, capsys):
@@ -519,9 +525,8 @@ def test_generated_counts_have_handworked_values_and_keep_history():
     data = {'dataset': {'version': '1.0.0', 'as_of': '2026-10-18', 'network_milestones': [{}, {}]}, 'jurisdictions': [{'europe_scope': True, 'status': 'none_identified', 'status_confidence': 'medium'}, {'europe_scope': False, 'status': 'established', 'status_confidence': 'high'}], 'institutes': [{'outputs': [{}, {}, {}], 'agreements': [{}]}], 'sources': [{}, {}, {}, {}]}
     before = b'History: 7 outputs.\n<!-- counts:start -->\nold\n<!-- counts:end -->\nTail\n'
     result = release_checks.generated_counts(before, data)
-    assert b'2 jurisdictions, 1 institutes and 4 sources.' in result
-    assert b'3 output records, 1 agreements and 2 network milestones.' in result
-    assert b'0 high, 1 medium, 0 low.' in result
+    assert b'Version 1.0.0, data as of 18 October 2026: 2 jurisdictions, 1 AISIs, 3 outputs, 1 agreements, 2 network milestones and 4 sources.' in result
+    assert b'For the 1 jurisdictions where our searches found no qualifying government step towards an AISI, our confidence in that finding is low for none, medium for 1 and high for none.' in result
     assert result.startswith(b'History: 7 outputs.\n') and result.endswith(b'Tail\n')
     assert release_checks.generated_counts(result, data) == result
     with pytest.raises(ValueError, match='standalone counts markers'):
@@ -560,7 +565,7 @@ def test_generated_counts_preserves_unrecorded_optional_confidence():
     result = release_checks.generated_counts(
         b"<!-- counts:start -->\n<!-- counts:end -->\n", data
     )
-    assert b"0 high, 0 medium, 0 low, 1 not recorded." in result
+    assert b"is low for none, medium for none, high for none and not recorded for 1." in result
 
 
 def test_candidate_check_does_not_compare_or_write_canonical_readme(
@@ -858,3 +863,64 @@ def test_release_tag_cli_refuses_tags_elsewhere(tmp_path, capsys):
     with pytest.raises(SystemExit):
         release_tag.main([], repo)
     assert "already exists on a non-commit," in capsys.readouterr().err
+
+
+SCAFFOLD_SUMMARY = "Draft (edits before release): data from the 7 November 2026 staff and budget pass and legal-text status checks."
+FORTY_WORDS = "Word " + " ".join(["word"] * 38) + " end."
+# Released summaries, copied here so later draft entries in data/aisi.json cannot break ordinary checks.
+# 1.0.4 is the longest so far (50 words, 308 characters).
+RELEASED_SUMMARIES = [
+    "New outputs, notes and access events for the UK, US, Korea, Japan and other institutes from a re-check of their news on 7 November; Italy's AI Act authorities under Legislative Decree 179/2026; partners that share an explanation listed together; a page title and description that say what the tracker covers.",
+    "Staff and budget notes for Canada, France and the EU AI Office, Canada's CIFAR research stream from 2024-25, Singapore's Digital Trust Centre grant period, four laws verified in force against official records, and official copies for Russia's and Ethiopia's laws.",
+]
+
+
+@pytest.mark.parametrize(
+    ("summary", "changes", "expected"),
+    [
+        ("Two new institutes.", ["Added two records."], []),
+        ("Funding for 1.0.5 is revised. Staff counts are new.", ["One."], []),  # version numbers are not sentence ends
+        ("Updated U.S. funding. Corrected UK staffing.", ["One."], []),  # an initialism is not a sentence end
+        ("New records, e.g. Canada. Staff counts are new.", ["One."], []),
+        ("New records cover the U.S. Staffing figures were corrected. Sources were refreshed.", ["One."], ["3 sentences and 12 words"]),
+        (FORTY_WORDS + " " + FORTY_WORDS[:-1] + "?", ["One."], ["2 sentences and 80 words"]),
+        ("Funding updated. Staffing corrected. Sources refreshed", ["One."], ["3 sentences and 6 words"]),  # unpunctuated last sentence
+        (SCAFFOLD_SUMMARY, ["One."], ["still a draft ('Draft (')"]),
+        ("draft: tidy later.", ["One."], ["still a draft ('draft:')"]),
+        ("Release 1.0.5 (draft): funding updated.", ["One."], ["still a draft ('(draft)')"]),
+        ("New records. TODO add Lithuania.", ["One."], ["still a draft ('TODO')"]),
+        ("Norway's draft bill is recorded.", ["One."], []),  # a draft law is data, not a draft entry
+        ("Draft bill status is now recorded.", ["One."], []),
+        ("", ["One."], ["the summary is empty"]),
+        ("   ", ["One."], ["the summary is empty"]),
+        ("Two new institutes.", [], ["no changes listed"]),
+        ("Two new institutes.", [" "], ["no changes listed"]),
+        ("One. Two. Three.", ["One."], ["3 sentences and 3 words; at most 2 sentences and 60 words, the detail goes in changes"]),
+        (" ".join(["word"] * 61) + ".", ["One."], ["1 sentence and 61 words"]),
+        *[(summary, ["One."], []) for summary in RELEASED_SUMMARIES],
+    ],
+)
+def test_changelog_entry_handworked(summary, changes, expected):
+    data = {"dataset": {"version": "1.0.5"}, "changelog": [{"version": "1.0.5", "summary": summary, "changes": changes}]}
+    errors = release_checks.check_changelog_entry(data)
+    assert len(errors) == len(expected), errors
+    for error, part in zip(errors, expected):
+        assert error.startswith("changelog/1.0.5: ") and part in error
+
+
+def test_changelog_entry_must_exist_for_the_release_version():
+    data = {"dataset": {"version": "1.0.6"}, "changelog": [{"version": "1.0.5", "summary": "Done.", "changes": ["One."]}]}
+    assert release_checks.check_changelog_entry(data) == ["changelog: no entry for dataset.version 1.0.6"]
+    assert release_checks.check_changelog_entry({"dataset": {"version": "1.0.6"}}) == ["changelog: no entry for dataset.version 1.0.6"]
+
+
+def test_release_cli_refuses_a_draft_changelog_summary(dataset, build_env, monkeypatch, capsys):
+    """Only --release applies the guard; an ordinary check accepts the scaffold."""
+    dataset["changelog"][-1]["summary"] = SCAFFOLD_SUMMARY
+    write_json(build.DATA, dataset)
+    monkeypatch.setattr(sys, "argv", ["build.py", "--check"])
+    build.main()
+    monkeypatch.setattr(sys, "argv", ["build.py", "--release", "--check"])
+    with pytest.raises(SystemExit):
+        build.main()
+    assert "changelog/1.0.0: the summary is still a draft ('Draft (')" in capsys.readouterr().err

@@ -103,6 +103,26 @@ def browser_env() -> dict:
     return {**os.environ, "DBUS_SESSION_BUS_ADDRESS": "disabled:"}
 
 
+LOCALE = "en-GB"  # every page's locale: its default-locale collation then matches the gate's English oracle on any host
+
+
+class LocalisedBrowser:
+    """A browser whose new pages and contexts open in LOCALE unless a check names another: Chromium otherwise takes
+    its locale from the host (LANG on Linux, the system language on a Mac)."""
+
+    def __init__(self, browser):
+        self._browser = browser
+
+    def __getattr__(self, name):
+        return getattr(self._browser, name)
+
+    def new_page(self, **options):
+        return self._browser.new_page(**{"locale": LOCALE, **options})
+
+    def new_context(self, **options):
+        return self._browser.new_context(**{"locale": LOCALE, **options})
+
+
 def install_chrome() -> int:
     """Download the locked Playwright's Chromium (no headless shell: every launch names this browser). On Linux
     its system libraries are a separate, root step: python -m playwright install-deps chromium."""
@@ -7314,7 +7334,7 @@ def capture_states(chrome: str, dist: Path, out: Path) -> None:
         thread.start()
         try:
             with sync_playwright() as playwright:
-                browser = playwright.chromium.launch(executable_path=chrome, headless=True, args=STABLE_RASTER, env=browser_env())
+                browser = LocalisedBrowser(playwright.chromium.launch(executable_path=chrome, headless=True, args=STABLE_RASTER, env=browser_env()))
                 for width in (1440, 1000, 390):
                     for theme in ("light", "dark"):
                         page = themed_page(
@@ -9202,17 +9222,33 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
     return errors
 
 
+# pinFade(node): pause a jumped-to heading's focus-fade at its start (the tint held), so a check reads the tint at a
+# fixed point of the fade, not whenever it happens to run; true when there was a fade to pin.
+PIN_FOCUS_FADE = """
+  const pinFade = n => { const a = n.getAnimations().find(a => a.animationName === 'focus-fade'); if (a) { a.pause(); a.currentTime = 0; } return !!a; };
+"""
+
+
 def shared_links(browser, base_url: str) -> list[str]:
     """Section links and shared #links on a tall page, then the stylesheet at 320 px and its older-browser fallback."""
+    from playwright.sync_api import TimeoutError as PlaywrightTimeout
+
+    def settle(state: str) -> None:
+        """Wait (bounded) for the state a step should reach; the checks after it report what went wrong."""
+        try:
+            page.wait_for_function(state, timeout=5_000)
+        except PlaywrightTimeout:
+            pass
+
     errors = []
     # Short final sections must retain an explicit nav choice at a clamped scroll position.
-    page = browser.new_page(viewport={"width": 1440, "height": 1600})
+    page = browser.new_page(viewport={"width": 1440, "height": 1600}, reduced_motion="no-preference")  # the fade is read at its start
     page_errors = []
     page.on("pageerror", lambda e, errs=page_errors: errs.append(e))  # type: ignore[call-overload]
     hydrated(page, base_url)
     page.wait_for_selector("#world-rows tr")
     page.locator('.secnav a[href="#data"]').evaluate("e => e.click()")
-    page.wait_for_timeout(100)
+    settle("document.querySelector('.secnav a[href=\"#data\"]').getAttribute('aria-current') === 'location' && document.activeElement.id === 'data'")
     if (
         page.locator('.secnav a[href="#data"]').get_attribute(
             "aria-current"
@@ -9230,12 +9266,13 @@ def shared_links(browser, base_url: str) -> list[str]:
         set_theme(page, scheme)
         page.locator('.secnav a[href="#testing"]').focus(timeout=5_000)
         page.keyboard.press("Enter")
-        page.wait_for_timeout(100)
-        got = page.evaluate("() => {" + CONTRAST_JS + " const n = document.activeElement, c = getComputedStyle(n); return [n.id, n.tagName, c.outlineStyle, rgb(c.backgroundColor).join() === rgb(token('--highlight-fill')).join()]; }")
-        if got != ["testing", "H2", "none", True]:
-            errors.append(f"{scheme}: after a jump to Testing the focused heading is {got} (expected the #testing h2 with the tint and no outline)")
+        settle("document.activeElement.id === 'testing'")
+        # The tint is read at the start of its fade, paused there: sampled later, a slow run would see it faded.
+        got = page.evaluate("() => {" + CONTRAST_JS + PIN_FOCUS_FADE + " const n = document.activeElement, faded = pinFade(n), c = getComputedStyle(n); return [n.id, n.tagName, c.outlineStyle, rgb(c.backgroundColor).join() === rgb(token('--highlight-fill')).join(), faded]; }")
+        if got != ["testing", "H2", "none", True, True]:
+            errors.append(f"{scheme}: after a jump to Testing the focused heading is {got} (expected the #testing h2 with the tint, no outline and its fade)")
         # The palette's Definition destination is a paragraph, not a control: the same tint, no ring (rule 14).
-        got = page.evaluate("() => {" + CONTRAST_JS + " const n = document.getElementById('definition'); n.tabIndex = -1; n.focus({ preventScroll: true }); const c = getComputedStyle(n); return [c.outlineStyle, rgb(c.backgroundColor).join() === rgb(token('--highlight-fill')).join()]; }")
+        got = page.evaluate("() => {" + CONTRAST_JS + PIN_FOCUS_FADE + " const n = document.getElementById('definition'); n.tabIndex = -1; n.focus({ preventScroll: true }); pinFade(n); const c = getComputedStyle(n); return [c.outlineStyle, rgb(c.backgroundColor).join() === rgb(token('--highlight-fill')).join()]; }")
         if got != ["none", True]:
             errors.append(f"{scheme}: the focused Definition paragraph shows {got} (expected the tint and no outline)")
         for selector in ('.secnav a[href="#news"]', '#world-rows td:first-child a'):
@@ -9258,6 +9295,15 @@ def shared_links(browser, base_url: str) -> list[str]:
                 line: c.textDecorationLine, inset: /inset/.test(c.boxShadow) }; }""")
             if not (look["visible"] and look["outline"] == "none" and look["tint"] and look["line"] == "none" and look["inset"] == (pressed == "true")):
                 errors.append(f"{scheme}: a focused {'selected' if pressed == 'true' else 'unselected'} region tab is not the tint {'with' if pressed == 'true' else 'without'} the selection underline: {look}")
+    # Without motion the jumped-to heading keeps the tint while focused and has no fade.
+    page.emulate_media(reduced_motion="reduce")
+    page.locator('.secnav a[href="#data"]').focus(timeout=5_000)
+    page.keyboard.press("Enter")
+    settle("document.activeElement.id === 'data'")
+    got = page.evaluate("() => {" + CONTRAST_JS + " const n = document.activeElement, c = getComputedStyle(n); return [n.id, rgb(c.backgroundColor).join() === rgb(token('--highlight-fill')).join(), n.getAnimations().some(a => a.animationName === 'focus-fade')]; }")
+    if got != ["data", True, False]:
+        errors.append(f"reduced motion: after a jump to Data the focused heading is {got} (expected #data with the tint and no fade)")
+    page.emulate_media(reduced_motion="no-preference")
     set_theme(page, "light")
     for target in ("c-fr", "world", "funding", "method", "changes"):
         hydrated(page, base_url + "#" + target)
@@ -9320,9 +9366,11 @@ def chrome_session(chrome: str, dist: Path):
         thread.start()
         try:
             with sync_playwright() as playwright:
-                browser = playwright.chromium.launch(executable_path=chrome, headless=True, env=browser_env())
-                yield browser, f"http://127.0.0.1:{server.server_port}/"
-                browser.close()
+                browser = LocalisedBrowser(playwright.chromium.launch(executable_path=chrome, headless=True, env=browser_env()))
+                try:
+                    yield browser, f"http://127.0.0.1:{server.server_port}/"
+                finally:
+                    browser.close()
         finally:
             server.shutdown()
             thread.join(timeout=5)

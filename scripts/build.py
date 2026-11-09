@@ -8,7 +8,7 @@ Run from the repo root: uv run scripts/build.py [--out DIR]
 Exits non-zero on any schema or consistency error, so a broken dataset never ships.
 Outputs are written to a temporary folder beside the output directory first and only replace it
 when everything succeeded. No mode writes a tracked file except --update-readme, which regenerates
-the README citation, current-count, agents and definition blocks, CITATION.cff and .zenodo.json; --check writes nothing at all unless --report-dir is given.
+the README citation, current-count and definition blocks, CITATION.cff and .zenodo.json; --check writes nothing at all unless --report-dir is given.
 """
 
 import argparse
@@ -39,8 +39,8 @@ if __package__:
     from .method_copy import METHOD_TITLE, full_method_page
     from .method_checks import check_method_rules  # type: ignore[import-not-found]
     from .source_origins import source_origin_report, write_source_origin_report
-    from .agent_files import LICENSES, doi_url, api_files, api_landing_html, api_root, citation_cff, zenodo_json, head_links, share_tags, image_alt_text, json_ld_script, llms_txt, robots_txt, sitemap_xml, feed_xml, FEED_PATH, orientation_html, orientation_markdown, definition_markdown, public_url_errors
-    from .release_checks import check_metadata, check_readme_licence, check_readme_doi, check_markdown, generated_block, generated_citation, generated_counts, check_launch_wording, write_citation, check_instrument_status_dates, instrument_status_warnings, dates_after_as_of
+    from .agent_files import LICENSES, doi_url, api_files, api_landing_html, api_root, citation_cff, zenodo_json, head_links, share_tags, image_alt_text, json_ld_script, llms_txt, robots_txt, sitemap_xml, feed_xml, FEED_PATH, orientation_html, definition_markdown, public_url_errors
+    from .release_checks import check_metadata, check_readme_licence, check_readme_doi, check_markdown, generated_block, generated_citation, generated_counts, check_launch_wording, write_citation, check_instrument_status_dates, instrument_status_warnings, dates_after_as_of, check_changelog_entry
 else:  # Direct script execution.
     import published as fact_pipeline
     from references import authored_schema, excerpt_identity, materialise_references, pointer_ancestors
@@ -49,8 +49,8 @@ else:  # Direct script execution.
     from method_copy import METHOD_TITLE, full_method_page
     from method_checks import check_method_rules
     from source_origins import source_origin_report, write_source_origin_report
-    from agent_files import LICENSES, doi_url, api_files, api_landing_html, api_root, citation_cff, zenodo_json, head_links, share_tags, image_alt_text, json_ld_script, llms_txt, robots_txt, sitemap_xml, feed_xml, FEED_PATH, orientation_html, orientation_markdown, definition_markdown, public_url_errors
-    from release_checks import check_metadata, check_readme_licence, check_readme_doi, check_markdown, generated_block, generated_citation, generated_counts, check_launch_wording, write_citation, check_instrument_status_dates, instrument_status_warnings, dates_after_as_of
+    from agent_files import LICENSES, doi_url, api_files, api_landing_html, api_root, citation_cff, zenodo_json, head_links, share_tags, image_alt_text, json_ld_script, llms_txt, robots_txt, sitemap_xml, feed_xml, FEED_PATH, orientation_html, definition_markdown, public_url_errors
+    from release_checks import check_metadata, check_readme_licence, check_readme_doi, check_markdown, generated_block, generated_citation, generated_counts, check_launch_wording, write_citation, check_instrument_status_dates, instrument_status_warnings, dates_after_as_of, check_changelog_entry
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "data" / "aisi.json"
@@ -1003,7 +1003,7 @@ def main() -> None:
     ap.add_argument("--report-dir", type=Path, help="write the informational source-origin report to this directory (default: no report file)")
     ap.add_argument("--out", type=Path, default=DIST, help="output directory for the built site (default: dist/)")
     ap.add_argument("--check", action="store_true", help="validate only; write nothing")
-    ap.add_argument("--update-readme", action="store_true", help="regenerate README citation, current-count, agents and definition blocks, CITATION.cff and .zenodo.json, then validate as --check does; the only mode that writes a tracked file")
+    ap.add_argument("--update-readme", action="store_true", help="regenerate README citation, current-count and definition blocks, CITATION.cff and .zenodo.json, then validate as --check does; the only mode that writes a tracked file")
     ap.add_argument("--require-complete", action="store_true", help="require timeline and status confidence for jurisdictions, placement and short mandate for institutes, and legal basis for established institutes")
     ap.add_argument("--require-roster", action="store_true", help="require exactly the jurisdictions in data/reference/roster.csv")
     ap.add_argument("--release", action="store_true", help="also reject draft wording in release prose")
@@ -1034,11 +1034,8 @@ def main() -> None:
             counted_bytes = generated_counts(citation_bytes, published)
             if counted_bytes != citation_bytes:
                 stale.append("counts")
-            agents_bytes = generated_block(counted_bytes, orientation_markdown(published), "agents")
-            if agents_bytes != counted_bytes:
-                stale.append("agents")
-            defined_bytes = generated_block(agents_bytes, definition_markdown(published["dataset"]), "definition")
-            if defined_bytes != agents_bytes:
+            defined_bytes = generated_block(counted_bytes, definition_markdown(published["dataset"]), "definition")
+            if defined_bytes != counted_bytes:
                 stale.append("definition")
             citation_bytes = defined_bytes
             if stale and not args.update_readme:
@@ -1060,6 +1057,7 @@ def main() -> None:
     errors.extend(check_markdown(ROOT, citation_bytes))
     if args.release:
         errors.extend(public_url_errors())
+        errors.extend(check_changelog_entry(published))
         errors.extend(check_launch_wording(published, schema, ROOT, citation_bytes.decode("utf-8") if citation_bytes is not None else None))
     late = dates_after_as_of(d)
     if args.release:
@@ -1069,7 +1067,7 @@ def main() -> None:
     # Every check above ran against the regenerated citation, so a failing run writes nothing.
     if args.update_readme and citation_bytes != current_readme:
         write_citation(readme, citation_bytes)
-        print(f"updated {readme.relative_to(ROOT)} citation, counts, agents and definition blocks", file=sys.stderr)
+        print(f"updated {readme.relative_to(ROOT)} citation, counts and definition blocks", file=sys.stderr)
     for path, current, text in tracked:
         if args.update_readme and current != text:
             write_citation(path, text.encode("utf-8"))

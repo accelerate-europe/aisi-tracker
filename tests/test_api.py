@@ -219,7 +219,7 @@ def test_api_landing_page_links_resolve(site):
         assert text.endswith(".") and text.count(": ") >= 1, text
 
 
-def test_orientation_is_one_text_in_four_places(site):
+def test_orientation_is_one_text_in_three_places(site):
     from bs4 import BeautifulSoup
 
     major = load(site / "data/aisi.json")["dataset"]["version"].split(".")[0]
@@ -228,12 +228,11 @@ def test_orientation_is_one_text_in_four_places(site):
     block = BeautifulSoup((site / "index.html").read_text(encoding="utf-8"), "html.parser").select_one("p#using-data")
     assert [a["href"] for a in block.select("a")] == ["llms.txt", f"api/v{major}/index.json"]
     assert " ".join(block.get_text().split()) == "Scripts and AI agents: llms.txt and the API index"
-    readme = (build.ROOT / "README.md").read_text(encoding="utf-8")
-    agents = readme.split("<!-- agents:start -->")[1].split("<!-- agents:end -->")[0]
     llms = (site / "llms.txt").read_text(encoding="utf-8")
     for heading, text in sections:
-        assert f"### {heading}\n\n{text}\n" in agents
         assert text in llms
+    readme = (build.ROOT / "README.md").read_text(encoding="utf-8")
+    assert "<!-- agents:start -->" not in readme and "llms.txt" in readme
 
 
 def test_gate_accepts_the_built_agent_files(site):

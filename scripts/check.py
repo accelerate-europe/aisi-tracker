@@ -20,6 +20,7 @@ hook runs the staged copy of this file.
 """
 
 import argparse
+import datetime as dt
 import hashlib
 import io
 import json
@@ -34,6 +35,7 @@ import time
 from dataclasses import dataclass, field
 from pathlib import Path
 from urllib.parse import urljoin, urlsplit
+from zoneinfo import ZoneInfo
 
 sys.dont_write_bytecode = True
 
@@ -45,7 +47,7 @@ def toplevel() -> Path:
 
 
 ROOT = toplevel()
-STEPS = ("validate", "lint", "tests", "copies", "passes", "build", "gate", "compare", "sheet")
+STEPS = ("validate", "lint", "tests", "copies", "passes", "export", "build", "gate", "compare", "sheet")
 # The pre-commit hook runs "fast"; CI runs "fast,build,gate". One definition for both.
 GROUPS = {"fast": ("validate", "lint", "tests")}
 NOT_RUN = 3  # check_page.py's exit code when Chrome is missing
@@ -55,6 +57,8 @@ SERVE_URL = "http://127.0.0.1:8767/"
 # This coordinator and snapshot_sources.py both read AISI_SNAPSHOTS.
 _snapshot_directory = os.environ.get("AISI_SNAPSHOTS")
 SNAPSHOTS = Path(_snapshot_directory).expanduser() if _snapshot_directory else None
+# The run date every step uses (release_checks.today reads it; same name and zone there): one date per run.
+RUN_DATE_ENV, RUN_ZONE = "AISI_RUN_DATE", "Europe/Vienna"
 
 
 @dataclass
@@ -261,6 +265,21 @@ def step_passes(ctx: Context) -> Result:
     if code == 3:
         return Result("passes", "NOT RUN", seconds, f"{detail}; a maintainer with the private store must run this step", log)
     return Result("passes", "PASS" if code == 0 else "FAIL", seconds, detail, log)
+
+
+def step_export(ctx: Context) -> Result:
+    """The public source export (git archive of the snapshot, export-ignore honoured) names nothing internal."""
+    export = ctx.work / "export"
+    export.mkdir()
+    tree = subprocess.run(["git", "-C", str(ctx.snapshot), "write-tree"], capture_output=True, text=True, check=True, env=ctx.env).stdout.strip()
+    archive = subprocess.run(["git", "-C", str(ctx.snapshot), "archive", "--format=tar", tree], capture_output=True, check=True, env=ctx.env).stdout
+    with tarfile.open(fileobj=io.BytesIO(archive)) as tar:
+        tar.extractall(export, filter="data")
+    store = ["--store", str(ctx.snapshots)] if ctx.snapshots else []
+    code, seconds, log = run(ctx, "export", [sys.executable, "scripts/export_scan.py", str(export), *store])
+    if code == 3:
+        return Result("export", "NOT RUN", seconds, f"{tail(log, 1)}; a maintainer with the private store must run this step", log)
+    return Result("export", "PASS" if code == 0 else "FAIL", seconds, tail(log), log)
 
 
 def step_build(ctx: Context) -> Result:
@@ -641,6 +660,11 @@ def preflight(cache: Path, snapshots: Path | None) -> int:
     rows.append(("pass store (passes step, for commits naming a pass)", bool(passes and passes.is_dir()),
                  str(passes) if passes else "not configured (set AISI_PASSES or AISI_SNAPSHOTS)"))
     print(f"| {rows[-1][0]} | {'yes' if rows[-1][1] else 'NO'} | {rows[-1][2]} |")
+    with tempfile.TemporaryDirectory(prefix="aisi-check-") as empty:  # export_scan.py alone resolves the terms file
+        scan = subprocess.run([sys.executable, "scripts/export_scan.py", empty, *(["--store", str(snapshots)] if snapshots else [])],
+                              cwd=ROOT, env=clean_env(), capture_output=True, text=True)
+    rows.append(("private terms file (export step)", scan.returncode == 0, ((scan.stderr or "").strip().splitlines() or ["no output"])[-1]))
+    print(f"| {rows[-1][0]} | {'yes' if rows[-1][1] else 'NO'} | {rows[-1][2]} |")
     return 0 if all(ok for _, ok, _ in rows) else 1
 
 
@@ -658,7 +682,7 @@ def blocking(results: list[Result], allow_skip: bool) -> list[Result]:
 
 
 RUNNERS = {
-    "validate": step_validate, "lint": step_lint, "tests": step_tests, "copies": step_copies, "passes": step_passes, "build": step_build,
+    "validate": step_validate, "lint": step_lint, "tests": step_tests, "copies": step_copies, "passes": step_passes, "export": step_export, "build": step_build,
     "gate": step_gate, "compare": step_compare, "sheet": step_sheet,
 }
 
@@ -733,7 +757,9 @@ def main() -> int:
         work = Path(tmp)
         snapshot_id = make_snapshot(ROOT, work / "snapshot")
         dist = args.gate_dist.resolve() if args.gate_dist else args.out.resolve() if args.out else work / "dist"
-        ctx = Context(ROOT, work / "snapshot", work, report, base, args.release, dist, args.cache.resolve(), clean_env(), serve_url=args.serve_url,
+        env = clean_env()
+        env[RUN_DATE_ENV] = env.get(RUN_DATE_ENV) or dt.datetime.now(ZoneInfo(RUN_ZONE)).date().isoformat()
+        ctx = Context(ROOT, work / "snapshot", work, report, base, args.release, dist, args.cache.resolve(), env, serve_url=args.serve_url,
                       snapshots=args.snapshots, gate_args=gate_arguments(args), test_workers=args.test_workers, built=bool(args.gate_dist))
         results = []
         for step in STEPS:
@@ -748,7 +774,8 @@ def main() -> int:
     unstaged = git(ROOT, "diff", "--name-only").split()
     untracked = git(ROOT, "ls-files", "--others", "--exclude-standard").split()
     failed = blocking(results, args.allow_skip)
-    lines = ["# Check report", "", f"Staged snapshot {snapshot_id}" + (f", compared with {args.base} ({base[:12]})" if base else "") + ".", ""]
+    lines = ["# Check report", "", f"Staged snapshot {snapshot_id}" + (f", compared with {args.base} ({base[:12]})" if base else "")
+             + f"; run date {ctx.env[RUN_DATE_ENV]}.", ""]
     if unstaged or untracked:
         lines += [f"Not checked (unstaged or untracked): {', '.join(unstaged + untracked)}.", ""]
     lines += ["| Step | Result | Seconds | Detail |", "| --- | --- | --- | --- |"]

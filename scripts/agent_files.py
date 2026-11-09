@@ -4,8 +4,8 @@
   Each record file holds the published record unchanged plus the sources it cites, so a reader
   needs one request per state or institute instead of the full aisi.json.
 - One orientation text (what the data is, files and URL patterns, how to read status and
-  confidence, licence, citation), written once here and rendered into the page's "Using the
-  data" block, the README section "For agents and scripts", api/v<major>/index.json and llms.txt.
+  confidence, licence, citation), written once here and rendered into api/v<major>/index.json and
+  llms.txt; the page's "Using the data" block links both.
 - The schema.org Dataset JSON-LD in the page head, sitemap.xml, robots.txt and the Atom feed of news and releases (feed.xml,
   from the changelog).
 - CITATION.cff and .zenodo.json, the only tracked outputs, written by build.py --update-readme, and
@@ -211,13 +211,8 @@ def definition_markdown(dataset: dict) -> str:
     return f"{dataset['definition']} [What counts]({PUBLIC_URL}method.html#qualifying-body)"
 
 
-def orientation_markdown(published: dict) -> str:
-    """README block: one bold-free paragraph per heading, as level-3 headings."""
-    return "\n\n".join(f"### {heading}\n\n{text}" for heading, text in orientation(published))
-
-
 def orientation_html(published: dict) -> str:
-    """The page's "Using the data": one muted line after the downloads linking llms.txt and the API index (the full text is in llms.txt and the README)."""
+    """The page's "Using the data": one muted line after the downloads linking llms.txt and the API index (the full text is in llms.txt and the API index)."""
     api = api_root(published)
     return ('<p class="small" id="using-data">Scripts and AI agents: <a href="llms.txt">llms.txt</a> '
             f'and the <a href="{html.escape(api)}/index.json">API index</a></p>')

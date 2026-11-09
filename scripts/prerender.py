@@ -21,7 +21,7 @@ from functools import partial
 from http.server import ThreadingHTTPServer
 from pathlib import Path
 
-from check_page import INSTALL_CHROME, NOT_RUN, QuietHandler, browser_env, find_chrome
+from check_page import INSTALL_CHROME, LOCALE, NOT_RUN, QuietHandler, browser_env, find_chrome
 
 WIDTH, HEIGHT = 1440, 900  # desktop; at other widths the page regroups its card rows before the data arrives
 TIMEOUT_MS = 60_000
@@ -38,7 +38,7 @@ def prerender(dist: Path, chrome: str) -> str:
             with tempfile.TemporaryDirectory(prefix="prerender-") as profile, sync_playwright() as playwright:
                 browser = playwright.chromium.launch_persistent_context(
                     profile, executable_path=chrome, headless=True, env=browser_env(),
-                    viewport={"width": WIDTH, "height": HEIGHT}, color_scheme="light")
+                    viewport={"width": WIDTH, "height": HEIGHT}, color_scheme="light", locale=LOCALE)
                 try:
                     page = browser.new_page()
                     errors = []

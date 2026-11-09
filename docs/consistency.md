@@ -38,3 +38,13 @@ Funding derivation calculates both total amounts from `sum_of` components, annua
 Stable CSV identities, quote hashes and report locations are defined by the [export contract](design/schema-1.0.md#exports-and-checks).
 
 The page reads the producer’s choices, including the annual-estimate flag, funding and staff IDs, advisory and small-state flags, and development groups. [Render-only tests](../tests/test_render_only.py) supply conflicting raw facts and generated choices to ensure the renderer follows the latter, and mutate citation fallbacks to demonstrate failure. The browser gate and screenshot comparison remain required before integration.
+
+## Rule tables
+
+`uv run scripts/rule_tables.py --data data/aisi.json --output work/reports/rule-tables.md` puts editorial decisions side by side: outputs, first outputs (by `credit.date`), agreements and budget bases for every institute; negative confidence for every `none_identified` jurisdiction; and AI Act authority bases (by `kind`, so bodies with unresolved designation details are included) for EU members, Iceland, Liechtenstein and Norway. Appendices keep the full claims and citations. Run it before editing records for a rule change.
+
+`--decisions PATH` and `--uk-audit PATH` add explicit editorial exclusions from local research files in `work/`. Without them, exclusions are marked unrecorded, never inferred from missing catalogue entries; included UK review decisions missing from the catalogue are listed as pending. The report records the paths and SHA-256 hashes of the dataset and both inputs, is local and untracked, and must be regenerated after a data change. It does not verify sources or replace editorial review. Run it from the repository root, so the local paths resolve.
+
+## Source origins
+
+`uv run scripts/build.py --check --report-dir work/reports` also writes `source-origins.md`, an informational review of source `origin` (the issuing country or international body; null is unresolved) for each cited record: a domestic source on a parent record does not cover a nested claim. Statistical, identifier, historical independence and search-query citations are listed separately in its JSON report. Without `--report-dir`, validation prints the count and writes nothing; an unwritable report directory gives a warning, not a failure.

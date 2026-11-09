@@ -860,7 +860,9 @@ def test_run_stages_stops_workers_it_no_longer_needs(tmp_path):
     work = [("early", None, ("after", (str(pid_file), ["e1"]))), ("late", None, ("stuck", str(pid_file)))]
     start = time.monotonic()
     assert check_page.run_stages(staged_job, work, {}, jobs=2) == ["e1"]
-    assert time.monotonic() - start < 30
+    # The stuck job sleeps 600 s: finishing in under half of that shows it was stopped, not waited for, with room
+    # for slow process start-up on a loaded host.
+    assert time.monotonic() - start < 300
     with pytest.raises(ProcessLookupError):  # terminated, then killed when it ignored that, and reaped
         os.kill(int(pid_file.read_text()), 0)
 
@@ -1185,3 +1187,19 @@ def test_a_held_request_must_have_been_held_before_release():
     assert page.route_obj.done == "aborted"
     with pytest.raises(AssertionError, match="no request for"):
         check_page.Held(Page(), check_page.PAGE_DATA).wait(timeout_ms=120)
+
+
+def test_pages_and_contexts_open_in_the_fixed_locale_unless_a_check_names_one():
+    class Browser:
+        version = "1"
+
+        def new_page(self, **options):
+            return options
+
+        def new_context(self, **options):
+            return options
+
+    browser = check_page.LocalisedBrowser(Browser())
+    assert browser.new_page(color_scheme="dark") == {"locale": check_page.LOCALE, "color_scheme": "dark"}
+    assert browser.new_context(locale="de-AT") == {"locale": "de-AT"}
+    assert browser.version == "1"
