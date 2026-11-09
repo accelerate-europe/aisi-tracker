@@ -3,9 +3,9 @@
     "name": "aisi-tracker",
     "title": "AI Security Institutes tracker",
     "description": "Which states have an AI Security Institute (AISI), covering all 193 UN member states plus Taiwan and the EU AI Office, with funding, staff and leadership where published. Every record cites its sources.",
-    "definition": "We count a body as an AI Security Institute (AISI) if a national government or an international organisation, such as the EU, has tasked it with testing general-purpose or frontier AI models for their capabilities and risks, or has named it its AI safety institute or its AI security institute. A regulator, certification body or cyber security agency does not count for that role alone.",
-    "version": "1.0.5",
-    "as_of": "2026-11-08",
+    "definition": "We count a body as an AI Security Institute (AISI) if a national government or an international organisation, such as the EU, has tasked it with testing general-purpose or frontier AI models for their capabilities and risks, or has named it its AI safety institute or its AI security institute. Being a regulator, certification body or cyber security agency is not enough on its own.",
+    "version": "1.0.6",
+    "as_of": "2026-11-09",
     "license": "CC BY 4.0",
     "license_note": "Quotations from sources remain with their rights holders and are reproduced as quotations; the licence covers our own compilation, text and data.",
     "publisher": "Accelerate Europe",
@@ -18,7 +18,7 @@
     ],
     "contact": "contact@accelerate-europe.org",
     "repository": "https://github.com/accelerate-europe/aisi-tracker",
-    "citation": "Accelerate Europe (2026). AI Security Institutes tracker, version 1.0.5, data as of 8 November 2026. Compiled by Jason Hoelscher-Obermaier. https://doi.org/10.5281/zenodo.23600431",
+    "citation": "Accelerate Europe (2026). AI Security Institutes tracker, version 1.0.6, data as of 9 November 2026. Compiled by Jason Hoelscher-Obermaier. https://doi.org/10.5281/zenodo.23600431",
     "doi": "10.5281/zenodo.23600431",
     "scope": "Status is tracked for all 193 UN member states, Taiwan (as a territory) and the EU AI Office. The Europe page counts the 27 EU member states, Iceland, Liechtenstein, Norway, the United Kingdom and Switzerland.",
     "method": [
@@ -1635,7 +1635,7 @@
       {
         "id": "qualifying-body",
         "title": "What counts as an institute",
-        "summary": "We count a body as an AI Security Institute (AISI) if a national government or an international organisation, such as the EU, has tasked it with testing general-purpose or frontier AI models for their capabilities and risks, or has named it its AI safety institute or its AI security institute. A regulator, certification body or cyber security agency does not count for that role alone.",
+        "summary": "We count a body as an AI Security Institute (AISI) if a national government or an international organisation, such as the EU, has tasked it with testing general-purpose or frontier AI models for their capabilities and risks, or has named it its AI safety institute or its AI security institute. Being a regulator, certification body or cyber security agency is not enough on its own.",
         "rules": {
           "qualifying-body": "5cd73efbea9731dba541edcc3a61ac9e10cdf4616046633f5b821dba41449db9"
         }
@@ -16149,6 +16149,10 @@
           {
             "date": "2026-10-24",
             "scope": "Re-ran searches in English for a government-designated institute that evaluates advanced models, or a commitment, proposal or study naming one. No qualifying institute or commitment was identified; results described the June 2026 appointment of a Minister for Digital Transformation with an AI policy portfolio and the digital transformation agenda. Retrieved the Government Gazette as new primary governance evidence. Raised confidence to medium under the status-confidence rule: recorded queries in English and a national or official language, and cited primary governance evidence consistent with no qualifying institute. Partial check; the last full-check date is unchanged."
+          },
+          {
+            "date": "2026-11-09",
+            "scope": "Checked the Government Gazette after the 5 November 2026 general election, up to No. 57 of 6 November 2026: no new assignment of AI policy and no commencement notice for the Digital Transformation Agency Act. Partial check; the last full-check date is unchanged."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -16202,15 +16206,15 @@
       },
       "source_ids": [
         "gd-gov-ict",
-        "gd-dta-bill-2026",
+        "gd-dta-act-10-2026",
         "recheck-lac-ctu-caitf-2026",
         "gd-nowgrenada-redhead",
         "gd-gazette-26-2026"
       ],
-      "notes": "The Cabinet Office ICT division page lists 'AI-Powered Government Tools' among its services. The minister for digital transformation appointed in June 2026 has AI policy in his portfolio (Government Gazette No. 26 of 2026; NOW Grenada). The Digital Transformation Agency Bill 2026 would create an autonomous agency with audit powers over public bodies' digital services, with no AI remit. The CTU report (July 2026) lists 'None reported' for a national AI strategy. This is an absence of findings.",
+      "notes": "The Cabinet Office ICT division page lists 'AI-Powered Government Tools' among its services. The minister for digital transformation appointed in June 2026 has AI policy in his portfolio (Government Gazette No. 26 of 2026; NOW Grenada). The Digital Transformation Agency Act 2026 (Act No. 10 of 2026, assented on 31 August 2026) establishes an agency to lead, coordinate and oversee digital transformation across the public sector, and lets it audit public bodies' operations against the Government's digital transformation initiatives; no provision names artificial intelligence. It comes into operation on a day the minister appoints by notice in the Gazette. The CTU report (July 2026) lists 'None reported' for a national AI strategy. This is an absence of findings.",
       "next_check": {
-        "date": "2027-04-16",
-        "reason": "Look for a Grenada government source on AI or digital transformation."
+        "date": "2026-12-07",
+        "reason": "Look for the post-election assignment of AI policy and digital transformation in the Government Gazette."
       },
       "region": {
         "id": "019",
@@ -53504,22 +53508,51 @@
       }
     },
     {
-      "id": "gd-dta-bill-2026",
-      "url": "https://grenadaparliament.gd/wp-content/uploads/2026/07/Digital-Transformation-Agency-Bill-2026-1.pdf",
-      "title": "Digital Transformation Agency Bill, 2026",
+      "id": "gd-dta-act-10-2026",
+      "url": "https://grenadaparliament.gd/wp-content/uploads/2026/09/Act-No.-10-of-2026-Digital-Transformation-Agency.pdf",
+      "title": "Digital Transformation Agency Act, 2026 (Act No. 10 of 2026)",
       "publisher": "Parliament of Grenada",
       "type": "primary",
-      "published": "2026-07",
-      "accessed": "2026-10-16",
+      "published": "2026-09-04",
+      "accessed": "2026-11-09",
+      "legal_text": true,
       "language": "en",
       "origin": "GD",
+      "access_note": "Enacted text with the Governor-General's assent of 31 August 2026, printed by the Government Printer on 4/9/2026 and published with Government Gazette No. 41 of 4 September 2026 (Government Notice No. 41, https://gazettes.gov.gd/index.php/publications/no-41-of-2026-friday-4th-september-2026/viewdocument/664). Section 1(2): it comes into operation on a day the Minister appoints by notice in the Gazette. Artificial intelligence is not named; 'intelligence' appears only in the definition of a telecommunications system.",
+      "excerpts": [
+        {
+          "text": "AN ACT to establish an Agency to be called the Digital Transformation Agency with a mandate to lead, coordinate and oversee the implementation of digital transformation initiatives across the public sector",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "GD"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-09"
+        },
+        {
+          "text": "the Agency may carry out, or authorize duly qualified persons to carry out, a digital services audit of operations of a public body",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "GD"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-09"
+        }
+      ],
       "snapshot": {
-        "retrieved": "2026-10-17T14:22:17Z",
-        "sha256": "0cd5f358a02a7a7a0eb4804636f5978e48afaec7cd6b23c75f6f44322eb6f004",
-        "text_sha256": "91680dec07dff6cd13f5042ef465ae3886c782e8933a8c592d8726cce0c9db77",
+        "retrieved": "2026-11-09T07:17:53Z",
+        "sha256": "9df015972abb71be06e28e460aeb975497623cc83ba9ffd05e4cebcee2613871",
+        "text_sha256": "f079c36493868dc2827314114b4b1a37b919246cfd745c51ac1bb9faf642842e",
         "text_scheme": 1
-      },
-      "archive_url": "https://web.archive.org/web/20261017023036if_/https://grenadaparliament.gd/wp-content/uploads/2026/07/Digital-Transformation-Agency-Bill-2026-1.pdf"
+      }
     },
     {
       "id": "kn-sknis-hanley-2026",
@@ -60977,7 +61010,7 @@
       "legal_text": true,
       "language": "ru",
       "published": "2025-01-31",
-      "access_note": "Read the strategy provisions on the institutional framework, coordination, standards and economic application; these do not identify a national institute to evaluate advanced models.",
+      "access_note": "Read the strategy provisions on the institutional framework, coordination, standards and economic application; these do not identify a national institute to evaluate advanced models. Its status was confirmed in the Ministry of Justice's legal-information database ADLIA (https://mmih.tj/SEARCH/DocumentView?DocumentId=143399) on 9 November 2026: Амалкунанда (in force), with no repeal date, in the version amended by government resolution No. 83 of 31 January 2025.",
       "origin": "TJ",
       "snapshot": {
         "retrieved": "2026-10-17T14:23:15Z",
@@ -60985,7 +61018,8 @@
         "text_sha256": "e361fd72756b5df371849d4f72b4cc4bfa5f3bdd3d70052ca6f290fd6fe375de",
         "text_scheme": 1
       },
-      "archive_url": "https://web.archive.org/web/20260509071434if_/https://egov.tj/uploads/2025/9/25/db29ff250e97ee01de3339e6bf2423e6_original.144805.pdf"
+      "archive_url": "https://web.archive.org/web/20260509071434if_/https://egov.tj/uploads/2025/9/25/db29ff250e97ee01de3339e6bf2423e6_original.144805.pdf",
+      "instrument_status_checked": "2026-11-09"
     },
     {
       "id": "tj-recheck2-teaching-institute",
@@ -103403,7 +103437,8 @@
         "text_sha256": "c28eafa1615fa2557c398fc0532b9fea917976927b4e095c85f3c8e73083c268",
         "text_scheme": 1
       },
-      "legal_text": true
+      "legal_text": true,
+      "access_note": "Published in the Journal officiel de la République du Congo n° 35 of 28 August 2025, page 1171 (https://sgg.cg/JO/2025/congo-jo-2025-35.pdf, contents page, retrieved on 9 November 2026)."
     },
     {
       "id": "ml-un-global-dialogue-2026",
@@ -103502,12 +103537,12 @@
     },
     {
       "id": "gq-decreto-61-2026",
-      "url": "https://www.guineaecuatorialpress.com/noticias/decreto_presidencial_de_nombramiento_de_los_secretarios_de_estado",
-      "title": "Decreto presidencial de nombramiento de los secretarios de Estado",
-      "title_en": "Presidential decree appointing the secretaries of state",
-      "publisher": "Government of Equatorial Guinea (Guinea Ecuatorial Press)",
+      "url": "https://boe.gob.gq/files/Decreto%20Nombramientos%20de%20Secretarios%20de%20Estado.pdf",
+      "title": "Decreto Núm. 61/2026, de fecha 23 de junio, por el que se Nombra Secretarios de Estado en los Departamentos Ministeriales",
+      "title_en": "Decree No. 61/2026 of 23 June appointing Secretaries of State in the ministerial departments",
+      "publisher": "Boletín Oficial del Estado de Guinea Ecuatorial",
       "type": "primary",
-      "accessed": "2026-10-24",
+      "accessed": "2026-11-09",
       "published": "2026-06-23",
       "language": "es",
       "origin": "GQ",
@@ -103524,11 +103559,12 @@
               "governance_note"
             ]
           ],
-          "accessed": "2026-10-24",
-          "gloss": "Responsible for Artificial Intelligence Systems"
+          "accessed": "2026-11-09",
+          "gloss": "Responsible for Artificial Intelligence Systems",
+          "url": "https://www.guineaecuatorialpress.com/noticias/decreto_presidencial_de_nombramiento_de_los_secretarios_de_estado"
         },
         {
-          "text": "Secretario de Estado del Ministerio de Transportes, Telecomunicaciones y Aviación Civil",
+          "text": "Secretario de Estado del Ministerio de Transportes, Telecomunicaciones y Aviación Civil, Encargado de Sistemas de Inteligencia Artificial",
           "supports": [
             [
               "jurisdictions",
@@ -103539,17 +103575,19 @@
               "governance_note"
             ]
           ],
-          "accessed": "2026-10-24",
-          "gloss": "Secretary of State of the Ministry of Transport, Telecommunications and Civil Aviation"
+          "accessed": "2026-11-09",
+          "gloss": "Secretary of State of the Ministry of Transport, Telecommunications and Civil Aviation, responsible for Artificial Intelligence Systems",
+          "url": "https://www.guineaecuatorialpress.com/noticias/decreto_presidencial_de_nombramiento_de_los_secretarios_de_estado"
         }
       ],
       "snapshot": {
-        "retrieved": "2026-10-24T11:35:40Z",
-        "sha256": "22394561d12adde22bfcf99587a6313b0c895552f133235710597afa01aa4d9c",
-        "text_sha256": "6b3f08e865ccc714a1d1595a64aed8f3e7315f9a7dcadf49c377d9d425371b29",
+        "retrieved": "2026-11-09T09:38:21Z",
+        "sha256": "c7b8b7bd73a9f50c70add61de37db1c5418c7f538a808314901f88922c6c44b3",
+        "text_sha256": "36897357fec61f4e943d080f985da14410b0abf5d40707666cc6d3e8b70e7a7a",
         "text_scheme": 1
       },
-      "legal_text": true
+      "legal_text": true,
+      "access_note": "Official Boletín Oficial del Estado copy: an electronically signed image scan of five pages without a text layer. Both quotations are item 16 on page 4, checked by eye against the page image on 9 November 2026; there the item reads 'Ministerio de de Transportes', with the word 'de' doubled. They are verified by machine against the government press copy of the same decree (https://www.guineaecuatorialpress.com/noticias/decreto_presidencial_de_nombramiento_de_los_secretarios_de_estado), which was the source cited earlier. The document link was read from the BOE search results (https://boe.gob.gq/buscador), which need a browser."
     },
     {
       "id": "gb-dsit-supp-estimate-memo-2025-26",
@@ -111761,6 +111799,19 @@
         "France: INESIA's staffing notes cite an Inria vacancy that works with INESIA's members; these are member-body posts, not INESIA headcount.",
         "Singapore: the Digital Trust Centre's SGD 50m grant runs five years from 1 October 2022, from NTU's page on the centre; the related-funding record now has that period and an annual mean.",
         "Sources: the legal status of Japan's AI Promotion Act, Ethiopia's Regulation 510/2022, Greece's Law 5321/2026 (articles 3 to 5) and Azerbaijan's AI Strategy order (No. 530 of 2025) was verified on 8 November 2026 against official records; all are in force. Russia's Law 243-FZ and Ethiopia's regulation are now cited from official copies (publication.pravo.gov.ru, the Ministry of Justice) instead of a republication and a mirror; El Salvador's ANIA resolution has its Diario Oficial publication date."
+      ]
+    },
+    {
+      "date": "2026-11-09",
+      "version": "1.0.6",
+      "summary": "Plainer definition wording; Tajikistan's AI strategy confirmed in force; Grenada's Digital Transformation Agency Act cited from the published Act; a faster page and map.",
+      "changes": [
+        "Definition: the last sentence now reads \"Being a regulator, certification body or cyber security agency is not enough on its own.\" The rule is unchanged.",
+        "Tajikistan: the national AI strategy to 2040 is recorded as in force, as amended on 31 January 2025, from the Ministry of Justice register.",
+        "Grenada: the Digital Transformation Agency Act (Act No. 10 of 2026, assented 31 August 2026, published with Gazette No. 41 of 4 September) replaces the bill as the source; it comes into force by a later gazette notice. No new assignment of AI policy has been gazetted since the November 2026 election.",
+        "Republic of the Congo and Equatorial Guinea: decree citations now give the official journal (Congo, Journal officiel No. 35 of 28 August 2025) and the official gazette copy (Equatorial Guinea, Decree 61/2026).",
+        "Files for scripts and AI agents: llms.txt and the API index describe the data in plain words, with examples of the per-record files.",
+        "Page: switching theme, opening search and opening details no longer redraw the whole page; the map draws after the page has loaded, and a tap on the phone map before then opens the nearest country."
       ]
     }
   ]

@@ -2124,7 +2124,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         t.dataset.j = j.id; t.dataset.tip = j.name; t.dataset.tipSub = LABEL[j.status] + (inst && j.status !== "none_identified" ? " · " + inst.short_name : "");
         n.tgt = t;
         t.addEventListener("focus", function () { hover(j.id, true); }); t.addEventListener("blur", function () { hover(j.id, false); });
-        t.addEventListener("mousedown", function (e) { if (nearestAt(M, e)) e.preventDefault(); }); // the pointer's dot, not the overlapping circle, takes focus below
+        t.addEventListener("mousedown", function (e) { if (nearestAt(M.svg, e, M.nodes)) e.preventDefault(); }); // the pointer's dot, not the overlapping circle, takes focus below
         t.addEventListener("click", function (e) { pointerPick(M, e, n); });
         t.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); choose(j.id); } });
         // Names beside the dots of states with a status, in region views; the world view relies on the list.
@@ -2133,10 +2133,10 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         text.textContent = L.k < 1 && PHONE_SHORT[j.name] ? SHORT_NAME[j.name] : j.name; text.dataset.j = j.id; M.labels.push({ n: n, text: text });
         text.addEventListener("mouseenter", function () { hover(j.id, true); }); text.addEventListener("mouseleave", function () { hover(j.id, false); }); text.addEventListener("mousedown", function (e) { e.preventDefault(); }); text.addEventListener("click", function (e) { pointerPick(M, e, n); }); // a name may lie over a neighbour's hit circle
       });
-      placeLabels(L, M.nodes, M.labels);
+      placeLabels(L, M.nodes, M.labels); M.early = document.fonts.status !== "loaded"; // placed with fallback widths: again once the fonts are in
       // Hit circles overlap where states are close: the pointer acts on the nearest dot whose circle it is in.
       dots.addEventListener("mousemove", function (e) {
-        var near = nearestAt(M, e); if (near && !touchInput) showTip(near.tgt); // also over another dot's overlapping circle
+        var near = nearestAt(M.svg, e, M.nodes); if (near && !touchInput) showTip(near.tgt); // also over another dot's overlapping circle
         if (near === M.over) return;
         M.over = near; hover(near ? near.j.id : null, !!near);
       });
@@ -2166,18 +2166,19 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     }
     // One target per pointer click: the nearest dot under the pointer is selected, focused and named in the tooltip.
     function pointerPick(M, e, own, shape) {
-      var hit = (!shape && nearestAt(M, e)) || own; // a click on a country's shape acts on that country's dot
+      var hit = (!shape && nearestAt(M.svg, e, M.nodes)) || own; // a click on a country's shape acts on that country's dot
       e.stopPropagation(); // the page's tooltip handler would show the topmost circle's tip
       if (e.detail && hit.tgt !== document.activeElement) hit.tgt.focus({ preventScroll: true }); // first, so the record's opener is this dot
       choose(hit.j.id);
       if (!touchInput) showTip(hit.tgt); // on touch the record that opens names the state
     }
-    function nearestAt(M, e) {
+    // The nearest dot whose target holds the pointer (nodes: x, y, hit), not the circle on top; also for the saved drawing.
+    function nearestAt(svg, e, nodes) {
       if (!e.clientX && !e.clientY) return null; // a keyboard or scripted click has no position
-      var ctm = M.svg.getScreenCTM(); if (!ctm) return null;
-      var pt = M.svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY; pt = pt.matrixTransform(ctm.inverse());
+      var ctm = svg.getScreenCTM(); if (!ctm) return null;
+      var pt = svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY; pt = pt.matrixTransform(ctm.inverse());
       var best = null, bestD = Infinity;
-      M.nodes.forEach(function (n) { var dd = Math.hypot(n.x - pt.x, n.y - pt.y); if (dd <= n.hit && dd < bestD) { best = n; bestD = dd; } });
+      nodes.forEach(function (n) { var dd = Math.hypot(n.x - pt.x, n.y - pt.y); if (dd <= n.hit && dd < bestD) { best = n; bestD = dd; } });
       return best;
     }
     function hover(id, on) {
@@ -2193,11 +2194,16 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         M.nodes.forEach(function (n) { n.tgt.setAttribute("aria-expanded", String(n.j.id === view.sel)); }); // each dot opens the record beside the map
       });
     }
+    // The topology waiting for an idle moment (mapArrived), and the staged drawing run a direct draw supersedes.
+    var pendingWorld = null, stageRun = 0;
+    function takeWorld() { if (pendingWorld) { geo = makeGeo(pendingWorld); DRAWN = {}; pendingWorld = null; } }
+    function idle(fn) { if (window.requestIdleCallback) requestIdleCallback(fn, { timeout: 1000 }); else setTimeout(fn, 50); }
     // #worldmap[data-map] says what the map shows, for the browser gate (check_page map_ready): "saved" (the saved drawing
     // stands in), "loading" or "failed" (a note instead), "placing" (drawn, its names wait for the fonts), "drawn".
     function drawMap() {
-      var box = $("worldmap"); box.textContent = "";
-      if (!geo) { // the map loads after the data or not at all: the saved drawing of the default view stays, its dots open records
+      var box = $("worldmap"); stageRun++; takeWorld(); // a drawing now replaces any staged one
+      if (!geo) {
+        box.textContent = ""; // the map loads after the data or not at all: the saved drawing of the default view stays, its dots open records
         MAPS = [];
         var saved = SAVED_MAP && view.region === DEFAULT_REGION;
         if (saved) SAVED_MAP.forEach(function (n) { box.appendChild(n); });
@@ -2205,19 +2211,41 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         box.setAttribute("data-map", saved ? "saved" : mapFailed ? "failed" : "loading");
         return;
       }
-      MAPS = LAYOUTS.map(drawLayout);
+      showMaps(LAYOUTS.map(drawLayout));
+    }
+    function showMaps(maps) {
+      var box = $("worldmap"); box.textContent = "";
+      MAPS = maps;
       MAPS.forEach(function (M) { box.appendChild(M.svg); });
       syncSelection();
-      if (document.fonts.status === "loaded") { box.setAttribute("data-map", "drawn"); return; }
+      if (document.fonts.status === "loaded") { MAPS.forEach(function (M) { if (M.early) placeLabels(M.layout, M.nodes, M.labels); }); box.setAttribute("data-map", "drawn"); return; } // a staged layout drawn before the fonts came
       box.setAttribute("data-map", "placing");
       var maps = MAPS; // a later draw sets its own state; this one marks only its own drawing
       document.fonts.ready.then(function () { if (maps !== MAPS) return; MAPS.forEach(function (M) { placeLabels(M.layout, M.nodes, M.labels); }); box.setAttribute("data-map", "drawn"); });
     }
     function drawFirst() { drawHeadline(); drawMap(); syncList(); drawRecord(); }
-    // The saved drawing's dots (no map script yet): a click opens the record, as on the drawn map (keyboard: the list and search).
-    $("worldmap").addEventListener("click", function (e) { var t = !geo && e.target.closest && e.target.closest(".tgt[data-j]"); if (t) { e.stopPropagation(); choose(t.dataset.j); } });
+    // The saved drawing's dots (no drawn map yet): a click opens the record, as on the drawn map (keyboard: the list and search).
+    $("worldmap").addEventListener("click", function (e) {
+      var t = !MAPS.length && e.target.closest && e.target.closest(".tgt[data-j]"); if (!t) return;
+      var svg = t.ownerSVGElement, near = nearestAt(svg, e, [].map.call(svg.querySelectorAll(".tgt[data-j]"), function (c) { return { j: c.dataset.j, x: +c.getAttribute("cx"), y: +c.getAttribute("cy"), hit: +c.getAttribute("r") }; }));
+      e.stopPropagation(); choose(near ? near.j : t.dataset.j); // no position (keyboard): its own dot
+    });
     // The map arriving after the page has taken over, or failing to: draw it, or say so where no saved drawing stands in.
-    mapArrived = function (w) { if (w) { geo = makeGeo(w); DRAWN = {}; } drawMap(); };
+    // Where the saved drawing stands in, the map is drawn in idle moments after the take-over, one layout each (the one
+    // in view first), and replaces the saved drawing only when both are drawn: the same drawing as a direct draw. Any
+    // other draw meanwhile (a region switch) takes the topology and draws at once.
+    mapArrived = function (w) {
+      if (!w) { drawMap(); return; }
+      pendingWorld = w;
+      var phone = matchMedia("(max-width: 640px)").matches, order = phone ? [1, 0] : [0, 1], shown = LAYOUTS[order[0]].cls;
+      if (view.region !== DEFAULT_REGION || !document.querySelector("#worldmap svg." + shown + '[data-saved="done"]')) { drawMap(); return; } // nothing stands in: at once
+      var run = ++stageRun, maps = [];
+      (function next(k) { idle(function () {
+        if (run !== stageRun) return;
+        takeWorld(); maps[order[k]] = drawLayout(LAYOUTS[order[k]]);
+        if (k + 1 < order.length) next(k + 1); else showMaps(maps);
+      }); })(0);
+    };
 
     // Selecting a state opens its record beside the map; a state outside the region in view moves the map to its region.
     function choose(id) { pick(view.sel === id ? null : id, "map"); }
@@ -3306,9 +3334,9 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   var world = null; MAP.then(function (w) { world = w; }, function (error) { console.warn("The map could not be loaded", error); });
   Promise.all([fetch(dataMeta ? dataMeta.content : "data/page.json").then(json), PKG.catch(function () {}), PRERENDERING ? MAP : null])
     .then(function (loaded) {
-      (PRERENDERED ? hydrate : render)(loaded[0], world);
-      if (world) return;
+      (PRERENDERED ? hydrate : render)(loaded[0], PRERENDERED ? null : world); // the saved drawing stands in while the map is drawn after the take-over
       var late = function () { if (mapArrived) mapArrived(world); };
+      if (world) { if (PRERENDERED) late(); return; }
       MAP.then(late, function () { mapFailed = true; late(); });
       setTimeout(function () { if (!world && !mapFailed) { mapFailed = true; late(); } }, MAP_WAIT);
     }).catch(function (error) {

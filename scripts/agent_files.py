@@ -3,8 +3,8 @@
 - The static per-record API (api/v<major>/), versioned by the schema major in dataset.version.
   Each record file holds the published record unchanged plus the sources it cites, so a reader
   needs one request per state or institute instead of the full aisi.json.
-- One orientation text (what the data is, files and URL patterns, how to read status and
-  confidence, licence, citation), written once here and rendered into api/v<major>/index.json and
+- One orientation text (what the data is, how to read sources, status, confidence, funding and
+  partners, licence, citation), written once here and rendered into api/v<major>/index.json and
   llms.txt; the page's "Using the data" block links both.
 - The schema.org Dataset JSON-LD in the page head, sitemap.xml, robots.txt and the Atom feed of news and releases (feed.xml,
   from the changelog).
@@ -14,6 +14,7 @@
 
 from __future__ import annotations
 
+import datetime as dt
 import html
 import json
 import re
@@ -135,9 +136,9 @@ def compact_jurisdiction(j: dict) -> dict:
 JURISDICTION_IDS = "ISO 3166-1 alpha-2 code, EU for the European Union"
 API_FILES = {
     "index.json": "This index: files, URL patterns and how to read the records.",
-    "jurisdictions.json": "Every jurisdiction in one compact list: id, name, status, status_since and institute id.",
-    "jurisdictions/{id}.json": f"Everything on one jurisdiction ({JURISDICTION_IDS}): its record as published in the full dataset, its institute's record under institute (null when it has none), and the sources both cite with their supporting excerpts.",
-    "institutes/{id}.json": "One institute as published in the full dataset, with the sources it cites and their supporting excerpts.",
+    "jurisdictions.json": "Every jurisdiction in one compact list: id, name, status, status_since and AISI id (institute).",
+    "jurisdictions/{id}.json": f"Everything on one jurisdiction ({JURISDICTION_IDS}): its record as published in the full dataset, its AISI's record under institute (null when there is no AISI), and the sources both cite with their supporting excerpts.",
+    "institutes/{id}.json": "One AISI as published in the full dataset, with the sources it cites and their supporting excerpts.",
 }
 
 
@@ -156,46 +157,54 @@ def method_rule(dataset: dict, rule_id: str) -> str:
 def orientation(published: dict) -> list[tuple[str, str]]:
     """The one orientation text as (heading, text) pairs; `backticks` mark file paths and field names."""
     dataset = published["dataset"]
-    api = api_root(published)
     statuses = list(dataset["status_definitions"])
     licence = LICENSES[dataset["license"]]
+    as_of = dt.date.fromisoformat(dataset["as_of"])
     return [
-        ("What this is", f"{dataset['description']} Published by {dataset['publisher']}; version {dataset['version']}, data as of {dataset['as_of']}."),
-        ("Answering from this data",
-         "When you answer a question from this data, give the data date (`dataset.as_of`) and cite the source behind each fact: look up the IDs in the field's `citations` in `sources` and give each source's title and `url`. "
-         "When a value is none_identified, not_published, none_found or none_disclosed, say that our searches found nothing, not that nothing exists."),
-        ("Files and addresses",
-         "On the published site, the full dataset is `data/aisi.json`, every record with its sources and check dates; `data/aisi.schema.json` defines every field, "
-         "and `data/datapackage.json` lists every file, including one CSV per table. "
-         f"For one state, `{api}/jurisdictions/{{id}}.json` ({JURISDICTION_IDS}) holds its record and its institute's with the sources they cite; "
-         f"for one institute, `{api}/institutes/{{id}}.json` holds the record with its sources; `{api}/jurisdictions.json` lists every jurisdiction with its status, and `{api}/index.json` describes these files. "
-         "Paths are relative to the site address."),
+        ("What this is", f"{dataset['description']} Published by {dataset['publisher']}; version {dataset['version']}, data as of {as_of.day} {as_of:%B %Y}."),
+        ("What's in the data",
+         "- Jurisdiction (`jurisdictions`): the AISI status of one of the 193 UN member states, Taiwan or the EU.\n"
+         f"- AISI (`institutes`): a body that meets the definition below, or a named body planned or formally proposed for that role. {dataset['definition']}\n"
+         "- Related body (a jurisdiction's `related_bodies`): a body that could be mistaken for an AISI, such as an AI Act authority. Its record says why it does not qualify.\n"
+         "- Output (an AISI's `outputs`): a report, joint test, guidance, evaluation, tool or dataset credited to the AISI or a predecessor. Joint work appears under each of the involved AISIs.\n"
+         "- Agreement (an AISI's `agreements`): an agreement that names the AISI as a party or implementer. A company's pledge to give the AISI model access is listed too. Each is signed, announced or pledged (`state`).\n"
+         "- Network milestone (`dataset.network_milestones`): an event of the international network of AISIs, such as its founding or a joint testing exercise. It does not by itself show which members took part.\n"
+         "- Source (`sources`): a document we cite, with the passages we quote from it. Each quoted passage names the facts it supports (`supports`).\n\n"
+         "Jurisdiction and AISI IDs never change. New codes in `dataset.vocabularies` can appear in a minor version; removing or renaming one is a major version."),
+        ("Sources and dates",
+         "The sources behind each field are listed by ID in `citations`; an empty list means we have no quoted passage for that field. "
+         "Each source has a title, its address (`url`), a copy saved in a web archive where one exists (`archive_url`) and the passages we quote from it (`excerpts`), "
+         "each with an English translation when the source is in another language (`gloss`). The data date is `dataset.as_of`. "
+         "To let others check an answer drawn from this data, give the data date and each source's title and address. "
+         "Each jurisdiction and AISI records the date of its last full re-check (`check.last_checked`; see the freshness rule in `dataset.method`). "
+         "Where `check.last_checked_basis` is historical_upper_bound, the last check was on or before that date."),
         ("Status",
-         f"`status` is one of {', '.join(statuses[:-1])} or {statuses[-1]}, defined in `dataset.status_definitions`. "
-         "`status_since` is the date the current status began, meaning the earliest event in the unbroken run of events at that status. "
-         "none_identified means our searches found no qualifying government step, not that none exists. "
-         "Bodies a reader might mistake for an institute, such as AI Act authorities, are listed under each jurisdiction's `related_bodies`."),
-        ("Head, reporting line and national partners",
-         "Each institute can carry `head`, `reports_to` and `national_partners`: who leads it, which ministry-level body it answers to and which national bodies it works with. "
-         "Each has a `state`: stated, not_published or not_applicable. not_published means we searched and found nothing published, not that nothing exists. "
-         "`head.person_id` names an entry of the institute's `people`. A partner has `what` it is, a `relation` (member, works_with or planned, defined in `dataset.vocabularies.partner_relation`) and `how`, one sentence written from its quoted source; "
-         "`cyber_agency` marks the national cyber security agency, the only body searched for every institute, so a missing partner of any other kind says nothing. "
-         "The card's Partners line shows at most six partners per institute; its \"How they work together\" fold, the data and the downloads hold all of them. "
-         "The CSVs are `institutes.csv` (head and reporting-line columns) and `national_partners.csv`."),
-        ("Confidence and missing values",
-         "`status_confidence` and `confidence` rate the evidence as high, medium or low; the schema defines each level, and `dataset.method` sets the rules for status confidence. "
-         f"{method_rule(dataset, 'missing-values')} Some fields give null, omission or an empty list a specific meaning, such as not applicable; their schema descriptions say which."),
-        ("Budgets and staff figures",
-         "An institute's `funding` and `staff` lists hold every recorded figure, including historical figures, proposals, components and other bodies' funding, and their order has no meaning. "
-         "`display.budget` names the funding record shown as the institute's budget, `display.comparison_funding` the annual figure used to compare institutes (`eur_per_year_est` gives it in euros), "
-         "and `display.total_staff` and `display.technical_staff` the latest staff counts; each is null when nothing qualifies. "
-         "Before quoting an amount, read its `coverage`: not_institute_specific is another body's or a wider programme's money and component is only part of the budget. "
-         "Read `commitment` too: proposed is not adopted. A funding record of `kind` none_disclosed means we found no published budget."),
-        ("Sources",
-         "`citations` gives, for each field, the IDs of the sources whose quoted excerpt supports it. "
-         "Each source has its address, an archive copy where one exists, and its excerpts, with an English gloss for other languages. "
-         "`check.last_checked` is the recorded date of a record's last full re-check (Freshness in `dataset.method`); "
-         "where `check.last_checked_basis` is historical_upper_bound, that date is only an upper bound."),
+         f"A jurisdiction's status (`status`) is one of {', '.join(statuses[:-1])} or {statuses[-1]}, defined in `dataset.status_definitions`. "
+         "Where recorded, the date the current status began (`status_since`) is as precise as its source (a year, a month or a day)."),
+        ("Searches that found nothing",
+         "These four values mean our searches found nothing. They do not show that nothing exists.\n\n"
+         "- None identified (`none_identified`): no current qualifying government step towards an AISI.\n"
+         "- Not published (`not_published`): no published information for that field.\n"
+         "- None found (`none_found`): no matching evidence for that field, such as model access.\n"
+         "- None disclosed (a funding entry of `kind` none_disclosed): no published budget.\n\n"
+         f"{method_rule(dataset, 'missing-values')} Some fields give null, omission or an empty list another meaning, such as not applicable; their schema descriptions say which."),
+        ("Confidence",
+         "We rate the evidence as high, medium or low. Every jurisdiction's status has a rating (`status_confidence`), set by the status confidence rule in `dataset.method`. "
+         "Funding amounts, staff counts and leadership entries have one where recorded (`confidence`); the schema defines its levels."),
+        ("Funding and staff",
+         "An AISI's funding (`funding`) and staff (`staff`) lists include every recorded figure, including historical figures and proposals, so the first or last entry is not necessarily the current one. "
+         "The `display` fields pick the current figures, the ones the page shows, by ID (null when none qualifies):\n\n"
+         "- `display.budget`: the funding entry shown as the budget\n"
+         "- `display.comparison_funding`: the annual funding entry used to compare AISIs; its euro estimate is `eur_per_year_est`\n"
+         "- `display.staff`: the staff entry shown on the page\n"
+         "- `display.total_staff` and `display.technical_staff`: the latest total and technical staff counts\n\n"
+         "Not every amount is the AISI's own adopted budget. A figure can be another body's or a wider programme's money (`coverage`: not_institute_specific), "
+         "only part of the budget (`coverage`: component) or proposed rather than adopted (`commitment`: proposed)."),
+        ("Leadership and national partners",
+         "An AISI's head (`head`), the ministry-level body it reports to (`reports_to`) and the national bodies it works with (`national_partners`) each have a state: stated, not published or not applicable (`state`). "
+         "The head's name and title are in the AISI's list of named leaders, such as directors and their deputies (`people`, linked by `head.person_id`). "
+         "Each partner's relation is member (a constituent of a federated AISI), works with, or planned (`relation`). "
+         "Only the national cyber security agency, marked `cyber_agency`, is searched for at every AISI, so a missing partner of another kind does not mean there is none."),
         ("Licence", f"Code: MIT (`LICENSE`). Data, page text and documentation: {dataset['license']} "
          f"(`LICENSE-DATA`; {licence['title']}, {licence['path']}), with attribution. {dataset['license_note']}"),
         ("Cite as", dataset["citation"]),
@@ -222,19 +231,36 @@ def llms_txt(published: dict) -> str:
     """llms.txt (llmstxt.org): title, summary, the orientation, then absolute links to the key files."""
     dataset = published["dataset"]
     api = api_root(published)
+    # The per-record examples, by key: the UK and its AISI; a build without them lists the patterns unlinked.
+    uk = [j for j in published["jurisdictions"] if j["id"] == "GB"]
+    gb = uk[0]["id"] if len(uk) == 1 else None
+    gb_aisi = uk[0].get("institute_id") if gb else None
+    # (name, path, example, description); a URL pattern links its example file, or nothing without one.
     links = [
-        ("Full dataset", "data/aisi.json", "every record with its sources, confidence and check dates"),
-        ("Schema", "data/aisi.schema.json", "defines every field"),
-        ("Data package", "data/datapackage.json", "every file, including one CSV per table, with field descriptions"),
-        ("API index", f"{api}/index.json", "the per-record files and how to read them"),
-        ("Jurisdictions", f"{api}/jurisdictions.json", "every jurisdiction with its status"),
-        ("Page", "", "the tracker page"),
+        ("Full dataset", "data/aisi.json", None, "every jurisdiction, AISI and source in one file"),
+        ("Schema", "data/aisi.schema.json", None, "what each field means"),
+        ("Data package", "data/datapackage.json", None, "every download, including one CSV per table, with column descriptions"),
+        ("Jurisdictions list", f"{api}/jurisdictions.json", None, "each jurisdiction's ID, name, status, status date and AISI ID"),
+        ("One jurisdiction", f"{api}/jurisdictions/{{id}}.json", gb and f"{gb}.json",
+         "the ID is the two-letter ISO 3166-1 code (GB for the UK, GR for Greece) or EU. Holds the jurisdiction (`record`), its AISI where there is one "
+         "(`institute.record`, otherwise `institute` is null) and the sources both cite (`sources`)."),
+        ("One AISI", f"{api}/institutes/{{id}}.json", gb_aisi and f"{gb_aisi}.json", "the ID is in the jurisdictions list. Holds the AISI and the sources it cites."),
+        ("API index", f"{api}/index.json", None, "file locations, URL patterns, AISI IDs, status definitions and this text, as JSON"),
+        ("Page", "./", None, "the tracker page"),
     ]
+    items = []
+    for name, path, example, text in links:
+        if "{id}" in path and not example:
+            items.append(f"- {name} (`{path}`): {text}")
+        elif example:
+            items.append(f"- [{name}]({PUBLIC_URL}{path.replace('{id}.json', example)}) (`{path}`, for example `{example}`): {text}")
+        else:
+            items.append(f"- [{name}]({PUBLIC_URL}{path.removeprefix('./')}) (`{path}`): {text}")
     sections = orientation(published)
     body = [f"# {dataset['title']}", "", f"> {sections[0][1]}", ""]
     for heading, text in sections[1:]:
         body += [f"## {heading}", "", text, ""]
-    body += ["## Files", ""] + [f"- [{name}]({PUBLIC_URL}{path}): {text}" for name, path, text in links]
+    body += ["## Files", ""] + items
     return "\n".join(body) + "\n"
 
 

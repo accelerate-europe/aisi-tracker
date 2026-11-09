@@ -122,7 +122,7 @@ def test_pointer_escaping_is_rfc6901():
     assert pointer_ancestors(data, "/a~1b/0/~0key")[-1] == 12
 
 
-def test_browser_skip_defers_only_the_gate_and_keeps_other_blockers(monkeypatch, tmp_path):
+def test_browser_skip_starts_no_chromium_and_keeps_other_blockers(monkeypatch, tmp_path):
     monkeypatch.setattr(check, "git", lambda *args, **kwargs: "0" * 40)
     monkeypatch.setattr(check, "make_snapshot", lambda repo, dest: dest.mkdir(parents=True) or "snapshot")
     ran = []
@@ -130,9 +130,10 @@ def test_browser_skip_defers_only_the_gate_and_keeps_other_blockers(monkeypatch,
     monkeypatch.setattr("sys.argv", ["check.py", "--skip-browser", "--fail-fast", "--report-dir", str(tmp_path / "r")])
     monkeypatch.delenv("CI", raising=False)
     assert check.main() == 0
-    assert "gate" not in ran and "build" in ran and "sheet" in ran  # fail-fast goes on past the deferred gate; sheets stay local
+    assert not {"build", "gate", "sheet"} & set(ran) and "compare" in ran  # no step that starts Chromium; fail-fast goes on
     report = (tmp_path / "r/report.md").read_text()
     assert "| gate | NOT RUN |" in report and "CI's gate shards on the pushed commit" in report
+    assert "| build | NOT RUN |" in report and "| sheet | NOT RUN |" in report
     assert "Overall: PASS" in report and "no blocking result" in report
     # Any other NOT RUN still blocks: the private-store steps are part of the local done-check.
     monkeypatch.setattr(check, "RUNNERS", {**check.RUNNERS, "copies": lambda ctx: check.Result("copies", "NOT RUN", detail="no store")})

@@ -12,6 +12,7 @@ when Playwright's Chromium is missing, so callers can tell "not run" from "passe
 import argparse
 import copy
 import csv
+import faulthandler
 import hashlib
 import io
 import json
@@ -656,6 +657,38 @@ def check_static_page(dist: Path, data: dict) -> list[str]:
 FLASH_PIXELS = 500  # measured: at most 75 on an unchanged page
 
 
+def flash_evidence(page, name: str, before: bytes, after: bytes) -> None:
+    """Where AISI_GATE_EVIDENCE names a directory (CI uploads it with the shard results), keep a flash's two frames,
+    the box of the changed pixels and the page's state, so an occurrence that a rerun does not repeat can be read."""
+    if not (root := os.environ.get("AISI_GATE_EVIDENCE")):
+        return
+    out = Path(root) / re.sub(r"[^\w.-]+", "-", name)
+    out.mkdir(parents=True, exist_ok=True)
+    (out / "before.png").write_bytes(before)
+    (out / "after.png").write_bytes(after)
+    import base64
+
+    box = page.evaluate(
+        """async ([a, b]) => {
+          const load = async src => { const i = new Image(); i.src = 'data:image/png;base64,' + src; await i.decode(); return i; };
+          const [x, y] = await Promise.all([load(a), load(b)]);
+          const data = img => { const c = new OffscreenCanvas(img.width, img.height), g = c.getContext('2d'); g.drawImage(img, 0, 0); return g.getImageData(0, 0, img.width, img.height).data; };
+          if (x.width !== y.width || x.height !== y.height) return null;
+          const p = data(x), q = data(y); let x0 = Infinity, y0 = Infinity, x1 = -1, y1 = -1;
+          for (let i = 0; i < p.length; i += 4) if (Math.abs(p[i] - q[i]) > 12 || Math.abs(p[i + 1] - q[i + 1]) > 12 || Math.abs(p[i + 2] - q[i + 2]) > 12) {
+            const n = i / 4, px = n % x.width, py = (n - px) / x.width; x0 = Math.min(x0, px); x1 = Math.max(x1, px); y0 = Math.min(y0, py); y1 = Math.max(y1, py); }
+          return x1 < 0 ? null : { x0, y0, x1, y1 };
+        }""",
+        [base64.b64encode(before).decode(), base64.b64encode(after).decode()],
+    )
+    state = page.evaluate(
+        """() => ({ scrollY, height: document.documentElement.scrollHeight, settled: document.documentElement.hasAttribute('data-settled'),
+          map: document.getElementById('worldmap')?.dataset.map, fonts: document.fonts.status,
+          sections: [...document.querySelectorAll('main section')].map(s => [s.id, Math.round(s.getBoundingClientRect().top), Math.round(s.getBoundingClientRect().height)]) })"""
+    )
+    (out / "state.json").write_text(json.dumps({"diff_box": box, "state": state}, indent=1))
+
+
 def changed_pixels(page, before: bytes, after: bytes) -> int:
     """Count pixels that differ by more than 12 in any channel, decoding both screenshots in the page itself."""
     import base64
@@ -735,9 +768,25 @@ def hydration_paint(browser, base_url: str) -> list[str]:
                 page.wait_for_timeout(300)
                 if page.evaluate("getComputedStyle(document.body).backgroundColor") != GROUNDS[theme]:
                     errors.append(f"hydration {width}px {theme}: the page does not show the {theme} theme")
-                changed = changed_pixels(page, before, page.screenshot(mask=[page.locator(".secnav, .group-nav")]))
+                after = page.screenshot(mask=[page.locator(".secnav, .group-nav")])
+                changed = changed_pixels(page, before, after)
                 if changed > FLASH_PIXELS:
                     errors.append(f"hydration {width}px {theme} at {place}: {changed} pixels change when the script takes over (visible flash)")
+                    try:  # best effort: the flash is reported either way
+                        flash_evidence(page, f"hydration-{width}-{theme}-{place}", before, after)
+                    except Exception as exc:  # noqa: BLE001 - a full disk or a browser error must not hide the flash
+                        errors.append(f"hydration {width}px {theme} at {place}: the flash's evidence was not saved ({type(exc).__name__}: {exc})")
+                if place == "top":  # the drawn map replaces the saved drawing after the take-over: that swap shows nothing either
+                    map_ready(page)
+                    page.wait_for_timeout(300)
+                    drawn = page.screenshot(mask=[page.locator(".secnav, .group-nav")])
+                    changed = changed_pixels(page, before, drawn)
+                    if changed > FLASH_PIXELS:
+                        errors.append(f"hydration {width}px {theme}: {changed} pixels change when the drawn map replaces the saved drawing (visible flash)")
+                        try:
+                            flash_evidence(page, f"map-swap-{width}-{theme}", before, drawn)
+                        except Exception as exc:  # noqa: BLE001 - as above
+                            errors.append(f"hydration {width}px {theme}: the map swap's evidence was not saved ({type(exc).__name__}: {exc})")
                 page.close()
     return errors
 
@@ -800,6 +849,24 @@ def hydration_edges(browser, base_url: str, dist: Path) -> list[str]:
         errors.extend(f"hydration without the map: {e}" for e in mapless_controls(page, failed=True))
     except PlaywrightTimeout:
         errors.append("hydration: without the map topology and d3 the page script does not take over")
+    page.close()
+    # A tap on the phone's saved drawing opens the nearest dot's record, as on the drawn map: at France's centre the
+    # overlapping targets of its neighbours (painted later) must not win. A real pointer click, so hit testing applies.
+    page = browser.new_page(viewport={"width": 390, "height": 900})
+    page.route("**/assets/world-*.json", lambda route: route.abort())
+    page.route("**/assets/d3.*.js", lambda route: route.abort())
+    page.goto(base_url, wait_until="load")
+    try:
+        wait_hydrated(page, 15_000)
+        france = page.locator('#worldmap svg.map-narrow .tgt[data-j="FR"]')
+        france.wait_for(state="attached", timeout=10_000)
+        france.scroll_into_view_if_needed()
+        box = france.bounding_box()
+        page.mouse.click(box["x"] + box["width"] / 2, box["y"] + box["height"] / 2)
+        if (name := page.locator("#record-name").text_content()) != "France":
+            errors.append(f"hydration without the map: a tap at France's centre on the phone's saved drawing opens {name!r}, not France")
+    except PlaywrightTimeout:
+        errors.append("hydration without the map: the phone's saved drawing has no target for France")
     page.close()
     # The saved drawing follows the window across the width where the layouts swap, also while its file is still loading.
     page = browser.new_page(viewport={"width": 1440, "height": 1000})
@@ -9703,28 +9770,92 @@ def write_timings(path: Path, text: str, mode: str = "a") -> None:
         print(f"warning: browser job timings not written to {path}: {exc}", file=sys.stderr)
 
 
-def timed_job(timings: Path | None, origin: float, run, stage: str, check, args: tuple) -> list[str]:
-    """run(stage, check, args), appending one line about it to the timings file (JSON lines) as it ends: the job's
-    id, when it started (seconds after origin, the gate's or the shard's start on this machine, by the monotonic clock
-    that all processes of one machine share) and how long it took, with its error count or the type of the exception
-    it raised. Written by the job's own process, so jobs of a stage the report never reaches are timed too; a job
-    whose worker died has no line."""
-    if timings is None:
-        return run(stage, check, args)
-    started, line = time.monotonic(), {"job": job_id(stage, check, args)}
-    STEP_TIMES.clear()
-    try:
-        errors = run(stage, check, args)
-        line.update(errors=len(errors), exception=None)
-        return errors
-    except BaseException as exc:
-        line.update(errors=None, exception=type(exc).__name__)
-        raise
-    finally:
+# A watchdog, not a budget: CI's slowest job takes about 70 s alone and a small one-browser host about three times
+# that, while every Playwright call has its own timeout; a job still running after JOB_LIMIT is stuck outside them.
+JOB_LIMIT = 600
+JOB_TIMEOUT_EXIT = 124  # the exit status of a process a job's watchdog ended, as timeout(1) uses
+
+
+class WorkerCrashed(RuntimeError):
+    """A browser job's worker process died without a result."""
+
+
+def timed_job(timings: Path | None, origin: float, run, stage: str, check, args: tuple, limit: float = JOB_LIMIT) -> list[str]:
+    """run(stage, check, args) under a watchdog, appending one line about it to the timings file (JSON lines) as it
+    ends: the job's id, when it started (seconds after origin, the gate's or the shard's start on this machine, by the
+    monotonic clock that all processes of one machine share) and how long it took, with its error count or the type of
+    the exception it raised. Written by the job's own process, so jobs of a stage the report never reaches are timed
+    too; a job whose worker died has no line.
+
+    A job still running after limit seconds is stuck: its line says exception JobTimeout, stderr names the job and
+    where every thread was, and the process exits with JOB_TIMEOUT_EXIT; the Playwright driver then closes its Chrome
+    as the pipe closes. In a pool the gate reports WorkerCrashed; with one job in the gate's own process (--jobs 1)
+    the gate itself ends that way."""
+    started, line, owner = time.monotonic(), {"job": job_id(stage, check, args)}, threading.Lock()
+
+    def finish() -> None:
         line.update(started=round(max(started - origin, 0), 3), seconds=round(time.monotonic() - started, 3))
         if STEP_TIMES:  # a job that marks its steps (interaction_pass)
             line["steps"] = dict(STEP_TIMES)
-        write_timings(timings, json.dumps(line) + "\n")  # one short append per line; parallel jobs append whole lines
+        if timings is not None:
+            write_timings(timings, json.dumps(line) + "\n")  # one short append per line; parallel jobs append whole lines
+
+    def overrun() -> None:
+        if not owner.acquire(blocking=False):
+            return  # the job ended at the same moment and writes its own line
+        line.update(errors=None, exception="JobTimeout")
+        finish()
+        print(f"browser job {line['job']} ran over {limit:g} s and is stopped; where each thread was:", file=sys.stderr, flush=True)
+        faulthandler.dump_traceback(all_threads=True)
+        os._exit(JOB_TIMEOUT_EXIT)
+
+    watchdog = threading.Timer(limit, overrun)
+    watchdog.daemon = True
+    STEP_TIMES.clear()
+    watchdog.start()
+    ended = {}
+    try:
+        errors = run(stage, check, args)
+        ended.update(errors=len(errors), exception=None)
+        return errors
+    except BaseException as exc:
+        ended.update(errors=None, exception=type(exc).__name__)
+        raise
+    finally:
+        if owner.acquire(blocking=False):  # whoever takes owner first writes the one line
+            watchdog.cancel()
+            line.update(ended)
+            finish()
+        else:
+            watchdog.join()  # the watchdog fired first and ends this process
+
+
+def submit_jobs(pool, run, work: list[tuple], order: list[int]) -> dict:
+    """Submit work[n] for n in order; after a worker death breaks the pool, the rest stay unsubmitted (pool_result)."""
+    from concurrent.futures.process import BrokenProcessPool
+
+    futures = {}
+    for n in order:
+        try:
+            futures[n] = pool.submit(run, *work[n])
+        except BrokenProcessPool:
+            break
+    return futures
+
+
+def pool_result(future, job: tuple) -> list[str]:
+    """A pool job's errors; a dead worker (which breaks the whole pool) is WorkerCrashed naming the awaited job."""
+    from concurrent.futures.process import BrokenProcessPool
+
+    try:
+        if future is None:
+            raise BrokenProcessPool("the job was never submitted")
+        return future.result()
+    except BrokenProcessPool as exc:
+        raise WorkerCrashed(f"browser job {job_id(*job)} has no result: a worker process died while it was awaited or "
+                            "before it started (possibly SIGKILL: out of memory or an external kill, or another abrupt "
+                            f"exit; a job past its limit prints 'ran over {JOB_LIMIT:g} s' on stderr and its timings "
+                            "line says JobTimeout)") from exc
 
 
 def read_timings(path: Path) -> list[dict]:
@@ -9781,8 +9912,7 @@ def run_stages(run, work: list[tuple], seeds: dict, jobs: int = 1) -> list[str]:
             from concurrent.futures import ProcessPoolExecutor
 
             pool = ProcessPoolExecutor(jobs, mp_context=multiprocessing.get_context("spawn"))
-            for n in sorted(range(len(work)), key=lambda n: start_order(work[n][1])):
-                futures[n] = pool.submit(run, *work[n])
+            futures = submit_jobs(pool, run, work, sorted(range(len(work)), key=lambda n: start_order(work[n][1])))
         errors = []
         for stage in stages:
             if errors:
@@ -9790,7 +9920,7 @@ def run_stages(run, work: list[tuple], seeds: dict, jobs: int = 1) -> list[str]:
             found = seeds[stage]() if stage in seeds else []
             for n, job in enumerate(work):
                 if job[0] == stage:
-                    found += futures[n].result() if pool else run(*job)
+                    found += pool_result(futures.get(n), job) if pool else run(*job)
             errors += found
         else:
             finished = True
@@ -9920,11 +10050,10 @@ def run_shard(run, work: list[tuple], indices: list[int], jobs: int) -> dict[int
             from concurrent.futures import ProcessPoolExecutor
 
             pool = ProcessPoolExecutor(jobs, mp_context=multiprocessing.get_context("spawn"))
-            for n in sorted(indices, key=lambda n: start_order(work[n][1])):
-                futures[n] = pool.submit(run, *work[n])
+            futures = submit_jobs(pool, run, work, sorted(indices, key=lambda n: start_order(work[n][1])))
         for n in indices:
             try:
-                outcomes[n] = outcome(errors=futures[n].result() if pool else run(*work[n]))
+                outcomes[n] = outcome(errors=pool_result(futures.get(n), work[n]) if pool else run(*work[n]))
             except Exception as exc:  # noqa: BLE001 - every failure is a result the merge must see
                 outcomes[n] = outcome(exc)
         finished = True

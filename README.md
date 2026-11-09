@@ -6,13 +6,13 @@ This tracker shows which states have an AI Security Institute (AISI) and, where 
 
 <!-- definition:start -->
 
-We count a body as an AI Security Institute (AISI) if a national government or an international organisation, such as the EU, has tasked it with testing general-purpose or frontier AI models for their capabilities and risks, or has named it its AI safety institute or its AI security institute. A regulator, certification body or cyber security agency does not count for that role alone. [What counts](https://aisi.accelerate-europe.org/method.html#qualifying-body)
+We count a body as an AI Security Institute (AISI) if a national government or an international organisation, such as the EU, has tasked it with testing general-purpose or frontier AI models for their capabilities and risks, or has named it its AI safety institute or its AI security institute. Being a regulator, certification body or cyber security agency is not enough on its own. [What counts](https://aisi.accelerate-europe.org/method.html#qualifying-body)
 
 <!-- definition:end -->
 
 <!-- counts:start -->
 
-Version 1.0.5, data as of 8 November 2026: 195 jurisdictions, 15 AISIs, 134 outputs, 56 agreements, 9 network milestones and 1,193 sources. For the 178 jurisdictions where our searches found no qualifying government step towards an AISI, our confidence in that finding is low for 34, medium for 144 and high for none.
+Version 1.0.6, data as of 9 November 2026: 195 jurisdictions, 15 AISIs, 134 outputs, 56 agreements, 9 network milestones and 1,193 sources. For the 178 jurisdictions where our searches found no qualifying government step towards an AISI, our confidence in that finding is low for 34, medium for 144 and high for none.
 
 <!-- counts:end -->
 
@@ -20,13 +20,13 @@ Version 1.0.5, data as of 8 November 2026: 195 jurisdictions, 15 AISIs, 134 outp
 
 | Entry | What it is |
 | --- | --- |
-| Jurisdiction | One of the 193 UN member states, Taiwan or the EU. Each has a status for its AISI: established, planned, proposed, exploring or none identified ([definitions](https://aisi.accelerate-europe.org/method.html)). |
-| AISI | A body that meets the definition above, or a named body planned or proposed for that role. |
-| Related body | A body a reader might mistake for an AISI, such as an AI Act authority. Recorded for its jurisdiction, not counted. |
-| Output | Something an AISI published or ran: a report, joint test, guidance, evaluation, tool or dataset. A work shared by several AISIs is listed under each. |
-| Agreement | An agreement that names an AISI, with an AI developer, a government, another AISI or another organisation, signed, announced or pledged. |
-| Network milestone | A step of the international network of AISIs, such as its founding. |
-| Source | A document we cite, usually with quoted excerpts that support the facts it backs. |
+| Jurisdiction | One of the 193 UN member states, Taiwan or the EU, with its AISI status: established, planned, proposed, exploring or none identified ([definitions](https://aisi.accelerate-europe.org/method.html)). |
+| AISI | A body that meets the definition above, or a named body planned or formally proposed for that role. |
+| Related body | A body that could be mistaken for an AISI, such as an AI Act authority. Its record says why it does not qualify. Recorded for its jurisdiction, not counted. |
+| Output | A report, joint test, guidance, evaluation, tool or dataset credited to an AISI or a predecessor. Joint work appears under each of the involved AISIs. |
+| Agreement | An agreement that names an AISI as a party or implementer, with an AI developer, a government, another AISI or another organisation. A company's pledge to give an AISI model access is listed too. Each is signed, announced or pledged. |
+| Network milestone | An event of the international network of AISIs, such as its founding or a joint testing exercise. It does not by itself show which members took part. |
+| Source | A document we cite, usually with the passages we quote from it. Each quoted passage names the facts it supports. |
 
 "None identified" and "not published" mean our searches found nothing, not that nothing exists.
 
@@ -51,7 +51,7 @@ Jurisdiction and AISI IDs never change. New codes in `dataset.vocabularies` can 
 
 <!-- citation:start -->
 
-Accelerate Europe (2026). AI Security Institutes tracker, version 1.0.5, data as of 8 November 2026. Compiled by Jason Hoelscher-Obermaier. https://doi.org/10.5281/zenodo.23600431
+Accelerate Europe (2026). AI Security Institutes tracker, version 1.0.6, data as of 9 November 2026. Compiled by Jason Hoelscher-Obermaier. https://doi.org/10.5281/zenodo.23600431
 
 <!-- citation:end -->
 

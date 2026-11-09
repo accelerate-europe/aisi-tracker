@@ -9,7 +9,7 @@ from pathlib import Path
 # The host's settings that the scripts branch on are removed before any script is imported (some, such as
 # check.SNAPSHOTS, are read at import), so a test behaves the same on a maintainer's host and on a CI runner. A test
 # that needs one sets it with monkeypatch.setenv. tests/test_conftest.py keeps this list complete.
-HOST_ENV = ("CI", "AISI_SNAPSHOTS", "AISI_PASSES", "AISI_EXPORT_TERMS", "AISI_GATE_JOBS", "AISI_RUN_DATE", "AISI_MAP_FONTS",
+HOST_ENV = ("CI", "AISI_SNAPSHOTS", "AISI_PASSES", "AISI_EXPORT_TERMS", "AISI_GATE_JOBS", "AISI_GATE_EVIDENCE", "AISI_RUN_DATE", "AISI_MAP_FONTS",
             "ZENODO_TOKEN")
 for _name in HOST_ENV:
     os.environ.pop(_name, None)

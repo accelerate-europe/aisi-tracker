@@ -11,8 +11,8 @@
   uv run scripts/check.py --preflight           # can this agent run every step?
   uv run scripts/check.py --fail-fast           # stop at the first blocking result
   uv run scripts/check.py --changed --base origin/main   # only the steps the changed files need
-  uv run scripts/check.py --skip-browser --base origin/main   # all but the browser gate, which CI's
-                                                # shards run on the pushed commit
+  uv run scripts/check.py --skip-browser --base origin/main   # starts no Chromium: CI builds and gates the
+                                                # pushed commit; the sheet waits for a visual pass
 
 The staged index (not the working tree) is exported to a temporary directory and every step
 runs there with the locked dependencies, so results describe exactly what would be committed
@@ -57,9 +57,14 @@ STEPS = ("validate", "lint", "export", "tests", "copies", "passes", "compare", "
 # The pre-commit hook runs "fast"; CI runs "fast,build,gate". One definition for both.
 # export is fast (about 2 s): a private name is refused at commit, not only at the full check.
 GROUPS = {"fast": ("validate", "lint", "export", "tests")}
-# --skip-browser: until merges can be blocked on CI, CI's four gate shards on the
-# pushed commit are the browser gate's authority; a local run checks everything else.
-BROWSER_ELSEWHERE = "left to CI's gate shards on the pushed commit (--skip-browser); read that run's result"
+# --skip-browser: until merges can be blocked on CI, CI's build and four gate shards on the pushed commit are the
+# authority for every step that starts Chromium (the build pre-renders the page in it); a local run checks the rest,
+# so a shared host runs a done-check without taking its one browser.
+BROWSER_ELSEWHERE = {
+    "build": "left to CI's build of the pushed commit (--skip-browser: the build pre-renders in Chromium); read that run's result",
+    "gate": "left to CI's gate shards on the pushed commit (--skip-browser); read that run's result",
+    "sheet": "not taken (--skip-browser starts no Chromium); a visual pass runs check.py without it",
+}
 # Steps whose NOT RUN does not block a run of the fast group alone (the hook, CI's fast job): the export scan needs a
 # private terms file that a CI runner or a fresh clone does not have. The full check and --changed still require it.
 OPTIONAL_IN_FAST = ("export",)
@@ -914,8 +919,8 @@ def main() -> int:
                     "(see CHANGE_RULES; a path it does not name runs every step); excludes --only")
     ap.add_argument("--out", type=Path, help="build into this directory instead of a temporary one (CI publishes it)")
     ap.add_argument("--allow-skip", action="store_true", help="let NOT RUN steps pass (local only; refused in CI)")
-    ap.add_argument("--skip-browser", action="store_true", help="leave the browser gate to CI's shards on the pushed commit: "
-                    "it is recorded as NOT RUN without blocking; the other selected steps run and block as usual (sheets included)")
+    ap.add_argument("--skip-browser", action="store_true", help="start no Chromium: build, gate and sheet are recorded as NOT RUN "
+                    "without blocking (CI builds and gates the pushed commit); the other selected steps run and block as usual")
     ap.add_argument("--release", action="store_true", help="validate with build.py --release")
     ap.add_argument("--report-dir", type=Path, help="where to write report.md, logs and screenshots (default: a new temporary directory)")
     ap.add_argument("--cache", type=Path, default=ROOT / "work/source-cache", help="source cache for offline quote verification")
@@ -997,8 +1002,8 @@ def main() -> int:
                 sampler = PeakSampler(os.getpid()).start()
                 step_start = time.monotonic()
                 try:
-                    result = (Result(step, "NOT RUN", detail=BROWSER_ELSEWHERE, blocks=False)
-                              if args.skip_browser and step == "gate" else RUNNERS[step](ctx))
+                    result = (Result(step, "NOT RUN", detail=BROWSER_ELSEWHERE[step], blocks=False)
+                              if args.skip_browser and step in BROWSER_ELSEWHERE else RUNNERS[step](ctx))
                 except Exception as exc:  # noqa: BLE001 - a crashed step is a failed step, and the report still gets written
                     result = Result(step, "FAIL", detail=f"{type(exc).__name__}: {exc}")
                 # Timed here, around the whole step, so in-process work, early returns and crashes all count; read

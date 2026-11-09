@@ -803,7 +803,7 @@ def staged_job(stage, check, args):
     """A stand-in browser job for run_stages: ("ok", errors) returns them, ("raise", message) raises, ("mark", (file,
     errors)) creates the file and returns them, ("after", (file, errors)) returns them once the file exists, ("after_line",
     (file, job, errors)) once the file holds a complete timings line for that job, ("stuck", pid file) ignores SIGTERM,
-    then records its process id and never returns."""
+    then records its process id and never returns, ("die", None) kills its own process."""
     import os
     import signal
     import time
@@ -828,6 +828,8 @@ def staged_job(stage, check, args):
                 raise TimeoutError(f"{payload[0]} never appeared")
             time.sleep(0.05)
         return list(payload[1])
+    if kind == "die":
+        os.kill(os.getpid(), signal.SIGKILL)
     if kind == "stuck":
         signal.signal(signal.SIGTERM, signal.SIG_IGN)
         Path(payload + ".tmp").write_text(str(os.getpid()))
@@ -960,6 +962,106 @@ def test_job_ids_must_exist():
         with pytest.raises(check_page.argparse.ArgumentTypeError, match="unknown browser job"):
             check_page.job_ids(text)
     assert "interactions/interaction_pass/1440/light" in check_page.all_job_ids() and len(check_page.all_job_ids()) == len(set(check_page.all_job_ids()))
+
+
+def test_a_stuck_job_is_stopped_by_its_watchdog_and_named(tmp_path, capfd):
+    """A job past its limit ends its own process: the gate reports WorkerCrashed instead of waiting, stderr names the
+    job and where it was, and its timings line says JobTimeout."""
+    import os
+    import time
+
+    pid_file, timings = tmp_path / "stuck.pid", tmp_path / "timings.jsonl"
+    run = check_page.partial(check_page.timed_job, timings, time.monotonic(), staged_job, limit=3)
+    work = [("early", check_page.check_access_fixes, ("stuck", str(pid_file)))]
+    start = time.monotonic()
+    with pytest.raises(check_page.WorkerCrashed, match="early/check_access_fixes has no result"):
+        check_page.run_stages(run, work, {}, jobs=2)
+    assert time.monotonic() - start < 300  # the job sleeps 600 s; slow process start on a loaded host has room
+    with pytest.raises(ProcessLookupError):
+        os.kill(int(pid_file.read_text()), 0)
+    assert "browser job early/check_access_fixes ran over 3 s and is stopped" in capfd.readouterr().err
+    [line] = check_page.read_timings(timings)
+    assert (line["job"], line["errors"], line["exception"]) == ("early/check_access_fixes", None, "JobTimeout")
+    assert line["seconds"] >= 3
+
+
+def test_a_job_that_ends_in_time_disarms_its_watchdog(tmp_path, monkeypatch):
+    """A fake timer, so a slow scheduler cannot fire a real os._exit in the test process; real expiry is covered by
+    test_a_stuck_job_is_stopped_by_its_watchdog_and_named."""
+    timings, timers = tmp_path / "timings.jsonl", []
+
+    class Timer:
+        daemon = False
+        def __init__(self, seconds, function):
+            self.seconds, self.started, self.cancelled = seconds, False, False
+            timers.append(self)
+        def start(self):
+            self.started = True
+        def cancel(self):
+            self.cancelled = True
+
+    monkeypatch.setattr(check_page.threading, "Timer", Timer)
+    assert check_page.timed_job(timings, 0.0, staged_job, "early", check_page.check_access_fixes, ("ok", ["x"]), limit=7) == ["x"]
+    with pytest.raises(RuntimeError, match="boom"):
+        check_page.timed_job(timings, 0.0, staged_job, "early", check_page.check_access_fixes, ("raise", "boom"))
+    assert [(timer.seconds, timer.started, timer.cancelled) for timer in timers] == [(7, True, True), (check_page.JOB_LIMIT, True, True)]
+    assert [line["exception"] for line in check_page.read_timings(timings)] == [None, "RuntimeError"]
+
+
+def test_a_job_ending_as_its_watchdog_fires_leaves_one_timeout_line(tmp_path, monkeypatch):
+    """The boundary race, made deterministic: the watchdog fires while the job is returning; it owns the line, and
+    the job's own outcome is never written over it."""
+    timings, exits = tmp_path / "timings.jsonl", []
+
+    class FiredTimer:
+        def __init__(self, seconds, function):
+            self.function = function
+        daemon = False
+        def start(self):
+            pass
+        def cancel(self):
+            raise AssertionError("the job must not take the line once the watchdog owns it")
+        def join(self):
+            pass  # the real watchdog's os._exit never returns
+
+    monkeypatch.setattr(check_page.os, "_exit", exits.append)
+    monkeypatch.setattr(check_page.faulthandler, "dump_traceback", lambda all_threads: None)
+    timer = {}
+    monkeypatch.setattr(check_page.threading, "Timer", lambda seconds, function: timer.setdefault("t", FiredTimer(seconds, function)))
+
+    def job(stage, check, args):
+        timer["t"].function()  # the limit passes as the job ends
+        return ["x"]
+
+    check_page.timed_job(timings, 0.0, job, "early", check_page.check_access_fixes, ())
+    assert exits == [check_page.JOB_TIMEOUT_EXIT]
+    assert [(line["errors"], line["exception"]) for line in check_page.read_timings(timings)] == [(None, "JobTimeout")]
+
+
+def test_jobs_never_submitted_to_a_broken_pool_are_crashes(monkeypatch):
+    from concurrent.futures.process import BrokenProcessPool
+
+    class BrokenPool:
+        def __init__(self):
+            self.calls = 0
+        def submit(self, run, *job):
+            self.calls += 1
+            if self.calls > 1:
+                raise BrokenProcessPool("a worker died")
+            return "future"
+
+    futures = check_page.submit_jobs(BrokenPool(), staged_job, [("a", None, ()), ("b", None, ())], [0, 1])
+    assert futures == {0: "future"}
+    with pytest.raises(check_page.WorkerCrashed, match="early/check_access_fixes has no result"):
+        check_page.pool_result(futures.get(1), ("early", check_page.check_access_fixes, ()))
+
+
+def test_a_dead_worker_is_reported_as_a_crash_naming_the_job(tmp_path):
+    work = [("early", check_page.check_access_fixes, ("die", None)), ("early", check_page.check_menu_touch, ("ok", ["e1"]))]  # the awaited one dies
+    with pytest.raises(check_page.WorkerCrashed, match="early/check_access_fixes has no result.*possibly SIGKILL: out of memory"):
+        check_page.run_stages(staged_job, work, {}, jobs=2)
+    outcomes = check_page.run_shard(staged_job, work, [0, 1], jobs=2)
+    assert outcomes[0]["exception"]["type"] == "WorkerCrashed" and outcomes[0]["exception"]["caught"]
 
 
 def test_job_count_is_at_least_one():

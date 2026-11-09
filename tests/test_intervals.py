@@ -32,8 +32,8 @@ EXPECTED = {
     "jp-aisi": ((55, 55), (411, 411), (466, 466)),  # 21 Dec 2023, 14 Feb 2024, 31 Mar 2025
     "kr-aisi": ((189, 189), (211, 211), (400, 400)),  # 22 May 2024, 27 Nov 2024 (not the 2026 redesignation), 26 Jun 2025
     "sg-aisi": (None, (182, 182), None),  # no commitment or proposal; 22 May 2024, 20 Nov 2024
-    # 25 Nov 2025; "2026" read as 1 Jan to 8 Nov 2026 (as_of cap); 10 Aug 2026.
-    "au-aisi": ((37, 348), (-90, 221), (258, 258)),
+    # 25 Nov 2025; "2026" read as 1 Jan to 9 Nov 2026 (as_of cap); 10 Aug 2026.
+    "au-aisi": ((37, 349), (-91, 221), (258, 258)),
     "my-aisafe": (None, None, None),  # no commitment or proposal; nothing qualifying yet
     "in-aisi": ((-29, 335), None, None),  # 30 Jan 2025; "2025" read as the whole year
     # Planned: qualifying network credit (26 Jun 2025) is not an institute interval.

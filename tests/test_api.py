@@ -222,6 +222,8 @@ def test_api_landing_page_links_resolve(site):
 def test_orientation_is_one_text_in_three_places(site):
     from bs4 import BeautifulSoup
 
+    from scripts.agent_files import PUBLIC_URL
+
     major = load(site / "data/aisi.json")["dataset"]["version"].split(".")[0]
     sections = [(s["heading"], s["text"]) for s in load(site / f"api/v{major}/index.json")["orientation"]]
     assert len(sections) >= 5
@@ -231,6 +233,11 @@ def test_orientation_is_one_text_in_three_places(site):
     llms = (site / "llms.txt").read_text(encoding="utf-8")
     for heading, text in sections:
         assert text in llms
+    # The per-record examples in the Files list link built files.
+    examples = re.findall(r"\]\((https://[^)]*/api/v\d+/(?:jurisdictions|institutes)/[^)]*)\) \(`[^`]*\{id\}\.json`", llms)
+    assert len(examples) == 2, examples
+    for link in examples:
+        assert (site / link.removeprefix(PUBLIC_URL)).is_file(), link
     readme = (build.ROOT / "README.md").read_text(encoding="utf-8")
     assert "<!-- agents:start -->" not in readme and "llms.txt" in readme
 
