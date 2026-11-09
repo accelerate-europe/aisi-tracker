@@ -801,8 +801,9 @@ def test_keyed_finds_what_the_plain_query_finds(selector, attr, value, rest):
 
 def staged_job(stage, check, args):
     """A stand-in browser job for run_stages: ("ok", errors) returns them, ("raise", message) raises, ("mark", (file,
-    errors)) creates the file and returns them, ("after", (file, errors)) returns them once the file exists, ("stuck",
-    pid file) ignores SIGTERM, then records its process id and never returns."""
+    errors)) creates the file and returns them, ("after", (file, errors)) returns them once the file exists, ("after_line",
+    (file, job, errors)) once the file holds a complete timings line for that job, ("stuck", pid file) ignores SIGTERM,
+    then records its process id and never returns."""
     import os
     import signal
     import time
@@ -813,6 +814,13 @@ def staged_job(stage, check, args):
     if kind == "mark":
         Path(payload[0]).touch()
         return list(payload[1])
+    if kind == "after_line":
+        deadline = time.monotonic() + 60
+        while not any(line.get("job") == payload[1] for line in check_page.read_timings(Path(payload[0]))):
+            if time.monotonic() > deadline:
+                raise TimeoutError(f"{payload[0]} never held a line for {payload[1]}")
+            time.sleep(0.05)
+        return list(payload[2])
     if kind == "after":
         deadline = time.monotonic() + 60
         while not Path(payload[0]).exists():
@@ -844,6 +852,114 @@ def test_run_stages_reports_like_the_sequential_gate(jobs, tmp_path):
     work = [job("early", "ok", []), job("late", "ok", ["l1"]), job("late", "raise", "first"), job("late", "raise", "second")]
     with pytest.raises(RuntimeError, match="^first$"):
         check_page.run_stages(staged_job, work, {}, jobs)
+
+
+@pytest.mark.parametrize("jobs", [1, 2])
+def test_timed_jobs_write_one_line_per_job_that_ends(jobs, tmp_path):
+    import time
+
+    def job(stage, kind, payload):
+        return (stage, check_page.check_access_fixes, (kind, payload))
+
+    timings = tmp_path / "timings.jsonl"
+    run = check_page.partial(check_page.timed_job, timings, time.monotonic(), staged_job)
+    if jobs == 1:  # a sequential run stops at the failed stage: the later job never runs
+        work, expected = [job("early", "ok", ["e1"]), job("late", "ok", ["never reported"])], {("early/check_access_fixes", 1)}
+    else:  # in parallel, the early failure waits for the late job's line, so the discarded result is timed before the pool stops
+        work = [job("early", "after_line", (str(timings), "late/check_access_fixes", ["e1"])), job("late", "ok", ["never reported"])]
+        expected = {("early/check_access_fixes", 1), ("late/check_access_fixes", 1)}
+    assert check_page.run_stages(run, work, {}, jobs) == ["e1"]
+    lines = check_page.read_timings(timings)
+    assert all(check_page.timing_ok(line) for line in lines)
+    assert {(line["job"], line["errors"]) for line in lines} == expected and len(lines) == len(expected)
+    timings.unlink()
+    with pytest.raises(RuntimeError):
+        check_page.run_stages(run, [job("early", "raise", "boom")], {}, jobs)
+    assert [(line["errors"], line["exception"]) for line in check_page.read_timings(timings)] == [(None, "RuntimeError")]
+
+
+def test_a_timings_file_that_cannot_be_written_changes_no_outcome(tmp_path, capsys):
+    unwritable = tmp_path / "missing-dir" / "timings.jsonl"
+    assert check_page.timed_job(unwritable, 0.0, staged_job, "early", check_page.check_access_fixes, ("ok", ["x"])) == ["x"]
+    with pytest.raises(RuntimeError, match="^boom$"):  # the job's own exception, not the failed write's
+        check_page.timed_job(unwritable, 0.0, staged_job, "early", check_page.check_access_fixes, ("raise", "boom"))
+    assert "timings not written" in capsys.readouterr().err
+
+
+def test_a_damaged_timings_file_loses_only_timings(tmp_path, monkeypatch, capsys):
+    timings = tmp_path / "t.jsonl"
+    timings.write_text('{"job": "a", "started": 0, "seconds": 1, "errors": 0, "exception": null}\n{"job": "b", "sta\n{"job": 3}\n')
+    assert [line["job"] for line in check_page.read_timings(timings)] == ["a", 3]  # the cut line is dropped; merge validates the rest
+    monkeypatch.setattr(Path, "read_text", lambda self, *a, **k: (_ for _ in ()).throw(PermissionError("denied")))
+    assert check_page.read_timings(timings) == [] and "not read" in capsys.readouterr().err
+    monkeypatch.undo()
+    timings.write_bytes(b"\xff\xfe not utf-8\n")
+    assert check_page.read_timings(timings) == [] and "not read" in capsys.readouterr().err
+
+
+def test_a_working_file_that_cannot_be_removed_only_warns(tmp_path, monkeypatch, capsys):
+    monkeypatch.setattr(Path, "unlink", lambda self, missing_ok=False: (_ for _ in ()).throw(PermissionError("denied")))
+    check_page.drop_timings(tmp_path / "x.timings")
+    assert "not removed" in capsys.readouterr().err
+
+
+def test_load_shards_hands_over_the_timings_it_validated(tmp_path):
+    site, results = shard_files(tmp_path, ["a", "b"], {1: {0: OK}, 2: {1: OK}})
+    lines = []
+    check_page.load_shards(results, site, ["a", "b"], lines)
+    assert [(t["job"], t["shard"]) for t in lines] == [("a", "1/2"), ("b", "2/2")]
+
+
+def test_a_shard_that_cannot_make_its_timings_file_runs_untimed(tmp_path, monkeypatch, capsys):
+    monkeypatch.setattr(check_page.tempfile, "mkstemp", lambda **k: (_ for _ in ()).throw(PermissionError("denied")))
+    behaviour = [("hydration", ("errors", [])), ("interactions", ("errors", ["i1"]))]
+    merged, local = run_round_trip(tmp_path, monkeypatch, behaviour)
+    assert merged == local and "not timed" in capsys.readouterr().err
+    assert check_page.read_timings(tmp_path / "timings.jsonl") == []
+
+
+def test_main_clears_timings_of_an_earlier_run_first(tmp_path, monkeypatch):
+    timings = tmp_path / "timings.jsonl"
+    timings.write_text('{"job": "old"}\n')
+    monkeypatch.setattr(check_page, "find_chrome", lambda: None)
+    assert check_page.main(tmp_path, timings=timings) == check_page.NOT_RUN
+    assert timings.read_text() == ""
+
+
+def test_without_a_timings_file_a_job_runs_untimed():
+    assert check_page.timed_job(None, 0.0, staged_job, "early", check_page.check_access_fixes, ("ok", ["x"])) == ["x"]
+
+
+def test_only_named_jobs_run_in_their_stages(monkeypatch):
+    seen = {}
+    monkeypatch.setattr(check_page, "run_stages", lambda run, work, seeds, jobs: seen.setdefault("ids", [check_page.job_id(*j) for j in work]) and [])
+    chosen = ["interactions/check_touch_tips", "hydration/hydration_paint"]
+    check_page.check_browser("chrome", Path("site"), {}, only=chosen)
+    assert seen["ids"] == ["hydration/hydration_paint", "interactions/check_touch_tips"]  # report order, not the order asked
+
+
+def test_a_subset_runs_through_the_real_stages(monkeypatch):
+    ran = []
+    monkeypatch.setattr(check_page, "run_browser_job", lambda chrome, dist, stage, check, args: ran.append(check_page.job_id(stage, check, args)) or [])
+    monkeypatch.setattr(check_page, "browser_seeds", lambda dist: {"interactions": lambda: ran.append("seed") or ["seed error"]})
+    # Only an interactions job: the empty earlier stages pass, the stage's seed runs, nothing else does.
+    assert check_page.check_browser("chrome", Path("site"), {}, only=["interactions/check_menu_touch"]) == ["seed error"]
+    assert ran == ["seed", "interactions/check_menu_touch"]
+    ran.clear()
+    # Mixed stages: a hydration finding stops the run before the interactions stage, as in the full gate.
+    monkeypatch.setattr(check_page, "run_browser_job", lambda chrome, dist, stage, check, args: ran.append(check_page.job_id(stage, check, args)) or (["h"] if stage == "hydration" else []))
+    assert check_page.check_browser("chrome", Path("site"), {}, only=["interactions/check_menu_touch", "hydration/hydration_edges"]) == ["h"]
+    assert ran == ["hydration/hydration_edges"]
+
+
+def test_job_ids_must_exist():
+    assert check_page.job_ids("hydration/hydration_paint, interactions/interaction_pass/390/dark") == [
+        "hydration/hydration_paint", "interactions/interaction_pass/390/dark"]
+    assert check_page.job_ids("origins/check_origins,origins/check_origins") == ["origins/check_origins"]  # counted as run
+    for text in ("", "hydration/nope", "hydration/hydration_paint,nope"):
+        with pytest.raises(check_page.argparse.ArgumentTypeError, match="unknown browser job"):
+            check_page.job_ids(text)
+    assert "interactions/interaction_pass/1440/light" in check_page.all_job_ids() and len(check_page.all_job_ids()) == len(set(check_page.all_job_ids()))
 
 
 def test_job_count_is_at_least_one():
@@ -893,7 +1009,8 @@ def shard_files(tmp_path, ids, outcomes_by_shard, changes=None):
     for number, outcomes in outcomes_by_shard.items():
         result = {"format": check_page.SHARD_FORMAT, "shard": number, "count": len(outcomes_by_shard), "jobs": ids,
                   "checker": check_page.checker_digest(), "site": check_page.tree_digest(files), "site_files": files,
-                  "outcomes": {str(n): o for n, o in outcomes.items()}}
+                  "outcomes": {str(n): o for n, o in outcomes.items()},
+                  "timings": [{"job": ids[n], "started": 0.5, "seconds": 2.0, "errors": 0, "exception": None} for n in outcomes]}
         result.update((changes or {}).get(number, {}))
         (results / f"gate-shard-{number}").mkdir(parents=True, exist_ok=True)
         (results / f"gate-shard-{number}" / f"shard-{number}.json").write_text(json.dumps(result))
@@ -927,6 +1044,11 @@ def test_load_shards_returns_every_outcome(tmp_path):
     ({1: {0: OK}, 2: {1: OK}}, {2: {"shard": 3}}, "not K of N"),
     ({1: {0: OK}, 2: {1: OK}}, {2: {"site_files": ["index.html"]}}, "malformed jobs, digests or site files"),
     ({1: {0: OK}, 2: {1: OK}}, {2: {"jobs": "a,b"}}, "malformed jobs, digests or site files"),
+    ({1: {0: OK}, 2: {1: OK}}, {2: {"format": 1}}, "not a format 2"),
+    ({1: {0: OK}, 2: {1: OK}}, {2: {"timings": {}}}, "malformed timings"),
+    ({1: {0: OK}, 2: {1: OK}}, {2: {"timings": [{"job": "z", "started": 0, "seconds": 1, "errors": 0, "exception": None}]}}, "malformed timings"),
+    ({1: {0: OK}, 2: {1: OK}}, {2: {"timings": [{"job": "b", "started": 0, "seconds": 1, "errors": None, "exception": None}]}}, "malformed timings"),
+    ({1: {0: OK}, 2: {1: OK}}, {2: {"timings": [{"job": "b", "started": -1, "seconds": 1, "errors": 0, "exception": None}]}}, "malformed timings"),
 ])
 def test_load_shards_refuses_incomplete_or_foreign_results(tmp_path, shards, changes, problem):
     site, results = shard_files(tmp_path, ["a", "b"], shards, changes)
@@ -1037,7 +1159,7 @@ def run_round_trip(tmp_path, monkeypatch, behaviour, count=2):
         check_page.write_shard("chrome", site, {}, (number, count), tmp_path / "gate" / f"gate-shard-{number}" / f"shard-{number}.json", 1)
 
     def merged():
-        return check_page.check_merged(site, {}, tmp_path / "gate")
+        return check_page.check_merged(site, {}, tmp_path / "gate", tmp_path / "timings.jsonl")
 
     def local():
         return check_page.run_stages(lambda stage, check, args: run(None, None, stage, check, args), work, check_page.browser_seeds(site))
@@ -1064,6 +1186,11 @@ def reduce_call(call):
 def test_shard_files_merge_to_the_local_report(tmp_path, monkeypatch, behaviour):
     merged, local = run_round_trip(tmp_path, monkeypatch, behaviour)
     assert merged == local
+    # Every job was timed in its shard, and the merge lists them all with their shard.
+    lines = check_page.read_timings(tmp_path / "timings.jsonl")
+    assert len(lines) == len(behaviour) and {line["shard"] for line in lines} <= {"1/2", "2/2"}
+    assert sorted(line["exception"] is not None for line in lines) == sorted(kind == "raise" for _, (kind, _) in behaviour)
+    assert not list((tmp_path / "gate").glob("**/*.timings"))  # the shard's working file does not outlive it
 
 
 @pytest.mark.parametrize("stderr", [b"line one\nline two\n", b"x" * 2000 + b"line one", b"\x00\xff" * 1500 + b"line one", "line one " * 600])
@@ -1087,7 +1214,7 @@ def test_a_recorded_exception_prints_as_the_original_through_main(rendered, monk
     assert printed[0] == printed[1] and "line one" in printed[0]
 
 
-STATIC_CHECKS = ("check_method_pages", "check_dom", "check_agent_files", "check_static_page", "check_hydrated", "check_archive_links",
+STATIC_CHECKS = ("check_method_pages", "check_rendered_content", "check_dom", "check_agent_files", "check_static_page", "check_hydrated", "check_archive_links",
                  "check_launch_assets", "check_page_data", "check_budget_ratio_downloads", "check_state_downloads", "check_state_download_buttons")
 
 
@@ -1189,17 +1316,191 @@ def test_a_held_request_must_have_been_held_before_release():
         check_page.Held(Page(), check_page.PAGE_DATA).wait(timeout_ms=120)
 
 
+class _Opened(dict):
+    """A fake page or context: the options it was opened with, and the init scripts added to it."""
+
+    def __init__(self, options):
+        super().__init__(options)
+        self.scripts = []
+
+    def add_init_script(self, script):
+        self.scripts.append(script)
+
+
+class _FakeBrowser:
+    version = "1"
+
+    def new_page(self, **options):
+        return _Opened(options)
+
+    def new_context(self, **options):
+        return _Opened(options)
+
+
 def test_pages_and_contexts_open_in_the_fixed_locale_unless_a_check_names_one():
-    class Browser:
-        version = "1"
-
-        def new_page(self, **options):
-            return options
-
-        def new_context(self, **options):
-            return options
-
-    browser = check_page.LocalisedBrowser(Browser())
+    browser = check_page.LocalisedBrowser(_FakeBrowser())
     assert browser.new_page(color_scheme="dark") == {"locale": check_page.LOCALE, "color_scheme": "dark"}
     assert browser.new_context(locale="de-AT") == {"locale": "de-AT"}
     assert browser.version == "1"
+
+
+def test_the_gate_has_one_hydration_wait_and_its_timeout_names_where(monkeypatch):
+    import sys
+    import types
+
+    class PlaywrightTimeout(Exception):
+        pass
+
+    module = types.ModuleType("playwright.sync_api")
+    module.TimeoutError = PlaywrightTimeout
+    monkeypatch.setitem(sys.modules, "playwright", types.ModuleType("playwright"))
+    monkeypatch.setitem(sys.modules, "playwright.sync_api", module)
+    source = Path(check_page.__file__).read_text(encoding="utf-8")
+    assert source.count("!document.documentElement.hasAttribute('data-prerendered')") == 1  # wait_hydrated only
+
+    class Page:
+        def wait_for_function(self, script, timeout):
+            raise PlaywrightTimeout("Timeout 30000ms exceeded.")
+
+    with pytest.raises(PlaywrightTimeout, match="did not take over within 30 s") as caught:
+        check_page.wait_hydrated(Page())
+    assert check_page.raised_at(caught.value).startswith(" at check_page.py:")
+    assert check_page.raised_at(caught.value).endswith("(wait_hydrated)")
+    assert check_page.raised_at(ValueError()) == ""
+
+
+def test_a_run_of_named_jobs_never_reads_as_the_gate(rendered, monkeypatch, capsys):
+    _, data, dist = rendered
+    (dist / "data/aisi.json").write_text(json.dumps(data))
+    (dist / "index.html").write_text("Built page")
+    monkeypatch.setattr(check_page, "find_chrome", lambda: "chrome")
+    monkeypatch.setattr(check_page, "render", lambda *args: ("<html></html>", "http://127.0.0.1:1/"))
+    for name in STATIC_CHECKS:
+        monkeypatch.setattr(check_page, name, lambda *args: [])
+    asked = []
+    monkeypatch.setattr(check_page, "check_browser", lambda chrome, dist, data, screenshots, jobs, timings, only: asked.append(only) or [])
+    assert check_page.main(dist, only=["hydration/hydration_paint"]) == 0
+    assert asked == [["hydration/hydration_paint"]]
+    assert "not the full gate" in capsys.readouterr().out
+
+
+def test_rendered_content_runs_once_in_the_static_checks_not_per_state():
+    import inspect
+
+    assert "check_rendered_content(html, data)" in inspect.getsource(check_page.main)
+    passed = inspect.getsource(check_page.interaction_pass)
+    for helper in ("check_budget_output", "check_staff_figures", "check_generic_sources", "check_nonidentified_folds", "BeautifulSoup("):
+        assert helper not in passed, helper  # no per-state copy of a content check (filtered views keep their own)
+    assert 'theme_invariant=theme == "light"' in passed  # the first screen's theme-invariant steps run once per width
+    assert 'anchor = (width, theme) == (1440, "light")' in passed and passed.count("    if anchor:") == 3
+    assert passed.count('if theme == "light":') == 2  # the expanded sweep's theme-invariant checks
+    sweep = passed.split("# Check all controls revealed by disclosures.")[1].split("# Toolbar disclosures are exclusive")[0]
+    unguarded = [line.strip() for line in sweep.splitlines() if line.startswith(("    for error in check_", "        check_"))]
+    for colour in ("check_design_roles", "check_planned_swatches", "check_source_footers", "check_external_markers", "check_controls"):
+        assert any(colour in line for line in unguarded), colour  # read colours: still in both themes
+    for invariant in ("check_typography", "check_card_grid", "check_source_keyboard", "check_hit_targets"):
+        assert not any(invariant in line for line in unguarded), invariant  # geometry and order only: light only
+
+
+def test_rendered_content_reports_what_its_helpers_find(monkeypatch):
+    monkeypatch.setattr(check_page, "check_staff_figures", lambda soup, data: ["staff off"])
+    monkeypatch.setattr(check_page, "check_generic_sources", lambda html, data: ["generic off"])
+    for name in ("check_budget_output", "check_funding_outside", "check_operating_output", "check_summary_data", "check_source_alignment",
+                 "check_institute_names", "check_former_names", "check_no_rate_amounts", "check_euro_amounts", "check_leadership_rows",
+                 "check_nonidentified_folds"):
+        monkeypatch.setattr(check_page, name, lambda html, data: [])
+    monkeypatch.setattr(check_page, "check_interval_output", lambda html, data, worked: [])
+    for name in ("check_two_significant_figures", "check_section_bar"):
+        monkeypatch.setattr(check_page, name, lambda soup: [])
+    for name in ("check_access_groups", "check_figures_row", "check_setup_groups", "check_per_person"):
+        monkeypatch.setattr(check_page, name, lambda soup, data: [])
+    assert check_page.check_rendered_content("<html></html>", {}) == ["staff off", "generic off"]
+
+
+def test_laps_time_each_step_and_reach_the_job_line(tmp_path, monkeypatch):
+    clock = iter([10.0, 10.0, 11.5, 14.0, 14.0, 20.0])  # timed_job start, step_clock start, two laps, ..., end
+    monkeypatch.setattr(check_page.time, "monotonic", lambda: next(clock))
+
+    def job(stage, check, args):
+        lap = check_page.step_clock()
+        lap("load")
+        lap("layout")
+        return []
+
+    timings = tmp_path / "t.jsonl"
+    assert check_page.timed_job(timings, 10.0, job, "interactions", check_page.check_access_fixes, ()) == []
+    line = check_page.read_timings(timings)[0]
+    assert line["steps"] == {"load": 1.5, "layout": 2.5} and check_page.timing_ok(line)
+
+
+def test_a_job_without_laps_has_no_steps_key_and_bad_steps_are_refused(tmp_path):
+    timings = tmp_path / "t.jsonl"
+    check_page.timed_job(timings, 0.0, lambda stage, check, args: [], "origins", check_page.check_access_fixes, ())
+    assert "steps" not in check_page.read_timings(timings)[0]
+    base = {"job": "a", "started": 0, "seconds": 1, "errors": 0, "exception": None}
+    assert check_page.timing_ok({**base, "steps": {"load": 1.0}})
+    for bad in ({"load": -1}, {"load": "1"}, ["load"], {3: 1.0}):
+        assert not check_page.timing_ok({**base, "steps": bad})
+
+
+def test_interaction_pass_marks_its_steps():
+    import inspect
+
+    source = inspect.getsource(check_page.interaction_pass)
+    assert source.count('lap("') == 14 and "lap = step_clock()" in source  # one per block, the last before the return
+
+
+def test_each_job_line_has_only_its_own_steps_also_when_it_raises(tmp_path):
+    def first(stage, check, args):
+        check_page.step_clock()("load")
+        return []
+
+    def second(stage, check, args):
+        lap = check_page.step_clock()
+        lap("layout")
+        raise RuntimeError("broke after a lap")
+
+    timings = tmp_path / "t.jsonl"
+    check_page.timed_job(timings, 0.0, first, "interactions", check_page.check_access_fixes, ())
+    with pytest.raises(RuntimeError):
+        check_page.timed_job(timings, 0.0, second, "interactions", check_page.check_menu_touch, ())
+    one, two = check_page.read_timings(timings)
+    assert set(one["steps"]) == {"load"} and set(two["steps"]) == {"layout"} and two["exception"] == "RuntimeError"
+
+
+def test_pages_and_contexts_draw_every_section_unless_a_check_keeps_skipping():
+    """Content checks read text that skipped sections report empty; checks of the page as shipped keep skipping."""
+    browser = check_page.LocalisedBrowser(_FakeBrowser())
+    for opened in (browser.new_page(), browser.new_context()):
+        assert opened.scripts == [check_page.NO_SKIPPING]
+    for opened in (browser.new_page(skipping=True), browser.new_context(skipping=True)):
+        assert opened.scripts == [] and "skipping" not in opened
+
+
+def test_a_crop_never_captures_skipped_content_blank(monkeypatch, tmp_path):
+    """The contact sheet once photographed off-screen sections that content-visibility skipped, as blank areas
+    reported as changes; a crop with skipped text inside it now stops the capture instead."""
+
+    class Target:
+        def evaluate(self, script, name):
+            return {"x": 0, "y": 0, "width": 100, "height": 100}
+
+    class Page:
+        def __init__(self, skipped):
+            self.skipped, self.shots = skipped, []
+
+        def evaluate(self, script, clip):
+            assert script == check_page.SKIPPED_IN_CLIP
+            return self.skipped
+
+        def screenshot(self, **options):
+            self.shots.append(options["path"])
+
+    monkeypatch.setattr(check_page, "section_targets", lambda page: [("cards", Target())])
+    blind = Page(3)
+    with pytest.raises(RuntimeError, match="skipped inside the crop"):
+        check_page.capture_sections(blind, tmp_path, "1440-light")
+    assert blind.shots == []
+    drawn = Page(0)
+    check_page.capture_sections(drawn, tmp_path, "1440-light")
+    assert len(drawn.shots) == 1

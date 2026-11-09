@@ -20,6 +20,7 @@ import os
 import re
 import subprocess
 import sys
+import tempfile
 from html.parser import HTMLParser
 import threading
 import time
@@ -105,10 +106,18 @@ def browser_env() -> dict:
 
 LOCALE = "en-GB"  # every page's locale: its default-locale collation then matches the gate's English oracle on any host
 
+# Principle Off-screen sections: the content checks read text and hit-test boxes, which Chromium reports empty while
+# content-visibility skips them, so their pages draw every section; checks of the page's rendering as shipped (the
+# off-screen sections, interaction times, the hydration flash) open theirs with skipping=True.
+NO_SKIPPING = ("document.addEventListener('DOMContentLoaded', () => { const s = document.createElement('style'); s.textContent ="
+               " 'main section.offscreen, main section.offscreen :is(.card-row, .fund-item) { content-visibility: visible !important; }';"
+               " document.head.appendChild(s); });")
+
 
 class LocalisedBrowser:
     """A browser whose new pages and contexts open in LOCALE unless a check names another: Chromium otherwise takes
-    its locale from the host (LANG on Linux, the system language on a Mac)."""
+    its locale from the host (LANG on Linux, the system language on a Mac). They also draw every off-screen section
+    (NO_SKIPPING) unless a check passes skipping=True."""
 
     def __init__(self, browser):
         self._browser = browser
@@ -116,11 +125,17 @@ class LocalisedBrowser:
     def __getattr__(self, name):
         return getattr(self._browser, name)
 
-    def new_page(self, **options):
-        return self._browser.new_page(**{"locale": LOCALE, **options})
+    def new_page(self, skipping: bool = False, **options):
+        page = self._browser.new_page(**{"locale": LOCALE, **options})
+        if not skipping:
+            page.add_init_script(NO_SKIPPING)
+        return page
 
-    def new_context(self, **options):
-        return self._browser.new_context(**{"locale": LOCALE, **options})
+    def new_context(self, skipping: bool = False, **options):
+        context = self._browser.new_context(**{"locale": LOCALE, **options})
+        if not skipping:
+            context.add_init_script(NO_SKIPPING)
+        return context
 
 
 def install_chrome() -> int:
@@ -707,7 +722,7 @@ def hydration_paint(browser, base_url: str) -> list[str]:
     for width in (1440, 1000, 390):
         for theme in ("light", "dark"):
             for place in ("top", "#world-cards"):
-                page = themed_page(browser, theme, viewport={"width": width, "height": 1000})
+                page = themed_page(browser, theme, viewport={"width": width, "height": 1000}, skipping=True)  # the page as shipped
                 held = Held(page, PAGE_DATA)
                 page.goto(base_url, wait_until="load")
                 page.evaluate("document.fonts.ready")
@@ -716,7 +731,7 @@ def hydration_paint(browser, base_url: str) -> list[str]:
                 page.wait_for_timeout(300)
                 before = page.screenshot(mask=[page.locator(".secnav, .group-nav")])
                 held.release()
-                page.wait_for_function("!document.documentElement.hasAttribute('data-prerendered')", timeout=30_000)
+                wait_hydrated(page)
                 page.wait_for_timeout(300)
                 if page.evaluate("getComputedStyle(document.body).backgroundColor") != GROUNDS[theme]:
                     errors.append(f"hydration {width}px {theme}: the page does not show the {theme} theme")
@@ -741,7 +756,7 @@ def hydration_edges(browser, base_url: str, dist: Path) -> list[str]:
     page.fill("#world-filter", "fra")
     page.locator("#method-details > summary").focus()  # a control below the table, without an id
     held.release()
-    page.wait_for_function("!document.documentElement.hasAttribute('data-prerendered')", timeout=30_000)
+    wait_hydrated(page)
     state = page.evaluate("[document.querySelector('#world-cards details').open, document.getElementById('world-filter').value, document.activeElement === document.querySelector('#method-details > summary')]")
     if state != [True, "fra", True]:
         errors.append(f"hydration: the reader's open disclosure, filter text or focus was lost ({state})")
@@ -760,7 +775,7 @@ def hydration_edges(browser, base_url: str, dist: Path) -> list[str]:
             errors.append(f"hydration: the data request for #{target} was not held once ({len(held.routes)} held)")
         before = page.evaluate("window.scrollY")
         held.release()
-        page.wait_for_function("!document.documentElement.hasAttribute('data-prerendered')", timeout=30_000)
+        wait_hydrated(page)
         page.evaluate("new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)))")
         state = page.evaluate(f"[document.getElementById('{target}')?.open, window.scrollY]")
         if fonts != "loaded" or state[0] is not True or abs(state[1] - before) > 1:
@@ -779,7 +794,9 @@ def hydration_edges(browser, base_url: str, dist: Path) -> list[str]:
     page.route("**/assets/d3.*.js", lambda route: route.abort())
     page.goto(base_url, wait_until="load")
     try:
-        page.wait_for_function("!document.documentElement.hasAttribute('data-prerendered')", timeout=15_000)
+        wait_hydrated(page, 15_000)
+        if (mark := page.evaluate("document.getElementById('worldmap').dataset.map")) != "saved":
+            errors.append(f"hydration without the map: #worldmap data-map is {mark!r}, not 'saved' (the saved drawing stands in)")
         errors.extend(f"hydration without the map: {e}" for e in mapless_controls(page, failed=True))
     except PlaywrightTimeout:
         errors.append("hydration: without the map topology and d3 the page script does not take over")
@@ -791,7 +808,7 @@ def hydration_edges(browser, base_url: str, dist: Path) -> list[str]:
     held = Held(page, "**/assets/map-narrow.svg*")
     page.goto(base_url, wait_until="load")
     try:
-        page.wait_for_function("!document.documentElement.hasAttribute('data-prerendered')", timeout=15_000)
+        wait_hydrated(page, 15_000)
         page.wait_for_selector("#worldmap svg.map-wide .tgt", state="attached", timeout=10_000)
         for width in (390, 1440, 390):  # the narrow file stays pending across these
             page.set_viewport_size({"width": width, "height": 1000})
@@ -811,20 +828,35 @@ def hydration_edges(browser, base_url: str, dist: Path) -> list[str]:
     late = Held(page, "**/assets/world-*.json")
     page.goto(base_url, wait_until="load")
     try:
-        page.wait_for_function("!document.documentElement.hasAttribute('data-prerendered')", timeout=15_000)
+        wait_hydrated(page, 15_000)
         errors.extend(f"hydration before the map: {e}" for e in mapless_controls(page, failed=False))
         page.locator('#regions .region-head[data-region="Asia"]').first.click()
         page.wait_for_timeout(MAP_WAIT_MS + 500)
-        if "could not be loaded" not in page.locator("#worldmap").inner_text():
-            errors.append(f"hydration: {MAP_WAIT_MS} ms without the map, Asia's map box reads {page.locator('#worldmap').inner_text()!r}")
+        mark = page.evaluate("document.getElementById('worldmap').dataset.map")
+        if "could not be loaded" not in page.locator("#worldmap").inner_text() or mark != "failed":
+            errors.append(f"hydration: {MAP_WAIT_MS} ms without the map, Asia's map box reads {page.locator('#worldmap').inner_text()!r} (data-map {mark!r})")
         late.release()
-        page.wait_for_function("document.querySelector('#worldmap svg.map-wide .land')", timeout=10_000)
+        map_ready(page, 10_000)  # data-map reaches drawn once the late map is drawn
         page.locator('#regions .region-head[data-region="Europe"]').first.click()
         page.locator('#worldmap svg.map-wide .tgt[data-j="FR"]').dispatch_event("click")
         if not page.locator("#worldmap svg.map-wide .hl-sel").count() or page.locator("#record-name").text_content() != "France":
             errors.append("hydration: a map arriving late is not drawn as the interactive map (no selection highlight for France)")
     except PlaywrightTimeout as exc:
         errors.append(f"hydration: a late map: {exc}")
+    page.close()
+    # A map drawn while the fonts still load places its names when they come: data-map says placing until then.
+    page = browser.new_page(viewport={"width": 1440, "height": 1000})
+    fonts = Held(page, "**/assets/fonts/**")
+    page.goto(base_url, wait_until="commit")  # held fonts hold the load event
+    try:
+        wait_hydrated(page, 15_000)
+        settle(page, "['placing', 'drawn'].includes(document.getElementById('worldmap').dataset.map)", timeout_ms=15_000)
+        if (mark := page.evaluate("document.getElementById('worldmap').dataset.map")) != "placing":
+            errors.append(f"hydration: a map drawn while the fonts load has data-map {mark!r}, not 'placing'")
+        fonts.release()
+        map_ready(page, 10_000)
+    except PlaywrightTimeout as exc:
+        errors.append(f"hydration: a map drawn before its fonts: {exc}")
     page.close()
     return errors
 
@@ -882,7 +914,7 @@ def check_origins(browser, base_url: str, dist: Path) -> list[str]:
         page.route(lambda url: not local(url), lambda route: route.abort())  # recorded above; never wait on the network
         page.goto(base_url + name, wait_until="load")
         if name == "index.html":
-            page.wait_for_function("!document.documentElement.hasAttribute('data-prerendered')", timeout=30_000)
+            wait_hydrated(page)
         faces = page.evaluate("document.fonts.ready.then(() => [...document.fonts].map(f => [f.family.replace(/[\"']/g, ''), f.style, f.weight, f.unicodeRange.slice(0, 24), f.status]))")
         loaded = [f[0] for f in faces if f[4] == "loaded"]
         for family, path in VENDORED_FONTS.items():
@@ -1205,12 +1237,72 @@ def set_theme(page, theme: str) -> None:
     page.evaluate("t => t === 'dark' ? document.documentElement.setAttribute('data-theme', 'dark') : document.documentElement.removeAttribute('data-theme')", theme)
 
 
-def hydrated(page, url: str) -> None:
-    """Open the page and wait until its script has taken over the pre-rendered page (it removes the marker),
-    so no check acts on the saved page's controls, which have no listeners yet. A page from themed_page must
-    show its theme's ground."""
+HYDRATION_MS = 30_000  # the page script's takeover; past it under load, the host is contended (do not raise it)
+MAP_MS = 15_000
+
+
+def playwright_timeout(exc: BaseException):
+    """Playwright's TimeoutError class when `exc` is one, else None (also without Playwright: the unit tests)."""
+    try:
+        from playwright.sync_api import TimeoutError as PlaywrightTimeout
+    except ImportError:
+        return None
+    return PlaywrightTimeout if isinstance(exc, PlaywrightTimeout) else None
+
+
+def wait_hydrated(page, timeout_ms: int = HYDRATION_MS) -> None:
+    """Wait until the page script has taken over the saved page: it removes data-prerendered once every listener is
+    bound, so a check never acts on the saved page's controls. The one hydration wait of the gate."""
+    try:
+        page.wait_for_function("!document.documentElement.hasAttribute('data-prerendered')", timeout=timeout_ms)
+    except Exception as exc:
+        if (PlaywrightTimeout := playwright_timeout(exc)) is None:
+            raise
+        raise PlaywrightTimeout(f"the page script did not take over within {timeout_ms // 1000} s (data-prerendered still set)") from exc
+
+
+def map_ready(page, timeout_ms: int = MAP_MS) -> None:
+    """Wait until the map is drawn with its names placed (#worldmap[data-map=drawn], set in drawMap): a check that
+    uses map dots must not meet the saved drawing, whose dots are no controls, or a map still loading. Checks of
+    the late or missing map do not call it."""
+    try:
+        page.wait_for_function("document.getElementById('worldmap')?.dataset.map === 'drawn'", timeout=timeout_ms)
+    except Exception as exc:
+        if (PlaywrightTimeout := playwright_timeout(exc)) is None:
+            raise
+        state = page.evaluate("document.getElementById('worldmap')?.dataset.map ?? null")
+        raise PlaywrightTimeout(f"the map was not drawn within {timeout_ms // 1000} s (data-map: {state})") from exc
+
+
+def layout_settled(page, timeout_ms: int = 10_000) -> None:
+    """Wait until the layout has settled: force a layout first, so fonts that newly shown text needs are requested,
+    then the fonts, then two frames (bounded, so a page that never settles fails instead of holding the browser)."""
+    settled = page.evaluate("""ms => Promise.race([
+      new Promise(done => { document.body.getBoundingClientRect(); document.fonts.ready.then(() => requestAnimationFrame(() => requestAnimationFrame(() => done(true)))); }),
+      new Promise(done => setTimeout(() => done(false), ms))])""", timeout_ms)
+    if not settled:
+        raise AssertionError(f"the layout did not settle within {timeout_ms // 1000} s (fonts or frames pending)")
+
+
+def settle(page, state: str, arg=None, timeout_ms: int = 5_000) -> None:
+    """Wait (bounded) for the state a step should reach. Only before an assertion of that same state: a timeout falls
+    through, and the assertion after it reports what went wrong."""
+    from playwright.sync_api import TimeoutError as PlaywrightTimeout
+
+    try:
+        page.wait_for_function(state, arg=arg, timeout=timeout_ms)
+    except PlaywrightTimeout:
+        pass
+
+
+def hydrated(page, url: str, map_drawn: bool = False) -> None:
+    """Open the page and wait until its script has taken over the pre-rendered page, and with `map_drawn` also until
+    the map is drawn and the layout has settled. A page from themed_page must show its theme's ground."""
     page.goto(url)
-    page.wait_for_function("!document.documentElement.hasAttribute('data-prerendered')", timeout=30_000)
+    wait_hydrated(page)
+    if map_drawn:
+        map_ready(page)
+        layout_settled(page)
     theme = getattr(page, "aisi_theme", None)
     if theme:
         ground = page.evaluate("getComputedStyle(document.body).backgroundColor")
@@ -4761,6 +4853,99 @@ def check_command_palette(browser, base_url: str) -> list[str]:
     return [f"command palette: {e}" for e in errors]
 
 
+# Principle Off-screen sections: a section with more elements than this skips style and paint while off-screen, and the
+# page outside such sections keeps under the budget, so a theme switch restyles and repaints only that much. A
+# structural bound rather than a switch time, which varies with the machine's load (timings warn, never block).
+OFFSCREEN_SECTION_ELEMENTS, ALWAYS_DRAWN_ELEMENTS = 1500, 4000
+
+
+def check_offscreen_sections(browser, base_url: str) -> list[str]:
+    """Principle Off-screen sections: once the page has settled, every large section has content-visibility: auto and
+    remembers its rendered size, the elements always drawn stay within budget, and skipping moves nothing: a later
+    section's place and the scroll position are the same as with every section drawn, also after a width change."""
+    from playwright.sync_api import TimeoutError as PlaywrightTimeout
+
+    errors = []
+    shape = """([limit, budget]) => { const skips = s => getComputedStyle(s).contentVisibility === 'auto';
+      const sections = [...document.querySelectorAll('main section')], skipping = sections.filter(skips);
+      return { large: sections.filter(s => s.getElementsByTagName('*').length > limit && !(skips(s) && getComputedStyle(s).containIntrinsicBlockSize.startsWith('auto'))).map(s => s.getAttribute('aria-labelledby')),
+        skipping: skipping.length, drawn: document.getElementsByTagName('*').length - skipping.reduce((n, s) => n + s.getElementsByTagName('*').length, 0) }; }"""
+    # The last heading's place in the document and the scroll position, with the sections above it skipped, then drawn.
+    place = "() => [document.getElementById('method').getBoundingClientRect().top + scrollY, scrollY]"
+    settled = "document.documentElement.hasAttribute('data-settled')"
+    page = browser.new_page(viewport={"width": 1440, "height": 900}, skipping=True)
+    try:
+        hydrated(page, base_url)
+        for width in (1440, 390):
+            if width != 1440:
+                page.set_viewport_size({"width": width, "height": 900})
+                page.wait_for_timeout(1000)  # past the page's 250 ms wait for the width change to end, and its redraw
+            try:
+                page.wait_for_function(settled, timeout=5_000)
+            except PlaywrightTimeout:
+                errors.append(f"{width}px: the page never marks itself settled (data-settled), so no section skips while off-screen")
+                break
+            got = page.evaluate(shape, [OFFSCREEN_SECTION_ELEMENTS, ALWAYS_DRAWN_ELEMENTS])
+            if got["large"] or not got["skipping"]:
+                errors.append(f"{width}px: sections with more than {OFFSCREEN_SECTION_ELEMENTS} elements without content-visibility: auto and a remembered size (contain-intrinsic-size: auto): {got['large'] or 'no section skips'}")
+            if got["drawn"] > ALWAYS_DRAWN_ELEMENTS:
+                errors.append(f"{width}px: {got['drawn']} elements outside the off-screen sections, beyond the budget of {ALWAYS_DRAWN_ELEMENTS}; a theme switch restyles every one")
+            page.evaluate("scrollTo(0, document.documentElement.scrollHeight)")
+            page.wait_for_timeout(200)
+            skipped = page.evaluate(place)
+            page.evaluate("document.documentElement.removeAttribute('data-settled')")
+            drawn = page.evaluate(place)
+            if any(abs(a - b) > 1 for a, b in zip(skipped, drawn)):
+                errors.append(f"{width}px: skipping the off-screen sections moves the page (Method heading and scroll position {skipped} skipped, {drawn} drawn)")
+            page.evaluate("document.documentElement.setAttribute('data-settled', ''); scrollTo(0, 0)")
+    finally:
+        page.close()
+    return errors
+
+
+# Interaction times (they warn, never block): at CPU_SLOWDOWN, standing in for a phone, the page
+# answers within INTERACTION_MS after load and on a theme switch, opening the command palette and opening a disclosure.
+CPU_SLOWDOWN, INTERACTION_MS = 4, 100
+
+
+def check_interaction_times(browser, base_url: str) -> list[str]:
+    """Warn (stderr, no error) where an interaction takes longer than INTERACTION_MS at CPU_SLOWDOWN: the longest task
+    after load, and the median of several theme switches, palette openings and disclosure openings, each timed from
+    the action to the next frame."""
+    # Each sample starts from the closed state, after a pause in which the page's idle work (the palette list) can run.
+    timed = """async ([action, n]) => { const frame = () => new Promise(r => requestAnimationFrame(() => setTimeout(r, 0)));
+      const out = []; for (let i = 0; i < n; i++) { const p = document.getElementById('palette'); if (p.open) p.close(); await new Promise(r => setTimeout(r, 300));
+        await frame(); await frame(); const t0 = performance.now(); await (0, eval)(action)(i); await frame(); out.push(performance.now() - t0); }
+      return out.sort((a, b) => a - b)[Math.floor(out.length / 2)]; }"""
+    actions = {
+        "theme switch": "i => document.documentElement.setAttribute('data-theme', i % 2 ? 'light' : 'dark')",
+        "opening the command palette": "i => document.dispatchEvent(new KeyboardEvent('keydown', { key: '/', bubbles: true }))",
+        "opening a disclosure": "i => { const d = document.getElementById('method-details'); if (d.open) d.open = false; d.open = true; }",
+    }
+    from playwright.sync_api import TimeoutError as PlaywrightTimeout
+
+    for width in (1440, 390):
+        page = browser.new_page(viewport={"width": width, "height": 900}, skipping=True)
+        try:
+            page.context.new_cdp_session(page).send("Emulation.setCPUThrottlingRate", {"rate": CPU_SLOWDOWN})
+            page.add_init_script("window.__long = 0; new PerformanceObserver(l => l.getEntries().forEach(e => { window.__long = Math.max(window.__long, e.duration); })).observe({ type: 'longtask', buffered: true });")
+            hydrated(page, base_url)
+            page.wait_for_function("document.documentElement.hasAttribute('data-settled')", timeout=60_000)
+            page.wait_for_timeout(1000)
+            got = {"longest task after load": page.evaluate("window.__long")}
+            for name, action in actions.items():
+                got[name] = page.evaluate(timed, [action, 5])
+                page.evaluate("() => { const p = document.getElementById('palette'); if (p.open) p.close(); document.documentElement.removeAttribute('data-theme'); }")
+            for name, ms in got.items():
+                if ms > INTERACTION_MS:
+                    print(f"warning: {width}px at {CPU_SLOWDOWN}x slower CPU: {name} takes {ms:.0f} ms, beyond {INTERACTION_MS} ms", file=sys.stderr)
+        except PlaywrightTimeout as exc:  # a timing diagnostic: readiness itself is checked, unslowed, by the blocking checks
+            print(f"warning: {width}px at {CPU_SLOWDOWN}x slower CPU: interaction times not measured ({exc})", file=sys.stderr)
+        finally:
+            page.close()
+    return []
+
+
 def check_toggle_place(browser, base_url: str) -> list[str]:
     """Principles Theme and Phone: one theme toggle, at the right end of the sticky section bar above 430px (still there
     when the page is scrolled), in the header on phones; the bar row keeps fitting without sideways scroll."""
@@ -4994,8 +5179,7 @@ def touch_control_tips(browser, base_url: str, viewport: dict, scale: float) -> 
             page = context.new_page()
             page.opened = []  # every tab opened beside the page, recorded until the context closes
             context.on("page", lambda new: page.opened.append(new))
-            hydrated(page, base_url)
-            page.evaluate("document.fonts.ready")
+            hydrated(page, base_url, map_drawn=True)  # a map dot is tapped below
             yield page
         finally:
             context.close()  # closes any tab left open, too
@@ -5010,16 +5194,22 @@ def touch_control_tips(browser, base_url: str, viewport: dict, scale: float) -> 
             errors.append(f"no tappable {selector}")
         return found
 
-    def tap(page, point, tab: bool) -> tuple[int, bool]:
+    def tap(page, point, tab: bool, tip: bool | None = None) -> tuple[int, bool]:
         """Tap; return where this tap's tabs start in page.opened (read that slice at the assertion, so a tab is
-        counted however late it comes) and whether a tip shows 400 ms after the tap, sampled before any new tab
-        takes focus. With `tab`, the new tab is awaited (bounded) from before the tap."""
+        counted however late it comes) and whether a tip shows, sampled before any new tab takes focus. With `tip`
+        True or False the tip should open or close, which is awaited (bounded); with None no tip should open, which
+        only a window can show: 400 ms, in which a tip from the tap's emulated mouseover or focus would appear (a
+        slow run can only miss one, never fail a correct page). With `tab`, the new tab is awaited (bounded) from
+        before the tap."""
         mark, tipped = len(page.opened), False
-        page.wait_for_timeout(150)
+        page.wait_for_timeout(150)  # apart from the last tap, so the two are never one double tap
         try:
             with page.context.expect_page(timeout=15_000) if tab else nullcontext():
                 page.touchscreen.tap(*point[:2])
-                page.wait_for_timeout(400)
+                if tip is None:
+                    page.wait_for_timeout(400)
+                else:
+                    settle(page, shown if tip else f"() => !({shown})()")
                 tipped = page.evaluate(shown)
         except PlaywrightTimeout:
             pass
@@ -5048,14 +5238,17 @@ def touch_control_tips(browser, base_url: str, viewport: dict, scale: float) -> 
             except PlaywrightError:  # closed meanwhile
                 pass
         page.bring_to_front()
-        page.wait_for_timeout(400)
+        page.wait_for_timeout(400)  # a window: the focus that comes back with the tab must not open a tip
         return opened
 
     def open_france(page) -> None:
         """The owner's case: the France record panel, opened from the map search."""
         page.locator("#map-search").fill("fra")
         page.locator("#map-search-0").tap()
-        page.wait_for_timeout(400)
+        france = "() => { const r = document.getElementById('record'); return !r.hidden && r.dataset.j === 'FR'; }"
+        settle(page, france)
+        if not page.evaluate(france):
+            errors.append("a tap on the map search's France suggestion does not open the France record")
 
     cite = "#record a.cn"
     with touch_page() as page:
@@ -5069,27 +5262,30 @@ def touch_control_tips(browser, base_url: str, viewport: dict, scale: float) -> 
             come_back(page, page.opened[mark:])
             if page.evaluate(shown):
                 errors.append(f"after a tap on the control {selector} and a return to the tab, a tooltip shows")
-            hydrated(page, base_url)
+            hydrated(page, base_url, map_drawn=True)  # a reload: the map dot below needs the drawn map again
         # A map dot is a control: its tap opens the record, which names the state, with no tip over the map.
         page.evaluate("document.querySelector('#worldmap').scrollIntoView({ block: 'center' })")
-        page.wait_for_timeout(200)
+        layout_settled(page)
         dot = page.evaluate("""() => { const t = [...document.querySelectorAll('#worldmap svg')].find(n => n.getClientRects().length).querySelector('.tgt[data-j="FR"]'), r = t.getBoundingClientRect(),
           x = r.left + r.width / 2, y = r.top + r.height / 2, h = document.elementFromPoint(x, y); return h && h.closest('#worldmap') ? [x, y] : null; }""")
         if not dot:
             errors.append("no tappable map dot for France")
         else:
             page.touchscreen.tap(*dot)
-            page.wait_for_timeout(400)
+            # The record opens on the tap's click, after its emulated mouseover: a tip from that would show by now.
+            settle(page, "() => !document.getElementById('record').hidden")
             hidden, tipped = page.evaluate("document.getElementById('record').hidden"), page.evaluate(shown)
             if hidden or tipped:
                 errors.append(f"a tap on a map dot does not open the record without a tooltip (record hidden: {hidden}, tooltip shown: {tipped})")
             page.locator("#record .record-close").tap()
-            page.wait_for_timeout(200)
+            settle(page, "() => document.getElementById('record').hidden")
+            if not page.evaluate("document.getElementById('record').hidden"):
+                errors.append("a tap on the record's close button does not close it")
         open_france(page)
         point = point_of(page, cite)
         if point:
             href = page.evaluate("s => [...document.querySelectorAll(s)].find(n => n.getClientRects().length).href", cite)
-            cited, tipped = tap(page, point, tab=False)
+            cited, tipped = tap(page, point, tab=False, tip=True)
             if page.opened[cited:] or not tipped:
                 errors.append(f"a tap on a citation does not open its tooltip in place (tooltip shown: {tipped}, tabs opened: {len(page.opened[cited:])})")
             come_back(page, page.opened[cited:])
@@ -5112,15 +5308,15 @@ def touch_control_tips(browser, base_url: str, viewport: dict, scale: float) -> 
         open_france(page)
         point = point_of(page, cite)
         if point:
-            mark, _ = tap(page, point, tab=False)
+            mark, _ = tap(page, point, tab=False, tip=True)
             corner = page.evaluate("() => { const t = document.getElementById('tip'), r = t.getBoundingClientRect(); return t.hidden ? null : [r.left + 6, r.top + 6]; }")
             if corner:
-                tap(page, corner, tab=False)
+                tap(page, corner, tab=False, tip=False)
             if not corner or page.evaluate(shown) or page.opened[mark:]:
                 errors.append(f"a tap on a citation tooltip's text does not close it (tooltip was shown: {bool(corner)}, tabs opened: {len(page.opened[mark:])})")
             come_back(page, page.opened[mark:])
             page.evaluate("scrollBy(0, 200)")
-            page.wait_for_timeout(400)
+            page.wait_for_timeout(400)  # a window: a closed tip must not come back on the scroll
             if page.evaluate(shown):
                 errors.append("a closed citation tooltip comes back after a return to the tab or a scroll")
         # A mouse on a touch screen: after a tap, hovering with the mouse shows tips again.
@@ -5185,8 +5381,7 @@ def check_access_fixes(browser, base_url: str) -> list[str]:
                     errors.append(f"{width}px: {selector} focused under the sticky bar stays under it (from {got[0]:.0f} to {got[1]:.0f}, bar {got[2]:.0f})")
         page.close()
     page = browser.new_page(viewport={"width": 1440, "height": 700})
-    hydrated(page, base_url)
-    page.evaluate("document.fonts.ready")
+    hydrated(page, base_url, map_drawn=True)
     page.evaluate("() => [...document.querySelectorAll('#worldmap svg')].find(n => n.getClientRects().length).querySelector('.tgt[data-j=\"FR\"]').focus()")
     page.keyboard.press("Enter")
     got = page.evaluate("() => [document.activeElement.id, [...document.querySelectorAll('#worldmap svg')].find(n => n.getClientRects().length).querySelector('.tgt[data-j=\"FR\"]').getAttribute('aria-expanded')]")
@@ -5313,9 +5508,9 @@ def check_arrival(browser, base_url: str) -> list[str]:
             label = f"arrival {width}px {theme} motion={motion}"
             page = themed_page(browser, theme, viewport={"width": width, "height": 667 if width == 390 else 1000}, reduced_motion=motion)  # a short phone: the record under the map is below the fold
             try:
-                hydrated(page, base_url)
-                page.evaluate("document.fonts.ready")
+                hydrated(page, base_url, map_drawn=True)
                 page.locator('#region-chips button[data-region="Europe"]').click()  # Europe's map has none-identified dots
+                map_ready(page)
                 page.evaluate("scrollTo(0, 0)")
                 rows = page.locator("#region-rows-europe .pick").evaluate_all(
                     "bs => bs.map(b => [b.dataset.pick, document.getElementById('c-' + b.dataset.pick.toLowerCase())?.tagName])"
@@ -5392,7 +5587,7 @@ def check_arrival(browser, base_url: str) -> list[str]:
                         errors.append(f"{label}: browser Back to #{full} after Back to map loses its Back to map link")
                     # After a reload the history entry still knows the origin: Back to map opens that record again.
                     page.reload()
-                    page.wait_for_function("!document.documentElement.hasAttribute('data-prerendered')", timeout=30_000)
+                    wait_hydrated(page)
                     page.evaluate("document.fonts.ready")
                     page.wait_for_timeout(150)
                     if page.locator(f"#{full} .back-map").count() != 1:
@@ -5413,8 +5608,7 @@ def check_arrival(browser, base_url: str) -> list[str]:
                 if page.evaluate(state, mini)["tinted"] or page.evaluate(state, mini)["ring"]:
                     errors.append(f"{label}: #{mini} keeps its arrival tint after section navigation")
                 # A shared link: the saved page is swapped for a fresh copy; the outline must survive the swap.
-                hydrated(page, base_url + "#" + full)
-                page.evaluate("document.fonts.ready")
+                hydrated(page, base_url + "#" + full, map_drawn=True)  # Europe's dots are clicked after the reload
                 page.wait_for_timeout(150)
                 got = page.evaluate(state, full)
                 if not (got["marked"] and got["arrived"]):
@@ -5423,8 +5617,7 @@ def check_arrival(browser, base_url: str) -> list[str]:
                     errors.append(f"{label}: shared link #{full} does not arrive below the nav")
                 # The same link percent-encoded names the same card.
                 encoded = "c-" + "".join(f"%{ord(ch):02X}" for ch in full_id.lower()[:1]) + full_id.lower()[1:]
-                hydrated(page, base_url + "#" + encoded)
-                page.evaluate("document.fonts.ready")
+                hydrated(page, base_url + "#" + encoded, map_drawn=True)  # Europe's dots are clicked after the reload
                 page.wait_for_timeout(150)
                 got = page.evaluate(state, full)
                 if not (got["marked"] and got["arrived"] and got["focused"] and got["open"]):
@@ -5435,7 +5628,7 @@ def check_arrival(browser, base_url: str) -> list[str]:
                     try:
                         held = Held(late, "**/assets/fonts/**")
                         late.goto(base_url, wait_until="commit")  # held fonts hold the load event
-                        late.wait_for_function("!document.documentElement.hasAttribute('data-prerendered')", timeout=30_000)
+                        wait_hydrated(late)
                         late.locator(f'#region-rows-europe .pick[data-pick="{full_id}"]').click()
                         late.locator("#record .record-more").click()
                         late.wait_for_timeout(150)
@@ -5459,7 +5652,7 @@ def check_arrival(browser, base_url: str) -> list[str]:
                         if not slow.evaluate("document.documentElement.hasAttribute('data-prerendered')"):
                             errors.append(f"{label}: the page script took over while its data was held")
                         data.release()
-                        slow.wait_for_function("!document.documentElement.hasAttribute('data-prerendered')", timeout=30_000)
+                        wait_hydrated(slow)
                         slow.wait_for_timeout(200)
                         if slow.evaluate("getComputedStyle(document.body).backgroundColor") != GROUNDS[theme]:
                             errors.append(f"{label}: the slow-data page does not show the {theme} theme")
@@ -5703,11 +5896,14 @@ def check_map_labels(page, label: str, names: dict[str, str]) -> list[str]:
     return errors
 
 
-def check_first_screen(page, data: dict) -> list[str]:
+def check_first_screen(page, data: dict, theme_invariant: bool = True) -> list[str]:
     """The first screen against an independent oracle from aisi.json: per region the headline, the open accordion
     group and its institute rows, the others' name lines, one dot per state on or near its own country with its
     status mark; World by default; region chips move to their view; the list's World view row shows only outside World; the EU's merged border; search by keyboard; the record
-    beside the map with its one link down (card or table row)."""
+    beside the map with its one link down (card or table row). Without theme_invariant (the dark passes) only the
+    World view on load and its dots: the rest (region switches, dot clicks, the EU border, search, records, other
+    widths) reads text, classes, focus and geometry, which do not depend on the theme; it ends where the full run
+    ends (Europe selected, at the top) for the steps that follow."""
     errors = []
     page.mouse.move(0, 0)
     page.evaluate("scrollTo(0, 0)")
@@ -5829,6 +6025,11 @@ def check_first_screen(page, data: dict) -> list[str]:
     chips = "() => [...document.querySelectorAll('#region-chips button')].map(c => [c.dataset.region, c.getAttribute('aria-pressed')])"
     if page.evaluate(chips) != [[r, str(r == "World").lower()] for r in ("World",) + LIST_REGIONS]:
         errors.append(f"first screen: region chips are not World (pressed) then the list's regions: {page.evaluate(chips)}")
+    if not theme_invariant:
+        head("Europe")
+        expect_region("Europe", "Europe")
+        page.evaluate("scrollTo(0, 0)")
+        return errors
     head("Europe")
     expect_region("Europe", "Europe")
     pointer_picks("Europe")
@@ -5942,6 +6143,10 @@ def check_first_screen(page, data: dict) -> list[str]:
     box.press("Enter")
     if page.locator("#record-name").text_content() != "Germany" or page.locator("#map-search-list").is_visible() or box.get_attribute("aria-expanded") != "false":
         errors.append("search: Enter does not open the active option's record and close the list")
+    if page.locator("#record-name").text_content() != "Germany":
+        # The record steps below assume Germany's record; with another one open they would fail on something else
+        # (a citation that is not there) and hide the search errors above, so the search errors are the result.
+        return errors + [f"search: 'ger' then Enter opened {page.locator('#record-name').text_content()!r}, not Germany; later first-screen steps skipped"]
     de = next(j for j in data["jurisdictions"] if j["name"] == "Germany")
     link = page.locator("#record .record-more")
     if link.text_content() != "Full record \u2193" or link.get_attribute("href") != f"#c-{de['id'].lower()}":
@@ -6082,7 +6287,7 @@ def check_theme_default(browser, base_url: str, dist: Path) -> list[str]:
             errors.append("theme: the saved page's toggle does not show the stored light theme")
         page.locator("#theme-toggle").click(timeout=5_000)
         held.release()
-        page.wait_for_function("!document.documentElement.hasAttribute('data-prerendered')", timeout=30_000)
+        wait_hydrated(page)
         if state(page) != ["dark", GROUNDS["dark"], "Theme: dark"] or page.evaluate(stored) != "dark":
             errors.append(f"theme: a toggle before the script takes over is lost ({state(page)})")
         # The other pages follow the choice.
@@ -7204,6 +7409,17 @@ def section_targets(page) -> list[tuple[str, object]]:
     return targets
 
 
+# Elements with their own text inside a page-coordinate clip that would show but are skipped by content-visibility
+# (hidden, invisible or transparent ones do not count: they are blank in any capture). Text directly inside a
+# content-visibility element counts too: no script can tell whether its own contents are skipped, and the page keeps
+# such text in child elements.
+SKIPPED_IN_CLIP = """clip => [...document.querySelectorAll('main *')].filter(n =>
+  [...n.childNodes].some(t => t.nodeType === 3 && t.data.trim())
+  && n.checkVisibility && n.checkVisibility({ visibilityProperty: true, opacityProperty: true })
+  && (!n.checkVisibility({ contentVisibilityAuto: true }) || getComputedStyle(n).contentVisibility === 'auto') && (() => { const r = n.getBoundingClientRect();
+  return r.bottom + scrollY > clip.y && r.top + scrollY < clip.y + clip.height && r.right + scrollX > clip.x && r.left + scrollX < clip.x + clip.width; })()).length"""
+
+
 def capture_sections(page, screenshots: Path, prefix: str, landmarks: bool = False) -> None:
     """Save useful crops without moving the viewport or affecting measurements; with landmarks,
     also the named page parts inside each crop (see save_landmarks)."""
@@ -7220,6 +7436,9 @@ def capture_sections(page, screenshots: Path, prefix: str, landmarks: bool = Fal
             name,
         )
         if clip["width"] > 0 and clip["height"] > 0:
+            skipped = page.evaluate(SKIPPED_IN_CLIP, clip)
+            if skipped:  # a full-page clip reaches beyond the viewport, where skipped content would come out blank
+                raise RuntimeError(f"{prefix}-{name}: {skipped} elements with text are skipped inside the crop (principle: Off-screen sections); its capture would show them blank")
             page.screenshot(
                 path=str(screenshots / f"{prefix}-{name}.png"),
                 full_page=True,
@@ -8505,6 +8724,21 @@ def click_control_text(page, control) -> None:
     page.mouse.up()
 
 
+def check_rendered_content(html: str, data: dict) -> list[str]:
+    """The hydrated page's content against the data, once: funding, budget, intervals, operating outputs, summary,
+    figures, staff, sources, groups, names, amounts, leadership rows and none-identified folds. These read text and
+    data attributes that hydration writes the same at every width and in both themes (the page's script reads
+    neither before it renders), so interaction_pass no longer repeats them in each of its six states."""
+    soup = BeautifulSoup(html, "html.parser")
+    return (check_budget_output(html, data) + check_funding_outside(html, data) + check_operating_output(html, data)
+            + check_interval_output(html, data, HAND_WORKED_INTERVALS) + check_summary_data(html, data)
+            + check_two_significant_figures(soup) + check_staff_figures(soup, data) + check_source_alignment(html, data)
+            + check_section_bar(soup) + check_access_groups(soup, data) + check_figures_row(soup, data)
+            + check_setup_groups(soup, data) + check_per_person(soup, data) + check_institute_names(html, data)
+            + check_former_names(html, data) + check_no_rate_amounts(html, data) + check_euro_amounts(html, data)
+            + check_leadership_rows(html, data) + check_generic_sources(html, data) + check_nonidentified_folds(html, data))
+
+
 def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots: Path | None, width: int, theme: str) -> list[str]:
     """Layout and behaviour of the hydrated page at one width in one theme, step after step on one page: later steps
     rely on the filters, scroll position and open disclosures that earlier ones leave."""
@@ -8523,7 +8757,10 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
         if not condition:
             errors.append(f"{context}: {message}")
 
-    hydrated(page, base_url)
+    lap = step_clock()  # per-step seconds for the job's timings line (timed_job)
+    anchor = (width, theme) == (1440, "light")  # the one state for checks that depend on neither
+
+    hydrated(page, base_url, map_drawn=True)
     page.wait_for_selector("#world-rows tr")
     require(
         page.locator("#headline[role=alert]").count() == 0,
@@ -8535,6 +8772,7 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
         page.locator("#figures").is_visible(),
         "figures row is hidden",
     )
+    lap("load")
     for error in check_hit_targets(page):
         require(False, error)
     for check in (
@@ -8553,6 +8791,7 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
     ):
         for error in check(page):
             require(False, error)
+    lap("layout and style")
     for error in check_source_keyboard(page):
         require(False, error)
     for error in check_wrapped_rows(page):
@@ -8577,6 +8816,7 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
     for check in (check_controls, check_in_content_controls):
         for error in check(page):
             require(False, error)
+    lap("geometry and controls")
     for error in check_status_filter(page, data):
         require(False, error)
     for error in check_funding_weights(page):
@@ -8587,27 +8827,14 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
         require(False, error)
     for error in check_version_history(page, data) + check_legend_place(page, width) + check_info_lines(page, width):
         require(False, error)
-    for error in check_funding_bars(page, data) + check_budget_output(page.content(), data) + check_funding_outside(page.content(), data):
+    lap("filter, weights, ladder, downloads, history")
+    # The content of the hydrated page (check_rendered_content) is checked once, on main()'s rendered page, not here
+    # in every width and theme: it is the same in each. What remains reads layout, style or behaviour.
+    for error in check_funding_bars(page, data) + check_access_layout(page, width) + check_access_tips(page):
         require(False, error)
-    for error in check_operating_output(page.content(), data) + check_interval_output(page.content(), data, HAND_WORKED_INTERVALS):
+    for error in check_archive_wrap(page) + check_nonidentified_style(page) + check_name_roles(page):
         require(False, error)
-    for error in check_summary_data(page.content(), data):
-        require(False, error)
-    for error in check_two_significant_figures(BeautifulSoup(page.content(), "html.parser")) + check_staff_figures(BeautifulSoup(page.content(), "html.parser"), data):
-        require(False, error)
-    for error in check_source_alignment(page.content(), data):
-        require(False, error)
-    r2_soup = BeautifulSoup(page.content(), "html.parser")
-    for error in check_section_bar(r2_soup) + check_access_groups(r2_soup, data) + check_figures_row(r2_soup, data) + check_setup_groups(r2_soup, data) + check_per_person(r2_soup, data) + check_access_layout(page, width) + check_access_tips(page):
-        require(False, error)
-    for error in check_institute_names(page.content(), data) + check_former_names(page.content(), data) + check_no_rate_amounts(page.content(), data) + check_euro_amounts(page.content(), data):
-        require(False, error)
-    for error in check_leadership_rows(page.content(), data):
-        require(False, error)
-    for error in check_generic_sources(page.content(), data) + check_archive_wrap(page):
-        require(False, error)
-    for error in check_nonidentified_folds(page.content(), data) + check_nonidentified_style(page) + check_name_roles(page):
-        require(False, error)
+    lap("funding bars, access, archive, names")
     require(
         page.locator(".cards").evaluate_all(
             """(grids, statuses) => grids.every(grid => {
@@ -8688,8 +8915,11 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
     )
     for error in check_activity_width(page) + check_activity_tooltip(page):
         require(False, error)
-    for error in check_first_screen(page, data):
+    lap("grids, tooltips, nav, columns, activity")
+    # The first screen's region switches, dot clicks, search and records do not depend on the theme: in light only.
+    for error in check_first_screen(page, data, theme_invariant=theme == "light"):
         require(False, error)
+    lap("first screen")
     # The bar shows the page title once the h1 is under it; Back to top reveals the h1 fully.
     page.evaluate(
         "() => { const h = document.querySelector('#top h1'), n = document.querySelector('.secnav'); window.scrollTo(0, h.getBoundingClientRect().bottom + scrollY - n.offsetHeight + 2); }"
@@ -8715,6 +8945,7 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
     page.evaluate("window.scrollTo(0, 0)")
     page.wait_for_timeout(150)
 
+    lap("nav title")
     if screenshots:
         screenshots.mkdir(parents=True, exist_ok=True)
         page.screenshot(
@@ -8792,6 +9023,7 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
     for error in check_link_states(page):
         require(False, error)
 
+    lap("screenshots, version link, developments, events, rules, links")
     # A heading inside a sticky label stops moving. Its section does not.
     for target in ("map", "testing", "set-up", "funding", "europe", "world"):
         page.locator(
@@ -8834,6 +9066,7 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
         "nav click does not reach the section",
     )
 
+    lap("scrollspy")
     for error in check_design_roles(page):
         require(False, error)
 
@@ -8854,6 +9087,7 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
         "citation glue split a confidence label",
     )
 
+    lap("design roles, citations, glue")
     # Expanded lists stay in the shared footer track.
     for grid in page.locator(".cards:not(.minis)").all():
         paired = grid.locator(".card-row:has(> .card:nth-child(2))")
@@ -8891,116 +9125,119 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
         "funding disclosure is separated from the content before it (the budget, or Staff where the row stacks)",
     )
 
+    lap("expanded sources")
     # Production bindings: filters, column preference, CSV, glossary, downloads.
-    page.locator("#world-filter").fill("United Kingdom")
-    require(
-        page.locator("#world-rows > tr").count() == 1,
-        "world search fails",
-    )
-    menu = page.locator("#world-download")
-    trigger = menu.locator("summary")
-    trigger.focus()
-    trigger.press("Enter")
-    require(
-        menu.get_attribute("open") is not None,
-        "Download does not open by keyboard",
-    )
-    require(
-        menu.locator(".popover").evaluate(
-            "n => { const r=n.getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth; }"
-        ),
-        "Download choices are outside the viewport",
-    )
-    trigger.press("Tab")
-    require(
-        page.locator("#world-csv").evaluate(
-            "n => n === document.activeElement"
-        ),
-        "CSV choice is not next in tab order",
-    )
-    page.keyboard.press("Escape")
-    require(
-        menu.get_attribute("open") is None
-        and trigger.evaluate("n => n === document.activeElement"),
-        "Escape does not close Download and restore focus",
-    )
-    trigger.click()
-    page.locator("#world-filter").click()
-    require(
-        menu.get_attribute("open") is None,
-        "outside click does not close Download",
-    )
-    trigger.click()
-    with page.expect_download() as download:
-        click_control_text(page, page.locator("#world-csv"))
-    require(
-        menu.get_attribute("open") is None,
-        "CSV choice leaves Download open",
-    )
-    csv_text = Path(download.value.path()).read_text()
-    csv_rows = list(csv.DictReader(io.StringIO(csv_text)))
-    for error in check_operating_output(
-        page.content(), data, csv_rows
-    ):
-        require(False, error)
-    require(
-        len(csv_rows) == 1 and csv_rows[0]["id"] == "GB",
-        "filtered CSV export differs from view",
-    )
-    trigger.click()
-    menu.get_by_role("link", name="Full dataset…").click()
-    require(
-        page.evaluate("location.hash") == "#data"
-        and menu.get_attribute("open") is None,
-        "Full dataset does not close Download and navigate to Data",
-    )
-    page.locator("#world-count button").click()
-    require(
-        page.locator("#world-filter").input_value() == "",
-        "Show all does not clear search",
-    )
-    total = sum(
-        j["kind"] != "supranational" for j in data["jurisdictions"]
-    )
-    require(
-        page.locator("#world-rows > tr").count() == total
-        and page.locator('#world-status option[value=""]').inner_text()
-        == f"All ({total})",
-        "All status count or table total differs from data",
-    )
-    for error in check_operating_output(page.content(), data):
-        require(False, error)
-    region = page.locator(
-        '#world-region option[value^="c:"]'
-    ).first.get_attribute("value")
-    if region is None:
-        raise RuntimeError("region filter has no continent option")
-    page.locator("#world-region").select_option(region)
-    expected_region = {
-        j["id"]
-        for j in data["jurisdictions"]
-        if j["kind"] != "supranational"
-        and (j.get("region") or {}).get("name") == region[2:]
-    }
-    actual_region = set(
-        page.locator("#world-rows > tr").evaluate_all(
-            "rows => rows.map(r => r.dataset.j)"
+    # Search, the Download menu by keyboard, the filtered CSV, Show all and the region filter do not depend on width or theme: once, at 1440 light. Each popover's place in the viewport is checked per width below (toolbar menus).
+    if anchor:
+        page.locator("#world-filter").fill("United Kingdom")
+        require(
+            page.locator("#world-rows > tr").count() == 1,
+            "world search fails",
         )
-    )
-    require(
-        actual_region == expected_region,
-        "region filter differs from data",
-    )
-    require(
-        region[2:]
-        in (
-            page.locator("#world-region").get_attribute(
-                "aria-label"
+        menu = page.locator("#world-download")
+        trigger = menu.locator("summary")
+        trigger.focus()
+        trigger.press("Enter")
+        require(
+            menu.get_attribute("open") is not None,
+            "Download does not open by keyboard",
+        )
+        require(
+            menu.locator(".popover").evaluate(
+                "n => { const r=n.getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth; }"
+            ),
+            "Download choices are outside the viewport",
+        )
+        trigger.press("Tab")
+        require(
+            page.locator("#world-csv").evaluate(
+                "n => n === document.activeElement"
+            ),
+            "CSV choice is not next in tab order",
+        )
+        page.keyboard.press("Escape")
+        require(
+            menu.get_attribute("open") is None
+            and trigger.evaluate("n => n === document.activeElement"),
+            "Escape does not close Download and restore focus",
+        )
+        trigger.click()
+        page.locator("#world-filter").click()
+        require(
+            menu.get_attribute("open") is None,
+            "outside click does not close Download",
+        )
+        trigger.click()
+        with page.expect_download() as download:
+            click_control_text(page, page.locator("#world-csv"))
+        require(
+            menu.get_attribute("open") is None,
+            "CSV choice leaves Download open",
+        )
+        csv_text = Path(download.value.path()).read_text()
+        csv_rows = list(csv.DictReader(io.StringIO(csv_text)))
+        for error in check_operating_output(
+            page.content(), data, csv_rows
+        ):
+            require(False, error)
+        require(
+            len(csv_rows) == 1 and csv_rows[0]["id"] == "GB",
+            "filtered CSV export differs from view",
+        )
+        trigger.click()
+        menu.get_by_role("link", name="Full dataset…").click()
+        require(
+            page.evaluate("location.hash") == "#data"
+            and menu.get_attribute("open") is None,
+            "Full dataset does not close Download and navigate to Data",
+        )
+        page.locator("#world-count button").click()
+        require(
+            page.locator("#world-filter").input_value() == "",
+            "Show all does not clear search",
+        )
+        total = sum(
+            j["kind"] != "supranational" for j in data["jurisdictions"]
+        )
+        require(
+            page.locator("#world-rows > tr").count() == total
+            and page.locator('#world-status option[value=""]').inner_text()
+            == f"All ({total})",
+            "All status count or table total differs from data",
+        )
+        for error in check_operating_output(page.content(), data):
+            require(False, error)
+        region = page.locator(
+            '#world-region option[value^="c:"]'
+        ).first.get_attribute("value")
+        if region is None:
+            raise RuntimeError("region filter has no continent option")
+        page.locator("#world-region").select_option(region)
+        expected_region = {
+            j["id"]
+            for j in data["jurisdictions"]
+            if j["kind"] != "supranational"
+            and (j.get("region") or {}).get("name") == region[2:]
+        }
+        actual_region = set(
+            page.locator("#world-rows > tr").evaluate_all(
+                "rows => rows.map(r => r.dataset.j)"
             )
-            or ""
-        ),
-        "selected region is absent from accessible label",
-    )
+        )
+        require(
+            actual_region == expected_region,
+            "region filter differs from data",
+        )
+        require(
+            region[2:]
+            in (
+                page.locator("#world-region").get_attribute(
+                    "aria-label"
+                )
+                or ""
+            ),
+            "selected region is absent from accessible label",
+        )
     page.locator("#world-region").select_option("")
     page.locator("#world-status").select_option("none_identified")
     expected_none = sum(
@@ -9055,16 +9292,18 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
     term = page.locator("abbr.g").filter(visible=True).first
     term.scroll_into_view_if_needed()
     page.evaluate("new Promise(requestAnimationFrame)")
-    term.focus()
-    require(
-        page.locator("#tip").is_visible(),
-        "glossary tooltip does not open on focus",
-    )
-    page.keyboard.press("Escape")
-    require(
-        not page.locator("#tip").is_visible(),
-        "tooltip does not dismiss with Escape",
-    )
+    # The glossary tip on focus and Escape: once, at 1440 light; its placement (clamped at narrow widths) runs in every state.
+    if anchor:
+        term.focus()
+        require(
+            page.locator("#tip").is_visible(),
+            "glossary tooltip does not open on focus",
+        )
+        page.keyboard.press("Escape")
+        require(
+            not page.locator("#tip").is_visible(),
+            "tooltip does not dismiss with Escape",
+        )
     # Tooltip geometry after a previous tooltip elsewhere: 4px from the trigger, centred unless clamped.
     # A tooltip left near the right edge must not narrow the next one during measurement.
     page.evaluate("() => { const t = document.getElementById('tip'); t.style.left = (document.documentElement.clientWidth - 40) + 'px'; }")
@@ -9084,35 +9323,37 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
         term.element_handle(),
     )
     require(not bad_tip, "tooltip is not 4px from its trigger and centred or clamped: " + bad_tip)
-    with page.expect_download() as download:
-        page.locator('.dlist a[download="aisi.json"]').click()
-    require(
-        json.loads(Path(download.value.path()).read_text())[
-            "dataset"
-        ]["version"]
-        == data["dataset"]["version"],
-        "raw dataset download differs from build",
-    )
-    require(
-        page.locator("#fund-rows > .fund-item").count()
-        + page.locator("#fund-none li[data-j]").count()
-        == len(data["institutes"]),
-        "funding section omits an institute",
-    )
-
-    for record_type in ("funding", "staff"):
-        # Institutes on the Not published line keep their records on their cards, not in a fold.
-        expected = sum(
-            len(i.get(record_type, []))
-            for i in data["institutes"]
-            if i["jurisdiction_id"] not in funding_groups(data)[2]
+    # The aisi.json download and the funding counts do not depend on width or theme: once, at 1440 light.
+    if anchor:
+        with page.expect_download() as download:
+            page.locator('.dlist a[download="aisi.json"]').click()
+        require(
+            json.loads(Path(download.value.path()).read_text())[
+                "dataset"
+            ]["version"]
+            == data["dataset"]["version"],
+            "raw dataset download differs from build",
         )
         require(
-            page.locator(f"[data-record={record_type}]").count()
-            == expected,
-            f"funding folds lost {record_type} records",
+            page.locator("#fund-rows > .fund-item").count()
+            + page.locator("#fund-none li[data-j]").count()
+            == len(data["institutes"]),
+            "funding section omits an institute",
         )
 
+        for record_type in ("funding", "staff"):
+            # Institutes on the Not published line keep their records on their cards, not in a fold.
+            expected = sum(
+                len(i.get(record_type, []))
+                for i in data["institutes"]
+                if i["jurisdiction_id"] not in funding_groups(data)[2]
+            )
+            require(
+                page.locator(f"[data-record={record_type}]").count()
+                == expected,
+                f"funding folds lost {record_type} records",
+            )
+    lap("filters, menus, CSV, glossary")
     # Check all controls revealed by disclosures.
     page.locator("details").evaluate_all(
         "nodes => nodes.forEach(n => { if (!n.closest('.toolbar-actions')) n.open = true; })"
@@ -9125,26 +9366,27 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
         ),
         "descriptive disclosure text is not selectable",
     )
-    for error in check_wrapped_rows(page):
-        require(False, "expanded wrapped rows: " + error)
-    for error in check_hit_targets(page):
-        require(False, "expanded content: " + error)
+    # The expanded content's geometry, text placement and keyboard order do not depend on the theme: in light only
+    # (3 widths). Its colours (design roles, swatches, source footers, external markers, controls) are checked in both themes.
+    if theme == "light":
+        for error in check_wrapped_rows(page):
+            require(False, "expanded wrapped rows: " + error)
+        for error in check_hit_targets(page):
+            require(False, "expanded content: " + error)
     for error in check_planned_swatches(page):
         require(False, "expanded content: " + error)
     for check in (
-        check_typography,
-        check_baselines_and_rhythm,
-        check_citations,
+        *((check_typography, check_baselines_and_rhythm, check_citations) if theme == "light" else ()),
         check_design_roles,
-        check_source_footers,
-        check_meta_separators,
-        check_card_grid,
+        check_source_footers,  # compares each footer's colour with the theme's --muted, so in both themes
+        *((check_meta_separators, check_card_grid) if theme == "light" else ()),
         check_external_markers,
     ):
         for error in check(page):
             require(False, "expanded content: " + error)
-    for error in check_source_keyboard(page):
-        require(False, "expanded content: " + error)
+    if theme == "light":
+        for error in check_source_keyboard(page):
+            require(False, "expanded content: " + error)
     for error in check_controls(page):
         require(False, "expanded content: " + error)
     # Toolbar disclosures are exclusive, so measure each separately.
@@ -9219,6 +9461,7 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
     for browser_error in page_errors:
         require(False, f"JavaScript error: {browser_error}")
     page.close()
+    lap("expanded content, toolbar menus, rest")
     return errors
 
 
@@ -9231,15 +9474,6 @@ PIN_FOCUS_FADE = """
 
 def shared_links(browser, base_url: str) -> list[str]:
     """Section links and shared #links on a tall page, then the stylesheet at 320 px and its older-browser fallback."""
-    from playwright.sync_api import TimeoutError as PlaywrightTimeout
-
-    def settle(state: str) -> None:
-        """Wait (bounded) for the state a step should reach; the checks after it report what went wrong."""
-        try:
-            page.wait_for_function(state, timeout=5_000)
-        except PlaywrightTimeout:
-            pass
-
     errors = []
     # Short final sections must retain an explicit nav choice at a clamped scroll position.
     page = browser.new_page(viewport={"width": 1440, "height": 1600}, reduced_motion="no-preference")  # the fade is read at its start
@@ -9248,7 +9482,7 @@ def shared_links(browser, base_url: str) -> list[str]:
     hydrated(page, base_url)
     page.wait_for_selector("#world-rows tr")
     page.locator('.secnav a[href="#data"]').evaluate("e => e.click()")
-    settle("document.querySelector('.secnav a[href=\"#data\"]').getAttribute('aria-current') === 'location' && document.activeElement.id === 'data'")
+    settle(page, "document.querySelector('.secnav a[href=\"#data\"]').getAttribute('aria-current') === 'location' && document.activeElement.id === 'data'")
     if (
         page.locator('.secnav a[href="#data"]').get_attribute(
             "aria-current"
@@ -9266,7 +9500,7 @@ def shared_links(browser, base_url: str) -> list[str]:
         set_theme(page, scheme)
         page.locator('.secnav a[href="#testing"]').focus(timeout=5_000)
         page.keyboard.press("Enter")
-        settle("document.activeElement.id === 'testing'")
+        settle(page, "document.activeElement.id === 'testing'")
         # The tint is read at the start of its fade, paused there: sampled later, a slow run would see it faded.
         got = page.evaluate("() => {" + CONTRAST_JS + PIN_FOCUS_FADE + " const n = document.activeElement, faded = pinFade(n), c = getComputedStyle(n); return [n.id, n.tagName, c.outlineStyle, rgb(c.backgroundColor).join() === rgb(token('--highlight-fill')).join(), faded]; }")
         if got != ["testing", "H2", "none", True, True]:
@@ -9299,7 +9533,7 @@ def shared_links(browser, base_url: str) -> list[str]:
     page.emulate_media(reduced_motion="reduce")
     page.locator('.secnav a[href="#data"]').focus(timeout=5_000)
     page.keyboard.press("Enter")
-    settle("document.activeElement.id === 'data'")
+    settle(page, "document.activeElement.id === 'data'")
     got = page.evaluate("() => {" + CONTRAST_JS + " const n = document.activeElement, c = getComputedStyle(n); return [n.id, rgb(c.backgroundColor).join() === rgb(token('--highlight-fill')).join(), n.getAnimations().some(a => a.animationName === 'focus-fade')]; }")
     if got != ["data", True, False]:
         errors.append(f"reduced motion: after a jump to Data the focused heading is {got} (expected #data with the tint and no fade)")
@@ -9405,6 +9639,8 @@ def browser_jobs(dist: Path, data: dict, screenshots: Path | None) -> list[tuple
         ("interactions", check_theme_parity, ()),
         ("interactions", check_highlight_fill, ()),
         ("interactions", check_toggle_place, ()),
+        ("interactions", check_offscreen_sections, ()),
+        ("interactions", check_interaction_times, ()),
         ("interactions", check_command_palette, ()),
         ("interactions", check_anchor_aliases, ()),
         ("interactions", check_format_edges, (data,)),
@@ -9433,7 +9669,85 @@ def run_browser_job(chrome: str, dist: Path, stage: str, check, args: tuple) -> 
     except BrowserError as exc:
         if stage != "interactions":
             raise
-        raise RuntimeError(f"headless Chrome interaction checks failed: {exc}") from exc
+        raise RuntimeError(f"headless Chrome interaction check {job_id(stage, check, args)} failed{raised_at(exc)}: {exc}") from exc
+
+
+def raised_at(exc: BaseException) -> str:
+    """ at check_page.py:LINE (function), the innermost frame of this file that the exception passed, or ''."""
+    import traceback
+
+    ours = [f for f in traceback.extract_tb(exc.__traceback__) if Path(f.filename).name == "check_page.py"]
+    return f" at check_page.py:{ours[-1].lineno} ({ours[-1].name})" if ours else ""
+
+
+STEP_TIMES: dict[str, float] = {}  # per process: the running job's step seconds, collected by timed_job
+
+
+def step_clock():
+    """lap(name) records the seconds since the previous lap (or since the clock started) as step name."""
+    last = [time.monotonic()]
+
+    def lap(name: str) -> None:
+        now = time.monotonic()
+        STEP_TIMES[name] = round(STEP_TIMES.get(name, 0) + now - last[0], 3)
+        last[0] = now
+    return lap
+
+
+def write_timings(path: Path, text: str, mode: str = "a") -> None:
+    """Best effort: timings are a report aid, so failing to write them never changes what the gate reports."""
+    try:
+        with path.open(mode, encoding="utf-8") as out:
+            out.write(text)
+    except OSError as exc:
+        print(f"warning: browser job timings not written to {path}: {exc}", file=sys.stderr)
+
+
+def timed_job(timings: Path | None, origin: float, run, stage: str, check, args: tuple) -> list[str]:
+    """run(stage, check, args), appending one line about it to the timings file (JSON lines) as it ends: the job's
+    id, when it started (seconds after origin, the gate's or the shard's start on this machine, by the monotonic clock
+    that all processes of one machine share) and how long it took, with its error count or the type of the exception
+    it raised. Written by the job's own process, so jobs of a stage the report never reaches are timed too; a job
+    whose worker died has no line."""
+    if timings is None:
+        return run(stage, check, args)
+    started, line = time.monotonic(), {"job": job_id(stage, check, args)}
+    STEP_TIMES.clear()
+    try:
+        errors = run(stage, check, args)
+        line.update(errors=len(errors), exception=None)
+        return errors
+    except BaseException as exc:
+        line.update(errors=None, exception=type(exc).__name__)
+        raise
+    finally:
+        line.update(started=round(max(started - origin, 0), 3), seconds=round(time.monotonic() - started, 3))
+        if STEP_TIMES:  # a job that marks its steps (interaction_pass)
+            line["steps"] = dict(STEP_TIMES)
+        write_timings(timings, json.dumps(line) + "\n")  # one short append per line; parallel jobs append whole lines
+
+
+def read_timings(path: Path) -> list[dict]:
+    """The JSON object lines of a timings file; best effort like write_timings, so a damaged file loses only timings."""
+    try:
+        text = path.read_text(encoding="utf-8") if path.is_file() else ""
+    except (OSError, ValueError) as exc:  # ValueError: bytes that are not UTF-8
+        print(f"warning: browser job timings not read from {path}: {exc}", file=sys.stderr)
+        return []
+    lines = []
+    for line in text.splitlines():
+        try:
+            lines.append(json.loads(line))
+        except ValueError:
+            pass  # a line cut short when its worker died
+    return [line for line in lines if isinstance(line, dict)]  # a shard's lines are validated where it is merged
+
+
+def drop_timings(path: Path) -> None:
+    try:
+        path.unlink(missing_ok=True)
+    except OSError as exc:
+        print(f"warning: browser job timings working file {path} not removed: {exc}", file=sys.stderr)
 
 
 def stop_pool(pool, finished: bool) -> None:
@@ -9486,11 +9800,30 @@ def run_stages(run, work: list[tuple], seeds: dict, jobs: int = 1) -> list[str]:
             stop_pool(pool, finished)
 
 
-def check_browser(chrome: str, dist: Path, data: dict, screenshots: Path | None = None, jobs: int = 1) -> list[str]:
+def check_browser(chrome: str, dist: Path, data: dict, screenshots: Path | None = None, jobs: int = 1,
+                  timings: Path | None = None, only: list[str] | None = None) -> list[str]:
     """Hydration, then origins, then interactions (after the page's style-source check), each only when everything
     before it passed; a failed Playwright call in the interactions stops the gate. With --screenshots a parallel run
-    may also write the screenshots of a stage it then does not report."""
-    return run_stages(partial(run_browser_job, chrome, dist), browser_jobs(dist, data, screenshots), browser_seeds(dist), jobs)
+    may also write the screenshots of a stage it then does not report; with timings, each job's line (timed_job);
+    with only, just the jobs of those ids (job_id), in the same stages and order."""
+    work = browser_jobs(dist, data, screenshots)
+    if only is not None:
+        work = [job for job in work if job_id(*job) in only]
+    run = partial(timed_job, timings, time.monotonic(), partial(run_browser_job, chrome, dist))
+    return run_stages(run, work, browser_seeds(dist), jobs)
+
+
+def all_job_ids() -> list[str]:
+    """Every browser job's id, in report order; ids do not depend on the site or the data."""
+    return [job_id(*job) for job in browser_jobs(Path("site"), {}, None)]
+
+
+def job_ids(text: str) -> list[str]:
+    """--job: comma-separated job ids, each one that exists."""
+    wanted, known = list(dict.fromkeys(i.strip() for i in text.split(",") if i.strip())), all_job_ids()  # each id once
+    if not wanted or (unknown := [i for i in wanted if i not in known]):
+        raise argparse.ArgumentTypeError(f"unknown browser job {', '.join(unknown) if wanted else '(none given)'}; --list-jobs prints them")
+    return wanted
 
 
 def browser_seeds(dist: Path) -> dict:
@@ -9502,7 +9835,7 @@ def browser_seeds(dist: Path) -> dict:
 # gate's; an exception from a browser job prints the same text when main() catches its type, and any other failure
 # (a dead worker, a missing or foreign shard result) still fails, with its own message.
 
-SHARD_FORMAT = 1
+SHARD_FORMAT = 2  # 2: every shard result carries its jobs' timings
 CAUGHT = (OSError, subprocess.SubprocessError, ValueError, RuntimeError)  # what main() reports as "page check failed"
 
 # Seconds per job on GitHub's ubuntu-latest, one job at a time (bench run 40025105295, 24 Oct 2026); shards are
@@ -9607,13 +9940,23 @@ def write_shard(chrome: str, dist: Path, data: dict, shard: tuple[int, int], res
     work = browser_jobs(dist, data, None)
     ids = [job_id(*job) for job in work]
     mine = [n for n, s in enumerate(shard_numbers(ids, count)) if s == number]
-    outcomes = run_shard(partial(run_browser_job, chrome, dist), work, mine, jobs)
-    site = file_digests(dist)
     results.parent.mkdir(parents=True, exist_ok=True)
+    try:  # a new file, so no line of an earlier run can join this one; without one, this shard runs untimed
+        handle, name = tempfile.mkstemp(prefix=results.name + ".", suffix=".timings", dir=results.parent)
+        os.close(handle)
+        timings = Path(name)
+    except OSError as exc:
+        print(f"warning: browser jobs of shard {number}/{count} not timed: {exc}", file=sys.stderr)
+        timings = None
+    outcomes = run_shard(partial(timed_job, timings, time.monotonic(), partial(run_browser_job, chrome, dist)), work, mine, jobs)
+    site = file_digests(dist)
     results.write_text(json.dumps({
         "format": SHARD_FORMAT, "shard": number, "count": count, "jobs": ids, "checker": checker_digest(),
         "site": tree_digest(site), "site_files": site, "outcomes": {str(n): o for n, o in outcomes.items()},
+        "timings": read_timings(timings) if timings else [],
     }, indent=1), encoding="utf-8")
+    if timings:
+        drop_timings(timings)
     found = 0
     for n in mine:
         o = outcomes[n]
@@ -9625,8 +9968,9 @@ def write_shard(chrome: str, dist: Path, data: dict, shard: tuple[int, int], res
     return 1 if found else 0
 
 
-def load_shards(directory: Path, dist: Path, ids: list[str]) -> dict[int, dict]:
-    """Every job's recorded outcome from the shard files under directory, or ValueError naming what is wrong."""
+def load_shards(directory: Path, dist: Path, ids: list[str], timings: list[dict] | None = None) -> dict[int, dict]:
+    """Every job's recorded outcome from the shard files under directory, or ValueError naming what is wrong; with
+    timings, also every shard's validated timing lines there, each with its shard as K/N, in shard order."""
     def refuse(problem: str):
         raise ValueError(f"shard results in {directory}: {problem}")
 
@@ -9642,13 +9986,13 @@ def load_shards(directory: Path, dist: Path, ids: list[str]) -> dict[int, dict]:
     files = sorted(directory.glob("**/shard-*.json"))
     if not files:
         refuse("none found")
-    site, checker, shards, counts, outcomes = file_digests(dist), checker_digest(), {}, set(), {}
+    site, checker, shards, counts, outcomes, timed = file_digests(dist), checker_digest(), {}, set(), {}, {}
     for path in files:
         try:
             result = json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=unique_keys)
         except (OSError, ValueError) as exc:  # JSONDecodeError is a ValueError, as is a duplicate key
             refuse(f"{path.name} is not readable JSON without duplicate keys ({exc})")
-        keys = {"format", "shard", "count", "jobs", "checker", "site", "site_files", "outcomes"}
+        keys = {"format", "shard", "count", "jobs", "checker", "site", "site_files", "outcomes", "timings"}
         if not isinstance(result, dict) or set(result) != keys or not count_like(result["format"]) or result["format"] != SHARD_FORMAT:
             refuse(f"{path.name} is not a format {SHARD_FORMAT} shard result")
         if not (count_like(result["shard"]) and count_like(result["count"]) and result["shard"] <= result["count"]):
@@ -9671,6 +10015,9 @@ def load_shards(directory: Path, dist: Path, ids: list[str]) -> dict[int, dict]:
             refuse(f"{path.name} checked another build (differs in {', '.join(changed[:10]) or 'its digest'})")
         if not isinstance(result["outcomes"], dict):
             refuse(f"{path.name} has no outcomes")
+        if not (isinstance(result["timings"], list) and all(timing_ok(t) and t["job"] in ids for t in result["timings"])):
+            refuse(f"{path.name} has malformed timings")
+        timed[result["shard"]] = result["timings"]
         for key, o in result["outcomes"].items():
             if not key.isdigit() or not 0 <= int(key) < len(ids):
                 refuse(f"{path.name} has an outcome for job {key!r}, which does not exist")
@@ -9688,7 +10035,20 @@ def load_shards(directory: Path, dist: Path, ids: list[str]) -> dict[int, dict]:
         refuse(f"expected shards 1 to N of one N, found {sorted(shards)} of {sorted(counts)}")
     if missing := [ids[n] for n in range(len(ids)) if n not in outcomes]:
         refuse(f"no outcome for {', '.join(missing)}")
+    if timings is not None:
+        timings += [{**t, "shard": f"{number}/{len(shards)}"} for number, lines in sorted(timed.items()) for t in lines]
     return outcomes
+
+
+def timing_ok(t) -> bool:
+    """A timed_job line: what the shard format allows in its timings."""
+    number = lambda v: isinstance(v, (int, float)) and not isinstance(v, bool) and v >= 0  # noqa: E731
+    steps = t.get("steps", {}) if isinstance(t, dict) else None
+    return (isinstance(t, dict) and set(t) - {"steps"} == {"job", "started", "seconds", "errors", "exception"} and isinstance(t["job"], str)
+            and isinstance(steps, dict) and all(isinstance(k, str) and number(v) for k, v in steps.items())
+            and number(t["started"]) and number(t["seconds"]) and (t["errors"] is None) != (t["exception"] is None)
+            and (t["errors"] is None or (isinstance(t["errors"], int) and not isinstance(t["errors"], bool) and t["errors"] >= 0))
+            and (t["exception"] is None or isinstance(t["exception"], str)))
 
 
 def recorded(outcomes: dict[int, dict], stage: str, n: int, args: tuple) -> list[str]:
@@ -9701,10 +10061,14 @@ def recorded(outcomes: dict[int, dict], stage: str, n: int, args: tuple) -> list
     raise ShardJobError(f"{exc['type']}: {exc['message']}")
 
 
-def check_merged(dist: Path, data: dict, directory: Path) -> list[str]:
-    """check_browser's report from shard results instead of running the browser jobs."""
+def check_merged(dist: Path, data: dict, directory: Path, timings: Path | None = None) -> list[str]:
+    """check_browser's report from shard results instead of running the browser jobs; with timings, every shard's
+    job lines there, each with its shard (started counts from that shard's start)."""
     work = browser_jobs(dist, data, None)
-    outcomes = load_shards(directory, dist, [job_id(*job) for job in work])
+    lines = []
+    outcomes = load_shards(directory, dist, [job_id(*job) for job in work], lines)
+    if timings is not None:
+        write_timings(timings, "".join(json.dumps(t) + "\n" for t in lines), "w")
     indexed = [(stage, n, ()) for n, (stage, _, _) in enumerate(work)]
     return run_stages(partial(recorded, outcomes), indexed, browser_seeds(dist))
 
@@ -9977,7 +10341,10 @@ def check_recovery_page(
 
 
 def main(dist: Path = ROOT / "dist", screenshots: Path | None = None, capture: Path | None = None, jobs: int = 1,
-         shard: tuple[int, int] | None = None, results: Path | None = None, merge: Path | None = None) -> int:
+         shard: tuple[int, int] | None = None, results: Path | None = None, merge: Path | None = None,
+         timings: Path | None = None, only: list[str] | None = None) -> int:
+    if timings is not None:  # no line from an earlier run survives this one, whatever happens next
+        write_timings(timings, "", "w")
     chrome = find_chrome()
     if chrome is None:
         print(
@@ -9998,9 +10365,9 @@ def main(dist: Path = ROOT / "dist", screenshots: Path | None = None, capture: P
         if shard:
             return write_shard(chrome, dist, data, shard, results, jobs)
         html, base_url = render(chrome, dist)
-        errors = check_method_pages(html, data, dist) + check_dom(html, data, dist, base_url) + check_agent_files(dist) + check_static_page(dist, data) + check_hydrated(html) + check_archive_links(html, data) + check_launch_assets(dist) + check_page_data(dist, data) + check_budget_ratio_downloads(dist, data) + check_state_downloads(dist, data) + check_state_download_buttons(html, dist, data)
+        errors = check_method_pages(html, data, dist) + check_rendered_content(html, data) + check_dom(html, data, dist, base_url) + check_agent_files(dist) + check_static_page(dist, data) + check_hydrated(html) + check_archive_links(html, data) + check_launch_assets(dist) + check_page_data(dist, data) + check_budget_ratio_downloads(dist, data) + check_state_downloads(dist, data) + check_state_download_buttons(html, dist, data)
         if not errors:
-            errors.extend(check_merged(dist, data, merge) if merge else check_browser(chrome, dist, data, screenshots, jobs))
+            errors.extend(check_merged(dist, data, merge, timings) if merge else check_browser(chrome, dist, data, screenshots, jobs, timings, only))
     except CAUGHT as exc:
         print(f"error: page check failed: {exc}", file=sys.stderr)
         if isinstance(exc, subprocess.CalledProcessError) and exc.stderr:
@@ -10012,6 +10379,9 @@ def main(dist: Path = ROOT / "dist", screenshots: Path | None = None, capture: P
         for error in errors:
             print(f"error: {error}", file=sys.stderr)
         return 1
+    if only is not None:  # never mistaken for the gate
+        print(f"ok: static checks and {len(only)} selected browser job{'' if len(only) == 1 else 's'} passed ({', '.join(only)}); not the full gate")
+        return 0
     print(
         f"ok: rendered page and interaction checks passed ({len(data['jurisdictions'])} jurisdictions; {urlsplit(base_url).hostname})"
     )
@@ -10069,6 +10439,10 @@ if __name__ == "__main__":
     parser.add_argument("--shard", type=shard_spec, help="CI: run only shard K/N of the browser jobs, no static checks, and write --results")
     parser.add_argument("--results", type=Path, help="with --shard: where to write the shard's results (JSON)")
     parser.add_argument("--merge", type=Path, help="CI: run the static checks, then report the browser jobs from the shard results under this directory")
+    parser.add_argument("--job", type=job_ids, help="run only these browser jobs (comma-separated ids, see --list-jobs) after the static checks; "
+                        "a debugging and repetition aid, never the gate")
+    parser.add_argument("--list-jobs", action="store_true", help="only print every browser job's id, in report order")
+    parser.add_argument("--timings", type=Path, help="write one JSON line per browser job (id, start, seconds, errors) to this file; with --merge, the shards' lines")
     parser.add_argument(
         "--find-chrome",
         action="store_true",
@@ -10090,4 +10464,12 @@ if __name__ == "__main__":
         found = find_chrome()
         print(found or "")
         sys.exit(0 if found else NOT_RUN)
-    sys.exit(main(args.dist.resolve(), args.screenshots, args.capture, args.jobs, args.shard, args.results, args.merge and args.merge.resolve()))
+    if args.list_jobs:
+        print("\n".join(all_job_ids()))
+        sys.exit(0)
+    if args.job and (args.shard or args.merge or args.capture):
+        parser.error("--job runs browser jobs here: it excludes --shard, --merge and --capture")
+    if args.timings and (args.shard or args.capture):
+        parser.error("--timings goes with a local gate or --merge (a shard's results carry its timings)")
+    sys.exit(main(args.dist.resolve(), args.screenshots, args.capture, args.jobs, args.shard, args.results, args.merge and args.merge.resolve(),
+                  args.timings and args.timings.resolve(), args.job))

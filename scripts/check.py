@@ -7,8 +7,12 @@
   uv run scripts/check.py                       # every step on the staged snapshot, compared with HEAD
   uv run scripts/check.py --base origin/main    # compared with origin/main, when handing back a branch
   uv run scripts/check.py --release             # a release, compared with the last v* tag
-  uv run scripts/check.py --only fast           # validate,lint,tests: the pre-commit hook
+  uv run scripts/check.py --only fast           # validate,lint,export,tests: the pre-commit hook
   uv run scripts/check.py --preflight           # can this agent run every step?
+  uv run scripts/check.py --fail-fast           # stop at the first blocking result
+  uv run scripts/check.py --changed --base origin/main   # only the steps the changed files need
+  uv run scripts/check.py --skip-browser --base origin/main   # all but the browser gate, which CI's
+                                                # shards run on the pushed commit
 
 The staged index (not the working tree) is exported to a temporary directory and every step
 runs there with the locked dependencies, so results describe exactly what would be committed
@@ -31,6 +35,7 @@ import subprocess
 import sys
 import tarfile
 import tempfile
+import threading
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -47,9 +52,17 @@ def toplevel() -> Path:
 
 
 ROOT = toplevel()
-STEPS = ("validate", "lint", "tests", "copies", "passes", "export", "build", "gate", "compare", "sheet")
+# Cheapest first, so --fail-fast reaches a blocking result soon: export and compare read the snapshot and its evidence, not the build.
+STEPS = ("validate", "lint", "export", "tests", "copies", "passes", "compare", "build", "gate", "sheet")
 # The pre-commit hook runs "fast"; CI runs "fast,build,gate". One definition for both.
-GROUPS = {"fast": ("validate", "lint", "tests")}
+# export is fast (about 2 s): a private name is refused at commit, not only at the full check.
+GROUPS = {"fast": ("validate", "lint", "export", "tests")}
+# --skip-browser: until merges can be blocked on CI, CI's four gate shards on the
+# pushed commit are the browser gate's authority; a local run checks everything else.
+BROWSER_ELSEWHERE = "left to CI's gate shards on the pushed commit (--skip-browser); read that run's result"
+# Steps whose NOT RUN does not block a run of the fast group alone (the hook, CI's fast job): the export scan needs a
+# private terms file that a CI runner or a fresh clone does not have. The full check and --changed still require it.
+OPTIONAL_IN_FAST = ("export",)
 NOT_RUN = 3  # check_page.py's exit code when Chrome is missing
 EXCERPT_CHARS = 240
 MAX_ROWS = 300
@@ -68,6 +81,9 @@ class Result:
     seconds: float = 0.0
     detail: str = ""
     log: Path | None = None
+    peak_mb: float | None = None  # sampled peak aggregate RSS while the step ran (see PeakSampler)
+    ended: float = 0.0  # seconds from the start of the run to the end of this step
+    blocks: bool = True  # False only for a NOT RUN that this run may skip (OPTIONAL_IN_FAST)
 
 
 @dataclass
@@ -87,6 +103,64 @@ class Context:
     snapshots: Path | None = None  # private source snapshots that seed quote verification
     gate_args: list[str] = field(default_factory=list)  # CI: shard or merge options for check_page.py
     test_workers: int = 4
+
+
+# Which steps a change needs (--changed): the first rule whose path or directory prefix matches a changed path wins,
+# and a path no rule names runs every step. Deliberately coarse: page, data, build and gate changes run every browser
+# job, because nearly every job reads them; narrower selection waits for measured gains.
+DATA_STEPS = (*GROUPS["fast"], "copies", "passes", "compare", "build", "gate")
+BUILD_STEPS = (*GROUPS["fast"], "compare", "build", "gate")
+# Scripts that neither the build nor the gate imports, runs or reads (tests/test_check.py keeps this true).
+NO_BROWSER_SCRIPTS = ("archive_sources", "make_roster", "migrate_credit", "migrate_facts", "monitor_sources", "protocol_checks",
+                      "release_tag", "research_backfill", "research_log", "rule_tables", "slide_map",
+                      "snapshot_sources", "social_preview", "state_languages", "zenodo_metadata")
+CHANGE_RULES = (
+    (("data/aisi.json",), DATA_STEPS, "authored data: its evidence, then every content check"),
+    (("tests/fixtures/",), BUILD_STEPS, "test fixtures, which the gate also reads"),
+    (("docs/", "tests/", ".github/", ".githooks/", "README.md", "AGENTS.md", "CLAUDE.md", "LICENSE", "LICENSE-DATA",
+      "CITATION.cff", ".zenodo.json", ".gitignore"), GROUPS["fast"], "documentation, tests or tooling the build does not read"),
+    (("scripts/verify_excerpts.py",), (*GROUPS["fast"], "compare"), "quote verification, which compare runs"),
+    (("scripts/research_pass.py",), (*GROUPS["fast"], "passes"), "research-pass checks, which passes runs"),
+    (tuple(f"scripts/{name}.py" for name in NO_BROWSER_SCRIPTS), GROUPS["fast"], "a script neither the build nor the gate uses"),
+    (("site/", "schema/", "scripts/", "pyproject.toml", "uv.lock"), BUILD_STEPS, "page, schema, build or gate code"),
+)
+
+
+def matches(path: str, prefix: str) -> bool:
+    return path.startswith(prefix) if prefix.endswith("/") else path == prefix
+
+
+def changed_steps(paths: list[str]) -> tuple[tuple[str, ...], list[tuple[str, str, tuple[str, ...]]]]:
+    """The steps the changed paths need, in STEPS order, and per path the reason and its steps. No change: fast only.
+    Every rule includes the fast group, whose export scan covers any file (any file can carry an internal name)."""
+    rows = []
+    for path in paths:
+        rule = next(((steps, why) for prefixes, steps, why in CHANGE_RULES if any(matches(path, p) for p in prefixes)), None)
+        rows.append((path, *(rule[::-1] if rule else ("not in the change map: every step", STEPS))))
+    wanted = {step for _, _, steps in rows for step in steps} or set(GROUPS["fast"])
+    return tuple(step for step in STEPS if step in wanted), rows
+
+
+def changed_paths(repo: Path, index: Path, base: str) -> list[str]:
+    """Paths that differ between base and the frozen snapshot index; a rename counts as both its paths."""
+    env = {**os.environ, "GIT_INDEX_FILE": str(index)}
+    out = subprocess.run(["git", "-C", str(repo), "diff", "--cached", "--name-only", "--no-renames", "-z", base],
+                         capture_output=True, check=True, env=env).stdout
+    return sorted({p for p in out.decode("utf-8", "surrogateescape").split("\0") if p})
+
+
+def changed_section(base: str, steps: tuple[str, ...], rows: list) -> str:
+    lines = ["## Changed files", "", f"Steps chosen by --changed from the changes against {base[:12]}: {', '.join(steps)}. "
+             f"Not selected (no change needs them): {', '.join(s for s in STEPS if s not in steps) or 'none'}. "
+             "The fast checks run for every change; their export scan covers any file.", ""]
+    if not rows:
+        return "\n".join(lines + ["No changed files: fast checks only.", ""])
+    lines += ["| Path | Why | Steps |", "| --- | --- | --- |"]
+    shown = rows[:MAX_ROWS]
+    lines += [f"| {path} | {why} | {', '.join(s)} |" for path, why, s in shown]
+    if len(rows) > len(shown):
+        lines.append(f"| ... | {len(rows) - len(shown)} more paths | |")
+    return "\n".join(lines + [""])
 
 
 UV_KEPT = ("UV_CACHE_DIR", "UV_PYTHON_INSTALL_DIR", "UV_PYTHON_DOWNLOADS", "UV_INDEX", "UV_DEFAULT_INDEX",
@@ -150,6 +224,89 @@ def run(ctx: Context, step: str, cmd: list[str], cwd: Path | None = None) -> tup
         out.flush()
         code = subprocess.run(cmd, cwd=cwd or ctx.snapshot, env=ctx.env, stdout=out, stderr=subprocess.STDOUT).returncode
     return code, time.monotonic() - start, log
+
+
+SAMPLE_SECONDS = 0.5
+PEAK_METHOD = (f"sampled peak aggregate RSS of this check and its current descendants, read with ps every {SAMPLE_SECONDS} s: "
+               "memory shared between processes counts in each of them, a process that detaches from the tree drops out, "
+               "and peaks shorter than the interval can be missed")
+
+
+def tree_rss_kb(root: int, listing: str) -> int:
+    """Summed RSS (KB) of root and its descendants in `ps -A -o pid=,ppid=,rss=` output."""
+    children, rss = {}, {}
+    for line in listing.splitlines():
+        fields = line.split()
+        if len(fields) == 3 and all(f.isdigit() for f in fields):
+            pid, ppid, kb = map(int, fields)
+            children.setdefault(ppid, []).append(pid)
+            rss[pid] = kb
+    total, stack, seen = 0, [root], set()
+    while stack:
+        pid = stack.pop()
+        if pid not in seen:
+            seen.add(pid)
+            total += rss.get(pid, 0)
+            stack += children.get(pid, [])
+    return total
+
+
+class PeakSampler:
+    """Highest summed RSS of a process tree, sampled with ps (Linux and macOS both report RSS in KB) from start() to
+    stop(). peak_mb is None when the sampler could not start or ps could not be read; the step runs either way."""
+
+    def __init__(self, root: int, interval: float = SAMPLE_SECONDS):
+        self.root, self.interval, self.peak_kb = root, interval, None
+        self._stop = threading.Event()
+        self._thread = threading.Thread(target=self._loop, daemon=True)
+
+    def _sample(self) -> None:
+        try:
+            listing = subprocess.run(["ps", "-A", "-o", "pid=,ppid=,rss="], capture_output=True, text=True, timeout=2).stdout
+        except (OSError, subprocess.SubprocessError):
+            return
+        kb = tree_rss_kb(self.root, listing)
+        if kb:
+            self.peak_kb = max(self.peak_kb or 0, kb)
+
+    def _loop(self) -> None:
+        while True:
+            self._sample()
+            if self._stop.wait(self.interval):
+                return
+
+    def start(self) -> "PeakSampler":
+        try:
+            self._thread.start()
+        except RuntimeError:  # no thread to spare: no measurement, but the step still runs
+            pass
+        return self
+
+    def stop(self) -> None:
+        self._stop.set()
+        if self._thread.is_alive():
+            self._thread.join()
+
+    def __enter__(self) -> "PeakSampler":
+        return self.start()
+
+    def __exit__(self, *exc) -> None:
+        self.stop()
+
+    @property
+    def peak_mb(self) -> float | None:
+        return None if self.peak_kb is None else self.peak_kb / 1024
+
+
+def first_blocking(results: list[Result], allow_skip: bool) -> Result | None:
+    """The blocking result that ended first: how long an agent waits before it has something to fix."""
+    return min(blocking(results, allow_skip), key=lambda r: r.ended, default=None)
+
+
+def timing_line(results: list[Result], allow_skip: bool, total: float) -> str:
+    first = first_blocking(results, allow_skip)
+    found = f"first blocking result: {first.step} {first.status} after {first.ended:.1f} s" if first else "no blocking result"
+    return f"Timing: {total:.1f} s in all; {found}."
 
 
 def tail(log: Path, lines: int = 12) -> str:
@@ -296,10 +453,60 @@ def gate_result(step: str, code: int, seconds: float, log: Path) -> Result:
     return Result(step, "FAIL", seconds, tail(log), log)
 
 
+SLOWEST_JOBS = 10
+
+
+def browser_job_section(timings: list[dict]) -> str:
+    """The gate's browser jobs by time: the first with a finding (when an agent could have started on it) and the
+    slowest. Each started value counts from its own gate or shard's start; shards on different machines are not compared."""
+    lines = ["## Browser jobs", ""]
+    if not timings:
+        return "\n".join(lines + ["No browser job timings (the static checks failed first, or the gate did not run its browser jobs).", ""])
+    where = lambda t: f" (shard {t['shard']})" if t.get("shard") else ""  # noqa: E731
+    lines.append(f"{len(timings)} jobs timed, {sum(t['seconds'] for t in timings):.1f} job-seconds in all.")
+    # One first finding per clock: each shard counts from its own start, so shards are never compared with each other.
+    firsts = {}
+    for t in timings:
+        if (t["exception"] or t["errors"]) and (t.get("shard") not in firsts or t["started"] + t["seconds"] < firsts[t.get("shard")]["started"] + firsts[t.get("shard")]["seconds"]):
+            firsts[t.get("shard")] = t
+    for shard in sorted(firsts, key=str):
+        first = firsts[shard]
+        lines.append(f"First job with a finding{where(first)}: {first['job']}, ended {first['started'] + first['seconds']:.1f} s after "
+                     f"{'its shard' if shard else 'the browser jobs'} started.")
+    if not firsts:
+        lines.append("No job reported a finding.")
+    lines += ["", f"| Slowest {min(SLOWEST_JOBS, len(timings))} | Seconds | Result |", "| --- | --- | --- |"]
+    for t in sorted(timings, key=lambda t: -t["seconds"])[:SLOWEST_JOBS]:
+        result = t["exception"] or (f"{t['errors']} errors" if t["errors"] else "pass")
+        lines.append(f"| {t['job']}{where(t)} | {t['seconds']:.1f} | {result} |")
+    stepped = [t for t in timings if t.get("steps")]
+    if stepped:  # jobs that mark their steps (interaction_pass, once per width and theme)
+        totals: dict[str, float] = {}
+        slowest: dict[str, tuple[float, str]] = {}
+        for t in stepped:
+            for name, seconds in t["steps"].items():
+                totals[name] = totals.get(name, 0) + seconds
+                if seconds > slowest.get(name, (-1, ""))[0]:
+                    slowest[name] = (seconds, t["job"])
+        lines += ["", f"Steps of the {len(stepped)} jobs that mark them, summed:", "", "| Step | Seconds | Slowest job (seconds) |", "| --- | --- | --- |"]
+        for name in sorted(totals, key=lambda n: -totals[n]):
+            lines.append(f"| {name} | {totals[name]:.1f} | {slowest[name][1]} ({slowest[name][0]:.1f}) |")
+    return "\n".join(lines + [""])
+
+
 def step_gate(ctx: Context) -> Result:
     if not ctx.built:
         return Result("gate", "NOT RUN", detail="no successful build of this snapshot in this run")
-    code, seconds, log = run(ctx, "gate", ["uv", "run", "--locked", "-q", "scripts/check_page.py", "--dist", str(ctx.dist), *ctx.gate_args])
+    # A shard's own results carry its timings; the merge (or a local gate) writes them all here.
+    timings = None if any(a.startswith("--shard") for a in ctx.gate_args) else ctx.report / "gate-timings.jsonl"
+    code, seconds, log = run(ctx, "gate", ["uv", "run", "--locked", "-q", "scripts/check_page.py", "--dist", str(ctx.dist), *ctx.gate_args,
+                                           *([f"--timings={timings}"] if timings else [])])
+    if timings:
+        try:
+            lines = [json.loads(line) for line in timings.read_text(encoding="utf-8").splitlines() if line.strip()] if timings.is_file() else []
+            ctx.sections["jobs"] = browser_job_section(lines)
+        except (OSError, ValueError, KeyError, TypeError) as exc:  # timings are a report aid: never fail the gate over them
+            ctx.sections["jobs"] = f"## Browser jobs\n\nTimings unreadable ({type(exc).__name__}: {exc}).\n"
     return gate_result("gate", code, seconds, log)
 
 
@@ -668,8 +875,9 @@ def preflight(cache: Path, snapshots: Path | None) -> int:
     return 0 if all(ok for _, ok, _ in rows) else 1
 
 
-# The owner's list of where to look leads, then release warnings, the agent's visual pass and the claims.
-REPORT_ORDER = ("where", "warnings", "sheet", "compare")
+# The owner's list of where to look leads, then why --changed chose its steps, release warnings, the agent's visual pass,
+# the claims and the browser job timings.
+REPORT_ORDER = ("where", "changed", "warnings", "sheet", "compare", "jobs")
 
 
 def ordered_sections(sections: dict[str, str]) -> list[str]:
@@ -677,8 +885,8 @@ def ordered_sections(sections: dict[str, str]) -> list[str]:
 
 
 def blocking(results: list[Result], allow_skip: bool) -> list[Result]:
-    """FAIL always blocks; NOT RUN blocks unless skips were explicitly allowed."""
-    return [r for r in results if r.status == "FAIL" or (r.status == "NOT RUN" and not allow_skip)]
+    """FAIL always blocks; NOT RUN blocks unless skips were explicitly allowed or the result says it may be skipped."""
+    return [r for r in results if r.status == "FAIL" or (r.status == "NOT RUN" and not allow_skip and r.blocks)]
 
 
 RUNNERS = {
@@ -697,19 +905,25 @@ def gate_arguments(args) -> list[str]:
 
 
 def main() -> int:
+    started = time.monotonic()
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--base", help="revision to compare the staged snapshot with: a remote branch (origin/main), tag or commit; "
                     "a local branch that differs from its upstream is refused (default: HEAD; with --release, the last v* tag)")
     ap.add_argument("--only", help=f"comma-separated steps from {','.join(STEPS)}, or fast (default: all)")
+    ap.add_argument("--changed", action="store_true", help="run only the steps the files changed against the base need "
+                    "(see CHANGE_RULES; a path it does not name runs every step); excludes --only")
     ap.add_argument("--out", type=Path, help="build into this directory instead of a temporary one (CI publishes it)")
     ap.add_argument("--allow-skip", action="store_true", help="let NOT RUN steps pass (local only; refused in CI)")
-    ap.add_argument("--skip-browser", action="store_true", help="record gate and sheet as NOT RUN when this agent cannot run Chrome; requires --allow-skip")
+    ap.add_argument("--skip-browser", action="store_true", help="leave the browser gate to CI's shards on the pushed commit: "
+                    "it is recorded as NOT RUN without blocking; the other selected steps run and block as usual (sheets included)")
     ap.add_argument("--release", action="store_true", help="validate with build.py --release")
     ap.add_argument("--report-dir", type=Path, help="where to write report.md, logs and screenshots (default: a new temporary directory)")
     ap.add_argument("--cache", type=Path, default=ROOT / "work/source-cache", help="source cache for offline quote verification")
     ap.add_argument("--snapshots", type=Path, default=SNAPSHOTS, help="private store of source copies (default: AISI_SNAPSHOTS, otherwise unconfigured); checks copies and seeds quote verification")
     ap.add_argument("--serve-url", default=SERVE_URL, help=f"where the staged build is served for the Where to look links (default: {SERVE_URL})")
     ap.add_argument("--preflight", action="store_true", help="only check that this agent can run every step")
+    ap.add_argument("--fail-fast", action="store_true", help="after the first blocking result (FAIL, or NOT RUN without --allow-skip), "
+                    "record the remaining steps as NOT RUN instead of running them")
     ap.add_argument("--test-workers", type=int, default=4, help="pytest-xdist workers for the tests step (default: 4; 0 runs in one process)")
     ap.add_argument("--gate-dist", type=Path, help="CI: the gate checks this already built site instead of this run's build")
     ap.add_argument("--gate-shard", help="CI: the gate runs only shard K/N of the browser jobs (needs --gate-results)")
@@ -724,12 +938,20 @@ def main() -> int:
     steps = STEPS if not args.only else tuple(x for s in args.only.split(",") for x in GROUPS.get(s.strip(), (s.strip(),)))
     if unknown := set(steps) - set(STEPS):
         ap.error(f"unknown steps: {', '.join(sorted(unknown))}")
+    if args.changed and args.only:
+        ap.error("--changed chooses the steps itself: leave out --only")
+    if args.changed and args.release:
+        ap.error("a release runs every step: leave out --changed")
     if args.allow_skip and os.environ.get("CI"):
         ap.error("--allow-skip is for local runs only")
-    if args.skip_browser and not args.allow_skip:
-        ap.error("--skip-browser requires --allow-skip")
+    if args.skip_browser and os.environ.get("CI"):
+        ap.error("--skip-browser is for local runs: CI runs the browser gate")
+    if args.skip_browser and args.release:
+        ap.error("a release runs the browser gate: leave out --skip-browser")
     gate_options = [o for o in ("gate_dist", "gate_shard", "gate_results", "gate_jobs", "gate_merge") if getattr(args, o) is not None]
-    if gate_options and "gate" not in steps:
+    if args.changed and (fixed := [o for o in gate_options if o != "gate_jobs"]):
+        ap.error(f"--{fixed[0].replace('_', '-')} is for CI's fixed steps, not --changed")
+    if gate_options and "gate" not in steps and not args.changed:
         ap.error(f"--{gate_options[0].replace('_', '-')} needs the gate step")
     if args.gate_dist and ("build" in steps or args.out):
         ap.error("--gate-dist checks an existing build: leave out the build step and --out")
@@ -746,7 +968,7 @@ def main() -> int:
     if args.gate_shard and int(args.gate_shard.split("/")[0]) > int(args.gate_shard.split("/")[1]):
         ap.error(f"--gate-shard expects K/N with 1 <= K <= N, not {args.gate_shard!r}")
     try:
-        base = resolve_base(ROOT, args.base, args.release) if {"compare", "sheet", "passes"} & set(steps) else None
+        base = resolve_base(ROOT, args.base, args.release) if args.changed or {"compare", "sheet", "passes"} & set(steps) else None
     except ValueError as exc:
         ap.error(str(exc))
     report = (args.report_dir or Path(tempfile.mkdtemp(prefix="aisi-check-report-"))).resolve()
@@ -756,21 +978,41 @@ def main() -> int:
     with tempfile.TemporaryDirectory(prefix="aisi-check-") as tmp:
         work = Path(tmp)
         snapshot_id = make_snapshot(ROOT, work / "snapshot")
+        selected = None
+        if args.changed:  # chosen from exactly the snapshot being checked
+            steps, rows = changed_steps(changed_paths(ROOT, work / "snapshot.index", base))
+            selected = changed_section(base, steps, rows)
         dist = args.gate_dist.resolve() if args.gate_dist else args.out.resolve() if args.out else work / "dist"
         env = clean_env()
         env[RUN_DATE_ENV] = env.get(RUN_DATE_ENV) or dt.datetime.now(ZoneInfo(RUN_ZONE)).date().isoformat()
         ctx = Context(ROOT, work / "snapshot", work, report, base, args.release, dist, args.cache.resolve(), env, serve_url=args.serve_url,
                       snapshots=args.snapshots, gate_args=gate_arguments(args), test_workers=args.test_workers, built=bool(args.gate_dist))
-        results = []
+        if selected:
+            ctx.sections["changed"] = selected
+        results, stopped = [], None
         for step in STEPS:
-            if step in steps:
+            if step in steps and stopped:
+                results.append(Result(step, "NOT RUN", detail=f"fail-fast: stopped after {stopped.step} {stopped.status}", ended=stopped.ended))
+            elif step in steps:
+                sampler = PeakSampler(os.getpid()).start()
+                step_start = time.monotonic()
                 try:
-                    result = (Result(step, "NOT RUN", detail="browser unavailable to this agent; owner must run full check")
-                              if args.skip_browser and step in {"gate", "sheet"} else RUNNERS[step](ctx))
+                    result = (Result(step, "NOT RUN", detail=BROWSER_ELSEWHERE, blocks=False)
+                              if args.skip_browser and step == "gate" else RUNNERS[step](ctx))
                 except Exception as exc:  # noqa: BLE001 - a crashed step is a failed step, and the report still gets written
                     result = Result(step, "FAIL", detail=f"{type(exc).__name__}: {exc}")
+                # Timed here, around the whole step, so in-process work, early returns and crashes all count; read
+                # before the sampler stops, so a slow last ps does not count as the step's time.
+                step_end = time.monotonic()
+                sampler.stop()
+                result.seconds, result.ended, result.peak_mb = step_end - step_start, step_end - started, sampler.peak_mb
+                if result.status == "NOT RUN" and step in OPTIONAL_IN_FAST and set(steps) <= set(GROUPS["fast"]) and not args.changed:
+                    result.blocks = False
+                    result.detail += " (not blocking in a fast run; the full check requires it)"
                 print(f"{result.status:8} {step} ({result.seconds:.1f} s)", file=sys.stderr, flush=True)
                 results.append(result)
+                if args.fail_fast and blocking([result], args.allow_skip):
+                    stopped = result
     unstaged = git(ROOT, "diff", "--name-only").split()
     untracked = git(ROOT, "ls-files", "--others", "--exclude-standard").split()
     failed = blocking(results, args.allow_skip)
@@ -778,10 +1020,12 @@ def main() -> int:
              + f"; run date {ctx.env[RUN_DATE_ENV]}.", ""]
     if unstaged or untracked:
         lines += [f"Not checked (unstaged or untracked): {', '.join(unstaged + untracked)}.", ""]
-    lines += ["| Step | Result | Seconds | Detail |", "| --- | --- | --- | --- |"]
+    lines += ["| Step | Result | Seconds | Peak MB | Detail |", "| --- | --- | --- | --- | --- |"]
     for r in results:
-        lines.append(f"| {r.step} | {r.status} | {r.seconds:.1f} | {short(r.detail.splitlines()[-1] if r.detail else '', 200)}{f' ([log]({r.log}))' if r.log else ''} |")
+        peak = "not measured" if r.peak_mb is None else f"{r.peak_mb:.0f}"
+        lines.append(f"| {r.step} | {r.status} | {r.seconds:.1f} | {peak} | {short(r.detail.splitlines()[-1] if r.detail else '', 200)}{f' ([log]({r.log}))' if r.log else ''} |")
     lines += ["", f"Overall: {'FAIL' if failed else 'PASS'}" + (" (NOT RUN steps allowed by --allow-skip)" if args.allow_skip and any(r.status == 'NOT RUN' for r in results) else ""), ""]
+    lines += [timing_line(results, args.allow_skip, time.monotonic() - started), "", f"Peak MB: {PEAK_METHOD}.", ""]
     for r in results:
         if r.status == "FAIL" and r.detail:
             lines += [f"### {r.step} output (last lines)", "", "```", r.detail, "```", ""]

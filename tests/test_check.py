@@ -3,8 +3,10 @@
 import hashlib
 import json
 import os
+import re
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 import pytest
@@ -50,6 +52,183 @@ def test_not_run_fails_unless_skips_are_allowed(statuses, allow_skip, blocked):
     assert len(check.blocking(results, allow_skip)) == blocked
 
 
+def test_tree_rss_sums_a_process_and_its_descendants_only():
+    listing = "  10     1  100\n  11    10  200\n  12    11   50\n  13     1 9999\n garbage line\n"
+    assert check.tree_rss_kb(10, listing) == 350
+    assert check.tree_rss_kb(11, listing) == 250
+    assert check.tree_rss_kb(99, listing) == 0
+
+
+def test_peak_sampler_counts_memory_held_by_a_child_process():
+    hold = "b = bytearray(80 * 1024 * 1024); b[::4096] = b'x' * len(b[::4096]); import time; time.sleep(2)"
+    with check.PeakSampler(os.getpid(), interval=0.1) as alone:
+        time.sleep(0.3)
+    with check.PeakSampler(os.getpid(), interval=0.1) as with_child:
+        subprocess.run([sys.executable, "-c", hold], check=True)
+    assert alone.peak_mb is not None and with_child.peak_mb is not None
+    assert with_child.peak_mb - alone.peak_mb > 60
+
+
+def test_a_sampler_without_a_thread_measures_nothing_and_does_not_raise(monkeypatch):
+    sampler = check.PeakSampler(os.getpid())
+    monkeypatch.setattr(sampler._thread, "start", lambda: (_ for _ in ()).throw(RuntimeError("can't start new thread")))
+    sampler.start().stop()
+    assert sampler.peak_mb is None
+
+
+def test_step_time_ends_before_the_sampler_stops(tmp_path, monkeypatch):
+    samplers, stop = [], check.PeakSampler.stop
+
+    def slow_stop(self):
+        samplers.append(self)
+        time.sleep(2)  # far above any setup time, so a busy machine cannot blur the comparison
+        stop(self)
+
+    monkeypatch.setattr(check.PeakSampler, "stop", slow_stop)
+    monkeypatch.setattr(check, "make_snapshot", lambda repo, dest: dest.mkdir(parents=True) or "0" * 16)
+    monkeypatch.setattr(check, "RUNNERS", {**check.RUNNERS, "lint": lambda ctx: check.Result("lint", "NOT RUN", detail="no ruff")})
+    monkeypatch.setattr(sys, "argv", ["check.py", "--only", "lint", "--report-dir", str(tmp_path / "r")])
+    assert check.main() == 1
+    row = next(line for line in (tmp_path / "r/report.md").read_text().splitlines() if line.startswith("| lint "))
+    assert float(row.split(" | ")[2]) < 1.5  # the early NOT RUN is timed without the sampler's shutdown
+    ended = re.search(r"first blocking result: lint NOT RUN after (\d+\.\d) s", (tmp_path / "r/report.md").read_text())
+    assert ended and float(ended[1]) < 1.5  # and so is when it ended
+    assert samplers and not any(s._thread.is_alive() for s in samplers)
+
+
+def test_report_times_every_step_and_names_the_first_blocking_result(tmp_path, monkeypatch, capsys):
+    def slow_fail(ctx):
+        time.sleep(0.2)
+        return check.Result("lint", "FAIL", 0.0, "error: E501")
+
+    def crash(ctx):
+        raise RuntimeError("boom")
+
+    monkeypatch.setattr(check, "make_snapshot", lambda repo, dest: dest.mkdir(parents=True) or "0" * 16)
+    monkeypatch.setattr(check, "RUNNERS", {**check.RUNNERS, "validate": lambda ctx: check.Result("validate", "PASS"), "lint": slow_fail, "tests": crash})
+    monkeypatch.setattr(sys, "argv", ["check.py", "--only", "fast", "--report-dir", str(tmp_path / "r")])
+    assert check.main() == 1
+    report = (tmp_path / "r/report.md").read_text()
+    rows = {line.split(" | ")[0].strip("| "): line.split(" | ") for line in report.splitlines() if line.startswith("| ") and "---" not in line}
+    assert rows["Step"][:4] == ["| Step", "Result", "Seconds", "Peak MB"]
+    assert float(rows["lint"][2]) >= 0.2  # timed around the step, not what the step reported
+    assert rows["tests"][1] == "FAIL" and "RuntimeError: boom" in rows["tests"][4]
+    assert re.search(r"first blocking result: lint FAIL after \d+\.\d s", report)
+    assert "Peak MB: sampled peak aggregate RSS" in report
+
+
+def timing(job, started, seconds, errors=0, exception=None, shard=None):
+    line = {"job": job, "started": started, "seconds": seconds, "errors": None if exception else errors, "exception": exception}
+    return {**line, "shard": shard} if shard else line
+
+
+def test_browser_job_section_names_the_first_finding_and_the_slowest_jobs():
+    timings = [timing("a", 0, 50), timing("b", 0, 5, errors=2), timing("c", 1, 40, exception="TimeoutError"), *(timing(f"x{n}", 2, n) for n in range(12))]
+    section = check.browser_job_section(timings)
+    assert "15 jobs timed" in section
+    assert "First job with a finding: b, ended 5.0 s after" in section  # b ended before c, though c is listed first by speed
+    rows = [line for line in section.splitlines() if line.startswith("| ") and "---" not in line][1:]
+    assert len(rows) == check.SLOWEST_JOBS and rows[0] == "| a | 50.0 | pass |" and rows[1] == "| c | 40.0 | TimeoutError |"
+    # Shards keep their own clocks: each gets its own first finding, even when a later shard's ended "sooner".
+    sharded = check.browser_job_section([timing("a", 0, 30, errors=1, shard="1/4"), timing("b", 0, 1, errors=1, shard="2/4"), timing("c", 0, 9, errors=1, shard="1/4")])
+    assert "First job with a finding (shard 1/4): c, ended 9.0 s after its shard started." in sharded
+    assert "First job with a finding (shard 2/4): b, ended 1.0 s after its shard started." in sharded
+    assert "No job reported a finding." in check.browser_job_section([timing("a", 0, 1)])
+    assert "No browser job timings" in check.browser_job_section([])
+
+
+@pytest.mark.parametrize("gate_args, timed", [([], True), (["--merge=/r"], True), (["--shard=1/4", "--results=/r/s.json"], False)])
+def test_gate_asks_for_timings_except_in_a_shard(tmp_path, monkeypatch, gate_args, timed):
+    ctx = check.Context(tmp_path, tmp_path, tmp_path, tmp_path, None, False, tmp_path / "dist", tmp_path, built=True, gate_args=gate_args)
+    seen = []
+
+    def fake_run(ctx, step, cmd, cwd=None):
+        seen.extend(cmd)
+        for arg in cmd:
+            if arg.startswith("--timings="):
+                Path(arg.split("=", 1)[1]).write_text(json.dumps(timing("hydration/hydration_paint", 0, 3)) + "\n")
+        (tmp_path / "gate.log").write_text("")
+        return 0, 1.0, tmp_path / "gate.log"
+
+    monkeypatch.setattr(check, "run", fake_run)
+    assert check.step_gate(ctx).status == "PASS"
+    assert any(a.startswith("--timings=") for a in seen) == timed
+    assert ("hydration/hydration_paint" in ctx.sections.get("jobs", "")) == timed
+
+
+def test_unreadable_timings_never_fail_the_gate(tmp_path, monkeypatch):
+    ctx = check.Context(tmp_path, tmp_path, tmp_path, tmp_path, None, False, tmp_path / "dist", tmp_path, built=True)
+
+    def fake_run(ctx, step, cmd, cwd=None):
+        (tmp_path / "gate-timings.jsonl").write_text("{not json\n")
+        (tmp_path / "gate.log").write_text("")
+        return 0, 1.0, tmp_path / "gate.log"
+
+    monkeypatch.setattr(check, "run", fake_run)
+    assert check.step_gate(ctx).status == "PASS" and "Timings unreadable" in ctx.sections["jobs"]
+
+
+@pytest.mark.parametrize("allow_skip, ran", [(False, ["validate", "lint"]), (True, ["validate", "lint", "export", "tests"])])
+def test_fail_fast_stops_at_the_first_blocking_result(tmp_path, monkeypatch, allow_skip, ran):
+    calls = []
+
+    def runner(status):
+        def run(ctx):
+            calls.append(run.step)
+            return check.Result(run.step, status)
+        return run
+
+    runners = {step: runner("PASS") for step in check.STEPS}
+    runners["lint"] = runner("NOT RUN")
+    runners["tests"] = runner("FAIL")
+    for step, run in runners.items():
+        run.step = step
+    monkeypatch.setattr(check, "make_snapshot", lambda repo, dest: dest.mkdir(parents=True) or "0" * 16)
+    monkeypatch.setattr(check, "RUNNERS", runners)
+    monkeypatch.delenv("CI", raising=False)  # --allow-skip is refused in CI, where this test also runs
+    monkeypatch.setattr(sys, "argv", ["check.py", "--only", "fast,copies", "--fail-fast", "--report-dir", str(tmp_path / "r"),
+                                      *(["--allow-skip"] if allow_skip else [])])
+    assert check.main() == 1
+    assert calls == ran  # a skip that is allowed does not stop the run; a FAIL does, and copies never runs
+    report = (tmp_path / "r/report.md").read_text()
+    blocker = "lint NOT RUN" if not allow_skip else "tests FAIL"
+    assert "| copies | NOT RUN |" in report and f"fail-fast: stopped after {blocker}" in report
+    assert f"first blocking result: {blocker}" in report  # the skipped steps share its end but do not displace it
+
+
+@pytest.mark.parametrize("argv, blocks", [
+    (["--only", "fast"], False),  # the hook and CI's fast job: no terms file is not a reason to refuse a commit
+    (["--only", "export"], False),
+    (["--release", "--only", "fast"], False),  # CI's publish job
+    (["--only", "fast,build"], True),  # anything beyond the fast group needs the scan
+    (["--changed"], True),
+    ([], True),  # the full check
+])
+def test_export_without_terms_blocks_only_beyond_the_fast_group(tmp_path, monkeypatch, argv, blocks):
+    def runner(step):
+        return lambda ctx: check.Result(step, "NOT RUN" if step == "export" else "PASS", detail="no terms file" if step == "export" else "")
+
+    monkeypatch.setattr(check, "make_snapshot", lambda repo, dest: dest.mkdir(parents=True) or "0" * 16)
+    monkeypatch.setattr(check, "resolve_base", lambda repo, base, release: "b" * 40)
+    monkeypatch.setattr(check, "changed_paths", lambda repo, index, base: ["docs/review.md"])
+    monkeypatch.setattr(check, "RUNNERS", {step: runner(step) for step in check.STEPS})
+    monkeypatch.setattr(sys, "argv", ["check.py", *argv, "--report-dir", str(tmp_path / "r")])
+    assert check.main() == (1 if blocks else 0)
+    report = (tmp_path / "r/report.md").read_text()
+    assert ("not blocking in a fast run" in report) == (not blocks)
+
+
+@pytest.mark.parametrize("allow_skip", [False, True])
+def test_a_failed_export_blocks_even_in_a_fast_run(allow_skip):
+    failed = check.Result("export", "FAIL", detail="private term", blocks=False)
+    assert check.blocking([failed], allow_skip=allow_skip) == [failed]
+
+
+def test_compare_runs_before_the_build_it_does_not_need():
+    assert check.STEPS.index("compare") < check.STEPS.index("build")
+    assert check.STEPS[:4] == check.GROUPS["fast"] and check.STEPS.index("export") < check.STEPS.index("tests")  # cheap first
+
+
 def test_gate_exit_codes(tmp_path):
     log = tmp_path / "gate.log"
     log.write_text("error: card misaligned\n")
@@ -73,7 +252,7 @@ def test_fast_group_expands_and_unknown_steps_fail(monkeypatch, capsys):
     with pytest.raises(SystemExit):
         check.main()
     assert "unknown steps: bogus" in capsys.readouterr().err
-    assert check.GROUPS["fast"] == ("validate", "lint", "tests")
+    assert check.GROUPS["fast"] == ("validate", "lint", "export", "tests")
 
 
 @pytest.mark.parametrize("argv, message", [
@@ -513,3 +692,148 @@ def test_the_coordinator_and_release_checks_share_the_run_date_setting():
     from scripts import release_checks
 
     assert (check.RUN_DATE_ENV, check.RUN_ZONE) == (release_checks.RUN_DATE_ENV, release_checks.RUN_ZONE)
+
+
+@pytest.mark.parametrize("paths, steps", [
+    ([], check.GROUPS["fast"]),
+    (["docs/review.md", "README.md", "tests/test_api.py", ".github/workflows/pages.yml"], check.GROUPS["fast"]),
+    (["scripts/research_log.py"], check.GROUPS["fast"]),
+    (["scripts/research_pass.py"], (*check.GROUPS["fast"], "passes")),
+    (["scripts/verify_excerpts.py"], (*check.GROUPS["fast"], "compare")),
+    (["data/aisi.json"], check.DATA_STEPS),
+    (["site/index.html"], check.BUILD_STEPS),
+    (["scripts/check_page.py", "docs/x.md"], check.BUILD_STEPS),
+    (["tests/fixtures/earliest_credit.json"], check.BUILD_STEPS),  # the gate reads it
+    (["schema/aisi.schema.json"], check.BUILD_STEPS),
+    (["uv.lock"], check.BUILD_STEPS),
+    (["newdir/thing.txt", "docs/x.md"], check.STEPS),  # a path no rule names: every step, the sheet included
+    (["READMEX.md"], check.STEPS),  # a file rule is an exact name, not a prefix
+])
+def test_changed_files_choose_their_steps(paths, steps):
+    chosen, rows = check.changed_steps(paths)
+    assert chosen == steps and [row[0] for row in rows] == paths
+    assert set(check.GROUPS["fast"]) <= set(chosen)  # the fast checks, export among them, run for every change
+
+
+def test_sheet_needs_an_unknown_path_and_build_steps_keep_compare():
+    assert "sheet" not in check.DATA_STEPS + check.BUILD_STEPS  # sheets run at merge or release, not per commit
+    assert {"compare", "build", "gate"} <= set(check.BUILD_STEPS)
+
+
+def docstring_free_strings(tree):
+    """String constants of a module that are not docstrings."""
+    import ast
+
+    docs = {id(node.body[0].value) for node in ast.walk(tree)
+            if isinstance(node, (ast.Module, ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)) and node.body
+            and isinstance(node.body[0], ast.Expr) and isinstance(node.body[0].value, ast.Constant)}
+    return [n.value for n in ast.walk(tree) if isinstance(n, ast.Constant) and isinstance(n.value, str) and id(n) not in docs]
+
+
+def imported_scripts(tree) -> set[str]:
+    """Names a module could import from scripts/: `import x`, `import scripts.x`, `from x import`, `from scripts.x
+    import`, `from scripts import x`, `from . import x` and `from .x import` (any name; callers keep the scripts)."""
+    import ast
+
+    def local(dotted: str) -> list[str]:
+        parts = dotted.split(".")
+        return parts[1:2] if parts[0] == "scripts" else parts[:1]
+
+    names = set()
+    for n in ast.walk(tree):
+        if isinstance(n, ast.Import):
+            names |= {m for a in n.names for m in local(a.name)}
+        elif isinstance(n, ast.ImportFrom):
+            if n.module and n.module != "scripts":
+                names |= set(local(n.module))
+            if not n.module or n.module == "scripts":  # from . import x, from scripts import x
+                names |= {a.name for a in n.names}
+    return names
+
+
+def test_import_forms_are_all_seen():
+    import ast
+
+    code = "import scripts.a\nfrom scripts.b import f\nfrom scripts import c\nfrom . import d\nfrom .e import g\nimport h.i\nfrom j import k"
+    assert imported_scripts(ast.parse(code)) == {"a", "b", "c", "d", "e", "h", "j"}
+
+
+def test_scripts_without_browser_steps_are_not_used_by_the_build_or_the_gate():
+    import ast
+
+    scripts = Path(check.__file__).parent
+    modules = {p.stem: p for p in scripts.glob("*.py")}
+    used, todo = set(), ["build", "check_page", "prerender", "check"]
+    while todo:  # every module the build, the gate, the pre-render and this coordinator import, transitively
+        name = todo.pop()
+        if name in used or name not in modules:
+            continue
+        used.add(name)
+        todo += sorted(imported_scripts(ast.parse(modules[name].read_text())))
+    assert not used & set(check.NO_BROWSER_SCRIPTS)
+    for name in used:  # nor run or read by file name (docstrings may name them)
+        strings = docstring_free_strings(ast.parse(modules[name].read_text()))
+        assert not [s for s in strings for other in check.NO_BROWSER_SCRIPTS if f"{other}.py" in s], name
+    assert set(check.NO_BROWSER_SCRIPTS) <= set(modules)
+
+
+def test_changed_paths_come_from_the_frozen_index_with_both_sides_of_a_rename(tmp_path, monkeypatch):
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    git(repo, "init", "-q", "-b", "main")
+    (repo / "docs").mkdir()
+    (repo / "docs/old name.md").write_text("same text\n" * 20)
+    (repo / "gone.txt").write_text("x")
+    git(repo, "add", "-A")
+    base = commit(repo, "base")
+    git(repo, "mv", "docs/old name.md", "docs/new name.md")
+    git(repo, "rm", "-q", "gone.txt")
+    frozen = tmp_path / "frozen.index"
+    frozen.write_bytes((repo / ".git/index").read_bytes())
+    (repo / "later.txt").write_text("staged after the snapshot")
+    git(repo, "add", "later.txt")
+    assert check.changed_paths(repo, frozen, base) == ["docs/new name.md", "docs/old name.md", "gone.txt"]
+
+
+def test_changed_runs_only_the_chosen_steps_and_says_why(tmp_path, monkeypatch):
+    calls = []
+
+    def runner(step):
+        return lambda ctx: calls.append(step) or check.Result(step, "PASS")
+
+    monkeypatch.setattr(check, "make_snapshot", lambda repo, dest: dest.mkdir(parents=True) or "0" * 16)
+    monkeypatch.setattr(check, "resolve_base", lambda repo, base, release: "b" * 40)
+    monkeypatch.setattr(check, "changed_paths", lambda repo, index, base: ["docs/review.md", "scripts/research_log.py"])
+    monkeypatch.setattr(check, "RUNNERS", {step: runner(step) for step in check.STEPS})
+    monkeypatch.setattr(sys, "argv", ["check.py", "--changed", "--report-dir", str(tmp_path / "r")])
+    assert check.main() == 0
+    assert calls == list(check.GROUPS["fast"])
+    report = (tmp_path / "r/report.md").read_text()
+    assert "## Changed files" in report and "Not selected (no change needs them): copies, passes, compare, build, gate, sheet." in report
+    assert "| scripts/research_log.py | a script neither the build nor the gate uses | validate, lint, export, tests |" in report
+    assert "their export scan covers any file" in report
+    assert "No changed files: fast checks only." in check.changed_section("b" * 40, check.GROUPS["fast"], [])
+
+
+@pytest.mark.parametrize("argv, message", [
+    (["--changed", "--only", "fast"], "leave out --only"),
+    (["--changed", "--gate-merge", "results"], "not --changed"),
+    (["--changed", "--gate-jobs", "2", "--gate-merge", "results"], "--gate-merge is for CI's fixed steps"),
+    (["--changed", "--release"], "a release runs every step"),
+])
+def test_changed_refuses_options_that_fix_the_steps(monkeypatch, capsys, argv, message):
+    monkeypatch.setattr(sys, "argv", ["check.py", *argv])
+    with pytest.raises(SystemExit) as caught:
+        check.main()
+    assert caught.value.code == 2 and message in capsys.readouterr().err
+
+
+def test_browser_job_section_sums_the_steps_of_jobs_that_mark_them():
+    lines = [{**timing("interactions/interaction_pass/1440/light", 0, 10), "steps": {"load": 2.0, "first screen": 6.0}},
+             {**timing("interactions/interaction_pass/390/dark", 0, 8), "steps": {"load": 3.0, "first screen": 1.0}},
+             timing("hydration/hydration_paint", 0, 5)]
+    section = check.browser_job_section(lines)
+    assert "Steps of the 2 jobs that mark them, summed:" in section
+    rows = [line for line in section.splitlines() if line.startswith("| first screen") or line.startswith("| load")]
+    assert rows == ["| first screen | 7.0 | interactions/interaction_pass/1440/light (6.0) |", "| load | 5.0 | interactions/interaction_pass/390/dark (3.0) |"]
+    assert "Steps of" not in check.browser_job_section([timing("a", 0, 1)])

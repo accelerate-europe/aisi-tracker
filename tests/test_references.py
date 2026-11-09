@@ -122,18 +122,40 @@ def test_pointer_escaping_is_rfc6901():
     assert pointer_ancestors(data, "/a~1b/0/~0key")[-1] == 12
 
 
-def test_browser_skip_requires_explicit_local_skip(monkeypatch, capsys):
+def test_browser_skip_defers_only_the_gate_and_keeps_other_blockers(monkeypatch, tmp_path):
     monkeypatch.setattr(check, "git", lambda *args, **kwargs: "0" * 40)
-    monkeypatch.setattr(check, "make_snapshot", lambda *args, **kwargs: "snapshot")
-    monkeypatch.setattr(
-        check,
-        "RUNNERS",
-        {step: lambda ctx: check.Result("stub", "PASS") for step in check.STEPS},
-    )
-    monkeypatch.setattr("sys.argv", ["check.py", "--skip-browser"])
+    monkeypatch.setattr(check, "make_snapshot", lambda repo, dest: dest.mkdir(parents=True) or "snapshot")
+    ran = []
+    monkeypatch.setattr(check, "RUNNERS", {step: (lambda step: lambda ctx: ran.append(step) or check.Result(step, "PASS"))(step) for step in check.STEPS})
+    monkeypatch.setattr("sys.argv", ["check.py", "--skip-browser", "--fail-fast", "--report-dir", str(tmp_path / "r")])
+    monkeypatch.delenv("CI", raising=False)
+    assert check.main() == 0
+    assert "gate" not in ran and "build" in ran and "sheet" in ran  # fail-fast goes on past the deferred gate; sheets stay local
+    report = (tmp_path / "r/report.md").read_text()
+    assert "| gate | NOT RUN |" in report and "CI's gate shards on the pushed commit" in report
+    assert "Overall: PASS" in report and "no blocking result" in report
+    # Any other NOT RUN still blocks: the private-store steps are part of the local done-check.
+    monkeypatch.setattr(check, "RUNNERS", {**check.RUNNERS, "copies": lambda ctx: check.Result("copies", "NOT RUN", detail="no store")})
+    monkeypatch.setattr("sys.argv", ["check.py", "--skip-browser", "--report-dir", str(tmp_path / "r2")])
+    assert check.main() == 1
+    assert "first blocking result: copies NOT RUN" in (tmp_path / "r2/report.md").read_text()
+
+
+@pytest.mark.parametrize("argv, ci, message", [
+    (["--skip-browser"], True, "CI runs the browser gate"),
+    (["--skip-browser", "--release"], False, "a release runs the browser gate"),
+])
+def test_browser_skip_is_refused_in_ci_and_for_a_release(monkeypatch, capsys, argv, ci, message):
+    if ci:
+        monkeypatch.setenv("CI", "true")
+    else:
+        monkeypatch.delenv("CI", raising=False)
+    ran = []
+    monkeypatch.setattr(check, "make_snapshot", lambda repo, dest: ran.append("snapshot"))
+    monkeypatch.setattr("sys.argv", ["check.py", *argv])
     with pytest.raises(SystemExit):
         check.main()
-    assert "--skip-browser requires --allow-skip" in capsys.readouterr().err
+    assert message in capsys.readouterr().err and not ran  # refused before anything runs
 
 
 def test_real_migration_preserves_all_reference_targets():

@@ -70,6 +70,7 @@
  * Dates: day Mon year, Mon year or year, preserving source precision; tabular numerals for dates and figures; a date never breaks across lines.
  * Rhythm: tighter meta leading; line gap < row gap < header gap < card gap < section gap; folds follow content at the row gap; a repeated component keeps the same spacing in every section (an inline mark's or chip strip's outer margin belongs to the context that places it).
  * Theme: follows the system setting by default; one icon-only toggle, at the right end of the sticky section bar (in the header on phones, up to 430px, where the bar holds only the five tabs), moves through follows system, light and dark, and a light or dark choice is remembered (localStorage aisi-theme; back to follows system clears it), set before first paint, also on Method, the API index and the 404 page; Method has the section bar's look, its title linking back to the tracker and the toggle at its end at every width (check_page check_method_pages); without light-dark() support the page stays light and the toggle is hidden; without scripting the page follows the system and the toggle is hidden (check_page check_theme_default, check_light_fallback).
+ * Off-screen sections: a switch of theme repaints only what is near the viewport. The sections that hold most of the page (Funding and staff, Europe, The world), and within them each card row and funding row, skip style and paint while off-screen, at the size they last rendered, so scrolling, anchors and the restored scroll position land as without it (check_page check_offscreen_sections).
  * Theme parity: control fill, control border, selection and hairlines keep a similar contrast step from the ground in light and dark; floating surfaces (paper) are exempt.
  * Highlight: the current item in a list or menu (the selected or hovered search suggestion, a hovered download menu item, table row or download) takes --highlight-fill, at least 1.17:1 from the paper in both themes and within 0.1 of the other theme's step, with every text on it at least 4.5:1; buttons and pressed states keep --selected-fill (check_page check_highlight_fill).
  * Controls: boxed only when standalone (toolbar, filters, menus): they share height, radius, border and focus; warm fill, quiet tinted selection. Controls inside content (table headers, list extensions, disclosures) take the context's type and colour, with hover/focus feedback.
@@ -394,6 +395,11 @@ input[type="checkbox"]:checked::after { content: ""; position: absolute; left: v
 .legend-name { color: var(--ink); }
 
 /* First screen: headline, then the map beside the region list (below it at 1100px and narrower); the record opens over the list. */
+/* Off-screen sections (principle: Off-screen sections): the three large sections, and their card rows and funding rows, skip style and paint while far from the viewport, at the size they last rendered, once the page script marks the page settled. */
+main section.offscreen, main section.offscreen :is(.card-row, .fund-item) { contain: layout style paint; overflow-clip-margin: var(--sp-2); } /* the containment skipping needs, from the first paint (also on the saved page), so text keeps its pixel rows when skipping starts; the margin keeps an arrived card's tint (its spread shadow) unclipped */
+main section.offscreen { contain-intrinsic-block-size: auto 100vh; }
+main section.offscreen :is(.card-row, .fund-item) { contain-intrinsic-block-size: auto 20rem; }
+:root[data-settled] main section.offscreen, :root[data-settled] main section.offscreen :is(.card-row, .fund-item) { content-visibility: auto; }
 main section.first { display: flex; flex-direction: column; gap: var(--sp-5); border-top: 0; padding-top: 0; }
 .definition { font: var(--type-body); max-width: var(--prose); margin: calc(var(--sp-2) - var(--sp-5)) 0 0; } /* belongs to the headline above it: one link to the definition */
 .method-definition { max-width: var(--prose); margin: 0; } /* the section body's row gap separates it from the fold */
@@ -502,7 +508,7 @@ main section.first { display: flex; flex-direction: column; gap: var(--sp-5); bo
 .statusgroup, .eu-level { display: flex; flex-direction: column; gap: var(--sp-5); }
 .statusgroup > h3, .eu-head > h3 { font: var(--type-label); display: flex; align-items: first baseline; gap: var(--sp-2); color: var(--ink); } /* a group heading is never weaker than the cards under it */
 .cards { --columns: 3; display: grid; grid-template-columns: repeat(var(--columns), minmax(0, 1fr)); column-gap: var(--sp-8); row-gap: var(--gap-card); align-items: start; }
-.card-row { display: grid; grid-template-columns: subgrid; grid-column: 1 / -1; row-gap: 0; align-items: stretch; }
+.card-row { display: grid; grid-template-columns: repeat(var(--columns), minmax(0, 1fr)); column-gap: inherit; grid-column: 1 / -1; row-gap: 0; align-items: stretch; } /* the parent's equal tracks, not subgrid: a row skipped off-screen (Off-screen sections) is its own grid */
 .card-row > .card { display: grid; grid-template-rows: subgrid; grid-row: span 13; row-gap: 0; align-items: first baseline; }
 @media (min-width: 1101px) { .cards:not(.minis) > .card-row:only-child > .card:only-child { grid-column: span 2; } } /* a group's only card spans two of the three tracks, so its values do not wrap in a third of the row (principle: Card grids) */
 /* Fixed tracks: top 1, Institute 2, Status 3, Form 4, Head 5, Reports to 6, Partners 7, Mandate or Finding 8, Budget 9, Staff 10, Known activity 11, Related funding 12, footer 13. An omitted field leaves its track empty instead of pulling later fields up. */
@@ -828,7 +834,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     <div class="setup" id="setup" data-source-scope="setup"></div>
   </div></section>
 
-  <section aria-labelledby="funding"><div class="section-label">
+  <section class="offscreen" aria-labelledby="funding"><div class="section-label">
     <h2 id="funding">Funding and staff</h2></div><div class="section-body">
     <h3 id="fund-chart-h">Committed funding</h3>
     <details class="more quiet" id="fund-how"><summary>How this is chosen</summary>    <p class="small">The chart shows every institute worldwide on one scale. Bars show adopted or announced funding for the whole institute in a funding year that overlaps <span id="ref-year"></span>, the calendar year of the data date. Where several years qualify, the one containing the data date is used, if there is one. Proposals, one-off amounts and other years get no bar; institutes with only such funding are listed below the bars with their Budget value. Components are excluded. Period means are labelled. EUR figures are rough conversions at the ECB's <span id="fx-year"></span> annual-average rates and do not compare like with like.</p></details>
@@ -846,12 +852,12 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
 
   <div class="group">
   <nav class="group-nav" aria-label="States sections"><span class="group-label">States</span><span class="group-links"><a href="#europe">Europe</a><span class="group-sep" aria-hidden="true"> · </span><a href="#world">The world</a></span></nav>
-  <section aria-labelledby="europe"><div class="section-label">
+  <section class="offscreen" aria-labelledby="europe"><div class="section-label">
     <h2 id="europe">Europe, state by state</h2></div><div class="section-body">
     <div class="entries" id="entries"></div>
   </div></section>
 
-  <section aria-labelledby="world"><div class="section-label">
+  <section class="offscreen" aria-labelledby="world"><div class="section-label">
     <h2 id="world">The world</h2></div><div class="section-body">
     <div class="entries" id="world-cards"></div>
     <h3>All states and territories</h3>
@@ -1100,6 +1106,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   function hideLineEndDots(root) {
     var range = document.createRange(), marks = [];
     [].forEach.call(root.querySelectorAll(".meta-dot"), function (dot) {
+      if (dot.checkVisibility && !dot.checkVisibility({ contentVisibilityAuto: true })) return; // skipped off-screen: measuring would lay it out (principle: Off-screen sections); marked when it is drawn
       var mark = dot.getBoundingClientRect(); if (!mark.height) return;
       var walker = document.createTreeWalker(blockOf(dot), NodeFilter.SHOW_TEXT), next = null;
       walker.currentNode = dot.lastChild;
@@ -2186,18 +2193,25 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         M.nodes.forEach(function (n) { n.tgt.setAttribute("aria-expanded", String(n.j.id === view.sel)); }); // each dot opens the record beside the map
       });
     }
+    // #worldmap[data-map] says what the map shows, for the browser gate (check_page map_ready): "saved" (the saved drawing
+    // stands in), "loading" or "failed" (a note instead), "placing" (drawn, its names wait for the fonts), "drawn".
     function drawMap() {
       var box = $("worldmap"); box.textContent = "";
       if (!geo) { // the map loads after the data or not at all: the saved drawing of the default view stays, its dots open records
         MAPS = [];
-        if (SAVED_MAP && view.region === DEFAULT_REGION) SAVED_MAP.forEach(function (n) { box.appendChild(n); });
+        var saved = SAVED_MAP && view.region === DEFAULT_REGION;
+        if (saved) SAVED_MAP.forEach(function (n) { box.appendChild(n); });
         else box.appendChild(el("p", "small", mapFailed ? "The map could not be loaded; the list has every institute." : "The map is loading; the list has every institute."));
+        box.setAttribute("data-map", saved ? "saved" : mapFailed ? "failed" : "loading");
         return;
       }
       MAPS = LAYOUTS.map(drawLayout);
       MAPS.forEach(function (M) { box.appendChild(M.svg); });
       syncSelection();
-      if (document.fonts.status !== "loaded") document.fonts.ready.then(function () { MAPS.forEach(function (M) { placeLabels(M.layout, M.nodes, M.labels); }); });
+      if (document.fonts.status === "loaded") { box.setAttribute("data-map", "drawn"); return; }
+      box.setAttribute("data-map", "placing");
+      var maps = MAPS; // a later draw sets its own state; this one marks only its own drawing
+      document.fonts.ready.then(function () { if (maps !== MAPS) return; MAPS.forEach(function (M) { placeLabels(M.layout, M.nodes, M.labels); }); box.setAttribute("data-map", "drawn"); });
     }
     function drawFirst() { drawHeadline(); drawMap(); syncList(); drawRecord(); }
     // The saved drawing's dots (no map script yet): a click opens the record, as on the drawn map (keyboard: the list and search).
@@ -2347,6 +2361,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       q.addEventListener("blur", close);
     })();
 
+    var primePalette = null; // set by the palette, once its list can be built
     // Command palette (principle: Command palette): states, sections, regions and page actions in one dialog, over the data already drawn.
     (function () {
       var box = $("palette"), q = $("palette-q"), list = $("palette-list"), empty = $("palette-empty");
@@ -2441,11 +2456,16 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         function fallback() { var t = el("textarea"); t.value = text; box.appendChild(t); t.select(); try { if (document.execCommand("copy")) done(); } catch (err) {} t.remove(); q.focus(); }
         if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fallback); else fallback();
       }
+      // The empty list is the same at every opening but for the theme row: built while the browser is idle, and again
+      // after each closing, so opening only shows it (principle: Command palette).
+      var primed = null;
+      function prime() { if (box.open) return; copied = false; q.value = ""; fill(); primed = themeNow(); }
+      function primeIdle() { primed = null; (window.requestIdleCallback || setTimeout)(prime); }
       function open() {
         if (box.open) return;
         opener = document.activeElement; restore = true; copied = false; said.textContent = "";
-        hideTip(); q.value = ""; fill();
-        box.showModal(); q.focus();
+        hideTip(); q.value = ""; if (primed !== themeNow()) fill(); else paint(true);
+        primed = null; box.showModal(); q.focus();
       }
       q.addEventListener("input", function () { fill(); });
       q.addEventListener("keydown", function (e) {
@@ -2465,8 +2485,9 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       list.addEventListener("mousedown", function (e) { e.preventDefault(); });
       list.addEventListener("click", function (e) { var o = e.target.closest && e.target.closest('[role="option"]'); if (o) choose(+o.dataset.n); });
       box.addEventListener("click", function (e) { if (e.target === box) box.close(); }); // the backdrop
-      box.addEventListener("close", function () { var back = opener; opener = null; if (restore && back && back.isConnected && back.focus) back.focus({ preventScroll: true }); });
+      box.addEventListener("close", function () { var back = opener; opener = null; if (restore && back && back.isConnected && back.focus) back.focus({ preventScroll: true }); primeIdle(); });
       if ($("palette-open")) $("palette-open").addEventListener("click", open);
+      primePalette = primeIdle;
       // Cmd+K on a Mac, Ctrl+K elsewhere, from anywhere; "/" outside a text field types nothing and opens it too.
       document.addEventListener("keydown", function (e) {
         if (e.defaultPrevented || e.altKey) return;
@@ -3145,6 +3166,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     if (!PRERENDERING) {
       var dotFrame = 0, scheduleDots = function () { if (!dotFrame) dotFrame = requestAnimationFrame(function () { dotFrame = 0; hideLineEndDots(document); }); };
       new ResizeObserver(scheduleDots).observe(document.body); document.fonts.addEventListener("loadingdone", scheduleDots);
+      document.addEventListener("contentvisibilityautostatechange", function (e) { if (!e.skipped) hideLineEndDots(e.target); }, true); // an off-screen row or section as it is drawn
     }
     new ResizeObserver(scheduleSpy).observe(document.querySelector("main"));
     // A sticky table header sits below the section navigation (and its group row: --groupnav-height), whatever their heights.
@@ -3158,10 +3180,31 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     var rowsHeight = new ResizeObserver(function () { document.documentElement.style.setProperty("--groupnav-height", Math.max.apply(null, groupRows.map(function (g) { return g.row.offsetHeight; })) + "px"); });
     groupRows.forEach(function (g) { rowsHeight.observe(g.row); });
     requestAnimationFrame(spy);
+    // Off-screen sections (principle: Off-screen sections): settled once the fonts are in and frames have drawn every
+    // large section at its real size, which it then keeps while skipped. Once a width change ends, or a font loads later,
+    // they are all drawn again (while a resize lasts, the skipped ones stay skipped, so resizing stays light).
+    if (!PRERENDERING) {
+      var settledWidth = 0, settleTimer = 0, settleForce = false, resizes = 0, settling = 0, fontWait = false;
+      // Every run draws all sections first; a newer run supersedes it, and only the latest restarts or marks the page.
+      var settle = function () { var run = ++settling, w = window.innerWidth, n = resizes; ROOT.removeAttribute("data-settled");
+        var current = function () { if (run !== settling) return false; if (resizes !== n) { settle(); return false; } return true; }; // resized meanwhile, even back again: what was drawn may belong to another width
+        // Two frames lay every section out, which starts the fonts its text needs (a subset loads on first use); once they
+        // are in, two more frames draw it with them, the separators are marked, and one more frame draws them before any is skipped.
+        var frames = function (k, then) { requestAnimationFrame(function () { if (current()) { if (k > 1) frames(k - 1, then); else then(); } }); };
+        frames(2, function () { fontWait = true; document.fonts.ready.then(function () { fontWait = false; if (current()) frames(2, function () {
+          hideLineEndDots(document); frames(1, function () { settledWidth = w; ROOT.setAttribute("data-settled", ""); }); }); }); }); };
+      var redraw = function (force) { settleForce = settleForce || force; clearTimeout(settleTimer); settleTimer = setTimeout(function () {
+        if (!settleForce && window.innerWidth === settledWidth) return;
+        settleForce = false; settle(); }, 250); };
+      settle();
+      window.addEventListener("resize", function () { resizes++; redraw(false); });
+      document.fonts.addEventListener("loadingdone", function () { if (!fontWait) redraw(true); }); // also while settling, unless the run is still waiting for the fonts
+    }
     instantTips(document.body); W.forEach(function (r) { instantTips(r.tr); });
     // External links open in a new tab; links within the page stay in place.
     externalLinks(document.body); W.forEach(function (r) { externalLinks(r.tr); });
     // Save once the download lists, fonts and the layout updates queued for the next frames are in place.
+    if (!PRERENDERING && primePalette) downloads.then(primePalette, function () {}); // its Actions read the download links
     if (PRERENDERING) downloads.then(function () { return document.fonts.ready; }).then(function () { requestAnimationFrame(function () { requestAnimationFrame(prerendered); }); });
     return downloads;
     // The page to save: every table row (those the default view leaves out in a hidden tbody), the template, the marker.
@@ -3169,6 +3212,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       // The saved map is a picture until the script takes over (or stands in for a map that fails): its dots are no
       // controls, so keyboard and assistive technology never meet a button that does nothing; a click still opens a record.
       [].forEach.call(document.querySelectorAll("#worldmap .tgt"), function (t) { ["role", "tabindex", "aria-controls", "aria-expanded", "aria-label"].forEach(function (a) { t.removeAttribute(a); }); });
+      $("worldmap").removeAttribute("data-map"); // the saved page's map is no live drawing until the script says so
       // Attributes that only the running script uses, which draws them again when it takes over, stay out of the saved page: it
       // must stay under the 2 MB that search engines read (check_page check_page_size). Links keep their href and accessible
       // name; before the script runs they open in place and a citation shows no tooltip.
