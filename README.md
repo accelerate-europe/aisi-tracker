@@ -12,7 +12,7 @@ We count a body as an AI Security Institute (AISI) if a national government or a
 
 <!-- counts:start -->
 
-Version 1.0.6, data as of 9 November 2026: 195 jurisdictions, 15 AISIs, 134 outputs, 56 agreements, 9 network milestones and 1,196 sources. For the 178 jurisdictions where our searches found no qualifying government step towards an AISI, our confidence in that finding is low for 34, medium for 144 and high for none.
+Version 1.0.6, data as of 9 November 2026: 195 jurisdictions, 15 AISIs, 134 outputs, 57 agreements, 9 network milestones and 1,197 sources. For the 178 jurisdictions where our searches found no qualifying government step towards an AISI, our confidence in that finding is low for 34, medium for 144 and high for none.
 
 <!-- counts:end -->
 

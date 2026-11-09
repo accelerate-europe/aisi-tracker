@@ -32224,6 +32224,10 @@
           {
             "date": "2026-11-07",
             "scope": "News re-check since 25 October 2026: the institute's pages, news tag, research blog and guidelines, NIST news, NIST IR 8621, Commerce news, Semafor, FedScoop, Puck, Scale AI's DualChem post and the Great American AI Act draft. No new institute output since 25 October; added three earlier research-blog posts as outputs and a press-reported White House statement on the Super Intelligence Force to the reporting-line notes. Left for review: Scale AI's account of a February 2025 research agreement with the institute (no NIST source yet), press reports that the former director resigned in July 2026 and that staff number fewer than 50, and the blog post 'Accelerating AI Innovation Through Measurement Science' (2 December 2025), a research agenda rather than a technical result. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-09",
+            "scope": "Post-release news re-check from 6 November 2026: the institute page, its news tag, research blog and guidelines, NIST news and blogs, and Commerce releases. No new institute output. Resolved from the 7 November review: Scale AI's February 2025 agreement added as announced, now that NIST's March 2026 update lists Scale AI among its research partners; the research-agenda blog post of 2 December 2025 stays out of the outputs (not a technical result); the press reports on the former director's resignation and on staff numbers have no official source and are not used. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -32282,7 +32286,8 @@
         "us-blog-cheating-2025",
         "us-blog-transcripts-2026",
         "us-blog-red-teaming-2026",
-        "us-semafor-2026-10-28"
+        "us-semafor-2026-10-28",
+        "us-scale-aisi-2025"
       ],
       "notes": "The current NIST pages use CAISSI. The name-history start is the earliest archived use of the name found, NIST's page for the centre as captured on 3 October 2026. Executive Order 14434 of 29 September 2026, which directs the executive branch to use 'Super Intelligence' in place of 'Artificial Intelligence', is the likely trigger, but it does not name this centre or set a date for its rename. The current ministerial basis refers to the June 2025 CAISI decision; the retained establishment date refers to its US AISI predecessor. Canada's CAISI, the Canadian AI Safety Institute, is a different body.",
       "mandate_short": "Leads national security evaluations of superintelligence (SI) systems and develops guidelines to measure and improve their security.",
@@ -32414,6 +32419,20 @@
           "domestic_interagency": false,
           "peer_institute_id": "eu-ai-office",
           "id": "agreements-788cb204af5659269a13ca50289b4596"
+        },
+        {
+          "counterparty_type": "other",
+          "counterparty": "Scale AI",
+          "state": "announced",
+          "date": "2025-02-10",
+          "scope": "Announced research agreement to develop improved methods to test frontier AI models, including evaluations jointly developed with Scale's research lab; model builders may voluntarily test with Scale and choose whether to share results with the institute. NIST's update of March 2026 lists Scale AI among the partners under research and development or data transfer agreements, without the type or date of its agreement.",
+          "source_ids": [
+            "us-scale-aisi-2025",
+            "us-nist-march-slides"
+          ],
+          "participation": "institute_party",
+          "domestic_interagency": false,
+          "id": "agreements-0a6ff279c685891cc23cc8c53031c0b8"
         }
       ],
       "wikidata": "Q139559517",
@@ -33469,6 +33488,10 @@
           {
             "date": "2026-11-08",
             "scope": "Added ISED's 2024-25 results report for the CIFAR research stream's 2024-25 actual spending; funding only, not a full re-check."
+          },
+          {
+            "date": "2026-11-09",
+            "scope": "Post-release news re-check from 6 November 2026: ISED's institute page and media room, the research programme's newsroom (three features of 6 November on funded research networks), CIFAR news and NRC stories. No institute output, funding, staff or agreement change. Left for review: whether a funded network's testing counts as testing for the institute. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -34060,6 +34083,10 @@
           {
             "date": "2026-11-07",
             "scope": "News re-check since 24 October 2026: the institute's activity and output indexes, the 30 October evaluation note and its report, the IPA press list, the Cabinet Office AI pages and expert panel papers of 26 October, the minister's visit of 27 October and the foreign ministry's release on the UK-Japan Joint Committee. Added the GLM-5.3 evaluation as an output, with its API use in the model access notes. The minister's call of 27 October to strengthen the institute and the Chief Cabinet Secretary's instruction of 22 October to review the AI Act are context; no field records them. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-09",
+            "scope": "Post-release news re-check from 6 November 2026: the institute's activity and output indexes (newest 6 November), IPA press and the Cabinet Office AI pages. The AI news digest of 6 November is a source, not an output, as for other institutes' digests. Nothing else new. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -35247,6 +35274,10 @@
           {
             "date": "2026-11-07",
             "scope": "News re-check since 24 October 2026: the institute's Korean and English news boards, the ROK-FORTRESS paper on arXiv, Scale AI's blog, an Edaily interview of 2 November and ministry releases through a mirror. Added ROK-FORTRESS (credited from the institute's post of 18 September 2026) and the Korean edition of the Frontier AI Risk Update as outputs, and the evaluation reported on 3 November, whose results are withheld, as in-house testing. Left for review: an interview figure of about 27 permanent staff. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-09",
+            "scope": "Post-release news re-check from 6 November 2026: the institute's Korean board (newest 3 November) and English pages; the science ministry's press list could not be read. Nothing new. The interview figure of about 27 permanent staff has no official source and is not used. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -35726,6 +35757,10 @@
           {
             "date": "2026-11-08",
             "scope": "Staff and budget pass of 7 November 2026: NTU's page on the Digital Trust Centre states the SGD 50m grant runs five years from 1 October 2022; the related-funding record now has that period and its annual mean. Funding only, not a full record re-check."
+          },
+          {
+            "date": "2026-11-09",
+            "scope": "Post-release news re-check from 6 November 2026: the institute's site and resources (newest 23 July 2026) and the digital ministry's newsroom to 5 November; IMDA's press list was readable only as an archived copy to 20 October. Nothing new. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -36189,6 +36224,10 @@
           {
             "date": "2026-11-07",
             "scope": "News re-check since 24 October 2026: the institute page, the department's news and publications, the ministers' media pages, the minister's speech of 8 October, the department's annual report 2025-26 (23 October, highlights only) and the Joint Select Committee on AI hearing of 30 October. The annual report's statement that the institute was formally launched on 1 June 2026 is left for the set-up date review. No funding decision found; the evaluation agreement with Anthropic is still not final. Left for review: the full annual report, the launch speech and the committee's answers on notice. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-09",
+            "scope": "Post-release news re-check from 6 November 2026: the institute page, the department's news and publications to 9 November, the ministers' media pages, the department's annual report 2025-26 in full and the answers to the Joint Select Committee on AI hearing of 30 October. No institute-specific staff or budget figure and no new output or agreement. The annual report's launch date of 1 June 2026 and the 2 June speech stay with the set-up date review. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -36628,6 +36667,10 @@
           {
             "date": "2026-11-07",
             "scope": "News re-check since 24 October 2026: the institute page and ai.gov.my, the digital ministry's releases, the Dewan Rakyat Hansard for 5, 28 and 29 October and press coverage. The minister's answer of 5 October on the institute's remit (safety benchmarking, risk assessment, incident reporting) is a further source, left for review; the AI bill is still pending. Left for review: passage of the Supply Bill 2027 and the final Hansard for 28 October. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-09",
+            "scope": "Post-release news re-check from 6 November 2026: the institute page, AI Malaysia news, the digital ministry's releases to 5 November and the Dewan Rakyat Hansard for 5 and 28 October and 5 November. The minister's answers of 5 and 28 October describe the institute's remit (safety benchmarking, risk assessment, incident reporting); left for review as mandate evidence. The Supply Bill 2027 is still in committee. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -36864,6 +36907,10 @@
           {
             "date": "2026-11-07",
             "scope": "News re-check since 24 October 2026: press releases of 30 and 31 October and 3 November, press coverage, and searches for the head, calls for interest, outputs and agreements. Nothing official on the institute found. Left for review: a press report of 7 October that the IndiaAI COO spoke of the institute's formal constitution as still to come; the IndiaAI news pages (blocked on every route) and the ministry's consultation paper (not yet released). Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-09",
+            "scope": "Post-release news re-check from 6 November 2026: the ministry's acts and policies, what's new and press pages; IndiaAI news and the ministry's consultations page could not be read. No official item on the institute and no released consultation paper found. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -37040,6 +37087,10 @@
           {
             "date": "2026-11-07",
             "scope": "News re-check since 24 October 2026: the Cabinet Office despatches and Cabinet News of 9 October, the President's cabinet briefs, the ICT ministry homepage, the KICA amendment bill notice, Parliament's AI bill page and press coverage. The draft AI policy is not adopted; the Senate ICT committee recommended against the AI Bill 2026, which would create an AI Commissioner, not the institute. Left for review: the Senate committee report (not retrievable). Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-09",
+            "scope": "Post-release news re-check from 6 November 2026: the ICT ministry's news, consultation and public-participation pages, and the ministry bulletin of 3 November, which reports the AI policy as still forthcoming. The draft AI policy is not adopted. Left for review: the Senate ICT committee report on the AI Bill 2026 (located, not readable) and current Cabinet despatches. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -96278,6 +96329,28 @@
                 "id": "np-us-csis"
               },
               "name"
+            ],
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "agreements",
+              {
+                "id": "agreements-0a6ff279c685891cc23cc8c53031c0b8"
+              },
+              "counterparty"
+            ],
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "agreements",
+              {
+                "id": "agreements-0a6ff279c685891cc23cc8c53031c0b8"
+              },
+              "scope"
             ]
           ],
           "accessed": "2026-10-20"
@@ -96431,6 +96504,23 @@
             ]
           ],
           "accessed": "2026-10-20"
+        },
+        {
+          "text": "CRADAs and DTAs",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "agreements",
+              {
+                "id": "agreements-0a6ff279c685891cc23cc8c53031c0b8"
+              },
+              "scope"
+            ]
+          ],
+          "accessed": "2026-11-09"
         }
       ],
       "snapshot": {
@@ -111969,6 +112059,127 @@
         "retrieved": "2026-11-09T21:55:10Z",
         "sha256": "6b1276621ca10787804e0bf060d0f83aa5c8b53b81ae45928d9ff767b694f151",
         "text_sha256": "25f1c4fe47bb6a752d6a91c733e298fe5f3e9140e7366206014c776f2cce87b0",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "us-scale-aisi-2025",
+      "url": "https://scale.com/blog/first-independent-model-evaluator-for-the-usaisi",
+      "title": "Scale AI Partnering with the U.S. AI Safety Institute to Evaluate AI Models",
+      "publisher": "Scale AI",
+      "type": "primary",
+      "published": "2025-02-10",
+      "accessed": "2026-11-09",
+      "language": "en",
+      "origin": "US",
+      "access_note": "The counterparty's own announcement; the institute's side is corroborated by NIST's March 2026 update (us-nist-march-slides).",
+      "excerpts": [
+        {
+          "text": "Scale AI and the United States AI Safety Institute (AISI) are partnering to develop improved methods to test frontier AI models.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "agreements",
+              {
+                "id": "agreements-0a6ff279c685891cc23cc8c53031c0b8"
+              },
+              "counterparty"
+            ],
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "agreements",
+              {
+                "id": "agreements-0a6ff279c685891cc23cc8c53031c0b8"
+              },
+              "state"
+            ],
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "agreements",
+              {
+                "id": "agreements-0a6ff279c685891cc23cc8c53031c0b8"
+              },
+              "scope"
+            ],
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "agreements",
+              {
+                "id": "agreements-0a6ff279c685891cc23cc8c53031c0b8"
+              },
+              "participation"
+            ]
+          ],
+          "accessed": "2026-11-09"
+        },
+        {
+          "text": "This will include novel evaluations jointly developed by the AISI and Scale's research arm, the Safety, Evaluation, and Alignment Lab (SEAL).",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "agreements",
+              {
+                "id": "agreements-0a6ff279c685891cc23cc8c53031c0b8"
+              },
+              "scope"
+            ]
+          ],
+          "accessed": "2026-11-09"
+        },
+        {
+          "text": "February 10, 2025",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "agreements",
+              {
+                "id": "agreements-0a6ff279c685891cc23cc8c53031c0b8"
+              },
+              "date"
+            ]
+          ],
+          "accessed": "2026-11-09"
+        },
+        {
+          "text": "AI builders of any size can test with Scale and choose whether to share the results with the U.S. AISI.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "agreements",
+              {
+                "id": "agreements-0a6ff279c685891cc23cc8c53031c0b8"
+              },
+              "scope"
+            ]
+          ],
+          "accessed": "2026-11-09"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-09T22:06:38Z",
+        "sha256": "05820e05ef0407f4ec79171b9db2f7c81079bd2317966a0b0d22c1222f26d31a",
+        "text_sha256": "4e0869cf95b8cfed4f2015659019673c778ffa7988cb019fc44cfbc8c9ea4c1c",
         "text_scheme": 1
       }
     }
