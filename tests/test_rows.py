@@ -679,8 +679,8 @@ def test_orientation_names_the_new_rows(rows):
 
 
 def card(rows_html):
-    return f"""<article class="card" data-j="GB" id="c-gb"><div class="row"><div class="k">Form</div><div class="v">Unit</div></div>{rows_html}
-    <div class="row"><div class="k">Mandate</div><div class="v">Evaluate</div></div></article>"""
+    return f"""<article class="card" data-j="GB" id="c-gb"><div class="row" data-track="4"><div class="k">Form</div><div class="v">Unit</div></div>{rows_html}
+    <div class="row" data-track="8"><div class="k">Mandate</div><div class="v">Evaluate</div></div></article>"""
 
 
 def cite(n="gb-source", *more):
@@ -705,9 +705,9 @@ def fold(*pairs):
 
 def good_rows():
     return (
-        f'<div class="row"><div class="k">Head</div><div class="v">Synthetic lead, Director{cite()}</div></div>'
-        f'<div class="row"><div class="k">Reports to</div><div class="v">Test ministry{cite()}</div></div>'
-        '<div class="row"><div class="k">Partners</div><div class="v">'
+        f'<div class="row" data-track="5"><div class="k">Head</div><div class="v">Synthetic lead, Director{cite()}</div></div>'
+        f'<div class="row" data-track="6"><div class="k">Reports to</div><div class="v">Test ministry{cite()}</div></div>'
+        '<div class="row" data-track="7"><div class="k">Partners</div><div class="v">'
         '<span class="partners"><span class="partner">SCA (synthetic public body, works with)</span> '
         f'<span class="partner">LAB (synthetic public body, planned)</span>{cite()}</span>'
         + fold(("SCA", HOW_SCA), ("LAB", HOW_LAB))
@@ -727,6 +727,16 @@ def page_errors(rows, html):
 
 def test_page_oracle_accepts_the_expected_card(rows):
     assert page_errors(rows, card(good_rows())) == []
+
+
+@pytest.mark.parametrize("label", ["Head", "Reports to", "Partners"])
+def test_page_row_labels_allow_rewording_but_require_text(rows, label):
+    original = f'<div class="k">{label}</div>'
+    html = card(good_rows())
+    assert page_errors(rows, html.replace(original, '<div class="k">Reworded label</div>')) == []
+    for replacement in ("", '<div class="k"> \n </div>'):
+        errors = check_page.blocking(page_errors(rows, html.replace(original, replacement)))
+        assert any("row label is missing or empty" in error for error in errors)
 
 
 @pytest.mark.parametrize(
@@ -752,8 +762,8 @@ def test_page_oracle_accepts_the_expected_card(rows):
         ('<a class="cn" data-source-id="gb-source" href="u">1</a>', "", "citations"),
         (
             '<div class="k">Head</div>',
-            '<div class="k">Leader</div>',
-            "differ from the data",
+            '<div class="k"> \n </div>',
+            "row label is missing or empty",
         ),
         # the how sentence belongs in the fold-out, not on the line
         (
@@ -762,7 +772,6 @@ def test_page_oracle_accepts_the_expected_card(rows):
             "Partners: shows",
         ),
         (HOW_LAB, "Another sentence.", "fold-out shows"),
-        ("How they work together", "More", "summary must read"),
         (
             '<details class="more quiet partner-how">',
             '<details class="more quiet partner-how" open>',
@@ -959,7 +968,7 @@ def test_page_oracle_every_card_needs_the_rows_once_any_has_them(rows):
     published["institutes"].append(second)
     html = (
         card(good_rows())
-        + '<article class="card" data-j="FR" id="c-fr"><div class="row"><div class="k">Form</div><div class="v">x</div></div></article>'
+        + '<article class="card" data-j="FR" id="c-fr"><div class="row" data-track="4"><div class="k">Form</div><div class="v">x</div></div></article>'
     )
     assert any(
         "every institute needs all three rows" in e

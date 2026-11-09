@@ -396,8 +396,8 @@ def test_licence_notice_in_generated_files(dataset, build_env, monkeypatch):
         (
             "404.html",
             "<h1>Page not found</h1>",
-            "<h1>Welcome</h1>",
-            "404.html: missing Page not found heading",
+            "<p>Welcome</p>",
+            "404.html: missing h1",
         ),
         (
             "favicon.svg",
@@ -441,6 +441,16 @@ def test_launch_assets_missing_file(site, tmp_path, missing):
         if file != missing:
             (tmp_path / file).write_bytes((site / file).read_bytes())
     assert any(missing in error for error in check_page.check_launch_assets(tmp_path))
+
+
+def test_404_heading_allows_different_wording(site, tmp_path):
+    from scripts import check_page
+
+    for file in ("index.html", "404.html", "method.html", "favicon.svg", "LICENSE", "LICENSE-DATA"):
+        (tmp_path / file).write_bytes((site / file).read_bytes())
+    path = tmp_path / "404.html"
+    path.write_text(path.read_text().replace("<h1>Page not found</h1>", "<h1>Nothing here</h1>"))
+    assert check_page.check_launch_assets(tmp_path) == []
 
 
 def test_legal_code_packaged_verbatim_and_error_page_not_indexed(site, dataset):

@@ -104,13 +104,13 @@ def display(status="established", outputs=None, lines=(), institute=True):
         ("Staff", "staff", missing),
     ]
     card = "".join(
-        f'<div class="row"><div class="k">{name}</div><div class="v">{text}</div></div>'
+        f'<div class="row" data-track="{check_page.CARD_TRACKS[name]}"><div class="k">{name}</div><div class="v">{text}</div></div>'
         for name, _, text in values
         if institute and (established or name != "Known activity")
     )
     cells = "".join(f'<td data-col="{key}">{text}</td>' for _, key, text in values)
     rule = "A published evaluation or joint testing exercise; absence is not evidence of inactivity."
-    html = f'<article class="card" data-j="GB">{card}</article><table class="world"><thead><tr><th data-k="op"><button data-tip="{check_page.OP_HEADER_TIP}">Known activity</button></th></tr></thead><tbody id="world-rows"><tr data-j="GB">{cells}</tr></tbody></table><ul id="rules"><li>{rule}</li></ul>'
+    html = f'<article class="card" data-j="GB">{card}</article><table class="world"><thead><tr><th data-k="op"><button data-tip="Activity explained here.">Known activity</button></th></tr></thead><tbody id="world-rows"><tr data-j="GB">{cells}</tr></tbody></table><ul id="rules"><li>{rule}</li></ul>'
     sources = [{"id": sid} for sid in dict.fromkeys(sid for item in outputs for sid in item["source_ids"])]
     return html, {"jurisdictions": [j], "institutes": [inst], "sources": sources}
 
@@ -152,6 +152,15 @@ def test_no_qualifying_output():
     )
 
 
+def test_activity_header_requires_a_tooltip_without_fixed_wording():
+    html, data = display()
+    assert check_operating_output(html, data) == []
+    for replacement in ('data-tip=" \n "', ""):
+        broken = html.replace('data-tip="Activity explained here."', replacement)
+        assert check_page.blocking(check_operating_output(broken, data)) == ["Known activity header has no tooltip"]
+    assert check_operating_output(html.replace('data-tip="Activity explained here."', 'title="Another explanation."'), data) == []
+
+
 @pytest.mark.parametrize(
     "status", ["planned", "proposed", "exploring", "none_identified"]
 )
@@ -167,7 +176,7 @@ def test_all_non_established_states_are_inapplicable_even_with_outputs(status):
     # A dash in Budget for a state that has an institute, or a missing card row, fails.
     dashed = html.replace('<td data-col="budget">Not published</td>', f'<td data-col="budget">{NA}</td>')
     assert any("must be a structural absence exactly when" in e for e in check_operating_output(dashed, data))
-    assert any("card has no Staff row" in e for e in check_operating_output(html.replace('<div class="k">Staff</div>', '<div class="k">Other</div>'), data))
+    assert any("card has no Staff row" in e for e in check_operating_output(html.replace('data-track="10"', 'data-track="99"'), data))
     # A state without an institute shows the dash everywhere.
     html, data = display(status, institute=False)
     rows = [{"id": "GB", "operational": "Not applicable", "budget": "Not applicable", "staff": "Not applicable"}]
@@ -181,11 +190,10 @@ def test_all_non_established_states_are_inapplicable_even_with_outputs(status):
 )
 def test_cards_omit_structurally_absent_rows(label, value):
     html, data = display("planned")
-    row = f'<div class="row"><div class="k">{label}</div><div class="v">{value}</div></div>'
+    row = f'<div class="row" data-track="{check_page.CARD_TRACKS[label]}"><div class="k">{label}</div><div class="v">{value}</div></div>'
     html = html.replace('data-j="GB">', 'data-j="GB">' + row, 1)
     errors = check_operating_output(html, data)
     assert any(f"card shows {label} before establishment" in e for e in errors)
-    assert any("card shows Not applicable text" in e for e in errors)
 
 
 def test_structural_dash_needs_screen_reader_text():
@@ -407,7 +415,7 @@ def test_oracle_rejects_extra_text_anywhere_in_the_value():
     assert check_operating_output(html, data) == []
     extra = "<span>Confirmed operational since 2020</span>"
     for broken in (
-        html.replace("</div></div><div class=\"row\"><div class=\"k\">Budget", extra + "</div></div><div class=\"row\"><div class=\"k\">Budget"),
+        html.replace("</div></div><div class=\"row\" data-track=\"9\"><div class=\"k\">Budget", extra + "</div></div><div class=\"row\" data-track=\"9\"><div class=\"k\">Budget"),
         html.replace("</span></span></span></span></td>", "</span></span></span></span>" + extra + "</td>", 1),
         html.replace("since 2025</span></span></span>", "since 2025</span></span></span>" + extra, 1),
     ):

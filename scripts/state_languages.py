@@ -1,6 +1,6 @@
 """The internal per-jurisdiction language reference and the national-language flag derived from it.
 
-data/internal/state_languages.json (export-ignored) holds, per jurisdiction in data/aisi.json, the language
+state_languages.json in AISI_INTERNAL (default data/internal/, export-ignored) holds, per jurisdiction in data/aisi.json, the language
 statuses seeded from Unicode CLDR territory data, plus authored exceptions that cite a retrieved source where
 CLDR does not match the tracker's rule. A search's flag is derived from its query language, jurisdiction and
 date; an unresolved case is None (unknown), never guessed. A jurisdiction CLDR does not cover (the EU) is listed
@@ -14,11 +14,13 @@ derivation (a contradiction is an exception).
 
 `seed` rewrites only the `cldr` block and keeps `policy`, `aliases` and `exceptions`. `report` prints the
 frontload flag contradictions and the English-only searched states resolved against the reference.
+Missing internal files return exit status 3 (NOT RUN); set AISI_INTERNAL to their private directory.
 """
 
 import argparse
 import hashlib
 import json
+import os
 import sys
 from collections import Counter, defaultdict
 from datetime import date
@@ -26,7 +28,11 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "data" / "aisi.json"
-REF = ROOT / "data" / "internal" / "state_languages.json"
+
+
+def reference_path() -> Path:
+    directory = os.environ.get("AISI_INTERNAL")
+    return (Path(directory).expanduser() if directory else ROOT / "data" / "internal") / "state_languages.json"
 
 # Strongest first; a base language with several script variants takes the strongest status.
 CLDR_STATUSES = ("official", "de_facto_official", "official_regional")
@@ -73,8 +79,8 @@ def is_date(value) -> bool:
         return False
 
 
-def load(path: Path = REF) -> dict:
-    return json.loads(path.read_text(encoding="utf-8"))
+def load(path: Path | None = None) -> dict:
+    return json.loads((path or reference_path()).read_text(encoding="utf-8"))
 
 
 def language_status(ref: dict, jurisdiction: str, lang: str, on: str) -> tuple[str | None, str]:
@@ -188,8 +194,7 @@ def seed(args) -> int:
     raw = Path(args.cldr).read_bytes()
     territory_info = json.loads(raw)["supplemental"]["territoryInfo"]
     data = json.loads(DATA.read_text(encoding="utf-8"))
-    ref = load() if REF.exists() else {"about": "", "policy": {"counts": {}}, "aliases": {}, "exception_only": [],
-                                       "exceptions": []}
+    ref = load()
     meta = {
         "source": "Unicode CLDR territoryInfo (languagePopulation officialStatus)",
         "version": args.version,
@@ -198,9 +203,9 @@ def seed(args) -> int:
         "sha256": hashlib.sha256(raw).hexdigest(),
     }
     ref["cldr"] = cldr_block(territory_info, data["jurisdictions"], meta, ref.get("aliases", {}))
-    REF.write_text(json.dumps(ref, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    reference_path().write_text(json.dumps(ref, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     errors = validate(ref, data)
-    print("\n".join(errors) or f"{REF.relative_to(ROOT)}: {len(ref['cldr']['jurisdictions'])} jurisdictions", file=sys.stderr)
+    print("\n".join(errors) or f"{reference_path()}: {len(ref['cldr']['jurisdictions'])} jurisdictions", file=sys.stderr)
     return 1 if errors else 0
 
 
@@ -289,6 +294,9 @@ def main(argv=None) -> int:
     r = sub.add_parser("report", help="frontload contradictions and English-only states against the reference")
     r.add_argument("--frontload", required=True, help="path to the frontload searches.json")
     args = ap.parse_args(argv)
+    if not reference_path().is_file():
+        print(f"internal files were not found at {reference_path()}; set AISI_INTERNAL to their directory", file=sys.stderr)
+        return 3
     return seed(args) if args.command == "seed" else report(args)
 
 

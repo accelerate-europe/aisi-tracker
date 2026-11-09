@@ -1,5 +1,6 @@
 import re
 import subprocess
+import sys
 import json
 from collections import Counter
 from pathlib import Path
@@ -11,31 +12,72 @@ from conftest import ROOT, SOURCE_URL
 from scripts import check_page
 
 
-def test_scope_notes_are_short_explanations_or_plain_sentences():
-    testing = "Which institutes test AI models themselves, and which get privileged access to leading developers' models. It covers every institute, whatever its status, and counts access only where published sources confirm it."
-    scope = "This section covers every institute, whatever its status."
-    html = (
-        f'<h2 id="testing">Testing and access</h2><button class="info" id="test-scope" data-tip="{testing}">i</button>'
-        f'<section aria-labelledby="set-up"><h2 id="set-up">Institutional set-up</h2><div class="section-body"><p class="small scope-note" id="setup-scope">{scope}</p></div></section>'
-        f'<section aria-labelledby="funding"><h2 id="funding">Funding and staff</h2><div class="section-body"><p class="small scope-note" id="fund-scope">{scope}</p></div></section>'
-    )
-    data = {"institutes": [], "dataset": {"definition": "Example.", "status_definitions": {}}}
+def test_definition_link_allows_rewording_but_requires_one_reachable_target():
+    data = {"dataset": {"definition": "Example.", "status_definitions": {}}}
+    html = '<div id="headline"></div><p id="definition-link"><a href="#definition">Read the definition</a></p><section id="method-sec"><div class="section-body"><p id="definition">Example. <a href="method.html#qualifying-body">What counts</a></p></div></section>'
+    assert check_page.check_supporting_text(BeautifulSoup(html, "html.parser"), data) == []
+    for broken in (
+        html.replace('id="definition"', 'id="gone"'),
+        html.replace('href="#definition"', 'href="#gone"'),
+        html.replace('Read the definition</a>', 'Read the definition</a><a href="#definition">Again</a>'),
+        html.replace('id="definition-link"', 'id="gone"'),
+        html.replace('Read the definition</a>', ' \n </a>'),
+    ):
+        assert any("one link to an existing #definition" in error for error in check_page.blocking(check_page.check_supporting_text(BeautifulSoup(broken, "html.parser"), data)))
+
+
+def test_definition_rule_link_allows_rewording_but_requires_text_and_target():
+    data = {"dataset": {"definition": "Example.", "status_definitions": {}}}
+    html = '<div id="headline"></div><p id="definition-link"><a href="#definition">Read more</a></p><section id="method-sec"><div class="section-body"><p id="definition">Example. <a href="method.html#qualifying-body">See the criteria</a></p></div></section>'
+    assert check_page.check_supporting_text(BeautifulSoup(html, "html.parser"), data) == []
+    for broken in (
+        html.replace("See the criteria", " \n "),
+        html.replace('<a href="method.html#qualifying-body">See the criteria</a>', ""),
+        html.replace("method.html#qualifying-body", "method.html#other"),
+    ):
+        assert any("link does not go" in error for error in check_page.blocking(check_page.check_supporting_text(BeautifulSoup(broken, "html.parser"), data)))
+
+
+def test_section_headings_allow_rewording_but_not_missing_or_empty_headings():
+    html = "".join(f'<h2 id="{key}">Reworded heading</h2>' for key in check_page.SECTION_HEADINGS)
 
     def errors(markup):
-        return [
-            error for error in check_page.check_supporting_text(BeautifulSoup(markup, "html.parser"), data)
-            if error.startswith(("testing:", "set-up:", "funding:", "test-scope:"))
-        ]
+        return [e for e in check_page.blocking(check_page.check_section_bar(BeautifulSoup(markup, "html.parser"))) if e.startswith("heading #")]
 
     assert errors(html) == []
-    assert any("at most two sentences" in e for e in errors(html.replace(testing, testing + " A third sentence.")))
-    assert any("scope is not one (i)" in e for e in errors(html.replace(testing, "Only a scope note.")))
-    for note_id, heading in (("setup-scope", "set-up"), ("fund-scope", "funding")):
-        hidden = html.replace(
-            f'<p class="small scope-note" id="{note_id}">{scope}</p>',
-            f'<button class="info" id="{note_id}" data-tip="{scope}">i</button>',
-        )
-        assert any(e.startswith(heading + ": the scope must be a plain sentence") for e in errors(hidden))
+    for key in check_page.SECTION_HEADINGS:
+        for replacement in ("", f'<h2 id="{key}"> \n </h2>'):
+            assert errors(html.replace(f'<h2 id="{key}">Reworded heading</h2>', replacement)) == [f"heading #{key} is missing or empty"]
+
+
+@pytest.mark.parametrize("key", ["privileged", "law", "agreed", "none"])
+def test_access_group_headings_allow_rewording_but_not_missing_or_empty_headings(key):
+    data = {"institutes": [], "jurisdictions": []}
+    html = f'<div id="access"><div class="group-block" data-group="{key}"><h3>Reworded heading</h3></div></div>'
+
+    def errors(markup):
+        return [e for e in check_page.blocking(check_page.check_access_groups(BeautifulSoup(markup, "html.parser"), data)) if "heading is missing or empty" in e]
+
+    assert errors(html) == []
+    for replacement in ("", "<h3> \n </h3>"):
+        assert errors(html.replace("<h3>Reworded heading</h3>", replacement)) == [f"access group {key} heading is missing or empty"]
+
+
+def test_legend_definitions_allow_rewording_but_require_every_status_once():
+    statuses = ("established", "planned", "proposed", "exploring", "none_identified")
+    data = {"dataset": {"status_definitions": dict.fromkeys(statuses, "Full definition."), "definition": "Example.", "version": "1.0.0"}, "jurisdictions": [], "institutes": [], "changelog": [{"date": "2026-11-09"}]}
+    entries = {status: f'<div class="legend-entry" data-status="{status}"><i class="sw st-{status}"></i><abbr class="g legend-name" data-exp="Reworded definition.">{status}</abbr></div>' for status in statuses}
+    html = '<div id="legend">' + "".join(entries.values()) + '</div>'
+
+    def errors(markup):
+        return [e for e in check_page.blocking(check_page.check_summary_data(markup, data)) if e.startswith("legend")]
+
+    assert errors(html) == []
+    for status, entry in entries.items():
+        for replacement in ("", entries["planned" if status == "established" else "established"], entry.replace(f'data-status="{status}"', 'data-status="unknown"')):
+            assert "legend must have one entry per dataset status" in errors(html.replace(entry, replacement))
+        for replacement in ('data-exp=" \n "', ""):
+            assert errors(html.replace(entry, entry.replace('data-exp="Reworded definition."', replacement))) == [f"legend name lacks a non-empty definition tooltip: {status}"]
 
 
 @pytest.fixture
@@ -90,9 +132,66 @@ def test_missing_elements_fail(rendered, selector, message):
     assert any(message in e for e in errors_for(rendered))
 
 
-def test_country_search_wording_fails(rendered):
-    rendered[0].select_one("#world-filter")["placeholder"] = "Search country or institute"
-    assert any("#world-filter: placeholder" in e for e in errors_for(rendered))
+def test_an_accessible_name_from_a_referenced_label_counts(rendered):
+    soup = rendered[0]
+    box = soup.select_one("#map-search-list")
+    box.attrs.pop("aria-label", None)
+    box["aria-labelledby"] = "list-label"
+    label = soup.new_tag("span", id="list-label", attrs={"aria-label": "Places"})  # named by its attribute, no text
+    box.insert_before(label)
+    assert errors_for(rendered) == []
+    label["aria-label"] = ""
+    image = soup.new_tag("img", alt="Places")
+    label.append(image)  # named by an image's alt text
+    assert errors_for(rendered) == []
+
+
+def test_a_label_names_only_form_controls(rendered):
+    soup = rendered[0]
+    box = soup.select_one("#map-search-list")
+    for key in ("aria-label", "aria-labelledby", "title"):
+        box.attrs.pop(key, None)
+    label = soup.new_tag("label", attrs={"for": "map-search-list"})
+    label.string = "Places"
+    box.insert_before(label)
+    assert "#map-search-list: no accessible name" in check_page.blocking(errors_for(rendered))  # a <label> cannot name a list
+    field = soup.select_one("#world-filter")
+    for key in ("aria-label", "aria-labelledby", "title"):
+        field.attrs.pop(key, None)
+    wrapper = soup.new_tag("label")
+    wrapper.string = "Search"
+    field.wrap(wrapper)
+    assert "#world-filter: no accessible name" not in errors_for(rendered)  # a wrapping label names an input
+
+
+def test_search_inputs_need_a_name_and_a_placeholder_not_fixed_wording(rendered):
+    box = rendered[0].select_one("#world-filter")
+    box["placeholder"] = "Search country or institute"
+    assert errors_for(rendered) == []  # rewording is reviewed, not pinned
+    box["placeholder"] = " "
+    assert check_page.blocking(errors_for(rendered)) == ["#world-filter: no placeholder"]
+
+
+def test_listbox_requires_an_accessible_name_without_fixed_wording(rendered):
+    soup = rendered[0]
+    box = soup.select_one("#map-search-list")
+    box["aria-label"] = "Matching places"
+    assert errors_for(rendered) == []
+    for value in ("", " \n "):
+        box["aria-label"] = value
+        assert check_page.blocking(errors_for(rendered)) == ["#map-search-list: no accessible name"]
+    del box["aria-label"]
+    box["aria-labelledby"] = "list-label"
+    label = soup.new_tag("span", id="list-label")
+    label.string = "Places"
+    box.insert_before(label)
+    assert errors_for(rendered) == []
+    label.decompose()
+    assert check_page.blocking(errors_for(rendered)) == ["#map-search-list: no accessible name"]
+    box["title"] = "Places"
+    assert errors_for(rendered) == []
+    box.decompose()
+    assert check_page.blocking(errors_for(rendered)) == ["#map-search-list: no accessible name"]
 
 
 @pytest.mark.parametrize(("selector", "message"), [
@@ -284,7 +383,7 @@ def test_budget_oracle_rejects_wrong_id_and_missing_value_structure():
     data = {"jurisdictions": [{"id": "JP", "status": "established"}], "institutes": [{"id": "jp-aisi", "jurisdiction_id": "JP", "funding": []}]}
     identity = "funding-7d0b36a48cc65315865a6d6ec83ddeb6"
     value = f'<span class="budget-value" data-funding-id="{identity}"><span class="budget-amount">~EUR 52m (JPY 8.8bn)</span><span class="budget-qualifiers">one-off · FY2025 supplementary · adopted</span></span>'
-    html = f'<article class="card" data-j="JP"><div class="row"><div class="k">Budget</div><div class="v">{value}</div></div></article><table><tbody id="world-rows"><tr data-j="JP"><td data-col="budget">{value}</td></tr></tbody></table>'
+    html = f'<article class="card" data-j="JP"><div class="row" data-track="9"><div class="k">Budget</div><div class="v">{value}</div></div></article><table><tbody id="world-rows"><tr data-j="JP"><td data-col="budget">{value}</td></tr></tbody></table>'
     assert check_page.check_budget_output(html, data) == []
     assert any("wrong funding ID" in error for error in check_page.check_budget_output(html.replace(identity, "older-record"), data))
     assert any("separate amount and qualifiers" in error for error in check_page.check_budget_output(html.replace("budget-qualifiers", "removed"), data))
@@ -297,7 +396,7 @@ def test_budget_oracle_covers_institutes_before_establishment():
     identity = check_page.EXPECTED_BUDGET_IDS["no-ki-norge"]
     data = {"jurisdictions": [{"id": "NO", "status": "proposed"}], "institutes": [{"id": "no-ki-norge", "jurisdiction_id": "NO", "funding": []}]}
     value = f'<span class="budget-value" data-funding-id="{identity}"><span class="budget-amount">NOK 30m</span><span class="budget-qualifiers">a year · 2027 budget proposal</span></span>'
-    html = f'<article class="card" data-j="NO"><div class="row"><div class="k">Budget</div><div class="v">{value}</div></div></article><table><tbody id="world-rows"><tr data-j="NO"><td data-col="budget">{value}</td></tr></tbody></table>'
+    html = f'<article class="card" data-j="NO"><div class="row" data-track="9"><div class="k">Budget</div><div class="v">{value}</div></div></article><table><tbody id="world-rows"><tr data-j="NO"><td data-col="budget">{value}</td></tr></tbody></table>'
     assert check_page.check_budget_output(html, data) == []
     missing = html.replace(value, '<span class="missing">Not published</span>')
     assert any("wrong funding ID" in error for error in check_page.check_budget_output(missing, data))
@@ -317,11 +416,16 @@ def test_setup_groups_cover_institutes_before_establishment():
         marks = "".join(f'<i class="sw st-{status}"></i>' for _, status in states)
         items = "".join(f'<li data-state="{jid}"><a href="#c-{jid.lower()}">x</a><span class="group-note"><span class="missing">Not published</span></span></li>' for jid, _ in states)
         cards = "".join(f'<article id="c-{jid.lower()}"></article>' for jid, _ in states)
-        return BeautifulSoup(f'<h2 id="set-up">Institutional set-up</h2><div id="setup"><div class="groups-short"></div><div class="groups-long"><div class="group-block" data-form="new_body"><h3>New body</h3><div class="marks">{marks}</div><ul class="group-list">{items}</ul></div></div></div>{cards}', "html.parser")
+        return BeautifulSoup(f'<h2 id="set-up">Institutional set-up</h2><div id="setup"><div class="groups-short"></div><div class="groups-long"><div class="group-block" data-form="new_body"><div class="marks">{marks}</div><ul class="group-list">{items}</ul></div></div></div>{cards}', "html.parser")
     assert check_page.check_setup_groups(page([("GB", "established"), ("NO", "proposed")]), data) == []
+    renamed = page([("GB", "established"), ("NO", "proposed")])
+    renamed.select_one("#set-up").string = "How institutes are organised"
+    assert check_page.check_setup_groups(renamed, data) == []
+    renamed.select_one("#set-up").string = " \n "
+    assert check_page.blocking(check_page.check_setup_groups(renamed, data)) == ["set-up heading is missing or empty"]
+    renamed.select_one("#set-up").decompose()
+    assert check_page.blocking(check_page.check_setup_groups(renamed, data)) == ["set-up heading is missing or empty"]
     assert any("lists" in error for error in check_page.check_setup_groups(page([("NO", "proposed"), ("GB", "established")]), data))  # status on the ladder first, then name
-    described = str(page([("GB", "established"), ("NO", "proposed")])).replace("<ul", '<p class="group-help">A body created for the purpose.</p><ul')
-    assert any("describes its form" in error for error in check_page.check_setup_groups(BeautifulSoup(described, "html.parser"), data))
     assert any("lists" in error for error in check_page.check_setup_groups(page([("GB", "established")]), data))
     assert any("marks differ" in error for error in check_page.check_setup_groups(page([("GB", "established"), ("NO", "established")]), data))
 
@@ -335,7 +439,7 @@ def test_uncited_values_need_a_citation_link_except_absence_and_known_gaps(monke
       <tr data-j="US"><td data-col="net">Member</td><td data-col="op">None found yet</td></tr>
       <tr data-j="FR"><td data-col="op"><span class="activity-kind">Joint testing<span class="cites"><a class="cn" href="#">1</a></span></span><span class="activity-kind">Published work</span></td></tr>
     </tbody></table>
-    <article class="card" data-j="KR"><div class="row"><div class="k">Related funding</div><div class="v"><span class="related-funding-item" data-funding-id="f1">KRW 20.1bn<span class="cites"></span></span></div></div></article>"""
+    <article class="card" data-j="KR"><div class="row" data-track="12"><div class="k">Related funding</div><div class="v"><span class="related-funding-item" data-funding-id="f1">KRW 20.1bn<span class="cites"></span></span></div></div></article>"""
     found = check_page.uncited_values(BeautifulSoup(html, "html.parser"))
     assert found == ["card KR: Related funding", "related funding f1", "table FR: op"]
     monkeypatch.setattr(check_page, "KNOWN_UNCITED", {("net", "US"): "", ("net", "GB"): ""})
@@ -365,12 +469,6 @@ def test_internal_vocabulary_exempts_version_history_and_plain_words():
     html = """<main><p>The second funding round 2 opened. Ties keep a fixed order.</p>
       <details id="changes"><p>Round 6 review: direct requests returned HTTP 403.</p></details></main>"""
     assert check_page.internal_vocabulary(BeautifulSoup(html, "html.parser")) == []
-
-
-def test_each_constructions_in_page_text():
-    html = "<main><p>Source excerpts</p><p>quotations from sources and the values each supports</p></main>"
-    assert check_page.each_constructions(BeautifulSoup(html, "html.parser"))
-    assert check_page.each_constructions(BeautifulSoup("<p>Each card links to its sources.</p>", "html.parser")) == []
 
 
 def test_glyph_check_allows_status_swatches_only():
@@ -425,8 +523,14 @@ def test_institute_names_pass_and_fail_on_each_rule():
     assert check_page.check_institute_names(_names_html(), data) == []
     # Same-named bodies without their country.
     assert any("card names its institute" in e for e in check_page.check_institute_names(_names_html(gb="AI Security Institute"), data))
-    # A bare generic acronym in a tight place.
-    assert any("bare generic acronym" in e for e in check_page.check_institute_names(_names_html(gb_short="AISI"), data))
+    # The acronym preference is report-only; a name that differs from data still blocks.
+    findings = check_page.check_institute_names(_names_html(gb_short="AISI"), data)
+    assert any("bare generic acronym" in e and check_page.is_report_line(e) for e in findings)
+    assert not any("bare generic acronym" in e for e in check_page.blocking(findings))
+    assert any("does not show the short form" in e for e in check_page.blocking(findings))
+    data["institutes"][0]["short_name"] = "AISI"
+    assert check_page.blocking(check_page.check_institute_names(_names_html(gb_short="AISI"), data)) == []
+    data["institutes"][0]["short_name"] = "UK AISI"
     # The table shows the full name instead of the recorded short form.
     assert any("does not show the short form" in e for e in check_page.check_institute_names(_names_html(fr_short="National Institute"), data))
     # A short form that does not give the full name on hover.
@@ -438,7 +542,7 @@ def test_institute_names_pass_and_fail_on_each_rule():
     # A funding row that names its institute in short form, or with the new-tab note the page adds to links.
     bad = _names_html().replace("AI Security Institute (Spain)</span></div></article>", "Spain AISI</span></div></article>")
     assert any("funding row names its institute" in e for e in check_page.check_institute_names(bad, data))
-    tab = _names_html().replace("AI Security Institute (Spain)</span></div></article>", "AI Security Institute (Spain) (opens in a new tab)</span></div></article>")
+    tab = _names_html().replace("AI Security Institute (Spain)</span></div></article>", 'AI Security Institute (Spain)<span class="vh"> Opens elsewhere</span></span></div></article>')
     assert check_page.check_institute_names(tab, data) == []
     # No funding rows at all is a failure, not a pass.
     assert any("no funding rows" in e for e in check_page.check_institute_names(_names_html().replace('id="fund-rows"', 'id="x"'), data))
@@ -447,7 +551,7 @@ def test_institute_names_pass_and_fail_on_each_rule():
 def _fold_data():
     return {
         "jurisdictions": [{
-            "id": "BG", "notes": "Own note.",
+            "id": "BG",
             "related_bodies": [
                 {"name": "Комисия за финансов надзор", "name_en": "Financial Supervision Commission", "kind": "ai_act_authority",
                  "authority_roles": ["market_surveillance"], "designation_state": "proposed", "source_ids": ["s1"], "role": "Proposed market authority."},
@@ -458,15 +562,13 @@ def _fold_data():
     }
 
 
-def _fold_html(status='<p class="basis">Proposed, not yet designated.</p>', det='<span class="det">Proposed market authority.</span>', original=True, label="AI Act market surveillance", boilerplate="", how=True, method_count=1):
+def _fold_html(status='<p class="basis">Proposed, not yet designated.</p>', det='<span class="det">Proposed market authority.</span>', original=True, label="AI Act market surveillance"):
     orig = '<span class="orig">Комисия за финансов надзор</span>' if original else ""
-    how_block = f'<div class="how"><p class="gl">How we checked</p><p>Own note. {boilerplate}</p></div>' if how else ""
     return (
         '<details class="card mini" id="c-bg" data-j="BG"><summary><span class="name">Bulgaria</span></summary>'
         f'<div class="body-group"><p class="gl">{label}</p>{status}<ul><li><span class="body-name">Financial Supervision Commission<span class="cites"><a class="cn">1</a></span></span>{orig}{det}</li></ul></div>'
         '<div class="body-group"><p class="gl">Other bodies</p><ul><li><span class="body-name">INSAIT (Sofia University)<span class="cites"><a class="cn">1</a></span></span></li></ul></div>'
-        f"{how_block}</details>"
-        f'<ul id="rules"><li>{" ".join(["for a body its government has tasked with testing general-purpose or frontier AI models or named its AI safety or security institute."] * method_count)}</li></ul>'
+        "</details>"
     )
 
 
@@ -477,12 +579,7 @@ def test_nonidentified_folds_pass_and_fail_on_each_rule():
     assert any("original name must sit beneath" in e for e in check_page.check_nonidentified_folds(_fold_html(original=False), data))
     # A body under the wrong function heading.
     assert any("fold-out groups" in e for e in check_page.check_nonidentified_folds(_fold_html(label="AI Act notifying"), data))
-    # Shared boilerplate repeated in an entry, or missing from Method.
-    html = _fold_html(boilerplate="Searched in English for a body its government has tasked with testing general-purpose or frontier AI models or named its AI safety or security institute.")
-    assert any("Method states once" in e for e in check_page.check_nonidentified_folds(html, data))
-    assert any("Method states the search wording 0 times" in e for e in check_page.check_nonidentified_folds(_fold_html(method_count=0), data))
-    # Notes outside a How we checked block; a body without its citation.
-    assert any("not in a How we checked block" in e for e in check_page.check_nonidentified_folds(_fold_html(how=False), data))
+    # A body without its citation.
     assert any("no inline citation" in e for e in check_page.check_nonidentified_folds(_fold_html().replace('<a class="cn">1</a>', "", 1), data))
     # A role text that is nowhere in the entry.
     assert any("role text is nowhere" in e for e in check_page.check_nonidentified_folds(_fold_html(det=""), data))
@@ -491,19 +588,9 @@ def test_nonidentified_folds_pass_and_fail_on_each_rule():
     gone = {"jurisdictions": [{"id": "BG", "status": "none_identified", "europe_scope": True}], "dataset": {}}
     assert any("entry is missing" in e for e in check_page.check_nonidentified_folds("<ul id='rules'></ul>", gone))
     alone = _fold_html(original=False).replace("Financial Supervision Commission<", "Комисия за финансов надзор<")
-    assert any("non-Latin script" in e for e in check_page.check_nonidentified_folds(alone, data))
-
-
-@pytest.mark.parametrize("label", ["Closest candidate", "Closest candidates", "Not counted"])
-def test_nonidentified_folds_reject_short_run_on_candidate_text(label):
-    data = _fold_data()
-    page = _fold_html()
-    assert check_page.check_nonidentified_folds(page, data) == []
-    text = f"{label}: INSAIT."
-    broken = page.replace("</details>", f'<p class="related">{text}</p></details>')
-    assert check_page.check_nonidentified_folds(broken, data) == [
-        f"BG fold-out still shows run-on text {text!r}"
-    ]
+    assert check_page.blocking(check_page.check_nonidentified_folds(alone, data))  # wrong rendered name still blocks
+    data["jurisdictions"][0]["related_bodies"][0].pop("name_en")
+    assert any("non-Latin script" in e for e in check_page.blocking(check_page.check_nonidentified_folds(alone, data)))
 
 
 def test_nonidentified_fold_accepts_structured_closest_candidate():
@@ -515,6 +602,17 @@ def test_nonidentified_fold_accepts_structured_closest_candidate():
     }
     page = _fold_html().replace(">Other bodies<", ">Closest candidate<")
     assert check_page.check_nonidentified_folds(page, data) == []
+
+
+@pytest.mark.parametrize("closest", [False, True])
+def test_fold_owner_headings_allow_rewording_but_need_text(closest):
+    data = _fold_data()
+    if closest:
+        data["jurisdictions"][0]["closest_body"] = {"name": "INSAIT (Sofia University)", "source_ids": ["s1"]}
+    html = _fold_html().replace(">Other bodies<", ">A different heading<")
+    assert check_page.check_nonidentified_folds(html, data) == []
+    for broken in (html.replace("A different heading", " \n "), html.replace('<p class="gl">A different heading</p>', "")):
+        assert any("heading is empty" in error for error in check_page.blocking(check_page.check_nonidentified_folds(broken, data)))
 
 
 def test_generic_sources_stay_out_of_card_lists_and_in_method():
@@ -574,6 +672,15 @@ def test_archive_links_follow_archived_sources_only():
     assert "3 archived copy links on the page, 2 expected from source lists and Method" in check_page.check_archive_links(extra_citation, data)
     as_citation = _archive_html().replace('class="archive" href="https://web.archive.org', 'class="archive cn" href="https://web.archive.org', 1)
     assert check_page.check_archive_links(as_citation, data) == ["a superscript citation carries an archived copy link"]
+
+
+def test_archive_links_allow_rewording_but_require_visible_link_text():
+    data = _archive_data()
+    html = _archive_html().replace("archived copy", "Saved source").replace("(opens in a new tab)", "Opens separately")
+    assert check_page.check_archive_links(html, data) == []
+    for label in ("", " \n "):
+        errors = check_page.blocking(check_page.check_archive_links(html.replace("Saved source", label), data))
+        assert any("archived copy link differs" in error for error in errors)
 
 
 def test_former_names_are_marked_as_former():
@@ -660,9 +767,9 @@ def interval_html(status="Announced on 26 Oct 2023, 7 days earlier", activity="P
     line = f'<span class="small qualifiers activity-interval">{activity}</span>' if activity else ""
     return (
         '<article class="card" data-j="GB">'
-        f'<div class="row"><div class="k">Status</div><div class="v"><span class="qualified"><span class="value-line">Established since 2 Nov 2023</span>'
+        f'<div class="row" data-track="3"><div class="k">Status</div><div class="v"><span class="qualified"><span class="value-line">Established since 2 Nov 2023</span>'
         f'<span class="small qualifiers">{gap}<span class="cites">{links}</span>{"</span>" if status else ""}</span></span></div></div>'
-        f'<div class="row"><div class="k">Known activity</div><div class="v"><span class="smark value activity" title="{activity_caveat}"><span class="activity-kinds">'
+        f'<div class="row" data-track="11"><div class="k">Known activity</div><div class="v"><span class="smark value activity" title="{activity_caveat}"><span class="activity-kinds">'
         '<span class="qualified activity-kind"><span class="value-line activity-clause" data-kind="published_work">Published work</span>'
         f'<span class="small qualifiers activity-since">since 9 Feb 2024</span>{line}</span></span></span></div></div></article>'
         f'<table><tbody id="world-rows"><tr data-j="GB"><td>{table}</td></tr></tbody></table>'
@@ -854,6 +961,210 @@ def test_run_stages_reports_like_the_sequential_gate(jobs, tmp_path):
     work = [job("early", "ok", []), job("late", "ok", ["l1"]), job("late", "raise", "first"), job("late", "raise", "second")]
     with pytest.raises(RuntimeError, match="^first$"):
         check_page.run_stages(staged_job, work, {}, jobs)
+
+
+@pytest.mark.parametrize("jobs", [1, 2])
+def test_report_lines_are_reported_in_order_but_stop_no_stage(jobs):
+    def job(stage, payload):
+        return (stage, check_page.check_access_fixes, ("ok", payload))
+
+    work = [job("early", [check_page.report_line("spacing")]), job("late", ["l1", check_page.report_line("weight")]), job("later", ["never"])]
+    assert check_page.run_stages(staged_job, work, {}, jobs) == [check_page.report_line("spacing"), "l1", check_page.report_line("weight")]
+    assert check_page.blocking([check_page.report_line("spacing"), "1000px dark: " + check_page.report_line("gap"), "l1"]) == ["l1"]  # a prefix keeps the mark
+
+
+def test_only_the_mark_makes_a_report_line_not_the_text():
+    quoted = "missing evidence for 'report line: example'"  # page text or a message that happens to read like one
+    assert check_page.blocking([quoted]) == [quoted]
+    assert check_page.printed_report_line("390px: " + check_page.report_line("gap")) == "report line: 390px: gap"
+
+
+@pytest.mark.parametrize("planted", ["data/page.json:\\u001F", "index.html:\x1f", "bad\x1fname.txt:\x1f", "bad\x1fname.png:clean"])
+def test_the_report_mark_is_reserved_in_the_built_site(rendered, monkeypatch, capsys, planted):
+    _, data, dist = rendered
+    (dist / "data/aisi.json").write_text(json.dumps(data))
+    (dist / "index.html").write_text("Built page")
+    assert check_page.check_reserved_mark(dist, "<p>page</p>") == []
+    name, text = planted.split(":")
+    (dist / name).parent.mkdir(parents=True, exist_ok=True)
+    (dist / name).write_text(f'"name {text}"')
+    found = check_page.check_reserved_mark(dist, "")
+    assert name.replace("\x1f", "\\x1f") in found[0] and check_page.blocking(found) == found  # the guard's own finding is never a report line
+    monkeypatch.setattr(check_page, "find_chrome", lambda: "chrome")
+    monkeypatch.setattr(check_page, "render", lambda *args: ("<html></html>", "http://127.0.0.1:1/"))
+    monkeypatch.setattr(check_page, "check_dom", lambda *args: (_ for _ in ()).throw(AssertionError("checked after the mark was found")))
+    assert check_page.main(dist) == 1 and "reserved report-line mark" in capsys.readouterr().err
+
+
+def test_a_shard_exception_fails_whatever_its_message_says(tmp_path, monkeypatch, capsys):
+    behaviour = [("hydration", ("raise", RuntimeError("report line: " + check_page.REPORT_MARK + "boom")))]
+    run_round_trip(tmp_path, monkeypatch, behaviour)
+    assert "1 findings" in capsys.readouterr().out
+
+
+@pytest.fixture
+def quarantine_file(tmp_path, monkeypatch):
+    path = tmp_path / "quarantine.json"
+    path.write_text("[]\n")
+    monkeypatch.setattr(check_page, "QUARANTINE", path)
+    monkeypatch.setattr(check_page, "today", lambda: check_page.date(2026, 11, 9))
+    return path
+
+
+def quarantine_entry(**changes):
+    return {"job": "hydration/hydration_paint", "owner": "Test owner", "issue": "#123",
+            "expires": "2026-11-09", "reason": "Demonstrated harness flake; evidence in the issue.", **changes}
+
+
+@pytest.mark.parametrize("expires", ["2026-11-09", "2026-12-09"])
+def test_active_quarantine_runs_and_reports_findings_through_local_shards_and_merge(quarantine_file, tmp_path, monkeypatch, expires):
+    entry = quarantine_entry(job="hydration/fake_hydration/0", expires=expires)
+    quarantine_file.write_text(json.dumps([entry]))
+    behaviour = [("hydration", ("errors", ["h1", check_page.report_line("h2")])), ("interactions", ("errors", ["i1"]))]
+    merged, local = run_round_trip(tmp_path, monkeypatch, behaviour)
+    prefix = f"quarantined until {expires} (owner Test owner, #123): "
+    assert merged == local == ([check_page.report_line(prefix + "h1"), check_page.report_line(prefix + "h2"), "seed", "i1"], None)
+    lines = check_page.read_timings(tmp_path / "timings.jsonl")
+    assert all(check_page.timing_ok({key: value for key, value in line.items() if key != "shard"}) for line in lines)
+    assert {line["job"]: line["errors"] for line in lines} == {"hydration/fake_hydration/0": 1, "interactions/fake_interaction/1": 1}  # raw
+    # The merge applies the quarantine on its own date: after the expiry the same shard results block again.
+    monkeypatch.setattr(check_page, "today", lambda: check_page.date.fromisoformat(expires) + check_page.date.resolution)
+    assert check_page.blocking(check_page.check_merged(tmp_path / "site", {}, tmp_path / "gate")) == ["h1"]
+
+
+def test_expired_quarantine_blocks_and_warns(quarantine_file, tmp_path, monkeypatch, capsys):
+    quarantine_file.write_text(json.dumps([quarantine_entry(job="hydration/fake_hydration/0", expires="2026-11-08")]))
+    merged, local = run_round_trip(tmp_path, monkeypatch, [("hydration", ("errors", ["h1"]))])
+    assert merged == local == (["h1"], None)
+    assert "warning: expired quarantine hydration/fake_hydration/0 (expired 2026-11-08, owner Test owner, #123)" in capsys.readouterr().err
+
+
+def test_quarantine_uses_the_coordinator_run_date(tmp_path, monkeypatch):
+    path = tmp_path / "quarantine.json"
+    path.write_text(json.dumps([quarantine_entry(expires="2026-11-30")]))
+    monkeypatch.setattr(check_page, "QUARANTINE", path)
+    monkeypatch.setenv("AISI_RUN_DATE", "2026-11-30")
+    check_page.today.cache_clear()
+    try:
+        assert "hydration/hydration_paint" in check_page.load_quarantine()
+        monkeypatch.setenv("AISI_RUN_DATE", "2026-12-01")
+        check_page.today.cache_clear()
+        assert check_page.load_quarantine() == {}
+    finally:
+        check_page.today.cache_clear()
+
+
+@pytest.mark.parametrize(("entries", "message"), [
+    ({}, "expected a list"),
+    ([None], "requires job"),
+    *[([{key: value for key, value in quarantine_entry().items() if key != missing}], "requires job")
+      for missing in ("job", "owner", "issue", "expires", "reason")],
+    *[([quarantine_entry(**{field: value})], "non-empty text")
+      for field, value in (("owner", " "), ("reason", None), ("issue", 123), ("owner", "bad\nowner"))],
+    ([quarantine_entry(expires="2026-02-30")], "bad expires date"),
+    ([quarantine_entry(expires="20261109")], "bad expires date"),
+    ([quarantine_entry(job="hydration/unknown")], "unknown job"),
+    ([quarantine_entry(), quarantine_entry()], "duplicate job"),
+    ([quarantine_entry(expires="2026-12-10")], "more than 30 days"),
+    ([quarantine_entry(issue="not an issue")], "issue must be"),
+])
+@pytest.mark.parametrize("mode", ["local", "shard", "merge"])
+def test_bad_quarantine_fails_main_before_browser_access(quarantine_file, tmp_path, monkeypatch, capsys, entries, message, mode):
+    quarantine_file.write_text(json.dumps(entries))
+    monkeypatch.setattr(check_page, "find_chrome", lambda: pytest.fail("browser access before quarantine validation"))
+    kwargs = {"shard": (1, 1), "results": tmp_path / "result.json"} if mode == "shard" else {"merge": tmp_path} if mode == "merge" else {}
+    assert check_page.main(tmp_path, **kwargs) == 1
+    error = capsys.readouterr().err
+    assert error.startswith("error: quarantine ") and message in error
+
+
+def test_unreadable_quarantine_fails_clearly(quarantine_file):
+    quarantine_file.write_text("[broken")
+    with pytest.raises(ValueError, match="quarantine"):
+        check_page.load_quarantine()
+
+
+@pytest.mark.parametrize("issue", ["#1", "https://example.org/issues/123"])
+def test_quarantine_issue_formats(quarantine_file, issue):
+    quarantine_file.write_text(json.dumps([quarantine_entry(issue=issue)]))
+    assert check_page.load_quarantine()["hydration/hydration_paint"]["issue"] == issue
+
+
+def test_quarantined_exception_still_blocks_and_is_timed(quarantine_file, tmp_path, monkeypatch, capsys):
+    quarantine_file.write_text(json.dumps([quarantine_entry(job="hydration/fake_hydration/0")]))
+    merged, local = run_round_trip(tmp_path, monkeypatch, [("hydration", ("raise", RuntimeError("harness exploded")))])
+    assert merged == local == ("caught", "harness exploded")
+    assert "1 findings" in capsys.readouterr().out
+    (line,) = check_page.read_timings(tmp_path / "timings.jsonl")
+    assert check_page.timing_ok({key: value for key, value in line.items() if key != "shard"})
+    assert line["exception"] == "RuntimeError" and line["errors"] is None
+
+
+@pytest.mark.parametrize("crashes", [False, True])
+def test_quarantine_main_exit_and_printed_findings(quarantine_file, tmp_path, monkeypatch, capsys, crashes):
+    quarantine_file.write_text(json.dumps([quarantine_entry()]))
+    dist = tmp_path / "dist"
+    (dist / "data").mkdir(parents=True)
+    (dist / "index.html").write_text("built page")
+    (dist / "data/aisi.json").write_text('{"jurisdictions": []}')
+    monkeypatch.setattr(check_page, "find_chrome", lambda: "chrome")
+    monkeypatch.setattr(check_page, "render", lambda *args: ("<html></html>", "http://localhost/"))
+    for name in STATIC_CHECKS:
+        monkeypatch.setattr(check_page, name, lambda *args: [])
+    kind, payload = ("raise", "harness exploded") if crashes else ("ok", ["drift"])
+    monkeypatch.setattr(check_page, "browser_jobs", lambda *args: [("hydration", check_page.hydration_paint, (kind, payload))])
+    monkeypatch.setattr(check_page, "run_browser_job", lambda chrome, dist, stage, check, args: staged_job(stage, check, args))
+    assert check_page.main(dist) == int(crashes)
+    output = capsys.readouterr()
+    if crashes:
+        assert "error: page check failed: harness exploded" in output.err
+    else:
+        assert "report line: quarantined until 2026-11-09 (owner Test owner, #123): drift" in output.out
+        assert "error:" not in output.err
+
+
+def test_checker_digest_does_not_depend_on_the_quarantine_or_the_date(tmp_path, monkeypatch):
+    # Shards record raw findings and the merge applies the quarantine on its own date, so no shard result goes stale
+    # across midnight or when the register changes.
+    scripts = tmp_path / "scripts"
+    scripts.mkdir()
+    monkeypatch.setattr(check_page, "__file__", str(scripts / "check_page.py"))
+    register = scripts / "quarantine.json"
+    register.write_text("[]")
+    empty = check_page.checker_digest()
+    register.write_text(json.dumps([quarantine_entry()]))
+    assert check_page.checker_digest() == empty
+
+
+def test_a_job_with_only_report_lines_is_timed_without_errors(tmp_path):
+    timings = tmp_path / "t.jsonl"
+    check_page.timed_job(timings, 0.0, staged_job, "early", check_page.check_access_fixes, ("ok", [check_page.report_line("x"), "e"]))
+    assert [line["errors"] for line in check_page.read_timings(timings)] == [1]
+
+
+def test_main_prints_report_lines_and_passes_on_them_alone(rendered, monkeypatch, capsys):
+    _, data, dist = rendered
+    (dist / "data/aisi.json").write_text(json.dumps(data))
+    (dist / "index.html").write_text("Built page")
+    monkeypatch.setattr(check_page, "find_chrome", lambda: "chrome")
+    monkeypatch.setattr(check_page, "render", lambda *args: ("<html></html>", "http://127.0.0.1:1/"))
+    for name in STATIC_CHECKS:
+        monkeypatch.setattr(check_page, name, lambda *args: [])
+    monkeypatch.setattr(check_page, "check_dom", lambda *args: [check_page.report_line("static drift")])
+    monkeypatch.setattr(check_page, "check_browser", lambda *args: ["390px: " + check_page.report_line("browser drift")])
+    assert check_page.main(dist) == 0  # a report line does not stop the browser jobs either
+    out = capsys.readouterr()
+    assert out.out.splitlines()[:2] == ["report line: static drift", "report line: 390px: browser drift"] and "error:" not in out.err
+    monkeypatch.setattr(check_page, "check_browser", lambda *args: ["broken", check_page.report_line("browser drift")])
+    assert check_page.main(dist) == 1
+    out = capsys.readouterr()
+    assert "report line: browser drift" in out.out and "error: broken" in out.err and "error: report line" not in out.err
+
+
+def test_check_reads_the_report_lines_the_gate_prints():
+    from scripts import check
+
+    assert check.REPORT_LINE == check_page.REPORT_LINE
 
 
 @pytest.mark.parametrize("jobs", [1, 2])
@@ -1264,7 +1575,7 @@ def run_round_trip(tmp_path, monkeypatch, behaviour, count=2):
         return check_page.check_merged(site, {}, tmp_path / "gate", tmp_path / "timings.jsonl")
 
     def local():
-        return check_page.run_stages(lambda stage, check, args: run(None, None, stage, check, args), work, check_page.browser_seeds(site))
+        return check_page.check_browser("chrome", site, {})
 
     return reduce_call(merged), reduce_call(local)
 
@@ -1284,6 +1595,7 @@ def reduce_call(call):
     [("hydration", ("errors", [])), ("interactions", ("errors", ["i1"])), ("interactions", ("raise", RuntimeError("Chrome failed")))],
     [("hydration", ("raise", ValueError("bad value"))), ("interactions", ("errors", ["i1"]))],
     [("hydration", ("raise", KeyError("uncaught"))), ("interactions", ("errors", ["i1"]))],
+    [("hydration", ("errors", ["\x1fh1"])), ("interactions", ("errors", ["i1", "\x1fi2"]))],  # report lines (check_page.REPORT_MARK)
 ])
 def test_shard_files_merge_to_the_local_report(tmp_path, monkeypatch, behaviour):
     merged, local = run_round_trip(tmp_path, monkeypatch, behaviour)
@@ -1480,7 +1792,7 @@ def test_a_run_of_named_jobs_never_reads_as_the_gate(rendered, monkeypatch, caps
     for name in STATIC_CHECKS:
         monkeypatch.setattr(check_page, name, lambda *args: [])
     asked = []
-    monkeypatch.setattr(check_page, "check_browser", lambda chrome, dist, data, screenshots, jobs, timings, only: asked.append(only) or [])
+    monkeypatch.setattr(check_page, "check_browser", lambda chrome, dist, data, screenshots, jobs, timings, only, quarantine, limit: asked.append(only) or [])
     assert check_page.main(dist, only=["hydration/hydration_paint"]) == 0
     assert asked == [["hydration/hydration_paint"]]
     assert "not the full gate" in capsys.readouterr().out
@@ -1506,17 +1818,8 @@ def test_rendered_content_runs_once_in_the_static_checks_not_per_state():
 
 def test_rendered_content_reports_what_its_helpers_find(monkeypatch):
     monkeypatch.setattr(check_page, "check_staff_figures", lambda soup, data: ["staff off"])
-    monkeypatch.setattr(check_page, "check_generic_sources", lambda html, data: ["generic off"])
-    for name in ("check_budget_output", "check_funding_outside", "check_operating_output", "check_summary_data", "check_source_alignment",
-                 "check_institute_names", "check_former_names", "check_no_rate_amounts", "check_euro_amounts", "check_leadership_rows",
-                 "check_nonidentified_folds"):
-        monkeypatch.setattr(check_page, name, lambda html, data: [])
-    monkeypatch.setattr(check_page, "check_interval_output", lambda html, data, worked: [])
-    for name in ("check_two_significant_figures", "check_section_bar"):
-        monkeypatch.setattr(check_page, name, lambda soup: [])
-    for name in ("check_access_groups", "check_figures_row", "check_setup_groups", "check_per_person"):
-        monkeypatch.setattr(check_page, name, lambda soup, data: [])
-    assert check_page.check_rendered_content("<html></html>", {}) == ["staff off", "generic off"]
+    monkeypatch.setattr(check_page, "check_section_bar", lambda soup: ["bar off"])
+    assert check_page.check_rendered_content("<html></html>", {}) == ["staff off", "bar off"]
 
 
 def test_laps_time_each_step_and_reach_the_job_line(tmp_path, monkeypatch):
@@ -1606,3 +1909,170 @@ def test_a_crop_never_captures_skipped_content_blank(monkeypatch, tmp_path):
     drawn = Page(0)
     check_page.capture_sections(drawn, tmp_path, "1440-light")
     assert len(drawn.shots) == 1
+
+
+@pytest.mark.parametrize("use, expected", [(True, {"hydration/hydration_paint"}), (False, set())])
+def test_no_quarantine_reports_every_finding_but_still_validates_the_register(quarantine_file, rendered, monkeypatch, use, expected):
+    _, data, dist = rendered
+    (dist / "data/aisi.json").write_text(json.dumps(data))
+    (dist / "index.html").write_text("Built page")
+    quarantine_file.write_text(json.dumps([quarantine_entry()]))
+    monkeypatch.setattr(check_page, "find_chrome", lambda: "chrome")
+    monkeypatch.setattr(check_page, "render", lambda *args: ("<html></html>", "http://127.0.0.1:1/"))
+    for name in STATIC_CHECKS:
+        monkeypatch.setattr(check_page, name, lambda *args: [])
+    seen = []
+    monkeypatch.setattr(check_page, "check_browser", lambda *args: seen.append(set(args[7])) or [])  # the quarantine argument
+    assert check_page.main(dist, use_quarantine=use) == 0 and seen == [expected]
+    quarantine_file.write_text(json.dumps([quarantine_entry(owner="")]))  # a malformed register fails even with --no-quarantine
+    assert check_page.main(dist, use_quarantine=use) == 1
+
+
+@pytest.mark.parametrize("left, limit, code, marker", [
+    (5000.0, None, 0, ""),  # room for the full watchdog: unchanged, no marker
+    (100.0, 100.0, 0, "job deadline: watchdog lowered to 100 s"),
+    (0.5, None, 3, "NOT RUN: job deadline passed"),
+])
+def test_job_deadline_counts_from_the_process_start_and_lowers_the_watchdog(rendered, monkeypatch, capsys, left, limit, code, marker):
+    _, data, dist = rendered
+    (dist / "data/aisi.json").write_text(json.dumps(data))
+    (dist / "index.html").write_text("Built page")
+    monkeypatch.setattr(check_page, "find_chrome", lambda: "chrome")
+    monkeypatch.setattr(check_page, "render", lambda *args: ("<html></html>", "http://127.0.0.1:1/"))
+    for name in STATIC_CHECKS:
+        monkeypatch.setattr(check_page, name, lambda *args: [])
+    limits = []
+    monkeypatch.setattr(check_page, "check_browser", lambda *args: limits.append(args[8]) or [])
+    now = check_page.time.monotonic()
+    monkeypatch.setattr(check_page, "PROCESS_START", now - 1000.0)  # this process started 1000 s ago
+    monkeypatch.setattr(check_page, "guard_setup", lambda deadline: None)  # the start-up timer would end this worker; tested in a child below
+    assert check_page.main(dist, only=["hydration/hydration_paint"], deadline=1000.0 + left) == code
+    err = capsys.readouterr().err
+    if code == 0:
+        assert len(limits) == 1 and (limits[0] == check_page.JOB_LIMIT if limit is None else abs(limits[0] - limit) < 1)
+    else:
+        assert limits == []
+    assert marker in err
+
+
+def test_job_deadline_also_bounds_start_up_and_static_checks(tmp_path):
+    # A real child process: its static checks outlast the deadline, so it ends NOT_RUN with the marker, on time.
+    script = tmp_path / "slow.py"
+    script.write_text(
+        "import sys, time\n"
+        f"sys.path.insert(0, {str(Path(check_page.__file__).parent)!r})\n"
+        "import check_page\n"
+        "check_page.find_chrome = lambda: 'chrome'\n"
+        "check_page.load_quarantine = lambda: {}\n"
+        "check_page.guard_setup(1.5)\n"
+        "time.sleep(30)\n"
+        "print('not stopped')\n"
+    )
+    started = __import__("time").monotonic()
+    result = subprocess.run([sys.executable, str(script)], capture_output=True, text=True, timeout=60)
+    took = __import__("time").monotonic() - started
+    assert result.returncode == check_page.NOT_RUN and check_page.DEADLINE_PASSED in result.stderr and "not stopped" not in result.stdout
+    assert took < 25
+
+
+@pytest.mark.parametrize("jobs, ok", [("hydration/hydration_paint", True), ("hydration/hydration_paint,hydration/hydration_edges", False)])
+def test_job_deadline_takes_exactly_one_job(jobs, ok):
+    result = subprocess.run([sys.executable, str(Path(check_page.__file__)), "--job", jobs, "--jobs", "1", "--job-deadline", "1", "--find-chrome"],
+                            capture_output=True, text=True, timeout=120)
+    assert ("exactly one job" in result.stderr) != ok
+
+
+
+def test_job_deadline_needs_one_browser_job_at_a_time():
+    result = subprocess.run([sys.executable, str(Path(check_page.__file__)), "--job", "hydration/hydration_paint", "--jobs", "2",
+                             "--job-deadline", "1", "--find-chrome"], capture_output=True, text=True, timeout=120)
+    assert "--jobs 1" in result.stderr
+
+
+def test_the_deadline_timer_stays_armed_through_the_job(tmp_path):
+    # A real child: the job's hand-over and work outlast the deadline after job_limit() ran; the timer still ends it
+    # NOT_RUN with the marker, by the deadline, so no pass is reported after it.
+    script = tmp_path / "slow_job.py"
+    script.write_text(
+        "import sys, time\n"
+        f"sys.path.insert(0, {str(Path(check_page.__file__).parent)!r})\n"
+        "import check_page\n"
+        "check_page.guard_setup(2.0)\n"
+        "check_page.job_limit(2.0)\n"
+        "time.sleep(30)\n"
+        "print('passed after the deadline')\n"
+    )
+    result = subprocess.run([sys.executable, str(script)], capture_output=True, text=True, timeout=60)
+    assert result.returncode == check_page.NOT_RUN and check_page.DEADLINE_PASSED in result.stderr and "passed after" not in result.stdout
+
+
+def test_the_definition_must_come_before_its_rule_link():
+    data = {"dataset": {"definition": "Example.", "status_definitions": {}}}
+    html = '<div id="headline"></div><p id="definition-link"><a href="#definition">Read</a></p><section id="method-sec"><div class="section-body"><p id="definition">Example. <a href="method.html#qualifying-body">What counts</a></p></div></section>'
+    assert check_page.check_supporting_text(BeautifulSoup(html, "html.parser"), data) == []
+    moved = html.replace('Example. <a href="method.html#qualifying-body">What counts</a>', '<a href="method.html#qualifying-body">What counts</a> Example.')
+    assert any("dataset.definition" in e for e in check_page.blocking(check_page.check_supporting_text(BeautifulSoup(moved, "html.parser"), data)))
+
+
+def test_the_new_tab_notice_keeps_its_meaning_in_any_wording():
+    source = check_page.check_external_markers.__code__.co_consts
+    script = next(c for c in source if isinstance(c, str) and "external link lost accessible new-tab text" in c)
+    assert "/new (tab|window)/i" in script  # a notice that no longer says it opens a new tab or window fails
+
+
+def test_skip_static_runs_only_the_job_but_still_scans_for_the_reserved_mark(rendered, monkeypatch, capsys):
+    _, data, dist = rendered
+    (dist / "data/aisi.json").write_text(json.dumps(data))
+    (dist / "index.html").write_text("Built page")
+    monkeypatch.setattr(check_page, "find_chrome", lambda: "chrome")
+    monkeypatch.setattr(check_page, "render", lambda *args: (_ for _ in ()).throw(AssertionError("rendered")))
+    for name in STATIC_CHECKS:
+        monkeypatch.setattr(check_page, name, lambda *args: (_ for _ in ()).throw(AssertionError("static check ran")))
+    ran = []
+    monkeypatch.setattr(check_page, "check_browser", lambda *args: ran.append(args[6]) or [])
+    assert check_page.main(dist, only=["hydration/hydration_paint"], use_quarantine=False, skip_static=True) == 0
+    assert ran == [["hydration/hydration_paint"]] and "static checks skipped" in capsys.readouterr().out
+    (dist / "index.html").write_text("Built page \x1f")
+    assert check_page.main(dist, only=["hydration/hydration_paint"], use_quarantine=False, skip_static=True) == 1
+
+
+@pytest.mark.parametrize("args, ok", [
+    (["--job", "hydration/hydration_paint", "--no-quarantine", "--skip-static"], True),
+    (["--job", "hydration/hydration_paint", "--skip-static"], False),
+    (["--skip-static", "--no-quarantine"], False),
+])
+def test_skip_static_is_only_for_detector_runs(args, ok):
+    result = subprocess.run([sys.executable, str(Path(check_page.__file__)), *args, "--list-jobs"], capture_output=True, text=True, timeout=120)
+    assert result.returncode == (0 if ok else 2) and ("--skip-static is for the flake detector" in result.stderr) != ok
+
+
+MOVED_TO_CONTENT = {  # content family module -> the check_page helpers it now runs
+    "funding": ("check_budget_output", "check_funding_outside", "check_interval_output", "check_per_person", "check_no_rate_amounts", "check_euro_amounts"),
+    "sources": ("check_source_alignment", "check_generic_sources"),
+    "record_rows": ("check_leadership_rows", "check_access_groups", "check_setup_groups"),
+    "summary": ("check_summary_data", "check_figures_row", "check_two_significant_figures"),
+    "activity": ("check_operating_output",),
+    "names": ("check_institute_names", "check_former_names", "check_nonidentified_folds"),
+}
+MOVED_HELPERS = tuple(h for helpers in MOVED_TO_CONTENT.values() for h in helpers)
+
+
+def test_each_moved_content_family_has_one_home(monkeypatch):
+    # D2: each helper of a moved family runs exactly once in the content step (tests/content) and not at all in the
+    # browser gate's static pass. Spies record what each path actually calls.
+    import importlib
+
+    calls = []
+    for name in MOVED_HELPERS:
+        monkeypatch.setattr(check_page, name, lambda *args, name=name: calls.append(name) or [])
+    for module, helpers in MOVED_TO_CONTENT.items():
+        calls.clear()
+        for helper in importlib.import_module(f"content.test_{module}").FAMILY.values():
+            helper("<html></html>", {})
+        assert sorted(calls) == sorted(helpers), module  # each once, none missing, none twice
+    calls.clear()
+    rendered = check_page.check_rendered_content  # the real browser-path function; its other callees stubbed
+    for name in [n for n in dir(check_page) if n.startswith("check_") and n not in MOVED_HELPERS and n != "check_rendered_content"]:
+        monkeypatch.setattr(check_page, name, lambda *args, **kwargs: [])
+    rendered("<html></html>", {})
+    assert calls == []  # no moved helper runs in the browser gate any more

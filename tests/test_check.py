@@ -39,6 +39,8 @@ def test_snapshot_is_the_staged_index_not_the_working_tree(tmp_path):
     assert check.make_snapshot(repo, tmp_path / "two") == first
     git(repo, "add", "a.txt")
     assert check.make_snapshot(repo, tmp_path / "three") != first
+    check.make_snapshot(repo, tmp_path / "head", "HEAD")
+    assert (tmp_path / "head/a.txt").read_text() == "committed\n"
 
 
 @pytest.mark.parametrize(("statuses", "allow_skip", "blocked"), [
@@ -156,6 +158,31 @@ def test_gate_asks_for_timings_except_in_a_shard(tmp_path, monkeypatch, gate_arg
     assert ("hydration/hydration_paint" in ctx.sections.get("jobs", "")) == timed
 
 
+@pytest.mark.parametrize("code, status", [(0, "PASS"), (1, "FAIL")])
+def test_gate_report_lines_get_their_own_section(tmp_path, monkeypatch, code, status):
+    ctx = check.Context(tmp_path, tmp_path, tmp_path, tmp_path, None, False, tmp_path / "dist", tmp_path, built=True)
+
+    def fake_run(ctx, step, cmd, cwd=None):
+        (tmp_path / "gate.log").write_text("$ uv run\nreport line: gap 6px, not 8px\nreport line: gap 6px, not 8px\nerror: x\nreport line: weight 500\n")
+        return code, 1.0, tmp_path / "gate.log"
+
+    monkeypatch.setattr(check, "run", fake_run)
+    result = check.step_gate(ctx)
+    assert result.status == status
+    assert ctx.sections["report lines"].count("- gap 6px, not 8px") == 1 and "- weight 500" in ctx.sections["report lines"]
+    assert ("2 report lines" in result.detail) == (status == "PASS")
+    assert check.REPORT_ORDER.index("report lines") < check.REPORT_ORDER.index("sheet")
+
+
+def test_many_report_lines_are_cut_with_a_pointer_to_the_log(tmp_path, monkeypatch):
+    ctx = check.Context(tmp_path, tmp_path, tmp_path, tmp_path, None, False, tmp_path / "dist", tmp_path, built=True)
+    log = tmp_path / "gate.log"
+    monkeypatch.setattr(check, "run", lambda *a, **k: (log.write_text("".join(f"report line: n{i}\n" for i in range(45))), (0, 1.0, log))[1])
+    check.step_gate(ctx)
+    section = ctx.sections["report lines"]
+    assert "- n39" in section and "- n40" not in section and "and 5 more in the [gate log]" in section
+
+
 def test_unreadable_timings_never_fail_the_gate(tmp_path, monkeypatch):
     ctx = check.Context(tmp_path, tmp_path, tmp_path, tmp_path, None, False, tmp_path / "dist", tmp_path, built=True)
 
@@ -197,18 +224,22 @@ def test_fail_fast_stops_at_the_first_blocking_result(tmp_path, monkeypatch, all
 
 
 @pytest.mark.parametrize("argv, blocks", [
-    (["--only", "fast"], False),  # the hook and CI's fast job: no terms file is not a reason to refuse a commit
+    (["--only", "fast"], False),  # the local hook: no terms file is not a reason to refuse a commit
     (["--only", "export"], False),
     (["--release", "--only", "fast"], False),  # CI's publish job
     (["--only", "fast,build"], True),  # anything beyond the fast group needs the scan
     (["--changed"], True),
     ([], True),  # the full check
+    (["--only", "fast", "--commits", "HEAD~1..HEAD"], True),
+    (["--only", "export", "--commits", "HEAD", "^HEAD~1"], True),
 ])
 def test_export_without_terms_blocks_only_beyond_the_fast_group(tmp_path, monkeypatch, argv, blocks):
     def runner(step):
         return lambda ctx: check.Result(step, "NOT RUN" if step == "export" else "PASS", detail="no terms file" if step == "export" else "")
 
-    monkeypatch.setattr(check, "make_snapshot", lambda repo, dest: dest.mkdir(parents=True) or "0" * 16)
+    monkeypatch.delenv("CI", raising=False)
+    monkeypatch.delenv("GITHUB_EVENT_NAME", raising=False)
+    monkeypatch.setattr(check, "make_snapshot", lambda repo, dest, *args: dest.mkdir(parents=True) or "0" * 16)
     monkeypatch.setattr(check, "resolve_base", lambda repo, base, release: "b" * 40)
     monkeypatch.setattr(check, "changed_paths", lambda repo, index, base: ["docs/review.md"])
     monkeypatch.setattr(check, "RUNNERS", {step: runner(step) for step in check.STEPS})
@@ -216,6 +247,159 @@ def test_export_without_terms_blocks_only_beyond_the_fast_group(tmp_path, monkey
     assert check.main() == (1 if blocks else 0)
     report = (tmp_path / "r/report.md").read_text()
     assert ("not blocking in a fast run" in report) == (not blocks)
+
+
+@pytest.mark.parametrize("head, missing_terms_only, status, blocks", [
+    ({"full_name": "contributor/tracker"}, True, "NOT RUN", False),
+    (None, True, "NOT RUN", False),
+    ({"full_name": "accelerate-europe/aisi-tracker"}, True, "NOT RUN", True),
+    ({"full_name": "contributor/tracker"}, False, "NOT RUN", True),  # gitleaks missing
+    ({"full_name": "contributor/tracker"}, True, "FAIL", True),
+])
+def test_commit_scan_exempts_only_missing_terms_on_fork_prs(tmp_path, monkeypatch, head, missing_terms_only, status, blocks):
+    event = tmp_path / "event.json"
+    event.write_text(json.dumps({"pull_request": {"head": {"repo": head}, "base": {"repo": {"full_name": "accelerate-europe/aisi-tracker"}}}}))
+    monkeypatch.setenv("GITHUB_EVENT_NAME", "pull_request")
+    monkeypatch.setenv("GITHUB_EVENT_PATH", str(event))
+    monkeypatch.setenv("CI", "true")
+    monkeypatch.setattr(check, "make_snapshot", lambda repo, dest, revision: dest.mkdir(parents=True) or revision)
+
+    def runner(ctx):
+        assert ctx.commits == ["HEAD~1..HEAD"]
+        return check.Result("export", status, detail="no terms file" if missing_terms_only else "gitleaks NOT RUN: not on PATH",
+                            missing_terms_only=missing_terms_only)
+
+    monkeypatch.setattr(check, "RUNNERS", {"export": runner})
+    monkeypatch.setattr(sys, "argv", ["check.py", "--only", "export", "--commits", "HEAD~1..HEAD", "--report-dir", str(tmp_path / "report")])
+    assert check.main() == int(blocks)
+    report = (tmp_path / "report/report.md").read_text()
+    assert ("a maintainer runs the names scan before merging" in report) == (not blocks)
+
+
+def test_ci_tree_fallback_still_requires_terms(tmp_path, monkeypatch):
+    monkeypatch.setenv("CI", "true")
+    monkeypatch.setenv("GITHUB_EVENT_NAME", "push")
+    monkeypatch.setattr(check, "make_snapshot", lambda repo, dest: dest.mkdir(parents=True) or "snapshot")
+    monkeypatch.setattr(check, "RUNNERS", {"export": lambda ctx: check.Result("export", "NOT RUN", missing_terms_only=True)})
+    monkeypatch.setattr(sys, "argv", ["check.py", "--only", "export", "--report-dir", str(tmp_path / "report")])
+    assert check.main() == 1
+
+
+@pytest.mark.parametrize("payload", [None, "not json", "{}", '{"pull_request": {"head": {"repo": {}}, "base": {"repo": {}}}}'])
+def test_unreadable_or_incomplete_pr_events_do_not_exempt_the_scan(tmp_path, monkeypatch, payload):
+    event = tmp_path / "event.json"
+    if payload is not None:
+        event.write_text(payload)
+    monkeypatch.setenv("GITHUB_EVENT_NAME", "pull_request")
+    monkeypatch.setenv("GITHUB_EVENT_PATH", str(event))
+    assert not check.fork_pull_request()
+
+
+@pytest.fixture
+def push_repo(tmp_path):
+    repo = tmp_path / "repo"
+    (repo / "scripts").mkdir(parents=True)
+    git(repo, "init", "-q")
+    script = repo / "scripts/check.py"
+    script.write_text(
+        "import json, os, sys\n"
+        "with open(os.environ['HOOK_CALLS'], 'a') as out:\n"
+        "    out.write(json.dumps(sys.argv[1:]) + '\\n')\n"
+        "print('report at test-report.md', file=sys.stderr)\n"
+        "sys.exit(int(os.environ.get('HOOK_EXIT', '0')))\n"
+    )
+    git(repo, "add", "scripts/check.py")
+    git(repo, "-c", "user.name=t", "-c", "user.email=t@example.invalid", "commit", "-qm", "Base")
+    base = check.git(repo, "rev-parse", "HEAD").strip()
+    git(repo, "-c", "user.name=t", "-c", "user.email=t@example.invalid", "commit", "--allow-empty", "-qm", "Change")
+    head = check.git(repo, "rev-parse", "HEAD").strip()
+    script.write_text("raise SystemExit('staged version must not run')\n")
+    git(repo, "add", "scripts/check.py")
+    script.write_text("raise SystemExit('working version must not run')\n")
+    # Replace only the uv launcher; Python still executes the hook's HEAD script from stdin.
+    uv = tmp_path / "bin/uv"
+    uv.parent.mkdir()
+    uv.write_text(f"#!{sys.executable}\nimport os, sys\nos.execv(sys.executable, [sys.executable, *sys.argv[sys.argv.index('python') + 1:]])\n")
+    uv.chmod(0o755)
+    calls = tmp_path / "calls.jsonl"
+    env = {**os.environ, "PATH": str(uv.parent) + os.pathsep + os.environ["PATH"], "HOOK_CALLS": str(calls)}
+    return repo, base, head, calls, env
+
+
+def bare_remote(tmp_path, repo, held=None):
+    """A local stand-in for the destination; held is the commit it already has (on a branch named held)."""
+    remote = tmp_path / "remote"  # no .git suffix, so the listed-address cases can add one
+    git(tmp_path, "init", "-q", "--bare", str(remote))
+    if held:
+        git(repo, "push", "-q", str(remote), f"{held}:refs/heads/held")
+    return str(remote)
+
+
+def hook(repo, env, url, line):
+    return subprocess.run([str(check.ROOT / ".githooks/pre-push"), "origin", url], cwd=repo, env=env, input=line + "\n",
+                          capture_output=True, text=True)
+
+
+@pytest.mark.parametrize("remote_state", ["known", "new", "missing", "deleted", "unchanged", "already_remote"])
+def test_pre_push_selects_commits_from_what_the_destination_holds(tmp_path, push_repo, remote_state):
+    repo, base, head, calls, env = push_repo
+    url = bare_remote(tmp_path, repo, head if remote_state == "already_remote" else base)
+    git(repo, "update-ref", "refs/remotes/origin/main", head)  # a local tracking ref proves nothing about the destination
+    remote = {"known": base, "missing": "f" * 40, "unchanged": head}.get(remote_state, "0" * 40)
+    local = "0" * 40 if remote_state == "deleted" else head
+    result = hook(repo, env, url, f"refs/heads/main {local} refs/heads/main {remote}")
+    assert result.returncode == 0, result.stderr
+    if remote_state == "deleted":
+        assert not calls.exists()
+        return
+    revisions = {  # nothing new (unchanged, already_remote): the ref names are still checked
+        "known": [f"{base}..{head}"], "new": [head, f"^{base}"], "missing": [head, f"^{base}"],
+        "unchanged": [head, f"^{head}"], "already_remote": [head, f"^{head}"],
+    }[remote_state]
+    assert json.loads(calls.read_text()) == ["--only", "export", "--ref-names", "refs/heads/main", "refs/heads/main", "--commits", *revisions]
+
+
+def test_pre_push_refuses_when_the_destination_cannot_be_listed(tmp_path, push_repo):
+    repo, base, head, calls, env = push_repo
+    result = hook(repo, env, str(tmp_path / "no-such-remote.git"), f"refs/heads/main {head} refs/heads/main {'0' * 40}")
+    assert result.returncode == 1 and "cannot list" in result.stderr and not calls.exists()
+
+
+def test_pre_push_refuses_an_annotated_tag(tmp_path, push_repo):
+    repo, base, head, calls, env = push_repo
+    git(repo, "-c", "user.name=t", "-c", "user.email=t@example.invalid", "tag", "-a", "-m", "Release notes", "v9", head)
+    tag = check.git(repo, "rev-parse", "v9").strip()
+    result = hook(repo, env, bare_remote(tmp_path, repo, base), f"refs/tags/v9 {tag} refs/tags/v9 {'0' * 40}")
+    assert result.returncode == 1 and "points at a tag, not a commit" in result.stderr and not calls.exists()
+
+
+def test_pre_push_refuses_a_ref_to_a_blob(tmp_path, push_repo):
+    repo, base, head, calls, env = push_repo
+    blob = subprocess.run(["git", "-C", str(repo), "hash-object", "-w", "--stdin"], input=b"private notes\n",
+                          capture_output=True, check=True).stdout.decode().strip()
+    result = hook(repo, env, bare_remote(tmp_path, repo, base), f"refs/tags/notes {blob} refs/tags/notes {'0' * 40}")
+    assert result.returncode == 1 and "points at a blob" in result.stderr and not calls.exists()
+
+
+SKIPPED_REMOTE = "https://example.invalid/maintainers/" + "private-repo"  # the real name is a private term
+
+
+@pytest.mark.parametrize("listed, skipped", [
+    (SKIPPED_REMOTE + ".git", True),
+    (SKIPPED_REMOTE + "/", True),
+    (SKIPPED_REMOTE + "-fork.git", False),  # only an exact listed address is skipped
+    (None, False),  # nothing listed: every remote is scanned
+])
+def test_pre_push_skips_only_listed_remotes_and_propagates_failure(tmp_path, push_repo, listed, skipped):
+    repo, base, head, calls, env = push_repo
+    url = bare_remote(tmp_path, repo, base)
+    if listed:
+        git(repo, "config", "--add", "aisi.leakScanSkipUrl", listed.replace(SKIPPED_REMOTE, url))
+    env["HOOK_EXIT"] = "1"
+    result = hook(repo, env, url + "/", f"refs/heads/main {head} refs/heads/main {base}")
+    assert result.returncode == (0 if skipped else 1)
+    assert calls.exists() != skipped
+    assert ("report at test-report.md" in result.stderr) != skipped
 
 
 @pytest.mark.parametrize("allow_skip", [False, True])
@@ -227,6 +411,72 @@ def test_a_failed_export_blocks_even_in_a_fast_run(allow_skip):
 def test_compare_runs_before_the_build_it_does_not_need():
     assert check.STEPS.index("compare") < check.STEPS.index("build")
     assert check.STEPS[:4] == check.GROUPS["fast"] and check.STEPS.index("export") < check.STEPS.index("tests")  # cheap first
+
+
+def test_content_runs_between_build_and_gate():
+    start = check.STEPS.index("build")
+    assert check.STEPS[start:start + 3] == ("build", "content", "gate")
+    assert check.RUNNERS["content"] is check.step_content
+
+
+def test_content_without_a_build_blocks_even_if_dist_exists(tmp_path, monkeypatch):
+    (tmp_path / "dist").mkdir()
+    ctx = check.Context(tmp_path, tmp_path, tmp_path, tmp_path, None, False, tmp_path / "dist", tmp_path)
+    monkeypatch.setattr(check, "run", lambda *a, **k: pytest.fail("must not run without this snapshot's build"))
+    result = check.step_content(ctx)
+    assert result.status == "NOT RUN" and "no successful build" in result.detail
+    assert check.blocking([result], allow_skip=False) == [result]
+
+
+@pytest.mark.parametrize("workers, code", [(0, 0), (4, 0), (2, 1), (4, 3)])
+def test_content_runs_locked_pytest_in_snapshot_with_context_env(tmp_path, monkeypatch, workers, code):
+    ctx = check.Context(tmp_path, tmp_path / "snapshot", tmp_path, tmp_path, None, False, tmp_path / "dist", tmp_path,
+                        built=True, test_workers=workers, env={"PYTHONDONTWRITEBYTECODE": "1"})
+    calls = []
+
+    def child(cmd, **kwargs):
+        calls.append((cmd, kwargs["cwd"], kwargs["env"]))
+        return subprocess.CompletedProcess(cmd, code)
+
+    monkeypatch.setattr(check.subprocess, "run", child)
+    result = check.step_content(ctx)
+    assert result.status == ("PASS" if code == 0 else "FAIL")
+    assert calls == [(["uv", "run", "--locked", "-q", "pytest", "-q", "-p", "no:cacheprovider",
+                      "-n", str(workers), "tests/content", "--site", str(ctx.dist)], ctx.snapshot, ctx.env)]
+
+
+def test_skip_browser_leaves_content_to_ci_without_blocking(tmp_path, monkeypatch):
+    monkeypatch.setattr(check, "make_snapshot", lambda repo, dest: dest.mkdir(parents=True) or "snapshot")
+    monkeypatch.setattr(check, "RUNNERS", {step: lambda ctx: pytest.fail("a skipped runner must not run")
+                                         for step in ("build", "content", "gate")})
+    monkeypatch.setattr(sys, "argv", ["check.py", "--only", "build,content,gate", "--skip-browser",
+                                      "--fail-fast", "--report-dir", str(tmp_path / "r")])
+    assert check.main() == 0
+    report = (tmp_path / "r/report.md").read_text()
+    assert "| content | NOT RUN |" in report
+    assert "left to CI's content checks" in report and "content needs the pre-rendered build" in report
+    assert "no blocking result" in report
+
+
+@pytest.mark.parametrize("selected", ["content", "gate,content"])
+def test_content_accepts_gate_dist_and_runs_before_merge(tmp_path, monkeypatch, selected):
+    calls = []
+
+    def runner(step):
+        def run(ctx):
+            calls.append((step, ctx.built, ctx.dist, ctx.gate_args))
+            return check.Result(step, "PASS")
+        return run
+
+    monkeypatch.setattr(check, "make_snapshot", lambda repo, dest: dest.mkdir(parents=True) or "snapshot")
+    monkeypatch.setattr(check, "RUNNERS", {step: runner(step) for step in ("content", "gate")})
+    merge = ["--gate-merge", str(tmp_path / "shards")] if "gate" in selected else []
+    monkeypatch.setattr(sys, "argv", ["check.py", "--only", selected, "--gate-dist", str(tmp_path / "site"),
+                                      *merge, "--report-dir", str(tmp_path / "r")])
+    assert check.main() == 0
+    expected_args = [f"--merge={tmp_path / 'shards'}"] if merge else []
+    assert calls == [(step, True, tmp_path / "site", expected_args)
+                     for step in ("content", "gate") if step in selected]
 
 
 def test_gate_exit_codes(tmp_path):
@@ -257,6 +507,9 @@ def test_fast_group_expands_and_unknown_steps_fail(monkeypatch, capsys):
 
 @pytest.mark.parametrize("argv, message", [
     (["--only", "fast", "--gate-merge", "results"], "--gate-merge needs the gate step"),
+    (["--only", "content", "--gate-dist", "site", "--gate-merge", "results"], "--gate-merge needs the gate step"),
+    (["--only", "tests", "--gate-dist", "site"], "--gate-dist needs the content or gate step"),
+    (["--only", "build,content", "--gate-dist", "site"], "checks an existing build"),
     (["--only", "gate", "--gate-results", "shard.json"], "go together"),
     (["--only", "gate", "--gate-shard", "1/4"], "go together"),
     (["--only", "gate", "--gate-shard", "1/4", "--gate-results", "s.json", "--gate-merge", "results"], "exclude each other"),
@@ -395,6 +648,116 @@ def test_crop_links_name_a_missing_side(tmp_path):
     (tmp_path / "after/390-light-hero.png").write_bytes(b"png")
     links = check.crop_links(tmp_path, "390-light-hero")
     assert links.startswith("before: absent, [after](")
+
+
+@pytest.fixture
+def sheet_run(tmp_path, monkeypatch):
+    ctx = check.Context(tmp_path, tmp_path, tmp_path, tmp_path / "report", "HEAD", False,
+                        tmp_path / "dist", tmp_path / "cache", built=True)
+    ctx.dist.mkdir()
+    calls = []
+
+    def impact(ctx):
+        calls.append("impact")
+        return []
+
+    def capture(ctx, dist, out):
+        calls.append((dist, out.name))
+        return 0, 0.0, tmp_path / "log"
+
+    def build_base(ctx):
+        calls.append("base")
+        return tmp_path / "base-dist"
+
+    def run(ctx, step, cmd):
+        calls.append("sheets")
+        assert "scripts/contact_sheet.py" in cmd
+        assert ("--before" in cmd) == ("base" in calls)
+        sheets = ctx.report / "sheets"
+        sheets.mkdir(parents=True)
+        (sheets / "index.json").write_text(json.dumps({"changes": [], "compared": 1, "sheets": {}}))
+        return 0, 0.0, tmp_path / "log"
+
+    monkeypatch.setattr(check, "rendering_impact", impact)
+    monkeypatch.setattr(check, "capture", capture)
+    monkeypatch.setattr(check, "build_base", build_base)
+    monkeypatch.setattr(check, "run", run)
+    return ctx, calls
+
+
+@pytest.mark.parametrize("built", [False, True])
+def test_sheet_without_impact_skips_capture_and_does_not_block(sheet_run, built):
+    ctx, calls = sheet_run
+    ctx.built = built
+    result = check.step_sheet(ctx)
+    assert calls == ["impact"]
+    assert result.status == "NOT RUN" and not result.blocks
+    assert check.blocking([result], False) == []
+    assert "No rendering impact against HEAD" in result.detail
+    assert "no sheet" in result.detail and "no visual pass needed" in result.detail
+    assert ctx.sections["sheet"] == f"## Visual pass\n\n{result.detail}\n"
+
+
+@pytest.mark.parametrize("raises", [False, True])
+def test_sheet_with_impact_captures_before_and_after(sheet_run, monkeypatch, raises):
+    ctx, calls = sheet_run
+
+    def impact(ctx):
+        calls.append("impact")
+        if raises:
+            raise RuntimeError("dependency unknown")
+        return ["site/index.html changed"]
+
+    monkeypatch.setattr(check, "rendering_impact", impact)
+    result = check.step_sheet(ctx)
+    assert result.status == "PASS"
+    assert calls == ["impact", (ctx.dist, "after"), "base", (ctx.work / "base-dist", "before"), "sheets"]
+    assert "where" in ctx.sections
+    if raises:
+        assert "RuntimeError: dependency unknown" in result.detail
+        assert "counted as impact" in result.detail
+        assert "unknown rendering impact" in ctx.sections["sheet"]
+    else:
+        assert "site/index.html changed" in ctx.sections["sheet"]
+
+
+def test_sheet_at_release_captures_after_even_without_impact(sheet_run):
+    ctx, calls = sheet_run
+    ctx.release = True
+    assert check.step_sheet(ctx).status == "PASS"
+    assert calls == ["impact", (ctx.dist, "after"), "sheets"]
+    assert "Full sheets" in ctx.sections["sheet"]
+
+
+@pytest.mark.parametrize("failure", ["after", "before", "sheets"])
+def test_sheet_keeps_unknown_impact_detail_when_capture_or_sheet_fails(sheet_run, monkeypatch, failure):
+    ctx, _ = sheet_run
+    log = ctx.work / "log"
+    log.write_text("capture or sheet failed\n")
+    capture = check.capture
+
+    def impact(ctx):
+        raise RuntimeError("dependency unknown")
+
+    def failing_capture(ctx, dist, out):
+        return (1, 0.0, log) if out.name == failure else capture(ctx, dist, out)
+
+    monkeypatch.setattr(check, "rendering_impact", impact)
+    monkeypatch.setattr(check, "capture", failing_capture)
+    if failure == "sheets":
+        monkeypatch.setattr(check, "run", lambda *args: (1, 0.0, log))
+    result = check.step_sheet(ctx)
+    assert result.status == "FAIL"
+    assert "capture or sheet failed" in result.detail
+    assert "RuntimeError: dependency unknown" in result.detail
+    assert "counted as impact" in result.detail
+
+
+def test_sheet_without_a_base_keeps_after_capture(sheet_run):
+    ctx, calls = sheet_run
+    ctx.base = None
+    assert check.step_sheet(ctx).status == "PASS"
+    assert calls == [(ctx.dist, "after"), "sheets"]
 
 
 def test_where_to_look_then_visual_pass_come_before_the_claims_in_the_report():
@@ -704,6 +1067,8 @@ def test_the_coordinator_and_release_checks_share_the_run_date_setting():
     (["site/index.html"], check.BUILD_STEPS),
     (["scripts/check_page.py", "docs/x.md"], check.BUILD_STEPS),
     (["tests/fixtures/earliest_credit.json"], check.BUILD_STEPS),  # the gate reads it
+    (["tests/content/test_saved_page.py"], check.BUILD_STEPS),
+    (["tests/content/conftest.py"], check.BUILD_STEPS),
     (["schema/aisi.schema.json"], check.BUILD_STEPS),
     (["uv.lock"], check.BUILD_STEPS),
     (["newdir/thing.txt", "docs/x.md"], check.STEPS),  # a path no rule names: every step, the sheet included
@@ -717,7 +1082,8 @@ def test_changed_files_choose_their_steps(paths, steps):
 
 def test_sheet_needs_an_unknown_path_and_build_steps_keep_compare():
     assert "sheet" not in check.DATA_STEPS + check.BUILD_STEPS  # sheets run at merge or release, not per commit
-    assert {"compare", "build", "gate"} <= set(check.BUILD_STEPS)
+    assert {"compare", "build", "content", "gate"} <= set(check.BUILD_STEPS)
+    assert {"build", "content", "gate"} <= set(check.DATA_STEPS)
 
 
 def docstring_free_strings(tree):
@@ -809,7 +1175,7 @@ def test_changed_runs_only_the_chosen_steps_and_says_why(tmp_path, monkeypatch):
     assert check.main() == 0
     assert calls == list(check.GROUPS["fast"])
     report = (tmp_path / "r/report.md").read_text()
-    assert "## Changed files" in report and "Not selected (no change needs them): copies, passes, compare, build, gate, sheet." in report
+    assert "## Changed files" in report and "Not selected (no change needs them): copies, passes, compare, build, content, gate, sheet." in report
     assert "| scripts/research_log.py | a script neither the build nor the gate uses | validate, lint, export, tests |" in report
     assert "their export scan covers any file" in report
     assert "No changed files: fast checks only." in check.changed_section("b" * 40, check.GROUPS["fast"], [])

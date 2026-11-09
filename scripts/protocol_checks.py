@@ -1,7 +1,8 @@
 """Cheap checks of the search protocol (pilot, warn-only): do the logged passes follow the door lists and field cards?
 
-Reads data/internal/doors.json and data/internal/field_searches.json (internal, export-ignored) and data/aisi.json.
-Every finding is a warning; the exit code is 0 unless an input file is malformed. Run for the piloted institutes:
+Reads doors.json and field_searches.json in AISI_INTERNAL (default data/internal/, export-ignored) and data/aisi.json.
+Every finding is a warning; the exit code is 0 unless an input file is malformed or missing.
+Missing internal files return exit status 3 (NOT RUN); set AISI_INTERNAL to their private directory. Run for the piloted institutes:
 
     uv run --group evidence python scripts/protocol_checks.py [--as-of YYYY-MM-DD] [--fetch-doors] [--snapshots DIR]
 
@@ -23,8 +24,6 @@ from urllib.request import Request, urlopen
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "data" / "aisi.json"
-DOORS = ROOT / "data" / "internal" / "doors.json"
-LOG = ROOT / "data" / "internal" / "field_searches.json"
 UA = {"User-Agent": "aisi-tracker/1.0 (contact@accelerate-europe.org)"}
 try:  # the system store on some hosts lacks intermediates that curl fetches itself (www8.cao.go.jp)
     import certifi
@@ -36,6 +35,11 @@ READ = {"found", "none_found", "confirms_existing", "inconclusive"}
 COVERED = READ | {"blocked", "absent"}
 QUERY_TOOLS = {"exa", "web_search", "brave"}
 INTERVAL_MONTHS = {"institute": 6, "planned": 3}
+
+
+def internal_path(name: str) -> Path:
+    directory = os.environ.get("AISI_INTERNAL")
+    return (Path(directory).expanduser() if directory else ROOT / "data" / "internal") / name
 
 
 def empty_slots(inst: dict) -> dict[str, bool | None]:
@@ -222,15 +226,19 @@ def saved_copy_scan(data: dict, doors: dict, store: Path) -> list[str]:
     return warn
 
 
-def main() -> int:
+def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--as-of", type=date.fromisoformat, default=None, help="reference date (default: dataset as_of)")
     ap.add_argument("--fetch-doors", action="store_true", help="fetch each door and check its marker")
     ap.add_argument("--snapshots", type=Path, default=Path(os.environ["AISI_SNAPSHOTS"]) if os.environ.get("AISI_SNAPSHOTS") else None)
-    args = ap.parse_args()
+    args = ap.parse_args(argv)
+    paths = [internal_path(name) for name in ("doors.json", "field_searches.json")]
+    if missing := [str(path) for path in paths if not path.is_file()]:
+        print(f"internal files were not found at {', '.join(missing)}; set AISI_INTERNAL to their directory", file=sys.stderr)
+        return 3
     data = json.loads(DATA.read_text(encoding="utf-8"))
-    doors = json.loads(DOORS.read_text(encoding="utf-8"))
-    log = json.loads(LOG.read_text(encoding="utf-8"))
+    doors = json.loads(internal_path("doors.json").read_text(encoding="utf-8"))
+    log = json.loads(internal_path("field_searches.json").read_text(encoding="utf-8"))
     as_of = args.as_of or date.fromisoformat(data["dataset"]["as_of"])
     warn = check(data, doors, log, as_of)
     if args.fetch_doors:

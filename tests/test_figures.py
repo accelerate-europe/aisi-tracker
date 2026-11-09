@@ -591,17 +591,6 @@ def test_figures_note_names_institutes_in_neither_number():
     assert any("(i) reading" in e and note in e for e in check_figures_row(BeautifulSoup(stale, "html.parser"), data))
 
 
-def test_figures_row_rejects_a_capitalised_highest_qualifier():
-    from scripts.check_page import check_figures_row
-
-    rows = [institute("a", "A", 1_000_000, 10), institute("b", "B", 2_000_000, 20)]
-    for row in rows:
-        row["display"]["funding_records"]["x"]["display"] = {"value": "Up to EUR 2.0m"}
-    data = {"institutes": rows, "jurisdictions": [{"id": key, "name": key, "kind": "state"} for key in "AB"]}
-    html = str(figures_row("EUR 1.5m", "up to EUR 2.0m", "15", "20"))
-    assert any("capitalises its qualifier" in e for e in check_figures_row(BeautifulSoup(html, "html.parser"), data))
-
-
 def test_native_eur_one_off_is_not_a_comparable_sort_value():
     from scripts.check_page import sort_errors_for
 

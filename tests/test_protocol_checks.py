@@ -99,11 +99,12 @@ def test_related_funding_or_missing_technical_staff_leave_the_slot_empty():
     assert pc.cited_sources({"source_ids": ["a"], "staff": [{"source_ids": ["b"]}]}) == {"a", "b"}
 
 
-@pytest.mark.skipif(not (pc.DOORS.is_file() and pc.LOG.is_file()), reason="internal search-protocol files are not in public exports")
+@pytest.mark.skipif(not all(pc.internal_path(name).is_file() for name in ("doors.json", "field_searches.json")),
+                    reason="internal search-protocol files missing; set AISI_INTERNAL")
 def test_internal_pilot_files_load_and_name_known_institutes():
     data = json.loads(pc.DATA.read_text(encoding="utf-8"))
-    doors = json.loads(pc.DOORS.read_text(encoding="utf-8"))
-    log = json.loads(pc.LOG.read_text(encoding="utf-8"))
+    doors = json.loads(pc.internal_path("doors.json").read_text(encoding="utf-8"))
+    log = json.loads(pc.internal_path("field_searches.json").read_text(encoding="utf-8"))
     ids = {i["id"] for i in data["institutes"]}
     jids = {j["id"] for j in data["jurisdictions"]}
     # A state with no institute (the Netherlands) logs its searches by jurisdiction_id with a null institute_id.
@@ -114,3 +115,26 @@ def test_internal_pilot_files_load_and_name_known_institutes():
     assert {e["door"] for e in institute_rows if "door" in e} <= door_ids
     assert all(e["field"] in doors["cards"] or e["field"] == "status" for e in log["entries"])  # status searches (2 Nov; NL, KZ) sit beside the card fields
     pc.check(data, doors, log, date.fromisoformat(data["dataset"]["as_of"]))
+
+
+@pytest.mark.parametrize("present", [None, "doors.json", "field_searches.json"])
+def test_missing_internal_files_are_not_run(tmp_path, monkeypatch, capsys, present):
+    monkeypatch.setenv("AISI_INTERNAL", str(tmp_path))
+    if present:
+        (tmp_path / present).write_text("{}")
+    assert pc.main([]) == 3
+    error = capsys.readouterr().err
+    assert "internal files were not found at" in error and "set AISI_INTERNAL" in error
+    for name in ("doors.json", "field_searches.json"):
+        assert (str(tmp_path / name) in error) == (name != present)
+
+
+def test_internal_directory_override_is_read_by_cli(tmp_path, monkeypatch, capsys):
+    monkeypatch.delenv("AISI_INTERNAL", raising=False)
+    assert pc.internal_path("doors.json") == pc.ROOT / "data/internal/doors.json"
+    monkeypatch.setenv("AISI_INTERNAL", str(tmp_path))
+    (tmp_path / "doors.json").write_text(json.dumps({"institutes": {}, "cards": {}}))
+    (tmp_path / "field_searches.json").write_text(json.dumps({"entries": []}))
+    monkeypatch.delenv("AISI_SNAPSHOTS", raising=False)
+    assert pc.main([]) == 0
+    assert "0 warnings" in capsys.readouterr().err

@@ -18,6 +18,10 @@ KEYS = (
     "announced_to_first_qualifying_activity",
 )
 
+# The one input read from the data: the as_of date that caps a year-only date in the current year.
+AS_OF = date.fromisoformat(json.loads(DATA.read_text(encoding="utf-8"))["dataset"]["as_of"])
+END_2026 = min(AS_OF, date(2026, 12, 31))  # where a year-only "2026" ends
+
 # Worked by hand from the timeline and credit dates at as_of 2026-10-24 (see the commit message).
 # (announced to established, established to first qualifying activity, announced to first qualifying activity)
 EXPECTED = {
@@ -32,8 +36,8 @@ EXPECTED = {
     "jp-aisi": ((55, 55), (411, 411), (466, 466)),  # 21 Dec 2023, 14 Feb 2024, 31 Mar 2025
     "kr-aisi": ((189, 189), (211, 211), (400, 400)),  # 22 May 2024, 27 Nov 2024 (not the 2026 redesignation), 26 Jun 2025
     "sg-aisi": (None, (182, 182), None),  # no commitment or proposal; 22 May 2024, 20 Nov 2024
-    # 25 Nov 2025; "2026" read as 1 Jan to 9 Nov 2026 (as_of cap); 10 Aug 2026.
-    "au-aisi": ((37, 349), (-91, 221), (258, 258)),
+    # 25 Nov 2025; "2026" read as 1 Jan 2026 to 31 Dec 2026, capped at as_of; 10 Aug 2026.
+    "au-aisi": ((37, (END_2026 - date(2025, 11, 25)).days), ((date(2026, 8, 10) - END_2026).days, 221), (258, 258)),
     "my-aisafe": (None, None, None),  # no commitment or proposal; nothing qualifying yet
     "in-aisi": ((-29, 335), None, None),  # 30 Jan 2025; "2025" read as the whole year
     # Planned: qualifying network credit (26 Jun 2025) is not an institute interval.

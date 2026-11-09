@@ -1,0 +1,49 @@
+#!/bin/sh
+# Check pushed commits and their messages for internal names, private files and secrets.
+# Install once per clone: git config core.hooksPath .githooks
+# git push --no-verify bypasses this hook and must not be used for the public remote.
+# Stdin: one line per ref, <local ref> <local sha> <remote ref> <remote sha>.
+set -eu
+remote=$1
+url=${2%/}
+url=${url%.git}
+# A remote that must not be scanned (the maintainers' private repository) is named per clone, never here,
+# since its name is itself a private term: git config --add aisi.leakScanSkipUrl <url>. Every other remote is scanned.
+for skip in $(git config --get-all aisi.leakScanSkipUrl || true); do
+    skip=${skip%/}
+    if [ "$url" = "${skip%.git}" ]; then
+        echo "pre-push: $remote is listed in aisi.leakScanSkipUrl; leak checks skipped" >&2
+        exit 0
+    fi
+done
+cd "$(git rev-parse --show-toplevel)"
+unset UV_WORKING_DIR UV_PROJECT UV_PROJECT_ENVIRONMENT
+script=$(git show HEAD:scripts/check.py) || { echo "pre-push: scripts/check.py is not in HEAD; refusing to skip the checks" >&2; exit 1; }
+# What the destination already has, read from it (never from local remote-tracking refs, which may come from
+# another repository or be stale); only commits it holds are left out of the scan.
+listing=$(git ls-remote "$2") || { echo "pre-push: cannot list $remote; refusing to push unchecked" >&2; exit 1; }
+held=
+for sha in $(printf '%s\n' "$listing" | cut -f1 | sort -u); do
+    if git cat-file -e "$sha^{commit}" 2>/dev/null; then
+        held="$held ^$sha"
+    fi
+done
+while read -r local_ref local_sha remote_ref remote_sha; do
+    case "$local_sha" in *[!0]*) ;; *) continue ;; esac
+    # Only commits are scanned: an annotated tag carries a message no commit scan reads, and a ref to a bare blob
+    # or tree has no commit at all. Release tags are made on GitHub (docs/release.md).
+    if [ "$(git cat-file -t "$local_sha")" != commit ]; then
+        echo "pre-push: $local_ref points at a $(git cat-file -t "$local_sha"), not a commit; push release tags through the release runbook, not by hand" >&2
+        exit 1
+    fi
+    if git cat-file -e "$remote_sha^{commit}" 2>/dev/null; then
+        set -- "$remote_sha..$local_sha"
+    else
+        # shellcheck disable=SC2086 # one ^<sha> argument per held commit
+        set -- "$local_sha" $held
+    fi
+    [ -n "$(git rev-list "$@")" ] || set -- "$local_sha" "^$local_sha"  # nothing new: still check the ref names
+    echo "pre-push: checking $local_ref -> $remote_ref" >&2
+    # The coordinator prints its report path on failure; use HEAD, never the staged or working copy.
+    printf '%s\n' "$script" | uv run -q --no-project --python '>=3.11' python - --only export --ref-names "$local_ref" "$remote_ref" --commits "$@" || exit 1
+done

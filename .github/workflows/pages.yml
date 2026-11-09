@@ -32,6 +32,7 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           persist-credentials: false
+          fetch-depth: 0
       - uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86 # v5.4.2
         with:
           version: "0.11.14" # the uv the lockfile was checked with; relative exclude-newer needs uv >= 0.9.12
@@ -40,9 +41,49 @@ jobs:
           cache-dependency-glob: |
             uv.lock
             scripts/*.lock
-      # The hook's fast steps; two pytest workers are fastest on the runner's two cores. The publishing path also
-      # rejects draft wording (--release, which only the validate step reads).
-      - run: uv run scripts/check.py --only fast --test-workers 2 --report-dir "$RUNNER_TEMP/check" ${{ env.PUBLISH == 'true' && '--release' || '' }}
+      - name: Install gitleaks
+        run: |
+          mkdir -p "$RUNNER_TEMP/gitleaks"
+          curl --fail --location --silent --show-error https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz -o "$RUNNER_TEMP/gitleaks.tar.gz"
+          printf '%s  %s\n' 551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb "$RUNNER_TEMP/gitleaks.tar.gz" | sha256sum --check
+          tar -xzf "$RUNNER_TEMP/gitleaks.tar.gz" -C "$RUNNER_TEMP/gitleaks" gitleaks
+          echo "$RUNNER_TEMP/gitleaks" >> "$GITHUB_PATH"
+      # Fast steps plus names and secrets in the pushed commits and messages. Forks have no terms secret;
+      # check.py reports that names scan for a maintainer. Two pytest workers fit the runner's two cores.
+      # The publishing path also rejects draft wording (--release, which only the validate step reads).
+      - env:
+          TERMS: ${{ secrets.AISI_EXPORT_TERMS }}
+          EVENT: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          BEFORE: ${{ github.event.before }}
+          SHA: ${{ github.sha }}
+          REF: ${{ github.ref }}
+        run: |
+          unset AISI_EXPORT_TERMS
+          if [ -n "$TERMS" ]; then
+            umask 077
+            printf '%s\n' "$TERMS" > "$RUNNER_TEMP/export-terms.txt"
+            chmod 600 "$RUNNER_TEMP/export-terms.txt"
+            export AISI_EXPORT_TERMS="$RUNNER_TEMP/export-terms.txt"
+          fi
+          unset TERMS
+          # The commits this event publishes. Without a usable before (a new branch, a force push whose old
+          # commit is gone, a manual run): everything not on main, which moves only with the owner's Go after its
+          # commits were checked on next. Another branch is no baseline: nothing proves it was checked. A push to
+          # main itself without a usable before (a force push, which needs the owner's Go) scans the whole history,
+          # which fails on the 1.x commits' session trailers: deliberately closed. Never an empty range by mistake.
+          if [ "$EVENT" = pull_request ]; then
+            set -- "$BASE_SHA..$HEAD_SHA"
+          elif [ "$EVENT" = push ] && git cat-file -e "$BEFORE^{commit}" 2>/dev/null; then
+            set -- "$BEFORE..$SHA"
+          elif [ "$REF" != refs/heads/main ] && git rev-parse --verify -q origin/main >/dev/null; then
+            set -- "$SHA" "^$(git rev-parse origin/main)"
+          else
+            set -- "$SHA"
+          fi
+          set -- --ref-names "$REF" --commits "$@"
+          uv run scripts/check.py --only fast --test-workers 2 --report-dir "$RUNNER_TEMP/check" ${{ env.PUBLISH == 'true' && '--release' || '' }} "$@"
       - if: always()
         run: cat "$RUNNER_TEMP/check/report.md" || true
       # Backstop: no step may change or add a file outside the ignored outputs.
@@ -154,7 +195,7 @@ jobs:
           path: ${{ runner.temp }}/gate
           merge-multiple: false
       # The gate's report: the static checks on this site, then the shards' browser results in the sequential order.
-      - run: uv run scripts/check.py --only gate --gate-dist "$RUNNER_TEMP/site" --gate-merge "$RUNNER_TEMP/gate" --report-dir "$RUNNER_TEMP/check"
+      - run: uv run scripts/check.py --only gate,content --gate-dist "$RUNNER_TEMP/site" --gate-merge "$RUNNER_TEMP/gate" --report-dir "$RUNNER_TEMP/check"
       - if: always()
         run: cat "$RUNNER_TEMP/check/report.md" || true
       # The slide map is an extra download the page does not use: a Natural Earth outage or a changed upstream
@@ -188,3 +229,21 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5
+  smoke:
+    name: smoke checks of the live site
+    if: github.repository == 'accelerate-europe/aisi-tracker' && github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: deploy
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86 # v5.4.2
+        with:
+          version: "0.11.14"
+      # A signal, not a gate: a failure names each failing check and its URL; it does not undo the completed deploy,
+      # and no job needs this one.
+      - name: smoke checks of https://aisi.accelerate-europe.org/
+        run: uv run scripts/smoke_site.py

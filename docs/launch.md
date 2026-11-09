@@ -5,7 +5,7 @@ One-time setup for the first public release; every release, the first included, 
 ## Before the first release
 
 - Set `PUBLIC_URL` in `scripts/agent_files.py` to the public site address; `--release` fails while it is the placeholder. Run `uv run scripts/build.py --update-readme`, since `CITATION.cff` and `.zenodo.json` carry the address.
-- The first public commit is the export of the reviewed release commit (release step 5), initialised with `git init -b main` in an empty directory: fresh history, never the private repository's.
+- The first public commit was the export of the reviewed 1.0.0 release commit (the 1.x export step, retired when development became public-first), initialised with `git init -b main` in an empty directory: fresh history, never the private repository's.
 
 ## Repository and hosting
 

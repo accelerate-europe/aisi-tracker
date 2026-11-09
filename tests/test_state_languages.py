@@ -116,10 +116,28 @@ def test_alias_maps_deprecated_codes_in_queries_and_seed():
     assert sl.national_or_official(r, "XA", "iw", "2026-10-24")[0] is True
 
 
-@pytest.mark.skipif(not sl.REF.is_file(), reason="the internal language reference is not in public exports")
+@pytest.mark.skipif(not sl.reference_path().is_file(), reason="internal language reference missing; set AISI_INTERNAL")
 def test_reference_file_covers_the_dataset():
     data = json.loads(sl.DATA.read_text(encoding="utf-8"))
     assert sl.validate(sl.load(), data) == []
+
+
+def test_internal_directory_override_and_default(tmp_path, monkeypatch):
+    monkeypatch.delenv("AISI_INTERNAL", raising=False)
+    assert sl.reference_path() == sl.ROOT / "data/internal/state_languages.json"
+    monkeypatch.setenv("AISI_INTERNAL", str(tmp_path))
+    (tmp_path / "state_languages.json").write_text(json.dumps(ref()))
+    assert sl.load() == ref()
+
+
+@pytest.mark.parametrize("argv", [
+    ["report", "--frontload", "unused.json"],
+    ["seed", "--cldr", "unused.json", "--version", "test", "--released", "2026-11-09", "--url", "https://example.org/cldr"],
+])
+def test_missing_internal_reference_is_not_run(tmp_path, monkeypatch, capsys, argv):
+    monkeypatch.setenv("AISI_INTERNAL", str(tmp_path))
+    assert sl.main(argv) == 3
+    assert f"internal files were not found at {tmp_path / 'state_languages.json'}; set AISI_INTERNAL" in capsys.readouterr().err
 
 
 def test_cldr_checks_need_a_cldr_status_a_known_outcome_and_a_citation():

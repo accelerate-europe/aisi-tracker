@@ -227,7 +227,9 @@ def test_gate_checks_rendered_summaries_links_and_full_rules(tmp_path):
     (tmp_path / "method.html").write_text(full_method_page(data["dataset"], ""), encoding="utf-8")
     assert check_method_pages(page, data, tmp_path) == []
     assert check_method_pages(page.replace("A summary.", "Other words."), data, tmp_path) == ["Method summary brief: reader copy differs"]
-    assert check_method_pages(page.replace(">Full rule<", ">Internal rule<"), data, tmp_path) == ["Method summary brief: full-rule links differ"]
+    assert check_method_pages(page.replace(">Full rule<", ">Read the rule<"), data, tmp_path) == []
+    for broken in (page.replace(">Full rule<", "> \n <"), page.replace("method.html#first", "method.html#other")):
+        assert check_method_pages(broken, data, tmp_path) == ["Method summary brief: full-rule links differ"]
     assert check_method_pages(page.replace("<footer><a", "<footer><span"), data, tmp_path) == ["Full method: missing link in footer"]
     (tmp_path / "method.html").write_text(full_method_page(data["dataset"], "").replace("Internal rule.", "Internal."), encoding="utf-8")
     assert check_method_pages(page, data, tmp_path) == ["Full method rule internal: text differs from the full rule"]
@@ -242,14 +244,29 @@ def test_gate_names_each_link_when_a_summary_covers_several_rules(tmp_path):
     data["dataset"]["method"][0]["text"] = "First rule: a rule."
     data["dataset"]["method_summaries"][0]["rules"]["internal"] = fingerprint("Internal rule.")
     page = (
-        '<details id="method-details"><ul id="rules"><li id="method-summary-brief"><span class="method-copy">A summary.</span> Full rules on '
+        '<details id="method-details"><ul id="rules"><li id="method-summary-brief"><span class="method-copy">A summary.</span> '
         '<a href="method.html#first">First rule</a> and <a href="method.html#internal">Internal</a></li></ul><a href="method.html">Full method</a></details>'
         '<footer><a href="method.html">Full method</a></footer>'
     )
     (tmp_path / "method.html").write_text(full_method_page(data["dataset"], ""), encoding="utf-8")
     assert check_method_pages(page, data, tmp_path) == []
     assert check_method_pages(page.replace(">First rule<", ">Full rule<"), data, tmp_path) == ["Method summary brief: full-rule links differ"]
-    assert check_method_pages(page.replace("Full rules on ", ""), data, tmp_path) == ["Method summary brief: several rules without 'Full rules on'"]
+
+
+def test_gate_definition_shorthand_allows_rewording_but_requires_text(tmp_path):
+    from scripts.check_page import check_method_pages
+
+    data = {"dataset": fixture()}
+    data["dataset"]["definition"] = "A summary."
+    page = (
+        '<details id="method-details"><ul id="rules"><li id="method-summary-brief"><span class="method-copy">Read the definition above.</span> '
+        '<a href="method.html#first">Read the full rule</a></li></ul><a href="method.html">Full method</a></details>'
+        '<footer><a href="method.html">Full method</a></footer>'
+    )
+    (tmp_path / "method.html").write_text(full_method_page(data["dataset"], ""), encoding="utf-8")
+    assert check_method_pages(page, data, tmp_path) == []
+    for broken in (page.replace("Read the definition above.", " \n "), page.replace('<span class="method-copy">Read the definition above.</span>', "")):
+        assert check_method_pages(broken, data, tmp_path) == ["Method summary brief: reader copy differs"]
 
 
 def test_gate_requires_the_median_exception_wherever_tilde_is_explained(tmp_path):
@@ -269,8 +286,5 @@ def test_gate_requires_the_median_exception_wherever_tilde_is_explained(tmp_path
     assert check_method_pages(page, data, tmp_path) == [f"Full method rule internal: says what ~ marks without '{MEDIAN_EXCEPTION}'"]
     data["dataset"]["method_summaries"][0]["summary"] = "~ marks rounded figures."
     assert f"Method summary brief: says what ~ marks without '{READER_MEDIAN_EXCEPTION}'" in check_method_pages(page.replace("A summary.", "~ marks rounded figures."), data, tmp_path)
-    # Reader summaries name the medians' place on the page, never the internal "counts row".
-    data["dataset"]["method_summaries"][0]["summary"] = f"~ marks rounded figures, {MEDIAN_EXCEPTION}."
-    assert "Method summary brief: names the internal 'counts row'" in check_method_pages(page, data, tmp_path)
     data["dataset"]["method_summaries"][0]["summary"] = f"~ marks rounded figures, {READER_MEDIAN_EXCEPTION}."
     assert not [e for e in check_method_pages(page, data, tmp_path) if e.startswith("Method summary brief: says what ~ marks")]
