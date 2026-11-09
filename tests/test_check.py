@@ -1203,3 +1203,17 @@ def test_browser_job_section_sums_the_steps_of_jobs_that_mark_them():
     rows = [line for line in section.splitlines() if line.startswith("| first screen") or line.startswith("| load")]
     assert rows == ["| first screen | 7.0 | interactions/interaction_pass/1440/light (6.0) |", "| load | 5.0 | interactions/interaction_pass/390/dark (3.0) |"]
     assert "Steps of" not in check.browser_job_section([timing("a", 0, 1)])
+
+
+
+def test_time_budgets_warn_on_the_mac_and_only_report_elsewhere():
+    results = [check.Result("validate", "PASS", 5.0), check.Result("lint", "PASS", 1.0), check.Result("export", "PASS", 2.0),
+               check.Result("tests", "PASS", 40.0), check.Result("gate", "PASS", 80.0), check.Result("sheet", "NOT RUN", 0.0)]
+    mac = check.budget_section(results, "darwin")
+    assert "| fast checks | 48.0 | 30 | over budget |" in mac and "| browser gate | 80.0 | 90 | within budget |" in mac
+    assert "sheet" not in mac.split("| Steps |")[1]  # a step that did not run has no row
+    other = check.budget_section(results, "linux")
+    assert "not compared on this host" in other and "over budget" not in other
+    assert check.budget_section([check.Result("compare", "PASS", 1.0)], "darwin") == ""
+    partial = check.budget_section([check.Result("lint", "PASS", 1.0)], "darwin")
+    assert "| fast checks | 1.0 | 30 | partial (lint only): not compared |" in partial

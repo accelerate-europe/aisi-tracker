@@ -322,6 +322,33 @@ def timing_line(results: list[Result], allow_skip: bool, total: float) -> str:
     return f"Timing: {total:.1f} s in all; {found}."
 
 
+# Time budgets (test strategy D9): warnings only until a baseline is stable, then a hard budget on the fast steps,
+# which every commit waits on. The figures are the plan's, measured on the maintainer's Mac; on any other host the
+# section says so and only reports the times.
+TIME_BUDGETS = (("fast checks", GROUPS["fast"], 30.0), ("content", ("content",), 10.0), ("browser gate", ("gate",), 90.0), ("sheet", ("sheet",), 60.0))
+BUDGET_HOST = "darwin"
+
+
+def budget_section(results: list[Result], platform: str = sys.platform) -> str:
+    """The run's time against each budget, for the steps that ran; never blocking."""
+    ran = {r.step: r.seconds for r in results if r.status in ("PASS", "FAIL")}
+    rows = []
+    for name, steps, budget in TIME_BUDGETS:
+        if not set(steps) & set(ran):
+            continue
+        took = sum(ran.get(step, 0.0) for step in steps)
+        if not set(steps) <= set(ran):  # a budget covers its steps together: part of them is no measurement
+            verdict = f"partial ({', '.join(s for s in steps if s in ran)} only): not compared"
+        else:
+            verdict = ("over budget" if took > budget else "within budget") if platform == BUDGET_HOST else "not compared on this host"
+        rows.append(f"| {name} | {took:.1f} | {budget:.0f} | {verdict} |")
+    if not rows:
+        return ""
+    note = ("Warnings only (test strategy D9); a step over its budget is a reason to look, not a failure."
+            if platform == BUDGET_HOST else "The budgets are the Mac's figures; on this host the times are reported, not compared.")
+    return "\n".join(["## Time budgets", "", note, "", "| Steps | Seconds | Budget | Result |", "| --- | --- | --- | --- |", *rows, ""])
+
+
 def tail(log: Path, lines: int = 12) -> str:
     return "\n".join(log.read_text(encoding="utf-8", errors="replace").splitlines()[-lines:])
 
@@ -974,7 +1001,7 @@ def preflight(cache: Path, snapshots: Path | None) -> int:
 
 # The owner's list of where to look leads, then why --changed chose its steps, release warnings, the gate's report
 # lines, the agent's visual pass, the claims and the browser job timings.
-REPORT_ORDER = ("where", "changed", "warnings", "report lines", "sheet", "compare", "jobs")
+REPORT_ORDER = ("where", "changed", "warnings", "report lines", "sheet", "compare", "jobs", "budgets")
 
 
 def ordered_sections(sections: dict[str, str]) -> list[str]:
@@ -1153,6 +1180,8 @@ def main() -> int:
         lines.append(f"| {r.step} | {r.status} | {r.seconds:.1f} | {peak} | {short(r.detail.splitlines()[-1] if r.detail else '', 200)}{f' ([log]({r.log}))' if r.log else ''} |")
     lines += ["", f"Overall: {'FAIL' if failed else 'PASS'}" + (" (NOT RUN steps allowed by --allow-skip)" if args.allow_skip and any(r.status == 'NOT RUN' for r in results) else ""), ""]
     lines += [timing_line(results, args.allow_skip, time.monotonic() - started), "", f"Peak MB: {PEAK_METHOD}.", ""]
+    if budgets := budget_section(results):
+        ctx.sections["budgets"] = budgets
     for r in results:
         if r.status == "FAIL" and r.detail:
             lines += [f"### {r.step} output (last lines)", "", "```", r.detail, "```", ""]
