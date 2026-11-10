@@ -3311,6 +3311,7 @@
             "it-dlgs179-2026",
             "it-dlgs179-2026-art5",
             "it-dlgs179-2026-art6",
+            "it-gu-law132-2025-art20",
             "it-law132-article20",
             "eu-ai-act-authorities-2026"
           ],
@@ -3332,6 +3333,7 @@
           "source_ids": [
             "it-dlgs179-2026",
             "it-dlgs179-2026-art4",
+            "it-gu-law132-2025-art20",
             "it-law132-article20",
             "eu-ai-act-authorities-2026"
           ],
@@ -3352,6 +3354,7 @@
           "source_ids": [
             "it-dlgs179-2026",
             "it-dlgs179-2026-art5",
+            "it-gu-law132-2025-art20",
             "it-law132-article20",
             "eu-ai-act-authorities-2026"
           ],
@@ -3371,6 +3374,7 @@
           "source_ids": [
             "it-dlgs179-2026",
             "it-dlgs179-2026-art5",
+            "it-gu-law132-2025-art20",
             "it-law132-article20",
             "eu-ai-act-authorities-2026"
           ],
@@ -3390,6 +3394,7 @@
           "source_ids": [
             "it-dlgs179-2026",
             "it-dlgs179-2026-art5",
+            "it-gu-law132-2025-art20",
             "it-law132-article20",
             "eu-ai-act-authorities-2026"
           ],
@@ -3480,6 +3485,7 @@
         "governance_note": "Article 20 allocates AI Act notifying and market-surveillance roles to AgID and ACN; these regulatory functions do not establish a qualifying institute."
       },
       "source_ids": [
+        "it-gu-law132-2025-art20",
         "it-law132-article20",
         "negative-second-it-2026",
         "ai-act-tracker",
@@ -8085,6 +8091,7 @@
       "source_ids": [
         "jp-cao-2604",
         "jp-kantei-2023-12",
+        "jp-cao-ai-senryaku-7-minutes",
         "jp-ipa-2024-02",
         "depth-jp-redteam-guide",
         "depth-jp-redteam-results",
@@ -8127,7 +8134,8 @@
           "instrument": "speech",
           "description": "Prime Minister Kishida tells the AI Strategy Council the government will set up an AI Safety Institute, aiming for January 2024.",
           "source_ids": [
-            "jp-kantei-2023-12"
+            "jp-kantei-2023-12",
+            "jp-cao-ai-senryaku-7-minutes"
           ],
           "short": "Prime Minister announces AI Safety Institute plans, aiming for January 2024."
         },
@@ -32322,6 +32330,7 @@
         "r5-us-raman-nist-post",
         "us-nist-march-slides",
         "us-metr-about",
+        "us-metr-donate",
         "us-rand-about-fallback",
         "us-securebio-about",
         "us-cmu-about",
@@ -32391,7 +32400,8 @@
           "date": "2026-05-05",
           "scope": "Pre-deployment evaluation and post-deployment research on frontier models, including national security testing.",
           "source_ids": [
-            "us-nist-agreements-2026"
+            "us-nist-agreements-2026",
+            "r5-us-nist-renegotiation-bulletin"
           ],
           "counterparty_type": "developer",
           "counterparty": "Google DeepMind",
@@ -32404,7 +32414,8 @@
           "date": "2026-05-05",
           "scope": "Pre-deployment evaluation and post-deployment research on frontier models, including national security testing.",
           "source_ids": [
-            "us-nist-agreements-2026"
+            "us-nist-agreements-2026",
+            "r5-us-nist-renegotiation-bulletin"
           ],
           "counterparty_type": "developer",
           "counterparty": "Microsoft",
@@ -32417,7 +32428,8 @@
           "date": "2026-05-05",
           "scope": "Pre-deployment evaluation and post-deployment research on frontier models, including national security testing.",
           "source_ids": [
-            "us-nist-agreements-2026"
+            "us-nist-agreements-2026",
+            "r5-us-nist-renegotiation-bulletin"
           ],
           "counterparty_type": "developer",
           "counterparty": "xAI",
@@ -32927,7 +32939,8 @@
             "how": "Is named among the institute’s partners whose agreements enable evaluations of the latest AI capabilities.",
             "source_ids": [
               "us-nist-march-slides",
-              "us-metr-about"
+              "us-metr-about",
+              "us-metr-donate"
             ],
             "acronym": "METR"
           },
@@ -74547,7 +74560,7 @@
         "text_sha256": "494b418c0b9e0f648e77a4ee1bd8d1fdfc371de11f423ee153c90ab1f491f557",
         "text_scheme": 1
       },
-      "access_note": "The original PDF response contains the quoted legal text but appends a server error after its PDF end marker. It is quarantined and is not published as a complete PDF snapshot. The single text-only fallback contains the substantive article, including the recorded quotation. The published snapshot hash identifies the retained text copy at https://r.jina.ai/https://def.giustiziatributaria.gov.it/DocTribFrontend/executePrintArticolo.do?articolo=Articolo+20&codiceOrdinamento=0000000000000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000&id=%7B727C8823-31DE-4724-AFD5-1A4EC58809B3%7D."
+      "access_note": "The original PDF response contains the quoted legal text but appends a server error after its PDF end marker. It is quarantined and is not published as a complete PDF snapshot. The single text-only fallback contains the substantive article, including the recorded quotation. The published snapshot hash identifies the retained text copy at https://r.jina.ai/https://def.giustiziatributaria.gov.it/DocTribFrontend/executePrintArticolo.do?articolo=Articolo+20&codiceOrdinamento=0000000000000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000&id=%7B727C8823-31DE-4724-AFD5-1A4EC58809B3%7D. On 10 November 2026 the page refused a direct secure connection (SSL error) and was read through r.jina.ai; the Gazzetta Ufficiale text (it-gu-law132-2025-art20) is the primary citation."
     },
     {
       "id": "dk-digst-ai-authorities-faq",
@@ -88935,6 +88948,45 @@
               "scope"
             ]
           ]
+        },
+        {
+          "text": "Today, the Center for AI Standards and Innovation (CAISI) at the Department of Commerce’s National Institute of Standards and Technology announced new agreements with Google DeepMind, Microsoft and xAI.",
+          "accessed": "2026-11-10",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "agreements",
+              {
+                "id": "agreements-12216134026751a0b6a0c71674913e14"
+              },
+              "counterparty"
+            ],
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "agreements",
+              {
+                "id": "agreements-20ea71e4c2d059b7bece2116017a8c7f"
+              },
+              "counterparty"
+            ],
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "agreements",
+              {
+                "id": "agreements-94208975dcce57bca6f414b559e17cfc"
+              },
+              "counterparty"
+            ]
+          ]
         }
       ],
       "snapshot": {
@@ -96806,25 +96858,13 @@
       "title": "About METR",
       "publisher": "Model Evaluation and Threat Research",
       "type": "primary",
-      "accessed": "2026-10-20",
+      "accessed": "2026-11-10",
       "language": "en",
       "origin": "US",
       "excerpts": [
         {
-          "text": "METR (pronounced 'meter') is a research nonprofit that scientifically measures whether and when AI systems might threaten catastrophic harm to society.",
+          "text": "METR (pronounced “meter”) is a nonprofit that studies the most advanced AI agents to understand whether their developers are on track to lose control of them.",
           "supports": [
-            [
-              "institutes",
-              {
-                "id": "us-caissi"
-              },
-              "national_partners",
-              "entries",
-              {
-                "id": "np-us-metr"
-              },
-              "name"
-            ],
             [
               "institutes",
               {
@@ -96838,31 +96878,13 @@
               "what"
             ]
           ],
-          "accessed": "2026-10-20"
-        },
-        {
-          "text": "Model Evaluation and Threat Research",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "us-caissi"
-              },
-              "national_partners",
-              "entries",
-              {
-                "id": "np-us-metr"
-              },
-              "name"
-            ]
-          ],
-          "accessed": "2026-10-20"
+          "accessed": "2026-11-10"
         }
       ],
       "snapshot": {
-        "retrieved": "2026-10-20T06:54:38.304294+00:00",
-        "sha256": "503507400900f534536df047549b97c050d185f9769e40c3480130e3b2fe93c2",
-        "text_sha256": "e7ffb2fefa648f9e7b2c86d17c5ddebb170715d1db619a0d421115063bcccc52",
+        "retrieved": "2026-11-10T05:51:07Z",
+        "sha256": "fabe7221812141ba2d7a18b4a8f34dacf033bda3095c151ecafa034a683846fc",
+        "text_sha256": "effff55572d122a8bfbbace1f36f3d6c74ba360f3d61fd35a3ec0ff55cf63398",
         "text_scheme": 1
       }
     },
@@ -101467,14 +101489,14 @@
       "publisher": "European Union, EUR-Lex",
       "type": "primary",
       "published": "2026-07-21",
-      "accessed": "2026-10-21",
+      "accessed": "2026-11-10",
       "language": "en",
       "origin": "EU",
       "legal_text": true,
       "instrument_status_checked": "2026-10-21",
       "excerpts": [
         {
-          "text": "Where the Commission adopts a decision requesting access to a general-purpose AI model pursuant to Article 92(3) of Regulation (EU)2024/1689, that decision shall specify the technical means, tools, components, and conditions, including the time limit, by which the provider shall provide such access.",
+          "text": "Where the Commission adopts a decision requesting access to a general-purpose AI model pursuant to Article 92(3) of Regulation (EU) 2024/1689, that decision shall specify the technical means, tools, components, and conditions, including the time limit, by which the provider shall provide such access",
           "supports": [
             [
               "institutes",
@@ -101486,16 +101508,16 @@
               "conditions"
             ]
           ],
-          "accessed": "2026-10-21"
+          "accessed": "2026-11-10"
         }
       ],
       "snapshot": {
-        "retrieved": "2026-10-21T09:15:50Z",
-        "sha256": "5fa76299b157212b5204c268c7134e34cd92cf1a53aec82a3deb7f12d77d639b",
-        "text_sha256": "6224ca40ec70bb2063f15161e71ad20c3e5e8459d28c8c6fb06530bf92b728ca",
+        "retrieved": "2026-11-10T05:51:07Z",
+        "sha256": "879ac64a29c565aec35ebb9908c3f79e46a7beaa0f135d5920c96768f5dcd270",
+        "text_sha256": "78f860d361fdb843ffcccc2b18c25472e57e15f221d557829f445dc361c7121c",
         "text_scheme": 1
       },
-      "access_note": "The EUR-Lex page returned an empty response to automated retrieval. The snapshot is the rendered text-only copy at https://r.jina.ai/https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32026R1755."
+      "access_note": "On 21 October 2026 the EUR-Lex page returned an empty response to automated retrieval and a rendered text-only copy was used. On 10 November 2026 EUR-Lex served the page directly; the snapshot is that original HTML."
     },
     {
       "id": "jp-ai-basic-plan-2026",
@@ -112950,6 +112972,207 @@
         "retrieved": "2026-11-10T05:25:24Z",
         "sha256": "bceeded451ad3e99cfe5922a29a27141b14cd5ed61c2971d65368935983b0c32",
         "text_sha256": "8863d154069eaf8815b1643a644c9a38bb4cbe1bc81d551cb44492e5dad825c1",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "it-gu-law132-2025-art20",
+      "url": "https://www.gazzettaufficiale.it/atto/serie_generale/caricaArticolo?art.codiceRedazionale=25G00143&art.dataPubblicazioneGazzetta=2025-09-25&art.flagTipoArticolo=0&art.idArticolo=20&art.idGruppo=3&art.idSottoArticolo=1&art.idSottoArticolo1=10&art.progressivo=0&art.versione=1",
+      "title": "Legge 23 settembre 2025, n. 132, articolo 20 (Gazzetta Ufficiale, Serie Generale n. 223, 25 settembre 2025)",
+      "title_en": "Law No. 132 of 23 September 2025, Article 20 (Official Gazette)",
+      "publisher": "Gazzetta Ufficiale della Repubblica Italiana",
+      "type": "primary",
+      "published": "2025-09-25",
+      "accessed": "2026-11-10",
+      "legal_text": true,
+      "language": "it",
+      "origin": "IT",
+      "excerpts": [
+        {
+          "text": "autorita' di vigilanza del mercato e punto di contatto unico",
+          "accessed": "2026-11-10",
+          "gloss": "Market surveillance authority and single point of contact.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "IT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-d0f364f988eb57f3ae4326d78d0df766"
+              },
+              "designation_note"
+            ]
+          ]
+        },
+        {
+          "text": "ferma restando l'attribuzione alla Banca d'Italia, alla CONSOB e all'IVASS del ruolo di autorita' di vigilanza del mercato ai sensi e secondo quanto previsto dall'articolo 74",
+          "accessed": "2026-11-10",
+          "gloss": "without prejudice to the attribution to the Banca d'Italia, CONSOB and IVASS of the role of market surveillance authority under and as provided by Article 74",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "IT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-cfb18691f52652f9b1cf8001f6aa073a"
+              },
+              "designation_note"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "IT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-51b3a2a2081650b98424fc5125a8ce28"
+              },
+              "designation_note"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "IT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-4e74849e95025a8a87dd5a67d9253985"
+              },
+              "designation_note"
+            ]
+          ]
+        },
+        {
+          "text": "designata quale autorita' di notifica ai sensi dell'articolo 70 del medesimo regolamento",
+          "accessed": "2026-11-10",
+          "gloss": "designated as notifying authority under Article 70 of the same Regulation",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "IT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-86ccb972e5f052fb83f1cd9a4847f890"
+              },
+              "designation_note"
+            ]
+          ]
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-10T05:51:08Z",
+        "sha256": "df1b975982c942ea9feaf6b32f1a86f437e7558b4fa55ef776e92e029e3acb4d",
+        "text_sha256": "a01b47164fa740d98ff47956d9760865aa44f4dd14cf5e80d351f9fbcaad37af",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "us-metr-donate",
+      "url": "https://metr.org/donate",
+      "title": "Donate to METR",
+      "publisher": "Model Evaluation and Threat Research",
+      "type": "primary",
+      "accessed": "2026-11-10",
+      "language": "en",
+      "origin": "US",
+      "excerpts": [
+        {
+          "text": "Legal name: Model Evaluation and Threat Research, Inc.",
+          "accessed": "2026-11-10",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "national_partners",
+              "entries",
+              {
+                "id": "np-us-metr"
+              },
+              "name"
+            ]
+          ]
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-10T05:51:08Z",
+        "sha256": "0b562ee794c490afe7d26cf3742c9dae5db422d6b1afa62ab82538c8daf15af1",
+        "text_sha256": "6b677224e773d26a40a010b45a072ff68be4c13a475aa43d35e95a9f7878ae00",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "jp-cao-ai-senryaku-7-minutes",
+      "url": "https://www8.cao.go.jp/cstp/ai/ai_senryaku/7kai/gijiyoushi7kai.pdf",
+      "title": "第7回 AI戦略会議 議事要旨",
+      "title_en": "7th AI Strategy Council, summary minutes",
+      "publisher": "Cabinet Office of Japan",
+      "type": "primary",
+      "published": "2023-12-21",
+      "accessed": "2026-11-10",
+      "language": "ja",
+      "origin": "JP",
+      "access_note": "PDF: page 1 gives the meeting date; page 9 records the Prime Minister's closing statement.",
+      "excerpts": [
+        {
+          "text": "令和 5 年 12 月 21 日",
+          "accessed": "2026-11-10",
+          "gloss": "21 December 2023 (Reiwa 5)",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "JP"
+              },
+              "timeline",
+              {
+                "id": "jp-2023-12-21-commitment"
+              },
+              "date"
+            ]
+          ]
+        },
+        {
+          "text": "AI セーフティー・インスティテュートを来年１月めどで設立することとします。",
+          "accessed": "2026-11-10",
+          "gloss": "We will establish an AI Safety Institute, aiming for January next year.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "JP"
+              },
+              "timeline",
+              {
+                "id": "jp-2023-12-21-commitment"
+              },
+              "description"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "JP"
+              },
+              "timeline",
+              {
+                "id": "jp-2023-12-21-commitment"
+              },
+              "event"
+            ]
+          ]
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-10T05:51:08Z",
+        "sha256": "226b90c847a2af5dda995b8879cba2bc26466aa8fb4c1e9047740ed7c42d4ff5",
+        "text_sha256": "dd357c1749bdba059a29e67435e3291b915cb65fcbe5f38127fa22aa92b600fd",
         "text_scheme": 1
       }
     }
