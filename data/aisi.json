@@ -12548,7 +12548,7 @@
       "id": "GE",
       "name": "Georgia",
       "institute_id": null,
-      "summary": "No qualifying institute identified. In July 2026 the economy minister said the government is working on a national AI strategy and establishing the country's first AI research centre in Kutaisi.",
+      "summary": "No qualifying institute identified. In July 2026 the economy minister said the government is working on a national AI strategy and establishing the country's first AI research centre in Kutaisi. A Digital Governance Agency report of 20 October 2026 reports discussion of the process of developing the national AI strategy.",
       "next_check": {
         "date": "2027-03-31",
         "reason": "Adoption of the national AI strategy and the mandate of the Kutaisi AI research centre."
@@ -12608,14 +12608,14 @@
         "language_note": "The recorded ka query uses a national or official language selected for this country-specific check. Other national or official languages were not exhaustively searched. Search source_ids identify registered source URLs matched in the retrieved result set, which may include irrelevant hits. An empty list means no registered source URL was matched, not that the web response was empty. The earlier audit used independent_source_ids for substantive corroboration; governance_source_ids, where present, identifies the selected primary governance evidence. English queries were also run on 17 October 2026; the previously recorded national or official-language coverage and its limits are unchanged.",
         "independence_note": "Historical audit under the superseded two-independent-sources rule: The PMCG page is dated 2021 and explicitly retained as background rather than current-position evidence. Confidence was low under that rule; none_identified is a bounded search finding, not proof of absence.",
         "governance_source_ids": [
-          "r4-ge-dga-english"
+          "ge-dga-2026-10-20"
         ],
-        "governance_note": "The Digital Governance Agency's English government reports describe Ministry of Justice work on safe public-sector AI, legal and institutional mechanisms and the Georgia–Korea Digital Cooperation Center. The retrieved material concerns administrative AI governance and implementation, not a national institute to evaluate advanced models. It provides bounded primary governance context, not proof of absence or a complete national inventory."
+        "governance_note": "The Digital Governance Agency's report of 20 October 2026 describes the development of the national AI strategy and planned AI-based advisory and self-service initiatives at the House of Justice. This is administrative AI governance, not a national institute to evaluate advanced models. It provides bounded primary governance context, not proof of absence or a complete national inventory."
       },
       "source_ids": [
+        "ge-dga-2026-10-20",
         "ge-imedi-digital-economy-2026",
-        "ge-pmcg",
-        "r4-ge-dga-english"
+        "ge-pmcg"
       ],
       "notes": "The minister's statement was reported by Imedi (secondary) on 18 July 2026, from a meeting on global AI governance in Shanghai; no government release was found. A strategy or research centre would not count without a model-evaluation mandate. The earlier 2021 PMCG study is background only.",
       "region": {
@@ -12976,7 +12976,8 @@
         "kz-kaisi",
         "kz-r6-maidd-brief-primary",
         "kz-kaisi-rdap-2026",
-        "kz-akorda-ai-council-2026-10"
+        "kz-akorda-ai-council-2026-10",
+        "kz-harvard-hsil-2026"
       ],
       "notes": "kaisi.kz uses the name 'Kazakhstan AI Safety Institute' and describes research on the safety of advanced models; no national government designation was found. The AI Law (November 2025) provides for audits of AI systems by independent auditors.\n\nThe ministry's 14 October briefing was retrieved directly in Russian, alongside the English account on memleket.kz and the current Russian AI Law. The ministry distinguishes its rules and coordination functions from audits carried out by independent specialists and organisations. This supports keeping the ministry department as a related body. KAISI's retained archive describes research on the safety of advanced models and risk mitigation, but no national government designation was found in Kazakh, Russian or English searches. Its live and about pages could not be read reliably. The earlier private non-profit description and staff range were not reverified; the retained home-page copy does not itself establish them. These limits leave the KAISI designation question open.\n\nThe KazNIC registry record retrieved on 21 October 2026 showed the status server hold and registration expiry on 1 October 2026. On 2 November 2026 the same registry lookup stated that kaisi.kz does not exist in the registry, and www.kaisi.kz did not resolve. This does not establish whether KAISI still operates or has moved; its government designation remains unverified.",
       "region": {
@@ -13012,9 +13013,11 @@
         "name": "Kazakhstan AI Safety Institute (KAISI)",
         "stage": "exists",
         "gap": "designation",
-        "note": "The retained website archive presents KAISI as an institute researching advanced-AI capabilities and behaviour and testing risk mitigations. No government assignment was identified. Existence and function are self-described; the live home and about pages could not be reverified.",
+        "note": "The retained website archive presents KAISI as an institute researching advanced-AI capabilities and behaviour and testing risk mitigations. No government assignment was identified. Existence and function are self-described; the live home and about pages could not be reverified. Harvard's Health Systems Innovation Lab lists the Kazakhstan AI Safety Institute as the Astana hub of its 2026 hackathon, scheduled for 10 and 11 April 2026. Whether KAISI still operates after its domain was removed from the registry (by 2 November 2026) is unconfirmed.",
         "source_ids": [
-          "kz-kaisi"
+          "kz-kaisi",
+          "kz-harvard-hsil-2026",
+          "kz-kaisi-rdap-2026"
         ]
       }
     },
@@ -13994,14 +13997,14 @@
         "governance_note": "The existing UNDP account describes draft national AI-strategy consultation. The newly retrieved state-agency release records presidential approval of work on AI-use rules, government responsibilities, standards and technical regulations. Neither retrieved account specifies a national institute evaluating advanced models for capabilities or behaviour risks."
       },
       "source_ids": [
-        "tm-gov-home",
         "tm-recheck2-ai-centre-plan",
         "tm-recheck2-ai-centre-purpose",
         "tm-recheck2-ai-strategy-workshop",
         "r3-tm-official-ai-strategy-workshop",
-        "r4-tm-ai-legal-framework"
+        "r4-tm-ai-legal-framework",
+        "tm-gov-2026-10-16-ai-code"
       ],
-      "notes": "Read the State Radio Frequency Service March announcement in Turkmen, the Turkmengaz June account of the minister's speech, TurkmenTelecom's March strategy-workshop report, the UNDP May workshop announcement in English, and Russian official accounts of January AI legal-framework proposals and the February digital-economy programme. The ministerial centre announcement concerns research, professional training and sectoral AI pilots. Neither the centre nor the draft-strategy workshop specifies evaluation of advanced general-purpose models for their capabilities or behaviour risks; a general AI strategy study is not exploration of an AISI. The draft strategy itself was not retrieved. Previous broad-search source retained. A domestic transport-enterprise republication repeats workshop reporting; the substantive ministry-role account is UNDP's.",
+      "notes": "Read the State Radio Frequency Service March announcement in Turkmen, the Turkmengaz June account of the minister's speech, TurkmenTelecom's March strategy-workshop report, the UNDP May workshop announcement in English, and Russian official accounts of January AI legal-framework proposals and the February digital-economy programme. The ministerial centre announcement concerns research, professional training and sectoral AI pilots. Neither the centre nor the draft-strategy workshop specifies evaluation of advanced general-purpose models for their capabilities or behaviour risks; a general AI strategy study is not exploration of an AISI. The draft strategy itself was not retrieved. Previous broad-search source retained. A domestic transport-enterprise republication repeats workshop reporting; the substantive ministry-role account is UNDP's. An official report of 16 October 2026 says Turkmenistan proposed an international code for the peaceful use of AI in international relations and diplomacy; it is a diplomatic proposal, not a national law, strategy or institute.",
       "kind": "state",
       "status_confidence": "medium",
       "related_bodies": [
@@ -16053,7 +16056,7 @@
       "id": "EC",
       "name": "Ecuador",
       "kind": "state",
-      "summary": "No qualifying institute identified. The National Assembly has about a dozen AI bills pending and archived a comprehensive one in September 2026.",
+      "summary": "No qualifying institute identified. The National Assembly archived a comprehensive AI bill on 15 September 2026 and admitted a separate AI-governance bill on 28 September; El Diario counted 12 AI-related initiatives on 27 October.",
       "next_check": {
         "date": "2027-04-15",
         "reason": "Routine re-check on a two-year rotation of states with no reported plans."
@@ -16107,10 +16110,13 @@
         "governance_note": "The National Assembly reports archiving the AI-regulation bill. This is primary evidence about the legislative governance process, not a denial of an institute."
       },
       "source_ids": [
+        "ec-an-bill-98762",
+        "ec-an-bill-119270",
+        "ec-an-2026-09-30-education",
         "negative-second-ec-2026",
         "ec-eldiario-leyes"
       ],
-      "notes": "Ecuador adopted a national AI strategy in December 2025 and launched it in March 2026. The archived bill would have created a national AI control authority with algorithm-audit access; the bill text was not read directly.\n\nThe National Assembly confirms that the comprehensive AI bill was archived on 15 September 2026. Searches covered indexed public English and Spanish sources for a government-designated AI safety institute with a remit to evaluate advanced models.",
+      "notes": "Ecuador adopted a national AI strategy in December 2025 and launched it in March 2026. The archived bill would have created a national AI control authority with algorithm-audit access; the bill text was not read directly.\n\nThe National Assembly confirms that the comprehensive AI bill was archived on 15 September 2026. Searches covered indexed public English and Spanish sources for a government-designated AI safety institute with a remit to evaluate advanced models. The Assembly's 30 September report says a resolution directed the Education Committee to begin considering the bill admitted on 28 September and allowed it to combine related proposals.",
       "region": {
         "id": "019",
         "name": "Americas",
@@ -27207,7 +27213,7 @@
     {
       "id": "TD",
       "name": "Chad",
-      "summary": "No qualifying institute identified. UNECA describes prevalidation of a National AI Strategy 2027-2035 on 8 October 2026, before government adoption. A General Directorate for AI was created in the digital ministry in October 2025.",
+      "summary": "No qualifying institute identified. The digital ministry and UNECA report prevalidation of a National AI Strategy 2027-2035 on 8 October 2026, before government adoption. The ministry lists a General Directorate for AI (organisation decree of September 2025 per the ministry; a reorganisation in October 2025 reported by Tchadinfos).",
       "check": {
         "last_checked": "2026-10-16",
         "method": "individual",
@@ -27265,11 +27271,14 @@
         "language_note": "The recorded fr query uses a national or official language selected for this country-specific check. Other national or official languages were not exhaustively searched. Search source_ids identify registered source URLs matched in the retrieved result set, which may include irrelevant hits. An empty list means no registered source URL was matched, not that the web response was empty. The earlier audit used independent_source_ids for substantive corroboration; governance_source_ids, where present, identifies the selected primary governance evidence. English queries were also run on 17 October 2026; the previously recorded national or official-language coverage and its limits are unchanged.",
         "independence_note": "Historical audit under the superseded two-independent-sources rule: Two substantively independent evidence origins were not established. Multiple pages from one owner, mirrors, reports of the same underlying announcement and general regional coverage are not counted as independent corroboration.",
         "governance_source_ids": [
+          "td-mten-2026-10-09",
           "r4-td-uneca-ai-prevalidation-2026"
         ],
-        "governance_note": "UNECA, as a workshop participant, describes national AI strategy prevalidation and government steering arrangements, before formal adoption. The primary account was read through web extraction; a separate direct and text copy preservation attempt failed, so no complete response snapshot is claimed."
+        "governance_note": "The digital ministry's report of 9 October 2026 and UNECA's press release of 8 October 2026 describe prevalidation of the national AI strategy before formal adoption. Neither specifies a national institute to evaluate advanced models."
       },
       "source_ids": [
+        "td-mten-2026-10-09",
+        "td-mten-organigramme",
         "td-osiris-ia-2026",
         "td-tchadinfos-dgia-2025",
         "r4-td-uneca-ai-prevalidation-2026"
@@ -47717,20 +47726,36 @@
     },
     {
       "id": "ec-eldiario-leyes",
-      "url": "https://www.eldiario.ec/ecuador/ecuador-reglas-leyes-inteligencia-artificial-11102026/",
+      "url": "https://www.eldiario.ec/ecuador/ecuador-reglas-leyes-inteligencia-artificial-27102026/",
       "title": "Ecuador busca definir reglas para el uso de la inteligencia artificial: estas son las propuestas de ley",
       "publisher": "El Diario Ecuador",
       "type": "secondary",
-      "published": "2026-10-11",
-      "accessed": "2026-10-16",
+      "published": "2026-10-27",
+      "accessed": "2026-11-10",
       "language": "es",
-      "archive_url": "https://web.archive.org/web/20261011143016/https://www.eldiario.ec/ecuador/ecuador-reglas-leyes-inteligencia-artificial-11102026",
       "origin": "EC",
       "title_en": "Ecuador seeks to define rules for artificial intelligence use: these are the proposed laws",
+      "access_note": "Republished at this address on 27 October 2026. The version of 11 October at the earlier address is no longer online; it is archived at https://web.archive.org/web/20261011143016/https://www.eldiario.ec/ecuador/ecuador-reglas-leyes-inteligencia-artificial-11102026. The article's statement that the 1 September bill still awaited admission is out of date: the Assembly's file records its admission on 28 September 2026.",
+      "excerpts": [
+        {
+          "text": "Ecuador busca definir reglas para el uso de la inteligencia artificial mediante 12 iniciativas legislativas.",
+          "accessed": "2026-11-10",
+          "gloss": "Ecuador seeks to define rules for the use of artificial intelligence through 12 legislative initiatives.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "EC"
+              },
+              "summary"
+            ]
+          ]
+        }
+      ],
       "snapshot": {
-        "retrieved": "2026-10-17T14:20:24Z",
-        "sha256": "5f0a89a3ab6fad4fd4ac3c25c323de0b462c26c5540cd2b2888448383061dde5",
-        "text_sha256": "7f8247fc0e558a45cd0f028e8e1b76354c877dd66bcfae134434e8316de86b2e",
+        "retrieved": "2026-11-10T06:12:46Z",
+        "sha256": "d9883119961338b3d4e82c232a9efcabb3165d9bb903787a996fe643191de852",
+        "text_sha256": "831d8427cd407e389ca1918ddede35279a547225b0a60ccf95b3dfdcbfb8fb0a",
         "text_scheme": 1
       }
     },
@@ -51851,9 +51876,9 @@
       "title": "Council of Ministers of Bosnia and Herzegovina, home page",
       "publisher": "Council of Ministers of Bosnia and Herzegovina",
       "type": "primary",
-      "accessed": "2026-10-16",
+      "accessed": "2026-11-10",
       "language": "bs",
-      "access_note": "Home page only; no AI item visible.",
+      "access_note": "Changing home page. Read again on 10 November 2026 by the monitor re-check, with the session index, the conclusions of the 120th session of 28 October and extraordinary sessions 88 to 92 (20 October to 3 November 2026): no AI item.",
       "archive_url": "https://web.archive.org/web/20261017013904/https://www.vijeceministara.gov.ba/hr",
       "origin": "BA",
       "snapshot": {
@@ -51934,24 +51959,6 @@
         "text_scheme": 1
       },
       "archive_url": "https://web.archive.org/web/20261001151838/https://www.president.tj/"
-    },
-    {
-      "id": "tm-gov-home",
-      "url": "https://turkmenistan.gov.tm/en",
-      "title": "Turkmenistan government portal, home page",
-      "publisher": "Government of Turkmenistan",
-      "type": "primary",
-      "accessed": "2026-10-16",
-      "language": "en",
-      "access_note": "Home page only; the single AI item was a training seminar.",
-      "archive_url": "https://web.archive.org/web/20261017014238/https://turkmenistan.gov.tm/en",
-      "origin": "TM",
-      "snapshot": {
-        "retrieved": "2026-10-17T14:21:36Z",
-        "sha256": "172fb6282538ff06560c1a3d9e3e13ae9289dbf07ebea53ad3a4077e6a1e4b44",
-        "text_sha256": "fea2842dae7c65341b951e5d85ccc01b4fb19ac0bbb22c98c1803fa8265ac132",
-        "text_scheme": 1
-      }
     },
     {
       "id": "ge-imedi-digital-economy-2026",
@@ -56135,6 +56142,13 @@
                 "id": "related_bodies-547cafda5bcc5a3cb95b1026afee2376"
               },
               "name"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "TD"
+              },
+              "summary"
             ]
           ],
           "gloss": "The main innovations include the creation of the Directorate-General for Artificial Intelligence (DG IA), a first.",
@@ -87137,22 +87151,72 @@
     },
     {
       "id": "r4-td-uneca-ai-prevalidation-2026",
-      "url": "https://www.uneca.org/eca-events/chad-moves-towards-adopting-its-national-artificial-intelligence-strategy-eca-support",
-      "title": "Chad Moves Towards Adopting Its National Artificial Intelligence Strategy with ECA Support",
+      "url": "https://www.uneca.org/stories/chad-moves-towards-adopting-its-national-artificial-intelligence-strategy",
+      "title": "Chad moves towards adopting its national artificial intelligence strategy",
       "publisher": "United Nations Economic Commission for Africa",
       "type": "primary",
-      "accessed": "2026-10-17",
-      "archive_url": "https://web.archive.org/web/20261012102905/https://www.uneca.org/eca-events/chad-moves-towards-adopting-its-national-artificial-intelligence-strategy-eca-support",
+      "accessed": "2026-11-10",
       "language": "en",
       "origin": "United Nations",
-      "excerpts": [],
-      "access_note": "Retrieved event page dates the prevalidation workshop 8 October 2026; no separate publication date asserted. Separate complete-copy retrieval and its text-only fallback failed; the web-extracted primary account was the evidence read; the private copy held is a text copy of the event page. The live URL returned HTTP 404 on 24 October 2026; the Wayback capture of 12 October 2026 carries the same event text as the retained private copy.",
+      "excerpts": [
+        {
+          "text": "N’Djamena, 8 October 2026 — With support from the United Nations Economic Commission for Africa (ECA), Chad advanced its National Artificial Intelligence Strategy (NAIS) at a pre-validation workshop in N’Djamena.",
+          "accessed": "2026-11-10",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "TD"
+              },
+              "summary"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "TD"
+              },
+              "check",
+              "governance_note"
+            ]
+          ]
+        },
+        {
+          "text": "the draft strategy outlines Chad’s artificial intelligence priorities for 2027–2035.",
+          "accessed": "2026-11-10",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "TD"
+              },
+              "summary"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "TD"
+              },
+              "notes"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "TD"
+              },
+              "check",
+              "governance_note"
+            ]
+          ]
+        }
+      ],
+      "access_note": "UNECA press release of 8 October 2026. The earlier event page, read on 17 October 2026, is no longer online; it is archived at https://web.archive.org/web/20261012102905/https://www.uneca.org/eca-events/chad-moves-towards-adopting-its-national-artificial-intelligence-strategy-eca-support.",
       "snapshot": {
-        "retrieved": "2026-10-19T00:10:52Z",
-        "sha256": "55fe2c4c89caa932960ac86bc97150ff7cfac7a9b6dc1507d4e00ee92a7a656f",
-        "text_sha256": "866500dd633509c48f95defe672073cdcd17860cee0063ebdc79a6028fae8ff0",
+        "retrieved": "2026-11-10T06:12:46Z",
+        "sha256": "cbcfdc6ec2d14d1b15d209a39104b76c08bad0334351ed897b2b69f4b59de010",
+        "text_sha256": "2aebad65f3a533552485eeeff0f664c27f027444183b7640e427af2ac39d15e3",
         "text_scheme": 1
-      }
+      },
+      "published": "2026-10-08"
     },
     {
       "id": "r4-mx-itsitio-bill-lead",
@@ -89928,7 +89992,7 @@
       "accessed": "2026-10-21",
       "language": "en",
       "origin": "KZ",
-      "access_note": "Registry data retrieved on 21 October 2026. It records registration on 1 October 2025, expiration on 1 October 2026 and the status server hold; on the same day kaisi.kz did not resolve. A fresh lookup on 2 November 2026 returned HTTP 404 with the registry message \"The domain kaisi.kz does not exist in the registry.\" The snapshot tool does not preserve HTTP error bodies; the cited snapshot remains the valid 21 October registration record, not a copy of the later response. On 2 November www.kaisi.kz also returned DNS NXDOMAIN. Domain removal does not establish that the organisation has closed.",
+      "access_note": "Registry data retrieved on 21 October 2026. It records registration on 1 October 2025, expiration on 1 October 2026 and the status server hold; on the same day kaisi.kz did not resolve. A fresh lookup on 2 November 2026 returned HTTP 404 with the registry message \"The domain kaisi.kz does not exist in the registry.\" The snapshot tool does not preserve HTTP error bodies; the cited snapshot remains the valid 21 October registration record, not a copy of the later response. On 2 November www.kaisi.kz also returned DNS NXDOMAIN. Domain removal does not establish that the organisation has closed. A further lookup on 10 November 2026 returned the same HTTP 404 registry message.",
       "excerpts": [
         {
           "text": "server hold",
@@ -113173,6 +113237,344 @@
         "retrieved": "2026-11-10T05:51:08Z",
         "sha256": "226b90c847a2af5dda995b8879cba2bc26466aa8fb4c1e9047740ed7c42d4ff5",
         "text_sha256": "dd357c1749bdba059a29e67435e3291b915cb65fcbe5f38127fa22aa92b600fd",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "ec-an-bill-98762",
+      "url": "https://www.asambleanacional.gob.ec/es/multimedios-legislativos/98762-proyecto-de-ley-para-el-fomento-y",
+      "title": "Proyecto de Ley para el Fomento y Desarrollo de la Inteligencia Artificial (unificado)",
+      "title_en": "Bill for the Promotion and Development of Artificial Intelligence (unified), legislative file",
+      "publisher": "Asamblea Nacional del Ecuador",
+      "type": "primary",
+      "accessed": "2026-11-10",
+      "language": "es",
+      "origin": "EC",
+      "excerpts": [
+        {
+          "text": "2026-09-15 ARCHIVADO",
+          "accessed": "2026-11-10",
+          "gloss": "15 September 2026: archived",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "EC"
+              },
+              "summary"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "EC"
+              },
+              "notes"
+            ]
+          ]
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-10T06:12:47Z",
+        "sha256": "87251cd823fd9adf33999b5a8d74b52f00c743d8584e6033fde6dd2f9a0da63d",
+        "text_sha256": "e37a557082a6eb13a7ef02b21d5375268bcf64db05a70c65e34714f339d4d831",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "ec-an-bill-119270",
+      "url": "https://www.asambleanacional.gob.ec/es/multimedios-legislativos/119270-proyecto-de-ley-organica-para-el",
+      "title": "Proyecto de Ley Orgánica para el desarrollo, uso ético y gobernanza de la inteligencia artificial en el Ecuador",
+      "title_en": "Organic Bill on the development, ethical use and governance of artificial intelligence in Ecuador, legislative file",
+      "publisher": "Asamblea Nacional del Ecuador",
+      "type": "primary",
+      "accessed": "2026-11-10",
+      "language": "es",
+      "origin": "EC",
+      "excerpts": [
+        {
+          "text": "Calificación del CAL: 2026-09-28: cal-mdma-2025-2027-600",
+          "accessed": "2026-11-10",
+          "gloss": "Admission by the Council of Legislative Administration: 28 September 2026, resolution cal-mdma-2025-2027-600",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "EC"
+              },
+              "summary"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "EC"
+              },
+              "notes"
+            ]
+          ]
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-10T06:12:46Z",
+        "sha256": "c0fa5e091e731c7a5d27c9230dadc716cf5906e0adf6caf97a95d029bb91f491",
+        "text_sha256": "9b1b0dd2e183d15102e4414c3340e14036708462c64798f704d46cda7b74bd48",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "ec-an-2026-09-30-education",
+      "url": "https://www.asambleanacional.gob.ec/es/noticia/119810-comision-de-educacion-conoce-propuesta-para-regular-el",
+      "title": "Comisión de Educación conoce propuesta para regular el desarrollo y uso ético de la inteligencia artificial",
+      "title_en": "Education Committee takes up a proposal to regulate the development and ethical use of artificial intelligence",
+      "publisher": "Asamblea Nacional del Ecuador",
+      "type": "primary",
+      "published": "2026-09-30",
+      "accessed": "2026-11-10",
+      "language": "es",
+      "origin": "EC",
+      "excerpts": [
+        {
+          "text": "La resolución dispone iniciar su tratamiento y faculta a la comisión a unificarlo con otras propuestas relacionadas.",
+          "accessed": "2026-11-10",
+          "gloss": "The resolution orders consideration to begin and allows the committee to combine it with related proposals.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "EC"
+              },
+              "notes"
+            ]
+          ]
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-10T06:12:48Z",
+        "sha256": "c3a83c3c1e910fc41ae52481bcc67b4eb1986523d8a55a2deddc749a9d1a08e8",
+        "text_sha256": "61143b396d8a37b9fc15c934bb8b2f128819a69064a3634ffc705a4431faf7e3",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "td-mten-2026-10-09",
+      "url": "https://mten.gouv.td/le-ministre-rencontre-les-diplomates-allemand-et-de-l-union-europeenne/",
+      "title": "Le ministre rencontre les diplomates allemand et de l’Union européenne",
+      "title_en": "The minister meets the German and European Union diplomats",
+      "publisher": "Ministère des Télécommunications, de l’Économie Numérique et de la Digitalisation (Chad)",
+      "type": "primary",
+      "published": "2026-10-09",
+      "accessed": "2026-11-10",
+      "language": "fr",
+      "origin": "TD",
+      "excerpts": [
+        {
+          "text": "Cette rencontre intervient juste à la suite de l’atelier de validation de la Stratégie Nationale de Gouvernance des Données et celui de pré-validation de la Stratégie Nationale de l’Intelligence Artificielle.",
+          "accessed": "2026-11-10",
+          "gloss": "This meeting comes right after the workshop to validate the National Data Governance Strategy and the one to prevalidate the National Artificial Intelligence Strategy.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "TD"
+              },
+              "summary"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "TD"
+              },
+              "check",
+              "governance_note"
+            ]
+          ]
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-10T06:12:47Z",
+        "sha256": "d677d10fc674d7b2410f84f33d0e46b1b9ab26944de00496f7bd2db379b620e6",
+        "text_sha256": "af44d92105ce6a9cc7b4f31f5b4fdf313e995b0f3c72d8845a4f53831a0f4fb4",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "td-mten-organigramme",
+      "url": "https://mten.gouv.td/organigramme/",
+      "title": "Organigramme",
+      "title_en": "Organisation chart",
+      "publisher": "Ministère des Télécommunications, de l’Économie Numérique et de la Digitalisation (Chad)",
+      "type": "primary",
+      "accessed": "2026-11-10",
+      "language": "fr",
+      "origin": "TD",
+      "excerpts": [
+        {
+          "text": "La Direction Générale de l’intelligence artificielle",
+          "accessed": "2026-11-10",
+          "gloss": "The General Directorate for artificial intelligence",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "TD"
+              },
+              "summary"
+            ]
+          ]
+        },
+        {
+          "text": "Décret n° 2203/PR/PM/MTENDA/2025, portant organisation et fonctionnement du Ministère des Télécommunications de l'Economie Numérique et de la Digitalisation du Tchad du 10 septembre 2025.",
+          "accessed": "2026-11-10",
+          "gloss": "Decree No. 2203/PR/PM/MTENDA/2025 on the organisation and functioning of the Ministry of Telecommunications, the Digital Economy and Digitalisation of Chad, of 10 September 2025.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "TD"
+              },
+              "summary"
+            ]
+          ]
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-10T06:12:48Z",
+        "sha256": "c80a535669d8767c4bdd27ec9b8e9c72c7872efc258c0ce62ef8303a1b37abfc",
+        "text_sha256": "6a52c2fab40a1d0a18835bd95491dd22297248a0121349264edc2a2778b72798",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "kz-harvard-hsil-2026",
+      "url": "https://hsph.harvard.edu/research/health-systems-innovation-lab/work/hsil-hackathon-2026-building-high-value-health-systems-leveraging-ai/",
+      "title": "HSIL Hackathon 2026 – Building High-Value Health Systems: Leveraging AI",
+      "publisher": "Health Systems Innovation Lab, Harvard T.H. Chan School of Public Health",
+      "type": "secondary",
+      "accessed": "2026-11-10",
+      "language": "en",
+      "origin": "US",
+      "excerpts": [
+        {
+          "text": "Kazakhstan – Astana Kazakhstan AI Safety Institute",
+          "accessed": "2026-11-10",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "KZ"
+              },
+              "closest_body",
+              "note"
+            ]
+          ]
+        },
+        {
+          "text": "Two-day Hackathon Event = April 10-11, 2026",
+          "accessed": "2026-11-10",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "KZ"
+              },
+              "closest_body",
+              "note"
+            ]
+          ]
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-10T06:12:49Z",
+        "sha256": "be351930b8d3e8f611edf210deb022c4745ec7833e61cb900f299d2c727eae42",
+        "text_sha256": "3125643dda593ec6ed5b8138e4896d8119ccb8e8ebade8a3f8af5c4943a08e6c",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "ge-dga-2026-10-20",
+      "url": "https://www.dga.gov.ge/?id=2Wti9RlPSv&m=articles",
+      "title": "სტამბოლში, ხელოვნური ინტელექტის მმართველობის კონფერენციაზე საქართველოს გამოცდილებაზე ისაუბრეს",
+      "title_en": "Georgia's experience discussed at the AI governance conference in Istanbul",
+      "publisher": "Digital Governance Agency (Georgia)",
+      "type": "primary",
+      "published": "2026-10-20",
+      "accessed": "2026-11-10",
+      "language": "ka",
+      "origin": "GE",
+      "excerpts": [
+        {
+          "text": "მან ისაუბრა საქართველოს საერთაშორისო ვალდებულებებზე, ხელოვნური ინტელექტის ეროვნული სტრატეგიის შემუშავების პროცესსა და UNESCO-ს მიერ განხორციელებულ ხელოვნური ინტელექტის მზაობის შეფასებაზე.",
+          "accessed": "2026-11-10",
+          "gloss": "He spoke about Georgia's international obligations, the process of developing the national artificial intelligence strategy and the AI readiness assessment carried out by UNESCO.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "GE"
+              },
+              "summary"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "GE"
+              },
+              "check",
+              "governance_note"
+            ]
+          ]
+        },
+        {
+          "text": "იუსტიციის სახლში დაგეგმილი, ხელოვნურ ინტელექტზე დაფუძნებული საკონსულტაციო და თვითმომსახურების ინიციატივები",
+          "accessed": "2026-11-10",
+          "gloss": "AI-based advisory and self-service initiatives planned at the House of Justice",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "GE"
+              },
+              "check",
+              "governance_note"
+            ]
+          ]
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-10T06:12:49Z",
+        "sha256": "410ad29274617441997a52cfe9bdbe1d65c5321a757a2b1633ac4adaafe3944b",
+        "text_sha256": "ad95e28cfc63001004c3db5419938879002c63fec449ed6bca9150229a59a097",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "tm-gov-2026-10-16-ai-code",
+      "url": "https://www.turkmenistan.gov.tm/en/post/111058/ashgabat-has-initiated-development-international-code-peaceful-uses-ai",
+      "title": "Ashgabat has initiated the development of an International code for the peaceful uses of AI",
+      "publisher": "Government of Turkmenistan",
+      "type": "primary",
+      "published": "2026-10-16",
+      "accessed": "2026-11-10",
+      "language": "en",
+      "origin": "TM",
+      "excerpts": [
+        {
+          "text": "Turkmenistan is proposing the development of an International code for the peaceful use of artificial intelligence in international relations and diplomacy",
+          "accessed": "2026-11-10",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "TM"
+              },
+              "notes"
+            ]
+          ]
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-10T06:12:49Z",
+        "sha256": "b1a3d7dae75f21de4e4ff2ff563af13d823ca2d700c00a11b969a67bfa0eb670",
+        "text_sha256": "9778477841f01fe6ed51458c0f6af2b13a8d5e7c7a7bccd9c2e6a94127c488ea",
         "text_scheme": 1
       }
     }
