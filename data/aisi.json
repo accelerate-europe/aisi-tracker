@@ -107,12 +107,16 @@
         "text": "Testing capacity and model access: each institute records whether a source states that it tests AI models and how it gets access to them, using only the defined codes. Every value other than not published needs a verbatim excerpt from a retrieved source in which the institute, or a body explicitly acting for it, is the subject. Never infer a value from press narrative, a parent ministry's powers, a partner's general expertise or network membership. Testing capacity may hold one or both modes. In house: a source reports testing or evaluation of AI models that the institute itself has carried out or is carrying out, such as published results, a network report crediting it with running tests, or an official statement that it is already testing. A statement of role, function or focus does not count. For a federation, only testing that a source attributes to the institute counts, never a member body's own general track record. A joint network testing report counts as the institute's own testing only if it says the institute ran tests, not only analysis, translation checks or task design, and the institute existed at that date. Via other bodies: a source states that a named body outside the institute, such as a contractor or partner lab, tests or evaluates models for it. Model access records what sources state, and its value is derived from that, never set by hand. An access event is dated access by the institute to a model before its public release, or deeper than the public gets, such as reduced or removed safeguards, weights or internals. Testing through a public interface is not an event, and testing alone shows access only if the source says the developer gave it. An event's date is the model's public release date, unless the date of the access is published. Either way it is the date by which access had happened, so the access took place on or before it. An event counts when the model is in Epoch AI's frontier set, which Epoch AI defines as the models in the top 5 by training compute at the time of their release, or when its developer was a leading developer at the event date. A leading developer has had a model in Epoch AI's frontier set released since 1 January 2023, and a model in Epoch AI's notable models released in the twelve months before the event. Both are cited from Epoch AI's data. Access to other models goes in the notes. A legal power is an operative provision, named by act and article, that gives the institute, or explicitly the institute on behalf of its authority, a power to require access to models, with its conditions. An explainer is not enough; the provision itself is quoted. A developer agreement is a published agreement between the institute and a developer with a model in Epoch AI's frontier set that provides for access to, or evaluation of, the developer's models. The value is Yes when the latest event falls within the twelve months up to the data date, where a date known only to the month or year counts from its first possible day. It is Yes, evidence from the year of the latest event when that event is older; otherwise it is By law with a legal power, Access agreed with a developer agreement, and None found with a dated search log. Planned, for testing capacity when no mode is stated: an adopted text, such as a cabinet decision, an adopted plan, strategy or guidelines or a government action plan, sets it up in the future. A proposal, such as a consultation draft, a budget proposal not yet voted or a bill, gives not published, with the proposal quoted in the notes with its source and date. Not published: searched and no source states it; a dated search log records each query, its language and the sources read. Where a newer official source contradicts an older one, the newer one decides and the notes record both. Notes also record explicit negative statements, such as no own staff, and joint network testing as testing reported with its date. Not published means not stated in the sources searched, never that the institute lacks the capacity or access."
       },
       {
+        "id": "technical-staff",
+        "text": "Technical staff: the technical count is filled whenever a source states the number of staff in technical roles, such as researchers, engineers or evaluators, or states a share of a stated total. An exact count or an explicit lower bound that covers only part of the institute, such as one lab or unit, is entered as at least, and the description names the part. A share of a stated total for the whole institute, such as about half of 25 staff, is entered as about, rounded to the nearest whole number with halves rounded down, and the description says that the count is derived and from which figures. An exact share of an exact count for part of the institute, such as half of a lab's 20 staff, is entered as at least the derived count, and the description names the part and says that the count is derived and from which figures. For part of the institute, approximate counts, upper bounds and approximate shares give no count; the description records them. A share is a fraction or a percentage; words such as most or many give no count. A count is never derived from a total alone."
+      },
+      {
         "id": "staffing-model",
         "text": "Staffing model: each institute records how a source says it is staffed, using only the defined codes; dated headcounts stay in the staff figures. Every value other than not published needs a verbatim excerpt from a retrieved source in which the institute, or a body explicitly acting for it, is the subject, and only a source published in 2023 or later supports it; a page without a date counts as of the day it was read, and older sources go in the notes as history. Never infer a value from a legal form, a host body's own staff, a partner's expertise or press narrative. The first code that applies, in this order, is used. Staff of existing bodies: a federation of existing bodies whose staff do its work; used only for that legal form. Core team with partners: partner institutions do the institute's research or testing under its programme, and any central team of its own only coordinates, sets policy or represents it. Unit in a host body: the institute is a unit of an agency, public research body or university, never a ministry, government department or the European Commission, and a source states that the institute's staff are the host's employees, are assigned or seconded from the host or are hired through the host's own recruitment, or that an existing unit of the host was designated as the institute. Own staff: the institute employs or recruits people in posts of its own, including as a unit of a ministry, government department or the European Commission. Planned: no current model is stated and adopted text, such as a cabinet decision or an adopted plan, sets up the staffing in the future; a proposal gives not published, with the proposal quoted in the notes with its source and date. Not published: searched and no source states it, with a dated search log of each query, its language and the sources read; it never means that the institute has no staff. Where a newer official source contradicts an older one, the newer one decides and the notes record both. Notes also record secondments, concurrent posts, partners and contractors beside the main model."
       },
       {
         "id": "source-preference",
-        "text": "Source preference: for a claim about a jurisdiction or its institute, cite that jurisdiction's own primary source first, in any language. Add an English-language source as a second citation where one exists, so readers can check it; it may come from another jurisdiction and does not replace the domestic primary source. Rely on an account from another country alone only when no source from the jurisdiction itself was found, and name who reported the claim in its description. Source origin identifies the issuer's country or international body, not the language or hosting server. Unknown origin is left null and reported for review, as are records with no citation from the jurisdiction itself."
+        "text": "Source preference: for a claim about a jurisdiction or its institute, cite that jurisdiction's own primary source first, in any language. Add an English-language source as a second citation where one exists, so readers can check it; it may come from another jurisdiction and does not replace the domestic primary source. Rely on an account from another country alone only when no source from the jurisdiction itself was found, and name who reported the claim in its description. Quote the primary text itself, in its original language: the issuer's own page or document, not a press report, feed item, aggregator or translation of it. When the issuer's page cannot be retrieved, quote an archived copy of that same page and say so in the access note; cite a secondary account only when no primary text could be retrieved. Source origin identifies the issuer's country or international body, not the language or hosting server. Unknown origin is left null and reported for review, as are records with no citation from the jurisdiction itself."
       },
       {
         "id": "source-titles",
@@ -1744,7 +1748,7 @@
         "title": "Sources",
         "summary": "For a claim about a state or its institute we cite that state's own primary source first, in any language, and add an English source where one exists. Where we found only another country's account, the entry says who reported it.",
         "rules": {
-          "source-preference": "d28d5db7853c59d9b10cd5e084fa0bf9e0a6f2e0189b690df53c7fda3c3dcbc3"
+          "source-preference": "48c1a8e533f0ae9367bcdc36fccb5c63a3dbcf477f00bc0bca690a398331d874"
         }
       },
       {
@@ -1819,7 +1823,8 @@
       "private-evidence-copies",
       "staffing-model",
       "budget-ratios",
-      "rescinded-instruments"
+      "rescinded-instruments",
+      "technical-staff"
     ],
     "method_summary_status": "Owner copy approved."
   },
@@ -35749,8 +35754,10 @@
         {
           "total": 38,
           "total_qualifier": "exact",
+          "technical": 6,
+          "technical_qualifier": "at_least",
           "as_of": "2026-10",
-          "description": "A member of the National Assembly said at the October 2026 parliamentary audit that the institute's staff had grown from 26 to 38 and is still short of peer institutes, as reported in the press. ZDNet Korea reported, from ministry and institute material, that the evaluation lab has 7 staff, 6 of them technical evaluators. The count is the one given as current at the October 2026 audit. No official current headcount was found.",
+          "description": "A member of the National Assembly said at the October 2026 parliamentary audit that the institute's staff had grown from 26 to 38 and is still short of peer institutes, as reported in the press. ZDNet Korea reported, from ministry and institute material, that the evaluation lab has 7 staff, 6 of them technical evaluators. The count is the one given as current at the October 2026 audit. No official current headcount was found. The technical count of at least 6 is the evaluation lab's technical evaluators, which is only part of the institute.",
           "source_ids": [
             "kr-nate",
             "kr-zdnet"
@@ -36648,8 +36655,10 @@
         {
           "total": 25,
           "total_qualifier": "exact",
+          "technical": 12,
+          "technical_qualifier": "about",
           "as_of": "2026-09-18",
-          "description": "25 staff, about half of them technical, as the institute's General Manager told the Joint Select Committee on Artificial Intelligence on 18 September 2026 (uncorrected proof Hansard).",
+          "description": "25 staff, about half of them technical, as the institute's General Manager told the Joint Select Committee on Artificial Intelligence on 18 September 2026 (uncorrected proof Hansard). The technical count of about 12 is derived from these figures: half of 25, rounded down.",
           "source_ids": [
             "au-jsc-ai-2026-09-18"
           ],
@@ -41946,6 +41955,28 @@
                 "id": "staff-01c3c07170645ef1a37faf78ac7508ff"
               },
               "description"
+            ],
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "staff",
+              {
+                "id": "staff-01c3c07170645ef1a37faf78ac7508ff"
+              },
+              "technical"
+            ],
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "staff",
+              {
+                "id": "staff-01c3c07170645ef1a37faf78ac7508ff"
+              },
+              "technical_qualifier"
             ]
           ],
           "accessed": "2026-10-24",
@@ -102378,6 +102409,28 @@
                 "id": "staff-9d4a6c2e1b8f4a37a5e0c7d3b2f61e48"
               },
               "description"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "staff",
+              {
+                "id": "staff-9d4a6c2e1b8f4a37a5e0c7d3b2f61e48"
+              },
+              "technical"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "staff",
+              {
+                "id": "staff-9d4a6c2e1b8f4a37a5e0c7d3b2f61e48"
+              },
+              "technical_qualifier"
             ]
           ],
           "accessed": "2026-10-21"
