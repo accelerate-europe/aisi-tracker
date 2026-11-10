@@ -4,8 +4,8 @@
     "title": "AI Security Institutes tracker",
     "description": "Which states have an AI Security Institute (AISI), covering all 193 UN member states plus Taiwan and the EU AI Office, with funding, staff and leadership where published. Every record cites its sources.",
     "definition": "We count a body as an AI Security Institute (AISI) if a national government or an international organisation, such as the EU, has tasked it with testing general-purpose or frontier AI models for their capabilities and risks, or has named it its AI safety institute or its AI security institute. Being a regulator, certification body or cyber security agency is not enough on its own.",
-    "version": "1.0.6",
-    "as_of": "2026-11-09",
+    "version": "1.0.7",
+    "as_of": "2026-11-10",
     "license": "CC BY 4.0",
     "license_note": "Quotations from sources remain with their rights holders and are reproduced as quotations; the licence covers our own compilation, text and data.",
     "publisher": "Accelerate Europe",
@@ -18,7 +18,7 @@
     ],
     "contact": "contact@accelerate-europe.org",
     "repository": "https://github.com/accelerate-europe/aisi-tracker",
-    "citation": "Accelerate Europe (2026). AI Security Institutes tracker, version 1.0.6, data as of 9 November 2026. Compiled by Jason Hoelscher-Obermaier. https://doi.org/10.5281/zenodo.23600431",
+    "citation": "Accelerate Europe (2026). AI Security Institutes tracker, version 1.0.7, data as of 10 November 2026. Compiled by Jason Hoelscher-Obermaier. https://doi.org/10.5281/zenodo.23600431",
     "doi": "10.5281/zenodo.23600431",
     "scope": "Status is tracked for all 193 UN member states, Taiwan (as a territory) and the EU AI Office. The Europe page counts the 27 EU member states, Iceland, Liechtenstein, Norway, the United Kingdom and Switzerland.",
     "method": [
@@ -113712,6 +113712,28 @@
         "Republic of the Congo and Equatorial Guinea: decree citations now give the official journal (Congo, Journal officiel No. 35 of 28 August 2025) and the official gazette copy (Equatorial Guinea, Decree 61/2026).",
         "Files for scripts and AI agents: llms.txt and the API index describe the data in plain words, with examples of the per-record files.",
         "Page: switching theme, opening search and opening details no longer redraw the whole page; the map draws after the page has loaded, and a tap on the phone map before then opens the nearest country."
+      ]
+    },
+    {
+      "date": "2026-11-10",
+      "version": "1.0.7",
+      "summary": "The UK institute's funding is now one £360m record for 2026-27 to 2029-30, and its corrected staff count is 243. Updates also cover AI Act authorities on the EU's contact list of 9 November 2026, Malaysia, the Republic of the Congo, Equatorial Guinea, El Salvador, Norway, the United States and Ecuador, with replaced sources for moved pages.",
+      "changes": [
+        "United Kingdom: funding is one whole-institute record of £360m for 2026-27 to 2029-30, the £240m Spending Review allocation plus £120m from Budget 2026, from a written answer of 6 November 2026. No source splits it by year, so it is compared at its four-year mean of £90m a year; the £240m and £120m are its components and are not counted twice.",
+        "United Kingdom: staff are 243 (227.8 full-time equivalent) as at 12 October 2026, 109 in technical and 134 in other roles; the written answer was corrected on 22 October from 241.",
+        "United Kingdom: the notes add, from written answers, that there is no fixed frontier threshold, that all current collaboration agreements are with UK and US developers and that results are not typically published.",
+        "Malaysia: the mandate adds safety benchmarking, risk assessment and incident reporting for corrective action, from the Digital Minister's answer in the Dewan Rakyat on 5 October 2026.",
+        "EU AI Act authorities, from the Commission's contact list of 9 November 2026: Germany and Slovenia are no longer marked pending there (their designations already rested on national acts); Hungary's related body is now the Minister of Science and Technology, and the notes record that Decree 224/2026 repealed section 5(1)(e) of Decree 344/2025; Bulgaria and Slovakia are listed but stay proposed, as a list entry is not a designation. Notes for ten states still marked pending now cite the updated list date.",
+        "Republic of the Congo: Law 14-2024 of 23 May 2024 creates the African Research Centre for AI, now named by its French acronym CARIA (previously ARCAI); it has no task to test or evaluate AI models.",
+        "Equatorial Guinea: the notes name Óscar Ondo Ngomo as Secretary of State responsible for AI Systems under Decree 61/2026.",
+        "El Salvador: Legislative Decree 674 (Diario Oficial No. 178, 25 September 2026) on national AI and robotics projects is recorded; it neither amends nor repeals Resolution 0001/2025.",
+        "Norway: KI Norge's staffing notes record a consultant contracted as executive assistant to its management (contract award of 22 October 2026).",
+        "United States: the institute's research agreement with Scale AI, announced on 10 February 2025, is added, now that NIST's March 2026 update lists Scale AI among its agreements.",
+        "Ecuador: the National Assembly's records are now cited first: the unified AI bill was archived on 15 September 2026, and an AI-governance bill was admitted on 28 September and referred to the Education Committee.",
+        "Chad: the ministry's own report and organisation chart are now cited first; the summary says the ministry lists a General Directorate for AI, with an organisation decree of September 2025 per the ministry and a reorganisation in October 2025 reported by Tchadinfos.",
+        "Kazakhstan: the closest-body note now cites Harvard's 2026 hackathon page and says that operations after the domain's removal are unconfirmed.",
+        "Sources for moved or changed pages: Georgia, Turkmenistan and Bosnia and Herzegovina, Italy's Law 132/2025 (now cited from the Gazzetta Ufficiale), Japan's 2023 commitment, METR, NIST's May 2026 agreements and the Commission's Implementing Regulation (EU) 2026/1755.",
+        "The news re-checks of 9 November 2026 covered all 15 institutes."
       ]
     }
   ]
