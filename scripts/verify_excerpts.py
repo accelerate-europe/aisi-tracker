@@ -639,7 +639,7 @@ class Fetcher:
             seed_from_snapshot(folder, *self.snapshots[key])
         return folder
 
-    def fetch(self, url: str, method: str = "live") -> dict:
+    def fetch(self, url: str, method: str = "live", headers: dict | None = None) -> dict:
         with self.lock:
             lock = self.url_locks.setdefault(url, threading.Lock())
         with lock:
@@ -747,7 +747,10 @@ class Fetcher:
                     )
                 )
                 self.last_request[host] = time.monotonic()
-            meta = self._download(url, method, folder)
+            meta = (
+                self._download(url, method, folder, headers=headers)
+                if headers else self._download(url, method, folder)
+            )
             try:
                 atomic_json(meta_path, meta)
             except OSError as exc:
@@ -757,7 +760,9 @@ class Fetcher:
             self.attempts[url] = dict(meta)
             return meta
 
-    def _download(self, url: str, method: str, folder: Path) -> dict:
+    def _download(
+        self, url: str, method: str, folder: Path, headers: dict | None = None
+    ) -> dict:
         meta: dict = {
             "cache_version": 1,
             "extraction_version": EXTRACTION_VERSION,
@@ -773,6 +778,7 @@ class Fetcher:
                 headers={
                     "User-Agent": "AISI-tracker-evidence/1.0",
                     "Accept-Encoding": "identity",
+                    **(headers or {}),
                 },
             )
             with urlopen(
@@ -781,6 +787,7 @@ class Fetcher:
                 meta.update(
                     final_url=response.geturl(),
                     content_type=response.headers.get("Content-Type", ""),
+                    http_status=getattr(response, "status", 200),
                 )
                 raw_length = response.headers.get("Content-Length", "")
                 expected = int(raw_length) if raw_length.isdigit() else None
@@ -792,7 +799,10 @@ class Fetcher:
                 if expected is not None and len(body) != expected:
                     return {**meta, "status": "incomplete_response"}
         except HTTPError as exc:
-            return {**meta, "status": "http_error", "error": f"HTTP {exc.code}"}
+            return {
+                **meta, "status": "http_error", "error": f"HTTP {exc.code}",
+                "http_status": exc.code,
+            }
         except IncompleteRead as exc:
             return {
                 **meta,
