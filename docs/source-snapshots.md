@@ -53,10 +53,21 @@ Public sources may contain `snapshot.retrieved`, `snapshot.sha256`, `snapshot.te
 
 ## Change monitor
 
-`scripts/monitor_sources.py` re-fetches every cited source once from its live URL (no reader proxies, no archives) and compares it with the copy its snapshot hash names. It never changes the dataset or the store. Classes: unchanged (same file or text hash), trivial, substantive (a bound quotation the cited copy carries is missing, or, without such quotations, no long run of the cited text survives), gone (404, 410, host no longer resolves), blocked (refuses automated readers, reported as a class) and failed (transient). It also lists due `next_check` dates and a discovery queue of recorded searches. Reports go to `work/monitor/monitor.md` and `monitor.json`:
+`scripts/monitor_sources.py` checks every source once and compares what it gets with the copy the source's snapshot hash names. It never changes the dataset, a manifest or a cited copy. Routes, in order, the first clear answer deciding:
+
+1. A source without a snapshot hash is not fetched: `skipped`.
+2. The plain request (honest User-Agent, per-host pacing). Classes: unchanged (same file or text hash), trivial, substantive (a bound quotation the cited copy carries is missing, or, for a like-for-like copy without such quotations, no long run of the cited text survives), gone (404, 410, host no longer resolves), blocked (refuses automated readers) and failed (transient or tool failure).
+3. For blocked and failed sources, headless Chromium (`scripts/monitor_browser.py`, one browser, one page at a time), then r.jina.ai with its cache bypassed. Both are live checks, labelled with their route. A fallback copy is never like for like: it is trivial only when every quotation the cited copy carries is present (or, without quotations, a long run of the cited text survives), substantive only when both fallbacks reached a comparable copy and miss the same quotation, and otherwise `failed` (`not_comparable`, `fallback_quote_unconfirmed`), moving on. A comparable copy carries at least one of the cited copy's quotations, or, without quotations, a long run of its text.
+4. When no live route answered, the newest Wayback capture: `archived`, with the capture date. A live copy missing a quotation still outranks a capture that has it. It is an archive observation, never a live check. A check whose URL or final URL is an archive capture is an archive observation on any route.
+
+Each run appends one line per source to `checks/checks.jsonl` beside the snapshot directory (run, dataset revision, route, every route tried, hashes, each quotation's presence by text hash, class and reason, verifier versions), records its start and finishing steps in `checks/runs.jsonl`, and keeps checked copies that differ from the cited copy in `checks/responses/` under their hash. Nothing there is pruned yet. A fallback copy is evidence in the log, never a new snapshot. `--resume RUN_ID` finishes an interrupted run (Ctrl-C, a stop, the four-hour `--deadline-hours`) without fetching the sources it already has, and refuses a changed dataset. `--digest` sends the run's summary with the notification command the host sets in `AISI_DIGEST_COMMAND` (title and body as its last two arguments); an undelivered digest fails the run.
+
+Headless Chromium runs only inside the shared browser lock (`scripts/browser_lock.py`, `$AISI_BROWSER_LOCK`, by default `$XDG_RUNTIME_DIR/aisi-browser.lock`), which the browser gate and the build's pre-render also take, so the monitor waits while a gate run uses the browser, for at most `--browser-wait` seconds per run, and skips the headless route when that runs out. The report (`monitor.md`, `monitor.json`) also lists the unreached sources with what was tried, due `next_check` dates and a discovery queue of recorded searches:
 
 ```sh
 uv run --group evidence python scripts/monitor_sources.py --report work/monitor
 ```
+
+The weekly run is a scheduled job on the maintainers' host, configured outside this repository, and off until the owner switches it on.
 
 `--lead URL` checks a page that discovery read but did not cite against a private seen-leads ledger (`discovery-leads.jsonl` beside the snapshot directory): new, changed or skip (text hash unchanged). Add `--verdict irrelevant|not_primary|duplicate|candidate --reason "..."` (and `--duplicate-of SOURCE_ID`) to record a reading.
