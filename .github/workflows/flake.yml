@@ -1,0 +1,83 @@
+# The browser flake detector (test strategy D5), by hand only: one build, then one browser job run again and again
+# in fresh processes (scripts/flake_detector.py), every attempt kept. It never gates anything and never retries a
+# failure: its report says stable, flaky, failing or inconclusive, and the artifact keeps every attempt's logs and
+# timings, plus a flash's frames when hydration_paint sees one (AISI_GATE_EVIDENCE). With parallel set to 3, three
+# runners each run their own batch at once, close to the gate's four busy shards, where the hydration_paint flash
+# at #world-cards was seen.
+#
+# GitHub dispatches a workflow only from the default branch (main, which deploys), so until this file is there a
+# run is started by pushing a branch named flake-run/<set>-<runners>: the set hp runs hydration/hydration_paint and
+# interactions/check_toggle_place (the two jobs with known CI cases), toggle only the latter; runners is 1 or 3. A push
+# uses 20 attempts per job and a 40-minute budget. pages.yml runs on that push too, as on every branch. Run branches
+# stay until the owner deletes them.
+name: flake
+on:
+  push:
+    branches: ['flake-run/**']
+  workflow_dispatch:
+    inputs:
+      job:
+        description: browser job id (check_page.py --list-jobs)
+        default: hydration/hydration_paint
+      runs:
+        description: attempts planned per runner
+        default: "20"
+      max_minutes:
+        description: start budget per runner, in minutes
+        default: "15"
+      parallel:
+        description: runners at once, each with its own batch (1 or 3)
+        type: choice
+        options: ["1", "3"]
+        default: "1"
+permissions:
+  contents: read
+concurrency:
+  group: flake-${{ github.ref }}
+  cancel-in-progress: false
+env:
+  # As in pages.yml: the lockfile's window for newly published versions.
+  UV_EXCLUDE_NEWER: "7 days"
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    strategy:
+      fail-fast: false  # one runner's flake must not cancel the others' evidence
+      matrix:
+        runner: ${{ fromJSON((inputs.parallel == '3' || (github.event_name == 'push' && endsWith(github.ref_name, '-3'))) && '[1, 2, 3]' || '[1]') }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86 # v5.4.2
+        with:
+          version: "0.11.14"
+          enable-cache: true
+          cache-dependency-glob: |
+            uv.lock
+            scripts/*.lock
+      - run: uv run --locked -q scripts/check_page.py --install-chrome
+      - run: uv run scripts/check.py --only build --out dist --report-dir "$RUNNER_TEMP/check"
+      # Exits 1 when the job is flaky or failing, 2 when an attempt was cut by the budget: the run shows red then,
+      # and the artifact below says why.
+      - name: detector batch on runner ${{ matrix.runner }}
+        env:  # inputs reach the shell as variables, never spliced into the command text
+          AISI_GATE_EVIDENCE: ${{ runner.temp }}/flake/evidence
+          JOB: >-
+            ${{ inputs.job || (startsWith(github.ref_name, 'flake-run/toggle-') && 'interactions/check_toggle_place'
+            || 'hydration/hydration_paint,interactions/check_toggle_place') }}
+          RUNS: ${{ inputs.runs || '20' }}
+          MAX_MINUTES: ${{ inputs.max_minutes || '40' }}
+        run: >-
+          uv run scripts/flake_detector.py --dist dist --job "$JOB" --runs "$RUNS"
+          --max-minutes "$MAX_MINUTES" --out "$RUNNER_TEMP/flake/batch"
+      - if: always()
+        run: cat "$RUNNER_TEMP/flake/batch/report.md" || true
+      - if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: flake-${{ matrix.runner }}
+          path: ${{ runner.temp }}/flake
+          if-no-files-found: warn
+          retention-days: 30
