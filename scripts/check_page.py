@@ -3414,6 +3414,7 @@ PLURAL_PARTNER_HOW = {
     "Is one of the national evaluation and security bodies the institute federates without a new legal structure.": "Are among the national evaluation and security bodies the institute federates without a new legal structure.",
     "Takes part in the institute as a participating organisation of the AISI Partnership Agreement.": "Take part in the institute as participating organisations of the AISI Partnership Agreement.",
     "Has initial representation on the TRAINS Taskforce chaired by the then US AI Safety Institute.": "Have initial representation on the TRAINS Taskforce chaired by the then US AI Safety Institute.",
+    "Collaborated with the institute and other agencies on the Rapid Review of an AI-driven cyber incident.": "Collaborated with the institute and other agencies on the Rapid Review of an AI-driven cyber incident.",
 }  # independent copy oracle, including agreement inside the sentence
 FIRST_OUTPUT_LINE = "First published work credited to the institute."  # owner-approved development line (decisions 21 Oct), one template for every first output
 
