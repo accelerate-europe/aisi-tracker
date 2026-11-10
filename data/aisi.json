@@ -2903,9 +2903,10 @@
         "nl-budget-xiii-2027",
         "nl-budget-vii-2027",
         "nl-miljoenennota-2027",
-        "nl-budget-xiii-bill-2027"
+        "nl-budget-xiii-bill-2027",
+        "fr-elysee-paris-call-2026"
       ],
-      "notes": "A TNO study commissioned by the Ministry of Economic Affairs and Climate examined the option in June 2026. In parliament on 17 September 2026, Jetten answered yes to a question about establishing an institute, preferably in close cooperation with other countries. Responding to motion 49 later in the debate, he said the cabinet would explore whether a national institute should be created and mainly look at whether it could link up with existing European initiatives. The record therefore remains exploring. On 17 September 2026 parliament adopted Dassen’s motion 49 by show of hands, asking the government to establish an AI safety institute in close cooperation with similar institutes in Germany, France and England. This parliamentary act does not count as a government commitment.\n\nThe written answer received on 1 June 2026 describes the Digitale Doetank exploration into an independent AI safety institute, modelled on the UK institute, running until September 2026. The answer received on 31 August 2026 still leaves the decision open. It expected an advisory report in September, after which the cabinet would decide whether and how to establish an institute, including its tasks, powers and necessary conditions. The 25 September letter frames the exploration as considering whether an institute could meet the need for insight and advice on AI’s impact on society and government, with the advisory report to be shared by the end of 2026. An advisory body would count only if the government designated it as its AI safety institute with an AI safety remit, or gave it the testing of advanced AI models.\n\nThe July strategy says the Netherlands will seek to join the International Network for Advanced AI Measurement, Evaluation and Science. This is an intention to seek membership, not confirmation of membership. The strategy also takes account of existing bodies that already advise the government on AI.\n\nNo institute-specific budget line was found in the 2027 Economic Affairs and Climate budget (Kamerstuk 37020-XIII, nos. 1 and 2), the Interior and Kingdom Relations budget (37020-VII, no. 2) or the Miljoenennota (37020, no. 1).\n\nThe Commission's contact list of 9 November 2026 marks this state's AI Act authority as pending final adoption; the national sources cited here give its actual designation status.",
+      "notes": "A TNO study commissioned by the Ministry of Economic Affairs and Climate examined the option in June 2026. In parliament on 17 September 2026, Jetten answered yes to a question about establishing an institute, preferably in close cooperation with other countries. Responding to motion 49 later in the debate, he said the cabinet would explore whether a national institute should be created and mainly look at whether it could link up with existing European initiatives. The record therefore remains exploring. On 17 September 2026 parliament adopted Dassen’s motion 49 by show of hands, asking the government to establish an AI safety institute in close cooperation with similar institutes in Germany, France and England. This parliamentary act does not count as a government commitment.\n\nThe written answer received on 1 June 2026 describes the Digitale Doetank exploration into an independent AI safety institute, modelled on the UK institute, running until September 2026. The answer received on 31 August 2026 still leaves the decision open. It expected an advisory report in September, after which the cabinet would decide whether and how to establish an institute, including its tasks, powers and necessary conditions. The 25 September letter frames the exploration as considering whether an institute could meet the need for insight and advice on AI’s impact on society and government, with the advisory report to be shared by the end of 2026. An advisory body would count only if the government designated it as its AI safety institute with an AI safety remit, or gave it the testing of advanced AI models.\n\nThe July strategy says the Netherlands will seek to join the International Network for Advanced AI Measurement, Evaluation and Science. This is an intention to seek membership, not confirmation of membership. The strategy also takes account of existing bodies that already advise the government on AI.\n\nNo institute-specific budget line was found in the 2027 Economic Affairs and Climate budget (Kamerstuk 37020-XIII, nos. 1 and 2), the Interior and Kingdom Relations budget (37020-VII, no. 2) or the Miljoenennota (37020, no. 1).\n\nThe Commission's contact list of 9 November 2026 marks this state's AI Act authority as pending final adoption; the national sources cited here give its actual designation status.\n\nOn 9 November 2026 the Netherlands was among the states that signed the Paris Call for AI Safety and Security, in which signatories commit to a common framework for the evaluation and risk management of frontier models.",
       "region": {
         "id": "150",
         "name": "Europe",
@@ -3980,7 +3981,8 @@
         "ie-ai-office-established-2026",
         "ie-ai-designation-si366-2025",
         "ai-act-tracker",
-        "eu-ai-act-authorities-2026"
+        "eu-ai-act-authorities-2026",
+        "fr-elysee-paris-call-2026"
       ],
       "region": {
         "id": "150",
@@ -3999,7 +4001,7 @@
         "un-m49",
         "wikidata-jurisdiction-identifiers"
       ],
-      "notes": "The AI Office of Ireland was established on 2 August 2026 under the Regulation of Artificial Intelligence Act 2026. It is the national single point of contact and coordinates a distributed model of sectoral regulators. SI 366/2025 separately allocates notifying and market-surveillance roles; Regulation 5 formally designates notifying authorities for Article 28 of the AI Act.\n\nSearched in English, including gov.ie, for a body its government has tasked with testing general-purpose or frontier AI models or named its AI safety or security institute."
+      "notes": "The AI Office of Ireland was established on 2 August 2026 under the Regulation of Artificial Intelligence Act 2026. It is the national single point of contact and coordinates a distributed model of sectoral regulators. SI 366/2025 separately allocates notifying and market-surveillance roles; Regulation 5 formally designates notifying authorities for Article 28 of the AI Act.\n\nSearched in English, including gov.ie, for a body its government has tasked with testing general-purpose or frontier AI models or named its AI safety or security institute.\n\nOn 9 November 2026 Ireland was among the states that signed the Paris Call for AI Safety and Security, in which signatories commit to a common framework for the evaluation and risk management of frontier models."
     },
     {
       "id": "AT",
@@ -4115,7 +4117,8 @@
       },
       "source_ids": [
         "at-dsb-ai-faq",
-        "ai-act-tracker"
+        "ai-act-tracker",
+        "fr-elysee-paris-call-2026"
       ],
       "region": {
         "id": "150",
@@ -4134,7 +4137,7 @@
         "un-m49",
         "wikidata-jurisdiction-identifiers"
       ],
-      "notes": "The undated Datenschutzbehörde FAQ says the identity of the relevant general market-surveillance authority has not yet been fixed. Its publication date was not verified, so the statement about the general authority is not treated as a dated finding for 17 October 2026. This does not negate the separate sectoral competence described by the same guidance through Article 74(8) and the national supervisory status established by §§18 and 31 DSG.\n\nDatenschutzbehörde guidance describes its sectoral AI Act market-surveillance competence in the areas covered by Article 74(8). Searched in English and German for a body its government has tasked with testing general-purpose or frontier AI models or named its AI safety or security institute."
+      "notes": "The undated Datenschutzbehörde FAQ says the identity of the relevant general market-surveillance authority has not yet been fixed. Its publication date was not verified, so the statement about the general authority is not treated as a dated finding for 17 October 2026. This does not negate the separate sectoral competence described by the same guidance through Article 74(8) and the national supervisory status established by §§18 and 31 DSG.\n\nDatenschutzbehörde guidance describes its sectoral AI Act market-surveillance competence in the areas covered by Article 74(8). Searched in English and German for a body its government has tasked with testing general-purpose or frontier AI models or named its AI safety or security institute.\n\nOn 9 November 2026 Austria was among the states that signed the Paris Call for AI Safety and Security, in which signatories commit to a common framework for the evaluation and risk management of frontier models."
     },
     {
       "id": "FI",
@@ -4383,7 +4386,8 @@
       "source_ids": [
         "fi-ai-supervision-act1377-2025",
         "negative-second-fi-2026",
-        "ai-act-tracker"
+        "ai-act-tracker",
+        "fr-elysee-paris-call-2026"
       ],
       "region": {
         "id": "150",
@@ -4402,7 +4406,7 @@
         "un-m49",
         "wikidata-jurisdiction-identifiers"
       ],
-      "notes": "Traficom's August 2026 guidance describes its supervision of AI transparency and sectoral authorities' responsibilities for high-risk systems. Searched in English and Finnish for a body its government has tasked with testing general-purpose or frontier AI models or named its AI safety or security institute."
+      "notes": "Traficom's August 2026 guidance describes its supervision of AI transparency and sectoral authorities' responsibilities for high-risk systems. Searched in English and Finnish for a body its government has tasked with testing general-purpose or frontier AI models or named its AI safety or security institute.\n\nOn 9 November 2026 Finland was among the states that signed the Paris Call for AI Safety and Security, in which signatories commit to a common framework for the evaluation and risk management of frontier models."
     },
     {
       "id": "DK",
@@ -4881,7 +4885,8 @@
       "source_ids": [
         "ee-ttja-ai-supervision",
         "ai-act-tracker",
-        "eu-ai-act-authorities-2026"
+        "eu-ai-act-authorities-2026",
+        "fr-elysee-paris-call-2026"
       ],
       "region": {
         "id": "150",
@@ -4920,7 +4925,7 @@
           "id": "related_bodies-e9418b44f082585ea0aaa36f10f7beae"
         }
       ],
-      "notes": "TTJA's page, updated 10 September 2026, describes a proposed AI Act supervisory and single-point-of-contact role, using future tense for supervision. Searches of Riigikogu, Riigi Teataja, TTJA and the economic ministry did not retrieve an enacted notifying-authority allocation.\n\nThe Commission's contact list of 9 November 2026 marks this state's AI Act authority as pending final adoption; the national sources cited here give its actual designation status.\n\nSearched in English and Estonian for a body its government has tasked with testing general-purpose or frontier AI models or named its AI safety or security institute. "
+      "notes": "TTJA's page, updated 10 September 2026, describes a proposed AI Act supervisory and single-point-of-contact role, using future tense for supervision. Searches of Riigikogu, Riigi Teataja, TTJA and the economic ministry did not retrieve an enacted notifying-authority allocation.\n\nThe Commission's contact list of 9 November 2026 marks this state's AI Act authority as pending final adoption; the national sources cited here give its actual designation status.\n\nSearched in English and Estonian for a body its government has tasked with testing general-purpose or frontier AI models or named its AI safety or security institute.\n\nOn 9 November 2026 Estonia was among the states that signed the Paris Call for AI Safety and Security, in which signatories commit to a common framework for the evaluation and risk management of frontier models."
     },
     {
       "id": "PT",
@@ -5110,9 +5115,10 @@
         "is-stjornarradid-ai-plan",
         "is-ai-implementation-review-2026",
         "ai-act-tracker",
-        "eu-ai-act-authorities-2026"
+        "eu-ai-act-authorities-2026",
+        "is-umbra-cert-openai-2026"
       ],
-      "notes": "The plan has 20 actions, all funded, runs for two years and is to be reviewed every six months. The government-linked working-group report released on 9 October 2026 describes EEA incorporation as unresolved and proposes allocating AI Act responsibilities among existing sectoral regulators. Final market-surveillance, notifying and single-point-of-contact allocations were not verified in the retrieved sources. Searches in English and Icelandic found no institute.\n\nThe Commission source is retained as the required EU/EEA cross-check. Its table lists EU Member State contact points and contains no entry for Iceland; it does not substantiate a national designation or imply that the AI Act is incorporated into the EEA Agreement.",
+      "notes": "The plan has 20 actions, all funded, runs for two years and is to be reviewed every six months. The government-linked working-group report released on 9 October 2026 describes EEA incorporation as unresolved and proposes allocating AI Act responsibilities among existing sectoral regulators. Final market-surveillance, notifying and single-point-of-contact allocations were not verified in the retrieved sources. Searches in English and Icelandic found no institute.\n\nThe Commission source is retained as the required EU/EEA cross-check. Its table lists EU Member State contact points and contains no entry for Iceland; it does not substantiate a national designation or imply that the AI Act is incorporated into the EEA Agreement.\n\nOn 4 November 2026 the government announced that Umbra, the Government Offices' service centre, and the cyber security team CERT-IS had received access to a specialised OpenAI cyber security model, granted after an assessment through Government Trusted Access for Cyber and limited to defined cyber defence tasks. The announcement describes defensive cyber work; it does not describe evaluation of the models.",
       "related_bodies": [
         {
           "name": "Centre for AI and language technology (planned)",
@@ -6677,9 +6683,11 @@
         "ro-capital-ai-act",
         "ro-digi24-ai-act",
         "ai-act-tracker",
-        "eu-ai-act-authorities-2026"
+        "eu-ai-act-authorities-2026",
+        "ro-senat-b597-2026",
+        "ro-b597-text-2026"
       ],
-      "notes": "ANCOM's official implementation update and governance page were retrieved. They describe authority allocations selected by government memorandum, including ANCOM for market surveillance and the single point of contact, ADR for notification, and specified sectoral authorities. ANCOM's July 2026 update says implementing legislation remains necessary; final enactment was not verified.\n\nThe Commission's contact list of 9 November 2026 marks this state's AI Act authority as pending final adoption; the national sources cited here give its actual designation status.",
+      "notes": "ANCOM's official implementation update and governance page were retrieved. They describe authority allocations selected by government memorandum, including ANCOM for market surveillance and the single point of contact, ADR for notification, and specified sectoral authorities. ANCOM's July 2026 update says implementing legislation remains necessary; final enactment was not verified.\n\nThe Commission's contact list of 9 November 2026 marks this state's AI Act authority as pending final adoption; the national sources cited here give its actual designation status.\n\nOn 28 October 2026 a legislative proposal from an unaffiliated deputy on the safe development of frontier AI systems and the prevention of catastrophic risks, B597/2026, was registered at the Senate. It provides for an AI Safety Authority, funded from the budget of the communications regulator ANCOM, that would carry out independent evaluations of frontier systems itself or through evaluation bodies it designates. It is not the government's own proposal.",
       "region": {
         "id": "150",
         "name": "Europe",
@@ -7376,9 +7384,10 @@
         "ai-act-tracker",
         "eu-ai-act-authorities-2026",
         "lv-r6-centre-overview",
-        "lv-r6-centre-defence"
+        "lv-r6-centre-defence",
+        "fr-elysee-paris-call-2026"
       ],
-      "notes": "The current AI Centre Law, displayed as in force from 1 June 2026, retains security-risk identification and research-capacity tasks in section 4(1)(2). Sections 8–9 concern a regulatory environment for developing, testing and validating AI systems and compliance with law and ethical standards. This supports applied testing; it does not establish the remit required here to evaluate advanced models for capabilities or behaviour risks. The ministry's English account of the rules approved on 13 January 2026 describes supervised testing before market placement or public-administration deployment. February 2026 defence funding supports advice, technology analysis, defence AI adoption and assessment of deepfake use. The ministry overview, updated on 2 July 2026, describes adoption and commercialisation support. No later qualifying designation or mandate extension was found in Latvian and English searches. The Centre's broader risk powers are not a prohibition on future model evaluation; reassess if a technical mandate is published.",
+      "notes": "The current AI Centre Law, displayed as in force from 1 June 2026, retains security-risk identification and research-capacity tasks in section 4(1)(2). Sections 8–9 concern a regulatory environment for developing, testing and validating AI systems and compliance with law and ethical standards. This supports applied testing; it does not establish the remit required here to evaluate advanced models for capabilities or behaviour risks. The ministry's English account of the rules approved on 13 January 2026 describes supervised testing before market placement or public-administration deployment. February 2026 defence funding supports advice, technology analysis, defence AI adoption and assessment of deepfake use. The ministry overview, updated on 2 July 2026, describes adoption and commercialisation support. No later qualifying designation or mandate extension was found in Latvian and English searches. The Centre's broader risk powers are not a prohibition on future model evaluation; reassess if a technical mandate is published.\n\nOn 9 November 2026 Latvia was among the states that signed the Paris Call for AI Safety and Security, in which signatories commit to a common framework for the evaluation and risk management of frontier models.",
       "region": {
         "id": "150",
         "name": "Europe",
@@ -7666,9 +7675,10 @@
         "cy-r4-draft-ai-strategy-2032",
         "cy-r4-ai-strategy-consultation",
         "cy-r6-presidency-strategy-consultation",
-        "cy-r6-ai-act-bill-consultation"
+        "cy-r6-ai-act-bill-consultation",
+        "fr-elysee-paris-call-2026"
       ],
-      "notes": "Greek government consultation notices and the English draft strategy were reviewed. The European AI Certification Lab would pre-certify high-risk and foundation models; the draft assigns an annual audit complementing documented conformity assessments to a Cyprus AI Security & Certification Authority. The National AI Cybersecurity Centre of Excellence concerns security research and protection of government and infrastructure. The National AI Misinformation and Security Council would assess model risks and advise policymakers. The council would submit recommendations to the National AI Taskforce. Its text does not specify general-purpose, foundation or frontier models as the object of evaluation; model-risk advice alone does not establish the qualifying remit. A more specific technical remit could change that assessment. Consultation closed on 31 August 2026; no later official adoption or qualifying designation was identified in a bounded search.\n\nThe Commission's contact list of 9 November 2026 marks this state's AI Act authority as pending final adoption; the national sources cited here give its actual designation status.\n\nThe separately cited Cyprus Mail account mentions national testing environments. The retrieved draft describes sector sandboxes and pre-certification; these do not by themselves establish the qualifying mandate. The official introduction to the AI Act implementation bill consultation, posted on 16 August 2026, describes market supervision, competent authorities and a regulatory sandbox. It is a draft, not evidence that the strategy bodies have been established.",
+      "notes": "Greek government consultation notices and the English draft strategy were reviewed. The European AI Certification Lab would pre-certify high-risk and foundation models; the draft assigns an annual audit complementing documented conformity assessments to a Cyprus AI Security & Certification Authority. The National AI Cybersecurity Centre of Excellence concerns security research and protection of government and infrastructure. The National AI Misinformation and Security Council would assess model risks and advise policymakers. The council would submit recommendations to the National AI Taskforce. Its text does not specify general-purpose, foundation or frontier models as the object of evaluation; model-risk advice alone does not establish the qualifying remit. A more specific technical remit could change that assessment. Consultation closed on 31 August 2026; no later official adoption or qualifying designation was identified in a bounded search.\n\nThe Commission's contact list of 9 November 2026 marks this state's AI Act authority as pending final adoption; the national sources cited here give its actual designation status.\n\nThe separately cited Cyprus Mail account mentions national testing environments. The retrieved draft describes sector sandboxes and pre-certification; these do not by themselves establish the qualifying mandate. The official introduction to the AI Act implementation bill consultation, posted on 16 August 2026, describes market supervision, competent authorities and a regulatory sandbox. It is a draft, not evidence that the strategy bodies have been established.\n\nOn 9 November 2026 Cyprus was among the states that signed the Paris Call for AI Safety and Security, in which signatories commit to a common framework for the evaluation and risk management of frontier models.",
       "region": {
         "id": "142",
         "name": "Asia",
@@ -15244,7 +15254,8 @@
         "br-r6-executive-bill",
         "br-r6-aiso-report",
         "br-r6-executive-bill-record",
-        "br-r6-anpd-sandbox"
+        "br-r6-anpd-sandbox",
+        "br-camara-pl5960-2026"
       ],
       "related_bodies": [
         {
@@ -15283,7 +15294,7 @@
           "id": "related_bodies-0096657a9da1527ba4ad1680d2b21c09"
         }
       ],
-      "notes": "PBIA action 51 was read in Portuguese and in the official English version. Both describe research on risks, safety, transparency and reliability and support for systems audits and evaluation. This is a government centre commitment, but it does not settle the criterion of evaluating advanced models. The full CEBRI and ITS Rio AISO report describes an exploratory design to stimulate debate; no government appointment or adoption was found. The current Chamber record still shows PL 2338/2023 awaiting the special-committee rapporteur. The government's separate PL 6237/2025, submitted on 8 December 2025 and joined to that bill, was also read: it proposes regulatory coordination, ANPD and sectoral-authority duties, and advisory committees. Article 8(X) concerns compliance audits, while article 8(XVIII) would let sectoral authorities and ANPD designate marketed general-purpose models and applications as materially relevant. Article 3(I) would permit support for infrastructure to assess model and application safety. These regulatory and enabling powers do not themselves designate a national institute to evaluate advanced models. ANPD's 19 August 2026 sandbox methodology describes testing transparency, explainability and personal-data protection in participant solutions. The reported August implementation of the PBIA centre remains unresolved because the Agência Gov source still returns an election-period unavailability notice, including through the single attempt to retrieve a text copy. The prior August implementation and Paris-summit sources remain cited for evidence history, not as new verification.",
+      "notes": "PBIA action 51 was read in Portuguese and in the official English version. Both describe research on risks, safety, transparency and reliability and support for systems audits and evaluation. This is a government centre commitment, but it does not settle the criterion of evaluating advanced models. The full CEBRI and ITS Rio AISO report describes an exploratory design to stimulate debate; no government appointment or adoption was found. The current Chamber record still shows PL 2338/2023 awaiting the special-committee rapporteur. The government's separate PL 6237/2025, submitted on 8 December 2025 and joined to that bill, was also read: it proposes regulatory coordination, ANPD and sectoral-authority duties, and advisory committees. Article 8(X) concerns compliance audits, while article 8(XVIII) would let sectoral authorities and ANPD designate marketed general-purpose models and applications as materially relevant. Article 3(I) would permit support for infrastructure to assess model and application safety. These regulatory and enabling powers do not themselves designate a national institute to evaluate advanced models. ANPD's 19 August 2026 sandbox methodology describes testing transparency, explainability and personal-data protection in participant solutions. The reported August implementation of the PBIA centre remains unresolved because the Agência Gov source still returns an election-period unavailability notice, including through the single attempt to retrieve a text copy. The prior August implementation and Paris-summit sources remain cited for evidence history, not as new verification.\n\nOn 4 November 2026 the Chamber of Deputies' news agency reported a committee hearing on a deputy's bill, PL 5960/2025, which would create Insoed, a network of public and private laboratories to test, certify and create technical standards for AI and digital infrastructure. It is a parliamentary bill, not the government's own proposal.",
       "next_check": {
         "date": "2027-01-15",
         "reason": "Retrieve an accessible primary act for the reported PBIA centre launch and clarify duties concerning advanced models; check PL 2338/2023 and government bill 6237/2025 for later institutional acts."
@@ -30664,9 +30675,11 @@
         "r4-fr-inria-evaluation-funding",
         "fr-sgdsn-aisi",
         "j7-fr-inria-about",
-        "j8-fr-anssi-home-render"
+        "j8-fr-anssi-home-render",
+        "fr-elysee-commission-ia-2026",
+        "fr-commission-ia-report-2026"
       ],
-      "notes": "Adopted a 2026-27 roadmap in Feb 2026. The named June 2025 joint-testing contribution was verified. SGDSN's network-representation statement was retrieved through the web research tool on 17 October 2026. A complete archived copy of the article was retained on 18 October; direct original retrieval remains blocked by a cookie-validation page. Other French testing work is credited to Inria, LNE and PEReN rather than to INESIA.",
+      "notes": "Adopted a 2026-27 roadmap in Feb 2026. The named June 2025 joint-testing contribution was verified. SGDSN's network-representation statement was retrieved through the web research tool on 17 October 2026. A complete archived copy of the article was retained on 18 October; direct original retrieval remains blocked by a cookie-validation page. Other French testing work is credited to Inria, LNE and PEReN rather than to INESIA.\n\nOn 10 November 2026 the French presidency announced the handover of the report of the expert commission on generative AI and vulnerabilities; the report recommends strengthening INESIA's mandate and resources, with lasting funding and recruitment of experts. These are recommendations, not adopted changes.",
       "mandate_short": "Builds public expertise in evaluating and securing advanced AI, and supports AI Act implementation.",
       "legal_basis": {
         "type": "administrative",
@@ -35985,7 +35998,7 @@
           "kr-aisi-recruit"
         ]
       },
-      "notes": "The science ministry planned in October 2024 for the institute to have about 30 staff in three research labs; its programme for the launch on 27 November 2024 counted 12 institute staff.",
+      "notes": "The science ministry planned in October 2024 for the institute to have about 30 staff in three research labs; its programme for the launch on 27 November 2024 counted 12 institute staff. Money Today reported that at the parliamentary audit of 20 October 2026, asked whether the AI safety evaluation organisation rents two GPU cloud servers from a private cloud company, ETRI's president answered that it uses external resources because GPUs are in very short supply.",
       "staff": [
         {
           "total": 38,
@@ -36591,7 +36604,15 @@
         "au-directory-institute",
         "au-naic-october",
         "j8-au-asd-plan-render",
-        "au-jsc-ai-2026-09-18"
+        "au-jsc-ai-2026-09-18",
+        "au-rapid-review-release-2026",
+        "au-rapid-review-recs-2026",
+        "au-ai-regulator-2026",
+        "rows-what-au-pmc",
+        "rows-what-au-ncsc",
+        "rows-what-au-oai",
+        "rows-what-au-sa",
+        "rows-what-au-dfat"
       ],
       "people": [
         {
@@ -36738,6 +36759,24 @@
             "institute_id": "au-aisi",
             "date": "2026-10-08"
           }
+        },
+        {
+          "date": "2026-11-10",
+          "type": "report",
+          "title": "Rapid Review into Australian Government arrangements for an AI-driven cyber incident",
+          "source_ids": [
+            "au-rapid-review-recs-2026",
+            "au-rapid-review-release-2026"
+          ],
+          "lineage": "rapid-review-ai-driven-cyber-incident",
+          "attribution": "named_contributor",
+          "attribution_note": "The minister's release says the Department of the Prime Minister and Cabinet undertook the review in collaboration with agencies including the Australian AI Safety Institute.",
+          "qualifies_as": "none",
+          "qualification_note": "A government review of arrangements for an AI-driven cyber incident, which makes 18 policy recommendations.",
+          "credit": {
+            "institute_id": "au-aisi",
+            "date": "2026-11-10"
+          }
         }
       ],
       "notes": "The 8 October 2026 publication date and AISI commissioning of CSIRO were reverified in the retained rendered copy of the department article. The retained direct article response did not independently yield those passages.",
@@ -36796,9 +36835,70 @@
               "au-industry",
               "rows-what-au-naic"
             ]
+          },
+          {
+            "id": "np-au-pmc",
+            "name": "Department of the Prime Minister and Cabinet",
+            "what": "department supporting the Prime Minister",
+            "relation": "works_with",
+            "how": "Undertook the government's Rapid Review of an AI-driven cyber incident in collaboration with the institute and other agencies.",
+            "source_ids": [
+              "au-rapid-review-release-2026",
+              "au-rapid-review-recs-2026",
+              "rows-what-au-pmc"
+            ]
+          },
+          {
+            "id": "np-au-ncsc",
+            "name": "National Cyber Security Coordinator",
+            "what": "coordinator of significant cyber incident response",
+            "relation": "works_with",
+            "how": "Collaborated with the institute and other agencies on the Rapid Review of an AI-driven cyber incident.",
+            "source_ids": [
+              "au-rapid-review-release-2026",
+              "au-rapid-review-recs-2026",
+              "rows-what-au-ncsc"
+            ]
+          },
+          {
+            "id": "np-au-oai",
+            "name": "Office of AI",
+            "what": "office to coordinate the AI standard",
+            "relation": "works_with",
+            "how": "Collaborated with the institute and other agencies on the Rapid Review of an AI-driven cyber incident.",
+            "source_ids": [
+              "au-rapid-review-release-2026",
+              "au-rapid-review-recs-2026",
+              "rows-what-au-oai"
+            ]
+          },
+          {
+            "id": "np-au-sa",
+            "name": "Services Australia",
+            "what": "agency delivering government services and payments",
+            "relation": "works_with",
+            "how": "Collaborated with the institute and other agencies on the Rapid Review of an AI-driven cyber incident.",
+            "source_ids": [
+              "au-rapid-review-release-2026",
+              "au-rapid-review-recs-2026",
+              "rows-what-au-sa"
+            ]
+          },
+          {
+            "id": "np-au-dfat",
+            "name": "Department of Foreign Affairs and Trade",
+            "acronym": "DFAT",
+            "what": "department for foreign affairs and trade",
+            "relation": "works_with",
+            "how": "An accepted Rapid Review recommendation has it, ASD and the industry department, including the institute, continue international AI governance and standards work.",
+            "source_ids": [
+              "au-rapid-review-recs-2026",
+              "au-rapid-review-release-2026",
+              "rows-what-au-dfat"
+            ]
           }
         ],
-        "notes": "Cyber agency searched: Australian Cyber Security Centre (ACSC), within ASD, 2026-10-19 (en); found. Live cyber.gov.au and industry.gov.au return 000 over curl from this Mac. Used Wayback (web.archive.org/web/2026/...): DISR AISI page (15 Oct), asd.gov.au/about (15 Sep), cyber.gov.au/about-us (26 Sep); an ACSC publication URL guess gave 404. Cooperation is stated with ASD (the host of ACSC), not with ACSC by name. All Wayback; no r.jina.ai used by me."
+        "notes": "Cyber agency searched: Australian Cyber Security Centre (ACSC), within ASD, 2026-10-19 (en); found. Live cyber.gov.au and industry.gov.au return 000 over curl from this Mac. Used Wayback (web.archive.org/web/2026/...): DISR AISI page (15 Oct), asd.gov.au/about (15 Sep), cyber.gov.au/about-us (26 Sep); an ACSC publication URL guess gave 404. Cooperation is stated with ASD (the host of ACSC), not with ACSC by name. All Wayback; no r.jina.ai used by me. On 10 November 2026 the government said it would propose a new targeted regulator for AI safety that would work with the institute to provide technical expertise and oversight; the regulator is not yet named or established, so it is not an entry."
       },
       "testing_capacity": {
         "modes": [
@@ -113503,7 +113603,8 @@
         "sha256": "df1b975982c942ea9feaf6b32f1a86f437e7558b4fa55ef776e92e029e3acb4d",
         "text_sha256": "a01b47164fa740d98ff47956d9760865aa44f4dd14cf5e80d351f9fbcaad37af",
         "text_scheme": 1
-      }
+      },
+      "access_note": "On 10 November 2026 the current text and version history of article 20 could not be read on Normattiva, so the article's current status was not verified and no status check date is recorded."
     },
     {
       "id": "us-metr-donate",
@@ -114506,6 +114607,62 @@
             ]
           ],
           "accessed": "2026-11-10"
+        },
+        {
+          "text": "AI 안전평가 조직에서 민간 클라우드사로부터 GPU 클라우드 서버 2대를 빌려 사용하고 있는지를 묻자",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "notes"
+            ]
+          ],
+          "gloss": "asked whether the AI safety evaluation organisation was renting two GPU cloud servers from a private cloud company",
+          "accessed": "2026-11-10"
+        },
+        {
+          "text": "GPU가 상당히 부족하기 때문에 외부에 있는 리소스를 쓰고 있다",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "notes"
+            ]
+          ],
+          "gloss": "because GPUs are in very short supply, we are using external resources",
+          "accessed": "2026-11-10"
+        },
+        {
+          "text": "20일 국회 과학기술정보방송통신위원회의 국가과학기술연구회(NST) 및 소관 연구기관 국정감사에서",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "notes"
+            ]
+          ],
+          "gloss": "on the 20th, at the National Assembly Science, ICT, Broadcasting and Communications Committee's audit of the National Research Council of Science and Technology (NST) and its research institutes",
+          "accessed": "2026-11-10"
+        },
+        {
+          "text": "ETRI 원장",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "notes"
+            ]
+          ],
+          "gloss": "ETRI president",
+          "accessed": "2026-11-10"
         }
       ],
       "snapshot": {
@@ -114750,6 +114907,1290 @@
         "retrieved": "2026-11-10T19:46:15Z",
         "sha256": "f9c77ac0d228fc26751bcc584fd479adb88a6bc51f54ce7766e6fdce21b9a486",
         "text_sha256": "f1d7d82a458e905e35dc2eef89375504abb8add33160d3e289c1e4bca07032c6",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "au-rapid-review-release-2026",
+      "url": "https://www.minister.industry.gov.au/t-ayres/media/strengthening-australia-against-ai-driven-cyber-incidents",
+      "title": "Strengthening Australia against AI-driven cyber incidents",
+      "publisher": "Minister for Industry and Innovation, Australia",
+      "type": "primary",
+      "published": "2026-11-10",
+      "accessed": "2026-11-10",
+      "language": "en",
+      "origin": "AU",
+      "access_note": "The live page did not answer automated requests from the maintainers' host; quotations are from the r.jina.ai text rendering read on 10 November 2026. The date excerpt quotes the Published Time metadata header of the text rendering rather than a date in the article body; the rendered page shows the release dated 10 November 2026.",
+      "excerpts": [
+        {
+          "text": "The Rapid Review – undertaken by the Department of Prime Minister and Cabinet, in collaboration with the National Cyber Security Coordinator, Office of AI, Australian Signals Directorate, Australian AI Safety Institute, and Services Australia – makes 18 recommendations",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "rapid-review-ai-driven-cyber-incident"
+              },
+              "attribution_note"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "rapid-review-ai-driven-cyber-incident"
+              },
+              "credit",
+              "institute_id"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "national_partners",
+              "entries",
+              {
+                "id": "np-au-pmc"
+              },
+              "name"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "national_partners",
+              "entries",
+              {
+                "id": "np-au-pmc"
+              },
+              "relation"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "national_partners",
+              "entries",
+              {
+                "id": "np-au-pmc"
+              },
+              "how"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "national_partners",
+              "entries",
+              {
+                "id": "np-au-ncsc"
+              },
+              "name"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "national_partners",
+              "entries",
+              {
+                "id": "np-au-ncsc"
+              },
+              "relation"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "national_partners",
+              "entries",
+              {
+                "id": "np-au-ncsc"
+              },
+              "how"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "national_partners",
+              "entries",
+              {
+                "id": "np-au-oai"
+              },
+              "name"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "national_partners",
+              "entries",
+              {
+                "id": "np-au-oai"
+              },
+              "relation"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "national_partners",
+              "entries",
+              {
+                "id": "np-au-oai"
+              },
+              "how"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "national_partners",
+              "entries",
+              {
+                "id": "np-au-sa"
+              },
+              "name"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "national_partners",
+              "entries",
+              {
+                "id": "np-au-sa"
+              },
+              "relation"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "national_partners",
+              "entries",
+              {
+                "id": "np-au-sa"
+              },
+              "how"
+            ]
+          ],
+          "accessed": "2026-11-10",
+          "url": "https://r.jina.ai/https://www.minister.industry.gov.au/t-ayres/media/strengthening-australia-against-ai-driven-cyber-incidents"
+        },
+        {
+          "text": "The Government accepts the recommendations and has commenced work to implement them.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "national_partners",
+              "entries",
+              {
+                "id": "np-au-dfat"
+              },
+              "relation"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "national_partners",
+              "entries",
+              {
+                "id": "np-au-dfat"
+              },
+              "how"
+            ]
+          ],
+          "accessed": "2026-11-10",
+          "url": "https://r.jina.ai/https://www.minister.industry.gov.au/t-ayres/media/strengthening-australia-against-ai-driven-cyber-incidents"
+        },
+        {
+          "text": "Published Time: Tue, 2026-11-10 13:23",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "rapid-review-ai-driven-cyber-incident"
+              },
+              "date"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "rapid-review-ai-driven-cyber-incident"
+              },
+              "credit",
+              "date"
+            ]
+          ],
+          "accessed": "2026-11-10",
+          "url": "https://r.jina.ai/https://www.minister.industry.gov.au/t-ayres/media/strengthening-australia-against-ai-driven-cyber-incidents"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-10T22:13:03Z",
+        "sha256": "0ff5565adb9a7ee960ae0ba9ac32080b3458d895b666500bfe088db2783de67c",
+        "text_sha256": "c7fb80638e780d687acc2ddd76182e752199d41d2c4b75aa2c1ff12446d8b8c7",
+        "text_scheme": 1
+      },
+      "output_role": "context"
+    },
+    {
+      "id": "au-rapid-review-recs-2026",
+      "url": "https://www.pmc.gov.au/resources/rapid-review-australian-government-arrangements-ai-driven-cyber-incident/rapid-review-australian-government-arrangements-ai-driven-cyber-incident-recommendations",
+      "title": "Rapid Review into Australian Government arrangements for an AI‑driven cyber incident recommendations",
+      "publisher": "Department of the Prime Minister and Cabinet (Australia)",
+      "type": "primary",
+      "published": "2026-11-10",
+      "accessed": "2026-11-10",
+      "language": "en",
+      "origin": "AU",
+      "output_role": "document",
+      "output_lineage": "rapid-review-ai-driven-cyber-incident",
+      "access_note": "The live page did not answer automated requests from the maintainers' host; quotations are from the r.jina.ai text rendering read on 10 November 2026.",
+      "excerpts": [
+        {
+          "text": "The Rapid Review into Australian Government arrangements for an AI-driven cyber incident examines the OpenAI cyber incident affecting Services Australia and outlines 18 recommendations to ensure Australia is better prepared for AI incidents of greater scale, complexity and consequence.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "rapid-review-ai-driven-cyber-incident"
+              },
+              "title"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "rapid-review-ai-driven-cyber-incident"
+              },
+              "qualification_note"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "national_partners",
+              "entries",
+              {
+                "id": "np-au-pmc"
+              },
+              "how"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "national_partners",
+              "entries",
+              {
+                "id": "np-au-ncsc"
+              },
+              "how"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "national_partners",
+              "entries",
+              {
+                "id": "np-au-oai"
+              },
+              "how"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "national_partners",
+              "entries",
+              {
+                "id": "np-au-sa"
+              },
+              "how"
+            ]
+          ],
+          "accessed": "2026-11-10",
+          "url": "https://r.jina.ai/https://www.pmc.gov.au/resources/rapid-review-australian-government-arrangements-ai-driven-cyber-incident/rapid-review-australian-government-arrangements-ai-driven-cyber-incident-recommendations"
+        },
+        {
+          "text": "The Department of Foreign Affairs and Trade (DFAT), the Australian Signals Directorate (ASD), and the Department of Industry, Science and Resources (DISR), including Australia’s AI Safety Institute (AISI)",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "national_partners",
+              "entries",
+              {
+                "id": "np-au-dfat"
+              },
+              "name"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "national_partners",
+              "entries",
+              {
+                "id": "np-au-dfat"
+              },
+              "relation"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "national_partners",
+              "entries",
+              {
+                "id": "np-au-dfat"
+              },
+              "how"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "national_partners",
+              "entries",
+              {
+                "id": "np-au-dfat"
+              },
+              "acronym"
+            ]
+          ],
+          "accessed": "2026-11-10",
+          "url": "https://r.jina.ai/https://www.pmc.gov.au/resources/rapid-review-australian-government-arrangements-ai-driven-cyber-incident/rapid-review-australian-government-arrangements-ai-driven-cyber-incident-recommendations"
+        },
+        {
+          "text": "continue engaging in international AI governance and standards-setting efforts",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "national_partners",
+              "entries",
+              {
+                "id": "np-au-dfat"
+              },
+              "relation"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "national_partners",
+              "entries",
+              {
+                "id": "np-au-dfat"
+              },
+              "how"
+            ]
+          ],
+          "accessed": "2026-11-10",
+          "url": "https://r.jina.ai/https://www.pmc.gov.au/resources/rapid-review-australian-government-arrangements-ai-driven-cyber-incident/rapid-review-australian-government-arrangements-ai-driven-cyber-incident-recommendations"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-10T22:13:04Z",
+        "sha256": "50652b690bdd657efe5599829d6f8033e436008530e0c9f15fa1e73eaa701a81",
+        "text_sha256": "031db4af5eaebdba38b88e89d1d29224c70f5006de46660317552748411faa87",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "au-ai-regulator-2026",
+      "url": "https://www.minister.industry.gov.au/t-ayres/media/new-australian-ai-safety-and-security-protections",
+      "title": "New Australian AI safety and security protections",
+      "publisher": "Minister for Industry and Innovation, Australia",
+      "type": "primary",
+      "published": "2026-11-10",
+      "accessed": "2026-11-10",
+      "language": "en",
+      "origin": "AU",
+      "access_note": "The live page did not answer automated requests from the maintainers' host; quotations are from the r.jina.ai text rendering read on 10 November 2026.",
+      "excerpts": [
+        {
+          "text": "The Government will propose these protections be enforced by a new targeted regulator for AI safety, which will work with the Australian AI Safety Institute to provide technical expertise and oversight as global standards evolve.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "national_partners",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-10",
+          "url": "https://r.jina.ai/https://www.minister.industry.gov.au/t-ayres/media/new-australian-ai-safety-and-security-protections"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-10T22:13:05Z",
+        "sha256": "e7c06c6f48539ca53f056f5ea9c055658492e527dd82d738965ca8446923878b",
+        "text_sha256": "d7e05e14911d5be776ae3f92302e812e532ecbac2d3bf367c8f2d7d2a8053f70",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "rows-what-au-pmc",
+      "url": "https://www.pmc.gov.au/about-us",
+      "title": "About us",
+      "publisher": "Department of the Prime Minister and Cabinet (Australia)",
+      "type": "primary",
+      "accessed": "2026-11-10",
+      "language": "en",
+      "origin": "AU",
+      "access_note": "The live page did not answer automated requests from the maintainers' host; quotations are from the r.jina.ai text rendering read on 10 November 2026.",
+      "excerpts": [
+        {
+          "text": "To support the Prime Minister, the Cabinet and our portfolio ministers to improve the lives of all Australians, advance Australia’s interests, and keep our country safe and prosperous.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "national_partners",
+              "entries",
+              {
+                "id": "np-au-pmc"
+              },
+              "what"
+            ]
+          ],
+          "accessed": "2026-11-10",
+          "url": "https://r.jina.ai/https://www.pmc.gov.au/about-us"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-10T22:13:06Z",
+        "sha256": "28befcfccd65aa0c2d82d2ed0e7d62bcaa9f9159ad62e10591026559fc8cf02b",
+        "text_sha256": "3bf0f6daadd6df03cf9d270079ac777d54e5f01be6319e2651fd8640c0a4a847",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "rows-what-au-ncsc",
+      "url": "https://www.homeaffairs.gov.au/about-us/our-portfolios/cyber-security/cyber-coordinator",
+      "title": "National Cyber Security Coordinator",
+      "publisher": "Department of Home Affairs (Australia)",
+      "type": "primary",
+      "accessed": "2026-11-10",
+      "language": "en",
+      "origin": "AU",
+      "excerpts": [
+        {
+          "text": "The National Cyber Security Coordinator (the Coordinator), supported by the National Office of Cyber Security, drives forward the necessary work to ensure Australia is best positioned to respond to the opportunities and threats of the digital age.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "national_partners",
+              "entries",
+              {
+                "id": "np-au-ncsc"
+              },
+              "what"
+            ]
+          ],
+          "accessed": "2026-11-10"
+        },
+        {
+          "text": "and triages action in response to a significant cyber incident",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "national_partners",
+              "entries",
+              {
+                "id": "np-au-ncsc"
+              },
+              "what"
+            ]
+          ],
+          "accessed": "2026-11-10"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-10T22:13:07Z",
+        "sha256": "35650ca8374f643fab923f507749cf8a00110f5354aa75ac55a156abd4ca0b7f",
+        "text_sha256": "1e9baf4bbeda12585d621cbb9b8a46ef8adc974c99f162037f9eda76efa7f3ef",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "rows-what-au-oai",
+      "url": "https://www.pmc.gov.au/domestic-policy/office-ai",
+      "title": "Office of AI",
+      "publisher": "Department of the Prime Minister and Cabinet (Australia)",
+      "type": "primary",
+      "accessed": "2026-11-10",
+      "language": "en",
+      "origin": "AU",
+      "access_note": "The live page did not answer automated requests from the maintainers' host; quotations are from the r.jina.ai text rendering read on 10 November 2026.",
+      "excerpts": [
+        {
+          "text": "The Office of AI was established in the Department of the Prime Minister and Cabinet on 15 July 2026.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "national_partners",
+              "entries",
+              {
+                "id": "np-au-oai"
+              },
+              "what"
+            ]
+          ],
+          "accessed": "2026-11-10",
+          "url": "https://r.jina.ai/https://www.pmc.gov.au/domestic-policy/office-ai"
+        },
+        {
+          "text": "The office will coordinate across Australian Government agencies to design and legislate the new Australia artificial intelligence (AI) standard",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "national_partners",
+              "entries",
+              {
+                "id": "np-au-oai"
+              },
+              "what"
+            ]
+          ],
+          "accessed": "2026-11-10",
+          "url": "https://r.jina.ai/https://www.pmc.gov.au/domestic-policy/office-ai"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-10T22:13:08Z",
+        "sha256": "1f527c66abfc158a5a7a9539d65b7a870ab97d44d9402cb6f849c115d4ce8b4c",
+        "text_sha256": "e35c1716b213ed72fb4e837ddd902fbfd4988cd67faefd78d959a99e001d96d2",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "rows-what-au-sa",
+      "url": "https://www.servicesaustralia.gov.au/who-we-are?context=22",
+      "title": "Who we are",
+      "publisher": "Services Australia",
+      "type": "primary",
+      "accessed": "2026-11-10",
+      "language": "en",
+      "origin": "AU",
+      "access_note": "The live page did not answer automated requests from the maintainers' host; quotations are from the r.jina.ai text rendering read on 10 November 2026.",
+      "excerpts": [
+        {
+          "text": "We are Services Australia, an Australian Government agency within the Finance portfolio. We support Australians by efficiently delivering high-quality, accessible services and payments on behalf of the government.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "national_partners",
+              "entries",
+              {
+                "id": "np-au-sa"
+              },
+              "what"
+            ]
+          ],
+          "accessed": "2026-11-10",
+          "url": "https://r.jina.ai/https://www.servicesaustralia.gov.au/who-we-are?context=22"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-10T22:13:09Z",
+        "sha256": "2a6bd7a89224a1b1e1cf38ba5d4e701b3661d460cf8abc0f4f9c867482f8d3ae",
+        "text_sha256": "42e305b6e03cbe00f49387dcb160bd983c15c1f11e711cda8c4243ae740d185f",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "rows-what-au-dfat",
+      "url": "https://www.dfat.gov.au/about-us/department/what-we-do",
+      "title": "What we do",
+      "publisher": "Department of Foreign Affairs and Trade (Australia)",
+      "type": "primary",
+      "accessed": "2026-11-10",
+      "language": "en",
+      "origin": "AU",
+      "access_note": "The live page did not answer automated requests from the maintainers' host; quotations are from the r.jina.ai text rendering read on 10 November 2026.",
+      "excerpts": [
+        {
+          "text": "The Department of Foreign Affairs and Trade (DFAT) promotes and protects Australia’s international interests to support our security and prosperity.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "national_partners",
+              "entries",
+              {
+                "id": "np-au-dfat"
+              },
+              "what"
+            ]
+          ],
+          "accessed": "2026-11-10",
+          "url": "https://r.jina.ai/https://www.dfat.gov.au/about-us/department/what-we-do"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-10T22:13:10Z",
+        "sha256": "4ecc73d475de6ff942326551ab3d5058fe9642a480613f3aee2012ac0730d3e4",
+        "text_sha256": "bd59cfbfbdd5db881f0f8ea88e26d1c190cc1911b0f1bd5e9d697d64d187760d",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "fr-elysee-paris-call-2026",
+      "url": "https://www.elysee.fr/en/emmanuel-macron/2026/11/09/paris-call-for-ai-safety-and-security",
+      "title": "Paris Call for AI safety and security.",
+      "publisher": "Presidency of France",
+      "type": "primary",
+      "published": "2026-11-09",
+      "accessed": "2026-11-10",
+      "language": "en",
+      "origin": "FR",
+      "excerpts": [
+        {
+          "text": "The declaration has been signed on Monday 9 November 2026 by the following Heads of States and Governments and CEOs:",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "AT"
+              },
+              "notes"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "CY"
+              },
+              "notes"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "EE"
+              },
+              "notes"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "FI"
+              },
+              "notes"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "IE"
+              },
+              "notes"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "LV"
+              },
+              "notes"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "NL"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-10"
+        },
+        {
+          "text": "Heads of States and Governments: Austria, Bahrain, Canada, Croatia, Cyprus, Estonia, Finland, France, Ireland, Kenya, Latvia, Liechtenstein, Luxembourg, Netherlands, Norway, Portugal.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "AT"
+              },
+              "notes"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "CY"
+              },
+              "notes"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "EE"
+              },
+              "notes"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "FI"
+              },
+              "notes"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "IE"
+              },
+              "notes"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "LV"
+              },
+              "notes"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "NL"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-10"
+        },
+        {
+          "text": "First, policy makers, researchers and developers are committed to establishing a common framework for the evaluation and risk management of frontier models, building on existing frameworks.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "AT"
+              },
+              "notes"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "CY"
+              },
+              "notes"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "EE"
+              },
+              "notes"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "FI"
+              },
+              "notes"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "IE"
+              },
+              "notes"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "LV"
+              },
+              "notes"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "NL"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-10"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-10T22:13:08Z",
+        "sha256": "d396581c937391e5b970a7ab199a8cc3680c1c9b3662062cec312cc0ba585275",
+        "text_sha256": "86b6c331dc0a78fcc4e8a93279f80bf46afe68d0d762b786d24029b30c3f7af8",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "is-umbra-cert-openai-2026",
+      "url": "https://www.stjornarradid.is/efst-a-baugi/frettir/stok-frett/umbra-og-cert-is-fa-adgang-ad-serhaefdri-gervigreind-openai-til-netvarna/",
+      "title": "Umbra og CERT-IS fá aðgang að sérhæfðri gervigreind OpenAI til netvarna",
+      "title_en": "Umbra and CERT-IS get access to specialised OpenAI artificial intelligence for cyber defence",
+      "publisher": "Government of Iceland, Ministry of Finance and Economic Affairs",
+      "type": "primary",
+      "published": "2026-11-04",
+      "accessed": "2026-11-10",
+      "language": "is",
+      "origin": "IS",
+      "excerpts": [
+        {
+          "text": "Umbra – þjónustumiðstöð Stjórnarráðsins og netöryggissveitin CERT-IS hafa fengið aðgang að sérhæfðu netöryggislíkani frá OpenAI.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "IS"
+              },
+              "notes"
+            ]
+          ],
+          "gloss": "Umbra, the Government Offices' service centre, and the cyber security team CERT-IS have received access to a specialised cyber security model from OpenAI.",
+          "accessed": "2026-11-10"
+        },
+        {
+          "text": "Þar sem slík tækni getur nýst bæði til varna og árása er aðgangur að líkaninu aðeins veittur að undangengnu mati, í gegnum Government Trusted Access for Cyber (GTAC).",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "IS"
+              },
+              "notes"
+            ]
+          ],
+          "gloss": "Because such technology can be used both for defence and for attack, access to the model is granted only after an assessment, through Government Trusted Access for Cyber (GTAC).",
+          "accessed": "2026-11-10"
+        },
+        {
+          "text": "Notkunin er bundin við skilgreind verkefni í þágu netvarna, háð skýrum öryggiskröfum og einskorðast við þau kerfi og innviði sem viðkomandi hafa heimild til að vinna með.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "IS"
+              },
+              "notes"
+            ]
+          ],
+          "gloss": "Use is tied to defined cyber defence tasks, subject to clear security requirements, and limited to the systems and infrastructure those concerned are authorised to work with.",
+          "accessed": "2026-11-10"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-10T22:13:09Z",
+        "sha256": "dcfc9cd8943954fe39558b2ce846eb0921a349178adcdec10d5f651b91c4e110",
+        "text_sha256": "355dd5090093d8f214afc41a175e0904afa91a11072161a0d1db8259bb3bd4a1",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "ro-senat-b597-2026",
+      "url": "https://www.senat.ro/legis/lista.aspx?an_cls=2026&nr_cls=b597",
+      "title": "B597/2026 Propunere legislativă privind dezvoltarea sigură a sistemelor de inteligență artificială de vârf și prevenirea riscurilor catastrofale pentru cetățeanul român",
+      "title_en": "B597/2026 Legislative proposal on the safe development of frontier artificial intelligence systems and the prevention of catastrophic risks for Romanian citizens",
+      "publisher": "Senatul României",
+      "type": "primary",
+      "accessed": "2026-11-10",
+      "language": "ro",
+      "origin": "RO",
+      "excerpts": [
+        {
+          "text": "Propunere legislativă privind dezvoltarea sigură a sistemelor de inteligență artificială de vârf și prevenirea riscurilor catastrofale pentru cetățeanul român",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "RO"
+              },
+              "notes"
+            ]
+          ],
+          "gloss": "Legislative proposal on the safe development of frontier artificial intelligence systems and the prevention of catastrophic risks for Romanian citizens",
+          "accessed": "2026-11-10"
+        },
+        {
+          "text": "deputat Neafiliat",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "RO"
+              },
+              "notes"
+            ]
+          ],
+          "gloss": "unaffiliated deputy",
+          "accessed": "2026-11-10"
+        },
+        {
+          "text": "Înregistrat la Senat pentru dezbatere cu nr.b597",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "RO"
+              },
+              "notes"
+            ]
+          ],
+          "gloss": "Registered at the Senate for debate as no. b597",
+          "accessed": "2026-11-10"
+        },
+        {
+          "text": "28-10-2026",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "RO"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-10",
+          "gloss": "28 October 2026"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-10T22:13:09Z",
+        "sha256": "3c649ead62356b71cbf178e19d4b86a28675cfcd8eba597b272a76887c73a437",
+        "text_sha256": "ccb4a2d7a45f566d38cd9b553b523ff8ccd5413acfcae4365d5fe985e0c5fe5c",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "ro-b597-text-2026",
+      "url": "https://www.senat.ro/legis/PDF/2026/26b597FG.PDF?nocache=true",
+      "title": "B597/2026, forma inițiatorului",
+      "title_en": "B597/2026, initiator's text",
+      "publisher": "Senatul României",
+      "type": "primary",
+      "accessed": "2026-11-10",
+      "language": "ro",
+      "origin": "RO",
+      "legal_text": true,
+      "access_note": "The PDF is a scan; its text layer is machine-recognised and drops some diacritics, so quotations follow that layer.",
+      "excerpts": [
+        {
+          "text": "Autoritatea pentru Siguranta Inteligentei Artificiale",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "RO"
+              },
+              "notes"
+            ]
+          ],
+          "gloss": "the AI Safety Authority",
+          "accessed": "2026-11-10"
+        },
+        {
+          "text": "evaluare independenta - evaluarea capabilitatilor Si a sigurantei unui sistem de varf,",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "RO"
+              },
+              "notes"
+            ]
+          ],
+          "gloss": "independent evaluation: the evaluation of the capabilities and safety of a frontier system,",
+          "accessed": "2026-11-10"
+        },
+        {
+          "text": "realizata de Autoritate sau de un organism de evaluare desemnat de aceasta",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "RO"
+              },
+              "notes"
+            ]
+          ],
+          "gloss": "carried out by the Authority or by an evaluation body it designates",
+          "accessed": "2026-11-10"
+        },
+        {
+          "text": "Autoritatea se finanteaza din bugetul ANCOM",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "RO"
+              },
+              "notes"
+            ]
+          ],
+          "gloss": "The Authority is funded from ANCOM's budget",
+          "accessed": "2026-11-10"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-10T22:13:10Z",
+        "sha256": "eab717242648b8430abbec92fced3c8e467ddaf311d0d794d7923d39e6b5b202",
+        "text_sha256": "637ee53e6da2b6fd2afa913c57eed922831e9ba918c1389e0e38086791f24b6e",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "br-camara-pl5960-2026",
+      "url": "https://www.camara.leg.br/noticias/1315814-marco-da-economia-digital-garantira-recursos-de-longo-prazo-para-tecnologia-dizem-especialistas",
+      "title": "Marco da Economia Digital garantirá recursos de longo prazo para tecnologia, dizem especialistas",
+      "title_en": "Digital Economy Framework will guarantee long-term resources for technology, experts say",
+      "publisher": "Câmara dos Deputados",
+      "type": "primary",
+      "published": "2026-11-04",
+      "accessed": "2026-11-10",
+      "language": "pt",
+      "origin": "BR",
+      "excerpts": [
+        {
+          "text": "Da Agência Câmara - 04/11/2026 - 14:54",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "BR"
+              },
+              "notes"
+            ]
+          ],
+          "gloss": "From Agência Câmara, 4 November 2026",
+          "accessed": "2026-11-10"
+        },
+        {
+          "text": "Projeto de Lei 5960/2025",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "BR"
+              },
+              "notes"
+            ]
+          ],
+          "gloss": "Bill 5960/2025",
+          "accessed": "2026-11-10"
+        },
+        {
+          "text": "Em audiência na Comissão de Desenvolvimento Econômico da Câmara dos Deputados",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "BR"
+              },
+              "notes"
+            ]
+          ],
+          "gloss": "At a hearing in the Chamber of Deputies' Economic Development Committee",
+          "accessed": "2026-11-10"
+        },
+        {
+          "text": "O autor do projeto de lei, deputado",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "BR"
+              },
+              "notes"
+            ]
+          ],
+          "gloss": "The author of the bill, deputy",
+          "accessed": "2026-11-10"
+        },
+        {
+          "text": "Prevista pelo projeto, a Rede de Institutos de Ciência e Tecnologia para a Economia Digital (Insoed) funcionará como uma estrutura articulada de laboratórios públicos e privados para testar, certificar e criar padrões técnicos para inteligência artificial e infraestrutura digital.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "BR"
+              },
+              "notes"
+            ]
+          ],
+          "gloss": "Provided for by the bill, the Network of Science and Technology Institutes for the Digital Economy (Insoed) will work as a coordinated structure of public and private laboratories to test, certify and create technical standards for artificial intelligence and digital infrastructure.",
+          "accessed": "2026-11-10"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-10T22:13:10Z",
+        "sha256": "f42093aed80245290a92b1e65936afd3a798c0a312173fb2c28cda8d2ccd9b52",
+        "text_sha256": "304b5e64e66fcab7751325ec25903ca2ed9fd537948b71fb12531e8bb2acb987",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "fr-elysee-commission-ia-2026",
+      "url": "https://www.elysee.fr/emmanuel-macron/2026/11/10/remise-du-rapport-de-la-commission-dexperts-ia-generative-et-vulnerabilites",
+      "title": "Remise du rapport de la Commission d’experts « IA générative et vulnérabilités »",
+      "title_en": "Presentation of the report of the expert commission on generative AI and vulnerabilities",
+      "publisher": "Presidency of France",
+      "type": "primary",
+      "published": "2026-11-10",
+      "accessed": "2026-11-10",
+      "language": "fr",
+      "origin": "FR",
+      "excerpts": [
+        {
+          "text": "Publié le 10 novembre 2026",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "fr-inesia"
+              },
+              "notes"
+            ]
+          ],
+          "gloss": "Published 10 November 2026",
+          "accessed": "2026-11-10"
+        },
+        {
+          "text": "Remise du rapport de la Commission d’experts « IA générative et vulnérabilités »",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "fr-inesia"
+              },
+              "notes"
+            ]
+          ],
+          "gloss": "Handover of the report of the expert commission on generative AI and vulnerabilities",
+          "accessed": "2026-11-10"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-10T22:13:10Z",
+        "sha256": "cbed2137789cdef5b2512b3e9bc1c183d6a8ff88cbc8878627d61b5163682e0a",
+        "text_sha256": "3e0f44e700c58051bd4025cb85f6ece4747eeff5bd9e691e791539d3a7f17b81",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "fr-commission-ia-report-2026",
+      "url": "https://www.conseil-ia-numerique.fr/files/uploads/2026/Rapport_Commission_IA_generative_vulnerabilites_2026.pdf",
+      "title": "Protéger sans empêcher : nos vulnérabilités à l’ère de l’IA générative",
+      "title_en": "Protect without preventing: our vulnerabilities in the age of generative AI",
+      "publisher": "Conseil de l’intelligence artificielle et du numérique",
+      "type": "primary",
+      "accessed": "2026-11-10",
+      "language": "fr",
+      "origin": "FR",
+      "excerpts": [
+        {
+          "text": "Renforcer le mandat et les moyens de l’INESIA pour en faire une force propre",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "fr-inesia"
+              },
+              "notes"
+            ]
+          ],
+          "gloss": "Strengthen INESIA's mandate and resources to make it a force of its own",
+          "accessed": "2026-11-10"
+        },
+        {
+          "text": "via un financement pérenne et un recrutement d’experts",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "fr-inesia"
+              },
+              "notes"
+            ]
+          ],
+          "gloss": "through lasting funding and recruitment of experts",
+          "accessed": "2026-11-10"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-10T22:13:11Z",
+        "sha256": "babfb941929f0d45f6b3de6367bd86b788be250f16f819a0179dc0a0a5ecd7ee",
+        "text_sha256": "dd96a4d6942699a0fc48cd5f577a1abcdbb35f3622b46579b8f5d7f4ddddd8f9",
         "text_scheme": 1
       }
     }

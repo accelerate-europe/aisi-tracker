@@ -26,7 +26,7 @@ def test_all_catalogue_outputs_have_reviewed_decisions():
         (Path(__file__).resolve().parents[1] / "data/aisi.json").read_text()
     )
     outputs = [o for i in data["institutes"] for o in i.get("outputs", [])]
-    assert len(outputs) == 134
+    assert len(outputs) == 135
     assert all(o["qualification_note"].strip() for o in outputs)
     assert all(
         o["qualifies_as"] in {"published_work", "joint_testing", "none"}
