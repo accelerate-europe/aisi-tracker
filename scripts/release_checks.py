@@ -370,7 +370,9 @@ def check_markdown(root: Path, readme: bytes | None = None) -> list[str]:
         return [f"Cannot check tracked Markdown: {error}"]
 
 
-DRAFT_WORDING = re.compile(r"\bunreleased\b|\bthis\s+draft\b|\bowner\s+copy\s+edit\s+pending\b", re.I)
+# Explicit draft markers only: a bare "unreleased" also describes public-first work
+# ("unreleased data on next is public"), so it counts only in "unreleased draft".
+DRAFT_WORDING = re.compile(r"\bunreleased\s+draft\b|\bthis\s+draft\b|\bowner\s+copy\s+edit\s+pending\b", re.I)
 # Match tracker version labels and paths, not the CC BY licence or font versions.
 PRERELEASE_VERSION = re.compile(
     r"\b(?:version|schema|contract)\s*[-:(`]*\s*v?4\.0(?:\.\d+)?(?!\w|\.\d)"
