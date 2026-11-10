@@ -21,6 +21,7 @@ from functools import partial
 from http.server import ThreadingHTTPServer
 from pathlib import Path
 
+from browser_lock import browser_slot
 from check_page import INSTALL_CHROME, LOCALE, NOT_RUN, QuietHandler, browser_env, find_chrome
 
 WIDTH, HEIGHT = 1440, 900  # desktop; at other widths the page regroups its card rows before the data arrives
@@ -121,7 +122,8 @@ def main() -> int:
         print(f"NOT RUN: Playwright's Chromium is required to pre-render the page and is not installed ({INSTALL_CHROME}).", file=sys.stderr)
         return NOT_RUN
     page = args.dist / "index.html"
-    html = split_map(prerender(args.dist, chrome), args.dist)
+    with browser_slot("prerender", wait=None):
+        html = split_map(prerender(args.dist, chrome), args.dist)
     if "data-prerendered" not in html or '<template id="page-template">' not in html:
         print("error: the rendered page lacks its pre-rendering markers", file=sys.stderr)
         return 1

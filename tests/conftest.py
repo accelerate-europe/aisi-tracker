@@ -79,6 +79,16 @@ def no_prerender():
 
 
 @pytest.fixture(scope="session", autouse=True)
+def isolated_browser_lock(tmp_path_factory):
+    """Tests that call the gate's main() take the browser lock: a lock of their own (one per xdist worker), so the
+    suite neither waits for a real gate or monitor run on the host nor holds it up."""
+    with pytest.MonkeyPatch.context() as patch:
+        patch.setenv("AISI_BROWSER_LOCK", str(tmp_path_factory.mktemp("browser-lock") / "browser.lock"))
+        patch.delenv("AISI_BROWSER_LOCK_HELD", raising=False)
+        yield
+
+
+@pytest.fixture(scope="session", autouse=True)
 def isolated_git(tmp_path_factory):
     """Every git a test starts runs without the user's, system or command-scope configuration and without
     templates (no signing, hooks or default-branch settings), with a fixed identity; the repository's own

@@ -10,7 +10,10 @@ SCRIPTS = Path(__file__).resolve().parents[1] / "scripts"
 # Read by the scripts but owned by the git isolation fixture or by git itself, not host settings to drop.
 # AISI_INTERNAL stays: it is how a public checkout's tests find the private data/internal files, and the tests that
 # need them skip only when they are absent there.
-NOT_HOST_SETTINGS = {"GIT_INDEX_FILE", "GIT_AUTHOR_DATE", "AISI_INTERNAL"}
+# The browser lock settings are set for every test by conftest.isolated_browser_lock (XDG_RUNTIME_DIR is read only
+# when AISI_BROWSER_LOCK is unset), so a test never shares the host's lock.
+NOT_HOST_SETTINGS = {"GIT_INDEX_FILE", "GIT_AUTHOR_DATE", "AISI_INTERNAL", "AISI_BROWSER_LOCK", "AISI_BROWSER_LOCK_HELD",
+                     "XDG_RUNTIME_DIR"}
 
 
 def test_every_setting_the_scripts_read_is_removed_for_tests():

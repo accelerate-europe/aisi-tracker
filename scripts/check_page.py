@@ -38,6 +38,7 @@ from urllib.parse import urljoin, urlsplit
 from bs4 import BeautifulSoup
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from browser_lock import browser_slot, lock_path  # noqa: E402
 from display import GENERIC_FIELDS, record_sources as entry_sources  # noqa: E402
 from method_copy import rule_label  # noqa: E402
 from release_checks import today  # noqa: E402
@@ -97,7 +98,7 @@ def reports(check):
         return [report_line(finding) for finding in check(*args, **kwargs)]
     return reported
 # One browser for build, gate and contact sheet on every host: the Chromium of the Playwright version this
-# script's lock pins (prerender.py's lock pins the same, a test checks), in Playwright's default browser folder.
+# script's lock pins (prerender.py and monitor_browser.py pin the same, a test checks), in Playwright's default browser folder.
 INSTALL_CHROME = "uv run --locked scripts/check_page.py --install-chrome"
 
 
@@ -10064,6 +10065,14 @@ def stop_pool(pool, finished: bool) -> None:
             process.join()
 
 
+def inherit_browser_slot(path: str) -> None:
+    """Spawned worker initialiser: only the child's environment gets the parent's lock marker.
+
+    Workers call jobs directly, never main(); the gate entry point owns their slot.
+    """
+    os.environ["AISI_BROWSER_LOCK_HELD"] = path
+
+
 def run_stages(run, work: list[tuple], seeds: dict, jobs: int = 1) -> list[str]:
     """Report (stage, check, args) jobs, each run as run(stage, check, args), as the sequential gate does: stages in
     the order they first appear, each only when every earlier one passed; within a stage its seed's errors (a
@@ -10081,7 +10090,8 @@ def run_stages(run, work: list[tuple], seeds: dict, jobs: int = 1) -> list[str]:
             import multiprocessing
             from concurrent.futures import ProcessPoolExecutor
 
-            pool = ProcessPoolExecutor(jobs, mp_context=multiprocessing.get_context("spawn"))
+            pool = ProcessPoolExecutor(jobs, mp_context=multiprocessing.get_context("spawn"),
+                                       initializer=inherit_browser_slot, initargs=(str(lock_path()),))
             futures = submit_jobs(pool, run, work, sorted(range(len(work)), key=lambda n: start_order(work[n][1])))
         errors = []
         for stage in stages:
@@ -10222,7 +10232,8 @@ def run_shard(run, work: list[tuple], indices: list[int], jobs: int) -> dict[int
             import multiprocessing
             from concurrent.futures import ProcessPoolExecutor
 
-            pool = ProcessPoolExecutor(jobs, mp_context=multiprocessing.get_context("spawn"))
+            pool = ProcessPoolExecutor(jobs, mp_context=multiprocessing.get_context("spawn"),
+                                       initializer=inherit_browser_slot, initargs=(str(lock_path()),))
             futures = submit_jobs(pool, run, work, sorted(indices, key=lambda n: start_order(work[n][1])))
         for n in indices:
             try:
@@ -10650,6 +10661,7 @@ def check_recovery_page(
     return errors
 
 
+@browser_slot("gate", wait=None)
 def main(dist: Path = ROOT / "dist", screenshots: Path | None = None, capture: Path | None = None, jobs: int = 1,
          shard: tuple[int, int] | None = None, results: Path | None = None, merge: Path | None = None,
          timings: Path | None = None, only: list[str] | None = None, use_quarantine: bool = True, deadline: float | None = None,
