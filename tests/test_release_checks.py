@@ -346,7 +346,10 @@ def test_audit_prose_still_gets_dash_check_without_page_jargon_rule():
 
 
 @pytest.mark.parametrize("where", ["README.md", "CLAUDE.md", "AGENTS.md", "citation", "schema", "method"])
-@pytest.mark.parametrize("wording", ["unreleased", "This draft", "THIS\nDRAFT", "[Owner copy edit pending.]"])
+@pytest.mark.parametrize(
+    "wording",
+    ["unreleased draft", "Unreleased\nDraft", "This draft", "THIS\nDRAFT", "[Owner copy edit pending.]"],
+)
 def test_launch_wording_mutations(dataset, build_env, where, wording):
     (build_env / "CLAUDE.md").write_text("Project rules.")
     (build_env / "AGENTS.md").write_text("Agent map.")
@@ -372,6 +375,23 @@ def test_launch_wording_mutations(dataset, build_env, where, wording):
         "draft wording" in e
         for e in release_checks.check_launch_wording(dataset, schema, build_env)
     )
+
+
+@pytest.mark.parametrize(
+    "wording",
+    [
+        "Branches, commit messages and unreleased data on `next` are public the moment they are pushed.",
+        "Unreleased changes stay on next until the owner's Go.",
+        "The model was unreleased at the time of access.",
+        "The unreleased version on `next` is already public.",
+        "Unreleased changelog entries are public as soon as they are pushed.",
+        "Version 1.2.0\n\nUnreleased data on `next` is public.",
+    ],
+)
+def test_launch_wording_allows_unreleased_without_draft_marker(dataset, build_env, wording):
+    (build_env / "CLAUDE.md").write_text("Project rules.")
+    (build_env / "AGENTS.md").write_text("Agent map.\n" + wording)
+    assert release_checks.check_launch_wording(dataset, {}, build_env) == []
 
 
 @pytest.mark.parametrize(
