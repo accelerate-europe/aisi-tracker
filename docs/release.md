@@ -10,7 +10,7 @@ A page, code or documentation change that leaves `data/aisi.json`, `schema/aisi.
 
 ## 1. Before the release commit
 
-- Freeze: changes to method, definition or naming text made less than 48 hours before the release go to the next release.
+- Method, definition or naming text: a change ships once the owner has approved its final wording and its rule-impact table (`uv run scripts/rule_tables.py`), with no waiting time. A change to the definition or to `dataset.status_definitions` also re-checks the public claims in the private repository's `docs/claims.csv` before the release, at any version, as the claims bullet below describes.
 - Run quotation verification and refresh the private source copies ([source snapshots](source-snapshots.md)).
 - Review stale full-check dates (`check.last_checked`) and the recorded evidence limits.
 - At a minor or major release, in the private repository checkout: re-check the public claims in its `docs/claims.csv` against the release data and update `verdict`, `our_record` and `checked`. A verdict that flips points at a fix or a mistake.
