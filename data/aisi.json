@@ -116,7 +116,7 @@
       },
       {
         "id": "source-preference",
-        "text": "Source preference: for a claim about a jurisdiction or its institute, cite that jurisdiction's own primary source first, in any language. Add an English-language source as a second citation where one exists, so readers can check it; it may come from another jurisdiction and does not replace the domestic primary source. Rely on an account from another country alone only when no source from the jurisdiction itself was found, and name who reported the claim in its description. Quote the primary text itself, in its original language: the issuer's own page or document, not a press report, feed item, aggregator or translation of it. When the issuer's page cannot be retrieved, quote an archived copy of that same page and say so in the access note; cite a secondary account only when no primary text could be retrieved. Source origin identifies the issuer's country or international body, not the language or hosting server. Unknown origin is left null and reported for review, as are records with no citation from the jurisdiction itself."
+        "text": "Source preference: for a claim about a jurisdiction or its institute, cite that jurisdiction's own primary source first, in any language. Add an English-language source as a second citation where one exists, so readers can check it; it may come from another jurisdiction and does not replace the domestic primary source. Rely on an account from another country alone only when no source from the jurisdiction itself was found or retrieved, and name who reported the claim in its description. Quote the primary text itself, in its original language: the issuer's own page or document, not a press report, feed item, aggregator or translation of it. When the issuer's page cannot be retrieved, quote an archived copy of that same page and say so in the access note; cite a secondary account only when no primary text could be retrieved. Source origin identifies the issuer's country or international body, not the language or hosting server. Unknown origin is left null and reported for review, as are records with no citation from the jurisdiction itself."
       },
       {
         "id": "source-titles",
@@ -1748,7 +1748,7 @@
         "title": "Sources",
         "summary": "For a claim about a state or its institute we cite that state's own primary source first, in any language, and add an English source where one exists. Where we found only another country's account, the entry says who reported it.",
         "rules": {
-          "source-preference": "48c1a8e533f0ae9367bcdc36fccb5c63a3dbcf477f00bc0bca690a398331d874"
+          "source-preference": "cc31ce54ef92dda9d50ee06b6aa92ecd0982f66d3421aad253bfd66812cf6233"
         }
       },
       {
