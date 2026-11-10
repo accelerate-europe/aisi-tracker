@@ -8253,7 +8253,7 @@ def check_light_fallback(page) -> list[str]:
 
 # Expected selections for this dataset, independent of the page's selection algorithm.
 EXPECTED_FUNDING_IDS = {
-    "GB": "funding-9efb56f77c7a5a6c8ca9eee9f9db9191",
+    "GB": "funding-ddcdd902bdc5873816ddd014c1742ad6",
     "US": "funding-443aa6a31d205192966af69e21022fb1",
     "CA": "funding-360a59a37fde5cc8ba0a03ce3a00ea5f",
     "KR": "funding-d0f61d15548153b9830f74f6e14ec324",
