@@ -59,15 +59,30 @@ def institute(name, jurisdiction, eur=None, staff=None, kind="state"):
     funding = {"x": {"currency": "EUR", "annual_amount": eur, "eur_per_year_est": eur}} if eur is not None else {}
     people = {"s": {"total": staff, "display": {"total": str(staff)}}} if staff is not None else {}
     return {"id": name, "jurisdiction_id": jurisdiction, "status": "established", "display": {
-        "funding_records": funding, "comparison_funding": "x" if funding else None,
+        "funding_records": funding, "budget": "x" if funding else None, "comparison_funding": "x" if funding else None,
         "staff_records": people, "total_staff": "s" if people else None}}
 
 
-def figures_row(budget, budget_top, staff, staff_top):
-    """The page's figures row for two established institutes in states A and B (B the highest), neither with a card."""
+def budget_cards(data):
+    """Supply the budget values that the no-budget count reads, for this fixture's states."""
+    jurisdictions = {j["id"]: j for j in data["jurisdictions"]}
+    cards = []
+    for institute in data["institutes"]:
+        jid = institute["jurisdiction_id"]
+        if institute["status"] != "established" or jurisdictions[jid]["kind"] == "supranational":
+            continue
+        display = institute["display"]
+        record = display["funding_records"].get(display["budget"])
+        value = record["display"]["value"] if record else "Not published"
+        cards.append(f'<article class="card" data-j="{jid}"><div class="row" data-track="9"><div class="v">{value}</div></div></article>')
+    return "".join(cards)
+
+
+def figures_row(budget, budget_top, staff, staff_top, data):
+    """Two median inputs in states A and B (B highest), with the cards used by the no-budget count."""
     def fig(figure, text):
         return f'<div class="figure"><b>{figure}</b><span>{text}</span></div>'
-    return BeautifulSoup('<div id="figures">' + fig(budget, f"median annual budget of 2 institutes. <em>B highest at {budget_top}.</em>") + fig(staff, f"median staff of 2 institutes. <em>B highest at {staff_top}.</em>") + fig("0 of 2", 'established institutes publish no <span class="info-glue">budget.<button type="button" class="info" id="figures-scope" data-tip="Counts cover the 2 established state institutes.">i</button></span>') + '</div>', "html.parser")
+    return BeautifulSoup('<div id="figures">' + fig(budget, f"median annual budget of 2 institutes. <em>B highest at {budget_top}.</em>") + fig(staff, f"median staff of 2 institutes. <em>B highest at {staff_top}.</em>") + fig("0 of 2", 'established institutes publish no <span class="info-glue">budget.<button type="button" class="info" id="figures-scope" data-tip="Counts cover the 2 established state institutes.">i</button></span>') + '</div>' + budget_cards(data), "html.parser")
 
 
 def counts(rows):
@@ -172,16 +187,20 @@ def test_staff_median_gate_and_truncation_mutation(staff, expected):
     for row in rows:
         row["display"]["funding_records"]["x"]["display"] = {"value": "EUR 1.0m"}
     data = {"institutes": rows, "jurisdictions": [{"id": key, "name": key, "kind": "state"} for key in "AB"]}
-    soup = figures_row("EUR 1.0m", "EUR 1.0m", expected, staff[1])
+    soup = figures_row("EUR 1.0m", "EUR 1.0m", expected, staff[1], data)
     assert counts(rows)["headcount"]["median"] == expected
     assert check_figures_row(soup, data) == []
     tile = soup.select("#figures > .figure b")[1]  # Exactly three figures in this fixture; the second is staff.
     tile.string = "1" if expected == "1.5" else "99"
-    assert any("staff median figure" in error and "differs from the data median" in error for error in check_figures_row(soup, data))
+    errors = check_figures_row(soup, data)
+    assert any("staff median figure" in error and "differs from the data median" in error for error in errors)
+    assert not any("matched 0" in error for error in errors), errors
     tile.string = expected
     assert check_figures_row(soup, data) == []
     tile.string = "~" + expected
-    assert any("staff median figure" in error and "carries ~" in error for error in check_figures_row(soup, data))
+    errors = check_figures_row(soup, data)
+    assert any("staff median figure" in error and "carries ~" in error for error in errors)
+    assert not any("matched 0" in error for error in errors), errors
     tile.string = expected
 
 
@@ -566,13 +585,15 @@ def test_summary_median_avoids_export_double_rounding():
         "institutes": rows,
         "jurisdictions": [{"id": key, "name": key, "kind": "state"} for key in "AB"],
     }
-    html = str(figures_row("EUR 1.2m", "~EUR 1.2m", "31", "31"))
+    html = str(figures_row("EUR 1.2m", "~EUR 1.2m", "31", "31", data))
     assert check_figures_row(BeautifulSoup(html, "html.parser"), data) == []
     broken = html.replace("<b>EUR 1.2m</b>", "<b>EUR 1.3m</b>")
+    errors = check_figures_row(BeautifulSoup(broken, "html.parser"), data)
     assert any(
         "budget median figure" in e
-        for e in check_figures_row(BeautifulSoup(broken, "html.parser"), data)
+        for e in errors
     )
+    assert not any("matched 0" in e for e in errors), errors
     assert check_figures_row(BeautifulSoup(html, "html.parser"), data) == []
 
 
@@ -582,13 +603,16 @@ def test_figures_note_names_institutes_in_neither_number():
     rows = [institute("a", "A", 1_000_000, 10), institute("b", "B", 2_000_000, 20), institute("c", "C", None, None)]
     for row in rows[:2]:
         row["display"]["funding_records"]["x"]["display"] = {"value": "EUR 1.0m"}
-    rows[2]["display"].update(budget="y", funding_records={"y": {"kind": "one_off", "commitment": "adopted"}})
+    rows[2]["display"].update(budget="y", funding_records={"y": {"kind": "one_off", "commitment": "adopted", "display": {"value": "EUR 1.0m one-off"}}})
     data = {"institutes": rows, "jurisdictions": [{"id": key, "name": key, "kind": "state"} for key in "ABC"]}
     note = "Counts cover the 3 established state institutes. C's budget is a one-off amount, so it counts neither in the budget median nor among those with no budget."
-    html = str(figures_row("EUR 1.5m", "EUR 1.0m", "15", "20")).replace("0 of 2", "0 of 3").replace("Counts cover the 2 established state institutes.", note)
+    html = str(figures_row("EUR 1.5m", "EUR 1.0m", "15", "20", data)).replace("0 of 2", "0 of 3").replace("Counts cover the 2 established state institutes.", note)
     assert [e for e in check_figures_row(BeautifulSoup(html, "html.parser"), data) if "figures row" in e] == []
+    assert check_figures_row(BeautifulSoup(html, "html.parser"), data) == []
     stale = html.replace(note, "Counts cover the 3 established state institutes.")
-    assert any("(i) reading" in e and note in e for e in check_figures_row(BeautifulSoup(stale, "html.parser"), data))
+    errors = check_figures_row(BeautifulSoup(stale, "html.parser"), data)
+    assert any("(i) reading" in e and note in e for e in errors)
+    assert not any("matched 0" in e for e in errors), errors
 
 
 def test_native_eur_one_off_is_not_a_comparable_sort_value():
@@ -632,10 +656,13 @@ def test_budget_median_over_a_bound_keeps_it_and_rounds_towards_it():
     tipped = lambda budget, tip=True: f'<abbr class="g" data-exp="{MEDIAN_CEILING}">{budget}</abbr>' if tip and budget.startswith("up to") else budget  # noqa: E731
     figures = lambda budget, tip=True: BeautifulSoup(  # noqa: E731
         '<div id="figures"><div class="figure"><b>' + tipped(budget, tip) + '</b><span>median annual budget of 4 institutes. D EUR 1.0m.</span></div>'
-        '<div class="figure"><b>0</b><span>x</span></div><div class="figure"><b>0 of 0</b><span>established institutes publish no budget.</span></div></div>',
+        '<div class="figure"><b>0</b><span>x</span></div><div class="figure"><b>0 of 0</b><span>established institutes publish no budget.</span></div></div>' + budget_cards(data),
         "html.parser",
     )
-    budget_errors = lambda soup: [e for e in check_figures_row(soup, data) if e.startswith("budget median")]  # noqa: E731
+    def budget_errors(soup):
+        errors = check_figures_row(soup, data)
+        assert not any("matched 0" in e for e in errors), errors
+        return [e for e in errors if e.startswith("budget median")]
     assert budget_errors(figures("up to EUR 8.5m")) == []
     assert budget_errors(figures("up to EUR 8.5m", tip=False)) == [f"budget median 'up to EUR 8.5m' is a ceiling but lacks the tooltip {MEDIAN_CEILING!r}"]
     assert budget_errors(figures("EUR 8.4m")) == ["budget median figure 'EUR 8.4m' differs from the data median 'up to EUR 8.5m'"]
@@ -679,20 +706,27 @@ def test_figures_note_counts_established_state_institutes():
     for row in rows:
         row["display"]["funding_records"]["x"]["display"] = {"value": "EUR 1.0m"}
     data = {"institutes": rows, "jurisdictions": [{"id": key, "name": key, "kind": "state"} for key in "AB"]}
-    html = str(figures_row("EUR 1.0m", "EUR 1.0m", "31", "31"))
+    html = str(figures_row("EUR 1.0m", "EUR 1.0m", "31", "31", data))
     assert check_figures_row(BeautifulSoup(html, "html.parser"), data) == []
     wrong = html.replace("the 2 established", "the 11 established")
-    assert any("does not end with one (i)" in e for e in check_figures_row(BeautifulSoup(wrong, "html.parser"), data))
+    errors = check_figures_row(BeautifulSoup(wrong, "html.parser"), data)
+    assert any("does not end with one (i)" in e for e in errors)
+    assert not any("matched 0" in e for e in errors), errors
     missing = BeautifulSoup(html, "html.parser")
     missing.select_one("#figures-scope").decompose()
-    assert any("does not end with one (i)" in e for e in check_figures_row(missing, data))
+    errors = check_figures_row(missing, data)
+    assert any("does not end with one (i)" in e for e in errors)
+    assert not any("matched 0" in e for e in errors), errors
     moved = BeautifulSoup(html, "html.parser")
     mark = moved.select_one("#figures-scope").extract()
     moved.select("#figures > .figure")[1].insert(0, mark)  # in the staff figure, not at the end of the row
-    assert any("does not end with one (i)" in e for e in check_figures_row(moved, data))
+    errors = check_figures_row(moved, data)
+    assert any("does not end with one (i)" in e for e in errors)
+    assert not any("matched 0" in e for e in errors), errors
     rows[1]["status"] = "planned"  # a planned institute's budget in the medians would make the note false
     errors = check_figures_row(BeautifulSoup(html.replace("0 of 2", "0 of 1").replace("the 2 established", "the 1 established"), "html.parser"), data)
     assert any("not established (b)" in e for e in errors)
+    assert not any("matched 0" in e for e in errors), errors
 
 
 def test_figures_note_layout_mutations():

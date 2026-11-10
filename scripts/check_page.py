@@ -1511,12 +1511,42 @@ def check_citation_ends(soup) -> list[str]:
     return errors
 
 
+def zero_match_errors(check: str, selector: str, count: int, expected: bool = True) -> list[str]:
+    """An expected selection must exercise its check, even when the DOM disappears."""
+    return [f"{check}: {selector} matched 0"] if expected and count == 0 else []
+
+
+def full_card_expected(jurisdiction: dict) -> bool:
+    """The page gives supranational and positive-status records a full card."""
+    return jurisdiction.get("kind") == "supranational" or jurisdiction["status"] != "none_identified"
+
+
 def check_source_alignment(html: str, data: dict) -> list[str]:
     """Cross-check rendered references against source records and card numbering."""
     soup = BeautifulSoup(html, "html.parser")
     sources = {source["id"]: source for source in data["sources"]}
     errors = []
     orders = {}
+    jurisdictions = {j["id"]: j for j in data["jurisdictions"]}
+    institutes = {i["jurisdiction_id"]: i for i in data["institutes"]}
+
+    def required(selector, expected=True, root=soup, key=""):
+        nodes = root.select(selector)
+        errors.extend(zero_match_errors("source_alignment", f"{key} {selector}".strip(), len(nodes), expected))
+        return nodes
+
+    cited_cards = False
+    for j in data["jurisdictions"]:
+        full = full_card_expected(j)
+        if not full and not j.get("europe_scope"):
+            continue  # none-identified records outside Europe have no card
+        selector = f'.card{":not(.mini)" if full else ".mini"}[data-j="{j["id"]}"]'
+        cards = required(selector)
+        wanted = set(entry_sources(j) + entry_sources(institutes.get(j["id"]))) & sources.keys()
+        cited_cards |= bool(wanted)
+        for card in cards:
+            required(".srcs li", bool(wanted), card, j["id"])
+
     world_rows = Keyed(soup, "#world-rows tr[data-j]")
     for card in soup.select(".card:not(.mini)[data-j]"):
         jid = str(card["data-j"])
@@ -1525,6 +1555,9 @@ def check_source_alignment(html: str, data: dict) -> list[str]:
         if len(ids) != len(set(ids)) or None in ids:
             errors.append(f"{jid}: source list has missing or duplicate IDs")
         table = world_rows.one(jid)
+        if table is None and jurisdictions.get(jid, {}).get("kind") != "supranational":
+            errors.extend(zero_match_errors("source_alignment", f'#world-rows tr[data-j="{jid}"]', 0))
+        rows = required(".row", root=card, key=jid)
         if table:
             columns = {
                 "Institute": "inst",
@@ -1533,11 +1566,14 @@ def check_source_alignment(html: str, data: dict) -> list[str]:
                 "Staff": "staff",
                 "Known activity": "op",
             }
-            for row in card.select(".row"):
+            compared = 0
+            for row in rows:
                 column = next((column for label, column in columns.items() if row.get("data-track") == CARD_TRACKS[label]), None)
                 if column is None:
                     continue
+                compared += 1
                 cell = table.select_one(f'[data-col="{column}"]')
+                errors.extend(zero_match_errors("source_alignment", f'{jid} #world-rows [data-col="{column}"]', int(cell is not None)))
                 card_ids = [a.get("data-source-id") for a in row.select(".cn")]
                 if column == "since" and row.select_one(".qualifiers"):
                     # Only the dated announcement's extra sources may differ (dataset.method/intervals).
@@ -1553,6 +1589,7 @@ def check_source_alignment(html: str, data: dict) -> list[str]:
                     errors.append(
                         f"{jid}: {column} citations differ between card and table"
                     )
+            errors.extend(zero_match_errors("source_alignment", f"{jid} .row[data-track] for card/table citations", compared))
 
     # Documented display order: source-catalogue order, duplicates removed.
     catalogue = {sid: index for index, sid in enumerate(sources)}
@@ -1562,7 +1599,7 @@ def check_source_alignment(html: str, data: dict) -> list[str]:
                 {sid for sid in entry_sources(jurisdiction) if sid in sources},
                 key=catalogue.__getitem__,
             )
-    for li in soup.select("li[data-source-id]"):
+    for li in required("li[data-source-id]", cited_cards):
         sid = str(li["data-source-id"])
         link = li.select_one("a[href]")
         if sid not in sources or not link or link["href"] != sources[sid]["url"]:
@@ -1574,7 +1611,16 @@ def check_source_alignment(html: str, data: dict) -> list[str]:
         want_en = f" [{sources[sid]['title_en']}]" if sources[sid].get("title_en") else None  # Method: our English translation beside the original title
         if (en.get_text() if en else None) != want_en:
             errors.append(f"source list {sid}: English title {en.get_text() if en else None!r}, expected {want_en!r}")
-    for cite in soup.select(".cn"):
+    # Source catalogues may contain background sources only. Dated status and mini-card findings,
+    # however, render their field citations in the page (including the default positive-only table).
+    cited_fields = any(
+        citation_fields(j, ["since"]) if full_card_expected(j) and j.get("status_since")
+        else citation_fields(j, ["finding"]) if j.get("europe_scope") and not full_card_expected(j) else []
+        for j in data["jurisdictions"]
+    )
+    citations = required(".cn", cited_fields)
+    required(".cites", bool(citations))  # check_citation_ends otherwise loops over nothing
+    for cite in citations:
         host = cite.find_parent(attrs={"data-j": True})
         jid = str(host.get("data-j") or "") if host else ""
         sid = str(cite.get("data-source-id") or "")
@@ -1643,6 +1689,11 @@ def check_source_alignment(html: str, data: dict) -> list[str]:
                 if actual != wanted:
                     errors.append(f"{jid}: {kind} record citations differ from data")
     # dataset.method/missing-values requires Not published for unknown figures.
+    positive_states = [j for j in data["jurisdictions"] if j.get("kind") != "supranational" and j["status"] != "none_identified"]
+    unknown_figures = any("display" in i and (i["display"].get("budget") is None or i["display"].get("staff") is None) for i in data["institutes"])
+    structural = any(j["status"] != "established" for j in positive_states)
+    required(".missing:not(.na)", unknown_figures)
+    required(".missing.na", structural)
     for missing in soup.select(".missing"):
         label = missing.get_text(strip=True)
         if "na" in missing.get("class", []):
@@ -1662,11 +1713,11 @@ def check_source_alignment(html: str, data: dict) -> list[str]:
             )
         if label == "Not published" and not missing.get("data-tip", "").strip():
             errors.append("missing-value tooltip loses the null definition")
-    for cell in soup.select("#world-rows td"):
+    for cell in required("#world-rows td", bool(positive_states)):
         if not cell.get_text(strip=True):
             errors.append("world table has an unexplained empty cell")
     errors += check_citation_ends(soup)
-    for mark in soup.select(".smark:not([data-state])"):
+    for mark in required(".smark:not([data-state])", bool(positive_states) or any(j.get("europe_scope") for j in data["jurisdictions"])):
         if not mark.select_one(".sw"):
             errors.append("status mark lacks the shared sw symbol")
     cards = Keyed(soup, ".card[data-j]")
@@ -2000,9 +2051,11 @@ def check_interval_output(html: str, data: dict, hand_worked: dict | None = None
             errors.append(f"{j['id']}: interval oracle {(since, line and line['text'])!r} differs from the hand-worked {hand_worked[j['id']]!r}")
         card = full_cards.one(j["id"])
         if card is None:
+            errors.extend(zero_match_errors("interval_output", f'article.card:not(.mini)[data-j="{j["id"]}"]', 0, full_card_expected(j)))
             continue
         rows = {r.get("data-track"): r for r in card.select(".row")}
         status = rows.get(CARD_TRACKS["Status"])
+        errors.extend(zero_match_errors("interval_output", f'{j["id"]} .row[data-track="{CARD_TRACKS["Status"]}"]', int(status is not None)))
         shown = status.select(".interval") if status else []
         # The qualifier names the announcement and its date; the amount is the caveated term, the other words plain text on the same muted line.
         text = []
@@ -2028,6 +2081,7 @@ def check_interval_output(html: str, data: dict, hand_worked: dict | None = None
             if {a.get("data-source-id") for a in status.select(".cn")} != wanted:
                 errors.append(f"{j['id']}: Status citations do not cover the announcement and establishment")
         activity = rows.get(CARD_TRACKS["Known activity"])
+        errors.extend(zero_match_errors("interval_output", f'{j["id"]} .row[data-track="{CARD_TRACKS["Known activity"]}"]', int(activity is not None), institute is not None and j["status"] == "established"))
         lines = activity.select(".activity-interval") if activity else []
         found = [(n.find_parent(class_="activity-kind").select_one(".activity-clause").get("data-kind"), " ".join(n.get_text().split())) for n in lines]
         if found != ([(line["kind"], f"{kind_label(line['kind'], True)} began {line['text']}")] if line else []):
@@ -3050,7 +3104,16 @@ def check_figures_row(soup, data: dict) -> list[str]:
     def words(node):  # the figure's text without its (i), which joins the last word in one unbreakable box
         return " ".join(s.strip() for s in node.find_all(string=True) if s.strip() and not s.find_parent(class_="info"))
 
-    tiles = [(t.select_one("b").get_text(strip=True), words(t.select_one("span"))) for t in soup.select("#figures > .figure")]
+    figures = soup.select("#figures > .figure")
+    if not figures:
+        return zero_match_errors("figures_row", "#figures > .figure", 0)
+    errors = []
+    for n, tile in enumerate(figures, 1):
+        for selector in ("b", "span"):
+            errors.extend(zero_match_errors("figures_row", f"#figures > .figure:nth-child({n}) {selector}", len(tile.select(selector))))
+    if errors:
+        return errors
+    tiles = [(t.select_one("b").get_text(strip=True), words(t.select_one("span"))) for t in figures]
     if len(tiles) != 3:
         return [f"figures row has {len(tiles)} figures, expected budget, staff and no budget"]
     errors = []
@@ -3093,7 +3156,9 @@ def check_figures_row(soup, data: dict) -> list[str]:
     cards = Keyed(soup, ".card[data-j]")
     for jid in counted:
         row = cards.one(jid, '.row[data-track="9"]')
-        value = row.select_one(".v").get_text(" ", strip=True) if row else ""
+        value_node = row.select_one(".v") if row else None
+        errors.extend(zero_match_errors("figures_row", f'.card[data-j="{jid}"] .row[data-track="9"] .v', int(value_node is not None)))
+        value = value_node.get_text(" ", strip=True) if value_node else ""
         missing += value == MISSING_TEXT
     want = (f"{missing} of {len(counted)}", FIGURES_NO_BUDGET)
     if tiles[2] != want:
@@ -4356,12 +4421,46 @@ def check_line_end_separators(page) -> list[str]:
     )
 
 
+def checked_page_data(page) -> dict:
+    """Read the same versioned, possibly fixture-routed data as the page, without changing callers."""
+    return page.evaluate("""async () => {
+      const meta = document.querySelector('meta[name="aisi-page-data"]');
+      const response = await fetch(meta ? meta.content : 'data/page.json');
+      if (!response.ok) throw new Error(`check data: HTTP ${response.status}`);
+      return response.json();
+    }""")
+
+
+def source_keyboard_targets(data: dict) -> dict[str, bool]:
+    """Each sourced card type exercises one disclosure; source-free records have no disclosure."""
+    sources = {s["id"] for s in data["sources"]}
+    institutes = {i["jurisdiction_id"]: i for i in data["institutes"]}
+    targets = {"article.card": False, ".card.mini": False}
+    for j in data["jurisdictions"]:
+        full = full_card_expected(j)
+        if full or j.get("europe_scope"):
+            targets["article.card" if full else ".card.mini"] |= bool(sources.intersection(entry_sources(j) + entry_sources(institutes.get(j["id"]))))
+    return targets
+
+
 def check_source_keyboard(page) -> list[str]:
     """Exercise both card types and the correction link's accessible role."""
     errors = []
+    data = checked_page_data(page)
     scroll = page.evaluate("[scrollX, scrollY]")
-    for selector in ("article.card", ".card.mini"):
-        card = page.locator(selector + ":has(details.srcs):visible").first
+    for selector, expected in source_keyboard_targets(data).items():
+        target = selector + ":has(details.srcs):visible"
+        cards = page.locator(target)
+        count = cards.count()
+        errors.extend(zero_match_errors("source_keyboard", target, count, expected))
+        if not count:
+            continue
+        card = cards.first
+        fold = card.locator("details.srcs")
+        missing = [error for child in ("summary", "ol") for error in zero_match_errors("source_keyboard", f"{target} details.srcs {child}", fold.locator(child).count())]
+        errors.extend(missing)
+        if missing:
+            continue
         was_open = card.get_attribute("open") is not None
         if selector == ".card.mini":
             card.evaluate("e => e.open = true")
@@ -4379,6 +4478,7 @@ def check_source_keyboard(page) -> list[str]:
         if fold.get_attribute("open") is not None or fold.locator("ol").is_visible():
             errors.append(f"{selector}: Space does not collapse Sources")
         correction = fold.locator(".source-after .correction")
+        errors.extend(zero_match_errors("source_keyboard", f"{target} .source-after .correction", correction.count(), bool(data["dataset"].get("repository"))))
         if correction.count():
             fold.evaluate("e => e.open = true")
             if fold.get_by_role("link").and_(correction).count() != 1:
@@ -8403,15 +8503,43 @@ def check_funding_outside(html, data: dict) -> list[str]:
     return errors
 
 
+def label_ladder_selectors(data: dict) -> list[str]:
+    """Data-backed minima, including the EU even if its entire group is removed."""
+    selectors = set()
+    for j in data["jurisdictions"]:
+        full = full_card_expected(j)
+        if j.get("kind") == "supranational":
+            group, heading = ".eu-level", ".eu-level .eu-head > h3"
+        elif full or j.get("europe_scope"):
+            section = "#entries" if j.get("europe_scope") else "#world-cards"
+            group = f'{section} .statusgroup[data-status="{j["status"]}"]'
+            heading = group + " > h3"
+        else:
+            continue
+        selectors.add(heading)
+        if full:
+            selectors.add(heading + ":visible")
+            card = f'{group} .card:not(.mini)[data-j="{j["id"]}"]'
+            selectors.update((card, card + " .top .name"))
+    return sorted(selectors)
+
+
+def label_ladder_match_errors(data: dict, counts: dict[str, int]) -> list[str]:
+    return [error for selector in label_ladder_selectors(data)
+            for error in zero_match_errors("label_ladder", selector, counts.get(selector, 0))]
+
+
 def check_label_ladder(page) -> list[str]:
     """Group headings are not weaker than items; cards retain accessible status; source marks match Method."""
-    return page.evaluate("() => {" + REPORT_JS + """
+    data = checked_page_data(page)
+    result = page.evaluate("selectors => {" + REPORT_JS + """
       const errors = [], visible = n => n.getClientRects().length > 0;
       const css = (n, p) => getComputedStyle(n)[p];
-      for (const h of document.querySelectorAll('.statusgroup > h3, .eu-level > h3')) {
+      const counts = Object.fromEntries(selectors.map(s => [s, [...document.querySelectorAll(s.replace(/:visible$/, ''))].filter(n => !s.endsWith(':visible') || visible(n)).length]));
+      for (const h of document.querySelectorAll('.statusgroup > h3, .eu-level .eu-head > h3')) {
         if (!visible(h)) continue;
-        const name = h.parentElement.querySelector('.card .top .name');
-        if (!name) continue;
+        const name = h.closest('.statusgroup, .eu-level').querySelector('.card .top .name');
+        if (!name) continue; // mini-only groups have no .top; full-card names are required above
         if (css(h, 'color') !== css(name, 'color') || parseFloat(css(h, 'fontWeight')) < parseFloat(css(name, 'fontWeight')) || parseFloat(css(h, 'fontSize')) < parseFloat(css(name, 'fontSize'))) errors.push(REPORT + `group heading is weaker than its items: ${h.textContent.trim()}`);
       }
       // A card under a status group heading does not repeat the status in its title row; its accessible name still carries it.
@@ -8428,8 +8556,9 @@ def check_label_ladder(page) -> list[str]:
         const row = card.querySelector('.row[data-track="3"]'), shown = row ? row.querySelector('.v').textContent.trim().split(' since ')[0] : null;
         if (!said || !shown || said.textContent !== ', ' + shown || !ids.includes(said.id)) errors.push(`the EU entry's accessible status ${said && said.textContent} does not match its Status row ${shown}`);
       }
-      return errors;
-    }""")
+      return {errors, counts};
+    }""", label_ladder_selectors(data))
+    return label_ladder_match_errors(data, result["counts"]) + result["errors"]
 
 
 @reports

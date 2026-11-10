@@ -181,10 +181,12 @@ def test_theme_name_says_the_chosen_mode_in_any_wording(active, system):
 def test_renamed_card_fields_still_compare_their_citations_with_the_table():
     data = {"sources": [{"id": "one", "url": "https://example.org/one"}, {"id": "two", "url": "https://example.org/two"}], "jurisdictions": [{"id": "XX", "status": "planned"}], "institutes": []}
     cite = '<sup class="cites"><a class="cn" data-source-id="one" href="https://example.org/one">1</a></sup>'
-    html = f'<article class="card" data-j="XX"><div class="row" data-track="9"><div class="k">Reworded field</div><div class="v">10<span class="qualifiers">Qualification</span>{cite}</div></div><ol class="srcs"><li data-source-id="one"><a href="https://example.org/one">One</a></li><li data-source-id="two"><a href="https://example.org/two">Two</a></li></ol></article><table><tbody id="world-rows"><tr data-j="XX"><td data-col="budget">10{cite}</td></tr></tbody></table>'
+    html = f'<article class="card" data-j="XX"><div class="row" data-track="9"><div class="k">Reworded field</div><div class="v">10<span class="qualifiers">Qualification</span>{cite}</div></div><ol class="srcs"><li data-source-id="one"><a href="https://example.org/one">One</a></li><li data-source-id="two"><a href="https://example.org/two">Two</a></li></ol></article><table><tbody id="world-rows"><tr data-j="XX"><td data-col="status"><span class="smark"><i class="sw"></i>Planned</span></td><td data-col="budget">10{cite}</td><td data-col="op"><span class="missing na"><span aria-hidden="true">–</span><span class="vh">Not applicable</span></span></td></tr></tbody></table>'
     assert check_page.check_source_alignment(html, data) == []
     broken = html.replace(cite, cite.replace('data-source-id="one"', 'data-source-id="two"').replace('example.org/one', 'example.org/two').replace('>1</a>', '>2</a>'), 1)
-    assert 'XX: budget citations differ between card and table' in check_page.blocking(check_page.check_source_alignment(broken, data))
+    errors = check_page.blocking(check_page.check_source_alignment(broken, data))
+    assert 'XX: budget citations differ between card and table' in errors
+    assert errors == ['XX: budget citations differ between card and table']
 
 
 

@@ -836,6 +836,192 @@ def test_interval_oracle_cites_every_tied_designation():
     assert any("citations do not cover" in e for e in check_page.check_interval_output(interval_html(), data))
 
 
+@pytest.fixture
+def alignment_case():
+    data = {"sources": [{"id": "s", "url": SOURCE_URL}], "institutes": [], "jurisdictions": [{
+        "id": "XX", "kind": "state", "status": "planned", "status_since": "2026-01-01",
+        "source_ids": ["s"], "citations": {"since": ["s"]},
+    }]}
+    cite = f'<span class="cites"><a class="cn" data-source-id="s" href="{SOURCE_URL}">1</a></span>'
+    html = (
+        '<article class="card" data-j="XX"><div class="row" data-track="3"><div class="v">Planned ' + cite + '</div></div>'
+        f'<details class="srcs"><ol><li data-source-id="s"><a href="{SOURCE_URL}">Source</a></li></ol></details></article>'
+        '<table><tbody id="world-rows"><tr data-j="XX"><td><span class="smark"><i class="sw"></i>Planned</span></td>'
+        '<td data-col="since">1 Jan 2026 ' + cite + '</td>'
+        '<td data-col="budget"><span class="missing na"><span aria-hidden="true">–</span><span class="vh">Not applicable</span></span></td></tr></tbody></table>'
+    )
+    return BeautifulSoup(html, "html.parser"), data
+
+
+@pytest.mark.parametrize("selector, message", [
+    ('.card', '.card:not(.mini)[data-j="XX"]'),
+    ('.row', 'XX .row'),
+    ('.srcs li', 'XX .srcs li'),
+    ('li[data-source-id]', 'li[data-source-id]'),
+    ('.cn', '.cn'),
+    ('.cites', '.cites'),
+    ('#world-rows tr', '#world-rows tr[data-j="XX"]'),
+    ('#world-rows [data-col="since"]', 'XX #world-rows [data-col="since"]'),
+    ('#world-rows td', '#world-rows td'),
+    ('.smark', '.smark:not([data-state])'),
+    ('.missing.na', '.missing.na'),
+])
+def test_source_alignment_rejects_empty_selections(alignment_case, selector, message):
+    soup, data = alignment_case
+    assert check_page.check_source_alignment(str(soup), data) == []
+    for node in soup.select(selector):
+        node.unwrap() if selector == '.cites' else node.decompose()
+    assert f"source_alignment: {message} matched 0" in check_page.blocking(check_page.check_source_alignment(str(soup), data))
+
+
+def test_source_alignment_rejects_zero_comparable_rows(alignment_case):
+    soup, data = alignment_case
+    soup.select_one('.row')['data-track'] = '999'
+    assert 'source_alignment: XX .row[data-track] for card/table citations matched 0' in check_page.blocking(check_page.check_source_alignment(str(soup), data))
+
+
+def test_source_alignment_unknown_figures_need_missing_marks(alignment_case):
+    soup, data = alignment_case
+    data['institutes'] = [{'id': 'xx', 'jurisdiction_id': 'XX', 'status': 'planned', 'display': {'budget': None, 'staff': None}}]
+    soup.append(BeautifulSoup('<ul class="fund-none"><li data-j="XX"></li></ul><span class="missing" data-tip="Unknown">Not published</span>', 'html.parser'))
+    assert check_page.check_source_alignment(str(soup), data) == []
+    soup.select_one('.missing:not(.na)').decompose()
+    assert 'source_alignment: .missing:not(.na) matched 0' in check_page.blocking(check_page.check_source_alignment(str(soup), data))
+
+
+def test_source_alignment_allows_source_free_records_and_eu_without_table(alignment_case):
+    soup, data = alignment_case
+    for node in soup.select('.srcs, .cites'):
+        node.decompose()
+    data['jurisdictions'][0].update(source_ids=[], citations={})
+    assert check_page.check_source_alignment(str(soup), data) == []
+    data['jurisdictions'][0]['kind'] = 'supranational'
+    soup.select_one('#world-rows').decompose()
+    assert check_page.check_source_alignment(str(soup), data) == []
+
+
+@pytest.mark.parametrize("selector, message", [
+    ('article.card', 'article.card:not(.mini)[data-j="GB"]'),
+    ('.row[data-track="3"]', 'GB .row[data-track="3"]'),
+    ('.row[data-track="11"]', 'GB .row[data-track="11"]'),
+])
+def test_interval_output_requires_card_and_rows_even_without_intervals(selector, message):
+    data = interval_case(kind='none')
+    data['jurisdictions'][0]['timeline'] = []
+    soup = BeautifulSoup(interval_html(status=None, activity=None), 'html.parser')
+    assert check_page.check_interval_output(str(soup), data) == []
+    for node in soup.select(selector):
+        node.decompose()
+    assert f'interval_output: {message} matched 0' in check_page.blocking(check_page.check_interval_output(str(soup), data))
+
+
+def test_interval_output_allows_absent_full_cards_for_none_identified():
+    data = interval_case()
+    data['jurisdictions'][0]['status'] = 'none_identified'
+    assert check_page.check_interval_output('', data) == []
+
+
+@pytest.fixture
+def figures_case():
+    # Reuse the existing small figure inputs and their matching budget cards.
+    from test_figures import figures_row, institute
+
+    rows = [institute('a', 'A', 1_000_000, 31), institute('b', 'B', 1_000_000, 31)]
+    for row in rows:
+        row['display']['funding_records']['x']['display'] = {'value': 'EUR 1.0m'}
+    data = {'institutes': rows, 'jurisdictions': [{'id': key, 'name': key, 'kind': 'state'} for key in 'AB']}
+    soup = figures_row('EUR 1.0m', 'EUR 1.0m', '31', '31', data)
+    return soup, data
+
+
+@pytest.mark.parametrize('selector, message', [
+    ('#figures > .figure', '#figures > .figure'),
+    ('#figures > .figure b', '#figures > .figure:nth-child(1) b'),
+    ('#figures > .figure > span', '#figures > .figure:nth-child(1) span'),
+    ('.card', '.card[data-j="A"] .row[data-track="9"] .v'),
+    ('.row', '.card[data-j="A"] .row[data-track="9"] .v'),
+    ('.v', '.card[data-j="A"] .row[data-track="9"] .v'),
+])
+def test_figures_row_rejects_empty_selections(figures_case, selector, message):
+    soup, data = figures_case
+    assert check_page.check_figures_row(soup, data) == []
+    for node in soup.select(selector):
+        node.decompose()
+    assert f'figures_row: {message} matched 0' in check_page.blocking(check_page.check_figures_row(soup, data))
+
+
+def test_source_keyboard_minima_follow_sourced_card_types_and_repository():
+    data = {'dataset': {'repository': 'https://example.org/repo'}, 'sources': [{'id': 's'}], 'institutes': [], 'jurisdictions': [
+        {'id': 'EU', 'kind': 'supranational', 'status': 'established', 'source_ids': ['s']},
+        {'id': 'XX', 'kind': 'state', 'status': 'none_identified', 'europe_scope': True, 'source_ids': ['s']},
+    ]}
+    assert check_page.source_keyboard_targets(data) == {'article.card': True, '.card.mini': True}
+    for selector, expected in check_page.source_keyboard_targets(data).items():
+        assert check_page.zero_match_errors('source_keyboard', selector, 0, expected) == [f'source_keyboard: {selector} matched 0']
+        assert check_page.zero_match_errors('source_keyboard', selector, 1, expected) == []
+    data['jurisdictions'][0]['source_ids'] = []
+    data['jurisdictions'][1]['europe_scope'] = False
+    assert check_page.source_keyboard_targets(data) == {'article.card': False, '.card.mini': False}
+    for repository in ('https://example.org/repo', None):
+        errors = check_page.zero_match_errors('source_keyboard', '.source-after .correction', 0, bool(repository))
+        assert bool(check_page.blocking(errors)) == bool(repository)
+
+
+def test_source_keyboard_returns_blocking_absence_without_touching_missing_card(monkeypatch):
+    data = {'dataset': {}, 'sources': [{'id': 's'}], 'institutes': [], 'jurisdictions': [
+        {'id': 'XX', 'status': 'planned', 'source_ids': ['s']},
+    ]}
+    monkeypatch.setattr(check_page, 'checked_page_data', lambda page: data)
+
+    class EmptyPage:
+        def evaluate(self, expression, *args):
+            return [0, 0] if expression == '[scrollX, scrollY]' else None
+
+        def locator(self, selector):
+            return self
+
+        def count(self):
+            return 0
+
+        @property
+        def first(self):
+            pytest.fail('must not interact with an empty locator')
+
+    assert check_page.blocking(check_page.check_source_keyboard(EmptyPage())) == ['source_keyboard: article.card:has(details.srcs):visible matched 0']
+
+
+def test_label_ladder_requires_each_data_backed_card_heading_and_name():
+    data = {'jurisdictions': [
+        {'id': 'EU', 'kind': 'supranational', 'status': 'established'},
+        {'id': 'GB', 'kind': 'state', 'status': 'established', 'europe_scope': True},
+        {'id': 'US', 'kind': 'state', 'status': 'established', 'europe_scope': False},
+        {'id': 'XX', 'kind': 'state', 'status': 'none_identified', 'europe_scope': True},
+    ]}
+    counts = dict.fromkeys(check_page.label_ladder_selectors(data), 1)
+    eu = '.eu-level .card:not(.mini)[data-j="EU"]'
+    assert eu in counts and '.eu-level .eu-head > h3' in counts
+    assert check_page.label_ladder_match_errors(data, counts) == []
+    for selector in counts:
+        errors = check_page.label_ladder_match_errors(data, {**counts, selector: 0})
+        assert check_page.blocking(errors) == [f'label_ladder: {selector} matched 0']
+    data['jurisdictions'] = data['jurisdictions'][1:]
+    assert not any('.eu-level' in selector for selector in check_page.label_ladder_selectors(data))
+    assert check_page.label_ladder_match_errors(data, {k: v for k, v in counts.items() if '.eu-level' not in k}) == []
+
+
+def test_label_ladder_keeps_presence_findings_blocking_at_page_seam(monkeypatch):
+    data = {'jurisdictions': [{'id': 'EU', 'kind': 'supranational', 'status': 'established'}]}
+    monkeypatch.setattr(check_page, 'checked_page_data', lambda page: data)
+
+    class EmptyPage:
+        def evaluate(self, expression, selectors):
+            return {'counts': dict.fromkeys(selectors, 0), 'errors': []}
+
+    errors = check_page.check_label_ladder(EmptyPage())
+    assert 'label_ladder: .eu-level .card:not(.mini)[data-j="EU"] matched 0' in errors
+    assert check_page.blocking(errors) == errors
+
+
 def test_every_theme_is_set_through_the_theme_helpers():
     """Principle Theme: the page ignores the system scheme, so a page opened with color_scheme alone is silently
     light. Only the helpers and the theme checks may name a colour scheme; every loop over both themes opens its

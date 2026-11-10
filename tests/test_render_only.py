@@ -324,6 +324,16 @@ def test_credit_oracle_rejects_unknown_work_and_missing_explicit_credit():
         )
 
 
+def source_alignment_card(source_list):
+    """One established state: a comparable card/table row and its status mark."""
+    return (
+        '<article class="card" data-j="XX"><div class="row" data-track="2"><div class="v">Institute</div></div>'
+        + source_list
+        + '</article><table><tbody id="world-rows"><tr data-j="XX"><td data-col="inst">Institute</td>'
+        '<td data-col="status"><span class="smark"><i class="sw"></i>Established</span></td></tr></tbody></table>'
+    )
+
+
 def test_detail_oracle_rejects_reordered_and_duplicate_citations():
     from scripts.check_page import check_source_alignment
 
@@ -333,7 +343,7 @@ def test_detail_oracle_rejects_reordered_and_duplicate_citations():
     ]
     data = {
         "sources": sources,
-        "jurisdictions": [{"id": "XX"}],
+        "jurisdictions": [{"id": "XX", "kind": "state", "status": "established"}],
         "institutes": [
             {
                 "jurisdiction_id": "XX",
@@ -365,12 +375,10 @@ def test_detail_oracle_rejects_reordered_and_duplicate_citations():
             f'<a class="cn" data-source-id="{sid}" href="https://example.org/{sid}">{[s["id"] for s in sources].index(sid) + 1}</a>'
             for sid in ids
         )
-        html = f'<article class="card" data-j="XX">{source_list}</article><article class="fund-item" data-j="XX">{source_list}<p data-record="funding" data-record-id="budget">Published budget{cites}</p></article>'
-        return [
-            e
-            for e in check_source_alignment(html, data)
-            if "record citations differ" in e
-        ]
+        html = source_alignment_card(source_list) + f'<article class="fund-item" data-j="XX">{source_list}<p data-record="funding" data-record-id="budget">Published budget<span class="cites">{cites}</span></p></article>'
+        findings = check_source_alignment(html, data)
+        assert all("record citations differ" in e for e in findings), findings
+        return findings
 
     assert errors(["description", "period", "confidence"]) == []
     assert errors(["period", "description", "confidence"])
@@ -705,11 +713,13 @@ def test_native_funding_gate_rejects_wrong_amount_and_wrong_field_evidence(
 ):
     from scripts.check_page import check_source_alignment
     record = {"id": "budget", "amount": amount, "amount_qualifier": qualifier, "currency": currency, "description": "A sourced statement.", "source_ids": ["amount", "statement"], "citations": {"amount": ["amount"], "description": ["statement"]}}
-    data = {"dataset": {"exchange_rates": [{"currency": "USD", "eur_per_unit": 0.5}]}, "sources": [{"id": identity, "url": "https://example.org/" + identity} for identity in ("amount", "statement")], "jurisdictions": [{"id": "XX", "source_ids": []}], "institutes": [{"id": "institute", "jurisdiction_id": "XX", "funding": [record], "staff": []}]}
+    data = {"dataset": {"exchange_rates": [{"currency": "USD", "eur_per_unit": 0.5}]}, "sources": [{"id": identity, "url": "https://example.org/" + identity} for identity in ("amount", "statement")], "jurisdictions": [{"id": "XX", "kind": "state", "status": "established", "source_ids": []}], "institutes": [{"id": "institute", "jurisdiction_id": "XX", "funding": [record], "staff": []}]}
     listing = '<div class="srcs"><ol><li data-source-id="amount"><a href="https://example.org/amount">Amount</a></li><li data-source-id="statement"><a href="https://example.org/statement">Statement</a></li></ol></div>'
-    html = f'<article class="card" data-j="XX">{listing}</article><article class="fund-item" data-j="XX">{listing}<div data-record="funding" data-record-id="budget"><p class="funding-native"><span class="budget-amount">{label}</span><a class="cn" data-source-id="amount" href="https://example.org/amount">1</a></p><details class="source-statement"><summary>Source statement</summary><p>A sourced statement.<a class="cn" data-source-id="statement" href="https://example.org/statement">2</a></p></details><p class="funding-metadata"></p></div></article>'
+    html = source_alignment_card(listing) + f'<article class="fund-item" data-j="XX">{listing}<div data-record="funding" data-record-id="budget"><p class="funding-native"><span class="budget-amount">{label}</span><span class="cites"><a class="cn" data-source-id="amount" href="https://example.org/amount">1</a></span></p><details class="source-statement"><summary>Source statement</summary><p>A sourced statement.<span class="cites"><a class="cn" data-source-id="statement" href="https://example.org/statement">2</a></span></p></details><p class="funding-metadata"></p></div></article>'
     def errors(text):
-        return [error for error in check_source_alignment(text, data) if "native funding amount" in error or "funding ." in error]
+        findings = check_source_alignment(text, data)
+        assert not any("matched 0" in error for error in findings), findings
+        return findings
     assert errors(html) == []
     if qualifier == "about":
         assert any(
@@ -853,11 +863,13 @@ def test_source_lists_put_the_english_title_right_after_the_original():
     from scripts.check_page import check_source_alignment
 
     data = {"sources": [{"id": "fr", "url": "https://example.org/fr", "title_en": "The announcement"}, {"id": "en", "url": "https://example.org/en"}],
-            "jurisdictions": [{"id": "XX"}], "institutes": []}
+            "jurisdictions": [{"id": "XX", "kind": "state", "status": "established", "source_ids": ["fr", "en"]}], "institutes": []}
 
     def errors(fr_item):
-        html = f'<article class="card" data-j="XX"><div class="srcs"><ol>{fr_item}<li data-source-id="en"><a href="https://example.org/en">Report</a></li></ol></div></article>'
-        return [e for e in check_source_alignment(html, data) if "English title" in e]
+        html = source_alignment_card(f'<div class="srcs"><ol>{fr_item}<li data-source-id="en"><a href="https://example.org/en">Report</a></li></ol></div>')
+        findings = check_source_alignment(html, data)
+        assert all("English title" in e for e in findings), findings
+        return findings
 
     link, en, archive = '<a href="https://example.org/fr">L’annonce</a>', '<span class="title-en"> [The announcement]</span>', '<span class="archive-copy"> (<a class="archive" href="x">archived copy</a>)</span>'
     assert errors(f'<li data-source-id="fr">{link}{en}{archive}</li>') == []
