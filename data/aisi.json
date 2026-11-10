@@ -2849,6 +2849,10 @@
           {
             "date": "2026-10-26",
             "scope": "Known-pages-first status pass in Dutch and English (government.nl, officielebekendmakingen, Tweede Kamer open data, 2027 budget, TNO, AP, RDI, news). Added the 1 June and 3 July 2026 exploring acts and the adopted motion; status unchanged. Partial check; AI Act authority roles not re-verified."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "News search from 17 October 2026 in English and Dutch, with the government's digitalisation theme page (newest 6 November). Left for review: the cabinet's AI vision of 6 November, which again says a possible Dutch AI safety institute is being explored, and the Netherlands' place on the endorsement list of the French presidency's Paris Call for AI Safety and Security, published on 9 November and since updated. No new institute mandate, budget, staffing or national privileged-access agreement was found. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -3122,6 +3126,10 @@
           {
             "date": "2026-10-19",
             "scope": "Read the institute proposal in SOU 2025:12, pages 83–84 (original roadmap pages 51–52), and added its main research task, proposed location and proposed funding with quotations. Preserved exploring status and the original recommendation date; no full record re-check."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "News search from 17 October 2026 in English and Swedish, with the government's press release listing (newest 10 November). No qualifying item was found. The Financial Supervisory Authority's review of 29 September concerns financial firms' cyber defences, and the FRA and Armed Forces cyber pilot of 4 September predates the window. No public report from FRA, whose interim report was due on 30 October, and no new access agreement or AI Act designation act was found. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -3233,6 +3241,10 @@
           {
             "date": "2026-10-17",
             "scope": "Attempted preservation of cited source copies and checked saved-copy hashes; failures remain in source access notes. This source-evidence work is not a full factual recheck of the record."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "News search from 17 October 2026 in English, German, French, Italian and Romansh, with the Federal Office of Communications' press release page (newest 4 November). Left for review: the Federal Council's update of 28 October moving the opening of the consultation on implementing the AI Convention to spring 2027, with the Federal Office of Justice preparing binding legislation and the Federal Office of Communications coordinating non-binding measures. No national model evaluator or frontier-developer agreement was found. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -3456,6 +3468,10 @@
           {
             "date": "2026-11-07",
             "scope": "Read Legislative Decree 179/2026 (Articles 4 to 6 and its entry into force) for the AI Act authorities: the decree is now their designation basis, the financial supervisors have their own sectors and the Garante is added; Law 132/2025 is kept as history. Partial check; the last full-check date is unchanged."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "News search from 17 October 2026 in English and Italian, with the digital innovation ministry's news pages (articles newest 11 September, press releases 23 July, interventions 22 September). No qualifying item was found, and the listing showed no items in the window. The current text and history of Article 20 of Law 132/2025 could not be read on Normattiva, so its status check is not advanced. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -3619,6 +3635,10 @@
           {
             "date": "2026-11-07",
             "scope": "Re-read Resolution 130 of the Council of Ministers of 9 June 2026 (Monitor Polski, 18 June 2026, position 620): it adopts the State Digitalisation Strategy and contains both passages on NASK's AI Safety Research Centre that the record quotes. The strategy names the AI policy of 2020 (Resolution 196 of 28 December 2020) as the one in force, with an update planned for 2026; no record text says an AI policy to 2030 was adopted. No change. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "News search from 17 October 2026 in English and Polish, with the digital affairs ministry's news page (newest 10 November). Added NASK's announcement of 23 October 2026 of its agreement with OpenAI on AI safety research, led on NASK's side by its AI Safety Research Centre, with OpenAI's description of the work from an archived copy, and CERT Polska's access to OpenAI cyber models from July 2026. No separate ministry announcement of the agreement, no new government act assigning national frontier evaluation, and no centre funding, staffing or centre-specific model-access terms were found. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -3663,7 +3683,10 @@
         "pl-r4-nask-eval-fm",
         "pl-r8-resolution130",
         "pl-r8-research-teams",
-        "pl-nask-aitas-2026"
+        "pl-nask-aitas-2026",
+        "pl-nask-openai-2026",
+        "pl-openai-nask-2026",
+        "pl-nask-cert-openai-2026"
       ],
       "region": {
         "id": "150",
@@ -3682,7 +3705,7 @@
         "un-m49",
         "wikidata-jurisdiction-identifiers"
       ],
-      "notes": "The Act of 3 July 2026 on AI systems was published on 27 July 2026 and generally took effect on 11 August. Article 5 designates KRiBSI as market-surveillance authority and single point of contact; Article 86 assigns the notifying role to the minister responsible for informatisation. Several operational chapters commence on 28 October 2026, and full commission operation was scheduled for November.\n\nThe government announcement records presidential signature of the AI implementation law and says publication in the official journal will follow; the subsequently retrieved official journal confirms publication on 27 July 2026.\n\nResolution 130, PDF pages 145 and 158, concerns research and an R&D network around an existing centre, not assignment of a qualifying national evaluation role. The ministry's account of reorganising the AI Division and NASK's own description of model auditing do not supply that assignment. The centre's title and legal form do not determine the status.",
+      "notes": "The Act of 3 July 2026 on AI systems was published on 27 July 2026 and generally took effect on 11 August. Article 5 designates KRiBSI as market-surveillance authority and single point of contact; Article 86 assigns the notifying role to the minister responsible for informatisation. Several operational chapters commence on 28 October 2026, and full commission operation was scheduled for November.\n\nThe government announcement records presidential signature of the AI implementation law and says publication in the official journal will follow; the subsequently retrieved official journal confirms publication on 27 July 2026.\n\nResolution 130, PDF pages 145 and 158, concerns research and an R&D network around an existing centre, not assignment of a qualifying national evaluation role. The ministry's account of reorganising the AI Division and NASK's own description of model auditing do not supply that assignment. The centre's title and legal form do not determine the status.\n\nOn 2 July 2026 NASK announced that CERT Polska, which operates within NASK, was joining the trusted partners for OpenAI's GPT-5.5 as a verified defender, with access to come through the Government Trusted Access for Cyber programme. On 23 October NASK reported that CERT Polska had received access to OpenAI's cyber models in the Daybreak programme in July and used them to find six vulnerabilities in MikroTik RouterOS. This is access by a cyber team for defensive work, not evaluation of the models.",
       "next_check": {
         "date": "2027-01-31",
         "reason": "Check whether KRiBSI, once operating, or the minister assigns NASK or its AITAS laboratory a national role in evaluating advanced models, and whether Poland joins the International Network for Advanced AI Measurement, Evaluation and Science."
@@ -3691,12 +3714,14 @@
         "name": "NASK AI Safety Research Centre",
         "stage": "exists",
         "gap": "remit",
-        "note": "The ministry records the centre's creation and Resolution 130 recognises its AI safety research role and plans an R&D network around it. NASK describes foundation-model security research and model auditing. These texts do not assign a qualifying national evaluation role. In June 2026 NASK announced its AITAS laboratory to develop methods for assessing AI models for safety, reliability and regulatory compliance; this is NASK's own announcement, not a government assignment.",
+        "note": "The ministry records the centre's creation and Resolution 130 recognises its AI safety research role and plans an R&D network around it. NASK describes foundation-model security research and model auditing. These texts do not assign a qualifying national evaluation role. In June 2026 NASK announced its AITAS laboratory to develop methods for assessing AI models for safety, reliability and regulatory compliance; this is NASK's own announcement, not a government assignment. On 23 October 2026 NASK announced that it had signed an agreement with OpenAI on AI safety research, to be led on NASK's side by the centre, which NASK says serves as the Polish AI Safety Institute; OpenAI described the work as exploring ways to evaluate increasingly capable AI systems, identify vulnerabilities and strengthen safeguards. NASK's own description and an agreement with a developer are not a government assignment.",
         "source_ids": [
           "pl-nask",
           "pl-r8-resolution130",
           "pl-r8-research-teams",
-          "pl-nask-aitas-2026"
+          "pl-nask-aitas-2026",
+          "pl-nask-openai-2026",
+          "pl-openai-nask-2026"
         ]
       }
     },
@@ -3914,6 +3939,10 @@
           {
             "date": "2026-10-17",
             "scope": "Attempted preservation of cited source copies and checked saved-copy hashes; failures remain in source access notes. This source-evidence work is not a full factual recheck of the record."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "News search from 17 October 2026 in English, with the enterprise department's news page (newest 9 November). Left for review: Ireland's place on the endorsement list of the French presidency's Paris Call for AI Safety and Security, published on 9 November and since updated, with no Irish government announcement of the endorsement found. The Dublin Declaration page of 9 November names no evaluator and the AI Office's role is already in the record. No new institute mandate or access agreement was found, and Irish-language news was not searched. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -4047,6 +4076,10 @@
           {
             "date": "2026-10-17",
             "scope": "Re-read at-dsb-ai-faq and documented why the DSB designation state remains unresolved, without inferring a formal proposal or a separate designation."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "News search from 17 October 2026 in English and German, with the Federal Chancellery's government news listing for November (newest 9 November). No qualifying national institute or new national AI Act designation was found. Left for review: Austria's proposal of 28 October to host a UN AI cooperation centre in Vienna, whose possible model-evaluation expertise is conditional and international, and Austria's place on the endorsement list of the French presidency's Paris Call for AI Safety and Security, published on 9 November and since updated. The annual listing page showed navigation only and no item dates. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -4312,6 +4345,10 @@
           {
             "date": "2026-10-17",
             "scope": "Attempted preservation of cited source copies and checked saved-copy hashes; failures remain in source access notes. This source-evidence work is not a full factual recheck of the record."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "News search from 17 October 2026 in English, Finnish and Swedish, with the transport and communications ministry's front page (newest 2 November). Left for review: the government bill of 22 October for an AI regulatory sandbox run by Traficom, the leaders' meeting convened by Finland and Norway on 28 October with an expert process on frontier AI risks, and Finland's signing on 9 November of the Paris Call for AI Safety and Security, announced by the Finnish presidency on 10 November. The sandbox is still a proposal, and the corrected Finnish release gives 29 countries for the meeting where the initial text said 31. A ministerial call of 29 October for European independent evaluation capacity named no Finnish evaluator and was not taken as a candidate, and no institute or Network membership was found. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -4457,6 +4494,10 @@
           {
             "date": "2026-10-17",
             "scope": "Attempted preservation of cited source copies and checked saved-copy hashes; failures remain in source access notes. This source-evidence work is not a full factual recheck of the record."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "News search from 17 October 2026 in English and Danish, with the digitalisation ministry's news page (newest 22 October). Left for review: the first reading and referral to committee on 5 November of the Folketing bill L3 on supplementary provisions to the AI Act, which would set up national supervision and enforcement. The bill is pending, with further readings scheduled for December. No new institute, developer access or Network joining was found. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -4546,6 +4587,10 @@
           {
             "date": "2026-10-17",
             "scope": "Attempted preservation of cited source copies and checked saved-copy hashes; failures remain in source access notes. This source-evidence work is not a full factual recheck of the record."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "News search from 17 October 2026 in English, French, Dutch and German, with the economy ministry's press release listing (newest 4 November). No qualifying item was found. The undated implementation timetable of the telecoms regulator BIPT was read and not taken as a new national designation. The final Belgian designation remains to be followed up. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -4659,6 +4704,10 @@
           {
             "date": "2026-10-17",
             "scope": "Attempted preservation of cited source copies and checked saved-copy hashes; failures remain in source access notes. This source-evidence work is not a full factual recheck of the record."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "News search from 17 October 2026 in English and Czech, with the industry ministry's press release listing (newest 5 November). Left for review: the cabinet's approval on 9 November of the AI Act implementation bill, which proposes roles for the telecoms regulator ČTÚ, the central bank and the data protection authority and allocates sandboxes, and the creation of a Government AI Council, both from a separate ministry release of 9 November. The bill is not yet enacted, and no qualifying AI safety institute was identified. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -4788,6 +4837,10 @@
           {
             "date": "2026-10-17",
             "scope": "Attempted preservation of cited source copies and checked saved-copy hashes; failures remain in source access notes. This source-evidence work is not a full factual recheck of the record."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "News search from 17 October 2026 in English and Estonian, with the justice and digital affairs ministry's website (news titles readable but undated) and its search page (newest 14 October, before the window). Left for review: Estonia's place on the endorsement list of the French presidency's Paris Call for AI Safety and Security, published on 9 November and since updated. The consumer protection and technical regulatory authority's AI page, last updated 10 September, repeats a supervisory role already in the record, and no Estonian announcement of the endorsement was found. No new national evaluator or final designation act was found. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -4903,6 +4956,10 @@
           {
             "date": "2026-10-17",
             "scope": "Attempted preservation of cited source copies and checked saved-copy hashes; failures remain in source access notes. This source-evidence work is not a full factual recheck of the record."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "News search from 17 October 2026 in English and Portuguese, with the digital administration ministry's news page (newest 6 November). No qualifying item was found. The government's AI Act overview page is undated and did not show a new Portuguese designation act. No new evaluator, developer safety agreement or Network joining was found, and ANACOM's final legal designation was not newly verified. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -5010,6 +5067,10 @@
           {
             "date": "2026-10-17",
             "scope": "English searches for a national AI safety, security or evaluation institute, commitment, proposal or study. The English country queries did not identify a qualifying institute, commitment, proposal or institute-specific study. The selected official action-plan announcement describes a centre for AI and language technology, computing access and responsible sectoral adoption. Partial check only; the last full-check date is unchanged."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "News search from 17 October 2026 in English and Icelandic, with the Government Offices pages of the finance ministry (newest 4 November) and the front-page news (newest 10 November). Left for review: the announcement of 4 November that Umbra and CERT-IS received access to a specialist OpenAI cybersecurity model for authorised defensive tasks, with humans taking the decisions. The announcement gives no model name, funding or frontier-evaluation mandate, and no new AI Act incorporation or designation was found. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -5405,6 +5466,10 @@
           {
             "date": "2026-10-17",
             "scope": "English searches for a national AI safety, security or evaluation institute, commitment, proposal or study. The English query did not identify a qualifying institute, commitment, proposal or institute-specific study. The selected government communiqué describes draft bill 8476 and proposed national AI Act governance. Foreign AI institutes appearing in Luxembourg conferences do not establish a domestic institute. The broader query also returned official research-strategy excerpts on AI audit frameworks, certification and cyber vulnerability tools; these did not name a qualifying institute, and the PDF was not opened. Partial check only; the last full-check date is unchanged."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "News search from 17 October 2026 in English, French, German and Luxembourgish, with the digitalisation ministry's page (newest 22 October). No qualifying item was found. The minister's research and innovation visit to the UK on 22 October mentions safe and trustworthy AI but no evaluator mandate, developer agreement or model access. No adoption of AI Act bill 8476 or national institute was found. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -5569,6 +5634,10 @@
           {
             "date": "2026-10-17",
             "scope": "English searches for a national AI safety, security or evaluation institute, commitment, proposal or study. The English query returned AI Act implementation and governance material but no qualifying national evaluation institute or institute-specific commitment. The selected Greek law could not be re-retrieved in this pass, including the fallback text copy; the retained complete law copy was then validated and Article 6 read. It establishes advisory, coordination, training and sandbox-support functions, not the required mandate to evaluate advanced models. The broader query found the official AI Blueprint. Retrieved Proposal 5.1, printed page 81, proposes an AI Act supervisory authority, including regulatory-sandbox oversight; the passage does not establish a frontier-model evaluation institute. Partial check only; the last full-check date is unchanged."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "News search from 17 October 2026 in English and Greek, with the digital governance ministry's homepage (newest 6 November). No qualifying item was found. Nothing identified a new evaluator, developer safety or access agreement or Network joining beyond the Law 5321/2026 framework of July already in the record. The ministry's page on the government directory could not be read for news. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -5681,6 +5750,10 @@
           {
             "date": "2026-10-17",
             "scope": "English searches for a national AI safety, security or evaluation institute, commitment, proposal or study. The English query did not identify a qualifying institute, commitment, proposal or institute-specific study. The official 16 October announcement covers a national AI plan and consultation; the plan itself was not read in this pass. The broader query added applied AI and information-security work in Croatian customs; no new institute signal was found. Partial check only; the last full-check date is unchanged."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "News search from 17 October 2026 in English and Croatian, with the justice, public administration and digital transformation ministry's news page (newest 10 November). No qualifying item was found. The presentation of the national AI plan on 16 October is already in the record and describes a consultation, not an adoption. The outcome of that consultation remains to be checked. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -5966,6 +6039,10 @@
           {
             "date": "2026-10-17",
             "scope": "English searches for a national AI safety, security or evaluation institute, commitment, proposal or study. The English query did not identify a qualifying institute or named institute commitment. The official strategy includes national procedures and safety tests for algorithms and cites international AISI cooperation; the reviewed passages assign work across existing ministries and do not establish a national institute for advanced models. The broader query returned national AI programme and regulatory-sandbox research excerpts; these do not establish a new evaluator of advanced models. Partial check only; the last full-check date is unchanged."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "News search from 17 October 2026 in English and Slovenian, with the interior and public administration ministry's news page (newest 23 October, so the listing may be out of date). No qualifying item was found. The official national AI ecosystem page matches the authority framework already in the record. No new evaluator, developer agreement or designation amendment was found. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -6144,6 +6221,10 @@
           {
             "date": "2026-10-18",
             "scope": "Aligned current rationale wording with the consolidated capability-or-behaviour-risk test, removing the old severity requirement. This editorial consistency pass adds no research claim and does not change status or the last full-check date."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "News search from 17 October 2026 in English and Slovak, with the regional development and informatisation ministry's news page (newest 10 November). No qualifying item was found. The parliamentary vote on paper 1447 was a first reading on 17 September, before the window, and the parliamentary policy overview could not be read. No final implementation law or CyberLab grant award was found. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -6360,6 +6441,10 @@
           {
             "date": "2026-11-10",
             "scope": "Corrected the notes against section 4(1) of Act LXXV of 2025: the instruments designate the AI Act authorities, and the notifying authority designates conformity assessment bodies on the basis of their accreditation. Bound the AI Council's first meeting on 15 December 2025 to the council's concluding declaration. Wording correction only; the last full-check date is unchanged."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "News search from 17 October 2026 in English and Hungarian, with the science and technology ministry's page (newest 28 October). Added press reports (Agence Europe, 23 October; MLex, 3 November) of Hungary's proposal for an EU Frontier AI Safety and Security Team; the non-paper itself was not found. The ministry's news listing could not be read, and no Hungarian national-body commitment or new domestic AI Act designation was found. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -6396,9 +6481,11 @@
         "hu-economx-ai-council",
         "ai-act-tracker",
         "hu-mihivatal-rolunk",
-        "hu-njt-90-2026"
+        "hu-njt-90-2026",
+        "hu-agenceeurope-eufast-2026",
+        "hu-mlex-eufast-2026"
       ],
-      "notes": "The enacted Act LXXV of 2025 and Decree 344/2025 designate the AI Act authorities; under the Act (section 4(1)) the notifying authority assesses, designates, notifies and monitors conformity assessment bodies on the basis of their accreditation. They create no testing institute. The Act (section 8) sets up the Hungarian AI Council as a body without decision-making power. Decree 224/2026 (1 October 2026) repealed § 5(1)(e) of Decree 344/2025.",
+      "notes": "The enacted Act LXXV of 2025 and Decree 344/2025 designate the AI Act authorities; under the Act (section 4(1)) the notifying authority assesses, designates, notifies and monitors conformity assessment bodies on the basis of their accreditation. They create no testing institute. The Act (section 8) sets up the Hungarian AI Council as a body without decision-making power. Decree 224/2026 (1 October 2026) repealed § 5(1)(e) of Decree 344/2025.\n\nAgence Europe reported on 23 October 2026 that Hungary, in a non-paper, proposed embedding independent evaluators in the training and testing of frontier AI models, seconded by national safety institutes, cybersecurity agencies and research centres, and MLex reported on 3 November that Hungary was seeking support from EU countries for an EU Frontier AI Safety and Security Team. The proposal itself was not found. The reports concern an EU-level proposal and do not establish a Hungarian commitment to a national institute.",
       "region": {
         "id": "150",
         "name": "Europe",
@@ -6550,6 +6637,10 @@
           {
             "date": "2026-10-17",
             "scope": "English searches for a national AI safety, security or evaluation institute, commitment, proposal or study. The English query did not identify a qualifying institute, commitment, proposal or institute-specific study. Results included the national strategy's certification-evaluator register and AI Act implementation. The selected ANCOM page opened initially, but a later content lookup timed out; earlier saved evidence remains relevant. The certification-register result was read only as a search excerpt. Partial check only; the last full-check date is unchanged."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "News search from 17 October 2026 in English and Romanian, with the economy ministry's homepage news (newest 4 November). Left for review: private members' bill B597/2026, registered in the Senate on 28 October, which would create an AI Safety Authority within the telecoms regulator ANCOM to carry out independent frontier-model evaluations, with competitive recruitment and funding from the ANCOM budget and fees. It comes from an unaffiliated deputy, no government support or adoption was shown, and the national AI Act implementing act was not newly verified. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -6872,6 +6963,10 @@
           {
             "date": "2026-11-07",
             "scope": "Read BTA's report of the innovation committee's vote of 4 November 2026 on the AI bill; the bill remains a proposal. Partial check; the last full-check date is unchanged."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "News search from 17 October 2026 in English and Bulgarian, with the digital ministry's news page (newest 10 November). No qualifying item was found. The parliamentary committee's rejection of a private members' AI bill on 4 November was reported by BTA and is already in the record. The older e-government ministry listing could not be read for dated news, so the current ministry page was used instead. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -7012,6 +7107,10 @@
           {
             "date": "2026-10-17",
             "scope": "English searches for a national AI safety, security or evaluation institute, commitment, proposal or study. The English query did not identify a qualifying institute, commitment, proposal or institute-specific study. The ministry's primary governance page assigns notifying functions to the Innovation Agency and market surveillance and contact functions to RRT. The broader query returned LitAI infrastructure and AI-governance project excerpts; neither snippet establishes an evaluator of advanced models. Partial check only; the last full-check date is unchanged. The ministry passages were read through the web reader on 17 October 2026, despite separate complete-copy preservation failures."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "News search from 17 October 2026 in English and Lithuanian, with the economy and innovation ministry's news page (newest 9 November). Left for review: the ministry's confirmation that the Seimas adopted the AI Act implementation law on 5 November, with commencement announced for 1 December. The promulgated act and its article-level allocations were not read, and adoption is not yet commencement. No national model evaluator was found. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -7185,6 +7284,10 @@
           {
             "date": "2026-10-18",
             "scope": "Aligned current rationale wording with the consolidated capability-or-behaviour-risk test, removing the old severity requirement. This editorial consistency pass adds no research claim and does not change status or the last full-check date."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "News search from 17 October 2026 in English and Latvian, with the regional development ministry's news page (newest 6 November). Left for review: the president's participation on 28 October in a virtual leaders' meeting on international AI safety cooperation, and Latvia's place on the endorsement list of the French presidency's Paris Call for AI Safety and Security, published on 9 November and since updated. The Latvian release gives 31 countries for the meeting where Finland's correction says 29. No new AI Centre evaluation mandate, authority act or Latvian announcement of the endorsement was found. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -7448,6 +7551,10 @@
           {
             "date": "2026-10-18",
             "scope": "Aligned current rationale wording with the consolidated capability-or-behaviour-risk test, removing the old severity requirement. This editorial consistency pass adds no research claim and does not change status or the last full-check date."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "News search from 17 October 2026 in English, Greek and Turkish, with the digital policy deputy ministry's news page (newest 10 November). Left for review: the cabinet's approval on 10 November of the 2026 to 2032 national AI strategy, and Cyprus's place on the endorsement list of the French presidency's Paris Call for AI Safety and Security, published on 9 November and since updated. The full adopted strategy was not found, so it is not known whether the testing, certification and security bodies of the earlier draft remain. No new national evaluator designation or Cypriot announcement of the endorsement was found. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -7664,6 +7771,10 @@
           {
             "date": "2026-10-17",
             "scope": "Attempted preservation of cited source copies and checked saved-copy hashes; failures remain in source access notes. This source-evidence work is not a full factual recheck of the record."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "News search from 17 October 2026 in English and Maltese, with the Department of Information press release listing (newest 10 November). Left for review: the ministry release of 29 October announcing an updated national AI strategy to 2030 for the following month, distinct from the strategy page of November 2025 already in the record. The revised strategy itself had not been found by 10 November. No new evaluator, access arrangement or change to the MDIA designation was found. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -8621,6 +8732,10 @@
           {
             "date": "2026-10-18",
             "scope": "Checked the retained TC260 framework as primary governance evidence and the English Tsinghua account for the network name. Partial check; the last full-check date is unchanged."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "News search from 17 October 2026 in English and Chinese, with the science and technology ministry's listing (newest dated item 10 November) and the National Development and Reform Commission's press conference transcript of 3 November. Left for review: a report by Guandian of 5 November that the China Academy of Information and Communications Technology organised its 2026 Q3 test of sycophancy risk in large models. The academy's original release was not found, so no new mandate or model access is claimed. Standards, prospective laws and sandboxes found did not establish a national evaluator or Network accession. No full review of official gazettes was made. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -9238,6 +9353,10 @@
           {
             "date": "2026-11-07",
             "scope": "Read KORIKA's report of its first members' meeting of 2026 (30 April 2026) for KORIKA's legal form; the AISII role now names it as an independent membership association. Partial check; the last full-check date is unchanged."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "News search from 17 October 2026 in English and Indonesian, with the communications and digital ministry's press release listing (entries shown with relative times only, so the newest publication date was not verified). Left for review: a release of 23 October republished by Suar naming AISII among the participants in Project NUSA, launched by KORIKA and AI Singapore, and a CNBC Indonesia interview of 30 October in which the ministry's AI director said the national AI roadmap 2026 to 2029 and the AI ethics presidential regulation were still awaiting signature. The ministry's article with the national cyber agency on AI-agent threats could not be read, and the original NUSA release was not found. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -9663,6 +9782,10 @@
           {
             "date": "2026-10-17",
             "scope": "Attempted preservation of cited source copies and checked saved-copy hashes; failures remain in source access notes. This source-evidence work is not a full factual recheck of the record."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "News search from 17 October 2026 in English and Maori, with the MBIE homepage news block (newest 3 November). No qualifying item was found. A request of 9 November for an institute and strategy came from independent advocacy, not a government commitment. The filtered MBIE news list could not be read. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -13594,6 +13717,10 @@
           {
             "date": "2026-10-24",
             "scope": "Re-ran searches in English and Russian for a government-designated institute that evaluates advanced models, or a commitment, proposal or study naming one. No qualifying institute or commitment was identified. A February 2026 trade-press report of a planned ministry test site for AI security certification, which the ministry said it was not legislating, concerns conformity of deployed systems. Retrieved the presidential decree as new primary governance evidence. Raised confidence to medium under the status-confidence rule: recorded queries in English and a national or official language, and cited primary governance evidence consistent with no qualifying institute. Partial check; the last full-check date is unchanged."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "News search from 17 October 2026 in English and Russian, with the official publication card for Government decree 1461 of 6 November and a legal-text mirror of it. Left for review: decree 1461 of 6 November, which gives the digital development ministry powers to analyse foundation-model development, with the mirror reporting entry into force on 14 November. It names no model-testing body and no link to the six announced implementing decrees was found in the material read, whose adoption remains unverified. The ministry's news listing and the operative text on the official card could not be read. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -14162,6 +14289,10 @@
           {
             "date": "2026-10-18",
             "scope": "Aligned current rationale wording with the consolidated capability-or-behaviour-risk test, removing the old severity requirement. This editorial consistency pass adds no research claim and does not change status or the last full-check date."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "News search from 17 October 2026 in English and Turkish, with the industry and technology ministry's homepage news block (newest 23 October). No qualifying item was found. The foreign minister's call of 28 October to open the Network and share tests and access is advocacy, not Turkish membership or a domestic designation. The ministry's full news listing could not be read. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -14679,6 +14810,10 @@
           {
             "date": "2026-10-17",
             "scope": "Attempted preservation of cited source copies and checked saved-copy hashes; failures remain in source access notes. This source-evidence work is not a full factual recheck of the record."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "News search from 17 October 2026 in English and Spanish, with the Secretariat of Innovation, Science and Technology's news listing (newest 6 November). No qualifying item was found. Public-service AI adoption, general cooperation releases and an undated university programme page do not establish a national evaluator or safety access agreement. No full audit of the underlying legislation was made. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -15010,6 +15145,10 @@
           {
             "date": "2026-10-18",
             "scope": "Changed status confidence from low to medium because the individual check has recorded English and national or official-language queries and retrieved primary governance evidence; classification disagreement no longer lowers confidence. Partial check; the last full-check date is unchanged."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "News search from 17 October 2026 in English and Portuguese, with the science ministry's news listing (newest 10 November), the data protection authority's sandbox listing (newest relevant item 5 November) and the Chamber of Deputies news of 4 November. Left for review: the data protection authority's listing item of 5 November on concluding its first AI sandbox and announcing a second on digital games for children, and the proposal in parliamentary bill PL 5960/2025, reported 4 November, for INSOED, an Inmetro-coordinated testing and certification network for AI and digital infrastructure. The bill did not originate with the government, the committee report was read only in part, and the listings were not paged through in full. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -15457,6 +15596,10 @@
           {
             "date": "2026-10-17",
             "scope": "English searches for a national AI safety, security or evaluation institute, commitment, proposal or study. English results concern the AI bill, data-protection enforcement, advisory governance and public-sector AI support. The cached Senate article assigns enforcement and sanctions to the data-protection agency and proposes an advisory technical council; it does not designate an institute to evaluate advanced models. No new institute-specific government proposal or study was identified. Partial check only; the last full-check date is unchanged."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "News search from 17 October 2026 in English and Spanish, with the science ministry's news listing (newest 9 November). No qualifying item was found. Negotiations with OpenAI reported by Diario Financiero have an undisclosed scope, and the token, training and adoption plans reported by Periodismo2 and Diario Financiero name no advanced-model evaluator. Any later signed agreement was not found. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -15570,6 +15713,10 @@
           {
             "date": "2026-10-17",
             "scope": "Attempted preservation of cited source copies and checked saved-copy hashes; failures remain in source access notes. This source-evidence work is not a full factual recheck of the record."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "News search from 17 October 2026 in English and Spanish, with the Minciencias news listing (newest 10 November). No qualifying item was found. Compute, data and application cooperation and a report by TheIntelligent of 30 October on AI-assisted cyberdefence do not assign advanced-model evaluation. The cyberdefence launch was not confirmed by an official source and was not used. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -15667,6 +15814,10 @@
           {
             "date": "2026-10-17",
             "scope": "Attempted preservation of cited source copies and checked saved-copy hashes; failures remain in source access notes. This source-evidence work is not a full factual recheck of the record."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "News search from 17 October 2026 in English and Spanish, with the MICITT news listing (newest 21 October) and a separately found MICITT release of 28 October on cooperation with the Center for Public Intelligence. No qualifying item was found. The open-code, public-services agent and applied cooperation items name no frontier developer, evaluator or privileged access. The listing was out of date relative to the standalone release, and the status of bills was not fully reviewed. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -17180,6 +17331,10 @@
           {
             "date": "2026-10-24",
             "scope": "Re-ran searches in English and Spanish for a government-designated institute that evaluates advanced models, or a commitment, proposal or study naming one. No qualifying institute or commitment was identified; results described the ATDT's training and compute work and further parliamentary AI bills, including one in the Gazette of 29 June 2026, which were not opened. The earlier low rating rested on access gaps for later official pages, which the rule does not make a condition. Raised confidence to medium under the status-confidence rule: recorded queries in English and a national or official language, and cited primary governance evidence consistent with no qualifying institute. Partial check; the last full-check date is unchanged."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "News search from 17 October 2026 in English and Spanish, with the SECIHTI press room (newest 7 November). No qualifying item was found. The independent AI Safety Mexico body has no retrieved government designation, and a search on the parliamentary algorithmic audit platform did not show adoption or an advanced-model remit. No full review of the legislative docket or of the digital agency's news archive was made. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -19005,6 +19160,10 @@
           {
             "date": "2026-10-24",
             "scope": "Re-ran searches in English and Arabic for a government-designated institute that evaluates advanced models, or a commitment, proposal or study naming one. No qualifying institute or commitment was identified; results again described the draft Responsible AI Policy and SDAIA's work on the International AI Safety Report. Retrieved SDAIA's AI page as new primary governance evidence. Raised confidence to medium under the status-confidence rule: recorded queries in English and a national or official language, and cited primary governance evidence consistent with no qualifying institute. Partial check; the last full-check date is unchanged."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "News search from 17 October 2026 in English and Arabic, with the SDAIA news listing (newest 4 November) and the communications ministry's homepage (newest 8 November). No qualifying item was found. Media-use principles and a foreign-ministers' session reported by Arab News and Saudi Gazette are neither a public advanced-model evaluator nor Network accession. The event detail pages of the Saudi Press Agency and SDAIA could not be read. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -19134,6 +19293,10 @@
           {
             "date": "2026-10-24",
             "scope": "Re-ran searches in English and Hebrew for a government-designated institute that evaluates advanced models, or a commitment, proposal or study naming one. No qualifying institute or commitment was identified, and nothing new on the reported AI Security Research Unit was found. Kept low: the earlier unresolved evidence gap on that unit remains. Partial check; the last full-check date is unchanged."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "News search from 17 October 2026 in English and Hebrew, with the innovation, science and technology ministry's Hebrew news listing (newest 3 November). No qualifying item was found. Infrastructure plans and independent think-tank work do not establish the government AI Security Research Unit in the record, and that evidence gap remains. The English-language listings were out of date and were not used. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -27727,6 +27890,10 @@
           {
             "date": "2026-10-17",
             "scope": "Attempted preservation of cited source copies and checked saved-copy hashes; failures remain in source access notes. This source-evidence work is not a full factual recheck of the record."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "News search from 17 October 2026 in English and Afrikaans, with the communications department's media listing (newest 12 May, out of date) and the science department's account of 3 November. Left for review: the 3 November account of a 29 October dialogue with Finland, saying the department continues revising the withdrawn AI policy with an independent expert panel, and a TechCentral report of 29 October giving the timetable of revised policy to the minister by 30 November and a Cabinet submission in March 2027 for public consultation. No replacement policy or reinstated institute proposal was found, and support for the Finland and Norway call is not Network membership. The parliamentary reply of 14 October, which gives the March 2027 target, was read, but its printed page numbers could not be checked. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -114345,6 +114512,244 @@
         "retrieved": "2026-11-10T19:13:06Z",
         "sha256": "d31d8709ac5de97b96ce273faa47c1f2fc8885e3c9fe2500862de9e90d7058ac",
         "text_sha256": "d524b451a8a5b2f5381f5a70c9f808fdd1df90fdcc7b469c8ead5d806e18e149",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "pl-nask-openai-2026",
+      "url": "https://www.nask.pl/aktualnosci/jedyna-taka-umowa-w-ue-partnerstwo-nask-i-openai-w-obszarze-bezpieczenstwa-sztucznej-inteligencji",
+      "title": "Jedyna taka umowa w UE. Partnerstwo NASK i OpenAI w obszarze bezpieczeństwa sztucznej inteligencji",
+      "title_en": "The only agreement of its kind in the EU: NASK and OpenAI partner on artificial intelligence safety",
+      "publisher": "NASK National Research Institute",
+      "type": "primary",
+      "published": "2026-10-23",
+      "accessed": "2026-11-10",
+      "language": "pl",
+      "origin": "PL",
+      "excerpts": [
+        {
+          "text": "NASK i OpenAI podpisały porozumienie o współpracy w zakresie badań nad bezpieczeństwem AI.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "PL"
+              },
+              "closest_body",
+              "note"
+            ]
+          ],
+          "gloss": "NASK and OpenAI have signed a cooperation agreement on AI safety research.",
+          "accessed": "2026-11-10"
+        },
+        {
+          "text": "Po stronie NASK współpracę poprowadzi Ośrodek Badań nad Bezpieczeństwem Sztucznej Inteligencji, który pełni funkcję polskiego Instytutu Bezpieczeństwa Sztucznej Inteligencji (AISI).",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "PL"
+              },
+              "closest_body",
+              "note"
+            ]
+          ],
+          "gloss": "On NASK's side, the cooperation will be led by the AI Safety Research Centre, which serves as the Polish AI Safety Institute (AISI).",
+          "accessed": "2026-11-10"
+        },
+        {
+          "text": "W lipcu zespół CERT Polska, który działa w strukturach instytutu, otrzymał w programie Daybreak dostęp do zaawansowanych modeli OpenAI w zakresie cyberbezpieczeństwa. CERT Polska z ich pomocą wykrył sześć podatności w systemie MikroTik RouterOS.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "PL"
+              },
+              "notes"
+            ]
+          ],
+          "gloss": "In July the CERT Polska team, which operates within the institute, received access to OpenAI's advanced cybersecurity models in the Daybreak programme. With their help CERT Polska found six vulnerabilities in the MikroTik RouterOS system.",
+          "accessed": "2026-11-10"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-10T19:46:15Z",
+        "sha256": "856b38746e1695ea8418ba71484aafcf5d9d40f33c9f09151ac8d2e2309cd5ed",
+        "text_sha256": "a04257150a6279120676227435522a7ddd562d446de0e731f52836ed0b3b54ac",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "pl-openai-nask-2026",
+      "url": "https://openai.com/index/openai-nask-ai-safety-security-partnership/",
+      "title": "OpenAI and Poland’s NASK partner to advance AI safety and security",
+      "publisher": "OpenAI",
+      "type": "primary",
+      "published": "2026-10-23",
+      "accessed": "2026-11-10",
+      "language": "en",
+      "origin": "US",
+      "archive_url": "http://web.archive.org/web/20261029085646/https://openai.com/index/openai-nask-ai-safety-security-partnership/",
+      "access_note": "The live page answered automated requests with a challenge page; the quotation is from the archived copy of 29 October 2026.",
+      "excerpts": [
+        {
+          "text": "exploring ways to evaluate increasingly capable AI systems, identify potential vulnerabilities and strengthen safeguards.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "PL"
+              },
+              "closest_body",
+              "note"
+            ]
+          ],
+          "accessed": "2026-11-10"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-10T19:46:15Z",
+        "sha256": "e5c6390fb9a65e2fd8b4d7e77dfaa0f2de1ca04041a326e51d461939b357b316",
+        "text_sha256": "9b9dab586dbc5d13283f31abb02a7f604f134477d48389c82823c961b404bd01",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "pl-nask-cert-openai-2026",
+      "url": "https://www.nask.pl/aktualnosci/nask-z-przelomowym-narzedziem-od-openai",
+      "title": "NASK z przełomowym narzędziem od OpenAI",
+      "title_en": "NASK gets a breakthrough tool from OpenAI",
+      "publisher": "NASK National Research Institute",
+      "type": "primary",
+      "published": "2026-07-02",
+      "accessed": "2026-11-10",
+      "language": "pl",
+      "origin": "PL",
+      "excerpts": [
+        {
+          "text": "Model GPT-5.5 od OpenAI udostępniany jest wyłącznie dla zaufanych partnerów. Polska i działający w NASK CERT Polska właśnie dołączają do tego grona jako “zweryfikowany obrońca”.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "PL"
+              },
+              "notes"
+            ]
+          ],
+          "gloss": "OpenAI's GPT-5.5 model is made available only to trusted partners. Poland and CERT Polska, which operates within NASK, are now joining this group as a \"verified defender\".",
+          "accessed": "2026-11-10"
+        },
+        {
+          "text": "Eksperci zyskają zaawansowany dostęp za pośrednictwem programu Government Trusted Access for Cyber dla rządowych jednostek.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "PL"
+              },
+              "notes"
+            ]
+          ],
+          "gloss": "Experts will gain advanced access through the Government Trusted Access for Cyber programme for government units.",
+          "accessed": "2026-11-10"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-10T19:46:16Z",
+        "sha256": "0955f888fda8f2252e1f8ba84ee38d0255d51464819681cd6659883785fbc188",
+        "text_sha256": "ec3e5545b22594803a4d98c43807a1c4a5e0ada8e94571f45bfb6749f9f21f76",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "hu-agenceeurope-eufast-2026",
+      "url": "https://agenceurope.eu/en/bulletin/article/13967/10/hungary-calls-for-frontier-ai-models-to-be-pre-vetted-from-training-and-testing-onwards",
+      "title": "Hungary calls for frontier AI models to be pre-vetted from training and testing onwards",
+      "publisher": "Agence Europe",
+      "type": "secondary",
+      "published": "2026-10-23",
+      "accessed": "2026-11-10",
+      "language": "en",
+      "origin": "BE",
+      "excerpts": [
+        {
+          "text": "In a non-paper dated October 2026, addressed to the European Commission, the Member States and the Irish Presidency of the Council of the EU and seen by Agence Europe",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "HU"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-10"
+        },
+        {
+          "text": "the Hungarian government calls for the creation of an “EU Frontier AI Safety and Security Team”. Called ‘EU FAST’, the team would comprise pre-vetted, security-cleared independent evaluators embedded in the training and testing of advanced artificial intelligence (AI) models",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "HU"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-10"
+        },
+        {
+          "text": "These experts would be seconded by national safety institutes, cybersecurity agencies and research centres.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "HU"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-10"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-10T19:46:15Z",
+        "sha256": "d41a246b65e758470ac1532bc029bcdeb9c3578cc17622af6413de2e2619209a",
+        "text_sha256": "f64cd7eb7f911aab72e95de85f8cd49798ae640ea34c2e5265e125e03346d53a",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "hu-mlex-eufast-2026",
+      "url": "https://www.mlex.com/mlex/articles/2545592",
+      "title": "Hungary seeks EU backing for new agency to test AI models in development",
+      "publisher": "MLex",
+      "type": "secondary",
+      "published": "2026-11-03",
+      "accessed": "2026-11-10",
+      "language": "en",
+      "origin": "GB",
+      "access_note": "Only the public introduction was read; the rest of the article is behind a paywall.",
+      "excerpts": [
+        {
+          "text": "Hungary is seeking support from EU countries for its plan to set up a new agency called the EU Frontier AI Safety and Security Team",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "HU"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-10"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-10T19:46:15Z",
+        "sha256": "f9c77ac0d228fc26751bcc584fd479adb88a6bc51f54ce7766e6fdce21b9a486",
+        "text_sha256": "f1d7d82a458e905e35dc2eef89375504abb8add33160d3e289c1e4bca07032c6",
         "text_scheme": 1
       }
     }
