@@ -1903,7 +1903,8 @@
           "source_ids": [
             "network-2025",
             "network-nist-2026",
-            "jp-joint-2025"
+            "jp-joint-2025",
+            "gb-aisi-network-consensus-2026"
           ]
         }
       ],
@@ -2049,7 +2050,8 @@
           "source_ids": [
             "fr-sgdsn-aisi",
             "network-2025",
-            "network-nist-2026"
+            "network-nist-2026",
+            "gb-aisi-network-consensus-2026"
           ]
         }
       ],
@@ -7758,7 +7760,10 @@
         "gb-joint-testing",
         "catalogue-agentic-report",
         "fix-output-network-agentic-arxiv",
-        "depth-gb-blog"
+        "depth-gb-blog",
+        "eu-midday-briefing-2026-09-11",
+        "eu-tnw-enisa-mythos-2026",
+        "eu-techzine-enisa-mythos-2026"
       ],
       "memberships": [
         {
@@ -7766,7 +7771,8 @@
           "source_ids": [
             "r3-eu-first-network-meeting",
             "network-2025",
-            "network-nist-2026"
+            "network-nist-2026",
+            "gb-aisi-network-consensus-2026"
           ]
         }
       ],
@@ -7814,7 +7820,22 @@
       "identifier_source_ids": [
         "wikidata-eu-identifier"
       ],
-      "identifier_notes": "EU is a supranational union, not an ISO 3166 country or M49 statistical country/area. EU is not assigned country-equivalent ISO3/M49 codes; both remain null."
+      "identifier_notes": "EU is a supranational union, not an ISO 3166 country or M49 statistical country/area. EU is not assigned country-equivalent ISO3/M49 codes; both remain null.",
+      "related_bodies": [
+        {
+          "name": "European Union Agency for Cybersecurity (ENISA)",
+          "role": "The EU cybersecurity agency; the EU's institute record is the AI Office. A Commission spokesperson said on 11 September 2026 that, after safeguards and terms were agreed with Anthropic, the Commission had official access to its model Mythos 5 and the cybersecurity agency was testing it. The Next Web reported on 10 September that access came more than three months after Anthropic agreed in principle in June; Techzine reported the same day that the access was limited to defensive use and that the agency did not have access to Mythos 5.1.",
+          "counts_as_aisi": false,
+          "source_ids": [
+            "eu-midday-briefing-2026-09-11",
+            "eu-tnw-enisa-mythos-2026",
+            "eu-techzine-enisa-mythos-2026",
+            "eu-enisa-about"
+          ],
+          "kind": "other",
+          "id": "related_bodies-37c9ea7f5e1b74ab17d6fcc2295fb100"
+        }
+      ]
     },
     {
       "id": "US",
@@ -7891,7 +7912,8 @@
           "source_ids": [
             "network-nist-2026",
             "network-2025",
-            "jp-joint-2025"
+            "jp-joint-2025",
+            "gb-aisi-network-consensus-2026"
           ]
         }
       ],
@@ -8023,7 +8045,8 @@
           "source_ids": [
             "ca-launch",
             "network-2025",
-            "network-nist-2026"
+            "network-nist-2026",
+            "gb-aisi-network-consensus-2026"
           ]
         }
       ],
@@ -8131,7 +8154,8 @@
           "source_ids": [
             "jp-joint-2025",
             "network-2025",
-            "network-nist-2026"
+            "network-nist-2026",
+            "gb-aisi-network-consensus-2026"
           ]
         }
       ],
@@ -8249,7 +8273,8 @@
           "source_ids": [
             "r3-kr-collaboration-english",
             "network-2025",
-            "network-nist-2026"
+            "network-nist-2026",
+            "gb-aisi-network-consensus-2026"
           ]
         }
       ],
@@ -8363,7 +8388,8 @@
           "source_ids": [
             "r3-sg-eu-aa-domestic",
             "network-2025",
-            "network-nist-2026"
+            "network-nist-2026",
+            "gb-aisi-network-consensus-2026"
           ]
         }
       ],
@@ -8454,7 +8480,8 @@
           "source_ids": [
             "au-industry",
             "network-2025",
-            "network-nist-2026"
+            "network-nist-2026",
+            "gb-aisi-network-consensus-2026"
           ]
         }
       ],
@@ -24708,7 +24735,8 @@
           "source_ids": [
             "r3-ke-mygov-network-membership",
             "network-2025",
-            "network-nist-2026"
+            "network-nist-2026",
+            "gb-aisi-network-consensus-2026"
           ]
         }
       ],
@@ -28308,6 +28336,10 @@
           {
             "date": "2026-11-09",
             "scope": "Post-release news re-check from 6 November 2026: the institute's blog and research pages, its GOV.UK organisation page, Cabinet Office news, and written answers 38559, 38577, 39196 and 39199 with the corrected answer to 30890, read through the Parliament written questions API. Recorded the £360m allocation for 2026-27 to 2029-30 as the whole-institute figure with the £240m and £120m as its components, the corrected headcount of 243, that no fixed frontier threshold applies, that results are not typically published and that all current collaboration agreements are with UK and US developers. The date of the move to the Cabinet Office is still unresolved. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "Post-release news re-check from 8 November 2026: the institute's blog and research pages (newest 26 October), its GOV.UK organisation page (news 12 October), DSIT's documents (4 November) and Cabinet Office news (10 November), the Commons and Lords daily reports of 9 November, the written-questions listing of 10 November and targeted answers, including the answer to question 39801 of 10 November, which does not confirm testing of or access to the model it asks about. Added the institute's post of 12 February 2026 as a second source for the network memberships. The Home Office police AI factsheet mentions the institute only as an example in general wording on cooperation, so no partner is added. The NIST draft of 9 November could not be read in full, so its credit is unresolved. The date of the move to the Cabinet Office is still unresolved. Answers of 10 November beyond the listing and the targeted ones were not covered. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -30445,6 +30477,10 @@
           {
             "date": "2026-11-09",
             "scope": "Post-release news re-check from 6 November 2026: SGDSN publications and its INESIA page, the economy ministry's press pages and the digital minister's agenda for 9 to 13 November, and the DGE and DINUM news pages, whose newest items were from June and August, supplemented by searches. Nothing new on the institute; the public AI procurement guide of 6 November is credited to other bodies. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "Post-release news re-check from 8 November 2026: SGDSN publications (newest 27 October) and its INESIA page, DGE news (21 October), DINUM news and press (7 August and 30 July), and the economy ministry's press (10 November). Left for review: the report of the government's commission on generative AI, presented on 10 November, which recommends strengthening the institute's mandate and resources (recommendations, not adopted changes), and the network-wide Paris Call of 9 November. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -30855,6 +30891,10 @@
           {
             "date": "2026-11-09",
             "scope": "Post-release news re-check from 6 November 2026: BSI's institute page (newest digest 10/2026) and its news list to 4 November, and the digital ministry's press releases to 4 November. Nothing new. Left for review: the interior ministry's press pages, BSI's press-release list and Bundestag documents after 2 November, which could not be read. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "Post-release news re-check from 8 November 2026: BSI's institute page (newest digest 1 November) and news (4 November), the digital ministry's press (4 November), and the Bundestag proceeding on the institute with the opposition motion of 27 October, which is not adopted. Nothing new. BSI's press-release list, the interior ministry's current press and Bundestag documents after 2 November could not be fully read. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -31126,6 +31166,10 @@
           {
             "date": "2026-11-09",
             "scope": "Post-release news re-check from 6 November 2026: AESIA news, the digital ministry's press releases to 4 November, and the Official State Gazette summaries for 3 to 9 November (no issue on 8 November). No constitutive act and no institute appointment found. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "Post-release news re-check from 8 November 2026: AESIA news (newest 20 October), the ministry's press (4 November) and the BOE daily summaries of 9 and 10 November, in which no constitutive act or appointment for the institute was found. A separate list of AESIA publications was not found, so a new study cannot be ruled out. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -31422,6 +31466,10 @@
           {
             "date": "2026-11-09",
             "scope": "Post-release news re-check from 6 November 2026: ki.norge.no, the Digitalisation Agency's news and the government's news list to 9 November. Nothing new on the mandate. Added the contract award notice of 22 October 2026 for an executive assistant to KI Norge's management to the staffing-model notes as a contractor. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "Post-release news re-check from 8 November 2026: KI Norge articles (newest 24 September), Digdir news (28 October) and the digitalisation ministry's releases (10 November). Nothing new on the mandate was found in these listings; no separate KI Norge publications list was found, and not every ministry article was opened. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -31726,6 +31774,10 @@
           {
             "date": "2026-11-09",
             "scope": "Post-release news re-check from 6 November 2026: the AI Office page, the digital-strategy library and news to 6 November, and the Official Journal for 6 and 9 November. No new act under the AI Act and no new output. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "Post-release news re-check from 8 November 2026: the AI Office page, Commission digital-strategy news (6 November) and library (4 November), the Official Journal L series of 10 November, ENISA news (10 November) and the Commission's midday briefings of 18 June, 20 July, 1 September and 11 September 2026. Added ENISA's access to Mythos 5 to the EU record as a related body; it is ENISA's access, not the Office's. No primary source for the June agreement or the defensive-use terms was found in the material checked. The Official Journal of 9 November, corrigenda in other languages and ENISA's report of 10 November were not fully read. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -32310,6 +32362,10 @@
           {
             "date": "2026-11-09",
             "scope": "Post-release news re-check from 6 November 2026: the institute page, its news tag, research blog and guidelines, NIST news and blogs, and Commerce releases. No new institute output. Resolved from the 7 November review: Scale AI's February 2025 agreement added as announced, now that NIST's March 2026 update lists Scale AI among its research partners; the research-agenda blog post of 2 December 2025 stays out of the outputs (not a technical result); the press reports on the former director's resignation and on staff numbers have no official source and are not used. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "Post-release news re-check from 8 November 2026: the institute's pages, news tag (newest 16 October), research blog (23 March), guidelines (30 September) and NIST news (2 November). The landing page and announcement of the NIST publication of 9 November credit NIST staff, not the institute; the publication itself could not be read, so its credit is unresolved. Commerce news could be read only to 23 October. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -33579,6 +33635,10 @@
           {
             "date": "2026-11-09",
             "scope": "Post-release news re-check from 6 November 2026: ISED's institute page and media room, the research programme's newsroom (three features of 6 November on funded research networks), CIFAR news and NRC stories. No institute output, funding, staff or agreement change. Left for review: whether a funded network's testing counts as testing for the institute. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "Post-release news re-check from 8 November 2026: the institute page (newest linked blog 8 July), ISED's media room (9 November), NRC news (14 October; NRC stories only to June), CIFAR (newest linked AI safety news 28 March) and the research programme newsroom (6 November), and Canada's endorsement of the Paris Call of 9 November, which gives the institute no role. Nothing new. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -34174,6 +34234,10 @@
           {
             "date": "2026-11-09",
             "scope": "Post-release news re-check from 6 November 2026: the institute's activity and output indexes (newest 6 November), IPA press and the Cabinet Office AI pages. The AI news digest of 6 November is a source, not an output, as for other institutes' digests. Nothing else new. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "Post-release news re-check from 8 November 2026: the institute's homepage, activity list (10 November) and outputs (6 October), IPA press (4 November) and the Cabinet Office AI pages (26 October). The AI news digest of 10 November summarises outside research and is not an institute output. No separate current English news list was found. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -35365,6 +35429,10 @@
           {
             "date": "2026-11-09",
             "scope": "Post-release news re-check from 6 November 2026: the institute's Korean board (newest 3 November) and English pages; the science ministry's press list could not be read. Nothing new. The interview figure of about 27 permanent staff has no official source and is not used. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "Post-release news re-check from 8 November 2026: the institute's Korean board (newest 3 November, already in the record) and English board (newest 24 December 2024). The science ministry's press list could not be read. Added Money Today's report of the 20 October audit as a second source for the six technical evaluators; it gives no total headcount. Left for review: the same report's account that the institute uses external GPU resources. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -35390,7 +35458,8 @@
         "kr-rok-fortress-2026",
         "kr-rok-fortress-arxiv-2026",
         "kr-aire-risk-update-2026",
-        "kr-uncensored-eval-2026"
+        "kr-uncensored-eval-2026",
+        "kr-mt-2026-10-20"
       ],
       "people": [
         {
@@ -35757,10 +35826,11 @@
           "technical": 6,
           "technical_qualifier": "at_least",
           "as_of": "2026-10",
-          "description": "A member of the National Assembly said at the October 2026 parliamentary audit that the institute's staff had grown from 26 to 38 and is still short of peer institutes, as reported in the press. ZDNet Korea reported, from ministry and institute material, that the evaluation lab has 7 staff, 6 of them technical evaluators. The count is the one given as current at the October 2026 audit. No official current headcount was found. The technical count of at least 6 is the evaluation lab's technical evaluators, which is only part of the institute.",
+          "description": "A member of the National Assembly said at the October 2026 parliamentary audit that the institute's staff had grown from 26 to 38 and is still short of peer institutes, as reported in the press. ZDNet Korea reported, from ministry and institute material, that the evaluation lab has 7 staff, 6 of them technical evaluators. The count is the one given as current at the October 2026 audit. No official current headcount was found. The technical count of at least 6 is the evaluation lab's technical evaluators, which is only part of the institute. At the parliamentary audit of 20 October 2026, asked whether only six staff can analyse AI models' risks and run hacking simulations, the president of ETRI, the institute's host, answered that six people handle this work, as reported by Money Today.",
           "source_ids": [
             "kr-nate",
-            "kr-zdnet"
+            "kr-zdnet",
+            "kr-mt-2026-10-20"
           ],
           "confidence": "low",
           "figure_source": "press_report",
@@ -35850,6 +35920,10 @@
           {
             "date": "2026-11-09",
             "scope": "Post-release news re-check from 6 November 2026: the institute's site and resources (newest 23 July 2026) and the digital ministry's newsroom to 5 November; IMDA's press list was readable only as an archived copy to 20 October. Nothing new. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "Post-release news re-check from 8 November 2026: the institute's resources (newest 23 July) and the MDDI newsroom (6 November); IMDA's press list could be read only in an archived copy whose newest item was dated 20 October. No separate current research list was found. Nothing new in the pages read. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -36317,6 +36391,10 @@
           {
             "date": "2026-11-09",
             "scope": "Post-release news re-check from 6 November 2026: the institute page, the department's news and publications to 9 November, the ministers' media pages, the department's annual report 2025-26 in full and the answers to the Joint Select Committee on AI hearing of 30 October. No institute-specific staff or budget figure and no new output or agreement. The annual report's launch date of 1 June 2026 and the 2 June speech stay with the set-up date review. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "Post-release news re-check from 8 November 2026: the institute page, the department's news and publications (9 November), the ministers' media centre (10 November) and the Joint Select Committee's answers on notice (5 November). Left for review: two ministerial releases of 10 November, on a proposed AI safety regulator to work with the institute and on the Rapid Review of AI-driven cyber incidents the institute contributed to. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -36766,6 +36844,10 @@
           {
             "date": "2026-11-09",
             "scope": "Added safety benchmarking, risk assessment and incident reporting for corrective action to the mandate, from the Digital Minister's answer in the Dewan Rakyat on 5 October 2026. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "Post-release news re-check from 8 November 2026: the institute page, AI Malaysia news (11 September), the ministry's releases (5 November) and its official account (posts to 9 November), and the draft Hansard of 28 October. The ministry's release of 5 November invites Google to collaborate on AI safety research and evaluation; it is an invitation, not an agreement. Left for review: the minister's account of an academic roundtable on the institute, reported on 5 November (the ministry's own release was not found), and the minister's answer of 28 October. The final Hansard and the Supply Bill 2027 schedules could not be read. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -37007,6 +37089,10 @@
           {
             "date": "2026-11-09",
             "scope": "Post-release news re-check from 6 November 2026: the ministry's acts and policies, what's new and press pages; IndiaAI news and the ministry's consultations page could not be read. No official item on the institute and no released consultation paper found. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "Post-release news re-check from 8 November 2026: MeitY's What's New (newest 30 October) and its acts and policies pages (29 October); MeitY's press list could be read only in a copy of January 2025, and IndiaAI news could not be read. No released consultation paper on AI regulation was found. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -37187,6 +37273,10 @@
           {
             "date": "2026-11-09",
             "scope": "Post-release news re-check from 6 November 2026: the ICT ministry's news, consultation and public-participation pages, and the ministry bulletin of 3 November, which reports the AI policy as still forthcoming. The draft AI policy is not adopted. Left for review: the Senate ICT committee report on the AI Bill 2026 (located, not readable) and current Cabinet despatches. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "Post-release news re-check from 8 November 2026: the ICT ministry's news (10 November), policy documents, speeches (newest 20 September) and the Cabinet briefs (newest recovered 10 February). The security operations centre launched on 10 November is not a qualifying institute. The Senate ICT committee report on the AI Bill could not be read, and no adoption of the draft AI policy was found; current Cabinet and parliamentary coverage is incomplete. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -113687,6 +113777,574 @@
         "retrieved": "2026-11-10T06:12:49Z",
         "sha256": "b1a3d7dae75f21de4e4ff2ff563af13d823ca2d700c00a11b969a67bfa0eb670",
         "text_sha256": "9778477841f01fe6ed51458c0f6af2b13a8d5e7c7a7bccd9c2e6a94127c488ea",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "gb-aisi-network-consensus-2026",
+      "url": "https://www.aisi.gov.uk/blog/international-ai-network-consensus-and-open-questions",
+      "title": "International consensus and open questions in AI evaluations",
+      "publisher": "AI Security Institute (United Kingdom)",
+      "type": "primary",
+      "published": "2026-02-12",
+      "accessed": "2026-11-10",
+      "language": "en",
+      "origin": "GB",
+      "excerpts": [
+        {
+          "text": "the Network brings together Australia, Canada, the European Union, France, Japan, Kenya, the Republic of Korea, Singapore, the United Kingdom and the United States",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "AU"
+              },
+              "memberships",
+              {
+                "body": "intl-network"
+              },
+              "body"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "CA"
+              },
+              "memberships",
+              {
+                "body": "intl-network"
+              },
+              "body"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "EU"
+              },
+              "memberships",
+              {
+                "body": "intl-network"
+              },
+              "body"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "FR"
+              },
+              "memberships",
+              {
+                "body": "intl-network"
+              },
+              "body"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "JP"
+              },
+              "memberships",
+              {
+                "body": "intl-network"
+              },
+              "body"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "KE"
+              },
+              "memberships",
+              {
+                "body": "intl-network"
+              },
+              "body"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "KR"
+              },
+              "memberships",
+              {
+                "body": "intl-network"
+              },
+              "body"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "SG"
+              },
+              "memberships",
+              {
+                "body": "intl-network"
+              },
+              "body"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "GB"
+              },
+              "memberships",
+              {
+                "body": "intl-network"
+              },
+              "body"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "US"
+              },
+              "memberships",
+              {
+                "body": "intl-network"
+              },
+              "body"
+            ]
+          ],
+          "accessed": "2026-11-10"
+        },
+        {
+          "text": "the International Network for Advanced AI Measurement, Evaluation and Science — formerly the International Network of AI Safety Institutes",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "AU"
+              },
+              "memberships",
+              {
+                "body": "intl-network"
+              },
+              "body"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "CA"
+              },
+              "memberships",
+              {
+                "body": "intl-network"
+              },
+              "body"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "EU"
+              },
+              "memberships",
+              {
+                "body": "intl-network"
+              },
+              "body"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "FR"
+              },
+              "memberships",
+              {
+                "body": "intl-network"
+              },
+              "body"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "JP"
+              },
+              "memberships",
+              {
+                "body": "intl-network"
+              },
+              "body"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "KE"
+              },
+              "memberships",
+              {
+                "body": "intl-network"
+              },
+              "body"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "KR"
+              },
+              "memberships",
+              {
+                "body": "intl-network"
+              },
+              "body"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "SG"
+              },
+              "memberships",
+              {
+                "body": "intl-network"
+              },
+              "body"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "GB"
+              },
+              "memberships",
+              {
+                "body": "intl-network"
+              },
+              "body"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "US"
+              },
+              "memberships",
+              {
+                "body": "intl-network"
+              },
+              "body"
+            ]
+          ],
+          "accessed": "2026-11-10"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-10T19:13:06Z",
+        "sha256": "9fe21b344f2f3da3f8ea818ed065660f5cac6be13a5a9c6ca29e3443ade14de8",
+        "text_sha256": "e76045585435d5a2288db9a680fbd45a55e1f4d9a0e2f4930f2c1e55f2889097",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "eu-midday-briefing-2026-09-11",
+      "url": "https://audiovisual.ec.europa.eu/en/media/video/I-294322",
+      "title": "Midday press briefing from 11/09/2026",
+      "publisher": "European Commission",
+      "type": "primary",
+      "published": "2026-09-11",
+      "accessed": "2026-11-10",
+      "language": "en",
+      "origin": "EU",
+      "access_note": "Video page of the Commission's midday briefing; the quotations are from its transcript: a journalist's question and the spokesperson's answers.",
+      "excerpts": [
+        {
+          "text": "ENISA's recently unveiled access to Anthropics Mythos model",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "EU"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-37c9ea7f5e1b74ab17d6fcc2295fb100"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-10"
+        },
+        {
+          "text": "we had constructive engagement with a company like Anthropic and we needed of course to put in place appropriate safeguards and terms and conditions for a safe access that has now been achieved and this materialized in us having now official access.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "EU"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-37c9ea7f5e1b74ab17d6fcc2295fb100"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-10"
+        },
+        {
+          "text": "we're focusing on 5 and that one now which we're currently testing",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "EU"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-37c9ea7f5e1b74ab17d6fcc2295fb100"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-10"
+        },
+        {
+          "text": "our cybersecurity Agency is currently testing it",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "EU"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-37c9ea7f5e1b74ab17d6fcc2295fb100"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-10"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-10T19:13:06Z",
+        "sha256": "5436716e49cc94785b4e059c4e50e3adb1e1bdb6a480fef3dbe5d5bb6440f85f",
+        "text_sha256": "4b2ffd3489d14e4a29bc7de89a48081549df136a67a9b9843bb3f784331435a7",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "eu-tnw-enisa-mythos-2026",
+      "url": "https://thenextweb.com/news/eu-cybersecurity-agency-is-now-testing-mythos-5-and-gpt-6-astra-the-commission-says",
+      "title": "EU cybersecurity agency is now testing Mythos 5 and GPT-6 Astra, the Commission says",
+      "publisher": "The Next Web",
+      "type": "secondary",
+      "published": "2026-09-10",
+      "accessed": "2026-11-10",
+      "language": "en",
+      "origin": "NL",
+      "excerpts": [
+        {
+          "text": "more than three months from June, when the company agreed in principle to give ENISA access.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "EU"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-37c9ea7f5e1b74ab17d6fcc2295fb100"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-10"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-10T19:13:06Z",
+        "sha256": "868b4f919bd4dd8e68ff529c651ec15b11c7b1d62918db61c63c0453121bbbca",
+        "text_sha256": "33cb2bad8be849478b01c39d9e3ba5c1b93a7002f7b29dfd2c9f8bc93ea7dcb1",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "eu-techzine-enisa-mythos-2026",
+      "url": "https://www.techzine.eu/news/security/144207/eu-cybersecurity-agency-gains-access-to-mythos-5-after-a-3-month-delay/",
+      "title": "EU cybersecurity agency gains access to Mythos 5 after a 3-month delay",
+      "publisher": "Techzine",
+      "type": "secondary",
+      "published": "2026-09-10",
+      "accessed": "2026-11-10",
+      "language": "en",
+      "origin": "NL",
+      "excerpts": [
+        {
+          "text": "ENISA’s access is explicitly limited to defensive use.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "EU"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-37c9ea7f5e1b74ab17d6fcc2295fb100"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-10"
+        },
+        {
+          "text": "ENISA does not have access to the latest version, Mythos 5.1",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "EU"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-37c9ea7f5e1b74ab17d6fcc2295fb100"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-10"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-10T19:13:06Z",
+        "sha256": "ef9407af8577ad6840cd93817904fb3952370b5d40f23237a57dd348fdebbd4d",
+        "text_sha256": "03142c816f1a6b3571d63a758b7057722f3f3f29991879ad8d399325691874f6",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "kr-mt-2026-10-20",
+      "url": "https://www.mt.co.kr/politics/2026/10/20/2026102015161663786",
+      "title": "AI안전연구소, 위험평가 인력 6명뿐…ETRI 원장 \"많이 미흡\"",
+      "title_en": "AI Safety Institute has only 6 risk-evaluation staff; ETRI president says this falls well short",
+      "publisher": "Money Today",
+      "type": "secondary",
+      "published": "2026-10-20",
+      "accessed": "2026-11-10",
+      "language": "ko",
+      "origin": "KR",
+      "excerpts": [
+        {
+          "text": "국정감사에서 박세웅 ETRI 원장을 상대로 AI안전연구소의 인력과 인프라 확충 필요성을 질의했다",
+          "gloss": "at the parliamentary audit, questioned ETRI President Park Se-woong on the need to expand the AI Safety Institute's staff and infrastructure",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "staff",
+              {
+                "id": "staff-01c3c07170645ef1a37faf78ac7508ff"
+              },
+              "technical"
+            ],
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "staff",
+              {
+                "id": "staff-01c3c07170645ef1a37faf78ac7508ff"
+              },
+              "technical_qualifier"
+            ],
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "staff",
+              {
+                "id": "staff-01c3c07170645ef1a37faf78ac7508ff"
+              },
+              "description"
+            ]
+          ],
+          "accessed": "2026-11-10"
+        },
+        {
+          "text": "실제 AI 모델의 위험을 분석하고 해킹 시뮬레이션을 돌릴 수 있는 인력은 6명에 불과한 것이 맞느냐",
+          "gloss": "is it right that only six staff can actually analyse the risks of AI models and run hacking simulations",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "staff",
+              {
+                "id": "staff-01c3c07170645ef1a37faf78ac7508ff"
+              },
+              "technical"
+            ],
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "staff",
+              {
+                "id": "staff-01c3c07170645ef1a37faf78ac7508ff"
+              },
+              "technical_qualifier"
+            ],
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "staff",
+              {
+                "id": "staff-01c3c07170645ef1a37faf78ac7508ff"
+              },
+              "description"
+            ]
+          ],
+          "accessed": "2026-11-10"
+        },
+        {
+          "text": "박 원장은 관련 업무를 담당하는 조직에 대해 \"6명이 담당하고 있다\"고 답했다.",
+          "gloss": "President Park answered, about the organisation responsible for this work, \"six people are in charge of it\".",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "staff",
+              {
+                "id": "staff-01c3c07170645ef1a37faf78ac7508ff"
+              },
+              "technical"
+            ],
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "staff",
+              {
+                "id": "staff-01c3c07170645ef1a37faf78ac7508ff"
+              },
+              "technical_qualifier"
+            ],
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "staff",
+              {
+                "id": "staff-01c3c07170645ef1a37faf78ac7508ff"
+              },
+              "description"
+            ]
+          ],
+          "accessed": "2026-11-10"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-10T19:13:06Z",
+        "sha256": "d31d8709ac5de97b96ce273faa47c1f2fc8885e3c9fe2500862de9e90d7058ac",
+        "text_sha256": "d524b451a8a5b2f5381f5a70c9f808fdd1df90fdcc7b469c8ead5d806e18e149",
         "text_scheme": 1
       }
     }
