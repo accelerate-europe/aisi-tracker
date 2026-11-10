@@ -6315,7 +6315,8 @@
           "role": "It is an advisory body without enforcement powers; it first met on 15 December 2025.",
           "counts_as_aisi": false,
           "source_ids": [
-            "hu-njt-2025-75"
+            "hu-njt-2025-75",
+            "hu-mmit-declaration"
           ],
           "kind": "other",
           "id": "related_bodies-6df3d97198f454c39d08cf5d0d3b48b4"
@@ -6348,6 +6349,10 @@
           {
             "date": "2026-11-07",
             "scope": "Read the AI market surveillance authority's About page: it operates as a unit of the Ministry of Science and Technology. Partial check; the last full-check date is unchanged."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "Corrected the notes against section 4(1) of Act LXXV of 2025: the instruments designate the AI Act authorities, and the notifying authority designates conformity assessment bodies on the basis of their accreditation. Bound the AI Council's first meeting on 15 December 2025 to the council's concluding declaration. Wording correction only; the last full-check date is unchanged."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -6386,7 +6391,7 @@
         "hu-mihivatal-rolunk",
         "hu-njt-90-2026"
       ],
-      "notes": "The enacted Act LXXV of 2025 and Decree 344/2025 designate existing accredited bodies for conformity assessment and create no testing institute. The Act (section 8) sets up the Hungarian AI Council as a body without decision-making power. Decree 224/2026 (1 October 2026) repealed § 5(1)(e) of Decree 344/2025.",
+      "notes": "The enacted Act LXXV of 2025 and Decree 344/2025 designate the AI Act authorities; under the Act (section 4(1)) the notifying authority assesses, designates, notifies and monitors conformity assessment bodies on the basis of their accreditation. They create no testing institute. The Act (section 8) sets up the Hungarian AI Council as a body without decision-making power. Decree 224/2026 (1 October 2026) repealed § 5(1)(e) of Decree 344/2025.",
       "region": {
         "id": "150",
         "name": "Europe",
@@ -17997,6 +18002,10 @@
           {
             "date": "2026-11-09",
             "scope": "Added Legislative Decree 674 (Diario Oficial No. 178, 25 September 2026) on national AI and robotics projects to the notes. Screened the Diario Oficial contents of Tomo 453 No. 199 (26 October 2026): nothing on the agency or AI. Later issues were not yet readable on 9 November. Partial check; the last full-check date is unchanged."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "Re-read Resolution 0001/2025 for the agency's role: Art. 19 bars requiring disclosure of source code, architecture, weights or training data, which does not show that the agency cannot evaluate models. Narrowed the role and notes to say that no mandate for it to evaluate advanced models was identified. Wording correction only; the last full-check date is unchanged."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -18039,7 +18048,7 @@
       "related_bodies": [
         {
           "name": "Agencia Nacional de Inteligencia Artificial (ANIA)",
-          "role": "It promotes AI and provides light-touch supervision through a registry, standards, a sandbox, and voluntary and mandatory registration; it does not itself test models, so is not counted.",
+          "role": "It promotes AI and provides light-touch supervision through a registry, standards, a sandbox, and voluntary and mandatory registration; no mandate for it to evaluate advanced models was identified, so it is not counted.",
           "counts_as_aisi": false,
           "source_ids": [
             "sv-ania-resolucion-2025"
@@ -18048,7 +18057,7 @@
           "id": "related_bodies-d470e1c4f038548081155e8ee2182a9c"
         }
       ],
-      "notes": "Borderline case, kept as none identified. The agency (ANIA, created by Legislative Decree 234 of 26 February 2025 and now a decentralised public body) has a division for technical standards, risk frameworks and safety criteria, a voluntary registry with legal safeguards, a mandatory registry for consequential decisions in health, finance, public biometrics and public services, and a supervised sandbox. Its Resolution 0001/2025 (primary, read in full as text) says compliance checks focus on confirming that controls exist 'rather than a detailed technical review' (Art. 17) and that algorithmic impact assessments are done by the operators (Art. 15). No testing or evaluation of AI models by the agency is provided for. The law text itself (Decree 234) was not read; its description comes from the resolution and a press report. Resolution 0001/2025 Art. 19 prohibits requiring disclosure of source code, model architecture, weights or training data and bars mandatory third-party audits of these, and Art. 12(a) exempts providers of models, APIs and cloud services from mandatory registration on that basis alone; Art. 19 also limits ANIA to requesting high-level system descriptions, statistical summaries, performance metrics, dataset hashes and compliance statements; so ANIA cannot review models. Legislative Decree 674 (Diario Oficial No. 178, 25 September 2026) sets special rules for carrying out national AI, robotics and similar technology projects; as read on 9 November 2026 it neither amends nor repeals Resolution 0001/2025.",
+      "notes": "Borderline case, kept as none identified. The agency (ANIA, created by Legislative Decree 234 of 26 February 2025 and now a decentralised public body) has a division for technical standards, risk frameworks and safety criteria, a voluntary registry with legal safeguards, a mandatory registry for consequential decisions in health, finance, public biometrics and public services, and a supervised sandbox. Its Resolution 0001/2025 (primary, read in full as text) says compliance checks focus on confirming that controls exist 'rather than a detailed technical review' (Art. 17) and that algorithmic impact assessments are done by the operators (Art. 15). The resolution provides for no testing or evaluation of AI models by the agency. The law text itself (Decree 234) was not read; its description comes from the resolution and a press report. Resolution 0001/2025 Art. 19 prohibits requiring disclosure of source code, model architecture, weights or training data and bars mandatory third-party audits of these, and Art. 12(a) exempts providers of models, APIs and cloud services from mandatory registration on that basis alone; Art. 19 also limits ANIA to requesting high-level system descriptions, statistical summaries, performance metrics, dataset hashes and compliance statements. These limits concern what ANIA may require of providers; no mandate for ANIA to evaluate advanced models was identified. Legislative Decree 674 (Diario Oficial No. 178, 25 September 2026) sets special rules for carrying out national AI, robotics and similar technology projects; as read on 9 November 2026 it neither amends nor repeals Resolution 0001/2025.",
       "next_check": {
         "date": "2027-04-16",
         "reason": "Check whether ANIA starts evaluating or certifying models directly."
@@ -20748,6 +20757,10 @@
           {
             "date": "2026-10-17",
             "scope": "English searches for a national AI safety, security or evaluation institute, commitment, proposal or study. English searches returned the AI strategy and readiness process. The retrieved Presidency cabinet account describes a forum to identify AI opportunities and prepare a responsible-use regulatory/ethical framework, while the existing ESCWA account concerns strategy consultation with the digital ministry. Neither is an institute-specific AISI study or designation of an evaluator of advanced models. Partial check only; the last full-check date is unchanged."
+          },
+          {
+            "date": "2026-11-10",
+            "scope": "Narrowed the digital ministry's role to what UN ESCWA reports: a consultation workshop on the draft national AI strategy, organised with ESCWA. Wording correction only; the last full-check date is unchanged."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -20793,7 +20806,7 @@
       "related_bodies": [
         {
           "name": "Ministry of Digital Economy and Innovation",
-          "role": "It led the drafting of the national AI strategy with ESCWA. This was reported by UN ESCWA.",
+          "role": "With UN ESCWA it organised a consultation workshop on the draft national AI strategy, as reported by UN ESCWA.",
           "counts_as_aisi": false,
           "source_ids": [
             "dj-escwa-2026"
@@ -52294,6 +52307,20 @@
           ],
           "gloss": "The Hungarian AI Council is a collegial body without decision-making powers.",
           "accessed": "2026-10-17"
+        },
+        {
+          "text": "megfelelőségértékelő szervezeteket az MI bejelentő hatóság – akkreditált státusz alapján – értékeli, jelöli ki, jelenti be és követi nyomon",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "HU"
+              },
+              "notes"
+            ]
+          ],
+          "gloss": "the AI notifying authority, on the basis of accredited status, assesses, designates, notifies and monitors conformity assessment bodies",
+          "accessed": "2026-11-10"
         }
       ],
       "origin": "HU",
@@ -52322,7 +52349,27 @@
         "text_sha256": "ce01b8226efc229e8fe6f176fc6bf6251a34b7d6639ede8126338baa6863c72d",
         "text_scheme": 1
       },
-      "archive_url": "https://web.archive.org/web/20260927101243if_/https://sztnh.gov.hu/sw/static/file/Zaronyilatkozat_MMIT_20251215_C.pdf"
+      "archive_url": "https://web.archive.org/web/20260927101243if_/https://sztnh.gov.hu/sw/static/file/Zaronyilatkozat_MMIT_20251215_C.pdf",
+      "excerpts": [
+        {
+          "text": "A Magyar Mesterséges Intelligencia Tanács 2025. december 15-én megtartott alakuló ülésén",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "HU"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-6df3d97198f454c39d08cf5d0d3b48b4"
+              },
+              "role"
+            ]
+          ],
+          "gloss": "At the inaugural meeting of the Hungarian Artificial Intelligence Council held on 15 December 2025",
+          "accessed": "2026-11-10"
+        }
+      ]
     },
     {
       "id": "is-stjornarradid-action-plan-2025",
@@ -54004,6 +54051,17 @@
                 "id": "related_bodies-cda3f572f61857c2b7ad67ca3aba73b3"
               },
               "name"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "DJ"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-cda3f572f61857c2b7ad67ca3aba73b3"
+              },
+              "role"
             ]
           ],
           "accessed": "2026-10-17"
@@ -112940,6 +112998,7 @@
       "published": "2026-05-13",
       "accessed": "2026-11-10",
       "legal_text": true,
+      "instrument_status_checked": "2026-11-10",
       "language": "hu",
       "origin": "HU",
       "access_note": "Consolidated text in force when read on 10 November 2026; its footnotes attribute §§ 168 and 168/A to Decree 139/2026 §§ 71-72.",
