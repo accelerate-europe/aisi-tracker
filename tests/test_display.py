@@ -522,7 +522,7 @@ def test_real_comparison_matches_hand_checked_owner_choices():
                 row["eur_per_year_est"],
             )
     assert actual == {
-        "GB": ("2026/27 to 2029/30", 70_028_600),
+        "GB": ("2026-27 to 2029-30", 105_043_000),
         "US": ("FY2026 enacted", 8_849_690),
         "CA": ("2024-25 to 2028-29", 6_334_220),
         "KR": ("2026 total", 8_019_550),

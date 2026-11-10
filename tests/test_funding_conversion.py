@@ -146,7 +146,7 @@ def test_real_estimates_against_independent_arithmetic():
                 expected = float(format(raw, ".6g"))
             assert funding["eur_per_year_est"] == pytest.approx(expected, rel=1e-12)
             count += 1
-    assert count == 24
+    assert count == 26
 
 
 def test_changed_valid_table_invalidates_stored_estimates(dataset):

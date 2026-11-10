@@ -228,7 +228,7 @@ def published():
 
 
 def test_real_ratios_match_hand_worked_values(published):
-    """GB: GBP 60m a year (2026/27 allocation) at the ECB 2025 average of 0.8567923137255 GBP per EUR,
+    """GB: GBP 90m a year (mean of GBP 360m over 2026-27 to 2029-30) at the ECB 2025 average of 0.8567923137255 GBP per EUR,
     Eurostat population 69,384,219 and WDI 2025 GDP GBP 3,039,861m. US: up to USD 10m, an upper bound."""
     rows = {
         institute["jurisdiction_id"]: institute["display"]["funding_records"][institute["display"]["comparison_funding"]]
@@ -236,10 +236,10 @@ def test_real_ratios_match_hand_worked_values(published):
         if institute["display"]["comparison_funding"]
     }
     gb, us = rows["GB"], rows["US"]
-    per_person = Decimal(60_000_000) / Decimal("0.8567923137255") / Decimal(69_384_219)
+    per_person = Decimal(90_000_000) / Decimal("0.8567923137255") / Decimal(69_384_219)
     assert abs(Decimal(str(gb["eur_per_person_est"])) - per_person) < Decimal("0.000005")
-    assert gb["share_of_gdp_est"] == 1.97377e-05  # 60m / 3,039,861m = 0.0000197377...
-    assert gb["display"]["per_person"] == "~EUR 1.0 per person"
+    assert gb["share_of_gdp_est"] == 2.96066e-05  # 90m / 3,039,861m = 0.0000296066...
+    assert gb["display"]["per_person"] == "~EUR 1.5 per person"
     assert us["amount_qualifier"] == "at_most"
     assert us["share_of_gdp_est"] == 3.24996e-07  # 10m / 30,769,700m = 3.249950...e-07, rounded up
     assert us["display"]["per_person"] == "up to ~EUR 0.026 per person"
@@ -268,7 +268,7 @@ def test_funding_csv_carries_ratios_with_denominator_year_and_sources(published)
     assert len(rows) == 5
     gb = next(row for row in rows.values() if row["gdp_source_ids"] and row["population_source_ids"] == "eurostat-pop")
     assert (gb["population_year"], gb["gdp_year"], gb["gdp_source_ids"]) == (2025, 2025, "wb-gdp-lcu-2025")
-    assert gb["share_of_gdp_est"] == 1.97377e-05
+    assert gb["share_of_gdp_est"] == 2.96066e-05
     others = [row for row in tables(published)["funding"] if row["eur_per_person_est"] == ""]
     assert others and all(row["gdp_source_ids"] == row["population_source_ids"] == "" for row in others)
 

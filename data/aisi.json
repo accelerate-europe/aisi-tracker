@@ -28000,6 +28000,29 @@
       "funding": [
         {
           "kind": "multi_year",
+          "amount": 360000000,
+          "currency": "GBP",
+          "years": 4,
+          "period": "2026-27 to 2029-30",
+          "description": "£360m allocated over 2026-27 to 2029-30, including the additional £120m announced at Budget 2026 on top of the £240m set out earlier.",
+          "source_ids": [
+            "gb-pq-39199-2026"
+          ],
+          "confidence": "high",
+          "commitment": "announced",
+          "funding_source": "national_government",
+          "annual_basis": "Arithmetic mean of the £360m four-year allocation stated in a written answer of 6 November 2026, which gives no split by year. Rounded to the nearest £1m; an allocation, not expenditure.",
+          "annual_basis_code": "period_mean",
+          "annual_period": {
+            "start": "2026-04-01",
+            "end": "2030-03-31"
+          },
+          "notes": "The £240m Spending Review allocation and the additional £120m are kept as separate component records so that neither is compared alone or counted twice.",
+          "coverage": "whole_institute",
+          "id": "funding-ddcdd902bdc5873816ddd014c1742ad6"
+        },
+        {
+          "kind": "multi_year",
           "amount": 240000000,
           "currency": "GBP",
           "years": 4,
@@ -28007,7 +28030,8 @@
           "description": "£240m planned R&D allocation over 2026/27 to 2029/30; £60m in each year.",
           "source_ids": [
             "r4-gb-dsit-rd-allocations-2025",
-            "gb-pq-33991-2026"
+            "gb-pq-33991-2026",
+            "gb-pq-39199-2026"
           ],
           "confidence": "high",
           "commitment": "announced",
@@ -28052,8 +28076,8 @@
               "id": "annual_profile-2d55967d51115bdf802fa7816d23107d"
             }
           ],
-          "notes": "DSIT says the figures guide planned activity to maintain current operations and may change; they need not reconcile to year-end outturn.",
-          "coverage": "whole_institute",
+          "notes": "DSIT says the figures guide planned activity to maintain current operations and may change; they need not reconcile to year-end outturn. Part of the £360m allocated to the institute over 2026-27 to 2029-30 (written answer of 6 November 2026), so recorded as a component and not compared alone.",
+          "coverage": "component",
           "id": "funding-9efb56f77c7a5a6c8ca9eee9f9db9191"
         },
         {
@@ -28108,30 +28132,39 @@
           "id": "funding-5c0e8a9f3d7b4e21a6f19c2d8b7e4a31"
         },
         {
-          "kind": "one_off",
+          "kind": "multi_year",
           "amount": 120000000,
           "currency": "GBP",
           "description": "£120m additional investment in the institute, announced on 24 October 2026 as part of the Budget AI package.",
           "source_ids": [
-            "gb-budget-ai-2026"
+            "gb-budget-ai-2026",
+            "gb-pq-39199-2026"
           ],
           "confidence": "high",
           "commitment": "announced",
           "funding_source": "national_government",
           "decision_date": "2026-10-24",
-          "notes": "No funding year or period is stated, so no annual figure is given and the amount is not compared.",
-          "coverage": "whole_institute",
-          "id": "funding-618ed3226ee75def870a5fb0f9501479"
+          "notes": "The Budget announcement states no period; a written answer of 6 November 2026 places the £120m over 2026-27 to 2029-30, within the institute's £360m allocation.",
+          "coverage": "component",
+          "id": "funding-618ed3226ee75def870a5fb0f9501479",
+          "years": 4,
+          "period": "2026-27 to 2029-30",
+          "annual_basis": "Arithmetic mean over the four years stated in a written answer of 6 November 2026; no split by year is published. A component, not compared alone.",
+          "annual_basis_code": "period_mean",
+          "annual_period": {
+            "start": "2026-04-01",
+            "end": "2030-03-31"
+          }
         }
       ],
       "staff": [
         {
-          "total": 241,
+          "total": 243,
           "total_qualifier": "exact",
-          "technical": 100,
-          "technical_qualifier": "at_least",
+          "technical": 109,
+          "technical_qualifier": "exact",
           "as_of": "2026-10-12",
-          "description": "Headcount 241, equal to 211.2 full-time equivalent posts, as of 12 October 2026, in a written parliamentary answer (UIN 30890). Another written answer (UIN 33991) gives 243, equal to 227.8 full-time equivalent posts, for the same date, with 109 in technical roles, and says it repeats the answer to UIN 30890. Asked for current and planned staffing, the government gave the current figures and said future staffing is managed in line with the budget allocated in the Spending Review.",
+          "description": "Headcount 243, equal to 227.8 full-time equivalent posts, as at 12 October 2026, with 109 in technical roles and 134 in other roles, in written parliamentary answers UIN 30890 (as corrected on 22 October 2026) and UIN 33991. The answer to UIN 30890 first gave 241, equal to 211.2 full-time equivalent posts. Asked for current and planned staffing, the government gave the current figures and said future staffing is managed in line with the budget allocated in the Spending Review.",
           "source_ids": [
             "gb-pq-30890-2026",
             "gb-pq-33991-2026"
@@ -28233,6 +28266,10 @@
           {
             "date": "2026-11-07",
             "scope": "News re-check since 24 October 2026: the institute's blog and research pages, GOV.UK search, the Budget 2026 document, written statements HCWS412, HCWS357 and HLWS298, the Minister for AI's speech of 12 October, Google's Gemini 4 Argon report and written answers. The £120m announcement date of 24 October 2026 is confirmed. Added two research outputs, the Gemini 4 Argon access event (dated from the announcement of 30 September 2026, with its limited first rollout in the notes), the 2025-26 compute spend in the funding notes and the June 2026 UK-Japan Frontier Technology Partnership. Left for review: the July 2026 transfer to the Cabinet Office (date of effect), the £120m period from a written answer of 6 November, and a written answer of 2 November that all current developer agreements are with UK and US developers. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-09",
+            "scope": "Post-release news re-check from 6 November 2026: the institute's blog and research pages, its GOV.UK organisation page, Cabinet Office news, and written answers 38559, 38577, 39196 and 39199 with the corrected answer to 30890, read through the Parliament written questions API. Recorded the £360m allocation for 2026-27 to 2029-30 as the whole-institute figure with the £240m and £120m as its components, the corrected headcount of 243, that no fixed frontier threshold applies, that results are not typically published and that all current collaboration agreements are with UK and US developers. The date of the move to the Cabinet Office is still unresolved. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -28355,7 +28392,11 @@
         "gb-jp-frontier-tech-partnership-2026",
         "google-gemini-4-argon-safety-2026",
         "gb-minister-speech-2026-10-12",
-        "google-gemini-4-argon-2026"
+        "google-gemini-4-argon-2026",
+        "gb-pq-39199-2026",
+        "gb-pq-39196-2026",
+        "gb-pq-38559-2026",
+        "gb-pq-38577-2026"
       ],
       "people": [
         {
@@ -29835,12 +29876,13 @@
             ]
           }
         ],
-        "notes": "Further own testing: joint pre-deployment evaluations with the US institute of the upgraded Claude 3.5 Sonnet (November 2024) and OpenAI o1 (December 2024), a joint assessment of Kimi K3 with the US institute (July 2026) and its own evaluation of GPT-6 Astra (September 2026).",
+        "notes": "Further own testing: joint pre-deployment evaluations with the US institute of the upgraded Claude 3.5 Sonnet (November 2024) and OpenAI o1 (December 2024), a joint assessment of Kimi K3 with the US institute (July 2026) and its own evaluation of GPT-6 Astra (September 2026). The institute applies no fixed threshold for the models it counts as frontier or near frontier and decides case by case (written answer of 6 November 2026).",
         "source_ids": [
           "us-claude35-2024",
           "fix-output-us-entry-14",
           "depth-us-kimi",
-          "depth-gb-supply-chain"
+          "depth-gb-supply-chain",
+          "gb-pq-39196-2026"
         ]
       },
       "model_access": {
@@ -30168,7 +30210,7 @@
             "named_as": "Taskforce"
           }
         ],
-        "notes": "Event dates are the model's public release date in Epoch AI's data unless the source dates the access itself; for every event except Gemini 4 Argon the sources state that the access came before release, so the access took place on or before that date. The Epoch AI models cited for the leading-developer test were released at least a month before each such date. Not counted: Kimi K3 (Moonshot, July 2026), as Moonshot has never had a model in Epoch AI's frontier set and the access route is not stated; the Llama 3.1-405B network pilot (October to November 2024), as its weights are public. The developer agreements are the commitments of Anthropic, Google DeepMind and OpenAI to give the institute's predecessor 'deep model access', announced in 2023. No statutory power: no AI bill has been laid. The institute says it has independently evaluated more than 55 models before release, working with industry; the post names no models, so they are not counted as access events. Gemini 4 Argon is dated 30 September 2026, the day Google announced it and Epoch AI's release date; that day it was rolling out to a set of trusted cyber defenders through Google's Fairwind Program, with an initial cohort of cyber defenders and trusted testers, and release to developers, enterprises and consumers, starting with paid API customers and Google AI Ultra subscribers, was to follow. The sources do not date the institute's access.",
+        "notes": "Event dates are the model's public release date in Epoch AI's data unless the source dates the access itself; for every event except Gemini 4 Argon the sources state that the access came before release, so the access took place on or before that date. The Epoch AI models cited for the leading-developer test were released at least a month before each such date. Not counted: Kimi K3 (Moonshot, July 2026), as Moonshot has never had a model in Epoch AI's frontier set and the access route is not stated; the Llama 3.1-405B network pilot (October to November 2024), as its weights are public. The developer agreements are the commitments of Anthropic, Google DeepMind and OpenAI to give the institute's predecessor 'deep model access', announced in 2023. No statutory power: no AI bill has been laid. The institute says it has independently evaluated more than 55 models before release, working with industry; the post names no models, so they are not counted as access events. Gemini 4 Argon is dated 30 September 2026, the day Google announced it and Epoch AI's release date; that day it was rolling out to a set of trusted cyber defenders through Google's Fairwind Program, with an initial cohort of cyber defenders and trusted testers, and release to developers, enterprises and consumers, starting with paid API customers and Google AI Ultra subscribers, was to follow. The sources do not date the institute's access. A written answer of 2 November 2026 says all the institute's current collaboration agreements are with developers based in the UK and the US; one of 6 November says its evaluations are governed by agreements with the developers and their results are not typically published.",
         "source_ids": [
           "depth-us-kimi",
           "sg-pilot-2024",
@@ -30178,7 +30220,9 @@
           "gb-aisi-best-practice-2026",
           "google-gemini-4-argon-safety-2026",
           "gb-minister-speech-2026-10-12",
-          "google-gemini-4-argon-2026"
+          "google-gemini-4-argon-2026",
+          "gb-pq-38577-2026",
+          "gb-pq-38559-2026"
         ],
         "searches": [
           {
@@ -36594,7 +36638,7 @@
       "jurisdiction_id": "MY",
       "host": "AI Malaysia Berhad, under the Ministry of Digital",
       "legal_form": "unknown",
-      "mandate": "Conducts safety evaluations, testing and AI red teaming; develops talent and technology-transfer partnerships; supports standards, risk management and regulation.",
+      "mandate": "Conducts safety evaluations, testing and AI red teaming; develops talent and technology-transfer partnerships; supports standards, risk management and regulation; its AI governance remit covers safety benchmarking, risk assessment and incident reporting for corrective action.",
       "funding": [
         {
           "kind": "none_disclosed",
@@ -36671,6 +36715,10 @@
           {
             "date": "2026-11-09",
             "scope": "Post-release news re-check from 6 November 2026: the institute page, AI Malaysia news, the digital ministry's releases to 5 November and the Dewan Rakyat Hansard for 5 and 28 October and 5 November. The minister's answers of 5 and 28 October describe the institute's remit (safety benchmarking, risk assessment, incident reporting); left for review as mandate evidence. The Supply Bill 2027 is still in committee. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-09",
+            "scope": "Added safety benchmarking, risk assessment and incident reporting for corrective action to the mandate, from the Digital Minister's answer in the Dewan Rakyat on 5 October 2026. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -36684,7 +36732,8 @@
         "network-2025",
         "network-nist-2026",
         "my-csm-about",
-        "my-csm-events"
+        "my-csm-events",
+        "my-hansard-dr-2026-10-05"
       ],
       "notes": "AI Malaysia Berhad was itself created the same day from the National AI Office. The 2026-2030 National AI Action Plan does not mention the institute; it calls instead for a national 'AI Trust Function' to evaluate, monitor and respond to AI risks. In September 2026 AI Malaysia's chair still described setting up the institute as a priority in the works. This is the weakest 'established' record in the dataset: designation and mandate are stated in a primary government release, but no head, staff, budget or launch is published.\n\nThe ministry identifies AI Malaysia Berhad as a national AI entity under the Ministry of Digital and assigns it the national AI Safety Institute role. The institute's separate legal form and host classification are not specified in this announcement.",
       "website": "https://ai.gov.my/my-aisafe/",
@@ -101508,7 +101557,8 @@
       "origin": "GB",
       "excerpts": [
         {
-          "text": "The headcount of the AI Security Institute is 241, equivalent to 211.2 full time equivalent (FTE) posts (as of 12 October 2026).",
+          "text": "The headcount of the AI Security Institute is 243, equivalent to 227.8 full time equivalent (FTE) posts (as at 12 October 2026).",
+          "accessed": "2026-11-10",
           "supports": [
             [
               "institutes",
@@ -101563,38 +101613,10 @@
               "code"
             ]
           ],
-          "accessed": "2026-10-21"
+          "url": "https://questions-statements-api.parliament.uk/api/writtenquestions/questions/1944727?expandMember=true"
         },
         {
-          "text": "This includes over 100 members of technical frontier AI specialists in the AI Security Institute’s Research Unit.",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "gb-aisi"
-              },
-              "staff",
-              {
-                "id": "staff-7c1f0e4a9b2d4c6e8a3f5b1d2e9c4a70"
-              },
-              "technical"
-            ],
-            [
-              "institutes",
-              {
-                "id": "gb-aisi"
-              },
-              "staff",
-              {
-                "id": "staff-7c1f0e4a9b2d4c6e8a3f5b1d2e9c4a70"
-              },
-              "technical_qualifier"
-            ]
-          ],
-          "accessed": "2026-10-21"
-        },
-        {
-          "text": "future staffing is managed in line with the budget it has allocated in the Spending Review",
+          "text": "The headcount of the AI Security Institute is 241, equivalent to 211.2 full time equivalent (FTE) posts (as of 12 October 2026).",
           "supports": [
             [
               "institutes",
@@ -101609,6 +101631,24 @@
             ]
           ],
           "accessed": "2026-10-21"
+        },
+        {
+          "text": "future staffing is managed in line with the budget it was allocated in the Spending Review",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "staff",
+              {
+                "id": "staff-7c1f0e4a9b2d4c6e8a3f5b1d2e9c4a70"
+              },
+              "description"
+            ]
+          ],
+          "accessed": "2026-11-10",
+          "url": "https://questions-statements-api.parliament.uk/api/writtenquestions/questions/1944727?expandMember=true"
         },
         {
           "text": "what is the (a) current and (b) planned (i) headcount and (ii) FTE staffing for the AI Security Institute",
@@ -101629,11 +101669,12 @@
         }
       ],
       "snapshot": {
-        "retrieved": "2026-10-21T12:06:26Z",
-        "sha256": "5d42b25542f6b312a9f92846aa2f7323392c6ea0adfbb54bee9ef22d1d18de96",
-        "text_sha256": "ed3890f18f22020b9ed42a78f321dd3d35128db52d7645fa134c73586c287404",
+        "retrieved": "2026-11-10T04:32:52Z",
+        "sha256": "5f3b40b88df4e07fb5439dbc9c5a4f5f406a6ea1ad8d7df4568666086be9714d",
+        "text_sha256": "050368b043467097a0f06bd1b3f401626a2b3d3f2a8b89c3e070c0e965f1acdf",
         "text_scheme": 1
-      }
+      },
+      "access_note": "The answer was corrected on 22 October 2026, from 241 (211.2 full-time equivalent posts) to 243 (227.8). The page now returns a browser challenge to automated requests, so the saved copy is the official written questions API record for this answer, which carries the corrected answer, the original answer and the date of correction; the earlier page copy of 21 October showed the original answer."
     },
     {
       "id": "gb-pq-33991-2026",
@@ -101659,6 +101700,39 @@
                 "id": "staff-7c1f0e4a9b2d4c6e8a3f5b1d2e9c4a70"
               },
               "description"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "staff",
+              {
+                "id": "staff-7c1f0e4a9b2d4c6e8a3f5b1d2e9c4a70"
+              },
+              "total"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "staff",
+              {
+                "id": "staff-7c1f0e4a9b2d4c6e8a3f5b1d2e9c4a70"
+              },
+              "technical"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "staff",
+              {
+                "id": "staff-7c1f0e4a9b2d4c6e8a3f5b1d2e9c4a70"
+              },
+              "technical_qualifier"
             ]
           ],
           "accessed": "2026-10-21"
@@ -105017,17 +105091,6 @@
                 "id": "funding-618ed3226ee75def870a5fb0f9501479"
               },
               "description"
-            ],
-            [
-              "institutes",
-              {
-                "id": "gb-aisi"
-              },
-              "funding",
-              {
-                "id": "funding-618ed3226ee75def870a5fb0f9501479"
-              },
-              "coverage"
             ]
           ],
           "accessed": "2026-10-24"
@@ -112180,6 +112243,383 @@
         "retrieved": "2026-11-09T22:06:38Z",
         "sha256": "05820e05ef0407f4ec79171b9db2f7c81079bd2317966a0b0d22c1222f26d31a",
         "text_sha256": "4e0869cf95b8cfed4f2015659019673c778ffa7988cb019fc44cfbc8c9ea4c1c",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "gb-pq-39199-2026",
+      "url": "https://questions-statements.parliament.uk/written-questions/detail/2026-10-29/39199",
+      "title": "AI Security Institute: Finance (UIN 39199)",
+      "publisher": "UK Parliament, House of Commons (answer by the Cabinet Office)",
+      "type": "primary",
+      "published": "2026-11-06",
+      "accessed": "2026-11-10",
+      "language": "en",
+      "origin": "GB",
+      "access_note": "The page returns a browser challenge to automated requests; quotations are checked against the official written questions API record for this answer (excerpt url).",
+      "excerpts": [
+        {
+          "text": "The AI Security Institute (AISI) has been allocated £360 million from 2026-27 to 2029-30.",
+          "accessed": "2026-11-10",
+          "url": "https://questions-statements-api.parliament.uk/api/writtenquestions/questions/1954681?expandMember=true",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-ddcdd902bdc5873816ddd014c1742ad6"
+              },
+              "amount"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-ddcdd902bdc5873816ddd014c1742ad6"
+              },
+              "currency"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-ddcdd902bdc5873816ddd014c1742ad6"
+              },
+              "years"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-ddcdd902bdc5873816ddd014c1742ad6"
+              },
+              "period"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-ddcdd902bdc5873816ddd014c1742ad6"
+              },
+              "description"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-ddcdd902bdc5873816ddd014c1742ad6"
+              },
+              "coverage"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-ddcdd902bdc5873816ddd014c1742ad6"
+              },
+              "annual_period"
+            ]
+          ]
+        },
+        {
+          "text": "This includes the additional £120 million over 2026-27 to 2029-30 announced at Budget 2026, on top of the £240 million set out in my response of 15 October 2026 to PQ",
+          "accessed": "2026-11-10",
+          "url": "https://questions-statements-api.parliament.uk/api/writtenquestions/questions/1954681?expandMember=true",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-ddcdd902bdc5873816ddd014c1742ad6"
+              },
+              "description"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-ddcdd902bdc5873816ddd014c1742ad6"
+              },
+              "notes"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-9efb56f77c7a5a6c8ca9eee9f9db9191"
+              },
+              "coverage"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-9efb56f77c7a5a6c8ca9eee9f9db9191"
+              },
+              "notes"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-618ed3226ee75def870a5fb0f9501479"
+              },
+              "coverage"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-618ed3226ee75def870a5fb0f9501479"
+              },
+              "years"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-618ed3226ee75def870a5fb0f9501479"
+              },
+              "period"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-618ed3226ee75def870a5fb0f9501479"
+              },
+              "annual_period"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-618ed3226ee75def870a5fb0f9501479"
+              },
+              "notes"
+            ]
+          ]
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-10T04:25:56Z",
+        "sha256": "9ce00cec4a1b8603d7c08a03e9d4db100f690c232bc8961f2da241c8b101b626",
+        "text_sha256": "9ce00cec4a1b8603d7c08a03e9d4db100f690c232bc8961f2da241c8b101b626",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "gb-pq-39196-2026",
+      "url": "https://questions-statements.parliament.uk/written-questions/detail/2026-10-29/39196",
+      "title": "AI Security Institute (UIN 39196)",
+      "publisher": "UK Parliament, House of Commons (answer by the Cabinet Office)",
+      "type": "primary",
+      "published": "2026-11-06",
+      "accessed": "2026-11-10",
+      "language": "en",
+      "origin": "GB",
+      "access_note": "The page returns a browser challenge to automated requests; quotations are checked against the official written questions API record for this answer (excerpt url).",
+      "excerpts": [
+        {
+          "text": "how does AISI decide which models count as 'frontier or near frontier'",
+          "accessed": "2026-11-10",
+          "url": "https://questions-statements-api.parliament.uk/api/writtenquestions/questions/1954678?expandMember=true",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "testing_capacity",
+              "notes"
+            ]
+          ]
+        },
+        {
+          "text": "The AI Security Institute (AISI) does not apply a fixed threshold.",
+          "accessed": "2026-11-10",
+          "url": "https://questions-statements-api.parliament.uk/api/writtenquestions/questions/1954678?expandMember=true",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "testing_capacity",
+              "notes"
+            ]
+          ]
+        },
+        {
+          "text": "AISI evaluates this on a case-by-case basis",
+          "accessed": "2026-11-10",
+          "url": "https://questions-statements-api.parliament.uk/api/writtenquestions/questions/1954678?expandMember=true",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "testing_capacity",
+              "notes"
+            ]
+          ]
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-10T04:25:57Z",
+        "sha256": "0eb6d1c4090532417eb040b9f7b03e458690ee37e935c69d978991d21566e97b",
+        "text_sha256": "0eb6d1c4090532417eb040b9f7b03e458690ee37e935c69d978991d21566e97b",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "gb-pq-38559-2026",
+      "url": "https://questions-statements.parliament.uk/written-questions/detail/2026-10-27/38559",
+      "title": "AI Security Institute (UIN 38559)",
+      "publisher": "UK Parliament, House of Commons (answer by the Cabinet Office)",
+      "type": "primary",
+      "published": "2026-11-06",
+      "accessed": "2026-11-10",
+      "language": "en",
+      "origin": "GB",
+      "access_note": "The page returns a browser challenge to automated requests; quotations are checked against the official written questions API record for this answer (excerpt url).",
+      "excerpts": [
+        {
+          "text": "AISI’s evaluations are governed by agreements with the AI developers and it does not typically publish the results of each evaluation.",
+          "accessed": "2026-11-10",
+          "url": "https://questions-statements-api.parliament.uk/api/writtenquestions/questions/1953849?expandMember=true",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "model_access",
+              "notes"
+            ]
+          ]
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-10T04:25:58Z",
+        "sha256": "eb57c37f804bdae4f2f8491a653dafcd99d5dc56f1ace9d3e60854468c18b79c",
+        "text_sha256": "eb57c37f804bdae4f2f8491a653dafcd99d5dc56f1ace9d3e60854468c18b79c",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "gb-pq-38577-2026",
+      "url": "https://questions-statements-api.parliament.uk/api/writtenquestions/questions/1953867?expandMember=true",
+      "title": "AI Security Institute (UIN 38577)",
+      "publisher": "UK Parliament, House of Commons (answer by the Cabinet Office)",
+      "type": "primary",
+      "published": "2026-11-02",
+      "accessed": "2026-11-10",
+      "language": "en",
+      "origin": "GB",
+      "access_note": "Cited by its official written questions API record: no page address for this answer was retrieved, and the written questions pages return a browser challenge to automated requests.",
+      "excerpts": [
+        {
+          "text": "AISI's current collaboration agreements are all with developers based in the UK and the US.",
+          "accessed": "2026-11-10",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "model_access",
+              "notes"
+            ]
+          ]
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-10T04:25:59Z",
+        "sha256": "d19848f35f6dc6d5f16c0e7023169b4b1c2a9fea4b29cc904f16c00c72d427f4",
+        "text_sha256": "d19848f35f6dc6d5f16c0e7023169b4b1c2a9fea4b29cc904f16c00c72d427f4",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "my-hansard-dr-2026-10-05",
+      "url": "https://hansard.parlimen.gov.my/hansard/dewan-rakyat/2026-10-05",
+      "title": "Dewan Rakyat Hansard, 5 October 2026",
+      "publisher": "Parliament of Malaysia, Dewan Rakyat",
+      "type": "primary",
+      "published": "2026-10-05",
+      "accessed": "2026-11-10",
+      "language": "ms",
+      "origin": "MY",
+      "excerpts": [
+        {
+          "text": "Malaysia AI Safety Institute bertanggungjawab untuk melihat secara spesifik kepada aspek tadbir urus AI ataupun AI governance yang merangkumi aspek penandaarasan keselamatan, penilaian risiko dan pelaporan insiden untuk tindakan pembetulan",
+          "accessed": "2026-11-10",
+          "gloss": "The Malaysia AI Safety Institute is responsible for looking specifically at AI governance, covering safety benchmarking, risk assessment and incident reporting for corrective action",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "my-aisafe"
+              },
+              "mandate"
+            ]
+          ]
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-10T04:25:56Z",
+        "sha256": "07659d889a41df74b0c49d506c8fbb34366cf7e5cebbc5a14724f950bf60b421",
+        "text_sha256": "8385cdda85a0425a55ca308bf0415790a48679cd5b55692b44c5ba206b9855bf",
         "text_scheme": 1
       }
     }

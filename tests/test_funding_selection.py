@@ -123,7 +123,7 @@ def test_real_selection_matches_expected_selections():
         for country, f in actual.items()
         if f
     } == {
-        "GB": ("2026/27 to 2029/30", 70_028_600),
+        "GB": ("2026-27 to 2029-30", 105_043_000),
         "US": ("FY2026 enacted", 8_849_690),
         "CA": ("2024-25 to 2028-29", 6_334_220),
         "KR": ("2026 total", 8_019_550),
@@ -260,7 +260,7 @@ def test_card_and_table_picker_excludes_components_and_amountless_future_figures
 
 # Hand-worked owner expectations, keyed by permanent record identity, not period text.
 EXPECTED_BUDGET_IDS = {
-    "gb-aisi": "funding-9efb56f77c7a5a6c8ca9eee9f9db9191",
+    "gb-aisi": "funding-ddcdd902bdc5873816ddd014c1742ad6",
     "fr-inesia": None,
     "de-aisi": None,
     "es-isia": None,

@@ -73,7 +73,7 @@ def test_all_real_funding_records_require_explicit_coverage():
         for institute in data["institutes"]
         for funding in institute.get("funding", [])
     }
-    assert len(records) == 33
+    assert len(records) == 34
     funding_validator = validator()
     for identity, funding in records.items():
         assert funding_validator.is_valid(funding), identity
