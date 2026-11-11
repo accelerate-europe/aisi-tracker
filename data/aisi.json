@@ -3689,7 +3689,8 @@
         "pl-nask-aitas-2026",
         "pl-nask-openai-2026",
         "pl-openai-nask-2026",
-        "pl-nask-cert-openai-2026"
+        "pl-nask-cert-openai-2026",
+        "pl-kribsi-first-meeting-2026"
       ],
       "region": {
         "id": "150",
@@ -3708,7 +3709,7 @@
         "un-m49",
         "wikidata-jurisdiction-identifiers"
       ],
-      "notes": "The Act of 3 July 2026 on AI systems was published on 27 July 2026 and generally took effect on 11 August. Article 5 designates KRiBSI as market-surveillance authority and single point of contact; Article 86 assigns the notifying role to the minister responsible for informatisation. Several operational chapters commence on 28 October 2026, and full commission operation was scheduled for November.\n\nThe government announcement records presidential signature of the AI implementation law and says publication in the official journal will follow; the subsequently retrieved official journal confirms publication on 27 July 2026.\n\nResolution 130, PDF pages 145 and 158, concerns research and an R&D network around an existing centre, not assignment of a qualifying national evaluation role. The ministry's account of reorganising the AI Division and NASK's own description of model auditing do not supply that assignment. The centre's title and legal form do not determine the status.\n\nOn 2 July 2026 NASK announced that CERT Polska, which operates within NASK, was joining the trusted partners for OpenAI's GPT-5.5 as a verified defender, with access to come through the Government Trusted Access for Cyber programme. On 23 October NASK reported that CERT Polska had received access to OpenAI's cyber models in the Daybreak programme in July and used them to find six vulnerabilities in MikroTik RouterOS. This is access by a cyber team for defensive work, not evaluation of the models.",
+      "notes": "The Act of 3 July 2026 on AI systems was published on 27 July 2026 and generally took effect on 11 August. Article 5 designates KRiBSI as market-surveillance authority and single point of contact; Article 86 assigns the notifying role to the minister responsible for informatisation. Several operational chapters commence on 28 October 2026, and full commission operation was scheduled for November. The commission held its first meeting on 28 October 2026.\n\nThe government announcement records presidential signature of the AI implementation law and says publication in the official journal will follow; the subsequently retrieved official journal confirms publication on 27 July 2026.\n\nResolution 130, PDF pages 145 and 158, concerns research and an R&D network around an existing centre, not assignment of a qualifying national evaluation role. The ministry's account of reorganising the AI Division and NASK's own description of model auditing do not supply that assignment. The centre's title and legal form do not determine the status.\n\nOn 2 July 2026 NASK announced that CERT Polska, which operates within NASK, was joining the trusted partners for OpenAI's GPT-5.5 as a verified defender, with access to come through the Government Trusted Access for Cyber programme. On 23 October NASK reported that CERT Polska had received access to OpenAI's cyber models in the Daybreak programme in July and used them to find six vulnerabilities in MikroTik RouterOS. This is access by a cyber team for defensive work, not evaluation of the models.",
       "next_check": {
         "date": "2027-01-31",
         "reason": "Check whether KRiBSI, once operating, or the minister assigns NASK or its AITAS laboratory a national role in evaluating advanced models, and whether Poland joins the International Network for Advanced AI Measurement, Evaluation and Science."
@@ -22979,10 +22980,13 @@
       "related_bodies": [
         {
           "name": "Ministry of Communications and Innovation",
-          "role": "It leads the national AI policy; it owns the policy.",
+          "role": "Its assistant minister said in August 2025 that the government is working on finalising a national AI policy.",
           "counts_as_aisi": false,
           "kind": "other",
-          "id": "related_bodies-7fa822db376e5c6bbbfbf949ab39ea47"
+          "id": "related_bodies-7fa822db376e5c6bbbfbf949ab39ea47",
+          "source_ids": [
+            "bw-dailynews-ai-policy-2025"
+          ]
         },
         {
           "name": "Information and Data Protection Commission",
@@ -36913,7 +36917,7 @@
             ]
           }
         ],
-        "notes": "Cyber agency searched: Australian Cyber Security Centre (ACSC), within ASD, 2026-10-19 (en); found. Live cyber.gov.au and industry.gov.au return 000 over curl from this Mac. Used Wayback (web.archive.org/web/2026/...): DISR AISI page (15 Oct), asd.gov.au/about (15 Sep), cyber.gov.au/about-us (26 Sep); an ACSC publication URL guess gave 404. Cooperation is stated with ASD (the host of ACSC), not with ACSC by name. All Wayback; no r.jina.ai used by me. On 10 November 2026 the government said it would propose a new targeted regulator for AI safety that would work with the institute to provide technical expertise and oversight; the regulator is not yet named or established, so it is not an entry."
+        "notes": "Cyber agency searched: Australian Cyber Security Centre (ACSC), within ASD, 2026-10-19 (en); found. Live cyber.gov.au and industry.gov.au return 000 over curl from this Mac. Used Wayback (web.archive.org/web/2026/...): DISR AISI page (15 Oct), asd.gov.au/about (15 Sep), cyber.gov.au/about-us (26 Sep); an ACSC publication URL guess gave 404. Cooperation is stated with ASD (the host of ACSC), not with ACSC by name. All Wayback; no r.jina.ai used by me. On 10 November 2026 the government said it would propose a new targeted regulator for AI safety that would work with the institute to provide technical expertise and oversight; the regulator is not yet named or established, so it is not an entry. The National Cyber Security Coordinator is a role supported by the National Office of Cyber Security."
       },
       "testing_capacity": {
         "modes": [
@@ -37413,7 +37417,6 @@
           "in-indiaai-2025"
         ]
       },
-      "name_local": "इंडियाएआई सुरक्षा संस्थान",
       "agreements": [],
       "wikidata": null,
       "identifier_notes": "No matching Wikidata institute item verified in label and official-name searches on 17 October 2026; null does not establish that no item exists.",
@@ -55804,7 +55807,26 @@
         "sha256": "d0489baf56c9e6ba6f52e6cc4831d1e4db53e6711b2326fbbff99286e9bd21c2",
         "text_sha256": "0c55a1a8312e4e93574330e69377cf104a9e122bf7164cf8f0caffad250b281d",
         "text_scheme": 1
-      }
+      },
+      "excerpts": [
+        {
+          "text": "Government is working on finalising a National Artificial Intelligence (AI) Policy, Assistant Minister of Communications and Innovation",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "BW"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-7fa822db376e5c6bbbfbf949ab39ea47"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-11"
+        }
+      ]
     },
     {
       "id": "bw-dailynews-ram-2025",
@@ -115463,6 +115485,14 @@
                 "id": "np-au-ncsc"
               },
               "what"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "national_partners",
+              "notes"
             ]
           ],
           "accessed": "2026-11-10"
@@ -116857,6 +116887,39 @@
         "retrieved": "2026-11-11T04:52:52Z",
         "sha256": "3cd64af33d9b5f9e8df493f0ebdce2e87c9f545d0ecdec2d43261f693bebdafa",
         "text_sha256": "862e071b5f3515f2c0dd7f98a87113eee41c0fd23e3d90c55dd3f730ad2738db",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "pl-kribsi-first-meeting-2026",
+      "url": "https://www.gov.pl/web/kribsi/pierwsze-posiedzenie-komisji-rozwoju-i-bezpieczenstwa-sztucznej-inteligencji",
+      "title": "Pierwsze posiedzenie Komisji Rozwoju i Bezpieczeństwa Sztucznej Inteligencji",
+      "title_en": "First meeting of the Commission for the Development and Safety of Artificial Intelligence",
+      "publisher": "Komisja Rozwoju i Bezpieczeństwa Sztucznej Inteligencji",
+      "type": "primary",
+      "accessed": "2026-11-11",
+      "language": "pl",
+      "origin": "PL",
+      "excerpts": [
+        {
+          "text": "28 października 2026 r. odbyło się pierwsze posiedzenie Komisji Rozwoju i Bezpieczeństwa Sztucznej Inteligencji.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "PL"
+              },
+              "notes"
+            ]
+          ],
+          "gloss": "On 28 October 2026 the first meeting of the Commission for the Development and Safety of Artificial Intelligence took place.",
+          "accessed": "2026-11-11"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-11T05:21:11Z",
+        "sha256": "f14430249bb5958f460c752022a2210d72e10d1336f9999016403b7a3b89dfe7",
+        "text_sha256": "29fc6933d7e983f9b2c6de240eab79900ea933e13683075c9776a96a27435ca7",
         "text_scheme": 1
       }
     }
