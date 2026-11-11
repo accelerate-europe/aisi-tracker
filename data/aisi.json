@@ -4,8 +4,8 @@
     "title": "AI Security Institutes tracker",
     "description": "Which states have an AI Security Institute (AISI), covering all 193 UN member states plus Taiwan and the EU AI Office, with funding, staff and leadership where published. Every record cites its sources.",
     "definition": "We count a body as an AI Security Institute (AISI) if a national government or an international organisation, such as the EU, has tasked it with testing general-purpose or frontier AI models for their capabilities and risks, or has named it its AI safety institute or its AI security institute. Being a regulator, certification body or cyber security agency is not enough on its own.",
-    "version": "1.0.7",
-    "as_of": "2026-11-10",
+    "version": "1.0.8",
+    "as_of": "2026-11-11",
     "license": "CC BY 4.0",
     "license_note": "Quotations from sources remain with their rights holders and are reproduced as quotations; the licence covers our own compilation, text and data.",
     "publisher": "Accelerate Europe",
@@ -18,7 +18,7 @@
     ],
     "contact": "contact@accelerate-europe.org",
     "repository": "https://github.com/accelerate-europe/aisi-tracker",
-    "citation": "Accelerate Europe (2026). AI Security Institutes tracker, version 1.0.7, data as of 10 November 2026. Compiled by Jason Hoelscher-Obermaier. https://doi.org/10.5281/zenodo.23600431",
+    "citation": "Accelerate Europe (2026). AI Security Institutes tracker, version 1.0.8, data as of 11 November 2026. Compiled by Jason Hoelscher-Obermaier. https://doi.org/10.5281/zenodo.23600431",
     "doi": "10.5281/zenodo.23600431",
     "scope": "Status is tracked for all 193 UN member states, Taiwan (as a territory) and the EU AI Office. The Europe page counts the 27 EU member states, Iceland, Liechtenstein, Norway, the United Kingdom and Switzerland.",
     "method": [
@@ -117079,6 +117079,43 @@
         "Kazakhstan: the closest-body note now cites Harvard's 2026 hackathon page and says that operations after the domain's removal are unconfirmed.",
         "Sources for moved or changed pages: Georgia, Turkmenistan and Bosnia and Herzegovina, Italy's Law 132/2025 (now cited from the Gazzetta Ufficiale), Japan's 2023 commitment, METR, NIST's May 2026 agreements and the Commission's Implementing Regulation (EU) 2026/1755.",
         "The news re-checks of 9 November 2026 covered all 15 institutes."
+      ]
+    },
+    {
+      "date": "2026-11-11",
+      "version": "1.0.8",
+      "summary": "Australia's institute now records five national partners and a policy output, the Rapid Review into government arrangements for an AI-driven cyber incident, and a new rule counts technical staff, giving Korea at least 6 and Australia about 12. Updates also cover the EU's ENISA, Poland's NASK and OpenAI agreement, the Paris Call signatories and Cyprus.",
+      "changes": [
+        "Method: a rule for technical staff counts. A stated count or a share of a stated total is used; a count derived from a share is marked about or at least, with the figures it comes from, and the rule says which partial or approximate figures give no count. Korea's institute now records at least 6 technical staff and Australia's about 12 of its 25.",
+        "Method: source preference asks for the primary text itself, quoted in its original language, or an archived copy of the issuer's page with an access note when the page cannot be retrieved; another country's account alone is allowed only when no source from the state itself was found or retrieved.",
+        "Australia: the Rapid Review into Australian Government arrangements for an AI-driven cyber incident, released on 10 November 2026 and undertaken by PM&C in collaboration with agencies including the institute, is recorded as an output that is not published evaluation work.",
+        "Australia: PM&C, the National Cyber Security Coordinator (a role supported by the National Office of Cyber Security), the Office of AI, Services Australia and DFAT are added as partners, and the notes record the proposed AI safety regulator.",
+        "EU: ENISA is added as a related body. A Commission spokesperson said on 11 September 2026 that the Commission had official access to Anthropic's Mythos 5 and that ENISA was testing it; the press reported that Anthropic had agreed in principle in June, that the access was limited to defensive use and that it did not cover Mythos 5.1.",
+        "United Kingdom: the institute's own network page is a second source for the ten International Network memberships.",
+        "Korea: Money Today is a second source for the six technical evaluators, and the notes add its report that the institute uses outside GPU resources.",
+        "Poland: NASK's agreement with OpenAI on AI safety research (23 October 2026), to be led by the centre NASK describes as the Polish AI Safety Institute, is in the notes; Poland stays at none identified, as no government act assigns a national evaluation role.",
+        "Poland: CERT Polska's access to OpenAI cyber models since July is in the notes.",
+        "Poland: KRiBSI held its first meeting on 28 October.",
+        "Hungary: press reports of its proposed EU Frontier AI Safety and Security Team are in the notes.",
+        "Hungary: the AI Act wording is corrected.",
+        "Hungary: the AI Council's first meeting now cites the Council's declaration.",
+        "Hungary: Decree 90/2026's status is checked.",
+        "Iceland: the notes record that Umbra and CERT-IS received access to an OpenAI cyber security model for defensive cyber work.",
+        "Paris Call for AI Safety and Security of 9 November 2026: a sentence in the notes of the eleven signatory states without an institute (Austria, Croatia, Cyprus, Estonia, Finland, Ireland, Latvia, Liechtenstein, Luxembourg, the Netherlands and Portugal).",
+        "Proposals that are not the government's own get a dated note and no status change: Romania's bill B597/2026, Brazil's bill PL 5960/2025 and the French expert commission's report on INESIA.",
+        "Cyprus: the cabinet approved the 2026-2032 national AI strategy on 10 November.",
+        "Switzerland: the consultation on legislation implementing the Council of Europe AI Convention is now planned for spring 2027.",
+        "Czechia: the government approved the AI Act implementation bill and set up a Government Council for AI.",
+        "Netherlands: the cabinet's AI vision of 6 November repeats that it is exploring an AI safety institute.",
+        "Finland: the notes record the Finland-Norway leaders' meeting on frontier AI control and its follow-up expert process.",
+        "Austria: the notes record the proposed UN centre for AI cooperation in Vienna.",
+        "South Africa: the notes record the timetable for the revised national AI policy.",
+        "Brazil: ANPD finished its first AI sandbox and is preparing a second, on digital games for children and adolescents.",
+        "El Salvador, Djibouti and Botswana: roles and notes now say only what their sources say.",
+        "India: the unsupported Hindi local name is removed.",
+        "Italy: the current status of Law 132/2025 article 20 could not be verified, and its status check date is left unset.",
+        "Notes for Australia's partners, INESIA and the Netherlands no longer name retrieval tools or people.",
+        "Partial news re-checks of 10 November 2026 are recorded for all 15 institutes and the 40 EU, OECD and G20 states without an institute, with what was read and what could not be."
       ]
     }
   ]
