@@ -2904,9 +2904,10 @@
         "nl-budget-vii-2027",
         "nl-miljoenennota-2027",
         "nl-budget-xiii-bill-2027",
-        "fr-elysee-paris-call-2026"
+        "fr-elysee-paris-call-2026",
+        "nl-cabinet-ai-vision-2026"
       ],
-      "notes": "A TNO study commissioned by the Ministry of Economic Affairs and Climate examined the option in June 2026. In parliament on 17 September 2026, Jetten answered yes to a question about establishing an institute, preferably in close cooperation with other countries. Responding to motion 49 later in the debate, he said the cabinet would explore whether a national institute should be created and mainly look at whether it could link up with existing European initiatives. The record therefore remains exploring. On 17 September 2026 parliament adopted Dassen’s motion 49 by show of hands, asking the government to establish an AI safety institute in close cooperation with similar institutes in Germany, France and England. This parliamentary act does not count as a government commitment.\n\nThe written answer received on 1 June 2026 describes the Digitale Doetank exploration into an independent AI safety institute, modelled on the UK institute, running until September 2026. The answer received on 31 August 2026 still leaves the decision open. It expected an advisory report in September, after which the cabinet would decide whether and how to establish an institute, including its tasks, powers and necessary conditions. The 25 September letter frames the exploration as considering whether an institute could meet the need for insight and advice on AI’s impact on society and government, with the advisory report to be shared by the end of 2026. An advisory body would count only if the government designated it as its AI safety institute with an AI safety remit, or gave it the testing of advanced AI models.\n\nThe July strategy says the Netherlands will seek to join the International Network for Advanced AI Measurement, Evaluation and Science. This is an intention to seek membership, not confirmation of membership. The strategy also takes account of existing bodies that already advise the government on AI.\n\nNo institute-specific budget line was found in the 2027 Economic Affairs and Climate budget (Kamerstuk 37020-XIII, nos. 1 and 2), the Interior and Kingdom Relations budget (37020-VII, no. 2) or the Miljoenennota (37020, no. 1).\n\nThe Commission's contact list of 9 November 2026 marks this state's AI Act authority as pending final adoption; the national sources cited here give its actual designation status.\n\nOn 9 November 2026 the Netherlands was among the states that signed the Paris Call for AI Safety and Security, in which signatories commit to a common framework for the evaluation and risk management of frontier models.",
+      "notes": "A TNO study commissioned by the Ministry of Economic Affairs and Climate examined the option in June 2026. In parliament on 17 September 2026, Jetten answered yes to a question about establishing an institute, preferably in close cooperation with other countries. Responding to motion 49 later in the debate, he said the cabinet would explore whether a national institute should be created and mainly look at whether it could link up with existing European initiatives. The record therefore remains exploring. On 17 September 2026 parliament adopted Dassen’s motion 49 by show of hands, asking the government to establish an AI safety institute in close cooperation with similar institutes in Germany, France and England. This parliamentary act does not count as a government commitment.\n\nThe written answer received on 1 June 2026 describes the Digitale Doetank exploration into an independent AI safety institute, modelled on the UK institute, running until September 2026. The answer received on 31 August 2026 still leaves the decision open. It expected an advisory report in September, after which the cabinet would decide whether and how to establish an institute, including its tasks, powers and necessary conditions. The 25 September letter frames the exploration as considering whether an institute could meet the need for insight and advice on AI’s impact on society and government, with the advisory report to be shared by the end of 2026. An advisory body would count only if the government designated it as its AI safety institute with an AI safety remit, or gave it the testing of advanced AI models.\n\nThe July strategy says the Netherlands will seek to join the International Network for Advanced AI Measurement, Evaluation and Science. This is an intention to seek membership, not confirmation of membership. The strategy also takes account of existing bodies that already advise the government on AI.\n\nNo institute-specific budget line was found in the 2027 Economic Affairs and Climate budget (Kamerstuk 37020-XIII, nos. 1 and 2), the Interior and Kingdom Relations budget (37020-VII, no. 2) or the Miljoenennota (37020, no. 1).\n\nThe Commission's contact list of 9 November 2026 marks this state's AI Act authority as pending final adoption; the national sources cited here give its actual designation status.\n\nOn 9 November 2026 the Netherlands was among the states that signed the Paris Call for AI Safety and Security, in which signatories commit to a common framework for the evaluation and risk management of frontier models.\n\nThe government's announcement of its AI vision on 6 November 2026 says the cabinet is investigating the possible establishment of a Dutch AI safety institute; this confirms the exploration and is not a commitment to establish one.",
       "region": {
         "id": "150",
         "name": "Europe",
@@ -3222,10 +3223,10 @@
         ]
       },
       "institute_id": null,
-      "summary": "No qualifying institute identified. A draft AI regulation is due for consultation by the end of 2026.",
+      "summary": "No qualifying institute identified. Consultation on legislation implementing the Council of Europe AI Convention is planned for spring 2027.",
       "next_check": {
-        "date": "2026-12-31",
-        "reason": "Consultation draft on AI regulation."
+        "date": "2027-06-30",
+        "reason": "Consultation on legislation implementing the Council of Europe AI Convention, planned for spring 2027."
       },
       "check": {
         "last_checked": "2026-10-16",
@@ -3285,7 +3286,8 @@
       },
       "source_ids": [
         "ch-bk",
-        "negative-second-ch-2026"
+        "negative-second-ch-2026",
+        "ch-federal-council-ai-2026-10"
       ],
       "region": {
         "id": "150",
@@ -3304,7 +3306,7 @@
         "un-m49",
         "wikidata-jurisdiction-identifiers"
       ],
-      "notes": "The Federal Office of Justice describes work on a consultation draft for AI regulation. The Federal Office of Justice's retrieved page states that Switzerland currently has no AI-specific legislation; this is the page's assessment, not an independently verified inventory of all legislation. No Swiss body with a mandate to test AI models was found. Searched in English and German for a body its government has tasked with testing general-purpose or frontier AI models or named its AI safety or security institute."
+      "notes": "The Federal Office of Justice describes work on a consultation draft for AI regulation. The Federal Office of Justice's retrieved page states that Switzerland currently has no AI-specific legislation; this is the page's assessment, not an independently verified inventory of all legislation. No Swiss body with a mandate to test AI models was found. Searched in English and German for a body its government has tasked with testing general-purpose or frontier AI models or named its AI safety or security institute.\n\nOn 28 October 2026 the Federal Council took note of the state of work on implementing the Council of Europe AI Convention, for which the Federal Office of Justice is drawing up the legally binding measures, with the consultation planned to open in spring 2027."
     },
     {
       "id": "IT",
@@ -4118,7 +4120,8 @@
       "source_ids": [
         "at-dsb-ai-faq",
         "ai-act-tracker",
-        "fr-elysee-paris-call-2026"
+        "fr-elysee-paris-call-2026",
+        "at-bka-ai-centre-vienna-2026"
       ],
       "region": {
         "id": "150",
@@ -4137,7 +4140,7 @@
         "un-m49",
         "wikidata-jurisdiction-identifiers"
       ],
-      "notes": "The undated Datenschutzbehörde FAQ says the identity of the relevant general market-surveillance authority has not yet been fixed. Its publication date was not verified, so the statement about the general authority is not treated as a dated finding for 17 October 2026. This does not negate the separate sectoral competence described by the same guidance through Article 74(8) and the national supervisory status established by §§18 and 31 DSG.\n\nDatenschutzbehörde guidance describes its sectoral AI Act market-surveillance competence in the areas covered by Article 74(8). Searched in English and German for a body its government has tasked with testing general-purpose or frontier AI models or named its AI safety or security institute.\n\nOn 9 November 2026 Austria was among the states that signed the Paris Call for AI Safety and Security, in which signatories commit to a common framework for the evaluation and risk management of frontier models."
+      "notes": "The undated Datenschutzbehörde FAQ says the identity of the relevant general market-surveillance authority has not yet been fixed. Its publication date was not verified, so the statement about the general authority is not treated as a dated finding for 17 October 2026. This does not negate the separate sectoral competence described by the same guidance through Article 74(8) and the national supervisory status established by §§18 and 31 DSG.\n\nDatenschutzbehörde guidance describes its sectoral AI Act market-surveillance competence in the areas covered by Article 74(8). Searched in English and German for a body its government has tasked with testing general-purpose or frontier AI models or named its AI safety or security institute.\n\nOn 9 November 2026 Austria was among the states that signed the Paris Call for AI Safety and Security, in which signatories commit to a common framework for the evaluation and risk management of frontier models.\n\nOn 28 October 2026 the Federal Chancellery reported Austria's proposal for an international centre for cooperation on AI under the umbrella of the United Nations in Vienna, which it says could provide technical expertise, for example on evaluating AI models."
     },
     {
       "id": "FI",
@@ -4387,7 +4390,8 @@
         "fi-ai-supervision-act1377-2025",
         "negative-second-fi-2026",
         "ai-act-tracker",
-        "fr-elysee-paris-call-2026"
+        "fr-elysee-paris-call-2026",
+        "fi-president-frontier-ai-meeting-2026"
       ],
       "region": {
         "id": "150",
@@ -4406,7 +4410,7 @@
         "un-m49",
         "wikidata-jurisdiction-identifiers"
       ],
-      "notes": "Traficom's August 2026 guidance describes its supervision of AI transparency and sectoral authorities' responsibilities for high-risk systems. Searched in English and Finnish for a body its government has tasked with testing general-purpose or frontier AI models or named its AI safety or security institute.\n\nOn 9 November 2026 Finland was among the states that signed the Paris Call for AI Safety and Security, in which signatories commit to a common framework for the evaluation and risk management of frontier models."
+      "notes": "Traficom's August 2026 guidance describes its supervision of AI transparency and sectoral authorities' responsibilities for high-risk systems. Searched in English and Finnish for a body its government has tasked with testing general-purpose or frontier AI models or named its AI safety or security institute.\n\nOn 9 November 2026 Finland was among the states that signed the Paris Call for AI Safety and Security, in which signatories commit to a common framework for the evaluation and risk management of frontier models.\n\nFinland's president and Norway's prime minister held a virtual meeting of leaders from 29 countries on controlling the development of frontier AI models, announced on 28 October 2026, to be followed by an expert-level process among interested countries exploring options for improving AI safety and security."
     },
     {
       "id": "DK",
@@ -4749,7 +4753,8 @@
         "cz-ctu-ai-department-2026",
         "cz-cas-ai-implementation-plan-2025",
         "ai-act-tracker",
-        "eu-ai-act-authorities-2026"
+        "eu-ai-act-authorities-2026",
+        "cz-mpo-ai-council-bill-2026"
       ],
       "region": {
         "id": "150",
@@ -4805,7 +4810,7 @@
           "id": "related_bodies-e4c8fb3e338f53ceac078210be4fd4a1"
         }
       ],
-      "notes": "The Commission's contact list of 9 November 2026 marks this state's AI Act authority as pending final adoption; the national sources cited here give its actual designation status.\n\nČTÚ's announcement describes its proposed AI Act market-surveillance and single-point-of-contact roles and the start of its AI department on 1 September 2026. The announcement says supervisory powers await the relevant legislation. Searched in English and Czech for a body its government has tasked with testing general-purpose or frontier AI models or named its AI safety or security institute."
+      "notes": "The Commission's contact list of 9 November 2026 marks this state's AI Act authority as pending final adoption; the national sources cited here give its actual designation status.\n\nČTÚ's announcement describes its proposed AI Act market-surveillance and single-point-of-contact roles and the start of its AI department on 1 September 2026. The announcement says supervisory powers await the relevant legislation. Searched in English and Czech for a body its government has tasked with testing general-purpose or frontier AI models or named its AI safety or security institute.\n\nIn a release of 9 November 2026 the Ministry of Industry and Trade reported that the government had approved the bill implementing the AI Act, under which the Czech Telecommunication Office would be the main supervisory authority and single point of contact, and had set up a Government Council for Artificial Intelligence to coordinate the state's approach and cooperation with researchers and companies; the bill is not yet law, and the release does not give the council a model-evaluation remit."
     },
     {
       "id": "EE",
@@ -5004,7 +5009,8 @@
         "pt-anacom-planned-ai-authority-2025",
         "negative-second-pt-2026",
         "ai-act-tracker",
-        "eu-ai-act-authorities-2026"
+        "eu-ai-act-authorities-2026",
+        "fr-elysee-paris-call-2026"
       ],
       "region": {
         "id": "150",
@@ -5042,7 +5048,7 @@
           "id": "related_bodies-c71bf6e1658557c2a9f81e710f1185ac"
         }
       ],
-      "notes": "ANACOM's 2026-2028 activity plan anticipates market-surveillance designation. The Commission's contact list dated 9 November 2026 marks its single-point-of-contact designation as pending final adoption. A national notifying-authority allocation was not verified in the retrieved sources.\n\nPortugal has a National AI Agenda. Searched in English and Portuguese for a body its government has tasked with testing general-purpose or frontier AI models or named its AI safety or security institute. "
+      "notes": "ANACOM's 2026-2028 activity plan anticipates market-surveillance designation. The Commission's contact list dated 9 November 2026 marks its single-point-of-contact designation as pending final adoption. A national notifying-authority allocation was not verified in the retrieved sources.\n\nPortugal has a National AI Agenda. Searched in English and Portuguese for a body its government has tasked with testing general-purpose or frontier AI models or named its AI safety or security institute.\n\nOn 9 November 2026 Portugal was among the states that signed the Paris Call for AI Safety and Security, in which signatories commit to a common framework for the evaluation and risk management of frontier models."
     },
     {
       "id": "IS",
@@ -5238,9 +5244,10 @@
         "li-business-ai-strategy",
         "li-asit-visit-2025",
         "ai-act-tracker",
-        "eu-ai-act-authorities-2026"
+        "eu-ai-act-authorities-2026",
+        "fr-elysee-paris-call-2026"
       ],
-      "notes": "The strategy is reported by a secondary source (Liechtenstein Marketing); the government release was not opened. Government report 59/2026, dated 12 May 2026, describes EEA incorporation and preparatory work on AI Act responsibility, market surveillance and coordination. Final market-surveillance, notifying and single-point-of-contact allocations were not verified in the retrieved sources.\n\nThe Commission source is retained as the required EU/EEA cross-check. Its table lists EU Member State contact points and contains no entry for Liechtenstein; it does not substantiate a national designation or imply that the AI Act is incorporated into the EEA Agreement.",
+      "notes": "The strategy is reported by a secondary source (Liechtenstein Marketing); the government release was not opened. Government report 59/2026, dated 12 May 2026, describes EEA incorporation and preparatory work on AI Act responsibility, market surveillance and coordination. Final market-surveillance, notifying and single-point-of-contact allocations were not verified in the retrieved sources.\n\nThe Commission source is retained as the required EU/EEA cross-check. Its table lists EU Member State contact points and contains no entry for Liechtenstein; it does not substantiate a national designation or imply that the AI Act is incorporated into the EEA Agreement.\n\nOn 9 November 2026 Liechtenstein was among the states that signed the Paris Call for AI Safety and Security, in which signatories commit to a common framework for the evaluation and risk management of frontier models.",
       "region": {
         "id": "150",
         "name": "Europe",
@@ -5529,7 +5536,8 @@
         "lu-cnpd-ai-draft-designation",
         "lu-paperjam-ai-factory",
         "ai-act-tracker",
-        "eu-ai-act-authorities-2026"
+        "eu-ai-act-authorities-2026",
+        "fr-elysee-paris-call-2026"
       ],
       "region": {
         "id": "150",
@@ -5558,7 +5566,7 @@
         "un-m49",
         "wikidata-jurisdiction-identifiers"
       ],
-      "notes": "The government bill envisages several AI Act roles for CNPD; these remain proposed roles in the retrieved bill.\n\nThe Commission's contact list of 9 November 2026 marks this state's AI Act authority as pending final adoption; the national sources cited here give its actual designation status."
+      "notes": "The government bill envisages several AI Act roles for CNPD; these remain proposed roles in the retrieved bill.\n\nThe Commission's contact list of 9 November 2026 marks this state's AI Act authority as pending final adoption; the national sources cited here give its actual designation status.\n\nOn 9 November 2026 Luxembourg was among the states that signed the Paris Call for AI Safety and Security, in which signatories commit to a common framework for the evaluation and risk management of frontier models."
     },
     {
       "id": "GR",
@@ -5798,9 +5806,10 @@
         "hr-mpudt-plan-2026-10",
         "hr-mpudt-startai",
         "hr-ai-act-legislative-plan-2026",
-        "ai-act-tracker"
+        "ai-act-tracker",
+        "fr-elysee-paris-call-2026"
       ],
-      "notes": "The plan documents themselves were not opened; the description rests on the ministry's press release. No AI Act authority designation was found.\n\nThe 2026 legislative plan lists a bill implementing Regulation (EU) 2024/1689. Final market-surveillance, notifying and single-point-of-contact allocations were not verified in the retrieved sources.",
+      "notes": "The plan documents themselves were not opened; the description rests on the ministry's press release. No AI Act authority designation was found.\n\nThe 2026 legislative plan lists a bill implementing Regulation (EU) 2024/1689. Final market-surveillance, notifying and single-point-of-contact allocations were not verified in the retrieved sources.\n\nOn 9 November 2026 Croatia was among the states that signed the Paris Call for AI Safety and Security, in which signatories commit to a common framework for the evaluation and risk management of frontier models.",
       "region": {
         "id": "150",
         "name": "Europe",
@@ -7676,9 +7685,10 @@
         "cy-r4-ai-strategy-consultation",
         "cy-r6-presidency-strategy-consultation",
         "cy-r6-ai-act-bill-consultation",
-        "fr-elysee-paris-call-2026"
+        "fr-elysee-paris-call-2026",
+        "cy-strategy-adopted-2026"
       ],
-      "notes": "Greek government consultation notices and the English draft strategy were reviewed. The European AI Certification Lab would pre-certify high-risk and foundation models; the draft assigns an annual audit complementing documented conformity assessments to a Cyprus AI Security & Certification Authority. The National AI Cybersecurity Centre of Excellence concerns security research and protection of government and infrastructure. The National AI Misinformation and Security Council would assess model risks and advise policymakers. The council would submit recommendations to the National AI Taskforce. Its text does not specify general-purpose, foundation or frontier models as the object of evaluation; model-risk advice alone does not establish the qualifying remit. A more specific technical remit could change that assessment. Consultation closed on 31 August 2026; no later official adoption or qualifying designation was identified in a bounded search.\n\nThe Commission's contact list of 9 November 2026 marks this state's AI Act authority as pending final adoption; the national sources cited here give its actual designation status.\n\nThe separately cited Cyprus Mail account mentions national testing environments. The retrieved draft describes sector sandboxes and pre-certification; these do not by themselves establish the qualifying mandate. The official introduction to the AI Act implementation bill consultation, posted on 16 August 2026, describes market supervision, competent authorities and a regulatory sandbox. It is a draft, not evidence that the strategy bodies have been established.\n\nOn 9 November 2026 Cyprus was among the states that signed the Paris Call for AI Safety and Security, in which signatories commit to a common framework for the evaluation and risk management of frontier models.",
+      "notes": "Greek government consultation notices and the English draft strategy were reviewed. The European AI Certification Lab would pre-certify high-risk and foundation models; the draft assigns an annual audit complementing documented conformity assessments to a Cyprus AI Security & Certification Authority. The National AI Cybersecurity Centre of Excellence concerns security research and protection of government and infrastructure. The National AI Misinformation and Security Council would assess model risks and advise policymakers. The council would submit recommendations to the National AI Taskforce. Its text does not specify general-purpose, foundation or frontier models as the object of evaluation; model-risk advice alone does not establish the qualifying remit. A more specific technical remit could change that assessment. Consultation closed on 31 August 2026. On 10 November 2026 the Council of Ministers approved the new National Strategy for Artificial Intelligence; the deputy minister's statement on its approval does not name the certification lab, the certification authority or the misinformation and security council, so they are recorded as the draft describes them. No qualifying designation was identified.\n\nThe Commission's contact list of 9 November 2026 marks this state's AI Act authority as pending final adoption; the national sources cited here give its actual designation status.\n\nThe separately cited Cyprus Mail account mentions national testing environments. The retrieved draft describes sector sandboxes and pre-certification; these do not by themselves establish the qualifying mandate. The official introduction to the AI Act implementation bill consultation, posted on 16 August 2026, describes market supervision, competent authorities and a regulatory sandbox. It is a draft, not evidence that the strategy bodies have been established.\n\nOn 9 November 2026 Cyprus was among the states that signed the Paris Call for AI Safety and Security, in which signatories commit to a common framework for the evaluation and risk management of frontier models.",
       "region": {
         "id": "142",
         "name": "Asia",
@@ -15255,7 +15265,8 @@
         "br-r6-aiso-report",
         "br-r6-executive-bill-record",
         "br-r6-anpd-sandbox",
-        "br-camara-pl5960-2026"
+        "br-camara-pl5960-2026",
+        "br-anpd-sandbox-concluded-2026"
       ],
       "related_bodies": [
         {
@@ -15282,14 +15293,15 @@
         },
         {
           "name": "ANPD and the regulatory system discussed under PL 2338/2023",
-          "role": "ANPD handles data protection, and AI regulation is proposed. PL 2338/2023 awaits a rapporteur opinion. The government bill PL 6237/2025 joined to it proposes regulatory coordination and advisory committees. ANPD also tests participant solutions in a transparency and data-protection sandbox. No designation as a national institute to evaluate advanced models was established.",
+          "role": "ANPD handles data protection, and AI regulation is proposed. PL 2338/2023 awaits a rapporteur opinion. The government bill PL 6237/2025 joined to it proposes regulatory coordination and advisory committees. ANPD finished the tests of its first AI and data-protection sandbox, publishing the final monitoring report on 5 November 2026, and is preparing a second edition on the safe use of digital games by children and adolescents. No designation as a national institute to evaluate advanced models was established.",
           "counts_as_aisi": false,
           "kind": "other",
           "source_ids": [
             "br-camara-pl2338",
             "br-r6-executive-bill-record",
             "br-r6-executive-bill",
-            "br-r6-anpd-sandbox"
+            "br-r6-anpd-sandbox",
+            "br-anpd-sandbox-concluded-2026"
           ],
           "id": "related_bodies-0096657a9da1527ba4ad1680d2b21c09"
         }
@@ -27944,9 +27956,12 @@
         "za-sanews-2026",
         "za-withdrawal-2026",
         "za-cabinet-2026",
-        "za-timeslive-2026"
+        "za-timeslive-2026",
+        "za-dsti-finland-dialogue-2026",
+        "za-pq5301-reply-2026",
+        "za-techcentral-ai-policy-2026"
       ],
-      "notes": "The withdrawn draft proposed a National AI Safety Institute. Cabinet supported revising the policy in May 2026; no adopted replacement establishing such an institute was identified.",
+      "notes": "The withdrawn draft proposed a National AI Safety Institute. Cabinet supported revising the policy in May 2026; no adopted replacement establishing such an institute was identified.\n\nThe communications department is revising the national AI policy and developing implementation roadmaps alongside it, the science department reported on 3 November 2026; the communications minister's reply to a parliamentary question, dated 14 October, aims to submit a revised policy to Cabinet by March 2027, and TechCentral reported on 29 October that the drafting team has a deadline of 30 November to submit to the minister, by which it must complete the revised policy and a discussion document.",
       "region": {
         "id": "002",
         "name": "Africa",
@@ -115673,6 +115688,34 @@
                 "id": "NL"
               },
               "notes"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "HR"
+              },
+              "notes"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "LI"
+              },
+              "notes"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "LU"
+              },
+              "notes"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "PT"
+              },
+              "notes"
             ]
           ],
           "accessed": "2026-11-10"
@@ -115728,6 +115771,34 @@
                 "id": "NL"
               },
               "notes"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "HR"
+              },
+              "notes"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "LI"
+              },
+              "notes"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "LU"
+              },
+              "notes"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "PT"
+              },
+              "notes"
             ]
           ],
           "accessed": "2026-11-10"
@@ -115781,6 +115852,34 @@
               "jurisdictions",
               {
                 "id": "NL"
+              },
+              "notes"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "HR"
+              },
+              "notes"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "LI"
+              },
+              "notes"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "LU"
+              },
+              "notes"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "PT"
               },
               "notes"
             ]
@@ -116191,6 +116290,573 @@
         "retrieved": "2026-11-10T22:13:11Z",
         "sha256": "babfb941929f0d45f6b3de6367bd86b788be250f16f819a0179dc0a0a5ecd7ee",
         "text_sha256": "dd96a4d6942699a0fc48cd5f577a1abcdbb35f3622b46579b8f5d7f4ddddd8f9",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "cy-strategy-adopted-2026",
+      "url": "https://www.gov.cy/erevna-kainotomia-kai-psifiaki-politiki/dilosi-yfypourgou-erevnas-kainotomias-kai-psifiakis-politikis-dros-nikodimou-damianou-anaforika-me-ti-nea-ethniki-stratigiki-gia-tin-techniti-noimosyni-2026-2032/",
+      "title": "Δήλωση Υφυπουργού Έρευνας, Καινοτομίας και Ψηφιακής Πολιτικής αναφορικά με τη Νέα Εθνική Στρατηγική για την Τεχνητή Νοημοσύνη 2026-2032",
+      "title_en": "Statement by the Deputy Minister of Research, Innovation and Digital Policy on the new National Strategy for Artificial Intelligence 2026-2032",
+      "publisher": "Deputy Ministry of Research, Innovation and Digital Policy (Cyprus)",
+      "type": "primary",
+      "published": "2026-11-10",
+      "accessed": "2026-11-11",
+      "language": "el",
+      "origin": "CY",
+      "excerpts": [
+        {
+          "text": "Το Υπουργικό Συμβούλιο ενέκρινε σήμερα Τρίτη, 10 Νοεμβρίου 2026, τη νέα",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "CY"
+              },
+              "notes"
+            ]
+          ],
+          "gloss": "The Council of Ministers today, Tuesday 10 November 2026, approved the new",
+          "accessed": "2026-11-11",
+          "url": "https://r.jina.ai/https://www.gov.cy/erevna-kainotomia-kai-psifiaki-politiki/dilosi-yfypourgou-erevnas-kainotomias-kai-psifiakis-politikis-dros-nikodimou-damianou-anaforika-me-ti-nea-ethniki-stratigiki-gia-tin-techniti-noimosyni-2026-2032/"
+        },
+        {
+          "text": "αναφορικά με τη Νέα Εθνική Στρατηγική για την Τεχνητή Νοημοσύνη 2026-2032",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "CY"
+              },
+              "notes"
+            ]
+          ],
+          "gloss": "on the new National Strategy for Artificial Intelligence 2026-2032",
+          "accessed": "2026-11-11",
+          "url": "https://r.jina.ai/https://www.gov.cy/erevna-kainotomia-kai-psifiaki-politiki/dilosi-yfypourgou-erevnas-kainotomias-kai-psifiakis-politikis-dros-nikodimou-damianou-anaforika-me-ti-nea-ethniki-stratigiki-gia-tin-techniti-noimosyni-2026-2032/"
+        }
+      ],
+      "access_note": "The page refused automated requests from the maintainers' host; quotations are from the r.jina.ai text rendering read on 11 November 2026.",
+      "snapshot": {
+        "retrieved": "2026-11-11T04:52:51Z",
+        "sha256": "3b2568bc71fe0698f4f424ee7fd7f02bde8c40f148b23ebaa93d50d4b8750c9b",
+        "text_sha256": "380df70d8acc3b06dc0999227a69efdf172dd017d1303d80945ca12c280952a9",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "ch-federal-council-ai-2026-10",
+      "url": "https://www.uvek.admin.ch/de/newnsb/s2TQiUUjrA5D",
+      "title": "Bundesrat nimmt Zwischenstand der KI-Regulierung zur Kenntnis",
+      "title_en": "Federal Council takes note of the interim status of AI regulation",
+      "publisher": "Federal Department of the Environment, Transport, Energy and Communications (Switzerland)",
+      "type": "primary",
+      "published": "2026-10-28",
+      "accessed": "2026-11-11",
+      "language": "de",
+      "origin": "CH",
+      "excerpts": [
+        {
+          "text": "An seiner Sitzung vom 28. Oktober 2026 hat der Bundesrat den Stand der Arbeiten und erste Ergebnisse zur Kenntnis genommen.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "CH"
+              },
+              "notes"
+            ]
+          ],
+          "gloss": "At its meeting of 28 October 2026 the Federal Council took note of the state of work and first results.",
+          "accessed": "2026-11-11"
+        },
+        {
+          "text": "Das Bundesamt für Justiz (BJ) erarbeitet die rechtlich verbindlichen Massnahmen zur Umsetzung der KI-Konvention des Europarats.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "CH"
+              },
+              "notes"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "CH"
+              },
+              "summary"
+            ]
+          ],
+          "gloss": "The Federal Office of Justice (FOJ) is drawing up the legally binding measures to implement the Council of Europe AI Convention.",
+          "accessed": "2026-11-11"
+        },
+        {
+          "text": "Die Eröffnung der Vernehmlassung ist für den Frühling 2027 geplant.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "CH"
+              },
+              "notes"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "CH"
+              },
+              "summary"
+            ]
+          ],
+          "gloss": "The opening of the consultation is planned for spring 2027.",
+          "accessed": "2026-11-11"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-11T04:52:50Z",
+        "sha256": "efd44a9a5de9e6d9ff16364c5d2da854f1cdb0eae90b9e17370e41666d6b8542",
+        "text_sha256": "15c322f3ed018940f417f949413a7e04759ac514c3356571ac97c27a4109dedf",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "cz-mpo-ai-council-bill-2026",
+      "url": "https://mpo.gov.cz/cz/rozcestnik/pro-media/tiskove-zpravy/vlada-podporila-rozvoj-umele-inteligence-zrizenim-nove-rady-a-schvalenim-navrhu-zakona--295239/",
+      "title": "Vláda podpořila rozvoj umělé inteligence zřízením nové rady a schválením návrhu zákona",
+      "title_en": "The government supported the development of artificial intelligence by setting up a new council and approving a bill",
+      "publisher": "Ministry of Industry and Trade (Czechia)",
+      "type": "primary",
+      "published": "2026-11-09",
+      "accessed": "2026-11-11",
+      "language": "cs",
+      "origin": "CZ",
+      "access_note": "The page's date is shown only in its rendered form; the date quotation is from the r.jina.ai text rendering read on 11 November 2026.",
+      "excerpts": [
+        {
+          "text": "9.11.2026",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "CZ"
+              },
+              "notes"
+            ]
+          ],
+          "gloss": "9 November 2026",
+          "accessed": "2026-11-11",
+          "url": "https://r.jina.ai/https://mpo.gov.cz/cz/rozcestnik/pro-media/tiskove-zpravy/vlada-podporila-rozvoj-umele-inteligence-zrizenim-nove-rady-a-schvalenim-navrhu-zakona--295239/"
+        },
+        {
+          "text": "Zřídila Radu vlády pro umělou inteligenci a schválila návrh zákona, který v Česku zajistí uplatňování evropského aktu o umělé inteligenci a AI omnibusu.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "CZ"
+              },
+              "notes"
+            ]
+          ],
+          "gloss": "It set up the Government Council for Artificial Intelligence and approved a bill that will ensure the application in Czechia of the European AI Act and the AI omnibus.",
+          "accessed": "2026-11-11"
+        },
+        {
+          "text": "Rada bude koordinovat postup státu a spolupráci s výzkumníky a firmami.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "CZ"
+              },
+              "notes"
+            ]
+          ],
+          "gloss": "The council will coordinate the state's approach and cooperation with researchers and companies.",
+          "accessed": "2026-11-11"
+        },
+        {
+          "text": "Hlavním dozorovým orgánem a jednotným kontaktním místem bude Český telekomunikační úřad.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "CZ"
+              },
+              "notes"
+            ]
+          ],
+          "gloss": "The main supervisory authority and single point of contact will be the Czech Telecommunication Office.",
+          "accessed": "2026-11-11"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-11T04:52:50Z",
+        "sha256": "df775f8e856f0939f8bac1de7dca73d87cd1bf5bbb540079d7261094fcc801d1",
+        "text_sha256": "787131dc5877940e7d4f1c4811a08f9b1d4c2360892370a1e501ad354d5fe4c5",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "nl-cabinet-ai-vision-2026",
+      "url": "https://www.rijksoverheid.nl/actueel/nieuws/2026/11/06/kabinet-kiest-voor-ai-die-nederland-vooruithelpt",
+      "title": "Kabinet kiest voor AI die Nederland vooruithelpt",
+      "title_en": "Cabinet chooses AI that helps the Netherlands forward",
+      "publisher": "Government of the Netherlands",
+      "type": "primary",
+      "published": "2026-11-06",
+      "accessed": "2026-11-11",
+      "language": "nl",
+      "origin": "NL",
+      "excerpts": [
+        {
+          "text": "Ook onderzoekt het kabinet de mogelijke oprichting van een Nederlands AI-veiligheidsinstituut, dat kan helpen om nieuwe risico’s tijdig te herkennen en aan te pakken.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "NL"
+              },
+              "notes"
+            ]
+          ],
+          "gloss": "The cabinet is also investigating the possible establishment of a Dutch AI safety institute, which could help to recognise and address new risks in time.",
+          "accessed": "2026-11-11"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-11T04:52:50Z",
+        "sha256": "cb98acc12ceb35fd32f40b6b5e7d83fbe8a09f9a92af02e6514437cf1fbb9381",
+        "text_sha256": "621470502563c0a28e588ebdb9f86285293aa73e172c7849d3e414eb9f39e92b",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "fi-president-frontier-ai-meeting-2026",
+      "url": "https://www.presidentti.fi/joint-statement-by-president-of-the-republic-of-finland-alexander-stubb-and-prime-minister-of-norway-jonas-gahr-store-on-how-to-follow-up-the-call-for-control-over-development-of-frontier-ai-models-e/",
+      "title": "Joint Statement by President of the Republic of Finland and Prime Minister of Norway on how to follow up the call for control over development of frontier AI models",
+      "publisher": "Office of the President of the Republic of Finland",
+      "type": "primary",
+      "published": "2026-10-28",
+      "accessed": "2026-11-11",
+      "language": "en",
+      "origin": "FI",
+      "excerpts": [
+        {
+          "text": "Finnish President Alexander Stubb and Norwegian Prime Minister Jonas Gahr Støre held a virtual meeting for world leaders on how to follow up the call for control over development of frontier AI models.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "FI"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-11"
+        },
+        {
+          "text": "In the meeting, political leaders from 29 countries across the world shared their perspectives and inputs on international cooperation in AI risk management",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "FI"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-11"
+        },
+        {
+          "text": "The meeting will be followed by an expert level process between the interested countries to explore options for improving AI safety and security",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "FI"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-11"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-11T04:52:50Z",
+        "sha256": "82631dd2f5cae394942f50c20eeb9472c083b7d60b6ac7d0b11efdb0d7e51f1e",
+        "text_sha256": "2d0d96f9eb086fe9ea42052db1645d52004401e5b17f7fb7e180e2713d47d5e4",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "at-bka-ai-centre-vienna-2026",
+      "url": "https://www.bundeskanzleramt.gv.at/bundeskanzleramt/nachrichten-der-bundesregierung/2026/10/nobelpreistraeger-geoffrey-hinton-begruesst-oesterreichs-vorstoss-fuer-ki-zentrum-in-wien.html",
+      "title": "Nobelpreisträger Geoffrey Hinton begrüßt Österreichs Vorstoß für KI-Zentrum in Wien",
+      "title_en": "Nobel laureate Geoffrey Hinton welcomes Austria's push for an AI centre in Vienna",
+      "publisher": "Federal Chancellery of Austria",
+      "type": "primary",
+      "published": "2026-10-28",
+      "accessed": "2026-11-11",
+      "language": "de",
+      "origin": "AT",
+      "excerpts": [
+        {
+          "text": "Im Mittelpunkt stand Österreichs Vorschlag, ein Zentrum für die Zusammenarbeit im Bereich künstliche Intelligenz (KI) unter dem Dach der Vereinten Nationen in Wien zu verankern.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "AT"
+              },
+              "notes"
+            ]
+          ],
+          "gloss": "The focus was Austria's proposal to establish a centre for cooperation on artificial intelligence (AI) under the umbrella of the United Nations in Vienna.",
+          "accessed": "2026-11-11"
+        },
+        {
+          "text": "könnte ein KI-Zentrum in Wien technische Expertise bereitstellen, etwa zur Bewertung von KI-Modellen",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "AT"
+              },
+              "notes"
+            ]
+          ],
+          "gloss": "an AI centre in Vienna could provide technical expertise, for example on evaluating AI models",
+          "accessed": "2026-11-11"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-11T04:52:50Z",
+        "sha256": "5f4939fd59c6ab3be280ddd43fcdbf2277ef7e9a0293c74b8d78f174cd2f4b14",
+        "text_sha256": "1cb7a978a3776ab4743472f7a0da41511902f5b7a9c8aee0149349d67366038d",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "za-dsti-finland-dialogue-2026",
+      "url": "https://www.dsti.gov.za/media/news/south-africa-finland-dialogue-highlights-the-role-of-partnerships-in-advancing-ai",
+      "title": "South Africa-Finland dialogue highlights the role of partnerships in advancing AI",
+      "publisher": "Department of Science, Technology and Innovation (South Africa)",
+      "type": "primary",
+      "published": "2026-11-03",
+      "accessed": "2026-11-11",
+      "language": "en",
+      "origin": "ZA",
+      "excerpts": [
+        {
+          "text": "the DCDT is currently revising the national AI policy",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "ZA"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-11"
+        },
+        {
+          "text": "The Department is developing implementation roadmaps alongside the policy so that the country can begin implementation as soon as the policy is approved",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "ZA"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-11"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-11T04:52:50Z",
+        "sha256": "a2f377a312148ccf84b6ce06b7dde51d2f467ea70b7b59f68040d43858fba5ab",
+        "text_sha256": "f04d02d992d9313faaff48e71f3825c7e8ecd9a723b263a4e08258a8746aac5f",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "za-pq5301-reply-2026",
+      "url": "https://www.parliament.gov.za/storage/app/media/Docs/exe_rq_na/01pv5mf2cd3qxzqkhdgzclre7urxuxkh3p.pdf",
+      "title": "National Assembly question 5301: reply of the Minister of Communications and Digital Technologies",
+      "publisher": "Parliament of the Republic of South Africa",
+      "type": "primary",
+      "accessed": "2026-11-11",
+      "language": "en",
+      "origin": "ZA",
+      "excerpts": [
+        {
+          "text": "with the aim of submitting a revised policy to Cabinet by March 2027.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "ZA"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-11"
+        },
+        {
+          "text": "DATE: 14/10/2026",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "ZA"
+              },
+              "notes"
+            ]
+          ],
+          "gloss": "Date: 14 October 2026",
+          "accessed": "2026-11-11"
+        },
+        {
+          "text": "MINISTER OF COMMUNICATIONS AND DIGITAL TECHNOLOGIES",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "ZA"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-11"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-11T04:52:51Z",
+        "sha256": "d56bd6a1d933263594f6f77e8fecf450826ac475af322f552456712db785a991",
+        "text_sha256": "b33b7c5747a08de1f7468ab5b06331c79bce72618379bfeb75a8d1bbf2ed4bbe",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "za-techcentral-ai-policy-2026",
+      "url": "https://techcentral.co.za/south-africa-national-ai-policy-deadline-cabinet-march-2027/287817/",
+      "title": "South Africa's AI policy team is racing a 30 November deadline",
+      "publisher": "TechCentral",
+      "type": "secondary",
+      "published": "2026-10-29",
+      "accessed": "2026-11-11",
+      "language": "en",
+      "origin": "ZA",
+      "excerpts": [
+        {
+          "text": "We have a deadline of 30 November to submit to the minister.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "ZA"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-11"
+        },
+        {
+          "text": "By then, the drafting team must complete both the revised policy and a discussion document.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "ZA"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-11"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-11T04:52:51Z",
+        "sha256": "aa348c04e050fa6dcf83bc49079ec63c47e1f2638408e101663c33a71b2fdf4d",
+        "text_sha256": "670f17a5d92507c20f13c927827015993b972b9c1c2e2a90e254b89338679fa9",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "br-anpd-sandbox-concluded-2026",
+      "url": "https://www.gov.br/anpd/pt-br/assuntos/noticias/anpd-conclui-1a-edicao-de-sandbox-de-ia-e-anuncia-2a-edicao-voltada-a-jogos-digitais-para-criancas-e-adolescentes",
+      "title": "ANPD conclui 1ª edição de Sandbox de IA e anuncia 2ª edição voltada a jogos digitais para crianças e adolescentes",
+      "title_en": "ANPD concludes the first edition of its AI sandbox and announces a second edition on digital games for children and adolescents",
+      "publisher": "Agência Nacional de Proteção de Dados (ANPD)",
+      "type": "primary",
+      "published": "2026-11-05",
+      "accessed": "2026-11-11",
+      "language": "pt",
+      "origin": "BR",
+      "excerpts": [
+        {
+          "text": "concluiu as testagens do seu projeto-piloto de Sandbox Regulatório de Inteligência Artificial e proteção de dados",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "BR"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-0096657a9da1527ba4ad1680d2b21c09"
+              },
+              "role"
+            ]
+          ],
+          "gloss": "concluded the tests of its pilot project of a Regulatory Sandbox for Artificial Intelligence and data protection",
+          "accessed": "2026-11-11"
+        },
+        {
+          "text": "e publicou, nesta quinta-feira (05), o relatório final de monitoramento",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "BR"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-0096657a9da1527ba4ad1680d2b21c09"
+              },
+              "role"
+            ]
+          ],
+          "gloss": "and published, this Thursday (the 5th), the final monitoring report",
+          "accessed": "2026-11-11"
+        },
+        {
+          "text": "a ANPD estrutura a segunda edição do programa, que focará na promoção do uso equilibrado e seguro de jogos digitais por crianças e adolescentes",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "BR"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-0096657a9da1527ba4ad1680d2b21c09"
+              },
+              "role"
+            ]
+          ],
+          "gloss": "ANPD is structuring the second edition of the programme, which will focus on promoting the balanced and safe use of digital games by children and adolescents",
+          "accessed": "2026-11-11"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-11T04:52:52Z",
+        "sha256": "3cd64af33d9b5f9e8df493f0ebdce2e87c9f545d0ecdec2d43261f693bebdafa",
+        "text_sha256": "862e071b5f3515f2c0dd7f98a87113eee41c0fd23e3d90c55dd3f730ad2738db",
         "text_scheme": 1
       }
     }
