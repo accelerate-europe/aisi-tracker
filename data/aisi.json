@@ -5865,11 +5865,11 @@
           "id": "related_bodies-05a7e29f690e539bb5948550af3fa839"
         },
         {
-          "name": "National AI Competence Centre (planned)",
-          "role": "It is a planned national hub for AI knowledge, technologies and services; the strategy is now the responsibility of the Ministry of the Interior and Public Administration.",
+          "name": "AI Competence Centre (KCUI)",
+          "role": "It operates as the central national hub for AI experts, technologies, services and information.",
           "counts_as_aisi": false,
           "source_ids": [
-            "si-nsai2030"
+            "si-ai-authorities-government"
           ],
           "kind": "other",
           "id": "related_bodies-ba64e53e232552089a798a95c7ba687f"
@@ -6744,11 +6744,14 @@
           "id": "related_bodies-a95720d42a855facaf5ad79e6ee4ff13"
         },
         {
-          "name": "INSAIT (Sofia University)",
-          "role": "It is a research institute building open models and working on trustworthy AI; it has no state mandate to evaluate models.",
+          "name": "INSAIT",
+          "role": "It is based in Sofia, and its website lists foundation models including BgGPT, a Bulgarian language model; no state mandate for it to evaluate models was found.",
           "counts_as_aisi": false,
           "kind": "other",
-          "id": "related_bodies-c1353e6dfb135bde8b5daeef997324c8"
+          "id": "related_bodies-c1353e6dfb135bde8b5daeef997324c8",
+          "source_ids": [
+            "bg-insait-digitalk"
+          ]
         },
         {
           "name": "Министър на иновациите и дигиталната трансформация",
@@ -37609,7 +37612,7 @@
         "catalogue-agentic-report",
         "gb-joint-testing"
       ],
-      "notes": "The 2025 strategy and July 2026 consultation draft plan a national institute. Section 8.5 of the June 2025 multilingual testing report explicitly credits 'Kenya AISI', rather than only Kenya. No government designation of that institute was located; the credit may identify the participating delegation. The proposed status and the named contribution are recorded separately. The sources do not specify a legal form for the planned institute. The July 2026 draft policy names the State Department responsible for Science, Research, Technology and Innovation as lead for establishing the institute, with the ICT ministry (MICDE) among the supporting bodies; the draft is not adopted, so the host entry is unchanged (noted 24 October 2026).",
+      "notes": "The 2025 strategy and July 2026 consultation draft plan a national institute. Section 8.5 of the June 2025 multilingual testing report explicitly credits 'Kenya AISI', rather than only Kenya. No government designation of that institute was located; the credit may identify the participating delegation. The planned status and the named contribution are recorded separately. The sources do not specify a legal form for the planned institute. The July 2026 draft policy names the State Department responsible for Science, Research, Technology and Innovation as lead for establishing the institute, with the ICT ministry (MICDE) among the supporting bodies; the draft is not adopted, so the host entry is unchanged (noted 24 October 2026).",
       "mandate_short": "Planned national body for AI safety research, oversight and capacity building.",
       "placement": {
         "host_type": "unknown",
@@ -51634,25 +51637,7 @@
       "accessed": "2026-10-17",
       "language": "en",
       "access_note": "A source copy was read on 17 October 2026 for the attached excerpts. Earlier access limitations: Adopted by the Government on 5 March 2026. The earlier gov.si address redirects to this path.",
-      "excerpts": [
-        {
-          "text": "which is being established as a single entry point and the central national hub for knowledge, technologies and services in the field of AI.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "SI"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-ba64e53e232552089a798a95c7ba687f"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-10-17"
-        }
-      ],
+      "excerpts": [],
       "origin": "SI",
       "snapshot": {
         "retrieved": "2026-10-17T14:21:28Z",
@@ -51969,7 +51954,54 @@
         "sha256": "a3e348fe5a7b4088651d9952cae12f297946bb31ae71015feb048cc4a9f399ee",
         "text_sha256": "6d9c85e2e743d151f1470a23929940d78f62b1aedf8fc615ae537bb5e800cbe0",
         "text_scheme": 1
-      }
+      },
+      "excerpts": [
+        {
+          "text": "INSAIT Foundation Models BG LLM (BgGPT)",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "BG"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-c1353e6dfb135bde8b5daeef997324c8"
+              },
+              "name"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "BG"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-c1353e6dfb135bde8b5daeef997324c8"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-13"
+        },
+        {
+          "text": "1784 Sofia, Bulgaria",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "BG"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-c1353e6dfb135bde8b5daeef997324c8"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-13"
+        }
+      ]
     },
     {
       "id": "lt-ktu-centre",
@@ -74862,6 +74894,42 @@
             ]
           ],
           "gloss": "The Act further specifies the market surveillance authorities."
+        },
+        {
+          "text": "Kompetenčni center za umetno inteligenco (KCUI)",
+          "gloss": "Artificial Intelligence Competence Centre (KCUI)",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "SI"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-ba64e53e232552089a798a95c7ba687f"
+              },
+              "name"
+            ]
+          ],
+          "accessed": "2026-11-13"
+        },
+        {
+          "text": "KCUI deluje kot osrednje nacionalno stičišče strokovnjakov, tehnologij, storitev in informacij s področja umetne inteligence.",
+          "gloss": "KCUI operates as the central national hub of experts, technologies, services and information in the field of artificial intelligence.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "SI"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-ba64e53e232552089a798a95c7ba687f"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-13"
         }
       ],
       "origin": "SI",
