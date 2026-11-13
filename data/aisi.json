@@ -4392,7 +4392,8 @@
         "negative-second-fi-2026",
         "ai-act-tracker",
         "fr-elysee-paris-call-2026",
-        "fi-president-frontier-ai-meeting-2026"
+        "fi-president-frontier-ai-meeting-2026",
+        "fi-he-270-2026"
       ],
       "region": {
         "id": "150",
@@ -4411,7 +4412,7 @@
         "un-m49",
         "wikidata-jurisdiction-identifiers"
       ],
-      "notes": "Traficom's August 2026 guidance describes its supervision of AI transparency and sectoral authorities' responsibilities for high-risk systems. Searched in English and Finnish for a body its government has tasked with testing general-purpose or frontier AI models or named its AI safety or security institute.\n\nOn 9 November 2026 Finland was among the states that signed the Paris Call for AI Safety and Security, in which signatories commit to a common framework for the evaluation and risk management of frontier models.\n\nFinland's president and Norway's prime minister held a virtual meeting of leaders from 29 countries on controlling the development of frontier AI models, announced on 28 October 2026, to be followed by an expert-level process among interested countries exploring options for improving AI safety and security."
+      "notes": "Traficom's August 2026 guidance describes its supervision of AI transparency and sectoral authorities' responsibilities for high-risk systems. Searched in English and Finnish for a body its government has tasked with testing general-purpose or frontier AI models or named its AI safety or security institute.\n\nOn 9 November 2026 Finland was among the states that signed the Paris Call for AI Safety and Security, in which signatories commit to a common framework for the evaluation and risk management of frontier models.\n\nFinland's president and Norway's prime minister held a virtual meeting of leaders from 29 countries on controlling the development of frontier AI models, announced on 28 October 2026, to be followed by an expert-level process among interested countries exploring options for improving AI safety and security.\n\nThe government's bill HE 270/2026 of 22 October 2026 proposes that Traficom set up and run Finland's AI regulatory sandbox; the amendments to the AI supervision act are mainly intended to take effect on 1 February 2027."
     },
     {
       "id": "DK",
@@ -117298,6 +117299,82 @@
         "retrieved": "2026-11-13T19:11:05Z",
         "sha256": "8b30237dcf2b06f301b89cbe49618475e9e595159ba470c86f6eac0cbbd52d72",
         "text_sha256": "c53f1b055bd9a5acfe7d0ff4ac9b6a614c339683feada787949a7f1b7d71f142",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "fi-he-270-2026",
+      "url": "https://www.finlex.fi/api/media/government-proposal/1153316/mainPdf/main.pdf?timestamp=2026-11-09T13%3A08%3A24.556Z",
+      "title": "HE 270/2026 vp: Hallituksen esitys eduskunnalle laeiksi eräiden tekoälyjärjestelmien valvonnasta annetun lain ja Finanssivalvonnasta annetun lain 71 §:n muuttamisesta",
+      "title_en": "Government bill HE 270/2026 to Parliament amending the Act on the Supervision of Certain Artificial Intelligence Systems and section 71 of the Act on the Financial Supervisory Authority",
+      "publisher": "Finlex / Oikeusministeriö",
+      "type": "primary",
+      "published": "2026-10-22",
+      "accessed": "2026-11-13",
+      "language": "fi",
+      "origin": "FI",
+      "excerpts": [
+        {
+          "text": "HE 270/2026 vp",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "FI"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-13",
+          "gloss": "Government bill 270/2026 (parliamentary year 2026)"
+        },
+        {
+          "text": "Liikenne- ja viestintäviraston tehtävänä olisi perustaa tekoälyn sääntelyn testiympäristö, ylläpitää sen toimintaa ja vastata siihen liittyvästä yhteistyöstä.",
+          "gloss": "The Transport and Communications Agency would be tasked with setting up the AI regulatory sandbox, maintaining its operation and being responsible for the related cooperation.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "FI"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-13"
+        },
+        {
+          "text": "Ehdotetut lait on tarkoitettu tulemaan voimaan eräiden tekoälyjärjestelmien valvonnasta annetun lain osalta pääosin 1.2.2027",
+          "gloss": "The proposed laws are intended to enter into force, as regards the Act on the Supervision of Certain Artificial Intelligence Systems, mainly on 1 February 2027",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "FI"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-13"
+        },
+        {
+          "text": "Helsingissä 22.10.2026",
+          "gloss": "Helsinki, 22 October 2026",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "FI"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-13"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-13T19:42:42Z",
+        "sha256": "98222abe969fd320fb39b62de0e8ee416a273840dd255c96dfbb822888ec8d4d",
+        "text_sha256": "f37378a36875e54c4ec8a3065dd91613eaa99e1a5898dae9e26df02ffa384c0c",
         "text_scheme": 1
       }
     }
