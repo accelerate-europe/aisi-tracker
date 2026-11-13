@@ -8,8 +8,9 @@
 
 Opens the page at 1440, 1000 and 390 px, light and dark, opens every fold (details and
 aria-expanded buttons, except the download menu, the column picker and the theme toggle), draws
-every off-screen section, and saves the whole page as 1600 px tall slices <width>-<theme>-NN.png.
-sweep.json records per view the controls opened, page height, scroll and client width (a wider
+every off-screen section, makes sticky bars static, and saves the whole page as 1600 px tall slices
+<width>-<theme>-NN.png. sweep.json records per view the controls opened, sticky bars made static,
+page height, scroll and client width (a wider
 scroll width is horizontal overflow), folds left closed, visible collapsed buttons and console
 errors. Exit 1 when any view has errors, overflow or a collapsed button; 3 (NOT_RUN) without
 Chromium. It takes the host's browser slot; on a shared host run it on CI (the sweep workflow).
@@ -70,17 +71,20 @@ def sweep_view(browser, url: str, view: str, out: Path) -> dict:
     opened = page.evaluate(OPEN_ALL)
     page.wait_for_timeout(800)
     page.add_style_tag(content="*, *::before, *::after { content-visibility: visible !important; }")
+    # Sticky bars keep their place in the layout, but a whole-page capture draws them at the end of their section,
+    # over its last lines; made static, each shows once where it sits and covers nothing.
+    unstuck = page.evaluate("""() => { let n = 0; for (const el of document.querySelectorAll('*'))
+      if (getComputedStyle(el).position === 'sticky') { el.style.setProperty('position', 'static', 'important'); n++; } return n; }""")
     page.wait_for_timeout(1500)
     page.mouse.move(0, 0)
     info = page.evaluate(INFO)
-    # Clipped full-page shots: sticky bars stay where they sit in the page instead of covering each slice.
     slices = 0
     for top in range(0, info["h"], SLICE):
         page.screenshot(path=str(out / f"{view}-{slices:02d}.png"), full_page=True,
                         clip={"x": 0, "y": top, "width": int(width), "height": min(SLICE, info["h"] - top)})
         slices += 1
     context.close()
-    return {"view": view, "opened": opened, **info, "errors": errors, "slices": slices}
+    return {"view": view, "opened": opened, "unstuck": unstuck, **info, "errors": errors, "slices": slices}
 
 
 def main() -> int:
