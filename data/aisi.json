@@ -13804,7 +13804,9 @@
       "source_ids": [
         "ru-law-243fz",
         "ru-antimalware",
-        "ru-decree-490"
+        "ru-decree-490",
+        "ru-decree-1461-2026",
+        "ru-decree-1461-2026-text"
       ],
       "region": {
         "id": "150",
@@ -13830,7 +13832,8 @@
       "identifier_source_ids": [
         "un-m49",
         "wikidata-jurisdiction-identifiers"
-      ]
+      ],
+      "notes": "Government decree 1461 of 6 November 2026, in force from 14 November according to a legal-text copy, adds to the digital development ministry's powers the analysis of the development of large foundation AI models, including measures to improve their legal regulation, methodological support to state and local government bodies on them, and measures to encourage their development and use."
     },
     {
       "id": "SM",
@@ -117375,6 +117378,147 @@
         "retrieved": "2026-11-13T19:42:42Z",
         "sha256": "98222abe969fd320fb39b62de0e8ee416a273840dd255c96dfbb822888ec8d4d",
         "text_sha256": "f37378a36875e54c4ec8a3065dd91613eaa99e1a5898dae9e26df02ffa384c0c",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "ru-decree-1461-2026",
+      "url": "http://publication.pravo.gov.ru/document/0001202611060039",
+      "title": "Постановление Правительства Российской Федерации от 06.11.2026 № 1461 \"О внесении изменений в постановление Правительства Российской Федерации от 2 июня 2008 г. № 418\"",
+      "title_en": "Government decree No. 1461 of 6 November 2026 amending government decree No. 418 of 2 June 2008 (the regulation on the Ministry of Digital Development)",
+      "publisher": "Official Internet Portal of Legal Information (publication.pravo.gov.ru)",
+      "type": "primary",
+      "published": "2026-11-06",
+      "accessed": "2026-11-13",
+      "language": "ru",
+      "origin": "RU",
+      "legal_text": true,
+      "access_note": "Official publication record, publication number 0001202611060039 of 6 November 2026; the official PDF is an image scan with no text layer, so the decree's text is quoted from the legal-text mirror cited as ru-decree-1461-2026-text. The portal has no status field, and government.ru and the official legal information database did not respond, so the in-force status is not confirmed in an official record.",
+      "excerpts": [
+        {
+          "text": "Постановление Правительства Российской Федерации от 06.11.2026 № 1461",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "RU"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-13",
+          "gloss": "Decree of the Government of the Russian Federation of 6 November 2026, No. 1461"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-13T21:48:04Z",
+        "sha256": "0c4e9a8aaaf215f43486248abcd2a8533b6e2787c68199654e0cdc8ff6357936",
+        "text_sha256": "5a50d17bcd159df4cbc8a75cfafbd6b5995bcbb90d270354f24053d73428389b",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "ru-decree-1461-2026-text",
+      "url": "https://pravo.ppt.ru/postanovlenie/pravitelstvo/n-1461-360021",
+      "title": "Постановление Правительства РФ от 06.11.2026 № 1461 О внесении изменений в постановление Правительства Российской Федерации от 2 июня 2008 г. № 418",
+      "title_en": "Government decree No. 1461 of 6 November 2026 amending government decree No. 418 of 2 June 2008 (legal-text mirror)",
+      "publisher": "ППТ.ру (pravo.ppt.ru)",
+      "type": "primary",
+      "published": "2026-11-06",
+      "accessed": "2026-11-13",
+      "language": "ru",
+      "origin": "RU",
+      "access_note": "Legal-text mirror of government decree 1461, used because the official publication (ru-decree-1461-2026) is an image scan. The decree has no commencement clause; the mirror records it as in force from 14 November 2026, which is not confirmed in an official record.",
+      "excerpts": [
+        {
+          "text": "Положение о Министерстве цифрового развития, связи и массовых коммуникаций Российской Федерации",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "RU"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-13",
+          "gloss": "the regulation on the Ministry of Digital Development, Communications and Mass Media of the Russian Federation"
+        },
+        {
+          "text": "Дополнить подпунктами 5.4.28 - 5.4.30 следующего содержания:",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "RU"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-13",
+          "gloss": "Add subparagraphs 5.4.28 to 5.4.30 with the following content:"
+        },
+        {
+          "text": "5.4.28. анализ развития больших фундаментальных моделей искусственного интеллекта, в том числе выработку мер по совершенствованию правового регулирования в сфере разработки, внедрения и применения больших фундаментальных моделей искусственного интеллекта;",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "RU"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-13",
+          "gloss": "5.4.28. analysing the development of large foundation AI models, including drafting measures to improve legal regulation of the development, deployment and use of large foundation AI models;"
+        },
+        {
+          "text": "5.4.29. оказание методической поддержки государственным органам и органам местного самоуправления в сфере разработки, внедрения и применения больших фундаментальных моделей искусственного интеллекта",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "RU"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-13",
+          "gloss": "5.4.29. giving methodological support to state bodies and local self-government bodies on the development, deployment and use of large foundation AI models"
+        },
+        {
+          "text": "5.4.30. выработку мер стимулирования разработки, внедрения и применения больших фундаментальных моделей искусственного интеллекта",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "RU"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-13",
+          "gloss": "5.4.30. drafting measures to encourage the development, deployment and use of large foundation AI models"
+        },
+        {
+          "text": "Вступил в силу 14 ноября 2026",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "RU"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-13",
+          "gloss": "Entered into force 14 November 2026"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-13T21:48:04Z",
+        "sha256": "3dccebbd6b8392fece88a00e10d76201228f01c8f0dc2ddca11c1aceb9e6954b",
+        "text_sha256": "a82b7b0db33d994e6cecb054605eaa7641f33e8f817e1976957147410877776a",
         "text_scheme": 1
       }
     }
