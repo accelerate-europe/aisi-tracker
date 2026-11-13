@@ -36,6 +36,12 @@ jobs:
       # The locked Playwright's Chromium: the browser the build, gate, contact sheet and sweep use on every host.
       - run: uv run --locked -q scripts/check_page.py --install-chrome
       - run: uv run scripts/check.py --only build --out dist --report-dir "$RUNNER_TEMP/check"
+      # The runner has no fonts for most non-Latin scripts, so source titles in Japanese, Korean, Thai, Arabic and
+      # others would show as empty boxes, and lines would wrap unlike a reader's browser: Noto covers every script
+      # in the data.
+      - run: |
+          sudo apt-get update -q && sudo apt-get install -y -q --no-install-recommends fonts-noto-core fonts-noto-cjk
+          for lang in ja ko zh th ar he hi bn ta si my km lo bo dv am ka hy el ru; do echo "$lang: $(fc-list ":lang=$lang" family | wc -l) fonts"; done
       - run: uv run --locked scripts/sweep_page.py --dist dist --out "$RUNNER_TEMP/sweep"
       # As a tar, like the site artifact: one file, unpacked with tar -xf after gh run download. Also when the sweep
       # failed, so its findings can be read; nothing is uploaded when it never started.
