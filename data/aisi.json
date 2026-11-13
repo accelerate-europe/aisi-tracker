@@ -28663,7 +28663,8 @@
         "gb-pq-39199-2026",
         "gb-pq-39196-2026",
         "gb-pq-38559-2026",
-        "gb-pq-38577-2026"
+        "gb-pq-38577-2026",
+        "gb-no-ai-statement-2026"
       ],
       "people": [
         {
@@ -29001,6 +29002,19 @@
           "participation": "named_implementer",
           "domestic_interagency": false,
           "id": "agreements-c99fd9e6b1004ac788e92192bad1f16d"
+        },
+        {
+          "counterparty_type": "government",
+          "counterparty": "Government of Norway, for KI Norge",
+          "state": "signed",
+          "date": "2026-11-12",
+          "scope": "Non-binding joint statement of intent to explore cooperation, including sharing best practices between the two institutes on AI security, testing and evaluation, and exchanging knowledge of the capabilities and risks of advanced AI systems.",
+          "source_ids": [
+            "gb-no-ai-statement-2026"
+          ],
+          "participation": "named_implementer",
+          "domestic_interagency": false,
+          "id": "agreements-e09480eea9104ef097cf911f435cd343"
         }
       ],
       "wikidata": "Q126284597",
@@ -31684,7 +31698,8 @@
         "no-altinget-holte-2026",
         "no-techwatch-2026-05",
         "no-karrierestart-kin-2026",
-        "no-doffin-2026-116502"
+        "no-doffin-2026-116502",
+        "gb-no-ai-statement-2026"
       ],
       "mandate_short": "Would add AI safety and model evaluation to KI Norge's remit.",
       "placement": {
@@ -31699,7 +31714,21 @@
       "notes": "The budget proposal combines an AI safety mandate with a contact-point role for international safety communities, including AI Safety Institutes. It also describes guidance on risk and suitable use when choosing specific models. The counterpart route supports proposed status; the proposal does not establish an operating institute. Other staff figures differ: a May 2026 press report gave about ten staff, and a job advertisement read on 24 October 2026 offered 16 permanent posts.",
       "wikidata": null,
       "identifier_notes": "No matching Wikidata institute item verified in label and official-name searches on 17 October 2026; null does not establish that no item exists.",
-      "agreements": [],
+      "agreements": [
+        {
+          "counterparty_type": "government",
+          "counterparty": "UK Government, for the UK AI Security Institute",
+          "state": "signed",
+          "date": "2026-11-12",
+          "scope": "Non-binding joint statement of intent to explore cooperation, including sharing best practices between the two institutes on AI security, testing and evaluation, and exchanging knowledge of the capabilities and risks of advanced AI systems.",
+          "source_ids": [
+            "gb-no-ai-statement-2026"
+          ],
+          "participation": "named_implementer",
+          "domestic_interagency": false,
+          "id": "agreements-558e5548aaf54f04a8a17b3f5939783b"
+        }
+      ],
       "outputs": [],
       "people": [
         {
@@ -116920,6 +116949,265 @@
         "retrieved": "2026-11-11T05:21:11Z",
         "sha256": "f14430249bb5958f460c752022a2210d72e10d1336f9999016403b7a3b89dfe7",
         "text_sha256": "29fc6933d7e983f9b2c6de240eab79900ea933e13683075c9776a96a27435ca7",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "gb-no-ai-statement-2026",
+      "url": "https://www.gov.uk/government/news/united-kingdom-norway-joint-statement-of-intent-on-artificial-intelligence",
+      "title": "United Kingdom-Norway Joint Statement of intent on Artificial Intelligence",
+      "publisher": "Government of the United Kingdom",
+      "type": "primary",
+      "accessed": "2026-11-13",
+      "language": "en",
+      "origin": "GB",
+      "access_note": "The joint statement was signed for both governments in English. The Norwegian government's release of 12 November 2026 answered automated requests with a challenge page and has no archived copy, so the signed text published by the UK government is cited for both institutes.",
+      "excerpts": [
+        {
+          "text": "The ministers committed to explore collaboration in the following potential areas:",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-e09480eea9104ef097cf911f435cd343"
+              },
+              "scope"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "agreements",
+              {
+                "id": "agreements-558e5548aaf54f04a8a17b3f5939783b"
+              },
+              "scope"
+            ]
+          ],
+          "accessed": "2026-11-13"
+        },
+        {
+          "text": "Strengthening cooperation between UK AISI and AI Norway through the sharing of best practices on AI security, testing, and evaluation, including as they relate to cybersecurity, via NCSC and NSM;",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-e09480eea9104ef097cf911f435cd343"
+              },
+              "counterparty"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-e09480eea9104ef097cf911f435cd343"
+              },
+              "participation"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-e09480eea9104ef097cf911f435cd343"
+              },
+              "scope"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "agreements",
+              {
+                "id": "agreements-558e5548aaf54f04a8a17b3f5939783b"
+              },
+              "counterparty"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "agreements",
+              {
+                "id": "agreements-558e5548aaf54f04a8a17b3f5939783b"
+              },
+              "participation"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "agreements",
+              {
+                "id": "agreements-558e5548aaf54f04a8a17b3f5939783b"
+              },
+              "scope"
+            ]
+          ],
+          "accessed": "2026-11-13"
+        },
+        {
+          "text": "exchanging knowledge of the capabilities and risks of advanced AI systems; and exploring other opportunities for practical cooperation.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-e09480eea9104ef097cf911f435cd343"
+              },
+              "scope"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "agreements",
+              {
+                "id": "agreements-558e5548aaf54f04a8a17b3f5939783b"
+              },
+              "scope"
+            ]
+          ],
+          "accessed": "2026-11-13"
+        },
+        {
+          "text": "This Statement expresses the intentions of the Participants and does not create rights or obligations under international or domestic law.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-e09480eea9104ef097cf911f435cd343"
+              },
+              "scope"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "agreements",
+              {
+                "id": "agreements-558e5548aaf54f04a8a17b3f5939783b"
+              },
+              "scope"
+            ]
+          ],
+          "accessed": "2026-11-13"
+        },
+        {
+          "text": "Signed in Oslo on [12 November 2026], in two copies in the English language.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-e09480eea9104ef097cf911f435cd343"
+              },
+              "state"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-e09480eea9104ef097cf911f435cd343"
+              },
+              "date"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "agreements",
+              {
+                "id": "agreements-558e5548aaf54f04a8a17b3f5939783b"
+              },
+              "state"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "agreements",
+              {
+                "id": "agreements-558e5548aaf54f04a8a17b3f5939783b"
+              },
+              "date"
+            ]
+          ],
+          "accessed": "2026-11-13"
+        },
+        {
+          "text": "For the Government of the United Kingdom of Great Britain and Northern Ireland",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "agreements",
+              {
+                "id": "agreements-558e5548aaf54f04a8a17b3f5939783b"
+              },
+              "counterparty"
+            ]
+          ],
+          "accessed": "2026-11-13"
+        },
+        {
+          "text": "For the Government of the Kingdom of Norway",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-e09480eea9104ef097cf911f435cd343"
+              },
+              "counterparty"
+            ]
+          ],
+          "accessed": "2026-11-13"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-13T07:42:15Z",
+        "sha256": "cdc6ce5394bc5625a0a30493e360f84df56e0e199f40498340b99dc2f3f88150",
+        "text_sha256": "b53f1a0f5d8ce65c54ec394d615cb2612f9efa4a512a4eb21f6729a3e942b175",
         "text_scheme": 1
       }
     }
