@@ -15,7 +15,7 @@ A page, code or documentation change that leaves `data/aisi.json`, `schema/aisi.
 - Review stale full-check dates (`check.last_checked`) and the recorded evidence limits.
 - At a minor or major release, in the private repository checkout: re-check the public claims in its `docs/claims.csv` against the release data and update `verdict`, `our_record` and `checked`. A verdict that flips points at a fix or a mistake.
 - Blind re-check: re-derive three to five randomly chosen records from their sources without looking at the stored values first; record the differences, and check more records if it finds many.
-- Fresh-eyes audit, the last data review: auditors never see the diff; each takes two or three records sampled by risk (changed institutes, high-visibility records, random controls), checks the bound quotations against the private copies, searches for anything new since the last check and reads the rendered card, table row and API file.
+- Fresh-eyes audit, the last data review: auditors never see the diff; each takes two or three records sampled by risk (changed institutes, high-visibility records, random controls), checks the bound quotations against the private copies, searches for anything new since the last check and reads the rendered card, table row and API file in the site CI built for the `next` commit the audit covers (`uv run --locked scripts/ci_run.py site <sha> --out <folder>`).
 
 ## 2. The release commit
 
@@ -33,10 +33,10 @@ A page, code or documentation change that leaves `data/aisi.json`, `schema/aisi.
 
 ## 4. Move `main` and deploy
 
-The owner's Go is needed for this step. CI must have passed on the release commit on `next`, including the browser gate.
+The owner's Go is needed for this step. CI must have passed on the release commit on `next`, including the browser gate (`uv run --locked scripts/ci_run.py wait <sha> --branch next` waits for the run and names any failed job).
 
 1. Fast-forward public `main` to that commit and push it: `git push origin <release-sha>:main`. Never force: a push that is not a fast-forward is refused, and the release starts again from an up-to-date `next`. The pre-push hook (`.githooks/pre-push`) runs gitleaks and the internal-names scan on the commits being pushed, and refuses the push when the private terms file is missing; CI runs both again.
-2. The `pages` workflow runs the checks, the build and the browser gate in four shards; `build` is the required check, and `deploy` publishes that build. When both have passed, open the site and confirm the version and data date.
+2. The `pages` workflow runs the checks, the build and the browser gate in four shards; `build` is the required check, and `deploy` publishes that build. When both have passed (`uv run --locked scripts/ci_run.py wait <release-sha> --branch main`), open the site and confirm the version and data date.
 
 A fix found after this point is a reviewed commit on `next`, and the release starts again from step 3.
 
