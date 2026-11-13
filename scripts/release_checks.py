@@ -262,9 +262,12 @@ def check_release_tag(data: dict, zenodo: str, head_tags: list[str], tag_commit:
 
 
 # The summary is the release's headline on the page, in feed.xml and in the GitHub and Zenodo release
-# notes; the detail belongs in `changes`. The schema asks for one or two sentences.
+# notes; the detail belongs in `changes`. The schema asks for one or two sentences. The word bound is per
+# sentence, so a summary cannot pack a list of changes into one long sentence. Released entries keep their wording:
+# the bound applies from 1.0.9, so a deploy without a version at 1.0.8 still passes.
 CHANGELOG_SUMMARY_MAX_SENTENCES = 2
-CHANGELOG_SUMMARY_MAX_WORDS = 60
+CHANGELOG_SUMMARY_MAX_SENTENCE_WORDS = 25
+CHANGELOG_SENTENCE_BOUND_FROM = (1, 0, 9)
 # A scaffolded entry labels itself: "Draft (edits before release): ...", "Draft: ...", "(draft)", or a TODO.
 # "Draft bill status is recorded" is data about a draft law, not a draft entry.
 DRAFT_SUMMARY = re.compile(r"^\W*draft\s*[:(\[-]|[(\[]\s*draft\s*[)\]]|\b(?:TODO|TBD|FIXME)\b", re.I)
@@ -275,9 +278,9 @@ INNER_STOP = re.compile(r"(?<=\b[A-Z])\.(?=[A-Z]\.)|(?<=\be\.g)\.|(?<=\bi\.e)\.|
 SENTENCE_END = re.compile(r"[.!?](?=\s*$|\s+[\"'(\[A-Z0-9])")
 
 
-def sentence_count(text: str) -> int:
+def sentences(text: str) -> list[str]:
     """Sentences in plain prose; an unpunctuated last sentence counts too."""
-    return sum(1 for part in SENTENCE_END.split(INNER_STOP.sub("\u2024", text)) if part.strip())
+    return [part for part in SENTENCE_END.split(INNER_STOP.sub("\u2024", text)) if part.strip()]
 
 
 def check_changelog_entry(data: dict) -> list[str]:
@@ -296,12 +299,14 @@ def check_changelog_entry(data: dict) -> list[str]:
         errors.append(f"{where}: the summary is still a draft ({DRAFT_SUMMARY.search(summary).group(0).strip()!r})")
     if not [text for text in entry.get("changes", []) if text.strip()]:
         errors.append(f"{where}: no changes listed")
-    sentences = sentence_count(summary)
-    words = len(summary.split())
-    if sentences > CHANGELOG_SUMMARY_MAX_SENTENCES or words > CHANGELOG_SUMMARY_MAX_WORDS:
+    parts = sentences(summary)
+    lengths = [len(part.split()) for part in parts]
+    bounded = tuple(int(n) for n in version.split(".")) >= CHANGELOG_SENTENCE_BOUND_FROM
+    if len(parts) > CHANGELOG_SUMMARY_MAX_SENTENCES or (bounded and max(lengths, default=0) > CHANGELOG_SUMMARY_MAX_SENTENCE_WORDS):
         errors.append(
-            f"{where}: the summary has {sentences} sentence{'' if sentences == 1 else 's'} and {words} words; at most "
-            f"{CHANGELOG_SUMMARY_MAX_SENTENCES} sentences and {CHANGELOG_SUMMARY_MAX_WORDS} words, the detail goes in changes"
+            f"{where}: the summary has {len(parts)} sentence{'' if len(parts) == 1 else 's'} of "
+            f"{', '.join(map(str, lengths))} words; at most {CHANGELOG_SUMMARY_MAX_SENTENCES} sentences of at most "
+            f"{CHANGELOG_SUMMARY_MAX_SENTENCE_WORDS} words each, leading with the changes that matter most; the rest goes in changes"
         )
     return errors
 

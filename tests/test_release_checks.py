@@ -887,11 +887,36 @@ def test_release_tag_cli_refuses_tags_elsewhere(tmp_path, capsys):
 
 SCAFFOLD_SUMMARY = "Draft (edits before release): data from the 7 November 2026 staff and budget pass and legal-text status checks."
 FORTY_WORDS = "Word " + " ".join(["word"] * 38) + " end."
-# Released summaries, copied here so later draft entries in data/aisi.json cannot break ordinary checks.
-# 1.0.4 is the longest so far (50 words, 308 characters).
+TWENTY_FIVE_WORDS = "Word " + " ".join(["word"] * 23) + " end."
+# Released summaries, copied here so later draft entries in data/aisi.json cannot break ordinary checks: version,
+# summary, and what the 25-word sentence bound would report had it applied. It applies from 1.0.9, so each still
+# passes at its own version; at 1.0.9 the list shows the bound catches the run-on sentences it targets.
 RELEASED_SUMMARIES = [
-    "New outputs, notes and access events for the UK, US, Korea, Japan and other institutes from a re-check of their news on 7 November; Italy's AI Act authorities under Legislative Decree 179/2026; partners that share an explanation listed together; a page title and description that say what the tracker covers.",
-    "Staff and budget notes for Canada, France and the EU AI Office, Canada's CIFAR research stream from 2024-25, Singapore's Digital Trust Centre grant period, four laws verified in force against official records, and official copies for Russia's and Ethiopia's laws.",
+    (
+        "1.0.4",
+        "New outputs, notes and access events for the UK, US, Korea, Japan and other institutes from a re-check of their news on 7 November; Italy's AI Act authorities under Legislative Decree 179/2026; partners that share an explanation listed together; a page title and description that say what the tracker covers.",
+        ["1 sentence of 50 words"],
+    ),
+    (
+        "1.0.5",
+        "Staff and budget notes for Canada, France and the EU AI Office, Canada's CIFAR research stream from 2024-25, Singapore's Digital Trust Centre grant period, four laws verified in force against official records, and official copies for Russia's and Ethiopia's laws.",
+        ["1 sentence of 40 words"],
+    ),
+    (
+        "1.0.6",
+        "Plainer definition wording; Tajikistan's AI strategy confirmed in force; Grenada's Digital Transformation Agency Act cited from the published Act; a faster page and map.",
+        [],
+    ),
+    (
+        "1.0.7",
+        "The UK institute's funding is now one £360m record for 2026-27 to 2029-30, and its corrected staff count is 243. Updates also cover AI Act authorities on the EU's contact list of 9 November 2026, Malaysia, the Republic of the Congo, Equatorial Guinea, El Salvador, Norway, the United States and Ecuador, with replaced sources for moved pages.",
+        ["2 sentences of 20, 37 words"],
+    ),
+    (
+        "1.0.8",
+        "Australia's institute now records five national partners and a policy output, the Rapid Review into government arrangements for an AI-driven cyber incident, and a new rule counts technical staff, giving Korea at least 6 and Australia about 12. Updates also cover the EU's ENISA, Poland's NASK and OpenAI agreement, the Paris Call signatories and Cyprus.",
+        ["2 sentences of 38, 17 words"],
+    ),
 ]
 
 
@@ -902,9 +927,9 @@ RELEASED_SUMMARIES = [
         ("Funding for 1.0.5 is revised. Staff counts are new.", ["One."], []),  # version numbers are not sentence ends
         ("Updated U.S. funding. Corrected UK staffing.", ["One."], []),  # an initialism is not a sentence end
         ("New records, e.g. Canada. Staff counts are new.", ["One."], []),
-        ("New records cover the U.S. Staffing figures were corrected. Sources were refreshed.", ["One."], ["3 sentences and 12 words"]),
-        (FORTY_WORDS + " " + FORTY_WORDS[:-1] + "?", ["One."], ["2 sentences and 80 words"]),
-        ("Funding updated. Staffing corrected. Sources refreshed", ["One."], ["3 sentences and 6 words"]),  # unpunctuated last sentence
+        ("New records cover the U.S. Staffing figures were corrected. Sources were refreshed.", ["One."], ["3 sentences of 5, 4, 3 words"]),
+        (FORTY_WORDS + " " + FORTY_WORDS[:-1] + "?", ["One."], ["2 sentences of 40, 40 words"]),
+        ("Funding updated. Staffing corrected. Sources refreshed", ["One."], ["3 sentences of 2, 2, 2 words"]),  # unpunctuated last sentence
         (SCAFFOLD_SUMMARY, ["One."], ["still a draft ('Draft (')"]),
         ("draft: tidy later.", ["One."], ["still a draft ('draft:')"]),
         ("Release 1.0.5 (draft): funding updated.", ["One."], ["still a draft ('(draft)')"]),
@@ -915,17 +940,36 @@ RELEASED_SUMMARIES = [
         ("   ", ["One."], ["the summary is empty"]),
         ("Two new institutes.", [], ["no changes listed"]),
         ("Two new institutes.", [" "], ["no changes listed"]),
-        ("One. Two. Three.", ["One."], ["3 sentences and 3 words; at most 2 sentences and 60 words, the detail goes in changes"]),
-        (" ".join(["word"] * 61) + ".", ["One."], ["1 sentence and 61 words"]),
-        *[(summary, ["One."], []) for summary in RELEASED_SUMMARIES],
+        ("One. Two. Three.", ["One."], ["3 sentences of 1, 1, 1 words; at most 2 sentences of at most 25 words each, leading with the changes that matter most; the rest goes in changes"]),
+        (TWENTY_FIVE_WORDS, ["One."], []),  # the bound itself passes
+        (TWENTY_FIVE_WORDS + " " + TWENTY_FIVE_WORDS, ["One."], []),  # two full sentences, 50 words in all
+        ("Word " + TWENTY_FIVE_WORDS, ["One."], ["1 sentence of 26 words"]),
+        (TWENTY_FIVE_WORDS + " Word " + TWENTY_FIVE_WORDS, ["One."], ["2 sentences of 25, 26 words"]),  # the second sentence counts too
+        ("Updated U.S. funding " + " ".join(["word"] * 21) + " end.", ["One."], []),  # an initialism does not split a 25-word sentence
+        (" ".join(["word"] * 61) + ".", ["One."], ["1 sentence of 61 words"]),
+        *[(summary, ["One."], expected) for _, summary, expected in RELEASED_SUMMARIES],
     ],
 )
 def test_changelog_entry_handworked(summary, changes, expected):
-    data = {"dataset": {"version": "1.0.5"}, "changelog": [{"version": "1.0.5", "summary": summary, "changes": changes}]}
+    data = {"dataset": {"version": "1.0.9"}, "changelog": [{"version": "1.0.9", "summary": summary, "changes": changes}]}
     errors = release_checks.check_changelog_entry(data)
     assert len(errors) == len(expected), errors
     for error, part in zip(errors, expected):
-        assert error.startswith("changelog/1.0.5: ") and part in error
+        assert error.startswith("changelog/1.0.9: ") and part in error
+
+
+@pytest.mark.parametrize(("version", "summary"), [(version, summary) for version, summary, _ in RELEASED_SUMMARIES])
+def test_released_summaries_pass_at_their_own_version(version, summary):
+    """A deploy without a version, or --release before the version moves, must not fail a released entry."""
+    data = {"dataset": {"version": version}, "changelog": [{"version": version, "summary": summary, "changes": ["One."]}]}
+    assert release_checks.check_changelog_entry(data) == []
+
+
+def test_sentence_bound_compares_versions_as_numbers():
+    long = "Word " + " ".join(["word"] * 30) + " end."
+    for version, failing in [("1.0.8", False), ("1.0.9", True), ("1.0.10", True), ("1.1.0", True), ("2.0.0", True)]:
+        data = {"dataset": {"version": version}, "changelog": [{"version": version, "summary": long, "changes": ["One."]}]}
+        assert bool(release_checks.check_changelog_entry(data)) is failing, version
 
 
 def test_changelog_entry_must_exist_for_the_release_version():
