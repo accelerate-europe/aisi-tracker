@@ -1,6 +1,6 @@
 # Dependencies and pinning
 
-Every command in the release and maintenance process runs from a lockfile, so the same commit gives the same packages and the same browser on every host and in CI. This page is the rule. `scripts/check.py` enforces it: the static rules (locks present, versions agreeing, no unpinned installs in the docs) in lint, the host state (installed Chromium, memory for the browser jobs) in `--preflight`.
+Every command in the release and maintenance process runs from a lockfile, so the same commit gives the same packages and the same browser on every host and in CI. This page is the rule. `scripts/dependency_checks.py` checks the static part (every header has its lock, a script that imports Playwright has both, heavy dependencies are pinned exactly, the locks agree, and every command in the docs, workflows, hooks, scripts and tests has the locked form) in `check.py`'s lint step, so in `--only fast` and the pre-commit hook.
 
 ## Two kinds of environment
 
@@ -27,7 +27,7 @@ A script has a header only when it needs packages outside the project environmen
 
 A new script's first lock travels with the script. A change to an existing lock goes in its own reviewed commit (`Deps: ...`), never inside a data, page or feature commit.
 
-1. Change the header or `pyproject.toml`, then relock every lock that holds the package: `uv lock` and `uv lock --script scripts/<name>.py` for each script lock.
+1. Change the header or `pyproject.toml`, then relock every lock that holds the package: `uv lock` and `uv lock --script scripts/<name>.py` for each script lock. A script whose own dependencies pull in packages that `uv.lock` also holds keeps them at `uv.lock`'s versions with `constraint-dependencies` in its header (`slide_map.py`); move those pins with `uv.lock`.
 2. When Playwright changes, install the matching Chromium in the same step: `uv run --locked scripts/check_page.py --install-chrome`. Every host that runs browser steps does this after pulling the commit; CI does it in every browser job.
 3. Run the fast checks and push; CI's build and browser gate must pass before the commit is merged.
 

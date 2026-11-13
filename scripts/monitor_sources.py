@@ -23,7 +23,7 @@ queue of recorded searches for states without an institute (queries only; it doe
 search). A seen-leads ledger (--lead) remembers pages discovery read but did not cite,
 so a later search skips them until their text hash changes.
 
-    uv run --group evidence python scripts/monitor_sources.py --report work/monitor
+    uv run --locked scripts/monitor_sources.py --report work/monitor
 """
 
 from __future__ import annotations

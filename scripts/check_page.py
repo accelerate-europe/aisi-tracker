@@ -4,7 +4,7 @@
 # ///
 """Check an already built site with Chrome; this script never builds or writes the checkout.
 
-Run from any directory: uv run scripts/build.py --out DIR && uv run scripts/check_page.py --dist DIR
+Run from any directory: uv run --locked scripts/build.py --out DIR && uv run --locked scripts/check_page.py --dist DIR
 (--dist defaults to dist/). Exit 0 when every check passed, 1 on any failure, and NOT_RUN (3)
 when Playwright's Chromium is missing, so callers can tell "not run" from "passed".
 """
@@ -10780,7 +10780,7 @@ def main(dist: Path = ROOT / "dist", screenshots: Path | None = None, capture: P
     try:
         if not (dist / "index.html").is_file():
             raise ValueError(
-                f"{dist} has no index.html; build first: uv run scripts/build.py --out {dist}"
+                f"{dist} has no index.html; build first: uv run --locked scripts/build.py --out {dist}"
             )
         if capture:
             capture_states(chrome, dist, capture)

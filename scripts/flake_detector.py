@@ -1,6 +1,6 @@
 """Repeat browser jobs against one existing build, retaining every attempt as evidence.
 
-uv run scripts/flake_detector.py --dist DIR --job ID[,ID...] --runs N
+uv run --locked scripts/flake_detector.py --dist DIR --job ID[,ID...] --runs N
 Jobs run round-robin in fresh check_page.py processes, with --no-quarantine. The default ten-minute budget holds:
 an attempt starts only when its expected length still fits, and runs with check_page.py's --job-deadline set to the
 time left, which the child keeps from its own start (start-up included): the job's own watchdog stops it at the

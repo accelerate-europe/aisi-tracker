@@ -4,7 +4,7 @@ Reads doors.json and field_searches.json in AISI_INTERNAL (default data/internal
 Every finding is a warning; the exit code is 0 unless an input file is malformed or missing.
 Missing internal files return exit status 3 (NOT RUN); set AISI_INTERNAL to their private directory. Run for the piloted institutes:
 
-    uv run --group evidence python scripts/protocol_checks.py [--as-of YYYY-MM-DD] [--fetch-doors] [--snapshots DIR]
+    uv run --locked scripts/protocol_checks.py [--as-of YYYY-MM-DD] [--fetch-doors] [--snapshots DIR]
 
 --fetch-doors fetches every door once (honest User-Agent, one request a second) and checks its marker phrase.
 --snapshots (default AISI_SNAPSHOTS) enables the saved-copy scan of cited sources for empty slots.

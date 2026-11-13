@@ -1,7 +1,7 @@
 """Write data/reference/roster.csv: every UN member state plus approved extra territories,
 with UN M49 region and sub-region and World Bank latest non-null population.
 
-Run rarely and review the diff: uv run scripts/make_roster.py
+Run rarely and review the diff: uv run --locked scripts/make_roster.py
 UN membership comes from Wikidata (member of United Nations, no end date), checked against an
 exact expected count. Region and sub-region come from the UN Statistics Division's M49 overview page
 (English table); population comes from the World Bank API. Builds never call the network.

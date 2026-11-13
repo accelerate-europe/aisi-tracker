@@ -9,9 +9,9 @@ the record to match. It manages creators, publisher, resource type, version, rig
 (keywords) and related identifiers; title, description, notes, dates and files stay as they are.
 For an earlier version it uses the current maintainers and publisher with that version's number.
 
-    uv run scripts/zenodo_metadata.py                  # diff for dataset.version
-    uv run scripts/zenodo_metadata.py --version 1.0.0  # diff for another release
-    uv run scripts/zenodo_metadata.py --apply          # needs ZENODO_TOKEN; edit, publish, verify
+    uv run --locked scripts/zenodo_metadata.py                  # diff for dataset.version
+    uv run --locked scripts/zenodo_metadata.py --version 1.0.0  # diff for another release
+    uv run --locked scripts/zenodo_metadata.py --apply          # needs ZENODO_TOKEN; edit, publish, verify
 
 Diff mode exits 0 when the record matches, 1 when it differs, 2 on errors or refusals. --apply
 refuses when the record's version is not the requested one, when the record already has an edit

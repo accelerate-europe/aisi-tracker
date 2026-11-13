@@ -8,9 +8,9 @@ in `exception_only` and counts only the languages its exceptions list. `cldr_che
 status was checked against primary sources that support it or are silent; it documents and does not change the
 derivation (a contradiction is an exception).
 
-    uv run scripts/state_languages.py seed --cldr work/languages/cldr-49.0.0/territoryInfo.json \\
+    uv run --locked scripts/state_languages.py seed --cldr work/languages/cldr-49.0.0/territoryInfo.json \\
         --version 49.0.0 --released 2026-10-22 --url <download URL>
-    uv run scripts/state_languages.py report --frontload <searches.json>
+    uv run --locked scripts/state_languages.py report --frontload <searches.json>
 
 `seed` rewrites only the `cldr` block and keeps `policy`, `aliases` and `exceptions`. `report` prints the
 frontload flag contradictions and the English-only searched states resolved against the reference.

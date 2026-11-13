@@ -1,6 +1,6 @@
 """Add reviewed output credit and its evidence; write only a named separate file.
 
-uv run scripts/migrate_credit.py --data data/aisi.json \
+uv run --locked scripts/migrate_credit.py --data data/aisi.json \
     --evidence work/credit-additions.json --out work/aisi-credit.json
 The evidence file contains assignments selected by institute ID and output lineage,
 plus new source records. Editorial decisions must agree with the input dataset.

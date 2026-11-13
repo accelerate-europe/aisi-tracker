@@ -1,6 +1,6 @@
 """Check the deployed site's page, assets, 404, downloads, API and Atom feed.
 
-    uv run scripts/smoke_site.py [--url URL] [--version X.Y.Z]
+    uv run --locked scripts/smoke_site.py [--url URL] [--version X.Y.Z]
 
 Each check retries briefly for CDN propagation and prints one result line.
 Exit 1 if any check fails. This uses HTTP only and never starts a browser.

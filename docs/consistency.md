@@ -3,14 +3,14 @@
 Run checks from the repository root:
 
 ```sh
-uv run python scripts/build.py --check --require-roster
-uv run --group dev pytest -q
+uv run --locked scripts/build.py --check --require-roster
+uv run --locked pytest -q
 ```
 
 To build the downloads and coverage resource rather than validate only (default output `dist/`; neither command writes a tracked file):
 
 ```sh
-uv run python scripts/build.py --require-roster --out dist
+uv run --locked scripts/build.py --require-roster --out dist
 ```
 
 Every output citation must have a reviewed `output_role`, including in small synthetic fragments. Removing all role metadata cannot disable this requirement. A `document` identifies one research document, software artefact or direct substantive release and declares its `output_lineage`. A `context` source is an index, general briefing, homepage or notice covering separate publications. Every output has a document anchor. A changed output label cannot hide disagreement with its document, and aliases of the same document URL cannot declare different lineages. All output rows in one lineage retain one publication date. Source `published` is its own bibliographic version or page date, not automatically the earliest lineage date.
@@ -41,10 +41,10 @@ The page reads the producer’s choices, including the annual-estimate flag, fun
 
 ## Rule tables
 
-`uv run scripts/rule_tables.py --data data/aisi.json --output work/reports/rule-tables.md` puts editorial decisions side by side: outputs, first outputs (by `credit.date`), agreements and budget bases for every institute; negative confidence for every `none_identified` jurisdiction; and AI Act authority bases (by `kind`, so bodies with unresolved designation details are included) for EU members, Iceland, Liechtenstein and Norway. Appendices keep the full claims and citations. Run it before editing records for a rule change.
+`uv run --locked scripts/rule_tables.py --data data/aisi.json --output work/reports/rule-tables.md` puts editorial decisions side by side: outputs, first outputs (by `credit.date`), agreements and budget bases for every institute; negative confidence for every `none_identified` jurisdiction; and AI Act authority bases (by `kind`, so bodies with unresolved designation details are included) for EU members, Iceland, Liechtenstein and Norway. Appendices keep the full claims and citations. Run it before editing records for a rule change.
 
 `--decisions PATH` and `--uk-audit PATH` add explicit editorial exclusions from local research files in `work/`. Without them, exclusions are marked unrecorded, never inferred from missing catalogue entries; included UK review decisions missing from the catalogue are listed as pending. The report records the paths and SHA-256 hashes of the dataset and both inputs, is local and untracked, and must be regenerated after a data change. It does not verify sources or replace editorial review. Run it from the repository root, so the local paths resolve.
 
 ## Source origins
 
-`uv run scripts/build.py --check --report-dir work/reports` also writes `source-origins.md`, an informational review of source `origin` (the issuing country or international body; null is unresolved) for each cited record: a domestic source on a parent record does not cover a nested claim. Statistical, identifier, historical independence and search-query citations are listed separately in its JSON report. Without `--report-dir`, validation prints the count and writes nothing; an unwritable report directory gives a warning, not a failure.
+`uv run --locked scripts/build.py --check --report-dir work/reports` also writes `source-origins.md`, an informational review of source `origin` (the issuing country or international body; null is unresolved) for each cited record: a domestic source on a parent record does not cover a nested claim. Statistical, identifier, historical independence and search-query citations are listed separately in its JSON report. Without `--report-dir`, validation prints the count and writes nothing; an unwritable report directory gives a warning, not a failure.

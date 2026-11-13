@@ -6,4 +6,4 @@ set -eu
 cd "$(git rev-parse --show-toplevel)"
 unset UV_WORKING_DIR UV_PROJECT UV_PROJECT_ENVIRONMENT
 git diff --cached --quiet -- data/aisi.json && exit 0
-exec uv run --locked -q python scripts/research_pass.py message "$1"
+exec uv run --locked -q scripts/research_pass.py message "$1"

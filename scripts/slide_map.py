@@ -8,8 +8,8 @@
 # ///
 """Render a static map of European AISI status for slides, from data/aisi.json.
 
-  uv run scripts/slide_map.py dist/maps/aisi-europe            # writes .png and .svg
-  AISI_MAP_FONTS=/path/to/fonts uv run scripts/slide_map.py ...   # font directory
+  uv run --locked scripts/slide_map.py dist/maps/aisi-europe            # writes .png and .svg
+  AISI_MAP_FONTS=/path/to/fonts uv run --locked scripts/slide_map.py ...   # font directory
 
 Boundaries: Natural Earth 1:50m admin-0 countries, downloaded once to work/cache/ (public domain) and checked
 against the pinned NE_SHA256; a changed upstream file fails until the pin is reviewed and updated.

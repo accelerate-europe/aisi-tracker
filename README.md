@@ -68,22 +68,22 @@ Data, page text and documentation, including `data/aisi.json` and its exports: [
 Install Git, [uv](https://docs.astral.sh/uv/getting-started/installation/), Python 3.11 or newer and Node.js, then, from the repository root:
 
 ```sh
-uv sync --locked --group dev
+uv sync --locked
 uv run --locked scripts/check_page.py --install-chrome   # the locked Playwright's Chromium; the build needs it
-uv run scripts/check.py --preflight                      # which check steps can run here
-uv run scripts/build.py --out dist                       # build the site
+uv run --locked scripts/check.py --preflight             # which check steps can run here
+uv run --locked scripts/build.py --out dist              # build the site
 python3 -m http.server 8000 --bind 127.0.0.1 --directory dist
 ```
 
 On Linux, Chromium needs system libraries: `python -m playwright install-deps chromium` (as root) installs them. Then open `http://127.0.0.1:8000/`.
 
-The build needs no network access; fetching sources and checking Wikidata identifiers are separate editorial steps. `uv run scripts/check.py` checks what is staged in Git, not the working tree, so stage your edits first. Some steps need the maintainers' [private source store](docs/source-snapshots.md) and report NOT RUN without it, which fails the check unless you pass `--allow-skip` (local runs only). Public CI runs the fast checks, the build and the browser gate.
+The build needs no network access; fetching sources and checking Wikidata identifiers are separate editorial steps. `uv run --locked scripts/check.py` checks what is staged in Git, not the working tree, so stage your edits first. Some steps need the maintainers' [private source store](docs/source-snapshots.md) and report NOT RUN without it, which fails the check unless you pass `--allow-skip` (local runs only). Public CI runs the fast checks, the build and the browser gate.
 
 To correct or add a fact:
 
 1. Edit the jurisdiction or AISI in `data/aisi.json`. Add its source to `sources` (url, publisher, primary or secondary, published and accessed dates) with an excerpt that quotes the passage and points at the fact it supports (`supports`); the build links each fact to its sources from these excerpts.
 2. Check the links with [lychee](https://lychee.cli.rs/). It needs a plain list of URLs, which this command extracts from the dataset: `mkdir -p work && python3 -c "import json;[print(s['url']) for s in json.load(open('data/aisi.json'))['sources']]" > work/urls.txt && lychee --no-progress --insecure --max-retries 1 work/urls.txt`. A government site that blocks automated readers gets an `access_note` on its source.
-3. Stage the change and run `uv run scripts/check.py`. It refuses schema errors, unknown or unused sources, impossible dates and disagreements between a jurisdiction and its AISI, and lists the changed facts next to their excerpts.
+3. Stage the change and run `uv run --locked scripts/check.py`. It refuses schema errors, unknown or unused sources, impossible dates and disagreements between a jurisdiction and its AISI, and lists the changed facts next to their excerpts.
 
 Versions, the changelog and publishing are in the [release runbook](docs/release.md).
 

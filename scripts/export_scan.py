@@ -1,9 +1,9 @@
 """Refuse internal names in a public source export or commits before publication.
 
-  uv run scripts/export_scan.py EXPORT_DIR                  # terms from the private store
-  uv run scripts/export_scan.py EXPORT_DIR --terms FILE
-  uv run scripts/export_scan.py EXPORT_DIR --store DIR      # the source store, in place of AISI_SNAPSHOTS
-  uv run scripts/export_scan.py --repo DIR --commits A..B   # rev-list arguments, also B ^C ^D
+  uv run --locked scripts/export_scan.py EXPORT_DIR                  # terms from the private store
+  uv run --locked scripts/export_scan.py EXPORT_DIR --terms FILE
+  uv run --locked scripts/export_scan.py EXPORT_DIR --store DIR      # the source store, in place of AISI_SNAPSHOTS
+  uv run --locked scripts/export_scan.py --repo DIR --commits A..B   # rev-list arguments, also B ^C ^D
 
 Scans every file under EXPORT_DIR (the output of `git archive`, so export-ignored files are already
 gone) for three kinds of internal detail:

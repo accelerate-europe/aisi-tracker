@@ -4,7 +4,7 @@
 # ///
 """Pre-render a built site in place: open its index.html in headless Chrome and save the rendered page.
 
-build.py runs this on its staged output: uv run scripts/prerender.py --dist DIR. The page script, opened
+build.py runs this on its staged output: uv run --locked scripts/prerender.py --dist DIR. The page script, opened
 as ?prerender, renders as usual and then marks the page data-prerendered, keeping the untouched
 page as <template id="page-template"> for hydration (see the comment at the top of the page script).
 Chrome is a build requirement: without it this exits with NOT_RUN (3) and the build fails.

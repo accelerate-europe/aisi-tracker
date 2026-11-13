@@ -1,6 +1,6 @@
 """Validate data/aisi.json and build dist/: the page plus JSON, CSV, datapackage.json and the per-record API.
 
-Run from the repo root: uv run scripts/build.py [--out DIR]
+Run from the repo root: uv run --locked scripts/build.py [--out DIR]
 Exits non-zero on any schema or consistency error, so a broken dataset never ships.
 Outputs are written to a temporary folder beside the output directory first and only replace it
 when everything succeeded. No mode writes a tracked file except --update-readme, which regenerates

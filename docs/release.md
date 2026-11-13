@@ -10,7 +10,7 @@ A page, code or documentation change that leaves `data/aisi.json`, `schema/aisi.
 
 ## 1. Before the release commit
 
-- Method, definition or naming text: a change ships once the owner has approved its final wording and its rule-impact table (`uv run scripts/rule_tables.py`), with no waiting time. A change to the definition or to `dataset.status_definitions` also re-checks the public claims in the private repository's `docs/claims.csv` before the release, at any version, as the claims bullet below describes.
+- Method, definition or naming text: a change ships once the owner has approved its final wording and its rule-impact table (`uv run --locked scripts/rule_tables.py`), with no waiting time. A change to the definition or to `dataset.status_definitions` also re-checks the public claims in the private repository's `docs/claims.csv` before the release, at any version, as the claims bullet below describes.
 - Run quotation verification and refresh the private source copies ([source snapshots](source-snapshots.md)).
 - Review stale full-check dates (`check.last_checked`) and the recorded evidence limits.
 - At a minor or major release, in the private repository checkout: re-check the public claims in its `docs/claims.csv` against the release data and update `verdict`, `our_record` and `checked`. A verdict that flips points at a fix or a mistake.
@@ -21,13 +21,13 @@ A page, code or documentation change that leaves `data/aisi.json`, `schema/aisi.
 
 1. Set `dataset.version`, and set `dataset.as_of` to the release day.
 2. Finish the `changelog` entry for that version, dated the release day. Its `summary` is the release's headline on the page, in `feed.xml` and in the GitHub and Zenodo release notes, and feed readers often show nothing else. It leads with the one or two changes that matter most to readers, in at most two plain sentences of at most 25 words each, with no tool or process names; the summary is not a list, the changes are. Each change goes in `changes`, one line per change. A major release keeps the summary short and links migration notes from `changes`. `--release` refuses an entry that is missing, still labelled as a draft, lists no changes, or has more than two sentences or a sentence over 25 words.
-3. Run `uv run scripts/build.py --update-readme`, which regenerates the README blocks, `CITATION.cff` and `.zenodo.json`.
-4. Stage everything, run `uv run scripts/check.py`, read the report and commit after an independent review of the staged diff ([AGENTS.md](../AGENTS.md), Done means). The release commit goes onto `next` like any other reviewed commit.
+3. Run `uv run --locked scripts/build.py --update-readme`, which regenerates the README blocks, `CITATION.cff` and `.zenodo.json`.
+4. Stage everything, run `uv run --locked scripts/check.py`, read the report and commit after an independent review of the staged diff ([AGENTS.md](../AGENTS.md), Done means). The release commit goes onto `next` like any other reviewed commit.
 
 ## 3. Release check
 
 1. The previous release's tag (`v` plus its version) must be in your clone (`git fetch --tags`): `--release` compares with the last `v*` tag reachable from `HEAD`, and without one it refuses to run.
-2. With the private store configured (`AISI_SNAPSHOTS`), run `uv run scripts/check.py --release --out dist` on the committed release. Every step must pass and none may be NOT RUN; `dist/` is the build to sweep. A `dist/` left behind by a failed run is not a passed build.
+2. With the private store configured (`AISI_SNAPSHOTS`), run `uv run --locked scripts/check.py --release --out dist` on the committed release. Every step must pass and none may be NOT RUN; `dist/` is the build to sweep. A `dist/` left behind by a failed run is not a passed build.
 3. Full page sweep of the release commit: every fold open, all table rows shown, 1440, 1000 and 390 px, light and dark. On CI, with the release commit pushed to `next`: `gh workflow run sweep.yml --ref next`, then `gh run download <run-id> -n sweep -D <absolute-dir>` (the run from `gh run list --workflow sweep.yml`; gh 2.45 refuses `-D .` as path traversal) and `tar -xf sweep.tar` there. On a host with memory for a browser and Noto fonts for every script in the data, `uv run --locked scripts/sweep_page.py --dist dist --out DIR` sweeps the local `dist/` the same way; on a shared host use CI. The output holds 1600 px slices `<width>-<theme>-NN.png` and `sweep.json` (controls opened, page height, overflow, folds left closed, console errors); the sweep fails on console errors, horizontal overflow or a collapsed button. Read every slice and fix or log every finding, by the page review checklist in the maintainers' review notes (`docs/review.md` in the private repository checkout).
 4. Read the report, including its Release warnings: legal instruments whose status check is missing or more than 183 days old (rule `rescinded-instruments` in `dataset.method`). Re-verify each one and record the date, or leave the warning for the owner to accept. `--release` also fails on work dated after `as_of`, a placeholder `PUBLIC_URL`, an unfinished changelog entry, draft wording in the citation, changelog, method, schema descriptions, README, CLAUDE.md, AGENTS.md and `docs/` (except `docs/history/`), and internal process wording in data prose, schema descriptions and the changelog.
 
@@ -46,7 +46,7 @@ In the public clone, at the pushed commit, with the release notes taken from the
 
 ```sh
 jq -r '.dataset.version as $v | .changelog[] | select(.version == $v) | .summary, "", (.changes[] | "- " + .)' data/aisi.json > <notes-file>
-tag=$(uv run scripts/release_tag.py) && gh release create "$tag" --target "$(git rev-parse HEAD)" --title "$tag" --notes-file <notes-file>
+tag=$(uv run --locked scripts/release_tag.py) && gh release create "$tag" --target "$(git rev-parse HEAD)" --title "$tag" --notes-file <notes-file>
 ```
 
 `release_tag.py` prints `v` plus `dataset.version` and refuses when `.zenodo.json` at `HEAD` carries another version, `HEAD` has another version tag, or the tag already exists elsewhere, locally or on the remote. Never type the tag by hand.
@@ -56,9 +56,9 @@ tag=$(uv run scripts/release_tag.py) && gh release create "$tag" --target "$(git
 Zenodo archives the GitHub release and mints the version DOI. Then add what `.zenodo.json` cannot carry (Accelerate Europe as organisational creator, so the record's citation matches ours, and the MIT licence for the code):
 
 ```sh
-uv run scripts/zenodo_metadata.py           # diff against the new Zenodo version
-uv run scripts/zenodo_metadata.py --apply   # needs ZENODO_TOKEN
-uv run scripts/zenodo_metadata.py           # must report nothing to do
+uv run --locked scripts/zenodo_metadata.py           # diff against the new Zenodo version
+uv run --locked scripts/zenodo_metadata.py --apply   # needs ZENODO_TOKEN
+uv run --locked scripts/zenodo_metadata.py           # must report nothing to do
 ```
 
 Zenodo's API can serve the old record for about a minute after `--apply`. The script rereads it for up to 2 minutes; if the final diff still shows the old values right after "published; record ... now matches", wait a minute and run it again.

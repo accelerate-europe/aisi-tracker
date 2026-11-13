@@ -124,7 +124,7 @@ Event `origin_id` is scoped by its parent: `jurisdiction_id:event_id` for timeli
 
 Sort by the unpadded ISO date string, then origin kind and stable row `id`. A year sorts before a month within that year. This is deterministic presentation, not a claim to know the order of overlapping partial dates. `scheduled` is true when the date is wholly after `dataset.as_of`; future events are not silently presented as completed acts. The datapackage describes all event columns. `outputs.csv`, `network_milestones.csv`, `source_excerpts.csv` and `related_bodies.csv` expose the new nested data; missing source language exports as empty, not English.
 
-Tests cover the migration, nested citations, bad/escaped/unrelated pointers, missing glosses, invalid dates, unchanged status derivation, event origins, partial dates, undated exclusions, future flags and the CSV/datapackage contract. Before each commit, run `uv run scripts/check.py` (see [AGENTS.md](../../AGENTS.md)).
+Tests cover the migration, nested citations, bad/escaped/unrelated pointers, missing glosses, invalid dates, unchanged status derivation, event origins, partial dates, undated exclusions, future flags and the CSV/datapackage contract. Before each commit, run `uv run --locked scripts/check.py` (see [AGENTS.md](../../AGENTS.md)).
 
 ## Revised research method
 

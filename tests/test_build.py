@@ -466,7 +466,7 @@ def test_table_schema_types_and_description_precedence():
 
 def test_real_dataset_smoke():
     result = subprocess.run(
-        ["uv", "run", "scripts/build.py", "--check", "--require-roster"],
+        ["uv", "run", "--locked", "scripts/build.py", "--check", "--require-roster"],
         cwd=ROOT, text=True, capture_output=True, timeout=120,
     )
     assert result.returncode == 0, result.stdout + result.stderr

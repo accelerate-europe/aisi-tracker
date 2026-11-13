@@ -1,6 +1,6 @@
 """One-time migration of positional references; writes only the named output file.
 
-uv run python scripts/migrate_references.py data/aisi.json work/aisi-stable.json
+uv run --locked scripts/migrate_references.py data/aisi.json work/aisi-stable.json
 IDs are opaque, permanent and unique within their collection. Never regenerate
 an existing ID on a rename, correction or reordering, or reuse a deleted ID.
 """

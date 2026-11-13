@@ -4,16 +4,16 @@
 # ///
 """One check command for agents, the pre-commit hook and CI.
 
-  uv run scripts/check.py                       # every step on the staged snapshot, compared with HEAD
-  uv run scripts/check.py --base origin/main    # compared with origin/main, when handing back a branch
-  uv run scripts/check.py --release             # a release, compared with the last v* tag
-  uv run scripts/check.py --only fast           # validate,lint,export,tests: the pre-commit hook
-  uv run scripts/check.py --only export --commits A..B   # names and secrets in commits being pushed
-  uv run scripts/check.py --preflight           # can this agent run every step?
-  uv run scripts/check.py --fail-fast           # stop at the first blocking result
-  uv run scripts/check.py --changed --base origin/main   # only the steps the changed files need
-  uv run scripts/check.py --skip-browser --base origin/main   # starts no Chromium: CI builds and gates the
-                                                # pushed commit; the sheet waits for a visual pass
+  uv run --locked scripts/check.py                       # every step on the staged snapshot, compared with HEAD
+  uv run --locked scripts/check.py --base origin/main    # compared with origin/main, when handing back a branch
+  uv run --locked scripts/check.py --release             # a release, compared with the last v* tag
+  uv run --locked scripts/check.py --only fast           # validate,lint,export,tests: the pre-commit hook
+  uv run --locked scripts/check.py --only export --commits A..B   # names and secrets in commits being pushed
+  uv run --locked scripts/check.py --preflight           # can this agent run every step?
+  uv run --locked scripts/check.py --fail-fast           # stop at the first blocking result
+  uv run --locked scripts/check.py --changed --base origin/main   # only the steps the changed files need
+  uv run --locked scripts/check.py --skip-browser --base origin/main   # starts no Chromium: CI builds and gates the
+                                                                       # pushed commit; the sheet waits for a visual pass
 
 The staged index (not the working tree) is exported to a temporary directory and every step
 runs there with the locked dependencies, so results describe exactly what would be committed
@@ -134,6 +134,7 @@ CHANGE_RULES = (
       "CITATION.cff", ".zenodo.json", ".gitignore"), GROUPS["fast"], "documentation, tests or tooling the build does not read"),
     (("scripts/verify_excerpts.py",), (*GROUPS["fast"], "compare"), "quote verification, which compare runs"),
     (("scripts/research_pass.py",), (*GROUPS["fast"], "passes"), "research-pass checks, which passes runs"),
+    (("scripts/dependency_checks.py",), GROUPS["fast"], "dependency rules, which lint runs"),
     (tuple(f"scripts/{name}.py" for name in NO_BROWSER_SCRIPTS), GROUPS["fast"], "a script neither the build nor the gate uses"),
     (("site/", "schema/", "scripts/", "pyproject.toml", "uv.lock"), BUILD_STEPS, "page, schema, build or gate code"),
 )
@@ -389,7 +390,7 @@ def make_snapshot(repo: Path, dest: Path, revision: str | None = None) -> str:
 
 
 def step_validate(ctx: Context) -> Result:
-    cmd = ["uv", "run", "--locked", "-q", "python", "scripts/build.py", "--check", "--require-roster",
+    cmd = ["uv", "run", "--locked", "-q", "scripts/build.py", "--check", "--require-roster",
            "--report-dir", str(ctx.report / "source-origins")]
     result = command_step(ctx, "validate", cmd + (["--release"] if ctx.release else []))
     # build.py writes its release warnings beside the source-origin report; they never fail the step.
@@ -402,7 +403,13 @@ def step_validate(ctx: Context) -> Result:
 
 
 def step_lint(ctx: Context) -> Result:
-    return command_step(ctx, "lint", ["uv", "run", "--locked", "-q", "ruff", "check", "--no-cache", "."])
+    """Ruff and the dependency rules of docs/dependencies.md (standard library only, so it runs with this interpreter),
+    both always, so one run reports every finding."""
+    ruff = command_step(ctx, "lint", ["uv", "run", "--locked", "-q", "ruff", "check", "--no-cache", "."])
+    deps = command_step(ctx, "lint-deps", [sys.executable, "scripts/dependency_checks.py", "."])
+    failed = [r for r in (ruff, deps) if r.status != "PASS"]
+    detail = "\n".join(r.detail for r in failed)
+    return Result("lint", "FAIL" if failed else "PASS", ruff.seconds + deps.seconds, detail, failed[0].log if failed else deps.log)
 
 
 def step_tests(ctx: Context) -> Result:
@@ -458,7 +465,7 @@ def pass_store(snapshots: Path | None) -> Path | None:
 def step_passes(ctx: Context) -> Result:
     """Every data commit since the base names a closed, valid research pass, or none with a reason (docs/research-passes.md)."""
     store = pass_store(ctx.snapshots)
-    cmd = ["uv", "run", "--locked", "-q", "python", "scripts/research_pass.py"] + (["--store", str(store)] if store else []) + [
+    cmd = ["uv", "run", "--locked", "-q", "scripts/research_pass.py"] + (["--store", str(store)] if store else []) + [
         "commits", "--base", ctx.base or "HEAD", "--repo", str(ctx.repo), "--data", "data/aisi.json"]
     code, seconds, log = run(ctx, "passes", cmd)
     detail = tail(log)
@@ -520,7 +527,7 @@ def step_export(ctx: Context) -> Result:
 
 
 def step_build(ctx: Context) -> Result:
-    result = command_step(ctx, "build", ["uv", "run", "--locked", "-q", "python", "scripts/build.py", "--out", str(ctx.dist)])
+    result = command_step(ctx, "build", ["uv", "run", "--locked", "-q", "scripts/build.py", "--out", str(ctx.dist)])
     ctx.built = result.status == "PASS"
     return result
 
@@ -664,7 +671,7 @@ def build_base(ctx: Context) -> Path | None:
         tar.extractall(base_dir, filter="data")
     throwaway_index(base_dir)
     # No --out: older revisions only build into their own dist/, here inside the temporary export.
-    code, _, _ = run(ctx, "sheet", ["uv", "run", "--locked", "-q", "python", "scripts/build.py"], cwd=base_dir)
+    code, _, _ = run(ctx, "sheet", ["uv", "run", "--locked", "-q", "scripts/build.py"], cwd=base_dir)
     return base_dir / "dist" if code == 0 and (base_dir / "dist/index.html").is_file() else None
 
 
@@ -886,7 +893,7 @@ def verify_quotes(ctx: Context, data: dict, changed: list[tuple[str, str]]) -> t
     report = ctx.report / "excerpt-verification.json"
     # The real cache and the snapshots are only read: entries are copied into a scratch cache outside
     # the checkout, which absorbs re-extraction. A fresh clone without a cache is seeded from the snapshots.
-    cmd = ["uv", "run", "--locked", "-q", "python", "scripts/verify_excerpts.py", "--offline", "--all-excerpts",
+    cmd = ["uv", "run", "--locked", "-q", "scripts/verify_excerpts.py", "--offline", "--all-excerpts",
            "--cache", str(ctx.work / "source-cache"), *seeds, "--report", str(report)]
     for source_id in sorted({s for s, _ in changed}):
         cmd += ["--source", source_id]

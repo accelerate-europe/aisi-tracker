@@ -35,7 +35,7 @@ jobs:
             scripts/*.lock
       # The locked Playwright's Chromium: the browser the build, gate, contact sheet and sweep use on every host.
       - run: uv run --locked -q scripts/check_page.py --install-chrome
-      - run: uv run scripts/check.py --only build --out dist --report-dir "$RUNNER_TEMP/check"
+      - run: uv run --locked scripts/check.py --only build --out dist --report-dir "$RUNNER_TEMP/check"
       # The runner has no fonts for most non-Latin scripts, so source titles in Japanese, Korean, Thai, Arabic and
       # others would show as empty boxes, and lines would wrap unlike a reader's browser: Noto covers every script
       # in the data.

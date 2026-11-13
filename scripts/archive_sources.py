@@ -2,9 +2,9 @@
 
 Record candidates in data/reference/archive_urls.json; --apply verifies candidate captures before applying them.
 
-  uv run --group evidence python scripts/archive_sources.py  # look up / request snapshots
-  uv run --group evidence python scripts/archive_sources.py --apply  # fetch and apply verified captures
-  uv run --group evidence python scripts/archive_sources.py --apply --offline  # use cached captures only
+  uv run --locked scripts/archive_sources.py  # look up / request snapshots
+  uv run --locked scripts/archive_sources.py --apply  # fetch and apply verified captures
+  uv run --locked scripts/archive_sources.py --apply --offline  # use cached captures only
 
 Sources that already have an archive_url are skipped. Failures are recorded and retried on the next run.
 """

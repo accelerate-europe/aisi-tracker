@@ -1,6 +1,6 @@
 """Print the release tag (v<dataset.version>) after checking it against .zenodo.json, HEAD and the remote.
 
-  tag=$(uv run scripts/release_tag.py) && gh release create "$tag" --target "$(git rev-parse HEAD)" ...
+  tag=$(uv run --locked scripts/release_tag.py) && gh release create "$tag" --target "$(git rev-parse HEAD)" ...
 
 Run in the public repository on the commit to be released, after pushing it. Exits 1, printing nothing
 on stdout, if .zenodo.json at HEAD carries another version, HEAD has another v* tag, or the tag already

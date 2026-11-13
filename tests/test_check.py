@@ -163,7 +163,7 @@ def test_gate_report_lines_get_their_own_section(tmp_path, monkeypatch, code, st
     ctx = check.Context(tmp_path, tmp_path, tmp_path, tmp_path, None, False, tmp_path / "dist", tmp_path, built=True)
 
     def fake_run(ctx, step, cmd, cwd=None):
-        (tmp_path / "gate.log").write_text("$ uv run\nreport line: gap 6px, not 8px\nreport line: gap 6px, not 8px\nerror: x\nreport line: weight 500\n")
+        (tmp_path / "gate.log").write_text("$ uv run --locked\nreport line: gap 6px, not 8px\nreport line: gap 6px, not 8px\nerror: x\nreport line: weight 500\n")
         return code, 1.0, tmp_path / "gate.log"
 
     monkeypatch.setattr(check, "run", fake_run)

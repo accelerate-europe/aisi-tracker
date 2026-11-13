@@ -1,7 +1,7 @@
 """Lay page captures out as small, scannable contact sheets.
 
-  uv run scripts/contact_sheet.py --after DIR --out DIR
-  uv run scripts/contact_sheet.py --before DIR --after DIR --out DIR
+  uv run --locked scripts/contact_sheet.py --after DIR --out DIR
+  uv run --locked scripts/contact_sheet.py --before DIR --after DIR --out DIR
 
 Captures are named <width>-<theme>-<section>.png (check_page.py --capture), each with a .json of the
 named page parts inside it. Writes, into --out:

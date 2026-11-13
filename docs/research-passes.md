@@ -68,7 +68,7 @@ Personal data must never enter a pass folder. Passes run from their own harness 
 The commands below use `$AISI_PASSES`; set it to the pass store (for example `export AISI_PASSES=<private-store>/passes`), or use the paths `homes` prints. Once per machine, write the two homes from the configuration in `scripts/` and log in to each:
 
 ```sh
-uv run scripts/research_pass.py homes
+uv run --locked scripts/research_pass.py homes
 CLAUDE_CONFIG_DIR="$AISI_PASSES/.homes/claude" claude auth login
 CODEX_HOME="$AISI_PASSES/.homes/codex" codex login
 ```
@@ -88,13 +88,13 @@ Run `homes` again after a change to `scripts/research_pass_claude.json`, `resear
 3. Close the pass:
 
    ```sh
-   uv run scripts/research_pass.py extract 2026-11-07-news-recheck
+   uv run --locked scripts/research_pass.py extract 2026-11-07-news-recheck
    ```
 
    This finds the sessions started in the pass folder in both homes (or takes `--transcripts PATH...`), copies them into `transcripts/`, writes `log.jsonl` and prints the sessions, models, harness and search tools to record. Fill those in, set `ended`, `stopping_reason` and `"status": "closed"`, then:
 
    ```sh
-   uv run scripts/research_pass.py validate 2026-11-07-news-recheck
+   uv run --locked scripts/research_pass.py validate 2026-11-07-news-recheck
    ```
 
    A closed pass must have logged at least one search with a known-engine tool.
@@ -114,4 +114,4 @@ Two places check the trailers:
 - The `commit-msg` hook (`.githooks/commit-msg`, installed with the pre-commit hook) refuses a new commit whose staged data changes records without a trailer, and checks each named pass in the store when one is configured. It does not check amends, which the `passes` step catches on the branch, or merges.
 - The `passes` step of `check.py` checks every commit in `--base..HEAD`: each named pass must be in the store, valid and closed. A commit with `none` is listed in the report with its reason. Without a pass store the step is NOT RUN when a commit names a pass; a missing trailer fails either way.
 
-`uv run scripts/research_pass.py commits --base <rev>` runs the same check directly.
+`uv run --locked scripts/research_pass.py commits --base <rev>` runs the same check directly.

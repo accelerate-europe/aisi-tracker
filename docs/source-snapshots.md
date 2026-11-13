@@ -9,7 +9,7 @@ Complete original PDF bytes can be preserved when the primary PDF parser fails, 
 Run from the repository root after quote verification has populated the cache:
 
 ```sh
-uv run --group evidence python scripts/snapshot_sources.py --offline --lookup-archives --report work/reports/source-snapshots.json
+uv run --locked scripts/snapshot_sources.py --offline --lookup-archives --report work/reports/source-snapshots.json
 ```
 
 Without `--offline`, uncached original URLs and selected fallbacks may be retrieved. `--lookup-archives` checks an existing archive.ph capture with GET when a declared archive does not validate. The tool never submits a page for capture. For `snapshot_sources.py`, `--apply` explicitly applies the proposed snapshot metadata and validated archive changes to the selected `--data` file; otherwise the dataset is unchanged. Review failed sources and archive-removal proposals in the report before applying them.
@@ -25,8 +25,8 @@ Public archive links use Wayback, with archive.today (archive.ph) as a fallback 
 `scripts/verify_excerpts.py` checks literal quotations against cached source text. Online retrieval is opt-in and the build never runs the tool; `check.py` runs it offline, only for new or edited quotations. Reports and the cache stay in ignored `work/`.
 
 ```sh
-uv run --group evidence python scripts/verify_excerpts.py --all-excerpts --offline   # audit the existing cache
-uv run --group evidence python scripts/verify_excerpts.py --all-excerpts             # also retrieve uncached copies
+uv run --locked scripts/verify_excerpts.py --all-excerpts --offline   # audit the existing cache
+uv run --locked scripts/verify_excerpts.py --all-excerpts             # also retrieve uncached copies
 ```
 
 The default checks decisive excerpts; `--all-excerpts` checks every quotation and `--all-sources` also retrieves sources without quotations. Retrieval tries each declared live and archive copy and one rendered fallback, reuses cached attempts (including failures: use a fresh `--cache` for a new attempt), and by default runs four workers with one second between request starts to the same host and a 25-second timeout. It rejects the same non-evidence responses as the snapshot tool (above). Exit status 1 means at least one quotation needs review.
@@ -37,14 +37,14 @@ Reports separate mismatches, transport failures, uncached sources, rejected resp
 
 ## Legacy archive candidates
 
-`data/reference/archive_urls.json` holds earlier Wayback lookups, not verified evidence. `uv run --group evidence python scripts/archive_sources.py --apply` retrieves each candidate capture into `work/source-cache` (`--offline`: cached captures only) and writes its URL only if it passes the archive, content and document-identity checks; existing canonical archive URLs stay unchanged. Without `--apply` the tool does its original lookup and Save Page Now requests. The snapshot workflow never calls it.
+`data/reference/archive_urls.json` holds earlier Wayback lookups, not verified evidence. `uv run --locked scripts/archive_sources.py --apply` retrieves each candidate capture into `work/source-cache` (`--offline`: cached captures only) and writes its URL only if it passes the archive, content and document-identity checks; existing canonical archive URLs stay unchanged. Without `--apply` the tool does its original lookup and Save Page Now requests. The snapshot workflow never calls it.
 
 ## File hash and text hash
 
 `sha256` proves which file is held. `text_sha256` hashes the copy's normalised main text under the versioned rule `text_scheme`, whose definition is the schema description of `sources[].snapshot.text_sha256`; it is how the tool tells a real content change from rotating tokens, counters and page furniture. When a rerun replaces the cited copy is an editorial rule in `dataset.method` (source copies). In the tool: a quotation is bound to the source when its excerpt names no URL, the source URL or its `archive_url`. A text-hash difference (`text_changed`, another scheme or none, or no text in the new copy) is then checked against the bound quotations, reading both copies through the same verifier views (primary text, visible HTML, PDF views): the new copy is proposed only as `bound_quote_missing` (a quotation the cited copy carries is missing from it) or `cited_copy_lacks_bound_quote` (it carries one the cited copy lacks); a quotation found in neither copy decides nothing. Otherwise the report records the change and its `bound_quotes` counts, and the cited copy is retained. Without bound quotations the text-hash difference alone proposes the new copy. A copy whose text is unchanged is retained; a cited copy no longer held privately is replaced (`previous_copy_missing`). Retained copies keep their timestamp and the new bytes are not saved. Any change to the rule, or to the extraction it reuses (including a parser upgrade that changes extracted text), is a new scheme: bump `TEXT_SCHEME` and re-hash every stored copy once, from the copies the published hashes name, never from new downloads:
 
 ```sh
-uv run --group evidence python scripts/snapshot_sources.py --rehash --apply --report work/reports/source-rehash.json
+uv run --locked scripts/snapshot_sources.py --rehash --apply --report work/reports/source-rehash.json
 ```
 
 `--rehash` never fetches; a source whose cited copy is missing is reported as `previous_copy_missing` and left unchanged.
@@ -65,7 +65,7 @@ Each run appends one line per source to `checks/checks.jsonl` beside the snapsho
 Headless Chromium runs only inside the shared browser lock (`scripts/browser_lock.py`, `$AISI_BROWSER_LOCK`, by default `$XDG_RUNTIME_DIR/aisi-browser.lock`), which the browser gate and the build's pre-render also take, so the monitor waits while a gate run uses the browser, for at most `--browser-wait` seconds per run, and skips the headless route when that runs out. The report (`monitor.md`, `monitor.json`) also lists the unreached sources with what was tried, due `next_check` dates and a discovery queue of recorded searches:
 
 ```sh
-uv run --group evidence python scripts/monitor_sources.py --report work/monitor
+uv run --locked scripts/monitor_sources.py --report work/monitor
 ```
 
 The weekly run is a scheduled job on the maintainers' host, configured outside this repository, and off until the owner switches it on.
