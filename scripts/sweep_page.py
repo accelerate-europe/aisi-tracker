@@ -7,12 +7,13 @@
   uv run --locked scripts/sweep_page.py --dist DIR --out DIR [--views 390-light,390-dark]
 
 Opens the page at 1440, 1000 and 390 px, light and dark, opens every fold (details and
-aria-expanded buttons, except the download menu, the column picker and the theme toggle), draws
+aria-expanded buttons, except the download menu, the column picker and the theme toggle), shows
+every table row (the table's "Show all"), draws
 every off-screen section, makes sticky bars static, and saves the whole page as 1600 px tall slices
 <width>-<theme>-NN.png. sweep.json records per view the controls opened, sticky bars made static,
 page height, scroll and client width (a wider
-scroll width is horizontal overflow), folds left closed, visible collapsed buttons and console
-errors. Exit 1 when any view has errors, overflow or a collapsed button; 3 (NOT_RUN) without
+scroll width is horizontal overflow), folds left closed, visible collapsed buttons, table rows shown and
+console errors. Exit 1 when any view has errors, overflow, a collapsed button or a filtered table; 3 (NOT_RUN) without
 Chromium. It takes the host's browser slot; on a shared host run it on CI (the sweep workflow).
 """
 
@@ -51,6 +52,8 @@ OPEN_ALL = """() => {
 INFO = """() => ({h: document.documentElement.scrollHeight,
   sw: document.documentElement.scrollWidth, cw: document.documentElement.clientWidth,
   closed: document.querySelectorAll('details:not([open])').length,
+  rows: document.querySelectorAll('#world-rows tr').length,
+  filtered: [...document.querySelectorAll('#world-count button')].some(x => x.textContent.trim() === 'Show all'),
   collapsed: [...document.querySelectorAll('button[aria-expanded="false"]')].filter(b => b.offsetParent).map(b => b.id || b.className)})"""
 
 
@@ -69,6 +72,9 @@ def sweep_view(browser, url: str, view: str, out: Path) -> dict:
     page.goto(url, wait_until="networkidle")
     page.wait_for_timeout(800)
     opened = page.evaluate(OPEN_ALL)
+    # The table opens filtered to states that have or consider an institute; its "Show all" lists every state.
+    page.evaluate("""() => { const b = [...document.querySelectorAll('#world-count button')]
+      .find(x => x.textContent.trim() === 'Show all'); if (b) b.click(); }""")
     page.wait_for_timeout(800)
     page.add_style_tag(content="*, *::before, *::after { content-visibility: visible !important; }")
     # Sticky bars keep their place in the layout, but a whole-page capture draws them at the end of their section,
@@ -120,9 +126,9 @@ def main() -> int:
                 (args.out / "sweep.json").write_text(json.dumps(log, indent=2), encoding="utf-8")
             browser.close()
         server.shutdown()
-    bad = [e["view"] for e in log if e["errors"] or e["sw"] > e["cw"] or e["collapsed"]]
+    bad = [e["view"] for e in log if e["errors"] or e["sw"] > e["cw"] or e["collapsed"] or e["filtered"]]
     if bad:
-        print(f"Errors, horizontal overflow or collapsed buttons in {', '.join(bad)}; see {args.out / 'sweep.json'}", file=sys.stderr)
+        print(f"Errors, horizontal overflow, collapsed buttons or a filtered table in {', '.join(bad)}; see {args.out / 'sweep.json'}", file=sys.stderr)
     return 1 if bad else 0
 
 

@@ -664,6 +664,11 @@ def rendering_impact(ctx: Context) -> list[str]:
     return reasons
 
 
+def without_script_header(text: str) -> str:
+    """The script with a leading PEP 723 `# /// script` block removed; unchanged when it has none."""
+    return re.sub(r"\A# /// script\n(?:#[^\n]*\n)*?# ///\n", "", text)
+
+
 def build_base(ctx: Context) -> Path | None:
     """Export and build the base revision with its own build script; None if that fails."""
     base_dir = ctx.work / "base"
@@ -673,6 +678,11 @@ def build_base(ctx: Context) -> Path | None:
         tar.extractall(base_dir, filter="data")
     throwaway_index(base_dir)
     # No --out: older revisions only build into their own dist/, here inside the temporary export.
+    # Up to 1.0.8, build.py carries a script header but no script lock, which `uv run --locked` refuses;
+    # those revisions ran it in their project environment, so the export's copy loses the header.
+    script = base_dir / "scripts/build.py"
+    if not (base_dir / "scripts/build.py.lock").is_file():
+        script.write_text(without_script_header(script.read_text(encoding="utf-8")), encoding="utf-8")
     code, _, _ = run(ctx, "sheet", ["uv", "run", "--locked", "-q", "scripts/build.py"], cwd=base_dir)
     return base_dir / "dist" if code == 0 and (base_dir / "dist/index.html").is_file() else None
 

@@ -54,6 +54,14 @@ def test_not_run_fails_unless_skips_are_allowed(statuses, allow_skip, blocked):
     assert len(check.blocking(results, allow_skip)) == blocked
 
 
+def test_the_base_build_drops_only_a_leading_script_header():
+    # build.py as released in 1.0.8: a header and no lock, which `uv run --locked` refuses.
+    old = '# /// script\n# requires-python = ">=3.11"\n# dependencies = ["pyyaml>=6"]\n# ///\n"""Doc."""\nimport json\n'
+    assert check.without_script_header(old) == '"""Doc."""\nimport json\n'
+    plain = '"""Doc."""\n# /// script\n# ///\nimport json\n'
+    assert check.without_script_header(plain) == plain
+
+
 def test_tree_rss_sums_a_process_and_its_descendants_only():
     listing = "  10     1  100\n  11    10  200\n  12    11   50\n  13     1 9999\n garbage line\n"
     assert check.tree_rss_kb(10, listing) == 350
