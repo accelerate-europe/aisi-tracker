@@ -35687,7 +35687,8 @@
         "kr-rok-fortress-arxiv-2026",
         "kr-aire-risk-update-2026",
         "kr-uncensored-eval-2026",
-        "kr-mt-2026-10-20"
+        "kr-mt-2026-10-20",
+        "kr-ai-safety-guardians-2026"
       ],
       "people": [
         {
@@ -36046,7 +36047,7 @@
           "kr-aisi-recruit"
         ]
       },
-      "notes": "The science ministry planned in October 2024 for the institute to have about 30 staff in three research labs; its programme for the launch on 27 November 2024 counted 12 institute staff. Money Today reported that at the parliamentary audit of 20 October 2026, asked whether the AI safety evaluation organisation rents two GPU cloud servers from a private cloud company, ETRI's president answered that it uses external resources because GPUs are in very short supply.",
+      "notes": "The science ministry planned in October 2024 for the institute to have about 30 staff in three research labs; its programme for the launch on 27 November 2024 counted 12 institute staff. Money Today reported that at the parliamentary audit of 20 October 2026, asked whether the AI safety evaluation organisation rents two GPU cloud servers from a private cloud company, ETRI's president answered that it uses external resources because GPUs are in very short supply. On 12 November 2026 the science ministry and the institute launched the AI Safety Guardians, 80 people selected from 138 applicants who are to find and report AI errors and risks; reported cases confirmed after validity checks are to be used as basic material for AI safety evaluation and risk research.",
       "staff": [
         {
           "total": 38,
@@ -117208,6 +117209,96 @@
         "retrieved": "2026-11-13T07:42:15Z",
         "sha256": "cdc6ce5394bc5625a0a30493e360f84df56e0e199f40498340b99dc2f3f88150",
         "text_sha256": "b53f1a0f5d8ce65c54ec394d615cb2612f9efa4a512a4eb21f6729a3e942b175",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "kr-ai-safety-guardians-2026",
+      "url": "https://www.korea.kr/news/policyNewsView.do?newsId=148975571",
+      "title": "국민이 직접 오류 찾아낸다…'AI 안전 지킴이' 출범",
+      "title_en": "Citizens find errors themselves: 'AI Safety Guardians' launched",
+      "publisher": "Ministry of Science and ICT (via Korea Policy Briefing)",
+      "type": "primary",
+      "published": "2026-11-12",
+      "accessed": "2026-11-13",
+      "language": "ko",
+      "origin": "KR",
+      "excerpts": [
+        {
+          "text": "과학기술정보통신부는 인공지능안전연구소(이하 안전연구소)와 함께 12일 서울 여의도 글래드 호텔에서 'AI 안전 지킴이' 발대식을 개최했다.",
+          "gloss": "The Ministry of Science and ICT, together with the AI Safety Institute (the Safety Institute), held the launch ceremony of the 'AI Safety Guardians' on the 12th at the Glad Hotel in Yeouido, Seoul.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-13"
+        },
+        {
+          "text": "'AI 안전 지킴이'는 지난 8월과 9월 두 차례 공개 모집을 통해 지원한 138명 중 최종 선발된 80명으로 구성됐다.",
+          "gloss": "The 'AI Safety Guardians' are made up of 80 people finally selected from the 138 who applied in two open calls in August and September.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-13"
+        },
+        {
+          "text": "이들은 내년 8월까지 약 1년간 인공지능 오류·위험 사례를 찾아내는 등",
+          "gloss": "For about a year, until August next year, they will, among other things, find cases of AI errors and risks",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-13"
+        },
+        {
+          "text": "AI 안전 지킴이가 제보한 사례는 정확성, 위험도, 재현 가능성, 활용 가능성 등 유효성 검증을 거쳐 확정된다.",
+          "gloss": "Cases reported by the AI Safety Guardians are confirmed after validity checks on accuracy, level of risk, reproducibility and usability, among others.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-13"
+        },
+        {
+          "text": "확정된 사례는 AI 안전성 평가와 위험 연구의 기초 자료 등으로 활용될 예정이다.",
+          "gloss": "Confirmed cases are to be used as, among other things, basic material for AI safety evaluation and risk research.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-13"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-13T19:11:05Z",
+        "sha256": "8b30237dcf2b06f301b89cbe49618475e9e595159ba470c86f6eac0cbbd52d72",
+        "text_sha256": "c53f1b055bd9a5acfe7d0ff4ac9b6a614c339683feada787949a7f1b7d71f142",
         "text_scheme": 1
       }
     }
