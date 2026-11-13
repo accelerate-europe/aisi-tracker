@@ -1862,10 +1862,14 @@ def test_euro_amounts_follow_the_rate_and_cite_it():
 
 
 def test_gate_jobs_default_follows_the_host_setting(monkeypatch):
-    """A host whose memory holds one browser sets AISI_GATE_JOBS=1; elsewhere the CPUs, at most 8."""
+    """AISI_GATE_JOBS where set; else the CPUs, at most 8 and at most what the memory holds at 4 GiB a job."""
     monkeypatch.setattr(check_page.os, "cpu_count", lambda: 16)
-    assert check_page.default_jobs({}) == 8
-    assert check_page.default_jobs({"AISI_GATE_JOBS": " "}) == 8
+    assert check_page.default_jobs({}, memory=64) == 8
+    assert check_page.default_jobs({"AISI_GATE_JOBS": " "}, memory=64) == 8
+    assert check_page.default_jobs({}, memory=15.6) == 3  # a CI runner
+    assert check_page.default_jobs({}, memory=7.7) == 1  # a small shared host
+    monkeypatch.setattr(check_page, "memory_gib", lambda: None)
+    assert check_page.default_jobs({}) == 8  # memory unknown: the CPU rule alone
     assert check_page.default_jobs({"AISI_GATE_JOBS": "1"}) == 1
     assert check_page.default_jobs({"AISI_GATE_JOBS": "12"}) == 12  # explicit: no cap
     for bad in ("0", "two"):

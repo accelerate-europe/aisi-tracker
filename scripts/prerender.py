@@ -22,7 +22,7 @@ from http.server import ThreadingHTTPServer
 from pathlib import Path
 
 from browser_lock import browser_slot
-from check_page import INSTALL_CHROME, LOCALE, NOT_RUN, QuietHandler, browser_env, find_chrome
+from check_page import LOCALE, NOT_RUN, QuietHandler, browser_env, chrome_problem, find_chrome
 
 WIDTH, HEIGHT = 1440, 900  # desktop; at other widths the page regroups its card rows before the data arrives
 TIMEOUT_MS = 60_000
@@ -119,7 +119,7 @@ def main() -> int:
     args = parser.parse_args()
     chrome = find_chrome()
     if chrome is None:
-        print(f"NOT RUN: Playwright's Chromium is required to pre-render the page and is not installed ({INSTALL_CHROME}).", file=sys.stderr)
+        print(f"NOT RUN: pre-rendering the page needs Playwright's Chromium: {chrome_problem()}.", file=sys.stderr)
         return NOT_RUN
     page = args.dist / "index.html"
     with browser_slot("prerender", wait=None):

@@ -23,6 +23,9 @@ from urllib.parse import urlsplit
 
 from bs4 import BeautifulSoup
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from host_checks import chrome_problem, playwright_version  # noqa: E402
+
 NOT_RUN = 3
 USER_AGENT = "AISI-tracker-evidence/1.0 (headless Chromium)"
 
@@ -119,8 +122,9 @@ def main(argv: list[str] | None = None) -> int:
         urls = [line.strip() for line in args.urls.read_text(encoding="utf-8").splitlines() if line.strip()]
         with sync_playwright() as playwright:
             chrome = playwright.chromium.executable_path
-            if not os.path.isfile(chrome) or not os.access(chrome, os.X_OK):
-                print("NOT RUN: Playwright's Chromium is not installed (uv run --locked scripts/check_page.py --install-chrome).", file=sys.stderr)
+            if not (os.path.isfile(chrome) and os.access(chrome, os.X_OK)):
+                problem = chrome_problem(chrome, playwright_version())
+                print(f"NOT RUN: {problem}.", file=sys.stderr)
                 return NOT_RUN
             browser = playwright.chromium.launch(
                 executable_path=chrome, headless=True,

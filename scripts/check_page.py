@@ -40,6 +40,7 @@ from bs4 import BeautifulSoup
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from browser_lock import browser_slot, lock_path  # noqa: E402
+from host_checks import INSTALL_CHROME, chrome_problem as missing_chrome, default_jobs as host_default_jobs, jobs_problem, memory_gib, playwright_version  # noqa: E402
 from display import GENERIC_FIELDS, record_sources as entry_sources  # noqa: E402
 from method_copy import rule_label  # noqa: E402
 from release_checks import today  # noqa: E402
@@ -99,8 +100,7 @@ def reports(check):
         return [report_line(finding) for finding in check(*args, **kwargs)]
     return reported
 # One browser for build, gate and contact sheet on every host: the Chromium of the Playwright version this
-# script's lock pins (prerender.py and monitor_browser.py pin the same, a test checks), in Playwright's default browser folder.
-INSTALL_CHROME = "uv run --locked scripts/check_page.py --install-chrome"
+# script's lock pins (every lock pins the same, the lint checks), in Playwright's default browser folder (host_checks.INSTALL_CHROME).
 
 
 PLAIN_KEY = re.compile(r"[A-Za-z0-9_-]+")
@@ -141,9 +141,21 @@ class Keyed:
         return nodes[0].select(f":scope {rest}") if nodes else []
 
 
+def chrome_problem() -> str | None:
+    """None when the Chromium build the locked Playwright expects is installed; otherwise which build is missing,
+    which are installed and the fix (host_checks.chrome_problem)."""
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError:  # outside the locked script environment (tests that stand in for find_chrome)
+        return f"Playwright's Chromium is not installed ({INSTALL_CHROME})"
+    with sync_playwright() as playwright:
+        path = playwright.chromium.executable_path
+    return missing_chrome(path, playwright_version())
+
+
 def find_chrome() -> str | None:
-    """The locked Playwright's Chromium, or None when it is not installed (INSTALL_CHROME). It runs as an ordinary
-    child process, so a memory cap on the job holds it; a snap browser moved into its own scope."""
+    """The locked Playwright's Chromium, or None when that build is not installed (chrome_problem says why). It runs
+    as an ordinary child process, so a memory cap on the job holds it; a snap browser moved into its own scope."""
     from playwright.sync_api import sync_playwright
 
     with sync_playwright() as playwright:
@@ -193,10 +205,11 @@ class LocalisedBrowser:
         return context
 
 
-def install_chrome() -> int:
-    """Download the locked Playwright's Chromium (no headless shell: every launch names this browser). On Linux
-    its system libraries are a separate, root step: python -m playwright install-deps chromium."""
-    code = subprocess.run([sys.executable, "-m", "playwright", "install", "--no-shell", "chromium"]).returncode
+def install_chrome(with_deps: bool = False) -> int:
+    """Download the locked Playwright's Chromium (no headless shell: every launch names this browser); with_deps also
+    installs its system libraries on Linux, which Playwright does through sudo."""
+    code = subprocess.run([sys.executable, "-m", "playwright", "install", *(["--with-deps"] if with_deps else []),
+                           "--no-shell", "chromium"]).returncode
     if code:
         return code
     found = find_chrome()
@@ -10772,10 +10785,11 @@ def main(dist: Path = ROOT / "dist", screenshots: Path | None = None, capture: P
         return 1
     chrome = find_chrome()
     if chrome is None:
-        print(
-            f"NOT RUN: Playwright's Chromium is not installed ({INSTALL_CHROME}); rendered page checks were not run.",
-            file=sys.stderr,
-        )
+        print(f"NOT RUN: {chrome_problem()}; rendered page checks were not run.", file=sys.stderr)
+        return NOT_RUN
+    # The browsers that start at once: no more than the selected jobs (--job) when there are fewer.
+    if not (merge or capture) and (problem := jobs_problem(min(jobs, len(only)) if only else jobs, memory_gib())):
+        print(f"NOT RUN: {problem}; rendered page checks were not run.", file=sys.stderr)
         return NOT_RUN
     try:
         if not (dist / "index.html").is_file():
@@ -10873,15 +10887,13 @@ def job_count(text: str) -> int:
     return int(text)
 
 
-def default_jobs(environ=os.environ) -> int:
-    """Browser jobs at once when --jobs is not given: AISI_GATE_JOBS where a host sets it (1 where its memory
-    holds one browser at a time), else the CPUs, at most 8."""
-    if text := environ.get("AISI_GATE_JOBS", "").strip():
-        try:
-            return job_count(text)
-        except (ValueError, argparse.ArgumentTypeError) as exc:
-            raise SystemExit(f"AISI_GATE_JOBS={text!r}: {exc}") from exc
-    return min(os.cpu_count() or 1, 8)
+def default_jobs(environ=os.environ, memory: float | None = None) -> int:
+    """Browser jobs at once when --jobs is not given (host_checks.default_jobs; memory read when not given). A
+    setting the memory does not hold is refused when the browser jobs start (jobs_problem)."""
+    try:
+        return host_default_jobs(environ, memory_gib() if memory is None else memory)
+    except ValueError as exc:
+        raise SystemExit(str(exc)) from exc
 
 
 if __name__ == "__main__":
@@ -10906,7 +10918,7 @@ if __name__ == "__main__":
         "--jobs",
         type=job_count,
         default=default_jobs(),
-        help="browser checks in this many parallel processes (default: AISI_GATE_JOBS, else the CPUs, at most 8); 1 runs them one after another",
+        help="browser checks in this many parallel processes (default: AISI_GATE_JOBS, else the CPUs, at most 8 and at most what the memory holds at 4 GiB each); 1 runs them one after another",
     )
     parser.add_argument("--shard", type=shard_spec, help="CI: run only shard K/N of the browser jobs, no static checks, and write --results")
     parser.add_argument("--results", type=Path, help="with --shard: where to write the shard's results (JSON)")
@@ -10932,6 +10944,7 @@ if __name__ == "__main__":
         action="store_true",
         help="only install the locked Playwright's Chromium, which build, gate and contact sheet use",
     )
+    parser.add_argument("--with-deps", action="store_true", help="with --install-chrome on Linux: also install Chromium's system libraries (asks for sudo)")
     args = parser.parse_args()
     if args.skip_static and not (args.job and args.no_quarantine):
         parser.error("--skip-static is for the flake detector: it needs --job and --no-quarantine")
@@ -10942,11 +10955,15 @@ if __name__ == "__main__":
         parser.error("--shard, --merge and --capture exclude each other")
     if bool(args.shard) != bool(args.results):
         parser.error("--shard and --results go together")
+    if args.with_deps and not args.install_chrome:
+        parser.error("--with-deps goes with --install-chrome")
     if args.install_chrome:
-        sys.exit(install_chrome())
+        sys.exit(install_chrome(args.with_deps))
     if args.find_chrome:
         found = find_chrome()
         print(found or "")
+        if not found:
+            print(chrome_problem(), file=sys.stderr)
         sys.exit(0 if found else NOT_RUN)
     if args.list_jobs:
         print("\n".join(all_job_ids()))

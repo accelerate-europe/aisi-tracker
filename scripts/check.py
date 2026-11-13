@@ -542,8 +542,10 @@ def step_content(ctx: Context) -> Result:
 def gate_result(step: str, code: int, seconds: float, log: Path) -> Result:
     if code == 0:
         return Result(step, "PASS", seconds, log=log)
-    if code == NOT_RUN:
-        return Result(step, "NOT RUN", seconds, "Playwright's Chromium is not installed (uv run --locked scripts/check_page.py --install-chrome)", log)
+    if code == NOT_RUN:  # check_page.py names the cause and its fix on a NOT RUN: line (a Chromium build, too many jobs)
+        said = [line.removeprefix("NOT RUN: ") for line in log.read_text(encoding="utf-8", errors="replace").splitlines()
+                if line.startswith("NOT RUN: ")] if log.is_file() else []
+        return Result(step, "NOT RUN", seconds, said[-1] if said else "Playwright's Chromium is not installed (uv run --locked scripts/check_page.py --install-chrome)", log)
     return Result(step, "FAIL", seconds, tail(log), log)
 
 
@@ -971,6 +973,37 @@ def step_compare(ctx: Context) -> Result:
 # Preflight ---------------------------------------------------------------------------------------
 
 
+def chrome_preflight() -> tuple[str, str]:
+    """The Chromium path the locked Playwright uses, or "" and why not (the build it expects and the fix)."""
+    try:  # check_page.py's own locked script environment, never the checkout's .venv
+        found = subprocess.run(["uv", "run", "--locked", "-q", "scripts/check_page.py", "--find-chrome"], cwd=ROOT, env=clean_env(),
+                               capture_output=True, text=True, timeout=300)
+    except (OSError, subprocess.SubprocessError) as exc:
+        return "", f"could not ask the locked Playwright ({exc})"
+    lines = [line for line in (found.stderr or "").splitlines() if line.strip()]
+    return (found.stdout or "").strip(), lines[-1] if lines else "Playwright's Chromium is not installed (uv run --locked scripts/check_page.py --install-chrome)"
+
+
+def gate_jobs_preflight(environ, memory: float | None = None) -> tuple[str, bool, str]:
+    """Whether the browser jobs the gate would start at once fit the host's memory (AISI_GATE_JOBS, else its default);
+    memory in GiB, read from the host when not given."""
+    sys.path.insert(0, str(ROOT / "scripts"))
+    from host_checks import JOB_MEMORY_GIB, default_jobs, jobs_problem, jobs_that_fit, memory_gib  # noqa: PLC0415 - standard library only
+
+    name, text = "browser jobs at once (AISI_GATE_JOBS)", environ.get("AISI_GATE_JOBS", "").strip()
+    memory = memory_gib() if memory is None else memory
+    try:
+        jobs = default_jobs(environ, memory)
+    except ValueError as exc:
+        return (name, False, f"NOT RUN: {exc}")
+    fit = jobs_that_fit(memory)
+    source = "AISI_GATE_JOBS" if text else "default"
+    if problem := jobs_problem(jobs, memory):
+        return (name, False, f"NOT RUN: {problem}")
+    held = f"{memory:.1f} GiB holds {fit} at {JOB_MEMORY_GIB} GiB each" if memory is not None else "memory unknown"
+    return (name, True, f"{jobs} ({source}; {held})")
+
+
 def preflight(cache: Path, snapshots: Path | None) -> int:
     rows = []
     try:
@@ -981,12 +1014,9 @@ def preflight(cache: Path, snapshots: Path | None) -> int:
         rows.append(("temporary output", False, str(exc)))
     for tool in ("git", "uv", "node", "gitleaks"):
         rows.append((tool, bool(shutil.which(tool)), shutil.which(tool) or "not on PATH"))
-    try:  # check_page.py's own locked script environment, never the checkout's .venv
-        chrome = subprocess.run(["uv", "run", "--locked", "-q", "scripts/check_page.py", "--find-chrome"], cwd=ROOT, env=clean_env(),
-                                capture_output=True, text=True, timeout=300).stdout.strip()
-    except (OSError, subprocess.SubprocessError):
-        chrome = ""
-    rows.append(("Playwright Chromium (build, gate, sheet)", bool(chrome), chrome or "missing: install with uv run --locked scripts/check_page.py --install-chrome; without it the build fails (pre-rendering needs it), so content, gate and sheet cannot run"))
+    chrome, why = chrome_preflight()
+    rows.append(("Playwright Chromium (build, gate, sheet)", bool(chrome), chrome or f"NOT RUN: {why}; without it the build fails (pre-rendering needs it), so content, gate and sheet cannot run"))
+    rows.append(gate_jobs_preflight(os.environ))
     print("| Capability | OK | Detail |\n| --- | --- | --- |")
     for name, ok, detail in rows:
         print(f"| {name} | {'yes' if ok else 'NO'} | {detail} |")

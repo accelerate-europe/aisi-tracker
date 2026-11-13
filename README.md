@@ -75,7 +75,7 @@ uv run --locked scripts/build.py --out dist              # build the site
 python3 -m http.server 8000 --bind 127.0.0.1 --directory dist
 ```
 
-On Linux, Chromium needs system libraries: `python -m playwright install-deps chromium` (as root) installs them. Then open `http://127.0.0.1:8000/`.
+On Linux, Chromium needs system libraries: add `--with-deps` to the install command, which installs them through sudo. Then open `http://127.0.0.1:8000/`.
 
 The build needs no network access; fetching sources and checking Wikidata identifiers are separate editorial steps. `uv run --locked scripts/check.py` checks what is staged in Git, not the working tree, so stage your edits first. Some steps need the maintainers' [private source store](docs/source-snapshots.md) and report NOT RUN without it, which fails the check unless you pass `--allow-skip` (local runs only). Public CI runs the fast checks, the build and the browser gate.
 

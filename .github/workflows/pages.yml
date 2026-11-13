@@ -145,8 +145,9 @@ jobs:
           name: site
           path: ${{ runner.temp }}
       - run: mkdir "$RUNNER_TEMP/site" && tar -C "$RUNNER_TEMP/site" -xf "$RUNNER_TEMP/site.tar"
-      # Three browser jobs at a time are fastest on the runner's two cores. The shard's own lines are raw
-      # diagnostics; build prints the gate's report.
+      # Three browser jobs at a time are fastest on the runner's four cores, and its 16 GB hold three at 4 GiB each
+      # (check_page.py refuses more than the memory holds, NOT RUN). The shard's own lines are raw diagnostics;
+      # build prints the gate's report.
       - env:
           AISI_GATE_EVIDENCE: ${{ runner.temp }}/gate/evidence # frames of a flash in hydration_paint, uploaded with the results
         run: >-
