@@ -1,0 +1,51 @@
+# The full page sweep of the release runbook (docs/release.md, step 3.3), on a runner instead of a shared host:
+# builds the site from the chosen ref, runs scripts/sweep_page.py and uploads the slices and sweep.json as one tar.
+# Run it on the release commit with: gh workflow run sweep.yml --ref next
+# A push that changes the sweep itself runs it too, so a change to the script is seen working before it is used.
+name: sweep
+on:
+  workflow_dispatch:
+  push:
+    branches: ['**']
+    paths:
+      - scripts/sweep_page.py
+      - scripts/sweep_page.py.lock
+      - .github/workflows/sweep.yml
+permissions:
+  contents: read
+concurrency:
+  group: sweep-${{ github.ref }}
+  cancel-in-progress: false # a later push to the same branch waits instead of cancelling a dispatched release sweep
+env:
+  UV_EXCLUDE_NEWER: "7 days" # as in pages.yml: the window the lockfiles record
+jobs:
+  sweep:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86 # v5.4.2
+        with:
+          version: "0.11.14"
+          enable-cache: true
+          cache-dependency-glob: |
+            uv.lock
+            scripts/*.lock
+      # The locked Playwright's Chromium: the browser the build, gate, contact sheet and sweep use on every host.
+      - run: uv run --locked -q scripts/check_page.py --install-chrome
+      - run: uv run scripts/check.py --only build --out dist --report-dir "$RUNNER_TEMP/check"
+      - run: uv run --locked scripts/sweep_page.py --dist dist --out "$RUNNER_TEMP/sweep"
+      # As a tar, like the site artifact: one file, unpacked with tar -xf after gh run download. Also when the sweep
+      # failed, so its findings can be read; nothing is uploaded when it never started.
+      - if: ${{ !cancelled() }}
+        run: if [ -d "$RUNNER_TEMP/sweep" ]; then tar -C "$RUNNER_TEMP" -cf "$RUNNER_TEMP/sweep.tar" sweep; fi
+      - if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: sweep
+          path: ${{ runner.temp }}/sweep.tar
+          if-no-files-found: ignore
+          retention-days: 30
+          overwrite: true

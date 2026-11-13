@@ -270,7 +270,7 @@ def test_chrome_is_the_locked_playwright_chromium_or_missing(monkeypatch, tmp_pa
 
 
 def test_build_gate_and_capture_lock_one_playwright():
-    """The build, gate, capture and source monitor pin the same Playwright, so one browser."""
+    """The build, gate, capture, sweep and source monitor pin the same Playwright, so one browser."""
     import tomllib
 
     pins = {}
@@ -278,7 +278,7 @@ def test_build_gate_and_capture_lock_one_playwright():
         packages = {p["name"]: p["version"] for p in tomllib.loads(lock.read_text(encoding="utf-8")).get("package", [])}
         if "playwright" in packages:
             pins[lock.name] = packages["playwright"]
-    assert {"check_page.py.lock", "prerender.py.lock", "monitor_browser.py.lock"} <= set(pins)
+    assert {"check_page.py.lock", "prerender.py.lock", "monitor_browser.py.lock", "sweep_page.py.lock"} <= set(pins)
     assert len(set(pins.values())) == 1, pins
 
 
