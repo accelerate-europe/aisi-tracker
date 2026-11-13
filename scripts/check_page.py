@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["beautifulsoup4>=4.12", "playwright>=1.51"]
+# dependencies = ["beautifulsoup4>=4.12", "playwright==1.63.0"]
 # ///
 """Check an already built site with Chrome; this script never builds or writes the checkout.
 

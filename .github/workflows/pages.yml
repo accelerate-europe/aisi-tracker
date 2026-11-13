@@ -22,8 +22,8 @@ env:
   # The maintainer's uv refuses versions published less than 7 days ago and uv.lock records that window;
   # CI uses the same window so the lockfile matches (--locked).
   UV_EXCLUDE_NEWER: "7 days"
-# check.py is a script without dependencies (and so without a lockfile: uv run --locked would refuse it); it runs
-# every step with uv run --locked itself.
+# Every script runs from a lock, with uv run --locked (docs/dependencies.md); check.py has an empty header and its own
+# lock, so it starts before the project environment is installed and runs each step with uv run --locked itself.
 jobs:
   checks:
     runs-on: ubuntu-latest
@@ -83,7 +83,7 @@ jobs:
             set -- "$SHA"
           fi
           set -- --ref-names "$REF" --commits "$@"
-          uv run scripts/check.py --only fast --test-workers 2 --report-dir "$RUNNER_TEMP/check" ${{ env.PUBLISH == 'true' && '--release' || '' }} "$@"
+          uv run --locked scripts/check.py --only fast --test-workers 2 --report-dir "$RUNNER_TEMP/check" ${{ env.PUBLISH == 'true' && '--release' || '' }} "$@"
       - if: always()
         run: cat "$RUNNER_TEMP/check/report.md" || true
       # Backstop: no step may change or add a file outside the ignored outputs.
@@ -103,7 +103,7 @@ jobs:
             scripts/*.lock
       # The locked Playwright's Chromium: the browser the build, gate and contact sheet use on every host.
       - run: uv run --locked -q scripts/check_page.py --install-chrome
-      - run: uv run scripts/check.py --only build --out dist --report-dir "$RUNNER_TEMP/check"
+      - run: uv run --locked scripts/check.py --only build --out dist --report-dir "$RUNNER_TEMP/check"
       - if: always()
         run: cat "$RUNNER_TEMP/check/report.md" || true
       - run: test -z "$(git status --porcelain --untracked-files=all)" || { git status --short; git diff; exit 1; }
@@ -150,7 +150,7 @@ jobs:
       - env:
           AISI_GATE_EVIDENCE: ${{ runner.temp }}/gate/evidence # frames of a flash in hydration_paint, uploaded with the results
         run: >-
-          uv run scripts/check.py --only gate --gate-dist "$RUNNER_TEMP/site" --gate-shard ${{ matrix.shard }}/4 --gate-jobs 3
+          uv run --locked scripts/check.py --only gate --gate-dist "$RUNNER_TEMP/site" --gate-shard ${{ matrix.shard }}/4 --gate-jobs 3
           --gate-results "$RUNNER_TEMP/gate/shard-${{ matrix.shard }}.json" --report-dir "$RUNNER_TEMP/check"
       - if: always()
         run: cat "$RUNNER_TEMP/check/report.md" || true
@@ -195,12 +195,12 @@ jobs:
           path: ${{ runner.temp }}/gate
           merge-multiple: false
       # The gate's report: the static checks on this site, then the shards' browser results in the sequential order.
-      - run: uv run scripts/check.py --only gate,content --gate-dist "$RUNNER_TEMP/site" --gate-merge "$RUNNER_TEMP/gate" --report-dir "$RUNNER_TEMP/check"
+      - run: uv run --locked scripts/check.py --only gate,content --gate-dist "$RUNNER_TEMP/site" --gate-merge "$RUNNER_TEMP/gate" --report-dir "$RUNNER_TEMP/check"
       - if: always()
         run: cat "$RUNNER_TEMP/check/report.md" || true
       # The slide map is an extra download the page does not use: a Natural Earth outage or a changed upstream
       # file (the script pins its hash) shows as a failed step but does not hold back the page.
-      - run: uv run scripts/slide_map.py "$RUNNER_TEMP/site/maps/aisi-europe"  # unlocked script, as before
+      - run: uv run --locked scripts/slide_map.py "$RUNNER_TEMP/site/maps/aisi-europe"
         continue-on-error: true
         timeout-minutes: 5
       - run: test -z "$(git status --porcelain --untracked-files=all)" || { git status --short; git diff; exit 1; }
@@ -246,4 +246,4 @@ jobs:
       # A signal, not a gate: a failure names each failing check and its URL; it does not undo the completed deploy,
       # and no job needs this one.
       - name: smoke checks of https://aisi.accelerate-europe.org/
-        run: uv run scripts/smoke_site.py
+        run: uv run --locked scripts/smoke_site.py

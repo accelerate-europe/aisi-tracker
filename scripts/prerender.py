@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["beautifulsoup4>=4.12", "playwright>=1.51"]
+# dependencies = ["beautifulsoup4>=4.12", "playwright==1.63.0"]
 # ///
 """Pre-render a built site in place: open its index.html in headless Chrome and save the rendered page.
 

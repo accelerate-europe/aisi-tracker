@@ -58,7 +58,7 @@ jobs:
             uv.lock
             scripts/*.lock
       - run: uv run --locked -q scripts/check_page.py --install-chrome
-      - run: uv run scripts/check.py --only build --out dist --report-dir "$RUNNER_TEMP/check"
+      - run: uv run --locked scripts/check.py --only build --out dist --report-dir "$RUNNER_TEMP/check"
       # Exits 1 when the job is flaky or failing, 2 when an attempt was cut by the budget: the run shows red then,
       # and the artifact below says why.
       - name: detector batch on runner ${{ matrix.runner }}
@@ -70,7 +70,7 @@ jobs:
           RUNS: ${{ inputs.runs || '20' }}
           MAX_MINUTES: ${{ inputs.max_minutes || '40' }}
         run: >-
-          uv run scripts/flake_detector.py --dist dist --job "$JOB" --runs "$RUNS"
+          uv run --locked scripts/flake_detector.py --dist dist --job "$JOB" --runs "$RUNS"
           --max-minutes "$MAX_MINUTES" --out "$RUNNER_TEMP/flake/batch"
       - if: always()
         run: cat "$RUNNER_TEMP/flake/batch/report.md" || true

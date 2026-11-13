@@ -1,7 +1,3 @@
-# /// script
-# requires-python = ">=3.11"
-# dependencies = []
-# ///
 """Refuse internal names in a public source export or commits before publication.
 
   uv run scripts/export_scan.py EXPORT_DIR                  # terms from the private store

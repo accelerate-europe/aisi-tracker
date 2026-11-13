@@ -1,7 +1,3 @@
-# /// script
-# requires-python = ">=3.11"
-# dependencies = ["pillow>=10"]
-# ///
 """Lay page captures out as small, scannable contact sheets.
 
   uv run scripts/contact_sheet.py --after DIR --out DIR

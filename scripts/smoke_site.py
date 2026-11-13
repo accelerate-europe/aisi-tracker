@@ -1,7 +1,3 @@
-# /// script
-# requires-python = ">=3.11"
-# dependencies = []
-# ///
 """Check the deployed site's page, assets, 404, downloads, API and Atom feed.
 
     uv run scripts/smoke_site.py [--url URL] [--version X.Y.Z]

@@ -1,7 +1,3 @@
-# /// script
-# requires-python = ">=3.11"
-# dependencies = ["jsonschema[format-nongpl]>=4.23", "pyyaml>=6"]
-# ///
 """Validate data/aisi.json and build dist/: the page plus JSON, CSV, datapackage.json and the per-record API.
 
 Run from the repo root: uv run scripts/build.py [--out DIR]

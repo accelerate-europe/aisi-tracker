@@ -1,7 +1,3 @@
-# /// script
-# requires-python = ">=3.11"
-# dependencies = []
-# ///
 """Write data/reference/roster.csv: every UN member state plus approved extra territories,
 with UN M49 region and sub-region and World Bank latest non-null population.
 

@@ -1,6 +1,10 @@
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["geopandas", "matplotlib", "pyogrio"]
+# dependencies = ["geopandas==1.2.0", "matplotlib==3.11.2", "pyogrio==0.13.0"]
+#
+# [tool.uv]
+# # Packages uv.lock also holds resolve to its versions (one version per package, docs/dependencies.md).
+# constraint-dependencies = ["fonttools==4.66.1", "pillow==12.3.0", "python-dateutil==2.9.0.post0", "tzdata==2026.5"]
 # ///
 """Render a static map of European AISI status for slides, from data/aisi.json.
 

@@ -1,7 +1,3 @@
-# /// script
-# requires-python = ">=3.11"
-# dependencies = []
-# ///
 """Repeat browser jobs against one existing build, retaining every attempt as evidence.
 
 uv run scripts/flake_detector.py --dist DIR --job ID[,ID...] --runs N
