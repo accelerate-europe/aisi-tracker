@@ -87,15 +87,51 @@ def test_metadata_mutations_reach_build(dataset, change):
     else:
         dataset["dataset"]["citation"] = "Synthetic tracker, version 1.0.0"
     assert any(
-        "changelog date" in e or "contain the as_of date" in e
+        "changelog date" in e or "dataset.citation must contain" in e
         for e in build.check_consistency(dataset)
     )
+    if change == "as_of":
+        assert any("dataset.citation does not name the current version" in e for e in build.check_consistency(dataset))
 
 
-@pytest.mark.parametrize("date", ["17 October 2026", "17 Oct 2026", "2026-10-17"])
-def test_citation_accepts_explicit_date_formats(dataset, date):
-    dataset["dataset"]["citation"] = "version 1.0.0, " + date
-    assert release_checks.check_metadata(dataset) == []
+@pytest.mark.parametrize("version, as_of, expected", [
+    ("1.0.0", "2026-10-17", "Tracker, version 1.0.0, data as of 17 October 2026. https://doi.org/x"),
+    ("1.0.10", "2026-11-03", "Tracker, version 1.0.10, data as of 3 November 2026. https://doi.org/x"),
+    ("2.0.0-rc.1", "2027-01-31", "Tracker, version 2.0.0-rc.1, data as of 31 January 2027. https://doi.org/x"),
+])
+def test_citation_release_part_is_derived_from_version_and_as_of(version, as_of, expected):
+    citation = "Tracker, version 1.0.9, data as of 11 November 2026. https://doi.org/x"
+    assert release_checks.citation_for_release(citation, version, as_of) == expected
+
+
+@pytest.mark.parametrize("citation", ["Tracker, version 1.0.0", "Tracker, version 1.0.0, 17 Oct 2026",
+                                      "version 1.0.0, data as of 17 October 2026; version 1.0.0, data as of 17 October 2026"])
+def test_citation_without_one_release_part_is_refused(dataset, citation):
+    dataset["dataset"]["citation"] = citation
+    assert any("exactly once" in e for e in release_checks.check_metadata(dataset))
+
+
+def test_a_stale_release_part_names_the_command_that_writes_it(dataset):
+    dataset["dataset"]["citation"] = dataset["dataset"]["citation"].replace("1.0.0", "0.9.0")
+    assert release_checks.check_metadata(dataset) == [
+        "dataset.citation does not name the current version and as_of date; run uv run --locked scripts/build.py --update-readme, which writes them"]
+
+
+def test_update_readme_writes_only_the_citations_release_part(dataset, build_env, monkeypatch, capsys):
+    dataset["dataset"]["citation"] = dataset["dataset"]["citation"].replace("1.0.0, data as of 17", "0.9.0, data as of 16")
+    write_json(build.DATA, dataset)
+    before = build.DATA.read_bytes()
+    monkeypatch.setattr(sys, "argv", ["build.py", "--check"])
+    with pytest.raises(SystemExit):
+        build.main()
+    assert "does not name the current version" in capsys.readouterr().err and build.DATA.read_bytes() == before
+    monkeypatch.setattr(sys, "argv", ["build.py", "--update-readme"])
+    build.main()
+    after = build.DATA.read_bytes()
+    assert after == before.replace(b"version 0.9.0, data as of 16 October 2026", b"version 1.0.0, data as of 17 October 2026")
+    assert "dataset.citation now reads: Synthetic tracker, version 1.0.0, data as of 17 October 2026" in capsys.readouterr().out
+    build.main()  # already current: nothing more to write
+    assert build.DATA.read_bytes() == after
 
 
 @pytest.mark.parametrize("newline", [b"\n", b"\r\n"])
@@ -281,9 +317,9 @@ def test_literal_dataset_root_is_always_rejected_in_page_prose(text):
     "text", ["117 October 2026", "2026-10-170", "17 Octobers 2026"]
 )
 def test_citation_date_rejects_false_word_boundaries(dataset, text):
-    dataset["dataset"]["citation"] = "version 1.0.0, " + text
+    dataset["dataset"]["citation"] = "version 1.0.0, data as of " + text
     assert any(
-        "contain the as_of date" in e for e in release_checks.check_metadata(dataset)
+        e.startswith("dataset.citation") for e in release_checks.check_metadata(dataset)
     )
 
 
@@ -522,13 +558,13 @@ def test_instrument_status_age_uses_the_release_date_under_release(dataset, monk
 
 @pytest.mark.parametrize("text", ["version 1.0.01", "version 1.0.0.1", "version 1.0.0-rc1", "version 1.0.0+build1", "version 11.0.0", "1.0.0"])
 def test_citation_version_must_be_the_whole_token(dataset, text):
-    dataset["dataset"]["citation"] = "Synthetic tracker, " + text + ", 17 October 2026"
-    assert any("current version" in e for e in release_checks.check_metadata(dataset))
+    dataset["dataset"]["citation"] = "Synthetic tracker, " + text + ", data as of 17 October 2026"
+    assert any(e.startswith("dataset.citation") for e in release_checks.check_metadata(dataset))
 
 
 @pytest.mark.parametrize("text", ["A\n\n# Injected", "A\r\nB", "A <!-- citation:end", "A <b>bold</b>"])
 def test_citation_is_one_line_of_plain_text(dataset, text):
-    dataset["dataset"]["citation"] = text + ", version 1.0.0, 17 October 2026"
+    dataset["dataset"]["citation"] = text + ", version 1.0.0, data as of 17 October 2026"
     schema = json.loads(build.SCHEMA.read_text(encoding="utf-8"))
     errors = list(build.Draft202012Validator(schema).iter_errors(dataset))
     assert any(list(e.absolute_path) == ["dataset", "citation"] for e in errors)
@@ -599,7 +635,7 @@ def test_candidate_check_does_not_compare_or_write_canonical_readme(
     source.pop("excerpts", None)
     dataset["sources"].append(source)
     dataset["institutes"][0]["source_ids"].append("candidate-source")
-    dataset["dataset"]["citation"] = "Candidate tracker, version 1.0.0, 17 October 2026"
+    dataset["dataset"]["citation"] = "Candidate tracker, version 1.0.0, data as of 17 October 2026"
     other = write_json(build_env / "candidate.json", dataset)
     monkeypatch.setattr(sys, "argv", ["build.py", "--data", str(other), "--check"])
     build.main()
@@ -988,3 +1024,13 @@ def test_release_cli_refuses_a_draft_changelog_summary(dataset, build_env, monke
     with pytest.raises(SystemExit):
         build.main()
     assert "changelog/1.0.0: the summary is still a draft ('Draft (')" in capsys.readouterr().err
+
+
+def test_update_readme_leaves_the_citation_when_the_version_is_malformed(dataset, build_env, monkeypatch, capsys):
+    dataset["dataset"]["version"] = "1.0.0 "
+    write_json(build.DATA, dataset)
+    before = build.DATA.read_bytes()
+    monkeypatch.setattr(sys, "argv", ["build.py", "--update-readme"])
+    with pytest.raises(SystemExit):
+        build.main()
+    assert "is not MAJOR.MINOR.PATCH" in capsys.readouterr().err and build.DATA.read_bytes() == before

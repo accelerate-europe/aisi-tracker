@@ -122,7 +122,7 @@ def build_env(tmp_path, monkeypatch):
         monkeypatch.setattr(build, name, path)
     monkeypatch.setattr(build, "EUROPE", {"GB"})
     monkeypatch.setattr(build.fact_pipeline, "AUTHORING_STRICT", False)  # Explicit legacy migration fixtures.
-    (tmp_path / "README.md").write_text("<!-- citation:start -->\n\nSynthetic tracker, version 1.0.0, 17 October 2026\n\n<!-- citation:end -->\n\n<!-- counts:start -->\n\n<!-- counts:end -->\n\n<!-- definition:start -->\n\n<!-- definition:end -->\n")
+    (tmp_path / "README.md").write_text("<!-- citation:start -->\n\nSynthetic tracker, version 1.0.0, data as of 17 October 2026\n\n<!-- citation:end -->\n\n<!-- counts:start -->\n\n<!-- counts:end -->\n\n<!-- definition:start -->\n\n<!-- definition:end -->\n")
     with (tmp_path / "README.md").open("a") as stream:
         stream.write(
             "\n## Licences\n\nQuotations from sources remain with their rights holders "
@@ -150,7 +150,7 @@ def dataset(build_env):
             "version": "1.0.0", "as_of": "2026-10-17", "license": "CC BY 4.0",
             "license_note": "Quotations from sources remain with their rights holders and are reproduced as quotations; the licence covers our own compilation, text and data.",
             "publisher": "Test publisher", "maintainers": [{"name": "Tester", "affiliation": "Test"}],
-            "contact": "Test contact", "citation": "Synthetic tracker, version 1.0.0, 17 October 2026",
+            "contact": "Test contact", "citation": "Synthetic tracker, version 1.0.0, data as of 17 October 2026",
             "scope": "One synthetic jurisdiction.", "method": [{"id": "fixtures", "text": "Synthetic fixtures only."}, {"id": "missing-values", "text": "Missing values: an omitted field or null means not known."}],
             "method_summaries": [], "method_no_reader_summary": ["fixtures", "missing-values"], "method_summary_status": "Owner copy approved.",
             "status_definitions": dict.fromkeys(STATUSES, "Synthetic definition."),

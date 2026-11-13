@@ -180,7 +180,8 @@ def test_duplicate_ids(dataset, table, singular):
     (("institutes", 0, "established"), "2025", "established: stored"),
     (("institutes", 0, "names", 1, "from"), "2025", "from: stored '2025' disagrees with derived '2024'"),
     (("institutes", 0, "names", 1, "event"), "missing-act", "names/test-name: event 'missing-act' is not in the GB timeline"),
-    (("dataset", "citation"), "Wrong version", "dataset.citation does not name"),
+    (("dataset", "citation"), "Wrong version", "dataset.citation must contain"),
+    (("dataset", "citation"), "Tracker, version 0.9.0, data as of 17 October 2026", "dataset.citation does not name"),
     (("changelog", 0, "version"), "0.9.0", "latest changelog version"),
 ])
 def test_consistency_error_classes(dataset, path, value, message):

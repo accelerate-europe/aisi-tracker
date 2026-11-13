@@ -66,9 +66,6 @@ def check_metadata(data: dict) -> list[str]:
     metadata = data["dataset"]
     if QUOTATIONS_NOTICE not in metadata.get("license_note", ""):
         errors.append("dataset.license_note: missing quotations licence notice")
-    # The whole version token: 'version 1.0.1' must not match inside 'version 1.0.10'.
-    if not re.search(r"(?<!\w)version " + re.escape(metadata["version"]) + r"(?![\w.+-]*\w)", metadata["citation"]):
-        errors.append("dataset.citation does not name the current version")
     if metadata.get("doi") and not metadata["citation"].endswith(" " + doi_url(metadata["doi"])):
         errors.append("dataset.citation must end with the DOI link https://doi.org/ followed by dataset.doi")
     if not data.get("changelog") or data["changelog"][-1]["date"] != metadata["as_of"]:
@@ -79,17 +76,27 @@ def check_metadata(data: dict) -> list[str]:
         return errors  # The ordinary date check reports malformed dates.
     if as_of > today():
         errors.append(f"dataset.as_of {as_of.isoformat()} is after today ({today().isoformat()})")
-    labels = [
-        as_of.isoformat(),
-        f"{as_of.day} {as_of:%B %Y}",
-        f"{as_of.day} {as_of:%b %Y}",
-    ]
-    if not any(
-        re.search(r"(?<!\w)" + re.escape(label) + r"(?!\w)", metadata["citation"])
-        for label in labels
-    ):
-        errors.append("dataset.citation must contain the as_of date")
+    try:
+        if citation_for_release(metadata["citation"], metadata["version"], metadata["as_of"]) != metadata["citation"]:
+            errors.append("dataset.citation does not name the current version and as_of date; run "
+                          "uv run --locked scripts/build.py --update-readme, which writes them")
+    except ValueError as exc:
+        errors.append(str(exc))
     return errors
+
+
+# The release part of dataset.citation, which build.py --update-readme derives from dataset.version and as_of.
+CITATION_RELEASE = re.compile(r"(?<!\w)version [0-9][0-9A-Za-z.+-]*, data as of [0-9]{1,2} [A-Z][a-z]+ [0-9]{4}(?!\w)")
+
+
+def citation_for_release(citation: str, version: str, as_of: str) -> str:
+    """The citation with its "version X, data as of D Month YYYY" part set from version and as_of. ValueError when
+    the citation does not hold that part exactly once."""
+    found = CITATION_RELEASE.findall(citation)
+    if len(found) != 1:
+        raise ValueError(f"dataset.citation must contain \"version X, data as of D Month YYYY\" exactly once, not {len(found)} times")
+    day = dt.date.fromisoformat(as_of)
+    return CITATION_RELEASE.sub(lambda _: f"version {version}, data as of {day.day} {day:%B %Y}", citation)
 
 
 INSTRUMENT_STATUS_MAX_AGE = dt.timedelta(days=183)  # six months, per dataset.method (rescinded-instruments)
@@ -323,6 +330,24 @@ def write_citation(path: Path, content: bytes) -> None:
     finally:
         if temporary is not None and temporary.exists():
             temporary.unlink()
+
+
+def write_release_citation(path: Path) -> str | None:
+    """Set the version and as_of part of dataset.citation in the authored file from dataset.version and as_of, changing
+    only that string's bytes; return the new citation, or None when it was already current. ValueError when the
+    citation lacks that part or its JSON text is not found exactly once."""
+    raw = path.read_bytes()
+    metadata = json.loads(raw)["dataset"]
+    if not re.fullmatch(r"\d+\.\d+\.\d+", str(metadata.get("version"))):
+        raise ValueError(f"dataset.version {metadata.get('version')!r} is not MAJOR.MINOR.PATCH; dataset.citation left as it is")
+    citation = citation_for_release(metadata["citation"], metadata["version"], metadata["as_of"])
+    if citation == metadata["citation"]:
+        return None
+    old, new = (json.dumps(text, ensure_ascii=False).encode("utf-8") for text in (metadata["citation"], citation))
+    if raw.count(old) != 1:
+        raise ValueError(f"dataset.citation's text occurs {raw.count(old)} times in {path.name}; set its version and date by hand")
+    write_citation(path, raw.replace(old, new))
+    return citation
 
 
 def tracked_markdown(root: Path) -> list[Path]:
