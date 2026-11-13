@@ -2289,3 +2289,22 @@ def test_the_staff_fixture_names_its_source_and_quote_for_every_entry():
     data = json.loads((ROOT / "data/aisi.json").read_text(encoding="utf-8"))
     excerpts = {s["id"]: [x["text"] for x in s.get("excerpts", [])] for s in data["sources"]}
     assert [e["institute_id"] for e in entries if e["quote"] not in excerpts.get(e["source_id"], [])] == []
+
+
+def test_palette_theme_rows_are_keyed_only_by_their_own_state():
+    """The palette's theme rows (one place in the page): one row per state, and a row's words name its own state and
+    no other, so a typed state word finds only the row that goes there (the browser gate checks the behaviour)."""
+    source = (ROOT / "site" / "index.html").read_text(encoding="utf-8")
+    found = re.search(r"var THEME_ROWS = (\[\[.*?\]\]), THEME_KEYS = (\"[^\"]*\");", source)
+    assert found, "THEME_ROWS and THEME_KEYS are not declared together in site/index.html"
+    rows, shared = json.loads(found[1]), json.loads(found[2])
+    assert sorted(r[0] for r in rows) == sorted(check_page.PALETTE_THEMES)
+    for state, label, words in rows:
+        named = {check_page.PALETTE_THEME_WORDS[w] for w in (words + " " + label).lower().split() if w in check_page.PALETTE_THEME_WORDS}
+        assert named == {state}, f"the {state} row ({label!r}, keys {words!r}) names {sorted(named)}"
+    assert not set(shared.split()) & set(check_page.PALETTE_THEME_WORDS), f"the shared theme words {shared!r} name a state"
+
+
+def test_fold_text_ignores_case_and_accents_as_the_palette_does():
+    assert check_page.fold_text("São Tomé") == "sao tome"
+    assert check_page.fold_text(None) == ""

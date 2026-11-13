@@ -25,6 +25,7 @@ import tempfile
 from html.parser import HTMLParser
 import threading
 import time
+import unicodedata
 from collections import Counter, defaultdict
 from contextlib import contextmanager, nullcontext
 from datetime import date
@@ -4825,12 +4826,108 @@ PALETTE_JS = """() => {
 }"""
 
 
+PALETTE_THEMES = ("system", "light", "dark")
+PALETTE_THEME_WORDS = {"light": "light", "dark": "dark", "system": "system", "auto": "system"}  # a typed word and the state it names
+PALETTE_REGIONS = ("World", "Europe", "Americas", "Asia", "Oceania", "Africa")
+# Each listed row with its text and the section its destination sits in (a section row: its own heading).
+PALETTE_ROWS_JS = """() => [...document.querySelectorAll('#palette-list [role="option"]')].filter(o => !o.dataset.row.startsWith('j-')).map(o => {
+  const id = o.dataset.row, file = id.startsWith('d-') && id.slice(2);
+  const dest = id.startsWith('s-') ? document.getElementById(id.slice(2)) : file ? document.querySelector(`#downloads a[href="data/${file}"]`)
+    : id === 'cite' ? document.getElementById('cite') : id.startsWith('r-') ? document.querySelector(`#region-chips button[data-region="${id.slice(2)}"]`) : null;
+  const section = dest && dest.closest('section'), h = section && section.querySelector('h2');
+  // A theme row's meta names the current state, not its destination: only its name counts.
+  return { id, text: id.startsWith('theme-') ? o.querySelector('.sname').textContent : o.textContent,
+    section: id.startsWith('s-') && dest && /^H[1-6]$/.test(dest.tagName) ? dest.textContent : h ? h.textContent : '' };
+})"""
+
+
+def palette_theme_now(page) -> str:
+    return page.evaluate("document.documentElement.getAttribute('data-theme') || 'system'")
+
+
+def palette_set_theme(page, theme: str) -> None:
+    page.evaluate("t => { const r = document.documentElement; if (t === 'system') r.removeAttribute('data-theme'); else r.setAttribute('data-theme', t); }", theme)
+
+
+def palette_theme_errors(page, typed) -> list[str]:
+    """From each theme state the palette offers the other two as their own rows, by keyboard from the empty list and by
+    typing each state's word; a typed word lists only the row of the state it names, and that row goes there, the
+    palette staying open."""
+    errors = []
+    active = "() => { const a = document.getElementById(document.getElementById('palette-q').getAttribute('aria-activedescendant') || '-'); return a && a.dataset.row; }"
+    rows = "() => [...document.querySelectorAll('#palette-list [role=\"option\"]')].map(o => o.dataset.row)"
+
+    def choose(target) -> bool:  # Home, then Down to the row, then Enter: the keyboard alone
+        page.keyboard.press("Home")
+        for _ in range(len(page.evaluate(rows))):
+            if page.evaluate(active) == target:
+                page.keyboard.press("Enter")
+                return True
+            page.keyboard.press("ArrowDown")
+        return False
+
+    open_now = "() => document.getElementById('palette').open"
+    for now in PALETTE_THEMES:
+        others = [t for t in PALETTE_THEMES if t != now]
+        for target in others:
+            palette_set_theme(page, now)
+            if page.evaluate(open_now):
+                page.keyboard.press("Escape")
+            page.locator("#palette-open").click()
+            listed = sorted(r for r in page.evaluate(rows) if r.startswith("theme-"))
+            if listed != sorted(f"theme-{t}" for t in others):
+                errors.append(f"theme: from {now} the empty palette lists {listed}, not the other two states {others}")
+            if not choose(f"theme-{target}"):
+                errors.append(f"theme: from {now} the keyboard cannot reach the {target} row")
+            elif palette_theme_now(page) != target or not page.evaluate(open_now):
+                errors.append(f"theme: from {now} the {target} row leaves the theme at {palette_theme_now(page)} (palette open: {page.evaluate(open_now)})")
+        for word, target in PALETTE_THEME_WORDS.items():
+            palette_set_theme(page, now)
+            if not page.evaluate(open_now):
+                page.locator("#palette-open").click()
+            typed(page, word)
+            listed = [r for r in page.evaluate(rows) if r.startswith("theme-")]
+            want = [] if target == now else [f"theme-{target}"]
+            if listed != want:
+                errors.append(f"theme: from {now}, typing {word!r} lists {listed}, not {want}")
+            elif want and (not choose(want[0]) or palette_theme_now(page) != target):
+                errors.append(f"theme: from {now}, typing {word!r} and choosing its row leaves the theme at {palette_theme_now(page)}, not {target}")
+            elif want and (page.locator("#palette-q").input_value() != "" or page.evaluate(active) != f"theme-{now}"):
+                errors.append(f"theme: from {now}, after typing {word!r} and switching, the palette does not show the full list on the row back to {now}")
+    page.keyboard.press("Escape")
+    return errors
+
+
+def palette_key_errors(page, typed) -> list[str]:
+    """Every word that names a destination (a theme state, a file type, a section, a region) lists only rows that go
+    there: the row says the word (or the state it stands for), or its destination sits in the section of that name. A
+    row's search words that name somewhere else fail here, as "light" once found "Follow the system theme". It runs in
+    one theme state; palette_theme_errors covers the theme words in all three."""
+    errors = []
+    words = dict(PALETTE_THEME_WORDS) | {w: w for w in ("json", "csv", *PALETTE_SECTIONS, *(r.lower() for r in PALETTE_REGIONS))}
+    page.locator("#palette-open").click()
+    for word, says in words.items():
+        typed(page, word)
+        pattern = re.compile(r"(?<![a-z0-9])" + re.escape(says))
+        for row in page.evaluate(PALETTE_ROWS_JS):
+            if not pattern.search(fold_text(row["text"])) and not pattern.search(fold_text(row["section"])):
+                errors.append(f"keys: typing {word!r} lists {row['id']} ({row['text']!r}), which neither says {says!r} nor goes to that section")
+    page.keyboard.press("Escape")
+    return errors
+
+
+def fold_text(text: str) -> str:
+    """The palette's fold: case and accents ignored."""
+    return "".join(c for c in unicodedata.normalize("NFD", text or "") if not unicodedata.combining(c)).lower()
+
+
 def check_command_palette(browser, base_url: str) -> list[str]:
     """Principle Command palette: Cmd/Ctrl+K and "/" open a modal dialog with focus in its labelled combobox; an empty field
     lists Sections and Regions first; a state name and Enter open its record as the map search does; institute and former
     names find their state; a section row lands on its anchor and a region row presses its tab; Esc returns focus; the
     current row takes --highlight-fill with text at least 4.5:1 in both themes; "/" in a text field types a slash; the
-    hint names the platform's key and hides on phones; the saved page holds the dialog closed."""
+    hint names the platform's key and hides on phones; the saved page holds the dialog closed; from each theme state
+    the other two are rows of their own, and every word that names a destination lists only rows that go there."""
     errors = []
 
     def palette(page):
@@ -4940,12 +5037,8 @@ def check_command_palette(browser, base_url: str) -> list[str]:
             if palette(page)["open"] or page.locator("#world-filter").input_value() != "/":
                 errors.append("slash: '/' in a text field opens the palette instead of typing a slash")
             page.locator("#world-filter").fill("")
-            # The theme row moves the toggle's cycle and the palette stays open on it.
-            page.locator("#palette-open").click()
-            typed(page, "theme")
-            page.keyboard.press("Enter")
-            if page.evaluate("document.documentElement.getAttribute('data-theme')") != "dark" or not palette(page)["open"]:
-                errors.append("theme: the theme row does not move light to dark with the palette left open")
+            errors.extend(palette_theme_errors(page, typed))
+            errors.extend(palette_key_errors(page, typed))
         finally:
             page.close()
     page = browser.new_page(viewport={"width": 390, "height": 800})

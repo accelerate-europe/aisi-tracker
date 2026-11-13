@@ -87,7 +87,7 @@
  * Focus: one style, the --highlight-fill tint: keyboard focus on a text control (link, text button, disclosure, tooltip term or value; table headers keep their label underline and ring) shows the tint behind it and a 2px underline in --focus (the tint alone is under 3:1 on the ground; the underline is at least 3:1 in both themes); a region tab shows the tint alone, as its underline means selected (owner, 5 Nov 2026); boxed controls (buttons, fields) keep their own edge; a heading or other non-control target that a section bar, group row, anchor or palette jump focuses (the Definition paragraph too) shows no ring, only the tint, fading after about 1.5s where motion is allowed; forced colours keep a system outline (check_page shared_links).
  * Arrival: a card reached by a link (the record beside the map, table row or shared link) takes the --highlight-fill tint, as a jumped-to heading does, and no outline; the tint lasts while it is the target, also after the page script takes over, and the card takes keyboard focus; motion only adds a brief accent flash settling into the tint (owner, 5 Nov 2026; check_page check_arrival).
  * Disclosures: a control that extends a list with more of the same items sits after the list and keeps its place there ("Show N earlier" / "Show fewer"); a control that reveals different content (sources, method) comes first.
- * Command palette: Cmd+K on a Mac, Ctrl+K elsewhere, and "/" outside a text field open one modal dialog over the page, without moving it (a floating surface, wider than a menu, fading in only): the page's search field, then rows grouped under small muted labels, States and territories (status mark and region, as the map search), Sections (the Anchors), Regions (as the tabs) and Actions (theme, the full JSON and states CSV downloads, copy the citation); an empty field lists Sections and Regions first; the matcher ignores case and accents and ranks a name's start, a word's start, an institute's name, short form or former name (marked formerly), then text inside, one ranking shared by both searches; unmodified arrows, Home, End and Enter (never during input-method composition) work it without the mouse, the hovered or current row takes --highlight-fill, focus stays in the field and Esc returns it to where it was; a quiet ⌘K (or Ctrl K) hint at the map search's right end, none on touch screens and phones; without scripting nothing shows (check_page check_command_palette).
+ * Command palette: Cmd+K on a Mac, Ctrl+K elsewhere, and "/" outside a text field open one modal dialog over the page, without moving it (a floating surface, wider than a menu, fading in only): the page's search field, then rows grouped under small muted labels, States and territories (status mark and region, as the map search), Sections (the Anchors), Regions (as the tabs) and Actions (the two theme states other than the current one, each its own row, the full JSON and states CSV downloads, copy the citation); a row's search words name only where it goes, so a typed "light" never offers a row that leads elsewhere; an empty field lists Sections and Regions first; the matcher ignores case and accents and ranks a name's start, a word's start, an institute's name, short form or former name (marked formerly), then text inside, one ranking shared by both searches; unmodified arrows, Home, End and Enter (never during input-method composition) work it without the mouse, the hovered or current row takes --highlight-fill, focus stays in the field and Esc returns it to where it was; a quiet ⌘K (or Ctrl K) hint at the map search's right end, none on touch screens and phones; without scripting nothing shows (check_page check_command_palette).
  */
 /* Fonts: Inter and Source Sans 3, vendored under assets/fonts (SIL OFL 1.1, assets/LICENSES.txt) in the subsets and weights Google Fonts serves, so the page loads nothing from another origin. */
 @font-face { font-family: "Inter"; font-style: normal; font-weight: 400; font-display: swap; src: url(assets/fonts/inter-v20-cyrillic.woff2) format("woff2"); unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
@@ -954,12 +954,14 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   function placeToggle() { var b = $("theme-toggle"), home = document.querySelector(PHONE_BAR.matches ? ".topbar .measure" : ".secnav .measure"); if (b && home && b.parentNode !== home) { var focused = document.activeElement === b; home.appendChild(b); if (focused) b.focus({ preventScroll: true }); } }
   if (PHONE_BAR.addEventListener) PHONE_BAR.addEventListener("change", placeToggle);
   function syncTheme() { placeToggle(); var b = $("theme-toggle"); if (!b) return; var t = themeNow(); b.setAttribute("aria-label", "Theme: " + THEME_NAME[t]); b.setAttribute("data-tip", "Theme: " + THEME_NAME[t]); b.setAttribute("data-tip-sub", "Click for " + THEME_NEXT[t]); }
+  function setTheme(t) { // the toggle moves to the next state; the command palette goes straight to the one asked for
+    if (t === "system") document.documentElement.removeAttribute("data-theme"); else document.documentElement.setAttribute("data-theme", t);
+    try { if (t === "system") localStorage.removeItem("aisi-theme"); else localStorage.setItem("aisi-theme", t); } catch (err) {}
+    syncTheme();
+  }
   document.addEventListener("click", function (e) {
     if (!(e.target.closest && e.target.closest("#theme-toggle"))) return;
-    var next = THEME_NEXT[themeNow()];
-    if (next === "system") document.documentElement.removeAttribute("data-theme"); else document.documentElement.setAttribute("data-theme", next);
-    try { if (next === "system") localStorage.removeItem("aisi-theme"); else localStorage.setItem("aisi-theme", next); } catch (err) {}
-    syncTheme();
+    setTheme(THEME_NEXT[themeNow()]);
   });
   syncTheme();
   // Pre-rendering: the build opens this page as ?prerender and saves the rendered page, marked data-prerendered,
@@ -2401,14 +2403,17 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       var SECTIONS = [["Map", "map", ""], ["Testing", "testing", "Compare"], ["Set-up", "set-up", "Compare"], ["Funding", "funding", "Compare"], ["News", "news", ""],
         ["Europe", "europe", "States"], ["The world", "world", "States"], ["Data", "data", "Data"], ["Method", "method", "Data"], ["Definition", "definition", "Method"]];
       var GROUPS = { states: "States and territories", sections: "Sections", regions: "Regions", actions: "Actions" };
+      // The theme rows' wording, in one place: [state, label, the words that find it]. A row's own words name only its own
+      // state, so a typed "light" never offers a row that goes elsewhere (check_page check_command_palette); THEME_KEYS find them all.
+      var THEME_ROWS = [["light", "Switch to the light theme", "light"], ["dark", "Switch to the dark theme", "dark"], ["system", "Follow the system theme", "system auto"]], THEME_KEYS = "theme mode colour";
       function heading(id) { var h = $(id); return h && /^H[1-6]$/.test(h.tagName) ? h.textContent.trim() : ""; }
       function items() {
         var out = [];
         SECTIONS.forEach(function (x) { var h = heading(x[1]); out.push({ id: "s-" + x[1], group: "sections", name: x[0], note: "", meta: x[2] !== x[0] ? x[2] : "", keys: [x[1], h], run: function () { jump(x[1]); } }); });
         ["World"].concat(LIST_REGIONS).forEach(function (r) { var t = regionTally(r); out.push({ id: "r-" + r, group: "regions", name: r, tally: t, keys: [], label: r + ", " + t[0] + " of " + t[1] + " states " + (t[0] === 1 ? "has" : "have") + " an institute", run: function () { region(r); } }); });
         if (CSS.supports("color", "light-dark(white, black)") && $("theme-toggle")) {
-          var now = themeNow(), next = THEME_NEXT[now];
-          out.push({ id: "theme", group: "actions", name: next === "system" ? "Follow the system theme" : "Switch to the " + next + " theme", meta: "Theme: " + THEME_NAME[now], keys: ["theme dark light mode colour"], stay: true, run: function () { $("theme-toggle").click(); } });
+          var now = themeNow(); // the two states other than the current one; after a switch the row of the one just left stays current
+          THEME_ROWS.forEach(function (x) { if (x[0] !== now) out.push({ id: "theme-" + x[0], group: "actions", name: x[1], meta: "Theme: " + THEME_NAME[now], keys: [x[2] + " " + THEME_KEYS], stay: true, keep: "theme-" + now, run: function () { setTheme(x[0]); said.textContent = "Theme: " + THEME_NAME[x[0]]; } }); });
         }
         [["aisi.json", "json"], ["jurisdictions.csv", "csv"]].forEach(function (f) { // the full downloads, through their links under Data
           var a = document.querySelector('#downloads a[href="data/' + f[0] + '"]'), t = a && a.querySelector(".dl-title");
@@ -2439,7 +2444,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
           var wrap = el("div"), label = el("div", "palette-group", GROUPS[g]); label.id = "palette-g-" + g; label.setAttribute("role", "presentation");
           wrap.setAttribute("role", "group"); wrap.setAttribute("aria-labelledby", label.id); wrap.appendChild(label);
           groups[g].sort(function (a, b) { return a.rank - b.rank || a.n - b.n; }).forEach(function (it) {
-            var o = el("div", "palette-option"); o.id = "palette-" + rows.length; o.setAttribute("role", "option"); o.dataset.n = rows.length;
+            var o = el("div", "palette-option"); o.id = "palette-" + rows.length; o.setAttribute("role", "option"); o.dataset.n = rows.length; o.dataset.row = it.id; // the row's destination, for the gate
             if (it.status) { var sw = el("i", "sw st-" + it.status); sw.setAttribute("aria-hidden", "true"); o.appendChild(sw); }
             var name = el("span", "sname", it.name); if (it.note) { name.appendChild(document.createTextNode(" ")); name.appendChild(el("span", "pnote", it.note)); } o.appendChild(name);
             if (it.tally) { var c = el("span", "small"), es = el("i", "sw st-established"); es.setAttribute("aria-hidden", "true"); c.appendChild(es); c.appendChild(document.createTextNode(it.tally[0] + " of " + it.tally[1])); o.appendChild(c); }
@@ -2465,7 +2470,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       }
       function choose(n) {
         var it = rows[n]; if (!it) return;
-        if (it.stay) { it.run(); fill(it.id); return; } // theme and copy: the palette stays, the row says what changed
+        if (it.stay) { if (it.keep) q.value = ""; it.run(); fill(it.keep || it.id); return; } // theme and copy: the palette stays, the row says what changed; after a theme switch the full list, on the state just left
         restore = false; box.close(); it.run();
       }
       function jump(id) { // as an anchor link does; the heading takes focus, as from the section bar
@@ -2485,7 +2490,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         function fallback() { var t = el("textarea"); t.value = text; box.appendChild(t); t.select(); try { if (document.execCommand("copy")) done(); } catch (err) {} t.remove(); q.focus(); }
         if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fallback); else fallback();
       }
-      // The empty list is the same at every opening but for the theme row: built while the browser is idle, and again
+      // The empty list is the same at every opening but for the theme rows: built while the browser is idle, and again
       // after each closing, so opening only shows it (principle: Command palette).
       var primed = null;
       function prime() { if (box.open) return; copied = false; q.value = ""; fill(); primed = themeNow(); }
