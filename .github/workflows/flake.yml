@@ -58,6 +58,7 @@ jobs:
             uv.lock
             scripts/*.lock
       - run: uv run --locked -q scripts/check_page.py --install-chrome
+      - uses: ./.github/actions/fonts # the fonts the gate runs with
       - run: uv run --locked scripts/check.py --only build --out dist --report-dir "$RUNNER_TEMP/check"
       # Exits 1 when the job is flaky or failing, 2 when an attempt was cut by the budget: the run shows red then,
       # and the artifact below says why.

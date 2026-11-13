@@ -103,6 +103,7 @@ jobs:
             scripts/*.lock
       # The locked Playwright's Chromium: the browser the build, gate and contact sheet use on every host.
       - run: uv run --locked -q scripts/check_page.py --install-chrome
+      - uses: ./.github/actions/fonts # every script in the data drawn as a reader's browser draws it
       - run: uv run --locked scripts/check.py --only build --out dist --report-dir "$RUNNER_TEMP/check"
       - if: always()
         run: cat "$RUNNER_TEMP/check/report.md" || true
@@ -140,6 +141,7 @@ jobs:
             scripts/*.lock
       # The locked Playwright's Chromium: the browser the build, gate and contact sheet use on every host.
       - run: uv run --locked -q scripts/check_page.py --install-chrome
+      - uses: ./.github/actions/fonts # every script in the data drawn as a reader's browser draws it
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: site
@@ -184,6 +186,7 @@ jobs:
             scripts/*.lock
       # The locked Playwright's Chromium: the browser the build, gate and contact sheet use on every host.
       - run: uv run --locked -q scripts/check_page.py --install-chrome
+      - uses: ./.github/actions/fonts # every script in the data drawn as a reader's browser draws it
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: site

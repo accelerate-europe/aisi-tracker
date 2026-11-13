@@ -1,0 +1,20 @@
+# Fonts for every script in the data, for each job that renders the page in Chromium (pre-render, gate, sweep).
+# The page bundles Inter for Latin, Cyrillic and Greek only; the runner has no fonts for Japanese, Korean, Thai,
+# Arabic and the other scripts of source titles and names, which would show as empty boxes and wrap unlike a
+# reader's browser. Noto core and CJK cover them; the fonts per script are counted, and a script without one fails the step.
+name: fonts
+description: Install Noto fonts for every script in the data
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: |
+        sudo apt-get -o Acquire::Retries=3 update -q
+        sudo apt-get -o Acquire::Retries=3 install -y -q --no-install-recommends fonts-noto-core fonts-noto-cjk
+        missing=
+        for lang in ja ko zh th ar he hi bn ta si my km lo bo dv am ka hy el ru; do
+          count=$(fc-list ":lang=$lang" family | wc -l)
+          echo "$lang: $count fonts"
+          [ "$count" -gt 0 ] || missing="$missing $lang"
+        done
+        [ -z "$missing" ] || { echo "No font for:$missing" >&2; exit 1; }
