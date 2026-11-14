@@ -5,7 +5,7 @@ import sys
 
 import pytest
 from conftest import write_json
-from scripts import build
+from scripts import build, method_checks
 from scripts.published import materialise_facts
 
 from scripts.method_checks import (
@@ -14,6 +14,8 @@ from scripts.method_checks import (
     check_method_rules,
     materialised_view,
     negative_confidence_limit,
+    primary_source_errors,
+    primary_source_flags,
     primary_source_warnings,
     required_excerpt_pointers,
     unquoted_claims,
@@ -500,7 +502,9 @@ def test_peer_and_authority_positive_contract(dataset):
     body = d["jurisdictions"][0]["related_bodies"][0]
     body.update(kind="ai_act_authority", designation_state="designated", designation_basis="law")
     body["source_ids"].append("eu-ai-act-authorities-2026")
-    d["sources"][0]["excerpts"][-1]["supports"] = sorted(required_excerpt_pointers(d))
+    d["sources"][0]["excerpts"][-1]["supports"] = sorted(required_excerpt_pointers(d)) + [
+        f"/jurisdictions/{n}/timeline/{k}/{leaf}" for n in (0, 1) for k in range(len(j["timeline"])) for leaf in ("date", "event")
+    ]
     assert check_method_rules(d) == []
     d["institutes"][0]["agreements"][0]["counterparty_type"] = "other"
     assert any("non-institute counterparty" in e for e in check_method_rules(d))
@@ -832,7 +836,11 @@ def test_authority_may_leave_designation_state_unresolved(dataset):
     assert check_method_rules(d) == []
 
 
-# Primary sources for status changes (lifted from the shelved Schema 2.0 draft): warnings only, never errors.
+# Primary sources for status changes (rule status-evidence): errors, except the listed accepted exceptions.
+
+
+def flagged(d):
+    return [f"primary source {line}" for *_, line in primary_source_flags(d)]
 
 
 def press_source(d, supports):
@@ -848,32 +856,35 @@ def press_source(d, supports):
 
 def test_primary_excerpts_on_every_status_event_raise_no_warning(dataset):
     d = strict_dataset(dataset)
-    assert primary_source_warnings(d) == []
+    assert flagged(d) == []
 
 
-def test_status_with_only_a_press_source_is_flagged_and_never_an_error(dataset):
+def test_status_with_only_a_press_source_is_an_error(dataset):
     d = strict_dataset(dataset)
     supports = d["sources"][0]["excerpts"][0]["supports"]
     for leaf in ("date", "event"):
         supports.remove(f"/jurisdictions/0/timeline/1/{leaf}")
     press_source(d, ["/jurisdictions/0/timeline/1/date", "/jurisdictions/0/timeline/1/event"])
-    assert primary_source_warnings(d) == [
+    assert flagged(d) == [
         "primary source [no primary source cited] GB act (designated, 2024; sets the current status, established, at high confidence; sets gb-test's established date): cites gb-press (secondary)"
     ]
-    assert not [e for e in check_method_rules(d) if "primary" in e]
+    assert [e for e in check_method_rules(d) if "status evidence" in e] == [
+        "status evidence (rule status-evidence) [no primary source cited] GB act (designated, 2024; sets the current status, "
+        "established, at high confidence; sets gb-test's established date): cites gb-press (secondary)"
+    ]
 
 
 def test_cited_primary_source_must_bind_the_date_and_the_act(dataset):
     d = strict_dataset(dataset)
     supports = d["sources"][0]["excerpts"][0]["supports"]
     supports.remove("/jurisdictions/0/timeline/0/date")
-    assert primary_source_warnings(d) == [
+    assert flagged(d) == [
         "primary source [primary excerpt misses a leaf] GB plan (commitment, 2023; sets gb-test's announced date): "
         "no primary excerpt binds its date"
     ]
     supports.remove("/jurisdictions/0/timeline/0/event")
     supports.append("/jurisdictions/0/timeline/0/description")
-    assert primary_source_warnings(d) == [
+    assert flagged(d) == [
         "primary source [primary source cited, no primary excerpt bound] GB plan (commitment, 2023; "
         "sets gb-test's announced date): no primary excerpt binds its date or event"
     ]
@@ -881,29 +892,83 @@ def test_cited_primary_source_must_bind_the_date_and_the_act(dataset):
     press_source(d, ["/jurisdictions/0/timeline/0/date", "/jurisdictions/0/timeline/0/event"])
     d["jurisdictions"][0]["timeline"][1]["source_ids"] = ["gb-source"]
     d["jurisdictions"][0]["timeline"][0]["source_ids"] = ["gb-source", "gb-press"]
-    assert [w.split("]")[0] for w in primary_source_warnings(d)] == ["primary source [primary source cited, no primary excerpt bound"]
+    assert [w.split("]")[0] for w in flagged(d)] == ["primary source [primary source cited, no primary excerpt bound"]
+
+
+def test_a_primary_source_published_on_the_act_date_carries_the_date(dataset):
+    d = strict_dataset(dataset)
+    d["sources"][0]["excerpts"][0]["supports"].remove("/jurisdictions/0/timeline/0/date")
+    event = d["jurisdictions"][0]["timeline"][0]
+    d["sources"][0]["published"] = event["date"]
+    assert flagged(d) == []
+    # The same year at a finer precision is not the act's date.
+    d["sources"][0]["published"] = event["date"] + "-05"
+    assert [w.split("]")[0] for w in flagged(d)] == ["primary source [primary excerpt misses a leaf"]
+    # Nor does a secondary source published that day carry it.
+    press_source(d, [])
+    d["jurisdictions"][0]["timeline"][1]["source_ids"] = ["gb-source"]
+    event["source_ids"] = ["gb-source", "gb-press"]
+    d["sources"][-1]["published"] = event["date"]
+    assert [w.split("]")[0] for w in flagged(d)] == ["primary source [primary excerpt misses a leaf"]
 
 
 def test_launch_needs_a_primary_date_and_other_milestones_are_not_checked(dataset):
     d = strict_dataset(dataset)
     timeline = d["jurisdictions"][0]["timeline"]
     timeline += [{**timeline[1], "id": "start", "event": "launched"}, {**timeline[1], "id": "remit", "event": "mandate_changed"}]
-    assert primary_source_warnings(d) == [
+    assert flagged(d) == [
         "primary source [primary source cited, no primary excerpt bound] GB start (launched, 2024; no status effect): "
         "no primary excerpt binds its date"
     ]
     d["sources"][0]["excerpts"][0]["supports"].append("/jurisdictions/0/timeline/3/date")
-    assert primary_source_warnings(d) == []
+    assert flagged(d) == []
 
 
-def test_primary_source_warnings_reach_the_report_without_failing(dataset, monkeypatch, tmp_path_factory, capsys):
-    dataset["sources"][0]["excerpts"][0]["supports"].remove("/jurisdictions/0/timeline/1/date")
+def press_only_event(d):
+    supports = d["sources"][0]["excerpts"][0]["supports"]
+    for leaf in ("date", "event"):
+        supports.remove(f"/jurisdictions/0/timeline/1/{leaf}")
+    press_source(d, ["/jurisdictions/0/timeline/1/date", "/jurisdictions/0/timeline/1/event"])
+    d["jurisdictions"][0]["timeline"][1]["source_ids"] = ["gb-source", "gb-press"]  # gb-source still quotes its description
+
+
+def test_a_listed_exception_with_an_access_note_is_a_warning_not_an_error(dataset):
+    d = strict_dataset(dataset)
+    press_only_event(d)
+    exceptions = {("GB", "act"): "gb-press"}
+    assert primary_source_errors(d, exceptions) == [
+        "status evidence: accepted exception GB act needs its cited source gb-press with an access note saying what was tried"
+    ]
+    d["sources"][-1]["access_note"] = "No government text was found on the ministry's site."
+    assert primary_source_errors(d, exceptions) == []
+    assert [w.split("]")[0] for w in primary_source_warnings(d, exceptions)] == ["primary source [accepted exception"]
+
+
+def test_a_stale_exception_is_an_error(dataset):
+    d = strict_dataset(dataset)
+    assert primary_source_errors(d, {("GB", "act"): "gb-source"}) == [
+        "status evidence: accepted exception GB act is no longer flagged; remove it from PRIMARY_SOURCE_EXCEPTIONS"
+    ]
+    # An entry for a jurisdiction the data does not hold, as in this fixture, is not checked.
+    assert primary_source_errors(d, {("KR", "kr-2024-05-22-commitment"): "kr-inews24-2024"}) == []
+
+
+def test_a_check_that_cannot_run_is_an_error_not_a_pass(dataset):
+    d = strict_dataset(dataset)
+    d["jurisdictions"][0]["timeline"][0]["date"] = "2023-02-30"
+    assert [e.split(" (")[0] for e in primary_source_errors(d)] == ["status evidence: not checked"]
+
+
+def test_accepted_exceptions_reach_the_report_without_failing(dataset, monkeypatch, tmp_path_factory, capsys):
+    press_only_event(dataset)
+    dataset["sources"][-1]["access_note"] = "No government text was found on the ministry's site."
+    monkeypatch.setattr(method_checks, "PRIMARY_SOURCE_EXCEPTIONS", {("GB", "act"): "gb-press"})
     write_json(build.DATA, dataset)
     report = tmp_path_factory.mktemp("report")
     monkeypatch.setattr(sys, "argv", ["build.py", "--check", "--report-dir", str(report)])
-    build.main()  # a warning never fails validation
+    build.main()
     assert "is valid" in capsys.readouterr().out
-    assert "primary source [primary excerpt misses a leaf] GB act" in (report / build.RELEASE_WARNINGS).read_text()
+    assert "primary source [accepted exception] GB act" in (report / build.RELEASE_WARNINGS).read_text()
 
 
 # Unquoted claims (the blind sample of 14 November 2026): warnings only, a count per kind.
@@ -977,6 +1042,7 @@ def test_unquoted_and_primary_checks_never_raise_on_broken_facts(dataset):
     assert materialised_view(d) is None
     assert unquoted_claims(d) == dict.fromkeys(UNQUOTED_KINDS, [])
     assert primary_source_warnings(d) == []
+    assert primary_source_errors(d) == []
 
 
 def test_strings_in_a_list_under_a_free_text_key_are_checked(dataset):

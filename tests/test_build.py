@@ -240,13 +240,22 @@ def test_withdrawal_requires_earlier_non_withdrawal(dataset, target):
     assert any("must name an earlier event" in e for e in build.check_consistency(dataset))
 
 
+def bind_timeline(dataset):
+    """Bind every timeline event's date and act to the fixture's primary excerpt (rule status-evidence)."""
+    supports = dataset["sources"][0]["excerpts"][0]["supports"]
+    for k in range(len(dataset["jurisdictions"][0]["timeline"])):
+        supports += [p for p in (f"/jurisdictions/0/timeline/{k}/date", f"/jurisdictions/0/timeline/{k}/event") if p not in supports]
+
+
 def test_status_since_reaffirmation_and_new_run(dataset):
     j, i = dataset["jurisdictions"][0], dataset["institutes"][0]
     j["timeline"].append(event("designated", "2025", "again"))
+    bind_timeline(dataset)
     assert build.check_consistency(dataset) == []
     j["status_since"] = "2025"
     assert any("disagrees with derived '2024'" in e for e in build.check_consistency(dataset))
     j["timeline"].insert(3, event("closed", "2024-12", "closed"))
+    bind_timeline(dataset)
     assert build.check_consistency(dataset) == []
     # established is the first designation, while status_since starts the new run.
     assert i["established"] == "2024"
@@ -259,6 +268,7 @@ def test_announced_uses_first_proposal_not_later_commitment(dataset):
     errors = build.check_consistency(dataset)
     assert any("announced: stored '2023' disagrees with derived '2022-06'" in e for e in errors)
     dataset["institutes"][0].pop("announced")
+    bind_timeline(dataset)
     assert build.check_consistency(dataset) == []
 
 
@@ -272,6 +282,7 @@ def test_closed_status_has_no_since_and_needs_negative_confidence_evidence(datas
     j.pop("status_since")
     dataset["sources"][0]["excerpts"][0]["supports"].remove("/jurisdictions/0/status_since")
     j["status_confidence"] = "low"
+    bind_timeline(dataset)
     assert build.check_consistency(dataset) == []
 
 
@@ -334,6 +345,7 @@ def test_nonestablished_release_allows_unknown_legal_basis(dataset, monkeypatch,
     excerpt["supports"] = [p for p in excerpt["supports"] if not p.startswith((
         "/institutes/0/legal_basis/", "/jurisdictions/0/timeline/",
     ))]
+    bind_timeline(dataset)
     write_json(build.DATA, dataset)
     monkeypatch.setattr(sys, "argv", ["build.py", "--check", "--require-complete"])
     build.main()
