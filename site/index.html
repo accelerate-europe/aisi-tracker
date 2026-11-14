@@ -3109,8 +3109,8 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     $("licence").textContent = m.license;
     // Download lists come from datapackage.json, which the build generates with a title and description per file.
     // Grouped, one list per group: the page's own names, the file name as a muted short form, the file type once in the group heading.
-    var DL_GROUPS = [["Start here", "CSV", ["jurisdictions", "institutes", "events"]], ["Institutes", "CSV", ["staff", "funding", "people", "outputs", "agreements", "national_partners", "known_activity"]],
-      ["States", "CSV", ["timeline", "closest_bodies", "related_bodies", "network_milestones"]], ["Evidence", "CSV", ["sources", "source_excerpts", "exchange_rates"]],
+    var DL_GROUPS = [["Start here", "CSV", ["jurisdictions", "institutes", "events"]], ["Institutes", "CSV", ["staff", "funding", "people", "outputs", "agreements", "national_partners", "known_activity", "functions"]],
+      ["States", "CSV", ["timeline", "closest_bodies", "related_bodies", "network_milestones"]], ["Evidence", "CSV", ["sources", "source_excerpts", "claims", "exchange_rates"]],
       ["For code", "JSON", ["aisi", "aisi-schema", "datapackage", "shared-claim-coverage"]]];
     var downloads = PKG.then(function (pkg) {
       var files = pkg.resources.concat([{ name: "datapackage", path: "datapackage.json", title: "Data package", description: "lists every file, for tools such as Frictionless" }]);

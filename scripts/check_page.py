@@ -379,9 +379,9 @@ def check_dom(html: str, data: dict, dist: Path, base_url: str) -> list[str]:
 
 DOWNLOAD_GROUPS = [
     ("CSV", ["jurisdictions.csv", "institutes.csv", "events.csv"]),
-    ("CSV", ["staff.csv", "funding.csv", "people.csv", "outputs.csv", "agreements.csv", "national_partners.csv", "known_activity.csv"]),
+    ("CSV", ["staff.csv", "funding.csv", "people.csv", "outputs.csv", "agreements.csv", "national_partners.csv", "known_activity.csv", "functions.csv"]),
     ("CSV", ["timeline.csv", "closest_bodies.csv", "related_bodies.csv", "network_milestones.csv"]),
-    ("CSV", ["sources.csv", "source_excerpts.csv", "exchange_rates.csv"]),
+    ("CSV", ["sources.csv", "source_excerpts.csv", "claims.csv", "exchange_rates.csv"]),
     ("JSON", ["aisi.json", "aisi.schema.json", "datapackage.json", "shared-claim-coverage.json"]),
 ]
 
