@@ -67,6 +67,10 @@
         "text": "Excerpts: every positive status, status date, legal basis, budget amount, staff figure, first output, agreement, head, reporting line, partner relation and partner how sentence needs a short quotation that carries the claim. Other fields have excerpts where possible. Each gloss translates only its own excerpt and adds no facts. Each quotation is linked to the values it supports; a check confirms each link exists, and review judges whether the quotation supports the value."
       },
       {
+        "id": "status-evidence",
+        "text": "Primary evidence for status changes: every timeline act that moves a status (exploring, proposed, planned, established, a withdrawal or a closure) and every launch date cites a primary source, and an excerpt from a primary source carries the act and its date. A primary source published on the act's date carries that date. A press report, feed item or aggregator can lead to an act but does not carry it alone; where no primary text could be retrieved, the event keeps the secondary citation, its access note says what was tried, and the event is listed as an accepted exception."
+      },
+      {
         "id": "outputs",
         "text": "Outputs: a publication, tool or dataset counts when it is written by the institute or credited to it as its own work, including named organisational contributions. Publishing or hosting alone does not count when the institute acts only as a regulator or facilitator for work drafted by others. Commissioned work published as the institute's own publication counts, with the research author identified. Staff co-authorship or a link in a staff bibliography alone does not count. Host-agency and government documents count only when the institute is named as author. Translations of other bodies' documents do not count. Drafts, versions, summaries and translations within one document lineage form one item, with the latest title and the earliest public date. Documented former names and institutional predecessors follow the same credit rule; their inclusion does not backdate government designation. Every catalogue output records an explicit institutional credit identity and date. The catalogue date is shared across a document lineage; the credit date records the earliest public version for which the institute’s credit is supported. If institute credit first appears in a later version, its credit date is later than the lineage date. An institute's own later post does not backdate that credit to an earlier staff-only paper. An explicit later official statement that names the institute as author of the earlier version, or credits it as the institute's own work, can establish credit for that version; a statement that it only published or hosted the work cannot. For arXiv papers, the recorded first-submission date is used as the bibliographic version date; it does not show the exact day the paper became publicly available. Cite the artefact itself where it can be retrieved."
       },
@@ -1824,7 +1828,8 @@
       "staffing-model",
       "budget-ratios",
       "rescinded-instruments",
-      "technical-staff"
+      "technical-staff",
+      "status-evidence"
     ],
     "method_summary_status": "Owner copy approved."
   },

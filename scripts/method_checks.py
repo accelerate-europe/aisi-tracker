@@ -217,7 +217,10 @@ def materialised_view(d: dict) -> dict | None:
 
 
 def primary_source_warnings(d: dict) -> list[str]:
-    """Status-changing timeline events, and launch dates, whose date or act no primary source's excerpt carries.
+    """Status-changing timeline events, and launch dates, whose date or act no primary source carries.
+
+    A primary source carries the act through an excerpt bound to `event`, and the date through an excerpt bound to
+    `date` or by its own `published` date when that equals the event's date at the same precision.
 
     Lifted from the shelved Schema 2.0 draft ("second-hand copies never carry a status change"). Warnings for
     the check report only, never failures, until the owner has seen what they flag. Each line names its kind
@@ -229,6 +232,7 @@ def primary_source_warnings(d: dict) -> list[str]:
     as_of = d["dataset"]["as_of"]
     institutes = {i["id"]: i for i in d["institutes"]}
     types = {s["id"]: s.get("type") for s in d["sources"]}
+    published = {s["id"]: s.get("published") for s in d["sources"]}
     primary_bound: dict[str, set[str]] = {}
     for source in d["sources"]:
         if source.get("type") == "primary":
@@ -259,7 +263,12 @@ def primary_source_warnings(d: dict) -> list[str]:
                 listed = ", ".join(f"{sid} ({types.get(sid) or 'unknown'})" for sid in cited) or "nothing"
                 warnings.append(f"primary source [no primary source cited] {where}: cites {listed}")
                 continue
-            missing = [leaf for leaf in leaves if not primary_bound.get(f"/jurisdictions/{n}/timeline/{k}/{leaf}")]
+            # A cited primary source published on the act's date, at the same precision, carries that date (rule status-evidence).
+            dated = any(types.get(sid) == "primary" and published.get(sid) == event["date"] for sid in cited)
+            missing = [
+                leaf for leaf in leaves
+                if not primary_bound.get(f"/jurisdictions/{n}/timeline/{k}/{leaf}") and not (leaf == "date" and dated)
+            ]
             if len(missing) == len(leaves):
                 warnings.append(f"primary source [primary source cited, no primary excerpt bound] {where}: no primary excerpt binds its {' or '.join(leaves)}")
             elif missing:

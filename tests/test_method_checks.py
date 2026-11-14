@@ -884,6 +884,23 @@ def test_cited_primary_source_must_bind_the_date_and_the_act(dataset):
     assert [w.split("]")[0] for w in primary_source_warnings(d)] == ["primary source [primary source cited, no primary excerpt bound"]
 
 
+def test_a_primary_source_published_on_the_act_date_carries_the_date(dataset):
+    d = strict_dataset(dataset)
+    d["sources"][0]["excerpts"][0]["supports"].remove("/jurisdictions/0/timeline/0/date")
+    event = d["jurisdictions"][0]["timeline"][0]
+    d["sources"][0]["published"] = event["date"]
+    assert primary_source_warnings(d) == []
+    # The same year at a finer precision is not the act's date.
+    d["sources"][0]["published"] = event["date"] + "-05"
+    assert [w.split("]")[0] for w in primary_source_warnings(d)] == ["primary source [primary excerpt misses a leaf"]
+    # Nor does a secondary source published that day carry it.
+    press_source(d, [])
+    d["jurisdictions"][0]["timeline"][1]["source_ids"] = ["gb-source"]
+    event["source_ids"] = ["gb-source", "gb-press"]
+    d["sources"][-1]["published"] = event["date"]
+    assert [w.split("]")[0] for w in primary_source_warnings(d)] == ["primary source [primary excerpt misses a leaf"]
+
+
 def test_launch_needs_a_primary_date_and_other_milestones_are_not_checked(dataset):
     d = strict_dataset(dataset)
     timeline = d["jurisdictions"][0]["timeline"]
