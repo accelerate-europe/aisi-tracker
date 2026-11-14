@@ -44340,6 +44340,17 @@
                 "id": "au-2025-12-02-commitment"
               },
               "description"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "AU"
+              },
+              "timeline",
+              {
+                "id": "au-2025-12-02-commitment"
+              },
+              "event"
             ]
           ],
           "accessed": "2026-10-17"
@@ -49621,6 +49632,17 @@
                 "id": "KE"
               },
               "notes"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "KE"
+              },
+              "timeline",
+              {
+                "id": "ke-2026-draft-policy"
+              },
+              "event"
             ]
           ],
           "accessed": "2026-10-17"
@@ -49796,6 +49818,17 @@
                 "id": "ke-2026-draft-policy"
               },
               "instrument"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "KE"
+              },
+              "timeline",
+              {
+                "id": "ke-2026-draft-policy"
+              },
+              "event"
             ]
           ],
           "accessed": "2026-10-17"
@@ -59356,7 +59389,8 @@
         "sha256": "16f6711886d8987b77dc549c7e1ac16618f49e2e4603280f4a1ce512a1eb0acf",
         "text_sha256": "c34526957f34e48060b01364929b8b0cfce10e44be69f20d58bc2e96ec1366e0",
         "text_scheme": 1
-      }
+      },
+      "access_note": "No Korean government text of the minister's remarks was found. On 14 November 2026 the science ministry's press releases from the AI Seoul Summit to 31 May 2024 (among them the joint release of 22 May and the releases of 23 and 30 May) and korea.kr's release, briefing and speech lists were searched; none carries the plan to set up the institute inside ETRI within the year."
     },
     {
       "id": "kr-msit-2024-11",
@@ -59557,6 +59591,17 @@
               },
               "legal_basis",
               "type"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "KR"
+              },
+              "timeline",
+              {
+                "id": "kr-2026-01-22-designated"
+              },
+              "event"
             ]
           ]
         },
