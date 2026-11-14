@@ -33,7 +33,7 @@ def output(lineage, date, **extra):
 def primary(events=None, outputs=None):
     return {
         "dataset": {"exchange_rates": []},
-        "jurisdictions": [{"id": "GB", "timeline": events or []}],
+        "jurisdictions": [{"id": "GB", "summary": "Fixture.", "timeline": events or []}],
         "institutes": [
             {"id": "institute", "jurisdiction_id": "GB", "outputs": outputs or []}
         ],

@@ -25,7 +25,7 @@ def test_prepared_facts_imports_migration_only_for_legacy(
     module = importlib.import_module(module_name)
     data = {
         "dataset": {"exchange_rates": []},
-        "jurisdictions": [{"id": "GB", "timeline": []}],
+        "jurisdictions": [{"id": "GB", "summary": "Fixture.", "timeline": []}],
         "institutes": [],
         "sources": [
             {

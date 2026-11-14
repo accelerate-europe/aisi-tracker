@@ -217,6 +217,11 @@ def authored_schema(download_schema, *, strict=False):
         if strict:
             for key in keys:
                 record["properties"][key] = False
+    # Generated in a migrated record (no authored summary), authored in the others until 1.2.0: optional here, and
+    # published.generate_texts requires role and note where summary is authored (docs/design/claims-1.1.md, section 1).
+    jprops = jurisdictions["properties"]
+    for record, key in ((jurisdictions, "summary"), (jprops["related_bodies"]["items"], "role"), (jprops["closest_body"], "note")):
+        record["required"] = [k for k in record.get("required", []) if k != key]
     funding = schema["$defs"]["funding"]
     computed_funding = (
         ({"required": ["sum_of"]}, ("amount", "annual_amount")),

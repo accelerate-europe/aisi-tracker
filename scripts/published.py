@@ -11,9 +11,11 @@ from decimal import Decimal, ROUND_CEILING, ROUND_FLOOR, ROUND_HALF_UP, localcon
 from functools import cmp_to_key
 
 if __package__:
+    from . import summaries
     from .claim_checks import function_rows
     from .flag_checks import access_summary
 else:
+    import summaries  # type: ignore[import-not-found, no-redef]
     from claim_checks import function_rows  # type: ignore[import-not-found, no-redef]
     from flag_checks import access_summary  # type: ignore[import-not-found, no-redef]
 
@@ -805,6 +807,59 @@ def materialise_facts(data: dict, *, strict: bool = False) -> dict:
             timeline.insert(index, event)
         if timeline or "timeline" in jurisdiction:
             jurisdiction["timeline"] = timeline
+    errors += generate_texts(result)
     if errors:
         raise ValueError("\n".join(errors))
     return result
+
+
+def generate_texts(result: dict) -> list[str]:
+    """Word the summary, notes, related-body roles and closest-body note of each migrated record (no authored summary).
+
+    A record with an authored summary keeps all four as authored and must author role and note; a migrated record
+    may author none of them (docs/design/claims-1.1.md, section 1, "A migrated record").
+    """
+    errors = []
+    institutes = {i["id"]: i for i in result.get("institutes", [])}
+    for jurisdiction in result.get("jurisdictions", []):
+        where = f"jurisdictions/{jurisdiction['id']}"
+        bodies = jurisdiction.get("related_bodies", [])
+        closest = jurisdiction.get("closest_body")
+        if "summary" in jurisdiction:
+            errors += [f"{where}/related_bodies/{b.get('id', b['name'])}: role is required while the record authors its summary"
+                       for b in bodies if "role" not in b]
+            if closest is not None and "note" not in closest:
+                errors.append(f"{where}/closest_body: note is required while the record authors its summary")
+            continue
+        authored = (["notes"] if "notes" in jurisdiction else []) + [
+            f"related_bodies/{b.get('id', b['name'])}/role" for b in bodies if "role" in b
+        ] + (["closest_body/note"] if closest is not None and "note" in closest else [])
+        errors += [f"{where}/{leaf}: generated in a migrated record (no authored summary); must not be authored" for leaf in authored]
+        closest_id = (closest or {}).get("body_id")
+        errors += [
+            f"{where}/related_bodies/{b.get('id', b['name'])}: a related body of a migrated record has a role claim or is an AI Act authority"
+            for b in bodies
+            if b["kind"] != "ai_act_authority"
+            and not (closest_id is not None and b.get("id") == closest_id)
+            and not summaries.role_claims(jurisdiction, b.get("id"))
+        ]
+        _, _, basis = status_basis(jurisdiction.get("timeline", []))
+        try:
+            texts = summaries.generate(
+                jurisdiction,
+                institutes.get(jurisdiction.get("institute_id")),
+                jurisdiction["timeline"][basis] if basis is not None else None,
+            )
+        except summaries.GeneratorError as exc:
+            errors.append(f"{where}: {exc}")
+            continue
+        jurisdiction["summary"] = texts["summary"]
+        if texts["notes"]:
+            jurisdiction["notes"] = texts["notes"]
+        else:
+            jurisdiction.pop("notes", None)
+        for body in bodies:
+            body["role"] = texts["roles"].get(body.get("id"), "")  # a body without an id has no claim to word
+        if closest is not None:
+            closest["note"] = texts["note"]
+    return errors

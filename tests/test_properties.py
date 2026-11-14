@@ -242,7 +242,7 @@ def test_budget_ratios_from_exact_quotients(ecb):
         else:
             record["annual_amount"] = record["amount"]
         jurisdiction = {
-            "id": "XX", "kind": "state", "timeline": [],
+            "id": "XX", "kind": "state", "summary": "Fixture.", "timeline": [],
             "population": {"value": population, "year": 2025},
             "gdp": {"value": gdp, "currency": gdp_currency, "year": 2025},
         }

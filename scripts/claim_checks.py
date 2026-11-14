@@ -8,8 +8,9 @@ code and sits on an institute or on a jurisdiction with a status. A development 
 lead development, at most one, on a jurisdiction with none identified: its act and date are bound
 too, the act to a primary source of the state, dated within three years before check.last_checked.
 When closest_body.body_id names the closest body, its gap needs an excerpt and, if the body has role
-claims, exactly one is marked lead and quotes its excerpt's gloss (or the excerpt). Until step B
-(the migrated record) those two rules bind only where body_id is set; designation_step is optional.
+claims, exactly one is marked lead and quotes its excerpt's gloss (or the excerpt). Those two rules
+bind where body_id is set, which a migrated record (no authored summary) must do for its closest body
+(published.generate_texts); designation_step is optional.
 Function codes, their tests and groups live only in dataset.vocabularies.function; a retired code
 stays there with deprecated and replaced_by. check.functions (institutes only) lists the codes an
 institute was coded against: a listed code with no claim is not_found, an unlisted current code

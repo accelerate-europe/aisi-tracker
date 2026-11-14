@@ -42,7 +42,7 @@ def record(identity="compared", **extra):
 
 
 def document(funding, population=10_000_000, gdp=None, kind="state"):
-    jurisdiction = {"id": "XX", "kind": kind, "timeline": []}
+    jurisdiction = {"id": "XX", "kind": kind, "summary": "Fixture.", "timeline": []}
     if population is not None:
         jurisdiction["population"] = {"value": population, "year": 2025, "source_ids": ["pop"]}
     if gdp is not None:

@@ -39,8 +39,10 @@ def required_excerpt_pointers(d: dict, *, authored: dict | None = None) -> set[s
         if status_authored and record["status"] != "none_identified":
             required.update(f"{prefix}/{key}" for key in ("status", "status_since"))
         if "closest_body" in record:
+            # A migrated record (no authored summary) generates the note; its gap carries the quote instead.
+            migrated = "summary" not in authored_jurisdictions[record["id"]]
             required.update(
-                f"{prefix}/closest_body/{key}" for key in ("name", "stage", "note")
+                f"{prefix}/closest_body/{key}" for key in ("name", "stage", "gap" if migrated else "note")
             )
         institute = authored_institutes.get(record.get("institute_id"))
         primary_institute = institute is not None and "status" not in institute
@@ -360,38 +362,64 @@ def unquoted_claims(d: dict) -> dict[str, list[str]]:
     sentences carry a date, a figure or a named body.
     """
     found: dict[str, list[str]] = {kind: [] for kind in UNQUOTED_KINDS}
+    migrated = migrated_ids(d)  # their items are errors (migrated_unquoted_errors), not warnings
+    for kind, jid, item in unquoted_items(d):
+        if jid not in migrated:
+            found[kind].append(item)
+    return found
+
+
+def migrated_ids(d: dict) -> set[str]:
+    """Jurisdictions whose authored input has no summary: their summary, notes, roles and closest note are generated."""
+    return {j["id"] for j in d["jurisdictions"] if "summary" not in j}
+
+
+def migrated_unquoted_errors(d: dict) -> list[str]:
+    """In a migrated record every unquoted_claims item is an error (docs/design/claims-1.1.md, section 5); d is authored."""
+    migrated = migrated_ids(d)
+    return [f"{jid}: {kind} in a migrated record: {item}" for kind, jid, item in unquoted_items(d) if jid in migrated]
+
+
+def unquoted_items(d: dict) -> list[tuple[str, str, str]]:
+    """(kind, jurisdiction id, item) for unquoted_claims; d is authored. A migrated record's generated leaves are left out."""
+    migrated = migrated_ids(d)
+    items: list[tuple[str, str, str]] = []
     d = materialised_view(d)
     if d is None:
-        return found
+        return items
     bound = {pointer for s in d["sources"] for e in s.get("excerpts", []) for pointer in e["supports"]}
 
-    def free_text(value, pointer: str, family: str, owner: str, key: str = "") -> None:
+    def free_text(value, pointer: str, family: str, owner: str, jid: str, key: str = "") -> None:
         if isinstance(value, dict):
             for child, item in value.items():
                 if child != "related_bodies":
-                    free_text(item, f"{pointer}/{child}", f"{family}.{child}", owner, child)
+                    free_text(item, f"{pointer}/{child}", f"{family}.{child}", owner, jid, child)
         elif isinstance(value, list):
             for k, item in enumerate(value):
-                free_text(item, f"{pointer}/{k}", f"{family}[]", owner, key)
+                free_text(item, f"{pointer}/{k}", f"{family}[]", owner, jid, key)
         elif isinstance(value, str) and key in FREE_TEXT_KEYS and pointer not in bound:
-            found["free text with no excerpt"].append(f"{family}: {owner} ({checkable_sentences(value)} checkable sentences)")
+            items.append(("free text with no excerpt", jid, f"{family}: {owner} ({checkable_sentences(value)} checkable sentences)"))
 
     for n, record in enumerate(d["jurisdictions"]):
+        jid, generated = record["id"], record["id"] in migrated
         for k, body in enumerate(record.get("related_bodies", [])):
-            prefix, label = f"/jurisdictions/{n}/related_bodies/{k}", f"{record['id']} {body['name']}"
+            prefix, label = f"/jurisdictions/{n}/related_bodies/{k}", f"{jid} {body['name']}"
             if not body.get("source_ids"):
-                found["related body with no source"].append(label)
+                items.append(("related body with no source", jid, label))
                 continue
-            if f"{prefix}/role" not in bound:
-                found["related body role with no excerpt"].append(label)
+            if not generated and f"{prefix}/role" not in bound:
+                items.append(("related body role with no excerpt", jid, label))
             if STAGE_IN_NAME.search(body["name"]) and f"{prefix}/name" not in bound:
-                found["stage in a body's name with no excerpt on the name"].append(label)
+                items.append(("stage in a body's name with no excerpt on the name", jid, label))
             if "designation_state" in body and f"{prefix}/designation_state" not in bound:
-                found["AI Act authority designation_state with no excerpt"].append(f"{label} ({body['designation_state']})")
-        free_text({key: value for key, value in record.items() if key != "check"}, f"/jurisdictions/{n}", "jurisdictions[]", record["id"])
+                items.append(("AI Act authority designation_state with no excerpt", jid, f"{label} ({body['designation_state']})"))
+        shown = {key: value for key, value in record.items() if key != "check" and not (generated and key in ("summary", "notes"))}
+        if generated and "closest_body" in shown:
+            shown["closest_body"] = {key: value for key, value in shown["closest_body"].items() if key != "note"}
+        free_text(shown, f"/jurisdictions/{n}", "jurisdictions[]", record["id"], jid)
     for n, record in enumerate(d["institutes"]):
-        free_text({key: value for key, value in record.items() if key != "check"}, f"/institutes/{n}", "institutes[]", record["id"])
-    return found
+        free_text({key: value for key, value in record.items() if key != "check"}, f"/institutes/{n}", "institutes[]", record["id"], record["jurisdiction_id"])
+    return items
 
 
 UNQUOTED_REPORT = "unquoted-claims.md"
@@ -438,6 +466,7 @@ def check_method_rules(d: dict, *, authored: dict | None = None) -> list[str]:
     errors += check_rows(d)
     errors += check_flags(d)
     errors += check_claims(d)
+    errors += migrated_unquoted_errors(authored)
     # Owner's decision of 14 Nov 2026: a related body cites a source. An error for Europe-scope records, whose
     # bodies were all sourced in 1.0.10; elsewhere still a release warning (unquoted_claims) until a later pass.
     errors += [

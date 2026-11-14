@@ -33,7 +33,7 @@ def document(*, withdrawn=False, replacement=False, closed=False):
     return {
         "dataset": {"as_of": "2028-01-01", "exchange_rates": []},
         "jurisdictions": [
-            {"id": "GB", "institute_id": "institute", "timeline": events}
+            {"id": "GB", "summary": "Fixture.", "institute_id": "institute", "timeline": events}
         ],
         "institutes": [{"id": "institute", "jurisdiction_id": "GB", "outputs": []}],
         "sources": [
