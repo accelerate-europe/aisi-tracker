@@ -115,8 +115,25 @@ def literal_match(quote: str, text: str) -> bool:
     return joined != text and _literal_match(quote, joined)
 
 
+def anchor_placement(anchor: str, quote: str, text: str) -> int | None:
+    """Characters from the end of the anchor's first match to the start of the quote's last match, the larger of
+    the two normalised views (as extracted, and with CJK layout wraps joined) that carry both; negative when the
+    anchor does not end before the quote starts. None when neither view carries both."""
+    joined = CJK_WRAP.sub("", text)
+    placements = []
+    for view in (text, joined) if joined != text else (text,):
+        anchors, quotes = list(_matches(anchor, view)), list(_matches(quote, view))
+        if anchors and quotes:
+            placements.append(quotes[-1][0] - anchors[0][1])
+    return max(placements, default=None)
+
+
 def _literal_match(quote: str, text: str) -> bool:
-    """Match one normalised view without truncating a numeric token at either edge.
+    return next(_matches(quote, text), None) is not None
+
+
+def _matches(quote: str, text: str):
+    """Each match (start, end) of quote in one normalised view, without truncating a numeric token at either edge.
 
     text is extractor output, where a BOUNDARY can only be an HTML element boundary.
     """
@@ -126,7 +143,7 @@ def _literal_match(quote: str, text: str) -> bool:
     gap = rf"(?<=[{cjk}])\s+(?=[{cjk}])"
     needle = re.sub(gap, "", normalise(quote))
     if not needle:
-        return False
+        return
     # Normalise each element's text separately and join them with one marker, so the
     # marked view has the same length as the plain view the quotation is found in.
     marked = re.sub(
@@ -161,9 +178,8 @@ def _literal_match(quote: str, text: str) -> bool:
         left_ok = not (needle[0].isdigit() and left_numeric)
         right_ok = not (needle[-1].isdigit() and right_numeric)
         if left_ok and right_ok:
-            return True
+            yield start, end
         start = haystack.find(needle, start + 1)
-    return False
 
 
 def is_xlsx(body: bytes) -> bool:
@@ -942,6 +958,44 @@ def candidates(source: dict, excerpt_url: str | None = None):
             yield url, method
 
 
+def copy_texts(fetcher: "Fetcher", meta: dict) -> list[str]:
+    """Every text view of one fetched copy that a quotation is matched in (PDF views only for an unextractable PDF)."""
+    if meta["status"] in {"no_extractable_text", "extraction_error"}:
+        return [text for _, text in fetcher.pdf_views(meta)]
+    if meta["status"] != "ok":
+        return []
+    return [text for _, text in fetcher.html_views(meta)] + [fetcher.text(meta)] + [text for _, text in fetcher.pdf_views(meta)]
+
+
+# An anchor that fails its check; each is an error (docs/design/claims-1.1.md, section 5).
+ANCHOR_FAILURES = ("anchor_mismatch", "anchor_other_copy", "anchor_not_before_quote")
+
+
+def check_anchors(source: dict, excerpt: dict, match: dict, fetcher: "Fetcher") -> list[dict]:
+    """Each anchor in the copy the quote was found in: found there, and for a heading or provision ending before the
+    quote starts in a text view that carries both; a definition may sit anywhere. One result per anchor: its kind
+    and text, `status` (matched, or a failure from ANCHOR_FAILURES) and, where one view carries anchor and quote,
+    `distance`, the characters from the anchor's end to the quote's start, for the reviewer who judges whether the
+    anchor governs the quote (negative when the anchor ends after the quote starts)."""
+    views = copy_texts(fetcher, match)
+    results = []
+    for anchor in excerpt["anchors"]:
+        placements = [p for p in (anchor_placement(anchor["text"], excerpt["text"], v) for v in views) if p is not None]
+        result = {"kind": anchor["kind"], "text": anchor["text"], "status": "matched"}
+        if placements:
+            result["distance"] = max(placements)
+        if not placements and not any(literal_match(anchor["text"], v) for v in views):
+            other = any(
+                meta["url"] != match["url"] and any(literal_match(anchor["text"], v) for v in copy_texts(fetcher, meta))
+                for meta in (fetcher.fetch(url, method) for url, method in candidates(source, excerpt.get("url")))
+            )
+            result["status"] = "anchor_other_copy" if other else "anchor_mismatch"
+        elif anchor["kind"] in {"heading", "provision"} and not (placements and max(placements) >= 0):
+            result["status"] = "anchor_not_before_quote"
+        results.append(result)
+    return results
+
+
 def verify_source(
     source: dict,
     excerpts: list[tuple[int, dict]],
@@ -1047,6 +1101,13 @@ def verify_source(
             else failure,
             "attempts": excerpt_attempts,
         }
+        if excerpt.get("anchors"):
+            # Checked only in the copy that carries the quote; without one the quote's own status stands.
+            row["anchors"] = check_anchors(source, excerpt, match, fetcher) if match else [
+                {"kind": a["kind"], "text": a["text"], "status": "not_checked"} for a in excerpt["anchors"]]
+            failed = [a["status"] for a in row["anchors"] if a["status"] in ANCHOR_FAILURES]
+            if failed:
+                row["status"] = failed[0]
         if excerpt.get("url"):
             row["declared_excerpt_url"] = excerpt["url"]
         if match:
@@ -1112,6 +1173,15 @@ def write_report(path: Path, results: list[dict], data_path: Path) -> dict:
             md.append(
                 f"| {row['source_id']} | {row['excerpt_id']} | {row['status']} | {evidence} |"
             )
+    anchored = [(row, a) for row in rows for a in row.get("anchors", [])]
+    if anchored:
+        md += ["", "## Anchors", "",
+               "Distance: characters from the anchor's end to the quote's start in the copy that carries both, farthest first. "
+               "The check shows order, not that the anchor governs the quote; review judges that against the saved copy.", "",
+               "| Source | Excerpt | Kind | Anchor result | Distance | Anchor |", "| --- | --- | --- | --- | --- | --- |"]
+        for row, a in sorted(anchored, key=lambda pair: -pair[1].get("distance", -1)):
+            text = a["text"].replace("|", "&#124;").replace("\n", " ")
+            md.append(f"| {row['source_id']} | {row['excerpt_id']} | {a['kind']} | {a['status']} | {a.get('distance', '')} | {text} |")
     path.with_suffix(".md").write_text("\n".join(md) + "\n", encoding="utf-8")
     return counts
 

@@ -625,7 +625,7 @@ def test_quote_verification_needs_a_complete_report(tmp_path, monkeypatch, repor
         return 1, 0.0, log
 
     monkeypatch.setattr(check, "run", fake_run)
-    assert check.verify_quotes(ctx, {}, [("s", "a"), ("s", "b")])[0] == status
+    assert check.verify_quotes(ctx, {}, [("s", "a", "", "[]"), ("s", "b", "", "[]")])[0] == status
 
 
 def test_child_environment_drops_git_and_uv_routing(monkeypatch):
@@ -903,11 +903,11 @@ def test_quote_verification_runs_from_snapshots_without_a_cache(tmp_path, monkey
         return 0, 0.0, log
 
     monkeypatch.setattr(check, "run", fake_run)
-    assert check.verify_quotes(ctx, {}, [("s", "a")])[0] == "PASS"
+    assert check.verify_quotes(ctx, {}, [("s", "a", "", "[]")])[0] == "PASS"
     assert "--seed-snapshots" in seen[0] and "--seed-cache" not in seen[0]
     for store in (None, tmp_path / "absent"):
         ctx.snapshots = store
-        status, lines = check.verify_quotes(ctx, {}, [("s", "a")])
+        status, lines = check.verify_quotes(ctx, {}, [("s", "a", "", "[]")])
         assert status == "NOT RUN"
         detail = " ".join(lines)
         assert "at None" not in detail
@@ -973,7 +973,7 @@ def test_unverified_changed_quotes_block_and_list_identity(tmp_path, monkeypatch
         return 1, 0.0, log
 
     monkeypatch.setattr(check, "run", fake_run)
-    status, lines = check.verify_quotes(ctx, {}, [("s", "a"), ("s", "b")])
+    status, lines = check.verify_quotes(ctx, {}, [("s", "a", "", "[]"), ("s", "b", "", "[]")])
     assert status == expected
     assert any("unavailable-evidence" in line and unverified in line for line in lines)
     assert "1 unverified" in "\n".join(lines)

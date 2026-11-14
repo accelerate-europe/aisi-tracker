@@ -866,12 +866,26 @@ def supporting(data: dict, pointer: str) -> list[tuple[str, dict]]:
     return found
 
 
-def excerpt_keys(data: dict) -> set[tuple[str, str]]:
-    return {(s["id"], e["text"]) for s in data.get("sources", []) for e in s.get("excerpts", [])}
+def anchor_key(anchors: list[dict] | None) -> str:
+    """An excerpt's anchor kinds and texts as one value (the verifier's report rows carry the same two), so adding or
+    editing an anchor re-verifies its excerpt. A gloss edit is a binding change, not a new quotation."""
+    return json.dumps([[a["kind"], a["text"]] for a in anchors or []], ensure_ascii=False)
+
+
+def anchored_copy(url: str | None, anchors: list[dict] | None) -> str:
+    """The declared copy, part of the key only for an anchored excerpt: two excerpts with one text and different
+    copies are checked apart once anchors are involved, as each anchor must be in its own excerpt's copy. Without
+    anchors a URL edit alone still does not re-verify, as before."""
+    return (url or "") if anchors else ""
+
+
+def excerpt_keys(data: dict) -> set[tuple[str, str, str, str]]:
+    return {(s["id"], e["text"], anchored_copy(e.get("url"), e.get("anchors")), anchor_key(e.get("anchors")))
+            for s in data.get("sources", []) for e in s.get("excerpts", [])}
 
 
 def binding_changes(old: dict, new: dict) -> list[dict]:
-    """Report bindings and gloss edits even when quotation text is unchanged."""
+    """Report bindings, gloss and anchor edits even when quotation text is unchanged (anchors in the gloss column)."""
     def bindings(data):
         result = {}
         for source in data.get("sources", []):
@@ -884,6 +898,8 @@ def binding_changes(old: dict, new: dict) -> list[dict]:
                 )
                 if "gloss" in excerpt:
                     group["glosses"].add(excerpt["gloss"])
+                if "anchors" in excerpt:
+                    group["glosses"].add("anchors: " + json.dumps(excerpt["anchors"], ensure_ascii=False, sort_keys=True))
         return result
 
     before, after = bindings(old), bindings(new)
@@ -904,7 +920,7 @@ def binding_changes(old: dict, new: dict) -> list[dict]:
     return rows
 
 
-def verify_quotes(ctx: Context, data: dict, changed: list[tuple[str, str]]) -> tuple[str, list[str]]:
+def verify_quotes(ctx: Context, data: dict, changed: list[tuple[str, str, str, str]]) -> tuple[str, list[str]]:
     """Offline literal quote check of new excerpt texts against the local source cache."""
     if not changed:
         return "PASS", ["No new or edited excerpt texts."]
@@ -918,7 +934,7 @@ def verify_quotes(ctx: Context, data: dict, changed: list[tuple[str, str]]) -> t
     # the checkout, which absorbs re-extraction. A fresh clone without a cache is seeded from the snapshots.
     cmd = ["uv", "run", "--locked", "-q", "scripts/verify_excerpts.py", "--offline", "--all-excerpts",
            "--cache", str(ctx.work / "source-cache"), *seeds, "--report", str(report)]
-    for source_id in sorted({s for s, _ in changed}):
+    for source_id in sorted({key[0] for key in changed}):
         cmd += ["--source", source_id]
     # Exit 1 only means some quotation needs review; the rows below say which.
     code, _, log = run(ctx, "compare", cmd)
@@ -926,18 +942,23 @@ def verify_quotes(ctx: Context, data: dict, changed: list[tuple[str, str]]) -> t
         return "FAIL", [f"verify_excerpts.py failed; see {log}", tail(log)]
     wanted = set(changed)
     verified = json.loads(report.read_text(encoding="utf-8"))
-    rows = [r for s in verified["sources"] for r in s["excerpts"] if (r["source_id"], r["text"]) in wanted]
-    missing = wanted - {(r["source_id"], r["text"]) for r in rows}
+    def key(row):
+        anchors = row.get("anchors")
+        return row["source_id"], row["text"], anchored_copy(row.get("declared_excerpt_url"), anchors), anchor_key(anchors)
+
+    rows = [r for s in verified["sources"] for r in s["excerpts"] if key(r) in wanted]
+    missing = wanted - {key(r) for r in rows}
     if verified.get("partial") or missing:
         return "FAIL", [f"verify_excerpts.py did not finish or skipped {len(missing)} excerpts; see {log}", tail(log)]
     lines = ["| Source | Excerpt ID | Status | Excerpt |", "| --- | --- | --- | --- |"]
     for row in rows:
         identity = row.get("excerpt_id") or "sha256:" + hashlib.sha256(row["text"].encode("utf-8")).hexdigest()
         lines.append(f"| {row['source_id']} | `{identity}` | {row['status']} | {short(row['text'], EXCERPT_CHARS)} |")
-    mismatched = [r for r in rows if r["status"] == "mismatch"]
-    unverified = [r for r in rows if not r["status"].startswith("matched") and r["status"] != "mismatch"]
+    # A missing, misplaced or other-copy anchor fails like a missing quotation (docs/design/claims-1.1.md, section 5).
+    mismatched = [r for r in rows if r["status"] == "mismatch" or r["status"].startswith("anchor_")]
+    unverified = [r for r in rows if not r["status"].startswith("matched") and r not in mismatched]
     lines.append("")
-    lines.append(f"{len(rows) - len(mismatched) - len(unverified)} matched, {len(mismatched)} not found in the cached document (fails), {len(unverified)} unverified (no usable cached copy; NOT RUN).")
+    lines.append(f"{len(rows) - len(mismatched) - len(unverified)} matched, {len(mismatched)} not found in the cached document or with an anchor that fails (fails), {len(unverified)} unverified (no usable cached copy; NOT RUN).")
     return ("FAIL" if mismatched else "NOT RUN" if unverified else "PASS"), lines
 
 
