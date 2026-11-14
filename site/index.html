@@ -1312,8 +1312,8 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     if (qualifiers.length) { box.appendChild(document.createTextNode(" ")); var q = el("span", "small qualifiers"); q.appendChild(separated(qualifiers)); box.appendChild(q); }
     return box;
   }
-  // A None identified state's finding opens with its status in words; wherever the status shows beside it, the finding starts with what was found (rule: nothing restates its context).
-  function findingText(j) { var t = j.status === "none_identified" ? j.summary.replace(/^No qualifying (?:national )?(?:government )?(?:institute|designation)(?: or commitment)? (?:identified|confirmed)[.;]\s*/, "") : j.summary; t = t || j.summary; return t.charAt(0).toUpperCase() + t.slice(1); }
+  // A None identified state's finding opens with its status in words; wherever the status shows beside it, the finding starts with what was found (rule: nothing restates its context). A generated finding carries its scope ("identified as of October 2026.").
+  function findingText(j) { var t = j.status === "none_identified" ? j.summary.replace(/^(?:No qualifying (?:national )?(?:government )?(?:institute|designation)(?: or commitment)? (?:identified|confirmed)[.;]|No qualifying institute identified as of (?:January|February|March|April|May|June|July|August|September|October|November|December) \d{4}\.)\s*/, "") : j.summary; t = t || j.summary; return t.charAt(0).toUpperCase() + t.slice(1); }
   function asOf(day, word) { var span = el("span", "date-text", (word || "as of") + " "); span.appendChild(dated(day)); return span; } // the word stays with its date
   function staffValue(st) { var text = st && staffText(st); return text ? qualified(text, [st.as_of ? asOf(st.as_of) : null, confTag(st)]) : null; }
   function datedStaff(st) { var text = st && staffText(st); return text ? text + (st.as_of ? ", " + fmtDate(st.as_of) : "") : ""; }

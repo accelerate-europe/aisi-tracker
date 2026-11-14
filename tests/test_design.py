@@ -157,3 +157,25 @@ def test_a_background_image_counts_where_it_shows_through():
 ])
 def test_only_text_clipped_to_nothing_is_skipped(args, hides):
     assert paint_js(f"clipHides(...{json.dumps(args)})") is hides
+
+
+@pytest.mark.skipif(shutil.which("node") is None, reason="node is not installed")
+def test_finding_text_strips_the_dated_and_the_legacy_opener():
+    """findingText drops the status-in-words opener, with or without the generated scope (claims-1.1, pattern 1)."""
+    source = re.search(r"  function findingText\(j\) .*", PAGE.read_text()).group()
+    cases = [
+        ("No qualifying institute identified as of October 2026. Closest body: Centre.", "Closest body: Centre."),
+        ("No qualifying institute identified as of October 2026.", "No qualifying institute identified as of October 2026."),
+        # Legacy openers, unchanged.
+        ("No qualifying institute identified. NASK describes research.", "NASK describes research."),
+        ("No qualifying national government designation or commitment confirmed; the bill is pending.", "The bill is pending."),
+        ("No qualifying institute identified.", "No qualifying institute identified."),
+        # Near misses keep the whole text.
+        ("No qualifying designation confirmed as of October 2026. Details follow.", "No qualifying designation confirmed as of October 2026. Details follow."),
+        ("No qualifying institute identified as of Spring 2026. Details follow.", "No qualifying institute identified as of Spring 2026. Details follow."),
+        ("No qualifying institute identified as of October 2026; details follow.", "No qualifying institute identified as of October 2026; details follow."),
+    ]
+    script = source + "; console.log(JSON.stringify(" + json.dumps([text for text, _ in cases]) + ".map(function (s) { return findingText({status: 'none_identified', summary: s}); }).concat([findingText({status: 'planned', summary: 'No qualifying institute identified as of October 2026. X.'})])));"
+    result = subprocess.run(["node", "-e", script], capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
+    assert json.loads(result.stdout) == [expected for _, expected in cases] + ["No qualifying institute identified as of October 2026. X."]
