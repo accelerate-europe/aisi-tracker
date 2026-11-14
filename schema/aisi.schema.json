@@ -2546,6 +2546,40 @@
                   "type": "string",
                   "description": "Short English gloss for a non-English excerpt."
                 },
+                "anchors": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 2,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "text",
+                      "kind"
+                    ],
+                    "properties": {
+                      "text": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 300,
+                        "description": "A short verbatim span in the original language, from the same copy as the excerpt."
+                      },
+                      "kind": {
+                        "enum": [
+                          "definition",
+                          "heading",
+                          "provision"
+                        ],
+                        "description": "definition: the clause that defines a short name the excerpt or its heading uses. heading: a heading or list lead-in that governs the excerpt. provision: the title of the article or section the excerpt sits in. A heading or provision comes before the excerpt in the copy."
+                      },
+                      "gloss": {
+                        "type": "string",
+                        "description": "Short English gloss for a non-English anchor."
+                      }
+                    }
+                  },
+                  "description": "Optional: the spans that name whom the excerpt is about when it does not name the institute or body itself (attribution rule, docs/design/claims-1.1.md section 2). At most one definition and at most one heading or provision: one link from the quote to its governing lead-in, one from a short name to its definition. Checked against the same copy as the excerpt, and re-read with it: the excerpt counts as found only when every span is."
+                },
                 "supports": {
                   "type": "array",
                   "minItems": 1,

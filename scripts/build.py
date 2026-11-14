@@ -133,6 +133,15 @@ def check_excerpts(d: dict) -> list[str]:
                 errors.append(f"{where}: source language is required for an excerpt")
             elif source["language"].split("-")[0] != "en" and not excerpt.get("gloss", "").strip():
                 errors.append(f"{where}: non-English excerpt needs an English gloss")
+            elif source["language"].split("-")[0] != "en" and any(not a.get("gloss", "").strip() for a in excerpt.get("anchors", [])):
+                errors.append(f"{where}: non-English anchor needs an English gloss")
+            groups = [a["kind"] == "definition" for a in excerpt.get("anchors", [])]
+            if len(groups) > 2 or len(groups) != len(set(groups)):
+                errors.append(
+                    f"{where}: anchors are at most one definition and at most one heading or provision (one link from the "
+                    "quote to its lead-in, one from a short name to its definition); for a longer chain widen the excerpt, "
+                    "or the claim waits"
+                )
             for pointer in excerpt["supports"]:
                 try:
                     nodes = pointer_ancestors(d, pointer)
@@ -752,6 +761,7 @@ def tables(d: dict) -> dict[str, list[dict]]:
     excerpts = [{
         "id": excerpt_identity(excerpt), "source_id": source["id"], "source_url": source["url"], "text": excerpt["text"], "gloss": excerpt.get("gloss", ""),
         "supports": json.dumps(excerpt["supports"], ensure_ascii=False), "url": excerpt.get("url", ""), "accessed": excerpt.get("accessed", ""),
+        "anchors": json.dumps(excerpt["anchors"], ensure_ascii=False) if excerpt.get("anchors") else "",
     } for source in d["sources"] for excerpt in source.get("excerpts", [])]
     bodies = [{
         "id": body.get("id", ""), "jurisdiction_id": j["id"], "name": body["name"], "name_en": body.get("name_en", ""), "kind": body["kind"], "role": body["role"], "counts_as_aisi": val(body.get("counts_as_aisi")),
@@ -828,6 +838,7 @@ FIELD_DOCS = {
     "supports": "JSON-encoded array of RFC 6901 pointers supported by this excerpt in this exact dataset version.",
     "identifier_source_ids": "Citations supporting identifiers, distinct from citations for status; see sources.csv.",
     "source_id": "ID of the source containing the excerpt; see sources.csv.",
+    "anchors": "JSON-encoded array of the excerpt's anchors (sources[].excerpts[].anchors in aisi.json), each {text, kind, gloss?}: verbatim spans from the same copy that name whom the excerpt is about (kind definition, heading or provision); empty when the excerpt has none.",
     "source_url": "Canonical URL of the source containing the excerpt.",
     "source_ids": "Source ids, separated by '; '; see sources.csv.",
     "source_urls": "URLs of the cited sources, same order as source_ids.",
@@ -943,7 +954,7 @@ EMPTY_COLUMNS = {
     "outputs": ["id", "institute_id", "date", "credited_from", "credit_institute_id", "credit_date", "type", "title", "lineage", "attribution", "qualifies_as", "qualification_note", "source_ids", "source_urls"],
     "known_activity": ["id", "institute_id", "kind", "date", "lineage", "source_ids", "source_urls"],
     "network_milestones": ["id", "body", "type", "date", "description", "short", "source_ids", "source_urls"],
-    "source_excerpts": ["id", "source_id", "source_url", "text", "gloss", "supports", "url", "accessed"],
+    "source_excerpts": ["id", "source_id", "source_url", "text", "gloss", "supports", "url", "accessed", "anchors"],
     "related_bodies": ["id", "jurisdiction_id", "name", "name_en", "kind", "role", "counts_as_aisi", "designation_state", "authority_roles", "designation_step_text", "designation_step_date", "source_ids", "source_urls"],
     "closest_bodies": ["id", "jurisdiction_id", "name", "stage", "gap", "note", "body_id", "source_ids", "source_urls"],
 }
@@ -966,13 +977,15 @@ def prerender(site: Path) -> None:
         fail([f"pre-rendering failed (scripts/prerender.py exit {result.returncode}): {result.stderr.strip()[-2000:]}"])
 
 
-PAGE_DATA_DROPPED = {"check": ("last_checked", "method"), "sources": ("snapshot", "access_note"), "records": ("claims", "functions")}
+PAGE_DATA_DROPPED = {"check": ("last_checked", "method"), "sources": ("snapshot", "access_note"), "records": ("claims", "functions"),
+                     "excerpts": ("anchors",)}
 
 
 def page_data(published: dict, build_mark: str | None = None) -> str:
     """data/page.json, what the page script loads: aisi.json without the fields it never reads (a state's research
     log in check, except last_checked and method; a source's private-copy metadata, snapshot and access_note; the
-    download-only claims and generated functions of states and institutes), minified, with the build mark
+    download-only claims and generated functions of states and institutes; an excerpt's anchors, until step F shows
+    them), minified, with the build mark
     (content_mark of the file without it) as its last key. aisi.json stays the public download; the page fetches
     this file by a URL carrying the same mark."""
     page = dict(published)
@@ -984,7 +997,13 @@ def page_data(published: dict, build_mark: str | None = None) -> str:
     if "institutes" in published:
         page["institutes"] = [shown(i) for i in published["institutes"]]
     page["jurisdictions"] = [shown(j) | {"check": {k: j["check"][k] for k in keep if k in j["check"]}} if "check" in j else shown(j) for j in published["jurisdictions"]]
-    page["sources"] = [{k: v for k, v in s.items() if k not in PAGE_DATA_DROPPED["sources"]} for s in published["sources"]]
+    def source(s: dict) -> dict:
+        kept = {k: v for k, v in s.items() if k not in PAGE_DATA_DROPPED["sources"]}
+        if "excerpts" in kept:
+            kept["excerpts"] = [{k: v for k, v in e.items() if k not in PAGE_DATA_DROPPED["excerpts"]} for e in kept["excerpts"]]
+        return kept
+
+    page["sources"] = [source(s) for s in published["sources"]]
     if build_mark is not None:
         page["build_mark"] = build_mark
     return json.dumps(page, ensure_ascii=False, separators=(",", ":"))
