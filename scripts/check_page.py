@@ -7643,6 +7643,47 @@ def check_archive_links(html, data: dict) -> list[str]:
     return errors
 
 
+def expected_reread_line(source: dict) -> str | None:
+    """The re-read line the page principle (Re-read line) asks for, from the source's quotations' own states."""
+    states = [e["reread"] for e in source.get("excerpts", []) if e.get("reread")]
+    if not states:
+        return None
+    rank = {"confirmed": 0, "not_attempted": 0, "blocked_or_failed": 1, "source_gone": 2, "quote_gone": 2}
+    tie = {"source_gone": 0, "quote_gone": 1, "blocked_or_failed": 2}
+    top = max(rank[r["state"]] for r in states)
+    if not top:
+        return f"Source last re-read {expected_date(max(r['last_found'] for r in states))}."
+    worst = min((r for r in states if rank[r["state"]] == top), key=lambda r: (r["since"], tie[r["state"]], r["last_found"]))
+    since, found = expected_date(worst["since"]), expected_date(worst["last_found"])
+    if worst["state"] == "quote_gone":
+        gone = sum(r["state"] == "quote_gone" for r in states)
+        count = f": {gone} of {len(states)} quotes" if any(not rank[r["state"]] for r in states) else ""
+        return f"Not found in the source on {since}{count}; last found {found}; under review."
+    if worst["state"] == "source_gone":
+        return f"Source offline since {since}; last found {found}."
+    return f"Source could not be re-read since {since}; last found {found}."
+
+
+def check_reread_lines(html, data: dict) -> list[str]:
+    """Each source list item carries the re-read line its quotations' states give, once, last, and none says verified."""
+    soup = BeautifulSoup(html, "html.parser")
+    sources = {s["id"]: s for s in data["sources"]}
+    errors, items = [], soup.select("li[data-source-id]")
+    for li in items:
+        sid = str(li["data-source-id"])
+        lines = li.select(".reread")
+        text = [" ".join(line.get_text().split()) for line in lines]
+        expected = expected_reread_line(sources[sid]) if sid in sources else None
+        if text != ([expected] if expected else []):
+            errors.append(f"source {sid}: re-read line {text or 'missing'}, expected {expected or 'none'}")
+        elif lines and (lines[0].parent is not li or any(
+                not isinstance(after, str) or after.strip() for after in lines[0].next_siblings)):
+            errors.append(f"source {sid}: the re-read line is not the item's last part")
+    if any("verified" in line.get_text().lower() for line in soup.select(".reread")):
+        errors.append("a re-read line says verified")
+    return errors
+
+
 def check_archive_wrap(page) -> list[str]:
     """"(archived copy)" never breaks across lines. Opens the source lists to measure, then restores them."""
     return page.evaluate("""() => {
@@ -10881,7 +10922,7 @@ def main(dist: Path = ROOT / "dist", screenshots: Path | None = None, capture: P
         if reserved := check_reserved_mark(dist, html):  # fails outright: a finding quoting such text could pass for a report line
             print(f"error: {reserved[0]}", file=sys.stderr)
             return 1
-        errors = [] if skip_static else check_method_pages(html, data, dist) + check_dom(html, data, dist, base_url) + check_agent_files(dist) + check_static_page(dist, data) + check_hydrated(html) + check_archive_links(html, data) + check_launch_assets(dist) + check_page_data(dist, data) + check_budget_ratio_downloads(dist, data) + check_state_downloads(dist, data) + check_state_download_buttons(html, dist, data)
+        errors = [] if skip_static else check_method_pages(html, data, dist) + check_dom(html, data, dist, base_url) + check_agent_files(dist) + check_static_page(dist, data) + check_hydrated(html) + check_archive_links(html, data) + check_reread_lines(html, data) + check_launch_assets(dist) + check_page_data(dist, data) + check_budget_ratio_downloads(dist, data) + check_state_downloads(dist, data) + check_state_download_buttons(html, dist, data)
         if not blocking(errors):
             errors.extend(check_merged(dist, data, merge, timings, quarantine) if merge else check_browser(chrome, dist, data, screenshots, jobs, timings, only, quarantine, job_limit(deadline)))
     except DeadlinePassed as exc:

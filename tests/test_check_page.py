@@ -654,6 +654,47 @@ def _archive_html(kept_archive=True, live_archive=False):
     )
 
 
+def _reread(state, last_found="2026-11-10", since=None):
+    return {"text": "q", "supports": [], "reread": {"state": state, "last_found": last_found, "since": since}}
+
+
+def test_reread_line_follows_the_worst_quotation():
+    line = lambda *excerpts: check_page.expected_reread_line({"excerpts": list(excerpts)})  # noqa: E731
+    assert line() is None
+    assert line(_reread("confirmed", "2026-11-03"), _reread("not_attempted", "2026-11-10")) == "Source last re-read 10 Nov 2026."
+    assert line(_reread("confirmed"), _reread("blocked_or_failed", "2026-10-17", "2026-11-10")) == \
+        "Source could not be re-read since 10 Nov 2026; last found 17 Oct 2026."
+    assert line(_reread("source_gone", "2026-10-17", "2026-11-10")) == "Source offline since 10 Nov 2026; last found 17 Oct 2026."
+    assert line(_reread("quote_gone", "2026-10-17", "2026-11-10")) == \
+        "Not found in the source on 10 Nov 2026; last found 17 Oct 2026; under review."
+    assert line(_reread("confirmed"), _reread("quote_gone", "2026-10-17", "2026-11-10"), _reread("blocked_or_failed", "2026-10-01", "2026-10-03")) == \
+        "Not found in the source on 10 Nov 2026: 1 of 3 quotes; last found 17 Oct 2026; under review."
+    # The count only when some quotation is still found.
+    assert line(_reread("quote_gone", "2026-10-17", "2026-11-10"), _reread("blocked_or_failed", "2026-10-01", "2026-10-03")) == \
+        "Not found in the source on 10 Nov 2026; last found 17 Oct 2026; under review."
+    # Exact ties: offline before not found, then the earliest last found, in either order.
+    pair = [_reread("quote_gone", "2026-10-17", "2026-11-10"), _reread("source_gone", "2026-10-20", "2026-11-10")]
+    for excerpts in (pair, pair[::-1]):
+        assert line(*excerpts) == "Source offline since 10 Nov 2026; last found 20 Oct 2026."
+    pair = [_reread("blocked_or_failed", "2026-10-17", "2026-11-10"), _reread("blocked_or_failed", "2026-10-03", "2026-11-10")]
+    for excerpts in (pair, pair[::-1]):
+        assert line(*excerpts) == "Source could not be re-read since 10 Nov 2026; last found 3 Oct 2026."
+
+
+def test_reread_lines_match_the_data():
+    data = {"sources": [{"id": "a", "excerpts": [_reread("confirmed")]}, {"id": "b", "excerpts": []}]}
+    item = '<li data-source-id="a"><a href="https://a.example/">A</a>, P{}</li><li data-source-id="b"><a href="https://b.example/">B</a>, P</li>'
+    good = '<span class="reread">Source last re-read <span class="date-text">10 Nov 2026</span>.</span>'
+    assert check_page.check_reread_lines(item.format(good), data) == []
+    assert "source a: re-read line missing, expected Source last re-read 10 Nov 2026." in check_page.check_reread_lines(item.format(""), data)
+    assert any("not the item's last part" in e for e in check_page.check_reread_lines(item.format(good + "<span>x</span>"), data))
+    assert any("not the item's last part" in e for e in check_page.check_reread_lines(item.format(good + " trailing text"), data))
+    # A page whose sources have no states shows no line, and that is valid.
+    assert check_page.check_reread_lines(item.format(""), {"sources": [{"id": "a", "excerpts": []}, {"id": "b"}]}) == []
+    verified = {"sources": [{"id": "a", "excerpts": []}]}
+    assert "a re-read line says verified" in check_page.check_reread_lines(item.format('<span class="reread">Verified.</span>'), verified)
+
+
 def test_archive_links_follow_archived_sources_only():
     data = _archive_data()
     assert check_page.check_archive_links(_archive_html(), data) == []
