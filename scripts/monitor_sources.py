@@ -65,6 +65,7 @@ try:
     )
     from .verify_excerpts import EXTRACTION_VERSION, Fetcher, content_problem, extract_text, literal_match
     from . import rereads
+    from . import published as fact_pipeline
 except ImportError:
     from snapshot_sources import (  # type: ignore[no-redef]  # Direct script entry point.
         PRIVATE_SNAPSHOTS,
@@ -80,6 +81,7 @@ except ImportError:
     )
     from verify_excerpts import EXTRACTION_VERSION, Fetcher, content_problem, extract_text, literal_match  # type: ignore[no-redef]
     import rereads  # type: ignore[no-redef]
+    import published as fact_pipeline  # type: ignore[no-redef]
 
 MONITOR_VERSION = 1
 CLASSES = ("substantive", "gone", "trivial", "unchanged", "archived", "blocked", "failed", "skipped")
@@ -977,6 +979,7 @@ def digest_summary(report: dict, path: Path) -> dict:
         "gone": entries(lambda r: r["class"] == "gone"),
         "unconfirmed": entries(lambda r: r["reason"] in {"fallback_quote_unconfirmed", "archive_quote_missing"}),
         "next_checks_due": [r["id"] for r in report["next_checks"] if r["due"]], "report": str(path),
+        "reread_alerts": report.get("reread_alerts", []),
     }
 
 
@@ -1094,6 +1097,10 @@ def run_monitor(args) -> int:
                 rows = log.rows(run_id, sources, args.directory, ROOT / "work/snapshots")
             report = build_report(args, data, start, rows, time.monotonic() - clock, error, interrupted)
             try:
+                report["reread_alerts"] = reread_alerts(data, log.read("checks"), args.today.isoformat())
+            except (KeyError, ValueError, TypeError, IndexError, ArithmeticError) as exc:
+                report["reread_alerts"] = [f"re-read alerts not computed: {type(exc).__name__}: {exc}"]
+            try:
                 args.report.mkdir(parents=True, exist_ok=True)
                 (args.report / "monitor.json").write_text(json.dumps(report, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
                 report_path.write_text(markdown(report, sources, citing_records(data)), encoding="utf-8")
@@ -1139,6 +1146,14 @@ def run_monitor(args) -> int:
         finally:
             for sig, handler in previous.items():
                 signal.signal(sig, handler)
+
+
+def reread_alerts(data: dict, rows: list[dict], today: str) -> list[str]:
+    """The digest's maintenance alerts: the whole log, this run included, joined into the dataset as of today,
+    which is what data/rereads.json and the build would say now (claims included)."""
+    states = rereads.export(data, rows, is_archive=archive_snapshot)
+    facts = rereads.join(fact_pipeline.prepared_facts(data), states, as_of=today)
+    return rereads.alerts(facts, states, today)
 
 
 def write_rereads(args) -> int:

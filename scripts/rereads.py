@@ -228,7 +228,14 @@ def alerts(data: dict, rereads: dict, as_of: str) -> list[str]:
                      "run scripts/monitor_sources.py --rereads")
     overdue: dict[tuple[str, str, str], int] = {}
     unattempted: dict[str, int] = {}
-    for (sid, _), entry in sorted(quote_states(data, rereads).items()):
+    # Quotes from a copy other than the source's own URL: the monitor does not re-read them yet, so they are counted
+    # once instead of raising the 14-day alert every week.
+    monitored = {(s["id"], quote_id(e["text"])) for s in data["sources"] for e in s.get("excerpts", []) if bound(s, e)}
+    unmonitored = 0
+    for (sid, qid), entry in sorted(quote_states(data, rereads).items()):
+        if (sid, qid) not in monitored:
+            unmonitored += 1
+            continue
         state = entry["state"]
         since = date.fromisoformat(entry["since"]) if entry["since"] else None
         if (state in LOSSES and since < day - timedelta(days=TRIAGE_DAYS)) or (
@@ -247,6 +254,8 @@ def alerts(data: dict, rereads: dict, as_of: str) -> list[str]:
         total = sum(unattempted.values())
         lines.append(f"{total} {'quote' if total == 1 else 'quotes'} in {len(unattempted)} {'source' if len(unattempted) == 1 else 'sources'} "
                      f"had no re-read attempt for {NOT_ATTEMPTED_DAYS} days: {listed(sorted(unattempted))}")
+    if unmonitored:
+        lines.append(f"{unmonitored} {'quote is' if unmonitored == 1 else 'quotes are'} on a page the monitor does not re-read yet")
     last = previous_release(data)
     for pointer, claim in claim_owners(data):
         if "reread" not in claim and claim.get("kind") != "development":
@@ -257,9 +266,12 @@ def alerts(data: dict, rereads: dict, as_of: str) -> list[str]:
     return lines
 
 
-def join(published: dict, rereads: dict) -> dict:
-    """Publish per-quote and per-claim re-read states (excerpt supports are RFC 6901 pointers here)."""
-    as_of = published["dataset"]["as_of"]
+def join(published: dict, rereads: dict, as_of: str | None = None) -> dict:
+    """Publish per-quote and per-claim re-read states (excerpt supports are RFC 6901 pointers here).
+
+    as_of: the date states and expiry are judged against; by default dataset.as_of (the build), today for the digest.
+    """
+    as_of = as_of or published["dataset"]["as_of"]
     states = quote_states(published, rereads)
     leaves: dict[str, list[dict]] = {}
     for source in published["sources"]:

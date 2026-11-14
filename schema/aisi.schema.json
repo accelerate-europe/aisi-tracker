@@ -2466,6 +2466,10 @@
                 },
                 "accessed": {
                   "$ref": "#/$defs/date"
+                },
+                "reread": {
+                  "$ref": "#/$defs/reread",
+                  "description": "Generated: this quotation's re-read state from the source monitor, as of dataset.as_of. Absent when the source has no private copy."
                 }
               }
             }
@@ -4211,6 +4215,43 @@
       ],
       "description": "Source type shown beside a low-confidence budget or staff figure: secondary_sources for another body's or government's account, press_report for a press report, our_estimate for our own estimate or calculation from reported figures. Required when confidence is low and absent otherwise; a medium-confidence figure is labelled 'indirect or secondary'."
     },
+    "reread": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "last_found",
+        "since"
+      ],
+      "description": "Generated from data/rereads.json, the source monitor's re-reads, against dataset.as_of; never authored. The page never says 'verified'.",
+      "properties": {
+        "state": {
+          "enum": [
+            "confirmed",
+            "not_attempted",
+            "quote_gone",
+            "source_gone",
+            "blocked_or_failed"
+          ],
+          "description": "confirmed: found in the source at the last attempt. not_attempted: confirmed, but no attempt for 14 days. quote_gone: the cited copy carried the quotation and a readable new copy does not. source_gone: the source answered 404 or 410, or its host no longer resolves. blocked_or_failed: the source refused automated readers, the read failed, or only an archive copy was reached."
+        },
+        "last_found": {
+          "$ref": "#/$defs/date",
+          "description": "The last day the quotation was found in its source: a re-read, or the retrieval of the private copy."
+        },
+        "since": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/date"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "For quote_gone, source_gone and blocked_or_failed, the first attempt that showed the state; null otherwise."
+        }
+      }
+    },
     "claim": {
       "type": "object",
       "required": [
@@ -4261,6 +4302,14 @@
         },
         "citations": {
           "$ref": "#/$defs/citations"
+        },
+        "reread": {
+          "$ref": "#/$defs/reread",
+          "description": "Generated: the worst state among the claim's required leaves (text; for a development also act and date), each leaf taking the best of its excerpts. Absent when no bound excerpt has a state."
+        },
+        "expired": {
+          "type": "boolean",
+          "description": "Generated: true when the claim has left the summary: its quote or source was gone for more than a month, its source could not be re-read for more than six months, or, for a development, its date is more than three years before dataset.as_of. An expired claim stays in the record's list with its label."
         }
       },
       "allOf": [

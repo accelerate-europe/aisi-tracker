@@ -7,7 +7,8 @@ import json
 import pytest
 from jsonschema import Draft202012Validator
 
-from scripts import build, claim_checks
+from scripts import build, claim_checks, rereads
+from scripts import published as fact_pipeline
 from scripts.display import record_sources
 from scripts.references import authored_schema
 
@@ -137,6 +138,37 @@ def located_errors(d, schema):
 def test_published_schema_accepts_the_export(claimed):
     published = build.export_dataset(claimed)
     assert located_errors(published, SCHEMA) == []
+
+
+def test_rereads_reach_claims_excerpts_and_csv_never_authored(claimed):
+    """Step C: a quote's re-read state joins its excerpt, its claim and claims.csv; authors never write it."""
+    quote = "The institute shall test AI models."
+    states = {"checked_to": "2026-10-15", "runs": ["r"], "sources": {"gb-source": {rereads.quote_id(quote): {
+        "state": "quote_gone", "last_found": "2026-10-01", "since": "2026-10-15", "last_attempt": "2026-10-15"}}}}
+    published = fact_pipeline.publish(claimed, rereads=states)
+    assert located_errors(published, SCHEMA) == []
+    claim = next(c for c in published["institutes"][0]["claims"] if c["id"] == MANDATE)
+    assert claim["reread"] == {"state": "quote_gone", "last_found": "2026-10-01", "since": "2026-10-15"} and claim["expired"] is False
+    assert "reread" not in next(c for c in published["institutes"][0]["claims"] if c["id"] == TESTING)
+    rows = {r["id"]: r for r in build.tables(published)["claims"]}
+    assert (rows[MANDATE]["reread_state"], rows[MANDATE]["last_found"]) == ("quote_gone", "2026-10-01")
+    assert (rows[TESTING]["reread_state"], rows[TESTING]["last_found"]) == ("", "")
+    strict = authored_schema(SCHEMA, strict=True)
+    before = located_errors(claimed, strict)
+    claimed["sources"][0]["excerpts"][-1]["reread"] = claim["reread"]
+    claimed["institutes"][0]["claims"][1]["expired"] = False
+    assert len(located_errors(claimed, strict)) == len(before) + 2
+
+
+def test_digest_alerts_name_a_claim_expired_since_the_last_release(claimed):
+    """The monitor joins fresh states into the claims as of today, so the weekly digest lists an expired claim."""
+    from scripts import monitor_sources
+    gb = claimed["sources"][0]
+    quote = rereads.quote_id("The institute shall test AI models.")
+    lost = {"run_id": "r", "source_id": gb["id"], "checked": "2026-10-01T09:00:00Z", "route": "direct", "class": "substantive",
+            "observation": "live", "quotes": [{"id": quote, "in_cited_copy": True, "in_checked_copy": False}]}
+    alerts = monitor_sources.reread_alerts(claimed, [lost], "2026-11-05")
+    assert any(a.startswith(f"claim {MANDATE} (/institutes/0/claims/1) left the summary on 2026-11-02") for a in alerts)
 
 
 def test_functions_are_generated_never_authored(claimed):

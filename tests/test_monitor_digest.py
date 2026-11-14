@@ -92,6 +92,16 @@ def test_at_most_eight_sources(summary, group):
     assert "src-07 (quote_lost, direct)\nand 3 more" in body
 
 
+def test_reread_alerts_count_and_first_three(summary):
+    summary["reread_alerts"] = [f"source s{n}: offline since 2026-11-01 (1 quote); triage was due 2026-11-08" for n in range(5)]
+    summary["reread_alerts"][0] += " " + "x" * 200
+    _, body = digest.build(summary)
+    lines = body.splitlines()
+    start = lines.index("Re-read alerts: 5")
+    assert lines[start + 1].endswith("...") and len(lines[start + 1]) == 120
+    assert lines[start + 2:start + 4] == summary["reread_alerts"][1:3] and "source s3" not in body
+
+
 def test_empty_lists_and_zero_counts_omitted(summary):
     summary.update(
         substantive=[], gone=[], unconfirmed=[], next_checks_due=[],

@@ -481,13 +481,19 @@ def prepared_facts(data: dict, *, strict: bool | None = None) -> dict:
     return result
 
 
-def publish(data: dict, *, strict: bool | None = None) -> dict:
-    """The sole authored-to-download boundary, shared by every consumer."""
+def publish(data: dict, *, strict: bool | None = None, rereads: dict | None = None) -> dict:
+    """The sole authored-to-download boundary, shared by every consumer.
+
+    rereads: the monitor's re-read states (scripts/rereads.py); by default the tracked data/rereads.json.
+    """
     if __package__:
         from .display import derive_display
+        from . import rereads as reread_states
     else:
         from display import derive_display
-    return derive_display(prepared_facts(data, strict=strict))
+        import rereads as reread_states  # type: ignore[no-redef]
+    facts = prepared_facts(data, strict=strict)
+    return derive_display(reread_states.join(facts, reread_states.load() if rereads is None else rereads))
 
 
 def assign_credit_provenance(data: dict) -> None:

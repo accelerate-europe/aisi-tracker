@@ -36,6 +36,7 @@ if __package__:
     from .method_copy import METHOD_TITLE, full_method_page
     from .method_checks import check_method_rules, UNQUOTED_REPORT, primary_source_warnings, unquoted_claims, unquoted_report, unquoted_warnings  # type: ignore[import-not-found]
     from .source_origins import source_origin_report, write_source_origin_report
+    from . import rereads
     from .agent_files import LICENSES, doi_url, api_files, api_landing_html, api_root, citation_cff, zenodo_json, head_links, share_tags, image_alt_text, json_ld_script, llms_txt, robots_txt, sitemap_xml, feed_xml, FEED_PATH, orientation_html, definition_markdown, public_url_errors
     from .release_checks import check_metadata, check_readme_licence, check_readme_doi, check_markdown, generated_block, generated_citation, generated_counts, check_launch_wording, write_citation, check_instrument_status_dates, instrument_status_warnings, dates_after_as_of, check_changelog_entry, write_release_citation
 else:  # Direct script execution.
@@ -46,6 +47,7 @@ else:  # Direct script execution.
     from method_copy import METHOD_TITLE, full_method_page
     from method_checks import check_method_rules, UNQUOTED_REPORT, primary_source_warnings, unquoted_claims, unquoted_report, unquoted_warnings
     from source_origins import source_origin_report, write_source_origin_report
+    import rereads  # type: ignore[no-redef]
     from agent_files import LICENSES, doi_url, api_files, api_landing_html, api_root, citation_cff, zenodo_json, head_links, share_tags, image_alt_text, json_ld_script, llms_txt, robots_txt, sitemap_xml, feed_xml, FEED_PATH, orientation_html, definition_markdown, public_url_errors
     from release_checks import check_metadata, check_readme_licence, check_readme_doi, check_markdown, generated_block, generated_citation, generated_counts, check_launch_wording, write_citation, check_instrument_status_dates, instrument_status_warnings, dates_after_as_of, check_changelog_entry, write_release_citation
 
@@ -726,6 +728,7 @@ def tables(d: dict) -> dict[str, list[dict]]:
     claims = [{
         "id": c["id"], "jurisdiction_id": jid, "institute_id": iid, "kind": c["kind"], "code": c.get("code", ""), "basis": c.get("basis", ""),
         "body_id": c.get("body_id", ""), "text": c["text"], "source_ids": join(c["source_ids"]), "source_urls": links(c["source_ids"]),
+        "reread_state": c.get("reread", {}).get("state", ""), "last_found": c.get("reread", {}).get("last_found", ""),
     } for jid, iid, record in claim_owners for c in record.get("claims", [])]
     src = [{
         "id": s["id"], "url": s["url"], "title": s["title"], "title_en": s.get("title_en", ""), "publisher": s["publisher"], "type": s["type"],
@@ -796,6 +799,8 @@ FIELD_DOCS = {
     "period_end": "Inclusive end date of the cited exchange-rate table.",
     "units_per_eur": "ECB euro foreign exchange reference rate: units of the currency per euro, annual average for the period. In funding.csv, the rate applied to that row's annual_amount to give eur_per_year_est; empty when there is no EUR estimate.",
     "source_accessed": "Date the cited rate source was retrieved.",
+    "reread_state": "The claim's re-read state (claims[].reread.state in aisi.json): confirmed, not_attempted, quote_gone, source_gone or blocked_or_failed; empty when no bound excerpt has one.",
+    "last_found": "The last day the claim's quotation was found in its source (claims[].reread.last_found in aisi.json).",
     "snapshot_retrieved": "Recorded retrieval timestamp of the complete private source copy, not publication date.",
     "snapshot_sha256": "SHA-256 of complete private response bytes; no private file path is exported.",
     "snapshot_text_sha256": "Versioned SHA-256 of the private copy's normalised main text, for change detection; the rule is the JSON Schema field sources[].snapshot.text_sha256. Empty when the copy yields no text.",
@@ -927,7 +932,7 @@ EMPTY_COLUMNS = {
     "timeline": ["id", "jurisdiction_id", "event_id", "date", "event", "instrument", "description", "short", "withdraws", "source_ids", "source_urls"],
     "national_partners": ["id", "institute_id", "name", "name_en", "acronym", "what", "relation", "cyber_agency", "how", "source_ids", "source_urls"],
     "functions": ["id", "institute_id", "code", "value", "claim_ids"],
-    "claims": ["id", "jurisdiction_id", "institute_id", "kind", "code", "basis", "body_id", "text", "source_ids", "source_urls"],
+    "claims": ["id", "jurisdiction_id", "institute_id", "kind", "code", "basis", "body_id", "text", "source_ids", "source_urls", "reread_state", "last_found"],
     "agreements": ["id", "institute_id", "counterparty", "counterparty_type", "state", "participation", "date", "scope", "source_ids", "source_urls"],
     "events": ["id", "jurisdiction_id", "jurisdiction", "institute_id", "institute", "type", "date", "description", "short", "origin_kind", "origin_id", "source_pointer", "withdraws", "scheduled", "source_ids", "source_urls"],
     "outputs": ["id", "institute_id", "date", "credited_from", "credit_institute_id", "credit_date", "type", "title", "lineage", "attribution", "qualifies_as", "qualification_note", "source_ids", "source_urls"],
@@ -1115,6 +1120,7 @@ def main() -> None:
             print(f"updated {path.relative_to(ROOT)}", file=sys.stderr)
     unquoted = unquoted_claims(d)
     warnings = instrument_status_warnings(d, release=args.release) + late + primary_source_warnings(d) + unquoted_warnings(unquoted)
+    warnings += [f"re-read: {line}" for line in rereads.alerts(published, rereads.load(), published["dataset"]["as_of"])]
     for warning in warnings:
         print(f"warning: {warning}", file=sys.stderr)
     if args.report_dir:

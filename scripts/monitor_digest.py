@@ -79,6 +79,11 @@ def build(summary: dict) -> tuple[str, str]:
     ]
     shown = [min(8, len(rows)) for _, rows in groups]
     tail = []
+    # Maintenance alerts from the re-read states (scripts/rereads.py): the count and the first three, shortened.
+    alerts = summary.get("reread_alerts", [])
+    if alerts:
+        tail.append(f"Re-read alerts: {len(alerts)}")
+        tail.extend(alert if len(alert) <= 120 else alert[:117] + "..." for alert in alerts[:3])
     due = summary["next_checks_due"]
     if due:
         # Keep the caller's due-date order; the monitor breaks ties by jurisdiction ID.

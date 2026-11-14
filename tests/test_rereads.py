@@ -89,6 +89,9 @@ def test_unbound_quote_is_not_replayed_and_falls_back_to_the_copy_date():
     assert rereads.effective(state, "2026-10-05") == {"state": "confirmed", "last_found": "2026-10-01", "since": None}
     assert rereads.effective(state, "2026-10-14")["state"] == "confirmed"
     assert rereads.effective(state, "2026-10-15")["state"] == "not_attempted"  # 14 days without an attempt
+    # Counted once, never the weekly 14-day alert (hub, 14 Nov: an alert that fires forever teaches people to ignore it).
+    assert rereads.alerts(data, {"checked_to": "2026-11-20", "sources": {}}, "2026-11-20") == [
+        "1 quote is on a page the monitor does not re-read yet"]
 
 
 def published(claims, as_of="2026-12-20", **excerpt_supports):
