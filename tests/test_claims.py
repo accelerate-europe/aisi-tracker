@@ -264,5 +264,6 @@ def test_real_vocabulary_is_the_spec_list():
     assert len(claim_checks.current_codes(real["dataset"]["vocabularies"])) == 18
     assert list(vocabulary)[:2] == ["model_testing", "evaluation_methods"]
     assert list(vocabulary)[-2:] == ["certification", "sandbox"]
-    assert set(real["dataset"]["provisional"]) == {"institutes[].functions", "vocabularies.function"}
+    assert set(real["dataset"]["provisional"]) == {"institutes[].functions", "vocabularies.function", "vocabularies.development"}
+    assert list(real["dataset"]["vocabularies"]["development"]) == ["public_body", "testing_duty"]
     assert all(claim_checks.schema_node(p) for p in real["dataset"]["provisional"])

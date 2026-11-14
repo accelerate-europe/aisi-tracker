@@ -727,7 +727,8 @@ def tables(d: dict) -> dict[str, list[dict]]:
     claim_owners = [(j["id"], "", j) for j in d["jurisdictions"]] + [(i["jurisdiction_id"], i["id"], i) for i in d["institutes"]]
     claims = [{
         "id": c["id"], "jurisdiction_id": jid, "institute_id": iid, "kind": c["kind"], "code": c.get("code", ""), "basis": c.get("basis", ""),
-        "body_id": c.get("body_id", ""), "text": c["text"], "source_ids": join(c["source_ids"]), "source_urls": links(c["source_ids"]),
+        "body_id": c.get("body_id", ""), "lead": val(c.get("lead")), "text": c["text"], "act": c.get("act", ""), "date": c.get("date", ""),
+        "source_ids": join(c["source_ids"]), "source_urls": links(c["source_ids"]),
         "reread_state": c.get("reread", {}).get("state", ""), "last_found": c.get("reread", {}).get("last_found", ""),
     } for jid, iid, record in claim_owners for c in record.get("claims", [])]
     src = [{
@@ -755,10 +756,12 @@ def tables(d: dict) -> dict[str, list[dict]]:
     bodies = [{
         "id": body.get("id", ""), "jurisdiction_id": j["id"], "name": body["name"], "name_en": body.get("name_en", ""), "kind": body["kind"], "role": body["role"], "counts_as_aisi": val(body.get("counts_as_aisi")),
         "designation_state": body.get("designation_state", ""), "authority_roles": join(body.get("authority_roles", [])),
+        "designation_step_text": body.get("designation_step", {}).get("text", ""), "designation_step_date": body.get("designation_step", {}).get("date", ""),
         "source_ids": join(body.get("source_ids", [])), "source_urls": links(body.get("source_ids", [])),
     } for j in d["jurisdictions"] for body in j.get("related_bodies", [])]
     closest = [{
         "id": j["id"], "jurisdiction_id": j["id"], **{key: j["closest_body"][key] for key in ("name", "stage", "gap", "note")},
+        "body_id": j["closest_body"].get("body_id", ""),
         "source_ids": join(j["closest_body"]["source_ids"]), "source_urls": links(j["closest_body"]["source_ids"]),
     } for j in d["jurisdictions"] if "closest_body" in j]
     rates = [{
@@ -801,6 +804,8 @@ FIELD_DOCS = {
     "source_accessed": "Date the cited rate source was retrieved.",
     "reread_state": "The claim's re-read state (claims[].reread.state in aisi.json): confirmed, not_attempted, quote_gone, source_gone or blocked_or_failed; empty when no bound excerpt has one.",
     "last_found": "The last day the claim's quotation was found in its source (claims[].reread.last_found in aisi.json).",
+    "designation_step_text": "For a proposed AI Act authority: the latest formal step of the bill or draft (related_bodies[].designation_step.text).",
+    "designation_step_date": "The date of that step (related_bodies[].designation_step.date).",
     "snapshot_retrieved": "Recorded retrieval timestamp of the complete private source copy, not publication date.",
     "snapshot_sha256": "SHA-256 of complete private response bytes; no private file path is exported.",
     "snapshot_text_sha256": "Versioned SHA-256 of the private copy's normalised main text, for change detection; the rule is the JSON Schema field sources[].snapshot.text_sha256. Empty when the copy yields no text.",
@@ -932,15 +937,15 @@ EMPTY_COLUMNS = {
     "timeline": ["id", "jurisdiction_id", "event_id", "date", "event", "instrument", "description", "short", "withdraws", "source_ids", "source_urls"],
     "national_partners": ["id", "institute_id", "name", "name_en", "acronym", "what", "relation", "cyber_agency", "how", "source_ids", "source_urls"],
     "functions": ["id", "institute_id", "code", "value", "claim_ids"],
-    "claims": ["id", "jurisdiction_id", "institute_id", "kind", "code", "basis", "body_id", "text", "source_ids", "source_urls", "reread_state", "last_found"],
+    "claims": ["id", "jurisdiction_id", "institute_id", "kind", "code", "basis", "body_id", "lead", "text", "act", "date", "source_ids", "source_urls", "reread_state", "last_found"],
     "agreements": ["id", "institute_id", "counterparty", "counterparty_type", "state", "participation", "date", "scope", "source_ids", "source_urls"],
     "events": ["id", "jurisdiction_id", "jurisdiction", "institute_id", "institute", "type", "date", "description", "short", "origin_kind", "origin_id", "source_pointer", "withdraws", "scheduled", "source_ids", "source_urls"],
     "outputs": ["id", "institute_id", "date", "credited_from", "credit_institute_id", "credit_date", "type", "title", "lineage", "attribution", "qualifies_as", "qualification_note", "source_ids", "source_urls"],
     "known_activity": ["id", "institute_id", "kind", "date", "lineage", "source_ids", "source_urls"],
     "network_milestones": ["id", "body", "type", "date", "description", "short", "source_ids", "source_urls"],
     "source_excerpts": ["id", "source_id", "source_url", "text", "gloss", "supports", "url", "accessed"],
-    "related_bodies": ["id", "jurisdiction_id", "name", "name_en", "kind", "role", "counts_as_aisi", "designation_state", "authority_roles", "source_ids", "source_urls"],
-    "closest_bodies": ["id", "jurisdiction_id", "name", "stage", "gap", "note", "source_ids", "source_urls"],
+    "related_bodies": ["id", "jurisdiction_id", "name", "name_en", "kind", "role", "counts_as_aisi", "designation_state", "authority_roles", "designation_step_text", "designation_step_date", "source_ids", "source_urls"],
+    "closest_bodies": ["id", "jurisdiction_id", "name", "stage", "gap", "note", "body_id", "source_ids", "source_urls"],
 }
 
 
