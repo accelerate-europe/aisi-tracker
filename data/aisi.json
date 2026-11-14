@@ -6609,6 +6609,7 @@
           "role": "It would cover the financial sector as identified by memorandum.",
           "counts_as_aisi": false,
           "source_ids": [
+            "ro-ancom-ai-implementation-2026",
             "ro-ancom-ai-governance-memorandum",
             "eu-ai-act-authorities-2026"
           ],
@@ -6626,6 +6627,7 @@
           "role": "It would cover the financial sector as identified by memorandum.",
           "counts_as_aisi": false,
           "source_ids": [
+            "ro-ancom-ai-implementation-2026",
             "ro-ancom-ai-governance-memorandum",
             "eu-ai-act-authorities-2026"
           ],
@@ -6643,6 +6645,7 @@
           "role": "It would cover specified biometric, law-enforcement, migration/border and justice/democratic-process uses as identified by memorandum.",
           "counts_as_aisi": false,
           "source_ids": [
+            "ro-ancom-ai-implementation-2026",
             "ro-ancom-ai-governance-memorandum",
             "eu-ai-act-authorities-2026"
           ],
@@ -23731,7 +23734,7 @@
           "id": "related_bodies-9c4006c2fec75a8b8196d34b60005201"
         }
       ],
-      "notes": "MINPOSTEL's 2024 CONIA account was retrieved and records consultations and a recommended AI-strategy roadmap. Lawyers Hub and Osiris's republication of Ecofin reporting supply the later governance context, including press accounts giving 7 or 8 July 2025 as the strategy adoption date; the strategy text was not found. The earlier allAfrica request returned HTTP 403. Searched in French and English.",
+      "notes": "MINPOSTEL's 2024 CONIA account was retrieved and records consultations and a recommended AI-strategy roadmap. Lawyers Hub and Osiris's republication of Ecofin reporting supply the later governance context, including the strategy's unveiling on 7 July 2025 (Osiris) and Lawyers Hub's account that it was formally adopted that day; the strategy text was not found. The earlier allAfrica request returned HTTP 403. Searched in French and English.",
       "next_check": {
         "date": "2027-03-31",
         "reason": "Check whether the proposed AI authority is created and has an evaluation mandate."
@@ -74700,50 +74703,6 @@
                 "id": "related_bodies-fd0ceba52edc5398bd88a11e86d08191"
               },
               "designation_state"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "RO"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-03de3ed9fce1599086859988ee0f1375"
-              },
-              "designation_state"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "RO"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-e807d1407eee5c629ed36715ef6c83fb"
-              },
-              "designation_state"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "RO"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-b464dd1e1850581787b25c4dcc15162c"
-              },
-              "designation_state"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "RO"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-e4aedc56b2195fbaac83fa27f0837454"
-              },
-              "designation_state"
             ]
           ],
           "accessed": "2026-11-10"
@@ -75964,50 +75923,6 @@
                 "id": "related_bodies-fd0ceba52edc5398bd88a11e86d08191"
               },
               "designation_state"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "RO"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-03de3ed9fce1599086859988ee0f1375"
-              },
-              "designation_state"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "RO"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-e807d1407eee5c629ed36715ef6c83fb"
-              },
-              "designation_state"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "RO"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-b464dd1e1850581787b25c4dcc15162c"
-              },
-              "designation_state"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "RO"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-e4aedc56b2195fbaac83fa27f0837454"
-              },
-              "designation_state"
             ]
           ],
           "accessed": "2026-11-14"
@@ -77114,6 +77029,133 @@
             ]
           ],
           "gloss": "ANCOM was proposed to act as national market-surveillance authority."
+        },
+        {
+          "text": "ANCOM a fost propusă să exercite rolul de autoritate națională de supraveghere a pieței și punct național unic de contact, alături de alte autorități desemnate drept autorități de supraveghere a pieței, precum: Autoritatea de Supraveghere Financiară și Banca Națională a României",
+          "gloss": "ANCOM was proposed to act as national market-surveillance authority and single point of contact, alongside other authorities designated as market-surveillance authorities, such as the Financial Supervisory Authority and the National Bank of Romania",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "RO"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-e807d1407eee5c629ed36715ef6c83fb"
+              },
+              "role"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "RO"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-b464dd1e1850581787b25c4dcc15162c"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "Autoritatea Națională de Supraveghere a Prelucrării Datelor cu Caracter Personal – pentru sistemele de IA cu grad ridicat de risc din domeniul biometriei",
+          "gloss": "the National Supervisory Authority for Personal Data Processing, for high-risk AI systems in biometrics",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "RO"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-e4aedc56b2195fbaac83fa27f0837454"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "În prezent, autoritățile competente desemnate prin Memorandum lucrează, împreună cu alte autorități sectoriale, la elaborarea cadrului legislativ național necesar punerii în aplicare a Regulamentului",
+          "gloss": "At present, the competent authorities designated by Memorandum are working, together with other sectoral authorities, on drafting the national legal framework needed to implement the Regulation",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "RO"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-e807d1407eee5c629ed36715ef6c83fb"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "RO"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-b464dd1e1850581787b25c4dcc15162c"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "RO"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-e4aedc56b2195fbaac83fa27f0837454"
+              },
+              "designation_state"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "act normativ care va stabili, printre altele: autoritățile de supraveghere a pieței și atribuțiile acestora",
+          "gloss": "a legal act that will establish, among other things, the market-surveillance authorities and their tasks",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "RO"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-e807d1407eee5c629ed36715ef6c83fb"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "RO"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-b464dd1e1850581787b25c4dcc15162c"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "RO"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-e4aedc56b2195fbaac83fa27f0837454"
+              },
+              "designation_state"
+            ]
+          ],
+          "accessed": "2026-11-14"
         }
       ],
       "origin": "RO",
