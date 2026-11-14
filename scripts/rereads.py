@@ -19,6 +19,11 @@ import json
 from datetime import date, timedelta
 from pathlib import Path
 
+if __package__:
+    from .claim_checks import CLAIM_LEAVES, years_before
+else:
+    from claim_checks import CLAIM_LEAVES, years_before  # type: ignore[import-not-found, no-redef]
+
 ROOT = Path(__file__).resolve().parent.parent
 REREADS = ROOT / "data/rereads.json"
 LIVE_ROUTES = {"direct", "headless", "jina", "headless+jina"}
@@ -31,7 +36,6 @@ STALE_FILE_DAYS = 8
 DEADLINE_MONTHS = {"quote_gone": 1, "source_gone": 1, "blocked_or_failed": 6}
 BLOCKED_ALERT_MONTHS = 5
 DEVELOPMENT_YEARS = 3
-CLAIM_LEAVES = {"development": ("text", "act", "date")}
 
 
 def quote_id(text: str) -> str:
@@ -190,12 +194,17 @@ def claim_expiry(claim: dict, reread: dict | None, as_of: str) -> date | None:
     It is the day after its deadline: a loss more than a month old, an access failure more than six months old, or a
     development dated more than three years before `as_of`.
     """
-    ends = []
+    firsts = []
     if reread and (end := deadline(reread)):
-        ends.append(end)
+        firsts.append(end + timedelta(days=1))
     if claim.get("kind") == "development" and claim.get("date"):
-        ends.append(add_months(latest_day(claim["date"]), 12 * DEVELOPMENT_YEARS))
-    passed = [end + timedelta(days=1) for end in ends if end < date.fromisoformat(as_of)]
+        # The first day whose three-year window (claim_checks.years_before, the level 2 bar's own rule) excludes it.
+        dated = latest_day(claim["date"]).isoformat()
+        first = add_months(date.fromisoformat(dated), 12 * DEVELOPMENT_YEARS) - timedelta(days=2)
+        while years_before(first.isoformat(), DEVELOPMENT_YEARS) <= dated:
+            first += timedelta(days=1)
+        firsts.append(first)
+    passed = [first for first in firsts if first <= date.fromisoformat(as_of)]
     return min(passed) if passed else None
 
 

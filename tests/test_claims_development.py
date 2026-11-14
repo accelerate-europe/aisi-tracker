@@ -88,6 +88,21 @@ def test_published_schema_and_csv(lead):
     assert list(tables["closest_bodies"][0]) == build.EMPTY_COLUMNS["closest_bodies"]
 
 
+def test_rereads_and_expiry_on_a_development(lead):
+    """Step C on A2's shape: the claim takes the worst of its text, act and date leaves, and leaves the summary
+    more than three years after its date."""
+    from scripts import published as fact_pipeline, rereads
+    act = rereads.quote_id("The government adopted the national AI strategy to 2030 today.")
+    states = {"checked_to": "2026-10-15", "runs": ["r"], "sources": {"gb-source": {act: {
+        "state": "blocked_or_failed", "last_found": "2026-09-01", "since": "2026-10-10", "last_attempt": "2026-10-15"}}}}
+    development = fact_pipeline.publish(lead, rereads=states)["jurisdictions"][0]["claims"][2]
+    assert development["reread"] == {"state": "blocked_or_failed", "last_found": "2026-09-01", "since": "2026-10-10"}
+    assert development["expired"] is False
+    old = copy.deepcopy(lead)
+    old["jurisdictions"][0]["claims"][2]["date"] = "2023-10-16"  # one day outside the window of dataset.as_of 2026-10-17
+    assert fact_pipeline.publish(old, rereads=states)["jurisdictions"][0]["claims"][2]["expired"] is True
+
+
 def test_without_body_id_nothing_new_binds(lead):
     """Until step B: a closest body that names no related body needs no gap excerpt and no lead (today's 11)."""
     d = copy.deepcopy(lead)

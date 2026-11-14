@@ -138,6 +138,16 @@ def test_expiry_by_reason():
     assert old["expired"] is True
 
 
+def test_development_leaves_on_the_level_2_bar_s_own_three_year_rule():
+    claim = {"kind": "development", "date": "2023-10-17"}
+    assert rereads.claim_expiry(claim, None, "2026-10-17") is None  # exactly three years: still in (inclusive window)
+    assert str(rereads.claim_expiry(claim, None, "2026-10-18")) == "2026-10-18"
+    leap = {"kind": "development", "date": "2025-02-28"}
+    assert rereads.claim_expiry(leap, None, "2028-02-29") is None  # claim_checks.years_before("2028-02-29", 3) is 2025-02-28
+    assert str(rereads.claim_expiry(leap, None, "2028-03-01")) == "2028-03-01"
+    assert str(rereads.claim_expiry({"kind": "development", "date": "2023-10"}, None, "2026-11-01")) == "2026-11-01"
+
+
 def test_alerts():
     data = published([{"id": "claims-1", "kind": "fact", "text": "x"}], a=["/jurisdictions/0/claims/0/text"])
     states = {QA: entry("quote_gone", "2026-12-12"), QB: entry("blocked_or_failed", "2026-07-10", last_attempt="2026-12-01")}
