@@ -8116,11 +8116,12 @@
         },
         {
           "id": "us-2026-10-03-named",
-          "date": "2026-10-03",
+          "date": "2026-09-30",
           "event": "named",
           "instrument": "unknown",
-          "description": "NIST's page for the centre, in the earliest archived capture found (3 October 2026), names it the Center for Advancing Innovation and Standards for Super Intelligence (CAISSI); NIST's release of 16 October 2026 also uses the name. No published act gives the date of the change.",
+          "description": "NIST's super intelligence page, in the earliest archived capture found (30 September 2026), names the Center for Advancing Innovation and Standards for Super Intelligence (CAISSI) and says NIST is updating its communications under the Executive Order of 29 September 2026; NIST's release of 16 October 2026 also uses the name. No published act gives the date of the change.",
           "source_ids": [
+            "us-si-page-archive-2026-09-30",
             "us-caissi-archive-2026-10-03",
             "depth-us-incident-release",
             "us-caissi",
@@ -32426,6 +32427,7 @@
           "name": "Center for Advancing Innovation and Standards for Super Intelligence (CAISSI)",
           "event": "us-2026-10-03-named",
           "source_ids": [
+            "us-si-page-archive-2026-09-30",
             "us-caissi-archive-2026-10-03",
             "us-caissi",
             "us-si-page"
@@ -32722,9 +32724,10 @@
         "us-blog-transcripts-2026",
         "us-blog-red-teaming-2026",
         "us-semafor-2026-10-28",
-        "us-scale-aisi-2025"
+        "us-scale-aisi-2025",
+        "us-si-page-archive-2026-09-30"
       ],
-      "notes": "The current NIST pages use CAISSI. The name-history start is the earliest archived use of the name found, NIST's page for the centre as captured on 3 October 2026. Executive Order 14434 of 29 September 2026, which directs the executive branch to use 'Super Intelligence' in place of 'Artificial Intelligence', is the likely trigger, but it does not name this centre or set a date for its rename. The current ministerial basis refers to the June 2025 CAISI decision; the retained establishment date refers to its US AISI predecessor. Canada's CAISI, the Canadian AI Safety Institute, is a different body.",
+      "notes": "The current NIST pages use CAISSI. The name-history start is the earliest archived use of the name found, NIST's super intelligence page as captured on 30 September 2026. Executive Order 14434 of 29 September 2026, which directs the executive branch to use 'Super Intelligence' in place of 'Artificial Intelligence', is the likely trigger, but it does not name this centre or set a date for its rename. The current ministerial basis refers to the June 2025 CAISI decision; the retained establishment date refers to its US AISI predecessor. Canada's CAISI, the Canadian AI Safety Institute, is a different body.",
       "mandate_short": "Leads national security evaluations of superintelligence (SI) systems and develops guidelines to measure and improve their security.",
       "legal_basis": {
         "type": "ministerial_act",
@@ -41415,17 +41418,6 @@
         {
           "text": "Center for Advancing Innovation and Standards for Super Intelligence (CAISSI)",
           "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "US"
-              },
-              "timeline",
-              {
-                "id": "us-2026-10-03-named"
-              },
-              "date"
-            ],
             [
               "jurisdictions",
               {
@@ -120099,6 +120091,88 @@
         "retrieved": "2026-11-14T12:13:33Z",
         "sha256": "8b7aba5b2ae0a32d3ed83724605cf4cf1f63c6817ab1043ceef5a7287cb2c98d",
         "text_sha256": "d36b38ba8f10326b51c881254895dd30e1b5e39b72948f1320b927a577abf240",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "us-si-page-archive-2026-09-30",
+      "url": "https://web.archive.org/web/20260930205401/https://www.nist.gov/super-intelligence",
+      "title": "Super intelligence",
+      "publisher": "NIST",
+      "type": "primary",
+      "accessed": "2026-11-14",
+      "language": "en",
+      "origin": "US",
+      "access_note": "Internet Archive capture of the NIST page https://www.nist.gov/super-intelligence made on 30 September 2026, the earliest archived use of the centre's new name found.",
+      "excerpts": [
+        {
+          "text": "NIST does this work through the laboratory programs and the Center for Advancing Innovation and Standards for Super Intelligence (CAISSI)",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "US"
+              },
+              "timeline",
+              {
+                "id": "us-2026-10-03-named"
+              },
+              "date"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "US"
+              },
+              "timeline",
+              {
+                "id": "us-2026-10-03-named"
+              },
+              "event"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "US"
+              },
+              "timeline",
+              {
+                "id": "us-2026-10-03-named"
+              },
+              "description"
+            ],
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "Per the Sept. 29, 2026, Executive Order on Inaugurating the Era of Super Intelligence, NIST is working to update its communications to incorporate the term",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "US"
+              },
+              "timeline",
+              {
+                "id": "us-2026-10-03-named"
+              },
+              "description"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-14T12:39:29Z",
+        "sha256": "2fcfd2cc043f9120a3d6fb8a6e18dc7bde3c3e53e659517cbeffad785f1fcc74",
+        "text_sha256": "16d3da7415d395308e33c64fa46282b2ce493ba888a4d3d979969f7ab40dad21",
         "text_scheme": 1
       }
     }
