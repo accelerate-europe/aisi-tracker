@@ -59,6 +59,10 @@
         "text": "Rescinded or replaced instruments: records describe the current state. A fact that rests on a rescinded or replaced instrument never appears as current. History is kept only where the instrument is itself a recorded act (a timeline event, legal basis, name or agreement), dated with the date it was rescinded and the act that rescinded it, both sourced. Context or supporting notes resting on a replaced instrument are removed, not annotated. Sources that are legal instruments carry the date their status was last verified. Record checks re-verify it, and the release check warns when a cited instrument's status was last verified more than six months before release."
       },
       {
+        "id": "bills",
+        "text": "Bills: a record states a bill's latest formal step with its date. It does not say that a bill proposes something or that a bill is dead unless a vote or a withdrawal is quoted."
+      },
+      {
         "id": "status-confidence",
         "text": "Status confidence: a measure of evidence, not of disagreement over classification. High means a primary source states the decisive act; medium means indirect primary evidence or several independent secondary accounts; low means a single secondary source. For a finding of no institute, medium requires an individual check with recorded queries in English and a national or official language, plus at least one retrieved primary source showing the state's AI governance set-up, consistent with no qualifying institute. English meets both language requirements where it is official; the language note records the languages searched and coverage limits. The governance citations and note identify the reviewed governance evidence. English-only searches where English is not official, secondary-only evidence and other incomplete checks remain low. High also requires a dated official primary statement, no more than 12 calendar months before the dataset date, that explicitly says no institute exists or is planned. Medium has no fixed age limit; the original search and full-check dates show freshness. This finding is limited to our search; it is not proof of absence."
       },
@@ -1936,7 +1940,8 @@
       "budget-ratios",
       "rescinded-instruments",
       "technical-staff",
-      "status-evidence"
+      "status-evidence",
+      "bills"
     ],
     "method_summary_status": "Owner copy approved."
   },
