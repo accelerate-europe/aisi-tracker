@@ -5287,7 +5287,7 @@
       "id": "LU",
       "name": "Luxembourg",
       "institute_id": null,
-      "summary": "No qualifying institute identified. Draft bill 8476 would make the data protection authority the main AI Act market-surveillance body, and the national AI Factory runs sandbox and assessment tools.",
+      "summary": "No qualifying institute identified. Draft bill 8476 would make the data protection authority the main AI Act market-surveillance body, and the national AI Factory released an open-source tool for building AI assessment sandboxes in June 2026.",
       "related_bodies": [
         {
           "name": "Commission nationale pour la protection des données (CNPD)",
@@ -5316,7 +5316,7 @@
         },
         {
           "name": "AI Assessment Sandbox Configurator",
-          "role": "It is an open-source tool released by LIST and the University of Luxembourg's SnT on 10 June 2026 for building environments to test whether AI systems are trustworthy and compliant; it is not a body.",
+          "role": "It is an open-source tool released by the Luxembourg AI Factory on 10 June 2026 and developed by LIST and the University of Luxembourg's SnT for building environments to test whether AI systems are trustworthy and compliant; it is not a body.",
           "counts_as_aisi": false,
           "source_ids": [
             "lu-unilu-sandbox-configurator"
@@ -7742,11 +7742,11 @@
       "id": "MT",
       "name": "Malta",
       "institute_id": null,
-      "summary": "No qualifying institute identified. The Malta Digital Innovation Authority is the AI Act market-surveillance and notifying authority and runs an AI sandbox; the realigned national AI strategy (83 measures) names no evaluation institute on its summary page.",
+      "summary": "No qualifying institute identified. The Malta Digital Innovation Authority is the AI Act market-surveillance and notifying authority and is responsible for setting up the national AI regulatory sandbox; the realigned national AI strategy (83 measures) names no evaluation institute on its summary page.",
       "related_bodies": [
         {
           "name": "Malta Digital Innovation Authority",
-          "role": "It operates the national AI regulatory sandbox. Regulations 3 and 7 designate it as market authority, single contact and notifying authority. National Accreditation Board (Malta) performs conformity-body assessment and monitoring under Article 28(1).",
+          "role": "It is responsible for the establishment and functioning of the national AI regulatory sandbox. Regulations 3 and 7 designate it as market authority, single contact and notifying authority. National Accreditation Board (Malta) performs conformity-body assessment and monitoring under Article 28(1).",
           "counts_as_aisi": false,
           "source_ids": [
             "mt-ai-regulations-ln226-2025",
@@ -14676,7 +14676,7 @@
     {
       "id": "AG",
       "name": "Antigua and Barbuda",
-      "summary": "No qualifying institute identified. The government has been piloting UNESCO's AI readiness assessment through its ICT ministry since 2024, and no AI strategy, law or regulator was found.",
+      "summary": "No qualifying institute identified. The government was piloting UNESCO's AI readiness assessment through its ICT ministry in 2024, and a July 2026 regional report lists it as completed; no AI strategy, law or regulator was found.",
       "check": {
         "last_checked": "2026-10-16",
         "method": "individual",
@@ -14781,7 +14781,7 @@
       "related_bodies": [
         {
           "name": "Ministry of Information and Communications Technology",
-          "role": "It leads the UNESCO AI readiness assessment pilot reported in August 2024; no model evaluation mandate was found.",
+          "role": "It led the UNESCO AI readiness assessment pilot reported in August 2024; no model evaluation mandate was found.",
           "counts_as_aisi": false,
           "kind": "other",
           "id": "related_bodies-09c6de52a48b5410bc792b26f877ff70"
@@ -18054,7 +18054,7 @@
           "id": "related_bodies-cda07765806f535089e662d39d2bd110"
         }
       ],
-      "notes": "The government news agency report (primary, 26 June 2026) says MITIC leads AI work and that the roadmap starts with governance and the regulatory framework; it names no evaluation body. The Senate bill (secondary, May 2025) requires providers to classify risk and run algorithmic impact assessments; it names no enforcement authority or institute in the report. A later search summary dated the bill's filing to July 2026, which conflicts with the 2025 article date; this was not resolved.",
+      "notes": "The government news agency report (primary, 26 June 2026) says MITIC leads AI work and that the roadmap starts with governance and the regulatory framework; it names no evaluation body. The Senate bill (secondary, May 2025) requires a preliminary assessment by the provider to classify each system's risk and sets out a procedure for algorithmic impact assessment; the report names no enforcement authority or institute. A later search summary dated the bill's filing to July 2026, which conflicts with the 2025 article date; this was not resolved.",
       "next_check": {
         "date": "2027-01-16",
         "reason": "Check whether the bill passed and whether it creates an authority."
@@ -19172,7 +19172,7 @@
       "name": "Saudi Arabia",
       "kind": "state",
       "institute_id": null,
-      "summary": "No qualifying institute identified. The data and AI authority SDAIA issues AI risk and ethics frameworks but runs no model-evaluation institute.",
+      "summary": "No qualifying institute identified. The data and AI authority SDAIA issues AI risk and ethics frameworks; no model-evaluation institute run by it was found.",
       "next_check": {
         "date": "2027-10-16",
         "reason": "Routine yearly re-check of a state where an institute is plausible (in Europe, the G20 or the OECD, or a signatory of the Bletchley Declaration)."
@@ -19906,7 +19906,7 @@
       "name": "Tunisia",
       "kind": "state",
       "institute_id": null,
-      "summary": "No qualifying institute identified. A national AI strategy for 2026-2030 has been presented but names no evaluation body.",
+      "summary": "No qualifying institute identified. A national AI strategy for 2026-2030 has been presented; press accounts of it name no evaluation body.",
       "next_check": {
         "date": "2028-04-15",
         "reason": "Routine re-check on a two-year rotation of states with no reported plans."
@@ -21270,7 +21270,7 @@
           "id": "related_bodies-ec51adb95a835489a1507b391a1ef0fb"
         }
       ],
-      "notes": "The CMC draft regulation (Art. 12) sets a CMC risk-classification methodology, and Art. 13 requires providers of generative and general-purpose models to run periodic safety, security and bias tests before public release and after major changes. These are duties on providers plus CMC classification; the draft creates no CMC testing body or institute for evaluating advanced models. Not every article was read in full. The INSAIN national strategy is run from the Prime Minister's Office and was reported as under revision in 2026.",
+      "notes": "The CMC draft regulation (Art. 12) sets a CMC risk-classification methodology, and Art. 13 requires providers of generative and general-purpose models to run periodic safety, security and bias tests before public release and after major changes. These are duties on providers plus CMC classification; the draft creates no CMC testing body or institute for evaluating advanced models. Not every article was read in full. The national AI strategy was discussed at a planning ministry meeting in April 2026, attended by the Prime Minister's adviser on AI, and was reported as under revision.",
       "next_check": {
         "date": "2027-01-15",
         "reason": "Final text of the CMC regulation and the revised national AI strategy."
@@ -21748,15 +21748,20 @@
         "mv-presidency-2024",
         "mv-seemv-ram-2025-primary-proposal",
         "mv-seemv-ram-2025",
-        "mv-regulations-ai-2026"
+        "mv-regulations-ai-2026",
+        "mv-presidency-2026-mds"
       ],
       "related_bodies": [
         {
-          "name": "National Centre for Information Technology",
-          "role": "It is reported to lead the AI masterplan and the UNESCO readiness assessment (launched 31 July 2025).",
+          "name": "Maldives Digital Service",
+          "role": "It was established on 15 January 2026, when the National Centre for Information Technology (NCIT) was abolished, and was to assume all of NCIT's responsibilities; NCIT had worked with the steering committee that compiled the UNESCO readiness assessment launched on 31 July 2025.",
           "counts_as_aisi": false,
           "kind": "other",
-          "id": "related_bodies-a6b1512bedd95938ab05f7b885dc34e5"
+          "id": "related_bodies-a6b1512bedd95938ab05f7b885dc34e5",
+          "source_ids": [
+            "mv-presidency-2026-mds",
+            "mv-seemv-ram-2025"
+          ]
         },
         {
           "name": "Ministry of Homeland Security and Technology",
@@ -21979,7 +21984,7 @@
       "id": "OM",
       "name": "Oman",
       "institute_id": null,
-      "summary": "No qualifying institute identified. The 2025 policy on safe and ethical use of AI assigns monitoring to the transport and communications ministry and sector regulators, and a February 2026 UNESCO readiness assessment names no testing body.",
+      "summary": "No qualifying institute identified. The 2025 policy on safe and ethical use of AI assigns monitoring to the transport and communications ministry and sector regulators, and launch coverage of a February 2026 UNESCO readiness assessment names no testing body.",
       "check": {
         "last_checked": "2026-10-16",
         "method": "individual",
@@ -22049,10 +22054,13 @@
         },
         {
           "name": "Sector regulators",
-          "role": "They enforce the policy within their sectors.",
+          "role": "They monitor compliance with the policy by the institutions in the sectors they supervise.",
           "counts_as_aisi": false,
           "kind": "other",
-          "id": "related_bodies-467fa5e9fe2f58de883dcb7c25eb5f63"
+          "id": "related_bodies-467fa5e9fe2f58de883dcb7c25eb5f63",
+          "source_ids": [
+            "om-mtcit-policy-2025"
+          ]
         },
         {
           "name": "AI Experts Committee",
@@ -23166,7 +23174,7 @@
     {
       "id": "CF",
       "name": "Central African Republic",
-      "summary": "No qualifying institute identified. No national AI strategy or AI body found. In June 2025 the government announced a partnership with the Indian company Dure Technologie to create an AI centre of excellence.",
+      "summary": "No qualifying institute identified. No national AI strategy or AI regulatory or advisory body found. In June 2025 the government announced a partnership with the Indian company Dure Technologie to create an AI centre of excellence.",
       "check": {
         "last_checked": "2026-10-16",
         "method": "individual",
@@ -23289,7 +23297,7 @@
           "id": "related_bodies-15cefb7fc165535aac2538dceb97bd2b"
         }
       ],
-      "notes": "ARCEP's own mission page was retrieved for its electronic-communications and postal remit. Lawyers Hub supplies broader governance context; the Osiris report of a centre of excellence was seen in search results, not read in full. No qualifying evaluation institute was found. Searched in French and English.",
+      "notes": "ARCEP's own mission page was retrieved for its electronic-communications and postal remit. Lawyers Hub supplies broader governance context; the Osiris report gives the centre of excellence announcement. No qualifying evaluation institute was found. Searched in French and English.",
       "region": {
         "id": "002",
         "name": "Africa",
@@ -37020,7 +37028,7 @@
             "named_as": "AISI"
           }
         ],
-        "notes": "The minister's speech, marked check against delivery, says the institute is already testing frontier AI models 'with technical partners'; this does not make a partner the tester, so testing by other bodies is not recorded. No evaluation output is published. On 18 September 2026 the institute's General Manager said at a parliamentary committee hearing (uncorrected proof Hansard) 'I don't have a number to hand of exactly how many models we've tested' and referred to 'some of our early testing' on the capabilities of a newly released model, Astra. Joint network testing before the institute existed is credited to Australia, not the institute: testing reported, 2025-06-26 (multilingual exercise: 'Australia and Japan also ran independent tests in Mandarin Chinese and Japanese') and 2025-07-17 (agentic exercise: 'UK AISI, EU AI Office and Australia ran evaluations on two open-source models').",
+        "notes": "The minister's speech, marked check against delivery, says the institute is already testing frontier AI models 'with technical partners'; this does not make a partner the tester, so testing by other bodies is not recorded. No published evaluation was found. On 18 September 2026 the institute's General Manager said at a parliamentary committee hearing (uncorrected proof Hansard) 'I don't have a number to hand of exactly how many models we've tested' and referred to 'some of our early testing' on the capabilities of a newly released model, Astra. Joint network testing before the institute existed is credited to Australia, not the institute: testing reported, 2025-06-26 (multilingual exercise: 'Australia and Japan also ran independent tests in Mandarin Chinese and Japanese') and 2025-07-17 (agentic exercise: 'UK AISI, EU AI Office and Australia ran evaluations on two open-source models').",
         "source_ids": [
           "depth-au-forum",
           "network-multilingual-2025",
@@ -53861,7 +53869,22 @@
         "text_sha256": "4cfa4c84c756a44bfc5641d7e898d1b48d0e648db7a2d6aff8c6147e5fe97a27",
         "text_scheme": 1
       },
-      "archive_url": "https://web.archive.org/web/20261017022216if_/https://ctu.int/wp-content/uploads/2026/07/CAITF-Final-Report.pdf"
+      "archive_url": "https://web.archive.org/web/20261017022216if_/https://ctu.int/wp-content/uploads/2026/07/CAITF-Final-Report.pdf",
+      "excerpts": [
+        {
+          "text": "Jamaica, Antigua and Barbuda completed their UNESCO Readiness Assessment",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "AG"
+              },
+              "summary"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        }
+      ]
     },
     {
       "id": "pa-gaceta-30592a",
@@ -55073,7 +55096,26 @@
         "text_sha256": "7fcb7ab0f398866dab3f338f3b9a90c453ea3a337cf1589b2c2dbf889be608e4",
         "text_scheme": 1
       },
-      "access_note": "The published snapshot hash identifies the retained archive capture at https://web.archive.org/web/20261017025410/https://see.mv/97862."
+      "access_note": "The published snapshot hash identifies the retained archive capture at https://web.archive.org/web/20261017025410/https://see.mv/97862.",
+      "excerpts": [
+        {
+          "text": "The comprehensive report was compiled by a steering committee representing diverse sectors, working in conjunction with the NCIT under the initiative of UNESCO.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "MV"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-a6b1512bedd95938ab05f7b885dc34e5"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        }
+      ]
     },
     {
       "id": "mv-regulations-ai-2026",
@@ -55185,7 +55227,27 @@
         "sha256": "4da6ea8f1bc3154ac6207b8c1983a82921b3cef8ae270d3fe0b816fdd6c9cb80",
         "text_sha256": "3759d333322ab85e5110eee8b1886b8543a248dbaf0b0f65b3f92d0ed2c0eb66",
         "text_scheme": 1
-      }
+      },
+      "excerpts": [
+        {
+          "text": "تتولى الجهات التنظيمية مراقبة التزام المؤسسات في القطاعات التي تشرف عليها بالسياسة",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "OM"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-467fa5e9fe2f58de883dcb7c25eb5f63"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-14",
+          "gloss": "regulatory bodies monitor the compliance of institutions in the sectors they supervise with the policy"
+        }
+      ]
     },
     {
       "id": "om-ona-ram-2026",
@@ -117697,6 +117759,70 @@
         "retrieved": "2026-11-13T21:48:04Z",
         "sha256": "3dccebbd6b8392fece88a00e10d76201228f01c8f0dc2ddca11c1aceb9e6954b",
         "text_sha256": "a82b7b0db33d994e6cecb054605eaa7641f33e8f817e1976957147410877776a",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "mv-presidency-2026-mds",
+      "url": "https://presidency.gov.mv/Press/Article/36043",
+      "title": "President establishes Maldives Digital Service and abolishes National Centre for Information Technology",
+      "publisher": "The President's Office, Republic of Maldives",
+      "type": "primary",
+      "published": "2026-01-15",
+      "accessed": "2026-11-14",
+      "language": "en",
+      "origin": "MV",
+      "excerpts": [
+        {
+          "text": "President Dr Mohamed Muizzu has established the Maldives Digital Service under the administrative oversight of the Ministry of Homeland Security and Technology, following the abolishment of the National Centre for Information Technology (NCIT).",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "MV"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-a6b1512bedd95938ab05f7b885dc34e5"
+              },
+              "name"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "MV"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-a6b1512bedd95938ab05f7b885dc34e5"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "The Maldives Digital Service will assume all responsibilities previously undertaken by the NCIT",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "MV"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-a6b1512bedd95938ab05f7b885dc34e5"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-14T11:58:13Z",
+        "sha256": "c135631ce8882c1b22081c6a377804c53f86868325a6ac8b81ec770d0c0ee73f",
+        "text_sha256": "2f56378a14b3a381e480b49ff4f871af6b6ada44c8cf56361a55384c8422afd4",
         "text_scheme": 1
       }
     }
