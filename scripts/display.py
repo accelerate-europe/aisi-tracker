@@ -36,7 +36,8 @@ DEVELOPMENT_EVENTS = {
 GENERIC_FIELDS = ("population", "region")
 # Off the card source lists: the downloads and the API carry them; the page shows model access only in Testing and access, with its own source list.
 # GDP and the budget ratios join them until the page shows per person (rule budget-ratios).
-DOWNLOAD_ONLY_FIELDS = ("testing_capacity", "model_access", "staffing_model", "gdp", *RATIO_FIELDS)
+# Claims and functions join them until the page shows them (docs/design/claims-1.1.md, steps E and F).
+DOWNLOAD_ONLY_FIELDS = ("testing_capacity", "model_access", "staffing_model", "gdp", *RATIO_FIELDS, "claims", "functions")
 NON_DISPLAY_FIELDS = {
     "id",
     "lineage",

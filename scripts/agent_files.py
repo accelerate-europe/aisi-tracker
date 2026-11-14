@@ -169,8 +169,10 @@ def orientation(published: dict) -> list[tuple[str, str]]:
          "- Output (an AISI's `outputs`): a report, joint test, guidance, evaluation, tool or dataset credited to the AISI or a predecessor. Joint work appears under each of the involved AISIs.\n"
          "- Agreement (an AISI's `agreements`): an agreement that names the AISI as a party or implementer. A company's pledge to give the AISI model access is listed too. Each is signed, announced or pledged (`state`).\n"
          "- Network milestone (`dataset.network_milestones`): an event of the international network of AISIs, such as its founding or a joint testing exercise. It does not by itself show which members took part.\n"
-         "- Source (`sources`): a document we cite, with the passages we quote from it. Each quoted passage names the facts it supports (`supports`).\n\n"
-         "Jurisdiction and AISI IDs never change. New codes in `dataset.vocabularies` can appear in a minor version; removing or renaming one is a major version."),
+         "- Source (`sources`): a document we cite, with the passages we quote from it. Each quoted passage names the facts it supports (`supports`).\n"
+         "- Claim (a jurisdiction's or an AISI's `claims`): one sentence with the one quoted passage that supports it, and a code where a code fits.\n\n"
+         "Jurisdiction and AISI IDs never change. New codes in `dataset.vocabularies` can appear in a minor version; removing or renaming one is a major version, "
+         "except fields and vocabularies listed in `dataset.provisional`."),
         ("Sources and dates",
          "The sources behind each field are listed by ID in `citations`; an empty list means we have no quoted passage for that field. "
          "Each source has a title, its address (`url`), a copy saved in a web archive where one exists (`archive_url`) and the passages we quote from it (`excerpts`), "
@@ -205,6 +207,12 @@ def orientation(published: dict) -> list[tuple[str, str]]:
          "The head's name and title are in the AISI's list of named leaders, such as directors and their deputies (`people`, linked by `head.person_id`). "
          "Each partner's relation is member (a constituent of a federated AISI), works with, or planned (`relation`). "
          "Only the national cyber security agency, marked `cyber_agency`, is searched for at every AISI, so a missing partner of another kind does not mean there is none."),
+        ("Functions",
+         "An AISI's functions (`functions`) give each current (not retired) code in `dataset.vocabularies.function` once, in that order, with a value (`value`): "
+         "mandate (a text assigns it), activity (a text shows it done), both, not_found (checked, no claim found) or not_coded (not yet checked against that code). "
+         "The claims behind a value are listed by ID (`claim_ids`). A function claim on a jurisdiction is about the related body its `body_id` names. "
+         "The functions and their code list are provisional (`dataset.provisional`): codes may be added, split, renamed or removed in a minor version, "
+         "and a retired code stays in the list with `deprecated` and `replaced_by`."),
         ("Licence", f"Code: MIT (`LICENSE`). Data, page text and documentation: {dataset['license']} "
          f"(`LICENSE-DATA`; {licence['title']}, {licence['path']}), with attribution. {dataset['license_note']}"),
         ("Cite as", dataset["citation"]),

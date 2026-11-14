@@ -4258,6 +4258,9 @@
         "source_ids": {
           "$ref": "#/$defs/source_ids_required",
           "description": "The sources whose excerpts bind the claim."
+        },
+        "citations": {
+          "$ref": "#/$defs/citations"
         }
       },
       "allOf": [

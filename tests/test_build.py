@@ -432,6 +432,7 @@ def test_csv_datapackage_columns_and_descriptions(dataset, monkeypatch):
     assert set(tables) == {
         "jurisdictions", "institutes", "funding", "staff", "people", "known_activity",
         "timeline", "agreements", "national_partners", "sources", "outputs", "network_milestones", "source_excerpts", "related_bodies", "closest_bodies", "events", "exchange_rates",
+        "functions", "claims",
     }
     resources = {r["name"]: r for r in package["resources"] if r["format"] == "csv"}
     assert resources.keys() == tables.keys()
@@ -703,8 +704,8 @@ def test_empty_new_catalogues_have_headers_and_dictionaries(dataset, monkeypatch
 def test_empty_headers_match_populated_tables(dataset):
     tables = build.tables(build.export_dataset(dataset))
     for name, columns in build.EMPTY_COLUMNS.items():
-        if name in {"closest_bodies", "national_partners"}:
-            assert tables[name] == []  # Covered with a populated fixture separately (tests/test_rows.py).
+        if name in {"closest_bodies", "national_partners", "functions", "claims"}:
+            assert tables[name] == []  # Covered with a populated fixture separately (tests/test_rows.py, tests/test_claims.py).
             continue
         assert list(tables[name][0]) == columns
 

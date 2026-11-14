@@ -64,6 +64,8 @@ FILES = {
     "staff": ("Staff", "headcounts, technical staff and targets, dated"),
     "people": ("Leadership", "heads and leads of each institute"),
     "national_partners": ("National partners", "the national bodies each institute works with, what each is, how they work together and the kind of relation"),
+    "functions": ("Functions", "each institute's value for every current function code, from its quoted claims; the code list is provisional"),
+    "claims": ("Claims", "quoted claims on states and institutes: one sentence, its code and its sources"),
     "outputs": ("Outputs", "publications, tools and datasets credited to each institute"),
     "agreements": ("Agreements", "commitments made with AI developers, governments and other institutes"),
     "known_activity": ("Known activity", "the earliest published work and joint testing of each institute"),
@@ -335,6 +337,8 @@ def check_consistency(d: dict, require_roster: bool = False, complete: bool = Fa
                 errors.append(f"{collection}: duplicate {key} identifiers")
         for record in d[collection]:
             refs(f"{collection} {record['id']} identifiers", record.get("identifier_source_ids", []))
+            for claim in record.get("claims", []):
+                refs(f"{collection} {record['id']} claim {claim.get('id')}", claim["source_ids"])
             check = record["check"]
             refs(f"{collection} {record['id']} independent sources", check.get("independent_source_ids", []))
             refs(f"{collection} {record['id']} governance sources", check.get("governance_source_ids", []))
@@ -715,6 +719,14 @@ def tables(d: dict) -> dict[str, list[dict]]:
         "what": e["what"], "relation": e["relation"], "cyber_agency": val(e.get("cyber_agency")), "how": e["how"],
         "source_ids": join(e["source_ids"]), "source_urls": links(e["source_ids"]),
     } for i in d["institutes"] for e in i.get("national_partners", {}).get("entries", [])]
+    functions = [{
+        "id": row["code"], "institute_id": i["id"], "code": row["code"], "value": row["value"], "claim_ids": join(row["claim_ids"]),
+    } for i in d["institutes"] for row in i.get("functions", [])]
+    claim_owners = [(j["id"], "", j) for j in d["jurisdictions"]] + [(i["jurisdiction_id"], i["id"], i) for i in d["institutes"]]
+    claims = [{
+        "id": c["id"], "jurisdiction_id": jid, "institute_id": iid, "kind": c["kind"], "code": c.get("code", ""), "basis": c.get("basis", ""),
+        "body_id": c.get("body_id", ""), "text": c["text"], "source_ids": join(c["source_ids"]), "source_urls": links(c["source_ids"]),
+    } for jid, iid, record in claim_owners for c in record.get("claims", [])]
     src = [{
         "id": s["id"], "url": s["url"], "title": s["title"], "title_en": s.get("title_en", ""), "publisher": s["publisher"], "type": s["type"],
         "origin": s.get("origin") or "", "published": s.get("published", ""), "accessed": s["accessed"], "language": s.get("language", ""),
@@ -752,7 +764,7 @@ def tables(d: dict) -> dict[str, list[dict]]:
         "source_ids": join(r["source_ids"]), "source_urls": links(r["source_ids"]),
         "source_accessed": join(accessed[i] for i in r["source_ids"]),
     } for r in d["dataset"].get("exchange_rates", [])]
-    result = {"jurisdictions": jur, "institutes": inst, "funding": fund, "exchange_rates": rates, "staff": staff, "people": people, "known_activity": evidence, "national_partners": partners, "timeline": timeline, "agreements": agreements, "sources": src, "outputs": outputs, "network_milestones": milestones, "source_excerpts": excerpts, "related_bodies": bodies, "closest_bodies": closest, "events": event_rows(d)}
+    result = {"jurisdictions": jur, "institutes": inst, "funding": fund, "exchange_rates": rates, "staff": staff, "people": people, "known_activity": evidence, "national_partners": partners, "functions": functions, "claims": claims, "timeline": timeline, "agreements": agreements, "sources": src, "outputs": outputs, "network_milestones": milestones, "source_excerpts": excerpts, "related_bodies": bodies, "closest_bodies": closest, "events": event_rows(d)}
     check_table_identities(result)
     return result
 
@@ -777,7 +789,7 @@ FIELD_DOCS = {
     "institute_id": "Institute record ID; see institutes.csv or institutes[].id in aisi.json.",
     "derived_total": "True for a calculated sum of component funding records; do not add this row to its components.",
     "sum_of": "Permanent funding component IDs within this institute, separated by '; '.",
-    "id": "Stable row identity, scoped by institute_id, jurisdiction_id or source_id where present. Natural-key aliases: outputs use lineage; known activity uses kind; exchange rates use currency; closest candidates use jurisdiction_id. Source excerpts use SHA-256 of exact quotation text; duplicate quotations share this quote identity and binding or URL edits retain it. Quotation edits change its content identity. Event IDs combine origin_kind and origin_id.",
+    "id": "Stable row identity, scoped by institute_id, jurisdiction_id or source_id where present. Natural-key aliases: outputs use lineage; known activity uses kind; functions use code; exchange rates use currency; closest candidates use jurisdiction_id. Source excerpts use SHA-256 of exact quotation text; duplicate quotations share this quote identity and binding or URL edits retain it. Quotation edits change its content identity. Event IDs combine origin_kind and origin_id.",
     "annual_period_start": "Inclusive start of the annual comparison period; full span for a period mean or repeated identical annual allocations.",
     "annual_period_end": "Inclusive end of the annual comparison period; full span for a period mean or repeated identical annual allocations.",
     "period_start": "Inclusive start date of the cited exchange-rate table.",
@@ -895,6 +907,8 @@ TABLE_NODES = {
     "timeline": ("properties", "jurisdictions", "items", "properties", "timeline", "items"),
     "agreements": ("properties", "institutes", "items", "properties", "agreements", "items"),
     "national_partners": ("$defs", "partner_entry"),
+    "functions": ("$defs", "function_row"),
+    "claims": ("$defs", "claim"),
     "sources": ("properties", "sources", "items"),
     "outputs": ("properties", "institutes", "items", "properties", "outputs", "items"),
     "network_milestones": ("properties", "dataset", "properties", "network_milestones", "items"),
@@ -912,6 +926,8 @@ EMPTY_COLUMNS = {
     "exchange_rates": ["id", "currency", "units_per_eur", "eur_per_unit", "basis", "period_start", "period_end", "source_ids", "source_urls", "source_accessed"],
     "timeline": ["id", "jurisdiction_id", "event_id", "date", "event", "instrument", "description", "short", "withdraws", "source_ids", "source_urls"],
     "national_partners": ["id", "institute_id", "name", "name_en", "acronym", "what", "relation", "cyber_agency", "how", "source_ids", "source_urls"],
+    "functions": ["id", "institute_id", "code", "value", "claim_ids"],
+    "claims": ["id", "jurisdiction_id", "institute_id", "kind", "code", "basis", "body_id", "text", "source_ids", "source_urls"],
     "agreements": ["id", "institute_id", "counterparty", "counterparty_type", "state", "participation", "date", "scope", "source_ids", "source_urls"],
     "events": ["id", "jurisdiction_id", "jurisdiction", "institute_id", "institute", "type", "date", "description", "short", "origin_kind", "origin_id", "source_pointer", "withdraws", "scheduled", "source_ids", "source_urls"],
     "outputs": ["id", "institute_id", "date", "credited_from", "credit_institute_id", "credit_date", "type", "title", "lineage", "attribution", "qualifies_as", "qualification_note", "source_ids", "source_urls"],

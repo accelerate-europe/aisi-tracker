@@ -11,8 +11,10 @@ from decimal import Decimal, ROUND_CEILING, ROUND_FLOOR, ROUND_HALF_UP, localcon
 from functools import cmp_to_key
 
 if __package__:
+    from .claim_checks import function_rows
     from .flag_checks import access_summary
 else:
+    from claim_checks import function_rows  # type: ignore[import-not-found, no-redef]
     from flag_checks import access_summary  # type: ignore[import-not-found, no-redef]
 
 AUTHORING_STRICT = True  # Production accepts primary facts and stable bindings only.
@@ -646,6 +648,13 @@ def materialise_facts(data: dict, *, strict: bool = False) -> dict:
             summary = access_summary(institute["model_access"], result["dataset"]["as_of"])
             for key, value in summary.items():
                 derived(institute["model_access"], key, value, f"{where}/model_access", optional=True)
+        derived(
+            institute,
+            "functions",
+            function_rows(institute, result.get("dataset", {}).get("vocabularies", {})),
+            where,
+            optional=True,
+        )
         records = institute.get("funding", [])
         finished = set()
 

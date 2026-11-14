@@ -11,6 +11,7 @@ if __package__:
     from .reader_text import check_reader_text  # type: ignore[import-not-found]
     from .row_checks import check_rows, required_row_pointers
     from .flag_checks import check_flags, required_flag_pointers
+    from .claim_checks import check_claims, required_claim_pointers
 else:
     from method_copy import check_method_copy
     from references import materialise_references
@@ -18,6 +19,7 @@ else:
     from reader_text import check_reader_text  # type: ignore[import-not-found, no-redef]
     from row_checks import check_rows, required_row_pointers  # type: ignore[import-not-found, no-redef]
     from flag_checks import check_flags, required_flag_pointers  # type: ignore[import-not-found, no-redef]
+    from claim_checks import check_claims, required_claim_pointers  # type: ignore[import-not-found, no-redef]
 
 
 def required_excerpt_pointers(d: dict, *, authored: dict | None = None) -> set[str]:
@@ -100,6 +102,7 @@ def required_excerpt_pointers(d: dict, *, authored: dict | None = None) -> set[s
                     )
     required.update(required_row_pointers(d))
     required.update(required_flag_pointers(d))
+    required.update(required_claim_pointers(d))
     return required
 
 
@@ -434,6 +437,7 @@ def check_method_rules(d: dict, *, authored: dict | None = None) -> list[str]:
     errors += status_evidence
     errors += check_rows(d)
     errors += check_flags(d)
+    errors += check_claims(d)
     # Owner's decision of 14 Nov 2026: a related body cites a source. An error for Europe-scope records, whose
     # bodies were all sourced in 1.0.10; elsewhere still a release warning (unquoted_claims) until a later pass.
     errors += [
