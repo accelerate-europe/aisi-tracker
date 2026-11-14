@@ -1133,6 +1133,12 @@
     "since": null,
     "last_attempt": "2026-11-10"
    },
+   "sha256:96d3a059ef75710b7e66f5ce98acbaea96aeb2a1bf8406a883b117077502787d": {
+    "state": "confirmed",
+    "last_found": "2026-10-17",
+    "since": null,
+    "last_attempt": "2026-10-17"
+   },
    "sha256:a5b4ad068a77fcb04bf7379163011528d2b5df69ee26aa32cd432c1aed7c79ee": {
     "state": "confirmed",
     "last_found": "2026-11-10",
@@ -1344,6 +1350,12 @@
     "last_found": "2026-11-10",
     "since": null,
     "last_attempt": "2026-11-10"
+   },
+   "sha256:85bd07ea8bb1f6e5507119dc006a3e9a319fe8c9bf85570f2567f209b0c4e546": {
+    "state": "confirmed",
+    "last_found": "2026-10-17",
+    "since": null,
+    "last_attempt": "2026-10-17"
    }
   },
   "jp-aisi-deck": {
@@ -3491,6 +3503,12 @@
     "since": null,
     "last_attempt": "2026-11-10"
    },
+   "sha256:ae5e8ac826bf2a164a3f4c24e34e7151db4c39bdf038869cdb034fe92163f31d": {
+    "state": "confirmed",
+    "last_found": "2026-10-17",
+    "since": null,
+    "last_attempt": "2026-10-17"
+   },
    "sha256:bbb352150ed2e8054a598e23f84ef048a23944fcd253d3b4187171b52e8082e7": {
     "state": "confirmed",
     "last_found": "2026-11-10",
@@ -3502,6 +3520,12 @@
     "last_found": "2026-11-10",
     "since": null,
     "last_attempt": "2026-11-10"
+   },
+   "sha256:e4bd0053fc21cb99d70420417276cdca577b377696af69f3c6200cc1da38cf00": {
+    "state": "confirmed",
+    "last_found": "2026-10-17",
+    "since": null,
+    "last_attempt": "2026-10-17"
    },
    "sha256:fce04e4718951391fe80393af5c77446eb0b8b0ca098665d5e4199356d6b74e8": {
     "state": "confirmed",
@@ -3816,6 +3840,18 @@
     "last_found": "2026-11-10",
     "since": null,
     "last_attempt": "2026-11-10"
+   },
+   "sha256:2bb9b2dd7fd976ffea0d32f629708c04d8d284824b42e1d95f6e121ad4fe31ee": {
+    "state": "confirmed",
+    "last_found": "2026-10-17",
+    "since": null,
+    "last_attempt": "2026-10-17"
+   },
+   "sha256:3a8b913d11e54da778da9ee1e6e3829f02f3e931133b15b403bbaf181457673a": {
+    "state": "confirmed",
+    "last_found": "2026-10-17",
+    "since": null,
+    "last_attempt": "2026-10-17"
    },
    "sha256:46c987a67dbc7bfce91ce190ab2a705697cc65c7a0fc6e5722fe3bb5863b40e1": {
     "state": "confirmed",
@@ -11083,6 +11119,18 @@
     "since": null,
     "last_attempt": "2026-11-10"
    },
+   "sha256:940985816bad98fa5cdc5743717133be97594a4e3887cff6f259401a88aa94e4": {
+    "state": "confirmed",
+    "last_found": "2026-10-21",
+    "since": null,
+    "last_attempt": "2026-10-21"
+   },
+   "sha256:ed7a98a8d996b41c1b473069d074efacd81a27c0f4804f22e34163ff97551d4f": {
+    "state": "confirmed",
+    "last_found": "2026-10-21",
+    "since": null,
+    "last_attempt": "2026-10-21"
+   },
    "sha256:f64e596951284319c32d658f838ba23a956a068489967b77457ec467b713b154": {
     "state": "confirmed",
     "last_found": "2026-11-10",
@@ -13974,6 +14022,140 @@
     "last_attempt": "2026-11-14"
    },
    "sha256:86d17f73e1650a750d09888855a3fe935fb25f4bc8a0359cecbaf1a024e13c1f": {
+    "state": "confirmed",
+    "last_found": "2026-11-14",
+    "since": null,
+    "last_attempt": "2026-11-14"
+   }
+  },
+  "gb-dezoete-bio": {
+   "sha256:09e01aadc6937ece08ecaa8304abb3e154cc696d476a75f3574c3d24bf1ebec4": {
+    "state": "confirmed",
+    "last_found": "2026-11-14",
+    "since": null,
+    "last_attempt": "2026-11-14"
+   }
+  },
+  "eu-sioli-connect-2020": {
+   "sha256:568647ef39c100106c612366e6fb054dac57c418e50c2bfff8e2fe47ea318eb0": {
+    "state": "confirmed",
+    "last_found": "2026-11-14",
+    "since": null,
+    "last_attempt": "2026-11-14"
+   },
+   "sha256:df4c567081761cab2e92ed22cb8583fe2ea5f5d1dcf033855bbe352c954a5b73": {
+    "state": "confirmed",
+    "last_found": "2026-11-14",
+    "since": null,
+    "last_attempt": "2026-11-14"
+   }
+  },
+  "no-holte-appointment-dfd": {
+   "sha256:22ab8a64bd4bfad4f01a9f1f7af91cd51d87ae1f2d9bd7b56cd84ac5e58c7919": {
+    "state": "confirmed",
+    "last_found": "2026-11-14",
+    "since": null,
+    "last_attempt": "2026-11-14"
+   }
+  },
+  "us-raman-nist-bio": {
+   "sha256:0989415f2f23a27d38526910121dcb6fab7b0ab6493f81bf234bdb1c31538a60": {
+    "state": "confirmed",
+    "last_found": "2026-11-14",
+    "since": null,
+    "last_attempt": "2026-11-14"
+   },
+   "sha256:2037787ab661a1fb4398ed7e2d55062bd4e56db433eb111d9e07836e2a9e4ece": {
+    "state": "confirmed",
+    "last_found": "2026-11-14",
+    "since": null,
+    "last_attempt": "2026-11-14"
+   },
+   "sha256:8c98c08c4c2df756073313e210576abb7da18c2a2b59b0b09d927469db781288": {
+    "state": "confirmed",
+    "last_found": "2026-11-14",
+    "since": null,
+    "last_attempt": "2026-11-14"
+   }
+  },
+  "us-raman-confirmed-2026": {
+   "sha256:54fdf1b1a78b497f52f9ddeb027475aeeac05022c930f186eb71c8f5f7b2d0af": {
+    "state": "confirmed",
+    "last_found": "2026-11-14",
+    "since": null,
+    "last_attempt": "2026-11-14"
+   }
+  },
+  "ca-ised-transition-book-2025": {
+   "sha256:211d47c4f15d9fbc9f23147996384c786d4ba4ea0461c956a4b074d2f7871d8e": {
+    "state": "confirmed",
+    "last_found": "2026-11-14",
+    "since": null,
+    "last_attempt": "2026-11-14"
+   },
+   "sha256:2996ca8b57d6db925882f9388c97bfb7402f95da31e3db9ca94bf68d00973cd0": {
+    "state": "confirmed",
+    "last_found": "2026-11-14",
+    "since": null,
+    "last_attempt": "2026-11-14"
+   }
+  },
+  "jp-cao-aisi-20240214": {
+   "sha256:6e73bcb42471ef3aa5a998ea2b6e2408fe0679ed8133b4aa432efaa2fe2580e1": {
+    "state": "confirmed",
+    "last_found": "2026-11-14",
+    "since": null,
+    "last_attempt": "2026-11-14"
+   }
+  },
+  "kr-msit-kim-director-2024": {
+   "sha256:8e72b14d33153bf06767aa6b247403b048b4b57c57398bc9c47e31a7abdad5b9": {
+    "state": "confirmed",
+    "last_found": "2026-11-14",
+    "since": null,
+    "last_attempt": "2026-11-14"
+   },
+   "sha256:c7e7d8a4c2010f7194c92e08e69d7b52a03dde921cd7c6c18ffe1048148825cd": {
+    "state": "confirmed",
+    "last_found": "2026-11-14",
+    "since": null,
+    "last_attempt": "2026-11-14"
+   }
+  },
+  "sg-imda-dtc-factsheet-2022": {
+   "sha256:22b943583dff29b241fbc51ca7cc782ff657b4b579607cde0ca6864aeb235594": {
+    "state": "confirmed",
+    "last_found": "2026-11-14",
+    "since": null,
+    "last_attempt": "2026-11-14"
+   }
+  },
+  "gb-cp960-2023": {
+   "sha256:ff372cc6239143cafeb15d2e68d48fec3d83d80a19a101e0ba27974c1109b960": {
+    "state": "confirmed",
+    "last_found": "2026-11-14",
+    "since": null,
+    "last_attempt": "2026-11-14"
+   }
+  },
+  "eu-ai-office-jobs-2024": {
+   "sha256:e7f2d2fa3c251dde82055e9d4b5e4c2b6d06ab4c43d71f6a44cce78d80eb2552": {
+    "state": "confirmed",
+    "last_found": "2026-11-14",
+    "since": null,
+    "last_attempt": "2026-11-14"
+   }
+  },
+  "no-digdir-ki-norge-report-2025": {
+   "sha256:52cc4bfcfb757d00089abe0d982b612823b731e935a16d26f030174a03e1b85b": {
+    "state": "confirmed",
+    "last_found": "2026-11-14",
+    "since": null,
+    "last_attempt": "2026-11-14"
+   }
+  },
+  "in-aisi-director-advert-2026": {
+   "sha256:f12fc26d60dfb6211651453b4bd1ac98a8968076f4e9adb87e9899c643c1f5e7": {
     "state": "confirmed",
     "last_found": "2026-11-14",
     "since": null,
