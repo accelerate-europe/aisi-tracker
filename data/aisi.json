@@ -28819,11 +28819,13 @@
           "name": "Henry de Zoete",
           "role": "Director",
           "source_ids": [
-            "gb-about"
+            "gb-about",
+            "gb-dezoete-bio"
           ],
           "confidence": "high",
           "title_status": "published",
-          "id": "people-79b0cf38817c5246bc06d819ffb9ba02"
+          "id": "people-79b0cf38817c5246bc06d819ffb9ba02",
+          "background": "From March to August 2026 de Zoete was Investment and AI Adviser in the Department for Science, Innovation and Technology."
         },
         {
           "name": "Ian Hogarth",
@@ -31918,10 +31920,12 @@
           "title_status": "published",
           "source_ids": [
             "r5-no-holte-appointment",
-            "no-ki-holte-june"
+            "no-ki-holte-june",
+            "no-holte-appointment-dfd"
           ],
           "notes": "Digdir's 7 May 2026 announcement gave August 2026 as the planned start. KI Norge's article published on 1 June 2026 presents Holte as director and gives 12 June 2026 as the organisation's official launch. His actual start date is unresolved. The additional AI safety and model-evaluation mandate remains proposed. This appointment does not establish an operational safety institute.",
-          "id": "people-2d72b937814c5e4885e71e2f8af219e3"
+          "id": "people-2d72b937814c5e4885e71e2f8af219e3",
+          "background": "Holte was Director of Labour and Welfare from 2020 to 2025."
         }
       ],
       "head": {
@@ -32240,11 +32244,13 @@
           "name": "Lucilla Sioli",
           "role": "Director AI Office (DG CONNECT)",
           "source_ids": [
-            "eu-sioli"
+            "eu-sioli",
+            "eu-sioli-connect-2020"
           ],
           "confidence": "high",
           "title_status": "published",
-          "id": "people-ff3044c04c6d5bc490489df29a84f83a"
+          "id": "people-ff3044c04c6d5bc490489df29a84f83a",
+          "background": "A European Commission civil servant since 1997, Sioli was listed in August 2020 as Director for Artificial Intelligence and Digital Industry in DG CONNECT."
         }
       ],
       "mandate_short": "Evaluates general-purpose AI models with systemic risk under the AI Act.",
@@ -33355,10 +33361,13 @@
           "title_status": "published",
           "source_ids": [
             "r5-us-raman-nist-post",
-            "r5-us-raman-axios"
+            "r5-us-raman-axios",
+            "us-raman-nist-bio",
+            "us-raman-confirmed-2026"
           ],
           "notes": "Role confirmed by NIST organisational post. July 2026 transition reported by Axios on 20 July from a named Commerce spokesperson; exact effective day was not independently established. Confidence is medium for the combined record because the start month rests on a press account, while the role is primary-confirmed.",
-          "id": "people-ccd2b978e1045a9b9cb2f0e2539cbdae"
+          "id": "people-ccd2b978e1045a9b9cb2f0e2539cbdae",
+          "background": "Raman came to NIST from Purdue University, where Raman was named Dean of Engineering in February 2023, and is also NIST Director, sworn in on 30 June 2026."
         }
       ],
       "head": {
@@ -34219,11 +34228,13 @@
           "name": "Alexandra Dostal",
           "role": "Executive Director, Canadian AI Safety Institute",
           "source_ids": [
-            "depth-ca-au-mou"
+            "depth-ca-au-mou",
+            "ca-ised-transition-book-2025"
           ],
           "confidence": "high",
           "title_status": "published",
-          "id": "people-e51819a0b781512099c82d5c0352b7c9"
+          "id": "people-e51819a0b781512099c82d5c0352b7c9",
+          "background": "Dostal is also Senior Assistant Deputy Minister, Strategic Policy Sector, at ISED, a post held since September 2024, and earlier held posts at Fisheries and Oceans Canada, the Treasury Board Secretariat, Finance Canada and Global Affairs Canada."
         },
         {
           "name": "Nicolas Papernot",
@@ -34766,11 +34777,13 @@
             "jp-cao-2604",
             "jp-ipa-2024-02",
             "jp-aisi-about",
-            "jp-ipa-oct9"
+            "jp-ipa-oct9",
+            "jp-cao-aisi-20240214"
           ],
           "confidence": "high",
           "title_status": "published",
-          "id": "people-b2221cf0153f51bbb54c609c96e106c6"
+          "id": "people-b2221cf0153f51bbb54c609c96e106c6",
+          "background": "When appointed, Murakami was an executive officer and Chief Digital Officer of Sompo Japan, a post held since April 2022 and listed as current, and is a former AI researcher at IBM Japan."
         },
         {
           "name": "Satoshi Sekine",
@@ -35917,11 +35930,14 @@
           "name": "Myuhngjoo Kim",
           "role": "Director of the AI Safety Institute",
           "source_ids": [
-            "kr-site"
+            "kr-site",
+            "kr-msit-kim-director-2024"
           ],
           "confidence": "high",
           "title_status": "published",
-          "id": "people-396e0e7649455f829a0da6181a1c735c"
+          "id": "people-396e0e7649455f829a0da6181a1c735c",
+          "since": "2024-11-12",
+          "background": "When appointed, Kim was a professor in the Department of Information Security at Seoul Women's University."
         }
       ],
       "mandate_short": "Researches AI risks, safety policy, and safety evaluation standards and methods.",
@@ -36483,11 +36499,13 @@
           "name": "Lam Kwok Yan",
           "role": "Executive Director, Singapore AI Safety Institute",
           "source_ids": [
-            "depth-sg-lam"
+            "depth-sg-lam",
+            "sg-imda-dtc-factsheet-2022"
           ],
           "confidence": "high",
           "title_status": "published",
-          "id": "people-46ec54ee933b52658c261129018e5356"
+          "id": "people-46ec54ee933b52658c261129018e5356",
+          "background": "When named in June 2022 to lead the Digital Trust Centre, Lam was Professor and Associate Vice President (Strategy and Partnerships) at NTU."
         }
       ],
       "outputs": [
@@ -45126,6 +45144,23 @@
             ]
           ],
           "accessed": "2026-10-20"
+        },
+        {
+          "text": "has been a civil servant with the European Commission since 1997",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "people",
+              {
+                "id": "people-ff3044c04c6d5bc490489df29a84f83a"
+              },
+              "background"
+            ]
+          ],
+          "accessed": "2026-11-14"
         }
       ],
       "origin": "EU",
@@ -59424,6 +59459,24 @@
           ],
           "gloss": "Work on international cooperation with relevant institutions in other countries, such as the UK and US AI Safety Institutes.",
           "accessed": "2026-10-19"
+        },
+        {
+          "text": "2021年4月 損害保険ジャパン株式会社 入社 執行役員待遇DX推進部 特命部長 2021年10月 同社 執行役員待遇 DX推進部長 2022年4月 同社 執行役員 CDO(Chief Digital Officer) DX推進部長 現職",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "people",
+              {
+                "id": "people-b2221cf0153f51bbb54c609c96e106c6"
+              },
+              "background"
+            ]
+          ],
+          "gloss": "April 2021: joined Sompo Japan Insurance Inc., special general manager of the DX Promotion Department with executive officer status. October 2021: same company, general manager of the DX Promotion Department with executive officer status. April 2022: same company, Executive Officer, CDO (Chief Digital Officer) and general manager of the DX Promotion Department (current post).",
+          "accessed": "2026-11-14"
         }
       ],
       "origin": "JP",
@@ -64623,6 +64676,17 @@
                 "id": "people-e51819a0b781512099c82d5c0352b7c9"
               },
               "role"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "people",
+              {
+                "id": "people-e51819a0b781512099c82d5c0352b7c9"
+              },
+              "background"
             ]
           ],
           "accessed": "2026-10-20"
@@ -120387,6 +120451,417 @@
         "retrieved": "2026-11-14T12:39:29Z",
         "sha256": "2fcfd2cc043f9120a3d6fb8a6e18dc7bde3c3e53e659517cbeffad785f1fcc74",
         "text_sha256": "16d3da7415d395308e33c64fa46282b2ce493ba888a4d3d979969f7ab40dad21",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "gb-dezoete-bio",
+      "url": "https://www.gov.uk/government/people/henry-de-zoete",
+      "title": "Henry De Zoete - GOV.UK",
+      "publisher": "GOV.UK",
+      "type": "primary",
+      "accessed": "2026-11-14",
+      "language": "en",
+      "origin": "GB",
+      "excerpts": [
+        {
+          "text": "In March 2026 he was appointed as the Investment and AI Adviser in the Department for Science, Innovation and Technology (March 2026 - August 2026).",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "people",
+              {
+                "id": "people-79b0cf38817c5246bc06d819ffb9ba02"
+              },
+              "background"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-14T11:31:13Z",
+        "sha256": "ad7c9cb4b6b71f1acdeec63dde6e2f24249c6f6f6cd4bb7841fc479f696ad4e2",
+        "text_sha256": "39f7fa9f4355ecfc6a4a8b46b5725c0f04872af0151e0e5a3f1012a2e3f9731c",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "eu-sioli-connect-2020",
+      "url": "https://digital-strategy.ec.europa.eu/en/events/artificial-intelligence-meets-health-sector-connect-university",
+      "title": "Artificial Intelligence meets the health sector | CONNECT University",
+      "publisher": "European Commission (DG CONNECT)",
+      "type": "primary",
+      "published": "2020-08-20",
+      "accessed": "2026-11-14",
+      "language": "en",
+      "origin": "EU",
+      "excerpts": [
+        {
+          "text": "Ms Lucilla Sioli is the Director for \"Artificial Intelligence and Digital Industry\" within Directorate-General CONNECT at the European Commission.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "people",
+              {
+                "id": "people-ff3044c04c6d5bc490489df29a84f83a"
+              },
+              "background"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "Publication 20 August 2020",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "people",
+              {
+                "id": "people-ff3044c04c6d5bc490489df29a84f83a"
+              },
+              "background"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-14T11:30:52Z",
+        "sha256": "e291664a3d6d8c85eda6b61e79689d6e0946b9f38199da51f7584e9793e57c3f",
+        "text_sha256": "9a0a22270aad707e125847360b524b4e843b727c02d1671c25fbf2b635237ac7",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "no-holte-appointment-dfd",
+      "url": "https://www.regjeringen.no/no/aktuelt/hans-christian-holte-blir-direktor-for-ki-norge/id3158721/",
+      "title": "Hans Christian Holte blir direktør for KI Norge",
+      "title_en": "Hans Christian Holte becomes director of KI Norge",
+      "publisher": "Digitaliserings- og forvaltningsdepartementet",
+      "type": "primary",
+      "published": "2026-05-07",
+      "accessed": "2026-11-14",
+      "language": "no",
+      "origin": "NO",
+      "excerpts": [
+        {
+          "text": "Holte var arbeids- og velferdsdirektør fra 2020 til 2025.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "people",
+              {
+                "id": "people-2d72b937814c5e4885e71e2f8af219e3"
+              },
+              "background"
+            ]
+          ],
+          "gloss": "Holte was Director of Labour and Welfare from 2020 to 2025.",
+          "accessed": "2026-11-14"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-14T11:32:30Z",
+        "sha256": "041df97d4464ba6cba4302f705b5aa2e810d014af070a2de93fa192cd59e76c7",
+        "text_sha256": "c6f403b21d6af212b30df9f2d8f91ba14e8c7c4bd3e642ce2f921cd3eba58b7b",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "us-raman-nist-bio",
+      "url": "https://www.nist.gov/people/arvind-raman",
+      "title": "Arvind Raman | NIST",
+      "publisher": "National Institute of Standards and Technology",
+      "type": "primary",
+      "accessed": "2026-11-14",
+      "language": "en",
+      "origin": "US",
+      "excerpts": [
+        {
+          "text": "In February 2023 he was named the John A. Edwardson Dean of Engineering at the university.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "people",
+              {
+                "id": "people-ccd2b978e1045a9b9cb2f0e2539cbdae"
+              },
+              "background"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "Dr. Raman joined NIST after a distinguished career at Purdue University in Indiana.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "people",
+              {
+                "id": "people-ccd2b978e1045a9b9cb2f0e2539cbdae"
+              },
+              "background"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "Arvind Raman is the fifth Under Secretary of Commerce for Standards and Technology and the 18th director of the National Institute of Standards and Technology.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "people",
+              {
+                "id": "people-ccd2b978e1045a9b9cb2f0e2539cbdae"
+              },
+              "background"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-14T11:31:53Z",
+        "sha256": "45d410057b2669e80fe71e7e1a6084ae45ac3c822c5609c8dd4d681e8d5265f0",
+        "text_sha256": "f00797b7b87e0abe2f1457a6dbb3d22f7ad99ea8531dfdcf61bfcb8150767f66",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "us-raman-confirmed-2026",
+      "url": "https://www.nist.gov/news-events/news/2026/07/arvind-raman-confirmed-18th-nist-director",
+      "title": "Arvind Raman Confirmed as the 18th NIST Director",
+      "publisher": "National Institute of Standards and Technology",
+      "type": "primary",
+      "published": "2026-07-06",
+      "accessed": "2026-11-14",
+      "language": "en",
+      "origin": "US",
+      "excerpts": [
+        {
+          "text": "Arvind Raman was sworn in on June 30, 2026, as the fifth under secretary of commerce for standards and technology and the 18th director of the National Institute of Standards and Technology (NIST)",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "people",
+              {
+                "id": "people-ccd2b978e1045a9b9cb2f0e2539cbdae"
+              },
+              "background"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-14T11:31:54Z",
+        "sha256": "6e648d7a9a4acb0ccd6b59a65db486bc63dc0a518fcc994d38270ab76518cde7",
+        "text_sha256": "792441651ddaaadbc076091695b2f4c06ece2f00682625208121995051de0c8a",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "ca-ised-transition-book-2025",
+      "url": "https://ised-isde.canada.ca/site/ised/en/transition-materials/ministerial-transition-book-march-2025-minister-innovation-science-and-industry",
+      "title": "Ministerial transition book: March 2025 — Minister of Innovation, Science and Industry",
+      "publisher": "Innovation, Science and Economic Development Canada",
+      "type": "primary",
+      "published": "2025-03",
+      "accessed": "2026-11-14",
+      "language": "en",
+      "origin": "CA",
+      "excerpts": [
+        {
+          "text": "Alexandra is the Senior Assistant Deputy Minister, Strategic Policy Sector, at ISED since September 2024.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "people",
+              {
+                "id": "people-e51819a0b781512099c82d5c0352b7c9"
+              },
+              "background"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "Previously, she has held positions with Government of Canada at Fisheries and Oceans Canada, Treasury Board Secretariat, Finance Canada and Global Affairs Canada.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "people",
+              {
+                "id": "people-e51819a0b781512099c82d5c0352b7c9"
+              },
+              "background"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-14T11:37:20Z",
+        "sha256": "a0387d03e387b73e3d8c1a9f335b1e819362a4b56951ade83cec084675643d55",
+        "text_sha256": "9258c91557222a6d914b0ded8d0430c9aa7a885bcb65b3423996fc883ffe0dd8",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "jp-cao-aisi-20240214",
+      "url": "https://www8.cao.go.jp/cstp/stmain/20240214.html",
+      "title": "AIセーフティ・インスティテュートの設立について",
+      "title_en": "On the establishment of the AI Safety Institute",
+      "publisher": "Cabinet Office of Japan, Science, Technology and Innovation Promotion Secretariat",
+      "type": "primary",
+      "published": "2024-02-14",
+      "accessed": "2026-11-14",
+      "language": "ja",
+      "origin": "JP",
+      "excerpts": [
+        {
+          "text": "所長には、今月１日に内定していた、元日本IBMのAI研究者で、現在は損保ジャパンCDO（チーフ・デジタル・オフィサー）で京都大学防災研究所客員講師の村上(むらかみ)明子(あきこ)氏が就任した。",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "people",
+              {
+                "id": "people-b2221cf0153f51bbb54c609c96e106c6"
+              },
+              "background"
+            ]
+          ],
+          "gloss": "Akiko Murakami, a former AI researcher at IBM Japan who is currently CDO (Chief Digital Officer) of Sompo Japan and a visiting lecturer at the Disaster Prevention Research Institute, Kyoto University, whose appointment was decided on the 1st of this month, took office as director.",
+          "accessed": "2026-11-14"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-14T11:31:10Z",
+        "sha256": "6a1ce25525804aa77dd6a72ac6b63583150abcabe263e7d9a4f6f07cc63a2c60",
+        "text_sha256": "4e016dde5bfd966ad39a89a611eb57c9f4d5c552d8d586d3073efb1a2dae5014",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "kr-msit-kim-director-2024",
+      "url": "https://www.msit.go.kr/eng/bbs/view.do?bbsSeqNo=42&mId=4&nttSeqNo=1048&sCode=eng",
+      "title": "Professor Kim Myuhng-Joo Appointed as First Director of the AI Safety Institute",
+      "publisher": "Ministry of Science and ICT (MSIT)",
+      "type": "primary",
+      "published": "2024-11-12",
+      "accessed": "2026-11-14",
+      "language": "en",
+      "origin": "KR",
+      "excerpts": [
+        {
+          "text": "has announced the appointment of Professor Kim Myuhng-joo from the Department of Information Security at Seoul Women's University as the inaugural Director of the AI Safety Institute, effective November 12.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "people",
+              {
+                "id": "people-396e0e7649455f829a0da6181a1c735c"
+              },
+              "background"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "The term for Professor Kim's appointment as Director of the AI Safety Institute is three years, from November 12, 2024, to November 11, 2027.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "people",
+              {
+                "id": "people-396e0e7649455f829a0da6181a1c735c"
+              },
+              "since"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-14T11:31:11Z",
+        "sha256": "15e059cf5bcc1a4b7c53adcd025e937a58571573d7dc2b7dd1b3f90f4c3d5626",
+        "text_sha256": "58fa66e12e863df812ec29e5f370f25d6b41e953a29b234596edabd173d8ed76",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "sg-imda-dtc-factsheet-2022",
+      "url": "https://www.imda.gov.sg/-/media/Imda/Files/News-and-Events/Media-Room/Media-Releases/2022/06/Digital-Trust-Centre-Factsheet---ATxSG-1-Jun-2022.pdf",
+      "title": "IMDA to Strengthen Singapore's Capabilities in Digital Trust Through New National Digital Trust Centre (fact sheet)",
+      "publisher": "Infocomm Media Development Authority (IMDA)",
+      "type": "primary",
+      "published": "2022-06-01",
+      "accessed": "2026-11-14",
+      "language": "en",
+      "origin": "SG",
+      "excerpts": [
+        {
+          "text": "NTU Professor Lam Kwok Yan, Associate Vice President (Strategy & Partnerships), who will lead the DTC as its Executive Director",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "sg-aisi"
+              },
+              "people",
+              {
+                "id": "people-46ec54ee933b52658c261129018e5356"
+              },
+              "background"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-14T11:32:02Z",
+        "sha256": "f5b123ad3a88b12357633cdcfc6465d45134c9b1d8334547c0e257aa985420bd",
+        "text_sha256": "b732385e56892863ada661c8343d1d6f5ab2ed87dff8a3af04699eab9014f1ed",
         "text_scheme": 1
       }
     }
