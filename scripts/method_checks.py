@@ -434,6 +434,13 @@ def check_method_rules(d: dict, *, authored: dict | None = None) -> list[str]:
     errors += status_evidence
     errors += check_rows(d)
     errors += check_flags(d)
+    # Owner's decision of 14 Nov 2026: a related body cites a source. An error for Europe-scope records, whose
+    # bodies were all sourced in 1.0.10; elsewhere still a release warning (unquoted_claims) until a later pass.
+    errors += [
+        f"{record['id']} related body {body['name']!r}: cites no source (Europe scope)"
+        for record in d["jurisdictions"] if record.get("europe_scope")
+        for body in record.get("related_bodies", []) if not body.get("source_ids")
+    ]
     sources = {s["id"]: s for s in d["sources"]}
     institutes = {i["id"]: i for i in d["institutes"]}
     as_of = d["dataset"]["as_of"]
