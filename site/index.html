@@ -51,6 +51,7 @@
  * None-identified entries: bodies grouped by role (closest candidate; AI Act authorities by function; other bodies), the English name first with the original muted beneath, the basis a group shares said once, citations inline; research notes in one muted How we checked block; on phones the name sits above a full-width summary; wording every entry shares lives in Method (check_page check_nonidentified_folds, check_nonidentified_style).
  * Sources: entry source lists hold sources that support the entry; population and region sources (display.generic_sources) are named once in Method and stay in the downloads; check_page check_generic_sources.
  * Archived copies: wherever a source list or Method names a source that has an archive URL, "(archived copy)" follows its link (after our English translation of a non-English title, in square brackets) as a quiet link in muted ink with a muted underline, no arrow, never broken across lines; superscript citations never carry one (check_page check_archive_links).
+ * Re-read line: every source list item whose source has a quotation with a re-read state ends with one line of its own in the list's muted ink, from its quotations' states (docs/design/claims-1.1.md section 4): "Source last re-read {date}." while none is missing; else the worst state (the earliest start, then offline before not found, then the earliest last found): "Not found in the source on {date}; last found {date}; under review." (with ": N of M quotes" after the first date when some quotations are still found), "Source offline since {date}; last found {date}.", "Source could not be re-read since {date}; last found {date}."; a quotation or claim shown on its own shows its own state, never its source's; the page never says "verified" (check_page check_reread_lines).
  * Sorting: every table column sorts values by meaning, then values without a comparable figure, research gaps, structural absence; gaps stay last in both directions; ties by state name.
  * Links: inline text uses a thin muted-accent underline and accent ink; standalone links use position, icon or colour, with hover/focus underline or ink change. State names in linked lists (Testing and access, Institutional set-up, Budget not published) take the accent link style; News and None identified names take the card title's type (check_page check_name_roles).
  * External markers: marked links end in a compact SVG arrow with body-weight stroke and retain accessible new-tab text in every theme.
@@ -538,6 +539,7 @@ main section.first { display: flex; flex-direction: column; gap: var(--sp-5); bo
 .srcs ol { margin: var(--sp-2) 0 0; padding-left: var(--sp-5); display: flex; flex-direction: column; gap: var(--sp-2); color: var(--muted); }
 .srcs li { overflow-wrap: anywhere; }
 .srcs .role { font-style: italic; }
+.srcs .reread { display: block; } /* principle: Re-read line */
 .correction { color: var(--muted); }
 .cards.minis { --columns: 1; gap: 0; }
 .card.mini { gap: var(--sp-2); border-bottom: var(--rule) solid var(--line); }
@@ -1276,6 +1278,32 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     sum.appendChild(el("span", "source-count", order.length + (order.length === 1 ? " source" : " sources"))); det.appendChild(sum); det.appendChild(sourceList(order, S)); foot.appendChild(det);
     return foot;
   }
+  // A source's re-read line, from its quotations' own states (principle: Re-read line). Confirmed and not yet re-attempted
+  // quotations read alike (the latest date); otherwise the worst state leads: the earliest start, then offline before
+  // not found, then the earliest last found. The count shows when some quotations are still found.
+  var REREAD_RANK = { confirmed: 0, not_attempted: 0, blocked_or_failed: 1, source_gone: 2, quote_gone: 2 }, REREAD_TIE = { source_gone: 0, quote_gone: 1, blocked_or_failed: 2 };
+  function rereadWorse(r, w) {
+    var a = REREAD_RANK[r.state], b = REREAD_RANK[w.state];
+    if (a !== b) return a > b;
+    if (!a) return r.last_found > w.last_found;
+    if (r.since !== w.since) return r.since < w.since;
+    if (r.state !== w.state) return REREAD_TIE[r.state] < REREAD_TIE[w.state];
+    return r.last_found < w.last_found;
+  }
+  function rereadLine(src) {
+    var states = (src.excerpts || []).map(function (e) { return e.reread; }).filter(Boolean);
+    if (!states.length) return null;
+    var worst = states.reduce(function (w, r) { return rereadWorse(r, w) ? r : w; });
+    var parts, gone = states.filter(function (r) { return r.state === "quote_gone"; }).length;
+    var found = states.some(function (r) { return !REREAD_RANK[r.state]; });
+    if (worst.state === "quote_gone") parts = ["Not found in the source on ", dated(worst.since), found ? ": " + gone + " of " + states.length + " quotes" : "", "; last found ", dated(worst.last_found), "; under review."];
+    else if (worst.state === "source_gone") parts = ["Source offline since ", dated(worst.since), "; last found ", dated(worst.last_found), "."];
+    else if (worst.state === "blocked_or_failed") parts = ["Source could not be re-read since ", dated(worst.since), "; last found ", dated(worst.last_found), "."];
+    else parts = ["Source last re-read ", dated(worst.last_found), "."];
+    var line = el("span", "reread");
+    parts.forEach(function (p) { if (p) line.appendChild(typeof p === "string" ? document.createTextNode(p) : p); });
+    return line;
+  }
   function sourceList(order, S, roles) {
     var ol = el("ol");
     order.forEach(function (id) {
@@ -1286,6 +1314,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       li.appendChild(document.createTextNode(", " + src.publisher + (src.published ? ", " : "")));
       if (src.published) li.appendChild(dated(src.published));
       if (roles && roles[id] && roles[id].length) li.appendChild(el("span", "role", ", supports " + roles[id].join(", ").toLowerCase()));
+      var reread = rereadLine(src); if (reread) li.appendChild(reread);
       ol.appendChild(li);
     });
     return ol;

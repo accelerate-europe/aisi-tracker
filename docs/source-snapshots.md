@@ -70,4 +70,10 @@ uv run --locked scripts/monitor_sources.py --report work/monitor
 
 The weekly run is a scheduled job on the maintainers' host, configured outside this repository, and off until the owner switches it on.
 
+`--rereads` fetches nothing: it replays the whole check log into the tracked `data/rereads.json`, each bound quotation's re-read state and dates (keyed by source ID, then quotation hash), and is that file's only writer (`scripts/rereads.py`; states, expiry and alerts in [claims design section 4](design/claims-1.1.md#4-freshness-and-expiry)). The file carries states and dates only, never the log's paths, responses or texts; regenerate it after each run and commit it as data, so the build and CI need no private store.
+
+```sh
+uv run --locked scripts/monitor_sources.py --rereads
+```
+
 `--lead URL` checks a page that discovery read but did not cite against a private seen-leads ledger (`discovery-leads.jsonl` beside the snapshot directory): new, changed or skip (text hash unchanged). Add `--verdict irrelevant|not_primary|duplicate|candidate --reason "..."` (and `--duplicate-of SOURCE_ID`) to record a reading.

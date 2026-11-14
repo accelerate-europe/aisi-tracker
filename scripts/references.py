@@ -211,6 +211,8 @@ def authored_schema(download_schema, *, strict=False):
         (outputs, ("credited_from",)),
         (institutes["properties"]["names"]["items"], ("from",)),
         (schema["$defs"]["model_access"], ("value", "latest_event")),
+        (schema["properties"]["sources"]["items"]["properties"]["excerpts"]["items"], ("reread",)),
+        (schema["$defs"]["claim"], ("reread", "expired")),
     ]
     for record, keys in derived:
         record["required"] = [key for key in record.get("required", []) if key not in keys]

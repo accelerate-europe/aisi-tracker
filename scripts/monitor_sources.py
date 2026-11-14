@@ -24,6 +24,9 @@ search). A seen-leads ledger (--lead) remembers pages discovery read but did not
 so a later search skips them until their text hash changes.
 
     uv run --locked scripts/monitor_sources.py --report work/monitor
+
+--rereads fetches nothing: it replays the check log into the tracked data/rereads.json, the per-quote re-read
+states and dates the build publishes (scripts/rereads.py).
 """
 
 from __future__ import annotations
@@ -61,6 +64,8 @@ try:
         text_fields,
     )
     from .verify_excerpts import EXTRACTION_VERSION, Fetcher, content_problem, extract_text, literal_match
+    from . import rereads
+    from . import published as fact_pipeline
 except ImportError:
     from snapshot_sources import (  # type: ignore[no-redef]  # Direct script entry point.
         PRIVATE_SNAPSHOTS,
@@ -75,6 +80,8 @@ except ImportError:
         text_fields,
     )
     from verify_excerpts import EXTRACTION_VERSION, Fetcher, content_problem, extract_text, literal_match  # type: ignore[no-redef]
+    import rereads  # type: ignore[no-redef]
+    import published as fact_pipeline  # type: ignore[no-redef]
 
 MONITOR_VERSION = 1
 CLASSES = ("substantive", "gone", "trivial", "unchanged", "archived", "blocked", "failed", "skipped")
@@ -972,6 +979,7 @@ def digest_summary(report: dict, path: Path) -> dict:
         "gone": entries(lambda r: r["class"] == "gone"),
         "unconfirmed": entries(lambda r: r["reason"] in {"fallback_quote_unconfirmed", "archive_quote_missing"}),
         "next_checks_due": [r["id"] for r in report["next_checks"] if r["due"]], "report": str(path),
+        "reread_alerts": report.get("reread_alerts", []),
     }
 
 
@@ -1089,6 +1097,10 @@ def run_monitor(args) -> int:
                 rows = log.rows(run_id, sources, args.directory, ROOT / "work/snapshots")
             report = build_report(args, data, start, rows, time.monotonic() - clock, error, interrupted)
             try:
+                report["reread_alerts"] = reread_alerts(data, log.read("checks"), args.today.isoformat())
+            except (KeyError, ValueError, TypeError, IndexError, ArithmeticError) as exc:
+                report["reread_alerts"] = [f"re-read alerts not computed: {type(exc).__name__}: {exc}"]
+            try:
                 args.report.mkdir(parents=True, exist_ok=True)
                 (args.report / "monitor.json").write_text(json.dumps(report, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
                 report_path.write_text(markdown(report, sources, citing_records(data)), encoding="utf-8")
@@ -1136,6 +1148,27 @@ def run_monitor(args) -> int:
                 signal.signal(sig, handler)
 
 
+def reread_alerts(data: dict, rows: list[dict], today: str) -> list[str]:
+    """The digest's maintenance alerts: the whole log, this run included, joined into the dataset as of today,
+    which is what data/rereads.json and the build would say now (claims included)."""
+    states = rereads.export(data, rows, is_archive=archive_snapshot)
+    facts = rereads.join(fact_pipeline.prepared_facts(data), states, as_of=today)
+    return rereads.alerts(facts, states, today)
+
+
+def write_rereads(args) -> int:
+    """The only writer of data/rereads.json: states and dates, never the private log's paths or texts."""
+    data = json.loads(args.data.read_text(encoding="utf-8"))
+    with file_lock(args.checks / "checks.lock"):
+        rows = read_lines(args.checks / "checks.jsonl")
+    result = rereads.export(data, rows, is_archive=archive_snapshot)
+    args.rereads_out.write_text(json.dumps(result, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    states = Counter(e["state"] for quotes in result["sources"].values() for e in quotes.values())
+    print(f"{args.rereads_out}: runs {', '.join(result['runs']) or 'none'}, checked to {result['checked_to']}; "
+          + ", ".join(f"{k} {v}" for k, v in sorted(states.items())))
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     parser.add_argument("--data", type=Path, default=ROOT / "data/aisi.json")
@@ -1157,6 +1190,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--digest", action="store_true")
     parser.add_argument("--today", type=date.fromisoformat, default=date.today())
     parser.add_argument("--horizon", type=int, default=14, help="days ahead for next checks")
+    parser.add_argument("--rereads", action="store_true", help="write the re-read states from the check log and stop; fetches nothing")
+    parser.add_argument("--rereads-out", type=Path, default=rereads.REREADS, help="default: data/rereads.json")
     leads = parser.add_argument_group(
         "seen-leads ledger",
         "Pages discovery read but did not cite. --lead URL alone says whether to read it "
@@ -1175,12 +1210,18 @@ def main(argv: list[str] | None = None) -> int:
         parser.error("workers must be positive and time budgets non-negative")
     try:
         validate_write_paths(
-            [args.report, args.cache, args.leads, *log_paths(args.checks),
+            [args.report, args.cache, args.leads, args.rereads_out, *log_paths(args.checks),
              args.report / "monitor.json", args.report / "monitor.md"],
             (args.directory, ROOT / "work/snapshots"),
         )
     except ValueError as exc:
         parser.error(str(exc))
+    if args.rereads:
+        try:
+            return write_rereads(args)
+        except (OSError, ValueError, KeyError) as exc:
+            print(str(exc), file=sys.stderr)
+            return 1
     if args.lead:
         # Private like the snapshots: rejected leads are working notes, not public data.
         args.leads = args.leads or args.directory.parent / "discovery-leads.jsonl"
