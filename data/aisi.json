@@ -74200,6 +74200,28 @@
                 "id": "NL"
               },
               "notes"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "NL"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-2a1087f4f6895c56bde94140740fbf86"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "NL"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-37f51ebd899d5c18b8e5f5ae70373124"
+              },
+              "designation_state"
             ]
           ],
           "accessed": "2026-11-10"
@@ -74246,6 +74268,490 @@
                 "id": "related_bodies-b173c82822855ee784d0272880ce3aef"
               },
               "role"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "BG"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-06fe88afbf4b584895a61fef69c43312"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "BG"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-b173c82822855ee784d0272880ce3aef"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "BG"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-1b6e5484c420551683309e3557fd8031"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "BG"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-50dc53621f775ba69532395f8a4050fc"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "BG"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-8fae863e4117514bb7464473cf6d11b4"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "BG"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-581b65ac8f705b1a9d2b0810bfa5af1e"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "BG"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-3e152fe184b359fc8ee0bd53180513c9"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "BG"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-a9185be5637a563ca75a87ed062800af"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "BG"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-7fde843de3825f9a9f6b60d07abf7508"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "BG"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-54128178102c5fcab52f3522048b957d"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "BG"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-3651ed932d1b534db17886606ddfc629"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "BG"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-30c27d74676c592b93a3a3ab8edaff7e"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "CZ"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-37a2089a60165502bdc297538657f264"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "CZ"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-e4c8fb3e338f53ceac078210be4fd4a1"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "EE"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-e9418b44f082585ea0aaa36f10f7beae"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "ES"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-ac6e5fc2826b586cb53ec652868a94d3"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "ES"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-1b12ed097c015828a8b266c6506845fc"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "ES"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-a4c3a4ec842b528f8f1b134df249879b"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "FR"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-22f37dff551052589cba3b6271b1fcd0"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "FR"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-c01fd9ea79105752a0863587f779b4ce"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "FR"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-f610ed0737415b45919de7073ff161f1"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "FR"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-e863af4b955f5a5f8c9c175544c92aaf"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "FR"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-01cac79d68a1576dbc66fe1e08d97e79"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "FR"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-b82c636a549e5ab08ae7b1d3a744b104"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "FR"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-a7c2e5c4b9ee5515b38ca398b1caaa31"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "FR"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-5f883b7307c558188b9bf449e10d6c5f"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "FR"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-4220d49ce76f5ffdbf4df1e4d9cc52d9"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "LU"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-e961f3b9eef9537db5b2d9854ac44805"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "LU"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-d1592b40ae4855c7a79b78d30199ea92"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "LU"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-dc3fc564a1f55aaab0380fab1e66419f"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "LU"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-6619ef64a8905825891d4e69de0f0fd2"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "LU"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-080a6767ca1f53cba097d8d62c4f8373"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "LU"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-c5b66b57851b58629d158ff6c27b0a8d"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "LU"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-77249e9dde1b5419b3e28e5cc8ec3d4f"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "LU"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-2bc7312cd9cf542e9e7c2eb1a2acb702"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "LU"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-5ad061b2f163587b8a0f139e8c7a62c0"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "NL"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-2a1087f4f6895c56bde94140740fbf86"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "NL"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-37f51ebd899d5c18b8e5f5ae70373124"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "PT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-c71bf6e1658557c2a9f81e710f1185ac"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "RO"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-fd0ceba52edc5398bd88a11e86d08191"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "RO"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-03de3ed9fce1599086859988ee0f1375"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "RO"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-e807d1407eee5c629ed36715ef6c83fb"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "RO"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-b464dd1e1850581787b25c4dcc15162c"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "RO"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-e4aedc56b2195fbaac83fa27f0837454"
+              },
+              "designation_state"
             ]
           ],
           "accessed": "2026-11-10"
@@ -74405,6 +74911,28 @@
                 "id": "related_bodies-561ab77228a354879fd8de3926340be1"
               },
               "role"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "HU"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-561ab77228a354879fd8de3926340be1"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "HU"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-465a88301b9f5fde85c9eac8d8f4c129"
+              },
+              "designation_state"
             ]
           ]
         },
@@ -74423,6 +74951,138 @@
                 "id": "related_bodies-b173c82822855ee784d0272880ce3aef"
               },
               "role"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "BG"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-06fe88afbf4b584895a61fef69c43312"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "BG"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-b173c82822855ee784d0272880ce3aef"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "BG"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-1b6e5484c420551683309e3557fd8031"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "BG"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-50dc53621f775ba69532395f8a4050fc"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "BG"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-8fae863e4117514bb7464473cf6d11b4"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "BG"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-581b65ac8f705b1a9d2b0810bfa5af1e"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "BG"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-3e152fe184b359fc8ee0bd53180513c9"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "BG"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-a9185be5637a563ca75a87ed062800af"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "BG"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-7fde843de3825f9a9f6b60d07abf7508"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "BG"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-54128178102c5fcab52f3522048b957d"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "BG"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-3651ed932d1b534db17886606ddfc629"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "BG"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-30c27d74676c592b93a3a3ab8edaff7e"
+              },
+              "designation_state"
             ]
           ]
         },
@@ -74455,6 +75115,39 @@
                 "id": "DE"
               },
               "notes"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "DE"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-e10c0977415056d28b41b2b8038940bd"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "DE"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-6d4249d97996520590858ebe894e1f03"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "DE"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-3691133321315a2a9958c88783232fab"
+              },
+              "designation_state"
             ]
           ]
         },
@@ -74471,6 +75164,861 @@
               "notes"
             ]
           ]
+        },
+        {
+          "text": "Czech Republic *Český telekomunikační úřad",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "CZ"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-37a2089a60165502bdc297538657f264"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "CZ"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-e4c8fb3e338f53ceac078210be4fd4a1"
+              },
+              "designation_state"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "Denmark Digitaliseringsstyrels",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "DK"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-99d6373d4fdc54dc9979c00bee32e8b6"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "DK"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-4783fb6b79775f88ba826c816866d991"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "DK"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-e070cd5a05a05d84a3299044ee9d8314"
+              },
+              "designation_state"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "Estonia *Tarbijakaitse ja Tehnilise Järelevalve Amet",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "EE"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-e9418b44f082585ea0aaa36f10f7beae"
+              },
+              "designation_state"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "Spain *Agencia Española de Supervisión de Inteligencia Artificial",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "ES"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-ac6e5fc2826b586cb53ec652868a94d3"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "ES"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-1b12ed097c015828a8b266c6506845fc"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "ES"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-a4c3a4ec842b528f8f1b134df249879b"
+              },
+              "designation_state"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "Finland Traficom",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "FI"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-dc971bc50f795549805c194a52e7fe38"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "FI"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-3fd7835331a359eea89eb87b7653f84f"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "FI"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-63f5a187e1165867b7fd39d6fc6d8067"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "FI"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-b932134d2cda50d9af2101d00a1b6aff"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "FI"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-eb6cf2c4cb3d5d8cbb4f6fd8030df070"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "FI"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-ceae8a0ee8735d3fbb89bf2956f45b65"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "FI"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-c1f33f9a17125821838ac1bbc2d66a59"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "FI"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-b094c15418d859fdb87453a9806e34da"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "FI"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-9ec8b098ed3656c5826ed643db278854"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "FI"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-26df67295a9b5ae5ba47949989b2d0ef"
+              },
+              "designation_state"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "France *Direction générale de la concurrence, de la consommation et de la répression des fraudes (DGCCRF)",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "FR"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-22f37dff551052589cba3b6271b1fcd0"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "FR"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-c01fd9ea79105752a0863587f779b4ce"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "FR"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-f610ed0737415b45919de7073ff161f1"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "FR"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-e863af4b955f5a5f8c9c175544c92aaf"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "FR"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-01cac79d68a1576dbc66fe1e08d97e79"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "FR"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-b82c636a549e5ab08ae7b1d3a744b104"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "FR"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-a7c2e5c4b9ee5515b38ca398b1caaa31"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "FR"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-5f883b7307c558188b9bf449e10d6c5f"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "FR"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-4220d49ce76f5ffdbf4df1e4d9cc52d9"
+              },
+              "designation_state"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "Greece Αρχή Προστασίας Δεδομένων Προσωπικού Χαρακτήρα",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "GR"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-851be243ec5957c69be5f448ac4026cb"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "GR"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-80d6cf3c0de758a8929addc5fe775650"
+              },
+              "designation_state"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "Ireland Oifig IS na hÉireann",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "IE"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-a093d0d1cabc56f5909efe89c0a0fdc7"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "IE"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-d7bc6145865158ddb5d236ca9dc89aec"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "IE"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-2e8d666d7b52507b80c55efa7ce08470"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "IE"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-8bb24817e55b56d6ab517c100d63e903"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "IE"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-01fa81e941bc5bae8ca9fa7f877e8e91"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "IE"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-75a1658fb5e6592795a2b74ee717ee85"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "IE"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-250e4a0cc7ea503d8b82dd2b1330124e"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "IE"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-d6b400feeca05b98b9703755489ccf98"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "IE"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-36ef31d0268f5dea9a304af6da4d8887"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "IE"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-d4735b5177315fc088857ac981629879"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "IE"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-ad4d9a0811ae5cf9b321e51cc4b69103"
+              },
+              "designation_state"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "Italy Agenzia per la cybersicurezza nazionale",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "IT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-d0f364f988eb57f3ae4326d78d0df766"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "IT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-86ccb972e5f052fb83f1cd9a4847f890"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "IT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-cfb18691f52652f9b1cf8001f6aa073a"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "IT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-51b3a2a2081650b98424fc5125a8ce28"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "IT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-4e74849e95025a8a87dd5a67d9253985"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "IT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-9542f4c8ca8d43fba362f5198c45c7e6"
+              },
+              "designation_state"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "Lithuania Lietuvos Respublikos ryšių reguliavimo tarnyba",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "LT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-8c4595e6d7515664b50c7ddcd5cab3a8"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "LT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-871b94a361b75d9a9550525d7841cda6"
+              },
+              "designation_state"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "Luxembourg *Commission nationale pour la protection des données",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "LU"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-e961f3b9eef9537db5b2d9854ac44805"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "LU"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-d1592b40ae4855c7a79b78d30199ea92"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "LU"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-dc3fc564a1f55aaab0380fab1e66419f"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "LU"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-6619ef64a8905825891d4e69de0f0fd2"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "LU"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-080a6767ca1f53cba097d8d62c4f8373"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "LU"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-c5b66b57851b58629d158ff6c27b0a8d"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "LU"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-77249e9dde1b5419b3e28e5cc8ec3d4f"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "LU"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-2bc7312cd9cf542e9e7c2eb1a2acb702"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "LU"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-5ad061b2f163587b8a0f139e8c7a62c0"
+              },
+              "designation_state"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "Latvia Patērētāju tiesību aizsardzības centrs",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "LV"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-0ac057d6004e5ebba0c33e2542dab524"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "LV"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-b6417ce54fe5574a92f19a8f2f110b25"
+              },
+              "designation_state"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "Malta L-Awtorità Maltija għall-Innovazzjoni Diġitali",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "MT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-0d7ba905bff754c7b2d682718d6218d8"
+              },
+              "designation_state"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "Poland Komisja Rozwoju i Bezpieczeństwa Sztucznej Inteligencji (KRiBSI)",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "PL"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-9abdac50986a5525bca90d58733feba6"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "PL"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-de1e7f85821a52ce902ccb245f304536"
+              },
+              "designation_state"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "Portugal *ANACOM",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "PT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-c71bf6e1658557c2a9f81e710f1185ac"
+              },
+              "designation_state"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "Romania *ANCOM",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "RO"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-fd0ceba52edc5398bd88a11e86d08191"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "RO"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-03de3ed9fce1599086859988ee0f1375"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "RO"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-e807d1407eee5c629ed36715ef6c83fb"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "RO"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-b464dd1e1850581787b25c4dcc15162c"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "RO"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-e4aedc56b2195fbaac83fa27f0837454"
+              },
+              "designation_state"
+            ]
+          ],
+          "accessed": "2026-11-14"
         }
       ],
       "access_note": "The retrieved Commission table covers EU Member States. Its country rows were checked again on 10 November 2026 (list of 9 November) for Norway, Iceland and Liechtenstein; none of those three appears. This absence cross-check does not establish their national designations.",
@@ -75842,6 +77390,17 @@
                 "id": "BE"
               },
               "notes"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "BE"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-6713d36a74925313b05d8bebcda3ffc3"
+              },
+              "designation_state"
             ]
           ],
           "gloss": "Belgium has not yet made this formal designation."
@@ -76151,6 +77710,35 @@
             ]
           ],
           "gloss": "The Ministry of Investments is the general market-surveillance authority."
+        },
+        {
+          "text": "1447 VLÁDNY NÁVRH",
+          "gloss": "1447 government bill",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "SK"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-a6e07da58c8353baadda29f2efea1372"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "SK"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-df4ae7e268805b7390d577eef564c628"
+              },
+              "designation_state"
+            ]
+          ],
+          "accessed": "2026-11-14"
         }
       ],
       "origin": "SK",
@@ -76424,6 +78012,68 @@
             ]
           ],
           "gloss": "Swedac is otherwise to be the notifying authority."
+        },
+        {
+          "text": "Regeringen ger Post- och telestyrelsen (PTS), Integritetsskyddsmyndigheten, Finansinspektionen, Läkemedelsverket och Styrelsen för ackreditering och teknisk kontroll (Swedac) i uppdrag att vara nationella behöriga myndigheter enligt artikel 70.1",
+          "gloss": "The government assigns the Post and Telecom Authority (PTS), the Authority for Privacy Protection, the Financial Supervisory Authority, the Medical Products Agency and the Swedish Board for Accreditation and Conformity Assessment (Swedac) to be national competent authorities under Article 70(1)",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "SE"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-2b7055290e825b10b32885aee6de84cd"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "SE"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-0c4e1d192eed5889ac6754fb687f2f13"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "SE"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-be4221270d60586697df38052cd5204e"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "SE"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-edce05d619da55c7ad8d443e15e67b2c"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "SE"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-c7f5891b540f58518a65815f90820dc7"
+              },
+              "designation_state"
+            ]
+          ],
+          "accessed": "2026-11-14"
         }
       ],
       "origin": "SE",
@@ -76844,6 +78494,35 @@
             ]
           ],
           "gloss": "The Norwegian Communications Authority is the national contact point for the national competent authorities"
+        },
+        {
+          "text": "Høringsnotat Gjennomføring av forordningen om kunstig intelligens",
+          "gloss": "Consultation paper: implementation of the regulation on artificial intelligence",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "NO"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-b4d2d434bb295ee0bb53655409c68c01"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "NO"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-71e07cd6efa150f092d7a0dc37460fe4"
+              },
+              "designation_state"
+            ]
+          ],
+          "accessed": "2026-11-14"
         }
       ],
       "origin": "NO",
