@@ -357,6 +357,55 @@
               },
               "description": "Function codes for claims of kind function (institutes, and related bodies through body_id) and for institutes[].functions, in display order, each with its label, test (definition) and group. Provisional (dataset.provisional): codes may be added, split, renamed or removed in a minor version, with a changelog line; a retired code stays with deprecated and replaced_by."
             },
+            "development": {
+              "type": "object",
+              "minProperties": 1,
+              "propertyNames": {
+                "pattern": "^[a-z_]+$"
+              },
+              "additionalProperties": {
+                "type": "object",
+                "required": [
+                  "label",
+                  "definition"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "label": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "definition": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "The test a reviewer applies to the quoted act."
+                  },
+                  "deprecated": {
+                    "const": true,
+                    "description": "A retired code: never reused and never used by a claim."
+                  },
+                  "replaced_by": {
+                    "type": "array",
+                    "minItems": 1,
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "string",
+                      "pattern": "^[a-z_]+$"
+                    },
+                    "description": "The current codes that replace a retired one."
+                  }
+                },
+                "dependentRequired": {
+                  "deprecated": [
+                    "replaced_by"
+                  ],
+                  "replaced_by": [
+                    "deprecated"
+                  ]
+                }
+              },
+              "description": "Development codes for claims of kind development, one per limb of the level 2 bar, in display order, each with its label and test (definition). Provisional (dataset.provisional): codes may be added, split, renamed or removed in a minor version, with a changelog line; a retired code stays with deprecated and replaced_by."
+            },
             "membership_body": {
               "type": "object",
               "minProperties": 1,
@@ -857,6 +906,25 @@
                   ],
                   "description": "State of the AI Act authority designation in the cited national source. Omission means unresolved or inapplicable."
                 },
+                "designation_step": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "text",
+                    "date"
+                  ],
+                  "properties": {
+                    "text": {
+                      "type": "string",
+                      "pattern": "\\S",
+                      "description": "The latest formal step of the bill or draft ('bill tabled'), never that it proposes something or is dead unless a quoted vote or withdrawal supports it."
+                    },
+                    "date": {
+                      "$ref": "#/$defs/date"
+                    }
+                  },
+                  "description": "For an AI Act authority whose designation_state is proposed: the latest formal step of the bill or draft and its date, each bound to an excerpt."
+                },
                 "authority_roles": {
                   "type": "array",
                   "items": {
@@ -963,6 +1031,23 @@
                           ]
                         }
                       ]
+                    }
+                  }
+                },
+                {
+                  "if": {
+                    "required": [
+                      "designation_step"
+                    ]
+                  },
+                  "then": {
+                    "required": [
+                      "designation_state"
+                    ],
+                    "properties": {
+                      "designation_state": {
+                        "const": "proposed"
+                      }
                     }
                   }
                 }
@@ -1240,6 +1325,11 @@
                 "type": "string",
                 "pattern": "\\S",
                 "description": "Name of the single closest candidate, not its host or a list of alternatives."
+              },
+              "body_id": {
+                "type": "string",
+                "minLength": 1,
+                "description": "The related_bodies id of the closest body, so its role claims (function claims with this body_id) attach. When set, the gap needs its own excerpt (the act it concerns for remit, the body's own text for designation), and a body with role claims has exactly one marked lead."
               },
               "stage": {
                 "enum": [
@@ -1526,7 +1616,14 @@
             "$ref": "#/$defs/claims",
             "items": {
               "properties": {
-                "body_id": false
+                "kind": {
+                  "enum": [
+                    "function",
+                    "fact"
+                  ]
+                },
+                "body_id": false,
+                "lead": false
               }
             }
           },
@@ -4229,14 +4326,15 @@
         "kind": {
           "enum": [
             "function",
+            "development",
             "fact"
           ],
-          "description": "function: the body does, or is assigned, what its code's test names (institutes; related bodies through body_id). fact: a quoted fact with no field and no code, on an institute or a jurisdiction with a status; never in a summary."
+          "description": "function: the body does, or is assigned, what its code's test names (institutes; related bodies through body_id). development: a state's lead development, an act that passes the level 2 bar, on a jurisdiction with none identified, at most one. fact: a quoted fact with no field and no code, on an institute or a jurisdiction with a status; never in a summary."
         },
         "code": {
           "type": "string",
           "pattern": "^[a-z_]+$",
-          "description": "For a function claim, a current code in dataset.vocabularies.function; absent for a fact."
+          "description": "For a function claim, a current code in dataset.vocabularies.function; for a development, a current code in dataset.vocabularies.development; absent for a fact."
         },
         "basis": {
           "enum": [
@@ -4250,10 +4348,23 @@
           "minLength": 1,
           "description": "For a function claim on a jurisdiction: the related_bodies id the claim is about. A claim on an institute is about the institute and has none."
         },
+        "lead": {
+          "const": true,
+          "description": "On one role claim of the closest body (body_id is closest_body.body_id): the claim its summary line quotes, the role claim closest to model testing. Its text names the speaker and carries the English of its quote in quotation marks."
+        },
         "text": {
           "type": "string",
           "minLength": 1,
-          "description": "One sentence saying no more than its quote; it states no absence. Exactly one excerpt binds it."
+          "description": "One sentence saying no more than its quote; it states no absence. Exactly one excerpt binds it. For a development, the clause that completes the sentence 'On {date} {act}, which {text}.': lower-case start, no date, no full stop."
+        },
+        "act": {
+          "type": "string",
+          "minLength": 1,
+          "description": "For a development: who did what to which instrument ('the government adopted the national AI strategy to 2030'). One excerpt from a primary source of the jurisdiction binds it."
+        },
+        "date": {
+          "$ref": "#/$defs/date",
+          "description": "For a development: the date of the act, within three years before check.last_checked. One excerpt binds it."
         },
         "source_ids": {
           "$ref": "#/$defs/source_ids_required",
@@ -4279,7 +4390,35 @@
             "required": [
               "code",
               "basis"
+            ],
+            "properties": {
+              "act": false,
+              "date": false
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "development"
+              }
+            },
+            "required": [
+              "kind"
             ]
+          },
+          "then": {
+            "required": [
+              "code",
+              "act",
+              "date"
+            ],
+            "properties": {
+              "basis": false,
+              "body_id": false,
+              "lead": false
+            }
           }
         },
         {
@@ -4297,7 +4436,10 @@
             "properties": {
               "code": false,
               "basis": false,
-              "body_id": false
+              "body_id": false,
+              "lead": false,
+              "act": false,
+              "date": false
             }
           }
         }

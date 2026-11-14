@@ -88,7 +88,7 @@ Generated outputs: per-record `citations`; `institutes.csv` columns `staffing_mo
 
 ## Claims and functions
 
-Added in 1.1.0: `claims[]` on jurisdictions and institutes, `check.log`, `check.functions` and the generated `institutes[].functions[]`, exported as `claims.csv` and `functions.csv`. The design is [claims-1.1](claims-1.1.md); field meanings are in the schema; checks in `scripts/claim_checks.py`, tests in `tests/test_claims.py`.
+Added in 1.1.0: `claims[]` on jurisdictions and institutes, `check.log`, `check.functions` and the generated `institutes[].functions[]`, exported as `claims.csv` and `functions.csv`; the development claim (`act`, `date`) with `dataset.vocabularies.development`, the `lead` mark, `closest_body.body_id` and `related_bodies[].designation_step`, exported as columns of `claims.csv`, `closest_bodies.csv` and `related_bodies.csv`. The design is [claims-1.1](claims-1.1.md); field meanings are in the schema; checks in `scripts/claim_checks.py`, tests in `tests/test_claims.py` and `tests/test_claims_development.py`.
 
 ## Known activity
 

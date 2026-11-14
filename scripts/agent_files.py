@@ -170,7 +170,8 @@ def orientation(published: dict) -> list[tuple[str, str]]:
          "- Agreement (an AISI's `agreements`): an agreement that names the AISI as a party or implementer. A company's pledge to give the AISI model access is listed too. Each is signed, announced or pledged (`state`).\n"
          "- Network milestone (`dataset.network_milestones`): an event of the international network of AISIs, such as its founding or a joint testing exercise. It does not by itself show which members took part.\n"
          "- Source (`sources`): a document we cite, with the passages we quote from it. Each quoted passage names the facts it supports (`supports`).\n"
-         "- Claim (a jurisdiction's or an AISI's `claims`): one sentence with the one quoted passage that supports it, and a code where a code fits.\n\n"
+         "- Claim (a jurisdiction's or an AISI's `claims`): one sentence with the one quoted passage that supports it, and a code where a code fits. "
+         "A state with none identified may have one development claim: an act quoted from the state's own primary sources, with its date (`act`, `date`), coded from `dataset.vocabularies.development`.\n\n"
          "Jurisdiction and AISI IDs never change. New codes in `dataset.vocabularies` can appear in a minor version; removing or renaming one is a major version, "
          "except fields and vocabularies listed in `dataset.provisional`."),
         ("Sources and dates",

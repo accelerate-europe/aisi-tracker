@@ -513,10 +513,12 @@ PAGE_BYTES_BUDGET = 2_000_000  # search engines read only the first 2 MB of a pa
 # not timings, so the check is deterministic: a saved map drawing past its budget, or the data the page reads, or the
 # whole first load, fails the gate and asks for a decision instead of slowing the first screen unnoticed. Set about a
 # quarter (maps) or a tenth (the rest) above the sizes on 8 Nov 2026: map-wide 71 KB, map-narrow 44 KB, page.json
-# 541 KB, first load 1.51 MB (all font subsets counted, the larger map once).
+# 541 KB, first load 1.51 MB (all font subsets counted, the larger map once). page.json raised to 750 KB by the
+# owner's decision of 14 Nov 2026 (593 KB on 1.0.10, about 144 KB of it source excerpts), and the first load by the
+# same 150 KB so that page.json can reach its budget.
 SAVED_MAP_GZIP_BUDGET = {"assets/map-wide.svg": 90_000, "assets/map-narrow.svg": 56_000}
-PAGE_DATA_GZIP_BUDGET = 600_000
-FIRST_LOAD_GZIP_BUDGET = 1_650_000
+PAGE_DATA_GZIP_BUDGET = 750_000
+FIRST_LOAD_GZIP_BUDGET = 1_800_000
 # Every file a first visit requests, as patterns relative to the site; check_first_load fails on a request outside them.
 FIRST_LOAD = ("index.html", "data/page.json", "data/datapackage.json", "assets/map-wide.svg", "assets/map-narrow.svg", "assets/d3.*.js",
               "assets/topojson-client.*.js", "assets/world-*.json", "assets/fonts/*.woff2", "favicon.svg")
