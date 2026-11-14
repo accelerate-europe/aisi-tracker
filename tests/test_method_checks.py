@@ -9,10 +9,15 @@ from scripts import build
 from scripts.published import materialise_facts
 
 from scripts.method_checks import (
+    UNQUOTED_KINDS,
+    UNQUOTED_REPORT,
     check_method_rules,
+    materialised_view,
     negative_confidence_limit,
     primary_source_warnings,
     required_excerpt_pointers,
+    unquoted_claims,
+    unquoted_warnings,
 )
 
 
@@ -899,3 +904,82 @@ def test_primary_source_warnings_reach_the_report_without_failing(dataset, monke
     build.main()  # a warning never fails validation
     assert "is valid" in capsys.readouterr().out
     assert "primary source [primary excerpt misses a leaf] GB act" in (report / build.RELEASE_WARNINGS).read_text()
+
+
+# Unquoted claims (the blind sample of 14 November 2026): warnings only, a count per kind.
+
+
+def test_quoted_fixture_has_no_unquoted_claims(dataset):
+    d = strict_dataset(dataset)
+    assert unquoted_claims(d) == dict.fromkeys(UNQUOTED_KINDS, [])
+    assert unquoted_warnings(unquoted_claims(d)) == []
+
+
+def test_related_body_with_no_source_is_flagged_once(dataset):
+    # The Maldives case: a body named as current lead in its role, with no source at all.
+    d = strict_dataset(dataset)
+    d["jurisdictions"][0]["related_bodies"].append({
+        "id": "test-dissolved", "name": "Dissolved centre (planned)", "kind": "other", "counts_as_aisi": False,
+        "role": "It is reported to lead the AI masterplan.",
+    })
+    found = unquoted_claims(d)
+    assert found["related body with no source"] == ["GB Dissolved centre (planned)"]
+    assert [kind for kind, items in found.items() if items] == ["related body with no source"]
+    assert unquoted_warnings(found) == [
+        "unquoted [related body with no source]: 1 (first: GB Dissolved centre (planned)); "
+        "full list in unquoted-claims.md beside the release warnings"
+    ]
+
+
+def test_cited_body_needs_excerpts_on_its_role_stage_and_designation(dataset):
+    d = strict_dataset(dataset)
+    body = d["jurisdictions"][0]["related_bodies"][0]
+    supports = d["sources"][0]["excerpts"][0]["supports"]
+    supports.remove("/jurisdictions/0/related_bodies/0/role")
+    body.update(name="Synthetic regulator (proposed)", designation_state="proposed")
+    found = unquoted_claims(d)
+    assert found["related body role with no excerpt"] == ["GB Synthetic regulator (proposed)"]
+    assert found["stage in a body's name with no excerpt on the name"] == ["GB Synthetic regulator (proposed)"]
+    assert found["AI Act authority designation_state with no excerpt"] == ["GB Synthetic regulator (proposed) (proposed)"]
+    supports += [f"/jurisdictions/0/related_bodies/0/{leaf}" for leaf in ("role", "name", "designation_state")]
+    assert not any(unquoted_claims(d).values())
+
+
+def test_notes_without_an_excerpt_count_their_checkable_sentences(dataset):
+    d = strict_dataset(dataset)
+    d["jurisdictions"][0]["notes"] = "The NCIT leads the plan since January 2026. It is well regarded."
+    found = unquoted_claims(d)["free text with no excerpt"]
+    assert found == ["jurisdictions[].notes: GB (1 checkable sentences)"]
+    assert unquoted_warnings({"free text with no excerpt": found}) == [
+        "unquoted [free text with no excerpt]: 1 leaves, 1 sentences in them with a date, figure or named body "
+        "(jurisdictions[].notes 1); full list in unquoted-claims.md beside the release warnings"
+    ]
+    # A bound excerpt clears the whole leaf; whether it carries every sentence is left to review.
+    d["sources"][0]["excerpts"][0]["supports"].append("/jurisdictions/0/notes")
+    assert unquoted_claims(d)["free text with no excerpt"] == []
+
+
+def test_unquoted_counts_reach_the_report_without_failing(dataset, monkeypatch, tmp_path_factory, capsys):
+    dataset["sources"][0]["excerpts"][0]["supports"].remove("/jurisdictions/0/related_bodies/0/role")
+    write_json(build.DATA, dataset)
+    report = tmp_path_factory.mktemp("report")
+    monkeypatch.setattr(sys, "argv", ["build.py", "--check", "--report-dir", str(report)])
+    build.main()  # a warning never fails validation
+    assert "is valid" in capsys.readouterr().out
+    assert "unquoted [related body role with no excerpt]: 1 (first: GB Synthetic regulator)" in (report / build.RELEASE_WARNINGS).read_text()
+    assert "## related body role with no excerpt (1)\n\n- GB Synthetic regulator\n" in (report / UNQUOTED_REPORT).read_text()
+
+
+def test_unquoted_and_primary_checks_never_raise_on_broken_facts(dataset):
+    d = strict_dataset(dataset)
+    d["jurisdictions"][0].pop("status")
+    d["jurisdictions"][0]["timeline"] = None  # breaks prepared_facts; validation reports it, the warnings stay quiet
+    assert materialised_view(d) is None
+    assert unquoted_claims(d) == dict.fromkeys(UNQUOTED_KINDS, [])
+    assert primary_source_warnings(d) == []
+
+
+def test_strings_in_a_list_under_a_free_text_key_are_checked(dataset):
+    d = strict_dataset(dataset)
+    d["institutes"][0]["staffing_model"]["notes"] = ["The Ministry funds it from 2026."]
+    assert unquoted_claims(d)["free text with no excerpt"] == ["institutes[].staffing_model.notes[]: gb-test (1 checkable sentences)"]

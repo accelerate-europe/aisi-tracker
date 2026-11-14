@@ -34,7 +34,7 @@ if __package__:
     from .published import INTERVAL_KEYS, NO_ECB_RATE, budget_ratios, comparable_funding, annual_eur_estimate as annual_eur_estimate, known_activity as known_activity, output_activity_kind as output_activity_kind, publish, prepared_facts, timeline_status as timeline_status, eur_per_unit as eur_per_unit, significant as significant
     from .shared_claims import check_shared_claims, shared_claim_coverage  # type: ignore[import-not-found]
     from .method_copy import METHOD_TITLE, full_method_page
-    from .method_checks import check_method_rules, primary_source_warnings  # type: ignore[import-not-found]
+    from .method_checks import check_method_rules, UNQUOTED_REPORT, primary_source_warnings, unquoted_claims, unquoted_report, unquoted_warnings  # type: ignore[import-not-found]
     from .source_origins import source_origin_report, write_source_origin_report
     from .agent_files import LICENSES, doi_url, api_files, api_landing_html, api_root, citation_cff, zenodo_json, head_links, share_tags, image_alt_text, json_ld_script, llms_txt, robots_txt, sitemap_xml, feed_xml, FEED_PATH, orientation_html, definition_markdown, public_url_errors
     from .release_checks import check_metadata, check_readme_licence, check_readme_doi, check_markdown, generated_block, generated_citation, generated_counts, check_launch_wording, write_citation, check_instrument_status_dates, instrument_status_warnings, dates_after_as_of, check_changelog_entry, write_release_citation
@@ -44,7 +44,7 @@ else:  # Direct script execution.
     from published import INTERVAL_KEYS, NO_ECB_RATE, budget_ratios, comparable_funding, annual_eur_estimate as annual_eur_estimate, known_activity as known_activity, output_activity_kind as output_activity_kind, publish, prepared_facts, timeline_status as timeline_status, eur_per_unit as eur_per_unit, significant as significant
     from shared_claims import check_shared_claims, shared_claim_coverage
     from method_copy import METHOD_TITLE, full_method_page
-    from method_checks import check_method_rules, primary_source_warnings
+    from method_checks import check_method_rules, UNQUOTED_REPORT, primary_source_warnings, unquoted_claims, unquoted_report, unquoted_warnings
     from source_origins import source_origin_report, write_source_origin_report
     from agent_files import LICENSES, doi_url, api_files, api_landing_html, api_root, citation_cff, zenodo_json, head_links, share_tags, image_alt_text, json_ld_script, llms_txt, robots_txt, sitemap_xml, feed_xml, FEED_PATH, orientation_html, definition_markdown, public_url_errors
     from release_checks import check_metadata, check_readme_licence, check_readme_doi, check_markdown, generated_block, generated_citation, generated_counts, check_launch_wording, write_citation, check_instrument_status_dates, instrument_status_warnings, dates_after_as_of, check_changelog_entry, write_release_citation
@@ -1078,7 +1078,8 @@ def main() -> None:
         if args.update_readme and current != text:
             write_citation(path, text.encode("utf-8"))
             print(f"updated {path.relative_to(ROOT)}", file=sys.stderr)
-    warnings = instrument_status_warnings(d, release=args.release) + late + primary_source_warnings(d)
+    unquoted = unquoted_claims(d)
+    warnings = instrument_status_warnings(d, release=args.release) + late + primary_source_warnings(d) + unquoted_warnings(unquoted)
     for warning in warnings:
         print(f"warning: {warning}", file=sys.stderr)
     if args.report_dir:
@@ -1086,6 +1087,10 @@ def main() -> None:
             write_release_warnings(warnings, args.report_dir)
         except OSError as exc:
             print(f"warning: could not write release warnings: {exc}", file=sys.stderr)
+        try:
+            (args.report_dir / UNQUOTED_REPORT).write_text(unquoted_report(unquoted), encoding="utf-8")
+        except OSError as exc:
+            print(f"warning: could not write the unquoted-claims list: {exc}", file=sys.stderr)
         try:
             origin_report = write_source_origin_report(published, args.report_dir)
         except OSError as exc:

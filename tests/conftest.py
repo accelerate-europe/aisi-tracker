@@ -210,6 +210,9 @@ def dataset(build_env):
         "sources": [{"id": "gb-source", "output_role": "document", "output_lineage": "evaluation-report", "origin": "GB", "url": SOURCE_URL, "title": "Synthetic citation",
                      "publisher": "Test publisher", "type": "primary", "language": "en", "accessed": "2026-10-17", "excerpts": [{"text": "Synthetic institute", "supports": [
                          "/institutes/0/name", "/jurisdictions/0/status", "/jurisdictions/0/status_since",
+                         "/jurisdictions/0/summary", "/jurisdictions/0/related_bodies/0/role",
+                         "/jurisdictions/0/timeline/0/description", "/jurisdictions/0/timeline/1/description",
+                         "/institutes/0/mandate", "/institutes/0/funding/0/description",
                          "/jurisdictions/0/timeline/0/date", "/jurisdictions/0/timeline/0/event",
                          "/jurisdictions/0/timeline/1/date", "/jurisdictions/0/timeline/1/event",
                          "/jurisdictions/0/timeline/2/date", "/jurisdictions/0/timeline/2/description",

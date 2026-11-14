@@ -206,6 +206,16 @@ STATUS_EVENTS = (*IMPLIES, "withdrawn", "closed")
 PRIMARY_LEAVES = {event: ("date", "event") for event in STATUS_EVENTS} | {"launched": ("date",)}
 
 
+def materialised_view(d: dict) -> dict | None:
+    """The data with generated facts and RFC 6901 support pointers, as check_method_rules reads it; None if broken."""
+    try:
+        if any("status" not in j for j in d["jurisdictions"]):
+            d = prepared_facts(d)
+        return materialise_references(d)
+    except (ValueError, KeyError, IndexError, TypeError, ArithmeticError):
+        return None
+
+
 def primary_source_warnings(d: dict) -> list[str]:
     """Status-changing timeline events, and launch dates, whose date or act no primary source's excerpt carries.
 
@@ -213,12 +223,9 @@ def primary_source_warnings(d: dict) -> list[str]:
     the check report only, never failures, until the owner has seen what they flag. Each line names its kind
     in brackets; lines follow jurisdiction order, then timeline order.
     """
-    if any("status" not in j for j in d["jurisdictions"]):
-        try:
-            d = prepared_facts(d)
-        except (ValueError, KeyError, IndexError, TypeError, ArithmeticError):
-            return []  # check_method_rules reports the broken facts.
-    d = materialise_references(d)
+    d = materialised_view(d)
+    if d is None:
+        return []  # check_method_rules reports the broken facts.
     as_of = d["dataset"]["as_of"]
     institutes = {i["id"]: i for i in d["institutes"]}
     types = {s["id"]: s.get("type") for s in d["sources"]}
@@ -258,6 +265,103 @@ def primary_source_warnings(d: dict) -> list[str]:
             elif missing:
                 warnings.append(f"primary source [primary excerpt misses a leaf] {where}: no primary excerpt binds its {' or '.join(missing)}")
     return warnings
+
+
+# Free-text leaves of jurisdictions and institutes, by key, that state facts without a required excerpt.
+FREE_TEXT_KEYS = ("summary", "notes", "note", "description", "mandate")
+STAGE_IN_NAME = re.compile(r"\b(planned|proposed|draft|under study)\b", re.IGNORECASE)
+# What a sentence can carry that a source must back, recognisable without reading the prose: a date, a figure,
+# or a named body (an acronym or an institutional noun).
+CHECKABLE = re.compile(
+    r"\d|\b[A-Z]{2,}\b|\b(January|February|March|April|May|June|July|August|September|October|November|December"
+    r"|Ministry|Minister|Authority|Agency|Office|Council|Centre|Center|Institute|Commission|Committee"
+    r"|Department|Directorate|Board|University|Parliament|Cabinet|Senate|Assembly)\b"
+)
+SENTENCE_END = re.compile(r"(?<=[.;!?])\s+")
+UNQUOTED_KINDS = (
+    "related body with no source",
+    "related body role with no excerpt",
+    "stage in a body's name with no excerpt on the name",
+    "AI Act authority designation_state with no excerpt",
+    "free text with no excerpt",
+)
+
+
+def checkable_sentences(text: str) -> int:
+    """Sentences that carry a date, a figure or a named body."""
+    return sum(bool(CHECKABLE.search(sentence)) for sentence in SENTENCE_END.split(text))
+
+
+def unquoted_claims(d: dict) -> dict[str, list[str]]:
+    """Facts stated in fields that need no excerpt, with none bound: related-body roles and stages, notes and summaries.
+
+    Returns the items per kind of UNQUOTED_KINDS, in jurisdiction then institute order. A leaf counts as quoted
+    when any excerpt binds it exactly; whether the excerpt carries every sentence is left to review. Free text
+    is grouped by field family (for example "jurisdictions[].notes"); each item names how many of its
+    sentences carry a date, a figure or a named body.
+    """
+    found: dict[str, list[str]] = {kind: [] for kind in UNQUOTED_KINDS}
+    d = materialised_view(d)
+    if d is None:
+        return found
+    bound = {pointer for s in d["sources"] for e in s.get("excerpts", []) for pointer in e["supports"]}
+
+    def free_text(value, pointer: str, family: str, owner: str, key: str = "") -> None:
+        if isinstance(value, dict):
+            for child, item in value.items():
+                if child != "related_bodies":
+                    free_text(item, f"{pointer}/{child}", f"{family}.{child}", owner, child)
+        elif isinstance(value, list):
+            for k, item in enumerate(value):
+                free_text(item, f"{pointer}/{k}", f"{family}[]", owner, key)
+        elif isinstance(value, str) and key in FREE_TEXT_KEYS and pointer not in bound:
+            found["free text with no excerpt"].append(f"{family}: {owner} ({checkable_sentences(value)} checkable sentences)")
+
+    for n, record in enumerate(d["jurisdictions"]):
+        for k, body in enumerate(record.get("related_bodies", [])):
+            prefix, label = f"/jurisdictions/{n}/related_bodies/{k}", f"{record['id']} {body['name']}"
+            if not body.get("source_ids"):
+                found["related body with no source"].append(label)
+                continue
+            if f"{prefix}/role" not in bound:
+                found["related body role with no excerpt"].append(label)
+            if STAGE_IN_NAME.search(body["name"]) and f"{prefix}/name" not in bound:
+                found["stage in a body's name with no excerpt on the name"].append(label)
+            if "designation_state" in body and f"{prefix}/designation_state" not in bound:
+                found["AI Act authority designation_state with no excerpt"].append(f"{label} ({body['designation_state']})")
+        free_text({key: value for key, value in record.items() if key != "check"}, f"/jurisdictions/{n}", "jurisdictions[]", record["id"])
+    for n, record in enumerate(d["institutes"]):
+        free_text({key: value for key, value in record.items() if key != "check"}, f"/institutes/{n}", "institutes[]", record["id"])
+    return found
+
+
+UNQUOTED_REPORT = "unquoted-claims.md"
+
+
+def unquoted_warnings(found: dict[str, list[str]]) -> list[str]:
+    """One Release warnings line per kind with a count, so the backlog's size shows before any rule is set."""
+    lines = []
+    for kind, items in found.items():
+        if not items:
+            continue
+        if kind == "free text with no excerpt":
+            families: dict[str, list[str]] = {}
+            for item in items:
+                families.setdefault(item.split(":", 1)[0], []).append(item)
+            detail = "; ".join(f"{family} {len(rows)}" for family, rows in sorted(families.items(), key=lambda pair: (-len(pair[1]), pair[0])))
+            sentences = sum(int(item.rsplit("(", 1)[1].split()[0]) for item in items)
+            lines.append(f"unquoted [{kind}]: {len(items)} leaves, {sentences} sentences in them with a date, figure or named body ({detail}); full list in {UNQUOTED_REPORT} beside the release warnings")
+        else:
+            lines.append(f"unquoted [{kind}]: {len(items)} (first: {'; '.join(items[:3])}); full list in {UNQUOTED_REPORT} beside the release warnings")
+    return lines
+
+
+def unquoted_report(found: dict[str, list[str]]) -> str:
+    """The full list behind the count lines, for the report directory."""
+    lines = ["# Unquoted claims", "", "Facts stated in fields that need no excerpt, with no excerpt bound (warning only).", ""]
+    for kind, items in found.items():
+        lines += [f"## {kind} ({len(items)})", ""] + [f"- {item}" for item in items] + [""]
+    return "\n".join(lines)
 
 
 def check_method_rules(d: dict, *, authored: dict | None = None) -> list[str]:
