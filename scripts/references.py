@@ -28,6 +28,7 @@ ID_COLLECTIONS = {
     "entries",  # institutes[].national_partners.entries
     "access_events",  # institutes[].model_access.access_events
     "developer_agreements",  # institutes[].model_access.developer_agreements
+    "claims",  # jurisdictions[].claims, institutes[].claims (docs/design/claims-1.1.md)
 }
 
 
@@ -204,7 +205,7 @@ def authored_schema(download_schema, *, strict=False):
     outputs = institutes["properties"]["outputs"]["items"]
     derived = [
         (jurisdictions, ("status", "status_since")),
-        (institutes, ("status", "announced", "established", "operating", "intervals")),
+        (institutes, ("status", "announced", "established", "operating", "intervals", "functions")),
         (schema["$defs"]["funding"], ("eur_per_year_est", "eur_per_person_est", "share_of_gdp_est", "ratio_denominators")),
         (schema["properties"]["dataset"]["properties"]["exchange_rates"]["items"], ("eur_per_unit",)),
         (outputs, ("credited_from",)),

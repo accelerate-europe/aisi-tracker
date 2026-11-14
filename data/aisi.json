@@ -382,8 +382,104 @@
           "definition": "The text is in the future tense or sets a mandate, and no current joint work is quoted."
         }
       },
-      "partner_cyber_none_published": "cyber agency not published"
+      "partner_cyber_none_published": "cyber agency not published",
+      "function": {
+        "model_testing": {
+          "label": "Model testing",
+          "definition": "It ran or commissioned a test of an identifiable AI model, or a text assigns it testing AI models or systems.",
+          "group": "Testing and science"
+        },
+        "evaluation_methods": {
+          "label": "Evaluation methods and tools",
+          "definition": "It develops or publishes test methods, benchmarks, protocols or software; running existing benchmarks is model testing.",
+          "group": "Testing and science"
+        },
+        "research": {
+          "label": "Research",
+          "definition": "It conducts or funds research on a named AI-risk topic or programme that meets no other test.",
+          "group": "Testing and science"
+        },
+        "standards_guidance": {
+          "label": "Standards and guidelines",
+          "definition": "It publishes, or is tasked to develop, standards, codes or guidance addressed to AI developers, providers or deployers; no addressee or facilitating others' text does not count.",
+          "group": "Rules"
+        },
+        "regulatory_enforcement": {
+          "label": "Enforces AI rules",
+          "definition": "It enforces AI rules itself: investigates, sanctions or holds legal powers over providers.",
+          "group": "Rules"
+        },
+        "regulatory_support": {
+          "label": "Supports regulators",
+          "definition": "A text gives it a role supporting regulators or the implementation of AI regulation.",
+          "group": "Rules"
+        },
+        "risk_monitoring": {
+          "label": "Capability and risk monitoring",
+          "definition": "It reports regularly on what AI can do or what risks emerge (a periodic or numbered series, or a monitoring mandate); one paper does not count.",
+          "group": "Informing government"
+        },
+        "foresight": {
+          "label": "Foresight",
+          "definition": "It publishes, or is tasked with, explicit forecasts, scenarios or early-warning indicators about future developments; threat models of current misuse do not count.",
+          "group": "Informing government"
+        },
+        "policy_advice": {
+          "label": "Policy advice",
+          "definition": "It publishes or is tasked with policy research, recommendations or options for government on AI.",
+          "group": "Informing government"
+        },
+        "incident_response": {
+          "label": "National incident role",
+          "definition": "It holds a standing national role, without an end date, in collecting, reporting or responding to AI incidents.",
+          "group": "Informing government"
+        },
+        "international_cooperation": {
+          "label": "International cooperation",
+          "definition": "It takes part for its jurisdiction in international networks, joint testing or agreements with foreign counterparts.",
+          "group": "Ecosystem"
+        },
+        "convening": {
+          "label": "Convening",
+          "definition": "It hosts, chairs or coordinates a national consortium or standing partnership, or is designated the national hub or contact point.",
+          "group": "Ecosystem"
+        },
+        "capacity_building": {
+          "label": "Capacity building",
+          "definition": "A named programme or mandate clause builds named kinds of domestic organisations' ability to understand, evaluate or safely use advanced AI.",
+          "group": "Ecosystem"
+        },
+        "talent": {
+          "label": "Talent",
+          "definition": "It trains or funds people outside its own staff.",
+          "group": "Ecosystem"
+        },
+        "adoption": {
+          "label": "Adoption and competitiveness",
+          "definition": "A text gives it a role in promoting AI uptake, commercialisation or the domestic industry.",
+          "group": "Ecosystem"
+        },
+        "public_access_continuity": {
+          "label": "Access and continuity for public bodies",
+          "definition": "It secures access to frontier models or compute for other public bodies, or assesses the jurisdiction's dependence on frontier AI.",
+          "group": "Ecosystem"
+        },
+        "certification": {
+          "label": "Certification and conformity",
+          "definition": "It certifies AI models, systems or products, or assesses their conformity with rules or standards, or a text tasks it to; testing done to certify or assess conformity is this code, not model testing.",
+          "group": "Rules"
+        },
+        "sandbox": {
+          "label": "Regulatory sandbox",
+          "definition": "It runs, or a text tasks it to set up or run, a regulatory sandbox where AI is developed or tested under a regulator's supervision.",
+          "group": "Rules"
+        }
+      }
     },
+    "provisional": [
+      "institutes[].functions",
+      "vocabularies.function"
+    ],
     "network_milestones": [
       {
         "id": "intl-network-founded-2024",

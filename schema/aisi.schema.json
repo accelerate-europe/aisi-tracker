@@ -303,6 +303,60 @@
               },
               "description": "Codes for institutes[].staffing_model.code: the models own_staff, member_bodies, core_with_partners and host_unit and the states planned and not_published, each with its label and definition. Adding a code is a minor version; renaming or removing one is major."
             },
+            "function": {
+              "type": "object",
+              "minProperties": 1,
+              "propertyNames": {
+                "pattern": "^[a-z_]+$"
+              },
+              "additionalProperties": {
+                "type": "object",
+                "required": [
+                  "label",
+                  "definition",
+                  "group"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "label": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "definition": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "The test a reviewer applies to the bound quote."
+                  },
+                  "group": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "deprecated": {
+                    "const": true,
+                    "description": "A retired code: never reused, never used by a claim, and given no institutes[].functions row."
+                  },
+                  "replaced_by": {
+                    "type": "array",
+                    "minItems": 1,
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "string",
+                      "pattern": "^[a-z_]+$"
+                    },
+                    "description": "The current codes that replace a retired one."
+                  }
+                },
+                "dependentRequired": {
+                  "deprecated": [
+                    "replaced_by"
+                  ],
+                  "replaced_by": [
+                    "deprecated"
+                  ]
+                }
+              },
+              "description": "Function codes for claims of kind function (institutes, and related bodies through body_id) and for institutes[].functions, in display order, each with its label, test (definition) and group. Provisional (dataset.provisional): codes may be added, split, renamed or removed in a minor version, with a changelog line; a retired code stays with deprecated and replaced_by."
+            },
             "membership_body": {
               "type": "object",
               "minProperties": 1,
@@ -410,6 +464,15 @@
               }
             }
           }
+        },
+        "provisional": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z_]+(?:\\[\\])?(?:\\.[a-z_]+(?:\\[\\])?)*$"
+          },
+          "description": "Fields and vocabularies that may still change in a minor version, as dotted paths ('institutes[].functions', 'vocabularies.function'): their codes, labels, tests and groups may be added, split, renamed or removed, with a changelog line and replaced_by on a retired code. An entry leaves the list when the owner signs it off."
         },
         "shared_claims": {
           "type": "array",
@@ -926,6 +989,26 @@
           "check": {
             "$ref": "#/$defs/check"
           },
+          "claims": {
+            "$ref": "#/$defs/claims",
+            "items": {
+              "if": {
+                "properties": {
+                  "kind": {
+                    "const": "function"
+                  }
+                },
+                "required": [
+                  "kind"
+                ]
+              },
+              "then": {
+                "required": [
+                  "body_id"
+                ]
+              }
+            }
+          },
           "source_ids": {
             "$ref": "#/$defs/source_ids"
           },
@@ -1438,6 +1521,21 @@
           },
           "check": {
             "$ref": "#/$defs/check"
+          },
+          "claims": {
+            "$ref": "#/$defs/claims",
+            "items": {
+              "properties": {
+                "body_id": false
+              }
+            }
+          },
+          "functions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/function_row"
+            },
+            "description": "Generated, provisional (dataset.provisional): one row per current code in dataset.vocabularies.function, in vocabulary order. The institute's functions as coded from its function claims and check.functions. One row per institute and code in functions.csv."
           },
           "source_ids": {
             "$ref": "#/$defs/source_ids_required"
@@ -2666,6 +2764,50 @@
           "type": "string",
           "minLength": 1,
           "description": "What the cited primary governance evidence establishes and its limits; requires governance_source_ids."
+        },
+        "log": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "date",
+              "text"
+            ],
+            "properties": {
+              "date": {
+                "$ref": "#/$defs/date"
+              },
+              "text": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "description": "Our search and reading notes, dated (\"Searched in Slovenian and English.\"). The only home for the search log; it states nothing about the world."
+        },
+        "functions": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "date",
+            "codes"
+          ],
+          "properties": {
+            "date": {
+              "$ref": "#/$defs/date"
+            },
+            "codes": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "^[a-z_]+$"
+              }
+            }
+          },
+          "description": "Institutes only: the codes in dataset.vocabularies.function this institute was coded against, and the date. A listed code with no function claim is published as not_found; a current code not listed, as not_coded."
         }
       },
       "dependentRequired": {
@@ -4068,6 +4210,136 @@
         "our_estimate"
       ],
       "description": "Source type shown beside a low-confidence budget or staff figure: secondary_sources for another body's or government's account, press_report for a press report, our_estimate for our own estimate or calculation from reported figures. Required when confidence is low and absent otherwise; a medium-confidence figure is labelled 'indirect or secondary'."
+    },
+    "claim": {
+      "type": "object",
+      "required": [
+        "id",
+        "kind",
+        "text",
+        "source_ids"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^claims-[0-9a-f]{32}$",
+          "description": "Permanent claim ID: 'claims-' plus a new UUID hex value; never reused."
+        },
+        "kind": {
+          "enum": [
+            "function",
+            "fact"
+          ],
+          "description": "function: the body does, or is assigned, what its code's test names (institutes; related bodies through body_id). fact: a quoted fact with no field and no code, on an institute or a jurisdiction with a status; never in a summary."
+        },
+        "code": {
+          "type": "string",
+          "pattern": "^[a-z_]+$",
+          "description": "For a function claim, a current code in dataset.vocabularies.function; absent for a fact."
+        },
+        "basis": {
+          "enum": [
+            "mandate",
+            "activity"
+          ],
+          "description": "For a function claim: mandate when a founding, legal, plan or announcement text assigns it; activity when a text shows it done. Evidence of both is two claims."
+        },
+        "body_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "For a function claim on a jurisdiction: the related_bodies id the claim is about. A claim on an institute is about the institute and has none."
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "description": "One sentence saying no more than its quote; it states no absence. Exactly one excerpt binds it."
+        },
+        "source_ids": {
+          "$ref": "#/$defs/source_ids_required",
+          "description": "The sources whose excerpts bind the claim."
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "function"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "code",
+              "basis"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "fact"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "properties": {
+              "code": false,
+              "basis": false,
+              "body_id": false
+            }
+          }
+        }
+      ]
+    },
+    "claims": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/claim"
+      },
+      "description": "Quoted claims: one sentence, one bound quote, and a code where a code fits (docs/design/claims-1.1.md)."
+    },
+    "function_row": {
+      "type": "object",
+      "required": [
+        "code",
+        "value",
+        "claim_ids"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "type": "string",
+          "pattern": "^[a-z_]+$",
+          "description": "A current code in dataset.vocabularies.function."
+        },
+        "value": {
+          "enum": [
+            "mandate",
+            "activity",
+            "both",
+            "not_found",
+            "not_coded"
+          ],
+          "description": "mandate, activity or both from the institute's function claims with this code; not_found when there is none and the code is in check.functions.codes; not_coded when the code is not in that list."
+        },
+        "claim_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          },
+          "description": "The institute's function claims with this code, in authored order; empty for not_found and not_coded."
+        }
+      }
     }
   }
 }
