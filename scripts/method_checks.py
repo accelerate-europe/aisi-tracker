@@ -216,19 +216,25 @@ def materialised_view(d: dict) -> dict | None:
         return None
 
 
-def primary_source_warnings(d: dict) -> list[str]:
+# Events whose act no primary text could be retrieved for (rule status-evidence), keyed by jurisdiction and event id,
+# with the cited secondary source whose access note says what was tried. Each must still be flagged; a stale entry fails.
+PRIMARY_SOURCE_EXCEPTIONS = {
+    ("KR", "kr-2024-05-22-commitment"): "kr-inews24-2024",
+}
+
+
+def primary_source_flags(d: dict) -> list[tuple[str, str, list[str], str]] | None:
     """Status-changing timeline events, and launch dates, whose date or act no primary source carries.
 
     A primary source carries the act through an excerpt bound to `event`, and the date through an excerpt bound to
-    `date` or by its own `published` date when that equals the event's date at the same precision.
-
-    Lifted from the shelved Schema 2.0 draft ("second-hand copies never carry a status change"). Warnings for
-    the check report only, never failures, until the owner has seen what they flag. Each line names its kind
-    in brackets; lines follow jurisdiction order, then timeline order.
+    `date` or by its own `published` date when that equals the event's date at the same precision (rule
+    status-evidence). Returns (jurisdiction id, event id, cited source ids, line) in jurisdiction then timeline
+    order, each line naming its kind in brackets; None when the facts cannot be prepared, which
+    check_method_rules reports.
     """
     d = materialised_view(d)
     if d is None:
-        return []  # check_method_rules reports the broken facts.
+        return None
     as_of = d["dataset"]["as_of"]
     institutes = {i["id"]: i for i in d["institutes"]}
     types = {s["id"]: s.get("type") for s in d["sources"]}
@@ -239,7 +245,7 @@ def primary_source_warnings(d: dict) -> list[str]:
             for excerpt in source.get("excerpts", []):
                 for pointer in excerpt["supports"]:
                     primary_bound.setdefault(pointer, set()).add(source["id"])
-    warnings = []
+    flags = []
     for n, record in enumerate(d["jurisdictions"]):
         events = record.get("timeline", [])
         institute = institutes.get(record.get("institute_id"))
@@ -259,21 +265,62 @@ def primary_source_warnings(d: dict) -> list[str]:
             role = "; ".join(roles.get(k, ["no status effect" if event["event"] == "launched" else "another status act; no generated date rests on it"]))
             where = f"{record['id']} {event['id']} ({event['event']}, {event['date']}; {role})"
             cited = event.get("source_ids", [])
+            flag = (record["id"], event["id"], cited)
             if not any(types.get(sid) == "primary" for sid in cited):
                 listed = ", ".join(f"{sid} ({types.get(sid) or 'unknown'})" for sid in cited) or "nothing"
-                warnings.append(f"primary source [no primary source cited] {where}: cites {listed}")
+                flags.append((*flag, f"[no primary source cited] {where}: cites {listed}"))
                 continue
-            # A cited primary source published on the act's date, at the same precision, carries that date (rule status-evidence).
             dated = any(types.get(sid) == "primary" and published.get(sid) == event["date"] for sid in cited)
             missing = [
                 leaf for leaf in leaves
                 if not primary_bound.get(f"/jurisdictions/{n}/timeline/{k}/{leaf}") and not (leaf == "date" and dated)
             ]
             if len(missing) == len(leaves):
-                warnings.append(f"primary source [primary source cited, no primary excerpt bound] {where}: no primary excerpt binds its {' or '.join(leaves)}")
+                flags.append((*flag, f"[primary source cited, no primary excerpt bound] {where}: no primary excerpt binds its {' or '.join(leaves)}"))
             elif missing:
-                warnings.append(f"primary source [primary excerpt misses a leaf] {where}: no primary excerpt binds its {' or '.join(missing)}")
-    return warnings
+                flags.append((*flag, f"[primary excerpt misses a leaf] {where}: no primary excerpt binds its {' or '.join(missing)}"))
+    return flags
+
+
+def primary_source_errors(d: dict, exceptions: dict | None = None) -> list[str]:
+    """Flags not listed in PRIMARY_SOURCE_EXCEPTIONS, and listed exceptions that are stale or have no access note.
+
+    Lifted from the shelved Schema 2.0 draft ("second-hand copies never carry a status change"); an error since
+    1.0.10, once the owner had seen what it flagged and the data was fixed.
+    """
+    exceptions = PRIMARY_SOURCE_EXCEPTIONS if exceptions is None else exceptions
+    try:
+        flags = primary_source_flags(d)
+    except (ValueError, KeyError, IndexError, TypeError, ArithmeticError) as exc:
+        # Never a silent pass: an impossible date, for one, is also reported by the consistency checks.
+        return [f"status evidence: not checked ({type(exc).__name__}: {exc})"]
+    if flags is None:
+        return []
+    notes = {s["id"]: s.get("access_note", "").strip() for s in d["sources"]}
+    present = {j["id"] for j in d["jurisdictions"]}
+    errors, flagged = [], set()
+    for jid, eid, cited, line in flags:
+        source = exceptions.get((jid, eid))
+        if source is None:
+            errors.append(f"status evidence (rule status-evidence) {line}")
+            continue
+        flagged.add((jid, eid))
+        if source not in cited or not notes.get(source):
+            errors.append(f"status evidence: accepted exception {jid} {eid} needs its cited source {source} with an access note saying what was tried")
+    # An entry for a jurisdiction the data does not hold (a test fixture) is not checked.
+    for jid, eid in sorted(k for k in exceptions.keys() - flagged if k[0] in present):
+        errors.append(f"status evidence: accepted exception {jid} {eid} is no longer flagged; remove it from PRIMARY_SOURCE_EXCEPTIONS")
+    return errors
+
+
+def primary_source_warnings(d: dict, exceptions: dict | None = None) -> list[str]:
+    """The accepted exceptions, for the check report's release warnings; everything else flagged is an error."""
+    exceptions = PRIMARY_SOURCE_EXCEPTIONS if exceptions is None else exceptions
+    return [
+        f"primary source [accepted exception] {line.split('] ', 1)[1]}"
+        for jid, eid, _, line in primary_source_flags(d) or []
+        if (jid, eid) in exceptions
+    ]
 
 
 # Free-text leaves of jurisdictions and institutes, by key, that state facts without a required excerpt.
@@ -376,6 +423,7 @@ def unquoted_report(found: dict[str, list[str]]) -> str:
 def check_method_rules(d: dict, *, authored: dict | None = None) -> list[str]:
     """Validate declared evidence metadata; judgement and quotations need review."""
     authored = d if authored is None else authored
+    status_evidence = primary_source_errors(d)
     if any("status" not in j for j in d["jurisdictions"]):
         try:
             d = prepared_facts(d)
@@ -383,6 +431,7 @@ def check_method_rules(d: dict, *, authored: dict | None = None) -> list[str]:
             return [f"authored facts or references: {exc}"]
     d = materialise_references(d)
     errors = check_method_copy(d["dataset"]) + check_reader_text(d) + check_naming(d) + check_body_names(d)
+    errors += status_evidence
     errors += check_rows(d)
     errors += check_flags(d)
     sources = {s["id"]: s for s in d["sources"]}
