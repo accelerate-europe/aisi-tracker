@@ -101,8 +101,10 @@ def test_a_shared_lost_anchor_is_reported_for_each_excerpt(tmp_path):
     new = cited.replace(b"Its tasks: ", b"").replace(b"publishes reports.", b"publishes reports. Updated.")
     result = setup(tmp_path, new, cited=cited, anchors=anchors)
     second = {"text": "national security risks", "supports": [["institutes", {"id": "xx-aisi"}, "mandate"]], "anchors": anchors}
-    lost = {"id": rereads.quote_id("Its tasks:"), "text": "Its tasks:", "in_cited_copy": True, "in_checked_copy": False}
-    result = {**result, "quotes": [*result["quotes"], lost]}  # the monitor's entry for the second excerpt's anchor
+    lost = {"id": rereads.quote_id("Its tasks:"), "in_cited_copy": True, "in_checked_copy": False}
+    # As the check log keeps them (ids only, no texts), with the second excerpt's anchor entry added.
+    quotes = [{k: q[k] for k in ("id", "in_cited_copy", "in_checked_copy")} for q in result["quotes"]]
+    result = {**result, "quotes": [*quotes, lost]}
     source = {"id": "src", "title": "News", "excerpts": [
         {"text": "founded in 2024", "supports": [["jurisdictions", {"id": "XX"}, "name"]], "anchors": anchors}, second]}
     lines = [line for line in monitor.markdown(report_for(result), {"src": source}, {}).splitlines() if 'anchor "Its tasks:"' in line]

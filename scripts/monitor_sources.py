@@ -803,14 +803,14 @@ def markdown(report: dict, sources: dict[str, dict], cites: dict[str, list[str]]
             out.append(f"- [{src['title']}]({r['url']}) (`{r['source_id']}`, {r['route']})")
             # Each span hash to every excerpt that carries it, as its quotation or as one of its anchors: a shared
             # span is reported once per owner, with its role in that excerpt.
-            owners: dict[str, list[tuple[dict, bool]]] = defaultdict(list)
+            # The span's text comes from the dataset: check-log rows carry quote ids only.
+            owners: dict[str, list[tuple[dict, str | None]]] = defaultdict(list)
             for e in src.get("excerpts", []):
                 for n, span in enumerate(excerpt_spans(e)):
-                    owners["sha256:" + hashlib.sha256(span.encode()).hexdigest()].append((e, n > 0))
+                    owners["sha256:" + hashlib.sha256(span.encode()).hexdigest()].append((e, span if n else None))
             for qid in dict.fromkeys(q["id"] for q in quotes):
                 for excerpt, anchor in owners[qid]:
-                    span = next(q["text"] for q in quotes if q["id"] == qid)
-                    lost = f"anchor \"{span[:200]}\" of \"{excerpt['text'][:120]}\"" if anchor else f"\"{excerpt['text'][:200]}\""
+                    lost = f"anchor \"{anchor[:200]}\" of \"{excerpt['text'][:120]}\"" if anchor else f"\"{excerpt['text'][:200]}\""
                     out.append(f"    - {lost} supports {'; '.join(label(p) for p in excerpt['supports'])}")
         if not found:
             out.append("None.")
