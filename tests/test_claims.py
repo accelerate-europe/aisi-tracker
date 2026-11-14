@@ -115,6 +115,16 @@ def test_claim_sources_stay_off_the_page(claimed):
     assert "gb-claim" not in institute["display"]["source_links"]
 
 
+def test_page_data_leaves_out_claims_and_functions(claimed):
+    """The page never reads them in A1, and page.json has a size budget; aisi.json keeps them."""
+    published = build.export_dataset(claimed)
+    page = json.loads(build.page_data(published))
+    assert published["institutes"][0]["functions"] and published["jurisdictions"][0]["claims"]
+    for record in [*page["institutes"], *page["jurisdictions"]]:
+        assert "claims" not in record and "functions" not in record
+    assert page["jurisdictions"][0]["check"] == {"last_checked": "2026-10-17", "method": "individual"}
+
+
 def test_no_vocabulary_no_rows(dataset):
     assert "functions" not in build.export_dataset(dataset)["institutes"][0]
 

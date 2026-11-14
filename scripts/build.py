@@ -956,17 +956,24 @@ def prerender(site: Path) -> None:
         fail([f"pre-rendering failed (scripts/prerender.py exit {result.returncode}): {result.stderr.strip()[-2000:]}"])
 
 
-PAGE_DATA_DROPPED = {"check": ("last_checked", "method"), "sources": ("snapshot", "access_note")}
+PAGE_DATA_DROPPED = {"check": ("last_checked", "method"), "sources": ("snapshot", "access_note"), "records": ("claims", "functions")}
 
 
 def page_data(published: dict, build_mark: str | None = None) -> str:
     """data/page.json, what the page script loads: aisi.json without the fields it never reads (a state's research
-    log in check, except last_checked and method; a source's private-copy metadata, snapshot and access_note),
-    minified, with the build mark (content_mark of the file without it) as its last key. aisi.json stays the public
-    download; the page fetches this file by a URL carrying the same mark."""
+    log in check, except last_checked and method; a source's private-copy metadata, snapshot and access_note; the
+    download-only claims and generated functions of states and institutes), minified, with the build mark
+    (content_mark of the file without it) as its last key. aisi.json stays the public download; the page fetches
+    this file by a URL carrying the same mark."""
     page = dict(published)
     keep = PAGE_DATA_DROPPED["check"]
-    page["jurisdictions"] = [j | {"check": {k: j["check"][k] for k in keep if k in j["check"]}} if "check" in j else j for j in published["jurisdictions"]]
+
+    def shown(record: dict) -> dict:
+        return {k: v for k, v in record.items() if k not in PAGE_DATA_DROPPED["records"]}
+
+    if "institutes" in published:
+        page["institutes"] = [shown(i) for i in published["institutes"]]
+    page["jurisdictions"] = [shown(j) | {"check": {k: j["check"][k] for k in keep if k in j["check"]}} if "check" in j else shown(j) for j in published["jurisdictions"]]
     page["sources"] = [{k: v for k, v in s.items() if k not in PAGE_DATA_DROPPED["sources"]} for s in published["sources"]]
     if build_mark is not None:
         page["build_mark"] = build_mark
