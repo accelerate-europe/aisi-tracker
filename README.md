@@ -45,7 +45,7 @@ All paths are relative to [aisi.accelerate-europe.org](https://aisi.accelerate-e
 
 Before using a funding figure, check what it covers: some figures are another body's money, part of a budget, or proposed rather than adopted (the `coverage` and `commitment` fields say which). There are two kinds of confidence rating: one for each jurisdiction's status (`status_confidence`), and one for each funding, staff or leadership figure (`confidence`).
 
-Jurisdiction and AISI IDs never change. New codes in `dataset.vocabularies` can appear in a minor version; removing or renaming one is a major version. Field meanings are in `data/aisi.schema.json`, the download contract is [schema 1.0](docs/design/schema-1.0.md), and the editorial rules are on the [method page](https://aisi.accelerate-europe.org/method.html).
+Jurisdiction and AISI IDs never change. New codes in `dataset.vocabularies` can appear in a minor version; removing or renaming one is a major version, except fields and vocabularies listed in `dataset.provisional`. Field meanings are in `data/aisi.schema.json`, the download contract is [schema 1.0](docs/design/schema-1.0.md), and the editorial rules are on the [method page](https://aisi.accelerate-europe.org/method.html).
 
 ## Cite
 

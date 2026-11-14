@@ -4,7 +4,7 @@ The steps for every release, in order. Development is public: work lands on `nex
 
 ## Release or deploy without a version
 
-A change to `data/aisi.json` is released with a version: patch for corrections, minor for new records, status changes or additive schema fields, major for breaking schema changes. Adding a code to `dataset.vocabularies` is minor; removing or renaming one is major.
+A change to `data/aisi.json` is released with a version: patch for corrections, minor for new records, status changes or additive schema fields, major for breaking schema changes. Adding a code to `dataset.vocabularies` is minor; removing or renaming one is major, except fields and vocabularies listed in `dataset.provisional`, which may change in a minor with a changelog line.
 
 A page, code or documentation change that leaves `data/aisi.json`, `schema/aisi.schema.json` and the download files unchanged can be deployed without a version: run steps 3 and 4 unchanged (`--release` passes when the data is unchanged, and CI on public `main` runs the same release checks), and skip the changelog, GitHub release and Zenodo. A schema or download change needs a version even when the data is unchanged.
 

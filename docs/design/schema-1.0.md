@@ -86,6 +86,10 @@ Evidence: `staffing_model/code` needs a bound excerpt unless the code is `not_pu
 
 Generated outputs: per-record `citations`; `institutes.csv` columns `staffing_model`, `staffing_model_source_ids`, `staffing_model_notes` and `staffing_model_searches`. Tests: `tests/test_staffing_model.py`, each gate with its mutation.
 
+## Claims and functions
+
+Added in 1.1.0: `claims[]` on jurisdictions and institutes, `check.log`, `check.functions` and the generated `institutes[].functions[]`, exported as `claims.csv` and `functions.csv`. The design is [claims-1.1](claims-1.1.md); field meanings are in the schema; checks in `scripts/claim_checks.py`, tests in `tests/test_claims.py`.
+
 ## Known activity
 
 The qualification policy is in `dataset.method`, with the field contract in the output schema. `qualifies_as` and a non-empty `qualification_note` are required for every output, including exclusions. `type` describes the artefact and `attribution` describes institutional credit; neither is a substitute for the reviewed qualification. The broad publication catalogue and its `first_output` milestone are unchanged and can begin before Known activity.
