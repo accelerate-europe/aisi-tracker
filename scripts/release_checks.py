@@ -423,6 +423,8 @@ INTERNAL_PROCESS = re.compile(
     r"\b(?:review|research|audit|search|agent|job|batch)(?:[-_][a-z]+)*[-_]\d+\b"
     r"|\bnight\d+/[a-z][\w-]*"
     r"|(?-i:\b[a-z][a-zA-Z]*(?:Search|Blogs?)\b)"
+    # The researcher's own computer; "this host" stays allowed, as URL host names use it, and so does machine learning.
+    r"|\b(?:this|my|our)\s+(?:Mac|MacBook|machine(?![\s-]+learning)|computer|laptop|VPS)\b"
     r"|\b(?:red[- ]teamed|reviewed|checked|audited|verified)\s+by\s+"
     r"(?:an?\s+)?(?:(?:different|independent|separate|second|another)\s+)*"
     r"(?:"

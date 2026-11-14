@@ -747,6 +747,8 @@ def test_changelog_allows_substantive_round_and_model_family_text(dataset, build
         "Red-teamed by a different model in each region.",
         "Red-teamed by a different model for each region.",
         "Checked by Codex (GPT-5).",
+        "The site gives no response from this Mac.",
+        "The ministry page timed out on our machine.",
     ],
 )
 @pytest.mark.parametrize(
@@ -784,7 +786,9 @@ def test_internal_process_preserves_evidence_and_ai_subject_matter(dataset, buil
         "Verified by AI Act market-surveillance authorities. "
         "Red-teamed by AI Security Institute evaluators. "
         "Results verified by model providers. "
-        "Reviewed by Claude Martin, head of unit."
+        "Reviewed by Claude Martin, head of unit. "
+        "The archive target rejected this host variant. "
+        "Funding supports this machine learning lab and our machine-learning programme."
     )
     source = dataset["sources"][0]
     source["title"] = (
