@@ -2051,7 +2051,8 @@
           "instrument": "press_release",
           "description": "AI Safety Institute launched; the Frontier AI Taskforce becomes the institute, tasked with testing frontier AI before and after release.",
           "source_ids": [
-            "gb-aisi-launch"
+            "gb-aisi-launch",
+            "gb-cp960-2023"
           ],
           "short": "Frontier AI Taskforce becomes the AI Safety Institute."
         },
@@ -30740,7 +30741,17 @@
         "source_ids": [
           "gb-pq-30890-2026"
         ]
-      }
+      },
+      "claims": [
+        {
+          "id": "claims-524ed29c55f549f39a3f9a0263f9fef7",
+          "kind": "fact",
+          "source_ids": [
+            "gb-taskforce-rename"
+          ],
+          "text": "The Frontier AI Taskforce said it now has a growing team of AI researchers."
+        }
+      ]
     },
     {
       "id": "fr-inesia",
@@ -32125,6 +32136,16 @@
           "figure_source": "press_report",
           "id": "staff-a2a3ec64e2e4440497c92d90c838943a"
         }
+      ],
+      "claims": [
+        {
+          "id": "claims-c5714a4546514d44a64c162bb4f13632",
+          "kind": "fact",
+          "source_ids": [
+            "no-digdir-ki-norge-report-2025"
+          ],
+          "text": "To make KI Norge fully operational, Digdir brought technical, legal, innovation and public administration expertise together in an interim organisation from 1 December 2025."
+        }
       ]
     },
     {
@@ -32521,7 +32542,17 @@
           "eu-decision-oj"
         ],
         "notes": "The Commission decision establishing the Office provides that its officials are staff of the Directorate-General for Communication Networks, Content and Technology already assigned to the work or redeployed within it, and that the costs of its external staff are covered from the Digital Europe Programme's administrative budget."
-      }
+      },
+      "claims": [
+        {
+          "id": "claims-e862178394584c1f9013e3776f86525b",
+          "kind": "fact",
+          "source_ids": [
+            "eu-ai-office-jobs-2024"
+          ],
+          "text": "The Commission announced the AI Office's first job opportunities."
+        }
+      ]
     },
     {
       "id": "us-caissi",
@@ -35680,7 +35711,17 @@
           "jp-aisi-recruit-2025"
         ],
         "notes": "Staff also come on secondment from companies, with IPA paying the seconding company, and some senior posts are held concurrently with IPA posts, such as the head of IPA's Digital Infrastructure Centre."
-      }
+      },
+      "claims": [
+        {
+          "id": "claims-a7f39fe39fbb43228dde8a3b7fa36662",
+          "kind": "fact",
+          "source_ids": [
+            "jp-ipa-2024-02"
+          ],
+          "text": "Kenji Hiramoto took office as the institute's full-time secretary-general on 14 February 2024."
+        }
+      ]
     },
     {
       "id": "kr-aisi",
@@ -37811,7 +37852,17 @@
           "in-indiaai-partners-2025",
           "in-pib-2026-07-27"
         ]
-      }
+      },
+      "claims": [
+        {
+          "id": "claims-05eb0f44ebc64a3c955d10a0eba34ba5",
+          "kind": "fact",
+          "source_ids": [
+            "in-aisi-director-advert-2026"
+          ],
+          "text": "IndiaAI invited applications for one contract post of Director of the IndiaAI Safety Institute."
+        }
+      ]
     },
     {
       "id": "ke-ai-safety-institute",
@@ -44010,6 +44061,23 @@
             ]
           ],
           "accessed": "2026-10-21"
+        },
+        {
+          "text": "we now have a growing team of AI researchers",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-524ed29c55f549f39a3f9a0263f9fef7"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-11-14"
         }
       ],
       "origin": "GB",
@@ -59476,6 +59544,24 @@
             ]
           ],
           "gloss": "April 2021: joined Sompo Japan Insurance Inc., special general manager of the DX Promotion Department with executive officer status. October 2021: same company, general manager of the DX Promotion Department with executive officer status. April 2022: same company, Executive Officer, CDO (Chief Digital Officer) and general manager of the DX Promotion Department (current post).",
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "平本健二が事務局長に就任しました。 平本 健二（ひらもと けんじ） 発令日 2024年2月14日 氏名 平本 健二（ひらもと けんじ） 役職 AIセーフティ・インスティテュート事務局長 勤務形態 常勤",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-a7f39fe39fbb43228dde8a3b7fa36662"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "Kenji Hiramoto took office as secretary-general. Kenji Hiramoto. Date of appointment: 14 February 2024. Name: Kenji Hiramoto. Post: Secretary-General, AI Safety Institute. Employment: full-time.",
           "accessed": "2026-11-14"
         }
       ],
@@ -120862,6 +120948,152 @@
         "retrieved": "2026-11-14T11:32:02Z",
         "sha256": "f5b123ad3a88b12357633cdcfc6465d45134c9b1d8334547c0e257aa985420bd",
         "text_sha256": "b732385e56892863ada661c8343d1d6f5ab2ed87dff8a3af04699eab9014f1ed",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "gb-cp960-2023",
+      "url": "https://www.gov.uk/government/publications/ai-safety-institute-overview/introducing-the-ai-safety-institute",
+      "title": "Introducing the AI Safety Institute",
+      "publisher": "Department for Science, Innovation and Technology",
+      "type": "primary",
+      "published": "2023-11-02",
+      "accessed": "2026-11-14",
+      "language": "en",
+      "origin": "GB",
+      "excerpts": [
+        {
+          "text": "As of today, the Taskforce will become the AI Safety Institute, a new institution established for the long-term.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "GB"
+              },
+              "timeline",
+              {
+                "id": "gb-2"
+              },
+              "description"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-14T11:31:13Z",
+        "sha256": "8101f320413205bc5c235091b8aaaa58c1c0026942988316136e64f9d4d51f33",
+        "text_sha256": "7a61c4ef73595ba5cf099c26c871f02e3cb3d262b2b2ad9b51b3630aa8da0d2a",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "eu-ai-office-jobs-2024",
+      "url": "https://digital-strategy.ec.europa.eu/en/news/job-opportunities-european-ai-office",
+      "title": "Job opportunities at the European AI Office",
+      "publisher": "European Commission (DG CONNECT)",
+      "type": "primary",
+      "published": "2024-03-07",
+      "accessed": "2026-11-14",
+      "language": "en",
+      "origin": "EU",
+      "excerpts": [
+        {
+          "text": "The European AI Office launched its first job opportunities.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "claims",
+              {
+                "id": "claims-e862178394584c1f9013e3776f86525b"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-14T11:32:04Z",
+        "sha256": "34feb71f4892e51c18f3cd0876b2c8d9ee3c815094825465bf87a334a1bf45cc",
+        "text_sha256": "9f1bee63a1e09f29e88389860e1e615230fc3f1065f663350860ffdcba48a770",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "no-digdir-ki-norge-report-2025",
+      "url": "https://www.digdir.no/media/6966/download",
+      "title": "Rapportering på oppdrag om KI Norge",
+      "title_en": "Report on the KI Norge assignment",
+      "publisher": "Digitaliseringsdirektoratet (Digdir)",
+      "type": "primary",
+      "published": "2026-03-13",
+      "accessed": "2026-11-14",
+      "language": "no",
+      "origin": "NO",
+      "excerpts": [
+        {
+          "text": "KI Norge skal bli et samlende spiss- miljø for utvikling og bruk av innovativ og ansvarlig kunstig intelligens, og skal være fullt operativt fra august 2026. For å nå målet, samlet Digdir teknisk, juridisk, innovasjons- og forvaltningskompetanse i en interimsorganisasjon fra 1. desember 2025.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "claims",
+              {
+                "id": "claims-c5714a4546514d44a64c162bb4f13632"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "KI Norge is to become a unifying centre of expertise for the development and use of innovative and responsible artificial intelligence, and is to be fully operational from August 2026. To reach that goal, Digdir brought technical, legal, innovation and public administration expertise together in an interim organisation from 1 December 2025.",
+          "accessed": "2026-11-14"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-14T11:35:25Z",
+        "sha256": "dff34a21e23534a70f80f0ff37a5fd819831bc0d8c0865c21d132c06e66ae5af",
+        "text_sha256": "dec5fe3de37a31496a0da84f889693f15166215a1f014c98bba83589cb32d2ec",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "in-aisi-director-advert-2026",
+      "url": "https://www.meity.gov.in/static/uploads/2026/05/5188ada2f926aebc544d26a28dc22413.pdf",
+      "title": "Advertisement: Director, IndiaAI Safety Institute",
+      "publisher": "IndiaAI, Digital India Corporation",
+      "type": "primary",
+      "published": "2026-05-19",
+      "accessed": "2026-11-14",
+      "language": "en",
+      "origin": "IN",
+      "excerpts": [
+        {
+          "text": "India AI is currently inviting applications for the below position purely on Contract/ Consolidated basis. Sr.No Name of the Post No. of Positions 1. Director – IndiaAI Safety Institute 1",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "in-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-05eb0f44ebc64a3c955d10a0eba34ba5"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-14T11:33:15Z",
+        "sha256": "aabce9f022bee185f3c9ed32b98b2b434d751b4e5a3d9e4c2573988f7a7161c2",
+        "text_sha256": "751f89d8680d576d10fe7035e5c9026fd89e4326c36331227de356fdfbdc8358",
         "text_scheme": 1
       }
     }
