@@ -10681,9 +10681,10 @@ FAVICON_HREFS = {
 
 
 def check_page_data(dist: Path, data: dict) -> list[str]:
-    """data/page.json is aisi.json without a state's research log (check, except last_checked and method) and a
-    source's private-copy metadata (snapshot, access_note), minified; the page loads it by a URL carrying the
-    dataset version and the file's hash; and the page script reads none of the fields left out."""
+    """data/page.json is aisi.json without a state's research log (check, except last_checked and method), a
+    source's private-copy metadata (snapshot, access_note) and the download-only claims and functions of states and
+    institutes, minified; the page loads it by a URL carrying the dataset version and the file's hash; and the page
+    script reads none of the fields left out."""
     import hashlib
 
     errors = []
@@ -10698,12 +10699,15 @@ def check_page_data(dist: Path, data: dict) -> list[str]:
     for source in want["sources"]:
         source.pop("snapshot", None)
         source.pop("access_note", None)
+    for record in [*want["jurisdictions"], *want["institutes"]]:
+        record.pop("claims", None)
+        record.pop("functions", None)
     page = json.loads(text)
     mark = page.pop("build_mark", None)
     if list(json.loads(text))[-1:] != ["build_mark"]:
         errors.append("data/page.json: no build_mark as its last key (the page compares it with its own to catch a mixed release)")
     if page != want:
-        errors.append("data/page.json differs from aisi.json without check (except last_checked and method), snapshot and access_note")
+        errors.append("data/page.json differs from aisi.json without check (except last_checked and method), snapshot, access_note, claims and functions")
     if "\n" in text or ": " in text[:200]:
         errors.append("data/page.json is not minified")
     # The build mark is the version and the hash of the file without it; the data URL and the page carry the same.
@@ -10722,7 +10726,7 @@ def check_page_data(dist: Path, data: dict) -> list[str]:
     if len(meta) == 1 and meta[0].get("data-package") != f"data/datapackage.json?v={data['dataset']['version']}-{hashlib.sha256(package.encode('utf-8')).hexdigest()[:10]}":
         errors.append(f"index.html: the data package URL {meta[0].get('data-package')!r} is not versioned by its content")
     script = "\n".join(node.get_text() for node in soup.select("body > script:not([src])"))
-    for pattern in (r"\.snapshot\b", r"\baccess_note\b", r"\.check\.(?!last_checked\b|method\b)\w+", r"\.check\[", r"\bcheck\)"):
+    for pattern in (r"\.snapshot\b", r"\baccess_note\b", r"\.check\.(?!last_checked\b|method\b)\w+", r"\.check\[", r"\bcheck\)", r"\.claims\b", r"\.functions\b"):
         for found in re.finditer(pattern, script):
             errors.append(f"page script reads a field data/page.json leaves out: {script[max(0, found.start() - 40):found.end() + 20]!r}")
     return errors
