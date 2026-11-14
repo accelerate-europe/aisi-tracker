@@ -4030,10 +4030,13 @@
         {
           "name": "RTR KI-Servicestelle",
           "name_en": "RTR AI Service Desk",
-          "role": "It provides an AI Act service desk inside the regulator RTR.",
+          "role": "It is set up at the regulator RTR as a contact point and information hub on AI, in preparation for the AI Act.",
           "counts_as_aisi": false,
           "kind": "other",
-          "id": "related_bodies-18d1df10e92a59df8106f78e76a7b25e"
+          "id": "related_bodies-18d1df10e92a59df8106f78e76a7b25e",
+          "source_ids": [
+            "at-dsb-ai-faq"
+          ]
         },
         {
           "name": "Datenschutzbehörde",
@@ -5134,8 +5137,8 @@
       "notes": "The plan has 20 actions, all funded, runs for two years and is to be reviewed every six months. The government-linked working-group report released on 9 October 2026 describes EEA incorporation as unresolved and proposes allocating AI Act responsibilities among existing sectoral regulators. Final market-surveillance, notifying and single-point-of-contact allocations were not verified in the retrieved sources. Searches in English and Icelandic found no institute.\n\nThe Commission source is retained as the required EU/EEA cross-check. Its table lists EU Member State contact points and contains no entry for Iceland; it does not substantiate a national designation or imply that the AI Act is incorporated into the EEA Agreement.\n\nOn 4 November 2026 the government announced that Umbra, the Government Offices' service centre, and the cyber security team CERT-IS had received access to a specialised OpenAI cyber security model, granted after an assessment through Government Trusted Access for Cyber and limited to defined cyber defence tasks. The announcement describes defensive cyber work; it does not describe evaluation of the models.",
       "related_bodies": [
         {
-          "name": "Centre for AI and language technology (planned)",
-          "role": "It is a new centre announced in the first AI Action Plan; the source read does not describe a model-evaluation mandate.",
+          "name": "Centre for AI and language technology",
+          "role": "The first AI Action Plan includes setting it up as a new centre; the source read does not describe a model-evaluation mandate.",
           "counts_as_aisi": false,
           "source_ids": [
             "is-stjornarradid-action-plan-2025"
@@ -5181,10 +5184,14 @@
         {
           "name": "Stabsstelle für Digitale Innovation",
           "name_en": "Office for Digital Innovation",
-          "role": "It coordinates digitalisation inside the national administration; it has no model-evaluation mandate.",
+          "role": "It is the central coordination and advisory office for innovation, digitalisation and new technologies in the national administration, and in May 2026 it was designing the AI regulatory sandbox the AI Act requires; no model-evaluation mandate was found.",
           "counts_as_aisi": false,
           "kind": "other",
-          "id": "related_bodies-db50035a13d65f138c591fc054483a95"
+          "id": "related_bodies-db50035a13d65f138c591fc054483a95",
+          "source_ids": [
+            "li-government-ai-act-implementation-2026",
+            "li-asit-visit-2025"
+          ]
         }
       ],
       "next_check": {
@@ -5308,11 +5315,14 @@
           "id": "related_bodies-e961f3b9eef9537db5b2d9854ac44805"
         },
         {
-          "name": "Luxembourg AI Factory (consortium of the Luxembourg National Data Service, the University of Luxembourg and LIST)",
-          "role": "It is an EU-backed support platform run as a one-stop shop by Luxinnovation; it has no government mandate to evaluate advanced models.",
+          "name": "Luxembourg AI Factory",
+          "role": "It is the national platform for the responsible and secure adoption of AI, supported by a consortium of LuxProvide, Luxinnovation, the Luxembourg National Data Service, the University of Luxembourg and LIST; no government mandate to evaluate advanced models was found.",
           "counts_as_aisi": false,
           "kind": "other",
-          "id": "related_bodies-1de660304d885ce49aaeeebfa2833690"
+          "id": "related_bodies-1de660304d885ce49aaeeebfa2833690",
+          "source_ids": [
+            "lu-paperjam-ai-factory-primary-proposal"
+          ]
         },
         {
           "name": "AI Assessment Sandbox Configurator",
@@ -5602,17 +5612,23 @@
         },
         {
           "name": "EETT AI Coordination and Expertise Centre",
-          "role": "It gives technical support to AI Act authorities and the sandbox; it is not described as testing models.",
+          "role": "It is set up within EETT under Law 5321/2026 to support the data protection authority and the market-surveillance authorities, including advice and technical support to the data protection authority; it is not described as testing models.",
           "counts_as_aisi": false,
           "kind": "other",
-          "id": "related_bodies-2a370f5ee5335a2aa31850984ddfa244"
+          "id": "related_bodies-2a370f5ee5335a2aa31850984ddfa244",
+          "source_ids": [
+            "gr-law5321-2026-authorities"
+          ]
         },
         {
           "name": "EETT AI regulatory sandbox",
-          "role": "It provides a time-limited environment for testing AI systems under supervision.",
+          "role": "It is the AI regulatory sandbox set up within EETT under Articles 57 and 58 of the AI Act, for testing AI systems under supervision.",
           "counts_as_aisi": false,
           "kind": "other",
-          "id": "related_bodies-bc6478fb623e567c89b7102d8f51d526"
+          "id": "related_bodies-bc6478fb623e567c89b7102d8f51d526",
+          "source_ids": [
+            "gr-law5321-2026-authorities"
+          ]
         },
         {
           "name": "Εθνική Επιτροπή Τηλεπικοινωνιών και Ταχυδρομείων (EETT)",
@@ -6562,10 +6578,13 @@
         },
         {
           "name": "RO AI Factory (ICI Bucharest)",
-          "role": "The EU AI Factory is expected to become operational in 2027 to provide computing and support; it is not an evaluator.",
+          "role": "Its implementation began on 1 September 2026 with EuroHPC funding, hosted at ICI Bucharest, and it is expected to be operational by the end of 2027, providing high-performance computing and AI services; no model-evaluation mandate was found.",
           "counts_as_aisi": false,
           "kind": "other",
-          "id": "related_bodies-da09468063605435a174ab230a8738a8"
+          "id": "related_bodies-da09468063605435a174ab230a8738a8",
+          "source_ids": [
+            "ro-ici-ai-factory-2026"
+          ]
         },
         {
           "name": "Autoritatea pentru Digitalizarea României (ADR)",
@@ -6701,7 +6720,8 @@
         "ai-act-tracker",
         "eu-ai-act-authorities-2026",
         "ro-senat-b597-2026",
-        "ro-b597-text-2026"
+        "ro-b597-text-2026",
+        "ro-ici-ai-factory-2026"
       ],
       "notes": "ANCOM's official implementation update and governance page were retrieved. They describe authority allocations selected by government memorandum, including ANCOM for market surveillance and the single point of contact, ADR for notification, and specified sectoral authorities. ANCOM's July 2026 update says implementing legislation remains necessary; final enactment was not verified.\n\nThe Commission's contact list of 9 November 2026 marks this state's AI Act authority as pending final adoption; the national sources cited here give its actual designation status.\n\nOn 28 October 2026 a legislative proposal from an unaffiliated deputy on the safe development of frontier AI systems and the prevention of catastrophic risks, B597/2026, was registered at the Senate. It provides for an AI Safety Authority, funded from the budget of the communications regulator ANCOM, that would carry out independent evaluations of frontier systems itself or through evaluation bodies it designates. It is not the government's own proposal.",
       "region": {
@@ -6739,7 +6759,7 @@
       "summary": "No qualifying institute identified. Bill 52-654-01-151, tabled by MPs on 24 September 2026 with proposed AI Act authority allocations, was rejected at first reading by the parliamentary committee on 4 November 2026. The INSAIT research institute is not a government evaluator.",
       "related_bodies": [
         {
-          "name": "Ministry of Innovation and Digital Transformation (proposed AI-policy role in 2026 bill)",
+          "name": "Ministry of Innovation and Digital Transformation",
           "role": "The 2026 draft bill assigns AI-policy responsibility to the Minister of Innovation and Digital Transformation and provides for a national coordinator. Enactment and an institute to evaluate advanced models were not established by the retrieved bill.",
           "counts_as_aisi": false,
           "source_ids": [
@@ -7463,8 +7483,8 @@
           "id": "related_bodies-44979f109a605db6a0580c59b50e66e1"
         },
         {
-          "name": "National AI Authority (proposed in draft strategy)",
-          "role": "The draft strategy would give it national AI coordination and compliance responsibilities, without a qualifying model-evaluation assignment.",
+          "name": "National AI Authority",
+          "role": "Proposed in the strategy's consultation draft of July 2026; the government's statement on the approved strategy does not name it. The draft strategy would give it national AI coordination and compliance responsibilities, without a qualifying model-evaluation assignment.",
           "counts_as_aisi": false,
           "source_ids": [
             "cy-mail-prosandcons",
@@ -7500,8 +7520,8 @@
           "id": "related_bodies-1c98c0ca4a4a5b12838d9260989c588b"
         },
         {
-          "name": "European AI Certification Lab (proposed in draft strategy)",
-          "role": "It would provide a sandbox for pre-certification of high-risk and foundation models, building equivalence with international frameworks. Conformity assessment alone does not meet the qualifying-body test.",
+          "name": "European AI Certification Lab",
+          "role": "Proposed in the strategy's consultation draft of July 2026; the government's statement on the approved strategy does not name it. It would provide a sandbox for pre-certification of high-risk and foundation models, building equivalence with international frameworks. Conformity assessment alone does not meet the qualifying-body test.",
           "counts_as_aisi": false,
           "kind": "other",
           "source_ids": [
@@ -7510,8 +7530,8 @@
           "id": "related_bodies-22ce43cad11a5215b57cf4f76c7cd5bc"
         },
         {
-          "name": "Cyprus AI Security & Certification Authority (proposed in draft strategy)",
-          "role": "It would provide an annual audit complementing documented conformity assessments under the draft strategy. Conformity assessment alone does not meet the qualifying-body test.",
+          "name": "Cyprus AI Security & Certification Authority",
+          "role": "Proposed in the strategy's consultation draft of July 2026; the government's statement on the approved strategy does not name it. It would provide an annual audit complementing documented conformity assessments under the draft strategy. Conformity assessment alone does not meet the qualifying-body test.",
           "counts_as_aisi": false,
           "kind": "other",
           "source_ids": [
@@ -7520,8 +7540,8 @@
           "id": "related_bodies-77789cf4c2b25457bcc4cb32dc0d05e9"
         },
         {
-          "name": "National AI Cybersecurity Centre of Excellence (proposed in draft strategy)",
-          "role": "It would conduct frontier security research, develop practical standards and guidance, and provide security and privacy controls to protect government and infrastructure. These protection functions do not by themselves establish a qualifying model-evaluation assignment.",
+          "name": "National AI Cybersecurity Centre of Excellence",
+          "role": "Proposed in the strategy's consultation draft of July 2026; the government's statement on the approved strategy does not name it. It would support frontier security research and the development of practical security standards and guidance, and protect critical infrastructure. These protection functions do not by themselves establish a qualifying model-evaluation assignment.",
           "counts_as_aisi": false,
           "kind": "other",
           "source_ids": [
@@ -7530,8 +7550,8 @@
           "id": "related_bodies-8fb08f7e916d508c93f1a1d71ac4de1e"
         },
         {
-          "name": "National AI Misinformation and Security Council (proposed in draft strategy)",
-          "role": "It would assess the system risk of AI models and advise regulating and policy-making authorities, submitting recommendations to the National AI Taskforce. The text does not specify general-purpose, foundation or frontier models as the object of evaluation; a more specific technical remit remains to be checked.",
+          "name": "National AI Misinformation and Security Council",
+          "role": "Proposed in the strategy's consultation draft of July 2026; the government's statement on the approved strategy does not name it. It would assess the system risk of AI models and advise regulating and policy-making authorities, submitting recommendations to the National AI Taskforce. The text does not specify general-purpose, foundation or frontier models as the object of evaluation; a more specific technical remit remains to be checked.",
           "counts_as_aisi": false,
           "kind": "other",
           "source_ids": [
@@ -52973,6 +52993,17 @@
                 "id": "related_bodies-c7b6fc57cf2d5c759c30c0f36a914abc"
               },
               "name"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "IS"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-c7b6fc57cf2d5c759c30c0f36a914abc"
+              },
+              "role"
             ]
           ],
           "gloss": "Measures include creating a new centre for AI and language technology.",
@@ -53017,7 +53048,27 @@
         "sha256": "b64b7989ed84531b641cfae0a1b18051cc6bfac45876950df395e20d86226c26",
         "text_sha256": "f4f5476530eb80f994a0ac006b5558b7a770495c225624a5f5d1a51fd21debca",
         "text_scheme": 1
-      }
+      },
+      "excerpts": [
+        {
+          "text": "Zentrale Koordinations- und Beratungsstelle für Innovation, Digitalisierung und neue Technologien in der LLV",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "LI"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-db50035a13d65f138c591fc054483a95"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-14",
+          "gloss": "Central coordination and advisory office for innovation, digitalisation and new technologies in the national administration (LLV)"
+        }
+      ]
     },
     {
       "id": "recheck-lac-dl-2026",
@@ -63038,7 +63089,54 @@
         "sha256": "579825b493a00b3ab8b09fee4aaa8537458d99839801e2752d48b28e74c0eb32",
         "text_sha256": "5f97f5e1ab731e355a88fa4c1524da8c6c005b3d2ccdc61ecfb69c4d146b8e13",
         "text_scheme": 1
-      }
+      },
+      "excerpts": [
+        {
+          "text": "the Luxembourg AI Factory is the national platform dedicated to the responsible and secure adoption of AI",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "LU"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-1de660304d885ce49aaeeebfa2833690"
+              },
+              "name"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "LU"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-1de660304d885ce49aaeeebfa2833690"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "It is supported by a consortium composed of LuxProvide, Luxinnovation, the Luxembourg National Data Service (LNDS), the University of Luxembourg and the Luxembourg Institute of Science and Technology (LIST)",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "LU"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-1de660304d885ce49aaeeebfa2833690"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        }
+      ]
     },
     {
       "id": "sk-oecd-cyberlab-primary-proposal",
@@ -75223,6 +75321,35 @@
             ]
           ],
           "gloss": "In Austria, under the current legal position, this competence falls to the Data Protection Authority under sections 18 and 31 DSG."
+        },
+        {
+          "text": "Als Vorbereitung für die Umsetzung der KI-VO gibt es eine KI-Servicestelle, welche in der RTR GmbH eingerichtet ist und als Ansprechpartnerin und Informationshub zum Thema KI dient.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "AT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-18d1df10e92a59df8106f78e76a7b25e"
+              },
+              "name"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "AT"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-18d1df10e92a59df8106f78e76a7b25e"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-14",
+          "gloss": "In preparation for implementing the AI Act there is an AI service desk, set up at RTR GmbH, which serves as a contact point and information hub on AI."
         }
       ],
       "access_note": "The FAQ is undated. Its sectoral competence statement was read with RIS §§18 and 31 DSG. Earlier EUR-Lex access attempts failed; a later review retrieved the original Article 74 and a rendered consolidated text, registered separately. The undated statement about the general market-surveillance authority is not treated as a dated absence finding.",
@@ -75590,6 +75717,100 @@
             ]
           ],
           "gloss": "Is designated as notifying authority."
+        },
+        {
+          "text": "Στην Ε.Ε.Τ.Τ. συστήνεται Κέντρο συντονισμού και τεχνογνωσίας για την ΤΝ",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "GR"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-2a370f5ee5335a2aa31850984ddfa244"
+              },
+              "name"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "GR"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-2a370f5ee5335a2aa31850984ddfa244"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-14",
+          "gloss": "A Coordination and Expertise Centre for AI is set up within EETT"
+        },
+        {
+          "text": "παρέχει συμβουλευτική και τεχνική υποστήριξη στην Α.Π.Δ.Π.Χ.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "GR"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-2a370f5ee5335a2aa31850984ddfa244"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-14",
+          "gloss": "provides advisory and technical support to the data protection authority"
+        },
+        {
+          "text": "Στην Ε.Ε.Τ.Τ. συστήνεται ρυθμιστικό δοκιμαστήριο ΤΝ, σύμφωνα με τα άρθρα 57 και 58 του Κανονισμού για την ΤΝ.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "GR"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-bc6478fb623e567c89b7102d8f51d526"
+              },
+              "name"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "GR"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-bc6478fb623e567c89b7102d8f51d526"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-14",
+          "gloss": "An AI regulatory sandbox is set up within EETT, in accordance with Articles 57 and 58 of the AI Regulation."
+        },
+        {
+          "text": "υποστηρίζει την Α.Π.Δ.Π.Χ. και τις αρμόδιες αρχές εποπτείας της αγοράς της παρ. 2 του άρθρου 3",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "GR"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-2a370f5ee5335a2aa31850984ddfa244"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-14",
+          "gloss": "supports the data protection authority and the competent market-surveillance authorities of Article 3(2)"
         }
       ],
       "origin": "GR",
@@ -75865,6 +76086,35 @@
             ]
           ],
           "gloss": "The AI Regulation is in the EEA incorporation process."
+        },
+        {
+          "text": "Die Stabsstelle für Digitale Innovation (SDI) konzipiert derzeit das in Art. 57 AI Act vorgeschriebene KI-Reallabor (AI-Sandbox)",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "LI"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-db50035a13d65f138c591fc054483a95"
+              },
+              "name"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "LI"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-db50035a13d65f138c591fc054483a95"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-14",
+          "gloss": "The Office for Digital Innovation (SDI) is currently designing the AI regulatory sandbox (AI sandbox) required by Art. 57 of the AI Act"
         }
       ],
       "origin": "LI",
@@ -87534,6 +87784,214 @@
             ]
           ],
           "accessed": "2026-10-18"
+        },
+        {
+          "text": "National AI Authority: Acts as the policy-setting, execution engine and governance gatekeeper with clear mandate and resources.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "CY"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-7584a6499a0054a29df3f7db8e950cd7"
+              },
+              "name"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "CY"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-7584a6499a0054a29df3f7db8e950cd7"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "European AI Certification Lab: A sandbox for pre-certification of high-risk and foundation models",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "CY"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-22ce43cad11a5215b57cf4f76c7cd5bc"
+              },
+              "name"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "CY"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-22ce43cad11a5215b57cf4f76c7cd5bc"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "complemented by an annual audit by the Cyprus AI Security & Certification Authority",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "CY"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-77789cf4c2b25457bcc4cb32dc0d05e9"
+              },
+              "name"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "CY"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-77789cf4c2b25457bcc4cb32dc0d05e9"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "National AI Cybersecurity Centre of Excellence",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "CY"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-8fb08f7e916d508c93f1a1d71ac4de1e"
+              },
+              "name"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "CY"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-8fb08f7e916d508c93f1a1d71ac4de1e"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "National AI Misinformation and Security Council",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "CY"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-41db19d41cc45fc9b6919ceed4dc10a3"
+              },
+              "name"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "CY"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-41db19d41cc45fc9b6919ceed4dc10a3"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "The Centre will support frontier security research, the development of practical security standards and guidance",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "CY"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-8fb08f7e916d508c93f1a1d71ac4de1e"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "National AI Cybersecurity Centre of Excellence: Protects critical infrastructure in partnership with leading global players",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "CY"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-8fb08f7e916d508c93f1a1d71ac4de1e"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "It shall assess the system risk of AI models and provide insight, guidelines, and policy recommendations to the regulating and policy-making authorities",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "CY"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-41db19d41cc45fc9b6919ceed4dc10a3"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "posture on AI security and misinformation. All recommendations and guidelines are submitted to the National AI Taskforce.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "CY"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-41db19d41cc45fc9b6919ceed4dc10a3"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-14"
         }
       ]
     },
@@ -117830,6 +118288,138 @@
         "retrieved": "2026-11-14T11:58:13Z",
         "sha256": "c135631ce8882c1b22081c6a377804c53f86868325a6ac8b81ec770d0c0ee73f",
         "text_sha256": "2f56378a14b3a381e480b49ff4f871af6b6ada44c8cf56361a55384c8422afd4",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "ro-ici-ai-factory-2026",
+      "url": "https://ici.ro/ro/anunturi/rom%C3%A2nia-face-un-nou-pas-%C3%AEn-dezvoltarea-inteligen%C8%9Bei-artificiale-%C3%AEncepe-proiectul-ro-ai-factory-g%C4%83zduit-la-ici-bucure%C8%99ti/",
+      "title": "România face un nou pas în dezvoltarea inteligenței artificiale: începe proiectul RO AI Factory, găzduit la ICI București",
+      "title_en": "Romania takes a new step in the development of artificial intelligence: the RO AI Factory project begins, hosted at ICI Bucharest",
+      "publisher": "Institutul Național de Cercetare-Dezvoltare în Informatică (ICI București)",
+      "type": "primary",
+      "published": "2026-09-01",
+      "accessed": "2026-11-14",
+      "language": "ro",
+      "origin": "RO",
+      "excerpts": [
+        {
+          "text": "Astăzi, 1 septembrie 2026, debutează oficial implementarea proiectului „Romanian EuroHPC AI Factory at ICI Bucharest” – RO AI Factory",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "RO"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-da09468063605435a174ab230a8738a8"
+              },
+              "name"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "RO"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-da09468063605435a174ab230a8738a8"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-14",
+          "gloss": "Today, 1 September 2026, the implementation of the project “Romanian EuroHPC AI Factory at ICI Bucharest” (RO AI Factory) officially begins"
+        },
+        {
+          "text": "care funcționează ca Hosting Entity pentru RO AI Factory",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "RO"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-da09468063605435a174ab230a8738a8"
+              },
+              "name"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "RO"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-da09468063605435a174ab230a8738a8"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-14",
+          "gloss": "which acts as the Hosting Entity for RO AI Factory"
+        },
+        {
+          "text": "Operaționalizarea RO AI Factory este estimată până la sfârșitul anului 2027",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "RO"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-da09468063605435a174ab230a8738a8"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-14",
+          "gloss": "RO AI Factory is expected to become operational by the end of 2027"
+        },
+        {
+          "text": "finanțat de European High Performance Computing Joint Undertaking (EuroHPC JU)",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "RO"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-da09468063605435a174ab230a8738a8"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-14",
+          "gloss": "funded by the European High Performance Computing Joint Undertaking (EuroHPC JU)"
+        },
+        {
+          "text": "RO AI Factory va oferi infrastructură de calcul de înaltă performanță, alături de un ecosistem integrat de resurse, servicii, expertiză și competențe în domeniul inteligenței artificiale",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "RO"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-da09468063605435a174ab230a8738a8"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-14",
+          "gloss": "RO AI Factory will offer high-performance computing infrastructure, together with an integrated ecosystem of resources, services, expertise and skills in artificial intelligence"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-14T12:13:33Z",
+        "sha256": "8b7aba5b2ae0a32d3ed83724605cf4cf1f63c6817ab1043ceef5a7287cb2c98d",
+        "text_sha256": "d36b38ba8f10326b51c881254895dd30e1b5e39b72948f1320b927a577abf240",
         "text_scheme": 1
       }
     }
