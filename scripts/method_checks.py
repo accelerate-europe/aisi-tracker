@@ -7,14 +7,14 @@ import re
 if __package__:
     from .method_copy import check_method_copy
     from .references import materialise_references
-    from .published import credit_date, first_designation, prepared_facts, status_basis
+    from .published import IMPLIES, announcement, credit_date, first_designation, prepared_facts, status_basis
     from .reader_text import check_reader_text  # type: ignore[import-not-found]
     from .row_checks import check_rows, required_row_pointers
     from .flag_checks import check_flags, required_flag_pointers
 else:
     from method_copy import check_method_copy
     from references import materialise_references
-    from published import credit_date, first_designation, prepared_facts, status_basis
+    from published import IMPLIES, announcement, credit_date, first_designation, prepared_facts, status_basis
     from reader_text import check_reader_text  # type: ignore[import-not-found, no-redef]
     from row_checks import check_rows, required_row_pointers  # type: ignore[import-not-found, no-redef]
     from flag_checks import check_flags, required_flag_pointers  # type: ignore[import-not-found, no-redef]
@@ -199,6 +199,65 @@ def check_body_names(d: dict) -> list[str]:
             if english is not None and english.strip() == body["name"].strip():
                 errors.append(f"{j['id']} {body['name']}: name_en repeats the name; omit it when the name is English")
     return errors
+
+
+# Timeline events that move a status (dataset.vocabularies.timeline_event), and the leaves a primary excerpt must bind.
+STATUS_EVENTS = (*IMPLIES, "withdrawn", "closed")
+PRIMARY_LEAVES = {event: ("date", "event") for event in STATUS_EVENTS} | {"launched": ("date",)}
+
+
+def primary_source_warnings(d: dict) -> list[str]:
+    """Status-changing timeline events, and launch dates, whose date or act no primary source's excerpt carries.
+
+    Lifted from the shelved Schema 2.0 draft ("second-hand copies never carry a status change"). Warnings for
+    the check report only, never failures, until the owner has seen what they flag. Each line names its kind
+    in brackets; lines follow jurisdiction order, then timeline order.
+    """
+    if any("status" not in j for j in d["jurisdictions"]):
+        try:
+            d = prepared_facts(d)
+        except (ValueError, KeyError, IndexError, TypeError, ArithmeticError):
+            return []  # check_method_rules reports the broken facts.
+    d = materialise_references(d)
+    as_of = d["dataset"]["as_of"]
+    institutes = {i["id"]: i for i in d["institutes"]}
+    types = {s["id"]: s.get("type") for s in d["sources"]}
+    primary_bound: dict[str, set[str]] = {}
+    for source in d["sources"]:
+        if source.get("type") == "primary":
+            for excerpt in source.get("excerpts", []):
+                for pointer in excerpt["supports"]:
+                    primary_bound.setdefault(pointer, set()).add(source["id"])
+    warnings = []
+    for n, record in enumerate(d["jurisdictions"]):
+        events = record.get("timeline", [])
+        institute = institutes.get(record.get("institute_id"))
+        _, _, basis = status_basis(events)
+        roles = {}
+        if basis is not None:
+            confidence = f", at {record['status_confidence']} confidence" if record.get("status_confidence") else ""
+            roles[basis] = [f"sets the current status, {record['status']}{confidence}"]
+        if institute is not None:
+            for k, label in ((first_designation(events), "established"), (announcement(events, as_of), "announced")):
+                if k is not None:
+                    roles.setdefault(k, []).append(f"sets {institute['id']}'s {label} date")
+        for k, event in enumerate(events):
+            leaves = PRIMARY_LEAVES.get(event["event"])
+            if leaves is None:
+                continue
+            role = "; ".join(roles.get(k, ["no status effect" if event["event"] == "launched" else "another status act; no generated date rests on it"]))
+            where = f"{record['id']} {event['id']} ({event['event']}, {event['date']}; {role})"
+            cited = event.get("source_ids", [])
+            if not any(types.get(sid) == "primary" for sid in cited):
+                listed = ", ".join(f"{sid} ({types.get(sid) or 'unknown'})" for sid in cited) or "nothing"
+                warnings.append(f"primary source [no primary source cited] {where}: cites {listed}")
+                continue
+            missing = [leaf for leaf in leaves if not primary_bound.get(f"/jurisdictions/{n}/timeline/{k}/{leaf}")]
+            if len(missing) == len(leaves):
+                warnings.append(f"primary source [primary source cited, no primary excerpt bound] {where}: no primary excerpt binds its {' or '.join(leaves)}")
+            elif missing:
+                warnings.append(f"primary source [primary excerpt misses a leaf] {where}: no primary excerpt binds its {' or '.join(missing)}")
+    return warnings
 
 
 def check_method_rules(d: dict, *, authored: dict | None = None) -> list[str]:
