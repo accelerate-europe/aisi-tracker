@@ -8,7 +8,8 @@ from pathlib import Path
 
 import pytest
 
-from scripts import build, method_checks
+from scripts import build, method_checks, rereads
+from scripts import published as published_facts
 from scripts.references import authored_schema
 from test_claims import SCHEMA, located_errors, schema_errors
 from test_claims_development import LEAD, ROLE, lead  # noqa: F401  (the A2 fixture: a closest body with a lead claim)
@@ -81,6 +82,27 @@ def test_migrated_record_is_generated(migrated):
     tables = build.tables(published)
     assert tables["jurisdictions"][0]["summary"] == state["summary"]
     assert tables["closest_bodies"][0]["note"] == state["closest_body"]["note"]
+
+
+def test_expired_claim_leaves_the_generated_texts(migrated):
+    """Step C marks claims expired after the texts are first worded; the published texts are worded without them."""
+    nothing = {"checked_to": None, "runs": [], "sources": {}}
+    before = published_facts.publish(migrated, rereads=nothing)
+    state = before["jurisdictions"][0]
+    lead_index = next(i for i, c in enumerate(state["claims"]) if c["id"] == LEAD)
+    claims = {c["id"]: c["text"] for c in state["claims"]}
+    gone = {s["id"]: {rereads.quote_id(e["text"]): {"state": "source_gone", "last_found": "2025-01-01", "since": "2025-01-02",
+                                                       "last_attempt": before["dataset"]["as_of"]}
+                      for e in s.get("excerpts", []) if f"/jurisdictions/0/claims/{lead_index}/text" in e["supports"]}
+            for s in before["sources"]}
+    after = published_facts.publish(migrated, rereads={"checked_to": before["dataset"]["as_of"], "runs": ["r1"],
+                                                        "sources": {k: v for k, v in gone.items() if v}})
+    state = after["jurisdictions"][0]
+    assert {c["id"]: c["expired"] for c in state["claims"]}[LEAD] is True
+    assert claims[LEAD] in before["jurisdictions"][0]["summary"]
+    assert claims[LEAD] not in state["summary"] and claims[LEAD] not in state["closest_body"]["note"]
+    assert state["closest_body"]["note"] == claims[ROLE]
+    assert located_errors(after, SCHEMA) == []
 
 
 @pytest.mark.parametrize("leaf", ["notes", "role", "note"])

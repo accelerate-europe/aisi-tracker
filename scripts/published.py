@@ -494,8 +494,15 @@ def publish(data: dict, *, strict: bool | None = None, rereads: dict | None = No
     else:
         from display import derive_display
         import rereads as reread_states  # type: ignore[no-redef]
-    facts = prepared_facts(data, strict=strict)
-    return derive_display(reread_states.join(facts, reread_states.load() if rereads is None else rereads))
+    facts = reread_states.join(prepared_facts(data, strict=strict), reread_states.load() if rereads is None else rereads)
+    # The join marks expired claims after prepared_facts has worded the migrated records, so they are worded again
+    # without them (docs/design/claims-1.1.md, section 4: an expired claim leaves the summary).
+    institutes = {i["id"]: i for i in facts.get("institutes", [])}
+    migrated = {j["id"] for j in data.get("jurisdictions", []) if "summary" not in j}
+    for jurisdiction in facts.get("jurisdictions", []):
+        if jurisdiction["id"] in migrated:
+            word_record(jurisdiction, institutes)
+    return derive_display(facts)
 
 
 def assign_credit_provenance(data: dict) -> None:
@@ -849,23 +856,27 @@ def generate_texts(result: dict) -> list[str]:
             and not (closest_id is not None and b.get("id") == closest_id)
             and not summaries.role_claims(jurisdiction, b.get("id"))
         ]
-        _, _, basis = status_basis(jurisdiction.get("timeline", []))
         try:
-            texts = summaries.generate(
-                jurisdiction,
-                institutes.get(jurisdiction.get("institute_id")),
-                jurisdiction["timeline"][basis] if basis is not None else None,
-            )
+            word_record(jurisdiction, institutes)
         except summaries.GeneratorError as exc:
             errors.append(f"{where}: {exc}")
-            continue
-        jurisdiction["summary"] = texts["summary"]
-        if texts["notes"]:
-            jurisdiction["notes"] = texts["notes"]
-        else:
-            jurisdiction.pop("notes", None)
-        for body in bodies:
-            body["role"] = texts["roles"].get(body.get("id"), "")  # a body without an id has no claim to word
-        if closest is not None:
-            closest["note"] = texts["note"]
     return errors
+
+
+def word_record(jurisdiction: dict, institutes: dict) -> None:
+    """Write a migrated record's generated summary, notes, roles and closest-body note; claims marked expired are left out."""
+    _, _, basis = status_basis(jurisdiction.get("timeline", []))
+    texts = summaries.generate(
+        jurisdiction,
+        institutes.get(jurisdiction.get("institute_id")),
+        jurisdiction["timeline"][basis] if basis is not None else None,
+    )
+    jurisdiction["summary"] = texts["summary"]
+    if texts["notes"]:
+        jurisdiction["notes"] = texts["notes"]
+    else:
+        jurisdiction.pop("notes", None)
+    for body in jurisdiction.get("related_bodies", []):
+        body["role"] = texts["roles"].get(body.get("id"), "")  # a body without an id has no claim to word
+    if jurisdiction.get("closest_body") is not None:
+        jurisdiction["closest_body"]["note"] = texts["note"]

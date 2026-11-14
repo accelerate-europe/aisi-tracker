@@ -3,8 +3,9 @@
 Design in docs/design/claims-1.1.md, section 3 (build step B). A migrated record is a jurisdiction whose authored
 input has no summary; only it is generated, and a record with an authored summary builds as it always has. Words in
 the patterns are fixed here; everything that varies comes from fields, claims and check. Negative findings come only
-from pattern 1, dated by check.last_checked. Expiry (section 4) is step C: a claim marked expired is skipped and
-nothing else here reads freshness.
+from pattern 1, dated by check.last_checked. Expiry (section 4) is step C: a claim marked expired (claims[].expired,
+set by rereads.join in published.publish, which then words the record again) is skipped and nothing else here reads
+freshness.
 
 A state without a status: pattern 1, then the first of patterns 2, 3 and 4 that applies. A state with a status:
 pattern 5, then pattern 6 when its institute has a mandate_short.
