@@ -273,7 +273,7 @@ A leaf's state is the best of its excerpts' states; a claim's is the worst of it
 ## 5. Checks
 
 **Structural (build errors):**
-- A claim's `text` has exactly one excerpt; a development's `act` and `date` have one each (added to `required_excerpt_pointers`, `scripts/method_checks.py:23-103`, reported at `scripts/method_checks.py:446-447`). A fact without a quote cannot be written.
+- A claim's `text` has exactly one excerpt; a development's `act` and `date` have one each (added to `required_excerpt_pointers`, `scripts/method_checks.py:23-103`, reported at `scripts/method_checks.py:453-454`). A fact without a quote cannot be written.
 - `text` is one sentence (a development's generated sentence is).
 - Codes exist and are not retired; `kind`, `code`, `basis` and `body_id` combine as section 1 says; `fact` and `development` sit only where section 3 allows; `check.functions` codes are current.
 - A development cites a primary source whose origin is the jurisdiction and is dated within three years before `check.last_checked`.
