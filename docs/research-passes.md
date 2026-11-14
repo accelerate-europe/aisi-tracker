@@ -2,7 +2,7 @@
 
 Research for the dataset runs as dedicated passes. A pass is one research session, or a session and its subagents, with its own folder in the private store and a pass file that states who ran it, with which harness and models, when, what kind of pass it is and its scope. During a pass the agent searches, reads and writes findings; it does not edit the repository. Data changes follow in a separate session whose commits name the pass.
 
-`scripts/research_pass.py` extracts a pass's log and validates pass folders. `scripts/research_log.py` is the transcript extractor it uses; its module docstring defines the log format.
+`scripts/research_pass.py` extracts a pass's log and validates pass folders. `scripts/research_log.py` is the transcript extractor it uses; its module docstring defines the log format. `scripts/sweep.py` prepares the two recurring kinds of pass, the per-state re-check and the monthly global topic sweep ([sweeps](sweep.md)).
 
 ## Where passes live
 
@@ -61,7 +61,7 @@ Personal data must never enter a pass folder. Passes run from their own harness 
 
 ## Findings
 
-`findings.jsonl` holds one JSON object per screened result: `url`, `scope` (the state, institute or field it bears on), `verdict` (`candidate` for a result to use in the data step, `rejected` for one screened out), `reason`, and optionally `title`, `excerpt` (an exact quotation) and `found_by` (the query or page that led to it). A pass that screened nothing has an empty file.
+`findings.jsonl` holds one JSON object per screened result: `url`, `scope` (the state, institute or field it bears on), `verdict` (`candidate` for a result to use in the data step, `rejected` for one screened out), `reason`, and optionally `title`, `excerpt` (an exact quotation) and `found_by` (the query or page that led to it). A pass that screened nothing has an empty file. A result that is a person's own profile page (a LinkedIn `/in/` or `/pub/` address) is left out altogether, not recorded as rejected; `validate` refuses one.
 
 ## Running a pass
 

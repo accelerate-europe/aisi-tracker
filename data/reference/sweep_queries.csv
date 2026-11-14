@@ -1,0 +1,339 @@
+id,query_id,lang,query,translation_verified
+AD,topic-en,en,"""Andorra"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+AD,topic-local,ca,"""Andorra"" (""seguretat de la IA"" OR ""ciberseguretat de la IA"" OR ""institut d'IA"" OR ""autoritat de la IA"" OR ""estratègia d'IA"")",no
+AE,topic-en,en,"""United Arab Emirates"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+AE,topic-local,ar,"""الإمارات العربية المتحدة"" (""سلامة الذكاء الاصطناعي"" OR ""أمن الذكاء الاصطناعي"" OR ""معهد الذكاء الاصطناعي"" OR ""هيئة تنظيم الذكاء الاصطناعي"" OR ""استراتيجية الذكاء الاصطناعي"")",no
+AF,topic-en,en,"""Afghanistan"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+AF,topic-local,prs,"""افغانستان"" (""ایمنی هوش مصنوعی"" OR ""امنیت هوش مصنوعی"" OR ""مؤسسه هوش مصنوعی"" OR ""نهاد ناظر بر هوش مصنوعی"" OR ""راهبرد هوش مصنوعی"")",no
+AG,topic-en,en,"""Antigua and Barbuda"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+AL,topic-en,en,"""Albania"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+AL,topic-local,sq,"""Shqipëria"" (""siguria e inteligjencës artificiale"" OR ""mbrojtja e inteligjencës artificiale"" OR ""instituti i inteligjencës artificiale"" OR ""autoriteti i inteligjencës artificiale"" OR ""strategjia e inteligjencës artificiale"")",no
+AM,topic-en,en,"""Armenia"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+AM,topic-local,hy,"""Հայաստան"" (""արհեստական բանականության անվտանգություն"" OR ""արհեստական բանականության պաշտպանություն"" OR ""արհեստական բանականության ինստիտուտ"" OR ""արհեստական բանականության կարգավորող մարմին"" OR ""արհեստական բանականության ռազմավարություն"")",no
+AO,topic-en,en,"""Angola"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+AO,topic-local,pt,"""Angola"" (""segurança da IA"" OR ""cibersegurança da IA"" OR ""instituto de IA"" OR ""autoridade reguladora de IA"" OR ""estratégia de IA"")",no
+AR,topic-en,en,"""Argentina"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+AR,topic-local,es,"""Argentina"" (""seguridad de la IA"" OR ""ciberseguridad de la IA"" OR ""instituto de IA"" OR ""autoridad de la ley de IA"" OR ""estrategia de IA"")",no
+AT,topic-en,en,"""Austria"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+AT,topic-local,de,"""Österreich"" (""KI-Sicherheit"" OR ""Sicherheit von KI-Systemen"" OR ""KI-Institut"" OR ""KI-Aufsichtsbehörde"" OR ""KI-Strategie"")",no
+AU,topic-en,en,"""Australia"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+AZ,topic-en,en,"""Azerbaijan"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+AZ,topic-local,az,"""Azərbaycan"" (""süni intellekt təhlükəsizliyi"" OR ""süni intellekt kibertəhlükəsizliyi"" OR ""süni intellekt institutu"" OR ""süni intellekt tənzimləyici orqanı"" OR ""süni intellekt strategiyası"")",no
+BA,topic-en,en,"""Bosnia and Herzegovina"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+BA,topic-local,bs,"""Bosna i Hercegovina"" (""sigurnost umjetne inteligencije"" OR ""zaštita umjetne inteligencije"" OR ""institut za umjetnu inteligenciju"" OR ""regulator za umjetnu inteligenciju"" OR ""strategija umjetne inteligencije"")",no
+BB,topic-en,en,"""Barbados"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+BD,topic-en,en,"""Bangladesh"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+BD,topic-local,bn,"""বাংলাদেশ"" (""এআই নিরাপত্তা"" OR ""এআই সাইবার নিরাপত্তা"" OR ""এআই ইনস্টিটিউট"" OR ""এআই নিয়ন্ত্রক কর্তৃপক্ষ"" OR ""এআই কৌশল"")",no
+BE,topic-en,en,"""Belgium"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+BE,topic-local,nl,"""België"" (""AI-veiligheid"" OR ""AI-beveiliging"" OR ""AI-instituut"" OR ""AI-toezichthouder"" OR ""AI-strategie"")",no
+BE,topic-local-2,fr,"""Belgique"" (""sécurité de l'IA"" OR ""sûreté de l'IA"" OR ""institut de l'IA"" OR ""autorité de régulation de l'IA"" OR ""stratégie de l'IA"")",no
+BF,topic-en,en,"""Burkina Faso"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+BF,topic-local,fr,"""Burkina Faso"" (""sécurité de l'IA"" OR ""sûreté de l'IA"" OR ""institut de l'IA"" OR ""autorité de régulation de l'IA"" OR ""stratégie de l'IA"")",no
+BG,topic-en,en,"""Bulgaria"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+BG,topic-local,bg,"""България"" (""безопасност на ИИ"" OR ""сигурност на ИИ"" OR ""институт за ИИ"" OR ""орган по Закона за ИИ"" OR ""стратегия за ИИ"")",no
+BH,topic-en,en,"""Bahrain"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+BH,topic-local,ar,"""البحرين"" (""سلامة الذكاء الاصطناعي"" OR ""أمن الذكاء الاصطناعي"" OR ""معهد الذكاء الاصطناعي"" OR ""هيئة تنظيم الذكاء الاصطناعي"" OR ""استراتيجية الذكاء الاصطناعي"")",no
+BI,topic-en,en,"""Burundi"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+BI,topic-local,fr,"""Burundi"" (""sécurité de l'IA"" OR ""sûreté de l'IA"" OR ""institut de l'IA"" OR ""autorité de régulation de l'IA"" OR ""stratégie de l'IA"")",no
+BJ,topic-en,en,"""Benin"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+BJ,topic-local,fr,"""Bénin"" (""sécurité de l'IA"" OR ""sûreté de l'IA"" OR ""institut de l'IA"" OR ""autorité de régulation de l'IA"" OR ""stratégie de l'IA"")",no
+BN,topic-en,en,"""Brunei"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+BN,topic-local,ms,"""Brunei Darussalam"" (""keselamatan AI"" OR ""keselamatan siber AI"" OR ""institut AI"" OR ""pihak berkuasa AI"" OR ""strategi AI"")",no
+BO,topic-en,en,"""Bolivia"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+BO,topic-local,es,"""Bolivia"" (""seguridad de la IA"" OR ""ciberseguridad de la IA"" OR ""instituto de IA"" OR ""autoridad de la ley de IA"" OR ""estrategia de IA"")",no
+BR,topic-en,en,"""Brazil"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+BR,topic-local,pt,"""Brasil"" (""segurança da IA"" OR ""cibersegurança da IA"" OR ""instituto de IA"" OR ""autoridade reguladora de IA"" OR ""estratégia de IA"")",no
+BS,topic-en,en,"""The Bahamas"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+BT,topic-en,en,"""Bhutan"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+BT,topic-local,dz,འབྲུག་ རིག་རྩལ་རང་བཞིན་ཅན་ (AI) ཉེན་སྲུང་ ལས་འཛིན་ གཞུང་,no
+BW,topic-en,en,"""Botswana"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+BY,topic-en,en,"""Belarus"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+BY,topic-local,ru,"""Беларусь"" (""безопасность ИИ"" OR ""безопасность искусственного интеллекта"" OR ""институт искусственного интеллекта"" OR ""орган регулирования ИИ"" OR ""стратегия развития ИИ"")",no
+BZ,topic-en,en,"""Belize"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+CA,topic-en,en,"""Canada"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+CA,topic-local,fr,"""Canada"" (""sécurité de l'IA"" OR ""sûreté de l'IA"" OR ""institut de l'IA"" OR ""autorité de régulation de l'IA"" OR ""stratégie de l'IA"")",no
+CD,topic-en,en,"""Democratic Republic of the Congo"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+CD,topic-local,fr,"""République démocratique du Congo"" (""sécurité de l'IA"" OR ""sûreté de l'IA"" OR ""institut de l'IA"" OR ""autorité de régulation de l'IA"" OR ""stratégie de l'IA"")",no
+CF,topic-en,en,"""Central African Republic"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+CF,topic-local,fr,"""République centrafricaine"" (""sécurité de l'IA"" OR ""sûreté de l'IA"" OR ""institut de l'IA"" OR ""autorité de régulation de l'IA"" OR ""stratégie de l'IA"")",no
+CG,topic-en,en,"""Republic of the Congo"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+CG,topic-local,fr,"""République du Congo"" (""sécurité de l'IA"" OR ""sûreté de l'IA"" OR ""institut de l'IA"" OR ""autorité de régulation de l'IA"" OR ""stratégie de l'IA"")",no
+CH,topic-en,en,"""Switzerland"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+CH,topic-local,de,"""Schweiz"" (""KI-Sicherheit"" OR ""Sicherheit von KI-Systemen"" OR ""KI-Institut"" OR ""KI-Aufsichtsbehörde"" OR ""KI-Strategie"")",no
+CI,topic-en,en,"""Ivory Coast"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+CI,topic-local,fr,"""Côte d'Ivoire"" (""sécurité de l'IA"" OR ""sûreté de l'IA"" OR ""institut de l'IA"" OR ""autorité de régulation de l'IA"" OR ""stratégie de l'IA"")",no
+CL,topic-en,en,"""Chile"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+CL,topic-local,es,"""Chile"" (""seguridad de la IA"" OR ""ciberseguridad de la IA"" OR ""instituto de IA"" OR ""autoridad de la ley de IA"" OR ""estrategia de IA"")",no
+CM,topic-en,en,"""Cameroon"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+CM,topic-local,fr,"""Cameroun"" (""sécurité de l'IA"" OR ""sûreté de l'IA"" OR ""institut de l'IA"" OR ""autorité de régulation de l'IA"" OR ""stratégie de l'IA"")",no
+CN,topic-en,en,"""People's Republic of China"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+CN,topic-local,zh-Hans,"""中国"" (""人工智能安全"" OR ""人工智能网络安全"" OR ""人工智能研究院"" OR ""人工智能监管机构"" OR ""人工智能战略"")",no
+CO,topic-en,en,"""Colombia"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+CO,topic-local,es,"""Colombia"" (""seguridad de la IA"" OR ""ciberseguridad de la IA"" OR ""instituto de IA"" OR ""autoridad de la ley de IA"" OR ""estrategia de IA"")",no
+CR,topic-en,en,"""Costa Rica"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+CR,topic-local,es,"""Costa Rica"" (""seguridad de la IA"" OR ""ciberseguridad de la IA"" OR ""instituto de IA"" OR ""autoridad de la ley de IA"" OR ""estrategia de IA"")",no
+CU,topic-en,en,"""Cuba"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+CU,topic-local,es,"""Cuba"" (""seguridad de la IA"" OR ""ciberseguridad de la IA"" OR ""instituto de IA"" OR ""autoridad de la ley de IA"" OR ""estrategia de IA"")",no
+CV,topic-en,en,"""Cape Verde"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+CV,topic-local,pt,"""Cabo Verde"" (""segurança da IA"" OR ""cibersegurança da IA"" OR ""instituto de IA"" OR ""autoridade reguladora de IA"" OR ""estratégia de IA"")",no
+CY,topic-en,en,"""Cyprus"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+CY,topic-local,el,"""Κύπρος"" (""ασφάλεια της τεχνητής νοημοσύνης"" OR ""κυβερνοασφάλεια της τεχνητής νοημοσύνης"" OR ""ινστιτούτο τεχνητής νοημοσύνης"" OR ""εποπτική αρχή τεχνητής νοημοσύνης"" OR ""στρατηγική τεχνητής νοημοσύνης"")",no
+CZ,topic-en,en,"""Czechia"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+CZ,topic-local,cs,"""Česko"" (""bezpečnost AI"" OR ""zabezpečení AI"" OR ""institut pro AI"" OR ""orgán dohledu nad AI"" OR ""strategie AI"")",no
+DE,topic-en,en,"""Germany"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+DE,topic-local,de,"""Deutschland"" (""KI-Sicherheit"" OR ""Sicherheit von KI-Systemen"" OR ""KI-Institut"" OR ""KI-Aufsichtsbehörde"" OR ""KI-Strategie"")",no
+DJ,topic-en,en,"""Djibouti"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+DJ,topic-local,fr,"""Djibouti"" (""sécurité de l'IA"" OR ""sûreté de l'IA"" OR ""institut de l'IA"" OR ""autorité de régulation de l'IA"" OR ""stratégie de l'IA"")",no
+DK,topic-en,en,"""Denmark"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+DK,topic-local,da,"""Danmark"" (""AI-sikkerhed"" OR ""sikkerhed i AI-systemer"" OR ""AI-institut"" OR ""AI-tilsynsmyndighed"" OR ""AI-strategi"")",no
+DM,topic-en,en,"""Dominica"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+DO,topic-en,en,"""Dominican Republic"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+DO,topic-local,es,"""República Dominicana"" (""seguridad de la IA"" OR ""ciberseguridad de la IA"" OR ""instituto de IA"" OR ""autoridad de la ley de IA"" OR ""estrategia de IA"")",no
+DZ,topic-en,en,"""Algeria"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+DZ,topic-local,ar,"""الجزائر"" (""سلامة الذكاء الاصطناعي"" OR ""أمن الذكاء الاصطناعي"" OR ""معهد الذكاء الاصطناعي"" OR ""هيئة تنظيم الذكاء الاصطناعي"" OR ""استراتيجية الذكاء الاصطناعي"")",no
+EC,topic-en,en,"""Ecuador"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+EC,topic-local,es,"""Ecuador"" (""seguridad de la IA"" OR ""ciberseguridad de la IA"" OR ""instituto de IA"" OR ""autoridad de la ley de IA"" OR ""estrategia de IA"")",no
+EE,topic-en,en,"""Estonia"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+EE,topic-local,et,"""Eesti"" (""tehisintellekti ohutus"" OR ""tehisintellekti turvalisus"" OR ""tehisintellekti instituut"" OR ""tehisintellekti järelevalveasutus"" OR ""tehisintellekti strateegia"")",no
+EG,topic-en,en,"""Egypt"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+EG,topic-local,ar,"""مصر"" (""سلامة الذكاء الاصطناعي"" OR ""أمن الذكاء الاصطناعي"" OR ""معهد الذكاء الاصطناعي"" OR ""هيئة تنظيم الذكاء الاصطناعي"" OR ""استراتيجية الذكاء الاصطناعي"")",no
+ER,topic-en,en,"""Eritrea"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+ES,topic-en,en,"""Spain"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+ES,topic-local,es,"""España"" (""seguridad de la IA"" OR ""ciberseguridad de la IA"" OR ""instituto de IA"" OR ""autoridad de la ley de IA"" OR ""estrategia de IA"")",no
+ET,topic-en,en,"""Ethiopia"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+ET,topic-local,am,"""ኢትዮጵያ"" (""የሰው ሠራሽ አስተውሎት ደህንነት"" OR ""የሰው ሠራሽ አስተውሎት ሳይበር ደህንነት"" OR ""የሰው ሠራሽ አስተውሎት ኢንስቲትዩት"" OR ""የሰው ሠራሽ አስተውሎት ተቆጣጣሪ ባለስልጣን"" OR ""የሰው ሠራሽ አስተውሎት ስትራቴጂ"")",no
+EU,topic-en,en,"""European Union"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+EU,topic-local,fr,"""Union européenne"" (""sécurité de l'IA"" OR ""sûreté de l'IA"" OR ""institut de l'IA"" OR ""autorité de régulation de l'IA"" OR ""stratégie de l'IA"")",no
+FI,topic-en,en,"""Finland"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+FI,topic-local,fi,"""Suomi"" (""tekoälyn turvallisuus"" OR ""tekoälyn tietoturva"" OR ""tekoälyinstituutti"" OR ""tekoälyasetuksen valvontaviranomainen"" OR ""tekoälystrategia"")",no
+FJ,topic-en,en,"""Fiji"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+FM,topic-en,en,"""Federated States of Micronesia"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+FR,topic-en,en,"""France"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+FR,topic-local,fr,"""France"" (""sécurité de l'IA"" OR ""sûreté de l'IA"" OR ""institut de l'IA"" OR ""autorité de régulation de l'IA"" OR ""stratégie de l'IA"")",no
+GA,topic-en,en,"""Gabon"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+GA,topic-local,fr,"""Gabon"" (""sécurité de l'IA"" OR ""sûreté de l'IA"" OR ""institut de l'IA"" OR ""autorité de régulation de l'IA"" OR ""stratégie de l'IA"")",no
+GB,topic-en,en,"""United Kingdom"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+GD,topic-en,en,"""Grenada"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+GE,topic-en,en,"""Georgia"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+GE,topic-local,ka,"""საქართველო"" (""ხელოვნური ინტელექტის უსაფრთხოება"" OR ""ხელოვნური ინტელექტის კიბერუსაფრთხოება"" OR ""ხელოვნური ინტელექტის ინსტიტუტი"" OR ""ხელოვნური ინტელექტის მარეგულირებელი"" OR ""ხელოვნური ინტელექტის სტრატეგია"")",no
+GH,topic-en,en,"""Ghana"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+GM,topic-en,en,"""The Gambia"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+GN,topic-en,en,"""Guinea"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+GN,topic-local,fr,"""Guinée"" (""sécurité de l'IA"" OR ""sûreté de l'IA"" OR ""institut de l'IA"" OR ""autorité de régulation de l'IA"" OR ""stratégie de l'IA"")",no
+GQ,topic-en,en,"""Equatorial Guinea"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+GQ,topic-local,es,"""Guinea Ecuatorial"" (""seguridad de la IA"" OR ""ciberseguridad de la IA"" OR ""instituto de IA"" OR ""autoridad de la ley de IA"" OR ""estrategia de IA"")",no
+GR,topic-en,en,"""Greece"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+GR,topic-local,el,"""Ελλάδα"" (""ασφάλεια της τεχνητής νοημοσύνης"" OR ""κυβερνοασφάλεια της τεχνητής νοημοσύνης"" OR ""ινστιτούτο τεχνητής νοημοσύνης"" OR ""εποπτική αρχή τεχνητής νοημοσύνης"" OR ""στρατηγική τεχνητής νοημοσύνης"")",no
+GT,topic-en,en,"""Guatemala"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+GT,topic-local,es,"""Guatemala"" (""seguridad de la IA"" OR ""ciberseguridad de la IA"" OR ""instituto de IA"" OR ""autoridad de la ley de IA"" OR ""estrategia de IA"")",no
+GW,topic-en,en,"""Guinea-Bissau"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+GW,topic-local,pt,"""Guiné-Bissau"" (""segurança da IA"" OR ""cibersegurança da IA"" OR ""instituto de IA"" OR ""autoridade reguladora de IA"" OR ""estratégia de IA"")",no
+GY,topic-en,en,"""Guyana"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+HN,topic-en,en,"""Honduras"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+HN,topic-local,es,"""Honduras"" (""seguridad de la IA"" OR ""ciberseguridad de la IA"" OR ""instituto de IA"" OR ""autoridad de la ley de IA"" OR ""estrategia de IA"")",no
+HR,topic-en,en,"""Croatia"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+HR,topic-local,hr,"""Hrvatska"" (""sigurnost umjetne inteligencije"" OR ""zaštita umjetne inteligencije"" OR ""institut za umjetnu inteligenciju"" OR ""tijelo za nadzor umjetne inteligencije"" OR ""strategija umjetne inteligencije"")",no
+HT,topic-en,en,"""Haiti"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+HT,topic-local,fr,"""Haïti"" (""sécurité de l'IA"" OR ""sûreté de l'IA"" OR ""institut de l'IA"" OR ""autorité de régulation de l'IA"" OR ""stratégie de l'IA"")",no
+HU,topic-en,en,"""Hungary"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+HU,topic-local,hu,"""Magyarország"" (""MI-biztonság"" OR ""MI védelme"" OR ""MI-intézet"" OR ""MI-felügyeleti hatóság"" OR ""MI-stratégia"")",no
+ID,topic-en,en,"""Indonesia"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+ID,topic-local,id,"""Indonesia"" (""keselamatan AI"" OR ""keamanan AI"" OR ""institut AI"" OR ""otoritas regulasi AI"" OR ""strategi AI"")",no
+IE,topic-en,en,"""Ireland"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+IL,topic-en,en,"""Israel"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+IL,topic-local,he,"""ישראל"" (""בטיחות בינה מלאכותית"" OR ""אבטחת בינה מלאכותית"" OR ""מכון לבינה מלאכותית"" OR ""רשות לבינה מלאכותית"" OR ""אסטרטגיית בינה מלאכותית"")",no
+IN,topic-en,en,"""India"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+IN,topic-local,hi,"""भारत"" (""एआई सुरक्षा"" OR ""एआई साइबर सुरक्षा"" OR ""एआई संस्थान"" OR ""एआई प्राधिकरण"" OR ""एआई रणनीति"")",no
+IQ,topic-en,en,"""Iraq"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+IQ,topic-local,ar,"""العراق"" (""سلامة الذكاء الاصطناعي"" OR ""أمن الذكاء الاصطناعي"" OR ""معهد الذكاء الاصطناعي"" OR ""هيئة تنظيم الذكاء الاصطناعي"" OR ""استراتيجية الذكاء الاصطناعي"")",no
+IR,topic-en,en,"""Iran"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+IR,topic-local,fa,"""ایران"" (""ایمنی هوش مصنوعی"" OR ""امنیت هوش مصنوعی"" OR ""مؤسسه هوش مصنوعی"" OR ""نهاد ناظر بر هوش مصنوعی"" OR ""راهبرد هوش مصنوعی"")",no
+IS,topic-en,en,"""Iceland"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+IS,topic-local,is,"""Ísland"" (""öryggi gervigreindar"" OR ""gervigreindaröryggi"" OR ""gervigreindarstofnun"" OR ""eftirlitsstofnun með gervigreind"" OR ""gervigreindarstefna"")",no
+IT,topic-en,en,"""Italy"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+IT,topic-local,it,"""Italia"" (""sicurezza dell'IA"" OR ""cybersicurezza dell'IA"" OR ""istituto per l'IA"" OR ""autorità per l'IA"" OR ""strategia per l'IA"")",no
+JM,topic-en,en,"""Jamaica"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+JO,topic-en,en,"""Jordan"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+JO,topic-local,ar,"""الأردن"" (""سلامة الذكاء الاصطناعي"" OR ""أمن الذكاء الاصطناعي"" OR ""معهد الذكاء الاصطناعي"" OR ""هيئة تنظيم الذكاء الاصطناعي"" OR ""استراتيجية الذكاء الاصطناعي"")",no
+JP,topic-en,en,"""Japan"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+JP,topic-local,ja,"""日本"" (""AI安全"" OR ""AIセキュリティ"" OR ""AI研究所"" OR ""AI規制当局"" OR ""AI戦略"")",no
+KE,topic-en,en,"""Kenya"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+KG,topic-en,en,"""Kyrgyzstan"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+KG,topic-local,ru,"""Кыргызстан"" (""безопасность ИИ"" OR ""безопасность искусственного интеллекта"" OR ""институт искусственного интеллекта"" OR ""орган регулирования ИИ"" OR ""стратегия развития ИИ"")",no
+KH,topic-en,en,"""Cambodia"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+KH,topic-local,km,"""កម្ពុជា"" (""សុវត្ថិភាព AI"" OR ""សន្តិសុខ AI"" OR ""វិទ្យាស្ថាន AI"" OR ""អាជ្ញាធរ AI"" OR ""យុទ្ធសាស្ត្រ AI"")",no
+KI,topic-en,en,"""Kiribati"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+KM,topic-en,en,"""Comoros"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+KM,topic-local,fr,"""Comores"" (""sécurité de l'IA"" OR ""sûreté de l'IA"" OR ""institut de l'IA"" OR ""autorité de régulation de l'IA"" OR ""stratégie de l'IA"")",no
+KN,topic-en,en,"""Saint Kitts and Nevis"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+KP,topic-en,en,"""North Korea"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+KP,topic-local,ko,"""조선민주주의인민공화국"" (""인공지능 안전"" OR ""인공지능 보안"" OR ""인공지능 연구소"" OR ""인공지능 감독기관"" OR ""인공지능 전략"")",no
+KR,topic-en,en,"""South Korea"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+KR,topic-local,ko,"""한국"" (""AI 안전"" OR ""AI 보안"" OR ""AI 연구소"" OR ""AI 감독기관"" OR ""AI 전략"")",no
+KW,topic-en,en,"""Kuwait"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+KW,topic-local,ar,"""الكويت"" (""سلامة الذكاء الاصطناعي"" OR ""أمن الذكاء الاصطناعي"" OR ""معهد الذكاء الاصطناعي"" OR ""هيئة تنظيم الذكاء الاصطناعي"" OR ""استراتيجية الذكاء الاصطناعي"")",no
+KZ,topic-en,en,"""Kazakhstan"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+KZ,topic-local,ru,"""Казахстан"" (""безопасность ИИ"" OR ""безопасность искусственного интеллекта"" OR ""институт искусственного интеллекта"" OR ""орган регулирования ИИ"" OR ""стратегия развития ИИ"")",no
+LA,topic-en,en,"""Laos"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+LA,topic-local,lo,"""ລາວ"" (""ຄວາມປອດໄພ AI"" OR ""ຄວາມໝັ້ນຄົງ AI"" OR ""ສະຖາບັນ AI"" OR ""ອົງການຄຸ້ມຄອງ AI"" OR ""ຍຸດທະສາດ AI"")",no
+LB,topic-en,en,"""Lebanon"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+LB,topic-local,ar,"""لبنان"" (""سلامة الذكاء الاصطناعي"" OR ""أمن الذكاء الاصطناعي"" OR ""معهد الذكاء الاصطناعي"" OR ""هيئة تنظيم الذكاء الاصطناعي"" OR ""استراتيجية الذكاء الاصطناعي"")",no
+LC,topic-en,en,"""Saint Lucia"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+LI,topic-en,en,"""Liechtenstein"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+LI,topic-local,de,"""Liechtenstein"" (""KI-Sicherheit"" OR ""Sicherheit von KI-Systemen"" OR ""KI-Institut"" OR ""KI-Aufsichtsbehörde"" OR ""KI-Strategie"")",no
+LK,topic-en,en,"""Sri Lanka"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+LK,topic-local,si,"""ශ්‍රී ලංකාව"" (""කෘත්‍රිම බුද්ධි ආරක්ෂාව"" OR ""කෘත්‍රිම බුද්ධි සයිබර් ආරක්ෂාව"" OR ""කෘත්‍රිම බුද්ධි ආයතනය"" OR ""කෘත්‍රිම බුද්ධි නියාමන අධිකාරිය"" OR ""කෘත්‍රිම බුද්ධි උපාය මාර්ගය"")",no
+LR,topic-en,en,"""Liberia"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+LS,topic-en,en,"""Lesotho"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+LT,topic-en,en,"""Lithuania"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+LT,topic-local,lt,"""Lietuva"" (""dirbtinio intelekto sauga"" OR ""dirbtinio intelekto saugumas"" OR ""dirbtinio intelekto institutas"" OR ""dirbtinio intelekto priežiūros institucija"" OR ""dirbtinio intelekto strategija"")",no
+LU,topic-en,en,"""Luxembourg"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+LU,topic-local,fr,"""Luxembourg"" (""sécurité de l'IA"" OR ""sûreté de l'IA"" OR ""institut de l'IA"" OR ""autorité de régulation de l'IA"" OR ""stratégie de l'IA"")",no
+LV,topic-en,en,"""Latvia"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+LV,topic-local,lv,"""Latvija"" (""mākslīgā intelekta drošība"" OR ""mākslīgā intelekta kiberdrošība"" OR ""mākslīgā intelekta institūts"" OR ""mākslīgā intelekta uzraudzības iestāde"" OR ""mākslīgā intelekta stratēģija"")",no
+LY,topic-en,en,"""Libya"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+LY,topic-local,ar,"""ليبيا"" (""سلامة الذكاء الاصطناعي"" OR ""أمن الذكاء الاصطناعي"" OR ""معهد الذكاء الاصطناعي"" OR ""هيئة تنظيم الذكاء الاصطناعي"" OR ""استراتيجية الذكاء الاصطناعي"")",no
+MA,topic-en,en,"""Morocco"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+MA,topic-local,ar,"""المغرب"" (""سلامة الذكاء الاصطناعي"" OR ""أمن الذكاء الاصطناعي"" OR ""معهد الذكاء الاصطناعي"" OR ""هيئة تنظيم الذكاء الاصطناعي"" OR ""استراتيجية الذكاء الاصطناعي"")",no
+MC,topic-en,en,"""Monaco"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+MC,topic-local,fr,"""Monaco"" (""sécurité de l'IA"" OR ""sûreté de l'IA"" OR ""institut de l'IA"" OR ""autorité de régulation de l'IA"" OR ""stratégie de l'IA"")",no
+MD,topic-en,en,"""Moldova"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+MD,topic-local,ro,"""Republica Moldova"" (""siguranța IA"" OR ""securitatea IA"" OR ""institutul de IA"" OR ""autoritatea pentru legea IA"" OR ""strategia IA"")",no
+ME,topic-en,en,"""Montenegro"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+ME,topic-local,cnr,"""Crna Gora"" (""bezbjednost vještačke inteligencije"" OR ""zaštita vještačke inteligencije"" OR ""institut za vještačku inteligenciju"" OR ""regulator za vještačku inteligenciju"" OR ""strategija vještačke inteligencije"")",no
+MG,topic-en,en,"""Madagascar"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+MG,topic-local,fr,"""Madagascar"" (""sécurité de l'IA"" OR ""sûreté de l'IA"" OR ""institut de l'IA"" OR ""autorité de régulation de l'IA"" OR ""stratégie de l'IA"")",no
+MH,topic-en,en,"""Marshall Islands"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+MK,topic-en,en,"""North Macedonia"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+MK,topic-local,mk,"""Северна Македонија"" (""безбедност на вештачката интелигенција"" OR ""заштита на вештачката интелигенција"" OR ""институт за вештачка интелигенција"" OR ""регулатор за вештачка интелигенција"" OR ""стратегија за вештачка интелигенција"")",no
+ML,topic-en,en,"""Mali"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+ML,topic-local,fr,"""Mali"" (""sécurité de l'IA"" OR ""sûreté de l'IA"" OR ""institut de l'IA"" OR ""autorité de régulation de l'IA"" OR ""stratégie de l'IA"")",no
+MM,topic-en,en,"""Myanmar"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+MM,topic-local,my,"""မြန်မာ"" (""AI ဘေးကင်းလုံခြုံရေး"" OR ""AI လုံခြုံရေး"" OR ""AI အင်စတီကျူး"" OR ""AI ထိန်းညှိရေးအာဏာပိုင်"" OR ""AI မဟာဗျူဟာ"")",no
+MN,topic-en,en,"""Mongolia"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+MN,topic-local,mn,"""Монгол Улс"" (""хиймэл оюун ухааны аюулгүй байдал"" OR ""хиймэл оюун ухааны кибер аюулгүй байдал"" OR ""хиймэл оюун ухааны хүрээлэн"" OR ""хиймэл оюун ухааны зохицуулах байгууллага"" OR ""хиймэл оюун ухааны стратеги"")",no
+MR,topic-en,en,"""Mauritania"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+MR,topic-local,ar,"""موريتانيا"" (""سلامة الذكاء الاصطناعي"" OR ""أمن الذكاء الاصطناعي"" OR ""معهد الذكاء الاصطناعي"" OR ""هيئة تنظيم الذكاء الاصطناعي"" OR ""استراتيجية الذكاء الاصطناعي"")",no
+MT,topic-en,en,"""Malta"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+MU,topic-en,en,"""Mauritius"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+MV,topic-en,en,"""Maldives"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+MV,topic-local,dv,ދިވެހިރާއްޖެ އަރޓިފިޝަލް އިންޓެލިޖެންސް އަމާންކަން އިންސްޓިޓިއުޓް,no
+MW,topic-en,en,"""Malawi"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+MX,topic-en,en,"""Mexico"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+MX,topic-local,es,"""México"" (""seguridad de la IA"" OR ""ciberseguridad de la IA"" OR ""instituto de IA"" OR ""autoridad de la ley de IA"" OR ""estrategia de IA"")",no
+MY,topic-en,en,"""Malaysia"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+MY,topic-local,ms,"""Malaysia"" (""keselamatan AI"" OR ""keselamatan siber AI"" OR ""institut AI"" OR ""pihak berkuasa AI"" OR ""strategi AI"")",no
+MZ,topic-en,en,"""Mozambique"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+MZ,topic-local,pt,"""Moçambique"" (""segurança da IA"" OR ""cibersegurança da IA"" OR ""instituto de IA"" OR ""autoridade reguladora de IA"" OR ""estratégia de IA"")",no
+NA,topic-en,en,"""Namibia"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+NE,topic-en,en,"""Niger"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+NE,topic-local,fr,"""Niger"" (""sécurité de l'IA"" OR ""sûreté de l'IA"" OR ""institut de l'IA"" OR ""autorité de régulation de l'IA"" OR ""stratégie de l'IA"")",no
+NG,topic-en,en,"""Nigeria"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+NI,topic-en,en,"""Nicaragua"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+NI,topic-local,es,"""Nicaragua"" (""seguridad de la IA"" OR ""ciberseguridad de la IA"" OR ""instituto de IA"" OR ""autoridad de la ley de IA"" OR ""estrategia de IA"")",no
+NL,topic-en,en,"""Netherlands"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+NL,topic-local,nl,"""Nederland"" (""AI-veiligheid"" OR ""AI-beveiliging"" OR ""AI-instituut"" OR ""AI-toezichthouder"" OR ""AI-strategie"")",no
+NO,topic-en,en,"""Norway"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+NO,topic-local,nb,"""Norge"" (""KI-sikkerhet"" OR ""sikkerhet i KI-systemer"" OR ""KI-institutt"" OR ""KI-tilsynsmyndighet"" OR ""KI-strategi"")",no
+NP,topic-en,en,"""Nepal"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+NP,topic-local,ne,"""नेपाल"" (""एआई सुरक्षा"" OR ""एआई साइबर सुरक्षा"" OR ""एआई संस्थान"" OR ""एआई नियामक निकाय"" OR ""एआई रणनीति"")",no
+NR,topic-en,en,"""Nauru"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+NZ,topic-en,en,"""New Zealand"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+OM,topic-en,en,"""Oman"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+OM,topic-local,ar,"""سلطنة عمان"" (""سلامة الذكاء الاصطناعي"" OR ""أمن الذكاء الاصطناعي"" OR ""معهد الذكاء الاصطناعي"" OR ""هيئة تنظيم الذكاء الاصطناعي"" OR ""استراتيجية الذكاء الاصطناعي"")",no
+PA,topic-en,en,"""Panama"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+PA,topic-local,es,"""Panamá"" (""seguridad de la IA"" OR ""ciberseguridad de la IA"" OR ""instituto de IA"" OR ""autoridad de la ley de IA"" OR ""estrategia de IA"")",no
+PE,topic-en,en,"""Peru"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+PE,topic-local,es,"""Perú"" (""seguridad de la IA"" OR ""ciberseguridad de la IA"" OR ""instituto de IA"" OR ""autoridad de la ley de IA"" OR ""estrategia de IA"")",no
+PG,topic-en,en,"""Papua New Guinea"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+PH,topic-en,en,"""Philippines"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+PK,topic-en,en,"""Pakistan"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+PL,topic-en,en,"""Poland"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+PL,topic-local,pl,"""Polska"" (""bezpieczeństwo AI"" OR ""bezpieczeństwo sztucznej inteligencji"" OR ""instytut AI"" OR ""organ nadzoru nad AI"" OR ""strategia AI"")",no
+PT,topic-en,en,"""Portugal"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+PT,topic-local,pt,"""Portugal"" (""segurança da IA"" OR ""cibersegurança da IA"" OR ""instituto de IA"" OR ""autoridade reguladora de IA"" OR ""estratégia de IA"")",no
+PW,topic-en,en,"""Palau"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+PY,topic-en,en,"""Paraguay"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+PY,topic-local,es,"""Paraguay"" (""seguridad de la IA"" OR ""ciberseguridad de la IA"" OR ""instituto de IA"" OR ""autoridad de la ley de IA"" OR ""estrategia de IA"")",no
+QA,topic-en,en,"""Qatar"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+QA,topic-local,ar,"""قطر"" (""سلامة الذكاء الاصطناعي"" OR ""أمن الذكاء الاصطناعي"" OR ""معهد الذكاء الاصطناعي"" OR ""هيئة تنظيم الذكاء الاصطناعي"" OR ""استراتيجية الذكاء الاصطناعي"")",no
+RO,topic-en,en,"""Romania"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+RO,topic-local,ro,"""România"" (""siguranța IA"" OR ""securitatea IA"" OR ""institutul de IA"" OR ""autoritatea pentru legea IA"" OR ""strategia IA"")",no
+RS,topic-en,en,"""Serbia"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+RS,topic-local,sr,"""Србија"" (""безбедност вештачке интелигенције"" OR ""заштита вештачке интелигенције"" OR ""институт за вештачку интелигенцију"" OR ""регулатор за вештачку интелигенцију"" OR ""стратегија вештачке интелигенције"")",no
+RU,topic-en,en,"""Russia"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+RU,topic-local,ru,"""Россия"" (""безопасность ИИ"" OR ""безопасность искусственного интеллекта"" OR ""институт искусственного интеллекта"" OR ""орган регулирования ИИ"" OR ""стратегия развития ИИ"")",no
+RW,topic-en,en,"""Rwanda"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+SA,topic-en,en,"""Saudi Arabia"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+SA,topic-local,ar,"""المملكة العربية السعودية"" (""سلامة الذكاء الاصطناعي"" OR ""أمن الذكاء الاصطناعي"" OR ""معهد الذكاء الاصطناعي"" OR ""هيئة تنظيم الذكاء الاصطناعي"" OR ""استراتيجية الذكاء الاصطناعي"")",no
+SB,topic-en,en,"""Solomon Islands"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+SC,topic-en,en,"""Seychelles"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+SD,topic-en,en,"""Sudan"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+SD,topic-local,ar,"""السودان"" (""سلامة الذكاء الاصطناعي"" OR ""أمن الذكاء الاصطناعي"" OR ""معهد الذكاء الاصطناعي"" OR ""هيئة تنظيم الذكاء الاصطناعي"" OR ""استراتيجية الذكاء الاصطناعي"")",no
+SE,topic-en,en,"""Sweden"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+SE,topic-local,sv,"""Sverige"" (""AI-säkerhet"" OR ""säkerhet för AI-system"" OR ""AI-institut"" OR ""AI-tillsynsmyndighet"" OR ""AI-strategi"")",no
+SG,topic-en,en,"""Singapore"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+SI,topic-en,en,"""Slovenia"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+SI,topic-local,sl,"""Slovenija"" (""varnost UI"" OR ""zaščita UI"" OR ""inštitut za UI"" OR ""nadzorni organ za UI"" OR ""strategija UI"")",no
+SK,topic-en,en,"""Slovakia"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+SK,topic-local,sk,"""Slovensko"" (""bezpečnosť AI"" OR ""zabezpečenie AI"" OR ""inštitút pre AI"" OR ""orgán dohľadu nad AI"" OR ""stratégia AI"")",no
+SL,topic-en,en,"""Sierra Leone"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+SM,topic-en,en,"""San Marino"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+SM,topic-local,it,"""San Marino"" (""sicurezza dell'IA"" OR ""cybersicurezza dell'IA"" OR ""istituto per l'IA"" OR ""autorità per l'IA"" OR ""strategia per l'IA"")",no
+SN,topic-en,en,"""Senegal"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+SN,topic-local,fr,"""Sénégal"" (""sécurité de l'IA"" OR ""sûreté de l'IA"" OR ""institut de l'IA"" OR ""autorité de régulation de l'IA"" OR ""stratégie de l'IA"")",no
+SO,topic-en,en,"""Somalia"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+SO,topic-local,so,"""Soomaaliya"" (""badbaadada sirdoonka macmalka ah"" OR ""amniga sirdoonka macmalka ah"" OR ""machadka sirdoonka macmalka ah"" OR ""hay'adda xakamaynta sirdoonka macmalka ah"" OR ""istaraatiijiyadda sirdoonka macmalka ah"")",no
+SR,topic-en,en,"""Suriname"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+SR,topic-local,nl,"""Suriname"" (""AI-veiligheid"" OR ""AI-beveiliging"" OR ""AI-instituut"" OR ""AI-toezichthouder"" OR ""AI-strategie"")",no
+SS,topic-en,en,"""South Sudan"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+ST,topic-en,en,"""São Tomé and Príncipe"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+ST,topic-local,pt,"""São Tomé e Príncipe"" (""segurança da IA"" OR ""cibersegurança da IA"" OR ""instituto de IA"" OR ""autoridade reguladora de IA"" OR ""estratégia de IA"")",no
+SV,topic-en,en,"""El Salvador"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+SV,topic-local,es,"""El Salvador"" (""seguridad de la IA"" OR ""ciberseguridad de la IA"" OR ""instituto de IA"" OR ""autoridad de la ley de IA"" OR ""estrategia de IA"")",no
+SY,topic-en,en,"""Syria"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+SY,topic-local,ar,"""سوريا"" (""سلامة الذكاء الاصطناعي"" OR ""أمن الذكاء الاصطناعي"" OR ""معهد الذكاء الاصطناعي"" OR ""هيئة تنظيم الذكاء الاصطناعي"" OR ""استراتيجية الذكاء الاصطناعي"")",no
+SZ,topic-en,en,"""Eswatini"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+TD,topic-en,en,"""Chad"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+TD,topic-local,fr,"""Tchad"" (""sécurité de l'IA"" OR ""sûreté de l'IA"" OR ""institut de l'IA"" OR ""autorité de régulation de l'IA"" OR ""stratégie de l'IA"")",no
+TG,topic-en,en,"""Togo"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+TG,topic-local,fr,"""Togo"" (""sécurité de l'IA"" OR ""sûreté de l'IA"" OR ""institut de l'IA"" OR ""autorité de régulation de l'IA"" OR ""stratégie de l'IA"")",no
+TH,topic-en,en,"""Thailand"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+TH,topic-local,th,"""ประเทศไทย"" (""ความปลอดภัยของ AI"" OR ""ความมั่นคงปลอดภัยไซเบอร์ของ AI"" OR ""สถาบัน AI"" OR ""หน่วยงานกำกับดูแล AI"" OR ""ยุทธศาสตร์ AI"")",no
+TJ,topic-en,en,"""Tajikistan"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+TJ,topic-local,tg,"""Тоҷикистон"" (""амнияти зеҳни сунъӣ"" OR ""амнияти киберии зеҳни сунъӣ"" OR ""институти зеҳни сунъӣ"" OR ""мақоми танзимкунандаи зеҳни сунъӣ"" OR ""стратегияи зеҳни сунъӣ"")",no
+TL,topic-en,en,"""Timor-Leste"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+TL,topic-local,pt,"""Timor-Leste"" (""segurança da IA"" OR ""cibersegurança da IA"" OR ""instituto de IA"" OR ""autoridade reguladora de IA"" OR ""estratégia de IA"")",no
+TM,topic-en,en,"""Turkmenistan"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+TM,topic-local,tk,"""Türkmenistan"" (""emeli aň howpsuzlygy"" OR ""emeli aň kiberhowpsuzlygy"" OR ""emeli aň instituty"" OR ""emeli aň sazlaýjy edarasy"" OR ""emeli aň strategiýasy"")",no
+TN,topic-en,en,"""Tunisia"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+TN,topic-local,ar,"""تونس"" (""سلامة الذكاء الاصطناعي"" OR ""أمن الذكاء الاصطناعي"" OR ""معهد الذكاء الاصطناعي"" OR ""هيئة تنظيم الذكاء الاصطناعي"" OR ""استراتيجية الذكاء الاصطناعي"")",no
+TO,topic-en,en,"""Tonga"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+TR,topic-en,en,"""Turkey"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+TR,topic-local,tr,"""Türkiye"" (""yapay zekâ güvenliği"" OR ""yapay zekâ siber güvenliği"" OR ""yapay zekâ enstitüsü"" OR ""yapay zekâ düzenleyici otoritesi"" OR ""yapay zekâ stratejisi"")",no
+TT,topic-en,en,"""Trinidad and Tobago"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+TV,topic-en,en,"""Tuvalu"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+TW,topic-en,en,"""Taiwan"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+TW,topic-local,zh-Hant,"""台灣"" (""人工智慧安全"" OR ""人工智慧資安"" OR ""人工智慧研究院"" OR ""人工智慧主管機關"" OR ""人工智慧策略"")",no
+TZ,topic-en,en,"""Tanzania"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+TZ,topic-local,sw,"""Tanzania"" (""usalama wa akili bandia"" OR ""ulinzi wa akili bandia"" OR ""taasisi ya akili bandia"" OR ""mamlaka ya udhibiti wa akili bandia"" OR ""mkakati wa akili bandia"")",no
+UA,topic-en,en,"""Ukraine"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+UA,topic-local,uk,"""Україна"" (""безпека ШІ"" OR ""безпека штучного інтелекту"" OR ""інститут штучного інтелекту"" OR ""орган регулювання ШІ"" OR ""стратегія ШІ"")",no
+UG,topic-en,en,"""Uganda"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+US,topic-en,en,"""United States"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+UY,topic-en,en,"""Uruguay"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+UY,topic-local,es,"""Uruguay"" (""seguridad de la IA"" OR ""ciberseguridad de la IA"" OR ""instituto de IA"" OR ""autoridad de la ley de IA"" OR ""estrategia de IA"")",no
+UZ,topic-en,en,"""Uzbekistan"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+UZ,topic-local,uz,"""Oʻzbekiston"" (""sun'iy intellekt xavfsizligi"" OR ""sun'iy intellekt kiberxavfsizligi"" OR ""sun'iy intellekt instituti"" OR ""sun'iy intellektni tartibga solish organi"" OR ""sun'iy intellekt strategiyasi"")",no
+VC,topic-en,en,"""Saint Vincent and the Grenadines"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+VE,topic-en,en,"""Venezuela"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+VE,topic-local,es,"""Venezuela"" (""seguridad de la IA"" OR ""ciberseguridad de la IA"" OR ""instituto de IA"" OR ""autoridad de la ley de IA"" OR ""estrategia de IA"")",no
+VN,topic-en,en,"""Vietnam"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+VN,topic-local,vi,"""Việt Nam"" (""an toàn AI"" OR ""an ninh AI"" OR ""viện AI"" OR ""cơ quan quản lý AI"" OR ""chiến lược AI"")",no
+VU,topic-en,en,"""Vanuatu"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+WS,topic-en,en,"""Samoa"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+YE,topic-en,en,"""Yemen"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+YE,topic-local,ar,"""اليمن"" (""سلامة الذكاء الاصطناعي"" OR ""أمن الذكاء الاصطناعي"" OR ""معهد الذكاء الاصطناعي"" OR ""هيئة تنظيم الذكاء الاصطناعي"" OR ""استراتيجية الذكاء الاصطناعي"")",no
+ZA,topic-en,en,"""South Africa"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+ZM,topic-en,en,"""Zambia"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a
+ZW,topic-en,en,"""Zimbabwe"" (""AI safety"" OR ""AI security"" OR ""AI institute"" OR ""AI Act authority"" OR ""AI strategy"")",n/a

@@ -22,6 +22,7 @@ import sys
 from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit
 
 from jsonschema import Draft202012Validator
 
@@ -52,6 +53,17 @@ KNOWN_ENGINES = {
 }
 
 PASS_TYPES = ["full-recheck", "news-sweep", "access-check", "field-fill", "targeted"]
+
+def personal_profile(url: str) -> bool:
+    """A person's own LinkedIn page, never a source or a finding; organisation pages (linkedin.com/company/)
+    and official accounts on other platforms stay allowed."""
+    try:
+        parts = urlsplit(url.strip())
+    except ValueError:
+        return False
+    host = (parts.hostname or "").casefold()
+    first = parts.path.strip("/").split("/")[0].casefold()
+    return (host == "linkedin.com" or host.endswith(".linkedin.com")) and first in {"in", "pub"}
 
 _ids = {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": True}
 _when = {"type": "string", "minLength": 10}
@@ -245,6 +257,9 @@ def validate_pass(folder: Path, data: dict[str, Any]) -> list[str]:
         for number, row in enumerate(_jsonl(findings, problems), 1):
             for e in Draft202012Validator(FINDING_SCHEMA).iter_errors(row):
                 problems.append(f"findings.jsonl row {number}: {e.message}")
+            if isinstance(row, dict) and personal_profile(str(row.get("url", ""))):
+                problems.append(f"findings.jsonl row {number}: a personal profile URL; leave the result out "
+                                "(personal data never enters a pass folder)")
     log = folder / LOG_FILE
     if record["status"] == "closed":
         for key in ("ended", "stopping_reason"):
