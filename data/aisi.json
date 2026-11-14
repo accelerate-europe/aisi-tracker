@@ -30863,7 +30863,13 @@
             "scope": "Sources checked for developments from 13 November 2026: SGDSN's publications (newest 27 October), the institute's page (5 February 2026), DGE's news (21 October) and press (22 June), the economy and digital ministry's press (13 November), DINUM's news page (news 7 August, press 30 July) and information page (news 28 July, press 10 July), and the Elysée's account of the expert report handed over on 10 November. No adopted or announced government decision to strengthen the institute was found; the report's recommendations are not a decision. No new institute publication was found. The DGE and DINUM listings were stale, so coverage of 13 and 14 November there is incomplete. Partial check, not a full record re-check."
           }
         ],
-        "last_checked_basis": "historical_upper_bound"
+        "last_checked_basis": "historical_upper_bound",
+        "log": [
+          {
+            "date": "2026-11-14",
+            "text": "Searched for a budget amount or staff count for INESIA itself: Senate and National Assembly reports on the 2026 and 2027 finance bills for programmes 129 and 134, parliamentary written questions, SGDSN, DGE and economy ministry press releases, the SGDSN roadmap and a parliamentary mission report to the Prime Minister, in French and English. The only figure found is the EUR 13.5m Inria programme already recorded as not specific to the institute; no staff count was found."
+          }
+        ]
       },
       "source_ids": [
         "fr-dge",
@@ -31287,7 +31293,13 @@
             "scope": "Sources checked for developments from 13 November 2026: BSI's institute page (newest digest 1 November) and news (11 November), the digital ministry's press (13 November) and its budget release of that day, which gives no allocation for the institute, the interior ministry's home page (11 November) and its archived press search (newest 30 June). The Bundestag's record of 13 November says motion 21/8810 was referred to committees after the debate; it was neither adopted nor rejected, and is not recorded as a change for the institute. No new institute output was found. BSI's current press list, the interior ministry's current press list and the plenary record could not be read. Partial check, not a full record re-check."
           }
         ],
-        "last_checked_basis": "historical_upper_bound"
+        "last_checked_basis": "historical_upper_bound",
+        "log": [
+          {
+            "date": "2026-11-14",
+            "text": "Searched for a budget amount or staff count for AISI Deutschland itself: the government's answers in Bundestag papers 21/8727 and 21/8470, budget section 24 of the 2027 draft and the budget committee's November papers, BSI and federal government pages and ministry press, in German and English. No figure for the institute was found; the amounts found were demands by industry associations."
+          }
+        ]
       },
       "source_ids": [
         "de-bmds",
@@ -31570,7 +31582,13 @@
             "scope": "Sources checked for developments from 13 November 2026: AESIA's news (titles undated; the newest article read is dated 12 November), its studies page (one undated study), the digital ministry's press (4 November) and the BOE daily summaries of 13 and 14 November. No constitutive act or appointment for the institute was found in the summaries read, which does not establish that none exists. No separate publication list for the institute was found, and the dates of AESIA's news list remain unresolved. Partial check, not a full record re-check."
           }
         ],
-        "last_checked_basis": "historical_upper_bound"
+        "last_checked_basis": "historical_upper_bound",
+        "log": [
+          {
+            "date": "2026-11-14",
+            "text": "Searched for a budget amount or staff count for the Instituto de Seguridad de la Inteligencia Artificial itself: the IA360 plan, AESIA's own plan and pages, Finance Ministry and Council of Ministers spending notes, written questions and answers in the Congress, and the press, in Spanish and English. The figures found concern AESIA, not the institute."
+          }
+        ]
       },
       "source_ids": [
         "es-plan",
@@ -32221,7 +32239,13 @@
             "scope": "Sources checked for developments from 13 November 2026: the AI Office page (undated), the Commission's digital-strategy news (6 November) and library (13 November), and the Official Journal's L and C series of 13 November. No new institute fact and no AI Act instrument was found in the material read. An Official Journal homepage displayed 14 November, but no issue contents for that date were recovered, so coverage of 14 November is incomplete. Partial check, not a full record re-check."
           }
         ],
-        "last_checked_basis": "historical_upper_bound"
+        "last_checked_basis": "historical_upper_bound",
+        "log": [
+          {
+            "date": "2026-11-14",
+            "text": "Searched for a budget amount for the AI Office: the Commission decision establishing it, the Commission's own pages, answers to Parliament's written questions, the budgetary statement of the 2025 AI Act amendment package and the press. No Commission figure was found; in the material read, a starting budget of EUR 46.5m was found only in press reports attributing it to a Member of the European Parliament."
+          }
+        ]
       },
       "source_ids": [
         "eu-decision",
@@ -32551,6 +32575,21 @@
             "eu-ai-office-jobs-2024"
           ],
           "text": "The Commission announced the AI Office's first job opportunities."
+        }
+      ],
+      "funding": [
+        {
+          "kind": "none_disclosed",
+          "description": "The decision assigns external statutory staff costs and operational expenditure to Digital Europe Programme appropriations.",
+          "source_ids": [
+            "eu-decision-oj"
+          ],
+          "confidence": "high",
+          "commitment": "not_applicable",
+          "funding_source": "supranational",
+          "coverage": "whole_institute",
+          "id": "funding-7507fd8b7767470bbecb06ab3f94cca2",
+          "notes": "The Commission decision of 24 January 2024 covers the human resources costs of the Office's external statutory staff by redeploying Digital Europe Programme administrative support appropriations, and its operational expenditure from the Programme's Specific Objective 2. This record supplies no amount."
         }
       ]
     },
@@ -36343,6 +36382,17 @@
           "confidence": "low",
           "figure_source": "press_report",
           "id": "staff-01c3c07170645ef1a37faf78ac7508ff"
+        },
+        {
+          "total": 12,
+          "total_qualifier": "exact",
+          "as_of": "2024-11-27",
+          "description": "The science ministry's release dated 27 November 2024 lists 12 institute staff.",
+          "source_ids": [
+            "kr-msit-2024-11-pdf"
+          ],
+          "confidence": "medium",
+          "id": "staff-53e2954ebc804ed1a61c521bf01ef098"
         }
       ]
     },
@@ -61499,6 +61549,62 @@
             ]
           ],
           "accessed": "2026-10-21"
+        },
+        {
+          "text": "For external statutory staff working in the Office, the human resources costs shall be covered by a redeployment of budget appropriations from the administrative support expenditure from the Digital Europe Programme.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "funding",
+              {
+                "id": "funding-7507fd8b7767470bbecb06ab3f94cca2"
+              },
+              "description"
+            ],
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "funding",
+              {
+                "id": "funding-7507fd8b7767470bbecb06ab3f94cca2"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "Operational expenditure of the Office shall be covered by the financial resources allocated to Specific Objective 2 'Artificial Intelligence' of the Digital Europe Programme.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "funding",
+              {
+                "id": "funding-7507fd8b7767470bbecb06ab3f94cca2"
+              },
+              "description"
+            ],
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "funding",
+              {
+                "id": "funding-7507fd8b7767470bbecb06ab3f94cca2"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-14"
         }
       ],
       "origin": "EU",
@@ -105494,6 +105600,53 @@
             ]
           ],
           "accessed": "2026-10-21"
+        },
+        {
+          "text": "연구소 투어 및 격려 ※ 연구소 직원 총 12명",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "staff",
+              {
+                "id": "staff-53e2954ebc804ed1a61c521bf01ef098"
+              },
+              "total"
+            ],
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "staff",
+              {
+                "id": "staff-53e2954ebc804ed1a61c521bf01ef098"
+              },
+              "description"
+            ]
+          ],
+          "gloss": "Tour of the institute and encouragement (note: 12 institute staff in total)",
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "보도시점 2024. 11. 27.(수) 09:30",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "staff",
+              {
+                "id": "staff-53e2954ebc804ed1a61c521bf01ef098"
+              },
+              "as_of"
+            ]
+          ],
+          "gloss": "For release 27 November 2024 (Wednesday), 09:30",
+          "accessed": "2026-11-14"
         }
       ],
       "snapshot": {
