@@ -943,21 +943,31 @@ def prerender(site: Path) -> None:
 PAGE_DATA_DROPPED = {"check": ("last_checked", "method"), "sources": ("snapshot", "access_note")}
 
 
-def page_data(published: dict) -> str:
+def page_data(published: dict, build_mark: str | None = None) -> str:
     """data/page.json, what the page script loads: aisi.json without the fields it never reads (a state's research
     log in check, except last_checked and method; a source's private-copy metadata, snapshot and access_note),
-    minified. aisi.json stays the public download; the page fetches this file by a URL versioned per content."""
+    minified, with the build mark (content_mark of the file without it) as its last key. aisi.json stays the public
+    download; the page fetches this file by a URL carrying the same mark."""
     page = dict(published)
     keep = PAGE_DATA_DROPPED["check"]
     page["jurisdictions"] = [j | {"check": {k: j["check"][k] for k in keep if k in j["check"]}} if "check" in j else j for j in published["jurisdictions"]]
     page["sources"] = [{k: v for k, v in s.items() if k not in PAGE_DATA_DROPPED["sources"]} for s in published["sources"]]
+    if build_mark is not None:
+        page["build_mark"] = build_mark
     return json.dumps(page, ensure_ascii=False, separators=(",", ":"))
 
 
+def content_mark(text: str, version: str) -> str:
+    """The dataset version and a short content hash. For the page data it is also the build mark: the page carries
+    it in its data meta tag and reloads itself once when the data it loads carries another (a mixed release: for up
+    to ten minutes after a deploy a browser can hold the old page, and Pages ignores the ?v= query)."""
+    return f"{version}-{hashlib.sha256(text.encode('utf-8')).hexdigest()[:10]}"
+
+
 def versioned(path: str, text: str, version: str) -> str:
-    """A data URL that changes with the file: the dataset version and a short content hash, so a cached copy
-    from an earlier build is never paired with this page."""
-    return f"{path}?v={version}-{hashlib.sha256(text.encode('utf-8')).hexdigest()[:10]}"
+    """A data URL that changes with the file, so a browser's cached copy from an earlier build is never paired with
+    this page (Pages itself ignores the query and serves the current file)."""
+    return f"{path}?v={content_mark(text, version)}"
 
 
 def page_heading(page: str) -> str | None:
@@ -966,11 +976,13 @@ def page_heading(page: str) -> str | None:
     return html.unescape(found[1]) if found else None
 
 
-def generated_page(page: str, published: dict, resources: list[dict], data_urls: tuple[str, str] = ("data/page.json", "data/datapackage.json")) -> str:
+def generated_page(page: str, published: dict, resources: list[dict], data_urls: tuple[str, str] = ("data/page.json", "data/datapackage.json"),
+                   build_mark: str | None = None) -> str:
     """Build-time insertions into site/index.html: each <!-- build:NAME --> marker appears once."""
     found = re.search(r"<title>([^<]+)</title>", page)
     title = html.unescape(found[1]) if found else published["dataset"]["title"]
-    data_meta = f'<meta name="aisi-page-data" content="{html.escape(data_urls[0])}" data-package="{html.escape(data_urls[1])}">'
+    build = f' data-build="{html.escape(build_mark)}"' if build_mark else ""
+    data_meta = f'<meta name="aisi-page-data" content="{html.escape(data_urls[0])}" data-package="{html.escape(data_urls[1])}"{build}>'
     inserts = {"head": head_links(published, title, page_heading(page) or title) + "\n" + json_ld_script(published, resources) + "\n" + data_meta, "using-data": orientation_html(published)}
     for name, text in inserts.items():
         marker = f"<!-- build:{name} -->"
@@ -1156,9 +1168,10 @@ def main() -> None:
         }
         package_text = json.dumps(package, indent=2, ensure_ascii=False) + "\n"
         (out / "datapackage.json").write_text(package_text, encoding="utf-8")
-        page_text = page_data(d)
+        build_mark = content_mark(page_data(d), m["version"])  # of the page data without the mark, which then carries it
+        page_text = page_data(d, build_mark)
         (out / "page.json").write_text(page_text, encoding="utf-8")
-        data_urls = (versioned("data/page.json", page_text, m["version"]), versioned("data/datapackage.json", package_text, m["version"]))
+        data_urls = (f"data/page.json?v={build_mark}", versioned("data/datapackage.json", package_text, m["version"]))
         for path, value in api_files(d).items():
             (build / path).parent.mkdir(parents=True, exist_ok=True)
             (build / path).write_text(json.dumps(value, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
@@ -1170,7 +1183,7 @@ def main() -> None:
         # Both licences travel with the build: MIT for the page code, CC BY 4.0 for data and text.
         for name in ("LICENSE", "LICENSE-DATA"):
             shutil.copy(ROOT / name, build / name)
-        (build / "index.html").write_text(generated_page(SITE.read_text(encoding="utf-8"), d, resources, data_urls), encoding="utf-8")
+        (build / "index.html").write_text(generated_page(SITE.read_text(encoding="utf-8"), d, resources, data_urls, build_mark), encoding="utf-8")
         page_source = SITE.read_text(encoding="utf-8")
         method_share = share_tags(METHOD_TITLE, "method.html", image_alt_text(d, page_heading(page_source) or METHOD_TITLE))
         (build / "method.html").write_text(full_method_page(m, page_source, method_share), encoding="utf-8")

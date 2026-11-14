@@ -514,6 +514,21 @@ def test_fast_group_expands_and_unknown_steps_fail(monkeypatch, capsys):
     assert check.GROUPS["fast"] == ("validate", "lint", "export", "tests")
     # The commit hook keeps the names scan and gitleaks (export); the tests run on CI only.
     assert check.GROUPS["commit"] == ("validate", "lint", "export")
+    # The done-check: the commit checks plus every step CI cannot run (the private store); no tests, no browser.
+    assert check.GROUPS["local"] == ("validate", "lint", "export", "copies", "passes", "compare")
+
+
+def test_the_local_done_check_blocks_on_a_missing_names_scan(tmp_path, monkeypatch):
+    """Unlike the hook, the done-check needs the private terms: a handback must have had the names scan."""
+    monkeypatch.delenv("CI", raising=False)
+    monkeypatch.setattr(check, "make_snapshot", lambda repo, dest, *args: dest.mkdir(parents=True) or "0" * 16)
+    monkeypatch.setattr(check, "resolve_base", lambda repo, base, release: "b" * 40)
+    ran = []
+    monkeypatch.setattr(check, "RUNNERS", {step: (lambda step: lambda ctx: ran.append(step) or check.Result(
+        step, "NOT RUN" if step == "export" else "PASS"))(step) for step in check.STEPS})
+    monkeypatch.setattr(sys, "argv", ["check.py", "--only", "local", "--base", "origin/next", "--report-dir", str(tmp_path / "r")])
+    assert check.main() == 1
+    assert ran == list(check.GROUPS["local"])
 
 
 def test_the_pre_commit_hook_runs_the_commit_group():

@@ -9,6 +9,8 @@
   uv run --locked scripts/check.py --release             # a release, compared with the last v* tag
   uv run --locked scripts/check.py --only commit         # validate,lint,export: the pre-commit hook (tests run on CI)
   uv run --locked scripts/check.py --only fast           # validate,lint,export,tests: CI's checks job
+  uv run --locked scripts/check.py --only local --base origin/next   # the done-check before a handback: the commit
+                                                         # checks and the private-store steps CI cannot run
   uv run --locked scripts/check.py --only export --commits A..B   # names and secrets in commits being pushed
   uv run --locked scripts/check.py --preflight           # can this agent run every step?
   uv run --locked scripts/check.py --fail-fast           # stop at the first blocking result
@@ -62,10 +64,13 @@ STEPS = ("validate", "lint", "export", "tests", "copies", "passes", "compare", "
 # The pre-commit hook runs "commit" (under 20 s on a shared host); CI runs "fast" and, when the change needs them, build, content and gate.
 # export (the names scan and gitleaks) is in both: a private name is refused at commit, not only at the full check.
 # The tests (3 to 4.5 min and up to 1.3 GB on a shared host) run on CI only, on the exact pushed commit.
-GROUPS = {"fast": ("validate", "lint", "export", "tests"), "commit": ("validate", "lint", "export")}
+# "local" is the done-check before a handback: the commit checks plus copies, passes and compare, which need the
+# private store and so never run on CI; CI carries the tests, the build and the browser gate.
+GROUPS = {"fast": ("validate", "lint", "export", "tests"), "commit": ("validate", "lint", "export"),
+          "local": ("validate", "lint", "export", "copies", "passes", "compare")}
 # --skip-browser: until merges can be blocked on CI, CI's build and four gate shards on the pushed commit are the
-# authority for every step that starts Chromium or needs its build; a local run checks the rest,
-# so a shared host runs a done-check without taking its one browser.
+# authority for every step that starts Chromium or needs its build; a local run checks the rest without taking a
+# shared host's one browser. The done-check itself is --only local, which also leaves the tests to CI.
 BROWSER_ELSEWHERE = {
     "build": "left to CI's build of the pushed commit (--skip-browser: the build pre-renders in Chromium); read that run's result",
     "content": "left to CI's content checks on the pushed commit (--skip-browser: content needs the pre-rendered build); read that run's result",

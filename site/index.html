@@ -3338,8 +3338,25 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     .then(function () { if (typeof d3 === "undefined" || typeof topojson === "undefined") throw new Error("map scripts unavailable"); });
   var MAP = Promise.all([LIBS, fetch("assets/world-50m.v2.0.2.json").then(json)]).then(function (loaded) { return loaded[1]; });
   var world = null; MAP.then(function (w) { world = w; }, function (error) { console.warn("The map could not be loaded", error); });
+  // A mixed release: for up to ten minutes after a deploy a browser can hold the old page while it fetches the new data
+  // (Pages ignores the ?v= query). The page compares its build mark (data-build) with the one in the data and, on a
+  // mismatch, reloads itself once to fetch the new page. The session remembers that it reloaded until page and data
+  // agree again, so a page that comes back still mixed, whatever mark its data now carries, renders what it got instead
+  // of reloading again. Never during the build's own render, and never without session storage, which keeps it to once.
+  function reloadForMixedRelease(d) {
+    var built = dataMeta && dataMeta.getAttribute("data-build"), got = d && d.build_mark, KEY = "aisi-reloaded-for";
+    if (PRERENDERING || !built || !got) return false;
+    try {
+      if (built === got) { sessionStorage.removeItem(KEY); return false; } // agreed: a later deploy may reload once again
+      if (sessionStorage.getItem(KEY) !== null) return false;
+      sessionStorage.setItem(KEY, got);
+    } catch (error) { return false; }
+    location.reload();
+    return true;
+  }
   Promise.all([fetch(dataMeta ? dataMeta.content : "data/page.json").then(json), PKG.catch(function () {}), PRERENDERING ? MAP : null])
     .then(function (loaded) {
+      if (reloadForMixedRelease(loaded[0])) return; // the saved page stays as it is until the new one arrives
       (PRERENDERED ? hydrate : render)(loaded[0], PRERENDERED ? null : world); // the saved drawing stands in while the map is drawn after the take-over
       var late = function () { if (mapArrived) mapArrived(world); };
       if (world) { if (PRERENDERED) late(); return; }
