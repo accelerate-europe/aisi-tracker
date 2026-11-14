@@ -148,7 +148,7 @@ The two of today, unchanged (`schema/aisi.schema.json:1170-1175`; rule `closest-
 
 | Code | Summary sentence (pattern 2) | Test |
 | --- | --- | --- |
-| `remit` | It has no government mandate to test AI models. | A quoted government act creates, funds, plans, proposes or recognises the body, and no quote assigns it a qualifying role. |
+| `remit` | Its government mandate covers {labels}, not evaluating frontier AI models. / It has no government mandate to test AI models. | A quoted government act creates, funds, plans, proposes or recognises the body, and no quote assigns it a qualifying role. |
 | `designation` | It has no government mandate for this work. | The quotes show qualifying work, self-described or documented, and no government act concerning the body is cited. |
 
 ### Development codes
@@ -157,6 +157,8 @@ The two of today, unchanged (`schema/aisi.schema.json:1170-1175`; rule `closest-
 | --- | --- | --- |
 | `public_body` | Named public body or programme | The quoted act creates, funds or assigns a named public body or national programme for AI. |
 | `testing_duty` | Testing duty | The quoted act requires or plans testing, assessment or certification of AI systems. |
+
+One code per limb of the level 2 bar, so every act that passes the bar has a code by construction; an act that meets both limbs is coded `testing_duty`, the closer one to the tracker's subject. A looser bar would add codes; the list is provisional.
 
 ## 3. What a record shows, and the six patterns
 
@@ -176,7 +178,7 @@ Words in braces are fields; nothing else varies. A state without a status gets p
 | # | Pattern | Fields |
 | --- | --- | --- |
 | 1 | No qualifying institute identified as of {month}. | `check.last_checked` |
-| 2 | {Closest body / Planned closest body / Proposed closest body / Closest body under study}: {name} ({function labels, lower case, joined by "; "}). It has no government mandate to test AI models. (gap `remit`) / It has no government mandate for this work. (gap `designation`) | `closest_body` stage and gap, its role claims |
+| 2 | {Closest body / Planned closest body / Proposed closest body / Closest body under study}: {name} ({function labels, lower case, joined by "; "}). Gap `remit`: Its government mandate covers {labels of the testing, certification or sandbox functions its act assigns}, not evaluating frontier AI models. / or, when the act assigns none of those: It has no government mandate to test AI models. Gap `designation`: It has no government mandate for this work. | `closest_body` stage and gap, its role claims |
 | 3 | On {date} {act}, which {text}. | the development claim |
 | 4 | {body} is its AI Act {roles}. / {body} is proposed as its AI Act {roles}. / {body} is listed as its AI Act {roles}, but no national designation is confirmed. Then "; {n} other AI Act bodies are listed below" when n > 1, "; 1 other AI Act body is listed below" when n = 1. | the AI Act authority holding the single point of contact, else the most roles, ties by name; `designation_state`, `authority_roles` |
 | 5 | {short name} was set up on {established} as {legal form} ({host} for a unit). / {Status} since {status_since}: {event short}. | institute, status event `short` (`scripts/build.py:805`) |
@@ -184,15 +186,23 @@ Words in braces are fields; nothing else varies. A state without a status gets p
 
 Fixed in the patterns, from the first run on real data: the host in brackets avoids "within Cabinet Office" without an article; authority names come first; the event `short` loses its own full stop. Pattern 2 is the owner's wording (14 November): what the closest body does, through its function labels, then the gap in one short sentence, which is the officials' near-miss explanation (item 17); the stage is printed only for a body that does not exist yet; the full explanation, its role sentences plus the gap sentence, is the generated `closest_body.note`. A pattern drops out when the quotes behind its fields have expired (section 4) and the next applies; patterns 1 and 5 never drop.
 
-**Pattern 2 against the eleven closest bodies** (1.0.9 data, each read against its bound quotes and the gap as the schema defines it, `schema/aisi.schema.json:1170-1175`). True as worded: PL (Resolution 130 recognises a research role), PA (the strategy plans a cyber-security institute that monitors attacks on models), and the three `designation` bodies, CN, ID and KZ (no government act concerning them is cited). False or misleading for six of the eight `remit` bodies, because a government act or plan does give them model testing or certification, without establishing a qualifying government assignment:
-- SK: the approved national project intent (Commission resolution 8/2026) says the lab "bude testovať platformu a modely" (will test the platform and models).
-- CY: the strategy proposes "A sandbox for pre-certification of high-risk and foundation models".
-- TW: the ministry set up AIEC and began "AI評測工作" (AI evaluation work), with initial evaluation items for language models.
-- TH: ETDA, a government agency, is "ร่วมกับภาคธนาคารในการทดสอบ Ethical LLM" (testing an Ethical LLM with the banking sector).
-- AE: the government-governed lab offers "continuous red-teaming, policy conformance, and vulnerability testing at national scale".
-- MZ: the draft strategy proposes a centre for "avaliação de modelos e certificação" (model evaluation and certification).
+**Pattern 2 against the eleven closest bodies.** The owner's first remit sentence was false or misleading for six of the eight `remit` bodies, because five of them have a government act or plan giving model testing or certification without a qualifying assignment (SK, CY, TW, AE, MZ), and a sixth is a government agency that tests (TH). His decision (14 November) adds a second sentence for those: when the act bound to `closest_body/gap` assigns the body a function with code `model_testing`, `certification` or `sandbox` (a `mandate` claim whose quote comes from that act), the line says "Its government mandate covers {those labels}, not evaluating frontier AI models."; otherwise "It has no government mandate to test AI models." stays. Read against the bound quotes in the 1.0.9 data and the gap as the schema defines it (`schema/aisi.schema.json:1170-1175`); the labels are proposals until the bodies' claims exist:
 
-The remit sentence is left as approved and marked open for these six; the owner decides the fix (open question, section 6). Both sentences state an absence, which pattern 1 dates ("as of {month}") in the same line.
+| | Generated sentences after the finding | Verdict |
+| --- | --- | --- |
+| PL | Closest body: NASK AI Safety Research Centre (research; evaluation methods and tools). It has no government mandate to test AI models. | true: Resolution 130 recognises a research role only |
+| SK | Planned closest body: AI CyberLab (model testing). Its government mandate covers model testing, not evaluating frontier AI models. | not confirmed: the approved project "bude testovať platformu a modely" (will test the platform and models) assigns testing; `remit` means no qualifying role, but no quote says frontier models are out of its scope |
+| CY | Proposed closest body: European AI Certification Lab (certification and conformity). Its government mandate covers certification and conformity, not evaluating frontier AI models. | misleading: a proposal is not yet a mandate, and "pre-certification of high-risk and foundation models" is an evaluation of such models in the plain sense; the rule excludes it because certification alone does not qualify, which the sentence does not say. The quote names a sandbox but no regulator's supervision, so `sandbox` is not supported. Stage stale: the strategy was adopted on 10 November |
+| CN | Closest body: China AI Safety and Development Association (CnAISDA) (international cooperation). It has no government mandate for this work. | true: reported government support, no act cited |
+| TW | Closest body: AI Product and System Evaluation Center (AIEC) (model testing; evaluation methods and tools). Its government mandate covers model testing, not evaluating frontier AI models. | misleading: a cited ministerial transcript says the service lets developers "learn whether your Frontier models have regressed or progressed"; the record judges that no assignment, but the sentence contradicts the quote |
+| ID | Closest body: AI Safety Institute Indonesia (AISII). It has no government mandate for this work. | gap sentence true: self-described, "under KORIKA", no act cited. No label is supported yet: "Evaluates AI behavior in Bahasa Indonesia and local languages" names no tested model, and "Addresses risks of bias, hallucination, and misalignment" names no research; the brackets stay empty until an excerpt meets a test |
+| TH | Closest body: AI Governance Practice Center (AIGPC), ETDA (model testing). It has no government mandate to test AI models. | unresolved: no testing assignment is quoted, and ETDA, itself a government agency, is "ร่วมกับภาคธนาคารในการทดสอบ Ethical LLM" (testing an Ethical LLM with the banking sector); activity is not a mandate, but readers will read the sentence against it. Whether ETDA's own release is the government act that `remit` needs is a data question |
+| KZ | Closest body: Kazakhstan AI Safety Institute (KAISI) (research). It has no government mandate for this work. | true: self-described, no act cited |
+| PA | Planned closest body: Instituto Nacional de Ciberseguridad (INC) (capability and risk monitoring). It has no government mandate to test AI models. | true: the strategy gives INC "monitorear ataques adversariales contra modelos nacionales de IA" (monitor adversarial attacks against national AI models); the national red team is the government's |
+| AE | Closest body: National AI Test and Validation Lab (certification and conformity). Its government mandate covers certification and conformity, not evaluating frontier AI models. | not confirmed: the lab is to "test, validate and certify AI models, agents and applications", which is testing to certify, so `certification` only; no quote says frontier models are out of its scope |
+| MZ | Proposed closest body: Centro Nacional de Testes, Avaliação e Auditoria de IA / Sandbox Regulatório Nacional de IA (model testing; certification and conformity; regulatory sandbox). Its government mandate covers model testing, certification and conformity and regulatory sandbox, not evaluating frontier AI models. | misleading: a draft is not yet a mandate, and "avaliação de modelos importados, abertos, proprietários" (evaluating imported, open and proprietary models) plausibly includes frontier models |
+
+Result: true for PL, CN, KZ and PA; for ID the gap sentence is true but no label is supported yet; not confirmed for SK and AE, because no quote says frontier models are out of their scope; misleading for CY, TW and MZ; unresolved for TH. Open for the owner, not reworded here: "Its government mandate" for a body that is only proposed (CY, MZ); "not evaluating frontier AI models", which asserts a scope no quote states (SK, AE) or one a quote contradicts (CY, TW) or makes doubtful (MZ); and a government agency's own testing with no assignment quoted (TH). Labels joined inside the sentence read heavily where a label contains "and" (MZ). The two "no government mandate" sentences state an absence, which pattern 1 dates ("as of {month}") in the same line.
 
 "How we checked" (`site/index.html:1533-1550`) is built from `check.searches` and `check.log` instead of `notes`; the page's finding regex (`site/index.html:1316`) learns the "as of {month}" opener.
 
@@ -226,13 +236,13 @@ Generated by a throwaway script from the fields on `next` when this was written,
 | GR | No qualifying institute identified as of October 2026. On 20 July 2026 Law 5321/2026 was published in the gazette, which sets up a Centre for Coordination and Expertise for AI within the telecoms regulator EETT. | quote on the centre to bind |
 | HR | No qualifying institute identified as of October 2026. | plan presented, not adopted: fails |
 | SI | No qualifying institute identified as of October 2026. On 5 March 2026 the government adopted the national AI strategy to 2030, which plans national safety-test procedures for algorithms. | worked example |
-| SK | No qualifying institute identified as of October 2026. Planned closest body: AI CyberLab ({labels}). It has no government mandate to test AI models. | false or misleading as worded (pattern 2 check); labels from its claims, likely model testing |
+| SK | No qualifying institute identified as of October 2026. Planned closest body: AI CyberLab (model testing). Its government mandate covers model testing, not evaluating frontier AI models. | not confirmed (pattern 2 check) |
 | HU | No qualifying institute identified as of October 2026. Minister of Science and Technology (minister responsible for enterprise development in AI matters) is its AI Act single point of contact and market-surveillance authority; 1 other AI Act body is listed below. | long name: a data fix |
 | RO | No qualifying institute identified as of October 2026. ANCOM is proposed as its AI Act single point of contact and market-surveillance authority; 4 other AI Act bodies are listed below. | Senate bill B597 fails (a bill) |
 | BG | No qualifying institute identified as of October 2026. Communications Regulation Commission is proposed as its AI Act single point of contact; 11 other AI Act bodies are listed below. | stale: the bill was rejected on 4 November; one code to fix in the data pass |
 | LT | No qualifying institute identified as of October 2026. Communications Regulatory Authority (RRT) is its AI Act single point of contact and market-surveillance authority; 1 other AI Act body is listed below. | |
 | LV | No qualifying institute identified as of October 2026. Consumer Rights Protection Centre (PTAC) is its AI Act single point of contact and market-surveillance authority; 2 other AI Act bodies are listed below. | the AI Centre may be the closest body: data pass |
-| CY | No qualifying institute identified as of October 2026. Proposed closest body: European AI Certification Lab ({labels}). It has no government mandate to test AI models. | false or misleading as worded (pattern 2 check); stage stale: the strategy was adopted on 10 November, so "Planned" once the data is fixed |
+| CY | No qualifying institute identified as of October 2026. Proposed closest body: European AI Certification Lab (certification and conformity). Its government mandate covers certification and conformity, not evaluating frontier AI models. | misleading (pattern 2 check); stage stale: the strategy was adopted on 10 November, so "Planned" once the data is fixed |
 | MT | No qualifying institute identified as of October 2026. Malta Digital Innovation Authority is its AI Act single point of contact, market-surveillance authority and notifying authority; 1 other AI Act body is listed below. | |
 
 ## 4. Freshness and expiry
@@ -277,7 +287,7 @@ Each step is one branch, merged to `next` on its own with CI green and review, a
 | --- | --- | --- | --- |
 | A1. Shapes, the decided part | `claims` identity (`ID_COLLECTIONS`) and authored-schema plumbing; the claim with kinds `function` (institutes and, through `body_id`, related bodies) and `fact`; `dataset.vocabularies.function` with the 18 codes, marked provisional; `dataset.provisional` and the clause in four places; `check.functions`, `institutes[].functions[]`, `functions.csv`; `check.log`; the required excerpt on `text`; the structural checks for those kinds; `claims.csv`; API and `llms.txt` lines | nothing open: items 1, 2 and 3 are decided | unchanged |
 | A2. Shapes, the rest | the `development` kind and its vocabulary; `closest_body.body_id` and the gap excerpt, and where gap codes live | items 4 and 5 | unchanged |
-| B. Generator | the six patterns, notes from `check.log`, role and closest note from claims, migrated-record rule, "How we checked" from `check`, finding regex | A2; the remit sentence for the six bodies in section 3 | unchanged (nothing migrated) |
+| B. Generator | the six patterns, notes from `check.log`, role and closest note from claims, migrated-record rule, "How we checked" from `check`, finding regex | A2; the unresolved pattern 2 findings in section 3 | unchanged (nothing migrated) |
 | C. Freshness | `--rereads` export, `data/rereads.json`, states, expiry, alerts | A1; item 7 for the page words only | "Source last re-read {date}" and the state labels in every source list |
 | D. Functions data | the 15 institutes coded with quotes against the provisional list, cross-model review, disputed cells to the confirmation list | A1 | downloads and API only |
 | E. Functions table | presentation A on Compare | D, the AE team's reply on presentation | the table, with the "not yet operating" mark |
@@ -312,7 +322,7 @@ Each open item: yes, or tell me what to change. Answered items are kept with the
 3. **The functions.** APPROVED (14 November) as the provisional starting list, now 18 with item 2, with the tests in section 2; the build may start on it. Your final sign-off, including evaluator accreditation, follows the AE team's replies (asked by 20 November).
 4. **Two development codes**: "Named public body or programme" and "Testing duty".
 5. **Gap codes stay as today**: `remit` and `designation` (worded in summaries by pattern 2), kept stable in the schema rather than moved into a provisional list. Your decision of 14 November put gap codes in a provisional list on the assumption that new ones were needed; none are, because the body's function codes say what it does instead.
-6. **The six summary lines.** APPROVED (14 November), with pattern 2 in your words (open: the remit sentence is false or misleading for six of eight bodies, section 3):
+6. **The six summary lines.** APPROVED (14 November), with pattern 2 in your words (the remit sentence as decided on 14 November, with its second form; not confirmed for SK and AE, misleading for CY, TW and MZ, unresolved for TH, section 3):
    - "No qualifying institute identified as of October 2026."
    - "Closest body: NASK AI Safety Research Centre (research; evaluation methods and tools). It has no government mandate to test AI models." (labels are printed in full)
    - "On 5 March 2026 the government adopted the national AI strategy to 2030, which plans national safety-test procedures for algorithms."
