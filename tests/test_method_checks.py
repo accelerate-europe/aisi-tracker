@@ -980,6 +980,15 @@ def test_quoted_fixture_has_no_unquoted_claims(dataset):
     assert unquoted_warnings(unquoted_claims(d)) == []
 
 
+def test_a_european_related_body_with_no_source_is_an_error(dataset):
+    d = strict_dataset(dataset)
+    body = {"id": "test-unsourced", "name": "Unsourced centre", "kind": "other", "counts_as_aisi": False, "role": "It advises on AI."}
+    d["jurisdictions"][0]["related_bodies"].append(body)
+    assert "GB related body 'Unsourced centre': cites no source (Europe scope)" in check_method_rules(d)
+    d["jurisdictions"][0]["europe_scope"] = False
+    assert not [e for e in check_method_rules(d) if "cites no source" in e]
+
+
 def test_related_body_with_no_source_is_flagged_once(dataset):
     # The Maldives case: a body named as current lead in its role, with no source at all.
     d = strict_dataset(dataset)
