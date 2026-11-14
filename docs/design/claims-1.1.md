@@ -34,7 +34,7 @@ Binding is as for any field today: an excerpt's `supports` names the leaf by sta
 Other authored additions:
 - `check.log`: `[{date, text}]`, our search and reading notes ("Searched in Slovenian and English.", "The national gazette blocks automated readers."). It is the only home for the search log; it states nothing about the world.
 - `check.functions` (institutes only): `{date, codes}`, the function codes the institute was coded against and when. This is the record of the search behind every "not found".
-- `closest_body.reason_shown`: false when review finds pattern 2's reason sentence not true as written for this body (section 3); default true.
+- `lead` (true) on one role claim of the closest body: the claim pattern 2 quotes (section 3). Its `text` names the speaker and carries the English of its bound quote in quotation marks.
 - `designation_step` on an AI Act authority whose `designation_state` is `proposed`: `{text, date}`, the latest formal step of the bill or draft ("bill tabled"), bound to an excerpt (bills rule, section 3).
 - `closest_body.body_id`: the `related_bodies` id of the closest body, so its function claims attach; `closest_body.gap` gets a required excerpt (the act it concerns for `remit`, the body's own text for `designation`).
 - `dataset.vocabularies.function` and `.development`: code → `{label, definition}`, function codes also `group` (as decided on 14 November), plus `deprecated: true` and `replaced_by: [codes]` on a retired code.
@@ -65,10 +65,12 @@ Real records; new ids are fresh UUIDs; excerpt texts are verbatim from the cited
 **A function: UK AISI tests models.** Authored, in `institutes[gb-aisi]`:
 
 ```json
+{
 "claims": [{"id": "claims-3f271759be5d4ae9bef2ea6015a0d1ec", "kind": "function", "code": "model_testing",
             "basis": "activity", "text": "With the US institute, it ran a joint pre-deployment evaluation of Anthropic's latest model.",
             "source_ids": ["us-claude35-2024"]}],
 "check": {"…": "…", "functions": {"date": "2026-11-14", "codes": ["model_testing", "…all 18…"]}}
+}
 ```
 
 The existing `us-claude35-2024` excerpt "The U.S. Artificial Intelligence Safety Institute (US AISI) and the UK Artificial Intelligence Safety Institute (UK AISI) conducted a joint pre-deployment evaluation of Anthropic’s latest model" gains the selector `["institutes", {"id": "gb-aisi"}, "claims", {"id": "claims-3f27…"}, "text"]`. Published `functions[]` includes `{"code": "model_testing", "value": "activity", "claim_ids": ["claims-3f27…"]}` and, with no foresight claim (round 4: not found), `{"code": "foresight", "value": "not_found", "claim_ids": []}`. A new code added later reads `not_coded` until the UK is coded against it. By hand: one sentence; one excerpt on `text`; code current; basis allowed for a function; no `body_id` on an institute; meets the test "ran a test of an identifiable AI model" (the quote names the UK institute as doing it and identifies the model by developer and release; the same source's title names it), so activity. The institute's own "we rigorously test leading AI systems" would not do: it names no model.
@@ -76,27 +78,31 @@ The existing `us-claude35-2024` excerpt "The U.S. Artificial Intelligence Safety
 **A body role with a gap: Poland's NASK centre.** Authored, in `jurisdictions[PL]`:
 
 ```json
+{
 "claims": [
   {"id": "claims-e0228007a6d742798ba085b873fc1e98", "kind": "function", "code": "research", "basis": "activity",
    "body_id": "related_bodies-8e2bf69316145732aea04a2f9bbd82eb",
-   "text": "It researches the security, explainability and interpretability of foundation models.",
+   "text": "It says it does \"research on the security, explainability, and interpretability of fundamental models\".",
    "source_ids": ["pl-r8-research-teams"]},
   {"id": "claims-9af9576c5e7c45198d8ea7fba5891114", "kind": "function", "code": "evaluation_methods", "basis": "activity",
-   "body_id": "related_bodies-8e2bf69316145732aea04a2f9bbd82eb",
-   "text": "It develops methods for analysing and auditing models.", "source_ids": ["pl-r8-research-teams"]}],
+   "body_id": "related_bodies-8e2bf69316145732aea04a2f9bbd82eb", "lead": true,
+   "text": "It says it develops \"methods for generating, analyzing and auditing models\".", "source_ids": ["pl-r8-research-teams"]}],
 "closest_body": {"name": "NASK AI Safety Research Centre", "stage": "exists", "gap": "remit",
                  "body_id": "related_bodies-8e2bf69316145732aea04a2f9bbd82eb", "source_ids": ["pl-nask", "pl-r8-resolution130", "pl-r8-research-teams"]}
+}
 ```
 
-Bindings: "research on the security, explainability, and interpretability of fundamental models" → first `text`; "We develop methods for generating, analyzing and auditing models" → second `text`; Resolution 130's "zbudowanie wokół Ośrodka Badań nad Bezpieczeństwem Sztucznej Inteligencji organizacji" (building an organisation around the centre) → `closest_body/gap`, the government act that concerns the body without assigning it evaluation; "w NASK powstał Ośrodek Badań nad Bezpieczeństwem Sztucznej Inteligencji." → `name` and `stage`, as today. Generated: the body's `role` is the two texts; `closest_body.note` is the two role sentences followed by pattern 2's gap sentence: "It researches … foundation models. It develops methods for analysing and auditing models. It has no government mandate to test AI models."; the summary is pattern 2 (section 3). Today's hand-written note, with its several facts and our negatives, is gone: the OpenAI agreement and the AITAS lab become further claims if kept, and "not a government assignment" is the gap code. The excerpts that bind today's `summary` and `closest_body/note` are rebound to the claims, and in a migrated record the required closest-body leaves become `name`, `stage` and `gap` instead of `note` (`scripts/method_checks.py:39-42`). By hand: both claims name an existing body id; codes are function codes allowed for bodies; each `text` has one excerpt; `gap` has its excerpt; no `text` states an absence.
+Bindings: "research on the security, explainability, and interpretability of fundamental models" → first `text`; "We develop methods for generating, analyzing and auditing models" → second `text`; Resolution 130's "zbudowanie wokół Ośrodka Badań nad Bezpieczeństwem Sztucznej Inteligencji organizacji" (building an organisation around the centre) → `closest_body/gap`, the government act that concerns the body without assigning it evaluation; "w NASK powstał Ośrodek Badań nad Bezpieczeństwem Sztucznej Inteligencji." → `name` and `stage`, as today. Generated: the body's `role` and `closest_body.note` are the two texts; the summary is pattern 2 (section 3), quoting the claim marked `lead`. Both texts name their speaker, because the source is NASK's own page. Today's hand-written note, with its several facts and our negatives, is gone: the OpenAI agreement and the AITAS lab become further claims if kept, and "not a government assignment" is the gap code. The excerpts that bind today's `summary` and `closest_body/note` are rebound to the claims, and in a migrated record the required closest-body leaves become `name`, `stage` and `gap` instead of `note` (`scripts/method_checks.py:39-42`). By hand: both claims name an existing body id; codes are function codes allowed for bodies; each `text` has one excerpt; `gap` has its excerpt; no `text` states an absence.
 
 **A lead development: Slovenia's strategy.** Authored, in `jurisdictions[SI]`:
 
 ```json
+{
 "claims": [{"id": "claims-e5ef5cd2a96443e88c374befa55b7c68", "kind": "development", "code": "testing_duty",
             "date": "2026-03-05", "act": "the government adopted the national AI strategy to 2030",
             "text": "plans national safety-test procedures for algorithms",
             "source_ids": ["si-gov-novice-2026-03-05", "si-nsai2030"]}]
+}
 ```
 
 New excerpts (neither source has one today): on `si-gov-novice-2026-03-05` (published 2026-03-05), "Vlada Republike Slovenije je na današnji seji sprejela Nacionalno strategijo za umetno inteligenco do leta 2030 (NsUI 2030)." with gloss "At today's session the Government adopted the National AI Strategy to 2030." → `act` and `date` (a primary source published on the act's date carries that date, rule of 14 November); on `si-nsai2030`, "Introduction of national procedures and safety tests for the review, testing and updating of algorithms, along with response mechanisms for cases of violations, bias or misuse of AI systems." → `text`. Generated pattern 3: "On 5 March 2026 the government adopted the national AI strategy to 2030, which plans national safety-test procedures for algorithms." By hand against the level 2 bar: domestic primary sources (origin SI, government); an adopted act; dated within three years of `check.last_checked` 2026-10-16; plans testing of AI systems; one development in the record; no status.
@@ -138,6 +144,8 @@ General rules (round 4 brief R1-R7, abridged): being hosted inside a ministry, a
 | `certification` | Certification and conformity | It certifies AI models, systems or products, or assesses their conformity with rules or standards, or a text tasks it to; testing done to certify or assess conformity is this code, not model testing. |
 | `sandbox` | Regulatory sandbox | It runs, or a text tasks it to set up or run, a regulatory sandbox where AI is developed or tested under a regulator's supervision. |
 
+Groups (hub default, provisional until the owner's final sign-off of the list; from the code list of 13 November, without the "AE extension" reader label): Testing and science (`model_testing`, `evaluation_methods`, `research`); Rules (`standards_guidance`, `regulatory_enforcement`, `regulatory_support`, `certification`, `sandbox`); Informing government (`risk_monitoring`, `foresight`, `policy_advice`, `incident_response`); Ecosystem (`international_cooperation`, `convening`, `capacity_building`, `talent`, `adoption`, `public_access_continuity`).
+
 Codes 17 and 18 were added on 14 November, so that one list serves institutes and related bodies alike (the owner's decision on item 2). Their place beside the two regulatory codes: running a sandbox or certifying is coded as `sandbox` or `certification`, not as `regulatory_enforcement` or `regulatory_support`; one quote carries two codes only when it meets both tests on its own words (for example "market surveillance and the regulatory sandbox"). Designating or notifying conformity-assessment bodies stays `regulatory_support`. Before the list is called tested, the two new codes need the short panel test on the six coded institutes (12 cells), as for any wording change; after that the evidence standard applies.
 
 A related body's role code is simply a function code; there is no separate role list and no body-only code. The difference between an institute and a near miss stays in the status rule (`qualifying-body`), which reads in function terms: certification, a sandbox, enforcement or support of regulation, alone or together, do not qualify a body. An AI Act authority's role claim is usually `regulatory_enforcement`, with the sector limit in its `text`; its AI Act roles stay in `authority_roles`.
@@ -146,12 +154,12 @@ Not in the list, pending the AE team's replies (by 20 November): evaluator quali
 
 ### Gap codes (closest body)
 
-The two of today, unchanged (`schema/aisi.schema.json:1170-1175`; rule `closest-candidate`); no new code is needed, because the body's function codes already say what it does instead:
+The two of today, unchanged (`schema/aisi.schema.json:1170-1175`; rule `closest-candidate`); no new code is needed. Pattern 2 does not print the gap; it stays in the data and in the review of each closest body:
 
-| Code | Summary sentence (pattern 2) | Test |
+| Code | Meaning | Test |
 | --- | --- | --- |
-| `remit` | Its government mandate covers {labels}, not evaluating frontier AI models. / It has no government mandate to test AI models. | A quoted government act creates, funds, plans, proposes or recognises the body, and no quote assigns it a qualifying role. |
-| `designation` | It has no government mandate for this work. | The quotes show qualifying work, self-described or documented, and no government act concerning the body is cited. |
+| `remit` | a government act concerns the body but gives it no qualifying role | A quoted government act creates, funds, plans, proposes or recognises the body, and no quote assigns it a qualifying role. |
+| `designation` | the body does qualifying work without a government act concerning it | The quotes show qualifying work, self-described or documented, and no government act concerning the body is cited. |
 
 ### Development codes
 
@@ -169,7 +177,7 @@ One code per limb of the level 2 bar, so every act that passes the bar has a cod
 A state without a status shows, in this order: the finding; the closest body, if the existing `closest-candidate` rule gives one; AI Act authorities; other related bodies that have at least one role claim; and at most one lead development. Testable form:
 
 1. A jurisdiction without a status has at most one `development` claim and no `fact` claim.
-2. A related body is published only with `source_ids` (an error once the Europe-scope ones are sourced, decision of 14 November) and, in a migrated record, with at least one role claim or an AI Act `kind`.
+2. A related body is published only with `source_ids` (an error once the Europe-scope ones are sourced, decision of 14 November) and, in a migrated record, with at least one role claim or an AI Act `kind`; the closest body is exempt from the role-claim requirement and then shows its name only.
 3. A development passes the level 2 bar: a quote from a domestic primary source (government, parliament, gazette, or a public body acting under a government act) for an act in force or an operating body, dated within three years before `check.last_checked`, that creates, funds or assigns a named public body or national programme for AI, or requires or plans testing, assessment or certification of AI systems. Drafts, bills, announcements and strategies naming neither fail. The build enforces the source type and origin and the three-year window; the reviewer judges the rest.
 4. No region, priority or re-read cadence enters this rule.
 5. Bills and other drafts (owner, 14 November): the text states the latest formal step with its date ("tabled on 24 September 2026", "rejected in committee on 4 November 2026"); it never says that a bill "proposes" something, or that it is "dead", unless a quoted vote or withdrawal supports it. This applies to claim texts and a development's `act` (review), and to generated wording: a body's stage `proposed` and an authority's `designation_state` `proposed` hold only while the latest quoted step is pending, and pattern 4's proposed form names that step from `designation_step`.
@@ -181,39 +189,37 @@ Words in braces are fields; nothing else varies. A state without a status gets p
 | # | Pattern | Fields |
 | --- | --- | --- |
 | 1 | No qualifying institute identified as of {month}. | `check.last_checked` |
-| 2 | {Closest body / Planned closest body / Proposed closest body / Closest body under study}: {name} ({function labels, lower case, joined by "; "}). Gap `remit`: Its government mandate covers {labels of the testing, certification or sandbox functions its act assigns}, not evaluating frontier AI models. / or, when the act assigns none of those: It has no government mandate to test AI models. Gap `designation`: It has no government mandate for this work. | `closest_body` stage and gap, its role claims |
+| 2 | {Closest body / Planned closest body / Proposed closest body / Closest body under study}: {name}. {lead claim text} | `closest_body` name and stage, its `lead` role claim |
 | 3 | On {date} {act}, which {text}. | the development claim |
 | 4 | {body} is its AI Act {roles}. / {body} is proposed as its AI Act {roles} ({designation_step text} on {date}). / {body} is listed as its AI Act {roles}, but no national designation is confirmed. Then "; {n} other AI Act bodies are listed below" when n > 1, "; 1 other AI Act body is listed below" when n = 1. | the AI Act authority holding the single point of contact, else the most roles, ties by name; `designation_state`, `authority_roles` |
 | 5 | {short name} was set up on {established} as {legal form} ({host} for a unit). / {Status} since {status_since}: {event short}. | institute, status event `short` (`scripts/build.py:805`) |
 | 6 | It {mandate_short, first letter lower-case} | `mandate_short` |
 
-Fixed in the patterns, from the first run on real data: the host in brackets avoids "within Cabinet Office" without an article; authority names come first; the event `short` loses its own full stop. Pattern 2 is the owner's wording (14 November): what the closest body does, through its function labels, then the gap in one short sentence, which is the officials' near-miss explanation (item 17); the stage is printed only for a body that does not exist yet; the full explanation, its role sentences plus the gap sentence, is the generated `closest_body.note`. A pattern drops out when the quotes behind its fields have expired (section 4) and the next applies; patterns 1 and 5 never drop.
+Fixed in the patterns, from the first run on real data: the host in brackets avoids "within Cabinet Office" without an article; authority names come first; the event `short` loses its own full stop. Pattern 2 is the owner's choice of 14 November: the stage prefix where the body does not exist yet, the name, and one attributed quote of what the body does, which is the officials' near-miss explanation (item 17). It gives no reason why the body is not counted; that is said once, where the page states what qualifies, and the line links there. The generated `closest_body.note` is all the body's role sentences. A pattern drops out when the quotes behind its fields have expired (section 4) and the next applies; patterns 1 and 5 never drop.
 
-**Pattern 2 against the eleven closest bodies.** The owner's first remit sentence was false or misleading for six of the eight `remit` bodies, because five of them have a government act or plan giving model testing or certification without a qualifying assignment (SK, CY, TW, AE, MZ), and a sixth is a government agency that tests (TH). His decision (14 November) adds a second sentence for those: when the act bound to `closest_body/gap` assigns the body a function with code `model_testing`, `certification` or `sandbox` (a `mandate` claim whose quote comes from that act), the line says "Its government mandate covers {those labels}, not evaluating frontier AI models."; otherwise "It has no government mandate to test AI models." stays. Read against the bound quotes in the 1.0.9 data and the gap as the schema defines it (`schema/aisi.schema.json:1170-1175`); the labels are proposals until the bodies' claims exist:
+**Which quote, and how it reads** (owner, 14 November). The lead claim is the body's role claim closest to model testing, whoever says it: `model_testing`, then `evaluation_methods`, `certification`, `sandbox`, `risk_monitoring`, `foresight`, then the rest in list order; review checks the choice. Its `text` always names the speaker ("It says it", "the ministry reports", "the approved national project says"), so a self-description reads as one. The line shows the English in quotation marks: the excerpt's gloss, or the excerpt itself when it is in English. The original-language quote is in the data and on hover. A body with no role claim gets the stage prefix and name only.
 
-| | Generated sentences after the finding | Verdict |
-| --- | --- | --- |
-| PL | Closest body: NASK AI Safety Research Centre (research; evaluation methods and tools). It has no government mandate to test AI models. | true: Resolution 130 recognises a research role only |
-| SK | Planned closest body: AI CyberLab (model testing). Its government mandate covers model testing, not evaluating frontier AI models. | not confirmed: the approved project "bude testovať platformu a modely" (will test the platform and models) assigns testing; `remit` means no qualifying role, but no quote says frontier models are out of its scope |
-| CY | Proposed closest body: European AI Certification Lab (certification and conformity). Its government mandate covers certification and conformity, not evaluating frontier AI models. | misleading: a proposal is not yet a mandate, and "pre-certification of high-risk and foundation models" is an evaluation of such models in the plain sense; the rule excludes it because certification alone does not qualify, which the sentence does not say. The quote names a sandbox but no regulator's supervision, so `sandbox` is not supported. Stage stale: the strategy was adopted on 10 November |
-| CN | Closest body: China AI Safety and Development Association (CnAISDA) (international cooperation). It has no government mandate for this work. | true: reported government support, no act cited |
-| TW | Closest body: AI Product and System Evaluation Center (AIEC) (model testing; evaluation methods and tools). Its government mandate covers model testing, not evaluating frontier AI models. | misleading: a cited ministerial transcript says the service lets developers "learn whether your Frontier models have regressed or progressed"; the record judges that no assignment, but the sentence contradicts the quote |
-| ID | Closest body: AI Safety Institute Indonesia (AISII). It has no government mandate for this work. | gap sentence true: self-described, "under KORIKA", no act cited. No label is supported yet: "Evaluates AI behavior in Bahasa Indonesia and local languages" names no tested model, and "Addresses risks of bias, hallucination, and misalignment" names no research; the brackets stay empty until an excerpt meets a test |
-| TH | Closest body: AI Governance Practice Center (AIGPC), ETDA (model testing). It has no government mandate to test AI models. | unresolved: no testing assignment is quoted, and ETDA, itself a government agency, is "ร่วมกับภาคธนาคารในการทดสอบ Ethical LLM" (testing an Ethical LLM with the banking sector); activity is not a mandate, but readers will read the sentence against it. Whether ETDA's own release is the government act that `remit` needs is a data question |
-| KZ | Closest body: Kazakhstan AI Safety Institute (KAISI) (research). It has no government mandate for this work. | true: self-described, no act cited |
-| PA | Planned closest body: Instituto Nacional de Ciberseguridad (INC) (capability and risk monitoring). It has no government mandate to test AI models. | true: the strategy gives INC "monitorear ataques adversariales contra modelos nacionales de IA" (monitor adversarial attacks against national AI models); the national red team is the government's |
-| AE | Closest body: National AI Test and Validation Lab (certification and conformity). Its government mandate covers certification and conformity, not evaluating frontier AI models. | not confirmed: the lab is to "test, validate and certify AI models, agents and applications", which is testing to certify, so `certification` only; no quote says frontier models are out of its scope |
-| MZ | Proposed closest body: Centro Nacional de Testes, Avaliação e Auditoria de IA / Sandbox Regulatório Nacional de IA (model testing; certification and conformity; regulatory sandbox). Its government mandate covers model testing, certification and conformity and regulatory sandbox, not evaluating frontier AI models. | misleading: a draft is not yet a mandate, and "avaliação de modelos importados, abertos, proprietários" (evaluating imported, open and proprietary models) plausibly includes frontier models |
+The eleven closest bodies, from excerpts already in the data (claims and `lead` marks to be authored at migration; hover text after the line):
 
-Result: true for PL, CN, KZ and PA; for ID the gap sentence is true but no label is supported yet; not confirmed for SK and AE, because no quote says frontier models are out of their scope; misleading for CY, TW and MZ; unresolved for TH.
-
-**The rule for the reason sentence** (hub default of 14 November, reversible, listed for the owner). The reason sentence is generated only where review finds it true as written; otherwise `closest_body.reason_shown` is false, the line shows the body and its function labels with no reason sentence, and the record is listed for the owner in the release warnings. For a body that is only planned or proposed, the stage prefix carries that fact, and the "Its government mandate covers ..." form becomes "The plan covers {labels}, not evaluating frontier AI models." or "The proposal covers {labels}, not evaluating frontier AI models.", again only where true; the two "no government mandate" sentences stay as they are (PA keeps "It has no government mandate to test AI models."). Labels are joined with semicolons everywhere, so a label containing "and" stays readable. Applied to the eleven: the sentence shows for PL, PA, CN, ID and KZ; it is withheld for SK and AE (not confirmed), for CY and MZ (the proposal sentence is no truer: certification of foundation models and evaluation of imported models are evaluations in the plain sense), and for TW and TH, where the open point is the classification itself; those two are on the data session's triage list as status questions. The two "no government mandate" sentences state an absence, which pattern 1 dates ("as of {month}") in the same line.
+| | Line after the finding | Lead claim, source | Note |
+| --- | --- | --- | --- |
+| PL | Closest body: NASK AI Safety Research Centre. It says it develops "methods for generating, analyzing and auditing models". | `evaluation_methods`, activity, `pl-r8-research-teams` (English original) | the government text (Resolution 130) is vaguer; the rule prefers the claim closest to testing |
+| SK | Planned closest body: AI CyberLab. The approved national project says it "will test the platform and models". | `model_testing`, mandate, `sk-r6-cyberlab-project-approval`; hover "bude testovať platformu a modely" | |
+| CY | Proposed closest body: European AI Certification Lab. The draft national AI strategy names "A sandbox for pre-certification of high-risk and foundation models". | `certification`, mandate, `cy-r4-draft-ai-strategy-2032` (English original) | the draft has since been adopted (10 November): stage and source go stale, handled by section 4 and the data fix |
+| CN | Closest body: China AI Safety and Development Association (CnAISDA). A Tsinghua research centre reports that it will continue advancing "frontier AI safety evaluation research". | `research`, mandate, `cn-ciss-frontier-dialogue-2026`; hover "前沿人工智能安全领域的评估研究" | the source names the "China AI Development and Safety Research Network", which the record identifies with CnAISDA |
+| TW | Closest body: AI Product and System Evaluation Center (AIEC). The Ministry of Digital Affairs reports that its "initial LLM evaluation items cover ten areas". | `evaluation_methods`, activity, `tw-moda-aiec-2023`; hover "建立語言模型(Large Language Model, LLM)的初步評測項目" | a status question, with the data session. Its 2026 evaluation results name no tested model, so they cannot carry `model_testing` |
+| ID | Closest body: AI Safety Institute Indonesia (AISII). | none: "Evaluates AI behavior in Bahasa Indonesia and local languages" (`id-aisii`) meets no function test, as it names no tested model | name only until a quote meets a test |
+| TH | Closest body: AI Governance Practice Center (AIGPC), ETDA. ETDA says it "plans to work with Singapore to develop test prompts". | `evaluation_methods`, mandate (ETDA's own announcement), `th-etda-aigpc-2027`; hover "ETDA เตรียมร่วมกับประเทศสิงคโปร์พัฒนาชุดคำสั่งทดสอบ" | a status question, with the data session. The "Ethical LLM" test names a model category, not a tested model, so it cannot carry `model_testing` |
+| KZ | Closest body: Kazakhstan AI Safety Institute (KAISI). It said it was building infrastructure "to develop and test risk mitigations". | `research`, activity, `kz-kaisi` (English original; archive copy) | the source is gone (domain removed by 2 November): `source_gone` under section 4 |
+| PA | Planned closest body: Instituto Nacional de Ciberseguridad (INC). The adopted national AI strategy plans for it to "monitor adversarial attacks against national AI models". | `risk_monitoring`, mandate, `pa-gaceta-30592a`; hover "monitorear ataques adversariales contra modelos nacionales de IA" | |
+| AE | Closest body: National AI Test and Validation Lab. A joint government release says it is to help "UAE government entities and private sector organizations test, validate and certify AI models, agents and applications for security, safety and trustworthiness". | `certification`, mandate, `ae-zawya-2026` (English original, read via an aggregator) | |
+| MZ | Proposed closest body: Centro Nacional de Testes, Avaliação e Auditoria de IA / Sandbox Regulatório Nacional de IA. | none yet: the draft's aim "Desenvolver capacidade nacional de avaliação de modelos importados, abertos, proprietários" (`mz-enia-draft-2026`) is not assigned to the centre in the quote | name only until an excerpt ties a function to the centre |
 
 "How we checked" (`site/index.html:1533-1550`) is built from `check.searches` and `check.log` instead of `notes`; the page's finding regex (`site/index.html:1316`) learns the "as of {month}" opener.
 
 ### The 32 Europe-scope lines
 
-Generated by a throwaway script from the fields on `next` when this was written, pattern 3 and the bracketed function labels written by hand where the claims do not exist yet. All checks are dated October 2026 today; the month moves with each re-check.
+Generated by a throwaway script from the fields on `next` when this was written, patterns 2 and 3 written by hand where the claims do not exist yet. All checks are dated October 2026 today; the month moves with each re-check.
 
 | | Line | Note |
 | --- | --- | --- |
@@ -226,7 +232,7 @@ Generated by a throwaway script from the fields on `next` when this was written,
 | SE | Exploring since 26 November 2024: Advisory recommendation for a Swedish AI safety institute. | SEK 30m and location: `fact` |
 | CH | No qualifying institute identified as of October 2026. | convention timetable fails level 2 (an announcement) |
 | IT | No qualifying institute identified as of October 2026. National Cybersecurity Agency (ACN) is its AI Act single point of contact and market-surveillance authority; 5 other AI Act bodies are listed below. | |
-| PL | No qualifying institute identified as of October 2026. Closest body: NASK AI Safety Research Centre (research; evaluation methods and tools). It has no government mandate to test AI models. | worked example |
+| PL | No qualifying institute identified as of October 2026. Closest body: NASK AI Safety Research Centre. It says it develops "methods for generating, analyzing and auditing models". | worked example |
 | IE | No qualifying institute identified as of October 2026. AI Office of Ireland is its AI Act single point of contact; 10 other AI Act bodies are listed below. | |
 | AT | No qualifying institute identified as of October 2026. Data Protection Authority is listed as its AI Act market-surveillance authority, but no national designation is confirmed. | |
 | FI | No qualifying institute identified as of October 2026. Traficom is its AI Act single point of contact, market-surveillance authority and notifying authority; 9 other AI Act bodies are listed below. | |
@@ -241,13 +247,13 @@ Generated by a throwaway script from the fields on `next` when this was written,
 | GR | No qualifying institute identified as of October 2026. On 20 July 2026 Law 5321/2026 was published in the gazette, which sets up a Centre for Coordination and Expertise for AI within the telecoms regulator EETT. | quote on the centre to bind |
 | HR | No qualifying institute identified as of October 2026. | plan presented, not adopted: fails |
 | SI | No qualifying institute identified as of October 2026. On 5 March 2026 the government adopted the national AI strategy to 2030, which plans national safety-test procedures for algorithms. | worked example |
-| SK | No qualifying institute identified as of October 2026. Planned closest body: AI CyberLab (model testing). | reason sentence withheld: not confirmed (pattern 2 check) |
+| SK | No qualifying institute identified as of October 2026. Planned closest body: AI CyberLab. The approved national project says it "will test the platform and models". | |
 | HU | No qualifying institute identified as of October 2026. Minister of Science and Technology (minister responsible for enterprise development in AI matters) is its AI Act single point of contact and market-surveillance authority; 1 other AI Act body is listed below. | long name: a data fix |
 | RO | No qualifying institute identified as of October 2026. ANCOM is proposed as its AI Act single point of contact and market-surveillance authority; 4 other AI Act bodies are listed below. | Senate bill B597 fails (a bill) |
 | BG | No qualifying institute identified as of October 2026. Communications Regulation Commission is proposed as its AI Act single point of contact; 11 other AI Act bodies are listed below. | stale: the bill was rejected on 4 November; one code to fix in the data pass |
 | LT | No qualifying institute identified as of October 2026. Communications Regulatory Authority (RRT) is its AI Act single point of contact and market-surveillance authority; 1 other AI Act body is listed below. | |
 | LV | No qualifying institute identified as of October 2026. Consumer Rights Protection Centre (PTAC) is its AI Act single point of contact and market-surveillance authority; 2 other AI Act bodies are listed below. | the AI Centre may be the closest body: data pass |
-| CY | No qualifying institute identified as of October 2026. Proposed closest body: European AI Certification Lab (certification and conformity). | reason sentence withheld: misleading (pattern 2 check); stage stale: the strategy was adopted on 10 November, so "Planned" once the data is fixed |
+| CY | No qualifying institute identified as of October 2026. Proposed closest body: European AI Certification Lab. The draft national AI strategy names "A sandbox for pre-certification of high-risk and foundation models". | stale: the strategy was adopted on 10 November, so "Planned" and the adopted text once the data is fixed |
 | MT | No qualifying institute identified as of October 2026. Malta Digital Innovation Authority is its AI Act single point of contact, market-surveillance authority and notifying authority; 1 other AI Act body is listed below. | |
 
 ## 4. Freshness and expiry
@@ -275,6 +281,7 @@ A leaf's state is the best of its excerpts' states; a claim's is the worst of it
 **Structural (build errors):**
 - A claim's `text` has exactly one excerpt; a development's `act` and `date` have one each (added to `required_excerpt_pointers`, `scripts/method_checks.py:23-103`, reported at `scripts/method_checks.py:453-454`). A fact without a quote cannot be written.
 - `text` is one sentence (a development's generated sentence is).
+- A closest body in a migrated record has at most one role claim marked `lead`, and none only when it has no role claim; the lead claim's text contains a quoted span that is in its excerpt's gloss, or in the excerpt itself when it has no gloss (case ignored).
 - Codes exist and are not retired; `kind`, `code`, `basis` and `body_id` combine as section 1 says; `fact` and `development` sit only where section 3 allows; `check.functions` codes are current.
 - A development cites a primary source whose origin is the jurisdiction and is dated within three years before `check.last_checked`.
 - A migrated record authors none of the generated texts; its remaining free-text leaves are bound, so the `unquoted_claims` kinds (`scripts/method_checks.py:351-391`) are errors for it, warnings elsewhere until 1.2.0.
@@ -291,7 +298,7 @@ Each step is one branch, merged to `next` on its own with CI green and review, a
 | Step | Content | Needs | Page after it |
 | --- | --- | --- | --- |
 | A1. Shapes, first part | `claims` identity (`ID_COLLECTIONS`) and authored-schema plumbing; the claim with kinds `function` (institutes and, through `body_id`, related bodies) and `fact`; `dataset.vocabularies.function` with the 18 codes, marked provisional; `dataset.provisional` and the clause in four places; `check.functions`, `institutes[].functions[]`, `functions.csv`; `check.log`; the required excerpt on `text`; the structural checks for those kinds; `claims.csv`; API and `llms.txt` lines | nothing open: items 1, 2 and 3 are decided | unchanged |
-| A2. Shapes, the rest | the `development` kind and its vocabulary; `closest_body.body_id`, `reason_shown` and the gap excerpt; `designation_step` | A1 (all items approved) | unchanged |
+| A2. Shapes, the rest | the `development` kind and its vocabulary; `closest_body.body_id`, the `lead` mark and the gap excerpt; `designation_step` | A1 (all items approved) | unchanged |
 | B. Generator | the six patterns, notes from `check.log`, role and closest note from claims, migrated-record rule, "How we checked" from `check`, finding regex | A2 | unchanged (nothing migrated) |
 | C. Freshness | `--rereads` export, `data/rereads.json`, states, expiry, alerts | A1 | "Source last re-read {date}" and the state labels in every source list |
 | D. Functions data | the 15 institutes coded with quotes against the provisional list, cross-model review, disputed cells to the confirmation list | A1 | downloads and API only |
@@ -326,10 +333,10 @@ All seven items were answered on 14 November; the answers are kept here as the r
 2. **One code list for institutes and bodies.** DECIDED (14 November), differently from the proposal: "Certification and conformity" and "Regulatory sandbox" become ordinary functions 17 and 18 for institutes and bodies alike, with no body-only codes; a body's role code is a function code. The two new tests need the 12-cell panel test before the list is called tested.
 3. **The functions.** APPROVED (14 November) as the provisional starting list, now 18 with item 2, with the tests in section 2; the build may start on it. Your final sign-off, including evaluator accreditation, follows the AE team's replies (asked by 20 November).
 4. **Two development codes**: "Named public body or programme" and "Testing duty". APPROVED (14 November): one per limb of the level 2 bar, provisional.
-5. **Gap codes stay as today**: `remit` and `designation` (worded in summaries by pattern 2), kept stable in the schema rather than moved into a provisional list. APPROVED (14 November). Your decision of 14 November put gap codes in a provisional list on the assumption that new ones were needed; none are, because the body's function codes say what it does instead.
-6. **The six summary lines.** APPROVED (14 November), with pattern 2 in your words (the remit sentence as decided on 14 November, with its second form; shown only where true, section 3):
+5. **Gap codes stay as today**: `remit` and `designation` (not printed by pattern 2), kept stable in the schema rather than moved into a provisional list. APPROVED (14 November). Your decision of 14 November put gap codes in a provisional list on the assumption that new ones were needed; none are, because the body's function codes say what it does instead.
+6. **The six summary lines.** APPROVED (14 November); pattern 2 by your choice of the same day: the quoted-fact line alone, the quote closest to model testing with its speaker named, English in the line and the original on hover (section 3):
    - "No qualifying institute identified as of October 2026."
-   - "Closest body: NASK AI Safety Research Centre (research; evaluation methods and tools). It has no government mandate to test AI models." (labels are printed in full)
+   - "Closest body: NASK AI Safety Research Centre. It says it develops "methods for generating, analyzing and auditing models"."
    - "On 5 March 2026 the government adopted the national AI strategy to 2030, which plans national safety-test procedures for algorithms."
    - "Traficom is its AI Act single point of contact, market-surveillance authority and notifying authority; 9 other AI Act bodies are listed below."
    - "UK AISI was set up on 2 November 2023 as a unit within an existing body (Cabinet Office)." or "Exploring since 1 June 2026: Cabinet confirms …"
