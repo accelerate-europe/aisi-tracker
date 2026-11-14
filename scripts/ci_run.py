@@ -4,7 +4,10 @@
   uv run --locked scripts/ci_run.py wait SHA --branch main     # the run of the push to main (a release, runbook step 4)
   uv run --locked scripts/ci_run.py site [SHA] --out DIR       # the `site` artifact of that run, extracted into DIR
 
-Runs are those of push events (not a pull request's merge build), on --branch when given; the newest counts.
+Runs are those of push events (to main or next) and of runs by hand (gh workflow run pages.yml --ref <branch>), not a
+pull request's merge build, on --branch when given; the newest counts. On main and next only the push run counts
+(--event overrides). A run by hand whose changes needed no build
+(pages.yml's plan) has no site to download.
 
 wait exits 0 when the run succeeded and 1 otherwise, naming the failed jobs and the command for their logs. site
 refuses an archive member that would land outside DIR (an absolute path, `..`, or a link), which `gh run download`
@@ -50,22 +53,37 @@ def full_sha(rev: str) -> str:
     return subprocess.run(["git", "rev-parse", "--verify", f"{rev}^{{commit}}"], capture_output=True, text=True, check=True).stdout.strip()
 
 
-def latest_run(run_gh: Gh, repo: str, sha: str, workflow: str, branch: str | None = None) -> dict | None:
-    """The newest push run of the workflow for this commit, on branch when given, or None. A pull request's run
-    builds its merge ref, another tree, so it never counts; a re-run keeps its run and shows the current attempt."""
-    runs = json.loads(run_gh(["run", "list", "--repo", repo, "--commit", sha, "--workflow", workflow, "--event", "push",
+# Runs that check exactly the commit: a push to main or next, or a run by hand on a branch (pages.yml starts no run on
+# a push to other branches). A pull request's run builds its merge ref, another tree, so it never counts.
+EVENTS = ("push", "workflow_dispatch")
+# On main and next only the push run counts: it always runs every check (and on main publishes), while a run by hand
+# with a base may skip the build, so a newer one must not stand in for it.
+PUSH_ONLY_BRANCHES = ("main", "next")
+
+
+def run_events(branch: str | None, event: str | None = None) -> tuple[str, ...]:
+    return (event,) if event else ("push",) if branch in PUSH_ONLY_BRANCHES else EVENTS
+
+
+def latest_run(run_gh: Gh, repo: str, sha: str, workflow: str, branch: str | None = None, event: str | None = None) -> dict | None:
+    """The newest run of the workflow for this commit, on branch when given, or None: of the given event, else a
+    push run on main or next and a push or by-hand run elsewhere. A re-run keeps its run and shows the current attempt."""
+    events = run_events(branch, event)
+    runs = json.loads(run_gh(["run", "list", "--repo", repo, "--commit", sha, "--workflow", workflow,
                               *(["--branch", branch] if branch else []),
-                              "--json", "databaseId,status,conclusion,createdAt,url", "--limit", "20"]))
+                              "--json", "databaseId,status,conclusion,createdAt,url,event", "--limit", "50"]))
+    runs = [r for r in runs if r["event"] in events]
     return max(runs, key=lambda r: (r["createdAt"], r["databaseId"])) if runs else None
 
 
 def wait(run_gh: Gh, repo: str, sha: str, workflow: str = WORKFLOW, timeout: float = 3600, interval: float = 30,
-         sleep: Callable[[float], None] = time.sleep, clock: Callable[[], float] = time.monotonic, branch: str | None = None) -> dict:
+         sleep: Callable[[float], None] = time.sleep, clock: Callable[[], float] = time.monotonic, branch: str | None = None,
+         event: str | None = None) -> dict:
     """Poll until the commit's newest run (on branch, when given) has completed; return it. CiError when none appears
     or it outlasts timeout."""
     start = clock()
     while True:
-        run = latest_run(run_gh, repo, sha, workflow, branch)
+        run = latest_run(run_gh, repo, sha, workflow, branch, event)
         if run and run["status"] == "completed":
             return run
         if clock() - start > timeout:
@@ -139,7 +157,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("rev", nargs="?", default="HEAD", help="commit (default HEAD)")
     parser.add_argument("--repo", help="OWNER/NAME (default: the checkout's GitHub repository)")
     parser.add_argument("--workflow", default=WORKFLOW)
-    parser.add_argument("--branch", help="only the run of the push to this branch (e.g. main for a release)")
+    parser.add_argument("--branch", help="only runs on this branch (e.g. main for a release); on main and next only push runs count")
+    parser.add_argument("--event", choices=EVENTS, help="only runs of this event (default: push on main and next, else either)")
     parser.add_argument("--timeout", type=float, default=3600, help="wait: seconds before giving up (default 3600)")
     parser.add_argument("--interval", type=float, default=30, help="wait: seconds between polls (default 30)")
     parser.add_argument("--out", type=Path, help="site: an empty or new folder for the extracted site")
@@ -149,7 +168,7 @@ def main(argv: list[str] | None = None) -> int:
     try:
         sha, repo = full_sha(args.rev), args.repo or default_repo(gh)
         if args.command == "wait":
-            run = wait(gh, repo, sha, args.workflow, args.timeout, args.interval, branch=args.branch)
+            run = wait(gh, repo, sha, args.workflow, args.timeout, args.interval, branch=args.branch, event=args.event)
             print(f"run {run['databaseId']} for {sha[:12]}: {run['conclusion']} ({run['url']})")
             if run["conclusion"] == "success":
                 return 0
@@ -160,7 +179,7 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"- {line}")
             print(f"logs: gh run view {run['databaseId']} --repo {repo} --log-failed")
             return 1
-        run = latest_run(gh, repo, sha, args.workflow, args.branch)
+        run = latest_run(gh, repo, sha, args.workflow, args.branch, args.event)
         if run is None or run["status"] != "completed":
             raise CiError(f"no completed {args.workflow} run for {sha[:12]}; wait for it first")
         count = download_site(gh, gh_bytes, repo, run, args.out)

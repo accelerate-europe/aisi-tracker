@@ -1003,7 +1003,10 @@ def main() -> None:
     ap.add_argument("--update-readme", action="store_true", help="set the version and date in dataset.citation from dataset.version and as_of, regenerate README citation, current-count and definition blocks, CITATION.cff and .zenodo.json, then validate as --check does; the only mode that writes tracked files")
     ap.add_argument("--require-complete", action="store_true", help="require timeline and status confidence for jurisdictions, placement and short mandate for institutes, and legal basis for established institutes")
     ap.add_argument("--require-roster", action="store_true", help="require exactly the jurisdictions in data/reference/roster.csv")
-    ap.add_argument("--release", action="store_true", help="also reject draft wording in release prose")
+    ap.add_argument("--release", action="store_true", help="also reject draft wording in release prose, and work dated after as_of")
+    ap.add_argument("--release-wording", action="store_true", help="the release's wording checks (draft and process wording, the "
+                    "changelog entry of dataset.version, the public address) without --release's rule on work dated after as_of, which "
+                    "only a release commit meets; CI runs it on every run that does not publish")
     args = ap.parse_args()
     canonical = args.data.resolve() == DATA.resolve()
     if not canonical and (args.update_readme or not args.check):
@@ -1058,7 +1061,7 @@ def main() -> None:
         errors.extend(check_readme_licence(citation_bytes.decode("utf-8")))
         errors.extend(check_readme_doi(citation_bytes.decode("utf-8"), d["dataset"].get("doi")))
     errors.extend(check_markdown(ROOT, citation_bytes))
-    if args.release:
+    if args.release or args.release_wording:
         errors.extend(public_url_errors())
         errors.extend(check_changelog_entry(published))
         errors.extend(check_launch_wording(published, schema, ROOT, citation_bytes.decode("utf-8") if citation_bytes is not None else None))

@@ -7,11 +7,13 @@
   uv run --locked scripts/check.py                       # every step on the staged snapshot, compared with HEAD
   uv run --locked scripts/check.py --base origin/main    # compared with origin/main, when handing back a branch
   uv run --locked scripts/check.py --release             # a release, compared with the last v* tag
-  uv run --locked scripts/check.py --only fast           # validate,lint,export,tests: the pre-commit hook
+  uv run --locked scripts/check.py --only commit         # validate,lint,export: the pre-commit hook (tests run on CI)
+  uv run --locked scripts/check.py --only fast           # validate,lint,export,tests: CI's checks job
   uv run --locked scripts/check.py --only export --commits A..B   # names and secrets in commits being pushed
   uv run --locked scripts/check.py --preflight           # can this agent run every step?
   uv run --locked scripts/check.py --fail-fast           # stop at the first blocking result
   uv run --locked scripts/check.py --changed --base origin/main   # only the steps the changed files need
+  uv run --locked scripts/check.py --changed --plan --base origin/main   # print those steps and run none (CI's plan job)
   uv run --locked scripts/check.py --skip-browser --base origin/main   # starts no Chromium: CI builds and gates the
                                                                        # pushed commit; the sheet waits for a visual pass
 
@@ -57,9 +59,10 @@ def toplevel() -> Path:
 ROOT = toplevel()
 # Cheapest first, so --fail-fast reaches a blocking result soon: export and compare read the snapshot and its evidence, not the build.
 STEPS = ("validate", "lint", "export", "tests", "copies", "passes", "compare", "build", "content", "gate", "sheet")
-# The pre-commit hook runs "fast"; CI runs "fast,build,content,gate". One definition for both.
-# export is fast (about 2 s): a private name is refused at commit, not only at the full check.
-GROUPS = {"fast": ("validate", "lint", "export", "tests")}
+# The pre-commit hook runs "commit" (under 20 s on a shared host); CI runs "fast" and, when the change needs them, build, content and gate.
+# export (the names scan and gitleaks) is in both: a private name is refused at commit, not only at the full check.
+# The tests (3 to 4.5 min and up to 1.3 GB on a shared host) run on CI only, on the exact pushed commit.
+GROUPS = {"fast": ("validate", "lint", "export", "tests"), "commit": ("validate", "lint", "export")}
 # --skip-browser: until merges can be blocked on CI, CI's build and four gate shards on the pushed commit are the
 # authority for every step that starts Chromium or needs its build; a local run checks the rest,
 # so a shared host runs a done-check without taking its one browser.
@@ -115,6 +118,7 @@ class Context:
     test_workers: int = 4
     commits: list[str] = field(default_factory=list)
     ref_names: list[str] = field(default_factory=list)  # with commits: the refs being pushed
+    release_wording: bool = False  # validate with build.py --release-wording (CI on every run that does not publish)
 
 
 # Which steps a change needs (--changed): the first rule whose path or directory prefix matches a changed path wins,
@@ -130,7 +134,9 @@ CHANGE_RULES = (
     (("data/aisi.json",), DATA_STEPS, "authored data: its evidence, then every content check"),
     (("tests/content/",), BUILD_STEPS, "content checks need the pre-rendered build"),
     (("tests/fixtures/",), BUILD_STEPS, "test fixtures, which the gate also reads"),
-    (("docs/", "tests/", ".github/", ".githooks/", "README.md", "AGENTS.md", "CLAUDE.md", "LICENSE", "LICENSE-DATA",
+    # CI's own workflows and actions: only a full run shows that a changed workflow still builds and gates the page.
+    ((".github/",), BUILD_STEPS, "CI's workflows and actions, proven only by a full CI run"),
+    (("docs/", "tests/", ".githooks/", "README.md", "AGENTS.md", "CLAUDE.md", "LICENSE", "LICENSE-DATA",
       "CITATION.cff", ".zenodo.json", ".gitignore"), GROUPS["fast"], "documentation, tests or tooling the build does not read"),
     (("scripts/verify_excerpts.py",), (*GROUPS["fast"], "compare"), "quote verification, which compare runs"),
     (("scripts/research_pass.py",), (*GROUPS["fast"], "passes"), "research-pass checks, which passes runs"),
@@ -392,7 +398,7 @@ def make_snapshot(repo: Path, dest: Path, revision: str | None = None) -> str:
 def step_validate(ctx: Context) -> Result:
     cmd = ["uv", "run", "--locked", "-q", "scripts/build.py", "--check", "--require-roster",
            "--report-dir", str(ctx.report / "source-origins")]
-    result = command_step(ctx, "validate", cmd + (["--release"] if ctx.release else []))
+    result = command_step(ctx, "validate", cmd + (["--release"] if ctx.release else ["--release-wording"] if ctx.release_wording else []))
     # build.py writes its release warnings beside the source-origin report; they never fail the step.
     warnings = ctx.report / "source-origins" / "release-warnings.md"
     if result.status == "PASS" and warnings.is_file():
@@ -1103,6 +1109,10 @@ def main() -> int:
     ap.add_argument("--skip-browser", action="store_true", help="start no Chromium: build, content, gate and sheet are recorded as NOT RUN "
                     "without blocking (CI builds and gates the pushed commit); the other selected steps run and block as usual")
     ap.add_argument("--release", action="store_true", help="validate with build.py --release")
+    ap.add_argument("--release-wording", action="store_true", help="validate with build.py --release-wording: the release's wording "
+                    "checks without its rule on work dated after as_of, which only a release commit meets (CI on every run that does not publish)")
+    ap.add_argument("--plan", action="store_true", help="with --changed: print the chosen steps on one line (comma-separated) and the "
+                    "reasons to stderr, and run none of them (CI's plan job)")
     ap.add_argument("--report-dir", type=Path, help="where to write report.md, logs and screenshots (default: a new temporary directory)")
     ap.add_argument("--cache", type=Path, default=ROOT / "work/source-cache", help="source cache for offline quote verification")
     ap.add_argument("--snapshots", type=Path, default=SNAPSHOTS, help="private store of source copies (default: AISI_SNAPSHOTS, otherwise unconfigured); checks copies and seeds quote verification")
@@ -1128,6 +1138,10 @@ def main() -> int:
         ap.error("--changed chooses the steps itself: leave out --only")
     if args.changed and args.release:
         ap.error("a release runs every step: leave out --changed")
+    if args.release and args.release_wording:
+        ap.error("--release includes the wording checks: leave out --release-wording")
+    if args.plan and not args.changed:
+        ap.error("--plan prints the steps --changed chooses: add --changed")
     if args.allow_skip and os.environ.get("CI"):
         ap.error("--allow-skip is for local runs only")
     if args.ref_names and not args.commits:
@@ -1165,7 +1179,14 @@ def main() -> int:
         base = resolve_base(ROOT, args.base, args.release) if args.changed or {"compare", "sheet", "passes"} & set(steps) else None
     except ValueError as exc:
         ap.error(str(exc))
-    report = (args.report_dir or Path(tempfile.mkdtemp(prefix="aisi-check-report-"))).resolve()
+    if args.plan:  # chosen exactly as a --changed run chooses them, from a frozen copy of the index; nothing runs
+        with tempfile.TemporaryDirectory(prefix="aisi-check-") as tmp:
+            make_snapshot(ROOT, Path(tmp) / "snapshot")
+            steps, rows = changed_steps(changed_paths(ROOT, Path(tmp) / "snapshot.index", base))
+        print(changed_section(base, steps, rows), file=sys.stderr)
+        print(",".join(steps))
+        return 0
+    report =(args.report_dir or Path(tempfile.mkdtemp(prefix="aisi-check-report-"))).resolve()
     if report.exists() and any(report.iterdir()):
         ap.error(f"--report-dir {report} is not empty; every report starts from an empty directory")
     report.mkdir(parents=True, exist_ok=True)
@@ -1181,7 +1202,7 @@ def main() -> int:
         env[RUN_DATE_ENV] = env.get(RUN_DATE_ENV) or dt.datetime.now(ZoneInfo(RUN_ZONE)).date().isoformat()
         ctx = Context(ROOT, work / "snapshot", work, report, base, args.release, dist, args.cache.resolve(), env, serve_url=args.serve_url,
                       snapshots=args.snapshots, gate_args=gate_arguments(args), test_workers=args.test_workers, built=bool(args.gate_dist),
-                      commits=args.commits or [], ref_names=args.ref_names)
+                      commits=args.commits or [], ref_names=args.ref_names, release_wording=args.release_wording)
         if selected:
             ctx.sections["changed"] = selected
         results, stopped = [], None

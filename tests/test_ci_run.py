@@ -13,8 +13,9 @@ REPO = "owner/name"
 SHA = "a" * 40
 
 
-def run(status="completed", conclusion="success", run_id=7, created="2026-11-13T20:00:00Z"):
-    return {"databaseId": run_id, "status": status, "conclusion": conclusion, "createdAt": created, "url": f"https://ci/{run_id}"}
+def run(status="completed", conclusion="success", run_id=7, created="2026-11-13T20:00:00Z", event="push"):
+    return {"databaseId": run_id, "status": status, "conclusion": conclusion, "createdAt": created, "url": f"https://ci/{run_id}",
+            "event": event}
 
 
 def fake_gh(answers):
@@ -123,11 +124,31 @@ def test_site_needs_a_passed_run_and_an_empty_folder(tmp_path):
         ci_run.download_site(gh, lambda a: b"", REPO, run(), tmp_path / "out")
 
 
-def test_runs_are_push_runs_on_the_named_branch():
+def test_runs_are_push_or_by_hand_runs_on_the_named_branch():
     gh = fake_gh({"run list": [[run()]]})
     ci_run.wait(gh, REPO, SHA, sleep=lambda s: None, clock=lambda: 0, branch="main")
     args = gh.calls[0]
-    assert args[args.index("--event") + 1] == "push" and args[args.index("--branch") + 1] == "main"
+    assert args[args.index("--branch") + 1] == "main" and "event" in args[args.index("--json") + 1].split(",")
+
+
+def test_a_pull_request_run_never_counts_but_a_run_by_hand_does():
+    """A pull request's run builds its merge ref, another tree; a run by hand builds the commit itself."""
+    newer_pr = run(run_id=9, created="2026-11-14T10:00:00Z", event="pull_request")
+    gh = fake_gh({"run list": [[newer_pr, run(run_id=8, event="workflow_dispatch")], [newer_pr]]})
+    assert ci_run.latest_run(gh, REPO, SHA, "pages.yml")["databaseId"] == 8
+    assert ci_run.latest_run(gh, REPO, SHA, "pages.yml") is None
+
+
+@pytest.mark.parametrize("branch, event, want", [
+    ("next", None, 7),  # a newer run by hand (perhaps with a base, skipping the build) never stands in for next's push run
+    ("main", None, 7),
+    ("code-x", None, 8),  # a work branch's run is started by hand
+    ("next", "workflow_dispatch", 8),
+])
+def test_on_main_and_next_only_the_push_run_counts_unless_asked(branch, event, want):
+    runs = [run(run_id=7, event="push"), run(run_id=8, created="2026-11-14T10:00:00Z", event="workflow_dispatch")]
+    gh = fake_gh({"run list": [runs]})
+    assert ci_run.latest_run(gh, REPO, SHA, "pages.yml", branch, event)["databaseId"] == want
 
 
 def test_a_cancelled_run_is_reported_as_superseded(monkeypatch, capsys):

@@ -232,7 +232,8 @@ def test_fail_fast_stops_at_the_first_blocking_result(tmp_path, monkeypatch, all
 
 
 @pytest.mark.parametrize("argv, blocks", [
-    (["--only", "fast"], False),  # the local hook: no terms file is not a reason to refuse a commit
+    (["--only", "commit"], False),  # the local hook: no terms file is not a reason to refuse a commit
+    (["--only", "fast"], False),
     (["--only", "export"], False),
     (["--release", "--only", "fast"], False),  # CI's publish job
     (["--only", "fast,build"], True),  # anything beyond the fast group needs the scan
@@ -511,6 +512,13 @@ def test_fast_group_expands_and_unknown_steps_fail(monkeypatch, capsys):
         check.main()
     assert "unknown steps: bogus" in capsys.readouterr().err
     assert check.GROUPS["fast"] == ("validate", "lint", "export", "tests")
+    # The commit hook keeps the names scan and gitleaks (export); the tests run on CI only.
+    assert check.GROUPS["commit"] == ("validate", "lint", "export")
+
+
+def test_the_pre_commit_hook_runs_the_commit_group():
+    hook = (check.ROOT / ".githooks/pre-commit").read_text(encoding="utf-8")
+    assert hook.rstrip().endswith("python - --only commit")
 
 
 @pytest.mark.parametrize("argv, message", [
@@ -1067,7 +1075,9 @@ def test_the_coordinator_and_release_checks_share_the_run_date_setting():
 
 @pytest.mark.parametrize("paths, steps", [
     ([], check.GROUPS["fast"]),
-    (["docs/review.md", "README.md", "tests/test_api.py", ".github/workflows/pages.yml"], check.GROUPS["fast"]),
+    (["docs/review.md", "README.md", "tests/test_api.py", ".githooks/pre-commit"], check.GROUPS["fast"]),
+    ([".github/workflows/pages.yml", "docs/x.md"], check.BUILD_STEPS),  # a workflow change gets the full CI run
+    ([".github/actions/fonts/action.yml"], check.BUILD_STEPS),
     (["scripts/research_log.py"], check.GROUPS["fast"]),
     (["scripts/research_pass.py"], (*check.GROUPS["fast"], "passes")),
     (["scripts/verify_excerpts.py"], (*check.GROUPS["fast"], "compare")),
@@ -1194,12 +1204,30 @@ def test_changed_runs_only_the_chosen_steps_and_says_why(tmp_path, monkeypatch):
     (["--changed", "--gate-merge", "results"], "not --changed"),
     (["--changed", "--gate-jobs", "2", "--gate-merge", "results"], "--gate-merge is for CI's fixed steps"),
     (["--changed", "--release"], "a release runs every step"),
+    (["--plan"], "add --changed"),
+    (["--release", "--release-wording", "--only", "validate"], "leave out --release-wording"),
 ])
 def test_changed_refuses_options_that_fix_the_steps(monkeypatch, capsys, argv, message):
     monkeypatch.setattr(sys, "argv", ["check.py", *argv])
     with pytest.raises(SystemExit) as caught:
         check.main()
     assert caught.value.code == 2 and message in capsys.readouterr().err
+
+
+@pytest.mark.parametrize("paths, printed", [
+    (["docs/review.md"], "validate,lint,export,tests"),  # CI's plan: checks only, no build
+    (["docs/review.md", ".github/workflows/pages.yml"], ",".join(check.BUILD_STEPS)),  # a workflow change: everything
+    (["data/aisi.json"], ",".join(check.DATA_STEPS)),
+])
+def test_plan_prints_the_chosen_steps_and_runs_none(tmp_path, monkeypatch, capsys, paths, printed):
+    monkeypatch.setattr(check, "make_snapshot", lambda repo, dest: dest.mkdir(parents=True) or "0" * 16)
+    monkeypatch.setattr(check, "resolve_base", lambda repo, base, release: "b" * 40)
+    monkeypatch.setattr(check, "changed_paths", lambda repo, index, base: paths)
+    monkeypatch.setattr(check, "RUNNERS", {step: lambda ctx: pytest.fail("--plan ran a step") for step in check.STEPS})
+    monkeypatch.setattr(sys, "argv", ["check.py", "--changed", "--plan", "--base", "origin/main"])
+    assert check.main() == 0
+    out, err = capsys.readouterr()
+    assert out == printed + "\n" and "## Changed files" in err
 
 
 def test_browser_job_section_sums_the_steps_of_jobs_that_mark_them():

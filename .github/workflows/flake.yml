@@ -8,7 +8,7 @@
 # GitHub dispatches a workflow only from the default branch (main, which deploys), so until this file is there a
 # run is started by pushing a branch named flake-run/<set>-<runners>: the set hp runs hydration/hydration_paint and
 # interactions/check_toggle_place (the two jobs with known CI cases), toggle only the latter; runners is 1 or 3. A push
-# uses 20 attempts per job and a 40-minute budget. pages.yml runs on that push too, as on every branch. Run branches
+# uses 20 attempts per job and a 40-minute budget. pages.yml does not run on that push (it runs on pull requests, main and next). Run branches
 # stay until the owner deletes them.
 name: flake
 on:

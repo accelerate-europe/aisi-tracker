@@ -514,6 +514,36 @@ def test_release_cli_rejects_draft_and_accepts_clean_fixture(
     with pytest.raises(SystemExit):
         build.main()
     assert late in capsys.readouterr().err
+    # --release-wording (CI on every run that does not publish): work after as_of only warns, as between releases.
+    monkeypatch.setattr(sys, "argv", ["build.py", "--release-wording", "--check"])
+    build.main()
+    assert f"warning: {late}" in capsys.readouterr().err
+
+
+def test_release_wording_cli_rejects_draft_wording_and_a_placeholder_address(dataset, build_env, monkeypatch, capsys):
+    """The wording half of --release, run on every pull request and push to next."""
+    (build_env / "CLAUDE.md").write_text("Project rules.")
+    (build_env / "AGENTS.md").write_text("Agent map.")
+    schema = json.loads(build.SCHEMA.read_text())
+    for path, text in list(release_checks.schema_descriptions(schema)):
+        node = schema
+        for key in path[:-1]:
+            node = node[key]
+        node[path[-1]] = release_checks.DRAFT_WORDING.sub("release", text)
+    monkeypatch.setattr(build, "SCHEMA", write_json(build_env / "schema/aisi.schema.json", schema))
+    monkeypatch.setattr(agent_files, "PUBLIC_URL", "https://example.org/aisi/")
+    write_json(build.DATA, dataset)
+    monkeypatch.setattr(sys, "argv", ["build.py", "--release-wording", "--check"])
+    build.main()
+    (build_env / "AGENTS.md").write_text("This draft is being reviewed.")
+    with pytest.raises(SystemExit):
+        build.main()
+    assert "AGENTS.md: remove draft wording before release" in capsys.readouterr().err
+    (build_env / "AGENTS.md").write_text("Agent map.")
+    monkeypatch.setattr(agent_files, "PUBLIC_URL", "https://public-url-not-decided.invalid/")
+    with pytest.raises(SystemExit):
+        build.main()
+    assert "is still the placeholder" in capsys.readouterr().err
 
 
 def test_dates_after_as_of_cover_flag_searches_access_and_instrument_status(dataset):

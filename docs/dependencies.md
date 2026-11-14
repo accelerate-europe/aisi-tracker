@@ -1,13 +1,13 @@
 # Dependencies and pinning
 
-Every command in the release and maintenance process runs from a lockfile, so the same commit gives the same packages and the same browser on every host and in CI. This page is the rule. `scripts/dependency_checks.py` checks the static part (every header has its lock, a script that imports Playwright has both, heavy dependencies are pinned exactly, the locks agree, and every command in the docs, workflows, hooks, scripts and tests has the locked form) in `check.py`'s lint step, so in `--only fast` and the pre-commit hook.
+Every command in the release and maintenance process runs from a lockfile, so the same commit gives the same packages and the same browser on every host and in CI. This page is the rule. `scripts/dependency_checks.py` checks the static part (every header has its lock, a script that imports Playwright has both, heavy dependencies are pinned exactly, the locks agree, and every command in the docs, workflows, hooks, scripts and tests has the locked form) in `check.py`'s lint step, so in the pre-commit hook (`--only commit`) and in every CI run (`--only fast`).
 
 ## Two kinds of environment
 
 - The project environment: `pyproject.toml` and `uv.lock`. A script without a PEP 723 header runs here, and so do the tools (`pytest`, `ruff`).
 - A script environment: a PEP 723 header (`# /// script`) and its lock beside it, `scripts/<name>.py.lock`.
 
-A script has a header only when it needs packages outside the project environment (Playwright, geodata) or must run before the project environment is installed (`check.py`, which CI runs first). A script with a header always has a lock, including a header with no dependencies. A script without a header has neither.
+A script has a header only when it needs packages outside the project environment (Playwright, geodata) or must run before the project environment is installed (`check.py`, which CI runs first, also in the `plan` job that picks the checks). A script with a header always has a lock, including a header with no dependencies. A script without a header has neither.
 
 ## Running a script
 

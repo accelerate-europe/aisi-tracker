@@ -1,16 +1,30 @@
 # Validate data/aisi.json, build the site once, check it in parallel and, on main, publish exactly that build to GitHub Pages.
-# Runs on every branch. Pages needs a public repository on the free plan; enable it under Settings > Pages > Source: GitHub Actions.
+# Pages needs a public repository on the free plan; enable it under Settings > Pages > Source: GitHub Actions.
 #
-# checks (validate, lint, tests) and site (the build) run side by side; gate checks the site in four shards of the
-# browser jobs; build (the required status check) runs the static checks, merges the shard results into the gate's
+# Runs on pull requests, on pushes to main and next, and by hand; a push to any other branch starts no run. A work
+# branch gets its run from a pull request, or by hand before it is merged:
+#   gh workflow run pages.yml --ref <branch> -f base=origin/next
+# plan picks the checks from the changed files with check.py --changed (its CHANGE_RULES): a pull request, or a run by
+# hand with a base, whose changes need no build (documentation, tests, tooling outside the build) runs checks only;
+# anything else, a change to .github/ among them, runs everything. Pushes to main and next and runs by hand without a
+# base always run everything, so the commit that main publishes is always built and gated.
+#
+# checks (validate, lint, export, tests) and site (the build) run side by side; gate checks the site in four shards of
+# the browser jobs; build (the required status check) runs the static checks, merges the shard results into the gate's
 # report in its usual order and uploads the site for deploy. build runs even when a dependency failed, so that a
-# failed, skipped or cancelled dependency can never leave the required check passing; it fails unless everything passed.
+# failed, skipped or cancelled dependency can never leave the required check passing; it fails unless everything passed,
+# and accepts a skipped site and gate only when plan said, without error, that the change needs no build.
 name: pages
 on:
   push:
-    branches: ['**']
+    branches: [main, next]
   pull_request:
   workflow_dispatch:
+    inputs:
+      base:
+        description: "Pick the checks from the changes since the merge base with this ref (e.g. origin/next); empty runs everything"
+        required: false
+        default: ""
 # Least privilege: the jobs read the repository; only deploy may publish to Pages.
 permissions:
   contents: read
@@ -25,6 +39,58 @@ env:
 # Every script runs from a lock, with uv run --locked (docs/dependencies.md); check.py has an empty header and its own
 # lock, so it starts before the project environment is installed and runs each step with uv run --locked itself.
 jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      browser: ${{ steps.plan.outputs.browser }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86 # v5.4.2
+        with:
+          version: "0.11.14"
+          enable-cache: true
+          cache-dependency-glob: |
+            uv.lock
+            scripts/*.lock
+      # browser=false only when check.py names no step that builds or gates; any error fails this job, and then site
+      # and gate are skipped and build fails.
+      - id: plan
+        env:
+          EVENT: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          INPUT_BASE: ${{ inputs.base }}
+        run: |
+          if [ "$PUBLISH" = true ]; then
+            base=  # main publishes what it builds: every check, whatever the event
+          elif [ "$EVENT" = pull_request ]; then
+            base=$BASE_SHA
+          elif [ "$EVENT" = workflow_dispatch ] && [ -n "$INPUT_BASE" ]; then
+            case $INPUT_BASE in -*) echo "base must be a ref, not an option: $INPUT_BASE" >&2; exit 1 ;; esac
+            ref=$(git rev-parse --verify --quiet "$INPUT_BASE^{commit}") || { echo "base $INPUT_BASE is not a commit here" >&2; exit 1; }
+            base=$(git merge-base HEAD "$ref")
+          else
+            base=
+          fi
+          if [ -z "$base" ]; then
+            echo "browser=true" >> "$GITHUB_OUTPUT"
+            echo "$EVENT run on $GITHUB_REF without a base, or publishing: every check"
+            exit 0
+          fi
+          steps=$(uv run --locked scripts/check.py --changed --plan --base "$base")
+          # Every plan includes the fast group; anything else is no plan, and no plan must never skip the build.
+          case ",$steps," in
+            *,validate,*) ;;
+            *) echo "unexpected plan output: '$steps'" >&2; exit 1 ;;
+          esac
+          case ",$steps," in
+            *,build,*|*,content,*|*,gate,*) browser=true ;;
+            *) browser=false ;;
+          esac
+          echo "steps: $steps; browser: $browser"
+          echo "browser=$browser" >> "$GITHUB_OUTPUT"
   checks:
     runs-on: ubuntu-latest
     steps:
@@ -50,7 +116,8 @@ jobs:
           echo "$RUNNER_TEMP/gitleaks" >> "$GITHUB_PATH"
       # Fast steps plus names and secrets in the pushed commits and messages. Forks have no terms secret;
       # check.py reports that names scan for a maintainer. Two pytest workers fit the runner's two cores.
-      # The publishing path also rejects draft wording (--release, which only the validate step reads).
+      # Every run rejects draft and process wording (--release-wording); the publishing path also rejects work dated
+      # after as_of (--release). Only the validate step reads either.
       - env:
           TERMS: ${{ secrets.AISI_EXPORT_TERMS }}
           EVENT: ${{ github.event_name }}
@@ -83,12 +150,14 @@ jobs:
             set -- "$SHA"
           fi
           set -- --ref-names "$REF" --commits "$@"
-          uv run --locked scripts/check.py --only fast --test-workers 2 --report-dir "$RUNNER_TEMP/check" ${{ env.PUBLISH == 'true' && '--release' || '' }} "$@"
+          uv run --locked scripts/check.py --only fast --test-workers 2 --report-dir "$RUNNER_TEMP/check" ${{ env.PUBLISH == 'true' && '--release' || '--release-wording' }} "$@"
       - if: always()
         run: cat "$RUNNER_TEMP/check/report.md" || true
       # Backstop: no step may change or add a file outside the ignored outputs.
       - run: test -z "$(git status --porcelain --untracked-files=all)" || { git status --short; git diff; exit 1; }
   site:
+    needs: plan
+    if: needs.plan.outputs.browser != 'false'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
@@ -170,14 +239,18 @@ jobs:
           retention-days: 30
           overwrite: true
   build:
-    needs: [checks, site, gate]
+    needs: [plan, checks, site, gate]
     if: always()
     runs-on: ubuntu-latest
+    env:
+      # Only an explicit "false" from a successful plan skips the browser steps; anything else runs (and fails) them.
+      BROWSER: ${{ needs.plan.result != 'success' || needs.plan.outputs.browser != 'false' }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           persist-credentials: false
       - uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86 # v5.4.2
+        if: env.BROWSER == 'true'
         with:
           version: "0.11.14"
           enable-cache: true
@@ -185,37 +258,56 @@ jobs:
             uv.lock
             scripts/*.lock
       # The locked Playwright's Chromium: the browser the build, gate and contact sheet use on every host.
-      - run: uv run --locked -q scripts/check_page.py --install-chrome
-      - uses: ./.github/actions/fonts # every script in the data drawn as a reader's browser draws it
-      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+      - if: env.BROWSER == 'true'
+        run: uv run --locked -q scripts/check_page.py --install-chrome
+      - if: env.BROWSER == 'true'
+        uses: ./.github/actions/fonts # every script in the data drawn as a reader's browser draws it
+      - if: env.BROWSER == 'true'
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: site
           path: ${{ runner.temp }}
-      - run: mkdir "$RUNNER_TEMP/site" && tar -C "$RUNNER_TEMP/site" -xf "$RUNNER_TEMP/site.tar"
+      - if: env.BROWSER == 'true'
+        run: mkdir "$RUNNER_TEMP/site" && tar -C "$RUNNER_TEMP/site" -xf "$RUNNER_TEMP/site.tar"
       # Each shard's file in its own directory; the merge refuses a missing, duplicate or foreign one.
-      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+      - if: env.BROWSER == 'true'
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           pattern: gate-shard-*
           path: ${{ runner.temp }}/gate
           merge-multiple: false
       # The gate's report: the static checks on this site, then the shards' browser results in the sequential order.
-      - run: uv run --locked scripts/check.py --only gate,content --gate-dist "$RUNNER_TEMP/site" --gate-merge "$RUNNER_TEMP/gate" --report-dir "$RUNNER_TEMP/check"
-      - if: always()
+      - if: env.BROWSER == 'true'
+        run: uv run --locked scripts/check.py --only gate,content --gate-dist "$RUNNER_TEMP/site" --gate-merge "$RUNNER_TEMP/gate" --report-dir "$RUNNER_TEMP/check"
+      - if: always() && env.BROWSER == 'true'
         run: cat "$RUNNER_TEMP/check/report.md" || true
       # The slide map is an extra download the page does not use: a Natural Earth outage or a changed upstream
       # file (the script pins its hash) shows as a failed step but does not hold back the page.
-      - run: uv run --locked scripts/slide_map.py "$RUNNER_TEMP/site/maps/aisi-europe"
+      - if: env.BROWSER == 'true'
+        run: uv run --locked scripts/slide_map.py "$RUNNER_TEMP/site/maps/aisi-europe"
         continue-on-error: true
         timeout-minutes: 5
       - run: test -z "$(git status --porcelain --untracked-files=all)" || { git status --short; git diff; exit 1; }
       # The required check passes only when every job and every step before this one passed. A job with always()
       # is never cancelled, so a cancellation that arrives once the dependencies are done lets build run to its end
       # and report truthfully (green only if everything passed); deploy, a new job, is cancelled. A cancellation
-      # earlier cancels a dependency, and build then fails here.
+      # earlier cancels a dependency, and build then fails here. site and gate may be skipped only when plan
+      # succeeded and said the change needs no build, and never on the publishing path.
       - if: always()
-        run: >-
-          test "${{ job.status }}" = success && test "${{ needs.checks.result }}" = success
-          && test "${{ needs.site.result }}" = success && test "${{ needs.gate.result }}" = success
+        env:
+          JOB: ${{ job.status }}
+          PLAN: ${{ needs.plan.result }}
+          CHECKS: ${{ needs.checks.result }}
+          SITE: ${{ needs.site.result }}
+          GATE: ${{ needs.gate.result }}
+        # One test per line: under bash -e a failed test that is not the last of an && list would not stop the script.
+        run: |
+          test "$JOB" = success
+          test "$PLAN" = success
+          test "$CHECKS" = success
+          if [ "$BROWSER" = false ] && [ "$PUBLISH" != true ]; then want=skipped; else want=success; fi
+          test "$SITE" = "$want"
+          test "$GATE" = "$want"
       - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1
         if: env.PUBLISH == 'true'
         with:
