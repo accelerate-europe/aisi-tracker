@@ -2,6 +2,11 @@
 
 import re
 
+if __package__:
+    from .claim_checks import QUOTED
+else:
+    from claim_checks import QUOTED  # type: ignore[import-not-found, no-redef]
+
 # Recorded titles, names, published job titles, quotations, query strings, URLs
 # and identifiers are deliberately absent. Translations are our own prose.
 PROSE_FIELDS = {
@@ -51,6 +56,13 @@ def reader_text(obj, path=()):
     elif isinstance(obj, str):
         field = next((key for key in reversed(path) if isinstance(key, str)), "")
         if "searches" in path or ("people" in path and field == "role"):
+            return
+        # A claim's text, a development's act and an authority's latest step are our prose around the source's
+        # words: the quoted spans are the source's and are masked, the rest is checked (worklist item 26).
+        claim = len(path) == 5 and path[0] in {"jurisdictions", "institutes"} and path[2] == "claims" and field in {"text", "act"}
+        step = len(path) == 6 and path[0] == "jurisdictions" and path[2:5:2] == ("related_bodies", "designation_step") and field == "text"
+        if claim or step:
+            yield path, QUOTED.sub('"…"', obj)
             return
         definitions = (
             len(path) > 1

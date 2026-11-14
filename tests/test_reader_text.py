@@ -3,7 +3,7 @@
 import pytest
 
 from scripts import build
-from scripts.reader_text import check_reader_text
+from scripts.reader_text import check_reader_text, reader_text
 
 
 @pytest.mark.parametrize(
@@ -57,6 +57,52 @@ def test_dataset_definition_is_reader_text(dataset):
     """The definition under the page headline obeys the copy rules like other authored prose."""
     dataset["dataset"]["definition"] = "We count a body.  Then more."
     assert "/dataset/definition: reader-facing text contains double spaces" in build.check_consistency(dataset)
+
+
+CLAIM = "It says it develops \"methods for generating, analyzing  and auditing models — case_study\"."
+
+
+@pytest.mark.parametrize("fragment", [
+    {"jurisdictions": [{"claims": [{"text": CLAIM}]}]},
+    {"institutes": [{"claims": [{"text": "It publishes “a dataset.method  of tests”."}]}]},
+    {"jurisdictions": [{"claims": [{"act": "the government adopted “the  strategy”", "text": "plans tests"}]}]},
+    {"jurisdictions": [{"related_bodies": [{"designation_step": {"text": "bill \"tabled  — in_committee\""}}]}]},
+])
+def test_quoted_spans_in_claims_are_the_sources_words(fragment):
+    """Inside the quotation marks is the source's text; the checks read only what is outside them."""
+    assert check_reader_text(fragment) == []
+
+
+@pytest.mark.parametrize("fragment, error", [
+    ({"jurisdictions": [{"claims": [{"text": "It says  it develops \"methods\"."}]}]}, "double spaces"),
+    ({"institutes": [{"claims": [{"text": "It tests models — at scale."}]}]}, "U+2014"),
+    ({"jurisdictions": [{"claims": [{"act": "the government adopted the model_testing plan", "text": "plans tests"}]}]}, "field-path jargon"),
+    ({"jurisdictions": [{"related_bodies": [{"designation_step": {"text": "bill  tabled"}}]}]}, "double spaces"),
+])
+def test_claim_prose_outside_quotations_is_checked(fragment, error):
+    assert any(error in e for e in check_reader_text(fragment))
+
+
+def test_excerpt_text_and_other_text_fields_stay_exempt():
+    assert check_reader_text({
+        "sources": [{"excerpts": [{"text": "Verbatim  — text",
+                                   "supports": [["jurisdictions", {"id": "XX"}, "claims", {"id": "c"}, "text"]]}]}],
+        "jurisdictions": [{"timeline": [{"act": "a  b"}], "claims": [{"source_ids": ["a  b"]}]}],
+        "institutes": [{"claims": [{"code": "a  b"}]}],
+    }) == []
+
+
+def test_masked_selection_is_exact():
+    """Each quoted span is masked, an unclosed quotation mark is not; method text is selected unmasked."""
+    data = {
+        "jurisdictions": [{"claims": [{"text": "It says \"a  b\" and “c — d” but \"open  e."}],
+                           "related_bodies": [{"designation_step": {"text": "bill “tabled  ”"}}]}],
+        "dataset": {"method": [{"id": "m", "text": "Method  \"text\"."}]},
+    }
+    selected = dict(reader_text(data))
+    assert selected[("jurisdictions", 0, "claims", 0, "text")] == "It says \"…\" and \"…\" but \"open  e."
+    assert selected[("jurisdictions", 0, "related_bodies", 0, "designation_step", "text")] == "bill \"…\""
+    assert selected[("dataset", "method", 0, "text")] == "Method  \"text\"."
 
 
 def test_single_spaces_and_paragraph_breaks_pass():
