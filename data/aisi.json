@@ -4,7 +4,7 @@
     "title": "AI Security Institutes tracker",
     "description": "Which states have an AI Security Institute (AISI), covering all 193 UN member states plus Taiwan and the EU AI Office, with funding, staff and leadership where published. Every record cites its sources.",
     "definition": "We count a body as an AI Security Institute (AISI) if a national government or an international organisation, such as the EU, has tasked it with testing general-purpose or frontier AI models for their capabilities and risks, or has named it its AI safety institute or its AI security institute. Being a regulator, certification body or cyber security agency is not enough on its own.",
-    "version": "1.0.9",
+    "version": "1.0.10",
     "as_of": "2026-11-14",
     "license": "CC BY 4.0",
     "license_note": "Quotations from sources remain with their rights holders and are reproduced as quotations; the licence covers our own compilation, text and data.",
@@ -18,7 +18,7 @@
     ],
     "contact": "contact@accelerate-europe.org",
     "repository": "https://github.com/accelerate-europe/aisi-tracker",
-    "citation": "Accelerate Europe (2026). AI Security Institutes tracker, version 1.0.9, data as of 14 November 2026. Compiled by Jason Hoelscher-Obermaier. https://doi.org/10.5281/zenodo.23600431",
+    "citation": "Accelerate Europe (2026). AI Security Institutes tracker, version 1.0.10, data as of 14 November 2026. Compiled by Jason Hoelscher-Obermaier. https://doi.org/10.5281/zenodo.23600431",
     "doi": "10.5281/zenodo.23600431",
     "scope": "Status is tracked for all 193 UN member states, Taiwan (as a territory) and the EU AI Office. The Europe page counts the 27 EU member states, Iceland, Liechtenstein, Norway, the United Kingdom and Switzerland.",
     "method": [
@@ -6705,6 +6705,7 @@
           "role": "It would cover the financial sector as identified by memorandum.",
           "counts_as_aisi": false,
           "source_ids": [
+            "ro-ancom-ai-implementation-2026",
             "ro-ancom-ai-governance-memorandum",
             "eu-ai-act-authorities-2026"
           ],
@@ -6722,6 +6723,7 @@
           "role": "It would cover the financial sector as identified by memorandum.",
           "counts_as_aisi": false,
           "source_ids": [
+            "ro-ancom-ai-implementation-2026",
             "ro-ancom-ai-governance-memorandum",
             "eu-ai-act-authorities-2026"
           ],
@@ -6739,6 +6741,7 @@
           "role": "It would cover specified biometric, law-enforcement, migration/border and justice/democratic-process uses as identified by memorandum.",
           "counts_as_aisi": false,
           "source_ids": [
+            "ro-ancom-ai-implementation-2026",
             "ro-ancom-ai-governance-memorandum",
             "eu-ai-act-authorities-2026"
           ],
@@ -23827,7 +23830,7 @@
           "id": "related_bodies-9c4006c2fec75a8b8196d34b60005201"
         }
       ],
-      "notes": "MINPOSTEL's 2024 CONIA account was retrieved and records consultations and a recommended AI-strategy roadmap. Lawyers Hub and Osiris's republication of Ecofin reporting supply the later governance context, including press accounts giving 7 or 8 July 2025 as the strategy adoption date; the strategy text was not found. The earlier allAfrica request returned HTTP 403. Searched in French and English.",
+      "notes": "MINPOSTEL's 2024 CONIA account was retrieved and records consultations and a recommended AI-strategy roadmap. Lawyers Hub and Osiris's republication of Ecofin reporting supply the later governance context, including the strategy's unveiling on 7 July 2025 (Osiris) and Lawyers Hub's account that it was formally adopted that day; the strategy text was not found. The earlier allAfrica request returned HTTP 403. Searched in French and English.",
       "next_check": {
         "date": "2027-03-31",
         "reason": "Check whether the proposed AI authority is created and has an evaluation mandate."
@@ -28678,6 +28681,10 @@
           {
             "date": "2026-11-13",
             "scope": "Post-release news re-check from 10 November 2026: the institute's blog and research pages (newest 26 October), its GOV.UK organisation page (12 October), DSIT's page (newest document 4 November), the Cabinet Office's news (12 November), the written-statements listing to 12 November and the Commons and Lords daily reports of 10, 11 and 12 November. Added the UK-Norway joint statement of intent of 12 November, a non-binding commitment to explore cooperation between the institute and KI Norge. The July written statement's conditional wording and the answers of 10 November did not establish the exact date of the move to the Cabinet Office, which is still unresolved. NIST's draft publication of 9 November gives UK AISI affiliations for an author and thanks UK AISI colleagues; whether that is institutional credit is left for review. No daily report of 13 November was displayed when the check ended. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-14",
+            "scope": "Sources checked for developments from 13 November 2026: the institute's home, blog and research pages (newest 26 October), its GOV.UK organisation page (12 October), DSIT's page (newest document 4 November), the Cabinet Office's news (12 November), Parliament's home page (answers of 12 November), the written-statements listing (13 November), the daily-reports listing (stale, newest 27 March 2026) and the machinery-of-government fact sheet of 22 July, updated 27 July. No new institute item was found. The fact sheet says responsibility 'will move', so the date the move to the Cabinet Office took effect is still unresolved. The daily reports of 13 November could not be retrieved, so written answers of that day are incompletely checked. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -30837,6 +30844,10 @@
           {
             "date": "2026-11-13",
             "scope": "Post-release news re-check from 10 November 2026: SGDSN publications (newest 27 October) and its INESIA page (dated 5 February 2026), DGE news (21 October) and press (22 June), the economy ministry's press (12 November) and DINUM news (7 August) and press (10 September). The presidency's handover statement of 10 November reports recommendations already in the record; no adopted or announced government response strengthening INESIA was found. A newsletter of 12 November on the state's AI site could not be opened, and the DGE and DINUM listings returned were stale. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-14",
+            "scope": "Sources checked for developments from 13 November 2026: SGDSN's publications (newest 27 October), the institute's page (5 February 2026), DGE's news (21 October) and press (22 June), the economy and digital ministry's press (13 November), DINUM's news page (news 7 August, press 30 July) and information page (news 28 July, press 10 July), and the Elysée's account of the expert report handed over on 10 November. No adopted or announced government decision to strengthen the institute was found; the report's recommendations are not a decision. No new institute publication was found. The DGE and DINUM listings were stale, so coverage of 13 and 14 November there is incomplete. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -31257,6 +31268,10 @@
           {
             "date": "2026-11-13",
             "scope": "Post-release news re-check from 10 November 2026: BSI's institute page (newest digest 1 November) and news (11 November), the digital ministry's press (11 November) and the interior ministry's home page (11 November). The Bundestag's notice dated 6 November of a debate on 13 November on the existing motion about the institute was read; the notice announces the debate, and its outcome was not checked. Current BSI and interior-ministry press lists could not be read, and coverage of parliamentary documents since 3 November is incomplete. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-14",
+            "scope": "Sources checked for developments from 13 November 2026: BSI's institute page (newest digest 1 November) and news (11 November), the digital ministry's press (13 November) and its budget release of that day, which gives no allocation for the institute, the interior ministry's home page (11 November) and its archived press search (newest 30 June). The Bundestag's record of 13 November says motion 21/8810 was referred to committees after the debate; it was neither adopted nor rejected, and is not recorded as a change for the institute. No new institute output was found. BSI's current press list, the interior ministry's current press list and the plenary record could not be read. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -31536,6 +31551,10 @@
           {
             "date": "2026-11-13",
             "scope": "Post-release news re-check from 10 November 2026: AESIA news (newest fetched article 12 November), the ministry's press (newest 4 November, before the window) and the BOE daily summaries of 11, 12 and 13 November, in which no constitutive act or appointment for the institute was found. AESIA's article of 12 November on the sandbox and market surveillance does not establish an institute launch or an institute output. Dates were not recovered for all AESIA listing items. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-14",
+            "scope": "Sources checked for developments from 13 November 2026: AESIA's news (titles undated; the newest article read is dated 12 November), its studies page (one undated study), the digital ministry's press (4 November) and the BOE daily summaries of 13 and 14 November. No constitutive act or appointment for the institute was found in the summaries read, which does not establish that none exists. No separate publication list for the institute was found, and the dates of AESIA's news list remain unresolved. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -31840,6 +31859,10 @@
           {
             "date": "2026-11-13",
             "scope": "Post-release news re-check from 10 November 2026: KI Norge articles (newest dated 1 September), Digdir news (28 October) and the government's releases (12 November). Added the UK-Norway joint statement of intent of 12 November, a non-binding commitment to explore cooperation between KI Norge and the UK institute on AI security, testing and evaluation; the Norwegian release says a more concrete memorandum of understanding is intended later. The statement gives no evidence of tests, model access, funding, staff or adoption of the proposed mandate. Dates were not recovered for all KI Norge articles, and no separate newer publication list was found. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-14",
+            "scope": "Sources checked for developments from 13 November 2026: KI Norge's articles (newest dated 1 September, first item undated), Digdir's news archive (undated) and cooperation-portal news (13 November), the government's news (13 November), the government's release of 12 November on the UK-Norway statement of intent and its release of 13 November on a security expert group. The statement and the later memorandum it contemplates are already recorded; the expert-group release assigns KI Norge no task. KI Norge's publications or research listing was not found. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -32167,6 +32190,10 @@
           {
             "date": "2026-11-13",
             "scope": "Post-release news re-check from 10 November 2026: the AI Office page, Commission digital-strategy news (6 November) and library (4 November), and the Official Journal L series of 12 and 13 November and C series of 12 November. The sandbox implementing regulation (adopted 10 November, published 11 November) and the Article 50 guidelines of 12 November are not Office outputs and add no access evidence. In ENISA's release and State of Cybersecurity report of 10 November, no statement of ENISA's own testing of or access to advanced models was found; the report's later AI passages were read only as extracted text, not checked against the original pages. The L series of 10 and 11 November, the C series of 13 November and corrigenda in other languages were not fully read. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-14",
+            "scope": "Sources checked for developments from 13 November 2026: the AI Office page (undated), the Commission's digital-strategy news (6 November) and library (13 November), and the Official Journal's L and C series of 13 November. No new institute fact and no AI Act instrument was found in the material read. An Official Journal homepage displayed 14 November, but no issue contents for that date were recovered, so coverage of 14 November is incomplete. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -32760,6 +32787,10 @@
           {
             "date": "2026-11-13",
             "scope": "Post-release news re-check from 10 November 2026: the institute's pages, news tag (newest 16 October), guidelines (30 September), NIST news (2 November) and all news and updates (12 November). Read NIST's draft publication of 9 November in full: its title page gives CAISSI and UK AISI affiliations for individual authors, and its acknowledgements thank CAISSI and UK AISI colleagues; whether that is institutional credit is left for review. Commerce news could be read only to 23 October. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-14",
+            "scope": "Sources checked for developments from 13 November 2026: the institute's page, its news tag (newest 16 October), research blog (23 March) and guidelines (updated 30 September), NIST's news (main news 2 November, a CHIPS item of 13 November) and Commerce's news and press releases (23 October) and blog (3 September). No new institute fact was found. Stale listings leave unlisted recent releases uncertain. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -34038,6 +34069,10 @@
           {
             "date": "2026-11-13",
             "scope": "Post-release news re-check from 10 November 2026: the institute page (newest linked blog 8 July), ISED's media room (9 November), CIFAR news (16 September) and its programme page, and the research programme newsroom (6 November). No update was found in the material checked. NRC news could be read only to 11 June, the CIFAR and ISED listings returned were stale, and unlisted publications may exist. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-14",
+            "scope": "Sources checked for developments from 13 November 2026: the institute page (its linked blog dated 8 July), the research programme's newsroom (news 6 November, insights 28 October), CIFAR's two news listings (16 September and 8 June) and the Government of Canada's news results (9 October). No new institute fact was found. NRC's stories listing was stale (newest 11 June) and its news page returned an empty table; ISED's media room returned no news list. The stale ISED, CIFAR and NRC listings leave coverage incomplete. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -34641,6 +34676,10 @@
           {
             "date": "2026-11-13",
             "scope": "Post-release news re-check from 10 November 2026: the institute's homepage (10 November digest), activities (6 November) and outputs (6 October), IPA press (12 November), Cabinet Office press (12 November) and the AI working group's meeting of 11 November. The digest of 10 November summarises other bodies' research and does not report the institute's own testing. The working group's papers on strengthening the institute are discussion, not a decision; some hearing papers were marked forthcoming and no meeting summary was posted. No separate current English news list was found. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-14",
+            "scope": "Sources checked for developments from 13 November 2026: the institute's home and activity pages (6 November) and outputs (6 October, with bilingual titles), IPA's press releases (13 November) and the Cabinet Office's AI pages (26 October) and press (12 November). The IPA items of 13 November are not credited to the institute. No new institute fact was found. The institute's separate English home page was not found, so English-only coverage is incomplete. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -35840,6 +35879,10 @@
           {
             "date": "2026-11-13",
             "scope": "Post-release news re-check from 10 November 2026: the institute's Korean board (newest 3 November) and English board (24 December 2024), the science ministry's press titles (including results dated 13 November) and the government's policy news. Left for review: the programme of 80 citizen AI safety monitors announced on 12 November, and whether collecting incidents from citizens belongs in the testing-capacity notes; the citizens are not institute staff. The ministry's attachments and the institute's root site could not be opened. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-14",
+            "scope": "Sources checked for developments from 13 November 2026: the institute's Korean board (newest 3 November), its English home page and English board (stale, newest 24 December 2024), the science ministry's press hub (13 November), korea.kr policy news (13 November) and korea.kr's release of 12 November on the AI Safety Guardians, which are already recorded. No new institute fact was found. English coverage is incomplete. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -36336,6 +36379,10 @@
           {
             "date": "2026-11-13",
             "scope": "Post-release news re-check from 10 November 2026: the institute's resources (newest 23 July), the MDDI newsroom (10 November) and IMDA's press list, whose items could be read only without dates; complete current dates for that list remain unresolved. The cybersecurity speech of 10 November concerns other funding, not the institute. No update was found in the material checked. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-14",
+            "scope": "Sources checked for developments from 13 November 2026: the institute's site and resources (newest 23 July) and MDDI's newsroom (13 November), including the minister's speech of 13 November and the release on the Washington visit (dateline 14 November). Neither gives the institute a role. Older, undated IMDA releases were read, but the first page of IMDA's current press list could not be recovered. No new institute fact was found. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -36811,6 +36858,10 @@
           {
             "date": "2026-11-13",
             "scope": "Post-release news re-check from 10 November 2026: the institute page, the department's news (13 November) and publications (9 November), the central ministerial media listing (11 November) and the industry minister's page (12 November), and the Joint Select Committee's answers on notice (newest received 5 November). The regulator proposal and the Rapid Review of 10 November are already in the record; no later name, bill or implementation step for either concerning the institute was found. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-14",
+            "scope": "Sources checked for developments from 13 November 2026: the institute page (undated), the department's news (13 November) and publications (9 November), the ministers' media page (13 November; Senator Ayres's newest item 12 November) and the Joint Select Committee on AI's answers on notice (to 5 November). Beyond the 10 November announcement already recorded, no new formal name, introduced bill or further detail of its relation to the institute was found for the proposed AI safety regulator, and no new institute publication. Individual ministers' archives and unlisted committee answers were not all checked. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -37355,6 +37406,10 @@
           {
             "date": "2026-11-13",
             "scope": "Post-release news re-check from 10 November 2026: the institute page, AI Malaysia news (the listing returned was stale, newest 14 May), the ministry's releases (5 November) and the digital Hansard of 28 October. No update was found in the material checked. Whether that Hansard is final could not be confirmed; the allocation it mentions is for the parent body, and the Supply Bill 2027 schedules were not found, so no institute allocation is recorded. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-14",
+            "scope": "Sources checked for developments from 13 November 2026: the institute page (undated), AI Malaysia's news (stale, newest 14 May), the digital ministry's releases list (stale, newest 17 June 2025) and home page (13 November), its release of 13 November, which still describes the institute as being established, and its budget release of 6 November. The 2027 budget estimates give AI Malaysia, the host, RM9,000,000 for 2026 and RM13,663,400 for 2027, as the host's estimates rather than an institute allocation. Neither finding has been added to the data. The new sources report no testing, staff, output or agreement. The Hansard of 28 October is still marked draft; the Supply Bill schedules, their adoption and how the estimates relate to the recorded nearly MYR15m are unresolved. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -37604,6 +37659,10 @@
           {
             "date": "2026-11-13",
             "scope": "Post-release news re-check from 10 November 2026: MeitY's What's New (12 November) and press releases (newest 21 January 2025). Current IndiaAI news and the ministry's notices and publications pages could not be read. No released consultation paper on AI regulation was found, which does not establish that none has been released. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-14",
+            "scope": "Sources checked for developments from 13 November 2026: MeitY's What's New (12 November), press releases (newest 21 January 2025), orders and notices (21 October) and gazette notifications (16 December 2025), and IndiaAI's news, which was stale (newest 17 September 2024; archived copy 9 September 2024). IndiaAI's current news could not be recovered, and its current publications remain unverified. A Moneycontrol report of 4 November describes a consultation paper as forthcoming; no released paper was found, which does not establish that none has been released. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -37791,6 +37850,10 @@
           {
             "date": "2026-11-13",
             "scope": "Post-release news re-check from 10 November 2026: the ICT ministry's news (10 November), policy documents (newest individually dated entry 22 January 2026) and speeches (20 September), the Cabinet briefs (newest recovered 10 February), the Senate Hansard of 7 October, which records the tabling of the ICT committee's report on the AI Bill without its recommendations, and the July draft policy's institute provision. The security operations centre of 10 November is not a qualifying institute. No adoption of the draft AI policy was found; the committee report itself was not read, and the committee's debate and current Cabinet coverage remain open. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-14",
+            "scope": "Sources checked for developments from 13 November 2026: the ICT ministry's home page (10 November), news (3 November), policy documents (newest dated title 22 January 2026, with undated items) and speeches and press releases (20 September), the Cabinet despatches (newest read 9 October) and the President's Cabinet briefs (10 February). No adoption of the draft AI policy and no act on the institute was found. A Mt Kenya Times report of 13 November on a court judgment of 12 November describes the policy as awaiting Cabinet approval; the judgment itself was not read, and the report is not evidence of adoption. Parliament's catalogue entry for its report on the AI Bill was read (issued 7 August, catalogued 12 October), but the report itself could not be retrieved. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound"
@@ -74796,50 +74859,6 @@
                 "id": "related_bodies-fd0ceba52edc5398bd88a11e86d08191"
               },
               "designation_state"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "RO"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-03de3ed9fce1599086859988ee0f1375"
-              },
-              "designation_state"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "RO"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-e807d1407eee5c629ed36715ef6c83fb"
-              },
-              "designation_state"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "RO"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-b464dd1e1850581787b25c4dcc15162c"
-              },
-              "designation_state"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "RO"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-e4aedc56b2195fbaac83fa27f0837454"
-              },
-              "designation_state"
             ]
           ],
           "accessed": "2026-11-10"
@@ -76060,50 +76079,6 @@
                 "id": "related_bodies-fd0ceba52edc5398bd88a11e86d08191"
               },
               "designation_state"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "RO"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-03de3ed9fce1599086859988ee0f1375"
-              },
-              "designation_state"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "RO"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-e807d1407eee5c629ed36715ef6c83fb"
-              },
-              "designation_state"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "RO"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-b464dd1e1850581787b25c4dcc15162c"
-              },
-              "designation_state"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "RO"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-e4aedc56b2195fbaac83fa27f0837454"
-              },
-              "designation_state"
             ]
           ],
           "accessed": "2026-11-14"
@@ -77210,6 +77185,133 @@
             ]
           ],
           "gloss": "ANCOM was proposed to act as national market-surveillance authority."
+        },
+        {
+          "text": "ANCOM a fost propusă să exercite rolul de autoritate națională de supraveghere a pieței și punct național unic de contact, alături de alte autorități desemnate drept autorități de supraveghere a pieței, precum: Autoritatea de Supraveghere Financiară și Banca Națională a României",
+          "gloss": "ANCOM was proposed to act as national market-surveillance authority and single point of contact, alongside other authorities designated as market-surveillance authorities, such as the Financial Supervisory Authority and the National Bank of Romania",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "RO"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-e807d1407eee5c629ed36715ef6c83fb"
+              },
+              "role"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "RO"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-b464dd1e1850581787b25c4dcc15162c"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "Autoritatea Națională de Supraveghere a Prelucrării Datelor cu Caracter Personal – pentru sistemele de IA cu grad ridicat de risc din domeniul biometriei",
+          "gloss": "the National Supervisory Authority for Personal Data Processing, for high-risk AI systems in biometrics",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "RO"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-e4aedc56b2195fbaac83fa27f0837454"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "În prezent, autoritățile competente desemnate prin Memorandum lucrează, împreună cu alte autorități sectoriale, la elaborarea cadrului legislativ național necesar punerii în aplicare a Regulamentului",
+          "gloss": "At present, the competent authorities designated by Memorandum are working, together with other sectoral authorities, on drafting the national legal framework needed to implement the Regulation",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "RO"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-e807d1407eee5c629ed36715ef6c83fb"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "RO"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-b464dd1e1850581787b25c4dcc15162c"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "RO"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-e4aedc56b2195fbaac83fa27f0837454"
+              },
+              "designation_state"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "act normativ care va stabili, printre altele: autoritățile de supraveghere a pieței și atribuțiile acestora",
+          "gloss": "a legal act that will establish, among other things, the market-surveillance authorities and their tasks",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "RO"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-e807d1407eee5c629ed36715ef6c83fb"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "RO"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-b464dd1e1850581787b25c4dcc15162c"
+              },
+              "designation_state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "RO"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-e4aedc56b2195fbaac83fa27f0837454"
+              },
+              "designation_state"
+            ]
+          ],
+          "accessed": "2026-11-14"
         }
       ],
       "origin": "RO",
@@ -120498,6 +120600,23 @@
         "Kenya: the notes call the institute's status planned, as recorded.",
         "Page: the command palette offers the light, dark and system themes as separate actions.",
         "Partial news re-checks of 13 November 2026 are recorded for all 15 institutes, with what was read and what could not be."
+      ]
+    },
+    {
+      "date": "2026-11-14",
+      "version": "1.0.10",
+      "summary": "Every status change now carries a quote from a primary source, with one listed exception. Among the corrections, the Maldives' lead body is now the Maldives Digital Service.",
+      "changes": [
+        "Method: a new rule, primary evidence for status changes. Every act that moves a status, and every launch date, now carries a quote from a primary source; a primary source published on the act's date carries that date. The one exception is Korea's commitment of 22 May 2024, for which no government text of the minister's remarks was found; its source says what was searched.",
+        "Maldives: the National Centre for Information Technology was abolished on 15 January 2026; the Maldives Digital Service, which took over its responsibilities, is now the related body, cited from the President's Office.",
+        "Antigua and Barbuda: the UNESCO readiness assessment is recorded as completed, as a July 2026 regional report says.",
+        "Bulgaria: the AI Act bill was rejected at first reading in committee on 4 November 2026. Cyprus: the national AI strategy was approved on 10 November 2026.",
+        "United States: the institute's current name is dated by NIST's own page as archived on 30 September 2026, not 3 October.",
+        "Wording narrowed to what the cited sources say, in the summaries, notes or related bodies of Australia, Burkina Faso, Cameroon, Canada, the Central African Republic, Estonia, France, Haiti, Iraq, Kuwait, Lesotho, Luxembourg, Madagascar, Malta, Norway, Oman, Pakistan, Paraguay, Romania, Saint Kitts and Nevis, Saudi Arabia, Trinidad and Tobago and Tunisia.",
+        "Bills: each bill described gives its latest formal step with its date (Brazil, Finland, Mexico, Bulgaria).",
+        "European related bodies: every one now cites a source, among them Austria's AI service desk, Liechtenstein's digital innovation office, Luxembourg's and Romania's AI Factories and Greece's AI coordination centre and sandbox; names no longer carry a stage, which is in the role with a quote (Bulgaria, Cyprus, Iceland).",
+        "AI Act authorities: the designation state of the authorities in 24 countries is now quoted, from the Commission's list of 9 November 2026 or from the national act or account where the list has no entry, names only the contact point or differs from the act. One Romanian authority, the notifying authority ADR, has no quote for its state yet.",
+        "Partial news re-checks of 14 November 2026 are recorded for all 15 institutes, with what was read and what could not be."
       ]
     }
   ]
