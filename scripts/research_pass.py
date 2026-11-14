@@ -187,6 +187,37 @@ def _paths(value: Any, prefix: str = "") -> set[str]:
     return found
 
 
+def _schema_paths(node: Any, schema: Json, prefix: str = "", refs: frozenset[str] = frozenset()) -> set[str]:
+    """Every dotted property path a schema node allows; list items share their list's path."""
+    if not isinstance(node, dict):
+        return set()
+    found: set[str] = set()
+    ref = node.get("$ref")
+    if isinstance(ref, str) and ref.startswith("#/") and ref not in refs:
+        target: Any = schema
+        for part in ref[2:].split("/"):
+            target = target[part]
+        found |= _schema_paths(target, schema, prefix, refs | {ref})
+    for key in ("allOf", "anyOf", "oneOf"):
+        for sub in node.get(key, []):
+            found |= _schema_paths(sub, schema, prefix, refs)
+    found |= _schema_paths(node.get("items"), schema, prefix, refs)
+    for key, child in (node.get("properties") or {}).items():
+        path = f"{prefix}.{key}" if prefix else key
+        found |= {path} | _schema_paths(child, schema, path, refs)
+    return found
+
+
+def known_fields(data: dict[str, Any]) -> set[str]:
+    """Field paths a scope may name: what the published schema allows on a jurisdiction or
+    institute record, so a field no record carries yet is known, plus every key path the
+    records have."""
+    schema = json.loads((ROOT / "schema" / "aisi.schema.json").read_text(encoding="utf-8"))
+    allowed = set().union(*(_schema_paths(schema["properties"][kind]["items"], schema)
+                            for kind in ("jurisdictions", "institutes")))
+    return allowed | {path for rows in (data["jurisdictions"], data["institutes"]) for row in rows for path in _paths(row)}
+
+
 def search_tools(events: list[Json]) -> set[str]:
     """Tools of logged executions that ran a search operation."""
     return {e["tool"]["name"] for e in events if any(op.get("kind") == "search" for op in e["operations"])}
@@ -207,7 +238,7 @@ def _scope_problems(scope: dict[str, list[str]], data: dict[str, Any]) -> list[s
     known = {
         "states": {j["id"] for j in data["jurisdictions"]},
         "institutes": {i["id"] for i in data["institutes"]},
-        "fields": {path for rows in (data["jurisdictions"], data["institutes"]) for row in rows for path in _paths(row)},
+        "fields": known_fields(data),
     }
     problems = []
     if not any(scope.values()):
