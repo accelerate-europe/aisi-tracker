@@ -474,11 +474,22 @@
           "definition": "It runs, or a text tasks it to set up or run, a regulatory sandbox where AI is developed or tested under a regulator's supervision.",
           "group": "Rules"
         }
+      },
+      "development": {
+        "public_body": {
+          "label": "Named public body or programme",
+          "definition": "The quoted act creates, funds or assigns a named public body or national programme for AI."
+        },
+        "testing_duty": {
+          "label": "Testing duty",
+          "definition": "The quoted act requires or plans testing, assessment or certification of AI systems."
+        }
       }
     },
     "provisional": [
       "institutes[].functions",
-      "vocabularies.function"
+      "vocabularies.function",
+      "vocabularies.development"
     ],
     "network_milestones": [
       {
