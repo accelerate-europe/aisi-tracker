@@ -112,6 +112,20 @@ def test_rejected_finding_needs_reason(tmp_path):
     assert any("'reason' is a required property" in p for p in problems)
 
 
+@pytest.mark.parametrize("url, refused", [
+    ("https://www.linkedin.com/in/someone-123", True),
+    ("https://uk.linkedin.com/pub/someone", True),
+    ("https://www.linkedin.com:443/in/someone", True),
+    ("HTTPS://LinkedIn.com/IN/someone/", True),
+    ("https://www.linkedin.com/company/some-agency", False),
+    ("https://www.instagram.com/official_ministry", False),
+])
+def test_personal_profile_never_enters_findings(tmp_path, url, refused):
+    finding = {"url": url, "scope": "it-aisi", "verdict": "rejected", "reason": "secondary"}
+    problems = research_pass.validate_pass(make(tmp_path, findings=[finding]), DATA)
+    assert any("personal profile URL" in p for p in problems) is refused, problems
+
+
 def test_store_location(monkeypatch, tmp_path):
     monkeypatch.delenv("AISI_PASSES", raising=False)
     monkeypatch.setenv("AISI_SNAPSHOTS", str(tmp_path / "private/sources"))
