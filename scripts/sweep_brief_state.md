@@ -14,7 +14,7 @@ $states
 
 ## Per state
 
-1. **Re-read.** Split the summary, the notes and every related body's role (for a state with an institute, also the institute's notes, head and mandate) into sentences. For each: does a cited source's saved copy carry it, and does anything else in the record contradict it? A sentence in the present tense about a body, bill, draft or pilot gets a check that it still holds (step 2).
+1. **Re-read.** Re-read every field of the record that states a fact, and every such field of each institute in the packet: summaries, notes, related bodies and their roles, timeline events, the closest body, and for an institute its names, host, legal form, mandate, legal basis, placement, head, people, reporting line, funding, staff, staffing, agreements, national partners, testing capacity, model access and outputs. Skip only identifiers and bookkeeping (`id`, `*source_ids`, `check`, `next_check`, `wikidata`, identifier fields). Split text into sentences and values into single claims. For each: does a cited source's saved copy carry it, and does anything else in the record contradict it? A claim in the present tense about a body, bill, draft or pilot gets a check that it still holds (step 2).
 2. **Search by name.** One search per body, act, law, bill (with its number), strategy, plan or programme the record names (`entity_seeds` plus the names in the text), in English and, where the name has a local form, in the main official language. Look for dissolved, renamed, merged, adopted, rejected, withdrawn, completed, launched, appointed. For a bill, find its latest formal step and that step's date.
 3. **Search by topic.** Run each of the state's `topic_queries` exactly as given. Check that each result concerns this state: some names are shared (Georgia and the US state, Guinea and its neighbours, the two Congos, Sudan and South Sudan).
 4. **Window.** Look for items published from the state's window date above. A search by name about whether a named body or act still stands looks back to the date of the evidence the record cites for it.
@@ -37,6 +37,6 @@ Append to `findings.jsonl`, one JSON object per line, one claim per line:
 
 ## Closing
 
-- In `sweep.json`, set each state to `complete` when every step above is done for it, or to `incomplete: <reason>` (blocked sources, quota, time). Only a `complete` state moves its next window.
+- In `sweep.json`, set each state to `complete` only when every claim-bearing field in step 1 was re-read and steps 2 to 4 are done for it; otherwise `incomplete: <reason>` (fields not re-read, blocked sources, quota, time). Only a `complete` state moves its next window.
 - `notes.md`: one line per state, starting `- <STATE>:`, with what you read, what you found and what was left and why; then "Blocked sources" (URL and what each route returned) and "Rule questions" (a finding that fits no method rule, or only by stretching one, is a `rejected` row whose reason starts `RULE GAP:`).
 - End with a short summary in the chat: candidates and leads per state, states incomplete and why.

@@ -102,6 +102,19 @@ def test_refuses_to_overwrite_and_bad_input_before_writing(store, snapshots):
     assert sorted(p.name for p in store.iterdir()) == ["2026-11-23-sweep-w48"]
 
 
+def test_a_failed_preparation_leaves_nothing_and_can_be_retried(store, snapshots):
+    manifest = snapshots / "mv-page" / "manifest.json"
+    good = manifest.read_text()
+    manifest.write_text("{not json")
+    with pytest.raises(ValueError):
+        prepare(store, snapshots)
+    assert list(store.iterdir()) == []  # neither the pass folder nor a partial one
+    manifest.write_text(good)
+    folder = prepare(store, snapshots)
+    assert folder.name == "2026-11-23-sweep-w48" and (folder / "brief.md").is_file()
+    assert [p.name for p in store.iterdir()] == ["2026-11-23-sweep-w48"]
+
+
 def test_a_new_store_is_created_on_first_use(tmp_path, snapshots):
     folder = prepare(tmp_path / "new" / "passes", snapshots)
     assert json.loads((folder / "sweep.json").read_text())["windows"]["MV"] == "2024-11-23"
@@ -166,5 +179,7 @@ def test_query_table_covers_every_jurisdiction_once_per_query():
 
 
 def test_cli_without_a_store_is_not_run(monkeypatch, capsys):
+    monkeypatch.delenv("AISI_PASSES", raising=False)
+    monkeypatch.delenv("AISI_SNAPSHOTS", raising=False)
     assert sweep.main(["state", "2026-11-23-sweep-w48", "--who", "M", "--states", "MV"]) == sweep.NOT_RUN
     assert "NOT RUN" in capsys.readouterr().err

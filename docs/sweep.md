@@ -2,7 +2,7 @@
 
 Two kinds of research pass keep records current between releases. `scripts/sweep.py` prepares them; they run and close like any other pass ([research passes](research-passes.md)).
 
-- **Per-state re-check** (pass type `targeted`): a few states a week. For each, an agent re-reads every sentence of the record against the saved copies of its cited sources, searches by the name of every body, act and bill the record names, runs the state's two fixed topic queries, and records what is stale, contradicted, unsupported or new. It finds facts that have gone stale. It does not reliably find new facts that the record does not name.
+- **Per-state re-check** (pass type `targeted`): a few states a week. For each, an agent re-reads every sentence of the record against the saved copies of its cited sources, searches by the name of every body, act and bill the record names, runs the state's fixed topic queries (one in English for each of the 195 jurisdictions, one more in the main official language for 142 where that is not English, and a third for Belgium), and records what is stale, contradicted, unsupported or new. It finds facts that have gone stale. It does not reliably find new facts that the record does not name.
 - **Global topic sweep** (pass type `news-sweep`): once a month, 15 fixed cross-country queries (three topics in five languages) over the 60 days to the month's last day (both ends included), triaged against the published data. It finds new facts in any state, most within a month, and misses quiet steps and items published only in other languages.
 
 Neither edits the data. The data session takes a pass's `candidate` findings only after an agent of the other model family has checked each against its excerpt, and names the pass in its commit (`Research-pass:`).
@@ -33,6 +33,11 @@ A state's window starts at `--since` if given; else at the start of the newest c
 ## Findings
 
 Pass findings format ([research passes](research-passes.md#findings)), one claim per line and one exact quotation per claim: `reason` gives the kind (`STALE`, `CONTRADICTED`, `UNSUPPORTED`, `NEW`), the field, the current text and the proposed sentence; `excerpt` carries the whole proposed sentence. A candidate needs a primary source of the state itself; anything else is recorded as `rejected` with a reason starting `LEAD:`. This screening threshold is stricter than what the dataset admits (`dataset.method`, source preference).
+
+## Known limits
+
+- Country names: each topic query uses one form of the state's name (for example "People's Republic of China" rather than "China", "Ivory Coast" rather than "Côte d'Ivoire", "Turkey" rather than "Türkiye"), so items that use only another form can be missed. The searches by the names the record states and the agent's follow-up queries cover part of this; the table is not extended with aliases.
+- Eritrea has no query in Tigrinya: English is among its government's working languages, so its topic query is in English only.
 
 ## Calibration (14 November 2026)
 

@@ -24,7 +24,10 @@ import csv
 import json
 import os
 import re
+import shutil
 import sys
+import tempfile
+from collections.abc import Callable
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from string import Template
@@ -217,12 +220,20 @@ def check_pass_id(pass_id: str) -> date:
     raise SystemExit(f"pass ID {pass_id!r}: a real start date and a short slug, e.g. 2026-11-23-sweep-w48")
 
 
-def new_folder(store: Path, pass_id: str) -> Path:
+def build_folder(store: Path, pass_id: str, fill: Callable[[Path], None]) -> Path:
+    """Fill a hidden temporary sibling, then rename it to the pass folder: a failure leaves nothing behind."""
     check_pass_id(pass_id)
     folder = store / pass_id
     if folder.exists():
         raise SystemExit(f"{folder} exists; a pass folder is never overwritten")
-    folder.mkdir(parents=True)
+    store.mkdir(parents=True, exist_ok=True)
+    partial = Path(tempfile.mkdtemp(prefix=f".{pass_id}-", dir=store))
+    try:
+        fill(partial)
+        partial.rename(folder)
+    except BaseException:
+        shutil.rmtree(partial, ignore_errors=True)
+        raise
     return folder
 
 
@@ -240,19 +251,21 @@ def prepare_state(store: Path, snapshots: Path, data: dict, pass_id: str, who: s
         raise SystemExit(f"a state is listed twice: {states}")
     today = check_pass_id(pass_id)
     windows = {s: window_start(store, s, today, since) for s in states}
-    folder = new_folder(store, pass_id)
-    for state in states:
-        target = folder / "packets" / state
-        target.mkdir(parents=True)
-        write_json(target / "packet.json", packet(state, data, snapshots, target, windows[state]))
-    write_json(folder / research_pass.PASS_FILE, pass_file(pass_id, who, "state", states))
-    write_json(folder / SWEEP_FILE, {"kind": "state", "windows": {s: d.isoformat() for s, d in windows.items()},
-                                     "states": {s: "pending" for s in states}})
-    (folder / research_pass.FINDINGS_FILE).touch()
-    lines = "\n".join(f"- {s} ({juris_name(data, s)}): search window from {windows[s].isoformat()}" for s in states)
-    (folder / "brief.md").write_text(render("state", {"pass_id": pass_id, "states": lines, "as_of": data["dataset"]["as_of"],
-                                                       "version": data["dataset"]["version"]}), encoding="utf-8")
-    return folder
+
+    def fill(folder: Path) -> None:
+        for state in states:
+            target = folder / "packets" / state
+            target.mkdir(parents=True)
+            write_json(target / "packet.json", packet(state, data, snapshots, target, windows[state]))
+        write_json(folder / research_pass.PASS_FILE, pass_file(pass_id, who, "state", states))
+        write_json(folder / SWEEP_FILE, {"kind": "state", "windows": {s: d.isoformat() for s, d in windows.items()},
+                                         "states": {s: "pending" for s in states}})
+        (folder / research_pass.FINDINGS_FILE).touch()
+        lines = "\n".join(f"- {s} ({juris_name(data, s)}): search window from {windows[s].isoformat()}" for s in states)
+        (folder / "brief.md").write_text(render("state", {"pass_id": pass_id, "states": lines, "as_of": data["dataset"]["as_of"],
+                                                           "version": data["dataset"]["version"]}), encoding="utf-8")
+
+    return build_folder(store, pass_id, fill)
 
 
 def juris_name(data: dict, state: str) -> str:
@@ -264,16 +277,18 @@ def prepare_global(store: Path, data: dict, pass_id: str, who: str, month: str) 
     first = date.fromisoformat(f"{month}-01")
     end = (first.replace(day=28) + timedelta(days=4)).replace(day=1) - timedelta(days=1)
     since = end - timedelta(days=GLOBAL_WINDOW_DAYS - 1)  # 60 calendar days, both ends included
-    folder = new_folder(store, pass_id)
-    write_json(folder / research_pass.PASS_FILE, pass_file(pass_id, who, "global", ["all"]))
-    write_json(folder / SWEEP_FILE, {"kind": "global", "month": month, "window": [since.isoformat(), end.isoformat()]})
-    (folder / research_pass.FINDINGS_FILE).touch()
     queries = "\n".join(f"- `{topic}:{lang}`: {query}" for topic, langs in GLOBAL_QUERIES.items()
                         for lang, query in langs.items())
-    (folder / "brief.md").write_text(render("global", {"pass_id": pass_id, "since": since.isoformat(), "until": end.isoformat(),
-                                                        "queries": queries, "as_of": data["dataset"]["as_of"],
-                                                        "version": data["dataset"]["version"]}), encoding="utf-8")
-    return folder
+
+    def fill(folder: Path) -> None:
+        write_json(folder / research_pass.PASS_FILE, pass_file(pass_id, who, "global", ["all"]))
+        write_json(folder / SWEEP_FILE, {"kind": "global", "month": month, "window": [since.isoformat(), end.isoformat()]})
+        (folder / research_pass.FINDINGS_FILE).touch()
+        (folder / "brief.md").write_text(render("global", {"pass_id": pass_id, "since": since.isoformat(), "until": end.isoformat(),
+                                                            "queries": queries, "as_of": data["dataset"]["as_of"],
+                                                            "version": data["dataset"]["version"]}), encoding="utf-8")
+
+    return build_folder(store, pass_id, fill)
 
 
 def main(argv: list[str] | None = None) -> int:
