@@ -28704,7 +28704,30 @@
             "scope": "Sources checked for developments from 13 November 2026: the institute's home, blog and research pages (newest 26 October), its GOV.UK organisation page (12 October), DSIT's page (newest document 4 November), the Cabinet Office's news (12 November), Parliament's home page (answers of 12 November), the written-statements listing (13 November), the daily-reports listing (stale, newest 27 March 2026) and the machinery-of-government fact sheet of 22 July, updated 27 July. No new institute item was found. The fact sheet says responsibility 'will move', so the date the move to the Cabinet Office took effect is still unresolved. The daily reports of 13 November could not be retrieved, so written answers of that day are incompletely checked. Partial check, not a full record re-check."
           }
         ],
-        "last_checked_basis": "historical_upper_bound"
+        "last_checked_basis": "historical_upper_bound",
+        "functions": {
+          "date": "2026-11-14",
+          "codes": [
+            "model_testing",
+            "evaluation_methods",
+            "research",
+            "standards_guidance",
+            "regulatory_enforcement",
+            "regulatory_support",
+            "risk_monitoring",
+            "foresight",
+            "policy_advice",
+            "incident_response",
+            "international_cooperation",
+            "convening",
+            "capacity_building",
+            "talent",
+            "adoption",
+            "public_access_continuity",
+            "certification",
+            "sandbox"
+          ]
+        }
       },
       "source_ids": [
         "gb-aisi-launch",
@@ -30766,6 +30789,56 @@
             "gb-taskforce-rename"
           ],
           "text": "The Frontier AI Taskforce said it now has a growing team of AI researchers."
+        },
+        {
+          "id": "claims-3e1cd8160012411a89b7e5c3a89d9f4d",
+          "kind": "function",
+          "code": "model_testing",
+          "basis": "activity",
+          "text": "NIST's report says that, with the US institute, it ran a joint pre-deployment evaluation of Anthropic's latest model.",
+          "source_ids": [
+            "us-claude35-2024"
+          ]
+        },
+        {
+          "id": "claims-ea01a460654d4b5fbd8befb466f92acf",
+          "kind": "function",
+          "code": "evaluation_methods",
+          "basis": "activity",
+          "text": "The government's announcement says it has open released a new testing platform to strengthen AI safety evaluations.",
+          "source_ids": [
+            "depth-gb-inspect"
+          ]
+        },
+        {
+          "id": "claims-82020cebb1ad4568b35afce6b56d6d6e",
+          "kind": "function",
+          "code": "research",
+          "basis": "mandate",
+          "text": "The government's renaming announcement says it will launch a criminal misuse team that works with the Home Office to research crime and security issues that threaten British citizens.",
+          "source_ids": [
+            "gb-rename"
+          ]
+        },
+        {
+          "id": "claims-ab919cf85a8a4e988b93d35f76dcc556",
+          "kind": "function",
+          "code": "international_cooperation",
+          "basis": "mandate",
+          "text": "The UK-Japan partnership statement commits to deepening cooperation between Japan AISI and it on the science of AI evaluation through the International Network for Advanced AI Measurement, Evaluation and Science.",
+          "source_ids": [
+            "gb-jp-frontier-tech-partnership-2026"
+          ]
+        },
+        {
+          "id": "claims-9b738056fb284533b4951aec055d0399",
+          "kind": "function",
+          "code": "adoption",
+          "basis": "mandate",
+          "text": "The government's renaming announcement says a revitalised institute will boost public confidence in AI and drive its uptake across the economy.",
+          "source_ids": [
+            "gb-rename"
+          ]
         }
       ]
     },
@@ -30885,7 +30958,30 @@
             "date": "2026-11-14",
             "text": "Searched for a budget amount or staff count for INESIA itself: Senate and National Assembly reports on the 2026 and 2027 finance bills for programmes 129 and 134, parliamentary written questions, SGDSN, DGE and economy ministry press releases, the SGDSN roadmap and a parliamentary mission report to the Prime Minister, in French and English. The only figure found is the EUR 13.5m Inria programme already recorded as not specific to the institute; no staff count was found."
           }
-        ]
+        ],
+        "functions": {
+          "date": "2026-11-14",
+          "codes": [
+            "model_testing",
+            "evaluation_methods",
+            "research",
+            "standards_guidance",
+            "regulatory_enforcement",
+            "regulatory_support",
+            "risk_monitoring",
+            "foresight",
+            "policy_advice",
+            "incident_response",
+            "international_cooperation",
+            "convening",
+            "capacity_building",
+            "talent",
+            "adoption",
+            "public_access_continuity",
+            "certification",
+            "sandbox"
+          ]
+        }
       },
       "source_ids": [
         "fr-dge",
@@ -30901,7 +30997,8 @@
         "j7-fr-inria-about",
         "j8-fr-anssi-home-render",
         "fr-elysee-commission-ia-2026",
-        "fr-commission-ia-report-2026"
+        "fr-commission-ia-report-2026",
+        "r3-gb-network-best-practice-release"
       ],
       "notes": "Adopted a 2026-27 roadmap in Feb 2026. The named June 2025 joint-testing contribution was verified. SGDSN's network-representation statement was read on 17 October 2026, and a complete archived copy of the article was retained on 18 October; direct retrieval of the original remains blocked by a cookie-validation page. Other French testing work is credited to Inria, LNE and PEReN rather than to INESIA.\n\nOn 10 November 2026 the French presidency announced the handover of the report of the expert commission on generative AI and vulnerabilities; the report recommends strengthening INESIA's mandate and resources, with lasting funding and recruitment of experts. These are recommendations, not adopted changes.",
       "mandate_short": "Builds public expertise in evaluating and securing advanced AI, and supports AI Act implementation.",
@@ -31189,7 +31286,29 @@
           "fr-inria-vacancy-2026-10640"
         ],
         "notes": "Inria recruits for its part in INESIA: an Inria vacancy for an AI evaluation engineer (PentestIA, Rennes; two-year contract; applications until 20 December 2026) is to work with INESIA's members on agentic benchmarks for the AI evaluation platform. These are posts of a member body, not INESIA headcount."
-      }
+      },
+      "claims": [
+        {
+          "id": "claims-52c093ce32d642879dd28ea647b28d19",
+          "kind": "function",
+          "code": "evaluation_methods",
+          "basis": "activity",
+          "text": "The UK AI Security Institute's release says it published 'What should evaluators prioritise when resources are limited?'",
+          "source_ids": [
+            "r3-gb-network-best-practice-release"
+          ]
+        },
+        {
+          "id": "claims-dfc050ba4d914cea9513bf82f7938dbc",
+          "kind": "function",
+          "code": "convening",
+          "basis": "mandate",
+          "text": "The government's founding announcement gives it the mission of federating the national evaluation and security bodies.",
+          "source_ids": [
+            "fr-dge"
+          ]
+        }
+      ]
     },
     {
       "id": "de-aisi",
@@ -31315,7 +31434,30 @@
             "date": "2026-11-14",
             "text": "Searched for a budget amount or staff count for AISI Deutschland itself: the government's answers in Bundestag papers 21/8727 and 21/8470, budget section 24 of the 2027 draft and the budget committee's November papers, BSI and federal government pages and ministry press, in German and English. No figure for the institute was found; the amounts found were demands by industry associations."
           }
-        ]
+        ],
+        "functions": {
+          "date": "2026-11-14",
+          "codes": [
+            "model_testing",
+            "evaluation_methods",
+            "research",
+            "standards_guidance",
+            "regulatory_enforcement",
+            "regulatory_support",
+            "risk_monitoring",
+            "foresight",
+            "policy_advice",
+            "incident_response",
+            "international_cooperation",
+            "convening",
+            "capacity_building",
+            "talent",
+            "adoption",
+            "public_access_continuity",
+            "certification",
+            "sandbox"
+          ]
+        }
       },
       "source_ids": [
         "de-bmds",
@@ -31521,7 +31663,69 @@
           "de-bt-8727-2026"
         ],
         "notes": "In the first phase BSI covers (cyber) security and BNetzA safety, and other security-sector bodies are to be closely involved; a second phase is to expand the institute's capacity. The government's answer of 19 October 2026 confirms that no separate posts are allocated for the first phase: the virtual BSI/BNetzA nucleus uses the two bodies' existing resources and expertise. This is not a staff count."
-      }
+      },
+      "claims": [
+        {
+          "id": "claims-4899423fbe8f468abc4f746b5a0e7f16",
+          "kind": "function",
+          "code": "model_testing",
+          "basis": "mandate",
+          "text": "Its founding ministries' launch statement makes analysing and evaluating leading AI models, above all their cybersecurity capabilities and risks, an important focus of its current first phase.",
+          "source_ids": [
+            "de-bmds"
+          ]
+        },
+        {
+          "id": "claims-866d5377003a4ca4b18da0427f9b056c",
+          "kind": "function",
+          "code": "risk_monitoring",
+          "basis": "mandate",
+          "text": "Its core tasks, as listed on the BSI's page for the institute, include international technology watch and situation analysis.",
+          "source_ids": [
+            "de-bsi-aisi"
+          ]
+        },
+        {
+          "id": "claims-6252a1aee1ce47e5934c14e2f6414ee9",
+          "kind": "function",
+          "code": "foresight",
+          "basis": "mandate",
+          "text": "The federal government's AI taskforce report says it provides current situation pictures with early-warning indicators.",
+          "source_ids": [
+            "de-ki-taskforce-2030"
+          ]
+        },
+        {
+          "id": "claims-732aa6558a8f4026946a3db397f09e36",
+          "kind": "function",
+          "code": "policy_advice",
+          "basis": "mandate",
+          "text": "Its core tasks, as listed on the BSI's page for the institute, include strategic advice to the federal government on AI-related security and sovereignty questions.",
+          "source_ids": [
+            "de-bsi-aisi"
+          ]
+        },
+        {
+          "id": "claims-96eb21a1b34e413ea7b8bee6184d7ec3",
+          "kind": "function",
+          "code": "international_cooperation",
+          "basis": "mandate",
+          "text": "Its founding ministries' announcement says it will work closely with comparable institutions in other states and with multilateral structures.",
+          "source_ids": [
+            "de-bmds"
+          ]
+        },
+        {
+          "id": "claims-b9096da85c9740b981c2915bd324605a",
+          "kind": "function",
+          "code": "convening",
+          "basis": "mandate",
+          "text": "The federal government's announcement of its opening says it is to act as the central interface for analysing and countering the new security risks that rapid progress in AI brings.",
+          "source_ids": [
+            "de-breg"
+          ]
+        }
+      ]
     },
     {
       "id": "es-isia",
@@ -38282,6 +38486,46 @@
             ]
           ],
           "accessed": "2026-10-19"
+        },
+        {
+          "text": "the Institute will also launch a new criminal misuse team which will work jointly with the Home Office to conduct research on a range of crime and security issues which threaten to harm British citizens.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-82020cebb1ad4568b35afce6b56d6d6e"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17",
+          "anchors": [
+            {
+              "text": "UK's AI Safety Institute becomes 'UK AI Security Institute'",
+              "kind": "definition"
+            }
+          ]
+        },
+        {
+          "text": "A revitalised AI Security Institute will ensure we boost public confidence in AI and drive its uptake across the economy so we can unleash the economic growth that will put more money in people’s pockets.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-9b738056fb284533b4951aec055d0399"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "GB",
@@ -39260,6 +39504,24 @@
           ],
           "accessed": "2026-10-24",
           "gloss": "Their work will cover the analysis of systemic risks in the field of national security, support for implementing AI regulation, and the evaluation of the performance and reliability of AI models."
+        },
+        {
+          "text": "(INESIA), l'État matérialise son engagement en faveur d'un développement maîtrisé de l'IA dans un cadre de confiance et de sécurité. Cet institut a pour mission de fédérer, sans création de nouvelle structure juridique, les acteurs nationaux de l'évaluation et de la sécurité",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "fr-inesia"
+              },
+              "claims",
+              {
+                "id": "claims-dfc050ba4d914cea9513bf82f7938dbc"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17",
+          "gloss": "(INESIA), the State gives concrete form to its commitment to a controlled development of AI within a framework of trust and security. This institute has the mission of federating, without creating a new legal structure, the national actors in evaluation and security"
         }
       ],
       "origin": "FR",
@@ -39425,7 +39687,25 @@
                 "id": "de-aisi"
               },
               "mandate"
+            ],
+            [
+              "institutes",
+              {
+                "id": "de-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-4899423fbe8f468abc4f746b5a0e7f16"
+              },
+              "text"
             ]
+          ],
+          "anchors": [
+            {
+              "text": "richten das AISI Deutschland in Berlin ein",
+              "kind": "definition",
+              "gloss": "are setting up AISI Deutschland in Berlin"
+            }
           ]
         },
         {
@@ -39566,6 +39846,31 @@
           ],
           "accessed": "2026-10-24",
           "gloss": "In a second phase the AI security institute will be expanded further in scope and capacity."
+        },
+        {
+          "text": "Das Institut ist von Beginn an international anschlussfähig und wird eng mit vergleichbaren Einrichtungen anderer Staaten sowie mit multilateralen Strukturen zusammenarbeiten.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "de-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-96eb21a1b34e413ea7b8bee6184d7ec3"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17",
+          "gloss": "From the outset the institute is internationally connectable and will work closely with comparable institutions in other states and with multilateral structures.",
+          "anchors": [
+            {
+              "text": "richten das AISI Deutschland in Berlin ein",
+              "kind": "definition",
+              "gloss": "are setting up AISI Deutschland in Berlin"
+            }
+          ]
         }
       ],
       "origin": "DE",
@@ -39611,6 +39916,24 @@
           ],
           "gloss": "To this end, existing capacities for risk and capability analysis of modern AI models are pooled centrally and expanded by AISI Deutschland.",
           "accessed": "2026-10-21"
+        },
+        {
+          "text": "Rasante Fortschritte in der künstlichen Intelligenz bieten zahlreiche Chancen, bringen aber auch neue Sicherheitsrisiken mit sich: Das neu eröffnete KI-Sicherheitsinstitut AISI Deutschland soll künftig als zentrale Schnittstelle für die Analyse und Abwehr dieser Gefahren agieren.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "de-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-b9096da85c9740b981c2915bd324605a"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17",
+          "gloss": "Rapid progress in artificial intelligence offers many opportunities but also brings new security risks: the newly opened AI security institute AISI Deutschland is in future to act as the central interface for analysing and countering these dangers."
         }
       ]
     },
@@ -51436,6 +51759,56 @@
           ],
           "gloss": "Tasks are divided along the dimensions of (cyber)security (BSI) and safety (BNetzA).",
           "accessed": "2026-10-19"
+        },
+        {
+          "text": "internationale Technologiebeobachtung und Lageanalyse",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "de-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-866d5377003a4ca4b18da0427f9b056c"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17",
+          "gloss": "international technology watch and situation analysis",
+          "anchors": [
+            {
+              "text": "Das AISI Deutschland bündelt technische, strategische und sicherheitspolitische Expertise in einer zentralen Einrichtung. Zu den Kernaufgaben zählen insbesondere:",
+              "kind": "heading",
+              "gloss": "AISI Deutschland brings together technical, strategic and security-policy expertise in one central body. Its core tasks include in particular:"
+            }
+          ]
+        },
+        {
+          "text": "strategische Beratung der Bundesregierung zu KI-bezogenen Sicherheits- und Souveränitätsfragen",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "de-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-732aa6558a8f4026946a3db397f09e36"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17",
+          "gloss": "strategic advice to the federal government on AI-related security and sovereignty questions",
+          "anchors": [
+            {
+              "text": "Das AISI Deutschland bündelt technische, strategische und sicherheitspolitische Expertise in einer zentralen Einrichtung. Zu den Kernaufgaben zählen insbesondere:",
+              "kind": "heading",
+              "gloss": "AISI Deutschland brings together technical, strategic and security-policy expertise in one central body. Its core tasks include in particular:"
+            }
+          ]
         }
       ],
       "origin": "DE",
@@ -58637,6 +59010,17 @@
               },
               "credit",
               "institute_id"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-3e1cd8160012411a89b7e5c3a89d9f4d"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-17"
@@ -65556,6 +65940,17 @@
               },
               "credit",
               "institute_id"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-ea01a460654d4b5fbd8befb466f92acf"
+              },
+              "text"
             ]
           ]
         }
@@ -88194,6 +88589,17 @@
               },
               "credit",
               "institute_id"
+            ],
+            [
+              "institutes",
+              {
+                "id": "fr-inesia"
+              },
+              "claims",
+              {
+                "id": "claims-52c093ce32d642879dd28ea647b28d19"
+              },
+              "text"
             ]
           ]
         },
@@ -112475,6 +112881,17 @@
                 "id": "agreements-e3b3a4e8db5844b7ad4d6b330bad895f"
               },
               "participation"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-ab919cf85a8a4e988b93d35f76dcc556"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-11-07"
@@ -113628,6 +114045,24 @@
             ]
           ],
           "accessed": "2026-11-07"
+        },
+        {
+          "text": "Das AISI Deutschland stellt aktuelle Lagebilder mit Frühwarnindikatoren zur Verfügung",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "de-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-6252a1aee1ce47e5934c14e2f6414ee9"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-11-07",
+          "gloss": "AISI Deutschland provides current situation pictures with early-warning indicators"
         }
       ],
       "accessed": "2026-11-07",
