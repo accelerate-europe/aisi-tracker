@@ -66,6 +66,7 @@ try:
     from .verify_excerpts import EXTRACTION_VERSION, Fetcher, content_problem, extract_text, literal_match
     from . import rereads
     from . import published as fact_pipeline
+    from .references import excerpt_spans
 except ImportError:
     from snapshot_sources import (  # type: ignore[no-redef]  # Direct script entry point.
         PRIVATE_SNAPSHOTS,
@@ -82,6 +83,7 @@ except ImportError:
     from verify_excerpts import EXTRACTION_VERSION, Fetcher, content_problem, extract_text, literal_match  # type: ignore[no-redef]
     import rereads  # type: ignore[no-redef]
     import published as fact_pipeline  # type: ignore[no-redef]
+    from references import excerpt_spans  # type: ignore[no-redef]
 
 MONITOR_VERSION = 1
 CLASSES = ("substantive", "gone", "trivial", "unchanged", "archived", "blocked", "failed", "skipped")
@@ -254,12 +256,15 @@ def compare_copy(
         new_views += [markdown_view(view) for view in new_views]
     quotes = []
     for excerpt in source.get("excerpts", []):
-        if bound(source, excerpt):
-            now = present(excerpt["text"], new_views)
+        if not bound(source, excerpt):
+            continue
+        # An anchor is re-read as one more span with its own hash (docs/design/claims-1.1.md, section 4).
+        for span in excerpt_spans(excerpt):
+            now = present(span, new_views)
             quotes.append({
-                "id": "sha256:" + hashlib.sha256(excerpt["text"].encode()).hexdigest(),
-                "text": excerpt["text"], "supports": [label(p) for p in excerpt["supports"]],
-                "in_cited_copy": present(excerpt["text"], old_views),
+                "id": "sha256:" + hashlib.sha256(span.encode()).hexdigest(),
+                "text": span, "supports": [label(p) for p in excerpt["supports"]],
+                "in_cited_copy": present(span, old_views),
                 "in_checked_copy": now, "in_new_copy": now,
             })
     row["quotes"] = quotes
@@ -796,10 +801,17 @@ def markdown(report: dict, sources: dict[str, dict], cites: dict[str, list[str]]
             found = True
             src = sources[r["source_id"]]
             out.append(f"- [{src['title']}]({r['url']}) (`{r['source_id']}`, {r['route']})")
-            excerpts = {"sha256:" + hashlib.sha256(e["text"].encode()).hexdigest(): e for e in src.get("excerpts", [])}
-            for q in quotes:
-                excerpt = excerpts[q["id"]]
-                out.append(f"    - \"{excerpt['text'][:200]}\" supports {'; '.join(label(p) for p in excerpt['supports'])}")
+            # Each span hash to every excerpt that carries it, as its quotation or as one of its anchors: a shared
+            # span is reported once per owner, with its role in that excerpt.
+            owners: dict[str, list[tuple[dict, bool]]] = defaultdict(list)
+            for e in src.get("excerpts", []):
+                for n, span in enumerate(excerpt_spans(e)):
+                    owners["sha256:" + hashlib.sha256(span.encode()).hexdigest()].append((e, n > 0))
+            for qid in dict.fromkeys(q["id"] for q in quotes):
+                for excerpt, anchor in owners[qid]:
+                    span = next(q["text"] for q in quotes if q["id"] == qid)
+                    lost = f"anchor \"{span[:200]}\" of \"{excerpt['text'][:120]}\"" if anchor else f"\"{excerpt['text'][:200]}\""
+                    out.append(f"    - {lost} supports {'; '.join(label(p) for p in excerpt['supports'])}")
         if not found:
             out.append("None.")
         out.append("")

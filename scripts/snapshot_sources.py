@@ -29,6 +29,7 @@ try:
         normalise,
         pdf_text_views,
     )
+    from .references import excerpt_spans
 except ImportError:
     from verify_excerpts import (  # type: ignore[no-redef]  # Direct script entry point.
         Fetcher,
@@ -43,6 +44,7 @@ except ImportError:
         normalise,
         pdf_text_views,
     )
+    from references import excerpt_spans  # type: ignore[no-redef]
 
 ROOT = Path(__file__).resolve().parents[1]
 ARCHIVE_HOSTS = {
@@ -460,9 +462,9 @@ def change_reason(previous: dict, digest: str, fields: dict) -> str:
 
 
 def bound_quotes(source: dict) -> list[str]:
-    """Quotations whose declared copy is the source itself (no URL, its URL or its archive)."""
+    """Quotations, and their anchors, whose declared copy is the source itself (no URL, its URL or its archive)."""
     own = {None, source["url"], source.get("archive_url")}
-    return [e["text"] for e in source.get("excerpts", []) if e.get("url") in own]
+    return [span for e in source.get("excerpts", []) if e.get("url") in own for span in excerpt_spans(e)]
 
 
 def copy_views(body: bytes, mime: str, path: Path) -> list[str]:

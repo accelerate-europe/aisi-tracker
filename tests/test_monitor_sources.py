@@ -36,7 +36,7 @@ OLD = page(
 
 
 def setup(
-    tmp_path, new_body: bytes | None, status="ok", error=None, cited=OLD, method="live", excerpts=True
+    tmp_path, new_body: bytes | None, status="ok", error=None, cited=OLD, method="live", excerpts=True, anchors=None
 ):
     store = tmp_path / "store"
     digest = hashlib.sha256(cited).hexdigest()
@@ -64,7 +64,8 @@ def setup(
         "url": URL,
         "title": "News",
         "excerpts": [] if not excerpts else [
-            {"text": "founded in 2024", "supports": [["jurisdictions", {"id": "XX"}, "timeline", {"id": "xx-1"}, "description"]]},
+            {"text": "founded in 2024", "supports": [["jurisdictions", {"id": "XX"}, "timeline", {"id": "xx-1"}, "description"]],
+             **({"anchors": anchors} if anchors else {})},
             {"text": "not on the page", "supports": [["institutes", {"id": "xx-aisi"}, "name"]]},
         ],
         "snapshot": {

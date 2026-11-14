@@ -21,8 +21,10 @@ from pathlib import Path
 
 if __package__:
     from .claim_checks import CLAIM_LEAVES, years_before
+    from .references import excerpt_spans
 else:
     from claim_checks import CLAIM_LEAVES, years_before  # type: ignore[import-not-found, no-redef]
+    from references import excerpt_spans  # type: ignore[import-not-found, no-redef]
 
 ROOT = Path(__file__).resolve().parent.parent
 REREADS = ROOT / "data/rereads.json"
@@ -114,14 +116,15 @@ def export(data: dict, rows: list[dict], *, is_archive) -> dict:
         for excerpt in source.get("excerpts", []):
             if not bound(source, excerpt):
                 continue
-            qid = quote_id(excerpt["text"])
-            entry = {"state": "confirmed", "last_found": None, "since": None, "last_attempt": None}
-            for stamp, row in events:
-                found = "confirmed" if row is None else evidence(row, qid, own_archive)
-                if found:
-                    entry = step(entry, found, stamp[:10])
-            if entry["last_attempt"]:
-                quotes[qid] = entry
+            # A quotation and each of its anchors are replayed as separate spans; join() combines them.
+            for qid in map(quote_id, excerpt_spans(excerpt)):
+                entry = {"state": "confirmed", "last_found": None, "since": None, "last_attempt": None}
+                for stamp, row in events:
+                    found = "confirmed" if row is None else evidence(row, qid, own_archive)
+                    if found:
+                        entry = step(entry, found, stamp[:10])
+                if entry["last_attempt"]:
+                    quotes[qid] = entry
         if quotes:
             result[source["id"]] = dict(sorted(quotes.items()))
     stamps = [row["checked"] for row in rows if row.get("checked")]
@@ -145,18 +148,19 @@ def effective(entry: dict, as_of: str) -> dict:
 
 
 def quote_states(data: dict, rereads: dict) -> dict[tuple[str, str], dict]:
-    """(source id, quote id) -> full entry, for every excerpt; a quote without a row takes `snapshot.retrieved`."""
+    """(source id, quote id) -> full entry, for every span of every excerpt (its text and each anchor); a span
+    without a row takes `snapshot.retrieved`."""
     known = rereads.get("sources", {})
     states = {}
     for source in data["sources"]:
         retrieved = (source.get("snapshot") or {}).get("retrieved")
         day = retrieved[:10] if retrieved else None
         for excerpt in source.get("excerpts", []):
-            qid = quote_id(excerpt["text"])
-            entry = known.get(source["id"], {}).get(qid)
-            if entry is None and day is None:
-                continue
-            states[source["id"], qid] = entry or {"state": "confirmed", "last_found": day, "since": None, "last_attempt": day}
+            for qid in map(quote_id, excerpt_spans(excerpt)):
+                entry = known.get(source["id"], {}).get(qid)
+                if entry is None and day is None:
+                    continue
+                states[source["id"], qid] = entry or {"state": "confirmed", "last_found": day, "since": None, "last_attempt": day}
     return states
 
 
@@ -241,7 +245,9 @@ def alerts(data: dict, rereads: dict, as_of: str) -> list[str]:
     unattempted: dict[str, int] = {}
     # Quotes from a copy other than the source's own URL: the monitor does not re-read them yet, so they are counted
     # once instead of raising the 14-day alert every week.
-    monitored = {(s["id"], quote_id(e["text"])) for s in data["sources"] for e in s.get("excerpts", []) if bound(s, e)}
+    # A quotation's anchors are counted as quotes here: each is a span the monitor re-reads.
+    monitored = {(s["id"], quote_id(span)) for s in data["sources"] for e in s.get("excerpts", []) if bound(s, e)
+                 for span in excerpt_spans(e)}
     unmonitored = 0
     for (sid, qid), entry in sorted(quote_states(data, rereads).items()):
         if (sid, qid) not in monitored:
@@ -290,7 +296,9 @@ def join(published: dict, rereads: dict, as_of: str | None = None) -> dict:
             entry = states.get((source["id"], quote_id(excerpt["text"])))
             if entry is None:
                 continue
-            excerpt["reread"] = effective(entry, as_of)
+            # Confirmed only when every span is found: the quotation and its anchors, the worst of them.
+            spans = [states.get((source["id"], quote_id(span))) for span in excerpt_spans(excerpt)]
+            excerpt["reread"] = dict(worst([effective(s, as_of) for s in spans if s is not None]))
             for pointer in excerpt["supports"]:
                 leaves.setdefault(pointer, []).append(excerpt["reread"])
     for pointer, claim in claim_owners(published):

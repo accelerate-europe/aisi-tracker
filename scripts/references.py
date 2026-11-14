@@ -39,6 +39,12 @@ def excerpt_identity(excerpt):
     ).hexdigest()
 
 
+def excerpt_spans(excerpt):
+    """The verbatim spans a saved copy must carry for an excerpt: its text, then its anchors' texts
+    (docs/design/claims-1.1.md, section 4). The monitor and the copies step re-read each one."""
+    return [excerpt["text"], *(anchor["text"] for anchor in excerpt.get("anchors", []))]
+
+
 def record_label(document, pointer):
     """Human-readable stable record path, separate from its snapshot pointer."""
     nodes = pointer_ancestors(document, pointer)
