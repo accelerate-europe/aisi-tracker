@@ -1856,7 +1856,7 @@ def test_a_recorded_exception_prints_as_the_original_through_main(rendered, monk
 
 
 STATIC_CHECKS = ("check_method_pages", "check_dom", "check_agent_files", "check_static_page", "check_hydrated", "check_archive_links",
-                 "check_launch_assets", "check_page_data", "check_budget_ratio_downloads", "check_state_downloads", "check_state_download_buttons")
+                 "check_reread_lines", "check_launch_assets", "check_page_data", "check_budget_ratio_downloads", "check_state_downloads", "check_state_download_buttons")
 
 
 def test_a_static_failure_is_reported_without_reading_shard_results(rendered, monkeypatch, capsys, tmp_path):

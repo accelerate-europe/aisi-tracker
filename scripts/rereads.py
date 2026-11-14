@@ -36,6 +36,7 @@ STALE_FILE_DAYS = 8
 DEADLINE_MONTHS = {"quote_gone": 1, "source_gone": 1, "blocked_or_failed": 6}
 BLOCKED_ALERT_MONTHS = 5
 DEVELOPMENT_YEARS = 3
+REGENERATE = "the monitor's --rereads export, docs/source-snapshots.md#change-monitor"
 
 
 def quote_id(text: str) -> str:
@@ -231,10 +232,11 @@ def alerts(data: dict, rereads: dict, as_of: str) -> list[str]:
     day = date.fromisoformat(as_of)
     lines = []
     if not rereads.get("checked_to"):
-        lines.append("data/rereads.json has no monitor results; run scripts/monitor_sources.py --rereads")
+        # The command is named by the docs, not here: modules the build uses never name a browser-only script.
+        lines.append(f"data/rereads.json has no monitor results; regenerate it ({REGENERATE})")
     elif date.fromisoformat(rereads["checked_to"]) < day - timedelta(days=STALE_FILE_DAYS):
         lines.append(f"data/rereads.json reflects checks up to {rereads['checked_to']}, more than {STALE_FILE_DAYS} days before {as_of}; "
-                     "run scripts/monitor_sources.py --rereads")
+                     f"regenerate it ({REGENERATE})")
     overdue: dict[tuple[str, str, str], int] = {}
     unattempted: dict[str, int] = {}
     # Quotes from a copy other than the source's own URL: the monitor does not re-read them yet, so they are counted
