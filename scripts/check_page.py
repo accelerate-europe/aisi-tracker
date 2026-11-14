@@ -1010,6 +1010,61 @@ def hydration_edges(browser, base_url: str, dist: Path) -> list[str]:
     return errors
 
 
+def check_mixed_release(browser, base_url: str) -> list[str]:
+    """A mixed release (owner, 14 Nov 2026): for up to ten minutes after a deploy a browser can hold the old page and
+    fetch the new data. A page whose data carries another build mark reloads itself exactly once, then renders what
+    it got, also when the data's mark differs again on the reload; with matching marks, or without session storage
+    (no guard against a loop), it never reloads. Loads are counted as main-frame document requests, which a reload
+    makes even when it starts before the first document's load event."""
+    from playwright.sync_api import TimeoutError as PlaywrightTimeout
+
+    errors = []
+
+    def documents_of(case: str, marks: list[str], *, storage: bool = True) -> int | None:
+        page = browser.new_page(viewport={"width": 1440, "height": 1000})
+        documents, served = [], []
+        page.on("request", lambda r: documents.append(r.url) if r.is_navigation_request() and r.frame == page.main_frame else None)
+
+        def other_build(route):  # each data request gets the next mark, the last one repeated
+            response = route.fetch()
+            data = response.json()
+            data["build_mark"] = marks[min(len(served), len(marks) - 1)]
+            served.append(data["build_mark"])
+            route.fulfill(response=response, body=json.dumps(data, ensure_ascii=False, separators=(",", ":")))
+
+        if not storage:
+            page.add_init_script("Object.defineProperty(window, 'sessionStorage', { get() { throw new Error('blocked'); } });")
+        if marks:
+            page.route(PAGE_DATA, other_build)
+        want = 2 if marks and storage else 1
+        try:
+            page.goto(base_url, wait_until="commit")
+            end = time.monotonic() + 15
+            while len(documents) < want and time.monotonic() < end:
+                page.wait_for_timeout(100)
+            page.wait_for_load_state("load")
+            wait_hydrated(page, 15_000)
+            page.wait_for_timeout(1500)  # a further reload would have started by now
+            if not page.evaluate("document.querySelectorAll('#figures > .figure').length > 0"):
+                errors.append(f"mixed release, {case}: the page did not render after {len(documents)} loads")
+            if marks and storage and (flag := page.evaluate("sessionStorage.getItem('aisi-reloaded-for')")) != marks[0]:
+                errors.append(f"mixed release, {case}: the session remembers {flag!r}, not the first mismatching mark {marks[0]!r}")
+            if len(documents) != want:
+                errors.append(f"mixed release, {case}: the page loaded {len(documents)} times, expected {want} (data marks served: {served})")
+            return len(documents)
+        except PlaywrightTimeout as exc:
+            errors.append(f"mixed release, {case}: {exc} after {len(documents)} loads")
+            return None
+        finally:
+            page.close()
+
+    documents_of("same build", [])
+    documents_of("another build", ["0.0.0-000000000a"])
+    documents_of("another build, then a third", ["0.0.0-000000000a", "0.0.0-000000000b", "0.0.0-000000000a"])
+    documents_of("another build without session storage", ["0.0.0-000000000a"], storage=False)
+    return errors
+
+
 def check_first_load(browser, base_url: str) -> list[str]:
     """A cold first visit at 390, 640, 641 and 1440 px: the visible saved map drawing is downloaded once, by the head
     script (whose download the page then uses), and nothing else a visit requests falls outside FIRST_LOAD, the
@@ -9905,6 +9960,7 @@ def browser_jobs(dist: Path, data: dict, screenshots: Path | None) -> list[tuple
     return [
         ("hydration", hydration_paint, ()),
         ("hydration", hydration_edges, (dist,)),
+        ("hydration", check_mixed_release, ()),
         ("origins", check_origins, (dist,)),
         ("origins", check_first_load, ()),
         ("interactions", check_recovery_page, (dist, screenshots)),
@@ -10261,7 +10317,8 @@ CAUGHT = (OSError, subprocess.SubprocessError, ValueError, RuntimeError)  # what
 # Seconds per job on GitHub's ubuntu-latest, one job at a time (bench run 40025105295, 24 Oct 2026); shards are
 # balanced by them, so they affect only how long each shard takes. A job not listed counts DEFAULT_COST.
 JOB_COST = {
-    "hydration/hydration_paint": 27.8, "hydration/hydration_edges": 23.8, "origins/check_origins": 2.8, "origins/check_first_load": 6.0,
+    "hydration/hydration_paint": 27.8, "hydration/hydration_edges": 23.8, "hydration/check_mixed_release": 15.0,  # estimate: six page loads
+    "origins/check_origins": 2.8, "origins/check_first_load": 6.0,
     "interactions/check_recovery_page": 3.2,
     "interactions/interaction_pass/1440/light": 65.6, "interactions/interaction_pass/1440/dark": 65.6,
     "interactions/interaction_pass/1000/light": 59.4, "interactions/interaction_pass/1000/dark": 59.6,
@@ -10641,15 +10698,26 @@ def check_page_data(dist: Path, data: dict) -> list[str]:
     for source in want["sources"]:
         source.pop("snapshot", None)
         source.pop("access_note", None)
-    if json.loads(text) != want:
+    page = json.loads(text)
+    mark = page.pop("build_mark", None)
+    if list(json.loads(text))[-1:] != ["build_mark"]:
+        errors.append("data/page.json: no build_mark as its last key (the page compares it with its own to catch a mixed release)")
+    if page != want:
         errors.append("data/page.json differs from aisi.json without check (except last_checked and method), snapshot and access_note")
     if "\n" in text or ": " in text[:200]:
         errors.append("data/page.json is not minified")
+    # The build mark is the version and the hash of the file without it; the data URL and the page carry the same.
+    unmarked = json.dumps(page, ensure_ascii=False, separators=(",", ":"))
+    want_mark = f"{data['dataset']['version']}-{hashlib.sha256(unmarked.encode('utf-8')).hexdigest()[:10]}"
+    if mark != want_mark:
+        errors.append(f"data/page.json: build_mark is {mark!r}, expected {want_mark!r} (the version and the hash of the file without it)")
     soup = BeautifulSoup((dist / "index.html").read_text(encoding="utf-8"), "html.parser")
     meta = soup.select('head meta[name="aisi-page-data"]')
-    url = f"data/page.json?v={data['dataset']['version']}-{hashlib.sha256(text.encode('utf-8')).hexdigest()[:10]}"
+    url = f"data/page.json?v={want_mark}"
     if len(meta) != 1 or meta[0].get("content") != url:
         errors.append(f"index.html: the page data URL is {[m.get('content') for m in meta]}, expected {url}")
+    if len(meta) == 1 and meta[0].get("data-build") != want_mark:
+        errors.append(f"index.html: the page's build mark (data-build) is {meta[0].get('data-build')!r}, expected {want_mark!r}")
     package = (dist / "data/datapackage.json").read_text(encoding="utf-8")
     if len(meta) == 1 and meta[0].get("data-package") != f"data/datapackage.json?v={data['dataset']['version']}-{hashlib.sha256(package.encode('utf-8')).hexdigest()[:10]}":
         errors.append(f"index.html: the data package URL {meta[0].get('data-package')!r} is not versioned by its content")

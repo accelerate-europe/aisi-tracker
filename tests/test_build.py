@@ -793,3 +793,15 @@ def test_dataset_doi_schema(dataset, doi, valid):
     dataset["dataset"]["doi"] = doi
     errors = list(Draft202012Validator(json.loads(build.SCHEMA.read_text())).iter_errors(dataset))
     assert (not any(list(e.path) == ["dataset", "doi"] for e in errors)) == valid
+
+
+def test_the_page_data_carries_its_build_mark_last():
+    """A mixed release: the page compares its data-build with the build_mark in the data it loads."""
+    published = {"dataset": {"version": "1.2.3"}, "jurisdictions": [], "sources": []}
+    unmarked = build.page_data(published)
+    mark = build.content_mark(unmarked, "1.2.3")
+    marked = build.page_data(published, mark)
+    assert mark.startswith("1.2.3-") and len(mark) == len("1.2.3-") + 10
+    assert list(json.loads(marked))[-1] == "build_mark" and json.loads(marked)["build_mark"] == mark
+    assert build.versioned("data/page.json", unmarked, "1.2.3") == f"data/page.json?v={mark}"
+    # The page's data-build on the real build is checked by the gate's static check_page_data.
