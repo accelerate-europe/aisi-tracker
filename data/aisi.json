@@ -4516,7 +4516,7 @@
         "un-m49",
         "wikidata-jurisdiction-identifiers"
       ],
-      "notes": "Traficom's August 2026 guidance describes its supervision of AI transparency and sectoral authorities' responsibilities for high-risk systems. Searched in English and Finnish for a body its government has tasked with testing general-purpose or frontier AI models or named its AI safety or security institute.\n\nOn 9 November 2026 Finland was among the states that signed the Paris Call for AI Safety and Security, in which signatories commit to a common framework for the evaluation and risk management of frontier models.\n\nFinland's president and Norway's prime minister held a virtual meeting of leaders from 29 countries on controlling the development of frontier AI models, announced on 28 October 2026, to be followed by an expert-level process among interested countries exploring options for improving AI safety and security.\n\nThe government's bill HE 270/2026 of 22 October 2026 proposes that Traficom set up and run Finland's AI regulatory sandbox; the amendments to the AI supervision act are mainly intended to take effect on 1 February 2027."
+      "notes": "Traficom's August 2026 guidance describes its supervision of AI transparency and sectoral authorities' responsibilities for high-risk systems. Searched in English and Finnish for a body its government has tasked with testing general-purpose or frontier AI models or named its AI safety or security institute.\n\nOn 9 November 2026 Finland was among the states that signed the Paris Call for AI Safety and Security, in which signatories commit to a common framework for the evaluation and risk management of frontier models.\n\nFinland's president and Norway's prime minister held a virtual meeting of leaders from 29 countries on controlling the development of frontier AI models, announced on 28 October 2026, to be followed by an expert-level process among interested countries exploring options for improving AI safety and security.\n\nUnder the government's bill HE 270/2026, signed on 22 October 2026, Traficom would set up and run Finland's AI regulatory sandbox; the amendments to the AI supervision act are mainly intended to take effect on 1 February 2027."
     },
     {
       "id": "DK",
@@ -8212,11 +8212,12 @@
         },
         {
           "id": "us-2026-10-03-named",
-          "date": "2026-10-03",
+          "date": "2026-09-30",
           "event": "named",
           "instrument": "unknown",
-          "description": "NIST's page for the centre, in the earliest archived capture found (3 October 2026), names it the Center for Advancing Innovation and Standards for Super Intelligence (CAISSI); NIST's release of 16 October 2026 also uses the name. No published act gives the date of the change.",
+          "description": "NIST's super intelligence page, in the earliest archived capture found (30 September 2026), names the Center for Advancing Innovation and Standards for Super Intelligence (CAISSI) and says NIST is updating its communications under the Executive Order of 29 September 2026; NIST's release of 16 October 2026 also uses the name. No published act gives the date of the change.",
           "source_ids": [
+            "us-si-page-archive-2026-09-30",
             "us-caissi-archive-2026-10-03",
             "depth-us-incident-release",
             "us-caissi",
@@ -15435,7 +15436,7 @@
           "id": "related_bodies-0096657a9da1527ba4ad1680d2b21c09"
         }
       ],
-      "notes": "PBIA action 51 was read in Portuguese and in the official English version. Both describe research on risks, safety, transparency and reliability and support for systems audits and evaluation. This is a government centre commitment, but it does not settle the criterion of evaluating advanced models. The full CEBRI and ITS Rio AISO report describes an exploratory design to stimulate debate; no government appointment or adoption was found. The current Chamber record still shows PL 2338/2023 awaiting the special-committee rapporteur. The government's separate PL 6237/2025, submitted on 8 December 2025 and joined to that bill, was also read: it proposes regulatory coordination, ANPD and sectoral-authority duties, and advisory committees. Article 8(X) concerns compliance audits, while article 8(XVIII) would let sectoral authorities and ANPD designate marketed general-purpose models and applications as materially relevant. Article 3(I) would permit support for infrastructure to assess model and application safety. These regulatory and enabling powers do not themselves designate a national institute to evaluate advanced models. ANPD's 19 August 2026 sandbox methodology describes testing transparency, explainability and personal-data protection in participant solutions. The reported August implementation of the PBIA centre remains unresolved because the Agência Gov source still returns an election-period unavailability notice, including through the single attempt to retrieve a text copy. The prior August implementation and Paris-summit sources remain cited for evidence history, not as new verification.\n\nOn 4 November 2026 the Chamber of Deputies' news agency reported a committee hearing on a deputy's bill, PL 5960/2025, which would create Insoed, a network of public and private laboratories to test, certify and create technical standards for AI and digital infrastructure. It is a parliamentary bill, not the government's own proposal.",
+      "notes": "PBIA action 51 was read in Portuguese and in the official English version. Both describe research on risks, safety, transparency and reliability and support for systems audits and evaluation. This is a government centre commitment, but it does not settle the criterion of evaluating advanced models. The full CEBRI and ITS Rio AISO report describes an exploratory design to stimulate debate; no government appointment or adoption was found. The current Chamber record still shows PL 2338/2023 awaiting the special-committee rapporteur. The government's separate PL 6237/2025, submitted on 8 December 2025 and joined to that bill by order of 19 March 2026, was also read: it would provide for regulatory coordination, ANPD and sectoral-authority duties, and advisory committees. Article 8(X) concerns compliance audits, while article 8(XVIII) would let sectoral authorities and ANPD designate marketed general-purpose models and applications as materially relevant. Article 3(I) would permit support for infrastructure to assess model and application safety. These regulatory and enabling powers do not themselves designate a national institute to evaluate advanced models. ANPD's 19 August 2026 sandbox methodology describes testing transparency, explainability and personal-data protection in participant solutions. The reported August implementation of the PBIA centre remains unresolved because the Agência Gov source still returns an election-period unavailability notice, including through the single attempt to retrieve a text copy. The prior August implementation and Paris-summit sources remain cited for evidence history, not as new verification.\n\nOn 4 November 2026 the Chamber of Deputies' news agency reported a committee hearing on a deputy's bill, PL 5960/2025, which would create Insoed, a network of public and private laboratories to test, certify and create technical standards for AI and digital infrastructure. It is a parliamentary bill, not the government's own proposal.",
       "next_check": {
         "date": "2027-01-15",
         "reason": "Retrieve an accessible primary act for the reported PBIA centre launch and clarify duties concerning advanced models; check PL 2338/2023 and government bill 6237/2025 for later institutional acts."
@@ -17443,7 +17444,7 @@
       "id": "MX",
       "name": "Mexico",
       "kind": "state",
-      "summary": "No qualifying institute identified. A bill presented on 30 April 2025 proposes a National AI Council and an algorithmic audit platform to evaluate data, models and systems for equity, explainability and traceability. The official legislative record lists it as pending in committee.",
+      "summary": "No qualifying institute identified. A bill presented on 30 April 2025 would create a National AI Council and an algorithmic audit platform to evaluate data, models and systems for equity, explainability and traceability. The official legislative record lists it as pending in committee.",
       "check": {
         "last_checked": "2026-10-16",
         "method": "individual",
@@ -32522,6 +32523,7 @@
           "name": "Center for Advancing Innovation and Standards for Super Intelligence (CAISSI)",
           "event": "us-2026-10-03-named",
           "source_ids": [
+            "us-si-page-archive-2026-09-30",
             "us-caissi-archive-2026-10-03",
             "us-caissi",
             "us-si-page"
@@ -32818,9 +32820,10 @@
         "us-blog-transcripts-2026",
         "us-blog-red-teaming-2026",
         "us-semafor-2026-10-28",
-        "us-scale-aisi-2025"
+        "us-scale-aisi-2025",
+        "us-si-page-archive-2026-09-30"
       ],
-      "notes": "The current NIST pages use CAISSI. The name-history start is the earliest archived use of the name found, NIST's page for the centre as captured on 3 October 2026. Executive Order 14434 of 29 September 2026, which directs the executive branch to use 'Super Intelligence' in place of 'Artificial Intelligence', is the likely trigger, but it does not name this centre or set a date for its rename. The current ministerial basis refers to the June 2025 CAISI decision; the retained establishment date refers to its US AISI predecessor. Canada's CAISI, the Canadian AI Safety Institute, is a different body.",
+      "notes": "The current NIST pages use CAISSI. The name-history start is the earliest archived use of the name found, NIST's super intelligence page as captured on 30 September 2026. Executive Order 14434 of 29 September 2026, which directs the executive branch to use 'Super Intelligence' in place of 'Artificial Intelligence', is the likely trigger, but it does not name this centre or set a date for its rename. The current ministerial basis refers to the June 2025 CAISI decision; the retained establishment date refers to its US AISI predecessor. Canada's CAISI, the Canadian AI Safety Institute, is a different body.",
       "mandate_short": "Leads national security evaluations of superintelligence (SI) systems and develops guidelines to measure and improve their security.",
       "legal_basis": {
         "type": "ministerial_act",
@@ -41511,17 +41514,6 @@
         {
           "text": "Center for Advancing Innovation and Standards for Super Intelligence (CAISSI)",
           "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "US"
-              },
-              "timeline",
-              {
-                "id": "us-2026-10-03-named"
-              },
-              "date"
-            ],
             [
               "jurisdictions",
               {
@@ -93648,7 +93640,23 @@
         "sha256": "abc19f95758a7bc3dfc399d9b952d7ddd78c3606f0fb1c490014ef08db3aad38",
         "text_sha256": "1d49e06b524a78c4c321e42dadc7d1a2c2db524e5447f61b36efa163cf3509ec",
         "text_scheme": 1
-      }
+      },
+      "excerpts": [
+        {
+          "text": "Despacho 19/03/2026 Apense-se à(ao) PL 2338/2023.",
+          "gloss": "Order of 19 March 2026: join to PL 2338/2023.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "BR"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        }
+      ]
     },
     {
       "id": "br-r6-executive-bill",
@@ -120195,6 +120203,88 @@
         "retrieved": "2026-11-14T12:13:33Z",
         "sha256": "8b7aba5b2ae0a32d3ed83724605cf4cf1f63c6817ab1043ceef5a7287cb2c98d",
         "text_sha256": "d36b38ba8f10326b51c881254895dd30e1b5e39b72948f1320b927a577abf240",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "us-si-page-archive-2026-09-30",
+      "url": "https://web.archive.org/web/20260930205401/https://www.nist.gov/super-intelligence",
+      "title": "Super intelligence",
+      "publisher": "NIST",
+      "type": "primary",
+      "accessed": "2026-11-14",
+      "language": "en",
+      "origin": "US",
+      "access_note": "Internet Archive capture of the NIST page https://www.nist.gov/super-intelligence made on 30 September 2026, the earliest archived use of the centre's new name found.",
+      "excerpts": [
+        {
+          "text": "NIST does this work through the laboratory programs and the Center for Advancing Innovation and Standards for Super Intelligence (CAISSI)",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "US"
+              },
+              "timeline",
+              {
+                "id": "us-2026-10-03-named"
+              },
+              "date"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "US"
+              },
+              "timeline",
+              {
+                "id": "us-2026-10-03-named"
+              },
+              "event"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "US"
+              },
+              "timeline",
+              {
+                "id": "us-2026-10-03-named"
+              },
+              "description"
+            ],
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "Per the Sept. 29, 2026, Executive Order on Inaugurating the Era of Super Intelligence, NIST is working to update its communications to incorporate the term",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "US"
+              },
+              "timeline",
+              {
+                "id": "us-2026-10-03-named"
+              },
+              "description"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-14T12:39:29Z",
+        "sha256": "2fcfd2cc043f9120a3d6fb8a6e18dc7bde3c3e53e659517cbeffad785f1fcc74",
+        "text_sha256": "16d3da7415d395308e33c64fa46282b2ce493ba888a4d3d979969f7ab40dad21",
         "text_scheme": 1
       }
     }
