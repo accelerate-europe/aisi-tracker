@@ -2062,7 +2062,8 @@
           "instrument": "press_release",
           "description": "AI Safety Institute launched; the Frontier AI Taskforce becomes the institute, tasked with testing frontier AI before and after release.",
           "source_ids": [
-            "gb-aisi-launch"
+            "gb-aisi-launch",
+            "gb-cp960-2023"
           ],
           "short": "Frontier AI Taskforce becomes the AI Safety Institute."
         },
@@ -28830,11 +28831,13 @@
           "name": "Henry de Zoete",
           "role": "Director",
           "source_ids": [
-            "gb-about"
+            "gb-about",
+            "gb-dezoete-bio"
           ],
           "confidence": "high",
           "title_status": "published",
-          "id": "people-79b0cf38817c5246bc06d819ffb9ba02"
+          "id": "people-79b0cf38817c5246bc06d819ffb9ba02",
+          "background": "From March to August 2026 de Zoete was Investment and AI Adviser in the Department for Science, Innovation and Technology."
         },
         {
           "name": "Ian Hogarth",
@@ -30749,7 +30752,17 @@
         "source_ids": [
           "gb-pq-30890-2026"
         ]
-      }
+      },
+      "claims": [
+        {
+          "id": "claims-524ed29c55f549f39a3f9a0263f9fef7",
+          "kind": "fact",
+          "source_ids": [
+            "gb-taskforce-rename"
+          ],
+          "text": "The Frontier AI Taskforce said it now has a growing team of AI researchers."
+        }
+      ]
     },
     {
       "id": "fr-inesia",
@@ -30861,7 +30874,13 @@
             "scope": "Sources checked for developments from 13 November 2026: SGDSN's publications (newest 27 October), the institute's page (5 February 2026), DGE's news (21 October) and press (22 June), the economy and digital ministry's press (13 November), DINUM's news page (news 7 August, press 30 July) and information page (news 28 July, press 10 July), and the Elysée's account of the expert report handed over on 10 November. No adopted or announced government decision to strengthen the institute was found; the report's recommendations are not a decision. No new institute publication was found. The DGE and DINUM listings were stale, so coverage of 13 and 14 November there is incomplete. Partial check, not a full record re-check."
           }
         ],
-        "last_checked_basis": "historical_upper_bound"
+        "last_checked_basis": "historical_upper_bound",
+        "log": [
+          {
+            "date": "2026-11-14",
+            "text": "Searched for a budget amount or staff count for INESIA itself: Senate and National Assembly reports on the 2026 and 2027 finance bills for programmes 129 and 134, parliamentary written questions, SGDSN, DGE and economy ministry press releases, the SGDSN roadmap and a parliamentary mission report to the Prime Minister, in French and English. The only figure found is the EUR 13.5m Inria programme already recorded as not specific to the institute; no staff count was found."
+          }
+        ]
       },
       "source_ids": [
         "fr-dge",
@@ -31285,7 +31304,13 @@
             "scope": "Sources checked for developments from 13 November 2026: BSI's institute page (newest digest 1 November) and news (11 November), the digital ministry's press (13 November) and its budget release of that day, which gives no allocation for the institute, the interior ministry's home page (11 November) and its archived press search (newest 30 June). The Bundestag's record of 13 November says motion 21/8810 was referred to committees after the debate; it was neither adopted nor rejected, and is not recorded as a change for the institute. No new institute output was found. BSI's current press list, the interior ministry's current press list and the plenary record could not be read. Partial check, not a full record re-check."
           }
         ],
-        "last_checked_basis": "historical_upper_bound"
+        "last_checked_basis": "historical_upper_bound",
+        "log": [
+          {
+            "date": "2026-11-14",
+            "text": "Searched for a budget amount or staff count for AISI Deutschland itself: the government's answers in Bundestag papers 21/8727 and 21/8470, budget section 24 of the 2027 draft and the budget committee's November papers, BSI and federal government pages and ministry press, in German and English. No figure for the institute was found; the amounts found were demands by industry associations."
+          }
+        ]
       },
       "source_ids": [
         "de-bmds",
@@ -31568,7 +31593,13 @@
             "scope": "Sources checked for developments from 13 November 2026: AESIA's news (titles undated; the newest article read is dated 12 November), its studies page (one undated study), the digital ministry's press (4 November) and the BOE daily summaries of 13 and 14 November. No constitutive act or appointment for the institute was found in the summaries read, which does not establish that none exists. No separate publication list for the institute was found, and the dates of AESIA's news list remain unresolved. Partial check, not a full record re-check."
           }
         ],
-        "last_checked_basis": "historical_upper_bound"
+        "last_checked_basis": "historical_upper_bound",
+        "log": [
+          {
+            "date": "2026-11-14",
+            "text": "Searched for a budget amount or staff count for the Instituto de Seguridad de la Inteligencia Artificial itself: the IA360 plan, AESIA's own plan and pages, Finance Ministry and Council of Ministers spending notes, written questions and answers in the Congress, and the press, in Spanish and English. The figures found concern AESIA, not the institute."
+          }
+        ]
       },
       "source_ids": [
         "es-plan",
@@ -31929,10 +31960,12 @@
           "title_status": "published",
           "source_ids": [
             "r5-no-holte-appointment",
-            "no-ki-holte-june"
+            "no-ki-holte-june",
+            "no-holte-appointment-dfd"
           ],
           "notes": "Digdir's 7 May 2026 announcement gave August 2026 as the planned start. KI Norge's article published on 1 June 2026 presents Holte as director and gives 12 June 2026 as the organisation's official launch. His actual start date is unresolved. The additional AI safety and model-evaluation mandate remains proposed. This appointment does not establish an operational safety institute.",
-          "id": "people-2d72b937814c5e4885e71e2f8af219e3"
+          "id": "people-2d72b937814c5e4885e71e2f8af219e3",
+          "background": "Holte was Director of Labour and Welfare from 2020 to 2025."
         }
       ],
       "head": {
@@ -32132,6 +32165,16 @@
           "figure_source": "press_report",
           "id": "staff-a2a3ec64e2e4440497c92d90c838943a"
         }
+      ],
+      "claims": [
+        {
+          "id": "claims-c5714a4546514d44a64c162bb4f13632",
+          "kind": "fact",
+          "source_ids": [
+            "no-digdir-ki-norge-report-2025"
+          ],
+          "text": "To make KI Norge fully operational, Digdir brought technical, legal, innovation and public administration expertise together in an interim organisation from 1 December 2025."
+        }
       ]
     },
     {
@@ -32207,7 +32250,13 @@
             "scope": "Sources checked for developments from 13 November 2026: the AI Office page (undated), the Commission's digital-strategy news (6 November) and library (13 November), and the Official Journal's L and C series of 13 November. No new institute fact and no AI Act instrument was found in the material read. An Official Journal homepage displayed 14 November, but no issue contents for that date were recovered, so coverage of 14 November is incomplete. Partial check, not a full record re-check."
           }
         ],
-        "last_checked_basis": "historical_upper_bound"
+        "last_checked_basis": "historical_upper_bound",
+        "log": [
+          {
+            "date": "2026-11-14",
+            "text": "Searched for a budget amount for the AI Office: the Commission decision establishing it, the Commission's own pages, answers to Parliament's written questions, the budgetary statement of the 2025 AI Act amendment package and the press. No Commission figure was found; in the material read, a starting budget of EUR 46.5m was found only in press reports attributing it to a Member of the European Parliament."
+          }
+        ]
       },
       "source_ids": [
         "eu-decision",
@@ -32251,11 +32300,13 @@
           "name": "Lucilla Sioli",
           "role": "Director AI Office (DG CONNECT)",
           "source_ids": [
-            "eu-sioli"
+            "eu-sioli",
+            "eu-sioli-connect-2020"
           ],
           "confidence": "high",
           "title_status": "published",
-          "id": "people-ff3044c04c6d5bc490489df29a84f83a"
+          "id": "people-ff3044c04c6d5bc490489df29a84f83a",
+          "background": "A European Commission civil servant since 1997, Sioli was listed in August 2020 as Director for Artificial Intelligence and Digital Industry in DG CONNECT."
         }
       ],
       "mandate_short": "Evaluates general-purpose AI models with systemic risk under the AI Act.",
@@ -32526,7 +32577,32 @@
           "eu-decision-oj"
         ],
         "notes": "The Commission decision establishing the Office provides that its officials are staff of the Directorate-General for Communication Networks, Content and Technology already assigned to the work or redeployed within it, and that the costs of its external staff are covered from the Digital Europe Programme's administrative budget."
-      }
+      },
+      "claims": [
+        {
+          "id": "claims-e862178394584c1f9013e3776f86525b",
+          "kind": "fact",
+          "source_ids": [
+            "eu-ai-office-jobs-2024"
+          ],
+          "text": "The Commission announced the AI Office's first job opportunities."
+        }
+      ],
+      "funding": [
+        {
+          "kind": "none_disclosed",
+          "description": "The decision assigns external statutory staff costs and operational expenditure to Digital Europe Programme appropriations.",
+          "source_ids": [
+            "eu-decision-oj"
+          ],
+          "confidence": "high",
+          "commitment": "not_applicable",
+          "funding_source": "supranational",
+          "coverage": "whole_institute",
+          "id": "funding-7507fd8b7767470bbecb06ab3f94cca2",
+          "notes": "The Commission decision of 24 January 2024 covers the human resources costs of the Office's external statutory staff by redeploying Digital Europe Programme administrative support appropriations, and its operational expenditure from the Programme's Specific Objective 2. This record supplies no amount."
+        }
+      ]
     },
     {
       "id": "us-caissi",
@@ -33366,10 +33442,13 @@
           "title_status": "published",
           "source_ids": [
             "r5-us-raman-nist-post",
-            "r5-us-raman-axios"
+            "r5-us-raman-axios",
+            "us-raman-nist-bio",
+            "us-raman-confirmed-2026"
           ],
           "notes": "Role confirmed by NIST organisational post. July 2026 transition reported by Axios on 20 July from a named Commerce spokesperson; exact effective day was not independently established. Confidence is medium for the combined record because the start month rests on a press account, while the role is primary-confirmed.",
-          "id": "people-ccd2b978e1045a9b9cb2f0e2539cbdae"
+          "id": "people-ccd2b978e1045a9b9cb2f0e2539cbdae",
+          "background": "Raman came to NIST from Purdue University, where Raman was named Dean of Engineering in February 2023, and is also NIST Director, sworn in on 30 June 2026."
         }
       ],
       "head": {
@@ -34230,11 +34309,13 @@
           "name": "Alexandra Dostal",
           "role": "Executive Director, Canadian AI Safety Institute",
           "source_ids": [
-            "depth-ca-au-mou"
+            "depth-ca-au-mou",
+            "ca-ised-transition-book-2025"
           ],
           "confidence": "high",
           "title_status": "published",
-          "id": "people-e51819a0b781512099c82d5c0352b7c9"
+          "id": "people-e51819a0b781512099c82d5c0352b7c9",
+          "background": "Dostal is also Senior Assistant Deputy Minister, Strategic Policy Sector, at ISED, a post held since September 2024, and earlier held posts at Fisheries and Oceans Canada, the Treasury Board Secretariat, Finance Canada and Global Affairs Canada."
         },
         {
           "name": "Nicolas Papernot",
@@ -34777,11 +34858,13 @@
             "jp-cao-2604",
             "jp-ipa-2024-02",
             "jp-aisi-about",
-            "jp-ipa-oct9"
+            "jp-ipa-oct9",
+            "jp-cao-aisi-20240214"
           ],
           "confidence": "high",
           "title_status": "published",
-          "id": "people-b2221cf0153f51bbb54c609c96e106c6"
+          "id": "people-b2221cf0153f51bbb54c609c96e106c6",
+          "background": "When appointed, Murakami was an executive officer and Chief Digital Officer of Sompo Japan, a post held since April 2022 and listed as current, and is a former AI researcher at IBM Japan."
         },
         {
           "name": "Satoshi Sekine",
@@ -35678,7 +35761,17 @@
           "jp-aisi-recruit-2025"
         ],
         "notes": "Staff also come on secondment from companies, with IPA paying the seconding company, and some senior posts are held concurrently with IPA posts, such as the head of IPA's Digital Infrastructure Centre."
-      }
+      },
+      "claims": [
+        {
+          "id": "claims-a7f39fe39fbb43228dde8a3b7fa36662",
+          "kind": "fact",
+          "source_ids": [
+            "jp-ipa-2024-02"
+          ],
+          "text": "Kenji Hiramoto took office as the institute's full-time secretary-general on 14 February 2024."
+        }
+      ]
     },
     {
       "id": "kr-aisi",
@@ -35928,11 +36021,14 @@
           "name": "Myuhngjoo Kim",
           "role": "Director of the AI Safety Institute",
           "source_ids": [
-            "kr-site"
+            "kr-site",
+            "kr-msit-kim-director-2024"
           ],
           "confidence": "high",
           "title_status": "published",
-          "id": "people-396e0e7649455f829a0da6181a1c735c"
+          "id": "people-396e0e7649455f829a0da6181a1c735c",
+          "since": "2024-11-12",
+          "background": "When appointed, Kim was a professor in the Department of Information Security at Seoul Women's University."
         }
       ],
       "mandate_short": "Researches AI risks, safety policy, and safety evaluation standards and methods.",
@@ -36297,6 +36393,17 @@
           "confidence": "low",
           "figure_source": "press_report",
           "id": "staff-01c3c07170645ef1a37faf78ac7508ff"
+        },
+        {
+          "total": 12,
+          "total_qualifier": "exact",
+          "as_of": "2024-11-27",
+          "description": "The science ministry's release dated 27 November 2024 lists 12 institute staff.",
+          "source_ids": [
+            "kr-msit-2024-11-pdf"
+          ],
+          "confidence": "medium",
+          "id": "staff-53e2954ebc804ed1a61c521bf01ef098"
         }
       ]
     },
@@ -36494,11 +36601,13 @@
           "name": "Lam Kwok Yan",
           "role": "Executive Director, Singapore AI Safety Institute",
           "source_ids": [
-            "depth-sg-lam"
+            "depth-sg-lam",
+            "sg-imda-dtc-factsheet-2022"
           ],
           "confidence": "high",
           "title_status": "published",
-          "id": "people-46ec54ee933b52658c261129018e5356"
+          "id": "people-46ec54ee933b52658c261129018e5356",
+          "background": "When named in June 2022 to lead the Digital Trust Centre, Lam was Professor and Associate Vice President (Strategy and Partnerships) at NTU."
         }
       ],
       "outputs": [
@@ -37804,7 +37913,17 @@
           "in-indiaai-partners-2025",
           "in-pib-2026-07-27"
         ]
-      }
+      },
+      "claims": [
+        {
+          "id": "claims-05eb0f44ebc64a3c955d10a0eba34ba5",
+          "kind": "fact",
+          "source_ids": [
+            "in-aisi-director-advert-2026"
+          ],
+          "text": "IndiaAI invited applications for one contract post of Director of the IndiaAI Safety Institute."
+        }
+      ]
     },
     {
       "id": "ke-ai-safety-institute",
@@ -44003,6 +44122,23 @@
             ]
           ],
           "accessed": "2026-10-21"
+        },
+        {
+          "text": "we now have a growing team of AI researchers",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-524ed29c55f549f39a3f9a0263f9fef7"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-11-14"
         }
       ],
       "origin": "GB",
@@ -45137,6 +45273,23 @@
             ]
           ],
           "accessed": "2026-10-20"
+        },
+        {
+          "text": "has been a civil servant with the European Commission since 1997",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "people",
+              {
+                "id": "people-ff3044c04c6d5bc490489df29a84f83a"
+              },
+              "background"
+            ]
+          ],
+          "accessed": "2026-11-14"
         }
       ],
       "origin": "EU",
@@ -59435,6 +59588,42 @@
           ],
           "gloss": "Work on international cooperation with relevant institutions in other countries, such as the UK and US AI Safety Institutes.",
           "accessed": "2026-10-19"
+        },
+        {
+          "text": "2021年4月 損害保険ジャパン株式会社 入社 執行役員待遇DX推進部 特命部長 2021年10月 同社 執行役員待遇 DX推進部長 2022年4月 同社 執行役員 CDO(Chief Digital Officer) DX推進部長 現職",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "people",
+              {
+                "id": "people-b2221cf0153f51bbb54c609c96e106c6"
+              },
+              "background"
+            ]
+          ],
+          "gloss": "April 2021: joined Sompo Japan Insurance Inc., special general manager of the DX Promotion Department with executive officer status. October 2021: same company, general manager of the DX Promotion Department with executive officer status. April 2022: same company, Executive Officer, CDO (Chief Digital Officer) and general manager of the DX Promotion Department (current post).",
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "平本健二が事務局長に就任しました。 平本 健二（ひらもと けんじ） 発令日 2024年2月14日 氏名 平本 健二（ひらもと けんじ） 役職 AIセーフティ・インスティテュート事務局長 勤務形態 常勤",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-a7f39fe39fbb43228dde8a3b7fa36662"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "Kenji Hiramoto took office as secretary-general. Kenji Hiramoto. Date of appointment: 14 February 2024. Name: Kenji Hiramoto. Post: Secretary-General, AI Safety Institute. Employment: full-time.",
+          "accessed": "2026-11-14"
         }
       ],
       "origin": "JP",
@@ -61371,6 +61560,62 @@
             ]
           ],
           "accessed": "2026-10-21"
+        },
+        {
+          "text": "For external statutory staff working in the Office, the human resources costs shall be covered by a redeployment of budget appropriations from the administrative support expenditure from the Digital Europe Programme.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "funding",
+              {
+                "id": "funding-7507fd8b7767470bbecb06ab3f94cca2"
+              },
+              "description"
+            ],
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "funding",
+              {
+                "id": "funding-7507fd8b7767470bbecb06ab3f94cca2"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "Operational expenditure of the Office shall be covered by the financial resources allocated to Specific Objective 2 'Artificial Intelligence' of the Digital Europe Programme.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "funding",
+              {
+                "id": "funding-7507fd8b7767470bbecb06ab3f94cca2"
+              },
+              "description"
+            ],
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "funding",
+              {
+                "id": "funding-7507fd8b7767470bbecb06ab3f94cca2"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-14"
         }
       ],
       "origin": "EU",
@@ -64634,6 +64879,17 @@
                 "id": "people-e51819a0b781512099c82d5c0352b7c9"
               },
               "role"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "people",
+              {
+                "id": "people-e51819a0b781512099c82d5c0352b7c9"
+              },
+              "background"
             ]
           ],
           "accessed": "2026-10-20"
@@ -105355,6 +105611,53 @@
             ]
           ],
           "accessed": "2026-10-21"
+        },
+        {
+          "text": "연구소 투어 및 격려 ※ 연구소 직원 총 12명",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "staff",
+              {
+                "id": "staff-53e2954ebc804ed1a61c521bf01ef098"
+              },
+              "total"
+            ],
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "staff",
+              {
+                "id": "staff-53e2954ebc804ed1a61c521bf01ef098"
+              },
+              "description"
+            ]
+          ],
+          "gloss": "Tour of the institute and encouragement (note: 12 institute staff in total)",
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "보도시점 2024. 11. 27.(수) 09:30",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "staff",
+              {
+                "id": "staff-53e2954ebc804ed1a61c521bf01ef098"
+              },
+              "as_of"
+            ]
+          ],
+          "gloss": "For release 27 November 2024 (Wednesday), 09:30",
+          "accessed": "2026-11-14"
         }
       ],
       "snapshot": {
@@ -120398,6 +120701,563 @@
         "retrieved": "2026-11-14T12:39:29Z",
         "sha256": "2fcfd2cc043f9120a3d6fb8a6e18dc7bde3c3e53e659517cbeffad785f1fcc74",
         "text_sha256": "16d3da7415d395308e33c64fa46282b2ce493ba888a4d3d979969f7ab40dad21",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "gb-dezoete-bio",
+      "url": "https://www.gov.uk/government/people/henry-de-zoete",
+      "title": "Henry De Zoete - GOV.UK",
+      "publisher": "GOV.UK",
+      "type": "primary",
+      "accessed": "2026-11-14",
+      "language": "en",
+      "origin": "GB",
+      "excerpts": [
+        {
+          "text": "In March 2026 he was appointed as the Investment and AI Adviser in the Department for Science, Innovation and Technology (March 2026 - August 2026).",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "people",
+              {
+                "id": "people-79b0cf38817c5246bc06d819ffb9ba02"
+              },
+              "background"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-14T11:31:13Z",
+        "sha256": "ad7c9cb4b6b71f1acdeec63dde6e2f24249c6f6f6cd4bb7841fc479f696ad4e2",
+        "text_sha256": "39f7fa9f4355ecfc6a4a8b46b5725c0f04872af0151e0e5a3f1012a2e3f9731c",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "eu-sioli-connect-2020",
+      "url": "https://digital-strategy.ec.europa.eu/en/events/artificial-intelligence-meets-health-sector-connect-university",
+      "title": "Artificial Intelligence meets the health sector | CONNECT University",
+      "publisher": "European Commission (DG CONNECT)",
+      "type": "primary",
+      "published": "2020-08-20",
+      "accessed": "2026-11-14",
+      "language": "en",
+      "origin": "EU",
+      "excerpts": [
+        {
+          "text": "Ms Lucilla Sioli is the Director for \"Artificial Intelligence and Digital Industry\" within Directorate-General CONNECT at the European Commission.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "people",
+              {
+                "id": "people-ff3044c04c6d5bc490489df29a84f83a"
+              },
+              "background"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "Publication 20 August 2020",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "people",
+              {
+                "id": "people-ff3044c04c6d5bc490489df29a84f83a"
+              },
+              "background"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-14T11:30:52Z",
+        "sha256": "e291664a3d6d8c85eda6b61e79689d6e0946b9f38199da51f7584e9793e57c3f",
+        "text_sha256": "9a0a22270aad707e125847360b524b4e843b727c02d1671c25fbf2b635237ac7",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "no-holte-appointment-dfd",
+      "url": "https://www.regjeringen.no/no/aktuelt/hans-christian-holte-blir-direktor-for-ki-norge/id3158721/",
+      "title": "Hans Christian Holte blir direktør for KI Norge",
+      "title_en": "Hans Christian Holte becomes director of KI Norge",
+      "publisher": "Digitaliserings- og forvaltningsdepartementet",
+      "type": "primary",
+      "published": "2026-05-07",
+      "accessed": "2026-11-14",
+      "language": "no",
+      "origin": "NO",
+      "excerpts": [
+        {
+          "text": "Holte var arbeids- og velferdsdirektør fra 2020 til 2025.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "people",
+              {
+                "id": "people-2d72b937814c5e4885e71e2f8af219e3"
+              },
+              "background"
+            ]
+          ],
+          "gloss": "Holte was Director of Labour and Welfare from 2020 to 2025.",
+          "accessed": "2026-11-14"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-14T11:32:30Z",
+        "sha256": "041df97d4464ba6cba4302f705b5aa2e810d014af070a2de93fa192cd59e76c7",
+        "text_sha256": "c6f403b21d6af212b30df9f2d8f91ba14e8c7c4bd3e642ce2f921cd3eba58b7b",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "us-raman-nist-bio",
+      "url": "https://www.nist.gov/people/arvind-raman",
+      "title": "Arvind Raman | NIST",
+      "publisher": "National Institute of Standards and Technology",
+      "type": "primary",
+      "accessed": "2026-11-14",
+      "language": "en",
+      "origin": "US",
+      "excerpts": [
+        {
+          "text": "In February 2023 he was named the John A. Edwardson Dean of Engineering at the university.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "people",
+              {
+                "id": "people-ccd2b978e1045a9b9cb2f0e2539cbdae"
+              },
+              "background"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "Dr. Raman joined NIST after a distinguished career at Purdue University in Indiana.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "people",
+              {
+                "id": "people-ccd2b978e1045a9b9cb2f0e2539cbdae"
+              },
+              "background"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "Arvind Raman is the fifth Under Secretary of Commerce for Standards and Technology and the 18th director of the National Institute of Standards and Technology.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "people",
+              {
+                "id": "people-ccd2b978e1045a9b9cb2f0e2539cbdae"
+              },
+              "background"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-14T11:31:53Z",
+        "sha256": "45d410057b2669e80fe71e7e1a6084ae45ac3c822c5609c8dd4d681e8d5265f0",
+        "text_sha256": "f00797b7b87e0abe2f1457a6dbb3d22f7ad99ea8531dfdcf61bfcb8150767f66",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "us-raman-confirmed-2026",
+      "url": "https://www.nist.gov/news-events/news/2026/07/arvind-raman-confirmed-18th-nist-director",
+      "title": "Arvind Raman Confirmed as the 18th NIST Director",
+      "publisher": "National Institute of Standards and Technology",
+      "type": "primary",
+      "published": "2026-07-06",
+      "accessed": "2026-11-14",
+      "language": "en",
+      "origin": "US",
+      "excerpts": [
+        {
+          "text": "Arvind Raman was sworn in on June 30, 2026, as the fifth under secretary of commerce for standards and technology and the 18th director of the National Institute of Standards and Technology (NIST)",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "people",
+              {
+                "id": "people-ccd2b978e1045a9b9cb2f0e2539cbdae"
+              },
+              "background"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-14T11:31:54Z",
+        "sha256": "6e648d7a9a4acb0ccd6b59a65db486bc63dc0a518fcc994d38270ab76518cde7",
+        "text_sha256": "792441651ddaaadbc076091695b2f4c06ece2f00682625208121995051de0c8a",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "ca-ised-transition-book-2025",
+      "url": "https://ised-isde.canada.ca/site/ised/en/transition-materials/ministerial-transition-book-march-2025-minister-innovation-science-and-industry",
+      "title": "Ministerial transition book: March 2025 — Minister of Innovation, Science and Industry",
+      "publisher": "Innovation, Science and Economic Development Canada",
+      "type": "primary",
+      "published": "2025-03",
+      "accessed": "2026-11-14",
+      "language": "en",
+      "origin": "CA",
+      "excerpts": [
+        {
+          "text": "Alexandra is the Senior Assistant Deputy Minister, Strategic Policy Sector, at ISED since September 2024.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "people",
+              {
+                "id": "people-e51819a0b781512099c82d5c0352b7c9"
+              },
+              "background"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "Previously, she has held positions with Government of Canada at Fisheries and Oceans Canada, Treasury Board Secretariat, Finance Canada and Global Affairs Canada.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "people",
+              {
+                "id": "people-e51819a0b781512099c82d5c0352b7c9"
+              },
+              "background"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-14T11:37:20Z",
+        "sha256": "a0387d03e387b73e3d8c1a9f335b1e819362a4b56951ade83cec084675643d55",
+        "text_sha256": "9258c91557222a6d914b0ded8d0430c9aa7a885bcb65b3423996fc883ffe0dd8",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "jp-cao-aisi-20240214",
+      "url": "https://www8.cao.go.jp/cstp/stmain/20240214.html",
+      "title": "AIセーフティ・インスティテュートの設立について",
+      "title_en": "On the establishment of the AI Safety Institute",
+      "publisher": "Cabinet Office of Japan, Science, Technology and Innovation Promotion Secretariat",
+      "type": "primary",
+      "published": "2024-02-14",
+      "accessed": "2026-11-14",
+      "language": "ja",
+      "origin": "JP",
+      "excerpts": [
+        {
+          "text": "所長には、今月１日に内定していた、元日本IBMのAI研究者で、現在は損保ジャパンCDO（チーフ・デジタル・オフィサー）で京都大学防災研究所客員講師の村上(むらかみ)明子(あきこ)氏が就任した。",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "people",
+              {
+                "id": "people-b2221cf0153f51bbb54c609c96e106c6"
+              },
+              "background"
+            ]
+          ],
+          "gloss": "Akiko Murakami, a former AI researcher at IBM Japan who is currently CDO (Chief Digital Officer) of Sompo Japan and a visiting lecturer at the Disaster Prevention Research Institute, Kyoto University, whose appointment was decided on the 1st of this month, took office as director.",
+          "accessed": "2026-11-14"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-14T11:31:10Z",
+        "sha256": "6a1ce25525804aa77dd6a72ac6b63583150abcabe263e7d9a4f6f07cc63a2c60",
+        "text_sha256": "4e016dde5bfd966ad39a89a611eb57c9f4d5c552d8d586d3073efb1a2dae5014",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "kr-msit-kim-director-2024",
+      "url": "https://www.msit.go.kr/eng/bbs/view.do?bbsSeqNo=42&mId=4&nttSeqNo=1048&sCode=eng",
+      "title": "Professor Kim Myuhng-Joo Appointed as First Director of the AI Safety Institute",
+      "publisher": "Ministry of Science and ICT (MSIT)",
+      "type": "primary",
+      "published": "2024-11-12",
+      "accessed": "2026-11-14",
+      "language": "en",
+      "origin": "KR",
+      "excerpts": [
+        {
+          "text": "has announced the appointment of Professor Kim Myuhng-joo from the Department of Information Security at Seoul Women's University as the inaugural Director of the AI Safety Institute, effective November 12.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "people",
+              {
+                "id": "people-396e0e7649455f829a0da6181a1c735c"
+              },
+              "background"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "The term for Professor Kim's appointment as Director of the AI Safety Institute is three years, from November 12, 2024, to November 11, 2027.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "people",
+              {
+                "id": "people-396e0e7649455f829a0da6181a1c735c"
+              },
+              "since"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-14T11:31:11Z",
+        "sha256": "15e059cf5bcc1a4b7c53adcd025e937a58571573d7dc2b7dd1b3f90f4c3d5626",
+        "text_sha256": "58fa66e12e863df812ec29e5f370f25d6b41e953a29b234596edabd173d8ed76",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "sg-imda-dtc-factsheet-2022",
+      "url": "https://www.imda.gov.sg/-/media/Imda/Files/News-and-Events/Media-Room/Media-Releases/2022/06/Digital-Trust-Centre-Factsheet---ATxSG-1-Jun-2022.pdf",
+      "title": "IMDA to Strengthen Singapore's Capabilities in Digital Trust Through New National Digital Trust Centre (fact sheet)",
+      "publisher": "Infocomm Media Development Authority (IMDA)",
+      "type": "primary",
+      "published": "2022-06-01",
+      "accessed": "2026-11-14",
+      "language": "en",
+      "origin": "SG",
+      "excerpts": [
+        {
+          "text": "NTU Professor Lam Kwok Yan, Associate Vice President (Strategy & Partnerships), who will lead the DTC as its Executive Director",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "sg-aisi"
+              },
+              "people",
+              {
+                "id": "people-46ec54ee933b52658c261129018e5356"
+              },
+              "background"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-14T11:32:02Z",
+        "sha256": "f5b123ad3a88b12357633cdcfc6465d45134c9b1d8334547c0e257aa985420bd",
+        "text_sha256": "b732385e56892863ada661c8343d1d6f5ab2ed87dff8a3af04699eab9014f1ed",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "gb-cp960-2023",
+      "url": "https://www.gov.uk/government/publications/ai-safety-institute-overview/introducing-the-ai-safety-institute",
+      "title": "Introducing the AI Safety Institute",
+      "publisher": "Department for Science, Innovation and Technology",
+      "type": "primary",
+      "published": "2023-11-02",
+      "accessed": "2026-11-14",
+      "language": "en",
+      "origin": "GB",
+      "excerpts": [
+        {
+          "text": "As of today, the Taskforce will become the AI Safety Institute, a new institution established for the long-term.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "GB"
+              },
+              "timeline",
+              {
+                "id": "gb-2"
+              },
+              "description"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-14T11:31:13Z",
+        "sha256": "8101f320413205bc5c235091b8aaaa58c1c0026942988316136e64f9d4d51f33",
+        "text_sha256": "7a61c4ef73595ba5cf099c26c871f02e3cb3d262b2b2ad9b51b3630aa8da0d2a",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "eu-ai-office-jobs-2024",
+      "url": "https://digital-strategy.ec.europa.eu/en/news/job-opportunities-european-ai-office",
+      "title": "Job opportunities at the European AI Office",
+      "publisher": "European Commission (DG CONNECT)",
+      "type": "primary",
+      "published": "2024-03-07",
+      "accessed": "2026-11-14",
+      "language": "en",
+      "origin": "EU",
+      "excerpts": [
+        {
+          "text": "The European AI Office launched its first job opportunities.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "claims",
+              {
+                "id": "claims-e862178394584c1f9013e3776f86525b"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-14T11:32:04Z",
+        "sha256": "34feb71f4892e51c18f3cd0876b2c8d9ee3c815094825465bf87a334a1bf45cc",
+        "text_sha256": "9f1bee63a1e09f29e88389860e1e615230fc3f1065f663350860ffdcba48a770",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "no-digdir-ki-norge-report-2025",
+      "url": "https://www.digdir.no/media/6966/download",
+      "title": "Rapportering på oppdrag om KI Norge",
+      "title_en": "Report on the KI Norge assignment",
+      "publisher": "Digitaliseringsdirektoratet (Digdir)",
+      "type": "primary",
+      "published": "2026-03-13",
+      "accessed": "2026-11-14",
+      "language": "no",
+      "origin": "NO",
+      "excerpts": [
+        {
+          "text": "KI Norge skal bli et samlende spiss- miljø for utvikling og bruk av innovativ og ansvarlig kunstig intelligens, og skal være fullt operativt fra august 2026. For å nå målet, samlet Digdir teknisk, juridisk, innovasjons- og forvaltningskompetanse i en interimsorganisasjon fra 1. desember 2025.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "claims",
+              {
+                "id": "claims-c5714a4546514d44a64c162bb4f13632"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "KI Norge is to become a unifying centre of expertise for the development and use of innovative and responsible artificial intelligence, and is to be fully operational from August 2026. To reach that goal, Digdir brought technical, legal, innovation and public administration expertise together in an interim organisation from 1 December 2025.",
+          "accessed": "2026-11-14"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-14T11:35:25Z",
+        "sha256": "dff34a21e23534a70f80f0ff37a5fd819831bc0d8c0865c21d132c06e66ae5af",
+        "text_sha256": "dec5fe3de37a31496a0da84f889693f15166215a1f014c98bba83589cb32d2ec",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "in-aisi-director-advert-2026",
+      "url": "https://www.meity.gov.in/static/uploads/2026/05/5188ada2f926aebc544d26a28dc22413.pdf",
+      "title": "Advertisement: Director, IndiaAI Safety Institute",
+      "publisher": "IndiaAI, Digital India Corporation",
+      "type": "primary",
+      "published": "2026-05-19",
+      "accessed": "2026-11-14",
+      "language": "en",
+      "origin": "IN",
+      "excerpts": [
+        {
+          "text": "India AI is currently inviting applications for the below position purely on Contract/ Consolidated basis. Sr.No Name of the Post No. of Positions 1. Director – IndiaAI Safety Institute 1",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "in-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-05eb0f44ebc64a3c955d10a0eba34ba5"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-14T11:33:15Z",
+        "sha256": "aabce9f022bee185f3c9ed32b98b2b434d751b4e5a3d9e4c2573988f7a7161c2",
+        "text_sha256": "751f89d8680d576d10fe7035e5c9026fd89e4326c36331227de356fdfbdc8358",
         "text_scheme": 1
       }
     }

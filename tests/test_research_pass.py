@@ -77,6 +77,15 @@ def test_pass_file_problems(tmp_path, changes, expected):
     assert any(expected in p for p in problems), problems
 
 
+def test_fields_come_from_the_schema_not_only_the_records(tmp_path):
+    # No record in DATA carries claims, check.log or people; the schema allows them, so a pass may scope them.
+    fields = ["claims", "claims.text", "check.log", "people.background"]
+    record = pass_record(scope={"states": [], "institutes": [], "fields": fields})
+    assert research_pass.validate_pass(make(tmp_path, record), DATA) == []
+    record = pass_record(scope={"states": [], "institutes": [], "fields": ["claims.nonexistent"]})
+    assert any("unknown field 'claims.nonexistent'" in p for p in research_pass.validate_pass(make(tmp_path / "b", record), DATA))
+
+
 def test_dotted_field_is_checked_whole(tmp_path):
     record = pass_record(scope={"states": [], "institutes": [], "fields": ["partners.relation"]})
     assert research_pass.validate_pass(make(tmp_path, record), DATA) == []
