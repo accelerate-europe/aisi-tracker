@@ -7,7 +7,7 @@ import json
 import pytest
 from jsonschema import Draft202012Validator
 
-from scripts import build, claim_checks
+from scripts import build, check_page, claim_checks
 from scripts.references import authored_schema
 
 SCHEMA = json.loads(build.SCHEMA.read_text())
@@ -114,6 +114,15 @@ def test_page_data_leaves_out_the_anchors(anchored):
     page = json.loads(build.page_data(published))
     assert all("anchors" not in e for s in page["sources"] for e in s.get("excerpts", []))
     assert quoted(page) == {k: v for k, v in quoted(published).items() if k != "anchors"}
+
+
+def test_gate_expects_the_page_data_the_build_writes(anchored):
+    """The gate's expected page.json, written from its own list, matches the build's on a dataset with anchors,
+    so a field one of them leaves out and the other keeps fails here, not first on a data branch."""
+    published = build.export_dataset(anchored)
+    assert any(e.get("anchors") for s in published["sources"] for e in s.get("excerpts", []))
+    assert check_page.expected_page_data(published) == json.loads(build.page_data(published))
+    assert "anchors" in check_page.PAGE_DATA_LEFT_OUT
 
 
 def test_non_english_anchor_needs_a_gloss(anchored):

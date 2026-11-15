@@ -10759,18 +10759,14 @@ FAVICON_HREFS = {
 }
 
 
-def check_page_data(dist: Path, data: dict) -> list[str]:
-    """data/page.json is aisi.json without a state's research log (check, except last_checked and method), a
-    source's private-copy metadata (snapshot, access_note) and the download-only claims and functions of states and
-    institutes, minified; the page loads it by a URL carrying the dataset version and the file's hash; and the page
-    script reads none of the fields left out."""
-    import hashlib
+PAGE_DATA_LEFT_OUT = "check (except last_checked and method), snapshot, access_note, claims, functions and excerpt anchors"
 
-    errors = []
-    path = dist / "data/page.json"
-    if not path.is_file():
-        return ["data/page.json: missing"]
-    text = path.read_text(encoding="utf-8")
+
+def expected_page_data(data: dict) -> dict:
+    """aisi.json as data/page.json must carry it, without its build mark: without a state's research log (check,
+    except last_checked and method), a source's private-copy metadata (snapshot, access_note), the download-only
+    claims and functions of states and institutes, and an excerpt's anchors (until the page shows them). Written
+    here from the documented list, not from the build's table, so a field the build drops without saying so fails."""
     want = copy.deepcopy(data)
     for j in want["jurisdictions"]:
         if "check" in j:
@@ -10778,15 +10774,31 @@ def check_page_data(dist: Path, data: dict) -> list[str]:
     for source in want["sources"]:
         source.pop("snapshot", None)
         source.pop("access_note", None)
-    for record in [*want["jurisdictions"], *want["institutes"]]:
+        for excerpt in source.get("excerpts", []):
+            excerpt.pop("anchors", None)
+    for record in [*want["jurisdictions"], *want.get("institutes", [])]:
         record.pop("claims", None)
         record.pop("functions", None)
+    return want
+
+
+def check_page_data(dist: Path, data: dict) -> list[str]:
+    """data/page.json is expected_page_data(aisi.json), minified; the page loads it by a URL carrying the dataset
+    version and the file's hash; and the page script reads none of the fields left out (PAGE_DATA_LEFT_OUT)."""
+    import hashlib
+
+    errors = []
+    path = dist / "data/page.json"
+    if not path.is_file():
+        return ["data/page.json: missing"]
+    text = path.read_text(encoding="utf-8")
+    want = expected_page_data(data)
     page = json.loads(text)
     mark = page.pop("build_mark", None)
     if list(json.loads(text))[-1:] != ["build_mark"]:
         errors.append("data/page.json: no build_mark as its last key (the page compares it with its own to catch a mixed release)")
     if page != want:
-        errors.append("data/page.json differs from aisi.json without check (except last_checked and method), snapshot, access_note, claims and functions")
+        errors.append(f"data/page.json differs from aisi.json without {PAGE_DATA_LEFT_OUT}")
     if "\n" in text or ": " in text[:200]:
         errors.append("data/page.json is not minified")
     # The build mark is the version and the hash of the file without it; the data URL and the page carry the same.
@@ -10805,7 +10817,7 @@ def check_page_data(dist: Path, data: dict) -> list[str]:
     if len(meta) == 1 and meta[0].get("data-package") != f"data/datapackage.json?v={data['dataset']['version']}-{hashlib.sha256(package.encode('utf-8')).hexdigest()[:10]}":
         errors.append(f"index.html: the data package URL {meta[0].get('data-package')!r} is not versioned by its content")
     script = "\n".join(node.get_text() for node in soup.select("body > script:not([src])"))
-    for pattern in (r"\.snapshot\b", r"\baccess_note\b", r"\.check\.(?!last_checked\b|method\b)\w+", r"\.check\[", r"\bcheck\)", r"\.claims\b", r"\.functions\b"):
+    for pattern in (r"\.snapshot\b", r"\baccess_note\b", r"\.check\.(?!last_checked\b|method\b)\w+", r"\.check\[", r"\bcheck\)", r"\.claims\b", r"\.functions\b", r"\.anchors\b"):
         for found in re.finditer(pattern, script):
             errors.append(f"page script reads a field data/page.json leaves out: {script[max(0, found.start() - 40):found.end() + 20]!r}")
     return errors
