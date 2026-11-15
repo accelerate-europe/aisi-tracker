@@ -36048,6 +36048,36 @@
           "source_ids": [
             "ca-caisi-srsr-briefing"
           ]
+        },
+        {
+          "id": "claims-5725067e50384146bf7e45737230a3f5",
+          "kind": "function",
+          "code": "evaluation_methods",
+          "basis": "activity",
+          "text": "Innovation, Science and Economic Development Canada's Question Period note says CAISI has initiated 13 projects, including on developing benchmarks and evaluations for AI models.",
+          "source_ids": [
+            "ca-qp-caisi-2025"
+          ]
+        },
+        {
+          "id": "claims-4443e68d347e4141a9158269d10c0846",
+          "kind": "function",
+          "code": "research",
+          "basis": "mandate",
+          "text": "ISED's departmental plan says the institute's project provides a non-repayable contribution to CIFAR to deliver the institute's applied and investigator-led research stream.",
+          "source_ids": [
+            "ca-ised-dp-2025-26-tpp"
+          ]
+        },
+        {
+          "id": "claims-0424f35f5f8047f3bc784ca59f9b9eea",
+          "kind": "function",
+          "code": "standards_guidance",
+          "basis": "mandate",
+          "text": "Its page on the ISED site says it provides guidance to AI developers and users and to the public on the risks of advanced AI systems and how to address them.",
+          "source_ids": [
+            "ca-ised"
+          ]
         }
       ]
     },
@@ -47901,6 +47931,29 @@
             ]
           ],
           "accessed": "2026-10-19"
+        },
+        {
+          "text": "Government-directed projects: We conduct projects supporting the government's priorities on AI safety, including joint testing with international counterparts, and provide guidance to AI developers and users and to the public on the risks of advanced AI systems and how to address them.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "claims",
+              {
+                "id": "claims-0424f35f5f8047f3bc784ca59f9b9eea"
+              },
+              "text"
+            ]
+          ],
+          "anchors": [
+            {
+              "text": "Canadian Artificial Intelligence Safety Institute",
+              "kind": "heading"
+            }
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "CA",
@@ -62278,6 +62331,23 @@
               "attribution_note"
             ]
           ]
+        },
+        {
+          "text": "To date, CAISI hasinitiated13 projects.which focus on AI safety issues, such as deepfake detection, safe robotic automation, exploring the risks with autonomous AI agents, as well as developing benchmarks and evaluations for AI models.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "claims",
+              {
+                "id": "claims-5725067e50384146bf7e45737230a3f5"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "CA",
@@ -109767,6 +109837,23 @@
                 "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
               },
               "notes"
+            ]
+          ],
+          "accessed": "2026-10-24"
+        },
+        {
+          "text": "One initiative under AET is the Canadian AI Safety Institute (CAISI) project, which is providing a non-repayable contribution to the Canadian Institute for Advanced Research (CIFAR), to deliver the applied and investigator-led research stream of the CAISI.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "claims",
+              {
+                "id": "claims-4443e68d347e4141a9158269d10c0846"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-24"
