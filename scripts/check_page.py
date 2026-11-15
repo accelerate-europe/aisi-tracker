@@ -4629,10 +4629,12 @@ TEXT_MEASURE_JS = """() => {
       const box = child.getBoundingClientRect(), ls = lines(child);
       if (ls.length) blocks.push({ el: child, left: box.left, right: box.right - parseFloat(s.paddingRight) - parseFloat(s.borderRightWidth), ls });
     }
-    // Bare text beside block children is one anonymous block with the container's measure.
+    // Bare text beside block children is one anonymous block with the container's measure. An inline element's
+    // lines are read as a block's are (its visible text only), so screen-reader text such as a link's
+    // "(opens in a new tab)", clipped beyond the line's end, never counts as running further.
     const bare = [...c.childNodes].filter(n => n.nodeType === 3 ? n.data.trim() : n.nodeType === 1 && getComputedStyle(n).display.startsWith('inline'));
     if (bare.length && blocks.length && isText(c)) {
-      const ls = bare.flatMap(n => { const r = document.createRange(); r.selectNode(n); return [...r.getClientRects()].filter(b => b.width > 0); });
+      const ls = bare.flatMap(n => { if (n.nodeType === 1) return lines(n); const r = document.createRange(); r.selectNode(n); return [...r.getClientRects()].filter(b => b.width > 0); });
       if (ls.length) blocks.push({ el: c, bare: true, left: Math.min(...ls.map(b => b.left)), right: c.getBoundingClientRect().right - parseFloat(cs.paddingRight), ls });
     }
     if (blocks.length < 2) continue;
@@ -4647,6 +4649,35 @@ TEXT_MEASURE_JS = """() => {
     }
   }
   return [errors, wrapped];
+}"""
+
+
+# Principle Re-read line: the line is a block of its own in the source item, so it wraps at the item's measure,
+# and no visible text of the item runs past that measure. Counts wrapped lines beside a wrapped title, so a run
+# that never meets a long line next to a long title says so.
+REREAD_MEASURE_JS = """() => {
+  const visible = (el, skip) => { const out = [], w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT); let n;
+    while ((n = w.nextNode())) { if (!n.data.trim()) continue; const p = n.parentElement; if (!p || !p.getClientRects().length || (skip && skip.contains(p))) continue;
+      if (getComputedStyle(p).visibility === 'hidden' || p.closest('.vh, [hidden]')) continue;
+      const r = document.createRange(); r.selectNodeContents(n); for (const b of r.getClientRects()) if (b.width > 0) out.push(b); }
+    return out; };
+  // Rendered lines: rectangles grouped by vertical overlap (a new line starts below the current one's middle).
+  const rows = ls => { let n = 0, bottom = -Infinity; for (const r of [...ls].sort((a, b) => a.top - b.top)) { if ((r.top + r.bottom) / 2 > bottom) { n++; bottom = r.bottom; } else bottom = Math.max(bottom, r.bottom); } return n; };
+  const errors = [], seen = new Set(); let lines = 0, beside = 0;
+  for (const s of document.querySelectorAll('li[data-source-id] > .reread')) {
+    if (!s.getClientRects().length) continue;
+    const li = s.parentElement, id = li.dataset.sourceId, ls = getComputedStyle(li), lb = li.getBoundingClientRect(), sb = s.getBoundingClientRect();
+    const left = lb.left + parseFloat(ls.paddingLeft) + parseFloat(ls.borderLeftWidth), right = lb.right - parseFloat(ls.paddingRight) - parseFloat(ls.borderRightWidth);
+    const own = visible(s), rest = visible(li, s);
+    lines++;
+    const say = m => { if (!seen.has(id)) { seen.add(id); errors.push(`source ${id}: ${m}`); } };
+    if (Math.abs(sb.left - left) > 1 || Math.abs(sb.right - right) > 1) say(`the re-read line spans ${Math.round(sb.left)}-${Math.round(sb.right)}px, its item ${Math.round(left)}-${Math.round(right)}px`);
+    const over = Math.max(...own.concat(rest).map(r => r.right)) - right;
+    if (over > 1) say(`text runs ${Math.round(over)}px past the item's measure`);
+    const title = li.querySelector(':scope > a.standalone');  // the source title, the item's first part (sourceList)
+    if (title && rows(own) > 1 && rows(visible(title)) > 1) beside++;
+  }
+  return [errors, lines, beside];
 }"""
 
 
@@ -4688,8 +4719,9 @@ def check_none_identified_tips(browser, base_url: str, data: dict) -> list[str]:
 def check_text_measure(browser, base_url: str) -> list[str]:
     """Principle Measure: stacked sibling text blocks in one container wrap at one width, so no paragraph,
     list or note breaks early beside a sibling whose lines run further (bare text included). Measured from
-    the rendered lines with every disclosure open, at 1280 and 390 px. Report lines (cosmetic, D1), except a missing
-    headline or first screen, which blocks."""
+    the rendered lines with every disclosure open, at 1600, 1280 and 390 px. Report lines (cosmetic, D1), except a missing
+    headline or first screen, which blocks, and the source items' re-read lines (REREAD_MEASURE_JS), which block: a
+    re-read line off its item's measure, or a width with no wrapped re-read line beside a wrapped title to measure."""
     errors = []
     for width in (1600, 1280, 390):
         page = browser.new_page(viewport={"width": width, "height": 900})
@@ -4708,6 +4740,10 @@ def check_text_measure(browser, base_url: str) -> list[str]:
             errors.append(report_line(f"{width}px: the headline runs past the first screen's column ({over})"))
         if wrapped < 20:
             errors.append(report_line(f"{width}px: only {wrapped} wrapped text blocks measured; the measure check is not seeing the page"))
+        off, lines, beside = page.evaluate(REREAD_MEASURE_JS)
+        errors.extend(f"{width}px: {e}" for e in off[:8])
+        if not beside:
+            errors.append(f"{width}px: no wrapped re-read line beside a wrapped source title among {lines} re-read lines; the re-read measure is not seeing a long line")
         page.close()
     return errors
 
