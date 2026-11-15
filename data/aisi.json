@@ -37330,6 +37330,56 @@
           "source_ids": [
             "gb-jp-joint-committee-2026"
           ]
+        },
+        {
+          "id": "claims-aef25f53ece0411e9ce9098eb3a4e2e9",
+          "kind": "function",
+          "code": "convening",
+          "basis": "activity",
+          "text": "J-AISI's status report says it led the launch of a discussion framework aimed at building AI safety benchmarks and held its kickoff in October 2025.",
+          "source_ids": [
+            "catalogue-jp-4-2"
+          ]
+        },
+        {
+          "id": "claims-bcf4a1e2247f40d390627089dbe5a0ce",
+          "kind": "function",
+          "code": "convening",
+          "basis": "mandate",
+          "text": "Its 2024 national status report says that, as a hub for AI safety in Japan, it will consolidate the latest information from industry and academia and promote collaboration among related companies and organisations.",
+          "source_ids": [
+            "catalogue-jp-20-2"
+          ]
+        },
+        {
+          "id": "claims-ef34327b044c49b08f89bc8ffe1a2d11",
+          "kind": "function",
+          "code": "policy_advice",
+          "basis": "activity",
+          "text": "Its 2024 national status report says it took part in government discussions on the procurement and use of AI, led by the Digital Agency and other bodies, and made proposals for addressing the risks of generative AI.",
+          "source_ids": [
+            "catalogue-jp-20-2"
+          ]
+        },
+        {
+          "id": "claims-a616913ab6134b2cb84ed7b8828e7ab0",
+          "kind": "function",
+          "code": "research",
+          "basis": "mandate",
+          "text": "Its page about the institute lists among its tasks research on safety standards, checking tools, disinformation countermeasure technology, and AI and cybersecurity.",
+          "source_ids": [
+            "jp-aisi-about"
+          ]
+        },
+        {
+          "id": "claims-35422bd54bcd480c90e3ebd511da7378",
+          "kind": "function",
+          "code": "talent",
+          "basis": "activity",
+          "text": "Its 2024 national status report says it has given lectures and conducted training, 14 times in total.",
+          "source_ids": [
+            "catalogue-jp-20-2"
+          ]
         }
       ]
     },
@@ -72324,6 +72374,29 @@
               "institute_id"
             ]
           ]
+        },
+        {
+          "text": "With the aim of concretizing AI safety evaluation procedures from the \ndeveloper's point of view, and building and proposing them as \nbenchmarks, J-AISI led the launch of a discussion framework and held a \nkickoff in October 2025.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-aef25f53ece0411e9ce9098eb3a4e2e9"
+              },
+              "text"
+            ]
+          ],
+          "anchors": [
+            {
+              "text": "(4) Project “Building AI Safety Benchmarks with All Japan/One Team ” \n(Creation of an evaluation method based on cross -organizational \ncollaboration)",
+              "kind": "heading"
+            }
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "JP",
@@ -73525,6 +73598,57 @@
               "institute_id"
             ]
           ]
+        },
+        {
+          "text": "As a hub for AI safety in Japan, J -AISI will consolidate the latest information in \nindustry and academia, then promote collaboration among related companies \nand organizations.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-bcf4a1e2247f40d390627089dbe5a0ce"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "AISI participated in discussions on appropriate procurements and utilizations of AI \nby Japanese government, led by the Digital Agency and other governmental bodies, \nand contributed to the discussions by making proposals for addressing the risks \nassociated with generative AI.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-ef34327b044c49b08f89bc8ffe1a2d11"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "AISI has exchanged views with AI stakeholders in various countries in person and \nonline, and has also given lectures and conducted training lecturers (total 14 times).",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-35422bd54bcd480c90e3ebd511da7378"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "JP",
@@ -99316,6 +99440,31 @@
             ]
           ],
           "gloss": "Director/Executive director Akiko Murakami (part-time)",
+          "accessed": "2026-10-19"
+        },
+        {
+          "text": "安全性に係る標準、チェックツール、偽情報対策技術、AIとサイバーセキュリティに関する調査",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-a616913ab6134b2cb84ed7b8828e7ab0"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "Research on safety-related standards, checking tools, disinformation countermeasure technologies, and AI and cybersecurity",
+          "anchors": [
+            {
+              "text": "AISIの業務",
+              "kind": "heading",
+              "gloss": "AISI's work"
+            }
+          ],
           "accessed": "2026-10-19"
         }
       ],
