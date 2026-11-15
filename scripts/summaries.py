@@ -16,6 +16,27 @@ import datetime as dt
 
 MONTHS = ("January", "February", "March", "April", "May", "June", "July", "August", "September", "October",
           "November", "December")
+LANGUAGE_NAMES = {
+    "am": "Amharic", "ar": "Arabic", "az": "Azerbaijani", "bg": "Bulgarian", "bm": "Bambara", "bn": "Bengali",
+    "bs": "Bosnian", "ca": "Catalan", "cnr": "Montenegrin", "cs": "Czech", "da": "Danish", "de": "German",
+    "dv": "Dhivehi", "dz": "Dzongkha", "el": "Greek", "en": "English", "es": "Spanish", "et": "Estonian",
+    "fa": "Persian", "fi": "Finnish", "fr": "French", "ha": "Hausa", "he": "Hebrew", "hr": "Croatian",
+    "ht": "Haitian Creole", "hu": "Hungarian", "hy": "Armenian", "id": "Indonesian", "is": "Icelandic",
+    "it": "Italian", "ja": "Japanese", "ka": "Georgian", "kk": "Kazakh", "km": "Khmer", "ko": "Korean",
+    "ky": "Kyrgyz", "lo": "Lao", "lt": "Lithuanian", "lv": "Latvian", "mk": "Macedonian", "mn": "Mongolian",
+    "mos": "Mossi", "ms": "Malay", "my": "Burmese", "nb": "Norwegian Bokmål", "ne": "Nepali", "nl": "Dutch",
+    "nn": "Norwegian Nynorsk", "no": "Norwegian", "pl": "Polish", "ps": "Pashto", "pt": "Portuguese",
+    "rn": "Kirundi", "ro": "Romanian", "ru": "Russian", "si": "Sinhala", "sk": "Slovak", "sl": "Slovenian",
+    "sq": "Albanian", "sr": "Serbian", "sv": "Swedish", "sw": "Swahili", "ta": "Tamil", "tg": "Tajik",
+    "th": "Thai", "ti": "Tigrinya", "tk": "Turkmen", "tr": "Turkish", "uk": "Ukrainian", "ur": "Urdu",
+    "uz": "Uzbek", "vi": "Vietnamese", "zh": "Chinese",
+}
+CHECK_TOPICS = {
+    "status": "status", "head": "head", "reports_to": "reporting line", "national_partners": "partners",
+    "staff": "staff", "funding": "budget", "agreements": "agreements", "model_access": "model access",
+    "testing_capacity": "testing capacity", "outputs": "published work", "closest_body": "closest body",
+    "related_bodies": "AI Act authorities and related bodies",
+}
 # Pattern 2: the stage prefix, where the body does not exist yet.
 STAGE_PREFIX = {"exists": "Closest body", "planned": "Planned closest body", "proposed": "Proposed closest body",
                 "under_study": "Closest body under study"}
@@ -133,10 +154,51 @@ def closest_warning(record: dict) -> str | None:
     return f"{where} has no live role claim and is shown by name alone; find a quote in the next sweep"
 
 
-def notes_text(record: dict) -> str:
-    """The record's notes: check.log in date order (ties keep the authored order), one paragraph each."""
-    log = sorted(enumerate(record.get("check", {}).get("log", [])), key=lambda pair: (pair[1]["date"], pair[0]))
-    return "\n\n".join(entry["text"].strip() for _, entry in log)
+def check_language_names(record: dict) -> None:
+    """Every search language needs a reader name, including searches not shown in generated notes."""
+    check = record.get("check", {})
+    codes = {s["language"] for s in check.get("searches", [])}
+    codes.update(code for entry in check.get("passes", []) for code in entry["languages"])
+    if unknown := sorted(codes - LANGUAGE_NAMES.keys()):
+        raise GeneratorError(f"{record['id']}: unknown check language code: {', '.join(unknown)}")
+
+
+def language_words(codes: list[str]) -> str:
+    """Distinct languages in authored order, with English last."""
+    ordered = sorted(dict.fromkeys(codes), key=lambda code: code == "en")
+    return words([LANGUAGE_NAMES[code] for code in ordered])
+
+
+def notes_text(record: dict, as_of: str) -> str:
+    """How we checked: full check, a future due date when shown, then searches newest first (ties in authored order).
+    The page shows the first three paragraphs and folds only the earlier searches."""
+    check_language_names(record)
+    check = record.get("check", {})
+    paragraphs = []
+    last = check.get("last_checked")
+    if check.get("method") == "individual":
+        # Without a recorded full check, the historical date is only an upper bound.
+        when = "on" if check.get("last_checked_basis") == "recorded_full_check" else "on or before"
+        line = f"Checked in full {when} {long_date(last)}"
+        if searches := check.get("searches"):
+            line += f", searching in {language_words([s['language'] for s in searches])}"
+        paragraphs.append(line + ".")
+    elif check.get("method") == "broad_search":
+        paragraphs.append(f"Covered by a search across many states by {long_date(last)}.")
+    if (due := record.get("next_check", {}).get("date")) and due > as_of:
+        paragraphs.append(f"Next check due by {long_date(due)}.")
+    for entry in sorted(check.get("passes", []), key=lambda entry: entry["date"], reverse=True):
+        if entry["date"] > last:
+            paragraphs.append(f"On {long_date(entry['date'])} we searched {words(entry['places'])} in "
+                              f"{language_words(entry['languages'])}, for information on {words([CHECK_TOPICS[key] for key in entry['fields']])}.")
+    return "\n\n".join(paragraphs)
+
+
+def next_check_warning(record: dict, as_of: str) -> str | None:
+    """An overdue next check is a release warning, never a generated promise to the reader."""
+    if (due := record.get("next_check", {}).get("date")) and due < as_of:
+        return f"{record['id']}: next_check {due} is before as_of"
+    return None
 
 
 def pattern_1(record: dict) -> str:
@@ -262,14 +324,14 @@ def summary_leaves(record: dict, institute: dict | None, basis: int | None) -> l
     return [("jurisdiction", f"related_bodies/{k}/{key}") for key in ("designation_state", "authority_roles", "designation_step")]
 
 
-def generate(record: dict, institute: dict | None, basis_event: dict | None) -> dict:
+def generate(record: dict, institute: dict | None, basis_event: dict | None, *, as_of: str) -> dict:
     """The generated texts of a migrated record: summary, notes, roles by body id, and the closest body's note."""
     closest = record.get("closest_body")
     if closest is not None and "body_id" not in closest:
         raise GeneratorError(f"{record['id']}: a migrated record's closest body names its related body (closest_body.body_id)")
     texts = {
         "summary": summary_text({**record, "status_basis_event": basis_event}, institute),
-        "notes": notes_text(record),
+        "notes": notes_text(record, as_of),
         "roles": {b["id"]: role_text(record, b["id"]) for b in record.get("related_bodies", [])},
     }
     if closest is not None:

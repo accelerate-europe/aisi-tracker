@@ -96,14 +96,14 @@ def test_closest_activity_follows_vocabulary_and_claim_order(migrated):
         {**claim, "id": "other", "code": "policy_advice", "body_id": "other-body"},
         {**claim, "id": "fact", "code": "policy_advice", "kind": "fact"},
     ]
-    published_facts.word_record(state, {}, migrated["dataset"]["vocabularies"])
+    published_facts.word_record(state, {}, migrated["dataset"]["vocabularies"], migrated["dataset"]["as_of"])
     assert state["closest_body"]["active_in"] == [
         {"code": "model_testing", "claim_ids": ["testing"]},
         {"code": "research", "claim_ids": ["research-first", "research-second"]},
     ]
     for c in state["claims"]:
         c["expired"] = True
-    published_facts.word_record(state, {}, migrated["dataset"]["vocabularies"])
+    published_facts.word_record(state, {}, migrated["dataset"]["vocabularies"], migrated["dataset"]["as_of"])
     assert "active_in" not in state["closest_body"]
 
 
@@ -164,7 +164,7 @@ def test_migrated_record_is_generated(migrated):
     assert state["summary"].startswith("No qualifying institute identified as of ")
     assert month.split("-")[0] in state["summary"]
     assert state["summary"].endswith(" Closest body: Synthetic model test centre. " + claims[LEAD])
-    assert state["notes"] == "Searched in English."
+    assert state["notes"] == "Checked in full on or before 17 October 2026."
     assert state["closest_body"]["note"] == claims[ROLE]  # the lead is in the summary, not said twice
     roles = {b["id"]: b["role"] for b in state["related_bodies"]}
     assert roles == {"test-regulator": f"{claims[ROLE]} {claims[LEAD]}", "test-authority": ""}
