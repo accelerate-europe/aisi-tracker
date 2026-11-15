@@ -2570,8 +2570,8 @@
                       "text": {
                         "type": "string",
                         "minLength": 1,
-                        "maxLength": 300,
-                        "description": "A short verbatim span in the original language, from the same copy as the excerpt."
+                        "maxLength": 500,
+                        "description": "A verbatim span in the original language, from the same copy as the excerpt; at most 500 characters, so a naming sentence and the lead-in it introduces fit in one span."
                       },
                       "kind": {
                         "enum": [

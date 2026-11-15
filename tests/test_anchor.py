@@ -65,12 +65,24 @@ def test_anchors_are_optional_and_valid(plain, anchored):
     [{"kind": "heading"}],  # no text
     [{"text": LEAD_IN["text"], "kind": "footnote"}],  # not a kind
     [{"text": "", "kind": "heading"}],
-    [{"text": "x" * 301, "kind": "heading"}],
+    [{"text": "x" * 501, "kind": "heading"}],  # over the 500-character anchor limit
     [{**LEAD_IN, "url": "https://example.org/other-copy"}],  # never a copy of its own
     [LEAD_IN, DEFINITION, {"text": "Article 3", "kind": "provision"}],  # three spans
 ])
 def test_anchor_shape(anchored, anchors):
     quoted(anchored)["anchors"] = anchors
+    assert errors(anchored)
+
+
+def test_anchor_limit_is_500_and_the_excerpt_limit_stays_300(anchored):
+    """Owner, 15 November: an anchor may hold up to 500 characters, so a naming sentence and its lead-in fit in one
+    span; the quotation itself keeps its 300."""
+    quoted(anchored)["anchors"] = [{"text": "x" * 500, "kind": "heading"}]
+    assert errors(anchored) == []
+    quoted(anchored)["anchors"] = [{"text": "x" * 501, "kind": "heading"}]
+    assert errors(anchored)
+    quoted(anchored)["anchors"] = [LEAD_IN]
+    quoted(anchored)["text"] = "x" * 301
     assert errors(anchored)
 
 
