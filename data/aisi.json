@@ -33614,16 +33614,6 @@
           ]
         },
         {
-          "id": "claims-9f5848bdf4cb4f3580be71ffe96fc49e",
-          "kind": "function",
-          "code": "standards_guidance",
-          "basis": "activity",
-          "text": "Commission guidelines say the AI Office prepared the template that specifies when providers must update the public summary of the content used to train their models.",
-          "source_ids": [
-            "catalogue-eu-artifact-gpai"
-          ]
-        },
-        {
           "id": "claims-7b80080e17d6465cbaeaa5e9b0663ba1",
           "kind": "function",
           "code": "standards_guidance",
@@ -75113,31 +75103,7 @@
         "text_sha256": "92b89a1d2953f812e9a29d8457a36f4cf52aa3001f180077014dfcf3780bc2b9",
         "text_scheme": 1
       },
-      "excerpts": [
-        {
-          "text": "content used for training required under Article 53(1), \npoint (d), AI Act must be drawn up and made publicly available for all the \nprovider’s models placed on the market. The template that has been prepared \nby the AI Office specifies circumstances under which the summary must be \nupdated.",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "eu-ai-office"
-              },
-              "claims",
-              {
-                "id": "claims-9f5848bdf4cb4f3580be71ffe96fc49e"
-              },
-              "text"
-            ]
-          ],
-          "anchors": [
-            {
-              "text": "the implementation \nof which is entrusted to the European Artificial Intelligence Office (‘AI Office’, see \nArticle 3(47) AI Act).",
-              "kind": "definition"
-            }
-          ],
-          "accessed": "2026-10-17"
-        }
-      ]
+      "excerpts": []
     },
     {
       "id": "catalogue-eu-artifact-template",
