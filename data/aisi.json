@@ -33168,6 +33168,66 @@
           "source_ids": [
             "no-prop1s-2026-27-dfd"
           ]
+        },
+        {
+          "id": "claims-0132732c8534478a827e1d638e013617",
+          "kind": "function",
+          "code": "adoption",
+          "basis": "activity",
+          "text": "KI Norge says it makes it easier for businesses, especially small and medium-sized ones, to understand the rules, find relevant tools and get started with artificial intelligence.",
+          "source_ids": [
+            "no-ki-about"
+          ]
+        },
+        {
+          "id": "claims-ac0da99673694210bb257cac9b905ceb",
+          "kind": "function",
+          "code": "adoption",
+          "basis": "mandate",
+          "text": "Digdir's report on the assignment says KI Norge is to drive innovative and responsible development and use of AI.",
+          "source_ids": [
+            "no-digdir-ki-norge-report-2025"
+          ]
+        },
+        {
+          "id": "claims-4a54b14b493840d6bb3a6c280e221021",
+          "kind": "function",
+          "code": "convening",
+          "basis": "mandate",
+          "text": "Digdir's report records the assignment to establish KI Norge as a national arena for responsible innovation, development and use of AI.",
+          "source_ids": [
+            "no-digdir-ki-norge-report-2025"
+          ]
+        },
+        {
+          "id": "claims-f8457955c41a4454814281ce6a589f58",
+          "kind": "function",
+          "code": "risk_monitoring",
+          "basis": "mandate",
+          "text": "KI Norge says it is to base its assessments and advice on knowledge and give an up-to-date picture of developments and what they mean for Norwegian organisations.",
+          "source_ids": [
+            "no-ki-about"
+          ]
+        },
+        {
+          "id": "claims-70abefe509fa472ea0e10af88e03c7fb",
+          "kind": "function",
+          "code": "sandbox",
+          "basis": "mandate",
+          "text": "The ministry's press release says KI Norge is to operate the national AI sandbox together with the Data Protection Authority and the Norwegian Communications Authority.",
+          "source_ids": [
+            "no-holte-appointment-dfd"
+          ]
+        },
+        {
+          "id": "claims-cd365bf008df42d68a3c2878770697dc",
+          "kind": "function",
+          "code": "standards_guidance",
+          "basis": "mandate",
+          "text": "The ministry's budget proposition says that through KI Norge the agency has a particular responsibility to guide on, and drive, responsible and innovative use of AI in the public and private sectors.",
+          "source_ids": [
+            "no-prop1s-2026-27-dfd"
+          ]
         }
       ]
     },
@@ -99099,6 +99159,42 @@
           ],
           "gloss": "KI Norge is a unit in the Norwegian Digitalisation Agency.",
           "accessed": "2026-10-19"
+        },
+        {
+          "text": "KI Norge gjør det enklere for virksomheter, særlig små og mellomstore, å forstå regelverk, finne relevante verktøy og komme i gang med kunstig intelligens på en innovativ og ansvarlig måte.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "claims",
+              {
+                "id": "claims-0132732c8534478a827e1d638e013617"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "KI Norge makes it easier for businesses, especially small and medium-sized ones, to understand the rules, find relevant tools and get started with artificial intelligence in an innovative and responsible way.",
+          "accessed": "2026-10-19"
+        },
+        {
+          "text": "KI Norge skal bygge på kunnskap i sine vurderinger og råd, og gi et oppdatert bilde av utviklingen og hva den betyr for norske virksomheter.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "claims",
+              {
+                "id": "claims-f8457955c41a4454814281ce6a589f58"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "KI Norge is to base its assessments and advice on knowledge, and give an up-to-date picture of developments and what they mean for Norwegian organisations.",
+          "accessed": "2026-10-19"
         }
       ],
       "snapshot": {
@@ -109841,6 +109937,24 @@
           "accessed": "2026-10-24",
           "url": "https://web.archive.org/web/20261012015622if_/https://www.regjeringen.no/contentassets/df4dc3a3497342129b6d1681ad6d4c9e/nn-no/pdfs/prp202620270001dfddddpdfs.pdf",
           "gloss": "KI Norge is to be the contact point towards international AI safety communities, for example AI Safety Institutes, with the aim of cooperation on, among other things, methods, assessments and test tools Norway cannot build up alone."
+        },
+        {
+          "text": "Gjennom KI Noreg har direktoratet òg eit særskilt ansvar for å rettleie om, og vere ein pådrivar for ansvarleg og innovativ bruk av KI i både offentleg og privat sektor.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "claims",
+              {
+                "id": "claims-cd365bf008df42d68a3c2878770697dc"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "Through KI Norge the directorate also has a particular responsibility to guide on, and be a driving force for, responsible and innovative use of AI in both the public and private sectors.",
+          "accessed": "2026-10-24"
         }
       ],
       "snapshot": {
@@ -120947,6 +121061,24 @@
           ],
           "gloss": "Holte was Director of Labour and Welfare from 2020 to 2025.",
           "accessed": "2026-11-14"
+        },
+        {
+          "text": "KI Norge skal gi veiledning og drifte den nasjonale KI-sandkassen sammen med Datatilsynet og Nasjonal kommunikasjonsmyndighet.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "claims",
+              {
+                "id": "claims-70abefe509fa472ea0e10af88e03c7fb"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "KI Norge is to provide guidance and operate the national AI sandbox together with the Data Protection Authority and the Norwegian Communications Authority.",
+          "accessed": "2026-11-14"
         }
       ],
       "snapshot": {
@@ -121468,6 +121600,42 @@
             ]
           ],
           "gloss": "KI Norge is to become a unifying centre of expertise for the development and use of innovative and responsible artificial intelligence, and is to be fully operational from August 2026. To reach that goal, Digdir brought technical, legal, innovation and public administration expertise together in an interim organisation from 1 December 2025.",
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "KI Norge skal være en pådriver for  \ninnovativ og ansvarlig utvikling og bruk av kunstig  \nintelligens, og et spissmilijø som samler kompetanse og \ninnsikt fra det offentlige, næringslivet, forskningsmiljøene  \nog sivilsamfunnet.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "claims",
+              {
+                "id": "claims-ac0da99673694210bb257cac9b905ceb"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "KI Norge is to be a driving force for innovative and responsible development and use of artificial intelligence, and a specialist centre that gathers expertise and insight from the public sector, business, research communities and civil society.",
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "Oppdrag om å etablere KI Norge – nasjonal arena  \nfor ansvarlig innovasjon, utvikling og bruk av kunstig  \nintelligens",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "claims",
+              {
+                "id": "claims-4a54b14b493840d6bb3a6c280e221021"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "Assignment to establish KI Norge: a national arena for responsible innovation, development and use of artificial intelligence",
           "accessed": "2026-11-14"
         }
       ],
