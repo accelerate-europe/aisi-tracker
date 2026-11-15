@@ -38441,6 +38441,76 @@
           "source_ids": [
             "kr-policy-briefing-2024-10-18"
           ]
+        },
+        {
+          "id": "claims-b9b1763aca844926bcd807645c2c5299",
+          "kind": "function",
+          "code": "adoption",
+          "basis": "activity",
+          "text": "Its director says the AISI is a collaborative organisation dedicated to supporting Korean AI companies by reducing risk factors that hinder their global competitiveness.",
+          "source_ids": [
+            "kr-nst-launch-2024"
+          ]
+        },
+        {
+          "id": "claims-7906d738915740988e8c7d0a1f053497",
+          "kind": "function",
+          "code": "capacity_building",
+          "basis": "activity",
+          "text": "It says it provides \"AI safety-related consulting to companies\", for example on international evaluations, certifications and compliance with foreign regulations.",
+          "source_ids": [
+            "kr-aisi-sub31"
+          ]
+        },
+        {
+          "id": "claims-3c0a171f93634bbbb83571ff38797b62",
+          "kind": "function",
+          "code": "convening",
+          "basis": "activity",
+          "text": "It says it serves as \"a platform for sharing information on AI safety technologies and policies\" and supports collaboration in human resources, technology and infrastructure among domestic companies, universities and research institutes.",
+          "source_ids": [
+            "kr-aisi-sub33"
+          ]
+        },
+        {
+          "id": "claims-d42654323cc84f3d8b02ef4816c80862",
+          "kind": "function",
+          "code": "model_testing",
+          "basis": "activity",
+          "text": "The joint testing report says Korea AISI ran variation tests on temperature and model size \"to assess the impact of temperature and model size on agent behaviour and safety performance\".",
+          "source_ids": [
+            "catalogue-agentic-report"
+          ]
+        },
+        {
+          "id": "claims-6f0581aa2bab422ca5b7cca604e45e67",
+          "kind": "function",
+          "code": "model_testing",
+          "basis": "mandate",
+          "text": "The ministry says the two sides agreed that the institute and Anthropic will actively work together to secure AI safety through \"AI model and autonomous AI agent safety evaluations\".",
+          "source_ids": [
+            "kr-msit-anthropic-2026"
+          ]
+        },
+        {
+          "id": "claims-74b3c80e552d474097641a9ebac41d70",
+          "kind": "function",
+          "code": "research",
+          "basis": "mandate",
+          "text": "The ministry's launch release describes the institute as a dedicated AI safety research organisation for responding systematically and expertly to various AI risks, including those arising from AI's technical limitations, human misuse of AI technology and loss of control over AI.",
+          "source_ids": [
+            "kr-msit-2024-11-pdf"
+          ]
+        },
+        {
+          "id": "claims-47d49d97089e465593f9b57083a9217d",
+          "kind": "function",
+          "code": "talent",
+          "basis": "mandate",
+          "text": "The decree lists advice and education related to AI safety among the institute's businesses.",
+          "source_ids": [
+            "kr-ai-basic-act-decree"
+          ]
         }
       ]
     },
@@ -63952,8 +64022,19 @@
           "accessed": "2026-10-17"
         },
         {
-          "text": "Korea’s AI Safety Institute (AISI) and Anthropic will actively work together to secure AI safety through AI model and autonomous AI agent safety evaluations.",
+          "text": "On AI safety, the two sides agreed that Korea’s AI Safety Institute (AISI) and Anthropic will actively work together to secure AI safety through AI model and autonomous AI agent safety evaluations.",
           "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-6f0581aa2bab422ca5b7cca604e45e67"
+              },
+              "text"
+            ],
             [
               "institutes",
               {
@@ -70331,6 +70412,23 @@
             ]
           ],
           "accessed": "2026-10-20"
+        },
+        {
+          "text": "The AISI is not a regulatory body but a collaborative organization dedicated to supporting Korean AI companies by reducing risk factors that hinder their global competitiveness.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-b9b1763aca844926bcd807645c2c5299"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "KR",
@@ -76014,6 +76112,23 @@
               "claims",
               {
                 "id": "claims-c9a798e398554a7abdf03d003c394160"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Korea AISI variation tests were conducted on temperature and different model size \n(parameter) to assess the impact of temperature and model size on agent behaviour \nand safety performance.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-d42654323cc84f3d8b02ef4816c80862"
               },
               "text"
             ]
@@ -100772,6 +100887,29 @@
             ]
           ],
           "accessed": "2026-10-19"
+        },
+        {
+          "text": "We provide AI safety-related consulting to companies (e.g., international evaluations, certifications, compliance with foreign regulations).",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-7906d738915740988e8c7d0a1f053497"
+              },
+              "text"
+            ]
+          ],
+          "anchors": [
+            {
+              "text": "AI safety consulting service",
+              "kind": "heading"
+            }
+          ],
+          "accessed": "2026-10-19"
         }
       ],
       "snapshot": {
@@ -100830,6 +100968,29 @@
               },
               "how"
             ]
+          ],
+          "accessed": "2026-10-19"
+        },
+        {
+          "text": "We serve as a platform for sharing information on AI safety technologies and policies, while fostering collaboration in human resources, technology, and infrastructure among domestic companies, universities, and research institutes.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-3c0a171f93634bbbb83571ff38797b62"
+              },
+              "text"
+            ]
+          ],
+          "anchors": [
+            {
+              "text": "National Safety Hub",
+              "kind": "heading"
+            }
           ],
           "accessed": "2026-10-19"
         }
@@ -107234,7 +107395,34 @@
         "sha256": "eb31bf3a589e09e7b9af5211a7574eea88db3952e80141d10a4863d135e5f634",
         "text_sha256": "52f45be0775a7b079dcd76954b1e671cfe34b518968f6668909b343b240a8ea5",
         "text_scheme": 1
-      }
+      },
+      "excerpts": [
+        {
+          "text": "1. 법 제12조제1항에 따른 인공지능안전(이하 “인공지능안전”이라 한다) 관련 자문 및 교육",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-47d49d97089e465593f9b57083a9217d"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "1. Advice and education related to AI safety under Article 12(1) of the Act (hereinafter 'AI safety')",
+          "anchors": [
+            {
+              "text": "제10조(인공지능안전연구소의 운영 등)",
+              "kind": "provision",
+              "gloss": "Article 10 (Operation of the AI Safety Institute, etc.)"
+            }
+          ],
+          "accessed": "2026-10-21"
+        }
+      ]
     },
     {
       "id": "in-pib-2026-07-27",
@@ -107823,6 +108011,24 @@
           ],
           "gloss": "For release 27 November 2024 (Wednesday), 09:30",
           "accessed": "2026-11-14"
+        },
+        {
+          "text": "인공지능 안전연구소는 인공지능의 기술적 한계, 인간의 인공지능 기술 오용, \n인공지능 통제력 상실 등으로 발생하는 다양한 인공지능 위험에 체계적‧전문적\n으로 대응하기 위한 인공지능 안전연구 전담조직이다.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-74b3c80e552d474097641a9ebac41d70"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "The AI Safety Institute is a dedicated AI safety research organisation for responding systematically and expertly to the various AI risks that arise from the technical limitations of AI, human misuse of AI technology, loss of control over AI and so on.",
+          "accessed": "2026-10-21"
         }
       ],
       "snapshot": {
