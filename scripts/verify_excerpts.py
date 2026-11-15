@@ -971,17 +971,62 @@ def copy_texts(fetcher: "Fetcher", meta: dict) -> list[str]:
 ANCHOR_FAILURES = ("anchor_mismatch", "anchor_other_copy", "anchor_not_before_quote")
 
 
-def check_anchors(source: dict, excerpt: dict, match: dict, fetcher: "Fetcher") -> list[dict]:
-    """Each anchor in the copy the quote was found in: found there, and for a heading or provision ending before the
-    quote starts in a text view that carries both; a definition may sit anywhere. One result per anchor: its kind
-    and text, `status` (matched, or a failure from ANCHOR_FAILURES) and, where one view carries anchor and quote,
+def unavailable_status(attempts: list[dict]) -> str:
+    """The unavailable-copy result, shared by quotations and other-copy anchors."""
+    statuses = {a["status"] for a in attempts}
+    if "storage_error" in statuses:
+        return "storage_error"
+    if "extraction_error" in statuses:
+        return "extraction_error"
+    if "no_extractable_text" in statuses:
+        return "unextractable"
+    if statuses & {"login_or_challenge", "error_or_challenge", "archive_wrapper", "empty_render",
+                   "cookie_settings_shell", "javascript_shell", "document_viewer", "too_large", "unsupported_url"}:
+        return "rejected_content"
+    if statuses & {"http_error", "incomplete_response", "unreachable"}:
+        return "unreachable"
+    return "not_cached"
+
+
+def anchor_result(anchor: dict, status: str) -> dict:
+    return {k: anchor[k] for k in ("kind", "text", "source_id") if k in anchor} | {"status": status}
+
+
+def check_anchors(source: dict, excerpt: dict, match: dict, fetcher: "Fetcher", sources: dict[str, dict]) -> list[dict]:
+    """Same-copy anchors must be in the quote's copy, with a heading or provision ending before the quote starts
+    in a text view that carries both; a definition or membership may sit anywhere. Other-copy anchors
+    are checked in their named source's candidates, without placement or distance. One result per anchor: its kind
+    and text, source_id when named, `status` (matched, not_checked, or an ANCHOR_FAILURES value) and, for same-copy spans,
     `distance`, the characters from the anchor's end to the quote's start, for the reviewer who judges whether the
     anchor governs the quote (negative when the anchor ends after the quote starts)."""
     views = copy_texts(fetcher, match)
     results = []
     for anchor in excerpt["anchors"]:
+        if "source_id" in anchor:
+            result = anchor_result(anchor, "not_checked")
+            attempts, available = [], False
+            named = sources.get(anchor["source_id"])
+            if named is None:  # the build rejects an unknown source id; a standalone run reports it as missing
+                results.append(anchor_result(anchor, "anchor_mismatch") | {"attempts": []})
+                continue
+            for url, method in candidates(named):
+                meta = fetcher.fetch(url, method)
+                attempts.append({"url": url, "status": meta["status"]})
+                named_views = copy_texts(fetcher, meta)
+                available |= meta["status"] == "ok" or any(normalise(v) for v in named_views)
+                if any(literal_match(anchor["text"], v) for v in named_views):
+                    result.update(status="matched", evidence_url=url)
+                    break
+            else:
+                if available:
+                    result["status"] = "anchor_mismatch"
+                else:
+                    result["copy_status"] = unavailable_status(attempts)
+            result["attempts"] = attempts
+            results.append(result)
+            continue
         placements = [p for p in (anchor_placement(anchor["text"], excerpt["text"], v) for v in views) if p is not None]
-        result = {"kind": anchor["kind"], "text": anchor["text"], "status": "matched"}
+        result = anchor_result(anchor, "matched")
         if placements:
             result["distance"] = max(placements)
         if not placements and not any(literal_match(anchor["text"], v) for v in views):
@@ -1001,7 +1046,9 @@ def verify_source(
     excerpts: list[tuple[int, dict]],
     fetcher: Fetcher,
     fetch_unused: bool = False,
+    sources: dict[str, dict] | None = None,
 ) -> dict:
+    sources = sources if sources is not None else {source["id"]: source}
     rows, attempts = [], {}
     for index, excerpt in excerpts:
         available = []
@@ -1051,29 +1098,7 @@ def verify_source(
             if match:
                 break
         chosen = match or (available[0] if available else None)
-        failed_statuses = {a["status"] for a in excerpt_attempts}
-        if "storage_error" in failed_statuses:
-            failure = "storage_error"
-        elif "extraction_error" in failed_statuses:
-            failure = "extraction_error"
-        elif "no_extractable_text" in failed_statuses:
-            failure = "unextractable"
-        elif failed_statuses & {
-            "login_or_challenge",
-            "error_or_challenge",
-            "archive_wrapper",
-            "empty_render",
-            "cookie_settings_shell",
-            "javascript_shell",
-            "document_viewer",
-            "too_large",
-            "unsupported_url",
-        }:
-            failure = "rejected_content"
-        elif failed_statuses & {"http_error", "incomplete_response", "unreachable"}:
-            failure = "unreachable"
-        else:
-            failure = "not_cached"
+        failure = unavailable_status(excerpt_attempts)
         render_only = bool(
             match
             and match.get("method") == "render"
@@ -1102,12 +1127,15 @@ def verify_source(
             "attempts": excerpt_attempts,
         }
         if excerpt.get("anchors"):
-            # Checked only in the copy that carries the quote; without one the quote's own status stands.
-            row["anchors"] = check_anchors(source, excerpt, match, fetcher) if match else [
-                {"kind": a["kind"], "text": a["text"], "status": "not_checked"} for a in excerpt["anchors"]]
+            # Without a quotation match its own status stands; every anchor still retains its source id.
+            row["anchors"] = check_anchors(source, excerpt, match, fetcher, sources) if match else [
+                anchor_result(a, "not_checked") for a in excerpt["anchors"]]
             failed = [a["status"] for a in row["anchors"] if a["status"] in ANCHOR_FAILURES]
+            unavailable = [a["copy_status"] for a in row["anchors"] if "copy_status" in a]
             if failed:
                 row["status"] = failed[0]
+            elif unavailable:
+                row["status"] = unavailable[0]
         if excerpt.get("url"):
             row["declared_excerpt_url"] = excerpt["url"]
         if match:
@@ -1178,10 +1206,10 @@ def write_report(path: Path, results: list[dict], data_path: Path) -> dict:
         md += ["", "## Anchors", "",
                "Distance: characters from the anchor's end to the quote's start in the copy that carries both, farthest first. "
                "The check shows order, not that the anchor governs the quote; review judges that against the saved copy.", "",
-               "| Source | Excerpt | Kind | Anchor result | Distance | Anchor |", "| --- | --- | --- | --- | --- | --- |"]
+               "| Source | Excerpt | Anchor source | Kind | Anchor result | Distance | Anchor |", "| --- | --- | --- | --- | --- | --- | --- |"]
         for row, a in sorted(anchored, key=lambda pair: -pair[1].get("distance", -1)):
             text = a["text"].replace("|", "&#124;").replace("\n", " ")
-            md.append(f"| {row['source_id']} | {row['excerpt_id']} | {a['kind']} | {a['status']} | {a.get('distance', '')} | {text} |")
+            md.append(f"| {row['source_id']} | {row['excerpt_id']} | {a.get('source_id', '')} | {a['kind']} | {a['status']} | {a.get('distance', '')} | {text} |")
     path.with_suffix(".md").write_text("\n".join(md) + "\n", encoding="utf-8")
     return counts
 
@@ -1269,9 +1297,10 @@ def main() -> None:
     if args.source and set(args.source) - {s["id"] for s in data["sources"]}:
         ap.error("unknown source ID")
     results = []
+    sources = {s["id"]: s for s in data["sources"]}
     with ThreadPoolExecutor(max_workers=args.workers) as pool:
         jobs = {
-            pool.submit(verify_source, s, ex, fetcher, args.all_sources): s["id"]
+            pool.submit(verify_source, s, ex, fetcher, args.all_sources, sources): s["id"]
             for s, ex in selected
         }
         for future in as_completed(jobs):

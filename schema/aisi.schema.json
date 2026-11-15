@@ -2589,9 +2589,10 @@
                 "anchors": {
                   "type": "array",
                   "minItems": 1,
-                  "maxItems": 2,
+                  "maxItems": 3,
                   "items": {
                     "type": "object",
+                    "description": "A span from the same copy as the excerpt unless source_id names another source.",
                     "additionalProperties": false,
                     "required": [
                       "text",
@@ -2602,23 +2603,37 @@
                         "type": "string",
                         "minLength": 1,
                         "maxLength": 500,
-                        "description": "A verbatim span in the original language, from the same copy as the excerpt; at most 500 characters, so a naming sentence and the lead-in it introduces fit in one span."
+                        "description": "A verbatim span in the original language, from the same copy as the excerpt unless source_id names another source."
                       },
                       "kind": {
                         "enum": [
                           "definition",
                           "heading",
-                          "provision"
+                          "provision",
+                          "membership"
                         ],
-                        "description": "definition: the clause that defines a short name the excerpt or its heading uses. heading: a heading or list lead-in that governs the excerpt. provision: the title of the article or section the excerpt sits in. A heading or provision comes before the excerpt in the copy."
+                        "description": "definition: defines a short name. membership: says a unit belongs to the body. heading: a governing heading or list lead-in. provision: the excerpt's article or section title. A heading or provision precedes the excerpt in the same copy."
                       },
                       "gloss": {
                         "type": "string",
                         "description": "Short English gloss for a non-English anchor."
+                      },
+                      "source_id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "description": "Source whose saved copy holds the span; absent means the excerpt's own copy."
+                      }
+                    },
+                    "if": {
+                      "required": ["source_id"]
+                    },
+                    "then": {
+                      "properties": {
+                        "kind": {"enum": ["definition", "membership"]}
                       }
                     }
                   },
-                  "description": "Optional: the spans that name whom the excerpt is about when it does not name the institute or body itself (attribution rule, docs/design/claims-1.1.md section 2). At most one definition and at most one heading or provision: one link from the quote to its governing lead-in, one from a short name to its definition. Checked against the same copy as the excerpt, and re-read with it: the excerpt counts as found only when every span is."
+                  "description": "Optional attribution spans (docs/design/claims-1.1.md section 2): at most one same-copy heading or provision, one same-copy definition or membership, and one definition or membership from another cited source named by source_id. Each is checked against the copy it is found in and re-read with it; the excerpt is found only when every span is."
                 },
                 "supports": {
                   "type": "array",

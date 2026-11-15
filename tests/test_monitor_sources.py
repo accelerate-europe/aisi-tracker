@@ -36,7 +36,7 @@ OLD = page(
 
 
 def setup(
-    tmp_path, new_body: bytes | None, status="ok", error=None, cited=OLD, method="live", excerpts=True, anchors=None
+    tmp_path, new_body: bytes | None, status="ok", error=None, cited=OLD, method="live", excerpts=True, anchors=None, sources=()
 ):
     store = tmp_path / "store"
     digest = hashlib.sha256(cited).hexdigest()
@@ -95,7 +95,7 @@ def setup(
         )
     (folder / "metadata.json").write_text(json.dumps(meta))
     fetcher.offline = True
-    return monitor.compare(source, fetcher, store, tmp_path / "fallback")
+    return monitor.compare(source, fetcher, store, tmp_path / "fallback", sources)
 
 
 def test_same_file_is_unchanged(tmp_path):

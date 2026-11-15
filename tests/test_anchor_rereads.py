@@ -1,8 +1,13 @@
 """Re-reading an anchored quotation (docs/design/claims-1.1.md, section 4): each anchor is a span with its own hash,
 and the excerpt counts as found only when every span is."""
 
+import copy
+
+import pytest
+
 from scripts import monitor_sources as monitor
 from scripts import rereads, snapshot_sources
+from scripts.references import excerpt_spans, located_spans
 from tests.test_monitor_sources import OLD, no_requests, setup  # noqa: F401 - the autouse fixture applies here too
 from tests.test_rereads import entry, file, row
 
@@ -128,3 +133,113 @@ def test_a_new_copy_without_an_anchor_does_not_replace_the_cited_copy():
     source = {"url": "https://example.org/a", "excerpts": [{"text": QUOTE, "supports": [], "anchors": [{"text": LEAD_IN, "kind": "heading"}]},
                                                             {"text": "elsewhere", "supports": [], "url": "https://example.org/other"}]}
     assert snapshot_sources.bound_quotes(source) == [QUOTE, LEAD_IN]
+
+
+def cross_copy_data(*, unbound=False):
+    published = data(anchors=(LEAD_IN,))
+    owner, = published["sources"]
+    excerpt, = owner["excerpts"]
+    excerpt["anchors"].append({"text": DEFINITION, "kind": "definition", "source_id": "s2"})
+    if unbound:
+        excerpt["url"] = "https://example.org/another-copy"
+    named = {"id": "s2", "url": "https://example.org/unit", "snapshot": {"retrieved": "2026-11-01T08:00:00Z"}}
+    published["sources"].append(named)
+    return published
+
+
+@pytest.mark.parametrize("unbound", [False, True])
+def test_other_copy_anchor_replays_with_named_source_and_loses_excerpt(unbound):
+    published = cross_copy_data(unbound=unbound)
+    rows = [row("2026-12-18", "trivial", quotes=[(Q, True, True), (H, True, True), (D, True, True)]),
+            {**row("2026-12-04", "substantive", quotes=[(D, True, False)]), "source_id": "s2"}]
+    replayed = rereads.export(published, rows, is_archive=lambda url: False)
+    assert D not in replayed["sources"].get("s1", {})
+    assert replayed["sources"]["s2"][D] == {"state": "quote_gone", "last_found": "2026-11-01", "since": "2026-12-04", "last_attempt": "2026-12-04"}
+    rereads.join(published, replayed)
+    excerpt = published["sources"][0]["excerpts"][0]
+    assert excerpt["reread"] == {"state": "quote_gone", "last_found": "2026-11-01", "since": "2026-12-04"}
+    assert published["institutes"][0]["claims"][0]["reread"] == excerpt["reread"]
+    assert any("source s2: quote not found in the source since 2026-12-04 (1 quote)" in line
+               for line in rereads.alerts(published, replayed, "2026-12-20"))
+
+
+def test_other_copy_anchor_without_monitor_rows_uses_named_copy_date():
+    published = cross_copy_data()
+    states = rereads.quote_states(published, {})
+    assert states["s2", D]["last_found"] == "2026-11-01"
+    assert ("s1", D) not in states
+
+
+def test_a_quote_without_its_own_state_is_not_confirmed_by_another_sources_anchor():
+    published = cross_copy_data()
+    published["sources"][0].pop("snapshot")
+    rereads.join(published, {"sources": {"s2": {D: entry("confirmed", last_found="2026-12-18")}}})
+    assert "reread" not in published["sources"][0]["excerpts"][0]
+
+
+@pytest.mark.parametrize("unbound", [False, True])
+def test_copy_spans_bind_other_copy_anchors_even_when_the_quote_is_unbound(unbound):
+    published = cross_copy_data(unbound=unbound)
+    owner, named = published["sources"]
+    excerpt, = owner["excerpts"]
+    assert excerpt_spans(excerpt) == [QUOTE, LEAD_IN]
+    assert located_spans(owner["id"], excerpt) == [("s1", QUOTE), ("s1", LEAD_IN), ("s2", DEFINITION)]
+    assert snapshot_sources.bound_quotes(owner, published["sources"]) == ([] if unbound else [QUOTE, LEAD_IN])
+    assert snapshot_sources.bound_quotes(named, published["sources"]) == [DEFINITION]
+
+
+def test_monitor_checks_incoming_anchor_and_digest_names_both_sources(tmp_path):
+    text = "Its tasks:"
+    excerpt = {"text": "Models are tested.", "url": "https://example.org/other-copy", "supports": [["institutes", {"id": "lab"}, "mandate"]],
+               "anchors": [{"kind": "membership", "text": text, "source_id": "src"}]}
+    owner = {"id": "owner", "title": "Lab programme", "excerpts": [excerpt]}
+    # An identical quote and anchor must still be reported as an anchor belonging to another source.
+    second = {**copy.deepcopy(excerpt), "text": text}
+    owner["excerpts"].append(second)
+    cited = OLD.replace(b"<p>The institute was", b"<p>Its tasks: the institute was")
+    kept = setup(tmp_path / "kept", cited, cited=cited, excerpts=False, sources=[owner])
+    assert all(q["in_checked_copy"] for q in kept["quotes"])
+    result = setup(tmp_path / "lost", OLD, cited=cited, excerpts=False, sources=[owner])
+    assert result["class"] == "substantive" and result["reason"] == "quote_lost"
+    assert all(q["id"] == rereads.quote_id(text) and q["supports"] == ["institutes › lab › mandate"] for q in result["quotes"])
+    result["quotes"] = [{k: q[k] for k in ("id", "in_cited_copy", "in_checked_copy")} for q in result["quotes"]]
+    digest = monitor.markdown(report_for(result), {"src": {"id": "src", "title": "Membership source"}, "owner": owner}, {})
+    assert "Membership source" in digest and "`src`" in digest
+    assert '- anchor "Its tasks:" of "Models are tested." from source `owner` (Lab programme)' in digest
+    assert '- anchor "Its tasks:" of "Its tasks:" from source `owner` (Lab programme)' in digest
+
+
+def test_snapshot_replacement_checks_the_named_sources_incoming_anchor(tmp_path):
+    from tests.test_snapshot_sources import FakeFetcher
+
+    named = {"id": "unit", "url": "https://example.org/unit", "title": "Institute unit membership", "excerpts": []}
+    owner = {"id": "owner", "url": "https://example.org/owner", "excerpts": [{"text": QUOTE, "supports": [],
+             "url": "https://example.org/other-copy", "anchors": [{"kind": "membership", "text": "founded in 2024", "source_id": "unit"}]}]}
+    fetcher = FakeFetcher(tmp_path / "old-cache")
+    fetcher.add(named["url"], OLD)
+    first = snapshot_sources.process_source(named, fetcher, tmp_path / "private", tmp_path / "fallback", sources=[owner, named])
+    snapshot_sources.apply_result(named, first)
+    newer = FakeFetcher(tmp_path / "new-cache")
+    newer.add(named["url"], OLD.replace(b"founded in 2024", b"founded in 2025"), retrieved="2026-10-19T00:00:00Z")
+    result = snapshot_sources.process_source_safe(named, newer, tmp_path / "private", tmp_path / "fallback", sources=[owner, named])
+    assert result["change"] == "bound_quote_missing"
+    assert result["bound_quotes"] == {"total": 1, "lost_in_new_copy": 1, "gained_in_new_copy": 0, "in_neither": 0}
+
+
+@pytest.mark.parametrize("route", ["direct", "headless", "jina", "wayback"])
+def test_monitor_routes_include_anchors_from_an_unselected_owner(tmp_path, monkeypatch, route):
+    from tests.test_monitor_checks import Run
+
+    run = Run(tmp_path, monkeypatch, excerpts=[])
+    owner = {"id": "owner", "url": "https://example.org/owner", "title": "Owner text", "excerpts": [
+        {"text": QUOTE, "url": "https://example.org/elsewhere", "supports": [["institutes", {"id": "lab"}, "name"]],
+         "anchors": [{"text": "founded in 2024", "kind": "membership", "source_id": "src0"}]}]}
+    run.data["sources"].append(owner)
+    run.write_data()
+    run.responses[route] = OLD
+    assert run.run("--only", "src0") == 0
+    checked, = run.rows()
+    span, = checked["quotes"]
+    assert span["id"] == rereads.quote_id("founded in 2024")
+    assert span["in_cited_copy"] and span["in_checked_copy"]
+    assert checked["route"] == route

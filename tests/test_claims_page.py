@@ -15,7 +15,8 @@ PAGE = Path(__file__).resolve().parents[1] / "site/index.html"
 # markup into elements, and lets the same production helpers run on synthetic published bindings.
 DOM = """
 function el(tag, cls, text) {
-  return {tag, className: cls || '', attrs: {}, dataset: {}, children: [],
+  return {tag, tagName: tag.toUpperCase(), className: cls || '', attrs: {}, dataset: {}, children: [],
+    classList: {add(c) {}},
     setAttribute(k, v) { this.attrs[k] = v; },
     appendChild(n) { this.children.push(n); return n; },
     set textContent(t) { this.children = [{text: t}]; },
@@ -29,8 +30,9 @@ function rereadLine(s) { return el('span', 'reread', s.id || ('R' + (s.excerpts 
 
 
 def page_call(expression):
-    source = PAGE.read_text()
-    source = source[source.index('  var FACTS_LABEL ='):source.index('  function sourceList(')]
+    page = PAGE.read_text()
+    source = page[page.index("  function withOriginal("):page.index("  // Institute name, linked to its official website")]
+    source += page[page.index('  var FACTS_LABEL ='):page.index('  function sourceList(')]
     result = subprocess.run(["node", "-"], input=DOM + source + "\nconsole.log(JSON.stringify(" + expression + "));",
                             text=True, capture_output=True, check=True)
     return json.loads(result.stdout)
@@ -198,6 +200,39 @@ def test_browser_fixture_covers_every_role_and_development_binding():
     shown = check_page.card_claims(migrated, {})
     assert len(shown) == 6 and shown[0]["expired"]
     assert [len(check_page.claim_bindings(fixture, c["id"])) for c in shown] == [1, 1, 1, 1, 1, 2]
+    other_copy = [(s, a) for s in fixture["sources"] for e in s.get("excerpts", []) for a in e.get("anchors", []) if "source_id" in a]
+    assert other_copy
+    for owner, anchor in other_copy:
+        named = next(s for s in fixture["sources"] if s["id"] == anchor["source_id"])
+        assert named["title"] and named["language"] != owner["language"]
+
+
+def test_other_copy_anchor_shows_its_source_title_language_and_original():
+    data = bound_data()
+    named = {"id": "unit-source", "title": "Unit <membership>", "language": "fr"}
+    data["sources"].append(named)
+    anchor = {"kind": "membership", "text": "Le laboratoire appartient à l'institut.", "gloss": "The lab belongs to the institute.", "source_id": named["id"]}
+    data["sources"][0]["excerpts"][0]["anchors"].append(anchor)
+    body = page_call(f"(CLAIM_INDEX = claimIndex({json.dumps(data)}), claimQuoteBody('fact'))")
+    line, = [n for n in body["children"][0]["children"] if n.get("className") == "quote-anchor" and texts(n).startswith("Part of:")]
+    assert texts(line) == 'Part of: "The lab belongs to the institute." translated from French (Unit <membership>)'
+    quote = line["children"][1]["children"][0]
+    assert quote["attrs"]["aria-description"] == anchor["text"] and quote["tabIndex"] == 0
+    assert line["children"][-1] == {"text": ")"} and texts(line["children"][-2]) == "Unit <membership>"
+    assert line["children"][-2].get("lang") == "fr" or line["children"][-2].get("attrs", {}).get("lang") == "fr"
+
+
+def test_other_copy_anchor_title_shows_english_with_the_original_as_tip():
+    data = bound_data()
+    named = {"id": "unit-source", "title": "Unité <membership>", "title_en": "Unit <membership>", "language": "fr"}
+    data["sources"].append(named)
+    anchor = {"kind": "membership", "text": "Le laboratoire appartient à l'institut.", "gloss": "The lab belongs to the institute.", "source_id": named["id"]}
+    data["sources"][0]["excerpts"][0]["anchors"].append(anchor)
+    body = page_call(f"(CLAIM_INDEX = claimIndex({json.dumps(data)}), claimQuoteBody('fact'))")
+    line, = [n for n in body["children"][0]["children"] if n.get("className") == "quote-anchor" and texts(n).startswith("Part of:")]
+    assert texts(line).endswith("(Unit <membership>)")
+    title = line["children"][-2]
+    assert title["attrs"]["aria-description"] == "Unité <membership>" and title["tabIndex"] == 0
 
 
 def test_expired_body_role_stays_with_a_warning_but_not_in_the_finding():
