@@ -35407,7 +35407,30 @@
             "scope": "Sources checked for developments from 13 November 2026: the institute's home and activity pages (6 November) and outputs (6 October, with bilingual titles), IPA's press releases (13 November) and the Cabinet Office's AI pages (26 October) and press (12 November). The IPA items of 13 November are not credited to the institute. No new institute fact was found. The institute's separate English home page was not found, so English-only coverage is incomplete. Partial check, not a full record re-check."
           }
         ],
-        "last_checked_basis": "historical_upper_bound"
+        "last_checked_basis": "historical_upper_bound",
+        "functions": {
+          "date": "2026-11-14",
+          "codes": [
+            "model_testing",
+            "evaluation_methods",
+            "research",
+            "standards_guidance",
+            "regulatory_enforcement",
+            "regulatory_support",
+            "risk_monitoring",
+            "foresight",
+            "policy_advice",
+            "incident_response",
+            "international_cooperation",
+            "convening",
+            "capacity_building",
+            "talent",
+            "adoption",
+            "public_access_continuity",
+            "certification",
+            "sandbox"
+          ]
+        }
       },
       "source_ids": [
         "jp-cao-2604",
@@ -35479,7 +35502,8 @@
         "gb-jp-joint-committee-2026",
         "gb-jp-frontier-tech-partnership-2026",
         "jp-aisi-note-glm-2026",
-        "jp-aisi-note-glm-pdf-2026"
+        "jp-aisi-note-glm-pdf-2026",
+        "jp-ai-basic-plan-2026"
       ],
       "people": [
         {
@@ -36403,6 +36427,76 @@
             "jp-ipa-2024-02"
           ],
           "text": "Kenji Hiramoto took office as the institute's full-time secretary-general on 14 February 2024."
+        },
+        {
+          "id": "claims-c86a9cf9ca38497084adb323bc3d25e9",
+          "kind": "function",
+          "code": "model_testing",
+          "basis": "mandate",
+          "text": "The Cabinet's AI Basic Plan says it needs strengthening and lists active evaluation of high-performance AI, to deter events that threaten national security, among the work to advance.",
+          "source_ids": [
+            "jp-ai-basic-plan-2026"
+          ]
+        },
+        {
+          "id": "claims-468dd4be366249588383df9c54484741",
+          "kind": "function",
+          "code": "research",
+          "basis": "activity",
+          "text": "It says it commissioned the 'Report on the Specific Influence on AI Safety', with NRI SecureTechnologies as research contractor.",
+          "source_ids": [
+            "catalogue-jp-12-1"
+          ]
+        },
+        {
+          "id": "claims-9e18d6e5b98f485ebb7ff9a394281919",
+          "kind": "function",
+          "code": "standards_guidance",
+          "basis": "activity",
+          "text": "It says it published a guide to evaluation perspectives that AI system developers and providers can refer to when conducting AI safety evaluations.",
+          "source_ids": [
+            "depth-jp-evaluation-guide"
+          ]
+        },
+        {
+          "id": "claims-32881cb9fdc74d88aecb53e573f972d2",
+          "kind": "function",
+          "code": "risk_monitoring",
+          "basis": "activity",
+          "text": "It says it published the second edition of its overview of known attacks on AI systems and their impacts.",
+          "source_ids": [
+            "catalogue-jp-5-2"
+          ]
+        },
+        {
+          "id": "claims-4b1426115be64960882f6107061262e3",
+          "kind": "function",
+          "code": "incident_response",
+          "basis": "mandate",
+          "text": "The Cabinet's AI Basic Plan says it needs strengthening and lists the collection and sharing of international AI vulnerability and incident information among the work to advance.",
+          "source_ids": [
+            "jp-ai-basic-plan-2026"
+          ]
+        },
+        {
+          "id": "claims-a2e4e8a8343c4508aa193d7ee63e5507",
+          "kind": "function",
+          "code": "international_cooperation",
+          "basis": "mandate",
+          "text": "Its host's founding announcement assigns it work on international cooperation with bodies in other countries, such as the UK and US AI Safety Institutes.",
+          "source_ids": [
+            "jp-ipa-2024-02"
+          ]
+        },
+        {
+          "id": "claims-897d981bc75c479c8dafbe84751693ab",
+          "kind": "function",
+          "code": "international_cooperation",
+          "basis": "activity",
+          "text": "It has built a strong and enduring relationship with the UK AI Security Institute, the UK-Japan Joint Committee statement says.",
+          "source_ids": [
+            "gb-jp-joint-committee-2026"
+          ]
         }
       ]
     },
@@ -36622,7 +36716,30 @@
             "scope": "Sources checked for developments from 13 November 2026: the institute's Korean board (newest 3 November), its English home page and English board (stale, newest 24 December 2024), the science ministry's press hub (13 November), korea.kr policy news (13 November) and korea.kr's release of 12 November on the AI Safety Guardians, which are already recorded. No new institute fact was found. English coverage is incomplete. Partial check, not a full record re-check."
           }
         ],
-        "last_checked_basis": "historical_upper_bound"
+        "last_checked_basis": "historical_upper_bound",
+        "functions": {
+          "date": "2026-11-14",
+          "codes": [
+            "model_testing",
+            "evaluation_methods",
+            "research",
+            "standards_guidance",
+            "regulatory_enforcement",
+            "regulatory_support",
+            "risk_monitoring",
+            "foresight",
+            "policy_advice",
+            "incident_response",
+            "international_cooperation",
+            "convening",
+            "capacity_building",
+            "talent",
+            "adoption",
+            "public_access_continuity",
+            "certification",
+            "sandbox"
+          ]
+        }
       },
       "source_ids": [
         "kr-site",
@@ -36647,7 +36764,9 @@
         "kr-aire-risk-update-2026",
         "kr-uncensored-eval-2026",
         "kr-mt-2026-10-20",
-        "kr-ai-safety-guardians-2026"
+        "kr-ai-safety-guardians-2026",
+        "kr-forecast-5-2026",
+        "kr-sg-mou-2026"
       ],
       "people": [
         {
@@ -37038,6 +37157,98 @@
           "confidence": "medium",
           "id": "staff-53e2954ebc804ed1a61c521bf01ef098"
         }
+      ],
+      "claims": [
+        {
+          "id": "claims-72f4568fa0034f67a59e982f431fe34b",
+          "kind": "function",
+          "code": "evaluation_methods",
+          "basis": "activity",
+          "text": "It says it and Scale AI jointly developed ROK-FORTRESS.",
+          "source_ids": [
+            "kr-rok-fortress-2026"
+          ]
+        },
+        {
+          "id": "claims-4eefbbb495f4464489459afe9e2226e9",
+          "kind": "function",
+          "code": "regulatory_support",
+          "basis": "mandate",
+          "text": "It is tasked by the AI Basic Act with support for securing the safety of AI systems under Article 32 of the Act.",
+          "source_ids": [
+            "kr-aibasic-art12"
+          ]
+        },
+        {
+          "id": "claims-dac88e4331254b3a97fae1b30b26307a",
+          "kind": "function",
+          "code": "risk_monitoring",
+          "basis": "activity",
+          "text": "It says it published the fifth edition of its quarterly AI Safety Forecast Report.",
+          "source_ids": [
+            "kr-forecast-5-2026"
+          ]
+        },
+        {
+          "id": "claims-ed8058c1644f417082b52de32b614c91",
+          "kind": "function",
+          "code": "foresight",
+          "basis": "activity",
+          "text": "It says it published the fifth edition of its quarterly AI Safety Forecast Report.",
+          "source_ids": [
+            "kr-forecast-5-2026"
+          ]
+        },
+        {
+          "id": "claims-1dfa0ff4ffb441edbfc60fe4f942205a",
+          "kind": "function",
+          "code": "policy_advice",
+          "basis": "mandate",
+          "text": "It is tasked by the AI Basic Act with AI safety policy research.",
+          "source_ids": [
+            "kr-aibasic-art12"
+          ]
+        },
+        {
+          "id": "claims-0d51c48f33244162aa806106963dfc3a",
+          "kind": "function",
+          "code": "international_cooperation",
+          "basis": "mandate",
+          "text": "It is tasked by the AI Basic Act with international exchange and cooperation on AI safety.",
+          "source_ids": [
+            "kr-aibasic-art12"
+          ]
+        },
+        {
+          "id": "claims-2dbbb2746eb24263b1d75f431c91574e",
+          "kind": "function",
+          "code": "international_cooperation",
+          "basis": "activity",
+          "text": "It says it signed a memorandum of understanding with the Singapore AI Safety Institute to strengthen cooperation centred on AI safety evaluation.",
+          "source_ids": [
+            "kr-sg-mou-2026"
+          ]
+        },
+        {
+          "id": "claims-a6875c99d7d9439dac478304b5053976",
+          "kind": "function",
+          "code": "convening",
+          "basis": "mandate",
+          "text": "Its establishment plan from the science ministry assigns it building an AI safety partnership of industry, academia and research centred on the institute to promote research cooperation.",
+          "source_ids": [
+            "kr-policy-briefing-2024-10-18"
+          ]
+        },
+        {
+          "id": "claims-e741a47262b84ec4aed430eb65c3255a",
+          "kind": "function",
+          "code": "adoption",
+          "basis": "mandate",
+          "text": "Its establishment plan from the science ministry says the government intends to set it up to spread safe AI development and use.",
+          "source_ids": [
+            "kr-policy-briefing-2024-10-18"
+          ]
+        }
       ]
     },
     {
@@ -37136,7 +37347,30 @@
             "scope": "Sources checked for developments from 13 November 2026: the institute's site and resources (newest 23 July) and MDDI's newsroom (13 November), including the minister's speech of 13 November and the release on the Washington visit (dateline 14 November). Neither gives the institute a role. Older, undated IMDA releases were read, but the first page of IMDA's current press list could not be recovered. No new institute fact was found. Partial check, not a full record re-check."
           }
         ],
-        "last_checked_basis": "historical_upper_bound"
+        "last_checked_basis": "historical_upper_bound",
+        "functions": {
+          "date": "2026-11-14",
+          "codes": [
+            "model_testing",
+            "evaluation_methods",
+            "research",
+            "standards_guidance",
+            "regulatory_enforcement",
+            "regulatory_support",
+            "risk_monitoring",
+            "foresight",
+            "policy_advice",
+            "incident_response",
+            "international_cooperation",
+            "convening",
+            "capacity_building",
+            "talent",
+            "adoption",
+            "public_access_continuity",
+            "certification",
+            "sandbox"
+          ]
+        }
       },
       "source_ids": [
         "sg-imda",
@@ -37152,7 +37386,9 @@
         "catalogue-agentic-report",
         "gb-joint-testing",
         "depth-sg-eu-mou",
-        "sg-mddi-pq-access-2026"
+        "sg-mddi-pq-access-2026",
+        "r3-gb-network-best-practice-release",
+        "fix-output-sg-kr-january"
       ],
       "mandate_short": "Conducts AI safety research, including testing and evaluation.",
       "legal_basis": {
@@ -37459,7 +37695,59 @@
           "sg-site"
         ],
         "notes": "IMDA, the government agency for the institute, sets its policy and leads international engagement."
-      }
+      },
+      "claims": [
+        {
+          "id": "claims-2374a6bc543044d79674e38d471b29da",
+          "kind": "function",
+          "code": "model_testing",
+          "basis": "activity",
+          "text": "It says that, with the US and UK institutes, it tested Llama-3.1 405B on GSM8K, SQuAD2.0 and MMMLU.",
+          "source_ids": [
+            "sg-pilot-2024"
+          ]
+        },
+        {
+          "id": "claims-20f3a4a585014bd1b6d4f954624d66b1",
+          "kind": "function",
+          "code": "evaluation_methods",
+          "basis": "activity",
+          "text": "The UK AI Security Institute's publication says it authored 'How should evaluators test AI systems (as opposed to models)?'",
+          "source_ids": [
+            "r3-gb-network-best-practice-release"
+          ]
+        },
+        {
+          "id": "claims-fd7f2385968a467796a985b226c8a135",
+          "kind": "function",
+          "code": "research",
+          "basis": "mandate",
+          "text": "IMDA's designation factsheet lists its initial research areas as testing and evaluation, safe model design, development and deployment, content assurance, and governance and policy.",
+          "source_ids": [
+            "sg-imda"
+          ]
+        },
+        {
+          "id": "claims-5aff8f596cc84888aa32b6d2b83b52bd",
+          "kind": "function",
+          "code": "international_cooperation",
+          "basis": "mandate",
+          "text": "IMDA's designation factsheet says it will work with other countries' AI safety institutes on AI safety research.",
+          "source_ids": [
+            "sg-imda"
+          ]
+        },
+        {
+          "id": "claims-1822c155dc964f6686d26f5f7cfbcf4a",
+          "kind": "function",
+          "code": "international_cooperation",
+          "basis": "activity",
+          "text": "It says that, with the Korean institute, it concluded a bilateral test of whether AI agents leak sensitive data in common tasks.",
+          "source_ids": [
+            "fix-output-sg-kr-january"
+          ]
+        }
+      ]
     },
     {
       "id": "au-aisi",
@@ -44471,9 +44759,43 @@
                 "id": "sg-aisi"
               },
               "mandate"
+            ],
+            [
+              "institutes",
+              {
+                "id": "sg-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-5aff8f596cc84888aa32b6d2b83b52bd"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-19"
+        },
+        {
+          "text": "The initial research areas are: • Testing & Evaluation • Safe Model Design, Development and Deployment • Content Assurance • Governance & Policy",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "sg-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-fd7f2385968a467796a985b226c8a135"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17",
+          "anchors": [
+            {
+              "text": "Digital Trust Centre designated as Singapore's AI Safety Institute",
+              "kind": "heading"
+            }
+          ]
         }
       ],
       "origin": "SG",
@@ -61114,10 +61436,28 @@
                 "id": "jp-aisi"
               },
               "mandate"
+            ],
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-a2e4e8a8343c4508aa193d7ee63e5507"
+              },
+              "text"
             ]
           ],
           "gloss": "Work on international cooperation with relevant institutions in other countries, such as the UK and US AI Safety Institutes.",
-          "accessed": "2026-10-19"
+          "accessed": "2026-10-19",
+          "anchors": [
+            {
+              "text": "AIセーフティ・インスティテュートの業務について",
+              "kind": "heading",
+              "gloss": "On the work of the AI Safety Institute"
+            }
+          ]
         },
         {
           "text": "2021年4月 損害保険ジャパン株式会社 入社 執行役員待遇DX推進部 特命部長 2021年10月 同社 執行役員待遇 DX推進部長 2022年4月 同社 執行役員 CDO(Chief Digital Officer) DX推進部長 現職",
@@ -61697,6 +62037,53 @@
           ],
           "accessed": "2026-10-24",
           "gloss": "Support for securing the safety of AI systems"
+        },
+        {
+          "text": "안전연구소는 다음 각 호의 사업을 수행한다. 1. 인공지능안전 관련 위험 정의 및 분석 2. 인공지능안전 정책 연구 3. 인공지능안전 평가 기준ㆍ방법 연구 4. 인공지능안전 기술 및 표준화 연구 5. 인공지능안전 관련 국제교류ㆍ국제협력 6. 제32조에 따른 인공지능시스템의 안전성 확보에 관한 지원",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-4eefbbb495f4464489459afe9e2226e9"
+              },
+              "text"
+            ],
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-1dfa0ff4ffb441edbfc60fe4f942205a"
+              },
+              "text"
+            ],
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-0d51c48f33244162aa806106963dfc3a"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17",
+          "gloss": "The Safety Institute carries out the following work: 1. definition and analysis of AI safety risks 2. AI safety policy research 3. research on AI safety evaluation criteria and methods 4. research on AI safety technology and standardisation 5. international exchange and cooperation on AI safety 6. support for securing the safety of AI systems under Article 32",
+          "anchors": [
+            {
+              "text": "인공지능안전연구소(이하 \"안전연구소\"라 한다)",
+              "kind": "definition",
+              "gloss": "the Artificial Intelligence Safety Institute (the \"Safety Institute\")"
+            }
+          ]
         }
       ],
       "origin": "KR",
@@ -62108,6 +62495,17 @@
               },
               "credit",
               "institute_id"
+            ],
+            [
+              "institutes",
+              {
+                "id": "sg-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-2374a6bc543044d79674e38d471b29da"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-17"
@@ -67112,6 +67510,17 @@
               },
               "credit",
               "institute_id"
+            ],
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-9e18d6e5b98f485ebb7ff9a394281919"
+              },
+              "text"
             ]
           ]
         }
@@ -71009,6 +71418,23 @@
             ]
           ],
           "accessed": "2026-10-17"
+        },
+        {
+          "text": "Known Attacks and Their Impacts on AI Systems 2nd Edition April 2026 1st Edition March 2025 AISI Japan AI Safety Institute",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-32881cb9fdc74d88aecb53e573f972d2"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "JP",
@@ -71828,6 +72254,17 @@
               },
               "credit",
               "institute_id"
+            ],
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-468dd4be366249588383df9c54484741"
+              },
+              "text"
             ]
           ]
         }
@@ -86188,6 +86625,17 @@
               },
               "credit",
               "institute_id"
+            ],
+            [
+              "institutes",
+              {
+                "id": "sg-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-1822c155dc964f6686d26f5f7cfbcf4a"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-17"
@@ -90020,6 +90468,17 @@
               },
               "credit",
               "institute_id"
+            ],
+            [
+              "institutes",
+              {
+                "id": "sg-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-20f3a4a585014bd1b6d4f954624d66b1"
+              },
+              "text"
             ]
           ]
         }
@@ -106872,7 +107331,37 @@
       "language": "ja",
       "origin": "JP",
       "title_en": "Artificial Intelligence Basic Plan",
-      "excerpts": [],
+      "excerpts": [
+        {
+          "text": "ＡＩＳＩも更なる強化が必要である。エージェント型ＡＩを含むＡＩの利活用及び開発時における安全性やセキュリティを担保するためのガイドラインの策定、国家の安全を脅かす事象を抑止する観点からの高性能ＡＩの積極的な評価、国際的なＡＩ脆弱性情報・インシデント情報等の収集・共有、国際的な規格や標準の策定等を一体的に進める。",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-c86a9cf9ca38497084adb323bc3d25e9"
+              },
+              "text"
+            ],
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-4b1426115be64960882f6107061262e3"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-21",
+          "gloss": "AISI also needs further strengthening. The drafting of guidelines to ensure safety and security in the use and development of AI, including agentic AI, active evaluation of high-performance AI to deter events that threaten national security, the collection and sharing of international AI vulnerability and incident information, and the drafting of international norms and standards will be advanced together."
+        }
+      ],
       "snapshot": {
         "retrieved": "2026-10-21T09:16:53Z",
         "sha256": "4e63dfe86c6a3516e708a031b0d4ad1c85e42f5362f8ccc71975a243ebf747d6",
@@ -107484,6 +107973,42 @@
             ]
           ],
           "accessed": "2026-10-21"
+        },
+        {
+          "text": "AI안전연구소를 중심으로 산·학·연이 참여하는 AI 안전 파트너십을 구축하여 AI 안전 정책·기술 분야 연구 협력을 촉진할 계획입니다.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-a6875c99d7d9439dac478304b5053976"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-21",
+          "gloss": "The plan is to build an AI safety partnership of industry, academia and research institutes centred on the AI Safety Institute to promote research cooperation in AI safety policy and technology."
+        },
+        {
+          "text": "우리나라도 AI안전연구소를 설치하여 안전한 AI 개발·활용을 확산하고, AI 안전 확보를 위한 국제적 연대를 강화해 나가고자 합니다.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-e741a47262b84ec4aed430eb65c3255a"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-21",
+          "gloss": "Korea too intends to set up an AI Safety Institute to spread safe AI development and use and to strengthen international solidarity for securing AI safety."
         }
       ],
       "snapshot": {
@@ -111631,6 +112156,17 @@
                 "id": "agreements-a2e6c97f5f3457b0b4e0ee60a952d502"
               },
               "participation"
+            ],
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-2dbbb2746eb24263b1d75f431c91574e"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-24",
@@ -111717,6 +112253,35 @@
           ],
           "accessed": "2026-10-24",
           "gloss": "Posted 2026-09-03 23:06:09"
+        },
+        {
+          "text": "Korea AISI publishes the fifth edition of its quarterly AI Safety Forecast Report.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-dac88e4331254b3a97fae1b30b26307a"
+              },
+              "text"
+            ],
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-ed8058c1644f417082b52de32b614c91"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-24",
+          "gloss": "Korea AISI publishes the fifth edition of its quarterly AI Safety Forecast Report."
         }
       ],
       "snapshot": {
@@ -112017,6 +112582,17 @@
                 "id": "agreements-0de799faa70640d78c37d2c4d5f0f6fe"
               },
               "counterparty"
+            ],
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-897d981bc75c479c8dafbe84751693ab"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-24"
@@ -114500,6 +115076,17 @@
               },
               "credit",
               "institute_id"
+            ],
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-72f4568fa0034f67a59e982f431fe34b"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-11-07"
