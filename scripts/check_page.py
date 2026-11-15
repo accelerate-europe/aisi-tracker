@@ -69,6 +69,18 @@ def tip_of(node) -> str:
     return node.get("data-tip") or node.get("data-exp") or node.get("aria-description") or ""
 
 
+def original_tip_matches(node, shown: str, original: str) -> bool:
+    """The complete name/title is one focusable target on the shared translation route."""
+    if node is None:
+        return False
+    text = "".join(t for t in node.find_all(string=True) if not t.find_parent(class_=("vh", "cites")))
+    return bool(
+        text == shown and "original-text" in node.get("class", [])
+        and node.get("aria-description") == original and tip_of(node) == original
+        and ((node.name == "a" and node.get("href")) or node.get("tabindex") == "0")
+    )
+
+
 def report_line(text: str) -> str:
     return REPORT_MARK + text
 
@@ -1607,6 +1619,8 @@ def check_source_alignment(html: str, data: dict) -> list[str]:
     soup = BeautifulSoup(html, "html.parser")
     sources = {source["id"]: source for source in data["sources"]}
     errors = []
+    if soup.select(".orig, .title-en"):
+        errors.append("translations: original names and translated titles must not have a second visible line or bracketed span")
     orders = {}
     jurisdictions = {j["id"]: j for j in data["jurisdictions"]}
     institutes = {i["jurisdiction_id"]: i for i in data["institutes"]}
@@ -1689,12 +1703,15 @@ def check_source_alignment(html: str, data: dict) -> list[str]:
         if sid not in sources or not link or link["href"] != sources[sid]["url"]:
             errors.append(f"source list {sid}: URL does not match data")
             continue
-        en = li.select_one(":scope > .title-en")
-        if en is not None and en.find_previous_sibling() is not link:
-            errors.append(f"source list {sid}: the English title does not follow the original title's link")
-        want_en = f" [{sources[sid]['title_en']}]" if sources[sid].get("title_en") else None  # Method: our English translation beside the original title
-        if (en.get_text() if en else None) != want_en:
-            errors.append(f"source list {sid}: English title {en.get_text() if en else None!r}, expected {want_en!r}")
+        src = sources[sid]
+        shown = "".join(t for t in link.find_all(string=True) if not t.find_parent(class_="vh"))
+        if (title := src.get("title_en") or src.get("title")) and shown != title:
+            errors.append(f"source list {sid}: title {shown!r}, expected {title!r}")
+        if src.get("title_en") and not original_tip_matches(link, src["title_en"], src["title"]):
+            errors.append(f"source list {sid}: the English title must carry the original in its tooltip")
+        language = None if src.get("title_en") or src.get("language") == "en" else src.get("language") or None  # the page is lang="en"
+        if link.get("lang") != language:
+            errors.append(f"source list {sid}: title language {link.get('lang')!r}, expected {language!r}")
     # Source catalogues may contain background sources only. Dated status and mini-card findings,
     # however, render their field citations in the page (including the default positive-only table).
     cited_fields = any(
@@ -6162,7 +6179,7 @@ def check_terms_once(html, data: dict) -> list[str]:
                     errors.append(f"terms once: {name} marks {label!r} where the text spells it out")
                 seen.add(label)
                 continue
-            if not isinstance(node, NavigableString) or isinstance(node, Comment) or node.find_parent(["abbr", "a", "button", "option", "select", "script", "style"]) is not None or node.find_parent(class_="conf") is not None:
+            if not isinstance(node, NavigableString) or isinstance(node, Comment) or node.find_parent(["abbr", "a", "button", "option", "select", "script", "style"]) is not None or node.find_parent(class_=("conf", "original-text")) is not None:
                 continue
             text = str(node)
             for match in term.finditer(text):
@@ -7152,6 +7169,9 @@ def check_institute_names(html, data: dict) -> list[str]:
         text = " ".join("".join(t for t in card.find_all(string=True) if not t.find_parent(class_=("vh", "cites"))).split())  # no qualifier: the EU's 'supranational' is said by its heading
         if text != names[iid]:
             errors.append(f"{jid} card names its institute {text!r}, expected {names[iid]!r}")
+        local = next(i.get("name_local") for i in data["institutes"] if i["id"] == iid)
+        if local and local != names[iid] and not original_tip_matches(card.select_one(".original-text"), names[iid], local):
+            errors.append(f"{jid} Institute: the shown name must carry name_local in a focusable tooltip")
     # Tight places show the recorded short form; hovering gives the full name.
     rows = {str(r["data-j"]): r for r in soup.select("table.world tbody tr[data-j]")}
     kinds = {j["id"]: j["kind"] for j in data["jurisdictions"]}
@@ -7437,6 +7457,10 @@ def check_leadership_rows(html, data: dict) -> list[str]:
             if not heading or not heading.get_text(strip=True):
                 errors.append(f"{jid}: {label} row label is missing or empty")
             value = row.select_one(".v")
+            reports = institute.get("reports_to") or {}
+            if label == "Reports to" and reports.get("state") == "stated" and reports.get("name_en"):
+                if not original_tip_matches(value.select_one(".original-text"), reports["name_en"], reports["name"]):
+                    errors.append(f"{jid} Reports to: the English name must carry the original in a focusable tooltip")
             if label == "Partners" and not text:
                 # The page keeps a citation with its last word by cloning the enclosing spans, so compare the line's text, not its elements.
                 clone = copy.copy(value)
@@ -7509,7 +7533,6 @@ def check_leadership_rows(html, data: dict) -> list[str]:
 
 
 SHOWN_AUTHORITIES = 3  # AI Act authorities shown before the fold (owner, 15 November)
-NON_LATIN_SCRIPT = re.compile(r"[\u0370-\u03ff\u0400-\u052f\u0530-\u058f\u0590-\u06ff\u0900-\u0dff\u0e00-\u0eff\u10a0-\u10ff\u1f00-\u1fff\u3040-\u30ff\u3400-\u9fff\uac00-\ud7af]")  # same scripts as method_checks.NON_LATIN, kept apart as the page gate's own oracle
 
 
 def designation_problem(body: dict, line: str) -> str | None:
@@ -7536,7 +7559,7 @@ def authority_key(body: dict):
 
 
 def shown_original(body: dict) -> str:
-    """The original name as a card shows it beneath the English one: a closing "(ABBR)" the English name also ends
+    """The original name in the English name's tooltip: a closing "(ABBR)" the English name also ends
     with is said once, in the English name."""
     match = re.search(r"\s*(\([^()]+\))$", body["name"])
     return body["name"][: match.start()] if match and body.get("name_en", "").endswith(match.group(1)) else body["name"]
@@ -7593,8 +7616,8 @@ def check_nonidentified_folds(html, data: dict) -> list[str]:
     when it has no role claim and the finding already names it and carries all its citations. Legacy notes stay as before. The AI
     Act authorities are one group in pattern 4's order, each line naming its roles in the published words
     (dataset.display.authority_roles); with more than four, the first three show and the rest fold behind a summary
-    giving their number. A name in another language shows its English name with the original beneath, and a non-Latin
-    script never stands alone. Each body with sources cites them inline, and each role text is shown.
+    giving their number. An English name carries the original in its own focusable tooltip; without an English
+    form, the original stands as it is. Each body with sources cites them inline, and each role text is shown.
     """
     from summaries import shown_lead
 
@@ -7673,11 +7696,10 @@ def check_nonidentified_folds(html, data: dict) -> list[str]:
                     if missing_sources:
                         errors.append(f"{j['id']}: closest body lacks citation marks for {sorted(missing_sources)}")
                 want = b.get("name_en") or b["name"]
-                if NON_LATIN_SCRIPT.search(want if b.get("name_en") else b["name"]) and not b.get("name_en"):
-                    errors.append(f"{j['id']} body {want!r} stands in a non-Latin script without an English name")
-                original = li.select_one(".orig")
-                if key != "closest" and (bool(b.get("name_en")) != (original is not None) or (original is not None and " ".join(original.get_text().split()) != shown_original(b))):
-                    errors.append(f"{j['id']} body {want!r}: the original name must sit beneath exactly when there is an English name, without an abbreviation the English name already closes with")
+                if b.get("name_en"):
+                    name = li.select_one(".body-name > span")
+                    if not original_tip_matches(name, want, shown_original(b)):
+                        errors.append(f"{j['id']} body {want!r}: the English name alone must carry the original name in a focusable tooltip, without a repeated closing abbreviation")
                 if key == "authorities":
                     # The citation glue stays inside one .body-roles span. Read every span in order, without the
                     # marks, so a split line is still checked for its words as well as its structure.
@@ -7817,8 +7839,6 @@ def check_nonidentified_style(page) -> list[str]:
         for (const g of card.querySelectorAll('.body-group')) {
           const gl = g.querySelector('.gl'), name = g.querySelector('.body-name');
           if (name && (weight(gl) < weight(name) || px(gl) < px(name))) errors.push(id + ': group heading ' + gl.textContent + ' is weaker than its items');
-          const orig = g.querySelector('.orig');
-          if (orig && getComputedStyle(orig).color === getComputedStyle(name).color) errors.push(id + ': original name is not muted');
           for (const claim of g.querySelectorAll('li > .claim:not(.claim + .claim)')) {
             const previous = claim.previousElementSibling;
             if (previous && Math.abs(claim.getBoundingClientRect().top - previous.getBoundingClientRect().bottom - claimGap) > 1) errors.push(id + ': first body claim does not follow its name at --sp-2');
@@ -7889,8 +7909,6 @@ def check_archive_links(html, data: dict) -> list[str]:
         nonlocal expected
         archive = sources[sid].get("archive_url") or ""
         after = link.find_next_sibling()
-        if after is not None and "title-en" in (after.get("class") or []):
-            after = after.find_next_sibling()  # a source list puts our English title between the link and its archived copy
         has = after is not None and after.select_one("a.archive") is not None
         if not archive:
             if has:
@@ -9626,7 +9644,7 @@ def check_claim_quotes(browser, base_url: str, data: dict) -> list[str]:
                             for line, anchor in zip(block.locator(".quote-anchor").all(), excerpt.get("anchors", [])):
                                 if "source_id" in anchor:
                                     named = next(s for s in payload["sources"] if s["id"] == anchor["source_id"])
-                                    if not line.inner_text().endswith(" (" + named["title"] + ")"):
+                                    if not line.inner_text().endswith(" (" + (named.get("title_en") or named["title"]) + ")"):  # Naming: English shown
                                         errors.append(f"{identity}: other-copy anchor source title is missing")
                                     if anchor.get("gloss") and not line.locator(".translation").count():
                                         errors.append(f"{identity}: other-copy anchor language is missing")

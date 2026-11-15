@@ -112,6 +112,17 @@ def test_without_body_id_nothing_new_binds(lead):
     assert build.check_consistency(d) == []
 
 
+def test_unmigrated_record_with_body_id_needs_no_gap_excerpt(lead):
+    """Hub default, 15 November, awaiting the owner: a record that authors its summary (not migrated) may name its
+    closest body's related body and carry a lead role claim without a gap excerpt; its gap stays explained by the
+    authored note, as no quote can show an absence. A migrated record still needs one
+    (test_generated_records.test_migrated_closest_body_needs_gap_excerpt_and_body_id)."""
+    d = copy.deepcopy(lead)
+    assert "summary" in d["jurisdictions"][0] and "body_id" in d["jurisdictions"][0]["closest_body"]
+    unbind(d, "/jurisdictions/0/closest_body/gap")
+    assert build.check_consistency(d) == []
+
+
 def test_lead_quote_in_english_excerpt_and_curly_marks(lead):
     """With no gloss the span is matched in the excerpt; curly quotation marks count; case is ignored."""
     d = copy.deepcopy(lead)
@@ -161,7 +172,6 @@ MUTATIONS = {
     "date unbound": (lambda d: unbind(d, "/jurisdictions/0/claims/2/date"), "required claim has no excerpt: /jurisdictions/0/claims/2/date"),
     "development text unbound": (lambda d: unbind(d, "/jurisdictions/0/claims/2/text"), "required claim has no excerpt: /jurisdictions/0/claims/2/text"),
     "act quoted twice": (lambda d: d["sources"][0]["excerpts"].append(excerpt("Adopted.", "/jurisdictions/0/claims/2/act")), "act has 2 bound excerpts"),
-    "gap unbound": (lambda d: unbind(d, "/jurisdictions/0/closest_body/gap"), "required claim has no excerpt: /jurisdictions/0/closest_body/gap"),
     "step text unbound": (lambda d: unbind(d, "/jurisdictions/0/related_bodies/1/designation_step/text"),
                           "required claim has no excerpt: /jurisdictions/0/related_bodies/1/designation_step/text"),
     "step date unbound": (lambda d: unbind(d, "/jurisdictions/0/related_bodies/1/designation_step/date"),
