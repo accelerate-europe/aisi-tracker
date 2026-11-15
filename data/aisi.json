@@ -9910,8 +9910,78 @@
           "tw-moda-aiec-2026",
           "tw-r6-aiec-ministerial-transcript",
           "tw-aiec-service"
-        ]
-      }
+        ],
+        "body_id": "related_bodies-b99e96dc6b88504faf9248e18a9b61eb"
+      },
+      "claims": [
+        {
+          "id": "claims-dc6ca05a48a34dda85e7a2f13d6188db",
+          "kind": "function",
+          "code": "certification",
+          "basis": "mandate",
+          "body_id": "related_bodies-b99e96dc6b88504faf9248e18a9b61eb",
+          "text": "The ministry's launch announcement says the centre will successively establish certification bodies and testing laboratories next year (113) to provide AI evaluation and verification services.",
+          "source_ids": [
+            "tw-moda-aiec-2023"
+          ]
+        },
+        {
+          "id": "claims-e0110a4d5db7435db3f1d81589dc28fe",
+          "kind": "function",
+          "code": "evaluation_methods",
+          "basis": "activity",
+          "body_id": "related_bodies-b99e96dc6b88504faf9248e18a9b61eb",
+          "text": "The ministry says the centre drew up 10 evaluation items for language models.",
+          "source_ids": [
+            "tw-moda-aiec-2023"
+          ]
+        },
+        {
+          "id": "claims-8c501f1f60e24065a531712186ff46a3",
+          "kind": "function",
+          "code": "evaluation_methods",
+          "basis": "mandate",
+          "body_id": "related_bodies-b99e96dc6b88504faf9248e18a9b61eb",
+          "text": "The ministry's launch announcement says the centre will draw up an evaluation system and evaluation guidelines for AI products and systems, setting the evaluation methods and norms they are to follow.",
+          "source_ids": [
+            "tw-moda-aiec-2023"
+          ]
+        },
+        {
+          "id": "claims-224d4c07a01a4cc4893ad07fba5c96c9",
+          "kind": "function",
+          "code": "model_testing",
+          "basis": "activity",
+          "body_id": "related_bodies-b99e96dc6b88504faf9248e18a9b61eb",
+          "lead": true,
+          "text": "The ministry says AIEC \"published its latest round of evaluation results for domestic and foreign open-source language models\", using three indicators highly relevant to Taiwan to examine performance in Traditional Chinese comprehension, Taiwan's social and cultural context, and local knowledge.",
+          "source_ids": [
+            "tw-moda-aiec-2026"
+          ]
+        },
+        {
+          "id": "claims-d9a9c1b3131f4c309e57c519b1beb2c0",
+          "kind": "function",
+          "code": "model_testing",
+          "basis": "mandate",
+          "body_id": "related_bodies-b99e96dc6b88504faf9248e18a9b61eb",
+          "text": "The ministry's launch announcement says the centre will provide domestic AI product evaluation services.",
+          "source_ids": [
+            "tw-moda-aiec-2023"
+          ]
+        },
+        {
+          "id": "claims-820540e3f8c946c9a6e60a3511c15751",
+          "kind": "function",
+          "code": "risk_monitoring",
+          "basis": "activity",
+          "body_id": "related_bodies-b99e96dc6b88504faf9248e18a9b61eb",
+          "text": "The Ministry of Digital Affairs' Administration for Digital Industries says AIEC has continuously published language model benchmark evaluation results since October of year 114 and has so far completed a cumulative total of 131 model tests.",
+          "source_ids": [
+            "tw-moda-aiec-2026"
+          ]
+        }
+      ]
     },
     {
       "id": "MY",
@@ -49473,6 +49543,88 @@
           ],
           "accessed": "2026-10-18",
           "gloss": "Initial LLM evaluation items cover ten areas: safety, explainability, resilience, fairness, accuracy, transparency, accountability, reliability, privacy and security."
+        },
+        {
+          "text": "AI評測中心涵蓋制度推動委員會、技術審議小組等架構，將制定「AI產品與系統評測制度」與「AI產品與系統評測指引」，建構我國AI產品與系統遵循之評測方式與規範，提供國內AI產品評測服務，以期保障產品使用者權益，並將陸續於明(113)年成立驗證機構、測試實驗室，提供AI評測與驗證服務，達到促進AI產業正向發展之目的，確保AI技術可被正確使用，提升國內AI產品效能與安全，為我國推動可信任AI環境發展邁出重要的一步。",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "TW"
+              },
+              "claims",
+              {
+                "id": "claims-dc6ca05a48a34dda85e7a2f13d6188db"
+              },
+              "text"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "TW"
+              },
+              "claims",
+              {
+                "id": "claims-8c501f1f60e24065a531712186ff46a3"
+              },
+              "text"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "TW"
+              },
+              "claims",
+              {
+                "id": "claims-d9a9c1b3131f4c309e57c519b1beb2c0"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "The AI Evaluation Centre includes structures such as a system promotion committee and a technical review panel, will formulate the 'AI Product and System Evaluation System' and the 'AI Product and System Evaluation Guidelines', establish the evaluation methods and norms that our country's AI products and systems are to follow, and provide domestic AI product evaluation services with a view to protecting product users' rights; it will also successively establish certification bodies and testing laboratories next year (113) to provide AI evaluation and verification services, achieve the aim of promoting the positive development of the AI industry, ensure that AI technology can be used correctly, improve the performance and safety of domestic AI products, and take an important step towards developing a trustworthy AI environment in our country.",
+          "anchors": [
+            {
+              "text": "數位發展部已展開AI評測工作，並在今(6)日於台北科技大學舉辦「AI產品與系統評測中心」啟動活動",
+              "kind": "definition",
+              "gloss": "The Ministry of Digital Affairs has begun AI evaluation work and held a launch event for the AI Product and System Evaluation Center at Taipei Tech today, the sixth."
+            },
+            {
+              "text": "數位發展部「AI產品與系統評測中心」啟動 推動我國AI評測制度與可信任AI環境發展",
+              "kind": "heading",
+              "gloss": "The Ministry of Digital Affairs launches the AI Product and System Evaluation Center, promoting the development of our country's AI evaluation system and a trustworthy AI environment"
+            }
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "AI評測中心針對語言模型擬定10項評測項目",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "TW"
+              },
+              "claims",
+              {
+                "id": "claims-e0110a4d5db7435db3f1d81589dc28fe"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "The AI Evaluation Center drew up 10 evaluation items for language models",
+          "anchors": [
+            {
+              "text": "數位發展部已展開AI評測工作，並在今(6)日於台北科技大學舉辦「AI產品與系統評測中心」啟動活動",
+              "kind": "definition",
+              "gloss": "The Ministry of Digital Affairs has begun AI evaluation work and held a launch event for the AI Product and System Evaluation Center at Taipei Tech today, the sixth."
+            },
+            {
+              "text": "數位發展部「AI產品與系統評測中心」啟動 推動我國AI評測制度與可信任AI環境發展",
+              "kind": "heading",
+              "gloss": "The Ministry of Digital Affairs launches the AI Product and System Evaluation Center, promoting the development of our country's AI evaluation system and a trustworthy AI environment"
+            }
+          ],
+          "accessed": "2026-10-17"
         }
       ]
     },
@@ -49488,8 +49640,19 @@
       "archive_url": "https://web.archive.org/web/20260913103813/https://moda.gov.tw/ADI/news/latest-news/19588",
       "excerpts": [
         {
-          "text": "AIEC）於 5 月 1 日公布最新一波國內外開源語言模型評測結果",
+          "text": "數位發展部 AI 產品與系統評測中心（Artificial Intelligence Evaluation Center，下稱 AIEC）於 5 月 1 日公布最新一波國內外開源語言模型評測結果，透過三項與臺灣高度相關的指標「臺灣價值觀」、「高中學測國文」及「高中學測社會」，檢視現行 AI 模型在繁體中文理解、臺灣社會文化脈絡，以及本土知識能力上的實際表現。",
           "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "TW"
+              },
+              "claims",
+              {
+                "id": "claims-224d4c07a01a4cc4893ad07fba5c96c9"
+              },
+              "text"
+            ],
             [
               "jurisdictions",
               {
@@ -49510,8 +49673,35 @@
               "note"
             ]
           ],
-          "gloss": "On 1 May, AIEC published new evaluation results for domestic and international open-source language models.",
-          "accessed": "2026-10-17"
+          "gloss": "On 1 May, the Ministry of Digital Affairs' AI Product and System Evaluation Center (Artificial Intelligence Evaluation Center, hereafter AIEC) published its latest round of evaluation results for domestic and foreign open-source language models, using three indicators highly relevant to Taiwan, 'Taiwanese values', 'high school GSAT Chinese' and 'high school GSAT social studies', to examine how current AI models actually perform in Traditional Chinese comprehension, Taiwan's social and cultural context, and local knowledge.",
+          "accessed": "2026-10-17",
+          "url": "https://web.archive.org/web/20261016200740/https://moda.gov.tw/ADI/news/latest-news/19588"
+        },
+        {
+          "text": "AIEC 自 114 年 10 月起持續發布語言模型基準（benchmark）評測成果，至今已累計完成 131 個模型測試。",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "TW"
+              },
+              "claims",
+              {
+                "id": "claims-820540e3f8c946c9a6e60a3511c15751"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "Since October of year 114, AIEC has continuously published language model benchmark evaluation results, and has so far completed a cumulative total of 131 model tests.",
+          "anchors": [
+            {
+              "text": "數位發展部 AI 產品與系統評測中心（Artificial Intelligence Evaluation Center，下稱 AIEC）",
+              "kind": "definition",
+              "gloss": "The Ministry of Digital Affairs' AI Product and System Evaluation Center (Artificial Intelligence Evaluation Center, hereafter AIEC)"
+            }
+          ],
+          "accessed": "2026-10-17",
+          "url": "https://web.archive.org/web/20261016200740/https://moda.gov.tw/ADI/news/latest-news/19588"
         }
       ],
       "origin": "TW",
