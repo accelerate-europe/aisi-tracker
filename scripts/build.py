@@ -986,8 +986,8 @@ PAGE_DATA_DROPPED = {"check": ("last_checked", "method"), "sources": ("snapshot"
 def page_data(published: dict, build_mark: str | None = None) -> str:
     """data/page.json, what the page script loads: aisi.json without the fields it never reads (a state's research
     log in check, except last_checked and method; a source's private-copy metadata, snapshot and access_note; the
-    download-only claims and generated functions of states and institutes; an excerpt's anchors, until step F shows
-    them), minified, with the build mark
+    claims and functions of states; an excerpt's anchors, until step F shows them). Institutes keep their claims and
+    functions, which the functions table on Compare reads. Minified, with the build mark
     (content_mark of the file without it) as its last key. aisi.json stays the public download; the page fetches
     this file by a URL carrying the same mark."""
     page = dict(published)
@@ -997,7 +997,8 @@ def page_data(published: dict, build_mark: str | None = None) -> str:
         return {k: v for k, v in record.items() if k not in PAGE_DATA_DROPPED["records"]}
 
     if "institutes" in published:
-        page["institutes"] = [shown(i) for i in published["institutes"]]
+        # STAND-IN (page-tone): swap for the shared version when it lands (it keeps claims on every record)
+        page["institutes"] = [dict(i) for i in published["institutes"]]
     page["jurisdictions"] = [shown(j) | {"check": {k: j["check"][k] for k in keep if k in j["check"]}} if "check" in j else shown(j) for j in published["jurisdictions"]]
     def source(s: dict) -> dict:
         kept = {k: v for k, v in s.items() if k not in PAGE_DATA_DROPPED["sources"]}

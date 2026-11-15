@@ -27,6 +27,7 @@
 <!-- build:head -->
 <style>
 /* Design principles
+ * Functions table: Compare shows the published function values, with a ring for assigned, a dot for shown and a dot inside a ring for both; not found is a search result, not absence. A muted note and column tint mark institutes not yet operating, without status words. Quotes and sources open on demand below the selected row (check_page check_functions_table, check_functions_detail, check_functions_layout).
  * Method: owner-owned reader summaries link to the full editorial rules on a separate page; rule anchors stay stable.
  * Type: title, label, body, meta, figure only, label, body and meta fixed up to 1200px and growing to their wide-screen sizes at 1440px, so the table and cards keep their 1100px fit; figure and title grow from phone width; shared size, weight, family and role-specific line height. The headline is the figure role with only its numbers at figure weight, its words at body weight.
  * Measure: running text (p, ul, ol) stops at one prose measure, so stacked siblings wrap at the same width; chart furniture and footer meta lines run full width as a whole (check_page check_text_measure).
@@ -626,6 +627,44 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
 .download-menu .popover > button { color: var(--ink); background: none; border: 0; text-align: left; cursor: pointer; }
 .download-menu .popover > :hover { background: var(--highlight-fill); }
 
+/* Functions table (Compare) */
+.fn { min-width: 0; display: flex; flex-direction: column; gap: var(--gap-row); }
+.fn-scroll { position: relative; max-width: 100%; overflow-x: auto; container-type: inline-size; } /* positioned, so the cells' visually hidden text is clipped here and does not widen the page */
+.fn-table { border-collapse: separate; border-spacing: 0; width: 100%; font: var(--type-meta); }
+.fn-table th, .fn-table td { padding: var(--sp-2) 2px; border-bottom: var(--rule) solid var(--line); text-align: center; vertical-align: middle; }
+.fn-table thead th { vertical-align: bottom; overflow-wrap: normal; hyphens: none; font: var(--type-meta); }
+.fn-table thead th:first-child, .fn-table th[scope="row"] { width: 9.5rem; min-width: 9.5rem; padding-right: var(--sp-2); position: sticky; left: 0; z-index: 1; background: var(--paper); text-align: left; overflow-wrap: normal; }
+.fn-table th[scope="row"] { font-weight: var(--weight-meta); }
+.fn-table .fn-group th { padding-top: var(--sp-4); text-align: left; font: var(--type-label); }
+.fn-group span { position: sticky; left: var(--sp-1); }
+.fn-nyo { display: block; color: var(--muted); font-weight: var(--weight-meta); }
+.fn-table .fn-pending { background: var(--field-fill); }
+.fn-table tr[data-code]:is(:hover, :focus-within) > :is(th, td) { background: var(--highlight-fill); }
+.fn-cell { display: inline-flex; align-items: center; justify-content: center; width: 100%; min-height: var(--hit); padding: 0; border: 0; background: transparent; color: var(--ink); cursor: pointer; }
+.fn-mark { display: inline-block; flex: 0 0 auto; width: .8rem; height: .8rem; vertical-align: middle; border-radius: 50%; color: var(--st-est-edge); }
+.fn-activity { background: currentColor; }
+.fn-mandate, .fn-both { border: 2px solid currentColor; }
+.fn-both { position: relative; }
+.fn-both::after { content: ""; position: absolute; inset: 2px; border-radius: 50%; background: currentColor; }
+.fn-not_found, .fn-table td[data-value="not_found"]::before { width: .18rem; height: .18rem; background: var(--muted); }
+.fn-not_coded, .fn-table td[data-value="not_coded"]::before { height: .12rem; border-radius: 0; background: var(--muted); }
+.fn-table td:is([data-value="not_found"], [data-value="not_coded"])::before { content: ""; display: inline-block; vertical-align: middle; }
+.fn-table td[data-value="not_found"]::before { border-radius: 50%; }
+.fn-table td[data-value="not_coded"]::before { width: .8rem; }
+.fn-legend { list-style: none; padding: 0; font: var(--type-meta); color: var(--muted); }
+.fn-legend li { display: flex; align-items: baseline; gap: var(--sp-2); }
+.fn-legend .fn-mark { align-self: center; }
+.fn-nyo-sample { display: inline-block; flex: 0 0 auto; width: .8rem; height: .8rem; background: var(--field-fill); border: var(--rule) solid var(--line); }
+.fn-table .fn-detail-row > td { padding: 0; text-align: left; }
+.fn-detail { position: sticky; left: 0; width: 100cqi; max-width: 100cqi; padding: var(--sp-4); box-sizing: border-box; white-space: normal; overflow-wrap: anywhere; background: var(--paper); font: var(--type-body); }
+.fn-detail-head { font: var(--type-label); margin-bottom: var(--sp-3); }
+.fn-claim + .fn-claim { margin-top: var(--sp-4); }
+.fn-basis, .fn-sources, .fn-gloss { font: var(--type-meta); color: var(--muted); }
+.fn-detail blockquote { margin: var(--sp-2) 0; padding-left: var(--sp-3); border-left: var(--rule-strong) solid var(--line); max-width: var(--prose); }
+.fn-sources { list-style: none; padding: 0; margin-top: var(--sp-2); }
+.fn-sources .reread { display: block; } /* principle: Re-read line */
+.fn-legend .fn-not_found { margin-inline: .31rem; }
+.fn-detail > button { margin-top: var(--sp-4); }
 /* Funding: common zero-based scale, with the full records in folds */
 .fund-axis { font: var(--type-meta); display: grid; grid-template-columns: minmax(10rem, 1fr) minmax(12.5rem, 1.5fr) 11rem; gap: var(--sp-1) var(--sp-6); align-items: first baseline; color: var(--muted); border-bottom: var(--rule) solid var(--line); padding-bottom: var(--sp-3); } /* the funding rows' tracks, so the scale sits over the bars */
 .fund-key { display: flex; flex-wrap: wrap; gap: var(--sp-1) var(--sp-4); align-items: first baseline; }
@@ -797,7 +836,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
 <div class="topbar gutter" id="page-top"><div class="measure">
     <a class="wordmark" href="https://accelerate-europe.org/">Accelerate Europe<sup>&#9733;</sup></a>
 </div></div>
-<nav class="secnav gutter" aria-label="Sections"><div class="measure"><a href="#page-top" class="navtitle" aria-label="Back to top"><span class="long">AI Security Institutes</span><span class="short">AISIs</span></a><a href="#map" data-sections="map">Map</a><a href="#testing" data-sections="testing set-up funding">Compare</a><a href="#news" data-sections="news">News</a><a href="#europe" data-sections="europe world">States</a><a href="#data" data-sections="data method">Data</a><button type="button" class="btn ico i-theme theme-toggle" id="theme-toggle" aria-label="Theme: follows system" data-tip="Theme: follows system" data-tip-sub="Click for light"></button></div></nav>
+<nav class="secnav gutter" aria-label="Sections"><div class="measure"><a href="#page-top" class="navtitle" aria-label="Back to top"><span class="long">AI Security Institutes</span><span class="short">AISIs</span></a><a href="#map" data-sections="map">Map</a><a href="#functions" data-sections="functions testing set-up funding">Compare</a><a href="#news" data-sections="news">News</a><a href="#europe" data-sections="europe world">States</a><a href="#data" data-sections="data method">Data</a><button type="button" class="btn ico i-theme theme-toggle" id="theme-toggle" aria-label="Theme: follows system" data-tip="Theme: follows system" data-tip-sub="Click for light"></button></div></nav>
 <div class="panel gutter" id="top">
   <div class="measure">
     <h1>AI Security Institutes worldwide</h1>
@@ -832,7 +871,11 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   <div class="figures" id="figures"></div>
 
   <div class="group">
-  <nav class="group-nav" aria-label="Compare sections"><span class="group-label">Compare</span><span class="group-links"><a href="#testing">Testing</a><span class="group-sep" aria-hidden="true"> · </span><a href="#set-up">Set-up</a><span class="group-sep" aria-hidden="true"> · </span><a href="#funding">Funding</a></span></nav>
+  <nav class="group-nav" aria-label="Compare sections"><span class="group-label">Compare</span><span class="group-links"><a href="#functions">Functions</a><span class="group-sep" aria-hidden="true"> · </span><a href="#testing">Testing</a><span class="group-sep" aria-hidden="true"> · </span><a href="#set-up">Set-up</a><span class="group-sep" aria-hidden="true"> · </span><a href="#funding">Funding</a></span></nav>
+  <section aria-labelledby="functions"><div class="section-label">
+    <h2 id="functions">Functions</h2></div><div class="section-body">
+    <div class="fn" id="functions-table"></div>
+  </div></section>
   <section aria-labelledby="testing"><div class="section-label">
     <h2 id="testing">Testing and access</h2></div><div class="section-body">
     <div class="access" id="access" data-source-scope="access"></div>
@@ -2454,7 +2497,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       var MAC = ROOT.hasAttribute("data-mac"), rows = [], opts = [], act = -1, opener = null, restore = true, copied = false, pointer = null;
       var said = el("span", "vh"); said.setAttribute("role", "status"); box.appendChild(said);
       // The anchors of the principle Anchors; the meta is the section bar's group, the note the section's own heading where it says more.
-      var SECTIONS = [["Map", "map", ""], ["Testing", "testing", "Compare"], ["Set-up", "set-up", "Compare"], ["Funding", "funding", "Compare"], ["News", "news", ""],
+      var SECTIONS = [["Map", "map", ""], ["Functions", "functions", "Compare"], ["Testing", "testing", "Compare"], ["Set-up", "set-up", "Compare"], ["Funding", "funding", "Compare"], ["News", "news", ""],
         ["Europe", "europe", "States"], ["The world", "world", "States"], ["Data", "data", "Data"], ["Method", "method", "Data"], ["Definition", "definition", "Method"]];
       var GROUPS = { states: "States and territories", sections: "Sections", regions: "Regions", actions: "Actions" };
       // The theme rows' wording, in one place: [state, label, the words that find it]. A row's own words name only its own
@@ -2754,6 +2797,148 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       items.forEach(function (j) { cards.appendChild(instituteCard(j, j.institute_id ? I[j.institute_id] : null, S, m, true)); });
       group.appendChild(cards); $("world-cards").appendChild(group);
     });
+    // Functions table (Compare)
+    (function () {
+      var FN_COPY = {
+        intro: "Which of {count} functions each institute's public texts report it doing (active) or give it (assigned), on a provisional list. Select an active or assigned mark for its quote and source.",
+        how_title: "How this is coded",
+        how: "We read each institute's founding, legal and plan texts and its own published work, and recorded a function only where a quote meets that function's test (hover a function's name for the test). Assigned means a government text gives the institute the function; active means a public text reports the institute doing it. Not found means we found no such quote (most recent coding: {date}). It does not mean the institute does not do it. The list of functions is provisional and may change in a minor release. Each institute's values are in functions.csv and claims.csv under {data}.",
+        data: "Data", caption: "Functions by institute", function: "Function", scroll_hint: "Scrolls sideways",
+        // Owner's vocabulary of 15 Nov 2026: "established", the status such an institute lacks, never the status it has.
+        not_established: "not yet established", not_established_legend: "Not yet established: its government has not yet set it up.",
+        provisional: "The list of functions is provisional.", translated: "translated from {language}", another_language: "the original language", close: "Close"
+      };
+      var FN_MARK = {
+        activity: { name: "active", legend: "Active: a public text reports the institute doing this" },
+        mandate: { name: "assigned", legend: "Assigned: a government text gives it this task" },
+        both: { name: "assigned and active", legend: "Assigned and active" },
+        not_found: { name: "not found", legend: "Not found: no quote found, which does not mean the function is absent" },
+        not_coded: { name: "not yet coded", legend: "Not yet coded against this function" }
+      };
+      var box = $("functions-table"), vocab = m.vocabularies.function || {};
+      var codes = Object.keys(vocab).filter(function (code) { return !vocab[code].deprecated; });
+      var groups = []; codes.forEach(function (code) { if (groups.indexOf(vocab[code].group) < 0) groups.push(vocab[code].group); });
+      function pending(i) { return J[i.jurisdiction_id].status !== "established"; }
+      function shortName(i) { return i.short_name || i.acronym || i.name; }
+      var institutes = d.institutes.slice().sort(function (a, b) {
+        return Number(pending(a)) - Number(pending(b)) || J[a.jurisdiction_id].name.localeCompare(J[b.jurisdiction_id].name) || a.id.localeCompare(b.id);
+      });
+      var rows = {}, claims = {}, quotes = new Map(), present = new Set();
+      // Index published pointers once; page.json keeps institute claims in their published positions.
+      d.sources.forEach(function (src) { (src.excerpts || []).forEach(function (excerpt) {
+        (excerpt.supports || []).forEach(function (pointer) {
+          var matches = quotes.get(pointer) || []; matches.push({ excerpt: excerpt, src: src }); quotes.set(pointer, matches);
+        });
+      }); });
+      d.institutes.forEach(function (i, n) {
+        rows[i.id] = {}; (i.functions || []).forEach(function (row) { rows[i.id][row.code] = row; present.add(row.value); });
+        claims[i.id] = {};
+        (i.claims || []).forEach(function (claim, k) {
+          claims[i.id][claim.id] = { claim: claim, pointer: "/institutes/" + n + "/claims/" + k + "/text" };
+        });
+      });
+      function mark(value) { var span = el("span", "fn-mark fn-" + value); span.setAttribute("aria-hidden", "true"); return span; }
+      function nyo() { return el("span", "fn-nyo", FN_COPY.not_established); }
+      function fnSources(ids) { var list = sourceList(ids, S); list.className = "fn-sources"; return list; }
+      // STAND-IN (page-tone): swap for the shared version when it lands
+      // sourceList supplies dated(), title translations and rereadLine(src), once. Anchors arrive with page-tone.
+      // Owner's rule (15 Nov 2026): a non-English quote shows our English first, with a marker naming the language
+      // that opens the original on hover, focus or tap; never the original first.
+      var LANGUAGE_NAME = typeof Intl.DisplayNames === "function" ? new Intl.DisplayNames(["en"], { type: "language" }) : null;
+      function fnQuote(excerpt, src) {
+        var fragment = document.createDocumentFragment(), quote = el("blockquote", null, excerpt.gloss || excerpt.text);
+        if (excerpt.gloss) {
+          quote.lang = "en";
+          var language = src.language && LANGUAGE_NAME ? LANGUAGE_NAME.of(src.language) : "", marker = el("p", "fn-gloss");
+          marker.appendChild(term(FN_COPY.translated.replace("{language}", language || FN_COPY.another_language), excerpt.text));
+          fragment.appendChild(quote); fragment.appendChild(marker);
+        } else {
+          if (src.language) quote.lang = src.language;
+          fragment.appendChild(quote);
+        }
+        fragment.appendChild(fnSources([src.id]));
+        return fragment;
+      }
+      box.appendChild(el("p", "small", FN_COPY.intro.replace("{count}", codes.length)));
+      var how = el("details", "more quiet"), body = el("p", "small"); how.appendChild(el("summary", null, FN_COPY.how_title));
+      var dates = institutes.map(function (i) { return i.check && i.check.functions && i.check.functions.date; }).filter(Boolean).sort();
+      var latest = dates.length ? dates[dates.length - 1] : ""; // ISO dates in ascending order; latest coding date
+      FN_COPY.how.split(/(\{date\}|\{data\})/).forEach(function (part) {
+        if (part === "{date}") body.appendChild(dated(latest));
+        else if (part === "{data}") { var a = el("a", null, FN_COPY.data); a.href = "#data"; body.appendChild(a); }
+        else body.appendChild(document.createTextNode(part));
+      });
+      how.appendChild(body); box.appendChild(how);
+      var hint = el("span", "vh", FN_COPY.scroll_hint); hint.id = "fn-scroll-hint"; box.appendChild(hint);
+      var scroll = el("div", "fn-scroll"); scroll.tabIndex = 0; scroll.setAttribute("role", "region");
+      scroll.setAttribute("aria-labelledby", "functions"); scroll.setAttribute("aria-describedby", hint.id);
+      var table = el("table", "fn-table"), head = el("thead"), heads = el("tr");
+      table.appendChild(el("caption", "vh", FN_COPY.caption));
+      var corner = el("th"); corner.scope = "col"; corner.appendChild(el("span", "vh", FN_COPY.function)); heads.appendChild(corner);
+      institutes.forEach(function (i) {
+        // Columns are headed by the jurisdiction's name, so all 15 fit at desktop width; the institute's full name is the
+        // head's tip (hover, focus, tap) and the detail's heading.
+        var place = J[i.jurisdiction_id].name, th = el("th", pending(i) ? "fn-pending" : null);
+        th.scope = "col"; th.dataset.institute = i.id; th.appendChild(term(place, i.name));
+        if (pending(i)) th.appendChild(nyo()); heads.appendChild(th);
+      });
+      head.appendChild(heads); table.appendChild(head);
+      groups.forEach(function (group) { // one row group per function group, headed by a rowgroup header
+        var tbody = el("tbody"), tr = el("tr", "fn-group"), th = el("th"); th.scope = "rowgroup"; th.colSpan = institutes.length + 1;
+        th.appendChild(el("span", null, group)); tr.appendChild(th); tbody.appendChild(tr);
+        codes.filter(function (code) { return vocab[code].group === group; }).forEach(function (code) {
+          var tr = el("tr"), th = el("th"); tr.dataset.code = code; th.scope = "row";
+          th.appendChild(term(vocab[code].label, vocab[code].definition)); tr.appendChild(th);
+          institutes.forEach(function (i) {
+            var row = rows[i.id][code], td = el("td", pending(i) ? "fn-pending" : null); td.dataset.value = row.value;
+            if (["mandate", "activity", "both"].indexOf(row.value) >= 0) {
+              var button = el("button", "fn-cell"); button.type = "button"; button.appendChild(mark(row.value));
+              button.setAttribute("aria-expanded", "false"); button.setAttribute("aria-controls", "fn-detail-" + code);
+              button.setAttribute("aria-label", shortName(i) + ", " + vocab[code].label + ": " + FN_MARK[row.value].name); td.appendChild(button);
+            } else td.appendChild(el("span", "vh", FN_MARK[row.value].name)); // the mark is the cell's ::before: 189 cells, kept small in the saved page
+            tr.appendChild(td);
+          }); tbody.appendChild(tr);
+        });
+        table.appendChild(tbody);
+      });
+      scroll.appendChild(table); box.appendChild(scroll);
+      var legend = el("ul", "fn-legend"); legend.setAttribute("role", "list");
+      Object.keys(FN_MARK).filter(function (value) { return present.has(value); }).forEach(function (value) {
+        var li = el("li"); li.dataset.value = value; li.appendChild(mark(value)); li.appendChild(el("span", null, FN_MARK[value].legend)); legend.appendChild(li);
+      });
+      var note = el("li"), sample = el("span", "fn-nyo-sample"); sample.setAttribute("aria-hidden", "true");
+      note.appendChild(sample); note.appendChild(el("span", null, FN_COPY.not_established_legend)); legend.appendChild(note); box.appendChild(legend);
+      box.appendChild(el("p", "small fn-provisional", FN_COPY.provisional));
+      var opened = null, detailRow = null;
+      function closeDetail(focus) {
+        if (!opened) return;
+        var previous = opened; previous.setAttribute("aria-expanded", "false"); detailRow.remove(); opened = null; detailRow = null;
+        if (focus) previous.focus({ preventScroll: true });
+      }
+      table.addEventListener("click", function (event) {
+        var button = event.target.closest(".fn-cell"); if (!button) return;
+        if (button === opened) { closeDetail(true); return; }
+        closeDetail(false);
+        var row = button.closest("tr"), code = row.dataset.code, i = institutes[button.parentNode.cellIndex - 1];
+        var detail = el("div", "fn-detail"), title = el("p", "fn-detail-head", shortName(i) + " · " + vocab[code].label);
+        title.id = "fn-detail-head"; detail.setAttribute("role", "region"); detail.setAttribute("aria-labelledby", title.id);
+        if (pending(i)) title.appendChild(nyo()); detail.appendChild(title);
+        rows[i.id][code].claim_ids.forEach(function (id) {
+          var binding = claims[i.id][id], claim = binding.claim, bound = quotes.get(binding.pointer);
+          if (!bound || bound.length !== 1) throw new Error("Function claim needs exactly one quote: " + id);
+          var evidence = bound[0], item = el("div", "fn-claim"); item.dataset.claim = id;
+          item.appendChild(el("p", "fn-basis", FN_MARK[claim.basis].name)); item.appendChild(el("p", "fn-claim-text", claim.text));
+          item.appendChild(fnQuote(evidence.excerpt, evidence.src));
+          var other = fieldCitations(claim, ["text"]).filter(function (sid) { return sid !== evidence.src.id; });
+          if (other.length) item.appendChild(fnSources(other)); detail.appendChild(item);
+        });
+        var close = el("button", "btn", FN_COPY.close); close.type = "button"; close.addEventListener("click", function () { closeDetail(true); }); detail.appendChild(close);
+        detailRow = el("tr", "fn-detail-row"); detailRow.id = button.getAttribute("aria-controls"); var td = el("td"); td.colSpan = institutes.length + 1;
+        td.appendChild(detail); detailRow.appendChild(td); row.after(detailRow); opened = button; button.setAttribute("aria-expanded", "true"); externalLinks(detail);
+      });
+      // Escape closes the detail only while focus is in the table, and only when no nested control has handled it.
+      table.addEventListener("keydown", function (event) { if (event.key === "Escape" && opened && !event.defaultPrevented) { event.preventDefault(); closeDetail(true); } });
+    })();
     // Testing and access: four groups from the published model access value (dataset.vocabularies.model_access; derived in flag_checks.py, read here, never recomputed).
     // Both access values go in the first group; earlier access says the year of its latest event, so old access never reads as current.
     (function () {

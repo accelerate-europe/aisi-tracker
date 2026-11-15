@@ -116,13 +116,17 @@ def test_claim_sources_stay_off_the_page(claimed):
     assert "gb-claim" not in institute["display"]["source_links"]
 
 
-def test_page_data_leaves_out_claims_and_functions(claimed):
-    """The page never reads them in A1, and page.json has a size budget; aisi.json keeps them."""
+def test_page_data_keeps_institute_claims_and_functions(claimed):
+    """Compare reads institute functions and claims, whose positions the published quote pointers name."""
     published = build.export_dataset(claimed)
     page = json.loads(build.page_data(published))
     assert published["institutes"][0]["functions"] and published["jurisdictions"][0]["claims"]
-    for record in [*page["institutes"], *page["jurisdictions"]]:
+    for record in page["jurisdictions"]:
         assert "claims" not in record and "functions" not in record
+    for actual, original in zip(page["institutes"], published["institutes"], strict=True):
+        assert actual == original
+    assert [[e["supports"] for e in s.get("excerpts", [])] for s in page["sources"]] == [
+        [e["supports"] for e in s.get("excerpts", [])] for s in published["sources"]]
     assert page["jurisdictions"][0]["check"] == {"last_checked": "2026-10-17", "method": "individual"}
 
 
