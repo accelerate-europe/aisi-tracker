@@ -34710,7 +34710,30 @@
             "scope": "Sources checked for developments from 13 November 2026: the institute page (its linked blog dated 8 July), the research programme's newsroom (news 6 November, insights 28 October), CIFAR's two news listings (16 September and 8 June) and the Government of Canada's news results (9 October). No new institute fact was found. NRC's stories listing was stale (newest 11 June) and its news page returned an empty table; ISED's media room returned no news list. The stale ISED, CIFAR and NRC listings leave coverage incomplete. Partial check, not a full record re-check."
           }
         ],
-        "last_checked_basis": "historical_upper_bound"
+        "last_checked_basis": "historical_upper_bound",
+        "functions": {
+          "date": "2026-11-14",
+          "codes": [
+            "model_testing",
+            "evaluation_methods",
+            "research",
+            "standards_guidance",
+            "regulatory_enforcement",
+            "regulatory_support",
+            "risk_monitoring",
+            "foresight",
+            "policy_advice",
+            "incident_response",
+            "international_cooperation",
+            "convening",
+            "capacity_building",
+            "talent",
+            "adoption",
+            "public_access_continuity",
+            "certification",
+            "sandbox"
+          ]
+        }
       },
       "source_ids": [
         "ca-launch",
@@ -34739,7 +34762,10 @@
         "ca-cse-annual-fr",
         "ca-ised-dp-2025-26-tpp",
         "r11-ca-fiscal-year",
-        "ca-nrc-ai-safety"
+        "ca-nrc-ai-safety",
+        "r5-ca-ai-for-all",
+        "ca-uk-alignment-2025",
+        "ca-kr-mou-2026"
       ],
       "mandate_short": "Researches risks from advanced artificial intelligence and ways to reduce them.",
       "legal_basis": {
@@ -35150,7 +35176,69 @@
           "ca-caisi-srsr-briefing"
         ],
         "notes": "The office in ISED leads policy coordination and international engagement; research runs through an investigator-led stream funded through CIFAR and government-directed projects at the National Research Council."
-      }
+      },
+      "claims": [
+        {
+          "id": "claims-011aed607ef34dc2a65b68ef6fc62095",
+          "kind": "function",
+          "code": "model_testing",
+          "basis": "mandate",
+          "text": "Canada's national AI strategy commits $50 million to expand its capabilities to conduct transparent evaluations of AI models.",
+          "source_ids": [
+            "r5-ca-ai-for-all"
+          ]
+        },
+        {
+          "id": "claims-f173f118881344e5b44c2fb055e0d5f7",
+          "kind": "function",
+          "code": "research",
+          "basis": "activity",
+          "text": "ISED's announcement says it will contribute $1 million through the Canadian Institute for Advanced Research to the UK AI Security Institute's Alignment Project.",
+          "source_ids": [
+            "ca-uk-alignment-2025"
+          ]
+        },
+        {
+          "id": "claims-d286d5a1123d4fb4abdc1ed5e1cdf157",
+          "kind": "function",
+          "code": "risk_monitoring",
+          "basis": "mandate",
+          "text": "Canada's national AI strategy commits $50 million to expand its capabilities to track emerging AI risks.",
+          "source_ids": [
+            "r5-ca-ai-for-all"
+          ]
+        },
+        {
+          "id": "claims-8e1176a760f640f49fbb87fec5a33d24",
+          "kind": "function",
+          "code": "international_cooperation",
+          "basis": "mandate",
+          "text": "The government's launch announcement says it will collaborate with safety institutes in other jurisdictions as part of the International Network of AI Safety Institutes.",
+          "source_ids": [
+            "ca-launch"
+          ]
+        },
+        {
+          "id": "claims-925c4fe0370a4c4bab32d1e90083f6ce",
+          "kind": "function",
+          "code": "international_cooperation",
+          "basis": "activity",
+          "text": "ISED's announcement says it and the Korean AI Safety Institute signed a memorandum of understanding to strengthen international cooperation on AI safety.",
+          "source_ids": [
+            "ca-kr-mou-2026"
+          ]
+        },
+        {
+          "id": "claims-9b1b78c24b4848fabf57585f7135b4c2",
+          "kind": "function",
+          "code": "talent",
+          "basis": "activity",
+          "text": "ISED's briefing says that, through CIFAR, it funds high-risk, high-reward projects and prioritises support for emerging and student researchers to build the next generation of AI safety experts.",
+          "source_ids": [
+            "ca-caisi-srsr-briefing"
+          ]
+        }
+      ]
     },
     {
       "id": "jp-aisi",
@@ -37529,7 +37617,30 @@
             "scope": "Sources checked for developments from 13 November 2026: the institute page (undated), the department's news (13 November) and publications (9 November), the ministers' media page (13 November; Senator Ayres's newest item 12 November) and the Joint Select Committee on AI's answers on notice (to 5 November). Beyond the 10 November announcement already recorded, no new formal name, introduced bill or further detail of its relation to the institute was found for the proposed AI safety regulator, and no new institute publication. Individual ministers' archives and unlisted committee answers were not all checked. Partial check, not a full record re-check."
           }
         ],
-        "last_checked_basis": "historical_upper_bound"
+        "last_checked_basis": "historical_upper_bound",
+        "functions": {
+          "date": "2026-11-14",
+          "codes": [
+            "model_testing",
+            "evaluation_methods",
+            "research",
+            "standards_guidance",
+            "regulatory_enforcement",
+            "regulatory_support",
+            "risk_monitoring",
+            "foresight",
+            "policy_advice",
+            "incident_response",
+            "international_cooperation",
+            "convening",
+            "capacity_building",
+            "talent",
+            "adoption",
+            "public_access_continuity",
+            "certification",
+            "sandbox"
+          ]
+        }
       },
       "source_ids": [
         "au-minister",
@@ -37971,7 +38082,79 @@
           "depth-au-forum"
         ],
         "notes": "It works with technical partners, including the Australian Signals Directorate and CSIRO."
-      }
+      },
+      "claims": [
+        {
+          "id": "claims-c49f43f8274043a3aba4dc027dfe8f69",
+          "kind": "function",
+          "code": "model_testing",
+          "basis": "mandate",
+          "text": "The department lists analysing and testing new AI models and applications as one of its goals.",
+          "source_ids": [
+            "au-industry"
+          ]
+        },
+        {
+          "id": "claims-ed8a5824ade64fb4828548bed75f691e",
+          "kind": "function",
+          "code": "research",
+          "basis": "activity",
+          "text": "The department says it commissioned CSIRO to explore scalable oversight, an aspect of AI alignment.",
+          "source_ids": [
+            "au-oversight-news-2026"
+          ]
+        },
+        {
+          "id": "claims-70f38aeb691942b78761ed40359a2074",
+          "kind": "function",
+          "code": "regulatory_support",
+          "basis": "mandate",
+          "text": "The department lists supporting regulators and agencies in responding to emerging AI risks and harms as one of its goals.",
+          "source_ids": [
+            "au-industry"
+          ]
+        },
+        {
+          "id": "claims-36b4a4a7580a49d89273c74ae0608625",
+          "kind": "function",
+          "code": "risk_monitoring",
+          "basis": "mandate",
+          "text": "The National AI Plan announcement says the government is setting it up to monitor, test and share information on emerging AI capabilities, risks and harms.",
+          "source_ids": [
+            "au-plan"
+          ]
+        },
+        {
+          "id": "claims-25ccbc8aedfd4251954647872cfe747a",
+          "kind": "function",
+          "code": "policy_advice",
+          "basis": "mandate",
+          "text": "The ministers' founding announcement says it will advise where updates to legislation might be needed.",
+          "source_ids": [
+            "au-minister"
+          ]
+        },
+        {
+          "id": "claims-d5c3bb7957924883a571c2a41db717ac",
+          "kind": "function",
+          "code": "international_cooperation",
+          "basis": "mandate",
+          "text": "The ministers' founding announcement says that, collaborating with partners including the International Network of AI Safety Institutes, it will support global efforts to address AI risks and harms.",
+          "source_ids": [
+            "au-minister"
+          ]
+        },
+        {
+          "id": "claims-0c7455a9274a45f18c3b4c46674205aa",
+          "kind": "function",
+          "code": "international_cooperation",
+          "basis": "activity",
+          "text": "The Australian government's announcement says the memorandum of understanding brings it together with the UK AI Security Institute.",
+          "source_ids": [
+            "depth-au-uk-mou"
+          ]
+        }
+      ]
     },
     {
       "id": "my-aisafe",
@@ -38330,7 +38513,30 @@
             "scope": "Sources checked for developments from 13 November 2026: MeitY's What's New (12 November), press releases (newest 21 January 2025), orders and notices (21 October) and gazette notifications (16 December 2025), and IndiaAI's news, which was stale (newest 17 September 2024; archived copy 9 September 2024). IndiaAI's current news could not be recovered, and its current publications remain unverified. A Moneycontrol report of 4 November describes a consultation paper as forthcoming; no released paper was found, which does not establish that none has been released. Partial check, not a full record re-check."
           }
         ],
-        "last_checked_basis": "historical_upper_bound"
+        "last_checked_basis": "historical_upper_bound",
+        "functions": {
+          "date": "2026-11-14",
+          "codes": [
+            "model_testing",
+            "evaluation_methods",
+            "research",
+            "standards_guidance",
+            "regulatory_enforcement",
+            "regulatory_support",
+            "risk_monitoring",
+            "foresight",
+            "policy_advice",
+            "incident_response",
+            "international_cooperation",
+            "convening",
+            "capacity_building",
+            "talent",
+            "adoption",
+            "public_access_continuity",
+            "certification",
+            "sandbox"
+          ]
+        }
       },
       "source_ids": [
         "in-indiaai-2025",
@@ -38346,7 +38552,8 @@
         "sas-mena-arcadia-2026",
         "in-storyboard-2026",
         "in-rs-usq-1668-2026",
-        "in-ht-explainer-2026-08"
+        "in-ht-explainer-2026-08",
+        "in-pib-2026-07-27"
       ],
       "notes": "Announced by the IT minister in January 2025; the November 2025 India AI Governance Guidelines call it recently established and propose testing and evaluation of AI systems for risks. The 9 May date concerns a call for partner institutions, not a verified designation date. The exact founding date remains unknown. Not a member of the international network. Projects funded under the IndiaAI Mission's safe and trusted AI pillar are mission grants, not output credited to the institute. A Hindustan Times explainer of 8 August 2026 says the institute is yet to be formally set up.",
       "mandate_short": "Guidelines propose research, risk assessment, testing and draft standards.",
@@ -38467,6 +38674,96 @@
             "in-aisi-director-advert-2026"
           ],
           "text": "IndiaAI invited applications for one contract post of Director of the IndiaAI Safety Institute."
+        },
+        {
+          "id": "claims-0c61be81bf5343eca02c81f51c1f5aa1",
+          "kind": "function",
+          "code": "model_testing",
+          "basis": "mandate",
+          "text": "It is tasked by the national AI governance guidelines to test and evaluate AI systems for risks.",
+          "source_ids": [
+            "in-guidelines-2025"
+          ]
+        },
+        {
+          "id": "claims-2dce8dac197d4dd990af3d35147c9938",
+          "kind": "function",
+          "code": "evaluation_methods",
+          "basis": "mandate",
+          "text": "Its IndiaAI mandate assigns it research and development on indigenous tools, benchmarks and measurement systems to mitigate AI risks.",
+          "source_ids": [
+            "in-indiaai-partners-2025"
+          ]
+        },
+        {
+          "id": "claims-48510410ae62492887c2d7f97e44c9df",
+          "kind": "function",
+          "code": "standards_guidance",
+          "basis": "mandate",
+          "text": "The national AI governance guidelines recommend resourcing it to develop draft standards and provide technical guidance to regulators and industry.",
+          "source_ids": [
+            "in-guidelines-2025"
+          ]
+        },
+        {
+          "id": "claims-cd4e3c781bb8419aa01f547962211a18",
+          "kind": "function",
+          "code": "regulatory_support",
+          "basis": "mandate",
+          "text": "The national AI governance guidelines recommend resourcing it to provide technical guidance to regulators.",
+          "source_ids": [
+            "in-guidelines-2025"
+          ]
+        },
+        {
+          "id": "claims-ccfdba5cb8ef48dea4f5c32de099a15b",
+          "kind": "function",
+          "code": "policy_advice",
+          "basis": "mandate",
+          "text": "The national AI governance guidelines say it should advise policymakers and industry actors on AI safety.",
+          "source_ids": [
+            "in-guidelines-2025"
+          ]
+        },
+        {
+          "id": "claims-a56175f3fa3247d89cab92cc2e568333",
+          "kind": "function",
+          "code": "international_cooperation",
+          "basis": "mandate",
+          "text": "The national AI governance guidelines say it should anchor India's participation in global forums such as the International Network of AI Safety Institutes.",
+          "source_ids": [
+            "in-guidelines-2025"
+          ]
+        },
+        {
+          "id": "claims-90ea78599f6547bb9af5d1dfcb33887b",
+          "kind": "function",
+          "code": "convening",
+          "basis": "mandate",
+          "text": "The IndiaAI Mission's announcement says it will be set up on a hub and spoke model, with research and academic institutions and private sector partners joining the hub and taking up projects.",
+          "source_ids": [
+            "in-indiaai-2025"
+          ]
+        },
+        {
+          "id": "claims-0d84e7a94b694c27878e455980ca8454",
+          "kind": "function",
+          "code": "talent",
+          "basis": "mandate",
+          "text": "Its IndiaAI mandate assigns it leading training and awareness programmes for key stakeholders.",
+          "source_ids": [
+            "in-indiaai-partners-2025"
+          ]
+        },
+        {
+          "id": "claims-51c485e110c84c559876506dcd425b52",
+          "kind": "function",
+          "code": "adoption",
+          "basis": "mandate",
+          "text": "The ministry's release says it is responsible for promoting the safe, secure, inclusive and trustworthy development, deployment and adoption of AI in India.",
+          "source_ids": [
+            "in-pib-2026-07-27"
+          ]
         }
       ]
     },
@@ -44623,6 +44920,24 @@
             ]
           ],
           "accessed": "2026-10-19"
+        },
+        {
+          "text": "CAISI will also collaborate with safety institutes in other jurisdictions as part of the new International Network of AI Safety Institutes",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "claims",
+              {
+                "id": "claims-8e1176a760f640f49fbb87fec5a33d24"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17",
+          "url": "https://web.archive.org/web/20261016194417/https://www.canada.ca/en/innovation-science-economic-development/news/2024/11/canada-launches-canadian-artificial-intelligence-safety-institute.html"
         }
       ],
       "origin": "CA",
@@ -44689,6 +45004,54 @@
             ]
           ],
           "accessed": "2026-10-17"
+        },
+        {
+          "text": "As AI technology evolves, the Institute will work across government to support best practice regulation, advise where updates to legislation might be needed and coordinate timely and consistent action to protect Australians.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-25ccbc8aedfd4251954647872cfe747a"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17",
+          "url": "https://r.jina.ai/https://www.minister.industry.gov.au/charlton/media/establishment-australian-ai-safety-institute",
+          "anchors": [
+            {
+              "text": "establishing the Australian AI Safety Institute",
+              "kind": "definition"
+            }
+          ]
+        },
+        {
+          "text": "Collaborating with domestic and international partners, including the National AI Centre and the International Network of AI Safety Institutes, the Institute will support global efforts to address AI risks and harms",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-d5c3bb7957924883a571c2a41db717ac"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17",
+          "url": "https://r.jina.ai/https://www.minister.industry.gov.au/charlton/media/establishment-australian-ai-safety-institute",
+          "anchors": [
+            {
+              "text": "establishing the Australian AI Safety Institute",
+              "kind": "definition"
+            }
+          ]
         }
       ],
       "origin": "AU",
@@ -45541,6 +45904,35 @@
             ]
           ],
           "accessed": "2026-10-21"
+        },
+        {
+          "text": "Australia’s AI Safety Institute has 3 goals: Analyse and test new AI models and applications. Support regulators and agencies in responding to emerging AI risks and harms.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-c49f43f8274043a3aba4dc027dfe8f69"
+              },
+              "text"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-70f38aeb691942b78761ed40359a2074"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17",
+          "url": "https://web.archive.org/web/20261015131505/https://www.industry.gov.au/science-technology-and-innovation/technology/artificial-intelligence/ai-safety-institute"
         }
       ],
       "origin": "AU",
@@ -45590,6 +45982,24 @@
             ]
           ],
           "accessed": "2026-10-17"
+        },
+        {
+          "text": "setting up the recently announced AI Safety Institute to monitor, test and share information on emerging AI capabilities, risks and harms",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-36b4a4a7580a49d89273c74ae0608625"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17",
+          "url": "https://web.archive.org/web/20261016194944/https://www.minister.industry.gov.au/t-ayres/media/national-ai-plan-empowering-all-australians"
         }
       ],
       "origin": "AU",
@@ -49739,9 +50149,26 @@
                 "id": "in-aisi"
               },
               "mandate"
+            ],
+            [
+              "institutes",
+              {
+                "id": "in-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-90ea78599f6547bb9af5d1dfcb33887b"
+              },
+              "text"
             ]
           ],
-          "accessed": "2026-10-19"
+          "accessed": "2026-10-19",
+          "anchors": [
+            {
+              "text": "The Hon'ble Minister has announced the setting up of IndiaAI Safety Institute",
+              "kind": "definition"
+            }
+          ]
         },
         {
           "text": "The Institute will advance indigenous research and development, based on Indian datasets and contextualized to India’s social, economic, cultural, and linguistic diversity.",
@@ -49946,6 +50373,28 @@
               },
               "testing_capacity",
               "state"
+            ],
+            [
+              "institutes",
+              {
+                "id": "in-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-0c61be81bf5343eca02c81f51c1f5aa1"
+              },
+              "text"
+            ],
+            [
+              "institutes",
+              {
+                "id": "in-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-ccfdba5cb8ef48dea4f5c32de099a15b"
+              },
+              "text"
             ]
           ]
         },
@@ -49978,9 +50427,48 @@
                 "id": "in-aisi"
               },
               "mandate"
+            ],
+            [
+              "institutes",
+              {
+                "id": "in-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-a56175f3fa3247d89cab92cc2e568333"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-19"
+        },
+        {
+          "text": "Provide adequate resources to the IndiaAI Safety Institute to conduct research, develop draft standards and their evaluation metrics and testing methods and benchmarks, collaborate with international bodies, national standard making bodies and provide technical guidance to regulators and industry.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "in-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-48510410ae62492887c2d7f97e44c9df"
+              },
+              "text"
+            ],
+            [
+              "institutes",
+              {
+                "id": "in-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-cd4e3c781bb8419aa01f547962211a18"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "IN",
@@ -50460,6 +50948,48 @@
             ]
           ],
           "accessed": "2026-10-21"
+        },
+        {
+          "text": "The IndiaAI Safety Institute will: Drive R&D on indigenous tools, technologies, benchmarks, measurement systems, and other outputs to mitigate AI risks",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "in-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-2dce8dac197d4dd990af3d35147c9938"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17",
+          "url": "https://web.archive.org/web/20260719035551/https://indiaai.gov.in/article/call-for-partnerships-as-part-of-the-indiaai-safety-institute"
+        },
+        {
+          "text": "Lead training and awareness programs for key stakeholders",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "in-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-0d84e7a94b694c27878e455980ca8454"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17",
+          "url": "https://web.archive.org/web/20260719035551/https://indiaai.gov.in/article/call-for-partnerships-as-part-of-the-indiaai-safety-institute",
+          "anchors": [
+            {
+              "text": "The IndiaAI Safety Institute will:",
+              "kind": "heading"
+            }
+          ]
         }
       ],
       "snapshot": {
@@ -65250,6 +65780,17 @@
               },
               "credit",
               "institute_id"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-ed8a5824ade64fb4828548bed75f691e"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-18",
@@ -73784,6 +74325,17 @@
                 "id": "agreements-d703af8681b95884b6ef76f805f8884a"
               },
               "scope"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-0c7455a9274a45f18c3b4c46674205aa"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-17"
@@ -82541,6 +83093,17 @@
                 "id": "agreements-dd408de818c75a0da2b99614b479409c"
               },
               "scope"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "claims",
+              {
+                "id": "claims-f173f118881344e5b44c2fb055e0d5f7"
+              },
+              "text"
             ]
           ]
         },
@@ -83572,6 +84135,23 @@
             ]
           ],
           "accessed": "2026-10-21"
+        },
+        {
+          "text": "The Canadian AI Safety Institute, through CIFAR, funds high-risk, high-reward projects and prioritizes support for emerging and student researchers to build the next generation of AI safety experts",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "claims",
+              {
+                "id": "claims-9b1b78c24b4848fabf57585f7135b4c2"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "access_note": "Official briefing for the 2 February 2026 appearance. HTML dcterms.issued is empty; Date modified and dcterms.date both say 2026-07-28. The appearance date is not treated as a publication date.",
@@ -92580,6 +93160,28 @@
               },
               "testing_capacity",
               "notes"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "claims",
+              {
+                "id": "claims-011aed607ef34dc2a65b68ef6fc62095"
+              },
+              "text"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "claims",
+              {
+                "id": "claims-d286d5a1123d4fb4abdc1ed5e1cdf157"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-21"
@@ -106473,6 +107075,23 @@
             ]
           ],
           "accessed": "2026-10-21"
+        },
+        {
+          "text": "The IndiaAI Safety Institute was announced in January 2025 to advance science-based and indigenous research on AI safety and governance. The Institute is responsible for promoting the safe, secure, inclusive and trustworthy development, deployment and adoption of AI in India.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "in-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-51c485e110c84c559876506dcd425b52"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-21"
         }
       ]
     },
@@ -108278,6 +108897,24 @@
             ]
           ],
           "accessed": "2026-10-24"
+        },
+        {
+          "text": "The Canadian and Korean AI Safety Institutes (AISI)have signed a memorandum of understanding (MOU) to strengthen international cooperation on artificial intelligence (AI) safety.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "claims",
+              {
+                "id": "claims-925c4fe0370a4c4bab32d1e90083f6ce"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-24",
+          "url": "https://r.jina.ai/https://www.canada.ca/en/innovation-science-economic-development/news/2026/07/canada-and-republic-of-korea-sign-memorandum-of-understanding-to-advance-ai-innovation-and-safety.html"
         }
       ],
       "snapshot": {
