@@ -38669,6 +38669,26 @@
           "source_ids": [
             "fix-output-sg-kr-january"
           ]
+        },
+        {
+          "id": "claims-32fe24b7dd1d435f85afd58edca8df5f",
+          "kind": "function",
+          "code": "talent",
+          "basis": "mandate",
+          "text": "IMDA's factsheet says the DTC would deepen local capabilities by nurturing R&D talent in digital trust.",
+          "source_ids": [
+            "sg-imda"
+          ]
+        },
+        {
+          "id": "claims-e40d6635638f4ee48b65957c4d8f9cc3",
+          "kind": "function",
+          "code": "evaluation_methods",
+          "basis": "mandate",
+          "text": "IMDA's fact sheet says the Digital Trust Centre will help to focus on outcomes that include testing the trustworthiness of AI and developing algorithms to test and evaluate the fairness of AI.",
+          "source_ids": [
+            "sg-imda-dtc-factsheet-2022"
+          ]
         }
       ]
     },
@@ -46000,6 +46020,29 @@
               "kind": "heading"
             }
           ]
+        },
+        {
+          "text": "The DTC would drive research and innovation of the trust \ntechnologies, enabling businesses to experiment with these technologies and \nassimilate them into operations, as well as deepening local capabilit ies by nurturing \nR&D talents in digital trust",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "sg-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-32fe24b7dd1d435f85afd58edca8df5f"
+              },
+              "text"
+            ]
+          ],
+          "anchors": [
+            {
+              "text": "The Digital Trust Centre has been designated as \nSingapore’s AI Safety Institute (AISI).",
+              "kind": "definition"
+            }
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "SG",
@@ -121685,6 +121728,34 @@
               },
               "background"
             ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "Develop technologies in testing and\nauditing to evaluate the\ntrustworthiness of digital products\nand services.\nTesting the trustworthiness of AI,\nthe development algorithms to test\nand evaluate the fairness of AI.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "sg-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-e40d6635638f4ee48b65957c4d8f9cc3"
+              },
+              "text"
+            ]
+          ],
+          "anchors": [
+            {
+              "text": "DTC will help to focus on four key outcomes.",
+              "kind": "heading"
+            },
+            {
+              "text": "The Digital Trust Centre has been designated as \nSingapore’s AI Safety Institute (AISI).",
+              "kind": "definition",
+              "source_id": "sg-imda"
+            }
           ],
           "accessed": "2026-11-14"
         }
