@@ -116,13 +116,15 @@ def test_claim_sources_stay_off_the_page(claimed):
     assert "gb-claim" not in institute["display"]["source_links"]
 
 
-def test_page_data_leaves_out_claims_and_functions(claimed):
-    """The page never reads them in A1, and page.json has a size budget; aisi.json keeps them."""
+def test_page_data_keeps_claims_but_leaves_out_functions(claimed):
+    """Cards read claims, including their citations and freshness, without changing the download."""
     published = build.export_dataset(claimed)
     page = json.loads(build.page_data(published))
     assert published["institutes"][0]["functions"] and published["jurisdictions"][0]["claims"]
-    for record in [*page["institutes"], *page["jurisdictions"]]:
-        assert "claims" not in record and "functions" not in record
+    for collection in ("institutes", "jurisdictions"):
+        for record, original in zip(page[collection], published[collection]):
+            assert record.get("claims") == original.get("claims")
+            assert "functions" not in record
     assert page["jurisdictions"][0]["check"] == {"last_checked": "2026-10-17", "method": "individual"}
 
 

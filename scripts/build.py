@@ -979,16 +979,15 @@ def prerender(site: Path) -> None:
         fail([f"pre-rendering failed (scripts/prerender.py exit {result.returncode}): {result.stderr.strip()[-2000:]}"])
 
 
-PAGE_DATA_DROPPED = {"check": ("last_checked", "method"), "sources": ("snapshot", "access_note"), "records": ("claims", "functions"),
-                     "excerpts": ("anchors",)}
+PAGE_DATA_DROPPED = {"check": ("last_checked", "method"), "sources": ("snapshot", "access_note"), "records": ("functions",)}
 
 
 def page_data(published: dict, build_mark: str | None = None) -> str:
     """data/page.json, what the page script loads: aisi.json without the fields it never reads (a state's research
     log in check, except last_checked and method; a source's private-copy metadata, snapshot and access_note; the
-    download-only claims and generated functions of states and institutes; an excerpt's anchors, until step F shows
-    them), minified, with the build mark
-    (content_mark of the file without it) as its last key. aisi.json stays the public download; the page fetches
+    download-only generated functions of states and institutes), minified. Claims and excerpt anchors stay for
+    the cards and their quotes on open. The build mark
+    (content_mark of the file without it) is its last key. aisi.json stays the public download; the page fetches
     this file by a URL carrying the same mark."""
     page = dict(published)
     keep = PAGE_DATA_DROPPED["check"]
@@ -1001,8 +1000,6 @@ def page_data(published: dict, build_mark: str | None = None) -> str:
     page["jurisdictions"] = [shown(j) | {"check": {k: j["check"][k] for k in keep if k in j["check"]}} if "check" in j else shown(j) for j in published["jurisdictions"]]
     def source(s: dict) -> dict:
         kept = {k: v for k, v in s.items() if k not in PAGE_DATA_DROPPED["sources"]}
-        if "excerpts" in kept:
-            kept["excerpts"] = [{k: v for k, v in e.items() if k not in PAGE_DATA_DROPPED["excerpts"]} for e in kept["excerpts"]]
         return kept
 
     page["sources"] = [source(s) for s in published["sources"]]

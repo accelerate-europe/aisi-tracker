@@ -2064,7 +2064,7 @@ def test_content_checks_run_in_the_content_step_not_per_state():
     for helper in ("check_budget_output", "check_staff_figures", "check_generic_sources", "check_nonidentified_folds", "BeautifulSoup("):
         assert helper not in passed, helper  # no per-state copy of a content check (filtered views keep their own)
     assert 'theme_invariant=theme == "light"' in passed  # the first screen's theme-invariant steps run once per width
-    assert 'anchor = (width, theme) == (1440, "light")' in passed and passed.count("    if anchor:") == 3
+    assert 'anchor = (width, theme) == (1440, "light")' in passed and passed.count("    if anchor:") == 4
     assert passed.count('if theme == "light":') == 2  # the expanded sweep's theme-invariant checks
     sweep = passed.split("# Check all controls revealed by disclosures.")[1].split("# Toolbar disclosures are exclusive")[0]
     unguarded = [line.strip() for line in sweep.splitlines() if line.startswith(("    for error in check_", "        check_"))]
@@ -2104,7 +2104,7 @@ def test_interaction_pass_marks_its_steps():
     import inspect
 
     source = inspect.getsource(check_page.interaction_pass)
-    assert source.count('lap("') == 14 and "lap = step_clock()" in source  # one per block, the last before the return
+    assert source.count('lap("') == 15 and "lap = step_clock()" in source  # one per block, the last before the return
 
 
 def test_each_job_line_has_only_its_own_steps_also_when_it_raises(tmp_path):
@@ -2299,6 +2299,7 @@ def test_skip_static_is_only_for_detector_runs(args, ok):
 
 
 MOVED_TO_CONTENT = {  # content family module -> the check_page helpers it now runs
+    "claims": ("check_claim_cards",),
     "funding": ("check_budget_output", "check_funding_outside", "check_interval_output", "check_per_person", "check_no_rate_amounts", "check_euro_amounts"),
     "sources": ("check_source_alignment", "check_generic_sources"),
     "record_rows": ("check_leadership_rows", "check_access_groups", "check_setup_groups"),

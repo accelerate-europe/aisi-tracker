@@ -543,6 +543,7 @@ function operatingMark(){return missing();} // Known activity has its own indepe
 function operatingText(){return '';}
 function intervalQualifier(text){return document.createTextNode(text);}
 function relatedFunding(){return el('span','','Related');}
+function factClaims(){return [];} // the Facts row has its own content check (tests/content/test_claims.py)
 const cite=()=>el("span");
 const rows=[];
 function capture(j,inst,view,label,value,ids){
