@@ -264,6 +264,8 @@ def row_display(institute: dict, vocabularies: dict) -> dict | None:
             "text": text,
             "cited": ids(reports, "name") if reports["state"] == "stated" else [],
         }
+        if reports["state"] == "stated" and reports.get("name_en"):
+            out["reports_to"]["original"] = reports["name"]
     partners = institute.get("national_partners")
     if partners:
         entries = partner_order(partners.get("entries", []))

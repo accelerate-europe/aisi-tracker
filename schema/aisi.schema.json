@@ -2181,6 +2181,11 @@
                           "string",
                           "null"
                         ]
+                      },
+                      "original": {
+                        "type": "string",
+                        "minLength": 1,
+                        "description": "The body's original-language name, shown as the tip on the English name."
                       }
                     }
                   },
