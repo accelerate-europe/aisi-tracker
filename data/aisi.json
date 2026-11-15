@@ -3940,7 +3940,7 @@
           },
           {
             "date": "2026-11-15",
-            "text": "Research pass 2026-11-15-poland-centre searched NASK's and the Ministry of Digital Affairs' sites, the official journals, NASK's public information bulletin and OpenAI's pages, in Polish and English, for the centre's setting-up, leadership, size, OpenAI agreements, partners and description as Poland's AI safety institute."
+            "text": "NASK's and the Ministry of Digital Affairs' sites, the official journals, NASK's public information bulletin and OpenAI's pages were searched in Polish and English for the centre's setting-up, leadership, size, OpenAI agreements, partners and description as Poland's AI safety institute."
           }
         ]
       },
@@ -4023,7 +4023,7 @@
           "code": "international_cooperation",
           "basis": "activity",
           "body_id": "related_bodies-8e2bf69316145732aea04a2f9bbd82eb",
-          "text": "NASK's director says the cooperation between Korea's AI Safety Institute at ETRI and the centre \"strengthens not only our joint commitment to safe and trustworthy artificial intelligence\".",
+          "text": "NASK's director describes \"the cooperation between the Korea AI Safety Institute at ETRI and the AI Safety Research Center at NASK\".",
           "source_ids": [
             "pl-nask-korea-aisi-2026"
           ]
@@ -118000,7 +118000,7 @@
       },
       "excerpts": [
         {
-          "text": "Współpraca między Koreańskim Instytutem Badań nad Bezpieczeństwem Sztucznej Inteligencji w ETRI a Ośrodkiem Badań nad Bezpieczeństwem Sztucznej Inteligencji w NASK wzmacnia nie tylko nasze wspólne zaangażowanie w bezpieczną i godną zaufania sztuczną inteligencję",
+          "text": "The cooperation between the Korea AI Safety Institute at ETRI and the AI Safety Research Center at NASK strengthens our joint commitment to safe and trustworthy artificial intelligence.",
           "supports": [
             [
               "jurisdictions",
@@ -118014,7 +118014,7 @@
               "text"
             ]
           ],
-          "gloss": "The cooperation between the Korea AI Safety Institute at ETRI and the AI Safety Research Centre at NASK strengthens not only our joint commitment to safe and trustworthy artificial intelligence",
+          "gloss": "The cooperation between the Korea AI Safety Institute at ETRI and the AI Safety Research Center at NASK strengthens our joint commitment to safe and trustworthy artificial intelligence.",
           "accessed": "2026-11-15"
         }
       ]
