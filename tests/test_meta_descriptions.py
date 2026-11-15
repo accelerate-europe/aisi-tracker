@@ -70,8 +70,8 @@ def test_share_tags_and_page_size_budget(tmp_path):
     warn = int(check_page.PAGE_BYTES_WARN * budget)
     assert serve(warn - fixed) == []  # at 95% exactly: nothing yet
     assert check_page.is_report_line(serve(warn - fixed + 1)[0])
-    assert len(serve(budget - fixed + 1)) == 1  # one byte beyond
-    assert len(serve(budget * 2)) == 1  # an oversized world body
+    assert len(check_page.blocking(serve(budget - fixed + 1))) == 1  # one byte beyond
+    assert len(check_page.blocking(serve(budget * 2))) == 1  # an oversized world body
     assert serve(100, after_bytes=budget * 2) == []  # a large section after it only warns
     (error,) = serve(100, world=False)  # the heading keeps its id but its section is gone
     assert "cannot find where the world section" in error

@@ -599,7 +599,8 @@
             "latest_change",
             "generic_sources",
             "counts",
-            "rule_labels"
+            "rule_labels",
+            "authority_roles"
           ],
           "additionalProperties": false,
           "properties": {
@@ -693,6 +694,14 @@
             "rule_labels": {
               "type": "object",
               "description": "Heading of each full method rule by rule id, as method.html shows it (scripts/method_copy.py rule_label).",
+              "additionalProperties": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "authority_roles": {
+              "type": "object",
+              "description": "The words for each AI Act authority role (related_bodies[].authority_roles), as the generated summaries and the page say them (scripts/summaries.py ROLE_WORDS).",
               "additionalProperties": {
                 "type": "string",
                 "minLength": 1

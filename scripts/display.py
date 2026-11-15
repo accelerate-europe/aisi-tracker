@@ -11,8 +11,10 @@ from decimal import Decimal, ROUND_HALF_UP
 
 if __package__:  # one home for the rule heading: method.html headings and the page's "Full rules on" links
     from .method_copy import rule_label
+    from .summaries import ROLE_WORDS
 else:
     from method_copy import rule_label
+    from summaries import ROLE_WORDS
 
 if __package__:
     from .published import INTERVAL_KEYS, RATIO_FIELDS, announcement, annual_eur_amount, annual_estimate, bound_rounding, budget_ratios, comparable_funding, component_indices, first_designation, milestones, naming_act, significant, status_basis
@@ -921,6 +923,7 @@ def derive_display(published_data):
         "latest_change": next(iter(changes), None),
         "counts": summary_figures(data),
         "rule_labels": {rule["id"]: rule_label(rule) for rule in metadata.get("method", [])},
+        "authority_roles": dict(ROLE_WORDS),  # one set of AI Act role words: summary pattern 4 and the page's AI Act lines
         "generic_sources": union(
             [
                 sid

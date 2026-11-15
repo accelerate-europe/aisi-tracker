@@ -36,7 +36,7 @@ from pathlib import Path
 from xml.etree import ElementTree
 from urllib.parse import urljoin, urlsplit
 
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Comment, NavigableString
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from browser_lock import browser_slot, lock_path  # noqa: E402
@@ -61,6 +61,12 @@ NOT_RUN = 3
 REPORT_MARK = "\x1f"
 REPORT_LINE = "report line: "
 REPORT_JS = f"const REPORT = {json.dumps(REPORT_MARK)};"
+
+
+def tip_of(node) -> str:
+    """A tooltip's text from the saved or drawn page: its one home, the description screen readers hear
+    (aria-description), or data-tip where the element has none (site/index.html tipText); data-exp for older pages."""
+    return node.get("data-tip") or node.get("data-exp") or node.get("aria-description") or ""
 
 
 def report_line(text: str) -> str:
@@ -679,7 +685,7 @@ def check_network_cells(soup, data) -> list[str]:
         mark = td.select_one(".nonmember")
         if td.select_one(".missing"):
             errors.append(f"table: Network cell for {jid} says Not published; the member list is complete")
-        if mark is not None and (mark.get_text(strip=True) != "Not a member" or not mark.get("data-tip", "").strip() or mark.get("tabindex") != "0"):
+        if mark is not None and (mark.get_text(strip=True) != "Not a member" or not tip_of(mark).strip() or mark.get("tabindex") != "0"):
             errors.append(f"table: Network cell for {jid} lacks 'Not a member' with a non-empty focusable tooltip")
         if (mark is None) != (jid in members):
             errors.append(f"table: Network cell for {jid} disagrees with the recorded memberships")
@@ -1786,7 +1792,7 @@ def check_source_alignment(html: str, data: dict) -> list[str]:
             errors.append(
                 "missing-value label does not distinguish unknown from inapplicable"
             )
-        if label == "Not published" and not missing.get("data-tip", "").strip():
+        if label == "Not published" and not tip_of(missing).strip():
             errors.append("missing-value tooltip loses the null definition")
     for cell in required("#world-rows td", bool(positive_states)):
         if not cell.get_text(strip=True):
@@ -2142,7 +2148,7 @@ def check_interval_output(html: str, data: dict, hand_worked: dict | None = None
             text += re.findall(r"(?:Announced|Proposed) on [^;·]+", " ".join(holder.get_text().split()))
         text = [t.strip() for t in text]
         for node in shown:
-            if not node.find_parent(class_="qualifiers") or STATUS_INTERVAL_CAVEAT not in (node.get("data-exp") or ""):
+            if not node.find_parent(class_="qualifiers") or STATUS_INTERVAL_CAVEAT not in tip_of(node):
                 errors.append(f"{j['id']}: Status interval is not a muted qualifier with its caveat")
         if len(shown) != (1 if since and ", " in since else 0):
             errors.append(f"{j['id']}: Status shows {len(shown)} caveated intervals for {since!r}")
@@ -2165,7 +2171,7 @@ def check_interval_output(html: str, data: dict, hand_worked: dict | None = None
             if n.select(".cn") or "qualifiers" not in n.get("class", []):
                 errors.append(f"{j['id']}: Known activity interval is not an uncited muted line")
         mark = activity.select_one(".smark") if activity else None
-        if lines and INTERVAL_CAVEAT not in ((mark.get("data-tip") or mark.get("title") or "") if mark else ""):
+        if lines and INTERVAL_CAVEAT not in ((tip_of(mark) or mark.get("title") or "") if mark else ""):
             errors.append(f"{j['id']}: Known activity tooltip lacks the interval caveat")
     return errors
 
@@ -2245,7 +2251,7 @@ def check_operating_output(
                     errors.append(f"{j['id']}: {view} operational text mark missing")
                 mark = node.select_one(".smark")
                 # The tooltip carries the proxy caveat: no known work is not inactivity.
-                tip = (mark.get("data-tip") or mark.get("title") or "") if mark else ""
+                tip = (tip_of(mark) or mark.get("title") or "") if mark else ""
                 if OPERATING_CAVEAT not in tip:
                     errors.append(
                         f"{j['id']}: {view} operational tooltip lacks finding wording"
@@ -2267,7 +2273,7 @@ def check_operating_output(
                 errors.append(f"{j['id']}: view CSV applicability differs")
     # The header has a tooltip; the method rule defines the evidence and its caveat.
     header = soup.select_one('table.world thead th[data-k="op"] button')
-    if not header or not (header.get("data-tip") or header.get("title") or "").strip():
+    if not header or not (tip_of(header) or header.get("title") or "").strip():
         errors.append("Known activity header has no tooltip")
     for selector, wordings in (
         ("#rules", ("published evaluation", "joint testing", OPERATING_CAVEAT)),
@@ -2520,7 +2526,7 @@ def check_state_counts(soup, data: dict) -> list[str]:
         errors.append("the EU appears under Worldwide")
     # Principle Supporting text: the note is the (i) after the heading, never a line under it.
     note = first.select_one(".eu-head > button.info#eu-scope") if first else None
-    if not note or not note.get("data-tip", "").strip():
+    if not note or not tip_of(note).strip():
         errors.append("EU level heading lacks its (i) with a non-empty scope tooltip")
     return errors
 
@@ -2592,7 +2598,7 @@ def check_headline(soup, data: dict) -> list[str]:
         errors.append(f"headline {text!r} differs from the data {expected_headline(data, 'World')!r}")
     europe = soup.select_one('#headline .hl-version[data-region="Europe"]')
     scope = europe.select_one("abbr.g") if europe else None
-    if not scope or not scope.get_text(strip=True) or not scope.get("data-exp", "").strip():
+    if not scope or not scope.get_text(strip=True) or not tip_of(scope).strip():
         errors.append("headline: 'European' lacks its scope definition")
     if re.search(r"\d ", node.get_text()):
         errors.append(report_line("headline: a number may end a line (no non-breaking space after it)"))
@@ -2796,11 +2802,11 @@ def check_absence_wording(soup) -> list[str]:
         for root in roots:
             for node in root.select(".missing:not(.na)"):
                 found["Not published"] += 1
-                if not node.get("data-tip", "").strip() or node.get("tabindex") != "0":
+                if not tip_of(node).strip() or node.get("tabindex") != "0":
                     errors.append(f"{place}: a Not published value lacks a non-empty focusable tooltip")
             for node in root.select('.smark[data-state="not_confirmed"]'):
                 found["None found yet"] += 1
-                if not node.get("data-tip", "").strip() or node.get("tabindex") != "0":
+                if not tip_of(node).strip() or node.get("tabindex") != "0":
                     errors.append(f"{place}: an activity absence value lacks a non-empty focusable tooltip")
         for term, count in found.items():
             if not count:
@@ -2809,14 +2815,14 @@ def check_absence_wording(soup) -> list[str]:
     if not marks:
         errors.append("Europe cards: no None identified group heading to check its tooltip")
     for mark in marks:  # the table and the record beside the map: check_none_identified_tips, which shows them
-        if not mark.get("data-tip", "").strip() or mark.get("tabindex") != "0":
+        if not tip_of(mark).strip() or mark.get("tabindex") != "0":
             errors.append("Europe cards: the None identified heading lacks a non-empty focusable tooltip")
     for key in DASH_COLUMNS:
         button = soup.select_one(f'table.world thead th[data-k="{key}"] button')
-        if not button or not button.get("data-tip", "").strip():
+        if not button or not tip_of(button).strip():
             errors.append(f"table column {key}: header lacks a non-empty tooltip")
     for node in soup.select("#entries .card .missing.na, #world-cards .card .missing.na"):
-        if not node.get("data-tip", "").strip():
+        if not tip_of(node).strip():
             errors.append("a card dash lacks a non-empty tooltip")
     visible = BeautifulSoup(str(soup), "html.parser")
     for node in visible.select("#method-details, #rules, #limits, #changes, template, script, style, .srcs, .card.mini, #tip"):
@@ -2858,7 +2864,7 @@ def check_figure_grades(soup, data: dict) -> list[str]:
                 if shown != marked:
                     errors.append(f"a source-type or confidence marker without its definition: {label!r} in {text[:60]!r}")
     for mark in soup.select("abbr.conf"):
-        if not mark.get("data-exp"):
+        if not tip_of(mark):
             errors.append(f"marker {mark.get_text()!r} has no definition")
     # Current source-type grades still qualify every non-primary figure.
     words = list(FIGURE_LABELS)
@@ -3094,7 +3100,7 @@ def check_access_groups(soup, data: dict) -> list[str]:
             errors.append(f"access group {key} heading is missing or empty")
         if key == "privileged":
             term = heading.select_one("abbr.g") if heading else None
-            if not term or not term.get_text(strip=True) or not term.get("data-exp", "").strip() or term.get("tabindex") != "0":
+            if not term or not term.get_text(strip=True) or not tip_of(term).strip() or term.get("tabindex") != "0":
                 errors.append("privileged access heading lacks a non-empty term and focusable tooltip")
         members = sorted(
             (i for i in data["institutes"] if i["model_access"]["value"] in values),
@@ -3112,7 +3118,7 @@ def check_access_groups(soup, data: dict) -> list[str]:
         marks = [m.get("class", []) for m in block.select(".marks > i")]
         if marks != [["sw", "st-" + jurisdictions[i["jurisdiction_id"]]["status"]] for i in members]:
             errors.append(f"access group {key}: marks {marks} differ from its members' statuses")
-        tips = [(m.get("data-tip"), m.get("data-tip-sub"), m.get("title")) for m in block.select(".marks > i")]
+        tips = [(tip_of(m), m.get("data-tip-sub"), m.get("title")) for m in block.select(".marks > i")]
         if tips != [(jurisdictions[i["jurisdiction_id"]]["name"], STATUS_LABELS[jurisdictions[i["jurisdiction_id"]]["status"]], None) for i in members]:
             errors.append(f"access group {key}: a status square's tooltip is not the map dots' form (name, then the status line): {tips}")
         for li, institute in zip(rows, members):
@@ -3125,7 +3131,7 @@ def check_access_groups(soup, data: dict) -> list[str]:
                 errors.append(f"access group {key}: {jid} has no note")
                 continue
             groups = [{a.get("data-source-id") for a in c.select("a.cn")} for c in note.select(".cites")]
-            tips = [(t.get_text(), t.get("data-exp")) for t in note.select("abbr.g")]
+            tips = [(t.get_text(), tip_of(t)) for t in note.select("abbr.g")]
             expected_tips = expected_access_tips(institute)
             if len(tips) != len(expected_tips) or any(term != expected_term or not (tip or "").strip() or (expected_tip is not None and tip != expected_tip) for (term, tip), (expected_term, expected_tip) in zip(tips, expected_tips)) or any(t.get("tabindex") != "0" for t in note.select("abbr.g")):
                 errors.append(f"access group {key}: {jid} tooltips {tips}, expected {expected_access_tips(institute)}")
@@ -3221,8 +3227,8 @@ def check_figures_row(soup, data: dict) -> list[str]:
             errors.append(f"{label} median figure {figure!r} differs from the data median {expected!r}")
             continue
         tile = soup.select("#figures > .figure")[0 if label == "budget" else 1]
-        tip = tile.select_one("b > abbr.g[data-exp]")
-        if bound == "at_most" and (not tip or tip.get("data-exp") != MEDIAN_CEILING or tip.get_text(strip=True) != figure):
+        tip = tile.select_one("b > abbr.g")
+        if bound == "at_most" and (not tip or tip_of(tip) != MEDIAN_CEILING or tip.get_text(strip=True) != figure):
             errors.append(f"{label} median {figure!r} is a ceiling but lacks the tooltip {MEDIAN_CEILING!r}")
         elif bound != "at_most" and tip:
             errors.append(f"{label} median {figure!r} is not a ceiling but carries a tooltip")
@@ -3249,7 +3255,7 @@ def check_figures_row(soup, data: dict) -> list[str]:
         else FIGURES_LEFT_ONE.format(n=len(counted), names=names, reason=FIGURES_REASONS[left[0][1]][0]) if len(left) == 1
         else FIGURES_LEFT_MANY.format(n=len(counted), names=names, reasons=FIGURES_REASONS[left[0][1]][1] if len(reasons) == 1 else "not compared")
     )
-    if len(note) != 1 or note[0].get("data-tip") != want_note or len(soup.select("#figures-scope")) != 1:
+    if len(note) != 1 or tip_of(note[0]) != want_note or len(soup.select("#figures-scope")) != 1:
         errors.append(f"figures row: the last figure does not end with one (i) reading {want_note!r}")
     return errors
 
@@ -3309,7 +3315,7 @@ def check_funding_key(page) -> list[str]:
       return { key: key.map(k => k.textContent.trim()), clear,
         solid: [bg('.fund-key .key-swatch:not(.pending)'), bg('#fund-rows .bar-value:not(.pending)')],
         hatch: [bg('.fund-key .key-swatch.pending'), bg('#fund-rows .bar-value.pending')],
-        tips: [...document.querySelectorAll('#fund-rows .fund-bar')].map(b => b.dataset.tip) };
+        tips: [...document.querySelectorAll('#fund-rows .fund-bar')].map(b => b.dataset.tip || b.getAttribute('aria-description')) };
     }""")
     errors = []
     if got["key"] != ["adopted", "announced"]:
@@ -3336,7 +3342,7 @@ def check_per_person(soup, data: dict) -> list[str]:
     in the figure's own tooltip."""
     errors, jurisdictions = [], {j["id"]: j for j in data["jurisdictions"]}
     for node in soup.select(".per-person"):
-        if node.name != "abbr" or "g" not in node.get("class", []) or node.get("data-exp") != PER_PERSON_TIP or node.get("tabindex") != "0":
+        if node.name != "abbr" or "g" not in node.get("class", []) or tip_of(node) != PER_PERSON_TIP or node.get("tabindex") != "0":
             errors.append(f"per-person figure {node.get_text()!r} lacks the focusable caveat tooltip {PER_PERSON_TIP!r}")
     shown = 0
     fund_items = Keyed(soup, ".fund-item[data-j]")
@@ -3362,7 +3368,7 @@ def check_state_download_buttons(html: str, dist: Path, data: dict) -> list[str]
         jid = card["data-j"]
         link = card.select_one(":scope > .foot > a.state-dl" if "mini" in card.get("class", []) else ":scope > .top > a.state-dl")
         path = f"api/v{major}/jurisdictions/{jid}.json"
-        if not link or link.get("href") != path or link.get("download") != f"{jid}.json" or [n for n in link.find_all(string=True) if n.strip() and not n.find_parent(class_="vh")] or not link.get("data-tip", "").strip() or not link.get_text(strip=True) or "i-dl" not in link.get("class", []):
+        if not link or link.get("href") != path or link.get("download") != f"{jid}.json" or [n for n in link.find_all(string=True) if n.strip() and not n.find_parent(class_="vh")] or not tip_of(link).strip() or not link.get_text(strip=True) or "i-dl" not in link.get("class", []):
             errors.append(f"card {jid}: download button missing or not the decided icon, path and label")
             continue
         file = dist / path
@@ -3393,7 +3399,7 @@ def check_access_tips(page) -> list[str]:
     terms = page.locator("#access .group-block abbr.g:visible")
     for n in range(terms.count()):
         term = terms.nth(n)
-        want, label = term.get_attribute("data-exp"), term.inner_text()
+        want, label = term.evaluate("n => n.dataset.tip || n.dataset.exp || n.getAttribute('aria-description') || ''"), term.inner_text()
         for how in ("focus", "hover", "tap"):
             page.keyboard.press("Escape")
             page.mouse.move(0, 0)
@@ -3540,7 +3546,7 @@ def check_summary_data(html: str, data: dict) -> list[str]:
         name = entry.select_one("abbr.g.legend-name")
         status = entry.get("data-status")
         # site/index.html SHORT supplies the definitions; the gate checks their presence only.
-        if not name or not (name.get("data-exp") or "").strip():
+        if not name or not tip_of(name).strip():
             errors.append(f"legend name lacks a non-empty definition tooltip: {status}")
         if not entry.select_one(f".sw.st-{status}") or not entry.select_one(
             ".legend-name"
@@ -3573,7 +3579,7 @@ def check_summary_data(html: str, data: dict) -> list[str]:
     if (
         not version
         or version.get_text() != "v" + dataset["version"]
-        or version.get("data-tip")
+        or tip_of(version)
         or version.get("title")
     ):
         errors.append("hero version is not 'v<version>' linking the changelog without a tooltip")
@@ -4698,13 +4704,13 @@ def check_none_identified_tips(browser, base_url: str, data: dict) -> list[str]:
     page = browser.new_page(viewport={"width": 1280, "height": 900})
     hydrated(page, base_url)
     page.locator("#world-status").select_option("")
-    marks = page.evaluate("""() => [...document.querySelectorAll('#world-rows td .smark')].filter(m => m.querySelector('.st-none_identified')).map(m => [m.dataset.tip, m.tabIndex])""")
+    marks = page.evaluate("""() => [...document.querySelectorAll('#world-rows td .smark')].filter(m => m.querySelector('.st-none_identified')).map(m => [m.dataset.tip || m.getAttribute('aria-description'), m.tabIndex])""")
     if not marks or any(not (tip or "").strip() or tabindex != 0 for tip, tabindex in marks):
         errors.append(f"table: None identified status marks lack the focusable tooltip ({len(marks)} marks, first {marks[:1]})")
     name = sorted(j["name"] for j in data["jurisdictions"] if j.get("europe_scope") and j["status"] == "none_identified")[0]
     page.locator("#map-search").fill(name)
     page.locator("#map-search").press("Enter")
-    got = page.evaluate("""() => { const m = document.querySelector('#record .record-status .smark'); return m ? [m.dataset.tip, m.tabIndex] : null; }""")
+    got = page.evaluate("""() => { const m = document.querySelector('#record .record-status .smark'); return m ? [m.dataset.tip || m.getAttribute('aria-description'), m.tabIndex] : null; }""")
     if not got or not (got[0] or "").strip() or got[1] != 0:
         errors.append(f"record beside the map: {name}'s None identified mark lacks the focusable tooltip ({got})")
     # The record qualifies the status date as the card does, no more: advisory recommendation, then any status confidence other than high.
@@ -5455,7 +5461,7 @@ def check_touch_tips(browser, base_url: str) -> list[str]:
         page.wait_for_timeout(150)
         button.tap()
         page.wait_for_timeout(200)
-        if not page.evaluate("id => { const t = document.getElementById('tip'); return !!t && !t.hidden && t.textContent.startsWith(document.getElementById(id).dataset.tip); }", info_id):
+        if not page.evaluate("id => { const t = document.getElementById('tip'); return !!t && !t.hidden && t.textContent.startsWith(document.getElementById(id).dataset.tip || document.getElementById(id).getAttribute('aria-description')); }", info_id):
             errors.append(f"tapping the (i) #{info_id} on touch shows no note")
     context.close()
     for viewport, scale in (({"width": 412, "height": 924}, 2.625), ({"width": 360, "height": 780}, 3)):
@@ -5573,9 +5579,11 @@ def touch_control_tips(browser, base_url: str, viewport: dict, scale: float) -> 
 
     cite = "#record a.cn"
     with touch_page() as page:
-        for selector in ("#world-rows td:first-child a[data-tip]", "#downloads a.ico", "#theme-toggle", "#world-scroll button[data-tip]", "#updated a.meta-link"):
+        for selector in ("#world-rows td:first-child a:is([data-tip], [aria-description])", "#downloads a.ico", "#theme-toggle", "#world-scroll button:is([data-tip], [aria-description])", "#updated a.meta-link"):
             point = point_of(page, selector)
             if not point:
+                if selector.startswith(("#world-rows", "#world-scroll")):  # always on the page: a missing control is a finding, not a skip
+                    errors.append(f"touch check: no tappable control matches {selector}")
                 continue
             mark, tipped = tap(page, point, tab=point[2])
             if tipped:
@@ -5740,7 +5748,7 @@ def check_access_fixes(browser, base_url: str) -> list[str]:
     page.set_viewport_size({"width": 800, "height": 220})
     phrase = page.locator('#world-rows .smark[data-state="confirmed"]').first
     # Tooltips are short now (rule 12), so the probe carries a long text: this tests the scrolling mechanism, not the copy.
-    phrase.evaluate("n => { const long = Array(12).fill(n.dataset.tip || n.title).join(' '); n.dataset.tip = long; if (n.title) n.title = long; n.scrollIntoView({ block: 'center', behavior: 'instant' }); }")
+    phrase.evaluate("n => { const long = Array(12).fill(n.dataset.tip || n.getAttribute('aria-description') || n.title).join(' '); n.dataset.tip = long; if (n.title) n.title = long; n.scrollIntoView({ block: 'center', behavior: 'instant' }); }")
     page.wait_for_timeout(100)
     p = phrase.bounding_box()
     page.mouse.move(p["x"] + 4, p["y"] + p["height"] / 2)
@@ -6048,7 +6056,7 @@ def check_tooltip_cues(page) -> list[str]:
     got = page.evaluate("""cls => [...document.querySelectorAll('abbr.g')].filter(n => n.getClientRects().length).map(n => {
         const value = cls.some(c => n.classList.contains(c)) || !!n.closest('#figures .figure > b');
         const c = getComputedStyle(n);
-        return [n.textContent.trim().slice(0, 40), value, c.textDecorationLine, c.textDecorationStyle, n.tabIndex === 0 && !!n.dataset.exp]; })""", list(VALUE_TIP_CLASSES))
+        return [n.textContent.trim().slice(0, 40), value, c.textDecorationLine, c.textDecorationStyle, n.tabIndex === 0 && !!(n.dataset.tip || n.getAttribute('aria-description'))]; })""", list(VALUE_TIP_CLASSES))
     errors = []
     for text, value, line, style, tip in got:
         if not tip:
@@ -6059,6 +6067,111 @@ def check_tooltip_cues(page) -> list[str]:
             errors.append(report_line(f"tooltip cues: the term {text!r} lacks its dotted underline"))
     if not any(value for _, value, *_ in got):
         errors.append(report_line("tooltip cues: no value with a tooltip to check"))
+    return errors
+
+
+def check_group_row_cover(page) -> list[str]:
+    """Principle Group rows: a sticky group row's ground reaches up to the section bar (no strip of text between them
+    when the bar's measured height is rounded) and sideways at least as far as an arrived card's tint spreads (no tint
+    beside the row). Read from the computed shadows, so it holds at every width and theme without scrolling."""
+    found = page.evaluate("""() => {
+        const probe = document.createElement('div'); probe.className = 'card arrived'; probe.style.position = 'absolute'; document.body.appendChild(probe);
+        const tint = getComputedStyle(probe).boxShadow; probe.remove();
+        return [tint, [...document.querySelectorAll('.group-nav')].filter(n => n.getClientRects().length).map(n => { const s = getComputedStyle(n);
+            return [n.textContent.trim().slice(0, 30), s.boxShadow, s.backgroundColor]; })]; }""")
+    return row_cover_errors(*found)
+
+
+def shadow_layers(value: str) -> list[dict]:
+    """A computed box-shadow ("rgb(23, 25, 26) 0px -8px 0px 8px, ...") as layers: colour, inset, x, y, blur, spread."""
+    if not value or value == "none":
+        return []
+    layers = []
+    for layer in re.split(r",(?![^(]*\))", value):
+        colour = (re.search(r"rgba?\([^)]*\)", layer) or [""])[0]
+        numbers = [float(n) for n in re.findall(r"(-?[\d.]+)px", layer.replace(colour, ""))] + [0.0] * 4
+        layers.append({"colour": colour, "inset": "inset" in layer, "x": numbers[0], "y": numbers[1], "blur": numbers[2], "spread": numbers[3]})
+    return layers
+
+
+def row_cover_errors(tint_shadow: str, rows: list) -> list[str]:
+    """One outer shadow layer in the row's own ground must cover, as one rectangle, the arrival tint's spread on both
+    sides and at least a pixel above the row: separate layers leave the upper corners open."""
+    tint = max([layer["spread"] for layer in shadow_layers(tint_shadow) if not layer["inset"]] or [0])
+    if not rows:
+        return [report_line("group row cover: no group row to check")]
+    errors = []
+    for text, shadow, ground in rows:
+        covers = [layer for layer in shadow_layers(shadow) if not layer["inset"] and layer["colour"] == ground
+                  and layer["blur"] == 0 and layer["x"] - layer["spread"] <= -tint and layer["x"] + layer["spread"] >= tint
+                  and layer["y"] - layer["spread"] <= -1 and layer["y"] + layer["spread"] >= 0]  # solid, down to the row's own bottom
+        if not covers:
+            errors.append(f"group row cover: {text!r} has no ground layer covering {tint:g}px on both sides and above the row as one rectangle")
+    return errors
+
+
+TERM_SCOPES = "details.card > summary, .card, #record"  # a folded card's summary row is its own view
+
+
+def term_scope(node):
+    """The nearest card summary row, card or record panel holding node (the page script's SCOPE)."""
+    for parent in node.parents:
+        if parent.name == "summary" and parent.parent is not None and parent.parent.name == "details" and "card" in parent.parent.get("class", []):
+            return parent
+        if "card" in (parent.get("class") or []) or parent.get("id") == "record":
+            return parent
+    return None
+
+
+def spelt_out(glossary: dict, label: str, state: str | None) -> str | None:
+    """The text that spells a term out just before it, lower-cased: its expansion's name up to the first sentence end,
+    then " (" ("ai security institute (" before AISI), as the page script reads it; None without an expansion."""
+    expansion = glossary.get(label)
+    if isinstance(expansion, dict):
+        expansion = expansion.get(state)
+    return re.split(r"[;(]|\.(?=\s|$)", expansion)[0].strip().lower() + " (" if expansion else None
+
+
+def check_terms_once(html, data: dict) -> list[str]:
+    """Principle Tooltip cues, on the saved page: in each card (its summary row and its body each) and the record
+    panel, a glossary term's first use is marked unless it spells the term out ("... Institute (AISI)"), and no later
+    use is. Expansions per state come from the card's data-j, as the page script reads them."""
+    soup = html if isinstance(html, BeautifulSoup) else BeautifulSoup(html, "html.parser")
+    glossary = data["dataset"].get("glossary") or {}
+    if not glossary:
+        return []
+    keys = sorted(glossary, key=len, reverse=True)
+    term = re.compile(r"(^|[^A-Za-z0-9-])(" + "|".join(map(re.escape, keys)) + r")(?![A-Za-z0-9-])")
+    errors = []
+    for box in soup.select(TERM_SCOPES):
+        host = box if box.has_attr("data-j") else box.find_parent(attrs={"data-j": True})
+        state = host["data-j"] if host else None
+        seen: set[str] = set()
+        name = box.get("id") or (box.find_parent(class_="card") or box).get("id") or "record"
+        for node in box.descendants:
+            if term_scope(node) is not box:
+                continue
+            if getattr(node, "name", None) == "abbr" and "g" in node.get("class", []) and "val" not in node.get("class", []):
+                label = node.get_text().strip()
+                if label in glossary and label in seen:
+                    errors.append(f"terms once: {name} marks {label!r} again after its first use")
+                elif label in glossary and isinstance(node.previous_sibling, NavigableString) and (spelt := spelt_out(glossary, label, state)) and str(node.previous_sibling).lower().endswith(spelt):
+                    errors.append(f"terms once: {name} marks {label!r} where the text spells it out")
+                seen.add(label)
+                continue
+            if not isinstance(node, NavigableString) or isinstance(node, Comment) or node.find_parent(["abbr", "a", "button", "option", "select", "script", "style"]) is not None or node.find_parent(class_="conf") is not None:
+                continue
+            text = str(node)
+            for match in term.finditer(text):
+                label, start = match.group(2), match.start(2)
+                expansion = glossary[label]
+                if isinstance(expansion, dict):
+                    expansion = expansion.get(state)
+                if not expansion or label in seen:
+                    continue
+                seen.add(label)
+                if not text[:start].lower().endswith(spelt_out(glossary, label, state)):
+                    errors.append(f"terms once: {name} leaves the first use of {label!r} unmarked")
     return errors
 
 
@@ -6388,7 +6501,7 @@ def check_first_screen(page, data: dict, theme_invariant: bool = True) -> list[s
             aside = page.evaluate("j => { const a = document.activeElement, t = document.getElementById('tip'), d = [...document.querySelectorAll('#worldmap svg')].find(n => n.getClientRects().length).querySelector('.tgt[data-j=\"' + j + '\"]'); return [a && a.id === 'record-name' ? null : (a && (a.dataset.j || a.id || a.tagName)), t && !t.hidden ? t.firstChild.textContent : null, d.getAttribute('aria-controls') === 'record' && d.getAttribute('aria-expanded') === 'true']; }", jid)
             name = next(j["name"] for j in data["jurisdictions"] if j["id"] == jid)
             # Opening the record can scroll another tooltip trigger under the resting pointer (a region list short name); its own tip is not the dot's.
-            under = page.evaluate("([x, y]) => { const n = document.elementFromPoint(x, y), o = n && n.closest('abbr.g, [data-tip]'); return o && !o.closest('#worldmap') ? (o.dataset.exp || o.dataset.tip) : null; }", [x, y])
+            under = page.evaluate("([x, y]) => { const n = document.elementFromPoint(x, y), o = n && n.closest('abbr.g, [data-tip], [aria-description]'); return o && !o.closest('#worldmap') ? (o.dataset.tip || o.getAttribute('aria-description')) : null; }", [x, y])
             if under is not None and aside[1] == under:
                 aside[1] = None
             if got != jid:
@@ -7053,7 +7166,7 @@ def check_institute_names(html, data: dict) -> list[str]:
         shown = " ".join("".join(t for t in cell.find_all(string=True) if not t.find_parent(class_=("vh", "cites"))).split()) if cell else ""
         if shown != shorts[iid] or (mark is None) != (hover is None):
             errors.append(f"{jid} table cell does not show the short form {shorts[iid]!r} (marked for hover only when it has a name to give)")
-        elif mark is not None and mark.get("data-exp") != hover:
+        elif mark is not None and tip_of(mark) != hover:
             errors.append(f"{jid} short form {shorts[iid]!r} does not give {hover!r} on hover")
         # The region list is a tight place too: its short form, cut off where long, gives the same name on hover or focus.
         pick = soup.select_one(f'#regions .region-rows .pick[data-pick="{jid}"]')
@@ -7062,7 +7175,7 @@ def check_institute_names(html, data: dict) -> list[str]:
             errors.append(f"{jid} region list row or its short form {shorts[iid]!r} is missing")
         else:
             mark = short.select_one("abbr.g")
-            if short.get_text(strip=True) != shorts[iid] or (mark is None) != (hover is None) or (mark is not None and (mark.get("data-exp") != hover or mark.get("tabindex") != "0")):
+            if short.get_text(strip=True) != shorts[iid] or (mark is None) != (hover is None) or (mark is not None and (tip_of(mark) != hover or mark.get("tabindex") != "0")):
                 errors.append(f"{jid} region list short form {shorts[iid]!r} does not give {hover!r} on hover and focus")
     for node in soup.select("td[data-col=inst] abbr"):
         if re.sub(r"[^A-Za-z]", "", node.get_text()).upper() in GENERIC_ACRONYMS:
@@ -7245,7 +7358,7 @@ def check_no_rate_amounts(html, data: dict) -> list[str]:
             for amount in amounts:
                 if "EUR" in amount.get_text() or currency not in amount.get_text():
                     errors.append(f"{identity}: amount must be in {currency} only, got {amount.get_text()!r}")
-                if amount.get("data-tip") != NO_RATE_TIP or amount.get("tabindex") != "0":
+                if tip_of(amount) != NO_RATE_TIP or amount.get("tabindex") != "0":
                     errors.append(f"{identity}: {currency} amount must say on hover and focus why there is no euro figure")
     return errors
 
@@ -7392,27 +7505,53 @@ def check_leadership_rows(html, data: dict) -> list[str]:
     return errors
 
 
-ROLE_PHRASES = {"single_point_of_contact": "single point of contact", "market_surveillance": "market surveillance", "notifying": "notifying"}
+SHOWN_AUTHORITIES = 3  # AI Act authorities shown before the fold (owner, 15 November)
 NON_LATIN_SCRIPT = re.compile(r"[\u0370-\u03ff\u0400-\u052f\u0530-\u058f\u0590-\u06ff\u0900-\u0dff\u0e00-\u0eff\u10a0-\u10ff\u1f00-\u1fff\u3040-\u30ff\u3400-\u9fff\uac00-\ud7af]")  # same scripts as method_checks.NON_LATIN, kept apart as the page gate's own oracle
 
 
-def expected_group_label(roles) -> str:
-    """Hand-worked heading of an AI Act authority group: its functions in the fixed order, joined with 'and'."""
-    ordered = [ROLE_PHRASES[r] for r in ("single_point_of_contact", "market_surveillance", "notifying") if r in (roles or [])]
-    if not ordered:
-        return "Other AI Act role"
-    return "AI Act " + (ordered[0] if len(ordered) == 1 else ", ".join(ordered[:-1]) + " and " + ordered[-1])
+def designation_problem(body: dict, line: str) -> str | None:
+    """Whether an AI Act authority's line states its designation as the data has it: designated by its basis;
+    proposed, with the latest formal step and its year where designation_step has them; otherwise neither."""
+    text, state = line.lower(), body.get("designation_state")
+    if state == "designated":
+        basis = (body.get("designation_basis") or "").replace("_", " ") or "an act"
+        if f"designated by {basis}" not in text or re.search(r"\bnot\b", text) or "proposed" in text:
+            return f"does not say it is designated by {basis}"
+    elif state == "proposed":
+        step = body.get("designation_step")
+        if "proposed" not in text or "designated by" in text or (step and (step["text"].lower() not in text or step["date"][:4] not in text)):
+            return "does not say it is proposed" + (f" with its latest step {step['text']!r} and its date" if step else "")
+    elif "designated" in text or "proposed" in text:
+        return "claims a designation the data does not record"
+    return None
+
+
+def authority_key(body: dict):
+    """Pattern 4's order: the single point of contact first, then the most roles, ties by name."""
+    roles = body.get("authority_roles") or []
+    return ("single_point_of_contact" not in roles, -len(roles), body.get("name_en") or body["name"])
+
+
+def shown_original(body: dict) -> str:
+    """The original name as a card shows it beneath the English one: a closing "(ABBR)" the English name also ends
+    with is said once, in the English name."""
+    match = re.search(r"\s*(\([^()]+\))$", body["name"])
+    return body["name"][: match.start()] if match and body.get("name_en", "").endswith(match.group(1)) else body["name"]
 
 
 def check_nonidentified_folds(html, data: dict) -> list[str]:
-    """None-identified fold-outs list bodies by role, English name first.
+    """None-identified fold-outs: the closest body, the AI Act authorities and other bodies, each group recognised by
+    its members, so the owner may reword a heading (test strategy D1); a heading must have text.
 
-    Every body appears once under a group heading for its role (closest candidate, AI Act authorities by
-    function, other bodies); a name in another language shows its English name with the original beneath, and
-    a non-Latin script never stands alone. Each body with sources cites them inline.
+    The closest body shows its note unless it is only its name, and one more line where it does not exist yet. The AI
+    Act authorities are one group in pattern 4's order, each line naming its roles in the published words
+    (dataset.display.authority_roles); with more than four, the first three show and the rest fold behind a summary
+    giving their number. A name in another language shows its English name with the original beneath, and a non-Latin
+    script never stands alone. Each body with sources cites them inline, and each role text is shown.
     """
     soup = BeautifulSoup(html, "html.parser")
     errors = []
+    words = (data.get("dataset", {}).get("display") or {}).get("authority_roles") or {}
     folds = Keyed(soup, "details.card.mini[id]", "id")
     for j in data["jurisdictions"]:
         card = folds.one(f"c-{j['id'].lower()}")
@@ -7420,64 +7559,86 @@ def check_nonidentified_folds(html, data: dict) -> list[str]:
             if j.get("status") == "none_identified" and j.get("europe_scope"):
                 errors.append(f"{j['id']} none-identified entry is missing")
             continue
+        if card.select("p.related"):
+            errors.append(f"{j['id']}: the fold-out carries a line about the bodies as a group; it was removed (owner, 15 November)")
         closest = j.get("closest_body")
-        bodies = [
-            b for b in j.get("related_bodies", [])
-            if not closest or (b["name"] != closest["name"] and not b["name"].startswith(closest["name"] + " ("))
-        ]
+        bodies = [b for b in j.get("related_bodies", [])
+                  if not closest or (b["name"] != closest["name"] and not b["name"].startswith(closest["name"] + " ("))]
         expected = {}
-        for b in bodies:
-            label = expected_group_label(b.get("authority_roles")) if b["kind"] == "ai_act_authority" else "Other bodies"
-            expected.setdefault(label, []).append(b)
         if closest:
-            expected["Closest candidate"] = [closest]
-        groups = {}
-        unmatched = []
+            expected["closest"] = [closest]
+        if authorities := sorted((b for b in bodies if b["kind"] == "ai_act_authority"), key=authority_key):
+            expected["authorities"] = authorities
+        if rest := [b for b in bodies if b["kind"] != "ai_act_authority"]:
+            expected["other"] = rest
+        groups, found = {}, []
         for group in card.select(".body-group"):
-            heading = group.select_one(".gl")
-            label = " ".join(heading.get_text().split()) if heading else ""
-            names = [" ".join("".join(t for t in n.find_all(string=True) if not t.find_parent(class_="cites")).split()) for n in group.select("li .body-name")]
+            names = []
+            for n in group.select("li .body-name"):
+                n = copy.copy(n)
+                for extra in n.select(".cites, .body-roles"):
+                    extra.extract()  # the numerals and an authority's roles are not part of the name
+                names.append(" ".join(n.get_text().split()))
+            found.append(names)
             matches = [key for key, members in expected.items() if names == [b.get("name_en") or b["name"] for b in members]]
             if len(matches) != 1 or matches[0] in groups:
-                unmatched.append(names)
-                continue
-            key = matches[0]
-            if not label or (key not in ("Other bodies", "Closest candidate") and label != key):
-                errors.append(f"{j['id']} fold-out groups: {key!r} heading is empty or differs from its authority roles")
-            groups[key] = group
-        if unmatched or set(groups) != set(expected):
-            errors.append(f"{j['id']} fold-out groups {sorted(groups)}, expected {sorted(expected)}")
+                errors.append(f"{j['id']} fold-out group lists {names}, which matches no expected group or repeats one")
+            if len(matches) == 1 and matches[0] not in groups:
+                groups[matches[0]] = group
+                heading = group.select_one(".gl")
+                if not heading or not heading.get_text().strip():
+                    errors.append(f"{j['id']} fold-out groups: the {matches[0]} heading is empty")
+        if list(groups) != list(expected):
+            errors.append(f"{j['id']} fold-out groups list {found}, expected {[[b.get('name_en') or b['name'] for b in m] for m in expected.values()]} in this order")
             continue
-        for label, members in expected.items():
-            items = groups[label].select("li")
-            if len(items) != len(members):
-                errors.append(f"{j['id']} group {label!r} lists {len(items)} bodies, expected {len(members)}")
-                continue
+        for key, members in expected.items():
+            group = groups[key]
+            items = group.select("li")
+            if key == "authorities":
+                fold = group.select_one("details.more")
+                hidden = len(members) - SHOWN_AUTHORITIES if len(members) > SHOWN_AUTHORITIES + 1 else 0
+                in_fold = len(fold.select("li")) if fold else 0
+                summary = fold.summary.get_text() if fold and fold.summary else ""
+                numbers = [int(n) for n in re.findall(r"\d+", summary)]
+                folded = []
+                for n in (fold.select("li .body-name") if fold else []):
+                    n = copy.copy(n)
+                    for extra in n.select(".cites, .body-roles"):
+                        extra.extract()
+                    folded.append(" ".join(n.get_text().split()))
+                wanted = [b.get("name_en") or b["name"] for b in members[len(members) - hidden:]] if hidden else []
+                if in_fold != hidden or folded != wanted or (hidden and numbers != [hidden]):
+                    errors.append(f"{j['id']} AI Act authorities: {folded} folded under {summary.strip()!r}, expected {wanted} under their number {hidden}")
             for li, b in zip(items, members):
                 cited = bool(li.select(".cn"))
-                for marks in li.select_one(".body-name").select(".cites"):
-                    marks.extract()  # the numerals are not part of the name
-                shown = " ".join(li.select_one(".body-name").get_text().split())
-                original = li.select_one(".orig")
                 want = b.get("name_en") or b["name"]
-                if shown != want:
-                    errors.append(f"{j['id']} body shows {shown!r}, expected {want!r}")
-                if NON_LATIN_SCRIPT.search(shown):
-                    errors.append(f"{j['id']} body {shown!r} stands in a non-Latin script without an English name")
-                if bool(b.get("name_en")) != (original is not None) or (original is not None and " ".join(original.get_text().split()) != b["name"]):
-                    errors.append(f"{j['id']} body {want!r}: the original name must sit beneath exactly when there is an English name")
-                state = {"designated": "Designated by", "proposed": "Proposed, not yet designated"}.get(b.get("designation_state"), "Designation not yet identified")
-                if b.get("kind") == "ai_act_authority" and state not in " ".join(groups[label].get_text().split()) and label != "Closest candidate":
-                    errors.append(f"{j['id']} body {want!r}: its designation status {state!r} is not shown")
-                role = " ".join(b.get("role", "").split())
+                if NON_LATIN_SCRIPT.search(want if b.get("name_en") else b["name"]) and not b.get("name_en"):
+                    errors.append(f"{j['id']} body {want!r} stands in a non-Latin script without an English name")
+                original = li.select_one(".orig")
+                if key != "closest" and (bool(b.get("name_en")) != (original is not None) or (original is not None and " ".join(original.get_text().split()) != shown_original(b))):
+                    errors.append(f"{j['id']} body {want!r}: the original name must sit beneath exactly when there is an English name, without an abbreviation the English name already closes with")
+                if key == "authorities":
+                    roles = li.select_one(".body-roles")
+                    line = " ".join("".join(t for t in roles.find_all(string=True) if not t.find_parent(class_="cites")).split()) if roles else ""
+                    missing = [words.get(r, r) for r in (b.get("authority_roles") or []) if words.get(r, r) not in line]
+                    if not line or missing:
+                        errors.append(f"{j['id']} body {want!r}: its line {line!r} does not name its roles {missing}")
+                    if problem := designation_problem(b, line):
+                        errors.append(f"{j['id']} body {want!r}: its line {line!r} {problem}")
                 for marks in li.select(".cites"):
                     marks.extract()
                 dets = [" ".join(d.get_text().split()) for d in li.select(".det")]
-                basis = groups[label].select_one(".basis")
-                basis_text = " ".join(basis.get_text().split()).lower() if basis else ""
-                # Each role text is recoverable: on the entry, as the group's shared sentence, or as the entry's part plus the shared closing words.
-                shown_role = any(d.lower() == role.lower() or (role.lower().startswith(d.lower().rstrip(".")) and d and role[len(d.rstrip(".")):].strip().lower() in basis_text) for d in dets)
-                if role and label != "Closest candidate" and not shown_role and role.lower() not in basis_text:
+                if key == "closest":
+                    note = " ".join((b.get("note") or "").split())
+                    shown_note = note if note and note != f"{b['name']}." else ""
+                    stage = (b.get("stage") or "exists").replace("_", " ")
+                    want_dets = [shown_note] if shown_note else []
+                    if stage != "exists":
+                        want_dets.append(stage)
+                    got = [d for d in dets]
+                    if len(got) != len(want_dets) or (shown_note and got[0] != shown_note) or (stage != "exists" and got[-1].rstrip(".").lower() != stage):
+                        errors.append(f"{j['id']} closest body shows {dets!r}: its note (unless only its name), then its stage ({stage!r}) only where it does not exist yet, and no reason")
+                elif (role := " ".join((b.get("role") or "").split())) and role not in dets:
                     errors.append(f"{j['id']} body {want!r}: its role text is nowhere in the entry")
                 if b.get("source_ids") and not cited:
                     errors.append(f"{j['id']} body {want!r} has no inline citation")
@@ -9213,6 +9374,7 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
         check_status_contrast,
         check_status_states,
         check_tooltip_cues,
+        check_group_row_cover,
     ):
         for error in check(page):
             require(False, error)
@@ -9289,7 +9451,7 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
     # State summaries reach keyboard users: a linked name and an unlinked one both show the tooltip on focus, and Escape dismisses it.
     scroll = page.evaluate("[scrollX, scrollY]")
     page.locator("#world-status").select_option("")
-    for name_sel in ("#world-rows td:first-child a[data-tip]", "#world-rows td:first-child strong[data-tip]"):
+    for name_sel in ("#world-rows td:first-child a[aria-description]", "#world-rows td:first-child strong[aria-description]"):
         name = page.locator(name_sel).first
         if not name.count():
             require(False, f"no state name tooltip for {name_sel}")
@@ -9297,7 +9459,7 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
         page.mouse.move(0, 0)  # a pointer left over the page would hover whatever scrolls under it
         name.focus()
         require(
-            page.evaluate("s => { const n = document.querySelector(s), t = document.getElementById('tip'); return n === document.activeElement && t && !t.hidden && t.textContent === n.dataset.tip && !!n.getAttribute('aria-description'); }", name_sel),
+            page.evaluate("s => { const n = document.querySelector(s), t = document.getElementById('tip'); return n === document.activeElement && t && !t.hidden && t.textContent === (n.dataset.tip || n.getAttribute('aria-description')) && !!n.getAttribute('aria-description'); }", name_sel),
             f"state summary tooltip not shown on keyboard focus: {name_sel}",
         )
         page.keyboard.press("Escape")
@@ -9310,7 +9472,7 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
     page.wait_for_timeout(300)
     require(
         page.evaluate(
-            "() => !document.body.textContent.includes('\\u2197') && ![...document.querySelectorAll('[data-tip], [data-tip-sub], [data-exp]')].some(n => Object.values(n.dataset).some(v => v.includes('\\u2197')))"
+            "() => !document.body.textContent.includes('\\u2197') && ![...document.querySelectorAll('[data-tip], [data-tip-sub], [data-exp], [aria-description]')].some(n => [...Object.values(n.dataset), n.getAttribute('aria-description') || ''].some(v => v.includes('\\u2197')))"
         ),
         "an arrow glyph is used instead of the drawn external marker",
     )

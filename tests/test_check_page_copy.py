@@ -198,3 +198,16 @@ def test_theme_mode_is_a_whole_word(label, mode, ok):
     paint = check_page.GROUNDS["dark" if mode == "dark" else "light"]
     scheme = "dark" if mode == "dark" else "light"
     assert check_page.theme_state_matches([scheme, paint, label], scheme, "dark" if mode == "dark" else "light", mode) is ok
+
+
+def test_a_tooltip_reads_from_its_one_home(network):
+    # The page keeps one home per tooltip text: the description screen readers hear, or data-tip where there is none.
+    assert check_page.tip_of(soup('<span aria-description="Said once">x</span>').span) == "Said once"
+    assert check_page.tip_of(soup('<i data-tip="A swatch">x</i>').i) == "A swatch"
+    assert check_page.tip_of(soup('<abbr>x</abbr>').abbr) == ""
+    page, data = network
+    mark = page.select_one(".nonmember")
+    mark["aria-description"] = mark.attrs.pop("data-tip")
+    assert check_page.check_network_cells(page, data) == []  # the same check passes with the description as the home
+    mark["aria-description"] = " \n "
+    assert check_page.blocking(check_page.check_network_cells(page, data))
