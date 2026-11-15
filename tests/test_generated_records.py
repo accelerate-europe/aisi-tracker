@@ -76,9 +76,9 @@ def test_migrated_record_is_generated(migrated):
     assert month.split("-")[0] in state["summary"]
     assert state["summary"].endswith(" Closest body: Synthetic model test centre. " + claims[LEAD])
     assert state["notes"] == "Searched in English."
-    assert state["closest_body"]["note"] == f"{claims[ROLE]} {claims[LEAD]}"
+    assert state["closest_body"]["note"] == claims[ROLE]  # the lead is in the summary, not said twice
     roles = {b["id"]: b["role"] for b in state["related_bodies"]}
-    assert roles == {"test-regulator": state["closest_body"]["note"], "test-authority": ""}
+    assert roles == {"test-regulator": f"{claims[ROLE]} {claims[LEAD]}", "test-authority": ""}
     tables = build.tables(published)
     assert tables["jurisdictions"][0]["summary"] == state["summary"]
     assert tables["closest_bodies"][0]["note"] == state["closest_body"]["note"]
@@ -120,7 +120,8 @@ def test_offline_lead_claim_is_kept_marked(migrated):
     mark = "Source offline since 2 January 2025; last found 1 January 2025."
     assert {c["id"]: c["expired"] for c in state["claims"]}[LEAD] is True
     assert state["summary"].endswith(f" Closest body: Synthetic model test centre. {claims[LEAD]} {mark}")
-    assert state["closest_body"]["note"] == f"{claims[ROLE]} {claims[LEAD]} {mark}"
+    assert state["closest_body"]["note"] == claims[ROLE]  # the kept lead is in the summary, marked
+    assert {b["id"]: b["role"] for b in state["related_bodies"]}["test-regulator"] == f"{claims[ROLE]} {claims[LEAD]} {mark}"
     assert located_errors(after, SCHEMA) == []
 
 
