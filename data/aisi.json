@@ -5293,7 +5293,6 @@
       "id": "IS",
       "name": "Iceland",
       "institute_id": null,
-      "summary": "No qualifying institute identified. The government's first AI Action Plan (2025-2027, 20 funded actions) aims at a legal framework for AI and includes a new centre for AI and language technology; it does not set up a model-evaluation body.",
       "next_check": {
         "date": "2027-10-16",
         "reason": "Routine yearly re-check of a state where an institute is plausible (in Europe, the G20 or the OECD, or a signatory of the Bletchley Declaration)."
@@ -5353,7 +5352,17 @@
         "governance_source_ids": [
           "is-stjornarradid-action-plan-2025"
         ],
-        "governance_note": "The ministry describes the funded AI action plan and a centre for AI and language technology; this is adoption and research infrastructure rather than evaluation of the safety of advanced models."
+        "governance_note": "The ministry describes the funded AI action plan and a centre for AI and language technology; this is adoption and research infrastructure rather than evaluation of the safety of advanced models.",
+        "log": [
+          {
+            "date": "2026-10-17",
+            "text": "The Government Offices' Icelandic release of 2 July 2025 and English page of 1 July 2025 on the first AI Action Plan and the working group's review of AI Act implementation were read. Searched in English and Icelandic for a body the government has tasked with testing general-purpose or frontier AI models, or named as its AI safety or security institute."
+          },
+          {
+            "date": "2026-11-10",
+            "text": "The Government Offices' announcement of 4 November 2026 about Umbra and CERT-IS was read."
+          }
+        ]
       },
       "source_ids": [
         "is-stjornarradid-action-plan-2025",
@@ -5363,19 +5372,7 @@
         "eu-ai-act-authorities-2026",
         "is-umbra-cert-openai-2026"
       ],
-      "notes": "The plan has 20 actions, all funded, runs for two years and is to be reviewed every six months. The government-linked working-group report released on 9 October 2026 describes EEA incorporation as unresolved and proposes allocating AI Act responsibilities among existing sectoral regulators. Final market-surveillance, notifying and single-point-of-contact allocations were not verified in the retrieved sources. Searches in English and Icelandic found no institute.\n\nThe Commission source is retained as the required EU/EEA cross-check. Its table lists EU Member State contact points and contains no entry for Iceland; it does not substantiate a national designation or imply that the AI Act is incorporated into the EEA Agreement.\n\nOn 4 November 2026 the government announced that Umbra, the Government Offices' service centre, and the cyber security team CERT-IS had received access to a specialised OpenAI cyber security model, granted after an assessment through Government Trusted Access for Cyber and limited to defined cyber defence tasks. The announcement describes defensive cyber work; it does not describe evaluation of the models.",
-      "related_bodies": [
-        {
-          "name": "Centre for AI and language technology",
-          "role": "The first AI Action Plan includes setting it up as a new centre; the source read does not describe a model-evaluation mandate.",
-          "counts_as_aisi": false,
-          "source_ids": [
-            "is-stjornarradid-action-plan-2025"
-          ],
-          "kind": "other",
-          "id": "related_bodies-c7b6fc57cf2d5c759c30c0f36a914abc"
-        }
-      ],
+      "related_bodies": [],
       "region": {
         "id": "150",
         "name": "Europe",
@@ -5402,7 +5399,8 @@
       "identifier_source_ids": [
         "un-m49",
         "wikidata-jurisdiction-identifiers"
-      ]
+      ],
+      "claims": []
     },
     {
       "id": "LI",
@@ -5790,12 +5788,10 @@
       "id": "GR",
       "name": "Greece",
       "institute_id": null,
-      "summary": "No qualifying institute identified. Law 5321/2026 (July 2026) names the data protection authority as main AI Act market-surveillance body and sets up a coordination centre and sandbox inside the telecoms regulator.",
       "related_bodies": [
         {
           "name": "Αρχή Προστασίας Δεδομένων Προσωπικού Χαρακτήρα (HDPA)",
           "name_en": "Hellenic Data Protection Authority (HDPA)",
-          "role": "HDPA covers prohibited practices, Annex III high-risk systems and Article 50 transparency under Articles 3-4 of Law 5321/2026; Annex I product-sector authorities retain their sectoral remit.",
           "counts_as_aisi": false,
           "source_ids": [
             "gr-law5321-2026-authorities",
@@ -5813,7 +5809,6 @@
         },
         {
           "name": "EETT AI Coordination and Expertise Centre",
-          "role": "It is set up within EETT under Law 5321/2026 to support the data protection authority and the market-surveillance authorities, including advice and technical support to the data protection authority; it is not described as testing models.",
           "counts_as_aisi": false,
           "kind": "other",
           "id": "related_bodies-2a370f5ee5335a2aa31850984ddfa244",
@@ -5822,19 +5817,8 @@
           ]
         },
         {
-          "name": "EETT AI regulatory sandbox",
-          "role": "It is the AI regulatory sandbox set up within EETT under Articles 57 and 58 of the AI Act, for testing AI systems under supervision.",
-          "counts_as_aisi": false,
-          "kind": "other",
-          "id": "related_bodies-bc6478fb623e567c89b7102d8f51d526",
-          "source_ids": [
-            "gr-law5321-2026-authorities"
-          ]
-        },
-        {
           "name": "Εθνική Επιτροπή Τηλεπικοινωνιών και Ταχυδρομείων (EETT)",
           "name_en": "Hellenic Telecommunications and Post Commission",
-          "role": "EETT's AI Act role is assigned under Article 5 of Law 5321/2026.",
           "counts_as_aisi": false,
           "source_ids": [
             "gr-law5321-2026-authorities",
@@ -5910,7 +5894,13 @@
         "governance_source_ids": [
           "gr-law5321-2026-authorities"
         ],
-        "governance_note": "The retrieved law allocates AI Act supervision, notification and coordination roles. The separate Kodiko table of contents is not relied upon as substantive legal text."
+        "governance_note": "The retrieved law allocates AI Act supervision, notification and coordination roles. The separate Kodiko table of contents is not relied upon as substantive legal text.",
+        "log": [
+          {
+            "date": "2026-10-17",
+            "text": "Law 5321/2026 in Government Gazette A 114 of 20 July 2026 was read, including Articles 3 to 6, 12 and 58. Searched in English and Greek for a body the government has tasked with testing general-purpose or frontier AI models, or named as its AI safety or security institute."
+          }
+        ]
       },
       "source_ids": [
         "gr-kodiko-law-5321",
@@ -5919,7 +5909,6 @@
         "ai-act-tracker",
         "gr-r4-ai-blueprint-2024"
       ],
-      "notes": "Article 6 of Law 5321/2026 (Gazette A 114/20.07.2026) establishes a Centre for Coordination and Expertise for Artificial Intelligence within EETT. The statutory text provides for support to market-surveillance and notifying authorities, technical advice, training, codes of conduct, and technical and administrative support for the sandbox. Articles 3–5 designate HDPA's market-surveillance and single-point-of-contact roles and EETT's notifying role.",
       "region": {
         "id": "150",
         "name": "Europe",
@@ -5946,6 +5935,63 @@
       "identifier_source_ids": [
         "un-m49",
         "wikidata-jurisdiction-identifiers"
+      ],
+      "claims": [
+        {
+          "id": "claims-73617b3c388d49f4b3bd4cedb83428eb",
+          "kind": "development",
+          "code": "public_body",
+          "text": "sets up a Coordination and Expertise Centre for AI within EETT",
+          "act": "the Government Gazette published Law 5321/2026 implementing the AI Act",
+          "date": "2026-07-20",
+          "source_ids": [
+            "gr-law5321-2026-authorities"
+          ]
+        },
+        {
+          "id": "claims-a364e2d5dc35478ba71490ca6f1bf20d",
+          "kind": "function",
+          "code": "regulatory_support",
+          "basis": "mandate",
+          "body_id": "related_bodies-2a370f5ee5335a2aa31850984ddfa244",
+          "text": "Law 5321/2026 tasks it with supporting the data protection authority and the market-surveillance authorities named in Article 3(2) of the law.",
+          "source_ids": [
+            "gr-law5321-2026-authorities"
+          ]
+        },
+        {
+          "id": "claims-937754dac58c41fd8be1c81a4d10b256",
+          "kind": "function",
+          "code": "sandbox",
+          "basis": "mandate",
+          "body_id": "related_bodies-80d6cf3c0de758a8929addc5fe775650",
+          "text": "Law 5321/2026 designates it, with the data protection authority, as competent authority for operating the AI regulatory sandbox.",
+          "source_ids": [
+            "gr-law5321-2026-authorities"
+          ]
+        },
+        {
+          "id": "claims-c335cfa549414f77a520b2b7e86ac20f",
+          "kind": "function",
+          "code": "sandbox",
+          "basis": "mandate",
+          "body_id": "related_bodies-851be243ec5957c69be5f448ac4026cb",
+          "text": "Law 5321/2026 designates it, with EETT, as competent authority for operating the AI regulatory sandbox.",
+          "source_ids": [
+            "gr-law5321-2026-authorities"
+          ]
+        },
+        {
+          "id": "claims-849f3e3340a547c4a87e069cf04a1d7a",
+          "kind": "function",
+          "code": "regulatory_enforcement",
+          "basis": "mandate",
+          "body_id": "related_bodies-851be243ec5957c69be5f448ac4026cb",
+          "text": "Law 5321/2026 makes it the market-surveillance authority for AI systems in the AI Act's prohibited practices, high-risk systems in Annex III and systems with transparency obligations under Article 50.",
+          "source_ids": [
+            "gr-law5321-2026-authorities"
+          ]
+        }
       ]
     },
     {
@@ -6060,11 +6106,9 @@
       "id": "SI",
       "name": "Slovenia",
       "institute_id": null,
-      "summary": "No qualifying institute identified. The national AI strategy to 2030, adopted by the government on 5 March 2026, plans national safety-test procedures for algorithms but no body to evaluate advanced models.",
       "related_bodies": [
         {
           "name": "AKOS",
-          "role": "Its AI Act roles are assigned under Articles 6 and 10 ZIUDHPUI, in force 21 November 2025. Article 7 makes AKOS the single point of contact; Article 17 assigns the regulatory sandbox.",
           "counts_as_aisi": false,
           "source_ids": [
             "si-ai-authorities-government",
@@ -6082,7 +6126,6 @@
         },
         {
           "name": "AI Competence Centre (KCUI)",
-          "role": "It operates as the central national hub for AI experts, technologies, services and information.",
           "counts_as_aisi": false,
           "source_ids": [
             "si-ai-authorities-government"
@@ -6093,7 +6136,6 @@
         {
           "name": "Informacijski pooblaščenec (IP)",
           "name_en": "Information Commissioner (IP)",
-          "role": "It supervises the AI Act's prohibited practices (Article 5).",
           "counts_as_aisi": false,
           "source_ids": [
             "si-ai-authorities-government",
@@ -6111,7 +6153,6 @@
         {
           "name": "Agencija za zavarovalni nadzor (AZN)",
           "name_en": "Insurance Supervision Agency (AZN)",
-          "role": "It supervises high-risk AI systems for insurance under Annex III point 5(c) of the AI Act.",
           "counts_as_aisi": false,
           "source_ids": [
             "si-ai-authorities-government",
@@ -6129,7 +6170,6 @@
         {
           "name": "Banka Slovenije",
           "name_en": "Bank of Slovenia",
-          "role": "It supervises high-risk AI systems for credit scoring under Annex III point 5(b) of the AI Act.",
           "counts_as_aisi": false,
           "source_ids": [
             "si-ai-authorities-government",
@@ -6147,7 +6187,6 @@
         {
           "name": "Tržni inšpektorat (TIRS)",
           "name_en": "Market Inspectorate of the Republic of Slovenia",
-          "role": "It supervises the credit-scoring AI systems of the consumer-credit lenders it already oversees.",
           "counts_as_aisi": false,
           "source_ids": [
             "si-ai-authorities-government",
@@ -6164,7 +6203,6 @@
         },
         {
           "name": "Ministry responsible for the market",
-          "role": "It covers high-risk AI in products under Annex I Section A points 1, 3 to 7, 9 and 10 of the AI Act.",
           "counts_as_aisi": false,
           "source_ids": [
             "si-ai-authorities-government",
@@ -6181,7 +6219,6 @@
         },
         {
           "name": "Ministry responsible for infrastructure",
-          "role": "It covers high-risk AI in products under Annex I Section A point 8 of the AI Act.",
           "counts_as_aisi": false,
           "source_ids": [
             "si-ai-authorities-government",
@@ -6198,7 +6235,6 @@
         },
         {
           "name": "Ministry responsible for health",
-          "role": "It covers high-risk AI in products under Annex I Section A point 2 of the AI Act.",
           "counts_as_aisi": false,
           "source_ids": [
             "si-ai-authorities-government",
@@ -6216,7 +6252,6 @@
         {
           "name": "Javna agencija Republike Slovenije za zdravila in medicinske pripomočke (JAZMP)",
           "name_en": "Agency for Medicinal Products and Medical Devices of the Republic of Slovenia",
-          "role": "It covers high-risk AI in medical devices under Annex I Section A points 11 and 12 of the AI Act.",
           "counts_as_aisi": false,
           "source_ids": [
             "si-ai-authorities-government",
@@ -6233,7 +6268,6 @@
         },
         {
           "name": "Ministry responsible for the information society",
-          "role": "It covers Annex III point 1 systems under Article 4 ZIUDHPUI. The Act allocates the role by the information-society portfolio.",
           "counts_as_aisi": false,
           "source_ids": [
             "si-ai-authorities-government",
@@ -6311,7 +6345,13 @@
         "governance_source_ids": [
           "si-nsai2030"
         ],
-        "governance_note": "The national strategy describes AI governance and national algorithm safety-test procedures, without establishing an institute to evaluate advanced models in the reviewed provisions."
+        "governance_note": "The national strategy describes AI governance and national algorithm safety-test procedures, without establishing an institute to evaluate advanced models in the reviewed provisions.",
+        "log": [
+          {
+            "date": "2026-10-17",
+            "text": "ZIUDHPUI, the government's release of 5 March 2026, the national AI strategy to 2030 and the government's page on the national AI ecosystem were read. Searched in English and Slovenian for a body the government has tasked with testing general-purpose or frontier AI models, or named as its AI safety or security institute."
+          }
+        ]
       },
       "source_ids": [
         "si-nsai2030",
@@ -6321,7 +6361,6 @@
         "ai-act-tracker",
         "eu-ai-act-authorities-2026"
       ],
-      "notes": "NSAI 2030 measure 3.4 plans 'national procedures and safety tests for the review, testing and updating of algorithms'; this is a procedure, not an institute, and does not target frontier models. The government adopted the strategy on 5 March 2026 and asked for an action plan within nine months. The Ministry of Digital Transformation named in the March 2026 release no longer exists; the responsible body is the Ministry of the Interior and Public Administration.\n\nThe government's account says the AI implementation law specifies market-surveillance authorities.\n\nThe Commission's contact list of 9 November 2026 shows this state's AI Act authority without the pending-adoption mark; the national sources cited here give its actual designation status.",
       "region": {
         "id": "150",
         "name": "Europe",
@@ -6348,6 +6387,152 @@
       "identifier_source_ids": [
         "un-m49",
         "wikidata-jurisdiction-identifiers"
+      ],
+      "claims": [
+        {
+          "id": "claims-ba9ee65e1c6b44608444a9b1a18cf12d",
+          "kind": "development",
+          "code": "testing_duty",
+          "text": "plans national safety-test procedures for algorithms",
+          "act": "the government adopted the national AI strategy to 2030",
+          "date": "2026-03-05",
+          "source_ids": [
+            "si-gov-novice-2026-03-05",
+            "si-nsai2030"
+          ]
+        },
+        {
+          "id": "claims-916d8158fe6a4389a0d507e65b5356cd",
+          "kind": "function",
+          "code": "convening",
+          "basis": "activity",
+          "body_id": "related_bodies-ba64e53e232552089a798a95c7ba687f",
+          "text": "The government says it operates as the central national hub for AI experts, technologies, services and information.",
+          "source_ids": [
+            "si-ai-authorities-government"
+          ]
+        },
+        {
+          "id": "claims-363169a200bf4b0dbe5fa0c275fb5ca9",
+          "kind": "function",
+          "code": "sandbox",
+          "basis": "mandate",
+          "body_id": "related_bodies-05a7e29f690e539bb5948550af3fa839",
+          "text": "ZIUDHPUI, the act implementing the AI Act, makes it responsible for setting up AI regulatory sandboxes under Article 57 of the AI Act.",
+          "source_ids": [
+            "si-ai-act-ziudhpui-2025"
+          ]
+        },
+        {
+          "id": "claims-eeaee010f4d94825b45e3ae458699504",
+          "kind": "function",
+          "code": "regulatory_enforcement",
+          "basis": "mandate",
+          "body_id": "related_bodies-05a7e29f690e539bb5948550af3fa839",
+          "text": "ZIUDHPUI makes it responsible for supervising the compliance of high-risk AI systems governed by the Union legislation in Annex I Section A of the AI Act.",
+          "source_ids": [
+            "si-ai-act-ziudhpui-2025"
+          ]
+        },
+        {
+          "id": "claims-465dd443f4a942b1989a2dcd813f69b6",
+          "kind": "function",
+          "code": "regulatory_enforcement",
+          "basis": "mandate",
+          "body_id": "related_bodies-04d58032332f5836b26369b84f13d58d",
+          "text": "ZIUDHPUI makes it responsible for supervising the provisions of Article 5 of the AI Act.",
+          "source_ids": [
+            "si-ai-act-ziudhpui-2025"
+          ]
+        },
+        {
+          "id": "claims-84ec953429c64172a4b4c30033ab23a5",
+          "kind": "function",
+          "code": "regulatory_enforcement",
+          "basis": "mandate",
+          "body_id": "related_bodies-18c5440d0a695d41ba2b48ccc1c04a07",
+          "text": "ZIUDHPUI makes it responsible for supervising high-risk AI systems in Annex III point 5(c) of the AI Act.",
+          "source_ids": [
+            "si-ai-act-ziudhpui-2025"
+          ]
+        },
+        {
+          "id": "claims-9f69116cc91a42c9b5fb1f6b7cce146b",
+          "kind": "function",
+          "code": "regulatory_enforcement",
+          "basis": "mandate",
+          "body_id": "related_bodies-2b81439e2cba50daa51283cd5ff5ee56",
+          "text": "ZIUDHPUI makes it responsible for supervising high-risk AI systems in Annex III point 5(b) of the AI Act when credit institutions place them on the market, put them into service or use them.",
+          "source_ids": [
+            "si-ai-act-ziudhpui-2025"
+          ]
+        },
+        {
+          "id": "claims-314cd073f93a4831b5aab472aa2e0d5d",
+          "kind": "function",
+          "code": "regulatory_enforcement",
+          "basis": "mandate",
+          "body_id": "related_bodies-94340d648e665adb9cbda39ca117d586",
+          "text": "ZIUDHPUI makes it responsible for supervising the high-risk AI systems of the preceding paragraph that are used by credit providers it supervises under the consumer-credit law.",
+          "source_ids": [
+            "si-ai-act-ziudhpui-2025"
+          ]
+        },
+        {
+          "id": "claims-4d9378d0dc5c448e9002244b69e6cdc7",
+          "kind": "function",
+          "code": "regulatory_support",
+          "basis": "mandate",
+          "body_id": "related_bodies-8868e4fb69c75cf8bf341e09fb6469b2",
+          "text": "ZIUDHPUI makes it the notifying authority for high-risk AI systems in products under Annex I Section A points 1, 3 to 7, 9 and 10 of the AI Act.",
+          "source_ids": [
+            "si-ai-act-ziudhpui-2025"
+          ]
+        },
+        {
+          "id": "claims-2bb645531479499b905fd47e58a950b6",
+          "kind": "function",
+          "code": "regulatory_support",
+          "basis": "mandate",
+          "body_id": "related_bodies-1b1869be03395ec5a3af1b20f391db55",
+          "text": "ZIUDHPUI makes it the notifying authority for high-risk AI systems in products under Annex I Section A point 8 of the AI Act.",
+          "source_ids": [
+            "si-ai-act-ziudhpui-2025"
+          ]
+        },
+        {
+          "id": "claims-e9933ec1eda847638aad835aacf54422",
+          "kind": "function",
+          "code": "regulatory_support",
+          "basis": "mandate",
+          "body_id": "related_bodies-8b5d3521b89951c483f1e88b727f2f3d",
+          "text": "ZIUDHPUI makes it the notifying authority for high-risk AI systems in products under Annex I Section A point 2 of the AI Act.",
+          "source_ids": [
+            "si-ai-act-ziudhpui-2025"
+          ]
+        },
+        {
+          "id": "claims-e1cf73abdf6e4b92b21f059090b9d31e",
+          "kind": "function",
+          "code": "regulatory_support",
+          "basis": "mandate",
+          "body_id": "related_bodies-46e57771fd775b47bb07c62d2b598b8b",
+          "text": "ZIUDHPUI makes it the notifying authority for high-risk AI systems in products under Annex I Section A points 11 and 12 of the AI Act.",
+          "source_ids": [
+            "si-ai-act-ziudhpui-2025"
+          ]
+        },
+        {
+          "id": "claims-5b8ab961592c4b8ba3ffeb7c68dfd3a1",
+          "kind": "function",
+          "code": "regulatory_support",
+          "basis": "mandate",
+          "body_id": "related_bodies-c69081fe97585e2dba9848d1177add8c",
+          "text": "ZIUDHPUI makes it the notifying authority for high-risk AI systems in Annex III point 1 of the AI Act.",
+          "source_ids": [
+            "si-ai-act-ziudhpui-2025"
+          ]
+        }
       ]
     },
     {
@@ -54470,7 +54655,25 @@
       "accessed": "2026-10-17",
       "language": "en",
       "access_note": "A source copy was read on 17 October 2026 for the attached excerpts. Earlier access limitations: Adopted by the Government on 5 March 2026. The earlier gov.si address redirects to this path.",
-      "excerpts": [],
+      "excerpts": [
+        {
+          "text": "Introduction of national procedures and safety tests for the review, testing and updating of algorithms, along with response mechanisms for cases of violations, bias or misuse of AI systems.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "SI"
+              },
+              "claims",
+              {
+                "id": "claims-ba9ee65e1c6b44608444a9b1a18cf12d"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        }
+      ],
       "origin": "SI",
       "snapshot": {
         "retrieved": "2026-10-17T14:21:28Z",
@@ -55373,7 +55576,38 @@
         "sha256": "969229b6ed64c631a9cd73273230f6094cf28c4167f79a3fed3552dc398104dc",
         "text_sha256": "95c1b5502dccea5b2297ad305963a3d3221c1f0277da9b5a94a7feea8bfda667",
         "text_scheme": 1
-      }
+      },
+      "excerpts": [
+        {
+          "text": "Vlada Republike Slovenije je na današnji seji sprejela Nacionalno strategijo za umetno inteligenco do leta 2030 (NsUI 2030).",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "SI"
+              },
+              "claims",
+              {
+                "id": "claims-ba9ee65e1c6b44608444a9b1a18cf12d"
+              },
+              "act"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "SI"
+              },
+              "claims",
+              {
+                "id": "claims-ba9ee65e1c6b44608444a9b1a18cf12d"
+              },
+              "date"
+            ]
+          ],
+          "gloss": "At today's session the Government adopted the National AI Strategy to 2030.",
+          "accessed": "2026-10-17"
+        }
+      ]
     },
     {
       "id": "hr-mpudt-plan-2026-10",
@@ -55571,37 +55805,7 @@
       "accessed": "2026-10-17",
       "language": "is",
       "archive_url": "https://web.archive.org/web/20260114072412/https://www.stjornarradid.is/efst-a-baugi/frettir/stok-frett/2025/07/02/Verdmaetaskopun-og-velferd-leidarstef-i-fyrstu-adgerdaaaetluninni-um-gervigreind-/",
-      "excerpts": [
-        {
-          "text": "Meðal aðgerða er stofnun nýrrar miðstöðvar um gervigreind og máltækni",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "IS"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-c7b6fc57cf2d5c759c30c0f36a914abc"
-              },
-              "name"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "IS"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-c7b6fc57cf2d5c759c30c0f36a914abc"
-              },
-              "role"
-            ]
-          ],
-          "gloss": "Measures include creating a new centre for AI and language technology.",
-          "accessed": "2026-10-17"
-        }
-      ],
+      "excerpts": [],
       "origin": "IS",
       "title_en": "Value creation and welfare are the guiding principles of the first artificial intelligence action plan",
       "snapshot": {
@@ -77028,13 +77232,6 @@
             [
               "jurisdictions",
               {
-                "id": "SI"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
                 "id": "CY"
               },
               "notes"
@@ -77429,13 +77626,6 @@
             [
               "jurisdictions",
               {
-                "id": "SI"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
                 "id": "CY"
               },
               "notes"
@@ -77538,20 +77728,6 @@
                 "id": "related_bodies-3691133321315a2a9958c88783232fab"
               },
               "designation_state"
-            ]
-          ]
-        },
-        {
-          "text": "Slovenia Agencija za komunikacijska omrežja in storitve Republike Slovenije (AKOS)",
-          "accessed": "2026-11-10",
-          "gloss": "Slovenia Agency for Communication Networks and Services of the Republic of Slovenia (AKOS)",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "SI"
-              },
-              "notes"
             ]
           ]
         },
@@ -78913,19 +79089,6 @@
       "language": "sl",
       "excerpts": [
         {
-          "text": "Zakon dalje določa organe za nadzor trga",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "SI"
-              },
-              "notes"
-            ]
-          ],
-          "gloss": "The Act further specifies the market surveillance authorities."
-        },
-        {
           "text": "Kompetenčni center za umetno inteligenco (KCUI)",
           "gloss": "Artificial Intelligence Competence Centre (KCUI)",
           "supports": [
@@ -78952,11 +79115,11 @@
               {
                 "id": "SI"
               },
-              "related_bodies",
+              "claims",
               {
-                "id": "related_bodies-ba64e53e232552089a798a95c7ba687f"
+                "id": "claims-916d8158fe6a4389a0d507e65b5356cd"
               },
-              "role"
+              "text"
             ]
           ],
           "accessed": "2026-11-13"
@@ -79366,23 +79529,6 @@
       "language": "el",
       "excerpts": [
         {
-          "text": "ορίζεται ως κοινοποιούσα αρχή",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "GR"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-80d6cf3c0de758a8929addc5fe775650"
-              },
-              "role"
-            ]
-          ],
-          "gloss": "Is designated as notifying authority."
-        },
-        {
           "text": "Στην Ε.Ε.Τ.Τ. συστήνεται Κέντρο συντονισμού και τεχνογνωσίας για την ΤΝ",
           "supports": [
             [
@@ -79401,62 +79547,15 @@
               {
                 "id": "GR"
               },
-              "related_bodies",
+              "claims",
               {
-                "id": "related_bodies-2a370f5ee5335a2aa31850984ddfa244"
+                "id": "claims-73617b3c388d49f4b3bd4cedb83428eb"
               },
-              "role"
+              "text"
             ]
           ],
           "accessed": "2026-11-14",
           "gloss": "A Coordination and Expertise Centre for AI is set up within EETT"
-        },
-        {
-          "text": "παρέχει συμβουλευτική και τεχνική υποστήριξη στην Α.Π.Δ.Π.Χ.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "GR"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-2a370f5ee5335a2aa31850984ddfa244"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-11-14",
-          "gloss": "provides advisory and technical support to the data protection authority"
-        },
-        {
-          "text": "Στην Ε.Ε.Τ.Τ. συστήνεται ρυθμιστικό δοκιμαστήριο ΤΝ, σύμφωνα με τα άρθρα 57 και 58 του Κανονισμού για την ΤΝ.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "GR"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-bc6478fb623e567c89b7102d8f51d526"
-              },
-              "name"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "GR"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-bc6478fb623e567c89b7102d8f51d526"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-11-14",
-          "gloss": "An AI regulatory sandbox is set up within EETT, in accordance with Articles 57 and 58 of the AI Regulation."
         },
         {
           "text": "υποστηρίζει την Α.Π.Δ.Π.Χ. και τις αρμόδιες αρχές εποπτείας της αγοράς της παρ. 2 του άρθρου 3",
@@ -79466,15 +79565,105 @@
               {
                 "id": "GR"
               },
-              "related_bodies",
+              "claims",
               {
-                "id": "related_bodies-2a370f5ee5335a2aa31850984ddfa244"
+                "id": "claims-a364e2d5dc35478ba71490ca6f1bf20d"
               },
-              "role"
+              "text"
             ]
           ],
           "accessed": "2026-11-14",
-          "gloss": "supports the data protection authority and the competent market-surveillance authorities of Article 3(2)"
+          "gloss": "supports the data protection authority and the competent market-surveillance authorities of Article 3(2)",
+          "anchors": [
+            {
+              "text": "Στην Ε.Ε.Τ.Τ. συστήνεται Κέντρο συντονισμού και τεχνογνωσίας για την ΤΝ (εφεξής: «Κέντρο»), το οποίο ασκεί τις ακόλουθες αρμοδιότητες:",
+              "kind": "heading",
+              "gloss": "A Coordination and Expertise Centre for AI (the Centre) is set up within EETT, which has the following powers:"
+            }
+          ]
+        },
+        {
+          "text": "ΕΦΗΜΕΡΙΔΑ ΤΗΣ ΚΥΒΕΡΝΗΣΕΩΣ ΤΗΣ ΕΛΛΗΝΙΚΗΣ ΔΗΜΟΚΡΑΤΙΑΣ E 20 Ιουλίου 2026 ΤΕΥΧΟΣ ΠΡΩΤΟ Αρ. Φύλλου 114 5471 NOMOΣ ΥΠ' ΑΡΙΘΜ. 5321 Μέτρα εφαρμογής του Κανονισμού(ΕΕ) 2024/1689 του Ευρωπαϊκού Κοινοβουλίου και του Συμβουλίου της 13ης Ιουνίου 2024 (Κανονισμός για την τεχνητή νοημοσύνη)",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "GR"
+              },
+              "claims",
+              {
+                "id": "claims-73617b3c388d49f4b3bd4cedb83428eb"
+              },
+              "act"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "GR"
+              },
+              "claims",
+              {
+                "id": "claims-73617b3c388d49f4b3bd4cedb83428eb"
+              },
+              "date"
+            ]
+          ],
+          "gloss": "GOVERNMENT GAZETTE OF THE HELLENIC REPUBLIC, 20 July 2026, ISSUE ONE, Sheet No. 114, [page] 5471, LAW No. 5321, Measures implementing Regulation (EU) 2024/1689 of the European Parliament and of the Council of 13 June 2024 (Artificial Intelligence Act)",
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Η Ε.Ε.Τ.Τ. και η Α.Π.Δ.Π.Χ. ορίζονται ως αρμόδιες αρχές για τη λειτουργία του ρυθμιστικού δοκιμα- στηρίου ΤΝ.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "GR"
+              },
+              "claims",
+              {
+                "id": "claims-937754dac58c41fd8be1c81a4d10b256"
+              },
+              "text"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "GR"
+              },
+              "claims",
+              {
+                "id": "claims-c335cfa549414f77a520b2b7e86ac20f"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "EETT and the data protection authority are designated as the competent authorities for operating the AI regulatory sandbox.",
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "α) τα συστήματα ΤΝ που εντάσσονται στις απαγορευμένες πρακτικές του άρθρου 5 του Κανονισμού για την ΤΝ, β) τα συστήματα ΤΝ υψηλού κινδύνου που αναφέρονται στο Παράρτημα ΙΙΙ του Κανονισμού για την ΤΝ και γ) τα συστήματα ΤΝ για τα οποία προβλέπονται υποχρεώσεις διαφάνειας, σύμφωνα με το άρθρο 50",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "GR"
+              },
+              "claims",
+              {
+                "id": "claims-849f3e3340a547c4a87e069cf04a1d7a"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "(a) AI systems falling under the prohibited practices of Article 5 of the AI Act, (b) the high-risk AI systems referred to in Annex III of the AI Act and (c) AI systems subject to transparency obligations under Article 50",
+          "anchors": [
+            {
+              "text": "Η Αρχή Προστασίας Δεδομένων Προσωπικού Χαρακτήρα (εφεξής: Α.Π.Δ.Π.Χ.) ορίζεται ως αρμόδια αρχή εποπτείας της αγοράς, σύμφωνα με την παρ. 1 του άρθρου 70 του Κανονισμού για την ΤΝ, για:",
+              "kind": "heading",
+              "gloss": "The Hellenic Data Protection Authority (the HDPA) is designated as competent market-surveillance authority under Article 70(1) of the AI Act for:"
+            }
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "GR",
@@ -79822,21 +80011,7 @@
       "accessed": "2026-10-17",
       "published": "2026-10-09",
       "language": "is",
-      "excerpts": [
-        {
-          "text": "ákvörðun um upptöku í EES-samninginn liggur ekki fyrir",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "IS"
-              },
-              "notes"
-            ]
-          ],
-          "gloss": "A decision on incorporation into the EEA Agreement is not yet available."
-        }
-      ],
+      "excerpts": [],
       "origin": "IS",
       "title_en": "AI for Good, section 8: Regulations and legal framework",
       "snapshot": {
@@ -83622,17 +83797,6 @@
               {
                 "id": "related_bodies-05a7e29f690e539bb5948550af3fa839"
               },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "SI"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-05a7e29f690e539bb5948550af3fa839"
-              },
               "authority_roles"
             ]
           ],
@@ -83642,17 +83806,6 @@
         {
           "text": "Naloge organov za nadzor trga po Uredbi 2024/1689/EU izvajajo:",
           "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "SI"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-05a7e29f690e539bb5948550af3fa839"
-              },
-              "role"
-            ],
             [
               "jurisdictions",
               {
@@ -83702,17 +83855,6 @@
               {
                 "id": "related_bodies-05a7e29f690e539bb5948550af3fa839"
               },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "SI"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-05a7e29f690e539bb5948550af3fa839"
-              },
               "designation_state"
             ],
             [
@@ -83738,15 +83880,22 @@
               {
                 "id": "SI"
               },
-              "related_bodies",
+              "claims",
               {
-                "id": "related_bodies-05a7e29f690e539bb5948550af3fa839"
+                "id": "claims-eeaee010f4d94825b45e3ae458699504"
               },
-              "role"
+              "text"
             ]
           ],
           "accessed": "2026-10-17",
-          "gloss": "The agency is responsible for supervising compliance of high-risk AI systems governed by Union legislation in Annex I Section A with the requirements of Regulation (EU) 2024/1689."
+          "gloss": "The agency is responsible for supervising compliance of high-risk AI systems governed by Union legislation in Annex I Section A with the requirements of Regulation (EU) 2024/1689.",
+          "anchors": [
+            {
+              "text": "Agencija za komunikacijska omrežja in storitve Republike Slovenije (v nadaljnjem besedilu: agencija)",
+              "kind": "definition",
+              "gloss": "Agency for Communication Networks and Services of the Republic of Slovenia (hereinafter: the agency)"
+            }
+          ]
         },
         {
           "text": "Za vzpostavitev regulativnih peskovnikov za UI v skladu s 57. členom Uredbe 2024/1689/EU je odgovorna agencija.",
@@ -83756,30 +83905,26 @@
               {
                 "id": "SI"
               },
-              "related_bodies",
+              "claims",
               {
-                "id": "related_bodies-05a7e29f690e539bb5948550af3fa839"
+                "id": "claims-363169a200bf4b0dbe5fa0c275fb5ca9"
               },
-              "role"
+              "text"
             ]
           ],
           "accessed": "2026-10-17",
-          "gloss": "The agency is responsible for establishing AI regulatory sandboxes under Article 57 of Regulation (EU) 2024/1689."
+          "gloss": "The agency is responsible for establishing AI regulatory sandboxes under Article 57 of Regulation (EU) 2024/1689.",
+          "anchors": [
+            {
+              "text": "Agencija za komunikacijska omrežja in storitve Republike Slovenije (v nadaljnjem besedilu: agencija)",
+              "kind": "definition",
+              "gloss": "Agency for Communication Networks and Services of the Republic of Slovenia (hereinafter: the agency)"
+            }
+          ]
         },
         {
           "text": "Ta zakon začne veljati petnajsti dan po objavi v Uradnem listu Republike Slovenije.",
           "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "SI"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-05a7e29f690e539bb5948550af3fa839"
-              },
-              "role"
-            ],
             [
               "jurisdictions",
               {
@@ -83796,37 +83941,8 @@
           "gloss": "This Act enters into force on the fifteenth day after publication in the Official Gazette of the Republic of Slovenia."
         },
         {
-          "text": "Uradni list RS, št. 85/2025 z dne 6. 11. 2025",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "SI"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-05a7e29f690e539bb5948550af3fa839"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-10-17",
-          "gloss": "Official Gazette of the Republic of Slovenia, no. 85/2025 of 6 November 2025"
-        },
-        {
           "text": "Informacijski pooblaščenec je pristojen za nadzor nad določbami 5. člena Uredbe 2024/1689/EU",
           "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "SI"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-04d58032332f5836b26369b84f13d58d"
-              },
-              "role"
-            ],
             [
               "jurisdictions",
               {
@@ -83848,6 +83964,17 @@
                 "id": "related_bodies-04d58032332f5836b26369b84f13d58d"
               },
               "designation_basis"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "SI"
+              },
+              "claims",
+              {
+                "id": "claims-465dd443f4a942b1989a2dcd813f69b6"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-17",
@@ -83865,17 +83992,6 @@
               {
                 "id": "related_bodies-18c5440d0a695d41ba2b48ccc1c04a07"
               },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "SI"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-18c5440d0a695d41ba2b48ccc1c04a07"
-              },
               "designation_state"
             ],
             [
@@ -83888,6 +84004,17 @@
                 "id": "related_bodies-18c5440d0a695d41ba2b48ccc1c04a07"
               },
               "designation_basis"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "SI"
+              },
+              "claims",
+              {
+                "id": "claims-84ec953429c64172a4b4c30033ab23a5"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-17",
@@ -83896,17 +84023,6 @@
         {
           "text": "Banka Slovenije je pristojna za nadzor nad skladnostjo visokotveganih sistemov UI pod (b) 5. točke Priloge III Uredbe 2024/1689/EU z zahtevami Uredbe 2024/1689/EU",
           "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "SI"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-2b81439e2cba50daa51283cd5ff5ee56"
-              },
-              "role"
-            ],
             [
               "jurisdictions",
               {
@@ -83945,17 +84061,6 @@
               {
                 "id": "related_bodies-94340d648e665adb9cbda39ca117d586"
               },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "SI"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-94340d648e665adb9cbda39ca117d586"
-              },
               "designation_state"
             ],
             [
@@ -83968,6 +84073,17 @@
                 "id": "related_bodies-94340d648e665adb9cbda39ca117d586"
               },
               "designation_basis"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "SI"
+              },
+              "claims",
+              {
+                "id": "claims-314cd073f93a4831b5aab472aa2e0d5d"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-17",
@@ -83985,17 +84101,6 @@
               {
                 "id": "related_bodies-1b1869be03395ec5a3af1b20f391db55"
               },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "SI"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-1b1869be03395ec5a3af1b20f391db55"
-              },
               "designation_state"
             ],
             [
@@ -84008,6 +84113,17 @@
                 "id": "related_bodies-1b1869be03395ec5a3af1b20f391db55"
               },
               "designation_basis"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "SI"
+              },
+              "claims",
+              {
+                "id": "claims-2bb645531479499b905fd47e58a950b6"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-17",
@@ -84025,17 +84141,6 @@
               {
                 "id": "related_bodies-8b5d3521b89951c483f1e88b727f2f3d"
               },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "SI"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-8b5d3521b89951c483f1e88b727f2f3d"
-              },
               "designation_state"
             ],
             [
@@ -84048,6 +84153,17 @@
                 "id": "related_bodies-8b5d3521b89951c483f1e88b727f2f3d"
               },
               "designation_basis"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "SI"
+              },
+              "claims",
+              {
+                "id": "claims-e9933ec1eda847638aad835aacf54422"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-17",
@@ -84065,17 +84181,6 @@
               {
                 "id": "related_bodies-46e57771fd775b47bb07c62d2b598b8b"
               },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "SI"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-46e57771fd775b47bb07c62d2b598b8b"
-              },
               "designation_state"
             ],
             [
@@ -84088,6 +84193,17 @@
                 "id": "related_bodies-46e57771fd775b47bb07c62d2b598b8b"
               },
               "designation_basis"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "SI"
+              },
+              "claims",
+              {
+                "id": "claims-e1cf73abdf6e4b92b21f059090b9d31e"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-17",
@@ -84105,17 +84221,6 @@
               {
                 "id": "related_bodies-c69081fe97585e2dba9848d1177add8c"
               },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "SI"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-c69081fe97585e2dba9848d1177add8c"
-              },
               "designation_state"
             ],
             [
@@ -84128,6 +84233,17 @@
                 "id": "related_bodies-c69081fe97585e2dba9848d1177add8c"
               },
               "designation_basis"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "SI"
+              },
+              "claims",
+              {
+                "id": "claims-5b8ab961592c4b8ba3ffeb7c68dfd3a1"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-17",
@@ -84136,17 +84252,6 @@
         {
           "text": "Priglasitveni organ za visokotvegane sisteme umetne inteligence (v nadaljnjem besedilu: UI) v proizvodih",
           "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "SI"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-8868e4fb69c75cf8bf341e09fb6469b2"
-              },
-              "role"
-            ],
             [
               "jurisdictions",
               {
@@ -84185,17 +84290,6 @@
               {
                 "id": "related_bodies-8868e4fb69c75cf8bf341e09fb6469b2"
               },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "SI"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-8868e4fb69c75cf8bf341e09fb6469b2"
-              },
               "designation_state"
             ],
             [
@@ -84212,6 +84306,42 @@
           ],
           "accessed": "2026-10-17",
           "gloss": "from points 1, 3 to 7, 9 and 10 of Annex I Section A to Regulation (EU) 2024/1689 is the ministry responsible for the market."
+        },
+        {
+          "text": "Banka Slovenije je pristojna za nadzor nad skladnostjo visokotveganih sistemov UI pod (b) 5. točke Priloge III Uredbe 2024/1689/EU z zahtevami Uredbe 2024/1689/EU, kadar jih dajejo na trg ali v uporabo oziroma jih uporabljajo kreditne institucije.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "SI"
+              },
+              "claims",
+              {
+                "id": "claims-9f69116cc91a42c9b5fb1f6b7cce146b"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "Banka Slovenije is competent to supervise the compliance of high-risk AI systems under point 5(b) of Annex III to Regulation 2024/1689/EU with the requirements of Regulation 2024/1689/EU when credit institutions place them on the market, put them into service or use them.",
+          "accessed": "2026-10-21"
+        },
+        {
+          "text": "Priglasitveni organ za visokotvegane sisteme umetne inteligence (v nadaljnjem besedilu: UI) v proizvodih, ki jih ureja zakonodaja Evropske unije (v nadaljnjem besedilu: Unija) iz 1., 3. do 7. ter 9. in 10. točke oddelka A Priloge I Uredbe 2024/1689/EU, je ministrstvo, pristojno za trg.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "SI"
+              },
+              "claims",
+              {
+                "id": "claims-4d9378d0dc5c448e9002244b69e6cdc7"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "The notifying authority for high-risk artificial intelligence systems (AI) in products governed by European Union legislation (the Union) in points 1, 3 to 7, 9 and 10 of Annex I Section A to Regulation (EU) 2024/1689 is the ministry responsible for the market.",
+          "accessed": "2026-10-21"
         }
       ],
       "access_note": "Statutory locators: Article 7 supplies the AKOS single-point-of-contact clause; Article 6 defines agencija as AKOS. Snapshot review on 17 October 2026, using cached responses: Original-source attempts: HTTP 503; Fallback text copy: an error or challenge page; Separate archive.ph newest-capture lookup returned HTTP 429; the capture content was not checked. That review retained no usable source copy. On 19 October 2026 the linked Wayback capture of 21 April 2026 was checked against this URL and every bound quotation; the recorded title, a citation label, was compared with the document by hand. On 21 October 2026 the complete response of the linked Wayback capture of 21 April 2026 was retained as the private source copy, and every bound quotation was found in it by the automated verifier. The sandbox quotation (Article 57 of Regulation 2024/1689) was previously bound to the long-form gazette address of the same act, which returned HTTP 503 on 21 October 2026; it is verbatim in the retained capture and is now bound to this source URL.",
@@ -119521,50 +119651,7 @@
       "accessed": "2026-11-10",
       "language": "is",
       "origin": "IS",
-      "excerpts": [
-        {
-          "text": "Umbra – þjónustumiðstöð Stjórnarráðsins og netöryggissveitin CERT-IS hafa fengið aðgang að sérhæfðu netöryggislíkani frá OpenAI.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "IS"
-              },
-              "notes"
-            ]
-          ],
-          "gloss": "Umbra, the Government Offices' service centre, and the cyber security team CERT-IS have received access to a specialised cyber security model from OpenAI.",
-          "accessed": "2026-11-10"
-        },
-        {
-          "text": "Þar sem slík tækni getur nýst bæði til varna og árása er aðgangur að líkaninu aðeins veittur að undangengnu mati, í gegnum Government Trusted Access for Cyber (GTAC).",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "IS"
-              },
-              "notes"
-            ]
-          ],
-          "gloss": "Because such technology can be used both for defence and for attack, access to the model is granted only after an assessment, through Government Trusted Access for Cyber (GTAC).",
-          "accessed": "2026-11-10"
-        },
-        {
-          "text": "Notkunin er bundin við skilgreind verkefni í þágu netvarna, háð skýrum öryggiskröfum og einskorðast við þau kerfi og innviði sem viðkomandi hafa heimild til að vinna með.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "IS"
-              },
-              "notes"
-            ]
-          ],
-          "gloss": "Use is tied to defined cyber defence tasks, subject to clear security requirements, and limited to the systems and infrastructure those concerned are authorised to work with.",
-          "accessed": "2026-11-10"
-        }
-      ],
+      "excerpts": [],
       "snapshot": {
         "retrieved": "2026-11-10T22:13:09Z",
         "sha256": "dcfc9cd8943954fe39558b2ce846eb0921a349178adcdec10d5f651b91c4e110",
