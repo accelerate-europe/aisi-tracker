@@ -165,6 +165,7 @@ def test_closest_body_download(closest, monkeypatch):
             "gap": "remit",
             "note": "Tests models for certification.",
             "body_id": "",
+            "active_in": "",
             "source_ids": "gb-source",
             "source_urls": closest["sources"][0]["url"],
         }

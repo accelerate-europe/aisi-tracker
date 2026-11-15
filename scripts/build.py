@@ -774,6 +774,7 @@ def tables(d: dict) -> dict[str, list[dict]]:
     closest = [{
         "id": j["id"], "jurisdiction_id": j["id"], **{key: j["closest_body"][key] for key in ("name", "stage", "gap", "note")},
         "body_id": j["closest_body"].get("body_id", ""),
+        "active_in": ";".join(row["code"] for row in j["closest_body"].get("active_in", [])),
         "source_ids": join(j["closest_body"]["source_ids"]), "source_urls": links(j["closest_body"]["source_ids"]),
     } for j in d["jurisdictions"] if "closest_body" in j]
     rates = [{
@@ -816,6 +817,7 @@ FIELD_DOCS = {
     "source_accessed": "Date the cited rate source was retrieved.",
     "reread_state": "The claim's re-read state (claims[].reread.state in aisi.json): confirmed, not_attempted, quote_gone, source_gone or blocked_or_failed; empty when no bound excerpt has one.",
     "last_found": "The last day the claim's quotation was found in its source (claims[].reread.last_found in aisi.json).",
+    "active_in": "The closest body's live activity function codes in vocabulary order, joined with ';'; empty when absent. Claim IDs are in closest_body.active_in in aisi.json.",
     "designation_step_text": "For a proposed AI Act authority: the latest formal step of the bill or draft (related_bodies[].designation_step.text).",
     "designation_step_date": "The date of that step (related_bodies[].designation_step.date).",
     "snapshot_retrieved": "Recorded retrieval timestamp of the complete private source copy, not publication date.",
@@ -958,7 +960,7 @@ EMPTY_COLUMNS = {
     "network_milestones": ["id", "body", "type", "date", "description", "short", "source_ids", "source_urls"],
     "source_excerpts": ["id", "source_id", "source_url", "text", "gloss", "supports", "url", "accessed", "anchors"],
     "related_bodies": ["id", "jurisdiction_id", "name", "name_en", "kind", "role", "counts_as_aisi", "designation_state", "authority_roles", "designation_step_text", "designation_step_date", "source_ids", "source_urls"],
-    "closest_bodies": ["id", "jurisdiction_id", "name", "stage", "gap", "note", "body_id", "source_ids", "source_urls"],
+    "closest_bodies": ["id", "jurisdiction_id", "name", "stage", "gap", "note", "body_id", "active_in", "source_ids", "source_urls"],
 }
 
 
@@ -979,16 +981,15 @@ def prerender(site: Path) -> None:
         fail([f"pre-rendering failed (scripts/prerender.py exit {result.returncode}): {result.stderr.strip()[-2000:]}"])
 
 
-PAGE_DATA_DROPPED = {"check": ("last_checked", "method"), "sources": ("snapshot", "access_note"), "records": ("claims", "functions"),
-                     "excerpts": ("anchors",)}
+PAGE_DATA_DROPPED = {"check": ("last_checked", "method"), "sources": ("snapshot", "access_note"), "records": ()}
 
 
 def page_data(published: dict, build_mark: str | None = None) -> str:
     """data/page.json, what the page script loads: aisi.json without the fields it never reads (a state's research
-    log in check, except last_checked and method; a source's private-copy metadata, snapshot and access_note; the
-    claims and functions of states; an excerpt's anchors, until step F shows them). Institutes keep their claims and
-    functions, which the functions table on Compare reads. Minified, with the build mark
-    (content_mark of the file without it) as its last key. aisi.json stays the public download; the page fetches
+    log in check, except last_checked and method; a source's private-copy metadata, snapshot and access_note),
+    minified. Functions, closest-body activity, claims and excerpt anchors stay for
+    the cards and their quotes on open. The build mark
+    (content_mark of the file without it) is its last key. aisi.json stays the public download; the page fetches
     this file by a URL carrying the same mark."""
     page = dict(published)
     keep = PAGE_DATA_DROPPED["check"]
@@ -997,13 +998,10 @@ def page_data(published: dict, build_mark: str | None = None) -> str:
         return {k: v for k, v in record.items() if k not in PAGE_DATA_DROPPED["records"]}
 
     if "institutes" in published:
-        # STAND-IN (page-tone): swap for the shared version when it lands (it keeps claims on every record)
-        page["institutes"] = [dict(i) for i in published["institutes"]]
+        page["institutes"] = [shown(i) for i in published["institutes"]]
     page["jurisdictions"] = [shown(j) | {"check": {k: j["check"][k] for k in keep if k in j["check"]}} if "check" in j else shown(j) for j in published["jurisdictions"]]
     def source(s: dict) -> dict:
         kept = {k: v for k, v in s.items() if k not in PAGE_DATA_DROPPED["sources"]}
-        if "excerpts" in kept:
-            kept["excerpts"] = [{k: v for k, v in e.items() if k not in PAGE_DATA_DROPPED["excerpts"]} for e in kept["excerpts"]]
         return kept
 
     page["sources"] = [source(s) for s in published["sources"]]

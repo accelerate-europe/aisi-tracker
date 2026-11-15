@@ -543,6 +543,7 @@ function operatingMark(){return missing();} // Known activity has its own indepe
 function operatingText(){return '';}
 function intervalQualifier(text){return document.createTextNode(text);}
 function relatedFunding(){return el('span','','Related');}
+function factClaims(){return [];} // the Facts row has its own content check (tests/content/test_claims.py)
 const cite=()=>el("span");
 const rows=[];
 function capture(j,inst,view,label,value,ids){
@@ -556,11 +557,13 @@ function capture(j,inst,view,label,value,ids){
         + dates
         + presentation
         + helpers
+        + "\nfunction activityLineNode(){return null;}\n"  # checked separately in test_activity_line.py
         + "\nconst d="
         + json.dumps(data)
         + ";\n"
         + """
 const I=Object.fromEntries(d.institutes.map(i=>[i.id,i]));
+const m=d.dataset;
 nameInstitutes(d.institutes,Object.fromEntries(d.jurisdictions.map(j=>[j.id,j])));
 for(const j of d.jurisdictions){const inst=I[j.institute_id]||null;
  if(j.status!=='none_identified'){

@@ -120,12 +120,11 @@ def test_anchors_do_not_change_the_excerpt_identity(plain, anchored):
     assert {k: r["id"] for k, r in csv_rows(plain).items()} == {k: r["id"] for k, r in csv_rows(anchored).items()}
 
 
-def test_page_data_leaves_out_the_anchors(anchored):
-    """The page shows nothing new in this step; step F shows the anchors with their quote."""
+def test_page_data_keeps_the_anchors(anchored):
+    """Cards read the original and translated anchors when a quote is opened."""
     published = build.export_dataset(anchored)
     page = json.loads(build.page_data(published))
-    assert all("anchors" not in e for s in page["sources"] for e in s.get("excerpts", []))
-    assert quoted(page) == {k: v for k, v in quoted(published).items() if k != "anchors"}
+    assert quoted(page) == quoted(published)
 
 
 def test_gate_expects_the_page_data_the_build_writes(anchored):
@@ -134,7 +133,7 @@ def test_gate_expects_the_page_data_the_build_writes(anchored):
     published = build.export_dataset(anchored)
     assert any(e.get("anchors") for s in published["sources"] for e in s.get("excerpts", []))
     assert check_page.expected_page_data(published) == json.loads(build.page_data(published))
-    assert "anchors" in check_page.PAGE_DATA_LEFT_OUT
+    assert "anchors" not in check_page.PAGE_DATA_LEFT_OUT
 
 
 def test_non_english_anchor_needs_a_gloss(anchored):

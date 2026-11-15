@@ -598,6 +598,30 @@ def test_nonidentified_folds_pass_and_fail_on_each_rule():
     assert any("non-Latin script" in e for e in check_page.blocking(check_page.check_nonidentified_folds(alone, data)))
 
 
+@pytest.mark.parametrize("space", [" ", "\u00a0"])
+def test_authority_line_read_across_its_glued_last_word(space):
+    """The citation glue stays inside one roles span; the check reads the whole line with either kind of space."""
+    data = _fold_data()
+    body = data["jurisdictions"][0]["related_bodies"][0]
+    body.update(designation_state="designated", designation_basis="law")
+    glued = (f'<li><span class="body-name">Financial Supervision Commission<span class="body-roles">: market-surveillance authority, designated{space}by{space}'
+             '<span class="cite-glue">law<span class="cites"><a class="cn">1</a></span></span></span></span>'
+             '<span class="orig">Комисия за финансов надзор</span><span class="det">Proposed market authority.</span></li>')
+    page = _fold_html().replace(_authority("Financial Supervision Commission", "market-surveillance authority, proposed",
+                                            '<span class="orig">Комисия за финансов надзор</span>', '<span class="det">Proposed market authority.</span>'), glued)
+    assert glued in page
+    assert check_page.check_nonidentified_folds(page, data) == []
+    assert any("designated by" in e for e in check_page.check_nonidentified_folds(page.replace(">law<", "><"), data))
+    split = page.replace('<span class="cite-glue">law', '</span><span class="cite-glue"><span class="body-roles">law</span>').replace(
+        '</a></span></span></span></span>', '</a></span></span></span>')
+    assert check_page.blocking(check_page.check_nonidentified_folds(split, data)) == [
+        "BG body 'Financial Supervision Commission': expected exactly one .body-roles span, found 2"
+    ]
+    missing = BeautifulSoup(page, "html.parser")
+    missing.select_one(".body-roles").decompose()
+    assert any("expected exactly one .body-roles span, found 0" in e for e in check_page.blocking(check_page.check_nonidentified_folds(str(missing), data)))
+
+
 def test_ai_act_authorities_in_pattern_4_order_and_folded_after_three():
     data = _fold_data()
     bodies = [{"name": n, "kind": "ai_act_authority", "authority_roles": r, "designation_state": "designated", "designation_basis": "law",
@@ -640,6 +664,144 @@ def test_closest_body_note_and_stage_line(stage, note, dets, ok):
         '<div class="body-group"><p class="gl">AI Act authorities</p>').replace(
         '<div class="body-group"><p class="gl">Other bodies</p><ul><li><span class="body-name">INSAIT (Sofia University)<span class="cites"><a class="cn">1</a></span></span></li></ul></div>', "")
     assert (check_page.check_nonidentified_folds(page, data) == []) is ok
+
+
+def _closest_fold_fixture(*, named=True, stage="planned", claims=(), finding_sources=("s1",), body_sources=("s1",), migrated=True):
+    name = "Fixture lab"
+    summary = f"Planned closest body: {name}." if named else "An AI Act authority is listed."
+    body = {"name": name, "body_id": "lab", "stage": stage, "source_ids": list(body_sources),
+            "display": {"source_links": list(body_sources)}}
+    record = {"id": "XX", "status": "none_identified", "europe_scope": True, "summary": summary, "closest_body": body,
+              "related_bodies": [{"id": "lab", "name": name, "kind": "research"}]}
+    if migrated:
+        record["claims"] = list(claims)
+
+    def cites(ids):
+        return '<span class="cites">' + "".join(f'<a class="cn" data-source-id="{sid}">{n}</a>' for n, sid in enumerate(ids, 1)) + '</span>'
+
+    html = f'<details class="card mini" id="c-xx"><summary>Fixture state</summary><p>{summary}{cites(finding_sources)}</p></details>'
+    lines = "".join(f'<div class="claim det" data-claim-id="{c["id"]}">{c["text"]}</div>' for c in claims if not c.get("lead"))
+    if stage != "exists":
+        lines += f'<span class="det">{stage.replace("_", " ").capitalize()}.</span>'
+    group = (f'<div class="body-group closest"><p class="gl">Closest body</p><ul><li data-body-id="lab">'
+             f'<span class="body-name">{name}{cites(body_sources)}</span>{lines}</li></ul></div>')
+    return {"jurisdictions": [record]}, html, group
+
+
+@pytest.mark.parametrize("claims", [
+    [],
+    [{"id": "lead", "kind": "function", "body_id": "lab", "lead": True, "text": "It tests models."}],
+])
+def test_closest_group_absent_when_summary_names_and_cites_it_without_role_claims(claims):
+    data, html, group = _closest_fold_fixture(claims=claims)
+    assert check_page.check_nonidentified_folds(html, data) == []
+    assert any("matches no expected group" in e for e in check_page.check_nonidentified_folds(html.replace("</details>", group + "</details>"), data))
+
+
+@pytest.mark.parametrize("stage", ["exists", "planned", "proposed", "under_study"])
+def test_closest_group_name_only_when_summary_does_not_name_it(stage):
+    data, html, group = _closest_fold_fixture(named=False, stage=stage)
+    page = html.replace("</details>", group + "</details>")
+    assert check_page.check_nonidentified_folds(page, data) == []
+    assert check_page.check_nonidentified_folds(html, data)
+    extra = page.replace("</li>", '<span class="det">An extra note.</span></li>')
+    assert any("role sentences" in e for e in check_page.check_nonidentified_folds(extra, data))
+    if stage != "exists":
+        missing_stage = page.replace(f'<span class="det">{stage.replace("_", " ").capitalize()}.</span>', "")
+        assert any("role sentences" in e for e in check_page.check_nonidentified_folds(missing_stage, data))
+
+
+def test_closest_group_normal_with_remaining_live_claims():
+    claims = [{"id": "role", "kind": "function", "body_id": "lab", "text": "It publishes research."}]
+    data, html, group = _closest_fold_fixture(claims=claims)
+    page = html.replace("</details>", group + "</details>")
+    assert check_page.check_nonidentified_folds(page, data) == []
+    assert check_page.check_nonidentified_folds(html, data)
+    assert any("role sentences" in e for e in check_page.check_nonidentified_folds(page.replace("It publishes research.", ""), data))
+
+
+def test_closest_group_kept_for_an_expired_role_claim():
+    # An expired role stays shown and marked (design section 4), so its group is never omitted.
+    claims = [{"id": "old", "kind": "function", "body_id": "lab", "expired": True, "text": "It tested models."}]
+    data, html, group = _closest_fold_fixture(claims=claims)
+    page = html.replace("</details>", group + "</details>")
+    assert check_page.check_nonidentified_folds(page, data) == []
+    assert check_page.check_nonidentified_folds(html, data)
+    assert any("role sentences" in e for e in check_page.check_nonidentified_folds(page.replace("It tested models.", ""), data))
+
+
+def test_closest_group_keeps_a_source_not_cited_in_the_finding():
+    data, html, group = _closest_fold_fixture(body_sources=("s1", "s2"))
+    assert check_page.check_nonidentified_folds(html.replace("</details>", group + "</details>"), data) == []
+    assert check_page.check_nonidentified_folds(html, data)
+    # A source link in the footer is not a citation mark on the card's finding.
+    footer = '<div class="foot"><a data-source-id="s2">Source two</a></div>'
+    assert check_page.check_nonidentified_folds(html.replace("</details>", footer + "</details>"), data)
+    complete = html.replace('</p></details>', '<span class="cites"><a class="cn" data-source-id="s2">2</a></span></p></details>')
+    assert check_page.check_nonidentified_folds(complete, data) == []
+
+
+def test_closest_group_legacy_still_shows_name_and_stage():
+    data, html, group = _closest_fold_fixture(migrated=False)
+    assert check_page.check_nonidentified_folds(html.replace("</details>", group + "</details>"), data) == []
+    assert check_page.check_nonidentified_folds(html, data)
+
+
+def _translated_lead_fixture():
+    claim = {"id": "lead", "kind": "function", "body_id": "lab", "lead": True,
+             "text": 'It says it "tests models" with them.', "citations": {"text": ["s1"]}}
+    data = {"jurisdictions": [{"id": "XX", "status": "none_identified", "europe_scope": True,
+                              "closest_body": {"body_id": "lab"}, "claims": [claim]}],
+            "sources": [{"id": "s1", "language": "de", "excerpts": [{"text": "prüft Modelle", "gloss": "tests models",
+                         "supports": ["/jurisdictions/0/claims/0/text"]}]}]}
+    quote = '<span class="quotation"><span class="quote-text" tabindex="0" aria-description="prüft Modelle">"tests models"</span></span>'
+    marker = '<span class="small translation"> translated from German</span>'
+    cites = '<span class="cites"><a class="cn" data-source-id="s1">1</a></span>'
+    html = (f'<details id="c-xx"><div class="claim" data-claim-id="lead"><span class="claim-text">It says it {quote} with them.{cites}</span>'
+            '<details class="quote" data-quote-claim="lead"><summary>Quote</summary></details></div></details>')
+    return data, html, quote, marker, cites
+
+
+def test_quote_translation_sentence_has_no_marker_and_keeps_original_with_citation_glue():
+    data, html, _, _, cites = _translated_lead_fixture()
+    assert check_page.check_claim_cards(html, data) == []
+    glued = html.replace("them." + cites, '<span class="cite-glue">them.' + cites + '</span>')
+    assert check_page.check_claim_cards(glued, data) == []
+
+
+@pytest.mark.parametrize("placement", ["inside-quote", "sentence-end", "after-citations", "missing-original", "missing-focus"])
+def test_quote_translation_rejects_sentence_markers_or_unreachable_original(placement):
+    data, html, quote, marker, cites = _translated_lead_fixture()
+    if placement == "inside-quote":
+        html = html.replace(quote, quote[:-7] + marker + "</span>")
+    elif placement == "sentence-end":
+        html = html.replace(cites, marker + cites)
+    elif placement == "after-citations":
+        html = html.replace(cites, cites + marker)
+    elif placement == "missing-original":
+        html = html.replace(' aria-description="prüft Modelle"', "")
+    else:
+        html = html.replace(' tabindex="0"', "")
+    assert any("translation" in e or "translated" in e for e in check_page.check_claim_cards(html, data))
+
+
+def test_quote_translation_standalone_excerpts_and_anchors_each_need_their_own_marker():
+    _, _, quote, marker, _ = _translated_lead_fixture()
+    standalone = quote[:-7] + marker + "</span>"
+    html = (f'<details class="quote" open><summary>Quote</summary><div class="quote-excerpt">{standalone}'
+            f'<span class="quote-anchor">Heading: {standalone}</span></div></details>')
+    assert check_page.check_quote_translations(BeautifulSoup(html, "html.parser")) == []
+    for broken in (html.replace(marker, "", 1), html.replace(marker, "", 2), html.replace(" translated from German", " "),
+                   html.replace(marker, marker + marker, 1), html.replace(' tabindex="0"', "", 1),
+                   html.replace(standalone, marker + quote, 1), html.replace(marker, " words in between " + marker, 1)):
+        assert check_page.check_quote_translations(BeautifulSoup(broken, "html.parser"))
+
+
+def test_quote_translation_generated_sentence_without_disclosure_has_no_marker():
+    _, _, quote, marker, _ = _translated_lead_fixture()
+    html = f'<p>It says it {quote} with them.</p>'
+    assert check_page.check_quote_translations(BeautifulSoup(html, "html.parser")) == []
+    assert check_page.check_quote_translations(BeautifulSoup(html.replace("</p>", marker + "</p>"), "html.parser"))
 
 
 def test_generic_sources_stay_out_of_card_lists_and_in_method():
@@ -2064,7 +2226,7 @@ def test_content_checks_run_in_the_content_step_not_per_state():
     for helper in ("check_budget_output", "check_staff_figures", "check_generic_sources", "check_nonidentified_folds", "BeautifulSoup("):
         assert helper not in passed, helper  # no per-state copy of a content check (filtered views keep their own)
     assert 'theme_invariant=theme == "light"' in passed  # the first screen's theme-invariant steps run once per width
-    assert 'anchor = (width, theme) == (1440, "light")' in passed and passed.count("    if anchor:") == 3
+    assert 'anchor = (width, theme) == (1440, "light")' in passed and passed.count("    if anchor:") == 4
     assert passed.count('if theme == "light":') == 2  # the expanded sweep's theme-invariant checks
     sweep = passed.split("# Check all controls revealed by disclosures.")[1].split("# Toolbar disclosures are exclusive")[0]
     unguarded = [line.strip() for line in sweep.splitlines() if line.startswith(("    for error in check_", "        check_"))]
@@ -2104,7 +2266,7 @@ def test_interaction_pass_marks_its_steps():
     import inspect
 
     source = inspect.getsource(check_page.interaction_pass)
-    assert source.count('lap("') == 14 and "lap = step_clock()" in source  # one per block, the last before the return
+    assert source.count('lap("') == 15 and "lap = step_clock()" in source  # one per block, the last before the return
 
 
 def test_each_job_line_has_only_its_own_steps_also_when_it_raises(tmp_path):
@@ -2299,6 +2461,7 @@ def test_skip_static_is_only_for_detector_runs(args, ok):
 
 
 MOVED_TO_CONTENT = {  # content family module -> the check_page helpers it now runs
+    "claims": ("check_claim_cards",),
     "funding": ("check_budget_output", "check_funding_outside", "check_interval_output", "check_per_person", "check_no_rate_amounts", "check_euro_amounts"),
     "sources": ("check_source_alignment", "check_generic_sources"),
     "record_rows": ("check_leadership_rows", "check_access_groups", "check_setup_groups"),
@@ -2439,16 +2602,17 @@ def test_terms_marked_once_per_scope(html, found):
     assert len(errors) == len(found) and all(any(f in e for e in errors) for f in found), errors
 
 
-def test_authority_line_states_the_recorded_designation():
+@pytest.mark.parametrize("space", [" ", "\u00a0"])
+def test_authority_line_states_the_recorded_designation(space):
     data = _fold_data()
     assert any("does not say it is proposed" in e for e in check_page.check_nonidentified_folds(_fold_html(roles="market-surveillance authority, designated by law"), data))
     body = data["jurisdictions"][0]["related_bodies"][0]
     body["designation_step"] = {"text": "bill tabled", "date": "2026-09-24"}
     assert any("latest step" in e for e in check_page.check_nonidentified_folds(_fold_html(), data))
-    assert check_page.check_nonidentified_folds(_fold_html(roles="market-surveillance authority, proposed (bill tabled on 24 Sep 2026)"), data) == []
+    assert check_page.check_nonidentified_folds(_fold_html(roles=f"market-surveillance authority, proposed (bill tabled on 24{space}Sep{space}2026)"), data) == []
     body.pop("designation_step")
     body.update(designation_state="designated", designation_basis="law")
-    assert check_page.check_nonidentified_folds(_fold_html(roles="market-surveillance authority, designated by law"), data) == []
+    assert check_page.check_nonidentified_folds(_fold_html(roles=f"market-surveillance authority, designated{space}by{space}law"), data) == []
     assert any("designated by law" in e for e in check_page.check_nonidentified_folds(_fold_html(roles="market-surveillance authority, designated by decree"), data))
     assert any("designated by law" in e for e in check_page.check_nonidentified_folds(_fold_html(roles="market-surveillance authority, not designated by law"), data))
     body.update(designation_state=None, designation_basis=None)

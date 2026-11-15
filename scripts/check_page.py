@@ -1144,7 +1144,7 @@ def check_origins(browser, base_url: str, dist: Path) -> list[str]:
 
 
 # Structural card field identities, independent of reader-facing labels.
-CARD_TRACKS = {"Institute": "2", "Status": "3", "Form": "4", "Head": "5", "Reports to": "6", "Partners": "7", "Mandate": "8", "Budget": "9", "Staff": "10", "Known activity": "11", "Related funding": "12"}
+CARD_TRACKS = {"Institute": "2", "Status": "3", "Form": "4", "Head": "5", "Reports to": "6", "Partners": "7", "Mandate": "8", "Budget": "9", "Staff": "10", "Known activity": "11", "Related funding": "12", "Facts": "13"}
 # Displayed values with no supporting quotation yet, by (table column or card label, jurisdiction id).
 KNOWN_UNCITED = {}
 CITED_COLUMNS = ("inst", "since", "op", "budget", "staff", "net")  # Region and status: reference data and derived status
@@ -1575,7 +1575,7 @@ def check_citation_ends(soup) -> list[str]:
                 or ("pname" in n.get("class", []) and n.find_parent("details", class_="partner-how"))
                 or (n.name == "li" and n.find_parent("details", class_="partner-how"))
                 or n.has_attr("data-record")
-                or bool(set(n.get("class", [])) & {"v", "fund-value", "fund-context", "activity-clause", "activity-since"})
+                or bool(set(n.get("class", [])) & {"v", "fund-value", "fund-context", "activity-clause", "activity-since", "claim-text"})  # a claim's sentence is its own value; its Quote fold follows it
             )
         )
         if host:
@@ -1629,12 +1629,14 @@ def check_source_alignment(html: str, data: dict) -> list[str]:
             required(".srcs li", bool(wanted), card, j["id"])
 
     world_rows = Keyed(soup, "#world-rows tr[data-j]")
-    for card in soup.select(".card:not(.mini)[data-j]"):
+    for card in soup.select(".card[data-j]"):
         jid = str(card["data-j"])
         ids = [li.get("data-source-id") for li in card.select(".srcs li")]
         orders[jid] = ids
         if len(ids) != len(set(ids)) or None in ids:
             errors.append(f"{jid}: source list has missing or duplicate IDs")
+        if "mini" in card.get("class", []):
+            continue
         table = world_rows.one(jid)
         if table is None and jurisdictions.get(jid, {}).get("kind") != "supranational":
             errors.extend(zero_match_errors("source_alignment", f'#world-rows tr[data-j="{jid}"]', 0))
@@ -1655,7 +1657,8 @@ def check_source_alignment(html: str, data: dict) -> list[str]:
                 compared += 1
                 cell = table.select_one(f'[data-col="{column}"]')
                 errors.extend(zero_match_errors("source_alignment", f'{jid} #world-rows [data-col="{column}"]', int(cell is not None)))
-                card_ids = [a.get("data-source-id") for a in row.select(".cn")]
+                # The card-only activity sentence has its own evidence, checked by the activity-line content family.
+                card_ids = [a.get("data-source-id") for a in row.select(".cn") if not a.find_parent(class_="activity-line")]
                 if column == "since" and row.select_one(".qualifiers"):
                     # Only the dated announcement's extra sources may differ (dataset.method/intervals).
                     jurisdiction = next((j for j in data["jurisdictions"] if j["id"] == jid), None)
@@ -2159,7 +2162,7 @@ def check_interval_output(html: str, data: dict, hand_worked: dict | None = None
             wanted = set(j.get("citations", {}).get("since", [])) | {
                 sid for n in counted for sid in j["timeline"][n].get("citations", {}).get("date", [])
             }
-            if {a.get("data-source-id") for a in status.select(".cn")} != wanted:
+            if {a.get("data-source-id") for a in status.select(".cn") if not a.find_parent(class_="activity-line")} != wanted:
                 errors.append(f"{j['id']}: Status citations do not cover the announcement and establishment")
         activity = rows.get(CARD_TRACKS["Known activity"])
         errors.extend(zero_match_errors("interval_output", f'{j["id"]} .row[data-track="{CARD_TRACKS["Known activity"]}"]', int(activity is not None), institute is not None and j["status"] == "established"))
@@ -4171,7 +4174,7 @@ def check_card_grid(page) -> list[str]:
         record: ['2', '3', '4', '8', '9', '10'],
         none: ['3', '8'],
       };
-      const OPTIONAL = ['12', '5', '6', '7'];
+      const OPTIONAL = ['12', '5', '6', '7', '13'];
       const errors = [];
       document.querySelectorAll('.cards:not(.minis)').forEach(grid => {
         const cards = [...grid.querySelectorAll('.card')], rows = [...grid.children];
@@ -4204,7 +4207,7 @@ def check_card_grid(page) -> list[str]:
             if (innerWidth <= 640 && getComputedStyle(card).display !== 'flex') errors.push(REPORT + 'phone card lost its flex stack');
             if (innerWidth > 640) {
               if (!getComputedStyle(card).gridTemplateRows.startsWith('subgrid')) errors.push(REPORT + 'card does not use row subgrid');
-              const placed = [[card.querySelector(':scope > .top'), 1, 'top'], [card.querySelector(':scope > .foot'), 13, 'footer']]
+              const placed = [[card.querySelector(':scope > .top'), 1, 'top'], [card.querySelector(':scope > .foot'), 14, 'footer']]
                 .concat(fieldRows.map((n, k) => [n, tracks[k], tracks[k]]));
               placed.forEach(([n, track, label]) => {
                 if (!n || getComputedStyle(n).gridRowStart !== String(track)) errors.push(REPORT + `${label} is not in its fixed track ${track}: ${card.id}`);
@@ -7543,12 +7546,15 @@ def check_nonidentified_folds(html, data: dict) -> list[str]:
     """None-identified fold-outs: the closest body, the AI Act authorities and other bodies, each group recognised by
     its members, so the owner may reword a heading (test strategy D1); a heading must have text.
 
-    The closest body shows its note unless it is only its name, and one more line where it does not exist yet. The AI
+    A migrated closest body shows its other role claims (expired ones marked), or just its name and stage; omit it
+    when it has no role claim and the finding already names it and carries all its citations. Legacy notes stay as before. The AI
     Act authorities are one group in pattern 4's order, each line naming its roles in the published words
     (dataset.display.authority_roles); with more than four, the first three show and the rest fold behind a summary
     giving their number. A name in another language shows its English name with the original beneath, and a non-Latin
     script never stands alone. Each body with sources cites them inline, and each role text is shown.
     """
+    from summaries import shown_lead
+
     soup = BeautifulSoup(html, "html.parser")
     errors = []
     words = (data.get("dataset", {}).get("display") or {}).get("authority_roles") or {}
@@ -7563,9 +7569,17 @@ def check_nonidentified_folds(html, data: dict) -> list[str]:
             errors.append(f"{j['id']}: the fold-out carries a line about the bodies as a group; it was removed (owner, 15 November)")
         closest = j.get("closest_body")
         bodies = [b for b in j.get("related_bodies", [])
-                  if not closest or (b["name"] != closest["name"] and not b["name"].startswith(closest["name"] + " ("))]
+                  if not closest or (b["id"] != closest.get("body_id") if "claims" in j
+                                     else b["name"] != closest["name"] and not b["name"].startswith(closest["name"] + " ("))]
         expected = {}
-        if closest:
+        lead = shown_lead(j) if "claims" in j else None
+        closest_claims = [c for c in j.get("claims", []) if c["kind"] == "function" and closest
+                          and c.get("body_id") == closest.get("body_id") and c is not lead]
+        finding_sources = {a.get("data-source-id") for a in card.select(":scope > summary a.cn, :scope > p a.cn, :scope > .claim a.cn")}
+        closest_sources = (closest.get("display", {}).get("source_links", closest.get("source_ids", [])) if closest else [])
+        repeated = (closest and "claims" in j and not closest_claims and closest["name"] in j.get("summary", "")
+                    and set(closest_sources) <= finding_sources)
+        if closest and not repeated:
             expected["closest"] = [closest]
         if authorities := sorted((b for b in bodies if b["kind"] == "ai_act_authority"), key=authority_key):
             expected["authorities"] = authorities
@@ -7611,6 +7625,10 @@ def check_nonidentified_folds(html, data: dict) -> list[str]:
                     errors.append(f"{j['id']} AI Act authorities: {folded} folded under {summary.strip()!r}, expected {wanted} under their number {hidden}")
             for li, b in zip(items, members):
                 cited = bool(li.select(".cn"))
+                if key == "closest" and "claims" in j:
+                    missing_sources = set(closest_sources) - {a.get("data-source-id") for a in li.select("a.cn")}
+                    if missing_sources:
+                        errors.append(f"{j['id']}: closest body lacks citation marks for {sorted(missing_sources)}")
                 want = b.get("name_en") or b["name"]
                 if NON_LATIN_SCRIPT.search(want if b.get("name_en") else b["name"]) and not b.get("name_en"):
                     errors.append(f"{j['id']} body {want!r} stands in a non-Latin script without an English name")
@@ -7618,8 +7636,12 @@ def check_nonidentified_folds(html, data: dict) -> list[str]:
                 if key != "closest" and (bool(b.get("name_en")) != (original is not None) or (original is not None and " ".join(original.get_text().split()) != shown_original(b))):
                     errors.append(f"{j['id']} body {want!r}: the original name must sit beneath exactly when there is an English name, without an abbreviation the English name already closes with")
                 if key == "authorities":
-                    roles = li.select_one(".body-roles")
-                    line = " ".join("".join(t for t in roles.find_all(string=True) if not t.find_parent(class_="cites")).split()) if roles else ""
+                    # The citation glue stays inside one .body-roles span. Read every span in order, without the
+                    # marks, so a split line is still checked for its words as well as its structure.
+                    spans = li.select(".body-roles")
+                    if len(spans) != 1:
+                        errors.append(f"{j['id']} body {want!r}: expected exactly one .body-roles span, found {len(spans)}")
+                    line = " ".join("".join(t for s in spans for t in s.find_all(string=True) if not t.find_parent(class_="cites")).split())
                     missing = [words.get(r, r) for r in (b.get("authority_roles") or []) if words.get(r, r) not in line]
                     if not line or missing:
                         errors.append(f"{j['id']} body {want!r}: its line {line!r} does not name its roles {missing}")
@@ -7627,8 +7649,23 @@ def check_nonidentified_folds(html, data: dict) -> list[str]:
                         errors.append(f"{j['id']} body {want!r}: its line {line!r} {problem}")
                 for marks in li.select(".cites"):
                     marks.extract()
+                for extra in li.select("details.quote, .translation, .claim > .reread"):
+                    extra.extract()
                 dets = [" ".join(d.get_text().split()) for d in li.select(".det")]
-                if key == "closest":
+                if "claims" in j:
+                    body_id = b.get("body_id") if key == "closest" else b["id"]
+                    want_dets = [" ".join(c["text"].split()) for c in j["claims"] if c["kind"] == "function"
+                                 and c.get("body_id") == body_id and c is not lead]
+                    if key == "closest" and b.get("stage", "exists") != "exists":
+                        stage = b["stage"].replace("_", " ").capitalize() + "."
+                        # An activity line follows the stage directly under the name; without it the existing order stays.
+                        if b.get("active_in"):
+                            want_dets.insert(0, stage)
+                        else:
+                            want_dets.append(stage)
+                    if dets != want_dets:
+                        errors.append(f"{j['id']} body {want!r}: role sentences {dets!r}, expected {want_dets!r}")
+                elif key == "closest":
                     note = " ".join((b.get("note") or "").split())
                     shown_note = note if note and note != f"{b['name']}." else ""
                     stage = (b.get("stage") or "exists").replace("_", " ")
@@ -7724,10 +7761,12 @@ def check_name_roles(page) -> list[str]:
 
 @reports
 def check_nonidentified_style(page) -> list[str]:
-    """The How we checked block is muted and smaller than the bodies above it; group headings are never weaker than their items."""
+    """Muted notes, group heading hierarchy and the first body claim's separation from its name."""
     return page.evaluate("""() => {
       const folds = [...document.querySelectorAll('details:not([open])')]; folds.forEach(d => d.open = true);
       const errors = [], px = e => parseFloat(getComputedStyle(e).fontSize), weight = e => Number(getComputedStyle(e).fontWeight);
+      const probe = document.createElement('span'); probe.style.marginTop = 'var(--sp-2)'; document.body.appendChild(probe);
+      const claimGap = parseFloat(getComputedStyle(probe).marginTop); probe.remove();
       for (const card of document.querySelectorAll('.card.mini')) {
         const id = card.dataset.j, how = card.querySelector('.how p:not(.gl)');
         if (how && getComputedStyle(how).color === getComputedStyle(card.querySelector('summary .name')).color) errors.push(id + ': How we checked is not muted');
@@ -7737,6 +7776,10 @@ def check_nonidentified_style(page) -> list[str]:
           if (name && (weight(gl) < weight(name) || px(gl) < px(name))) errors.push(id + ': group heading ' + gl.textContent + ' is weaker than its items');
           const orig = g.querySelector('.orig');
           if (orig && getComputedStyle(orig).color === getComputedStyle(name).color) errors.push(id + ': original name is not muted');
+          for (const claim of g.querySelectorAll('li > .claim:not(.claim + .claim)')) {
+            const previous = claim.previousElementSibling;
+            if (previous && Math.abs(claim.getBoundingClientRect().top - previous.getBoundingClientRect().bottom - claimGap) > 1) errors.push(id + ': first body claim does not follow its name at --sp-2');
+          }
         }
       }
       folds.forEach(d => d.open = false);
@@ -9306,6 +9349,264 @@ def check_development_edges(browser, base_url: str, data: dict) -> list[str]:
     return errors
 
 
+def card_claims(j: dict, institutes: dict) -> list[dict]:
+    """Expected card claims, from the published fields; institute functions belong to Compare."""
+    if j["status"] != "none_identified":
+        return [c for r in (j, institutes.get(j.get("institute_id"), {})) for c in r.get("claims", [])
+                if c["kind"] == "fact" and not c.get("expired")]
+    from summaries import shown_lead
+
+    lead = shown_lead(j)
+    closest_id = (j.get("closest_body") or {}).get("body_id")
+    bodies = {b["id"] for b in j.get("related_bodies", [])} | {closest_id}
+    return [c for c in j.get("claims", []) if c is lead or
+            c["kind"] == "development" and not c.get("expired") or c["kind"] == "function" and c.get("body_id") in bodies]
+
+
+def claim_bindings(data: dict, claim_id: str) -> list[tuple[dict, int, dict]]:
+    """Independently resolve a claim's required published leaves, once per bound excerpt."""
+    for collection in ("jurisdictions", "institutes"):
+        for ri, record in enumerate(data.get(collection, [])):
+            for ci, claim in enumerate(record.get("claims", [])):
+                if claim["id"] != claim_id:
+                    continue
+                leaves = ("text", "act", "date") if claim["kind"] == "development" else ("text",)
+                pointers = {f"/{collection}/{ri}/claims/{ci}/{leaf}" for leaf in leaves}
+                return [(s, ei, e) for s in data.get("sources", []) for ei, e in enumerate(s.get("excerpts", []))
+                        if pointers.intersection(e.get("supports", []))]
+    return []
+
+
+def check_quote_translations(soup) -> list[str]:
+    """Markers only in Quote folds, beside each glossed excerpt/anchor; every original stays focusable."""
+    errors = []
+    for marker in soup.select(".translation"):
+        if marker.find_parent("details", class_="quote") is None or marker.find_parent(class_="claim-text") is not None:
+            errors.append("translation marker must appear only in a Quote fold, never in a running sentence")
+    for quote in soup.select(".quote-text[aria-description]"):
+        if quote.get("tabindex") != "0":
+            errors.append("translated quote lacks keyboard focus")
+        if quote.find_parent("details", class_="quote") is None or quote.find_parent(class_="claim-text") is not None:
+            continue
+        scope = quote.find_parent(class_="quotation")
+        markers = scope.select(".translation") if scope is not None else []
+        if len(markers) != 1 or not markers[0].get_text(strip=True):
+            errors.append("translated quote lacks its translation marker")
+            continue
+        if quote.find_next_sibling() is not markers[0] or any(t.strip() for t in quote.next_siblings if isinstance(t, NavigableString)):
+            errors.append("translation marker must immediately follow its quote in the Quote fold")
+    return errors
+
+
+def check_claim_cards(html: str, data: dict) -> list[str]:
+    """Saved sentences and citations, empty quote disclosures, and unchanged legacy body text.
+
+    The lead's quoted English is deliberately saved. No disclosure body or anchor is saved, even hidden.
+    Legacy body text remains under check_nonidentified_folds in the names content family.
+    """
+    soup = BeautifulSoup(html, "html.parser")
+    institutes = {i["id"]: i for i in data.get("institutes", [])}
+    from summaries import shown_lead
+
+    errors = check_quote_translations(soup)
+    for j in data.get("jurisdictions", []):
+        if j["status"] == "none_identified" and not j.get("europe_scope"):
+            continue  # these jurisdictions have table rows, not cards
+        expected = card_claims(j, institutes)
+        lead = shown_lead(j) if j["status"] == "none_identified" else None
+        card = soup.select_one(f'#c-{j["id"].lower()}')
+        if card is None:
+            if expected:
+                errors.append(f"{j['id']}: missing claims card")
+            continue
+        blocks = card.select(".claim[data-claim-id]")
+        ids = [b["data-claim-id"] for b in blocks]
+        wanted = [c["id"] for c in expected]
+        if Counter(ids) != Counter(wanted) or (j["status"] != "none_identified" and ids != wanted):
+            errors.append(f"{j['id']}: claims {ids}, expected {wanted} once each, facts in authored order")
+        for c in expected:
+            block = next((b for b in blocks if b["data-claim-id"] == c["id"]), None)
+            if block is None:
+                continue
+            line = block.select_one(".claim-text")
+            if line is None:
+                errors.append(f"{c['id']}: missing claim sentence")
+                continue
+            plain = copy.copy(line)
+            for extra in plain.select(".cites, .translation"):
+                extra.decompose()
+            text = " ".join(plain.get_text().split())
+            if c["kind"] == "development":
+                expected_text = f"On {expected_date(c['date'])} {c['act']}, which {c['text'].rstrip('.')}."
+            else:
+                expected_text = " ".join(c["text"].replace("“", '"').replace("”", '"').split())
+            if text != expected_text:
+                errors.append(f"{c['id']}: sentence {text!r}, expected {expected_text!r}")
+            if c is lead:
+                bindings = claim_bindings(data, c["id"])
+                if len(bindings) == 1 and bindings[0][2].get("gloss"):
+                    quotes = line.select(".quote-text[aria-description]")
+                    if len(quotes) != 1 or quotes[0].get("aria-description") != bindings[0][2]["text"]:
+                        errors.append(f"{c['id']}: translated lead lacks its bound original")
+            fields = ("text", "act", "date") if c["kind"] == "development" else ("text",)
+            cited = {n.get("data-source-id") for n in line.select("a.cn")}
+            want_sources = {s for leaf in fields for s in c.get("citations", {}).get(leaf, [])}
+            if not cited or cited != want_sources:
+                errors.append(f"{c['id']}: citations {cited}, expected {want_sources}")
+            folds = block.select("details.quote")
+            if len(folds) != 1 or folds[0].get("data-quote-claim") != c["id"]:
+                errors.append(f"{c['id']}: missing or mismatched quote disclosure")
+            if c["kind"] == "function" and c.get("expired") and c is not lead:
+                warning = block.select_one(":scope > .reread")
+                if warning is None or not warning.get_text(strip=True):
+                    errors.append(f"{c['id']}: expired role lacks its re-read warning")
+        for fold in card.select("details.quote"):
+            summary = fold.find("summary", recursive=False)
+            if fold.has_attr("open") or not summary or not summary.get_text(strip=True) or len(fold.find_all(recursive=False)) != 1 or fold.get_text() != summary.get_text():
+                errors.append(f"{j['id']}: quote content is saved or disclosure is open/empty")
+        if card.select(".quote-body, .quote-excerpt, .quote-anchor"):
+            errors.append(f"{j['id']}: quote content is in the saved page")
+        if j["status"] == "none_identified" and "claims" not in j and card.select(".claim, details.quote"):
+            errors.append(f"{j['id']}: legacy card gained claims")
+        for body in card.select("[data-body-id]"):
+            actual = [n["data-claim-id"] for n in body.select(".claim")]
+            want = [c["id"] for c in expected if c.get("body_id") == body["data-body-id"] and c is not lead]
+            if actual != want:
+                errors.append(f"{j['id']}: body claims out of authored order: {actual}, expected {want}")
+    return errors
+
+
+def claim_quote_fixture(data: dict) -> tuple[dict, list[str]]:
+    """One status card and a migrated card, even before a data migration reaches this branch.
+
+    Synthetic quotes cover two anchors, mixed translations, all development leaves, a retained expired lead,
+    a closest body's different display name, authority roles, other bodies and a marked expired role.
+    """
+    fixture = copy.deepcopy(data)
+    status = min((j for j in fixture["jurisdictions"] if j["status"] != "none_identified"), key=lambda j: j["id"])
+    migrated = min((j for j in fixture["jurisdictions"] if j["status"] == "none_identified" and j.get("europe_scope")), key=lambda j: j["id"])
+    source_id = "fixture-claim-source"
+    state = {"state": "source_gone", "last_found": "2026-09-01", "since": "2026-09-02"}
+    source = {"id": source_id, "url": "https://example.org/claim-fixture", "title": "Synthetic claim source", "publisher": "Fixture", "language": "de", "excerpts": []}
+    fixture["sources"].append(source)
+
+    def add(record, kind, text, **extra):
+        claim = {"id": f"fixture-claim-{record['id']}-{len(record.setdefault('claims', []))}", "kind": kind,
+                 "text": text, "source_ids": [source_id], "citations": {leaf: [source_id] for leaf in ("text", "act", "date")}, **extra}
+        record["claims"].append(claim)
+        ri = fixture["jurisdictions"].index(record)
+        pointer = f"/jurisdictions/{ri}/claims/{len(record['claims']) - 1}"
+        source["excerpts"].append({"text": "Das Institut prüft Modelle.", "gloss": "The institute tests models.", "supports": [pointer + "/text"], "reread": state,
+                                   "anchors": [{"kind": "heading", "text": "Aufgaben", "gloss": "Tasks"}, {"kind": "definition", "text": "The Institute"}]})
+        if kind == "development":
+            source["excerpts"].append({"text": "The government adopted the instrument on 1 September 2026.",
+                                       "supports": [pointer + "/act", pointer + "/date"], "reread": state,
+                                       "anchors": [{"kind": "provision", "text": "Artikel 1", "gloss": "Article 1"}]})
+        return claim
+
+    add(status, "fact", "A synthetic fact is recorded.")
+    migrated["claims"] = []
+    lead = add(migrated, "function", 'It says it "tests models".', body_id="fixture-closest", lead=True, expired=True, reread=state)
+    add(migrated, "function", "It publishes research.", body_id="fixture-closest")
+    add(migrated, "function", "It supports regulators.", body_id="fixture-authority")
+    add(migrated, "function", "It trains people.", body_id="fixture-other")
+    add(migrated, "function", "This expired role stays marked.", body_id="fixture-other", expired=True, reread={**state, "state": "quote_gone"})
+    add(migrated, "development", "assigns model testing", act="the government adopted the instrument", date="2026-09-01")
+    migrated["closest_body"] = {"name": "Fixture closest body", "body_id": "fixture-closest", "stage": "exists", "display": {"source_links": [source_id]}}
+    migrated["related_bodies"] = [{"id": bid, "name": name, "kind": kind, "display": {"source_links": [source_id]}, "source_ids": [source_id],
+                                  "authority_roles": ["single_point_of_contact"], "designation_state": "designated", "designation_basis": "law"}
+                                 for bid, name, kind in [("fixture-closest", "Different legal name", "research"), ("fixture-authority", "Fixture authority", "ai_act_authority"), ("fixture-other", "Fixture other body", "research")]]
+    migrated["summary"] = ('No qualifying institute identified as of November 2026. Closest body: Fixture closest body. '
+                            + lead["text"] + ' Source offline since 2 September 2026; last found 1 September 2026.')
+    return fixture, [status["id"], migrated["id"]]
+
+
+def check_claim_quotes(browser, base_url: str, data: dict) -> list[str]:
+    """Open every disclosure on selected real cards and fixture cards, with keyboard and touch originals."""
+    errors = []
+    institutes = {i["id"]: i for i in data["institutes"]}
+    selected = []
+    for status in (True, False):
+        candidates = [j for j in data["jurisdictions"] if (j["status"] != "none_identified") == status
+                      and (status or j.get("europe_scope")) and card_claims(j, institutes)]
+        if candidates:
+            selected.append(min(candidates, key=lambda j: j["id"])["id"])
+    fixture, fixture_ids = claim_quote_fixture(data)
+    for payload, ids in ((data, selected), (fixture, fixture_ids)):
+        for touch in (False, True):
+            page = browser.new_page(viewport={"width": 390 if touch else 1440, "height": 1000}, has_touch=touch, is_mobile=touch)
+            try:
+                if payload is fixture:
+                    page.route(PAGE_DATA, lambda route: route.fulfill(json=fixture))
+                hydrated(page, base_url)
+                if payload is fixture:
+                    errors.extend(check_claim_cards(page.content(), fixture))
+                for jid in ids:
+                    card = page.locator(f"#c-{jid.lower()}")
+                    card.evaluate("n => { if (n.tagName === 'DETAILS') n.open = true; n.querySelectorAll('details.more').forEach(d => d.open = true); }")
+                    from summaries import shown_lead
+
+                    jurisdiction = next(j for j in payload["jurisdictions"] if j["id"] == jid)
+                    lead = shown_lead(jurisdiction) if jurisdiction["status"] == "none_identified" else None
+                    if lead:
+                        bound = claim_bindings(payload, lead["id"])
+                        original = bound[0][2] if len(bound) == 1 else None  # text has exactly one binding
+                        quote = card.locator(f'.claim[data-claim-id="{lead["id"]}"] > .claim-text .quote-text')
+                        if original and original.get("gloss") and (quote.count() != 1 or quote.get_attribute("aria-description") != original["text"]):
+                            errors.append(f"{jid}: saved lead does not carry its bound original")
+                    for fold in card.locator("details.quote").all():
+                        identity = fold.get_attribute("data-quote-claim")
+                        expected = claim_bindings(payload, identity)
+                        if fold.locator(".quote-body").count():
+                            errors.append(f"{identity}: quote loaded before opening")
+                        fold.locator("summary").tap() if touch else fold.locator("summary").click()
+                        fold.locator(".quote-body").wait_for(state="attached")
+                        blocks = fold.locator(".quote-excerpt")
+                        if blocks.count() != len(expected) or not expected:
+                            errors.append(f"{identity}: excerpt count {blocks.count()}, expected {len(expected)}")
+                        for source, ei, excerpt in expected:
+                            block = fold.locator(f'.quote-excerpt[data-source-id="{source["id"]}"][data-excerpt-index="{ei}"]')
+                            if block.count() != 1:
+                                errors.append(f"{identity}: missing bound excerpt {source['id']}/{ei}")
+                                continue
+                            spans = [excerpt, *excerpt.get("anchors", [])]
+                            shown = block.locator(".quote-text").all_text_contents()
+                            if shown != ['"' + (span.get("gloss") or span["text"]) + '"' for span in spans]:
+                                errors.append(f"{identity}: quote or anchor text differs")
+                            if block.locator(".quote-anchor").count() != len(spans) - 1 or not block.locator(".reread").count():
+                                errors.append(f"{identity}: missing anchors or source re-read line")
+                            if not block.locator(".quote-anchor").evaluate_all("nodes => nodes.every(n => n.firstChild.nodeType === Node.TEXT_NODE && n.firstChild.textContent.trim())"):
+                                errors.append(f"{identity}: anchor kind label is missing")
+                            for node, span in zip(block.locator(".quote-text").all(), spans):
+                                if not span.get("gloss"):
+                                    # An English original needs neither a tooltip nor a translation marker.
+                                    if node.get_attribute("aria-description"):
+                                        errors.append(f"{identity}: English original gained a translation tooltip")
+                                if span.get("gloss") and node.get_attribute("aria-description") != span["text"]:
+                                    errors.append(f"{identity}: original differs from the bound span")
+                        # Closing and reopening must not append a second copy.
+                        fold.evaluate("n => n.open = false")
+                        fold.locator("summary").tap() if touch else fold.locator("summary").click()
+                        if fold.locator(".quote-body").count() != 1:
+                            errors.append(f"{identity}: quote duplicated on reopening")
+                    # The saved lead has no marker; every loaded glossed excerpt and anchor has its own.
+                    errors.extend(f"{jid}: {e}" for e in check_quote_translations(BeautifulSoup(card.inner_html(), "html.parser")))
+                    for node in card.locator(".quote-text[aria-description]").all():
+                        original = node.get_attribute("aria-description")
+                        node.scroll_into_view_if_needed()
+                        page.keyboard.press("Escape")
+                        if touch:
+                            node.tap()
+                        else:
+                            node.focus()
+                        tip = page.locator("#tip")
+                        if not tip.is_visible() or tip.inner_text() != original:
+                            errors.append(f"{jid}: original unreachable by {'touch' if touch else 'keyboard'}")
+            finally:
+                page.close()
+    return errors
+
+
 def click_control_text(page, control) -> None:
     """Use real mouse-down/up on text: scripted clicks miss the Chrome 155 crash."""
     control.scroll_into_view_if_needed()
@@ -9359,6 +9660,10 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
         "figures row is hidden",
     )
     lap("load")
+    if anchor:
+        for error in check_claim_quotes(browser, base_url, data):
+            require(False, "claim quotes: " + error)
+        lap("claim quotes")
     for error in check_hit_targets(page):
         require(False, error)
     for check in (
@@ -11167,13 +11472,13 @@ FAVICON_HREFS = {
 }
 
 
-PAGE_DATA_LEFT_OUT = "state check (except last_checked and method), snapshot, access_note, state claims/functions and excerpt anchors"
+PAGE_DATA_LEFT_OUT = "check (except last_checked and method), snapshot and access_note"
 
 
 def expected_page_data(data: dict) -> dict:
     """aisi.json as data/page.json must carry it, without its build mark: without a state's research log (check,
-    except last_checked and method), a source's private-copy metadata (snapshot, access_note), the download-only
-    claims and functions of states, and an excerpt's anchors (until the page shows them). Written
+    except last_checked and method) and a source's private-copy metadata (snapshot, access_note). Functions stay for
+    the cards' activity line, claims and excerpt anchors for the cards' quotes. Written
     here from the documented list, not from the build's table, so a field the build drops without saying so fails."""
     want = copy.deepcopy(data)
     for j in want["jurisdictions"]:
@@ -11182,11 +11487,6 @@ def expected_page_data(data: dict) -> dict:
     for source in want["sources"]:
         source.pop("snapshot", None)
         source.pop("access_note", None)
-        for excerpt in source.get("excerpts", []):
-            excerpt.pop("anchors", None)
-    for record in want["jurisdictions"]:
-        record.pop("claims", None)
-        record.pop("functions", None)
     return want
 
 
@@ -11225,7 +11525,7 @@ def check_page_data(dist: Path, data: dict) -> list[str]:
     if len(meta) == 1 and meta[0].get("data-package") != f"data/datapackage.json?v={data['dataset']['version']}-{hashlib.sha256(package.encode('utf-8')).hexdigest()[:10]}":
         errors.append(f"index.html: the data package URL {meta[0].get('data-package')!r} is not versioned by its content")
     script = "\n".join(node.get_text() for node in soup.select("body > script:not([src])"))
-    for pattern in (r"\.snapshot\b", r"\baccess_note\b", r"\.check\.(?!last_checked\b|method\b|functions\b)\w+", r"\.check\[", r"\bcheck\)", r"\.anchors\b"):
+    for pattern in (r"\.snapshot\b", r"\baccess_note\b", r"\.check\.(?!last_checked\b|method\b|functions\b)\w+", r"\.check\[", r"\bcheck\)"):
         for found in re.finditer(pattern, script):
             errors.append(f"page script reads a field data/page.json leaves out: {script[max(0, found.start() - 40):found.end() + 20]!r}")
     return errors

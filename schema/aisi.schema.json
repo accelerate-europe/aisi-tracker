@@ -313,6 +313,7 @@
                 "type": "object",
                 "required": [
                   "label",
+                  "short",
                   "definition",
                   "group"
                 ],
@@ -321,6 +322,11 @@
                   "label": {
                     "type": "string",
                     "minLength": 1
+                  },
+                  "short": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "The lower-case form read after \"Active in\" and as a narrow column head; provisional with the vocabulary (dataset.provisional)."
                   },
                   "definition": {
                     "type": "string",
@@ -1339,6 +1345,26 @@
                 "type": "string",
                 "minLength": 1,
                 "description": "The related_bodies id of the closest body, so its role claims (function claims with this body_id) attach. When set, the gap needs its own excerpt (the act it concerns for remit, the body's own text for designation), and a body with role claims has exactly one marked lead."
+              },
+              "active_in": {
+                "type": "array",
+                "readOnly": true,
+                "minItems": 1,
+                "description": "Generated for migrated records from the closest body's live activity-basis function claims: one entry per code in vocabulary order, claim_ids in claim order. Absent when no such claim remains.",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["code", "claim_ids"],
+                  "properties": {
+                    "code": {"type": "string", "pattern": "^[a-z_]+$"},
+                    "claim_ids": {
+                      "type": "array",
+                      "minItems": 1,
+                      "uniqueItems": true,
+                      "items": {"type": "string", "pattern": "^claims-[a-f0-9]{32}$"}
+                    }
+                  }
+                }
               },
               "stage": {
                 "enum": [

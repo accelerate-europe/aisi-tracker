@@ -20,10 +20,10 @@ FACT = "claims-" + "3" * 32
 BODY = "claims-" + "4" * 32
 STATE_FACT = "claims-" + "5" * 32
 VOCABULARY = {
-    "model_testing": {"label": "Model testing", "definition": "Synthetic test.", "group": "Testing and science"},
-    "research": {"label": "Research", "definition": "Synthetic test.", "group": "Testing and science"},
-    "old_code": {"label": "Old code", "definition": "Synthetic test.", "group": "Rules", "deprecated": True, "replaced_by": ["research"]},
-    "policy_advice": {"label": "Policy advice", "definition": "Synthetic test.", "group": "Informing government"},
+    "model_testing": {"label": "Model testing", "short": "model testing", "definition": "Synthetic test.", "group": "Testing and science"},
+    "research": {"label": "Research", "short": "research", "definition": "Synthetic test.", "group": "Testing and science"},
+    "old_code": {"label": "Old code", "short": "old code", "definition": "Synthetic test.", "group": "Rules", "deprecated": True, "replaced_by": ["research"]},
+    "policy_advice": {"label": "Policy advice", "short": "policy advice", "definition": "Synthetic test.", "group": "Informing government"},
 }
 
 
@@ -116,22 +116,31 @@ def test_claim_sources_stay_off_the_page(claimed):
     assert "gb-claim" not in institute["display"]["source_links"]
 
 
-def test_page_data_keeps_institute_claims_and_functions(claimed):
-    """Compare reads institute functions and claims, whose positions the published quote pointers name."""
+def test_page_data_keeps_claims_and_functions(claimed):
+    """Cards read claims, including their citations and freshness, without changing the download."""
     published = build.export_dataset(claimed)
     page = json.loads(build.page_data(published))
     assert published["institutes"][0]["functions"] and published["jurisdictions"][0]["claims"]
-    for record in page["jurisdictions"]:
-        assert "claims" not in record and "functions" not in record
-    for actual, original in zip(page["institutes"], published["institutes"], strict=True):
-        assert actual == original
-    assert [[e["supports"] for e in s.get("excerpts", [])] for s in page["sources"]] == [
-        [e["supports"] for e in s.get("excerpts", [])] for s in published["sources"]]
+    for collection in ("institutes", "jurisdictions"):
+        for record, original in zip(page[collection], published[collection]):
+            assert record.get("claims") == original.get("claims")
+            assert record.get("functions") == original.get("functions")
     assert page["jurisdictions"][0]["check"] == {"last_checked": "2026-10-17", "method": "individual"}
 
 
 def test_no_vocabulary_no_rows(dataset):
     assert "functions" not in build.export_dataset(dataset)["institutes"][0]
+
+
+@pytest.mark.parametrize("code", VOCABULARY)
+def test_short_required_on_every_function_code(claimed, code):
+    del claimed["dataset"]["vocabularies"]["function"][code]["short"]
+    assert "'short' is a required property" in schema_errors(claimed)
+
+
+def test_short_is_a_nonempty_string(claimed):
+    claimed["dataset"]["vocabularies"]["function"]["research"]["short"] = 7
+    assert any("not of type 'string'" in e for e in schema_errors(claimed))
 
 
 def located_errors(d, schema):
