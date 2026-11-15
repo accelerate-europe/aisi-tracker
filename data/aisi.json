@@ -32702,6 +32702,16 @@
           "source_ids": [
             "es-plan"
           ]
+        },
+        {
+          "id": "claims-21cfb6551d944991a2eb59149bb2a453",
+          "kind": "function",
+          "code": "incident_response",
+          "basis": "mandate",
+          "text": "The government's plan lists among the institute's functions defining response protocols for incidents arising from the behaviour of advanced models or agents, in coordination with INCIBE and the National Cryptologic Centre.",
+          "source_ids": [
+            "es-plan"
+          ]
         }
       ]
     },
@@ -42472,6 +42482,36 @@
           ],
           "gloss": "make the Institute the reference counterpart for the artificial intelligence safety institutes of third countries. Milestones: setting up the initial technical core before the end of 2026",
           "anchors": [
+            {
+              "text": "España se dotará de un Instituto de Seguridad de la Inteligencia Artificial",
+              "kind": "definition",
+              "gloss": "Spain will establish an Artificial Intelligence Safety Institute"
+            }
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "la definición de protocolos de respuesta ante incidentes derivados del comportamiento de modelos o agentes avanzados, en coordinación con el INCIBE y el Centro Criptológico Nacional",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "es-isia"
+              },
+              "claims",
+              {
+                "id": "claims-21cfb6551d944991a2eb59149bb2a453"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "the definition of response protocols for incidents arising from the behaviour of advanced models or agents, in coordination with INCIBE and the National Cryptologic Centre",
+          "anchors": [
+            {
+              "text": "Serán funciones del Instituto",
+              "kind": "heading",
+              "gloss": "The Institute's functions will be"
+            },
             {
               "text": "España se dotará de un Instituto de Seguridad de la Inteligencia Artificial",
               "kind": "definition",
