@@ -30821,6 +30821,16 @@
           ]
         },
         {
+          "id": "claims-5fba9aa420344b75a4a43a7a041e01ae",
+          "kind": "function",
+          "code": "standards_guidance",
+          "basis": "activity",
+          "text": "It says it recommends that frontier AI developers follow a five-step plan for rigorous assessment of misuse safeguards.",
+          "source_ids": [
+            "catalogue-gb-75"
+          ]
+        },
+        {
           "id": "claims-ab919cf85a8a4e988b93d35f76dcc556",
           "kind": "function",
           "code": "international_cooperation",
@@ -30828,6 +30838,16 @@
           "text": "The UK-Japan partnership statement commits to deepening cooperation between Japan AISI and it on the science of AI evaluation through the International Network for Advanced AI Measurement, Evaluation and Science.",
           "source_ids": [
             "gb-jp-frontier-tech-partnership-2026"
+          ]
+        },
+        {
+          "id": "claims-0c9ac60a1e2f4e2596eb0d59fd6e6474",
+          "kind": "function",
+          "code": "international_cooperation",
+          "basis": "activity",
+          "text": "It says it has advanced the science of evaluation internationally by coordinating the Network for Advanced AI Measurement, Evaluation and Science and contributing to a NIST taxonomy.",
+          "source_ids": [
+            "gb-aisi-best-practice-2026"
           ]
         },
         {
@@ -35546,7 +35566,8 @@
         "gb-jp-frontier-tech-partnership-2026",
         "jp-aisi-note-glm-2026",
         "jp-aisi-note-glm-pdf-2026",
-        "jp-ai-basic-plan-2026"
+        "jp-ai-basic-plan-2026",
+        "jp-aisi-note-exploitbench-2026"
       ],
       "people": [
         {
@@ -36479,6 +36500,26 @@
           "text": "The Cabinet's AI Basic Plan says it needs strengthening and lists active evaluation of high-performance AI, to deter events that threaten national security, among the work to advance.",
           "source_ids": [
             "jp-ai-basic-plan-2026"
+          ]
+        },
+        {
+          "id": "claims-3187a3884be94f1eb17a126a06dc6f81",
+          "kind": "function",
+          "code": "model_testing",
+          "basis": "activity",
+          "text": "It says it evaluated the cyber capabilities of Anthropic's Claude Opus 4.8.",
+          "source_ids": [
+            "jp-aisi-note-exploitbench-2026"
+          ]
+        },
+        {
+          "id": "claims-4d8b728d6a0d474c9fcd75fff53ee246",
+          "kind": "function",
+          "code": "evaluation_methods",
+          "basis": "activity",
+          "text": "It says it released an AI safety evaluation tool as open-source software.",
+          "source_ids": [
+            "catalogue-jp-index"
           ]
         },
         {
@@ -37768,6 +37809,16 @@
           "text": "IMDA's designation factsheet lists its initial research areas as testing and evaluation, safe model design, development and deployment, content assurance, and governance and policy.",
           "source_ids": [
             "sg-imda"
+          ]
+        },
+        {
+          "id": "claims-b5e257f0ae2c493795921b43bba939cf",
+          "kind": "function",
+          "code": "research",
+          "basis": "activity",
+          "text": "It says its work examines issues such as emotional dependency and cognitive offloading.",
+          "source_ids": [
+            "sg-site"
           ]
         },
         {
@@ -45079,6 +45130,23 @@
             ]
           ],
           "accessed": "2026-10-21"
+        },
+        {
+          "text": "Our work examines issues such as emotional dependency and cognitive offloading, ensuring that AI deployment aligns with public interest and long-term societal well-being.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "sg-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-b5e257f0ae2c493795921b43bba939cf"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "SG",
@@ -70540,6 +70608,23 @@
               "institute_id"
             ]
           ]
+        },
+        {
+          "text": "We recommend frontier AI developers follow a 5-step plan for rigorous assessment of misuse safeguards",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-5fba9aa420344b75a4a43a7a041e01ae"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "GB",
@@ -71155,6 +71240,17 @@
               },
               "credit",
               "date"
+            ],
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-4d8b728d6a0d474c9fcd75fff53ee246"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-17",
@@ -108726,6 +108822,17 @@
               },
               "credit",
               "institute_id"
+            ],
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-3187a3884be94f1eb17a126a06dc6f81"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-24",
@@ -112674,6 +112781,23 @@
               },
               "model_access",
               "notes"
+            ]
+          ],
+          "accessed": "2026-10-24"
+        },
+        {
+          "text": "We have advanced the science of evaluation internationally by coordinating the Network for Advanced AI Measurement, Evaluation and Science and contributing to a NIST taxonomy.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-0c9ac60a1e2f4e2596eb0d59fd6e6474"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-24"
