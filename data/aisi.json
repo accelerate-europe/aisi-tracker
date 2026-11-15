@@ -9724,8 +9724,23 @@
           "cn-zhejiang-government-support-2026",
           "cn-ciss-frontier-dialogue-2026",
           "cn-tsinghua-aiig-2026"
-        ]
-      }
+        ],
+        "body_id": "related_bodies-1bd7b9d42ab55f11b3c6c1b1e532ba59"
+      },
+      "claims": [
+        {
+          "id": "claims-a8350d8c00694e07854dd48af9c2396c",
+          "kind": "function",
+          "code": "research",
+          "basis": "activity",
+          "body_id": "related_bodies-1bd7b9d42ab55f11b3c6c1b1e532ba59",
+          "lead": true,
+          "text": "CnAISDA says it conducts and supports research on \"all aspects of AI safety, from theoretical foundations to testing methods, audits, governance and social impacts\".",
+          "source_ids": [
+            "cn-cnaisda-home-r5"
+          ]
+        }
+      ]
     },
     {
       "id": "TW",
@@ -10251,8 +10266,34 @@
         "note": "AISII presents itself as an AI safety institute under KORIKA. Its website describes evaluating AI behaviour in Indonesian and local languages and work on bias, hallucination and misalignment risks. Government assignment remains unverified.",
         "source_ids": [
           "id-aisii"
-        ]
-      }
+        ],
+        "body_id": "related_bodies-aad469c6d98155afafe04c3684084aa5"
+      },
+      "claims": [
+        {
+          "id": "claims-902a232dc418490b839c677a220c640b",
+          "kind": "function",
+          "code": "policy_advice",
+          "basis": "activity",
+          "body_id": "related_bodies-aad469c6d98155afafe04c3684084aa5",
+          "lead": true,
+          "text": "KORIKA's AISII page states: \"Supports ministries with evidence-based decision tools\".",
+          "source_ids": [
+            "id-aisii"
+          ]
+        },
+        {
+          "id": "claims-298cfb8bb8374dd983fb6948920a75d1",
+          "kind": "function",
+          "code": "talent",
+          "basis": "mandate",
+          "body_id": "related_bodies-aad469c6d98155afafe04c3684084aa5",
+          "text": "KORIKA's page lists an AISII Academy for talent development and AI safety among the five main pillars of RKAP 2026.",
+          "source_ids": [
+            "id-korika-rua-2026"
+          ]
+        }
+      ]
     },
     {
       "id": "TH",
@@ -19981,8 +20022,23 @@
         "note": "A joint release announces the government-governed lab for security, safety and trustworthiness testing and certification of models, agents and applications, including continuous red-teaming. Its listed evaluations include risks of agent tool-use, but the release presents the service as policy conformance and verification against security standards for organisations, without identifying a qualifying national evaluation role. The government news-agency copy was unreadable.",
         "source_ids": [
           "ae-zawya-2026"
-        ]
-      }
+        ],
+        "body_id": "related_bodies-ef587708babd5273ab213348c3f527a8"
+      },
+      "claims": [
+        {
+          "id": "claims-0787bc8094014cfd8121768d05a9dc2a",
+          "kind": "function",
+          "code": "certification",
+          "basis": "mandate",
+          "body_id": "related_bodies-ef587708babd5273ab213348c3f527a8",
+          "lead": true,
+          "text": "The press release describes a collaboration to establish the UAE's National AI Test and Validation Lab to provide \"sovereign, independent assessment and certification for AI models, agents, and applications\".",
+          "source_ids": [
+            "ae-zawya-2026"
+          ]
+        }
+      ]
     },
     {
       "id": "SA",
@@ -39793,6 +39849,26 @@
           "source_ids": [
             "depth-au-uk-mou"
           ]
+        },
+        {
+          "id": "claims-3ccf280d822e490f8d2fc9756bb65120",
+          "kind": "function",
+          "code": "policy_advice",
+          "basis": "activity",
+          "text": "The Australian AI Safety Institute told a parliamentary committee that it is providing technical information services to support the digital duty of care legislation as it is being developed.",
+          "source_ids": [
+            "au-jsc-ai-2026-09-18"
+          ]
+        },
+        {
+          "id": "claims-1b478ab800b148af874a100a97a8fab4",
+          "kind": "function",
+          "code": "regulatory_support",
+          "basis": "activity",
+          "text": "The Department of Industry, Science and Resources says the institute supports \"government and regulators’ understanding of emerging AI capabilities, risks and mitigation approaches\".",
+          "source_ids": [
+            "au-industry"
+          ]
         }
       ]
     },
@@ -47943,6 +48019,17 @@
               },
               "staffing_model",
               "notes"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-1b478ab800b148af874a100a97a8fab4"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-21"
@@ -50639,6 +50726,29 @@
             ]
           ],
           "accessed": "2026-10-18"
+        },
+        {
+          "text": "Supports ministries with evidence-based decision tools",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "ID"
+              },
+              "claims",
+              {
+                "id": "claims-902a232dc418490b839c677a220c640b"
+              },
+              "text"
+            ]
+          ],
+          "anchors": [
+            {
+              "text": "AISII Differentiation",
+              "kind": "heading"
+            }
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "ID",
@@ -53495,6 +53605,23 @@
               },
               "closest_body",
               "note"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Strategic collaboration to establish the UAE’s National AI Test and Validation Lab to provide sovereign, independent assessment and certification for AI models, agents, and applications.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "AE"
+              },
+              "claims",
+              {
+                "id": "claims-0787bc8094014cfd8121768d05a9dc2a"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-17"
@@ -95317,8 +95444,19 @@
       "access_note": "Original https://cnaisi.cn/ returned a JavaScript application shell. One fallback text copy at https://r.jina.ai/https://cnaisi.cn/ retrieved substantive text using curl; the web tool could not open the fallback. The snapshot identifies the complete rendered response, not original HTML. No publication date is stated. Page title is retained as rendered, including Al.",
       "excerpts": [
         {
-          "text": "research on all aspects of AI safety, from theoretical foundations to testing methods, audits, governance and social impacts.",
+          "text": "We conduct and support research on all aspects of AI safety, from theoretical foundations to testing methods, audits, governance and social impacts.",
           "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "CN"
+              },
+              "claims",
+              {
+                "id": "claims-a8350d8c00694e07854dd48af9c2396c"
+              },
+              "text"
+            ],
             [
               "jurisdictions",
               {
@@ -108471,6 +108609,23 @@
             ]
           ],
           "accessed": "2026-10-21"
+        },
+        {
+          "text": "There is the digital duty of care that is currently moving through its legislative framing , and the Australian AI Safety Institute at the Department of Industry, Science and Resources is providing technical information services to support th at legislation as it 's being developed.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-3ccf280d822e490f8d2fc9756bb65120"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-21"
         }
       ],
       "access_note": "On 21 October 2026 the ParlInfo page and its reader-proxy copy returned the site's bot check, and no archive copy could be retrieved. The saved copy is the proof Hansard PDF of this ParlInfo record, downloaded in a browser by the dataset owner on 21 October 2026. The witness list is on printed page 19, the testing and access quotations on printed pages 22 and 25 and the staff quotations on printed pages 25 and 26. Proof Hansard is uncorrected.",
@@ -114740,6 +114895,31 @@
               },
               "role"
             ]
+          ],
+          "accessed": "2026-11-07"
+        },
+        {
+          "text": "Akademi AI Safety Institute Indonesia (AISII) pengembangan talenta dan keamanan AI",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "ID"
+              },
+              "claims",
+              {
+                "id": "claims-298cfb8bb8374dd983fb6948920a75d1"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "AI Safety Institute Indonesia (AISII) Academy: talent development and AI safety",
+          "anchors": [
+            {
+              "text": "RKAP 2026 dibangun di atas lima pilar utama:",
+              "kind": "heading",
+              "gloss": "RKAP 2026 is built on five main pillars:"
+            }
           ],
           "accessed": "2026-11-07"
         }
