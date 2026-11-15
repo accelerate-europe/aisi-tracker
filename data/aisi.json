@@ -2386,7 +2386,6 @@
         ]
       },
       "institute_id": "de-aisi",
-      "summary": "In its first phase, AISI Deutschland runs as a virtual core inside two federal agencies.",
       "next_check": {
         "date": "2026-12-01",
         "reason": "Check for confirmation of international network membership and phase 2 plans. The government's answer of 19 October 2026 has been read; it leaves further design and resources under discussion and sets no completion date."
@@ -2502,7 +2501,6 @@
         {
           "name": "Bundesnetzagentur",
           "name_en": "Federal Network Agency",
-          "role": "It handles general supervision under §§ 2 and 6 KI-MIG, effective 29 July 2026; sector and Länder exceptions apply. Its notifying remit covers Annex I point 6.",
           "counts_as_aisi": false,
           "source_ids": [
             "de-ki-mig-2026",
@@ -2522,7 +2520,6 @@
         {
           "name": "Bundesanstalt für Finanzdienstleistungsaufsicht (BaFin)",
           "name_en": "Federal Financial Supervisory Authority (BaFin)",
-          "role": "It covers regulated financial activities within § 2(3) KI-MIG.",
           "counts_as_aisi": false,
           "source_ids": [
             "de-ki-mig-2026",
@@ -2539,7 +2536,6 @@
         {
           "name": "Bundesamt für Sicherheit in der Informationstechnik (BSI)",
           "name_en": "Federal Office for Information Security (BSI)",
-          "role": "It covers Annex III point 1 high-risk AI under § 3(2) KI-MIG until the market-surveillance authority under Article 52(2) of the Cyber Resilience Act is designated.",
           "counts_as_aisi": false,
           "source_ids": [
             "de-bnetza-notifying-authorities",
@@ -2557,7 +2553,6 @@
         {
           "name": "Zentralstelle der Länder für Gesundheitsschutz bei Arzneimitteln und Medizinprodukten (ZLG)",
           "name_en": "Central Authority of the Länder for Health Protection regarding Medicinal Products and Medical Devices (ZLG)",
-          "role": "It covers Annex I Section A points 11 and 12. Bundesnetzagentur identifies the body; § 3(1) KI-MIG carries over authorities designated under existing federal or Land sectoral law rather than naming it individually.",
           "counts_as_aisi": false,
           "source_ids": [
             "de-bnetza-notifying-authorities",
@@ -2575,7 +2570,6 @@
         {
           "name": "Bayerisches Staatsministerium für Wohnen, Bau und Verkehr",
           "name_en": "Bavarian State Ministry for Housing, Construction and Transport",
-          "role": "It covers cableways (Annex I Section A point 8), as listed by Bundesnetzagentur. Section 3(1) KI-MIG assigns designation for these systems to the Länder; the federal Act does not name the Bavarian ministry individually.",
           "counts_as_aisi": false,
           "source_ids": [
             "de-bnetza-notifying-authorities",
@@ -2594,7 +2588,6 @@
         {
           "name": "Zentralstelle der Länder für Sicherheitstechnik (ZLS)",
           "name_en": "Central Authority of the Länder for Safety Technology (ZLS)",
-          "role": "It covers other Annex I Section A sectors. Bundesnetzagentur identifies the body; § 3(1) KI-MIG carries over authorities designated under existing federal or Land sectoral law rather than naming it individually.",
           "counts_as_aisi": false,
           "source_ids": [
             "de-bnetza-notifying-authorities",
@@ -2610,7 +2603,60 @@
           "id": "related_bodies-28b4121e14c756dbb9146baaedddf010"
         }
       ],
-      "notes": "Bundesnetzagentur's notifying-authorities page reports five notifying authorities in Germany.\n\nThe Commission's contact list of 9 November 2026 shows this state's AI Act authority without the pending-adoption mark; the national sources cited here give its actual designation status."
+      "claims": [
+        {
+          "id": "claims-3471353e22c8451ba08064730b29dd3f",
+          "kind": "fact",
+          "text": "The ministries' announcement says BSI and the Federal Network Agency form the institute's virtual core in a first phase.",
+          "source_ids": [
+            "de-bmds"
+          ]
+        },
+        {
+          "id": "claims-152ad39acb034344bd4965bfa7eafb67",
+          "kind": "function",
+          "code": "regulatory_support",
+          "basis": "mandate",
+          "body_id": "related_bodies-3691133321315a2a9958c88783232fab",
+          "text": "The Federal Network Agency lists it as one of Germany's notifying authorities under section 3 of the KI-MIG, for high-risk AI under Annex III point 1.",
+          "source_ids": [
+            "de-bnetza-notifying-authorities"
+          ]
+        },
+        {
+          "id": "claims-a7a66365aa494dd38f58f9df3c293569",
+          "kind": "function",
+          "code": "regulatory_support",
+          "basis": "mandate",
+          "body_id": "related_bodies-d1b9be1654f05dd39b51600931e78fc4",
+          "text": "The Federal Network Agency lists it as one of Germany's notifying authorities under section 3 of the KI-MIG, for Annex I Section A points 11 and 12.",
+          "source_ids": [
+            "de-bnetza-notifying-authorities"
+          ]
+        },
+        {
+          "id": "claims-e211d9b3009d4d45af08511da21c6aee",
+          "kind": "function",
+          "code": "regulatory_support",
+          "basis": "mandate",
+          "body_id": "related_bodies-3bcdf1206feb5293826eab1060d7f1dd",
+          "text": "The Federal Network Agency lists it as one of Germany's notifying authorities under section 3 of the KI-MIG, for cableways (Annex I Section A point 8).",
+          "source_ids": [
+            "de-bnetza-notifying-authorities"
+          ]
+        },
+        {
+          "id": "claims-e93b60c2385746d293650baed8961f54",
+          "kind": "function",
+          "code": "regulatory_support",
+          "basis": "mandate",
+          "body_id": "related_bodies-28b4121e14c756dbb9146baaedddf010",
+          "text": "The Federal Network Agency lists it as one of Germany's notifying authorities under section 3 of the KI-MIG, for the other areas of Annex I Section A.",
+          "source_ids": [
+            "de-bnetza-notifying-authorities"
+          ]
+        }
+      ]
     },
     {
       "id": "ES",
@@ -2626,12 +2672,10 @@
         ]
       },
       "institute_id": "es-isia",
-      "summary": "The government plans to set up an AI Security Institute inside the AI supervisory agency AESIA, with a first team by the end of 2026.",
       "related_bodies": [
         {
           "name": "Agencia Española de Supervisión de Inteligencia Artificial (AESIA)",
           "name_en": "Spanish Agency for the Supervision of Artificial Intelligence (AESIA)",
-          "role": "It would lead supervision of non-product AI under the government bill approved for submission to Congress 26 May 2026. Government approval does not mean the bill is enacted.",
           "counts_as_aisi": false,
           "source_ids": [
             "es-cabinet-ai-governance-bill-2026",
@@ -2649,7 +2693,6 @@
         {
           "name": "Agencia Española de Protección de Datos (AEPD)",
           "name_en": "Spanish Data Protection Agency (AEPD)",
-          "role": "It would cover its sector under the 26 May 2026 AI-governance bill.",
           "counts_as_aisi": false,
           "source_ids": [
             "es-cabinet-ai-governance-bill-2026",
@@ -2666,7 +2709,6 @@
         {
           "name": "Consejo General del Poder Judicial (CGPJ)",
           "name_en": "General Council of the Judiciary (CGPJ)",
-          "role": "It would cover the judicial sector under the 26 May 2026 AI-governance bill.",
           "counts_as_aisi": false,
           "source_ids": [
             "es-cabinet-ai-governance-bill-2026",
@@ -2756,8 +2798,7 @@
       "identifier_source_ids": [
         "un-m49",
         "wikidata-jurisdiction-identifiers"
-      ],
-      "notes": "The Commission's contact list of 9 November 2026 marks this state's AI Act authority as pending final adoption; the national sources cited here give its actual designation status."
+      ]
     },
     {
       "id": "NO",
@@ -31501,6 +31542,10 @@
           {
             "date": "2026-11-14",
             "text": "Searched for a budget amount or staff count for AISI Deutschland itself: the government's answers in Bundestag papers 21/8727 and 21/8470, budget section 24 of the 2027 draft and the budget committee's November papers, BSI and federal government pages and ministry press, in German and English. No figure for the institute was found; the amounts found were demands by industry associations."
+          },
+          {
+            "date": "2026-10-19",
+            "text": "Cyber agency searched on 19 October 2026 in German and English: BSI; the BMDS announcement, BSI's institute page and the National Security Council decision were read for its relation to the institute."
           }
         ],
         "functions": {
@@ -31595,7 +31640,7 @@
       "outputs": [],
       "head": {
         "state": "not_published",
-        "notes": "No named AISI top executive on BSI’s current AISI page, the BMDS founding release or the June 2026 National Security Council decision; German/English leadership searches on 19 October 2026 did not identify an appointment. Agency presidents and ministers are not treated as institute heads."
+        "notes": "Searched BSI’s current AISI page, the BMDS founding release, the June 2026 National Security Council decision and German and English leadership queries on 19 October 2026 for a named top executive of the institute."
       },
       "reports_to": {
         "state": "stated",
@@ -31637,8 +31682,7 @@
               "de-bsi-aisi"
             ]
           }
-        ],
-        "notes": "Cyber agency searched: BSI, 2026-10-19 (de, en); found. BSI founding membership and AI cybersecurity role explicitly confirmed. Stopped after positive evidence, without padding to six fetches. Count includes multipurpose sources; exact source IDs: de-bmds, de-bsi-aisi, de-nsr-2026."
+        ]
       },
       "testing_capacity": {
         "state": "planned",
@@ -31875,6 +31919,22 @@
           {
             "date": "2026-11-14",
             "text": "Searched for a budget amount or staff count for the Instituto de Seguridad de la Inteligencia Artificial itself: the IA360 plan, AESIA's own plan and pages, Finance Ministry and Council of Ministers spending notes, written questions and answers in the Congress, and the press, in Spanish and English. The figures found concern AESIA, not the institute."
+          },
+          {
+            "date": "2026-10-16",
+            "text": "The plan was read for a constitutive instrument for the institute."
+          },
+          {
+            "date": "2026-10-19",
+            "text": "Cyber agency searched on 19 October 2026 in Spanish and English: INCIBE and CCN; the plan and five cyber-related documents were read, and signed instruments naming them were searched for."
+          },
+          {
+            "date": "2026-10-16",
+            "text": "Testing: the IA360 plan was read for a constitutive instrument and for testing by the institute or its partner bodies."
+          },
+          {
+            "date": "2026-10-16",
+            "text": "Model access: searched for an access event, legal power or agreement with a developer that has a model in Epoch AI's frontier set, and the plan was read for an agreement with a developer."
           }
         ],
         "functions": {
@@ -31908,7 +31968,6 @@
         "j8-es-nis2-commission",
         "j8-es-incibe-role"
       ],
-      "notes": "Milestone: initial technical core before the end of 2026. The plan describes intended administrative agreements, but no constitutive instrument for the planned institute was identified.",
       "mandate_short": "Will evaluate the most advanced models before and after deployment.",
       "placement": {
         "host_type": "government_agency",
@@ -31922,7 +31981,7 @@
       "outputs": [],
       "head": {
         "state": "not_published",
-        "notes": "Searched IA360 plan, AESIA organisational and institutional pages, and Spanish/English appointment queries on 19 October 2026. No person explicitly named as head of the planned technical institute. Alberto Gago is named as AESIA director on its structure page, but a host director is not automatically head of the institute. The plan says AESIA will direct it and targets an initial technical core before the end of 2026."
+        "notes": "Searched the IA360 plan, AESIA's organisational and institutional pages, and Spanish and English appointment queries on 19 October 2026 for a named head of the planned institute."
       },
       "reports_to": {
         "state": "stated",
@@ -31999,19 +32058,18 @@
               "es-plan"
             ]
           }
-        ],
-        "notes": "Cyber agency searched: INCIBE; CCN, 2026-10-19 (es, en); found. INCIBE and CCN are named in planned institute cooperation. No signed named instruments found; all recorded relations are announced only. Five cyber-related documents fetched, plus institutional sources and targeted instrument searches. No sixth document fetched because searches yielded no new institute-specific instrument. Count includes multipurpose sources; exact source IDs: es-plan, es-incibe-about, es-ccn-home, es-aesia-search-held, es-incibe-aesia-campaign."
+        ]
       },
       "testing_capacity": {
         "state": "planned",
-        "notes": "The IA360 plan was presented on 21 September 2026 as the Government's action plan for the next twelve months; no constitutive instrument for the institute was found. Its partner bodies are planned, not yet testing for it: the institute 'se articulará mediante convenios con el INCIBE, el Centro Criptológico Nacional, el Departamento de Seguridad Nacional, la Agencia Española de Protección de Datos y el Barcelona Supercomputing Center, que pueden aportar personal, capacidad de cómputo y conocimiento especializado' (will be organised through agreements with INCIBE, the National Cryptologic Centre, the National Security Department, the Spanish Data Protection Agency and the Barcelona Supercomputing Center, which may contribute staff, computing capacity and specialist knowledge). No testing is reported.",
+        "notes": "The plan says the institute's functions will include evaluating the most advanced models before and after their deployment.",
         "source_ids": [
           "es-plan",
           "es-moncloa"
         ]
       },
       "model_access": {
-        "notes": "No access event, legal power or agreement providing for access to, or evaluation of, the models of a developer that has a model in Epoch AI's frontier set was found. Planned only: the plan foresees 'acceso previo al lanzamiento obtenido mediante acuerdos voluntarios con los desarrolladores' (pre-launch access obtained through voluntary agreements with developers); no agreement with a developer is reported. The AI Act market-surveillance role belongs to the host agency, AESIA, not to the institute.",
+        "notes": "The plan says the institute's functions will be evaluating the most advanced models before and after their deployment, with pre-launch access obtained through voluntary agreements with developers.",
         "source_ids": [
           "es-plan"
         ],
@@ -32071,7 +32129,7 @@
         "source_ids": [
           "es-plan"
         ],
-        "notes": "The plan of 20 September 2026 places the institute inside AESIA, which will direct it, with agreements under which INCIBE, the National Cryptologic Centre, the National Security Department, the Data Protection Agency and the Barcelona Supercomputing Center may contribute staff."
+        "notes": "The plan says the institute will be organised through agreements with INCIBE, the National Cryptologic Centre, the Department of National Security, the Spanish Data Protection Agency and the Barcelona Supercomputing Center, which can provide staff, computing capacity and expertise."
       },
       "claims": [
         {
@@ -32130,6 +32188,14 @@
           "code": "international_cooperation",
           "basis": "mandate",
           "text": "The government's IA360 plan assigns it international cooperation with counterpart institutes in other countries and with the European AI Office.",
+          "source_ids": [
+            "es-plan"
+          ]
+        },
+        {
+          "id": "claims-e2b863a4395843dda8d06717bf1c7371",
+          "kind": "fact",
+          "text": "The IA360 plan sets as a milestone the setting up of the institute's initial technical core before the end of 2026.",
           "source_ids": [
             "es-plan"
           ]
@@ -40767,13 +40833,6 @@
               {
                 "id": "DE"
               },
-              "summary"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "DE"
-              },
               "timeline",
               {
                 "id": "de-2"
@@ -40953,6 +41012,17 @@
                 "id": "np-de-bnetza"
               },
               "how"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "DE"
+              },
+              "claims",
+              {
+                "id": "claims-3471353e22c8451ba08064730b29dd3f"
+              },
+              "text"
             ]
           ],
           "gloss": "The Federal Office for Information Security (BSI) and the Federal Network Agency (BNetzA) form, in a first phase, the “virtual” nucleus of the AI security institute",
@@ -41042,6 +41112,24 @@
               "gloss": "are setting up AISI Deutschland in Berlin"
             }
           ]
+        },
+        {
+          "text": "Deutsches KI-Sicherheitsinstitut \"AISI Deutschland\" nimmt Arbeit auf",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "DE"
+              },
+              "timeline",
+              {
+                "id": "de-3"
+              },
+              "description"
+            ]
+          ],
+          "gloss": "German AI security institute \"AISI Deutschland\" starts work",
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "DE",
@@ -41144,13 +41232,6 @@
               {
                 "id": "ES"
               },
-              "summary"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "ES"
-              },
               "timeline",
               {
                 "id": "es-1"
@@ -41226,20 +41307,6 @@
               "code"
             ]
           ]
-        },
-        {
-          "text": "se articulará mediante convenios con el INCIBE, el Centro Criptológico Nacional, el Departamento de Seguridad Nacional, la Agencia Española de Protección de Datos y el Barcelona Supercomputing Center",
-          "gloss": "It will be organised through agreements with INCIBE, the National Cryptologic Centre, the Department of National Security, the Spanish Data Protection Agency and the Barcelona Supercomputing Center.",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "es-isia"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-10-17"
         },
         {
           "text": "Serán funciones del Instituto la evaluación de los modelos más avanzados antes y después de su despliegue",
@@ -41469,6 +41536,14 @@
               },
               "staffing_model",
               "code"
+            ],
+            [
+              "institutes",
+              {
+                "id": "es-isia"
+              },
+              "staffing_model",
+              "notes"
             ]
           ],
           "gloss": "it will be organised through agreements with INCIBE, the National Cryptologic Centre, the Department of National Security, the Spanish Data Protection Agency and the Barcelona Supercomputing Center, which can contribute staff, computing capacity and specialised knowledge",
@@ -41578,6 +41653,22 @@
                 "id": "claims-2283d1a3fa4f43fabf8f64a126e05904"
               },
               "text"
+            ],
+            [
+              "institutes",
+              {
+                "id": "es-isia"
+              },
+              "testing_capacity",
+              "notes"
+            ],
+            [
+              "institutes",
+              {
+                "id": "es-isia"
+              },
+              "model_access",
+              "notes"
             ]
           ],
           "gloss": "The Institute's functions will be the evaluation of the most advanced models before and after their deployment, with pre-launch access obtained through voluntary agreements with developers and in cooperation with the European AI Office",
@@ -41748,6 +41839,31 @@
               "gloss": "Spain will establish an Artificial Intelligence Safety Institute"
             }
           ]
+        },
+        {
+          "text": "constituir al Instituto como interlocutor de referencia ante los institutos de seguridad de la inteligencia artificial de terceros países. Hitos: constitución del núcleo técnico inicial antes de final de 2026",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "es-isia"
+              },
+              "claims",
+              {
+                "id": "claims-e2b863a4395843dda8d06717bf1c7371"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "make the Institute the reference counterpart for the artificial intelligence safety institutes of third countries. Milestones: setting up the initial technical core before the end of 2026",
+          "anchors": [
+            {
+              "text": "España se dotará de un Instituto de Seguridad de la Inteligencia Artificial",
+              "kind": "definition",
+              "gloss": "Spain will establish an Artificial Intelligence Safety Institute"
+            }
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "ES",
@@ -77141,13 +77257,6 @@
             [
               "jurisdictions",
               {
-                "id": "DE"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
                 "id": "LU"
               },
               "notes"
@@ -77163,13 +77272,6 @@
               "jurisdictions",
               {
                 "id": "RO"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "ES"
               },
               "notes"
             ],
@@ -77784,13 +77886,6 @@
             [
               "jurisdictions",
               {
-                "id": "DE"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
                 "id": "LU"
               },
               "notes"
@@ -77806,13 +77901,6 @@
               "jurisdictions",
               {
                 "id": "RO"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "ES"
               },
               "notes"
             ],
@@ -78086,13 +78174,6 @@
           "accessed": "2026-11-10",
           "gloss": "Germany Federal Network Agency",
           "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "DE"
-              },
-              "notes"
-            ],
             [
               "jurisdictions",
               {
@@ -78976,36 +79057,8 @@
       "language": "de",
       "excerpts": [
         {
-          "text": "Die Bundesnetzagentur ist die für die Einhaltung der Verordnung (EU) 2024/1689 zuständige Marktüberwachungsbehörde",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "DE"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-e10c0977415056d28b41b2b8038940bd"
-              },
-              "role"
-            ]
-          ],
-          "gloss": "The Federal Network Agency is the market surveillance authority responsible for compliance with Regulation (EU) 2024/1689."
-        },
-        {
           "text": "Für KI-Systeme, die mit solchen Produkten in Zusammenhang stehen, auf die die Verordnung (EU) 2016/424 anzuwenden ist, bestimmen die Länder die zuständigen notifizierenden Behörden.",
           "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "DE"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-3bcdf1206feb5293826eab1060d7f1dd"
-              },
-              "role"
-            ],
             [
               "jurisdictions",
               {
@@ -79034,29 +79087,7 @@
               {
                 "id": "related_bodies-d1b9be1654f05dd39b51600931e78fc4"
               },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "DE"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-d1b9be1654f05dd39b51600931e78fc4"
-              },
               "designation_basis"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "DE"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-28b4121e14c756dbb9146baaedddf010"
-              },
-              "role"
             ],
             [
               "jurisdictions",
@@ -79086,29 +79117,7 @@
               {
                 "id": "related_bodies-d1b9be1654f05dd39b51600931e78fc4"
               },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "DE"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-d1b9be1654f05dd39b51600931e78fc4"
-              },
               "designation_basis"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "DE"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-28b4121e14c756dbb9146baaedddf010"
-              },
-              "role"
             ],
             [
               "jurisdictions",
@@ -79127,37 +79136,8 @@
           "url": "https://www.gesetze-im-internet.de/ki-mig/__3.html"
         },
         {
-          "text": "(2) Für die Hochrisiko-KI-Systeme nach Artikel 6 Absatz 2 in Verbindung mit Anhang III Nummer 1 der Verordnung (EU) 2024/1689 ist die Marktüberwachungsbehörde,",
-          "gloss": "For high-risk AI systems under Article 6(2) in conjunction with Annex III point 1 of Regulation (EU) 2024/1689, the market-surveillance authority",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "DE"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-3691133321315a2a9958c88783232fab"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-10-17"
-        },
-        {
           "text": "Bis zur Benennung der Marktüberwachungsbehörde nach Artikel 52 Absatz 2 der Verordnung (EU) 2024/2847 nimmt das Bundesamt für Sicherheit in der Informationstechnik die in Satz 1 genannte Aufgabe wahr.",
           "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "DE"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-3691133321315a2a9958c88783232fab"
-              },
-              "role"
-            ],
             [
               "jurisdictions",
               {
@@ -79193,19 +79173,6 @@
       "accessed": "2026-10-17",
       "language": "de",
       "excerpts": [
-        {
-          "text": "gibt es in Deutschland fünf Notifizierende Behörden",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "DE"
-              },
-              "notes"
-            ]
-          ],
-          "gloss": "There are five notifying authorities in Germany."
-        },
         {
           "text": "Gemäß § 3 des deutschen KI-Marktüberwachungs- und Innovationsförderungs-Gesetzes (KI-MIG) gibt es in Deutschland fünf Notifizierende Behörden:",
           "supports": [
@@ -79291,17 +79258,6 @@
               {
                 "id": "related_bodies-d1b9be1654f05dd39b51600931e78fc4"
               },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "DE"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-d1b9be1654f05dd39b51600931e78fc4"
-              },
               "authority_roles"
             ],
             [
@@ -79322,17 +79278,6 @@
         {
           "text": "Das Bayerisches Staatsministerium für Wohnen, Bau und Verkehr (STMB) für Seilbahnen (Anhang I Teil A Nr. 8)",
           "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "DE"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-3bcdf1206feb5293826eab1060d7f1dd"
-              },
-              "role"
-            ],
             [
               "jurisdictions",
               {
@@ -79371,17 +79316,6 @@
               {
                 "id": "related_bodies-28b4121e14c756dbb9146baaedddf010"
               },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "DE"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-28b4121e14c756dbb9146baaedddf010"
-              },
               "authority_roles"
             ],
             [
@@ -79398,6 +79332,106 @@
           ],
           "accessed": "2026-10-17",
           "gloss": "The Central Authority of the Länder for Safety Engineering (ZLS), for the other areas of Annex I Section A"
+        },
+        {
+          "text": "Das Bundesamt für Sicherheit in der Informationstechnik (BSI) für Hochrisiko-KI nach Anhang III Nr. 1",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "DE"
+              },
+              "claims",
+              {
+                "id": "claims-152ad39acb034344bd4965bfa7eafb67"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "The Federal Office for Information Security (BSI), for high-risk AI under Annex III point 1",
+          "anchors": [
+            {
+              "text": "Gemäß § 3 des deutschen KI-Marktüberwachungs- und Innovationsförderungs-Gesetzes (KI-MIG) gibt es in Deutschland fünf Notifizierende Behörden:",
+              "kind": "heading",
+              "gloss": "Under section 3 of the German AI Market Surveillance and Innovation Promotion Act (KI-MIG), there are five notifying authorities in Germany:"
+            }
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Die Zentralstelle der Länder für Gesundheitsschutz bei Arzneimitteln und Medizinprodukten (ZLG) für Anhang I Teil A Nr. 11 und 12",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "DE"
+              },
+              "claims",
+              {
+                "id": "claims-a7a66365aa494dd38f58f9df3c293569"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "The Central Authority of the Länder for Health Protection with regard to Medicinal Products and Medical Devices (ZLG), for Annex I Section A points 11 and 12",
+          "anchors": [
+            {
+              "text": "Gemäß § 3 des deutschen KI-Marktüberwachungs- und Innovationsförderungs-Gesetzes (KI-MIG) gibt es in Deutschland fünf Notifizierende Behörden:",
+              "kind": "heading",
+              "gloss": "Under section 3 of the German AI Market Surveillance and Innovation Promotion Act (KI-MIG), there are five notifying authorities in Germany:"
+            }
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Das Bayerisches Staatsministerium für Wohnen, Bau und Verkehr (STMB) für Seilbahnen (Anhang I Teil A Nr. 8)",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "DE"
+              },
+              "claims",
+              {
+                "id": "claims-e211d9b3009d4d45af08511da21c6aee"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "The Bavarian State Ministry for Housing, Construction and Transport (STMB), for cableways (Annex I Section A point 8)",
+          "anchors": [
+            {
+              "text": "Gemäß § 3 des deutschen KI-Marktüberwachungs- und Innovationsförderungs-Gesetzes (KI-MIG) gibt es in Deutschland fünf Notifizierende Behörden:",
+              "kind": "heading",
+              "gloss": "Under section 3 of the German AI Market Surveillance and Innovation Promotion Act (KI-MIG), there are five notifying authorities in Germany:"
+            }
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Die Zentralstelle der Länder für Sicherheitstechnik (ZLS) für die anderen Bereiche des Anhang I Teil A",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "DE"
+              },
+              "claims",
+              {
+                "id": "claims-e93b60c2385746d293650baed8961f54"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "The Central Authority of the Länder for Safety Engineering (ZLS), for the other areas of Annex I Section A",
+          "anchors": [
+            {
+              "text": "Gemäß § 3 des deutschen KI-Marktüberwachungs- und Innovationsförderungs-Gesetzes (KI-MIG) gibt es in Deutschland fünf Notifizierende Behörden:",
+              "kind": "heading",
+              "gloss": "Under section 3 of the German AI Market Surveillance and Innovation Promotion Act (KI-MIG), there are five notifying authorities in Germany:"
+            }
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "DE",
@@ -80537,25 +80571,7 @@
       "accessed": "2026-10-17",
       "published": "2026-05-26",
       "language": "es",
-      "excerpts": [
-        {
-          "text": "un punto de contacto único para cuestiones de supervisión a través de la AESIA",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "ES"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-ac6e5fc2826b586cb53ec652868a94d3"
-              },
-              "role"
-            ]
-          ],
-          "gloss": "A single point of contact for supervision through AESIA."
-        }
-      ],
+      "excerpts": [],
       "origin": "ES",
       "title_en": "Draft Organic Law for the Proper Use and Governance of Artificial Intelligence",
       "snapshot": {
