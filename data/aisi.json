@@ -31808,7 +31808,30 @@
             "date": "2026-11-14",
             "text": "Searched for a budget amount or staff count for the Instituto de Seguridad de la Inteligencia Artificial itself: the IA360 plan, AESIA's own plan and pages, Finance Ministry and Council of Ministers spending notes, written questions and answers in the Congress, and the press, in Spanish and English. The figures found concern AESIA, not the institute."
           }
-        ]
+        ],
+        "functions": {
+          "date": "2026-11-14",
+          "codes": [
+            "model_testing",
+            "evaluation_methods",
+            "research",
+            "standards_guidance",
+            "regulatory_enforcement",
+            "regulatory_support",
+            "risk_monitoring",
+            "foresight",
+            "policy_advice",
+            "incident_response",
+            "international_cooperation",
+            "convening",
+            "capacity_building",
+            "talent",
+            "adoption",
+            "public_access_continuity",
+            "certification",
+            "sandbox"
+          ]
+        }
       },
       "source_ids": [
         "es-plan",
@@ -31981,7 +32004,69 @@
           "es-plan"
         ],
         "notes": "The plan of 20 September 2026 places the institute inside AESIA, which will direct it, with agreements under which INCIBE, the National Cryptologic Centre, the National Security Department, the Data Protection Agency and the Barcelona Supercomputing Center may contribute staff."
-      }
+      },
+      "claims": [
+        {
+          "id": "claims-2283d1a3fa4f43fabf8f64a126e05904",
+          "kind": "function",
+          "code": "model_testing",
+          "basis": "mandate",
+          "text": "The government's IA360 plan assigns it the evaluation of the most advanced models before and after deployment, with pre-launch access through voluntary agreements with developers.",
+          "source_ids": [
+            "es-plan"
+          ]
+        },
+        {
+          "id": "claims-13e6bdd9512f4b9f804f7eb6078d01a5",
+          "kind": "function",
+          "code": "evaluation_methods",
+          "basis": "mandate",
+          "text": "The government's IA360 plan assigns it the development of evaluation methodology and tools, and of standards for safe testing environments.",
+          "source_ids": [
+            "es-plan"
+          ]
+        },
+        {
+          "id": "claims-43bbb1c65d3447d4943af63125102155",
+          "kind": "function",
+          "code": "regulatory_support",
+          "basis": "mandate",
+          "text": "The national plan says it will give technical support to AESIA, the supervisory authority, in market surveillance and in helping companies prepare.",
+          "source_ids": [
+            "es-plan"
+          ]
+        },
+        {
+          "id": "claims-e0203a1b22b0440b8a930ebbb4fc054e",
+          "kind": "function",
+          "code": "risk_monitoring",
+          "basis": "mandate",
+          "text": "The government's IA360 plan assigns it a periodic report to the General State Administration on how the capabilities and risks of frontier models evolve.",
+          "source_ids": [
+            "es-plan"
+          ]
+        },
+        {
+          "id": "claims-fd3fdb842f724856937f29ae38c0d00a",
+          "kind": "function",
+          "code": "policy_advice",
+          "basis": "mandate",
+          "text": "The government's IA360 plan assigns it technical advice to the General State Administration.",
+          "source_ids": [
+            "es-plan"
+          ]
+        },
+        {
+          "id": "claims-91406200d0e949c3bdaaecb45287f261",
+          "kind": "function",
+          "code": "international_cooperation",
+          "basis": "mandate",
+          "text": "The government's IA360 plan assigns it international cooperation with counterpart institutes in other countries and with the European AI Office.",
+          "source_ids": [
+            "es-plan"
+          ]
+        }
+      ]
     },
     {
       "id": "no-ki-norge",
@@ -32465,7 +32550,30 @@
             "date": "2026-11-14",
             "text": "Searched for a budget amount for the AI Office: the Commission decision establishing it, the Commission's own pages, answers to Parliament's written questions, the budgetary statement of the 2025 AI Act amendment package and the press. No Commission figure was found; in the material read, a starting budget of EUR 46.5m was found only in press reports attributing it to a Member of the European Parliament."
           }
-        ]
+        ],
+        "functions": {
+          "date": "2026-11-14",
+          "codes": [
+            "model_testing",
+            "evaluation_methods",
+            "research",
+            "standards_guidance",
+            "regulatory_enforcement",
+            "regulatory_support",
+            "risk_monitoring",
+            "foresight",
+            "policy_advice",
+            "incident_response",
+            "international_cooperation",
+            "convening",
+            "capacity_building",
+            "talent",
+            "adoption",
+            "public_access_continuity",
+            "certification",
+            "sandbox"
+          ]
+        }
       },
       "source_ids": [
         "eu-decision",
@@ -32488,7 +32596,8 @@
         "eu-politico-ai-office-hiring-2026",
         "eu-ai-office-tender-gpai-2025",
         "eu-tender-op-0032-specifications",
-        "eu-politico-tudorache-2024"
+        "eu-politico-tudorache-2024",
+        "r5-eu-ai-act-article74"
       ],
       "staff": [
         {
@@ -32795,6 +32904,106 @@
             "eu-ai-office-jobs-2024"
           ],
           "text": "The Commission announced the AI Office's first job opportunities."
+        },
+        {
+          "id": "claims-3374546e32fa4592968daabf382324ba",
+          "kind": "function",
+          "code": "evaluation_methods",
+          "basis": "mandate",
+          "text": "The Commission decision establishing it assigns it developing tools, methodologies and benchmarks for evaluating the capabilities of general-purpose AI models.",
+          "source_ids": [
+            "eu-decision-oj"
+          ]
+        },
+        {
+          "id": "claims-650dbbebba8640e99e6994a11b842883",
+          "kind": "function",
+          "code": "regulatory_enforcement",
+          "basis": "mandate",
+          "text": "The Commission decision establishing it assigns it investigating possible infringements of the rules on general-purpose AI models and systems.",
+          "source_ids": [
+            "eu-decision-oj"
+          ]
+        },
+        {
+          "id": "claims-d69e2908557d4a308594526b6087b03f",
+          "kind": "function",
+          "code": "regulatory_support",
+          "basis": "mandate",
+          "text": "The Commission decision establishing it assigns it supporting the implementation of the rules on prohibited AI practices and high-risk AI systems, in coordination with sectoral bodies.",
+          "source_ids": [
+            "eu-decision-oj"
+          ]
+        },
+        {
+          "id": "claims-6d5ede87534242fdb578e48a25a1ac09",
+          "kind": "function",
+          "code": "risk_monitoring",
+          "basis": "mandate",
+          "text": "The Commission decision establishing it assigns it monitoring the emergence of unforeseen risks from general-purpose AI models.",
+          "source_ids": [
+            "eu-decision-oj"
+          ]
+        },
+        {
+          "id": "claims-bcc719ee44f2495cafbac63b914bf830",
+          "kind": "function",
+          "code": "incident_response",
+          "basis": "mandate",
+          "text": "Under the AI Act, relevant information about serious incidents is to be reported to it without undue delay.",
+          "source_ids": [
+            "r5-eu-ai-act-article74"
+          ]
+        },
+        {
+          "id": "claims-ca0e1ac83f8e4698bbf1b1ff1b2264b9",
+          "kind": "function",
+          "code": "international_cooperation",
+          "basis": "mandate",
+          "text": "The Commission decision establishing it assigns it contributing to the Commission's international cooperation on AI with third countries and international organisations.",
+          "source_ids": [
+            "eu-decision-oj"
+          ]
+        },
+        {
+          "id": "claims-d2a39520239642d5bf05275cd06a7ea5",
+          "kind": "function",
+          "code": "international_cooperation",
+          "basis": "activity",
+          "text": "The Commission says it was one of the three network members that ran the agentic evaluations for the cybersecurity strand.",
+          "source_ids": [
+            "eu-joint-testing-2025"
+          ]
+        },
+        {
+          "id": "claims-b9d973a760464f5ea3a367e0a4ea77cd",
+          "kind": "function",
+          "code": "convening",
+          "basis": "activity",
+          "text": "The Commission says it oversees the AI Pact, which allows businesses to engage with the Commission and other stakeholders to share best practices and join activities.",
+          "source_ids": [
+            "eu-aioffice"
+          ]
+        },
+        {
+          "id": "claims-24ab68433afd407ca2953ebfdb19c431",
+          "kind": "function",
+          "code": "adoption",
+          "basis": "mandate",
+          "text": "The Commission decision establishing it assigns it supporting the accelerated development, roll-out and use of trustworthy AI systems that contribute to the Union's competitiveness and economic growth.",
+          "source_ids": [
+            "eu-decision-oj"
+          ]
+        },
+        {
+          "id": "claims-7837462af5794561911284da8b49e812",
+          "kind": "function",
+          "code": "certification",
+          "basis": "mandate",
+          "text": "The consolidated AI Act makes it responsible for conformity assessments and tests of the high-risk AI systems referred to in that article that are subject to third-party conformity assessment.",
+          "source_ids": [
+            "r5-eu-ai-act-article74"
+          ]
         }
       ],
       "funding": [
@@ -33089,7 +33298,30 @@
             "scope": "Sources checked for developments from 13 November 2026: the institute's page, its news tag (newest 16 October), research blog (23 March) and guidelines (updated 30 September), NIST's news (main news 2 November, a CHIPS item of 13 November) and Commerce's news and press releases (23 October) and blog (3 September). No new institute fact was found. Stale listings leave unlisted recent releases uncertain. Partial check, not a full record re-check."
           }
         ],
-        "last_checked_basis": "historical_upper_bound"
+        "last_checked_basis": "historical_upper_bound",
+        "functions": {
+          "date": "2026-11-14",
+          "codes": [
+            "model_testing",
+            "evaluation_methods",
+            "research",
+            "standards_guidance",
+            "regulatory_enforcement",
+            "regulatory_support",
+            "risk_monitoring",
+            "foresight",
+            "policy_advice",
+            "incident_response",
+            "international_cooperation",
+            "convening",
+            "capacity_building",
+            "talent",
+            "adoption",
+            "public_access_continuity",
+            "certification",
+            "sandbox"
+          ]
+        }
       },
       "source_ids": [
         "us-caissi",
@@ -33148,7 +33380,9 @@
         "us-blog-red-teaming-2026",
         "us-semafor-2026-10-28",
         "us-scale-aisi-2025",
-        "us-si-page-archive-2026-09-30"
+        "us-si-page-archive-2026-09-30",
+        "fix-output-us-entry-9",
+        "fix-output-us-entry-4"
       ],
       "notes": "The current NIST pages use CAISSI. The name-history start is the earliest archived use of the name found, NIST's super intelligence page as captured on 30 September 2026. Executive Order 14434 of 29 September 2026, which directs the executive branch to use 'Super Intelligence' in place of 'Artificial Intelligence', is the likely trigger, but it does not name this centre or set a date for its rename. The current ministerial basis refers to the June 2025 CAISI decision; the retained establishment date refers to its US AISI predecessor. Canada's CAISI, the Canadian AI Safety Institute, is a different body.",
       "mandate_short": "Leads national security evaluations of superintelligence (SI) systems and develops guidelines to measure and improve their security.",
@@ -34155,7 +34389,109 @@
           "us-usajobs"
         ],
         "notes": "Its posts are advertised as NIST vacancies under direct-hire authority and paid under NIST's own pay system (Member of Technical Staff advert, February 2026)."
-      }
+      },
+      "claims": [
+        {
+          "id": "claims-67d4293b84eb4d20b41b2778a150ac38",
+          "kind": "function",
+          "code": "model_testing",
+          "basis": "mandate",
+          "text": "The Commerce Department's statement says it will lead unclassified evaluations of AI capabilities that may pose risks to national security.",
+          "source_ids": [
+            "us-commerce-2025"
+          ]
+        },
+        {
+          "id": "claims-1752942b7a2e44ec9c84e510eaa8c9b5",
+          "kind": "function",
+          "code": "model_testing",
+          "basis": "activity",
+          "text": "NIST's report says it evaluated the open-weight model DeepSeek V4 Pro in April 2026.",
+          "source_ids": [
+            "depth-us-deepseek"
+          ]
+        },
+        {
+          "id": "claims-ae9202af0518471fa52b995a5da33743",
+          "kind": "function",
+          "code": "evaluation_methods",
+          "basis": "mandate",
+          "text": "The Commerce Department's statement says it will coordinate with other federal agencies to develop evaluation methods.",
+          "source_ids": [
+            "us-commerce-2025"
+          ]
+        },
+        {
+          "id": "claims-f38bc42d0b2744aea187b15c6d356bd7",
+          "kind": "function",
+          "code": "evaluation_methods",
+          "basis": "activity",
+          "text": "NIST says it requested public comment on a draft document, NIST AI 800-2 Practices for Automated Benchmark Evaluations of Language Models.",
+          "source_ids": [
+            "fix-output-us-entry-9"
+          ]
+        },
+        {
+          "id": "claims-b510f43e1b6741eb89686f05a1f4de48",
+          "kind": "function",
+          "code": "research",
+          "basis": "activity",
+          "text": "NIST's announcement says it held three practitioner workshops and conducted a literature review on the challenges of post-deployment monitoring of AI systems.",
+          "source_ids": [
+            "fix-output-us-entry-4"
+          ]
+        },
+        {
+          "id": "claims-293a1f89984d4ca7b996b5eb75dfc636",
+          "kind": "function",
+          "code": "international_cooperation",
+          "basis": "mandate",
+          "text": "The Commerce Department's founding announcement said it would work with similar institutes in allied and partner nations, including the UK's AI Safety Institute.",
+          "source_ids": [
+            "us-commerce-2023"
+          ]
+        },
+        {
+          "id": "claims-cc4b4a9808b4461a896887d7759ef525",
+          "kind": "function",
+          "code": "international_cooperation",
+          "basis": "activity",
+          "text": "NIST's announcement says it and the UK AI Security Institute ran a joint evaluation of Moonshot AI's Kimi K3.",
+          "source_ids": [
+            "depth-us-kimi"
+          ]
+        },
+        {
+          "id": "claims-8c2d0bd27f5345c0a64cc27fc4babda3",
+          "kind": "function",
+          "code": "convening",
+          "basis": "mandate",
+          "text": "The Commerce Department's statement says it will serve as industry's primary point of contact in the US government to facilitate testing and collaborative research on commercial AI systems.",
+          "source_ids": [
+            "us-commerce-2025"
+          ]
+        },
+        {
+          "id": "claims-3ed5e0bd499342a19546543da973bd93",
+          "kind": "function",
+          "code": "convening",
+          "basis": "activity",
+          "text": "NIST's announcement says the TRAINS Taskforce is chaired by it and includes representation from federal agencies.",
+          "source_ids": [
+            "us-trains"
+          ]
+        },
+        {
+          "id": "claims-9ee0b5e05f1847ce8e232191e3af0ad8",
+          "kind": "function",
+          "code": "adoption",
+          "basis": "mandate",
+          "text": "Its introduction in a NIST AI update lists supporting the diffusion and adoption of AI throughout the US economy.",
+          "source_ids": [
+            "us-nist-march-slides"
+          ]
+        }
+      ]
     },
     {
       "id": "ca-caisi",
@@ -40396,10 +40732,28 @@
                 "id": "es-isia"
               },
               "mandate"
+            ],
+            [
+              "institutes",
+              {
+                "id": "es-isia"
+              },
+              "claims",
+              {
+                "id": "claims-2283d1a3fa4f43fabf8f64a126e05904"
+              },
+              "text"
             ]
           ],
           "gloss": "The Institute's functions will be the evaluation of the most advanced models before and after their deployment, with pre-launch access obtained through voluntary agreements with developers and in cooperation with the European AI Office",
-          "accessed": "2026-10-21"
+          "accessed": "2026-10-21",
+          "anchors": [
+            {
+              "text": "España se dotará de un Instituto de Seguridad de la Inteligencia Artificial",
+              "kind": "definition",
+              "gloss": "Spain will establish an Artificial Intelligence Safety Institute"
+            }
+          ]
         },
         {
           "text": "incluido un informe periódico sobre la evolución de las capacidades y los riesgos de los modelos de frontera; la definición de protocolos de respuesta ante incidentes derivados del comportamiento de modelos o agentes avanzados",
@@ -40414,6 +40768,151 @@
           ],
           "accessed": "2026-10-24",
           "gloss": "including a periodic report on the evolution of the capabilities and risks of frontier models; the definition of response protocols for incidents arising from the behaviour of advanced models or agents"
+        },
+        {
+          "text": "el desarrollo de metodología y herramientas de evaluación y de estándares para entornos de prueba seguros",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "es-isia"
+              },
+              "claims",
+              {
+                "id": "claims-13e6bdd9512f4b9f804f7eb6078d01a5"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17",
+          "gloss": "the development of evaluation methodology and tools and of standards for safe testing environments",
+          "anchors": [
+            {
+              "text": "Serán funciones del Instituto",
+              "kind": "heading",
+              "gloss": "The functions of the Institute will be"
+            },
+            {
+              "text": "España se dotará de un Instituto de Seguridad de la Inteligencia Artificial",
+              "kind": "definition",
+              "gloss": "Spain will establish an Artificial Intelligence Safety Institute"
+            }
+          ]
+        },
+        {
+          "text": "La AESIA, primera autoridad de supervisión de la Unión, ejercerá la vigilancia de mercado en ese calendario y acompañará a las empresas en su preparación, con el apoyo técnico del Instituto.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "es-isia"
+              },
+              "claims",
+              {
+                "id": "claims-43bbb1c65d3447d4943af63125102155"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17",
+          "gloss": "AESIA, the Union's first supervisory authority, will carry out market surveillance on that timetable and accompany companies in their preparation, with the Institute's technical support.",
+          "anchors": [
+            {
+              "text": "España se dotará de un Instituto de Seguridad de la Inteligencia Artificial",
+              "kind": "definition",
+              "gloss": "Spain will establish an Artificial Intelligence Safety Institute"
+            }
+          ]
+        },
+        {
+          "text": "el asesoramiento técnico a la Administración General del Estado, incluido un informe periódico sobre la evolución de las capacidades y los riesgos de los modelos de frontera",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "es-isia"
+              },
+              "claims",
+              {
+                "id": "claims-e0203a1b22b0440b8a930ebbb4fc054e"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17",
+          "gloss": "technical advice to the General State Administration, including a periodic report on the evolution of the capabilities and risks of frontier models",
+          "anchors": [
+            {
+              "text": "Serán funciones del Instituto",
+              "kind": "heading",
+              "gloss": "The functions of the Institute will be"
+            },
+            {
+              "text": "España se dotará de un Instituto de Seguridad de la Inteligencia Artificial",
+              "kind": "definition",
+              "gloss": "Spain will establish an Artificial Intelligence Safety Institute"
+            }
+          ]
+        },
+        {
+          "text": "el asesoramiento técnico a la Administración General del Estado",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "es-isia"
+              },
+              "claims",
+              {
+                "id": "claims-fd3fdb842f724856937f29ae38c0d00a"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17",
+          "gloss": "technical advice to the General State Administration",
+          "anchors": [
+            {
+              "text": "Serán funciones del Instituto",
+              "kind": "heading",
+              "gloss": "The functions of the Institute will be"
+            },
+            {
+              "text": "España se dotará de un Instituto de Seguridad de la Inteligencia Artificial",
+              "kind": "definition",
+              "gloss": "Spain will establish an Artificial Intelligence Safety Institute"
+            }
+          ]
+        },
+        {
+          "text": "la cooperación internacional con los institutos homólogos de terceros países y con la Oficina Europea de Inteligencia Artificial, contribuyendo a la armonización de estándares de evaluación",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "es-isia"
+              },
+              "claims",
+              {
+                "id": "claims-91406200d0e949c3bdaaecb45287f261"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17",
+          "gloss": "international cooperation with counterpart institutes in third countries and with the European AI Office, contributing to the harmonisation of evaluation standards",
+          "anchors": [
+            {
+              "text": "Serán funciones del Instituto",
+              "kind": "heading",
+              "gloss": "The functions of the Institute will be"
+            },
+            {
+              "text": "España se dotará de un Instituto de Seguridad de la Inteligencia Artificial",
+              "kind": "definition",
+              "gloss": "Spain will establish an Artificial Intelligence Safety Institute"
+            }
+          ]
         }
       ],
       "origin": "ES",
@@ -41159,6 +41658,23 @@
             ]
           ],
           "accessed": "2026-10-24"
+        },
+        {
+          "text": "The AI Office also oversees the AI Pact, which allows businesses to engage with the Commission and other stakeholders to share best practices and join activities.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "claims",
+              {
+                "id": "claims-b9d973a760464f5ea3a367e0a4ea77cd"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "EU",
@@ -42119,6 +42635,72 @@
           ],
           "url": "https://content.govdelivery.com/accounts/USDOC/bulletins/3e381fb",
           "accessed": "2026-10-17"
+        },
+        {
+          "text": "Establish voluntary agreements with private sector AI developers and evaluators, and lead unclassified evaluations of AI capabilities that may pose risks to national security.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "claims",
+              {
+                "id": "claims-67d4293b84eb4d20b41b2778a150ac38"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17",
+          "url": "https://content.govdelivery.com/accounts/USDOC/bulletins/3e381fb",
+          "anchors": [
+            {
+              "text": "To that end, CAISI will:",
+              "kind": "heading"
+            }
+          ]
+        },
+        {
+          "text": "Coordinate with other federal agencies and entities, including the Department of Defense, the Department of Energy, the Department of Homeland Security, the Office of Science and Technology Policy, and the Intelligence Community, to develop evaluation methods",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "claims",
+              {
+                "id": "claims-ae9202af0518471fa52b995a5da33743"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17",
+          "url": "https://content.govdelivery.com/accounts/USDOC/bulletins/3e381fb",
+          "anchors": [
+            {
+              "text": "To that end, CAISI will:",
+              "kind": "heading"
+            }
+          ]
+        },
+        {
+          "text": "CAISI will serve as industry's primary point of contact within the U.S. Government to facilitate testing and collaborative research related to harnessing and securing the potential of commercial AI systems.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "claims",
+              {
+                "id": "claims-8c2d0bd27f5345c0a64cc27fc4babda3"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17",
+          "url": "https://content.govdelivery.com/accounts/USDOC/bulletins/3e381fb"
         }
       ],
       "origin": "US",
@@ -51369,6 +51951,17 @@
                 "code": "in_house"
               },
               "code"
+            ],
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "claims",
+              {
+                "id": "claims-d2a39520239642d5bf05275cd06a7ea5"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-17"
@@ -58621,6 +59214,24 @@
             ]
           ],
           "accessed": "2026-10-17"
+        },
+        {
+          "text": "In addition, USAISI will work with similar institutes in ally and partner nations, including with the UK's AI Safety Institute, to align and coordinate work in this sphere.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "claims",
+              {
+                "id": "claims-293a1f89984d4ca7b996b5eb75dfc636"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17",
+          "url": "https://web.archive.org/web/20260211063744/https://www.commerce.gov/news/press-releases/2023/11/direction-president-biden-department-commerce-establish-us-artificial"
         }
       ],
       "origin": "US",
@@ -62005,6 +62616,160 @@
             ]
           ],
           "accessed": "2026-11-14"
+        },
+        {
+          "text": "The Office shall perform the following tasks stemming from the forthcoming Regulation: (a) developing tools, methodologies and benchmarks for evaluating capabilities of general-purpose AI models, in particular for very large general purpose AI models with systemic risks;",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "claims",
+              {
+                "id": "claims-3374546e32fa4592968daabf382324ba"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17",
+          "anchors": [
+            {
+              "text": "The European Artificial Intelligence Office (the 'Office') is established.",
+              "kind": "definition"
+            }
+          ]
+        },
+        {
+          "text": "investigating possible infringements of rules on general-purpose AI models and systems, including by collecting complaints and alerts, assisting in the preparation of decisions of the Commission and conducting evaluations pursuant to the forthcoming Regulation.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "claims",
+              {
+                "id": "claims-650dbbebba8640e99e6994a11b842883"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17",
+          "anchors": [
+            {
+              "text": "The Office shall perform the following tasks stemming from the forthcoming Regulation:",
+              "kind": "heading"
+            },
+            {
+              "text": "The European Artificial Intelligence Office (the 'Office') is established.",
+              "kind": "definition"
+            }
+          ]
+        },
+        {
+          "text": "supporting the implementation of rules on prohibited AI practices and high-risk AI systems in coordination with relevant bodies responsible under sectoral legislation",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "claims",
+              {
+                "id": "claims-d69e2908557d4a308594526b6087b03f"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17",
+          "anchors": [
+            {
+              "text": "The Office shall perform the following tasks stemming from the forthcoming Regulation:",
+              "kind": "heading"
+            },
+            {
+              "text": "The European Artificial Intelligence Office (the 'Office') is established.",
+              "kind": "definition"
+            }
+          ]
+        },
+        {
+          "text": "monitoring the emergence of unforeseen risks stemming from general-purpose AI models, including by responding to alerts from the scientific panel;",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "claims",
+              {
+                "id": "claims-6d5ede87534242fdb578e48a25a1ac09"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17",
+          "anchors": [
+            {
+              "text": "The Office shall perform the following tasks stemming from the forthcoming Regulation:",
+              "kind": "heading"
+            },
+            {
+              "text": "The European Artificial Intelligence Office (the 'Office') is established.",
+              "kind": "definition"
+            }
+          ]
+        },
+        {
+          "text": "The Office shall contribute to international cooperation on AI by the Commission, including innovation and excellence policy, with third countries and international organisations, in particular by:",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "claims",
+              {
+                "id": "claims-ca0e1ac83f8e4698bbf1b1ff1b2264b9"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17",
+          "anchors": [
+            {
+              "text": "The European Artificial Intelligence Office (the 'Office') is established.",
+              "kind": "definition"
+            }
+          ]
+        },
+        {
+          "text": "support the accelerated development, roll-out and use of trustworthy AI systems and applications that bring societal and economic benefits and that contribute to the competitiveness and the economic growth of the Union.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "claims",
+              {
+                "id": "claims-24ab68433afd407ca2953ebfdb19c431"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17",
+          "anchors": [
+            {
+              "text": "The Office shall have the following additional tasks:",
+              "kind": "heading"
+            },
+            {
+              "text": "The European Artificial Intelligence Office (the 'Office') is established.",
+              "kind": "definition"
+            }
+          ]
         }
       ],
       "origin": "EU",
@@ -66217,6 +66982,23 @@
             ]
           ],
           "accessed": "2026-10-17"
+        },
+        {
+          "text": "The UK Artificial Intelligence Security Institute (UK AISI) and the U.S. Center for AI Standards and Innovation (CAISI) (UK AISI / CAISI) conducted a joint evaluation of Moonshot AI's latest model, Kimi K3",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "claims",
+              {
+                "id": "claims-cc4b4a9808b4461a896887d7759ef525"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "US",
@@ -66310,6 +67092,17 @@
               },
               "credit",
               "institute_id"
+            ],
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "claims",
+              {
+                "id": "claims-1752942b7a2e44ec9c84e510eaa8c9b5"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-17"
@@ -85196,6 +85989,23 @@
             ]
           ],
           "accessed": "2026-10-17"
+        },
+        {
+          "text": "the Center for AI Standards and Innovation (CAISI) at the National Institute of Standards and Technology (NIST) is requesting public comment on a draft document, NIST AI 800-2 Practices for Automated Benchmark Evaluations of Language Models",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "claims",
+              {
+                "id": "claims-f38bc42d0b2744aea187b15c6d356bd7"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "US",
@@ -85242,6 +86052,17 @@
               },
               "credit",
               "institute_id"
+            ],
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "claims",
+              {
+                "id": "claims-b510f43e1b6741eb89686f05a1f4de48"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-17"
@@ -92734,6 +93555,42 @@
             ]
           ],
           "accessed": "2026-10-21"
+        },
+        {
+          "text": "keep track of, document, and report, without undue delay, to the AI Office and, as appropriate, to national competent authorities, relevant information about serious incidents and possible corrective measures to address them;",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "claims",
+              {
+                "id": "claims-bcc719ee44f2495cafbac63b914bf830"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17",
+          "url": "https://r.jina.ai/https://eur-lex.europa.eu/legal-content/EN/AUTO/?uri=CELEX:02024R1689-20260727"
+        },
+        {
+          "text": "The AI Office shall be responsible for conformity assessments and tests of AI systems referred to in paragraph 1 of this Article that are classified as high-risk and subject to a third-party conformity assessment pursuant to Article 43",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "claims",
+              {
+                "id": "claims-7837462af5794561911284da8b49e812"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17",
+          "url": "https://r.jina.ai/https://eur-lex.europa.eu/legal-content/EN/AUTO/?uri=CELEX:02024R1689-20260727"
         }
       ],
       "legal_text": true,
@@ -97766,6 +98623,17 @@
                 "id": "np-us-nih"
               },
               "how"
+            ],
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "claims",
+              {
+                "id": "claims-3ed5e0bd499342a19546543da973bd93"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-19"
@@ -100692,6 +101560,29 @@
             ]
           ],
           "accessed": "2026-11-09"
+        },
+        {
+          "text": "Support the diffusion and adoption of AI throughout the U.S. economy",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "claims",
+              {
+                "id": "claims-9ee0b5e05f1847ce8e232191e3af0ad8"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-20",
+          "anchors": [
+            {
+              "text": "NIST CAISI Introduction",
+              "kind": "heading"
+            }
+          ]
         }
       ],
       "snapshot": {
