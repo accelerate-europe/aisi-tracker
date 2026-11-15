@@ -50,7 +50,7 @@
  * Naming: one display name per body everywhere (no status suffix; the country in brackets where two bodies share a name); tight places such as table cells use the recorded short form (data field short_name, never a bare generic acronym such as AISI) with the full name on hover; check_page check_institute_names. An institute has one display name and one short form everywhere; former names are marked as former ('then', 'former' or 'formerly', or 'now' with the current short form), source titles excepted (check_page check_former_names). The rule covers institutes; other bodies are named with their original beneath in the none-identified entries.
  * None-identified entries: three groups, Closest body, AI Act authorities and Other bodies; the closest body's text in body type, its stage only where it does not exist yet and never a reason it is not counted (Method says what qualifies); the AI Act authorities one line per body (name, roles in the summary's words from dataset.display.authority_roles, basis), single point of contact first, folded after three when two or more would be hidden; the English name first with the original muted beneath (a closing abbreviation said once, in the English name), other bodies' roles muted, citations inline (owner, 15 Nov 2026); migrated bodies' role claims are separate cited sentences, starting --sp-2 below the name; the closest body's lead stays in the finding, its group shows its other role claims (expired ones marked) or just its name and stage, and is omitted when it has no role claim and the finding already names and cites it (hub default); research notes in one muted How we checked block; on phones the name sits above a full-width summary; wording every entry shares lives in Method (check_page check_nonidentified_folds, check_nonidentified_style).
  * Claims: current facts, body-role sentences and developments, their citations and closed Quote disclosures are in the saved page; bound excerpts, anchors and source re-read lines are built from page.json only on open. Translated quotes keep the original on hover, focus and tap; running sentences show no translation marker or added cue, including the saved closest-body lead; only the Quote fold shows a muted marker straight after each full translated quote and anchor (owner, 15 Nov 2026).
- * Activity line: a muted qualifier after Status qualifiers or the closest body's name and stage; closest bodies with live activity claims and planned or proposed institutes with activity name their work, established institutes without published work say so, and all other cases and legacy records show none; words come from ACTIVITY_WORDS and the vocabulary's short.
+ * Activity line: a muted qualifier after the closest body's name and stage, only for live activity claims for that body; institute cards and legacy records show none; words come from ACTIVITY_WORDS and the vocabulary's short.
  * Sources: entry source lists hold sources that support the entry; population and region sources (display.generic_sources) are named once in Method and stay in the downloads; check_page check_generic_sources.
  * Archived copies: wherever a source list or Method names a source that has an archive URL, "(archived copy)" follows its link (after our English translation of a non-English title, in square brackets) as a quiet link in muted ink with a muted underline, no arrow, never broken across lines; superscript citations never carry one (check_page check_archive_links).
  * Re-read line: every source list item whose source has a quotation with a re-read state ends with one line of its own in the list's muted ink, from its quotations' states (docs/design/claims-1.1.md section 4): "Source last re-read {date}." while none is missing; else the worst state (the earliest start, then offline before not found, then the earliest last found): "Not found in the source on {date}; last found {date}; under review." (with ": N of M quotes" after the first date when some quotations are still found), "Source offline since {date}; last found {date}.", "Source could not be re-read since {date}; last found {date}."; a quotation or claim shown on its own shows its own state, never its source's; the page never says "verified" (check_page check_reread_lines).
@@ -948,8 +948,8 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   // A function's own words come from dataset.vocabularies.function (label, and short for a line or a narrow column head).
   var ACTIVITY_WORDS = {
     active: "Active", assigned: "Assigned", both: "Assigned and active", notYet: "not yet established", // a function cell: a text shows it done, assigns it, or both
-    notDesignated: "Not designated.", notEstablished: "Not yet established.", established: "Established.", // a card's activity line opens with the designation state
-    activeIn: "Active in", noWork: "No published work found yet.", more: function (n) { return "and " + n + " more"; }
+    notDesignated: "Not designated.", // a closest body's activity line opens with the designation state
+    activeIn: "Active in", more: function (n) { return "and " + n + " more"; }
   };
   // Status definitions, short: the map legend shows each once, the full text is in Method.
   var SHORT = { established: "Created or designated by government.", planned: "Adopted by government, not yet created.", proposed: "Formally proposed, approval pending.", exploring: "Being studied or drafted, or recommended by an advisory commission.", none_identified: "No decision, plan, proposal or study found." };
@@ -1476,18 +1476,17 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     return box;
   }
   function activityRows(j, inst) {
-    if (inst) return "claims" in inst && ["planned", "proposed"].indexOf(j.status) >= 0 ? (inst.functions || []).filter(function (r) { return r.value === "activity" || r.value === "both"; }) : [];
+    if (inst) return [];
     return "claims" in j && j.status === "none_identified" && j.closest_body ? j.closest_body.active_in || [] : [];
   }
   function activityLine(j, inst, m) {
-    if (inst && "claims" in inst && j.status === "established" && inst.display.operating && !inst.display.operating.items.length) return ACTIVITY_WORDS.established + " " + ACTIVITY_WORDS.noWork;
     var rows = activityRows(j, inst);
     if (!rows.length) return "";
     var vocabulary = m.vocabularies.function;
     var work = Object.keys(vocabulary).filter(function (code) { return rows.some(function (r) { return r.code === code; }); }).map(function (code) { return vocabulary[code].short; });
     if (!work.length) return "";
     // The vocabulary defines the order; the line names at most the first three codes.
-    return (inst ? ACTIVITY_WORDS.notEstablished : ACTIVITY_WORDS.notDesignated) + " " + ACTIVITY_WORDS.activeIn + " " + (work.length > 3 ? work.slice(0, 3).join(", ") + " " + ACTIVITY_WORDS.more(work.length - 3) : andJoin(work)) + ".";
+    return ACTIVITY_WORDS.notDesignated + " " + ACTIVITY_WORDS.activeIn + " " + (work.length > 3 ? work.slice(0, 3).join(", ") + " " + ACTIVITY_WORDS.more(work.length - 3) : andJoin(work)) + ".";
   }
   function activityLineNode(j, inst, m, cite) {
     var text = activityLine(j, inst, m);
@@ -1495,7 +1494,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     var line = el("span", "small qualifiers activity-line", text), ids = [];
     activityRows(j, inst).forEach(function (r) { ids = ids.concat(r.claim_ids); });
     var sources = [];
-    ((inst || j).claims || []).forEach(function (c) { if (ids.indexOf(c.id) >= 0 && c.kind === "function" && c.basis === "activity") sources = sources.concat(fieldCitations(c, ["text"])); });
+    (j.claims || []).forEach(function (c) { if (ids.indexOf(c.id) >= 0 && c.kind === "function" && c.basis === "activity") sources = sources.concat(fieldCitations(c, ["text"])); });
     if (sources.length) line.appendChild(cite(sources));
     return line;
   }
@@ -1785,19 +1784,11 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     if (inst) {
       var nm = qualified(instName(inst), []); // no "supranational" qualifier: the EU level heading and its (i) say it
       row("Institute", nm, inst && !inst.website ? fieldCitations(inst, ["inst"]) : []);
-      var statusValue;
       if (j.status_since) {
         var cf = j.status_confidence && j.status_confidence !== "high" ? statusConfidence(j) : null;
         var gap = inst.display.intervals.status_since; // producer wording, exact intervals only
-        statusValue = row("Status", qualified(statusSince(j), [cf, gap ? intervalQualifier(gap) : null]), fieldCitations(j, ["since"]).concat(gap ? fieldCitations(inst, [/, /.test(gap) ? "announced_to_established" : "announced"]) : []));
-      } else statusValue = row("Status", LABEL[j.status]);
-      var activity = activityLineNode(j, inst, m, cite);
-      if (activity) {
-        // The status and its citations remain one paragraph; the activity sentence has its own evidence.
-        var statusParagraph = el("p");
-        while (statusValue.firstChild) statusParagraph.appendChild(statusValue.firstChild);
-        statusValue.appendChild(statusParagraph); statusValue.appendChild(activity);
-      }
+        row("Status", qualified(statusSince(j), [cf, gap ? intervalQualifier(gap) : null]), fieldCitations(j, ["since"]).concat(gap ? fieldCitations(inst, [/, /.test(gap) ? "announced_to_established" : "announced"]) : []));
+      } else row("Status", LABEL[j.status]);
       var form = [LEGAL_FORM[inst.legal_form]].filter(Boolean);
       var ht = inst.placement && HOST[inst.placement.host_type];
       if (ht && inst.legal_form !== "university_centre") { if (inst.legal_form === "unit_in_existing_body") form[0] = "Unit " + ht; else if (form.length) form[0] += " " + ht; else form.push(ht); }
