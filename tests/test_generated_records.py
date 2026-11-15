@@ -213,6 +213,20 @@ def test_unbound_free_text_is_an_error_only_in_a_migrated_record(dataset, migrat
     assert item not in method_checks.unquoted_claims(d)["free text with no excerpt"]
 
 
+def test_generated_first_output_description_is_not_unquoted():
+    """The first_output event's description is generated from the output's title, so it is never an unquoted item
+    (the UK and France have one; before the fix a migrated UK record failed on it)."""
+    authored = json.loads(DATA.read_text(encoding="utf-8"))
+    published = build.export_dataset(authored)
+    owners = {j["id"] for j in published["jurisdictions"] if any(e["event"] == "first_output" for e in j.get("timeline", []))}
+    assert {"GB", "FR"} <= owners
+    items = method_checks.unquoted_claims(authored)["free text with no excerpt"]
+    assert not [i for i in items if i.startswith("jurisdictions[].timeline[].description: ") and i.split(": ")[1].split()[0] in owners]
+    migrated_gb = copy.deepcopy(authored)
+    next(j for j in migrated_gb["jurisdictions"] if j["id"] == "GB").pop("summary")
+    assert not [e for e in method_checks.migrated_unquoted_errors(migrated_gb) if "timeline[].description" in e]
+
+
 def test_migrated_unquoted_free_text_is_an_error(migrated):
     """Its generated leaves (summary, notes, roles, note) are never unquoted items; anything else is an error."""
     d = copy.deepcopy(migrated)

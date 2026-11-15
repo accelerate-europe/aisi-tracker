@@ -388,6 +388,10 @@ def unquoted_items(d: dict) -> list[tuple[str, str, str]]:
     if d is None:
         return items
     bound = {pointer for s in d["sources"] for e in s.get("excerpts", []) for pointer in e["supports"]}
+    # The first_output event is generated from the output catalogue (published.prepared_facts), its description from
+    # the output's title; it is not authored text, so it is never an unquoted item.
+    bound |= {f"/jurisdictions/{n}/timeline/{k}/description" for n, record in enumerate(d["jurisdictions"])
+              for k, event in enumerate(record.get("timeline", [])) if event["event"] == "first_output"}
 
     def free_text(value, pointer: str, family: str, owner: str, jid: str, key: str = "") -> None:
         if isinstance(value, dict):
