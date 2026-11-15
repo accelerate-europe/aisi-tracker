@@ -3787,12 +3787,10 @@
         ]
       },
       "institute_id": null,
-      "summary": "No qualifying institute identified. Resolution 130 recognises NASK's AI Safety Research Centre and plans an R&D network around it; NASK describes foundation-model security research and model auditing.",
       "related_bodies": [
         {
           "name": "Komisja Rozwoju i Bezpieczeństwa Sztucznej Inteligencji (KRiBSI)",
           "name_en": "Commission for the Development and Safety of Artificial Intelligence (KRiBSI)",
-          "role": "Its AI Act roles are assigned under Article 5. The Act generally took effect on 11 August 2026; several operational chapters commence 28 October 2026. Full commission operation was scheduled for November.",
           "counts_as_aisi": false,
           "source_ids": [
             "pl-ai-act1003-2026",
@@ -3809,7 +3807,6 @@
         },
         {
           "name": "NASK AI Safety Research Centre",
-          "role": "It is an AI safety research centre formed from NASK's AI Division. Its Department of Security and Transparency of Artificial Intelligence describes research on foundation-model security and model auditing. Resolution 130 names the centre as a research institution and plans an R&D network around it; no national advanced-model evaluation role is assigned in the reviewed passages.",
           "counts_as_aisi": false,
           "source_ids": [
             "pl-nask",
@@ -3822,7 +3819,6 @@
         {
           "name": "Minister właściwy do spraw informatyzacji",
           "name_en": "Minister responsible for digitalisation",
-          "role": "The Minister's AI Act role is assigned under Article 86; chapter 6 is included in the general 11 August 2026 commencement.",
           "counts_as_aisi": false,
           "source_ids": [
             "pl-ai-act1003-2026",
@@ -3910,7 +3906,21 @@
         "governance_source_ids": [
           "pl-ai-act1003-2026"
         ],
-        "governance_note": "The enacted AI law allocates AI Act supervisory and notifying responsibilities; the NASK research centre is separately described without a qualifying mandate covering advanced models."
+        "governance_note": "The enacted AI law allocates AI Act supervisory and notifying responsibilities; the NASK research centre is separately described without a qualifying mandate covering advanced models.",
+        "log": [
+          {
+            "date": "2026-10-17",
+            "text": "The Act of 3 July 2026 on AI systems, its publication in the Journal of Laws and the Ministry of Digital Affairs' page on the centre were read."
+          },
+          {
+            "date": "2026-10-18",
+            "text": "Resolution 130 and NASK's research-teams page were read."
+          },
+          {
+            "date": "2026-11-10",
+            "text": "NASK's and OpenAI's announcements of their agreement of 23 October 2026 were read."
+          }
+        ]
       },
       "source_ids": [
         "pl-nask",
@@ -3943,7 +3953,6 @@
         "un-m49",
         "wikidata-jurisdiction-identifiers"
       ],
-      "notes": "The Act of 3 July 2026 on AI systems was published on 27 July 2026 and generally took effect on 11 August. Article 5 designates KRiBSI as market-surveillance authority and single point of contact; Article 86 assigns the notifying role to the minister responsible for informatisation. Several operational chapters commence on 28 October 2026, and full commission operation was scheduled for November. The commission held its first meeting on 28 October 2026.\n\nThe government announcement records presidential signature of the AI implementation law and says publication in the official journal will follow; the subsequently retrieved official journal confirms publication on 27 July 2026.\n\nResolution 130, PDF pages 145 and 158, concerns research and an R&D network around an existing centre, not assignment of a qualifying national evaluation role. The ministry's account of reorganising the AI Division and NASK's own description of model auditing do not supply that assignment. The centre's title and legal form do not determine the status.\n\nOn 2 July 2026 NASK announced that CERT Polska, which operates within NASK, was joining the trusted partners for OpenAI's GPT-5.5 as a verified defender, with access to come through the Government Trusted Access for Cyber programme. On 23 October NASK reported that CERT Polska had received access to OpenAI's cyber models in the Daybreak programme in July and used them to find six vulnerabilities in MikroTik RouterOS. This is access by a cyber team for defensive work, not evaluation of the models.",
       "next_check": {
         "date": "2027-01-31",
         "reason": "Check whether KRiBSI, once operating, or the minister assigns NASK or its AITAS laboratory a national role in evaluating advanced models, and whether Poland joins the International Network for Advanced AI Measurement, Evaluation and Science."
@@ -3952,7 +3961,6 @@
         "name": "NASK AI Safety Research Centre",
         "stage": "exists",
         "gap": "remit",
-        "note": "The ministry records the centre's creation and Resolution 130 recognises its AI safety research role and plans an R&D network around it. NASK describes foundation-model security research and model auditing. These texts do not assign a qualifying national evaluation role. In June 2026 NASK announced its AITAS laboratory to develop methods for assessing AI models for safety, reliability and regulatory compliance; this is NASK's own announcement, not a government assignment. On 23 October 2026 NASK announced that it had signed an agreement with OpenAI on AI safety research, to be led on NASK's side by the centre, which NASK says serves as the Polish AI Safety Institute; OpenAI described the work as exploring ways to evaluate increasingly capable AI systems, identify vulnerabilities and strengthen safeguards. NASK's own description and an agreement with a developer are not a government assignment.",
         "source_ids": [
           "pl-nask",
           "pl-r8-resolution130",
@@ -3960,8 +3968,23 @@
           "pl-nask-aitas-2026",
           "pl-nask-openai-2026",
           "pl-openai-nask-2026"
-        ]
-      }
+        ],
+        "body_id": "related_bodies-8e2bf69316145732aea04a2f9bbd82eb"
+      },
+      "claims": [
+        {
+          "id": "claims-1e75bf0fbfcd4b829a0294ed13f131bb",
+          "kind": "function",
+          "code": "research",
+          "basis": "mandate",
+          "body_id": "related_bodies-8e2bf69316145732aea04a2f9bbd82eb",
+          "lead": true,
+          "text": "NASK says the centre will lead its cooperation with OpenAI and \"will research the safety of increasingly advanced AI systems\" with it.",
+          "source_ids": [
+            "pl-nask-openai-2026"
+          ]
+        }
+      ]
     },
     {
       "id": "IE",
@@ -42673,36 +42696,10 @@
               },
               "closest_body",
               "stage"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "PL"
-              },
-              "closest_body",
-              "note"
             ]
           ],
           "gloss": "An AI Safety Research Centre was established within NASK.",
           "accessed": "2026-10-17"
-        },
-        {
-          "text": "Ośrodka, który powstał w wyniku przekształcenia Pionu Sztucznej Inteligencji",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "PL"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-8e2bf69316145732aea04a2f9bbd82eb"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-10-18",
-          "gloss": "The centre, which was formed by transforming the Artificial Intelligence Division."
         }
       ],
       "origin": "PL",
@@ -78698,21 +78695,7 @@
       "accessed": "2026-10-17",
       "published": "2026-07-27",
       "language": "pl",
-      "excerpts": [
-        {
-          "text": "Prezydent RP podpisał ustawę, która teraz trafi do Dziennika Ustaw.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "PL"
-              },
-              "notes"
-            ]
-          ],
-          "gloss": "The President signed the Act, which will now go to the Journal of Laws."
-        }
-      ],
+      "excerpts": [],
       "origin": "PL",
       "title_en": "AI Systems Act: safe development of artificial intelligence in Poland",
       "access_note": "Review of excerpts in a text copy on 17 October 2026: The government article says the President signed the law and that it will next go to the official journal. This supports signature and pending publication, not an inference that publication already occurred. The direct cached response was unavailable (unreachable). The quoted passages were checked in the retained text copy; no obvious spoken accessibility expansion was observed. Original displayed typography was not independently verified, so it remains flagged as evidence checked only in a text copy. The published snapshot hash identifies the retained text copy at https://r.jina.ai/https://www.gov.pl/web/cyfryzacja/ustawa-o-systemach-ai--bezpieczny-rozwoj-sztucznej-inteligencji-w-polsce.",
@@ -79821,25 +79804,7 @@
       "instrument_status_checked": "2026-10-21",
       "published": "2026-07-27",
       "language": "pl",
-      "excerpts": [
-        {
-          "text": "Minister właściwy do spraw informatyzacji jest organem notyfikującym",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "PL"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-de1e7f85821a52ce902ccb245f304536"
-              },
-              "role"
-            ]
-          ],
-          "gloss": "The minister responsible for informatisation is the notifying authority."
-        }
-      ],
+      "excerpts": [],
       "origin": "PL",
       "title_en": "Act of 3 July 2026 on artificial intelligence systems, Journal of Laws 2026, item 1003",
       "snapshot": {
@@ -95242,39 +95207,6 @@
       "access_note": "PDF/Gazette pages 145 and 158 (strategy pages 144 and 157) name the existing centre as a research institution and plan an R&D network around it; neither passage assigns a national advanced-model evaluation role.",
       "excerpts": [
         {
-          "text": "będzie podejmował podobne działania w obszarze bezpieczeństwa tej technologii",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "PL"
-              },
-              "summary"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "PL"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-8e2bf69316145732aea04a2f9bbd82eb"
-              },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "PL"
-              },
-              "closest_body",
-              "note"
-            ]
-          ],
-          "accessed": "2026-10-18",
-          "gloss": "It will undertake similar activities in the safety of this technology."
-        },
-        {
           "text": "zbudowanie wokół Ośrodka Badań nad Bezpieczeństwem Sztucznej Inteligencji organizacji",
           "supports": [
             [
@@ -95282,26 +95214,8 @@
               {
                 "id": "PL"
               },
-              "summary"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "PL"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-8e2bf69316145732aea04a2f9bbd82eb"
-              },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "PL"
-              },
               "closest_body",
-              "note"
+              "gap"
             ]
           ],
           "accessed": "2026-10-18",
@@ -95325,72 +95239,7 @@
       "language": "en",
       "origin": "PL",
       "access_note": "The Department of Security and Transparency of Artificial Intelligence describes its own research on fundamental models and model auditing. This institutional description is not a government assignment of a national evaluation role.",
-      "excerpts": [
-        {
-          "text": "research on the security, explainability, and interpretability of fundamental models",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "PL"
-              },
-              "summary"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "PL"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-8e2bf69316145732aea04a2f9bbd82eb"
-              },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "PL"
-              },
-              "closest_body",
-              "note"
-            ]
-          ],
-          "accessed": "2026-10-18"
-        },
-        {
-          "text": "We develop methods for generating, analyzing and auditing models",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "PL"
-              },
-              "summary"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "PL"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-8e2bf69316145732aea04a2f9bbd82eb"
-              },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "PL"
-              },
-              "closest_body",
-              "note"
-            ]
-          ],
-          "accessed": "2026-10-18"
-        }
-      ],
+      "excerpts": [],
       "snapshot": {
         "retrieved": "2026-10-18T05:11:30.911383+00:00",
         "sha256": "c594d0732fe24b6fb244499a56fce817cedbed8776c9541bd58b72055a28878b",
@@ -95410,23 +95259,7 @@
       "language": "pl",
       "origin": "PL",
       "access_note": "NASK's own announcement of a laboratory within its organisation. It describes the laboratory's planned work; it is not a government act assigning a national evaluation role.",
-      "excerpts": [
-        {
-          "text": "Laboratorium AITAS będzie rozwijać metody, narzędzia i procedury służące ocenie współczesnych modeli sztucznej inteligencji pod kątem bezpieczeństwa, niezawodności i zgodności z wymaganiami regulacyjnymi.",
-          "gloss": "The AITAS Laboratory will develop methods, tools and procedures for assessing contemporary artificial intelligence models for safety, reliability and compliance with regulatory requirements.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "PL"
-              },
-              "closest_body",
-              "note"
-            ]
-          ],
-          "accessed": "2026-10-21"
-        }
-      ],
+      "excerpts": [],
       "snapshot": {
         "retrieved": "2026-10-21T15:01:50Z",
         "sha256": "7bdc77c2a5bbad5c35f112e784c2e3da52a5dc84fc6d9f4e98c80a89488151f9",
@@ -117967,47 +117800,21 @@
       "origin": "PL",
       "excerpts": [
         {
-          "text": "NASK i OpenAI podpisały porozumienie o współpracy w zakresie badań nad bezpieczeństwem AI.",
+          "text": "Po stronie NASK współpracę poprowadzi Ośrodek Badań nad Bezpieczeństwem Sztucznej Inteligencji, który pełni funkcję polskiego Instytutu Bezpieczeństwa Sztucznej Inteligencji (AISI). Wspólnie z OpenAI będzie badać bezpieczeństwo coraz bardziej zaawansowanych systemów AI.",
           "supports": [
             [
               "jurisdictions",
               {
                 "id": "PL"
               },
-              "closest_body",
-              "note"
-            ]
-          ],
-          "gloss": "NASK and OpenAI have signed a cooperation agreement on AI safety research.",
-          "accessed": "2026-11-10"
-        },
-        {
-          "text": "Po stronie NASK współpracę poprowadzi Ośrodek Badań nad Bezpieczeństwem Sztucznej Inteligencji, który pełni funkcję polskiego Instytutu Bezpieczeństwa Sztucznej Inteligencji (AISI).",
-          "supports": [
-            [
-              "jurisdictions",
+              "claims",
               {
-                "id": "PL"
+                "id": "claims-1e75bf0fbfcd4b829a0294ed13f131bb"
               },
-              "closest_body",
-              "note"
+              "text"
             ]
           ],
-          "gloss": "On NASK's side, the cooperation will be led by the AI Safety Research Centre, which serves as the Polish AI Safety Institute (AISI).",
-          "accessed": "2026-11-10"
-        },
-        {
-          "text": "W lipcu zespół CERT Polska, który działa w strukturach instytutu, otrzymał w programie Daybreak dostęp do zaawansowanych modeli OpenAI w zakresie cyberbezpieczeństwa. CERT Polska z ich pomocą wykrył sześć podatności w systemie MikroTik RouterOS.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "PL"
-              },
-              "notes"
-            ]
-          ],
-          "gloss": "In July the CERT Polska team, which operates within the institute, received access to OpenAI's advanced cybersecurity models in the Daybreak programme. With their help CERT Polska found six vulnerabilities in the MikroTik RouterOS system.",
+          "gloss": "On NASK's side the cooperation will be led by the AI Safety Research Centre, which serves as the Polish Artificial Intelligence Safety Institute (AISI). Together with OpenAI it will research the safety of increasingly advanced AI systems.",
           "accessed": "2026-11-10"
         }
       ],
@@ -118030,22 +117837,7 @@
       "origin": "US",
       "archive_url": "http://web.archive.org/web/20261029085646/https://openai.com/index/openai-nask-ai-safety-security-partnership/",
       "access_note": "The live page answered automated requests with a challenge page; the quotation is from the archived copy of 29 October 2026.",
-      "excerpts": [
-        {
-          "text": "exploring ways to evaluate increasingly capable AI systems, identify potential vulnerabilities and strengthen safeguards.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "PL"
-              },
-              "closest_body",
-              "note"
-            ]
-          ],
-          "accessed": "2026-11-10"
-        }
-      ],
+      "excerpts": [],
       "snapshot": {
         "retrieved": "2026-11-10T19:46:15Z",
         "sha256": "e5c6390fb9a65e2fd8b4d7e77dfaa0f2de1ca04041a326e51d461939b357b316",
@@ -118064,36 +117856,7 @@
       "accessed": "2026-11-10",
       "language": "pl",
       "origin": "PL",
-      "excerpts": [
-        {
-          "text": "Model GPT-5.5 od OpenAI udostępniany jest wyłącznie dla zaufanych partnerów. Polska i działający w NASK CERT Polska właśnie dołączają do tego grona jako “zweryfikowany obrońca”.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "PL"
-              },
-              "notes"
-            ]
-          ],
-          "gloss": "OpenAI's GPT-5.5 model is made available only to trusted partners. Poland and CERT Polska, which operates within NASK, are now joining this group as a \"verified defender\".",
-          "accessed": "2026-11-10"
-        },
-        {
-          "text": "Eksperci zyskają zaawansowany dostęp za pośrednictwem programu Government Trusted Access for Cyber dla rządowych jednostek.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "PL"
-              },
-              "notes"
-            ]
-          ],
-          "gloss": "Experts will gain advanced access through the Government Trusted Access for Cyber programme for government units.",
-          "accessed": "2026-11-10"
-        }
-      ],
+      "excerpts": [],
       "snapshot": {
         "retrieved": "2026-11-10T19:46:16Z",
         "sha256": "0955f888fda8f2252e1f8ba84ee38d0255d51464819681cd6659883785fbc188",
@@ -119496,22 +119259,7 @@
       "accessed": "2026-11-11",
       "language": "pl",
       "origin": "PL",
-      "excerpts": [
-        {
-          "text": "28 października 2026 r. odbyło się pierwsze posiedzenie Komisji Rozwoju i Bezpieczeństwa Sztucznej Inteligencji.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "PL"
-              },
-              "notes"
-            ]
-          ],
-          "gloss": "On 28 October 2026 the first meeting of the Commission for the Development and Safety of Artificial Intelligence took place.",
-          "accessed": "2026-11-11"
-        }
-      ],
+      "excerpts": [],
       "snapshot": {
         "retrieved": "2026-11-11T05:21:11Z",
         "sha256": "f14430249bb5958f460c752022a2210d72e10d1336f9999016403b7a3b89dfe7",
