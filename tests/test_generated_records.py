@@ -18,11 +18,12 @@ DATA = Path(__file__).resolve().parent.parent / "data" / "aisi.json"
 
 
 def test_todays_data_publishes_its_authored_texts():
-    """Nothing is migrated yet, so the published summary, notes, roles and closest notes, and their CSV columns,
-    are the authored values in every record."""
+    """In every record not yet migrated (step F migrates the Europe records batch by batch), the published summary,
+    notes, roles and closest notes, and their CSV columns, are the authored values; a migrated one has them generated."""
     authored = json.loads(DATA.read_text(encoding="utf-8"))
-    assert method_checks.migrated_ids(authored) == set()
-    # Real unmigrated records with check.log lines and fact claims: the log never reaches their notes.
+    migrated = method_checks.migrated_ids(authored)
+    assert {j["id"] for j in authored["jurisdictions"]} - migrated, "a record is left to compare"
+    # Institutes with check.log lines and fact claims: an institute's log never reaches its notes.
     logged = {i["jurisdiction_id"] for i in authored["institutes"] if i.get("check", {}).get("log")}
     assert {"FR", "DE", "ES"} <= logged
     assert any(c["kind"] == "fact" for i in authored["institutes"] for c in i.get("claims", []))
@@ -34,6 +35,9 @@ def test_todays_data_publishes_its_authored_texts():
     closest = {row["jurisdiction_id"]: row for row in tables["closest_bodies"]}
     roles = {(row["jurisdiction_id"], row["id"]): row["role"] for row in tables["related_bodies"]}
     for before, after in zip(authored["jurisdictions"], published["jurisdictions"], strict=True):
+        if before["id"] in migrated:
+            assert after["summary"] == states[before["id"]]["summary"] and after["summary"].strip()
+            continue
         assert after["summary"] == before["summary"] == states[before["id"]]["summary"]
         assert after.get("notes") == before.get("notes")
         assert states[before["id"]]["notes"] == before.get("notes", "")
@@ -252,7 +256,7 @@ def test_generated_first_output_description_is_not_unquoted():
     items = method_checks.unquoted_claims(authored)["free text with no excerpt"]
     assert not [i for i in items if i.startswith("jurisdictions[].timeline[].description: ") and i.split(": ")[1].split()[0] in owners]
     migrated_gb = copy.deepcopy(authored)
-    next(j for j in migrated_gb["jurisdictions"] if j["id"] == "GB").pop("summary")
+    next(j for j in migrated_gb["jurisdictions"] if j["id"] == "GB").pop("summary", None)  # GB may already be migrated
     assert not [e for e in method_checks.migrated_unquoted_errors(migrated_gb) if "timeline[].description" in e]
 
 
