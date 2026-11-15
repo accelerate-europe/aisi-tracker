@@ -31218,6 +31218,76 @@
           "source_ids": [
             "gb-about"
           ]
+        },
+        {
+          "id": "claims-6b5a68f6de9748e0a6fa373ad8b6aa14",
+          "kind": "function",
+          "code": "evaluation_methods",
+          "basis": "mandate",
+          "text": "The government's announcement says the then AI Safety Institute, with i.AI and Number 10, will bring together AI talent to test and develop new open-source AI safety tools.",
+          "source_ids": [
+            "depth-gb-inspect"
+          ]
+        },
+        {
+          "id": "claims-f99a92b4f79b48bab1638919ddd96d31",
+          "kind": "function",
+          "code": "foresight",
+          "basis": "activity",
+          "text": "An AISI project team's report says current oversight rests on properties that are likely to erode over the next few years unless something is done to preserve them.",
+          "source_ids": [
+            "catalogue-gb-19"
+          ]
+        },
+        {
+          "id": "claims-f33e1edf3c2a4a14993353dfb4ed98ab",
+          "kind": "function",
+          "code": "model_testing",
+          "basis": "mandate",
+          "text": "The government's launch announcement says the institute is tasked with testing the safety of emerging types of AI.",
+          "source_ids": [
+            "gb-aisi-launch"
+          ]
+        },
+        {
+          "id": "claims-b06e9acd312c42c6afef1a36818b9f50",
+          "kind": "function",
+          "code": "regulatory_support",
+          "basis": "mandate",
+          "text": "DSIT's paper introducing the institute says its research will provide technical tools for governance and regulation.",
+          "source_ids": [
+            "gb-cp960-2023"
+          ]
+        },
+        {
+          "id": "claims-be6f898fa4d84ab1950efd2f440e8ff4",
+          "kind": "function",
+          "code": "research",
+          "basis": "activity",
+          "text": "AISI's blog says it funded Epoch AI to explore AI researchers' differing predictions on the automation of AI research and development.",
+          "source_ids": [
+            "depth-gb-blog"
+          ]
+        },
+        {
+          "id": "claims-4d5eeda7663f4d659d6e71243c25a157",
+          "kind": "function",
+          "code": "risk_monitoring",
+          "basis": "activity",
+          "text": "AISI's blog says its inaugural Frontier AI Trends Report draws on 2 years' worth of evaluations to give insights into the trajectory of AI development.",
+          "source_ids": [
+            "depth-gb-blog"
+          ]
+        },
+        {
+          "id": "claims-ec7fa65b316848e3abf76df549ca507a",
+          "kind": "function",
+          "code": "risk_monitoring",
+          "basis": "mandate",
+          "text": "DSIT's paper introducing the institute says it will work with other UK government functions to feed up-to-date information from the frontier of AI development and AI safety into government.",
+          "source_ids": [
+            "gb-cp960-2023"
+          ]
         }
       ]
     },
@@ -46698,6 +46768,23 @@
               "date"
             ]
           ]
+        },
+        {
+          "text": "World's first AI Safety Institute launched in UK, tasked with testing the safety of emerging types of AI.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-f33e1edf3c2a4a14993353dfb4ed98ab"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "GB",
@@ -68154,6 +68241,23 @@
               "text"
             ]
           ]
+        },
+        {
+          "text": "Alongside the launch of Inspect, the AI Safety Institute, Incubator for AI (i.AI) and Number 10 will bring together leading AI talent from a range of areas to rapidly test and develop new open-source AI safety tools.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-6b5a68f6de9748e0a6fa373ad8b6aa14"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "GB",
@@ -69606,6 +69710,29 @@
               },
               "title"
             ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Current oversight rests on properties which are likely to erode over the next few\nyears, absent intervention to preserve them.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-f99a92b4f79b48bab1638919ddd96d31"
+              },
+              "text"
+            ]
+          ],
+          "anchors": [
+            {
+              "text": "The following discussion represents the views of the project team at UK AISI",
+              "kind": "heading"
+            }
           ],
           "accessed": "2026-10-17"
         }
@@ -76979,6 +77106,40 @@
               },
               "credit",
               "date"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "AISI funded Epoch AI to explore AI researchers’ differing predictions on the automation of AI research and development and their suggestions for how to evaluate relevant capabilities.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-be6f898fa4d84ab1950efd2f440e8ff4"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Our inaugural Frontier AI Trends Report draws on 2 years' worth of evaluations to provide accessible insights into the trajectory of AI development.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-4d5eeda7663f4d659d6e71243c25a157"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-17"
@@ -120836,6 +120997,46 @@
               },
               "description"
             ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "The research of the AI Safety Institute will inform UK and international policymaking and provide technical tools for governance and regulation.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-b06e9acd312c42c6afef1a36818b9f50"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "The Institute will work with other UK government functions, such as DSIT’s recently established Central AI Risk Function, to feed up to date information from the frontier of AI development and AI safety into government.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-ec7fa65b316848e3abf76df549ca507a"
+              },
+              "text"
+            ]
+          ],
+          "anchors": [
+            {
+              "text": "Introducing the AI Safety Institute",
+              "kind": "heading"
+            }
           ],
           "accessed": "2026-11-14"
         }
