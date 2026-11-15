@@ -2012,12 +2012,7 @@
           }
         ],
         "last_checked_basis": "historical_upper_bound",
-        "log": [
-          {
-            "date": "2026-10-19",
-            "text": "The institute's About page (read on 17 October 2026) and the GOV.UK organisation page (read on 19 October 2026) were read for its parent department, and a dated source for a change of department was searched for."
-          }
-        ]
+        "log": []
       },
       "source_ids": [
         "gb-aisi-launch",
@@ -2162,12 +2157,7 @@
           }
         ],
         "last_checked_basis": "historical_upper_bound",
-        "log": [
-          {
-            "date": "2026-10-16",
-            "text": "Inria's 2024 annual report was read for the institute's origins, and an earlier government commitment was searched for."
-          }
-        ]
+        "log": []
       },
       "source_ids": [
         "fr-dge",
@@ -2892,12 +2882,7 @@
           }
         ],
         "last_checked_basis": "historical_upper_bound",
-        "log": [
-          {
-            "date": "2026-10-16",
-            "text": "The Commission's list of AI Act contact points was read as the EU and EEA cross-check for Norway."
-          }
-        ]
+        "log": []
       },
       "source_ids": [
         "no-budget",
@@ -3064,12 +3049,7 @@
           }
         ],
         "language_note": "Dutch and English searched; Dutch is the only official language of the European Netherlands (Frisian not searched).",
-        "log": [
-          {
-            "date": "2026-10-16",
-            "text": "The 2027 Economic Affairs and Climate budget (Kamerstuk 37020-XIII, nos. 1 and 2), the Interior and Kingdom Relations budget (37020-VII, no. 2) and the Miljoenennota (37020, no. 1) were searched for an institute-specific budget line."
-          }
-        ]
+        "log": []
       },
       "source_ids": [
         "nl-kamerbrief-2026-09",
@@ -3318,8 +3298,8 @@
         }
       ],
       "next_check": {
-        "date": "2026-11-13",
-        "reason": "Check the NCSC report and any government response to the AI Commission's institute recommendation for a superseding act."
+        "date": "2026-11-20",
+        "reason": "Rescheduled from 13 November because the follow-up is overdue and has not been completed. Check the NCSC report and any government response to the AI Commission's institute recommendation for a superseding act."
       },
       "check": {
         "last_checked": "2026-10-16",
@@ -3387,12 +3367,7 @@
           "se-gov"
         ],
         "governance_note": "The government assigns NCSC coordination of AI-driven cyber threats and a developer contact role; the retrieved mandate does not establish evaluation of advanced models.",
-        "log": [
-          {
-            "date": "2026-10-16",
-            "text": "Searched for a government act after the AI Commission's recommendation of 26 November 2024 that would change the record's status."
-          }
-        ]
+        "log": []
       },
       "source_ids": [
         "se-gov",
@@ -3554,12 +3529,7 @@
           "negative-second-ch-2026"
         ],
         "governance_note": "The Federal Office of Justice describes the Swiss AI regulatory approach and preparation of a consultation draft. Absence of AI-specific legislation is context, not an explicit denial of an institute.",
-        "log": [
-          {
-            "date": "2026-10-17",
-            "text": "Searched in English and German for a body the government has tasked with testing general-purpose or frontier AI models, or named as its AI safety or security institute; the Federal Office of Justice's pages on AI regulation were read."
-          }
-        ]
+        "log": []
       },
       "source_ids": [
         "ch-bk",
@@ -3778,12 +3748,7 @@
           "it-law132-article20"
         ],
         "governance_note": "Article 20 allocates AI Act notifying and market-surveillance roles to AgID and ACN; these regulatory functions do not establish a qualifying institute.",
-        "log": [
-          {
-            "date": "2026-10-17",
-            "text": "Searched in English and Italian for a body the government has tasked with testing general-purpose or frontier AI models, or named as its AI safety or security institute."
-          }
-        ]
+        "log": []
       },
       "source_ids": [
         "it-gu-law132-2025-art20",
@@ -3993,22 +3958,28 @@
           "pl-ai-act1003-2026"
         ],
         "governance_note": "The enacted AI law allocates AI Act supervisory and notifying responsibilities; the NASK research centre is separately described without a qualifying mandate covering advanced models.",
-        "log": [
-          {
-            "date": "2026-10-17",
-            "text": "The Act of 3 July 2026 on AI systems, its publication in the Journal of Laws and the Ministry of Digital Affairs' page on the centre were read."
-          },
-          {
-            "date": "2026-10-18",
-            "text": "Resolution 130 and NASK's research-teams page were read."
-          },
-          {
-            "date": "2026-11-10",
-            "text": "NASK's and OpenAI's announcements of their agreement of 23 October 2026 were read."
-          },
+        "log": [],
+        "passes": [
           {
             "date": "2026-11-15",
-            "text": "NASK's and the Ministry of Digital Affairs' sites, the official journals, NASK's public information bulletin and OpenAI's pages were searched in Polish and English for the centre's setting-up, leadership, size, OpenAI agreements, partners and description as Poland's AI safety institute."
+            "languages": [
+              "pl",
+              "en"
+            ],
+            "places": [
+              "NASK's site",
+              "the Ministry of Digital Affairs' site",
+              "the official journals",
+              "NASK's public information bulletin",
+              "OpenAI's pages"
+            ],
+            "fields": [
+              "status",
+              "head",
+              "staff",
+              "agreements",
+              "national_partners"
+            ]
           }
         ]
       },
@@ -4358,10 +4329,19 @@
           "ie-ai-office-established-2026"
         ],
         "governance_note": "The government describes the AI Office of Ireland and a distributed system of sectoral regulators, rather than an institute to evaluate advanced models.",
-        "log": [
+        "log": [],
+        "passes": [
           {
             "date": "2026-10-17",
-            "text": "Searched in English, including gov.ie, for a body the government has tasked with testing general-purpose or frontier AI models, or named as its AI safety or security institute."
+            "languages": [
+              "en"
+            ],
+            "places": [
+              "gov.ie"
+            ],
+            "fields": [
+              "status"
+            ]
           }
         ]
       },
@@ -4501,16 +4481,7 @@
           "at-dsb-ai-faq"
         ],
         "governance_note": "The DSB FAQ explains its sectoral AI Act supervisory competence. Its undated statement on unresolved general designation is not treated as a dated absence finding.",
-        "log": [
-          {
-            "date": "2026-10-17",
-            "text": "Searched for a national act designating the data protection authority under the AI Act, and read Article 74(8) of the AI Act."
-          },
-          {
-            "date": "2026-10-17",
-            "text": "The data protection authority's undated AI FAQ was read for the allocation of AI Act supervision. Searched in English and German for a body the government has tasked with testing general-purpose or frontier AI models, or named as its AI safety or security institute."
-          }
-        ]
+        "log": []
       },
       "source_ids": [
         "at-dsb-ai-faq",
@@ -4781,12 +4752,7 @@
           "fi-ai-supervision-act1377-2025"
         ],
         "governance_note": "The AI supervision act allocates national AI Act responsibilities, including the single contact and sectoral supervision. These regulatory roles do not establish a qualifying model-evaluation institute.",
-        "log": [
-          {
-            "date": "2026-10-17",
-            "text": "Traficom's August 2026 guidance on AI supervision was read. Searched in English and Finnish for a body the government has tasked with testing general-purpose or frontier AI models, or named as its AI safety or security institute."
-          }
-        ]
+        "log": []
       },
       "source_ids": [
         "fi-ai-supervision-act1377-2025",
@@ -4934,12 +4900,7 @@
           "dk-digst-ai-authorities-faq"
         ],
         "governance_note": "The Digital Agency FAQ describes AI Act supervisory responsibilities and the central contact point; no qualifying model-evaluation mandate is established in the reviewed allocation.",
-        "log": [
-          {
-            "date": "2026-10-17",
-            "text": "The Agency for Digital Government's FAQ on AI Act authorities was read. Searched in English and Danish for a body the government has tasked with testing general-purpose or frontier AI models, or named as its AI safety or security institute."
-          }
-        ]
+        "log": []
       },
       "source_ids": [
         "dk-ai-law467-2025",
@@ -5035,12 +4996,7 @@
           "be-parliament-ai-designation-oct2026"
         ],
         "governance_note": "The minister's parliamentary answer describes pending formal AI Act authority designation. It is governance evidence, not an official statement that no institute exists.",
-        "log": [
-          {
-            "date": "2026-10-17",
-            "text": "The minister's answer to parliament of 6 October 2026 was read for the designation of AI Act authorities, and the September 2026 ministerial proposal for a national AI strategy was read."
-          }
-        ]
+        "log": []
       },
       "source_ids": [
         "be-parliament-ai-designation-oct2026",
@@ -5153,16 +5109,7 @@
           "cz-ctu-ai-department-2026"
         ],
         "governance_note": "The regulator describes its new AI department and supervisory powers dependent on legislation; this supports the regulatory setup rather than an evaluation institute.",
-        "log": [
-          {
-            "date": "2026-10-17",
-            "text": "ČTÚ's announcement of its AI department was read. Searched in English and Czech for a body the government has tasked with testing general-purpose or frontier AI models, or named as its AI safety or security institute."
-          },
-          {
-            "date": "2026-11-11",
-            "text": "The Ministry of Industry and Trade's release of 9 November 2026 was read."
-          }
-        ]
+        "log": []
       },
       "source_ids": [
         "cz-ctu-ai-department-2026",
@@ -5297,10 +5244,23 @@
           "ee-ttja-ai-supervision"
         ],
         "governance_note": "TTJA describes its prospective competent-authority role in AI-system supervision. The future wording is retained.",
-        "log": [
+        "log": [],
+        "passes": [
           {
             "date": "2026-10-17",
-            "text": "TTJA's AI supervision page (updated 10 September 2026) was read, and Riigikogu, Riigi Teataja, TTJA and the economic ministry were searched for an enacted notifying-authority allocation. Searched in English and Estonian for a body the government has tasked with testing general-purpose or frontier AI models, or named as its AI safety or security institute."
+            "languages": [
+              "en",
+              "et"
+            ],
+            "places": [
+              "the Riigikogu's site",
+              "Riigi Teataja",
+              "TTJA's site",
+              "the economic ministry's site"
+            ],
+            "fields": [
+              "related_bodies"
+            ]
           }
         ]
       },
@@ -5418,12 +5378,7 @@
           "negative-second-pt-2026"
         ],
         "governance_note": "The government page sets out the National AI Agenda and its implementation structure. ANACOM's separate proposed market-surveillance role is not an established evaluation mandate.",
-        "log": [
-          {
-            "date": "2026-10-17",
-            "text": "ANACOM's 2026-2028 activity plan was read, and a national notifying-authority allocation was searched for. Searched in English and Portuguese for a body the government has tasked with testing general-purpose or frontier AI models, or named as its AI safety or security institute."
-          }
-        ]
+        "log": []
       },
       "source_ids": [
         "pt-anacom-planned-ai-authority-2025",
@@ -5532,16 +5487,7 @@
           "is-stjornarradid-action-plan-2025"
         ],
         "governance_note": "The ministry describes the funded AI action plan and a centre for AI and language technology; this is adoption and research infrastructure rather than evaluation of the safety of advanced models.",
-        "log": [
-          {
-            "date": "2026-10-17",
-            "text": "The Government Offices' Icelandic release of 2 July 2025 and English page of 1 July 2025 on the first AI Action Plan and the working group's review of AI Act implementation were read. Searched in English and Icelandic for a body the government has tasked with testing general-purpose or frontier AI models, or named as its AI safety or security institute."
-          },
-          {
-            "date": "2026-11-10",
-            "text": "The Government Offices' announcement of 4 November 2026 about Umbra and CERT-IS was read."
-          }
-        ]
+        "log": []
       },
       "source_ids": [
         "is-stjornarradid-action-plan-2025",
@@ -5656,16 +5602,7 @@
           "li-government-ai-act-implementation-2026"
         ],
         "governance_note": "Government report 59/2026 discusses EEA incorporation and preparatory AI Act responsibilities; final authority allocations remain unresolved.",
-        "log": [
-          {
-            "date": "2026-10-17",
-            "text": "The government's report 59/2026 of 12 May 2026 was read. Searched in English and German for a body the government has tasked with testing general-purpose or frontier AI models, or named as its AI safety or security institute."
-          },
-          {
-            "date": "2026-11-10",
-            "text": "The Commission's AI Act contact list of 9 November 2026 was read."
-          }
-        ]
+        "log": []
       },
       "source_ids": [
         "li-government-ai-act-implementation-2026",
@@ -5960,12 +5897,7 @@
           "lu-gouv-ai-act-2026"
         ],
         "governance_note": "The government describes the proposed AI Act implementation arrangements under bill 8476; the draft remains distinct from enacted authority designation.",
-        "log": [
-          {
-            "date": "2026-10-17",
-            "text": "Bill 8476 and the CNPD's page on its draft AI Act roles were read. Searched in English and French for a body the government has tasked with testing general-purpose or frontier AI models, or named as its AI safety or security institute."
-          }
-        ]
+        "log": []
       },
       "source_ids": [
         "lu-gouv-ai-act-2026",
@@ -6130,12 +6062,7 @@
           "gr-law5321-2026-authorities"
         ],
         "governance_note": "The retrieved law allocates AI Act supervision, notification and coordination roles. The separate Kodiko table of contents is not relied upon as substantive legal text.",
-        "log": [
-          {
-            "date": "2026-10-17",
-            "text": "Law 5321/2026 in Government Gazette A 114 of 20 July 2026 was read, including Articles 3 to 6, 12 and 58. Searched in English and Greek for a body the government has tasked with testing general-purpose or frontier AI models, or named as its AI safety or security institute."
-          }
-        ]
+        "log": []
       },
       "source_ids": [
         "gr-kodiko-law-5321",
@@ -6294,12 +6221,7 @@
           "hr-mpudt-plan-2026-10"
         ],
         "governance_note": "The ministry's announcement describes the national AI plan and public consultation; the underlying plan was not opened, so coverage is limited to the announcement.",
-        "log": [
-          {
-            "date": "2026-10-17",
-            "text": "The ministry's release of 16 October 2026 on the National AI Development Plan and the 2026 legislative plan were read. Searched in English and Croatian for a body the government has tasked with testing general-purpose or frontier AI models, or named as its AI safety or security institute."
-          }
-        ]
+        "log": []
       },
       "source_ids": [
         "hr-mpudt-plan-2026-10",
@@ -6581,12 +6503,7 @@
           "si-nsai2030"
         ],
         "governance_note": "The national strategy describes AI governance and national algorithm safety-test procedures, without establishing an institute to evaluate advanced models in the reviewed provisions.",
-        "log": [
-          {
-            "date": "2026-10-17",
-            "text": "ZIUDHPUI, the government's release of 5 March 2026, the national AI strategy to 2030 and the government's page on the national AI ecosystem were read. Searched in English and Slovenian for a body the government has tasked with testing general-purpose or frontier AI models, or named as its AI safety or security institute."
-          }
-        ]
+        "log": []
       },
       "source_ids": [
         "si-nsai2030",
@@ -6943,12 +6860,7 @@
           "sk-r6-cyberlab-project-approval"
         ],
         "governance_note": "The ministry proposal, official call and project approval establish a national public-administration cybersecurity project. Its platform and model testing serves cyber protection and safe deployment; no separate qualifying capability or behaviour-risk assignment was identified. Delivery remains unverified.",
-        "log": [
-          {
-            "date": "2026-10-17",
-            "text": "The AI CyberLab project plan, the minutes of the commission's meeting of 1 April 2026, the AI CyberLab and SIMULAB calls and government bill 1447 were read. Searched in English and Slovak for a body the government has tasked with testing general-purpose or frontier AI models, or named as its AI safety or security institute."
-          }
-        ]
+        "log": []
       },
       "source_ids": [
         "sk-ai-cyberlab-zamer",
@@ -7149,12 +7061,7 @@
           "hu-njt-2025-75"
         ],
         "governance_note": "The AI Act implementation law sets supervisory arrangements and an advisory AI Council without decision-making powers. Later decree amendments were not fully read.",
-        "log": [
-          {
-            "date": "2026-10-17",
-            "text": "Act LXXV of 2025, Government Decree 344/2025 and Government Decree 90/2026 were read. Searched in English and Hungarian for a body the government has tasked with testing general-purpose or frontier AI models, or named as its AI safety or security institute."
-          }
-        ]
+        "log": []
       },
       "source_ids": [
         "hu-njt-344-2025",
@@ -7354,16 +7261,7 @@
           "ro-ancom-ai-implementation-2026"
         ],
         "governance_note": "ANCOM's July update describes proposed market-surveillance responsibility and the need for implementing legislation; final enactment was not verified.",
-        "log": [
-          {
-            "date": "2026-10-17",
-            "text": "ANCOM's implementation update and governance page were read. Searched in English and Romanian for a body the government has tasked with testing general-purpose or frontier AI models, or named as its AI safety or security institute."
-          },
-          {
-            "date": "2026-11-10",
-            "text": "The Senate's record of bill B597/2026 was read."
-          }
-        ]
+        "log": []
       },
       "source_ids": [
         "ro-ancom-ai-implementation-2026",
@@ -7659,16 +7557,7 @@
           "bg-ai-bill151-2026-authorities"
         ],
         "governance_note": "The scanned parliamentary bill was visually reviewed for proposed AI Act authority allocations; these remain proposals, not enacted designations.",
-        "log": [
-          {
-            "date": "2026-10-17",
-            "text": "Article 5 of bill 52-654-01-151 was read. Searched in English and Bulgarian for a body the government has tasked with testing general-purpose or frontier AI models, or named as its AI safety or security institute."
-          },
-          {
-            "date": "2026-11-07",
-            "text": "BTA's report of 4 November 2026 on the innovation committee's vote on bill 52-654-01-151 was read."
-          }
-        ]
+        "log": []
       },
       "source_ids": [
         "bg-parliament-ai-bill",
@@ -7817,12 +7706,7 @@
           "lt-ai-authorities-ministry"
         ],
         "governance_note": "The ministry describes the Innovation Agency and Communications Regulatory Authority's AI Act functions; this is substantive national governance evidence.",
-        "log": [
-          {
-            "date": "2026-10-17",
-            "text": "The Ministry of the Economy and Innovation's AI page was read. Searched in English and Lithuanian for a body the government has tasked with testing general-purpose or frontier AI models, or named as its AI safety or security institute."
-          }
-        ]
+        "log": []
       },
       "source_ids": [
         "lt-ktu-centre",
@@ -8040,12 +7924,7 @@
           "lv-r6-centre-defence"
         ],
         "governance_note": "The current consolidated law and Latvian and English ministry accounts establish national governance, applied risk management and sandbox testing. They do not establish the qualifying remit to evaluate advanced models; confidence is medium following both language searches.",
-        "log": [
-          {
-            "date": "2026-10-17",
-            "text": "The Artificial Intelligence Centre Law (version in force from 1 June 2026), the ministry's account of the sandbox rules of 13 January 2026, its overview of the centre updated on 2 July 2026 and the defence ministry's release of February 2026 were read. Searched in English and Latvian for a body the government has tasked with testing general-purpose or frontier AI models, or named as its AI safety or security institute."
-          }
-        ]
+        "log": []
       },
       "source_ids": [
         "lv-likumi-ai-centre",
@@ -8323,16 +8202,7 @@
           "cy-r6-presidency-strategy-consultation"
         ],
         "governance_note": "Retrieved government consultation material describes coordination, conformity and cyber-defence arrangements. The model-risk policy council would advise policymakers, without specifying general-purpose, foundation or frontier models as the object of evaluation. These texts do not establish a qualifying body; a more specific technical remit could change the finding.",
-        "log": [
-          {
-            "date": "2026-10-17",
-            "text": "The consultation draft of the national AI strategy, the government's consultation notices of July 2026 and the deputy ministry's notice on AI Act authorities were read. Searched in English and Greek for a body the government has tasked with testing general-purpose or frontier AI models, or named as its AI safety or security institute."
-          },
-          {
-            "date": "2026-11-11",
-            "text": "The deputy minister's statement of 10 November 2026 on the national AI strategy was read."
-          }
-        ]
+        "log": []
       },
       "source_ids": [
         "cy-ccci-circular-primary-proposal",
@@ -8500,16 +8370,7 @@
           "mt-mdia-ai-authorities"
         ],
         "governance_note": "MDIA describes its lead AI Act market-surveillance and single-contact responsibilities, consistent with an authority rather than a qualifying evaluation institute.",
-        "log": [
-          {
-            "date": "2026-10-17",
-            "text": "MDIA's strategy page of 20 November 2025 and the official texts of Legal Notice 226 of 2025 and Legal Notice 227 of 2025 were read. Searched in English for a body the government has tasked with testing general-purpose or frontier AI models, or named as its AI safety or security institute."
-          },
-          {
-            "date": "2026-10-21",
-            "text": "MDIA's AI-authorities page was read."
-          }
-        ]
+        "log": []
       },
       "source_ids": [
         "mt-mdia-strategy-2025",
@@ -80911,7 +80772,9 @@
         "sha256": "b4a5b54040933bc57a2241531c9a7f53e386d094517415a5fb2a7f06606b932d",
         "text_sha256": "ea3b732bac8890e3a1b7dd0ad35966b431fd466d7655a1d692533ba1382040b8",
         "text_scheme": 1
-      }
+      },
+      "published": "2026-09-10",
+      "access_note": "The saved page labels 10 September 2026 as its last update (Viimati uuendatud 10.09.2026). The published field records that page-version date, not an original publication date."
     },
     {
       "id": "at-dsb-ai-faq",
@@ -83578,7 +83441,8 @@
         "sha256": "108dcaf331b540f89b83ae3b51ca7a34af5b5b0bcb7e641a839e27a3b83037c2",
         "text_sha256": "8ecead1fbad8597398cc764c7fa8162e28c5b8a3f4f9f2909e6c9cf82bb639fc",
         "text_scheme": 1
-      }
+      },
+      "published": "2026-08-20"
     },
     {
       "id": "negative-second-pt-2026",
