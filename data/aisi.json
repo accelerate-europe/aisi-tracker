@@ -8459,12 +8459,12 @@
           "date": "2024-02-14",
           "event": "designated",
           "instrument": "administrative",
-          "description": "IPA sets up the AI Safety Institute as a body to study AI safety evaluation methods, with a director and secretariat inside IPA.",
+          "description": "The Cabinet Office announces that the AI Safety Institute has been established within IPA as a body to study AI safety evaluation methods, with a director in office.",
           "source_ids": [
             "jp-ipa-2024-02",
             "jp-cao-aisi-20240214"
           ],
-          "short": "IPA establishes AI Safety Institute with a director and secretariat."
+          "short": "Cabinet Office announces institute established within IPA, with a director."
         },
         {
           "id": "jp-2024-02-14-launched",
@@ -124018,6 +124018,17 @@
                 "id": "people-b2221cf0153f51bbb54c609c96e106c6"
               },
               "background"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "JP"
+              },
+              "timeline",
+              {
+                "id": "jp-2024-02-14-designated"
+              },
+              "description"
             ]
           ],
           "gloss": "Akiko Murakami, a former AI researcher at IBM Japan who is currently CDO (Chief Digital Officer) of Sompo Japan and a visiting lecturer at the Disaster Prevention Research Institute, Kyoto University, whose appointment was decided on the 1st of this month, took office as director.",
@@ -124037,6 +124048,17 @@
                 "id": "jp-2024-02-14-designated"
               },
               "event"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "JP"
+              },
+              "timeline",
+              {
+                "id": "jp-2024-02-14-designated"
+              },
+              "description"
             ]
           ],
           "accessed": "2026-11-14"
@@ -124066,6 +124088,24 @@
                 "id": "jp-2024-02-14-launched"
               },
               "date"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "同機関は、内閣府をはじめ関係省庁、関係機関の協力の下、IPA（独立行政法人情報処理推進機構）に設置され",
+          "gloss": "The body is set up in IPA (the Information-technology Promotion Agency), with the cooperation of the Cabinet Office, the other ministries concerned and related bodies",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "JP"
+              },
+              "timeline",
+              {
+                "id": "jp-2024-02-14-designated"
+              },
+              "description"
             ]
           ],
           "accessed": "2026-11-14"
