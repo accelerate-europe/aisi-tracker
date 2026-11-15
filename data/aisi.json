@@ -8157,7 +8157,8 @@
         "fix-output-us-aisi-vision-2024",
         "fix-output-us-aisi-vision-release-2024",
         "jp-joint-2025",
-        "us-commerce-2023"
+        "us-commerce-2023",
+        "us-commerce-2024-02"
       ],
       "region": {
         "id": "019",
@@ -8214,7 +8215,8 @@
           "instrument": "administrative",
           "description": "NIST states the US AI Safety Institute was established under NIST; inaugural director named.",
           "source_ids": [
-            "us-aisi-2024"
+            "us-aisi-2024",
+            "us-commerce-2024-02"
           ],
           "short": "NIST confirms institute established under NIST; inaugural director named."
         },
@@ -8408,7 +8410,8 @@
         "depth-jp-redteam-results",
         "catalogue-jp-index",
         "catalogue-jp-29-1",
-        "fix-output-jp-entry-29"
+        "fix-output-jp-entry-29",
+        "jp-cao-aisi-20240214"
       ],
       "region": {
         "id": "142",
@@ -8458,7 +8461,8 @@
           "instrument": "administrative",
           "description": "IPA sets up the AI Safety Institute as a body to study AI safety evaluation methods, with a director and secretariat inside IPA.",
           "source_ids": [
-            "jp-ipa-2024-02"
+            "jp-ipa-2024-02",
+            "jp-cao-aisi-20240214"
           ],
           "short": "IPA establishes AI Safety Institute with a director and secretariat."
         },
@@ -8469,7 +8473,8 @@
           "instrument": "press_release",
           "description": "IPA announces that AISI has begun with an appointed director and an IPA secretariat to research AI safety evaluation methods.",
           "source_ids": [
-            "jp-ipa-2024-02"
+            "jp-ipa-2024-02",
+            "jp-cao-aisi-20240214"
           ],
           "short": "IPA announces institute has begun, to research AI safety evaluation methods."
         }
@@ -33445,7 +33450,8 @@
         "us-scale-aisi-2025",
         "us-si-page-archive-2026-09-30",
         "fix-output-us-entry-9",
-        "fix-output-us-entry-4"
+        "fix-output-us-entry-4",
+        "us-commerce-2024-02"
       ],
       "notes": "The current NIST pages use CAISSI. The name-history start is the earliest archived use of the name found, NIST's super intelligence page as captured on 30 September 2026. Executive Order 14434 of 29 September 2026, which directs the executive branch to use 'Super Intelligence' in place of 'Artificial Intelligence', is the likely trigger, but it does not name this centre or set a date for its rename. The current ministerial basis refers to the June 2025 CAISI decision; the retained establishment date refers to its US AISI predecessor. Canada's CAISI, the Canadian AI Safety Institute, is a different body.",
       "mandate_short": "Leads national security evaluations of superintelligence (SI) systems and develops guidelines to measure and improve their security.",
@@ -35567,7 +35573,8 @@
         "jp-aisi-note-glm-2026",
         "jp-aisi-note-glm-pdf-2026",
         "jp-ai-basic-plan-2026",
-        "jp-aisi-note-exploitbench-2026"
+        "jp-aisi-note-exploitbench-2026",
+        "jp-cao-aisi-20240214"
       ],
       "people": [
         {
@@ -60340,6 +60347,63 @@
         "text_scheme": 1
       },
       "access_note": "The published snapshot hash identifies the retained archive capture at https://web.archive.org/web/20260211063744/https://www.commerce.gov/news/press-releases/2023/11/direction-president-biden-department-commerce-establish-us-artificial."
+    },
+    {
+      "id": "us-commerce-2024-02",
+      "url": "https://www.commerce.gov/news/press-releases/2024/02/us-commerce-secretary-gina-raimondo-announces-key-executive-leadership",
+      "title": "U.S. Commerce Secretary Gina Raimondo Announces Key Executive Leadership at U.S. AI Safety Institute",
+      "publisher": "US Department of Commerce",
+      "type": "primary",
+      "published": "2024-02-07",
+      "accessed": "2026-11-15",
+      "language": "en",
+      "archive_url": "https://web.archive.org/web/20240223101238/https://www.commerce.gov/news/press-releases/2024/02/us-commerce-secretary-gina-raimondo-announces-key-executive-leadership",
+      "origin": "US",
+      "access_note": "The Department of Commerce URL returns HTTP 403 to automated readers; the copy is the archive capture of 23 February 2024 at https://web.archive.org/web/20240223101238/https://www.commerce.gov/news/press-releases/2024/02/us-commerce-secretary-gina-raimondo-announces-key-executive-leadership.",
+      "excerpts": [
+        {
+          "text": "Wednesday, February 7, 2024",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "US"
+              },
+              "timeline",
+              {
+                "id": "us-2024-designated"
+              },
+              "date"
+            ]
+          ],
+          "accessed": "2026-11-15",
+          "url": "https://web.archive.org/web/20240223101238/https://www.commerce.gov/news/press-releases/2024/02/us-commerce-secretary-gina-raimondo-announces-key-executive-leadership"
+        },
+        {
+          "text": "The U.S. AI Safety Institute was established under NIST at the direction of President Biden",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "US"
+              },
+              "timeline",
+              {
+                "id": "us-2024-designated"
+              },
+              "event"
+            ]
+          ],
+          "accessed": "2026-11-15",
+          "url": "https://web.archive.org/web/20240223101238/https://www.commerce.gov/news/press-releases/2024/02/us-commerce-secretary-gina-raimondo-announces-key-executive-leadership"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-15T09:02:58Z",
+        "sha256": "a86755d0058cd8c893e26ae8bcaf844b33bdf8d6cb264c3352eb638e6c67f08b",
+        "text_sha256": "1bae554c118aca1ac5e635b51d3e76b2859955e542f2556d8fbd7a46f1603188",
+        "text_scheme": 1
+      }
     },
     {
       "id": "us-nist-mou-2024",
@@ -123957,6 +124021,53 @@
             ]
           ],
           "gloss": "Akiko Murakami, a former AI researcher at IBM Japan who is currently CDO (Chief Digital Officer) of Sompo Japan and a visiting lecturer at the Disaster Prevention Research Institute, Kyoto University, whose appointment was decided on the 1st of this month, took office as director.",
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "AIの安全性に対する国際的な関心の高まりを踏まえ、AIの安全性の評価手法の検討等を行う機関として、米国や英国と同様に、日本においても、AIセーフティ・インスティテュートを本日設立した。",
+          "gloss": "In response to growing international interest in AI safety, the AI Safety Institute was established in Japan today, as in the United States and the United Kingdom, as a body to study methods for evaluating AI safety, among other work.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "JP"
+              },
+              "timeline",
+              {
+                "id": "jp-2024-02-14-designated"
+              },
+              "event"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "令和6年2月14日",
+          "gloss": "14 February 2024 (Reiwa 6)",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "JP"
+              },
+              "timeline",
+              {
+                "id": "jp-2024-02-14-designated"
+              },
+              "date"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "JP"
+              },
+              "timeline",
+              {
+                "id": "jp-2024-02-14-launched"
+              },
+              "date"
+            ]
+          ],
           "accessed": "2026-11-14"
         }
       ],
