@@ -4027,6 +4027,17 @@
           "source_ids": [
             "pl-nask-korea-aisi-2026"
           ]
+        },
+        {
+          "id": "claims-92a9d8cf0bc04767bcadc2912651649c",
+          "kind": "function",
+          "code": "convening",
+          "basis": "mandate",
+          "body_id": "related_bodies-8e2bf69316145732aea04a2f9bbd82eb",
+          "text": "The government's AI policy plans to build around the centre an organisation bringing together representatives of companies and research institutions to promote cooperation on AI safety research and development.",
+          "source_ids": [
+            "pl-r8-resolution130"
+          ]
         }
       ]
     },
@@ -95651,8 +95662,19 @@
       "access_note": "PDF/Gazette pages 145 and 158 (strategy pages 144 and 157) name the existing centre as a research institution and plan an R&D network around it; neither passage assigns a national advanced-model evaluation role.",
       "excerpts": [
         {
-          "text": "zbudowanie wokół Ośrodka Badań nad Bezpieczeństwem Sztucznej Inteligencji organizacji",
+          "text": "g) zbudowanie wokół Ośrodka Badań nad Bezpieczeństwem Sztucznej Inteligencji \norganizacji skupiającej przedstawicieli firm i instytucji badawczych mającej na \ncelu promowanie wzajemnej współpracy w zakresie prac badawczo-rozwojowych \nw obszarze bezpieczeństwa sztucznej inteligencji i ich promocji,",
           "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "PL"
+              },
+              "claims",
+              {
+                "id": "claims-92a9d8cf0bc04767bcadc2912651649c"
+              },
+              "text"
+            ],
             [
               "jurisdictions",
               {
@@ -95662,8 +95684,8 @@
               "gap"
             ]
           ],
-          "accessed": "2026-10-18",
-          "gloss": "Building an organisation around the AI Safety Research Centre."
+          "gloss": "g) building around the AI Safety Research Centre an organisation bringing together representatives of companies and research institutions, with the aim of promoting mutual cooperation on research and development work in the field of artificial intelligence safety and the promotion of that work,",
+          "accessed": "2026-10-18"
         }
       ],
       "snapshot": {
