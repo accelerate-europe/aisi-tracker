@@ -236,6 +236,32 @@ def summary_text(record: dict, institute: dict | None = None) -> str:
     return " ".join(x for x in (pattern_5(record, institute), pattern_6(institute)) if x)
 
 
+def summary_leaves(record: dict, institute: dict | None, basis: int | None) -> list[tuple[str, str]]:
+    """The leaves a generated summary words, as ("jurisdiction" | "institute", path below the record), so the
+    summary is cited from their excerpts. Pattern 1 is a finding from check and cites nothing. basis: the index of
+    the timeline event that sets the status (published.status_basis), for pattern 5 below established."""
+    claims = record.get("claims", [])
+    if record["status"] != "none_identified":
+        if record["status"] == "established":
+            leaves = [("institute", key) for key in ("established", "legal_form", "host")]
+        else:
+            leaves = [("jurisdiction", f"timeline/{basis}")] if basis is not None else []
+        return leaves + ([("institute", "mandate_short")] if pattern_6(institute) else [])
+    if record.get("closest_body") is not None:
+        lead = shown_lead(record)
+        return [("jurisdiction", f"closest_body/{key}") for key in ("name", "stage")] + (
+            [("jurisdiction", f"claims/{claims.index(lead)}/text")] if lead is not None else [])
+    if development := live([c for c in claims if c["kind"] == "development"]):
+        n = claims.index(development[0])
+        return [("jurisdiction", f"claims/{n}/{key}") for key in ("act", "date", "text")]
+    bodies = record.get("related_bodies", [])
+    authority = lead_authority([b for b in bodies if b["kind"] == "ai_act_authority"])
+    if authority is None:
+        return []
+    k = bodies.index(authority)
+    return [("jurisdiction", f"related_bodies/{k}/{key}") for key in ("designation_state", "authority_roles", "designation_step")]
+
+
 def generate(record: dict, institute: dict | None, basis_event: dict | None) -> dict:
     """The generated texts of a migrated record: summary, notes, roles by body id, and the closest body's note."""
     closest = record.get("closest_body")
