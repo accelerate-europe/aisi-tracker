@@ -4000,7 +4000,6 @@
           "code": "research",
           "basis": "mandate",
           "body_id": "related_bodies-8e2bf69316145732aea04a2f9bbd82eb",
-          "lead": true,
           "text": "NASK says the centre will lead its cooperation with OpenAI and \"will research the safety of increasingly advanced AI systems\" with it.",
           "source_ids": [
             "pl-nask-openai-2026"
@@ -4037,6 +4036,18 @@
           "text": "The government's AI policy plans to build around the centre an organisation bringing together representatives of companies and research institutions to promote cooperation on AI safety research and development.",
           "source_ids": [
             "pl-r8-resolution130"
+          ]
+        },
+        {
+          "id": "claims-1bf9b314ae6a4e4d8bf782ce4dfa908c",
+          "kind": "function",
+          "code": "evaluation_methods",
+          "basis": "activity",
+          "body_id": "related_bodies-8e2bf69316145732aea04a2f9bbd82eb",
+          "lead": true,
+          "text": "On NASK's research teams page, the centre's Department of Security and Transparency of Artificial Intelligence says \"We develop methods for generating, analyzing and auditing models, and develop methods and software to support their analysis\".",
+          "source_ids": [
+            "pl-r8-research-teams"
           ]
         }
       ]
@@ -95812,7 +95823,31 @@
       "language": "en",
       "origin": "PL",
       "access_note": "The Department of Security and Transparency of Artificial Intelligence describes its own research on fundamental models and model auditing. This institutional description is not a government assignment of a national evaluation role.",
-      "excerpts": [],
+      "excerpts": [
+        {
+          "text": "We develop methods for generating, analyzing and auditing models, and develop methods and software to support their analysis.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "PL"
+              },
+              "claims",
+              {
+                "id": "claims-1bf9b314ae6a4e4d8bf782ce4dfa908c"
+              },
+              "text"
+            ]
+          ],
+          "anchors": [
+            {
+              "text": "AI Safety Research Center",
+              "kind": "heading"
+            }
+          ],
+          "accessed": "2026-10-18"
+        }
+      ],
       "snapshot": {
         "retrieved": "2026-10-18T05:11:30.911383+00:00",
         "sha256": "c594d0732fe24b6fb244499a56fce817cedbed8776c9541bd58b72055a28878b",
