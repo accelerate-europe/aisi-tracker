@@ -211,6 +211,7 @@ def authored_schema(download_schema, *, strict=False):
     outputs = institutes["properties"]["outputs"]["items"]
     derived = [
         (jurisdictions, ("status", "status_since")),
+        (jurisdictions["properties"]["closest_body"], ("active_in",)),
         (institutes, ("status", "announced", "established", "operating", "intervals", "functions")),
         (schema["$defs"]["funding"], ("eur_per_year_est", "eur_per_person_est", "share_of_gdp_est", "ratio_denominators")),
         (schema["properties"]["dataset"]["properties"]["exchange_rates"]["items"], ("eur_per_unit",)),

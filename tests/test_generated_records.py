@@ -83,6 +83,66 @@ def test_generated_summary_cites_the_leaves_it_words(migrated):
     assert summary_leaves(bare, None, None) == []
 
 
+def test_closest_activity_follows_vocabulary_and_claim_order(migrated):
+    state = migrated["jurisdictions"][0]
+    body = state["closest_body"]["body_id"]
+    claim = {"kind": "function", "basis": "activity", "body_id": body, "text": "It tests models."}
+    state["claims"] = [
+        {**claim, "id": "research-first", "code": "research"},
+        {**claim, "id": "testing", "code": "model_testing"},
+        {**claim, "id": "research-second", "code": "research"},
+        {**claim, "id": "mandate", "code": "policy_advice", "basis": "mandate"},
+        {**claim, "id": "expired", "code": "policy_advice", "expired": True},
+        {**claim, "id": "other", "code": "policy_advice", "body_id": "other-body"},
+        {**claim, "id": "fact", "code": "policy_advice", "kind": "fact"},
+    ]
+    published_facts.word_record(state, {}, migrated["dataset"]["vocabularies"])
+    assert state["closest_body"]["active_in"] == [
+        {"code": "model_testing", "claim_ids": ["testing"]},
+        {"code": "research", "claim_ids": ["research-first", "research-second"]},
+    ]
+    for c in state["claims"]:
+        c["expired"] = True
+    published_facts.word_record(state, {}, migrated["dataset"]["vocabularies"])
+    assert "active_in" not in state["closest_body"]
+
+
+def test_closest_activity_is_generated_in_download_page_and_csv(migrated):
+    published = build.export_dataset(migrated)
+    closest = published["jurisdictions"][0]["closest_body"]
+    assert closest["active_in"] == [{"code": "model_testing", "claim_ids": [LEAD]}, {"code": "research", "claim_ids": [ROLE]}]
+    assert json.loads(build.page_data(published))["jurisdictions"][0]["closest_body"]["active_in"] == closest["active_in"]
+    table = build.tables(published)["closest_bodies"]
+    assert table[0]["active_in"] == "model_testing;research"
+    assert list(table[0]) == build.EMPTY_COLUMNS["closest_bodies"]
+    closest.pop("active_in")
+    assert build.tables(published)["closest_bodies"][0]["active_in"] == ""
+
+
+def test_closest_activity_is_removed_after_reread_expiry(migrated):
+    states = {"checked_to": None, "runs": [], "sources": {}}
+    for source in migrated["sources"]:
+        for excerpt in source.get("excerpts", []):
+            if any(p in excerpt["supports"] for p in ("/jurisdictions/0/claims/0/text", "/jurisdictions/0/claims/1/text")):
+                states["sources"].setdefault(source["id"], {})[rereads.quote_id(excerpt["text"])] = {
+                    "state": "quote_gone", "last_found": "2025-01-01", "since": "2025-01-02",
+                }
+    published = published_facts.publish(migrated, rereads=states)
+    state = published["jurisdictions"][0]
+    assert next(c for c in state["claims"] if c["id"] == ROLE)["expired"]
+    assert "active_in" not in state["closest_body"]
+
+
+def test_closest_activity_forbidden_in_authored_input(migrated):
+    migrated["jurisdictions"][0]["closest_body"]["active_in"] = [{"code": "research", "claim_ids": [ROLE]}]
+    assert any(path == ["jurisdictions", 0, "closest_body"] or "active_in" in path
+               for path, _ in located_errors(migrated, authored_schema(SCHEMA, strict=True)))
+
+
+def test_legacy_closest_body_has_no_generated_activity(lead):  # noqa: F811
+    assert "active_in" not in build.export_dataset(lead)["jurisdictions"][0]["closest_body"]
+
+
 def test_real_generated_status_summaries_are_cited():
     """The Netherlands and Sweden (a status, no institute): their card shows the generated summary as its finding."""
     authored = json.loads(DATA.read_text(encoding="utf-8"))

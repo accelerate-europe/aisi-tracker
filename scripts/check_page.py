@@ -1657,7 +1657,8 @@ def check_source_alignment(html: str, data: dict) -> list[str]:
                 compared += 1
                 cell = table.select_one(f'[data-col="{column}"]')
                 errors.extend(zero_match_errors("source_alignment", f'{jid} #world-rows [data-col="{column}"]', int(cell is not None)))
-                card_ids = [a.get("data-source-id") for a in row.select(".cn")]
+                # The card-only activity sentence has its own evidence, checked by the activity-line content family.
+                card_ids = [a.get("data-source-id") for a in row.select(".cn") if not a.find_parent(class_="activity-line")]
                 if column == "since" and row.select_one(".qualifiers"):
                     # Only the dated announcement's extra sources may differ (dataset.method/intervals).
                     jurisdiction = next((j for j in data["jurisdictions"] if j["id"] == jid), None)
@@ -2161,7 +2162,7 @@ def check_interval_output(html: str, data: dict, hand_worked: dict | None = None
             wanted = set(j.get("citations", {}).get("since", [])) | {
                 sid for n in counted for sid in j["timeline"][n].get("citations", {}).get("date", [])
             }
-            if {a.get("data-source-id") for a in status.select(".cn")} != wanted:
+            if {a.get("data-source-id") for a in status.select(".cn") if not a.find_parent(class_="activity-line")} != wanted:
                 errors.append(f"{j['id']}: Status citations do not cover the announcement and establishment")
         activity = rows.get(CARD_TRACKS["Known activity"])
         errors.extend(zero_match_errors("interval_output", f'{j["id"]} .row[data-track="{CARD_TRACKS["Known activity"]}"]', int(activity is not None), institute is not None and j["status"] == "established"))
@@ -7643,7 +7644,12 @@ def check_nonidentified_folds(html, data: dict) -> list[str]:
                     want_dets = [" ".join(c["text"].split()) for c in j["claims"] if c["kind"] == "function"
                                  and c.get("body_id") == body_id and c is not lead]
                     if key == "closest" and b.get("stage", "exists") != "exists":
-                        want_dets.append(b["stage"].replace("_", " ").capitalize() + ".")
+                        stage = b["stage"].replace("_", " ").capitalize() + "."
+                        # An activity line follows the stage directly under the name; without it the existing order stays.
+                        if b.get("active_in"):
+                            want_dets.insert(0, stage)
+                        else:
+                            want_dets.append(stage)
                     if dets != want_dets:
                         errors.append(f"{j['id']} body {want!r}: role sentences {dets!r}, expected {want_dets!r}")
                 elif key == "closest":

@@ -501,7 +501,7 @@ def publish(data: dict, *, strict: bool | None = None, rereads: dict | None = No
     migrated = {j["id"] for j in data.get("jurisdictions", []) if "summary" not in j}
     for jurisdiction in facts.get("jurisdictions", []):
         if jurisdiction["id"] in migrated:
-            word_record(jurisdiction, institutes)
+            word_record(jurisdiction, institutes, facts["dataset"].get("vocabularies", {}))
     return derive_display(facts)
 
 
@@ -857,7 +857,7 @@ def generate_texts(result: dict) -> list[str]:
             and not summaries.role_claims(jurisdiction, b.get("id"))
         ]
         try:
-            word_record(jurisdiction, institutes)
+            word_record(jurisdiction, institutes, result.get("dataset", {}).get("vocabularies", {}))
         except summaries.GeneratorError as exc:
             errors.append(f"{where}: {exc}")
     return errors
@@ -871,7 +871,7 @@ def closest_body_warnings(data: dict, published: dict) -> list[str]:
             and (line := summaries.closest_warning(j)) is not None]
 
 
-def word_record(jurisdiction: dict, institutes: dict) -> None:
+def word_record(jurisdiction: dict, institutes: dict, vocabularies: dict) -> None:
     """Write a migrated record's generated summary, notes, roles and closest-body note; claims marked expired are left out."""
     _, _, basis = status_basis(jurisdiction.get("timeline", []))
     texts = summaries.generate(
@@ -887,4 +887,14 @@ def word_record(jurisdiction: dict, institutes: dict) -> None:
     for body in jurisdiction.get("related_bodies", []):
         body["role"] = texts["roles"].get(body.get("id"), "")  # a body without an id has no claim to word
     if jurisdiction.get("closest_body") is not None:
-        jurisdiction["closest_body"]["note"] = texts["note"]
+        closest = jurisdiction["closest_body"]
+        closest["note"] = texts["note"]
+        claims = [c for c in jurisdiction.get("claims", []) if c.get("kind") == "function"
+                  and c.get("basis") == "activity" and not c.get("expired")
+                  and closest.get("body_id") is not None and c.get("body_id") == closest["body_id"]]
+        active = [{"code": code, "claim_ids": ids} for code in vocabularies.get("function", {})
+                  if (ids := [c["id"] for c in claims if c["code"] == code])]
+        if active:
+            closest["active_in"] = active
+        else:
+            closest.pop("active_in", None)
