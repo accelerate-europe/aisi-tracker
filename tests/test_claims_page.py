@@ -198,6 +198,25 @@ def test_browser_fixture_covers_every_role_and_development_binding():
     shown = check_page.card_claims(migrated, {})
     assert len(shown) == 6 and shown[0]["expired"]
     assert [len(check_page.claim_bindings(fixture, c["id"])) for c in shown] == [1, 1, 1, 1, 1, 2]
+    other_copy = [(s, a) for s in fixture["sources"] for e in s.get("excerpts", []) for a in e.get("anchors", []) if "source_id" in a]
+    assert other_copy
+    for owner, anchor in other_copy:
+        named = next(s for s in fixture["sources"] if s["id"] == anchor["source_id"])
+        assert named["title"] and named["language"] != owner["language"]
+
+
+def test_other_copy_anchor_shows_its_source_title_language_and_original():
+    data = bound_data()
+    named = {"id": "unit-source", "title": "Unit <membership>", "language": "fr"}
+    data["sources"].append(named)
+    anchor = {"kind": "membership", "text": "Le laboratoire appartient à l'institut.", "gloss": "The lab belongs to the institute.", "source_id": named["id"]}
+    data["sources"][0]["excerpts"][0]["anchors"].append(anchor)
+    body = page_call(f"(CLAIM_INDEX = claimIndex({json.dumps(data)}), claimQuoteBody('fact'))")
+    line, = [n for n in body["children"][0]["children"] if n.get("className") == "quote-anchor" and texts(n).startswith("Part of:")]
+    assert texts(line) == 'Part of: "The lab belongs to the institute." translated from French (Unit <membership>)'
+    quote = line["children"][1]["children"][0]
+    assert quote["attrs"]["aria-description"] == anchor["text"] and quote["tabIndex"] == 0
+    assert line["children"][-1] == {"text": " (Unit <membership>)"}
 
 
 def test_expired_body_role_stays_with_a_warning_but_not_in_the_finding():

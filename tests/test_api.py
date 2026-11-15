@@ -11,6 +11,21 @@ import pytest
 from scripts import build
 
 
+def test_other_copy_anchor_and_its_source_are_in_the_record_api():
+    from scripts.agent_files import record_sources
+
+    anchor = {"kind": "membership", "text": "The lab belongs to the institute.", "source_id": "unit-source"}
+    record = {"id": "lab", "source_ids": ["quote-source", "unit-source"]}
+    published = {"sources": [
+        {"id": "quote-source", "url": "https://example.org/quote", "title": "Quote source", "excerpts": [
+            {"text": "The lab tests models.", "supports": ["/institutes/0/name"], "anchors": [anchor]}]},
+        {"id": "unit-source", "url": "https://example.org/unit", "title": "Unit membership", "excerpts": []}]}
+    exported = record_sources(published, [("/institutes/0", "/record", record)])
+    sources = {s["id"]: s for s in exported}
+    assert sources["quote-source"]["excerpts"] == [{"text": "The lab tests models.", "supports": ["/record/name"], "anchors": [anchor]}]
+    assert sources["unit-source"]["title"] == "Unit membership"
+
+
 @pytest.fixture(scope="module")
 def site(tmp_path_factory):
     out = tmp_path_factory.mktemp("api") / "site"
