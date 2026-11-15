@@ -17,9 +17,11 @@ else:
 if __package__:
     from .published import INTERVAL_KEYS, RATIO_FIELDS, announcement, annual_eur_amount, annual_estimate, bound_rounding, budget_ratios, comparable_funding, component_indices, first_designation, milestones, naming_act, significant, status_basis
     from .row_checks import row_display
+    from . import summaries
 else:
     from published import INTERVAL_KEYS, RATIO_FIELDS, announcement, annual_eur_amount, annual_estimate, bound_rounding, budget_ratios, comparable_funding, component_indices, first_designation, milestones, naming_act, significant, status_basis
     from row_checks import row_display
+    import summaries  # type: ignore[no-redef]
 
 
 DEVELOPMENT_EVENTS = {
@@ -560,6 +562,7 @@ def derive_display(published_data):
         j["id"]: (n, j) for n, j in enumerate(data.get("jurisdictions", []))
     }
     institutes = {i["id"]: i for i in data.get("institutes", [])}
+    institute_index = {i["id"]: n for n, i in enumerate(data.get("institutes", []))}
     rates = data.get("dataset", {}).get("exchange_rates", [])
     rate_values = {r["currency"]: r["eur_per_unit"] for r in rates}
     for n, rate in enumerate(rates):
@@ -820,6 +823,11 @@ def derive_display(published_data):
         citations["status"] = status_ids
         citations["finding"] = cited(f"{path}/summary")
         institute = institutes.get(jurisdiction.get("institute_id"))
+        if not citations["finding"]:
+            # A generated summary (a migrated record) has no excerpt of its own: it cites the leaves its pattern words.
+            roots = {"jurisdiction": path, "institute": f"/institutes/{institute_index.get(jurisdiction.get('institute_id'))}"}
+            citations["finding"] = union(*(cited(f"{roots[owner]}/{leaf}")
+                                           for owner, leaf in summaries.summary_leaves(jurisdiction, institute, basis)))
         citations["inst"] = institute["citations"]["inst"] if institute else []
         if institute:
             institute["citations"]["status"] = list(citations["status"])

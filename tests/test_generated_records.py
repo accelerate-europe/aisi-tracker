@@ -68,6 +68,31 @@ def migrated(lead):  # noqa: F811
     return d
 
 
+def test_generated_summary_cites_the_leaves_it_words(migrated):
+    """A generated summary has no excerpt of its own; the card's finding cites the excerpts of the leaves its pattern
+    words (here pattern 2: the closest body's name and stage and its lead claim), and pattern 1 alone cites nothing."""
+    from scripts.summaries import summary_leaves
+    nothing = {"checked_to": None, "runs": [], "sources": {}}
+    state = published_facts.publish(migrated, rereads=nothing)["jurisdictions"][0]
+    leaves = summary_leaves(state, None, None)
+    lead_index = next(n for n, c in enumerate(state["claims"]) if c["id"] == LEAD)
+    assert leaves == [("jurisdiction", "closest_body/name"), ("jurisdiction", "closest_body/stage"), ("jurisdiction", f"claims/{lead_index}/text")]
+    assert state["citations"]["finding"]
+    assert set(state["citations"]["finding"]) <= set(state["closest_body"]["citations"]["display"]) | set(state["claims"][lead_index]["source_ids"])
+    bare = {"id": "XX", "status": "none_identified", "claims": [], "related_bodies": []}
+    assert summary_leaves(bare, None, None) == []
+
+
+def test_real_generated_status_summaries_are_cited():
+    """The Netherlands and Sweden (a status, no institute): their card shows the generated summary as its finding."""
+    authored = json.loads(DATA.read_text(encoding="utf-8"))
+    published = published_facts.publish(authored)
+    migrated = method_checks.migrated_ids(authored)
+    for j in published["jurisdictions"]:
+        if j["id"] in migrated and j["status"] != "none_identified":
+            assert j["citations"]["finding"], j["id"]
+
+
 def test_migrated_record_is_generated(migrated):
     assert schema_errors(migrated) == []
     assert build.check_consistency(migrated) == []
