@@ -1709,7 +1709,7 @@ def check_source_alignment(html: str, data: dict) -> list[str]:
             errors.append(f"source list {sid}: title {shown!r}, expected {title!r}")
         if src.get("title_en") and not original_tip_matches(link, src["title_en"], src["title"]):
             errors.append(f"source list {sid}: the English title must carry the original in its tooltip")
-        language = None if src.get("title_en") else src.get("language") or None
+        language = None if src.get("title_en") or src.get("language") == "en" else src.get("language") or None  # the page is lang="en"
         if link.get("lang") != language:
             errors.append(f"source list {sid}: title language {link.get('lang')!r}, expected {language!r}")
     # Source catalogues may contain background sources only. Dated status and mini-card findings,
@@ -9601,7 +9601,7 @@ def check_claim_quotes(browser, base_url: str, data: dict) -> list[str]:
                             for line, anchor in zip(block.locator(".quote-anchor").all(), excerpt.get("anchors", [])):
                                 if "source_id" in anchor:
                                     named = next(s for s in payload["sources"] if s["id"] == anchor["source_id"])
-                                    if not line.inner_text().endswith(" (" + named["title"] + ")"):
+                                    if not line.inner_text().endswith(" (" + (named.get("title_en") or named["title"]) + ")"):  # Naming: English shown
                                         errors.append(f"{identity}: other-copy anchor source title is missing")
                                     if anchor.get("gloss") and not line.locator(".translation").count():
                                         errors.append(f"{identity}: other-copy anchor language is missing")

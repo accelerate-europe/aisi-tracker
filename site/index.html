@@ -1389,7 +1389,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         line.appendChild(quoteNode(a.text, a.gloss, (named || s).language));
         if (named) { // the other copy's title follows Naming: English shown, the original as its tip
           var title = el("span", null, named.title_en || named.title);
-          if (named.title_en) withOriginal(title, named.title); else if (named.language) title.lang = named.language;
+          if (named.title_en) withOriginal(title, named.title); else if (named.language && named.language !== "en") title.lang = named.language; // the page is lang="en"
           line.appendChild(document.createTextNode(" (")); line.appendChild(title); line.appendChild(document.createTextNode(")"));
         }
         block.appendChild(line);
@@ -1454,7 +1454,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       var src = S[id], li = el("li"); li.dataset.sourceId = id;
       var a = el("a", "standalone", src.title_en || src.title); a.href = src.url; li.appendChild(a);
       if (src.title_en) withOriginal(a, src.title);
-      else if (src.language) a.lang = src.language;
+      else if (src.language && src.language !== "en") a.lang = src.language; // the page is lang="en"
       archiveCopy(li, src);
       li.appendChild(document.createTextNode(", " + src.publisher + (src.published ? ", " : "")));
       if (src.published) li.appendChild(dated(src.published));
