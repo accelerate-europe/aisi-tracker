@@ -218,8 +218,8 @@ a.standalone, .wordmark, .correction, .popover a, .dlist a { text-decoration-lin
 :is(a.standalone, .wordmark, .correction, .popover a):is(:hover, :focus-visible) { color: var(--ink); text-decoration-line: underline; }
 a, abbr.g, .smark[tabindex], .missing[tabindex], .budget-amount[tabindex], .quote-text[tabindex] { position: relative; } /* a focusable value mark is a tooltip control like a glossary term */
 a::before, abbr.g::before, .smark[tabindex]::before, .missing[tabindex]::before, .budget-amount[tabindex]::before, .quote-text[tabindex]::before { content: ""; position: absolute; inset-inline: 0; top: 50%; min-height: var(--hit); height: 100%; transform: translateY(-50%); }
-/* Inline source links use their text boxes, so tight meta lines cannot steal clicks. */
-:is(.srcs, .inline-links) a:not(.cn)::before { content: none; }
+/* Inline source links use their text boxes, so tight meta lines cannot steal clicks; the correction link has its own line (.source-after, one hit tall), so it keeps the full hit box. */
+:is(.srcs, .inline-links) a:not(.cn, .correction)::before { content: none; }
 .archive-copy { white-space: nowrap; } /* principle: Archived copies */
 a.archive { color: var(--muted); text-decoration-color: currentColor; }
 a.archive:is(:hover, :focus-visible) { color: var(--ink); }
