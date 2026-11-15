@@ -768,7 +768,7 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
 }
 /* Focus (principle: Focus): one style. Text controls (links, tabs, text buttons, disclosures, tooltip terms) take the highlight tint behind them and a 2px underline in the focus colour,
    which carries the 3:1 the tint alone lacks; boxed controls (.btn, .field) keep their own edge; a heading a jump focuses takes the tint alone, fading after about 1.5s. */
-html :is(a, summary, abbr.g, button.info, .linkbtn, .list-more, .popover button, .region-chips button, .region-head, .pick, .smark[tabindex], .missing[tabindex], .budget-amount[tabindex], [data-tip][tabindex="0"]):not(.btn, .field):focus-visible {
+html :is(a, summary, abbr.g, button.info, .linkbtn, .list-more, .popover button, .region-chips button, .region-head, .pick, .smark[tabindex], .missing[tabindex], .budget-amount[tabindex], [data-tip][tabindex="0"], [aria-description][tabindex="0"]):not(.btn, .field):focus-visible {
   outline: none; background-color: var(--highlight-fill); box-shadow: 0 0 0 var(--sp-1) var(--highlight-fill); border-radius: var(--r-sm);
   text-decoration: underline var(--rule-strong) var(--focus); text-underline-offset: var(--underline-offset);
 }
@@ -993,7 +993,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   var CONF = { indirect: ["indirect or secondary", "Not stated directly in a primary source; taken from secondary sources or read indirectly from a primary one."], secondary_sources: ["secondary sources", "Not stated directly in a primary source; taken from secondary sources or read indirectly from a primary one."], press_report: ["press report", "From a press report, not confirmed in a primary source."], our_estimate: ["our estimate", "Our own estimate or calculation from reported figures."] };
   var STATUS_CONF = { medium: "This status rests on indirect primary evidence or several secondary accounts.", low: "This status rests on a single secondary source." }; // only the level shown is explained
   // A term with a short definition shown on hover or focus.
-  function term(label, definition, cls) { var t = el("abbr", "g" + (cls ? " " + cls : ""), label); t.dataset.exp = definition; t.tabIndex = 0; t.setAttribute("aria-label", label + ": " + definition); return t; }
+  function term(label, definition, cls) { var t = el("abbr", "g" + (cls ? " " + cls : ""), label); t.tabIndex = 0; t.setAttribute("aria-description", definition); return t; } // the label is the name; its definition, the description, is also the tip
   function info(text, id) { var b = el("button", "info", "i"); b.type = "button"; b.dataset.tip = text; b.setAttribute("aria-label", "About this: " + text); if (id) b.id = id; return b; }
   // An (i) never sits alone on a line (principle: Supporting text). After a heading: heading and (i) share one line box whose only break-free point is between them.
   function infoAfterHeading(h, button) { var line = el("div", "head-line"); h.parentNode.insertBefore(line, h); line.appendChild(h); line.appendChild(button); return button; }
@@ -1025,7 +1025,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         if (t.slice(0, start).toLowerCase().endsWith(ex.split(/[;(]|\.(?=\s|$)/)[0].trim().toLowerCase() + " (")) continue; // the name up to its first sentence end, commas included ("Innovation, Science and ...")
         frag = frag || document.createDocumentFragment();
         frag.appendChild(document.createTextNode(t.slice(last, start)));
-        var ab = el("abbr", "g", m[2]); ab.dataset.exp = ex; ab.setAttribute("aria-label", m[2] + ", " + ex); ab.tabIndex = 0;
+        var ab = el("abbr", "g", m[2]); ab.setAttribute("aria-description", ex); ab.tabIndex = 0; // the abbreviation is the name; its expansion, the description, is also the tip
         frag.appendChild(ab); last = start + m[2].length;
       }
       if (frag) { frag.appendChild(document.createTextNode(t.slice(last))); n.parentNode.replaceChild(frag, n); }
@@ -1050,7 +1050,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     if (!tip) { tip = document.createElement("div"); tip.id = "tip"; tip.setAttribute("role", "tooltip"); tip.hidden = true; document.body.appendChild(tip);
       tip.addEventListener("mouseenter", function () { clearTimeout(tipTimer); });
       tip.addEventListener("mouseleave", function (e) { if (!(e.relatedTarget && tipFor && tipFor.contains(e.relatedTarget))) hideTipSoon(); }); }
-    clearTimeout(tipTimer); tipFor = ab; tipY = window.scrollY; tip.textContent = ab.dataset.exp || ab.dataset.tip; tip.hidden = false;
+    clearTimeout(tipTimer); tipFor = ab; tipY = window.scrollY; tip.textContent = tipText(ab); tip.hidden = false;
     if (ab.dataset.tipSub) { // a source's host is a link to it, so a reader on touch, whose tap on the citation opened this tip, can follow it
       var parts = ab.dataset.tipSub.split(" · "), sub = el("span", "tip-sub");
       if ("tipExt" in ab.dataset && ab.href) { var go = el("a", "", parts.pop()); go.href = ab.href; go.target = "_blank"; go.rel = "noopener"; go.tabIndex = -1; parts.push(go); }
@@ -1068,7 +1068,9 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     var range = document.createRange(); range.selectNodeContents(box); var b = range.getBoundingClientRect();
     return { left: r.left, width: r.width, top: r.top, bottom: Math.max(r.bottom, b.bottom) };
   }
-  var TIPSEL = "abbr.g, [data-tip]";
+  var TIPSEL = "abbr.g, [data-tip], [aria-description]";
+  // A tip's text has one home: the description screen readers hear (aria-description), or data-tip where an element has none (an (i), a download, a status swatch, a map dot).
+  function tipText(n) { return n.dataset.tip || n.getAttribute("aria-description") || ""; }
   // Touch: a tap fires emulated mouseover and moves focus (which comes back with the tab after a link opened another one), so neither opens a tip after a touch.
   // There a tip opens only from the tap itself, and only on a term or mark: a control (link, button, map dot) does its own job, except a citation, whose tap opens the tip naming its source with a link to it.
   // Hover, keyboard focus and a mouse click behave as before; the last pointer (a mouse as soon as it moves) or key decides which input is in use.
@@ -1085,14 +1087,15 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     if (touchInput && ab.matches("a.cn")) { e.preventDefault(); showTip(ab); }
     else if (touchInput ? !ab.closest(CONTROL) || ab.matches(".info") : !ab.closest("a")) showTip(ab); // on touch a tap on an (i) opens its note; other controls keep their own action
   });
-  // Instant tooltips: move every non-empty native title attribute (slow browser delay, and it stacks on the page's own tooltip) to data-tip.
+  // Instant tooltips: move every non-empty native title attribute (slow browser delay, and it stacks on the page's own tooltip) to the description, which is also the tip; data-tip only where there is no description (inside an image) or it says something else.
   function instantTips(root) {
     [].forEach.call(root.querySelectorAll("[title]"), function (x) {
       if (!x.title) return;
       var image = x.parentElement && x.parentElement.closest('[role="img"]'); // inside one image, whose own name says it all: no name of its own
       if (!image && !x.getAttribute("aria-label") && !x.textContent.trim()) x.setAttribute("aria-label", x.title);
       if (!image && !x.getAttribute("aria-description")) x.setAttribute("aria-description", x.title);
-      x.dataset.tip = x.title; x.removeAttribute("title");
+      if (x.getAttribute("aria-description") !== x.title) x.dataset.tip = x.title;
+      x.removeAttribute("title");
     });
   }
   document.addEventListener("focusout", function (e) { if (e.target === tipFor && !(tip && e.relatedTarget instanceof Node && tip.contains(e.relatedTarget))) hideTip(); }); // a press on the tip's link moves focus there
