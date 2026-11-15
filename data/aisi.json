@@ -7010,6 +7010,28 @@
           "source_ids": [
             "sk-ai-cyberlab-zamer"
           ]
+        },
+        {
+          "id": "claims-e797cbc878284b7db79d4ef2e4cc6f01",
+          "kind": "function",
+          "code": "capacity_building",
+          "basis": "mandate",
+          "body_id": "related_bodies-79e93e398efc50d3aa6d1d88ae3e6308",
+          "text": "The ministry's project plan says the laboratory will enable public authorities to test the security and robustness of AI solutions before they are deployed.",
+          "source_ids": [
+            "sk-ai-cyberlab-zamer"
+          ]
+        },
+        {
+          "id": "claims-96ae73ca15c24c89a412a0b4026ed80e",
+          "kind": "function",
+          "code": "certification",
+          "basis": "mandate",
+          "body_id": "related_bodies-79e93e398efc50d3aa6d1d88ae3e6308",
+          "text": "The minutes of the Programme Slovakia monitoring committee's commission record a ministry representative saying AI CyberLab will enable verification of solutions, for example in AI, from a cybersecurity perspective and of their compliance with national and international standards.",
+          "source_ids": [
+            "sk-r6-cyberlab-project-approval"
+          ]
         }
       ]
     },
@@ -13966,8 +13988,45 @@
           "kz-kaisi",
           "kz-harvard-hsil-2026",
           "kz-kaisi-rdap-2026"
-        ]
-      }
+        ],
+        "body_id": "related_bodies-a49acea8ed815892870f572bf579dca7"
+      },
+      "claims": [
+        {
+          "id": "claims-85e472076129414f91fee5d2bf2151ba",
+          "kind": "function",
+          "code": "evaluation_methods",
+          "basis": "activity",
+          "body_id": "related_bodies-a49acea8ed815892870f572bf579dca7",
+          "lead": true,
+          "text": "It says it creates \"tools for safe model control and evaluation\" to make advanced AI systems more transparent, reliable and aligned with human intentions.",
+          "source_ids": [
+            "kz-kaisi"
+          ]
+        },
+        {
+          "id": "claims-6f1f18372ea2476db7d3b02347797234",
+          "kind": "function",
+          "code": "policy_advice",
+          "basis": "activity",
+          "body_id": "related_bodies-a49acea8ed815892870f572bf579dca7",
+          "text": "It says its policy research explores how governance frameworks, regulatory approaches and international cooperation can ensure the safe and beneficial deployment of advanced AI systems.",
+          "source_ids": [
+            "kz-kaisi"
+          ]
+        },
+        {
+          "id": "claims-3e4c1322d98143d8bef676bcb94530be",
+          "kind": "function",
+          "code": "research",
+          "basis": "activity",
+          "body_id": "related_bodies-a49acea8ed815892870f572bf579dca7",
+          "text": "It says it investigates how neural representations emerge and interact, applying techniques such as \"activation steering, adversarial robustness analysis, and mechanistic interpretability\".",
+          "source_ids": [
+            "kz-kaisi"
+          ]
+        }
+      ]
     },
     {
       "id": "MC",
@@ -40410,6 +40469,36 @@
           "source_ids": [
             "in-pib-2026-07-27"
           ]
+        },
+        {
+          "id": "claims-acf385fe714a420fad33a84ae8137950",
+          "kind": "function",
+          "code": "convening",
+          "basis": "activity",
+          "text": "The ministry's release says the institute engages academia, startups, industry and government bodies \"through a hub-and-spoke model\".",
+          "source_ids": [
+            "in-pib-2026-07-27"
+          ]
+        },
+        {
+          "id": "claims-1859ac5e328e48f5b4eecd0f5b26b258",
+          "kind": "function",
+          "code": "foresight",
+          "basis": "mandate",
+          "text": "The government's AI governance guidelines list among its suggested key functions conducting forecasting research on the potential impact of AI and issues in online safety, privacy, data governance, labour and competition.",
+          "source_ids": [
+            "in-guidelines-2025"
+          ]
+        },
+        {
+          "id": "claims-c54df1f437614225a8a4b707b5132de0",
+          "kind": "function",
+          "code": "research",
+          "basis": "mandate",
+          "text": "The IndiaAI Mission's call for partnerships says the institute has been established \"to advance science-based and indigenous research on AI governance\" and approaches to AI safety relevant to the developing world.",
+          "source_ids": [
+            "in-indiaai-partners-2025"
+          ]
         }
       ]
     },
@@ -51471,6 +51560,57 @@
             ]
           ],
           "accessed": "2026-10-18"
+        },
+        {
+          "text": "By creating tools for safe model control and evaluation, we strive to make advanced AI systems more transparent, reliable, and aligned with human intentions.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "KZ"
+              },
+              "claims",
+              {
+                "id": "claims-85e472076129414f91fee5d2bf2151ba"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Our policy research explores how governance frameworks, regulatory approaches, and international cooperation can ensure the safe and beneficial deployment of advanced AI systems.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "KZ"
+              },
+              "claims",
+              {
+                "id": "claims-6f1f18372ea2476db7d3b02347797234"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "We investigate how neural representations emerge and interact by applying techniques such as activation steering, adversarial robustness analysis, and mechanistic interpretability.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "KZ"
+              },
+              "claims",
+              {
+                "id": "claims-3e4c1322d98143d8bef676bcb94530be"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ]
     },
@@ -52615,6 +52755,29 @@
             ]
           ],
           "accessed": "2026-10-17"
+        },
+        {
+          "text": "Conduct forecasting research on the potential impact of AI and issues in online safety, privacy, data governance, labour, and competition.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "in-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-1859ac5e328e48f5b4eecd0f5b26b258"
+              },
+              "text"
+            ]
+          ],
+          "anchors": [
+            {
+              "text": "Key functions of the AISI are suggested as follows:",
+              "kind": "heading"
+            }
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "IN",
@@ -53032,56 +53195,6 @@
       "origin": "IN",
       "excerpts": [
         {
-          "text": "As part of the Safe & Trusted AI pillar of the IndiaAI Mission, the IndiaAI Safety Institute has been established to advance science-based and indigenous research on AI governance",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "IN"
-              },
-              "timeline",
-              {
-                "id": "in-2025-designated"
-              },
-              "event"
-            ],
-            [
-              "institutes",
-              {
-                "id": "in-aisi"
-              },
-              "funding",
-              {
-                "id": "funding-c93e1a7d5b2f4e80a6d4b9c1e7f3a512"
-              },
-              "notes"
-            ],
-            [
-              "institutes",
-              {
-                "id": "in-aisi"
-              },
-              "funding",
-              {
-                "id": "funding-c93e1a7d5b2f4e80a6d4b9c1e7f3a512"
-              },
-              "coverage"
-            ],
-            [
-              "institutes",
-              {
-                "id": "in-aisi"
-              },
-              "funding",
-              {
-                "id": "funding-c93e1a7d5b2f4e80a6d4b9c1e7f3a512"
-              },
-              "annual_basis"
-            ]
-          ],
-          "accessed": "2026-10-17"
-        },
-        {
           "text": "The various IndiaAI Safety Institute Cells will function as decentralised capacity of the IndiaAI Safety Institute, executing the assigned technical mandate.",
           "supports": [
             [
@@ -53136,6 +53249,67 @@
               "kind": "heading"
             }
           ]
+        },
+        {
+          "text": "As part of the Safe & Trusted AI pillar of the IndiaAI Mission, the IndiaAI Safety Institute has been established to advance science-based and indigenous research on AI governance, pioneering innovative approaches to AI safety that are relevant to the developing world.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "in-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-c54df1f437614225a8a4b707b5132de0"
+              },
+              "text"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "IN"
+              },
+              "timeline",
+              {
+                "id": "in-2025-designated"
+              },
+              "event"
+            ],
+            [
+              "institutes",
+              {
+                "id": "in-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-c93e1a7d5b2f4e80a6d4b9c1e7f3a512"
+              },
+              "notes"
+            ],
+            [
+              "institutes",
+              {
+                "id": "in-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-c93e1a7d5b2f4e80a6d4b9c1e7f3a512"
+              },
+              "coverage"
+            ],
+            [
+              "institutes",
+              {
+                "id": "in-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-c93e1a7d5b2f4e80a6d4b9c1e7f3a512"
+              },
+              "annual_basis"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "snapshot": {
@@ -55902,6 +56076,31 @@
             ]
           ],
           "gloss": "Research organisations develop new knowledge, models and methods, while AI CyberLab will ensure their verification, testing and implementation support when they are introduced into public administration information systems, from a cybersecurity perspective.",
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Laboratórium zároveň umožní orgánom verejnej moci testovať bezpečnosť a robustnosť AI riešení pred \nich nasadením, čím vytvára prirodzené pokračovanie výskumno vývojového cyklu smerom k reálnej \nprevádzke vo verejnej správe.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "SK"
+              },
+              "claims",
+              {
+                "id": "claims-e797cbc878284b7db79d4ef2e4cc6f01"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "The laboratory will also enable public authorities to test the security and robustness of AI solutions before deployment, creating a natural continuation of the R&D cycle towards real operation in public administration.",
+          "anchors": [
+            {
+              "text": "Názov národného projektu  (ďalej aj „ NP“): Národné laboratórium umelej inteligencie pre \nkybernetickú bezpečnosť (AI CyberLab)",
+              "kind": "definition",
+              "gloss": "Name of the national project (hereinafter also 'NP'): National Artificial Intelligence Laboratory for Cybersecurity (AI CyberLab)"
+            }
+          ],
           "accessed": "2026-10-17"
         }
       ],
@@ -95929,6 +96128,37 @@
           ],
           "gloss": "The commission approved resolution 8/2026, which approves the national project intent under Programme Slovakia named \"National Artificial Intelligence Laboratory for Cybersecurity (AI CyberLab)\"",
           "accessed": "2026-10-19"
+        },
+        {
+          "text": "Tieto inštitúcie budú môcť do laboratória predkladať svoje riešenia, napríklad v oblasti umelej \ninteligencie, ktoré budú následne testované a vyhodnocované. Laboratórium umožní overovanie riešení \nz pohľadu kybernetickej bezpečnosti a ich súladu s národnými aj medzinárodnými štandardmi.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "SK"
+              },
+              "claims",
+              {
+                "id": "claims-96ae73ca15c24c89a412a0b4026ed80e"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "These institutions will be able to submit their solutions to the laboratory, for example in the field of artificial intelligence, which will then be tested and evaluated. The laboratory will enable verification of solutions from a cybersecurity perspective and of their compliance with national and international standards.",
+          "anchors": [
+            {
+              "text": "9. Návrh zámeru národného projektu v rámci Programu Slovensko s názvom „Národné \nlaboratórium umelej inteligencie pre kybernetickú bezpečnosť (AI CyberLab)“",
+              "kind": "heading",
+              "gloss": "9. Proposal for a national project intent under Programme Slovakia entitled 'National Artificial Intelligence Laboratory for Cybersecurity (AI CyberLab)'"
+            },
+            {
+              "text": "Názov národného projektu  (ďalej aj „ NP“): Národné laboratórium umelej inteligencie pre \nkybernetickú bezpečnosť (AI CyberLab)",
+              "kind": "definition",
+              "gloss": "Name of the national project (hereinafter also 'NP'): National Artificial Intelligence Laboratory for Cybersecurity (AI CyberLab)",
+              "source_id": "sk-ai-cyberlab-zamer"
+            }
+          ],
+          "accessed": "2026-10-19"
         }
       ],
       "snapshot": {
@@ -107451,6 +107681,17 @@
               },
               "staffing_model",
               "code"
+            ],
+            [
+              "institutes",
+              {
+                "id": "in-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-acf385fe714a420fad33a84ae8137950"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-21"
