@@ -1968,7 +1968,6 @@
         ]
       },
       "institute_id": "gb-aisi",
-      "summary": "The AI Security Institute is a unit within the Cabinet Office.",
       "next_check": {
         "date": "2027-04-16",
         "reason": "Routine full re-check of an institute record, every six months."
@@ -1994,7 +1993,13 @@
             "scope": "Host note: bound the retained About page (Department for Science, Innovation and Technology) and the GOV.UK organisation page (Cabinet Office) to the record notes; no dated source for the move found; no other field re-checked."
           }
         ],
-        "last_checked_basis": "historical_upper_bound"
+        "last_checked_basis": "historical_upper_bound",
+        "log": [
+          {
+            "date": "2026-10-19",
+            "text": "The institute's About page (read on 17 October 2026) and the GOV.UK organisation page (read on 19 October 2026) were read for its parent department, and a dated source for a change of department was searched for."
+          }
+        ]
       },
       "source_ids": [
         "gb-aisi-launch",
@@ -2101,8 +2106,7 @@
       "identifier_source_ids": [
         "un-m49",
         "wikidata-jurisdiction-identifiers"
-      ],
-      "notes": "Its About page, as read on 17 October 2026, placed it within the Department for Science, Innovation and Technology, and GOV.UK now lists it as part of the Cabinet Office. We found no dated source for the move, so no date is given."
+      ]
     },
     {
       "id": "FR",
@@ -2118,7 +2122,6 @@
         ]
       },
       "institute_id": "fr-inesia",
-      "summary": "INESIA federates existing national bodies and is not a new legal entity.",
       "next_check": {
         "date": "2027-04-16",
         "reason": "Routine full re-check of an institute record, every six months."
@@ -2140,7 +2143,13 @@
             "scope": "Corrected the first-output milestone from the dated full multilingual report. This is a partial check, not a full record recheck."
           }
         ],
-        "last_checked_basis": "historical_upper_bound"
+        "last_checked_basis": "historical_upper_bound",
+        "log": [
+          {
+            "date": "2026-10-16",
+            "text": "Inria's 2024 annual report was read for the institute's origins, and an earlier government commitment was searched for."
+          }
+        ]
       },
       "source_ids": [
         "fr-dge",
@@ -2205,11 +2214,9 @@
         "un-m49",
         "wikidata-jurisdiction-identifiers"
       ],
-      "notes": "Inria's 2024 annual report records a June 2024 partnership with LNE aimed at creating INESIA. This is an institutional precursor; an earlier government commitment was not verified.\n\nThe published French AI Act governance scheme is expressly subject to parliamentary approval.\n\nThe Commission's contact list of 9 November 2026 marks this state's AI Act authority as pending final adoption; the national sources cited here give its actual designation status.",
       "related_bodies": [
         {
           "name": "DGCCRF",
-          "role": "It would cover assigned prohibited practices, transparency duties and sectoral uses, coordinate operations and represent market-surveillance authorities in the AI Board coordination subgroup. The national scheme remains subject to parliamentary approval.",
           "counts_as_aisi": false,
           "source_ids": [
             "fr-dgccrf-ai-governance-2025",
@@ -2228,7 +2235,6 @@
         {
           "name": "Autorité de régulation de la communication audiovisuelle et numérique (Arcom)",
           "name_en": "Regulatory Authority for Audiovisual and Digital Communication (Arcom)",
-          "role": "It would cover specified manipulative practices, transparency and democratic-process uses.",
           "counts_as_aisi": false,
           "source_ids": [
             "fr-dge-ai-governance-plan-2025",
@@ -2245,7 +2251,6 @@
         {
           "name": "Commission nationale de l'informatique et des libertés (CNIL)",
           "name_en": "National Commission for Information Technology and Civil Liberties (CNIL)",
-          "role": "It would cover assigned prohibited practices, Annex III uses and emotion/biometric transparency.",
           "counts_as_aisi": false,
           "source_ids": [
             "fr-dge-ai-governance-plan-2025",
@@ -2262,7 +2267,6 @@
         {
           "name": "Autorité de contrôle prudentiel et de résolution (ACPR)",
           "name_en": "Prudential Supervision and Resolution Authority (ACPR)",
-          "role": "It would cover assigned creditworthiness and insurance uses within its remit.",
           "counts_as_aisi": false,
           "source_ids": [
             "fr-dge-ai-governance-plan-2025",
@@ -2279,7 +2283,6 @@
         {
           "name": "Conseil d'État",
           "name_en": "Council of State",
-          "role": "It would cover judicial administration uses.",
           "counts_as_aisi": false,
           "source_ids": [
             "fr-dge-ai-governance-plan-2025",
@@ -2296,7 +2299,6 @@
         {
           "name": "Cour de cassation",
           "name_en": "Court of Cassation",
-          "role": "It would cover judicial administration uses.",
           "counts_as_aisi": false,
           "source_ids": [
             "fr-dge-ai-governance-plan-2025",
@@ -2313,7 +2315,6 @@
         {
           "name": "Cour des comptes",
           "name_en": "Court of Audit",
-          "role": "It would cover judicial administration uses.",
           "counts_as_aisi": false,
           "source_ids": [
             "fr-dge-ai-governance-plan-2025",
@@ -2330,7 +2331,6 @@
         {
           "name": "Hauts fonctionnaires de défense et de sécurité des ministères de l'Économie et de l'Aménagement du territoire",
           "name_en": "Senior defence and security officials of the ministries of the Economy and of Regional Planning",
-          "role": "They would cover critical-infrastructure uses.",
           "counts_as_aisi": false,
           "source_ids": [
             "fr-dge-ai-governance-plan-2025",
@@ -2347,7 +2347,6 @@
         {
           "name": "Direction générale des entreprises (DGE)",
           "name_en": "Directorate-General for Enterprise (DGE)",
-          "role": "The government amendment debated in the Senate would provide powers for DGE's toy-sector notifying-authority tasks.",
           "counts_as_aisi": false,
           "source_ids": [
             "fr-senate-ai-notifier-proposal-2026",
@@ -2360,6 +2359,16 @@
           "designation_basis": "none_yet",
           "kind": "ai_act_authority",
           "id": "related_bodies-4220d49ce76f5ffdbf4df1e4d9cc52d9"
+        }
+      ],
+      "claims": [
+        {
+          "id": "claims-0eaa377082c64ceb8750deb5c3b4a738",
+          "kind": "fact",
+          "text": "Inria's 2024 annual report records a partnership between Inria and the LNE signed with a view to creating INESIA.",
+          "source_ids": [
+            "fr-inria-annual-2024"
+          ]
         }
       ]
     },
@@ -28598,7 +28607,7 @@
           "technical": 90,
           "technical_qualifier": "exact",
           "as_of": "2025-09",
-          "description": "About 200 or more staff, including 90 specialists. The Japanese comparison table explicitly dates the UK figures to September 2025. The total is shown as about 200; the source says about 200 or more. Reported by Cabinet Office of Japan.",
+          "description": "Japan's Cabinet Office reports about 200 or more staff, including 90 specialists.",
           "source_ids": [
             "jp-cao-2604"
           ],
@@ -28727,7 +28736,21 @@
             "certification",
             "sandbox"
           ]
-        }
+        },
+        "log": [
+          {
+            "date": "2026-10-16",
+            "text": "Staffing: the written parliamentary answers, the institute's About page and the Japanese Cabinet Office comparison table, with its footnote date, were read."
+          },
+          {
+            "date": "2026-10-16",
+            "text": "The external paper Emerging Practices in Frontier AI Safety Frameworks was read as background and is not counted as an institute publication."
+          },
+          {
+            "date": "2026-10-19",
+            "text": "Cyber agency searched on 19 October 2026 in English: the National Cyber Security Centre (NCSC), through the institute's research agenda, its cyber-defence post and the NCSC's what-we-do page."
+          }
+        ]
       },
       "source_ids": [
         "gb-aisi-launch",
@@ -28912,7 +28935,6 @@
           "id": "people-4a2d171617065be09ebccb2dfe369a8c"
         }
       ],
-      "notes": "Also reports more than £15m in grant funding and priority access to over £1.5bn of compute. The current headcount and technical-staff figures are from written parliamentary answers, and the institute's About page also gives 100+ technical staff; the September 2025 staffing is from the Japanese Cabinet Office comparison table, with its footnote date. The external paper Emerging Practices in Frontier AI Safety Frameworks is retained as consulted bibliography context, not counted as an institute publication.",
       "mandate_short": "Tests frontier AI models for security and safety risks.",
       "legal_basis": {
         "type": "administrative",
@@ -30335,8 +30357,7 @@
               "j7-gb-lasr-launch"
             ]
           }
-        ],
-        "notes": "Cyber agency searched: National Cyber Security Centre (NCSC), 2026-10-19 (en); found. Found via AISI research agenda, AISI cyber-defence post and ncsc.gov.uk what-we-do page (3 cyber fetches)."
+        ]
       },
       "testing_capacity": {
         "modes": [
@@ -30859,6 +30880,14 @@
           "source_ids": [
             "gb-rename"
           ]
+        },
+        {
+          "id": "claims-ee398e53899849d9a3eb3183952b3c63",
+          "kind": "fact",
+          "text": "It says it is mobilising more than £15 million in grants to accelerate breakthroughs globally.",
+          "source_ids": [
+            "gb-about"
+          ]
         }
       ]
     },
@@ -30876,16 +30905,16 @@
       "funding": [
         {
           "kind": "none_disclosed",
-          "description": "No dedicated budget published; runs on the participating bodies' resources",
+          "description": "The SGDSN lists coordinating public expertise and pooling resources among the four principles of INESIA's action.",
           "source_ids": [
-            "fr-dge"
+            "fr-dge",
+            "fr-sgdsn-aisi"
           ],
           "confidence": "medium",
           "commitment": "not_applicable",
           "funding_source": "unknown",
           "id": "funding-5900b7d819c0501a83196d3281da8527",
-          "coverage": "whole_institute",
-          "notes": "The absence of a dedicated budget concerns INESIA as a whole, not a funding component. This record supplies no amount."
+          "coverage": "whole_institute"
         },
         {
           "kind": "not_institute_specific",
@@ -30977,6 +31006,18 @@
           {
             "date": "2026-11-14",
             "text": "Searched for a budget amount or staff count for INESIA itself: Senate and National Assembly reports on the 2026 and 2027 finance bills for programmes 129 and 134, parliamentary written questions, SGDSN, DGE and economy ministry press releases, the SGDSN roadmap and a parliamentary mission report to the Prime Minister, in French and English. The only figure found is the EUR 13.5m Inria programme already recorded as not specific to the institute; no staff count was found."
+          },
+          {
+            "date": "2026-10-19",
+            "text": "Cyber agency searched on 19 October 2026 in French and English: ANSSI; the DGE announcement, the roadmap and ANSSI's own page were read for its relation to the institute. Failed fetches are in the sources' access notes."
+          },
+          {
+            "date": "2026-10-16",
+            "text": "Testing: the multilingual exercise report of 26 June 2025 and the roadmap announcement were read for testing credited to the institute or its members, and searched for a stand-alone evaluation of a named model."
+          },
+          {
+            "date": "2026-10-21",
+            "text": "Model access: searched on 21 October 2026 in French and English for an access event, legal power or agreement with a developer that has a model in Epoch AI's frontier set, and the joint testing report was read for an access arrangement."
           }
         ],
         "functions": {
@@ -31138,7 +31179,7 @@
       ],
       "head": {
         "state": "not_published",
-        "notes": "No named top executive found in the DGE founding announcement, current roadmap announcement, or French/English leadership searches on 19 October 2026. Federation structure alone does not prove that the Head field is not applicable. SGDSN roadmap PDF and its single alternative were blocked."
+        "notes": "Searched the DGE founding announcement, the current roadmap announcement and French and English leadership queries on 19 October 2026 for a named top executive. The SGDSN roadmap PDF and its one alternative copy were blocked."
       },
       "reports_to": {
         "state": "stated",
@@ -31214,8 +31255,7 @@
               "fr-roadmap"
             ]
           }
-        ],
-        "notes": "Cyber agency searched: ANSSI, 2026-10-19 (fr, en); found. ANSSI member relation confirmed; other cyber fetches checked current roadmap and agency context. Failed sources explicitly logged. Count includes multipurpose sources; exact source IDs: fr-dge, fr-roadmap, fr-roadmap-pdf, fr-roadmap-pdf-alternative, fr-anssi-about."
+        ]
       },
       "testing_capacity": {
         "modes": [
@@ -31227,7 +31267,7 @@
             "named_as": "France AISI"
           }
         ],
-        "notes": "Testing reported, 2025-07-17 (agentic exercise). The multilingual exercise reported on 2025-06-26, with a section contributed by France AISI, was conducted in the period leading up to February 2025, before or at the institute's announcement, so it is not counted. No stand-alone evaluation of a named model was found. The institute 'fédère un écosystème de chercheurs et d’ingénieurs' (brings together researchers and engineers) from ANSSI and other bodies, and its adopted 2026-27 roadmap plans to give the institute 'des moyens techniques de poursuivre ses activités' (the technical means to pursue its activities). The French roadmap credits the member bodies with the network testing: 'Inria, le LNE et le PEReN ont mené des exercices d’essais conjoints de modèles d’IA avancés, dont les résultats ont été publiés en juillet 2025' (Inria, LNE and PEReN carried out joint testing of advanced AI models, with results published in July 2025); this is read as the federation's members carrying out the institute's testing.",
+        "notes": "The roadmap announcement says Inria, the LNE and PEReN carried out joint testing exercises on advanced AI models, with results published in July 2025.",
         "source_ids": [
           "catalogue-agentic-report",
           "network-multilingual-2025",
@@ -31236,7 +31276,7 @@
         ]
       },
       "model_access": {
-        "notes": "No access event, legal power or agreement providing for access to, or evaluation of, the models of a developer that has a model in Epoch AI's frontier set was found. In the credited joint testing France 'ran a variation of the test using a different model from the main exercise', and its alternative judge prompt was tested in a complete benchmark run on a self-hosted model; the report describes no access arrangement with a developer. No operative provision gives the institute access powers.",
+        "notes": "The joint testing report says France ran a variation of the test using a different model from the main exercise.",
         "source_ids": [
           "catalogue-agentic-report"
         ],
@@ -31326,6 +31366,14 @@
           "text": "The government's founding announcement gives it the mission of federating the national evaluation and security bodies.",
           "source_ids": [
             "fr-dge"
+          ]
+        },
+        {
+          "id": "claims-c6b76ef3ac6240578805439e5d91a1a9",
+          "kind": "fact",
+          "text": "The announcement of the institute's roadmap says work will be done to give the institute the technical means to pursue its activities.",
+          "source_ids": [
+            "fr-roadmap"
           ]
         }
       ]
@@ -39713,6 +39761,17 @@
                 "id": "staff-b1bb61c8c7415a6b838a1ce0dbe89db3"
               },
               "technical_qualifier"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "staff",
+              {
+                "id": "staff-b1bb61c8c7415a6b838a1ce0dbe89db3"
+              },
+              "description"
             ]
           ],
           "accessed": "2026-10-17"
@@ -39917,19 +39976,6 @@
           "accessed": "2026-10-20"
         },
         {
-          "text": "The AI Security Institute (AISI) is a research organisation within the UK government's Department for Science, Innovation and Technology",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "GB"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-10-17"
-        },
-        {
           "text": "Chief Technology Officer Jade Leung",
           "supports": [
             [
@@ -39942,6 +39988,23 @@
                 "id": "people-540493becb4c5a4dbd2bdb9cf61476fe"
               },
               "name"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "So, we also research solutions across risk domains, and we are mobilizing >£15 million in grants to accelerate breakthroughs globally.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-ee398e53899849d9a3eb3183952b3c63"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-17"
@@ -40178,13 +40241,6 @@
                 "id": "fr-inesia"
               },
               "legal_form"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "FR"
-              },
-              "summary"
             ],
             [
               "jurisdictions",
@@ -44233,6 +44289,24 @@
           ],
           "accessed": "2026-10-24",
           "gloss": "Recommendation of the AI and web3 subcommittee of the LDP Headquarters for the Promotion of a Digital Society (19 December 2025)"
+        },
+        {
+          "text": "約200名人以上*(うち専門家は90 人)",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "staff",
+              {
+                "id": "staff-3681500baea95a7cb506597c0e521840"
+              },
+              "description"
+            ]
+          ],
+          "gloss": "About 200 or more people (of whom 90 are specialists)",
+          "accessed": "2026-10-17"
         }
       ],
       "access_note": "The underlying official PDF was retrieved and visually checked. On printed page 3, 約200名人以上* and うち専門家は90人 appear in the UK staff-and-budget cell; its footnote dates the UK information to September 2025. The unusual printed string 約200名人以上 is preserved. The specialist count breaks between 90 and 人 across consecutive lines. On printed page 5, 早急に現行 ends one line and の30名から陣容を拡充し、60名体制を目指すこと。 begins the next; the quotation preserves their printed adjacency despite extraction mismatch. On printed page 6, 英国並みの ends one line and ２００人体制を目指して begins the next in the same highlighted sentence. On printed page 8, numbered item 2, 各省庁は、早ければ令和８年4月から、遅くとも7月頃までに、 is immediately followed on the next line by 出向者を出すことを調整する。 The complete quotations retain each qualifier or timing clause with its figure or action. These line breaks are documented visual-evidence exceptions, not permission to match fragments separately. Follow-up: printed page 7 places the AIST commission inside the AISI capability package, below the heading sentence on the JPY 8.8bn; AISIが自ら評価ツールを開発。 and the bracketed purposes AI評価手法の構築、専用テストベッド・計算資源の整備等 appear on the same page directly under that sentence. The quotation retains the line break after ガイドライン; both the rendered page and Poppler extraction were checked. On printed page 3, 令和6年補正：3.8億円 is in the Japan AISI column of the 予算 row. The follow-up visual and text checks were completed on 19 October 2026, local Vienna date; snapshot timestamps retain their UTC retrieval times.",
@@ -47700,6 +47774,46 @@
           ],
           "accessed": "2026-10-20",
           "gloss": "The Ministerial Agency for Defence Artificial Intelligence (AMIAD)"
+        },
+        {
+          "text": "Un travail sera mené afin de doter l’Institut des moyens techniques de poursuivre ses activités.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "fr-inesia"
+              },
+              "claims",
+              {
+                "id": "claims-c6b76ef3ac6240578805439e5d91a1a9"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "Work will be done to give the Institute the technical means to pursue its activities.",
+          "anchors": [
+            {
+              "text": "l’Institut national pour l’évaluation et la sécurité de l’IA (INESIA) a adopté sa feuille de route 2026-2027",
+              "kind": "definition",
+              "gloss": "the National Institute for AI Evaluation and Security (INESIA) has adopted its 2026-2027 roadmap"
+            }
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Inria, le LNE et le PEReN ont mené des exercices d’essais conjoints de modèles d’IA avancés, dont les résultats ont été publiés en juillet 2025",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "fr-inesia"
+              },
+              "testing_capacity",
+              "notes"
+            ]
+          ],
+          "gloss": "Inria, the LNE and PEReN carried out joint testing exercises on advanced AI models, whose results were published in July 2025",
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "FR",
@@ -53601,6 +53715,24 @@
           ],
           "accessed": "2026-10-21",
           "gloss": "INESIA brings together researchers and engineers from the National Cybersecurity Agency (ANSSI), the National Institute for Research in Digital Science and Technology (Inria) and the National Laboratory of Metrology and Testing (LNE)."
+        },
+        {
+          "text": "L’action de l’INESIA repose sur quatre principes fondamentaux : construire une démarche scientifique et stratégique, structurer une capacité souveraine d’évaluation, coordonner les expertises publiques et mutualiser les moyens",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "fr-inesia"
+              },
+              "funding",
+              {
+                "id": "funding-5900b7d819c0501a83196d3281da8527"
+              },
+              "description"
+            ]
+          ],
+          "gloss": "INESIA's action rests on four fundamental principles: building a scientific and strategic approach, structuring a sovereign evaluation capacity, coordinating public expertise and pooling resources",
+          "accessed": "2026-10-18"
         }
       ],
       "title_en": "Evaluating and securing AI",
@@ -69098,7 +69230,11 @@
               {
                 "id": "FR"
               },
-              "notes"
+              "claims",
+              {
+                "id": "claims-0eaa377082c64ceb8750deb5c3b4a738"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-17"
@@ -74532,6 +74668,14 @@
                 "code": "in_house"
               },
               "code"
+            ],
+            [
+              "institutes",
+              {
+                "id": "fr-inesia"
+              },
+              "model_access",
+              "notes"
             ]
           ],
           "accessed": "2026-10-21"
@@ -76976,13 +77120,6 @@
             [
               "jurisdictions",
               {
-                "id": "FR"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
                 "id": "CZ"
               },
               "notes"
@@ -77623,13 +77760,6 @@
         {
           "text": "Last update 9 November 2026",
           "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "FR"
-              },
-              "notes"
-            ],
             [
               "jurisdictions",
               {
@@ -79874,21 +80004,7 @@
       "accessed": "2026-10-17",
       "published": "2025-09-09",
       "language": "fr",
-      "excerpts": [
-        {
-          "text": "Il devra être validé par Parlement.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "FR"
-              },
-              "notes"
-            ]
-          ],
-          "gloss": "It will have to be approved by Parliament."
-        }
-      ],
+      "excerpts": [],
       "origin": "FR",
       "title_en": "AI: DGCCRF will coordinate the work of surveillance authorities in France",
       "access_note": "Review of excerpts in a text copy on 17 October 2026: The passage says the published French governance arrangement still requires parliamentary validation. Surrounding text discusses the DGCCRF coordination role; the quotation supports the pending-adoption caveat. The direct cached response was unavailable (http_error). The quoted passages were checked in the retained text copy; no obvious spoken accessibility expansion was observed. Original displayed typography was not independently verified, so it remains flagged as evidence checked only in a text copy. The published snapshot hash identifies the retained text copy at https://r.jina.ai/https://www.economie.gouv.fr/dgccrf/actualites-dgccrf/ia-la-dgccrf-coordonnera-laction-des-autorites-de-surveillance-en-france.",
@@ -81507,86 +81623,8 @@
       "language": "fr",
       "excerpts": [
         {
-          "text": "Sous réserve de l’acceptation par le Parlement dans le cadre d’un projet de loi.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "FR"
-              },
-              "notes"
-            ]
-          ],
-          "gloss": "Subject to Parliament's approval through a bill."
-        },
-        {
-          "text": "Techniques subliminales, délibérément manipulatrices ou trompeuses : DGCCRF, Arcom",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "FR"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-22f37dff551052589cba3b6271b1fcd0"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-10-17",
-          "gloss": "Subliminal, deliberately manipulative or deceptive techniques: DGCCRF, Arcom"
-        },
-        {
-          "text": "Interaction directe avec des personnes physiques : DGCCRF, Arcom",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "FR"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-22f37dff551052589cba3b6271b1fcd0"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-10-17",
-          "gloss": "Direct interaction with natural persons: DGCCRF, Arcom"
-        },
-        {
-          "text": "Sécurité des jouets : DGCCRF",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "FR"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-22f37dff551052589cba3b6271b1fcd0"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-10-17",
-          "gloss": "Toy safety: DGCCRF"
-        },
-        {
           "text": "DGCCRF : coordination opérationnelle, point de contact unique et représentation des ASM au sous-groupe de coordination du Comité IA",
           "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "FR"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-22f37dff551052589cba3b6271b1fcd0"
-              },
-              "role"
-            ],
             [
               "jurisdictions",
               {
@@ -81621,62 +81659,7 @@
       "accessed": "2026-10-17",
       "published": "2026-02-17",
       "language": "fr",
-      "excerpts": [
-        {
-          "text": "missions d’autorité notifiante pour le secteur du jouet",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "FR"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-4220d49ce76f5ffdbf4df1e4d9cc52d9"
-              },
-              "role"
-            ]
-          ],
-          "gloss": "Notifying-authority tasks for the toy sector."
-        },
-        {
-          "text": "L’amendement n° 444, présenté par le Gouvernement, est ainsi libellé :",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "FR"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-4220d49ce76f5ffdbf4df1e4d9cc52d9"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-10-17",
-          "gloss": "Amendment no. 444, tabled by the Government, reads as follows:",
-          "url": "https://www.senat.fr/seances/s202602/s20260217/s20260217014.html"
-        },
-        {
-          "text": "permettent à la direction générale des entreprises d’exercer ses missions d’autorité notifiante pour le secteur du jouet en habilitant certains de ses agents",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "FR"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-4220d49ce76f5ffdbf4df1e4d9cc52d9"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-10-17",
-          "gloss": "allow the Directorate-General for Enterprise to perform its notifying-authority duties for the toy sector by empowering certain staff members"
-        }
-      ],
+      "excerpts": [],
       "origin": "FR",
       "title_en": "Session of 17 February 2026: coordination of AI Regulation authorities",
       "snapshot": {
@@ -93282,6 +93265,17 @@
                 "id": "annual_profile-2d55967d51115bdf802fa7816d23107d"
               },
               "amount"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-2da3817e81915eca86fd0a0799453a97"
+              },
+              "description"
             ]
           ]
         },
@@ -99344,26 +99338,12 @@
               "host_type"
             ],
             [
-              "jurisdictions",
-              {
-                "id": "GB"
-              },
-              "summary"
-            ],
-            [
               "institutes",
               {
                 "id": "gb-aisi"
               },
               "reports_to",
               "name"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "GB"
-              },
-              "notes"
             ]
           ],
           "accessed": "2026-10-19"
