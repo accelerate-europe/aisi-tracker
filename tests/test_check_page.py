@@ -666,6 +666,144 @@ def test_closest_body_note_and_stage_line(stage, note, dets, ok):
     assert (check_page.check_nonidentified_folds(page, data) == []) is ok
 
 
+def _closest_fold_fixture(*, named=True, stage="planned", claims=(), finding_sources=("s1",), body_sources=("s1",), migrated=True):
+    name = "Fixture lab"
+    summary = f"Planned closest body: {name}." if named else "An AI Act authority is listed."
+    body = {"name": name, "body_id": "lab", "stage": stage, "source_ids": list(body_sources),
+            "display": {"source_links": list(body_sources)}}
+    record = {"id": "XX", "status": "none_identified", "europe_scope": True, "summary": summary, "closest_body": body,
+              "related_bodies": [{"id": "lab", "name": name, "kind": "research"}]}
+    if migrated:
+        record["claims"] = list(claims)
+
+    def cites(ids):
+        return '<span class="cites">' + "".join(f'<a class="cn" data-source-id="{sid}">{n}</a>' for n, sid in enumerate(ids, 1)) + '</span>'
+
+    html = f'<details class="card mini" id="c-xx"><summary>Fixture state</summary><p>{summary}{cites(finding_sources)}</p></details>'
+    lines = "".join(f'<div class="claim det" data-claim-id="{c["id"]}">{c["text"]}</div>' for c in claims if not c.get("lead"))
+    if stage != "exists":
+        lines += f'<span class="det">{stage.replace("_", " ").capitalize()}.</span>'
+    group = (f'<div class="body-group closest"><p class="gl">Closest body</p><ul><li data-body-id="lab">'
+             f'<span class="body-name">{name}{cites(body_sources)}</span>{lines}</li></ul></div>')
+    return {"jurisdictions": [record]}, html, group
+
+
+@pytest.mark.parametrize("claims", [
+    [],
+    [{"id": "lead", "kind": "function", "body_id": "lab", "lead": True, "text": "It tests models."}],
+])
+def test_closest_group_absent_when_summary_names_and_cites_it_without_role_claims(claims):
+    data, html, group = _closest_fold_fixture(claims=claims)
+    assert check_page.check_nonidentified_folds(html, data) == []
+    assert any("matches no expected group" in e for e in check_page.check_nonidentified_folds(html.replace("</details>", group + "</details>"), data))
+
+
+@pytest.mark.parametrize("stage", ["exists", "planned", "proposed", "under_study"])
+def test_closest_group_name_only_when_summary_does_not_name_it(stage):
+    data, html, group = _closest_fold_fixture(named=False, stage=stage)
+    page = html.replace("</details>", group + "</details>")
+    assert check_page.check_nonidentified_folds(page, data) == []
+    assert check_page.check_nonidentified_folds(html, data)
+    extra = page.replace("</li>", '<span class="det">An extra note.</span></li>')
+    assert any("role sentences" in e for e in check_page.check_nonidentified_folds(extra, data))
+    if stage != "exists":
+        missing_stage = page.replace(f'<span class="det">{stage.replace("_", " ").capitalize()}.</span>', "")
+        assert any("role sentences" in e for e in check_page.check_nonidentified_folds(missing_stage, data))
+
+
+def test_closest_group_normal_with_remaining_live_claims():
+    claims = [{"id": "role", "kind": "function", "body_id": "lab", "text": "It publishes research."}]
+    data, html, group = _closest_fold_fixture(claims=claims)
+    page = html.replace("</details>", group + "</details>")
+    assert check_page.check_nonidentified_folds(page, data) == []
+    assert check_page.check_nonidentified_folds(html, data)
+    assert any("role sentences" in e for e in check_page.check_nonidentified_folds(page.replace("It publishes research.", ""), data))
+
+
+def test_closest_group_kept_for_an_expired_role_claim():
+    # An expired role stays shown and marked (design section 4), so its group is never omitted.
+    claims = [{"id": "old", "kind": "function", "body_id": "lab", "expired": True, "text": "It tested models."}]
+    data, html, group = _closest_fold_fixture(claims=claims)
+    page = html.replace("</details>", group + "</details>")
+    assert check_page.check_nonidentified_folds(page, data) == []
+    assert check_page.check_nonidentified_folds(html, data)
+    assert any("role sentences" in e for e in check_page.check_nonidentified_folds(page.replace("It tested models.", ""), data))
+
+
+def test_closest_group_keeps_a_source_not_cited_in_the_finding():
+    data, html, group = _closest_fold_fixture(body_sources=("s1", "s2"))
+    assert check_page.check_nonidentified_folds(html.replace("</details>", group + "</details>"), data) == []
+    assert check_page.check_nonidentified_folds(html, data)
+    # A source link in the footer is not a citation mark on the card's finding.
+    footer = '<div class="foot"><a data-source-id="s2">Source two</a></div>'
+    assert check_page.check_nonidentified_folds(html.replace("</details>", footer + "</details>"), data)
+    complete = html.replace('</p></details>', '<span class="cites"><a class="cn" data-source-id="s2">2</a></span></p></details>')
+    assert check_page.check_nonidentified_folds(complete, data) == []
+
+
+def test_closest_group_legacy_still_shows_name_and_stage():
+    data, html, group = _closest_fold_fixture(migrated=False)
+    assert check_page.check_nonidentified_folds(html.replace("</details>", group + "</details>"), data) == []
+    assert check_page.check_nonidentified_folds(html, data)
+
+
+def _translated_lead_fixture():
+    claim = {"id": "lead", "kind": "function", "body_id": "lab", "lead": True,
+             "text": 'It says it "tests models" with them.', "citations": {"text": ["s1"]}}
+    data = {"jurisdictions": [{"id": "XX", "status": "none_identified", "europe_scope": True,
+                              "closest_body": {"body_id": "lab"}, "claims": [claim]}],
+            "sources": [{"id": "s1", "language": "de", "excerpts": [{"text": "prüft Modelle", "gloss": "tests models",
+                         "supports": ["/jurisdictions/0/claims/0/text"]}]}]}
+    quote = '<span class="quotation"><span class="quote-text" tabindex="0" aria-description="prüft Modelle">"tests models"</span></span>'
+    marker = '<span class="small translation"> translated from German</span>'
+    cites = '<span class="cites"><a class="cn" data-source-id="s1">1</a></span>'
+    html = (f'<details id="c-xx"><div class="claim" data-claim-id="lead"><span class="claim-text">It says it {quote} with them.{cites}</span>'
+            '<details class="quote" data-quote-claim="lead"><summary>Quote</summary></details></div></details>')
+    return data, html, quote, marker, cites
+
+
+def test_quote_translation_sentence_has_no_marker_and_keeps_original_with_citation_glue():
+    data, html, _, _, cites = _translated_lead_fixture()
+    assert check_page.check_claim_cards(html, data) == []
+    glued = html.replace("them." + cites, '<span class="cite-glue">them.' + cites + '</span>')
+    assert check_page.check_claim_cards(glued, data) == []
+
+
+@pytest.mark.parametrize("placement", ["inside-quote", "sentence-end", "after-citations", "missing-original", "missing-focus"])
+def test_quote_translation_rejects_sentence_markers_or_unreachable_original(placement):
+    data, html, quote, marker, cites = _translated_lead_fixture()
+    if placement == "inside-quote":
+        html = html.replace(quote, quote[:-7] + marker + "</span>")
+    elif placement == "sentence-end":
+        html = html.replace(cites, marker + cites)
+    elif placement == "after-citations":
+        html = html.replace(cites, cites + marker)
+    elif placement == "missing-original":
+        html = html.replace(' aria-description="prüft Modelle"', "")
+    else:
+        html = html.replace(' tabindex="0"', "")
+    assert any("translation" in e or "translated" in e for e in check_page.check_claim_cards(html, data))
+
+
+def test_quote_translation_standalone_excerpts_and_anchors_each_need_their_own_marker():
+    _, _, quote, marker, _ = _translated_lead_fixture()
+    standalone = quote[:-7] + marker + "</span>"
+    html = (f'<details class="quote" open><summary>Quote</summary><div class="quote-excerpt">{standalone}'
+            f'<span class="quote-anchor">Heading: {standalone}</span></div></details>')
+    assert check_page.check_quote_translations(BeautifulSoup(html, "html.parser")) == []
+    for broken in (html.replace(marker, "", 1), html.replace(marker, "", 2), html.replace(" translated from German", " "),
+                   html.replace(marker, marker + marker, 1), html.replace(' tabindex="0"', "", 1),
+                   html.replace(standalone, marker + quote, 1), html.replace(marker, " words in between " + marker, 1)):
+        assert check_page.check_quote_translations(BeautifulSoup(broken, "html.parser"))
+
+
+def test_quote_translation_generated_sentence_without_disclosure_has_no_marker():
+    _, _, quote, marker, _ = _translated_lead_fixture()
+    html = f'<p>It says it {quote} with them.</p>'
+    assert check_page.check_quote_translations(BeautifulSoup(html, "html.parser")) == []
+    assert check_page.check_quote_translations(BeautifulSoup(html.replace("</p>", marker + "</p>"), "html.parser"))
+
+
 def test_generic_sources_stay_out_of_card_lists_and_in_method():
     data = {
         "sources": [{"id": "eurostat", "url": "https://e.example/"}, {"id": "own", "url": "https://o.example/"}],

@@ -48,8 +48,8 @@
  * Region list: beside the map (below it and the map legend at 1100px and narrower, so the legend stays directly under the map (check_page check_legend_place), then at most --region-list wide, so a row's state and institute never drift apart), map and list tops aligned; an accordion whose open region (light tint, thin accent rule, turned chevron) lists its institutes with status marks (institute names right-aligned, like the counts above them), the others their heading, "established of all states" count and one line of names, both in ink; a divider between Europe and the other regions; the EU AI Office under Europe.
  * Record: a map, list or search pick opens the record beside the map (over the list on wide screens, which it hides while open, under the map on narrow ones) and focuses its heading, in view below the section bar, its values cited and qualified as on the card (status date: advisory recommendation, confidence), never more; "Full record ↓" goes to the card (Arrival), whose "↑ Back to map" returns to the same view with the record open; a state without a card links to its table row. Search uses the page's own suggestion list (floating surface, status mark and region per row, keyboard).
  * Naming: one display name per body everywhere (no status suffix; the country in brackets where two bodies share a name); tight places such as table cells use the recorded short form (data field short_name, never a bare generic acronym such as AISI) with the full name on hover; check_page check_institute_names. An institute has one display name and one short form everywhere; former names are marked as former ('then', 'former' or 'formerly', or 'now' with the current short form), source titles excepted (check_page check_former_names). The rule covers institutes; other bodies are named with their original beneath in the none-identified entries.
- * None-identified entries: three groups, Closest body, AI Act authorities and Other bodies; the closest body's text in body type, its stage only where it does not exist yet and never a reason it is not counted (Method says what qualifies); the AI Act authorities one line per body (name, roles in the summary's words from dataset.display.authority_roles, basis), single point of contact first, folded after three when two or more would be hidden; the English name first with the original muted beneath (a closing abbreviation said once, in the English name), other bodies' roles muted, citations inline (owner, 15 Nov 2026); migrated bodies' role claims are separate cited sentences, with the closest body's lead shown only in the finding; research notes in one muted How we checked block; on phones the name sits above a full-width summary; wording every entry shares lives in Method (check_page check_nonidentified_folds, check_nonidentified_style).
- * Claims: current facts, body-role sentences and developments, their citations and closed Quote disclosures are in the saved page; bound excerpts, anchors and source re-read lines are built from page.json only on open. Quotes show English, with an original-language tooltip and a muted translation marker where translated; the lead quote in a closest-body finding follows the same rule in the saved page.
+ * None-identified entries: three groups, Closest body, AI Act authorities and Other bodies; the closest body's text in body type, its stage only where it does not exist yet and never a reason it is not counted (Method says what qualifies); the AI Act authorities one line per body (name, roles in the summary's words from dataset.display.authority_roles, basis), single point of contact first, folded after three when two or more would be hidden; the English name first with the original muted beneath (a closing abbreviation said once, in the English name), other bodies' roles muted, citations inline (owner, 15 Nov 2026); migrated bodies' role claims are separate cited sentences, starting --sp-2 below the name; the closest body's lead stays in the finding, its group shows its other role claims (expired ones marked) or just its name and stage, and is omitted when it has no role claim and the finding already names and cites it (hub default); research notes in one muted How we checked block; on phones the name sits above a full-width summary; wording every entry shares lives in Method (check_page check_nonidentified_folds, check_nonidentified_style).
+ * Claims: current facts, body-role sentences and developments, their citations and closed Quote disclosures are in the saved page; bound excerpts, anchors and source re-read lines are built from page.json only on open. Translated quotes keep the original on hover, focus and tap; running sentences show no translation marker or added cue, including the saved closest-body lead; only the Quote fold shows a muted marker straight after each full translated quote and anchor (owner, 15 Nov 2026).
  * Sources: entry source lists hold sources that support the entry; population and region sources (display.generic_sources) are named once in Method and stay in the downloads; check_page check_generic_sources.
  * Archived copies: wherever a source list or Method names a source that has an archive URL, "(archived copy)" follows its link (after our English translation of a non-English title, in square brackets) as a quiet link in muted ink with a muted underline, no arrow, never broken across lines; superscript citations never carry one (check_page check_archive_links).
  * Re-read line: every source list item whose source has a quotation with a re-read state ends with one line of its own in the list's muted ink, from its quotations' states (docs/design/claims-1.1.md section 4): "Source last re-read {date}." while none is missing; else the worst state (the earliest start, then offline before not found, then the earliest last found): "Not found in the source on {date}; last found {date}; under review." (with ": N of M quotes" after the first date when some quotations are still found), "Source offline since {date}; last found {date}.", "Source could not be re-read since {date}; last found {date}."; a quotation or claim shown on its own shows its own state, never its source's; the page never says "verified" (check_page check_reread_lines).
@@ -565,10 +565,11 @@ main section.first { display: flex; flex-direction: column; gap: var(--sp-5); bo
 .card.mini .body-group { display: flex; flex-direction: column; gap: var(--sp-1); }
 .card.mini .body-group ul, .card.mini .how { display: flex; flex-direction: column; gap: var(--sp-2); margin: 0; padding: 0; list-style: none; }
 .card.mini .body-group li { display: flex; flex-direction: column; font: var(--type-body); }
+.card.mini .body-group li > .claim:not(.claim + .claim) { margin-top: var(--sp-2); }
 .card.mini .body-group .orig, .card.mini .body-group .det, .card.mini .how { font: var(--type-meta); color: var(--muted); }
 .card.mini .body-group.closest .det { font: var(--type-body); color: var(--ink); } /* the closest body's text is read like the summary; other bodies' roles stay muted */
 .card.mini .body-roles { color: var(--muted); } /* an AI Act authority's roles and basis after its name, on its line */
-.card.mini .body-group > details.more { margin-top: var(--sp-2); }
+.card.mini .body-group > details.more { margin-top: calc(var(--gap-row) - var(--sp-1)); }
 .card.mini .body-group > details.more > summary { font: var(--type-meta); color: var(--muted); } /* "N more AI Act bodies": a quiet control inside the group, not a heading */
 .card.mini .body-group > details.more > ul { margin-top: var(--sp-2); }
 .card.mini .how > .gl { color: var(--ink); }
@@ -1344,11 +1345,11 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   var FACTS_LABEL = "Facts", QUOTE_LABEL = "Quote", TRANSLATED = "translated from {language}";
   var QUOTE_LANGUAGES = { ar: "Arabic", bg: "Bulgarian", cs: "Czech", da: "Danish", de: "German", el: "Greek", en: "English", es: "Spanish", et: "Estonian", fi: "Finnish", fr: "French", hr: "Croatian", hu: "Hungarian", id: "Indonesian", is: "Icelandic", it: "Italian", ja: "Japanese", ko: "Korean", lt: "Lithuanian", lv: "Latvian", nb: "Norwegian Bokmål", nl: "Dutch", nn: "Norwegian Nynorsk", no: "Norwegian", pl: "Polish", pt: "Portuguese", ro: "Romanian", ru: "Russian", sk: "Slovak", sl: "Slovenian", sv: "Swedish", th: "Thai", tr: "Turkish", uk: "Ukrainian", zh: "Chinese" };
   var ANCHOR_LABELS = { heading: "Heading:", definition: "Defined as:", provision: "Provision:" };
-  function quoteNode(text, gloss, lang) {
+  function quoteNode(text, gloss, lang, inSentence) {
     var box = el("span", "quotation"), quote = el("span", "quote-text", '"' + (gloss || text) + '"');
     if (gloss) { quote.setAttribute("aria-description", text); quote.tabIndex = 0; }
     box.appendChild(quote);
-    if (gloss) box.appendChild(el("span", "small translation", " " + TRANSLATED.replace("{language}", QUOTE_LANGUAGES[lang] || lang || "unknown language")));
+    if (gloss && !inSentence) box.appendChild(el("span", "small translation", " " + TRANSLATED.replace("{language}", QUOTE_LANGUAGES[lang] || lang || "unknown language")));
     return box;
   }
   window.quoteNode = quoteNode;
@@ -1392,6 +1393,12 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     return (j.claims || []).find(function (c) { return c.kind === "function" && c.lead && j.closest_body && c.body_id === j.closest_body.body_id && (!c.expired || ["source_gone", "blocked_or_failed"].indexOf((c.reread || {}).state) >= 0); });
   }
   function bodyClaims(j, id) { return (j.claims || []).filter(function (c) { return c.kind === "function" && c.body_id === id && c !== shownLead(j); }); }
+  // A closest body with no role claim (live or expired, so no expired role loses its warning) whose name the finding already gives, with every source cited there, adds nothing (hub default, copy sheet C12).
+  function closestBodyRepeated(j, findingSources) {
+    var closest = j.closest_body;
+    return !!(closest && "claims" in j && !bodyClaims(j, closest.body_id).length && (j.summary || "").indexOf(closest.name) >= 0
+      && closest.display.source_links.every(function (id) { return findingSources.indexOf(id) >= 0; }));
+  }
   function factClaims(j, inst) { return (j.claims || []).concat(inst && inst.claims || []).filter(function (c) { return c.kind === "fact" && !c.expired; }); }
   function claimSentence(c, text) {
     var line = el("span", "claim-text"), entry = CLAIM_INDEX[c.id];
@@ -1399,8 +1406,9 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     var quoted = c.lead && /["“]([^"”]+)["”]/.exec(text);
     if (!quoted || !bound) { line.textContent = nonbreakingDates(text); return line; }
     line.appendChild(document.createTextNode(text.slice(0, quoted.index)));
-    line.appendChild(quoteNode(bound.excerpt.gloss ? bound.excerpt.text : quoted[1], bound.excerpt.gloss ? quoted[1] : null, bound.source.language));
-    line.appendChild(document.createTextNode(text.slice(quoted.index + quoted[0].length))); return line;
+    line.appendChild(quoteNode(bound.excerpt.gloss ? bound.excerpt.text : quoted[1], bound.excerpt.gloss ? quoted[1] : null, bound.source.language, true));
+    line.appendChild(document.createTextNode(text.slice(quoted.index + quoted[0].length)));
+    return line;
   }
   function claimBlock(c, cite, text) {
     var block = el("div", "claim"), line = claimSentence(c, text || c.text); block.dataset.claimId = c.id;
@@ -1664,7 +1672,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     var name = function (x) { return x.name_en || x.name; };
     return spoc(a) - spoc(b) || (b.authority_roles || []).length - (a.authority_roles || []).length || (name(a) < name(b) ? -1 : name(a) > name(b) ? 1 : 0);
   }
-  function nonIdentifiedBodies(j, cite, m) {
+  function nonIdentifiedBodies(j, cite, m, findingSources) {
     var groups = [], closest = j.closest_body, all = j.related_bodies || [];
     var migrated = "claims" in j;
     function item(name, original, details, ids, bodyId, after) {
@@ -1682,7 +1690,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       }
       return li;
     }
-    if (closest) {
+    if (closest && !closestBodyRepeated(j, findingSources)) {
       var noteShown = closest.note && closest.note !== closest.name + "." ? closest.note : ""; // a note that is only the name, the generator's fallback, is not said twice
       groups.push(bodyGroup("Closest body", [item(closest.name, "", [noteShown, STAGE_LINE[closest.stage]], closest.display.source_links, closest.body_id)]));
       groups[groups.length - 1].classList.add("closest"); // its text in body type: the body nearest to an institute is read, not skimmed
@@ -2856,7 +2864,9 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         order.forEach(function (id) { roles[id] = []; });
         if ("claims" in j) migratedFinding(card, j, rest, cite);
         else { card.appendChild(el("p", null, rest)); citeTarget(card.lastElementChild).appendChild(cite(fieldCitations(j, ["finding"]))); }
-        nonIdentifiedBodies(j, cite, m).forEach(function (group) { card.appendChild(group); });
+        // Only marks already rendered in the finding can replace a closest body's own citations.
+        var findingSources = Array.from(card.querySelectorAll("a.cn[data-source-id]")).map(function (a) { return a.dataset.sourceId; });
+        nonIdentifiedBodies(j, cite, m, findingSources).forEach(function (group) { card.appendChild(group); });
         var how = howWeChecked(j, cite); if (how) card.appendChild(how);
         var foot = sourceFooter(j, m, order, S, roles); foot.appendChild(stateDownload(j, m)); card.appendChild(foot); // a mini card's download sits in its fold, never in the summary row
         cards.appendChild(card);

@@ -7545,12 +7545,15 @@ def check_nonidentified_folds(html, data: dict) -> list[str]:
     """None-identified fold-outs: the closest body, the AI Act authorities and other bodies, each group recognised by
     its members, so the owner may reword a heading (test strategy D1); a heading must have text.
 
-    The closest body shows its note unless it is only its name, and one more line where it does not exist yet. The AI
+    A migrated closest body shows its other role claims (expired ones marked), or just its name and stage; omit it
+    when it has no role claim and the finding already names it and carries all its citations. Legacy notes stay as before. The AI
     Act authorities are one group in pattern 4's order, each line naming its roles in the published words
     (dataset.display.authority_roles); with more than four, the first three show and the rest fold behind a summary
     giving their number. A name in another language shows its English name with the original beneath, and a non-Latin
     script never stands alone. Each body with sources cites them inline, and each role text is shown.
     """
+    from summaries import shown_lead
+
     soup = BeautifulSoup(html, "html.parser")
     errors = []
     words = (data.get("dataset", {}).get("display") or {}).get("authority_roles") or {}
@@ -7568,7 +7571,14 @@ def check_nonidentified_folds(html, data: dict) -> list[str]:
                   if not closest or (b["id"] != closest.get("body_id") if "claims" in j
                                      else b["name"] != closest["name"] and not b["name"].startswith(closest["name"] + " ("))]
         expected = {}
-        if closest:
+        lead = shown_lead(j) if "claims" in j else None
+        closest_claims = [c for c in j.get("claims", []) if c["kind"] == "function" and closest
+                          and c.get("body_id") == closest.get("body_id") and c is not lead]
+        finding_sources = {a.get("data-source-id") for a in card.select(":scope > summary a.cn, :scope > p a.cn, :scope > .claim a.cn")}
+        closest_sources = (closest.get("display", {}).get("source_links", closest.get("source_ids", [])) if closest else [])
+        repeated = (closest and "claims" in j and not closest_claims and closest["name"] in j.get("summary", "")
+                    and set(closest_sources) <= finding_sources)
+        if closest and not repeated:
             expected["closest"] = [closest]
         if authorities := sorted((b for b in bodies if b["kind"] == "ai_act_authority"), key=authority_key):
             expected["authorities"] = authorities
@@ -7614,6 +7624,10 @@ def check_nonidentified_folds(html, data: dict) -> list[str]:
                     errors.append(f"{j['id']} AI Act authorities: {folded} folded under {summary.strip()!r}, expected {wanted} under their number {hidden}")
             for li, b in zip(items, members):
                 cited = bool(li.select(".cn"))
+                if key == "closest" and "claims" in j:
+                    missing_sources = set(closest_sources) - {a.get("data-source-id") for a in li.select("a.cn")}
+                    if missing_sources:
+                        errors.append(f"{j['id']}: closest body lacks citation marks for {sorted(missing_sources)}")
                 want = b.get("name_en") or b["name"]
                 if NON_LATIN_SCRIPT.search(want if b.get("name_en") else b["name"]) and not b.get("name_en"):
                     errors.append(f"{j['id']} body {want!r} stands in a non-Latin script without an English name")
@@ -7638,10 +7652,7 @@ def check_nonidentified_folds(html, data: dict) -> list[str]:
                     extra.extract()
                 dets = [" ".join(d.get_text().split()) for d in li.select(".det")]
                 if "claims" in j:
-                    from summaries import shown_lead
-
                     body_id = b.get("body_id") if key == "closest" else b["id"]
-                    lead = shown_lead(j)
                     want_dets = [" ".join(c["text"].split()) for c in j["claims"] if c["kind"] == "function"
                                  and c.get("body_id") == body_id and c is not lead]
                     if key == "closest" and b.get("stage", "exists") != "exists":
@@ -7744,10 +7755,12 @@ def check_name_roles(page) -> list[str]:
 
 @reports
 def check_nonidentified_style(page) -> list[str]:
-    """The How we checked block is muted and smaller than the bodies above it; group headings are never weaker than their items."""
+    """Muted notes, group heading hierarchy and the first body claim's separation from its name."""
     return page.evaluate("""() => {
       const folds = [...document.querySelectorAll('details:not([open])')]; folds.forEach(d => d.open = true);
       const errors = [], px = e => parseFloat(getComputedStyle(e).fontSize), weight = e => Number(getComputedStyle(e).fontWeight);
+      const probe = document.createElement('span'); probe.style.marginTop = 'var(--sp-2)'; document.body.appendChild(probe);
+      const claimGap = parseFloat(getComputedStyle(probe).marginTop); probe.remove();
       for (const card of document.querySelectorAll('.card.mini')) {
         const id = card.dataset.j, how = card.querySelector('.how p:not(.gl)');
         if (how && getComputedStyle(how).color === getComputedStyle(card.querySelector('summary .name')).color) errors.push(id + ': How we checked is not muted');
@@ -7757,6 +7770,10 @@ def check_nonidentified_style(page) -> list[str]:
           if (name && (weight(gl) < weight(name) || px(gl) < px(name))) errors.push(id + ': group heading ' + gl.textContent + ' is weaker than its items');
           const orig = g.querySelector('.orig');
           if (orig && getComputedStyle(orig).color === getComputedStyle(name).color) errors.push(id + ': original name is not muted');
+          for (const claim of g.querySelectorAll('li > .claim:not(.claim + .claim)')) {
+            const previous = claim.previousElementSibling;
+            if (previous && Math.abs(claim.getBoundingClientRect().top - previous.getBoundingClientRect().bottom - claimGap) > 1) errors.push(id + ': first body claim does not follow its name at --sp-2');
+          }
         }
       }
       folds.forEach(d => d.open = false);
@@ -9334,7 +9351,8 @@ def card_claims(j: dict, institutes: dict) -> list[dict]:
     from summaries import shown_lead
 
     lead = shown_lead(j)
-    bodies = {b["id"] for b in j.get("related_bodies", [])} | {(j.get("closest_body") or {}).get("body_id")}
+    closest_id = (j.get("closest_body") or {}).get("body_id")
+    bodies = {b["id"] for b in j.get("related_bodies", [])} | {closest_id}
     return [c for c in j.get("claims", []) if c is lead or
             c["kind"] == "development" and not c.get("expired") or c["kind"] == "function" and c.get("body_id") in bodies]
 
@@ -9353,6 +9371,27 @@ def claim_bindings(data: dict, claim_id: str) -> list[tuple[dict, int, dict]]:
     return []
 
 
+def check_quote_translations(soup) -> list[str]:
+    """Markers only in Quote folds, beside each glossed excerpt/anchor; every original stays focusable."""
+    errors = []
+    for marker in soup.select(".translation"):
+        if marker.find_parent("details", class_="quote") is None or marker.find_parent(class_="claim-text") is not None:
+            errors.append("translation marker must appear only in a Quote fold, never in a running sentence")
+    for quote in soup.select(".quote-text[aria-description]"):
+        if quote.get("tabindex") != "0":
+            errors.append("translated quote lacks keyboard focus")
+        if quote.find_parent("details", class_="quote") is None or quote.find_parent(class_="claim-text") is not None:
+            continue
+        scope = quote.find_parent(class_="quotation")
+        markers = scope.select(".translation") if scope is not None else []
+        if len(markers) != 1 or not markers[0].get_text(strip=True):
+            errors.append("translated quote lacks its translation marker")
+            continue
+        if quote.find_next_sibling() is not markers[0] or any(t.strip() for t in quote.next_siblings if isinstance(t, NavigableString)):
+            errors.append("translation marker must immediately follow its quote in the Quote fold")
+    return errors
+
+
 def check_claim_cards(html: str, data: dict) -> list[str]:
     """Saved sentences and citations, empty quote disclosures, and unchanged legacy body text.
 
@@ -9363,7 +9402,7 @@ def check_claim_cards(html: str, data: dict) -> list[str]:
     institutes = {i["id"]: i for i in data.get("institutes", [])}
     from summaries import shown_lead
 
-    errors = []
+    errors = check_quote_translations(soup)
     for j in data.get("jurisdictions", []):
         if j["status"] == "none_identified" and not j.get("europe_scope"):
             continue  # these jurisdictions have table rows, not cards
@@ -9397,6 +9436,12 @@ def check_claim_cards(html: str, data: dict) -> list[str]:
                 expected_text = " ".join(c["text"].replace("“", '"').replace("”", '"').split())
             if text != expected_text:
                 errors.append(f"{c['id']}: sentence {text!r}, expected {expected_text!r}")
+            if c is lead:
+                bindings = claim_bindings(data, c["id"])
+                if len(bindings) == 1 and bindings[0][2].get("gloss"):
+                    quotes = line.select(".quote-text[aria-description]")
+                    if len(quotes) != 1 or quotes[0].get("aria-description") != bindings[0][2]["text"]:
+                        errors.append(f"{c['id']}: translated lead lacks its bound original")
             fields = ("text", "act", "date") if c["kind"] == "development" else ("text",)
             cited = {n.get("data-source-id") for n in line.select("a.cn")}
             want_sources = {s for leaf in fields for s in c.get("citations", {}).get(leaf, [])}
@@ -9538,11 +9583,10 @@ def check_claim_quotes(browser, base_url: str, data: dict) -> list[str]:
                         fold.locator("summary").tap() if touch else fold.locator("summary").click()
                         if fold.locator(".quote-body").count() != 1:
                             errors.append(f"{identity}: quote duplicated on reopening")
-                    # Includes the saved lead span as well as every loaded excerpt and anchor.
+                    # The saved lead has no marker; every loaded glossed excerpt and anchor has its own.
+                    errors.extend(f"{jid}: {e}" for e in check_quote_translations(BeautifulSoup(card.inner_html(), "html.parser")))
                     for node in card.locator(".quote-text[aria-description]").all():
                         original = node.get_attribute("aria-description")
-                        if node.get_attribute("tabindex") != "0" or not node.locator("..").locator(".translation").inner_text().strip():
-                            errors.append(f"{jid}: translated quote lacks keyboard focus or translation marker")
                         node.scroll_into_view_if_needed()
                         page.keyboard.press("Escape")
                         if touch:
