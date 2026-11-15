@@ -31314,6 +31314,16 @@
       },
       "claims": [
         {
+          "id": "claims-29e5158b98d9456eb8972a5de97edd09",
+          "kind": "function",
+          "code": "evaluation_methods",
+          "basis": "mandate",
+          "text": "The SGDSN's page says its roadmap plans the development of evaluation methods suited to the cybersecurity of systems and products that integrate AI.",
+          "source_ids": [
+            "fr-sgdsn-aisi"
+          ]
+        },
+        {
           "id": "claims-52c093ce32d642879dd28ea647b28d19",
           "kind": "function",
           "code": "evaluation_methods",
@@ -31321,6 +31331,26 @@
           "text": "The UK AI Security Institute's release says it published 'What should evaluators prioritise when resources are limited?'",
           "source_ids": [
             "r3-gb-network-best-practice-release"
+          ]
+        },
+        {
+          "id": "claims-2a45b3d3aa7a4f7ebbd2bebad5a5aa45",
+          "kind": "function",
+          "code": "research",
+          "basis": "mandate",
+          "text": "The SGDSN's page says its roadmap plans research to better understand, characterise and control systemic risks and to inform public decision-making.",
+          "source_ids": [
+            "fr-sgdsn-aisi"
+          ]
+        },
+        {
+          "id": "claims-8df41ad331cb446da60e123ab7fbc946",
+          "kind": "function",
+          "code": "regulatory_support",
+          "basis": "mandate",
+          "text": "The SGDSN's page says its roadmap sets a regulatory support pillar to help implement the AI regulatory framework effectively.",
+          "source_ids": [
+            "fr-sgdsn-aisi"
           ]
         },
         {
@@ -53591,7 +53621,25 @@
                 "id": "fr-inesia"
               },
               "mandate_short"
+            ],
+            [
+              "institutes",
+              {
+                "id": "fr-inesia"
+              },
+              "claims",
+              {
+                "id": "claims-8df41ad331cb446da60e123ab7fbc946"
+              },
+              "text"
             ]
+          ],
+          "anchors": [
+            {
+              "text": "L'action de l'INESIA repose sur quatre principes fondamentaux : construire une démarche scientifique et stratégique, structurer une capacité souveraine d'évaluation, coordonner les expertises publiques et mutualiser les moyens, être lisible et actif dans les réseaux internationaux. Ces quatre axes sont déclinés en trois pôles stratégiques et un axe transverse, qui se traduisent par onze projets opérationnels, décrits au sein de sa feuille de route 2026-2027 :",
+              "kind": "heading",
+              "gloss": "INESIA's action rests on four fundamental principles: building a scientific and strategic approach, structuring a sovereign evaluation capacity, coordinating public expertise and pooling resources, being visible and active in international networks. These four lines are set out in three strategic pillars and one cross-cutting line, which translate into eleven operational projects, described in its 2026-2027 roadmap:"
+            }
           ]
         },
         {
@@ -53608,6 +53656,58 @@
           ],
           "accessed": "2026-10-21",
           "gloss": "INESIA brings together researchers and engineers from the National Cybersecurity Agency (ANSSI), the National Institute for Research in Digital Science and Technology (Inria) and the National Laboratory of Metrology and Testing (LNE)."
+        },
+        {
+          "text": "Enfin, des méthodes d'évaluation adaptées à la cybersécurité des systèmes et des produits intégrant de l'IA seront développées (Projet n°4.).",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "fr-inesia"
+              },
+              "claims",
+              {
+                "id": "claims-29e5158b98d9456eb8972a5de97edd09"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-18",
+          "url": "https://web.archive.org/web/20261017005049/https://www.sgdsn.gouv.fr/nos-missions/anticiper-et-prevenir/evaluer-et-securiser-lia",
+          "gloss": "Finally, evaluation methods suited to the cybersecurity of systems and products that integrate AI will be developed (Project no. 4).",
+          "anchors": [
+            {
+              "text": "L'action de l'INESIA repose sur quatre principes fondamentaux : construire une démarche scientifique et stratégique, structurer une capacité souveraine d'évaluation, coordonner les expertises publiques et mutualiser les moyens, être lisible et actif dans les réseaux internationaux. Ces quatre axes sont déclinés en trois pôles stratégiques et un axe transverse, qui se traduisent par onze projets opérationnels, décrits au sein de sa feuille de route 2026-2027 :",
+              "kind": "heading",
+              "gloss": "INESIA's action rests on four fundamental principles: building a scientific and strategic approach, structuring a sovereign evaluation capacity, coordinating public expertise and pooling resources, being visible and active in international networks. These four lines are set out in three strategic pillars and one cross-cutting line, which translate into eleven operational projects, described in its 2026-2027 roadmap:"
+            }
+          ]
+        },
+        {
+          "text": "Des activités de recherches seront conduites afin de mieux comprendre les risques systémiques, les caractériser, les maîtriser, et informer la décision publique (Projet n°5.).",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "fr-inesia"
+              },
+              "claims",
+              {
+                "id": "claims-2a45b3d3aa7a4f7ebbd2bebad5a5aa45"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-18",
+          "url": "https://web.archive.org/web/20261017005049/https://www.sgdsn.gouv.fr/nos-missions/anticiper-et-prevenir/evaluer-et-securiser-lia",
+          "gloss": "Research activities will be conducted to better understand systemic risks, characterise them, control them and inform public decision-making (Project 5).",
+          "anchors": [
+            {
+              "text": "L'action de l'INESIA repose sur quatre principes fondamentaux : construire une démarche scientifique et stratégique, structurer une capacité souveraine d'évaluation, coordonner les expertises publiques et mutualiser les moyens, être lisible et actif dans les réseaux internationaux. Ces quatre axes sont déclinés en trois pôles stratégiques et un axe transverse, qui se traduisent par onze projets opérationnels, décrits au sein de sa feuille de route 2026-2027 :",
+              "kind": "heading",
+              "gloss": "INESIA's action rests on four fundamental principles: building a scientific and strategic approach, structuring a sovereign evaluation capacity, coordinating public expertise and pooling resources, being visible and active in international networks. These four lines are set out in three strategic pillars and one cross-cutting line, which translate into eleven operational projects, described in its 2026-2027 roadmap:"
+            }
+          ]
         }
       ],
       "title_en": "Evaluating and securing AI",
