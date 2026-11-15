@@ -598,20 +598,28 @@ def test_nonidentified_folds_pass_and_fail_on_each_rule():
     assert any("non-Latin script" in e for e in check_page.blocking(check_page.check_nonidentified_folds(alone, data)))
 
 
-def test_authority_line_read_across_its_glued_last_word():
-    """The page glues a line's last word to its citation marks in a span of its own (cite-glue): the check reads every
-    .body-roles span of the item, so "designated by" and "law" make one line."""
+@pytest.mark.parametrize("space", [" ", "\u00a0"])
+def test_authority_line_read_across_its_glued_last_word(space):
+    """The citation glue stays inside one roles span; the check reads the whole line with either kind of space."""
     data = _fold_data()
     body = data["jurisdictions"][0]["related_bodies"][0]
     body.update(designation_state="designated", designation_basis="law")
-    glued = ('<li><span class="body-name">Financial Supervision Commission<span class="body-roles">: market-surveillance authority, designated by </span>'
-             '<span class="cite-glue"><span class="body-roles">law</span><span class="cites"><a class="cn">1</a></span></span></span>'
+    glued = (f'<li><span class="body-name">Financial Supervision Commission<span class="body-roles">: market-surveillance authority, designated{space}by{space}'
+             '<span class="cite-glue">law<span class="cites"><a class="cn">1</a></span></span></span></span>'
              '<span class="orig">Комисия за финансов надзор</span><span class="det">Proposed market authority.</span></li>')
     page = _fold_html().replace(_authority("Financial Supervision Commission", "market-surveillance authority, proposed",
                                             '<span class="orig">Комисия за финансов надзор</span>', '<span class="det">Proposed market authority.</span>'), glued)
     assert glued in page
-    assert not [e for e in check_page.check_nonidentified_folds(page, data) if "designated by" in e]
+    assert check_page.check_nonidentified_folds(page, data) == []
     assert any("designated by" in e for e in check_page.check_nonidentified_folds(page.replace(">law<", "><"), data))
+    split = page.replace('<span class="cite-glue">law', '</span><span class="cite-glue"><span class="body-roles">law</span>').replace(
+        '</a></span></span></span></span>', '</a></span></span></span>')
+    assert check_page.blocking(check_page.check_nonidentified_folds(split, data)) == [
+        "BG body 'Financial Supervision Commission': expected exactly one .body-roles span, found 2"
+    ]
+    missing = BeautifulSoup(page, "html.parser")
+    missing.select_one(".body-roles").decompose()
+    assert any("expected exactly one .body-roles span, found 0" in e for e in check_page.blocking(check_page.check_nonidentified_folds(str(missing), data)))
 
 
 def test_ai_act_authorities_in_pattern_4_order_and_folded_after_three():
@@ -2456,16 +2464,17 @@ def test_terms_marked_once_per_scope(html, found):
     assert len(errors) == len(found) and all(any(f in e for e in errors) for f in found), errors
 
 
-def test_authority_line_states_the_recorded_designation():
+@pytest.mark.parametrize("space", [" ", "\u00a0"])
+def test_authority_line_states_the_recorded_designation(space):
     data = _fold_data()
     assert any("does not say it is proposed" in e for e in check_page.check_nonidentified_folds(_fold_html(roles="market-surveillance authority, designated by law"), data))
     body = data["jurisdictions"][0]["related_bodies"][0]
     body["designation_step"] = {"text": "bill tabled", "date": "2026-09-24"}
     assert any("latest step" in e for e in check_page.check_nonidentified_folds(_fold_html(), data))
-    assert check_page.check_nonidentified_folds(_fold_html(roles="market-surveillance authority, proposed (bill tabled on 24 Sep 2026)"), data) == []
+    assert check_page.check_nonidentified_folds(_fold_html(roles=f"market-surveillance authority, proposed (bill tabled on 24{space}Sep{space}2026)"), data) == []
     body.pop("designation_step")
     body.update(designation_state="designated", designation_basis="law")
-    assert check_page.check_nonidentified_folds(_fold_html(roles="market-surveillance authority, designated by law"), data) == []
+    assert check_page.check_nonidentified_folds(_fold_html(roles=f"market-surveillance authority, designated{space}by{space}law"), data) == []
     assert any("designated by law" in e for e in check_page.check_nonidentified_folds(_fold_html(roles="market-surveillance authority, designated by decree"), data))
     assert any("designated by law" in e for e in check_page.check_nonidentified_folds(_fold_html(roles="market-surveillance authority, not designated by law"), data))
     body.update(designation_state=None, designation_basis=None)

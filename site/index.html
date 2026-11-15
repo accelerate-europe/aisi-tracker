@@ -1636,10 +1636,11 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   // A body: its name (with what follows it on the same line, such as its AI Act roles), the original name muted beneath, then its role text.
   function bodyItem(name, original, details, ids, cite, after) {
     var li = el("li"), line = el("span", "body-name", name); li.appendChild(line);
-    if (after) line.appendChild(el("span", "body-roles", ": " + after));
+    var roles = after ? el("span", "body-roles", ": " + after) : null;
+    if (roles) line.appendChild(roles);
     if (original) li.appendChild(el("span", "orig", original));
     details.filter(Boolean).forEach(function (text, n, all) { var d = el("span", "det", text); li.appendChild(d); if (n === all.length - 1) d.appendChild(cite(ids)); });
-    if (!details.filter(Boolean).length) line.appendChild(cite(ids));
+    if (!details.filter(Boolean).length) (roles || line).appendChild(cite(ids));
     return li;
   }
   function bodyGroup(label, items, folded, more) {
@@ -1653,8 +1654,8 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   function authorityLine(b, words) {
     var roles = ROLE_ORDER.filter(function (r) { return (b.authority_roles || []).indexOf(r) >= 0; }).map(function (r) { return words[r]; });
     var step = b.designation_step;
-    var basis = b.designation_state === "designated" ? "designated by " + (BASIS_NAME[b.designation_basis] || "an act")
-      : b.designation_state === "proposed" ? "proposed" + (step ? " (" + step.text + " on " + fmtDate(step.date) + ")" : "") : "designation not yet identified";
+    var basis = b.designation_state === "designated" ? ("designated by " + (BASIS_NAME[b.designation_basis] || "an act")).replace(/ /g, "\u00a0")
+      : b.designation_state === "proposed" ? "proposed" + (step ? " (" + step.text + " on " + nonbreakingDates(fmtDate(step.date)) + ")" : "") : "designation not yet identified";
     return (roles.length ? andJoin(roles) + ", " : "") + basis;
   }
   // The order pattern 4 names them in: the single point of contact first, then the most roles, ties by name.
