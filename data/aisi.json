@@ -4001,6 +4001,17 @@
           "source_ids": [
             "pl-nask-openai-2026"
           ]
+        },
+        {
+          "id": "claims-bb5ea3f0ab994d51932261f30ee36269",
+          "kind": "function",
+          "code": "research",
+          "basis": "activity",
+          "body_id": "related_bodies-8e2bf69316145732aea04a2f9bbd82eb",
+          "text": "The Ministry of Digital Affairs says the new centre's researchers \"focus on innovative AI research, with an emphasis on cybersecurity\".",
+          "source_ids": [
+            "pl-nask"
+          ]
         }
       ]
     },
@@ -6972,7 +6983,7 @@
           "code": "policy_advice",
           "basis": "mandate",
           "body_id": "related_bodies-6df3d97198f454c39d08cf5d0d3b48b4",
-          "text": "Act LXXV of 2025 on the implementation of the AI Act tasks it with supporting, through proposals submitted to the government by the minister responsible for enterprise development, the shaping and implementation of the national AI strategy and policy.",
+          "text": "Act LXXV of 2025 tasks it with supporting the national AI strategy and policy through proposals to the government.",
           "source_ids": [
             "hu-njt-2025-75"
           ]
@@ -7484,7 +7495,7 @@
           "code": "talent",
           "basis": "activity",
           "body_id": "related_bodies-c1353e6dfb135bde8b5daeef997324c8",
-          "text": "INSAIT says a student takes part in its special four-year EXPLORER bachelor's programme aimed at developing talented Bulgarian students.",
+          "text": "INSAIT's news page names its special four-year EXPLORER bachelor's programme, aimed at developing talented Bulgarian students.",
           "source_ids": [
             "bg-insait-digitalk"
           ]
@@ -31188,7 +31199,7 @@
         {
           "id": "claims-ee398e53899849d9a3eb3183952b3c63",
           "kind": "fact",
-          "text": "It says it is mobilising more than £15 million in grants to accelerate breakthroughs globally.",
+          "text": "UK AISI says it is mobilising more than £15 million in grants to accelerate breakthroughs globally.",
           "source_ids": [
             "gb-about"
           ]
@@ -31700,14 +31711,6 @@
           "text": "The government's founding announcement gives it the mission of federating the national evaluation and security bodies.",
           "source_ids": [
             "fr-dge"
-          ]
-        },
-        {
-          "id": "claims-c6b76ef3ac6240578805439e5d91a1a9",
-          "kind": "fact",
-          "text": "The announcement of the institute's roadmap says work will be done to give the institute the technical means to pursue its activities.",
-          "source_ids": [
-            "fr-roadmap"
           ]
         }
       ]
@@ -42748,6 +42751,31 @@
           ],
           "gloss": "An AI Safety Research Centre was established within NASK.",
           "accessed": "2026-10-17"
+        },
+        {
+          "text": "Naukowcy z nowego Ośrodka skupiają się na prowadzeniu innowacyjnych badań w obszarze AI, z naciskiem na cyberbezpieczeństwo, które jest dla NASK kluczowe.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "PL"
+              },
+              "claims",
+              {
+                "id": "claims-bb5ea3f0ab994d51932261f30ee36269"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "The new centre's researchers focus on innovative AI research, with an emphasis on cybersecurity, which is key for NASK.",
+          "anchors": [
+            {
+              "text": "w NASK powstał Ośrodek Badań nad Bezpieczeństwem Sztucznej Inteligencji",
+              "kind": "definition",
+              "gloss": "an AI Safety Research Centre was established within NASK"
+            }
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "PL",
@@ -48168,31 +48196,6 @@
           ],
           "accessed": "2026-10-20",
           "gloss": "The Ministerial Agency for Defence Artificial Intelligence (AMIAD)"
-        },
-        {
-          "text": "Un travail sera mené afin de doter l’Institut des moyens techniques de poursuivre ses activités.",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "fr-inesia"
-              },
-              "claims",
-              {
-                "id": "claims-c6b76ef3ac6240578805439e5d91a1a9"
-              },
-              "text"
-            ]
-          ],
-          "gloss": "Work will be done to give the Institute the technical means to pursue its activities.",
-          "anchors": [
-            {
-              "text": "l’Institut national pour l’évaluation et la sécurité de l’IA (INESIA) a adopté sa feuille de route 2026-2027",
-              "kind": "definition",
-              "gloss": "the National Institute for AI Evaluation and Security (INESIA) has adopted its 2026-2027 roadmap"
-            }
-          ],
-          "accessed": "2026-10-17"
         },
         {
           "text": "Inria, le LNE et le PEReN ont mené des exercices d’essais conjoints de modèles d’IA avancés, dont les résultats ont été publiés en juillet 2025",
