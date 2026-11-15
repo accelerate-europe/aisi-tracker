@@ -551,6 +551,37 @@ def test_institute_names_pass_and_fail_on_each_rule():
 WORDS = {"single_point_of_contact": "single point of contact", "market_surveillance": "market-surveillance authority", "notifying": "notifying authority"}
 
 
+@pytest.mark.parametrize("linked", [False, True])
+def test_institute_local_name_is_the_complete_names_tooltip(linked):
+    data = _names_data()
+    data["institutes"][0]["name_local"] = "Institut local"
+    shown = "AI Security Institute (United Kingdom)"
+    soup = BeautifulSoup(_names_html(), "html.parser")
+    value = soup.select_one('#c-gb .v')
+    tag = 'a href="https://example.org/institute"' if linked else 'span tabindex="0"'
+    end = 'a' if linked else 'span'
+    value.clear()
+    value.append(BeautifulSoup(f'<{tag} class="original-text" aria-description="Institut local">{shown}</{end}>', "html.parser"))
+    html = str(soup)
+    assert check_page.check_institute_names(html, data) == []
+    for broken in (
+        html.replace('aria-description="Institut local"', 'aria-description="Wrong original"'),
+        html.replace('aria-description="Institut local"', 'aria-description="Institut local" data-tip="Wrong override"'),
+        html.replace('href="https://example.org/institute"' if linked else 'tabindex="0"', ''),
+        html.replace('class="original-text"', 'class="old-route"'),
+    ):
+        assert any('Institute: the shown name must carry name_local' in e for e in check_page.check_institute_names(broken, data))
+    data['institutes'][0]['name_local'] = shown
+    assert check_page.check_institute_names(_names_html(), data) == []
+
+
+def test_original_names_do_not_acquire_nested_glossary_tips():
+    data = {"dataset": {"glossary": {"AI": "artificial intelligence"}}}
+    html = '<article class="card" id="c-xx"><span class="original-text" aria-description="Institut IA" tabindex="0">AI Institute</span><p><abbr class="g" aria-description="artificial intelligence">AI</abbr> research</p></article>'
+    assert check_page.check_terms_once(html, data) == []
+    assert check_page.check_terms_once(html.replace('class="original-text"', ''), data)
+
+
 def _fold_data():
     return {
         "jurisdictions": [{
@@ -566,12 +597,13 @@ def _fold_data():
 
 
 def _authority(name, roles="market-surveillance authority, proposed", original="", det=""):
-    return (f'<li><span class="body-name">{name}<span class="body-roles">: {roles}<span class="cites"><a class="cn">1</a></span></span></span>'
-            f'{original}{det}</li>')
+    tip = f' class="original-text" aria-description="{original}" tabindex="0"' if original else ""
+    return (f'<li><span class="body-name"><span{tip}>{name}</span><span class="body-roles">: {roles}<span class="cites"><a class="cn">1</a></span></span></span>'
+            f'{det}</li>')
 
 
 def _fold_html(roles="market-surveillance authority, proposed", det='<span class="det">Proposed market authority.</span>', original=True, label="AI Act authorities", extra=""):
-    orig = '<span class="orig">Комисия за финансов надзор</span>' if original else ""
+    orig = 'Комисия за финансов надзор' if original else ""
     return (
         '<details class="card mini" id="c-bg" data-j="BG"><summary><span class="name">Bulgaria</span></summary>'
         f'<div class="body-group"><p class="gl">{label}</p><ul>{_authority("Financial Supervision Commission", roles, orig, det)}</ul>{extra}</div>'
@@ -585,7 +617,9 @@ def test_nonidentified_folds_pass_and_fail_on_each_rule():
     assert check_page.check_nonidentified_folds(_fold_html(), data) == []
     assert check_page.check_nonidentified_folds(_fold_html(label="Authorities under the AI Act"), data) == []  # the owner may reword a heading
     assert any("heading is empty" in e for e in check_page.check_nonidentified_folds(_fold_html(label=" "), data))
-    assert any("original name must sit beneath" in e for e in check_page.check_nonidentified_folds(_fold_html(original=False), data))
+    assert any("original name in a focusable tooltip" in e for e in check_page.check_nonidentified_folds(_fold_html(original=False), data))
+    for broken in (_fold_html().replace('tabindex="0"', ''), _fold_html().replace('aria-description="Комисия за финансов надзор"', 'aria-description="Wrong original"')):
+        assert any("original name in a focusable tooltip" in e for e in check_page.check_nonidentified_folds(broken, data))
     assert any("does not name its roles" in e for e in check_page.check_nonidentified_folds(_fold_html(roles="market surveillance, proposed"), data))
     assert any("no inline citation" in e for e in check_page.check_nonidentified_folds(_fold_html().replace('<a class="cn">1</a>', "", 1), data))
     assert any("role text is nowhere" in e for e in check_page.check_nonidentified_folds(_fold_html(det=""), data))
@@ -595,7 +629,7 @@ def test_nonidentified_folds_pass_and_fail_on_each_rule():
     alone = _fold_html(original=False).replace("Financial Supervision Commission<", "Комисия за финансов надзор<")
     assert check_page.blocking(check_page.check_nonidentified_folds(alone, data))  # wrong rendered name still blocks
     data["jurisdictions"][0]["related_bodies"][0].pop("name_en")
-    assert any("non-Latin script" in e for e in check_page.blocking(check_page.check_nonidentified_folds(alone, data)))
+    assert check_page.check_nonidentified_folds(alone, data) == []  # untranslated names stand as they are
 
 
 @pytest.mark.parametrize("space", [" ", "\u00a0"])
@@ -604,11 +638,11 @@ def test_authority_line_read_across_its_glued_last_word(space):
     data = _fold_data()
     body = data["jurisdictions"][0]["related_bodies"][0]
     body.update(designation_state="designated", designation_basis="law")
-    glued = (f'<li><span class="body-name">Financial Supervision Commission<span class="body-roles">: market-surveillance authority, designated{space}by{space}'
+    glued = (f'<li><span class="body-name"><span class="original-text" aria-description="Комисия за финансов надзор" tabindex="0">Financial Supervision Commission</span><span class="body-roles">: market-surveillance authority, designated{space}by{space}'
              '<span class="cite-glue">law<span class="cites"><a class="cn">1</a></span></span></span></span>'
-             '<span class="orig">Комисия за финансов надзор</span><span class="det">Proposed market authority.</span></li>')
+             '<span class="det">Proposed market authority.</span></li>')
     page = _fold_html().replace(_authority("Financial Supervision Commission", "market-surveillance authority, proposed",
-                                            '<span class="orig">Комисия за финансов надзор</span>', '<span class="det">Proposed market authority.</span>'), glued)
+                                            'Комисия за финансов надзор', '<span class="det">Proposed market authority.</span>'), glued)
     assert glued in page
     assert check_page.check_nonidentified_folds(page, data) == []
     assert any("designated by" in e for e in check_page.check_nonidentified_folds(page.replace(">law<", "><"), data))

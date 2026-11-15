@@ -484,6 +484,22 @@ def test_display_rows_order_words_and_tail(rows):
     )
 
 
+@pytest.mark.parametrize("english", [None, "English ministry"])
+def test_reports_to_producer_preserves_original_separately(rows, english):
+    reports = rows["institutes"][0]["reports_to"]
+    reports["name"] = "Ministère <local> (ML)"
+    if english:
+        reports["name_en"] = english
+    published = publish(rows)
+    institute = published["institutes"][0]
+    shown = institute["display"]["rows"]["reports_to"]
+    assert shown["text"] == (english or reports["name"])
+    assert shown.get("original") == (reports["name"] if english else None)
+    assert shown["cited"] == ["gb-source"]
+    assert institute["reports_to"]["name"] == reports["name"]  # downloads retain both authored forms
+    assert institute["reports_to"].get("name_en") == english
+
+
 def test_labels_come_only_from_the_vocabulary(rows):
     relation_vocabulary(rows)["works_with"]["label"] = "cooperates with"
     items = publish(rows)["institutes"][0]["display"]["rows"]["partners"]["items"]
@@ -727,6 +743,21 @@ def page_errors(rows, html):
 
 def test_page_oracle_accepts_the_expected_card(rows):
     assert page_errors(rows, card(good_rows())) == []
+
+
+def test_reports_to_original_must_be_on_the_complete_focusable_name(rows):
+    rows["institutes"][0]["reports_to"].update(name="Ministère local", name_en="Test ministry")
+    name = '<span class="original-text" aria-description="Ministère local" tabindex="0">Test <span class="cite-glue">ministry' + cite() + '</span></span>'
+    html = card(good_rows().replace('Test ministry' + cite(), name))
+    assert page_errors(rows, html) == []
+    for broken in (
+        html.replace(' aria-description="Ministère local"', ''),
+        html.replace('Ministère local', 'Wrong original'),
+        html.replace(' tabindex="0"', ''),
+        html.replace('class="original-text"', 'class="old-route"'),
+        html.replace('>Test <span', '></span>Test <span'),
+    ):
+        assert any('Reports to: the English name must carry the original' in e for e in page_errors(rows, broken))
 
 
 @pytest.mark.parametrize("label", ["Head", "Reports to", "Partners"])

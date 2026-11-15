@@ -527,7 +527,7 @@ def card_table_citation_gaps(data):
     ]
     label = source[source.index("  var LABEL = {") : source.index("\n", source.index("  var LABEL = {"))]
     stub = label + r"""
-function el(tag,cls,text){return {tag, className:cls||'', dataset:{}, children:[],
+function el(tag,cls,text){return {tag, tagName:tag.toUpperCase(), className:cls||'', classList:{add(){}}, dataset:{}, children:[],
  textContent:text||'', setAttribute(){}, appendChild(child){this.children.push(child);return child;}};}
 const document={createTextNode:text=>el('text','',text)};
 function words(node){return typeof node==='string'?node:node.textContent+node.children.map(words).join('');}
@@ -861,22 +861,216 @@ def test_page_rounding_matches_the_producer():
     assert page_eur_rounded(triples) == [float(round2(Decimal(str(a)) * Decimal(str(r)), q)) for a, r, q in triples]
 
 
-def test_source_lists_put_the_english_title_right_after_the_original():
-    """Method: a non-English source title keeps the original, with our English translation beside it."""
+def test_source_lists_show_english_with_the_original_in_the_link_tooltip():
+    """Naming: the source title and its original share one link, including its external tail."""
     from scripts.check_page import check_source_alignment
 
-    data = {"sources": [{"id": "fr", "url": "https://example.org/fr", "title_en": "The announcement"}, {"id": "en", "url": "https://example.org/en"}],
+    data = {"sources": [{"id": "fr", "url": "https://example.org/fr", "title": "L’annonce", "title_en": "The announcement", "language": "fr"}, {"id": "en", "url": "https://example.org/en"}],
             "jurisdictions": [{"id": "XX", "kind": "state", "status": "established", "source_ids": ["fr", "en"]}], "institutes": []}
 
     def errors(fr_item):
         html = source_alignment_card(f'<div class="srcs"><ol>{fr_item}<li data-source-id="en"><a href="https://example.org/en">Report</a></li></ol></div>')
         findings = check_source_alignment(html, data)
-        assert all("English title" in e for e in findings), findings
         return findings
 
-    link, en, archive = '<a href="https://example.org/fr">L’annonce</a>', '<span class="title-en"> [The announcement]</span>', '<span class="archive-copy"> (<a class="archive" href="x">archived copy</a>)</span>'
-    assert errors(f'<li data-source-id="fr">{link}{en}{archive}</li>') == []
-    assert errors(f'<li data-source-id="fr">{link}{archive}</li>')  # missing
-    assert errors(f'<li data-source-id="fr">{link}{archive}{en}</li>')  # after the archived copy
-    assert errors(f'<li data-source-id="fr">{en}{link}</li>')  # before the original
-    assert errors(f'<li data-source-id="fr">{link}<span class="title-en"> [Other]</span></li>')  # wrong text
+    item = '<li data-source-id="fr"><a class="original-text" href="https://example.org/fr" aria-description="L’annonce">The <span class="ext-tail">announcement<span class="vh"> (opens in a new tab)</span></span></a><span class="archive-copy"> (<a class="archive" href="x">archived copy</a>)</span></li>'
+    assert errors(item) == []
+    for broken in (
+        item.replace(' aria-description="L’annonce"', ''),
+        item.replace(' class="original-text"', ''),
+        item.replace('aria-description="L’annonce"', 'aria-description="Wrong original"'),
+        item.replace('aria-description="L’annonce"', 'aria-description="L’annonce" data-tip="Wrong tooltip"'),
+        item.replace('aria-description=', 'lang="fr" aria-description='),
+        item.replace('announcement<span', 'other title<span'),
+        item.replace('</li>', '<span class="orig">L’annonce</span></li>'),
+        item.replace('</li>', '<span class="title-en"> [The announcement]</span></li>'),
+    ):
+        assert errors(broken)
+    data['sources'][0].pop('title_en')
+    untranslated = '<li data-source-id="fr"><a href="https://example.org/fr" lang="fr">L’annonce</a></li>'
+    assert errors(untranslated) == []
+    assert errors(untranslated.replace(' lang="fr"', ''))
+
+
+def test_bilingual_names_and_titles_render_through_the_same_tooltip_route():
+    """Execute the renderers on supplied forms, including text that looks like markup."""
+    source = PAGE.read_text()
+    helpers = source[source.index('  function sourceList('):source.index('  // The producer owns evidence')]
+    helpers += source[source.index('  function withOriginal('):source.index('  function instShort(')]
+    helpers += next(line for line in source.splitlines() if line.startswith('  function rowValue('))
+    helpers += source[source.index('  function citations('):source.index('  // None-identified entries (principle:')]
+    helpers += source[source.index('  function originalName('):source.index('  function bodyGroup(')]
+    helpers += next(line for line in source.splitlines() if line.startswith('  function tipText('))
+    stub = r"""
+function el(tag, cls, text) {
+  const n = {tag, tagName: tag.toUpperCase(), className: cls || '', attrs: {}, dataset: {}, children: text == null ? [] : [{text}],
+    setAttribute(k, v) { this.attrs[k] = v; }, getAttribute(k) { return this.attrs[k]; },
+    appendChild(n) { this.children.push(n); return n; }, get childNodes() { return this.children; }};
+  n.classList = {add(c) { n.className = [n.className, c].filter(Boolean).join(' '); }};
+  return n;
+}
+const document = {createTextNode: text => ({text})};
+function missing(na) { return el('span', 'missing', na ? 'Not applicable' : 'Not published'); }
+function dated(text) { return el('span', 'date-text', text); }
+function rereadLine() { return el('span', 'reread', 'Source last re-read 15 Nov 2026.'); }
+function archiveCopy(li, src) { if (src.archive_url) li.appendChild(el('span', 'archive-copy', '(archived copy)')); }
+function hostOf(url) { return new URL(url).hostname; }
+"""
+    bodies = [
+        {"name": "Agence <nationale> (AN)", "name_en": "National Agency (AN)"},
+        {"name": "Agence (locale)", "name_en": "Local Agency"},
+        {"name": "原名"},
+    ]
+    sources = [
+        {"id": "translated", "title": "L’annonce <originale>", "title_en": "The announcement", "language": "fr", "archive_url": "https://example.org/archive"},
+        {"id": "original", "title": "原文", "language": "zh"},
+        {"id": "english", "title": "Report", "language": "en"},
+        {"id": "unknown", "title": "Title"},
+    ]
+    sources = [{**s, "url": "https://example.org/" + s["id"], "publisher": "Publisher", "published": "2026-11-15"} for s in sources]
+    script = stub + helpers + '\nconst bodies=' + json.dumps(bodies) + ';\nconst sources=' + json.dumps(sources) + r""";
+const S = Object.fromEntries(sources.map(s => [s.id, s])), order = sources.map(s => s.id);
+const cite = citations(S, order);
+const names = bodies.map(b => bodyItem(b.name_en || b.name, originalName(b), [], [], cite, 'authority role'));
+const list = sourceList(order, S, {translated: ['Finding']});
+const DISPLAY_NAME = {translated: 'Institute', same: 'Same name', absent: 'No local name'};
+const institutes = [
+  {id: 'translated', name_local: 'Institut <local>'},
+  {id: 'translated', name_local: 'Institut <local>', website: 'https://example.org/institute'},
+  {id: 'same', name_local: 'Same name'},
+  {id: 'absent', website: 'https://example.org/absent'}
+].map(instName);
+const rows = [
+  {state: 'stated', text: 'Ministry', original: 'Ministère <local>'},
+  {state: 'stated', text: 'Original ministry'},
+  {state: 'not_published', text: 'Stale name', original: 'Stale original'},
+  {state: 'not_applicable'}
+].map(rowValue);
+console.log(JSON.stringify({names, list, institutes, rows, marks: cite(order),
+  nameTips: names.map(n => tipText(n.children[0].children[0])),
+  titleTips: list.children.map(li => tipText(li.children[0]))}));
+"""
+    rendered = json.loads(subprocess.run(["node", "-"], input=script, text=True, capture_output=True, check=True).stdout)
+
+    def text(node):
+        return node.get('text', '') + ''.join(text(child) for child in node.get('children', []))
+
+    assert rendered['nameTips'] == ['Agence <nationale>', 'Agence (locale)', '']
+    for body, item in zip(bodies, rendered['names'], strict=True):
+        line = item['children'][0]
+        name, roles = line['children']
+        assert text(name) == body.get('name_en', body['name'])
+        assert name['tag'] == 'span' and 'authority role' in text(roles)
+        assert 'aria-description' not in line['attrs'] and 'aria-description' not in roles['attrs']
+        assert len(item['children']) == 1  # no original on a second line
+        if body.get('name_en'):
+            assert name['tabIndex'] == 0 and body['name'] not in text(item)
+        else:
+            assert name['attrs'] == {} and 'tabIndex' not in name
+    assert rendered['titleTips'] == ['L’annonce <originale>', '', '', '']
+    marks = [n for n in rendered['marks']['children'] if n.get('tag') == 'a']
+    for src, item, mark in zip(sources, rendered['list']['children'], marks, strict=True):
+        link = item['children'][0]
+        shown = src.get('title_en', src['title'])
+        assert text(link) == shown and link['href'] == src['url'] and 'tabIndex' not in link
+        assert link.get('lang') == (None if src.get('title_en') else src.get('language'))
+        assert mark['dataset']['tip'] == shown + ' (Publisher)'
+        assert mark['dataset']['tipSub'] == (src['title'] + ' · ' if src.get('title_en') else '') + 'example.org'
+        assert ', Publisher, 2026-11-15' in text(item)
+        assert text(item).endswith('Source last re-read 15 Nov 2026.')
+    translated = rendered['list']['children'][0]
+    assert translated['children'][1]['className'] == 'archive-copy'
+    assert ', supports finding' in text(translated)
+    assert sources[0]['title'] not in text(translated)
+    for name in rendered['institutes'][:2]:
+        assert text(name) == 'Institute'
+        assert name['attrs']['aria-description'] == 'Institut <local>'
+        assert 'original-text' in name['className']
+    assert rendered['institutes'][0]['tabIndex'] == 0
+    assert 'tabIndex' not in rendered['institutes'][1]
+    assert rendered['institutes'][1]['href'] == 'https://example.org/institute'
+    assert rendered['institutes'][2] == {'text': 'Same name'}
+    assert rendered['institutes'][3]['attrs'] == {}
+    translated_row = rendered['rows'][0]
+    assert text(translated_row) == 'Ministry' and translated_row['tabIndex'] == 0
+    assert translated_row['attrs']['aria-description'] == 'Ministère <local>'
+    assert rendered['rows'][1] == 'Original ministry'
+    assert text(rendered['rows'][2]) == 'Not published'
+    assert text(rendered['rows'][3]) == 'Not applicable'
+    assert all('aria-description' not in node['attrs'] for node in rendered['rows'][2:])
+
+
+def test_translated_links_open_a_touch_tip_with_the_destination():
+    source = PAGE.read_text()
+    show = source[source.index('  function showTip('):source.index('  // A value mark')]
+    handlers = source[source.index('  var touchInput ='):source.index('  // Instant tooltips:')]
+    script = r"""
+const assert = require('node:assert/strict'), listeners = {};
+class Node {}
+function el(tag, cls, text) { return {tag, cls, text, children: [], appendChild(n) { this.children.push(n); }}; }
+const tip = {hidden: true, style: {}, offsetWidth: 100, offsetHeight: 50, children: [],
+  appendChild(n) { this.children.push(n); }, contains(n) { return n === destination; }};
+let tipFor = null, tipTimer = 0, tipY = 0, destination = null;
+const window = {scrollY: 0, innerHeight: 500};
+const document = {documentElement: {clientWidth: 400}, addEventListener(type, fn) { listeners[type] = fn; }};
+const tipText = n => n.original, tipAnchor = () => ({left: 20, width: 100, bottom: 40, top: 20});
+const hostOf = url => new URL(url).hostname, separated = parts => parts;
+function bindArrow() {} function hideLineEndDots() {} function hideTipSoon() {}
+function hideTip() { tip.hidden = true; }
+""" + show + handlers + r"""
+function click(link, touch) {
+  touchInput = touch;
+  let prevented = false;
+  listeners.click({target: link, preventDefault() { prevented = true; }});
+  return prevented;
+}
+function link(translated, citation = false) {
+  return {href: 'https://example.org/source', original: 'Titre original', dataset: {},
+    matches(selector) { return selector.includes('a.cn') && citation || selector.includes('a.original-text[href]') && translated; },
+    closest() { return this; }};
+}
+const TIPSEL = 'abbr.g, [data-tip], [aria-description]';
+const translated = link(true);
+assert.equal(click(translated, true), true);
+assert.equal(tip.textContent, 'Titre original');
+assert.equal(tip.hidden, false);
+const go = tip.children[0].children[0][0];
+assert.equal(go.tag, 'a'); assert.equal(go.text, 'example.org');
+assert.equal(go.href, translated.href); assert.equal(go.target, '_blank');
+destination = new Node(); destination.closest = () => destination;
+assert.equal(click(destination, true), false); assert.equal(tip.hidden, true);
+assert.equal(click(translated, false), false);  // mouse follows the original link
+assert.equal(click(link(false), true), false); // ordinary links keep their action
+assert.equal(click(link(false, true), true), true); // citations still open their tips
+"""
+    subprocess.run(["node", "-"], input=script, text=True, capture_output=True, check=True)
+
+
+def test_citation_glue_keeps_one_wrapping_original_name():
+    """The extraction range stays inside the name, so it cannot clone its tooltip."""
+    source = PAGE.read_text()
+    helper = source[source.index('  function glueCitations('):source.index('  // Row wrappers')]
+    script = r"""
+const assert = require('node:assert/strict');
+const NodeFilter = {SHOW_TEXT: 4}, getComputedStyle = () => ({fontSize: '16px'});
+const text = {nodeValue: 'A long English ministry'};
+const root = {querySelectorAll: () => [cites], contains: () => true};
+const name = {matches: () => false, contains: n => n === text || n === cites,
+  closest: selector => selector === '.original-text' ? name : null,
+  appendChild(n) { n.parentNode = name; }};
+text.parentElement = name;
+const cites = {parentNode: root, childNodes: [{}], closest: () => null, contains: () => false,
+  before(glue) { assert.equal(this.parentNode, name); }};
+let starts = 0, ends = 0;
+const document = {
+  createTreeWalker() { let done = false; return {currentNode: text, nextNode() { if (done) return false; done = true; return true; }}; },
+  createRange() { return {
+    setStart(node, index) { assert.equal(node, text); assert.equal(index, text.nodeValue.lastIndexOf('ministry')); starts++; },
+    setStartBefore() { assert.fail('The whole name must still wrap'); },
+    setEndBefore(node) { assert.equal(node, cites); assert.equal(node.parentNode, name); ends++; },
+    extractContents() { assert.equal(starts, 1); assert.equal(ends, 1); return {}; }
+  }; }
+};
+function el() { return {appendChild() {}}; }
+""" + helper + "\nglueCitations(root); assert.equal(starts, 1); assert.equal(ends, 1);"
+    subprocess.run(["node", "-"], input=script, text=True, capture_output=True, check=True)

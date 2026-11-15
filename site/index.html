@@ -47,12 +47,12 @@
  * Controls: buttons and fields are soft fills (--field-fill) without a drawn edge; a field shows focus on its own edge.
  * Region list: beside the map (below it and the map legend at 1100px and narrower, so the legend stays directly under the map (check_page check_legend_place), then at most --region-list wide, so a row's state and institute never drift apart), map and list tops aligned; an accordion whose open region (light tint, thin accent rule, turned chevron) lists its institutes with status marks (institute names right-aligned, like the counts above them), the others their heading, "established of all states" count and one line of names, both in ink; a divider between Europe and the other regions; the EU AI Office under Europe.
  * Record: a map, list or search pick opens the record beside the map (over the list on wide screens, which it hides while open, under the map on narrow ones) and focuses its heading, in view below the section bar, its values cited and qualified as on the card (status date: advisory recommendation, confidence), never more; "Full record ↓" goes to the card (Arrival), whose "↑ Back to map" returns to the same view with the record open; a state without a card links to its table row. Search uses the page's own suggestion list (floating surface, status mark and region per row, keyboard).
- * Naming: one display name per body everywhere (no status suffix; the country in brackets where two bodies share a name); tight places such as table cells use the recorded short form (data field short_name, never a bare generic acronym such as AISI) with the full name on hover; check_page check_institute_names. An institute has one display name and one short form everywhere; former names are marked as former ('then', 'former' or 'formerly', or 'now' with the current short form), source titles excepted (check_page check_former_names). The rule covers institutes; other bodies are named with their original beneath in the none-identified entries.
- * None-identified entries: three groups, Closest body, AI Act authorities and Other bodies; the closest body's text in body type, its stage only where it does not exist yet and never a reason it is not counted (Method says what qualifies); the AI Act authorities one line per body (name, roles in the summary's words from dataset.display.authority_roles, basis), single point of contact first, folded after three when two or more would be hidden; the English name first with the original muted beneath (a closing abbreviation said once, in the English name), other bodies' roles muted, citations inline (owner, 15 Nov 2026); migrated bodies' role claims are separate cited sentences, starting --sp-2 below the name; the closest body's lead stays in the finding, its group shows its other role claims (expired ones marked) or just its name and stage, and is omitted when it has no role claim and the finding already names and cites it (hub default); research notes in one muted How we checked block; on phones the name sits above a full-width summary; wording every entry shares lives in Method (check_page check_nonidentified_folds, check_nonidentified_style).
- * Claims: current facts, body-role sentences and developments, their citations and closed Quote disclosures are in the saved page; bound excerpts, anchors and source re-read lines are built from page.json only on open. Translated quotes keep the original on hover, focus and tap; running sentences show no translation marker or added cue, including the saved closest-body lead; only the Quote fold shows a muted marker straight after each full translated quote and anchor (owner, 15 Nov 2026).
+ * Naming: one display name per body everywhere (no status suffix; the country in brackets where two bodies share a name); tight places such as table cells use the recorded short form (data field short_name, never a bare generic acronym such as AISI) with the full name on hover; check_page check_institute_names. An institute has one display name and one short form everywhere; former names are marked as former ('then', 'former' or 'formerly', or 'now' with the current short form), source titles excepted (check_page check_former_names). Text with an English form shows that form, with the original available on hover, focus and tap through tipText (aria-description on a focusable element), without a second line, brackets or marker; otherwise the original shows as it is, with lang where known. This covers body names, source titles, Reports to (the producer supplies the original separately) and the Institute name (name_local when it differs); check_page check_source_alignment, check_nonidentified_folds, check_leadership_rows, check_institute_names. A related body's original omits a closing abbreviation repeated in English. A translated link's tap opens its tip with a link to the destination. Downloads keep both forms.
+ * None-identified entries: three groups, Closest body, AI Act authorities and Other bodies; the closest body's text in body type, its stage only where it does not exist yet and never a reason it is not counted (Method says what qualifies); the AI Act authorities one line per body (name, roles in the summary's words from dataset.display.authority_roles, basis), single point of contact first, folded after three when two or more would be hidden; other bodies' roles muted, citations inline (owner, 15 Nov 2026); migrated bodies' role claims are separate cited sentences, starting --sp-2 below the name; the closest body's lead stays in the finding, its group shows its other role claims (expired ones marked) or just its name and stage, and is omitted when it has no role claim and the finding already names and cites it (hub default); research notes in one muted How we checked block; on phones the name sits above a full-width summary; wording every entry shares lives in Method (check_page check_nonidentified_folds, check_nonidentified_style).
+ * Claims: current facts, body-role sentences and developments, their citations and closed Quote disclosures are in the saved page; bound excerpts, anchors and source re-read lines are built from page.json only on open. Translated quotes follow Naming, including the saved closest-body lead; only the Quote fold shows a muted marker straight after each full translated quote and anchor (owner, 15 Nov 2026).
  * Activity line: a muted qualifier after Status qualifiers or the closest body's name and stage; closest bodies with live activity claims and planned or proposed institutes with activity name their work, established institutes without published work say so, and all other cases and legacy records show none; words come from ACTIVITY_WORDS and the vocabulary's short.
  * Sources: entry source lists hold sources that support the entry; population and region sources (display.generic_sources) are named once in Method and stay in the downloads; check_page check_generic_sources.
- * Archived copies: wherever a source list or Method names a source that has an archive URL, "(archived copy)" follows its link (after our English translation of a non-English title, in square brackets) as a quiet link in muted ink with a muted underline, no arrow, never broken across lines; superscript citations never carry one (check_page check_archive_links).
+ * Archived copies: wherever a source list or Method names a source that has an archive URL, "(archived copy)" follows its link as a quiet link in muted ink with a muted underline, no arrow, never broken across lines; superscript citations never carry one (check_page check_archive_links).
  * Re-read line: every source list item whose source has a quotation with a re-read state ends with one line of its own in the list's muted ink, from its quotations' states (docs/design/claims-1.1.md section 4): "Source last re-read {date}." while none is missing; else the worst state (the earliest start, then offline before not found, then the earliest last found): "Not found in the source on {date}; last found {date}; under review." (with ": N of M quotes" after the first date when some quotations are still found), "Source offline since {date}; last found {date}.", "Source could not be re-read since {date}; last found {date}."; a quotation or claim shown on its own shows its own state, never its source's; the page never says "verified" (check_page check_reread_lines).
  * Sorting: every table column sorts values by meaning, then values without a comparable figure, research gaps, structural absence; gaps stay last in both directions; ties by state name.
  * Links: inline text uses a thin muted-accent underline and accent ink; standalone links use position, icon or colour, with hover/focus underline or ink change. State names in linked lists (Testing and access, Institutional set-up, Budget not published) take the accent link style; News and None identified names take the card title's type (check_page check_name_roles).
@@ -567,7 +567,7 @@ main section.first { display: flex; flex-direction: column; gap: var(--sp-5); bo
 .card.mini .body-group ul, .card.mini .how { display: flex; flex-direction: column; gap: var(--sp-2); margin: 0; padding: 0; list-style: none; }
 .card.mini .body-group li { display: flex; flex-direction: column; font: var(--type-body); }
 .card.mini .body-group li > .claim:not(.claim + .claim) { margin-top: var(--sp-2); }
-.card.mini .body-group .orig, .card.mini .body-group .det, .card.mini .how { font: var(--type-meta); color: var(--muted); }
+.card.mini .body-group .det, .card.mini .how { font: var(--type-meta); color: var(--muted); }
 .card.mini .body-group.closest .det { font: var(--type-body); color: var(--ink); } /* the closest body's text is read like the summary; other bodies' roles stay muted */
 .card.mini .body-roles { color: var(--muted); } /* an AI Act authority's roles and basis after its name, on its line */
 .card.mini .body-group > details.more { margin-top: calc(var(--gap-row) - var(--sp-1)); }
@@ -1039,7 +1039,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     var parents = new Set();
     [].forEach.call(root.querySelectorAll("abbr.g[data-gl]"), function (a) { parents.add(a.parentNode); a.replaceWith(document.createTextNode(a.textContent)); });
     parents.forEach(function (p) { p.normalize(); });
-    var walker =document.createTreeWalker(root, NodeFilter.SHOW_TEXT, { acceptNode: function (n) { return n.parentNode.closest("abbr, a, button, option, select, script, style, .conf, .quotation") ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT; } });
+    var walker =document.createTreeWalker(root, NodeFilter.SHOW_TEXT, { acceptNode: function (n) { return n.parentNode.closest("abbr, a, button, option, select, script, style, .conf, .quotation, .original-text") ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT; } });
     var nodes = []; while (walker.nextNode()) nodes.push(walker.currentNode);
     // Once per card or record panel (principle: Tooltip cues): a term is marked at its first use there, or not at all where that use spells it out. A folded card's summary row is its own view: its copy of the finding is hidden while the card is open.
     // Text nodes come in document order; a mark another function made (term(), no data-gl) counts only where it comes before the text.
@@ -1085,10 +1085,11 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       tip.addEventListener("mouseenter", function () { clearTimeout(tipTimer); });
       tip.addEventListener("mouseleave", function (e) { if (!(e.relatedTarget && tipFor && tipFor.contains(e.relatedTarget))) hideTipSoon(); }); }
     clearTimeout(tipTimer); tipFor = ab; tipY = window.scrollY; tip.textContent = tipText(ab); tip.hidden = false;
-    if (ab.dataset.tipSub) { // a source's host is a link to it, so a reader on touch, whose tap on the citation opened this tip, can follow it
-      var parts = ab.dataset.tipSub.split(" · "), sub = el("span", "tip-sub");
-      if ("tipExt" in ab.dataset && ab.href) { var go = el("a", "", parts.pop()); go.href = ab.href; go.target = "_blank"; go.rel = "noopener"; go.tabIndex = -1; parts.push(go); }
-      sub.appendChild(separated(parts)); if ("tipExt" in ab.dataset) bindArrow(sub); tip.appendChild(sub); }
+    var originalLink = ab.matches("a.original-text[href]");
+    if (ab.dataset.tipSub || originalLink) { // a citation or translated link's destination stays reachable from its touch tip
+      var parts = ab.dataset.tipSub ? ab.dataset.tipSub.split(" · ") : [hostOf(ab.href)], sub = el("span", "tip-sub"), external = "tipExt" in ab.dataset || originalLink;
+      if (external && ab.href) { var go = el("a", "", parts.pop()); go.href = ab.href; go.target = "_blank"; go.rel = "noopener"; go.tabIndex = -1; parts.push(go); }
+      sub.appendChild(separated(parts)); if (external) bindArrow(sub); tip.appendChild(sub); }
     tip.style.left = "0px"; tip.style.top = "0px"; // measure at full available width, not the previous position
     var r = tipAnchor(ab), w = tip.offsetWidth, h = tip.offsetHeight, vw = document.documentElement.clientWidth;
     var gap = 4, x = Math.max(16, Math.min(r.left + (r.width - w) / 2, vw - 16 - w)), y = r.bottom + gap + h > window.innerHeight ? Math.max(gap, r.top - gap - h) : r.bottom + gap;
@@ -1106,7 +1107,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   // A tip's text has one home: the description screen readers hear (aria-description), or data-tip where an element has none (an (i), a download, a status swatch, a map dot).
   function tipText(n) { return n.dataset.tip || n.getAttribute("aria-description") || ""; }
   // Touch: a tap fires emulated mouseover and moves focus (which comes back with the tab after a link opened another one), so neither opens a tip after a touch.
-  // There a tip opens only from the tap itself, and only on a term or mark: a control (link, button, map dot) does its own job, except a citation, whose tap opens the tip naming its source with a link to it.
+  // There a tip opens only from the tap itself: controls keep their action, except citations and translated links, whose tips include a link to the destination.
   // Hover, keyboard focus and a mouse click behave as before; the last pointer (a mouse as soon as it moves) or key decides which input is in use.
   var touchInput = false, CONTROL = "a[href], button, summary, input, select, textarea, .tgt";
   document.addEventListener("pointerdown", function (e) { touchInput = e.pointerType === "touch"; }, { capture: true });
@@ -1118,7 +1119,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   document.addEventListener("click", function (e) {
     if (tip && e.target instanceof Node && tip.contains(e.target)) { if (touchInput || e.target.closest("a")) hideTip(); return; } // a link in the tip opens (in a new tab) and the tip goes; on touch a tap on its text closes it
     var ab = e.target.closest && e.target.closest(TIPSEL); if (!ab) return;
-    if (touchInput && ab.matches("a.cn")) { e.preventDefault(); showTip(ab); }
+    if (touchInput && ab.matches("a.cn, a.original-text[href]")) { e.preventDefault(); showTip(ab); }
     else if (touchInput ? !ab.closest(CONTROL) || ab.matches(".info") : !ab.closest("a")) showTip(ab); // on touch a tap on an (i) opens its note; other controls keep their own action
   });
   // Instant tooltips: move every non-empty native title attribute (slow browser delay, and it stacks on the page's own tooltip) to the description, which is also the tip; data-tip only where there is no description (inside an image) or it says something else.
@@ -1226,11 +1227,16 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     institutes.forEach(function (i) { var k = base(i).toLowerCase(); uses[k] = (uses[k] || 0) + 1; });
     institutes.forEach(function (i) { DISPLAY_NAME[i.id] = base(i) + (uses[base(i).toLowerCase()] > 1 ? " (" + J[i.jurisdiction_id].name + ")" : ""); });
   }
+  // One markerless route for names and titles with an original (principle: Naming).
+  function withOriginal(node, original) {
+    if (original) { node.classList.add("original-text"); node.setAttribute("aria-description", original); if (node.tagName !== "A") node.tabIndex = 0; }
+    return node;
+  }
   // Institute name, linked to its official website when it has one.
   function instName(inst) {
-    var label = DISPLAY_NAME[inst.id];
-    if (!inst.website) return document.createTextNode(label);
-    var a = el("a", "standalone", label); a.href = inst.website; a.rel = "noopener"; return a; // no tooltip: the arrow and the new-tab text say it is the official site (owner, 4 Nov 2026)
+    var label = DISPLAY_NAME[inst.id], original = inst.name_local !== label ? inst.name_local : null;
+    if (!inst.website) return original ? withOriginal(el("span", null, label), original) : document.createTextNode(label);
+    var a = el("a", "standalone", label); a.href = inst.website; a.rel = "noopener"; return withOriginal(a, original);
   }
   function instShort(inst, linked) {
     // The hover names what the short form does not already say: the display name, else the local name, else nothing (no dotted mark).
@@ -1258,7 +1264,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   // The network's member list is complete (dataset.vocabularies.membership_body): no entry is a known value, not a research gap.
   var NOT_MEMBER_TIP = "Not a member of the International Network for Advanced AI Measurement, Evaluation and Science, whose member list is complete.";
   function notMember() { var value = el("span", "nonmember", "Not a member"); value.title = NOT_MEMBER_TIP; value.tabIndex = 0; return value; }
-  function rowValue(r) { return r.state === "stated" && r.text ? r.text : missing(r.state === "not_applicable"); }
+  function rowValue(r) { return r.state === "stated" && r.text ? (r.original ? withOriginal(el("span", null, r.text), r.original) : r.text) : missing(r.state === "not_applicable"); }
   function partnersValue(p) {
     if (p.state !== "stated" || !p.items.length) return missing(p.state === "not_applicable");
     var parts = p.items.map(function (item) { return item.text; }); // strings: each item is one box, so a line wraps between items; a single item wider than the line wraps inside
@@ -1437,8 +1443,9 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     var ol = el("ol");
     order.forEach(function (id) {
       var src = S[id], li = el("li"); li.dataset.sourceId = id;
-      var a = el("a", "standalone", src.title); a.href = src.url; li.appendChild(a);
-      if (src.title_en) { var en = el("span", "title-en", " [" + src.title_en + "]"); en.lang = "en"; li.appendChild(en); a.lang = src.language || ""; if (!a.lang) a.removeAttribute("lang"); } // our English translation beside the original title (dataset.method source titles)
+      var a = el("a", "standalone", src.title_en || src.title); a.href = src.url; li.appendChild(a);
+      if (src.title_en) withOriginal(a, src.title);
+      else if (src.language) a.lang = src.language;
       archiveCopy(li, src);
       li.appendChild(document.createTextNode(", " + src.publisher + (src.published ? ", " : "")));
       if (src.published) li.appendChild(dated(src.published));
@@ -1613,6 +1620,9 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       // A marker after a separated item moves into it, so the glue never splits the item into two boxes.
       var item = text.parentElement.closest(".meta-item");
       if (item && item !== parent && parent.contains(item)) { item.appendChild(cites); parent = item; }
+      // Keep one focusable name when binding its citation to the last word; extracting across the name would clone its tooltip onto two fragments.
+      var original = text.parentElement.closest(".original-text");
+      if (original && original !== parent && parent.contains(original) && !original.matches("a")) { original.appendChild(cites); parent = original; }
       var host = text.parentElement;
       if (host !== parent && parent.contains(host) && !host.closest("a, abbr") && getComputedStyle(host).fontSize !== getComputedStyle(parent).fontSize) { host.appendChild(cites); parent = host; }
       var range = document.createRange(), atomic = text.parentElement.closest("abbr, a, strong, .missing, .smark, .date-text, .per-person");
@@ -1664,14 +1674,13 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   var BASIS_NAME = { law: "law", decree: "decree", government_decision: "government decision", cabinet_decision: "cabinet decision", ministerial_act: "ministerial act", administrative: "administrative act" };
   var STAGE_LINE = { planned: "Planned.", proposed: "Proposed.", under_study: "Under study." }; // an existing body has no stage line, and no body a reason (owner, 15 Nov 2026)
   var AI_ACT_SHOWN = 3; // more AI Act bodies than this fold behind "N more AI Act bodies" (owner, 15 Nov 2026)
-  // The original name beneath the English one, without a closing abbreviation the English name already ends with: "Agenzia per la cybersicurezza nazionale" under "National Cybersecurity Agency (ACN)".
+  // The original name's tooltip omits a closing abbreviation the English name already ends with.
   function originalName(b) { if (!b.name_en) return ""; var m = /\s*(\([^()]+\))$/.exec(b.name); return m && b.name_en.slice(-m[1].length) === m[1] ? b.name.slice(0, m.index) : b.name; }
-  // A body: its name (with what follows it on the same line, such as its AI Act roles), the original name muted beneath, then its role text.
+  // A body: its name with the original as its tooltip (principle: Naming), followed by roles outside the tooltip.
   function bodyItem(name, original, details, ids, cite, after) {
-    var li = el("li"), line = el("span", "body-name", name); li.appendChild(line);
+    var li = el("li"), line = el("span", "body-name"), text = withOriginal(el("span", null, name), original); line.appendChild(text); li.appendChild(line);
     var roles = after ? el("span", "body-roles", ": " + after) : null;
     if (roles) line.appendChild(roles);
-    if (original) li.appendChild(el("span", "orig", original));
     details.filter(Boolean).forEach(function (text, n, all) { var d = el("span", "det", text); li.appendChild(d); if (n === all.length - 1) d.appendChild(cite(ids)); });
     if (!details.filter(Boolean).length) (roles || line).appendChild(cite(ids));
     return li;

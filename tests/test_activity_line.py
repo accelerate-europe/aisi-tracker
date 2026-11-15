@@ -60,6 +60,7 @@ def render_cards(data):
     source = (ROOT / "site/index.html").read_text()
     words = source[source.index("  var ACTIVITY_WORDS ="):source.index("  // Status definitions, short:")]
     helpers = source[source.index("  function qualified("):source.index("  // A None identified state's finding")]
+    helpers += source[source.index("  function withOriginal("):source.index("  // Institute name, linked to its official website")]
     join = next(line for line in source.splitlines() if line.startswith("  function andJoin("))
     bodies = source[source.index("  var ROLE_ORDER ="):source.index("  // Research notes in one muted block.")]
     status = source[source.index("      var statusValue;"):source.index("      var form =", source.index("      var statusValue;"))]
