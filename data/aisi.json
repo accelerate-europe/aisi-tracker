@@ -6539,11 +6539,9 @@
       "id": "SK",
       "name": "Slovakia",
       "institute_id": null,
-      "summary": "No qualifying institute identified. AI CyberLab has an approved national project intent for model testing, cybersecurity and safe deployment in public administration.",
       "related_bodies": [
         {
           "name": "AI CyberLab",
-          "role": "It is a national laboratory project under MIRRI for AI cybersecurity in public administration. Its project includes adversarial testing and threats from generative models, alongside validating public bodies' applications before deployment. The stated functions concern cyber and deployment assurance, without a separate qualifying capability or behaviour-risk assignment.",
           "counts_as_aisi": false,
           "source_ids": [
             "sk-oecd-cyberlab-primary-proposal",
@@ -6557,7 +6555,6 @@
         {
           "name": "Ministerstvo investícií, regionálneho rozvoja a informatizácie Slovenskej republiky (MIRRI SR)",
           "name_en": "Ministry of Investment, Regional Development and Informatics of the Slovak Republic",
-          "role": "It would cover general supervision under § 6 of government bill 1447, submitted in 2026; the retrieved text is expressly a government bill, not promulgated law. The Commission's contact list of 9 November 2026 shows it without the pending-adoption mark; a list entry is not a designation, and the retrieved text is still a government bill.",
           "counts_as_aisi": false,
           "source_ids": [
             "sk-ai-governance-government-bill-2026",
@@ -6575,7 +6572,6 @@
         {
           "name": "Úrad pre normalizáciu, metrológiu a skúšobníctvo Slovenskej republiky",
           "name_en": "Office for Standardisation, Metrology and Testing of the Slovak Republic",
-          "role": "Its AI Act designation is proposed in § 2(1)(c) of government bill 1447. This replaces the data-protection-office notifier proposed in older drafts.",
           "counts_as_aisi": false,
           "source_ids": [
             "sk-ai-governance-government-bill-2026",
@@ -6588,16 +6584,6 @@
           "designation_basis": "none_yet",
           "kind": "ai_act_authority",
           "id": "related_bodies-df4ae7e268805b7390d577eef564c628"
-        },
-        {
-          "name": "AI Security Lab (SIMULAB, national project call)",
-          "role": "The Ministry of Education's national project call envisages an applied-research workplace developing and testing AI applications for public safety, including practical tools and crisis-management simulation. Despite the AI Security Lab title, its stated remit concerns AI applications for public security rather than evaluation of AI models themselves.",
-          "counts_as_aisi": false,
-          "kind": "other",
-          "source_ids": [
-            "sk-r6-simulab-call"
-          ],
-          "id": "related_bodies-e8028b2e3cf550ad8099a81feeb06890"
         }
       ],
       "next_check": {
@@ -6721,7 +6707,13 @@
           "sk-r6-cyberlab-call",
           "sk-r6-cyberlab-project-approval"
         ],
-        "governance_note": "The ministry proposal, official call and project approval establish a national public-administration cybersecurity project. Its platform and model testing serves cyber protection and safe deployment; no separate qualifying capability or behaviour-risk assignment was identified. Delivery remains unverified."
+        "governance_note": "The ministry proposal, official call and project approval establish a national public-administration cybersecurity project. Its platform and model testing serves cyber protection and safe deployment; no separate qualifying capability or behaviour-risk assignment was identified. Delivery remains unverified.",
+        "log": [
+          {
+            "date": "2026-10-17",
+            "text": "The AI CyberLab project plan, the minutes of the commission's meeting of 1 April 2026, the AI CyberLab and SIMULAB calls and government bill 1447 were read. Searched in English and Slovak for a body the government has tasked with testing general-purpose or frontier AI models, or named as its AI safety or security institute."
+          }
+        ]
       },
       "source_ids": [
         "sk-ai-cyberlab-zamer",
@@ -6734,7 +6726,6 @@
         "sk-r6-simulab-call",
         "sk-r6-cyberlab-project-approval"
       ],
-      "notes": "AI CyberLab's project intent expressly covers threats from generative models and adversarial attacks. It describes public bodies testing their own applications before deployment and CSIRT developing tools for threat detection and incident response. The adversarial testing and generative-model threat assessments are substantive model-security activities, but the retrieved text does not establish the remit required here to evaluate advanced models. The official call was issued on 14 August 2026 and closed on 14 October 2026; no award or revised mandate was found in a bounded search. A separate Ministry of Education AI Security Lab (SIMULAB) call concerns applied AI tools for public safety and crisis management. Its stated remit is applied research and testing of AI applications for public safety, so the AI Security Lab title is not treated as a designation to evaluate AI models. AI Act authority records were not fully rechecked. An earlier review recorded that the AI supervision bill (resolution 349/2026) was not intended to create a new central authority; that allocation was not rechecked. The Programme Slovakia monitoring committee's commission for objective 1 approved the CyberLab project intent on 1 April 2026 through resolution 8/2026. Its minutes describe CSIRT testing models and a platform for safe implementation; the stated purpose is safe implementation, without a separate qualifying capability or behaviour-risk assignment. Enactment of government bill 1447 was not verified.",
       "region": {
         "id": "150",
         "name": "Europe",
@@ -6766,12 +6757,13 @@
         "name": "AI CyberLab",
         "stage": "planned",
         "gap": "remit",
-        "note": "The approved national project intent includes platform and model testing. The project describes threats from generative models, adversarial resilience and testing public-administration applications before deployment. This supports cyber and deployment assurance; no separate qualifying capability or behaviour-risk assignment was identified. Delivery of the lab remains unverified.",
         "source_ids": [
           "sk-r6-cyberlab-project-approval",
           "sk-ai-cyberlab-zamer"
-        ]
-      }
+        ],
+        "body_id": "related_bodies-79e93e398efc50d3aa6d1d88ae3e6308"
+      },
+      "claims": []
     },
     {
       "id": "HU",
@@ -7853,11 +7845,9 @@
       "id": "CY",
       "name": "Cyprus",
       "institute_id": null,
-      "summary": "No qualifying institute identified. The Council of Ministers approved a national AI strategy on 10 November 2026; its consultation draft proposed a certification lab for foundation models, alongside cybersecurity bodies and a council advising on model risks.",
       "related_bodies": [
         {
           "name": "Commissioner of Electronic Communications",
-          "role": "The Council of Ministers selected the Commissioner on 22 January 2025.",
           "counts_as_aisi": false,
           "source_ids": [
             "cy-commissioner-ai-authorities",
@@ -7877,29 +7867,7 @@
           "id": "related_bodies-44979f109a605db6a0580c59b50e66e1"
         },
         {
-          "name": "National AI Authority",
-          "role": "Proposed in the strategy's consultation draft of July 2026; the government's statement on the approved strategy does not name it. The draft strategy would give it national AI coordination and compliance responsibilities, without a qualifying model-evaluation assignment.",
-          "counts_as_aisi": false,
-          "source_ids": [
-            "cy-mail-prosandcons",
-            "cy-r4-draft-ai-strategy-2032"
-          ],
-          "kind": "other",
-          "id": "related_bodies-7584a6499a0054a29df3f7db8e950cd7"
-        },
-        {
-          "name": "National AI Taskforce",
-          "role": "It is a cabinet-appointed group chaired by the Chief Scientist that drafted the strategy.",
-          "counts_as_aisi": false,
-          "kind": "other",
-          "source_ids": [
-            "cy-r6-presidency-strategy-consultation"
-          ],
-          "id": "related_bodies-de5bfa78102150f58957abe2a541c008"
-        },
-        {
           "name": "Commissioner for Personal Data Protection",
-          "role": "The Commissioner covers high-risk systems in Annex III points 1, 6, 7 and 8, and prohibited practices under Article 5 within the Commissioner's competence, following designation by the Council of Ministers on 22 January 2025.",
           "counts_as_aisi": false,
           "source_ids": [
             "cy-dmrid-authority-designation-2025",
@@ -7915,43 +7883,12 @@
         },
         {
           "name": "European AI Certification Lab",
-          "role": "Proposed in the strategy's consultation draft of July 2026; the government's statement on the approved strategy does not name it. It would provide a sandbox for pre-certification of high-risk and foundation models, building equivalence with international frameworks. Conformity assessment alone does not meet the qualifying-body test.",
           "counts_as_aisi": false,
           "kind": "other",
           "source_ids": [
             "cy-r4-draft-ai-strategy-2032"
           ],
           "id": "related_bodies-22ce43cad11a5215b57cf4f76c7cd5bc"
-        },
-        {
-          "name": "Cyprus AI Security & Certification Authority",
-          "role": "Proposed in the strategy's consultation draft of July 2026; the government's statement on the approved strategy does not name it. It would provide an annual audit complementing documented conformity assessments under the draft strategy. Conformity assessment alone does not meet the qualifying-body test.",
-          "counts_as_aisi": false,
-          "kind": "other",
-          "source_ids": [
-            "cy-r4-draft-ai-strategy-2032"
-          ],
-          "id": "related_bodies-77789cf4c2b25457bcc4cb32dc0d05e9"
-        },
-        {
-          "name": "National AI Cybersecurity Centre of Excellence",
-          "role": "Proposed in the strategy's consultation draft of July 2026; the government's statement on the approved strategy does not name it. It would support frontier security research and the development of practical security standards and guidance, and protect critical infrastructure. These protection functions do not by themselves establish a qualifying model-evaluation assignment.",
-          "counts_as_aisi": false,
-          "kind": "other",
-          "source_ids": [
-            "cy-r4-draft-ai-strategy-2032"
-          ],
-          "id": "related_bodies-8fb08f7e916d508c93f1a1d71ac4de1e"
-        },
-        {
-          "name": "National AI Misinformation and Security Council",
-          "role": "Proposed in the strategy's consultation draft of July 2026; the government's statement on the approved strategy does not name it. It would assess the system risk of AI models and advise regulating and policy-making authorities, submitting recommendations to the National AI Taskforce. The text does not specify general-purpose, foundation or frontier models as the object of evaluation; a more specific technical remit remains to be checked.",
-          "counts_as_aisi": false,
-          "kind": "other",
-          "source_ids": [
-            "cy-r4-draft-ai-strategy-2032"
-          ],
-          "id": "related_bodies-41db19d41cc45fc9b6919ceed4dc10a3"
         }
       ],
       "next_check": {
@@ -8095,7 +8032,17 @@
           "cy-r4-ai-strategy-consultation",
           "cy-r6-presidency-strategy-consultation"
         ],
-        "governance_note": "Retrieved government consultation material describes coordination, conformity and cyber-defence arrangements. The model-risk policy council would advise policymakers, without specifying general-purpose, foundation or frontier models as the object of evaluation. These texts do not establish a qualifying body; a more specific technical remit could change the finding."
+        "governance_note": "Retrieved government consultation material describes coordination, conformity and cyber-defence arrangements. The model-risk policy council would advise policymakers, without specifying general-purpose, foundation or frontier models as the object of evaluation. These texts do not establish a qualifying body; a more specific technical remit could change the finding.",
+        "log": [
+          {
+            "date": "2026-10-17",
+            "text": "The consultation draft of the national AI strategy, the government's consultation notices of July 2026 and the deputy ministry's notice on AI Act authorities were read. Searched in English and Greek for a body the government has tasked with testing general-purpose or frontier AI models, or named as its AI safety or security institute."
+          },
+          {
+            "date": "2026-11-11",
+            "text": "The deputy minister's statement of 10 November 2026 on the national AI strategy was read."
+          }
+        ]
       },
       "source_ids": [
         "cy-ccci-circular-primary-proposal",
@@ -8112,7 +8059,6 @@
         "fr-elysee-paris-call-2026",
         "cy-strategy-adopted-2026"
       ],
-      "notes": "Greek government consultation notices and the English draft strategy were reviewed. The European AI Certification Lab would pre-certify high-risk and foundation models; the draft assigns an annual audit complementing documented conformity assessments to a Cyprus AI Security & Certification Authority. The National AI Cybersecurity Centre of Excellence concerns security research and protection of government and infrastructure. The National AI Misinformation and Security Council would assess model risks and advise policymakers. The council would submit recommendations to the National AI Taskforce. Its text does not specify general-purpose, foundation or frontier models as the object of evaluation; model-risk advice alone does not establish the qualifying remit. A more specific technical remit could change that assessment. Consultation closed on 31 August 2026. On 10 November 2026 the Council of Ministers approved the new National Strategy for Artificial Intelligence; the deputy minister's statement on its approval does not name the certification lab, the certification authority or the misinformation and security council, so they are recorded as the draft describes them. No qualifying designation was identified.\n\nThe Commission's contact list of 9 November 2026 marks this state's AI Act authority as pending final adoption; the national sources cited here give its actual designation status.\n\nThe separately cited Cyprus Mail account mentions national testing environments. The retrieved draft describes sector sandboxes and pre-certification; these do not by themselves establish the qualifying mandate. The official introduction to the AI Act implementation bill consultation, posted on 16 August 2026, describes market supervision, competent authorities and a regulatory sandbox. It is a draft, not evidence that the strategy bodies have been established.\n\nOn 9 November 2026 Cyprus was among the states that signed the Paris Call for AI Safety and Security, in which signatories commit to a common framework for the evaluation and risk management of frontier models.",
       "region": {
         "id": "142",
         "name": "Asia",
@@ -8140,17 +8086,30 @@
         "un-m49",
         "wikidata-jurisdiction-identifiers"
       ],
-      "identifier_notes": "Country item Q229 selected; island item Q644636 excluded. Both carry an ISO2 claim, but the island has no ISO3/M49 in the retrieved query.",
+      "identifier_notes": "Country item Q229 selected; island item Q644636 excluded. Both carry an ISO2 claim.",
       "closest_body": {
         "name": "European AI Certification Lab",
         "stage": "proposed",
         "gap": "remit",
-        "note": "The draft strategy in public consultation proposes a lab and sandbox for pre-certification of high-risk and foundation models. This is an explicit model-testing proposal, but its conformity remit does not qualify.",
         "source_ids": [
           "cy-r4-draft-ai-strategy-2032",
           "cy-r4-ai-strategy-consultation"
-        ]
-      }
+        ],
+        "body_id": "related_bodies-22ce43cad11a5215b57cf4f76c7cd5bc"
+      },
+      "claims": [
+        {
+          "id": "claims-35ffb93629ad4c24bcd57f914ce741d9",
+          "kind": "function",
+          "code": "regulatory_enforcement",
+          "basis": "mandate",
+          "body_id": "related_bodies-1c98c0ca4a4a5b12838d9260989c588b",
+          "text": "The deputy ministry says it has been designated market-surveillance authority for high-risk AI systems in points 1, 6, 7 and 8 of Annex III of the AI Act.",
+          "source_ids": [
+            "cy-dmrid-authority-designation-2025"
+          ]
+        }
+      ]
     },
     {
       "id": "MT",
@@ -54703,116 +54662,6 @@
       "archive_url": "https://web.archive.org/web/20261017011409if_/https://eurofondy.gov.sk/wp-content/uploads/2026/04/Zamer_NP_AI_CyberLab.pdf",
       "excerpts": [
         {
-          "text": "testovať a overovať vlastné aplikácie pred ich nasadením v prostredí verejnej správy.",
-          "gloss": "Test and verify their own applications before deployment in public administration.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "SK"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "SK"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-79e93e398efc50d3aa6d1d88ae3e6308"
-              },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "SK"
-              },
-              "closest_body",
-              "note"
-            ]
-          ]
-        },
-        {
-          "text": "odolnosti AI systémov voči adversariálnym útokom",
-          "gloss": "Resilience of AI systems against adversarial attacks.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "SK"
-              },
-              "summary"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "SK"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "SK"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-79e93e398efc50d3aa6d1d88ae3e6308"
-              },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "SK"
-              },
-              "closest_body",
-              "note"
-            ]
-          ]
-        },
-        {
-          "text": "vyhodnocovanie hrozieb spojených s generatívnymi modelmi",
-          "gloss": "Assessment of threats associated with generative models.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "SK"
-              },
-              "summary"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "SK"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "SK"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-79e93e398efc50d3aa6d1d88ae3e6308"
-              },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "SK"
-              },
-              "closest_body",
-              "note"
-            ]
-          ]
-        },
-        {
           "text": "AI CyberLab",
           "supports": [
             [
@@ -54840,25 +54689,7 @@
       "accessed": "2026-10-17",
       "language": "en",
       "archive_url": "https://web.archive.org/web/20261017011528/https://oecd.ai/en/incidents/2026-02-20-4c28",
-      "excerpts": [
-        {
-          "text": "is planning a National AI Cybersecurity Laboratory (AI CyberLab) to develop, test, and validate AI solutions for protecting critical infrastructure.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "SK"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-79e93e398efc50d3aa6d1d88ae3e6308"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-10-17"
-        }
-      ],
+      "excerpts": [],
       "origin": "OECD",
       "snapshot": {
         "retrieved": "2026-10-17T14:21:29Z",
@@ -55146,25 +54977,7 @@
       "accessed": "2026-10-17",
       "language": "en",
       "archive_url": "https://web.archive.org/web/20261017012830/https://cyprus-mail.com/2026/08/07/pros-and-cons-of-cyprus-national-ai-strategy",
-      "excerpts": [
-        {
-          "text": "The National AI Authority may promote adoption, operate shared platforms and oversee compliance.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "CY"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-7584a6499a0054a29df3f7db8e950cd7"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-10-17"
-        }
-      ],
+      "excerpts": [],
       "origin": "CY",
       "snapshot": {
         "retrieved": "2026-10-17T14:21:33Z",
@@ -66146,44 +65959,7 @@
       "archive_url": "https://web.archive.org/web/20260610054538/https://mirri.gov.sk/aktuality/csirt/oznamenie-o-verejnom-pripomienkovani-projektovej-dokumentacie-k-pripravovanemu-narodnemu-projektu-narodne-laboratorium-umelej-inteligencie-pre-kyberneticku-bezpecnost-ai-cyberlab/",
       "published": "2026-02-19",
       "origin": "SK",
-      "excerpts": [
-        {
-          "text": "vývoj, testovanie a validáciu pokročilých technológií",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "SK"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-79e93e398efc50d3aa6d1d88ae3e6308"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-10-17",
-          "gloss": "Development, testing and validation of advanced technologies."
-        },
-        {
-          "text": "vývoj, testovanie a validáciu pokročilých technológií, ktoré zvýšia bezpečnosť IT infraštruktúry, odolnosť voči kybernetickým hrozbám a umožnia efektívne hodnotenie bezpečnostných rizík vyplývajúcich zo samotného použitia AI.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "SK"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-79e93e398efc50d3aa6d1d88ae3e6308"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-10-17",
-          "gloss": "Development, testing and validation of advanced technologies that will increase IT infrastructure security and resilience to cyber threats and enable effective assessment of security risks arising from the use of AI itself."
-        }
-      ],
+      "excerpts": [],
       "snapshot": {
         "retrieved": "2026-10-17T14:08:04.647662+00:00",
         "sha256": "81554e9198772c04c8fdf8e0922850e84409b530141ffbde7f98c16835a4ec57",
@@ -77227,19 +77003,6 @@
       "language": "en",
       "excerpts": [
         {
-          "text": "the national designation decision is still pending final adoption.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "CY"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-11-10"
-        },
-        {
           "text": "Netherlands *Rijksinspectie Digitale Infrastructuur",
           "supports": [
             [
@@ -77621,30 +77384,6 @@
           "accessed": "2026-11-10"
         },
         {
-          "text": "Last update 9 November 2026",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "CY"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "SK"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-a6e07da58c8353baadda29f2efea1372"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-11-10"
-        },
-        {
           "text": "Hungary Tudományos és Technológiai Minisztérium",
           "accessed": "2026-11-10",
           "gloss": "Hungary Ministry of Science and Technology",
@@ -77670,24 +77409,6 @@
                 "id": "related_bodies-465a88301b9f5fde85c9eac8d8f4c129"
               },
               "designation_state"
-            ]
-          ]
-        },
-        {
-          "text": "Slovakia Ministerstvo investícií, regionálneho rozvoja a informatizácie Slovenskej republiky (MIRRI)",
-          "accessed": "2026-11-10",
-          "gloss": "Slovakia Ministry of Investment, Regional Development and Informatics of the Slovak Republic (MIRRI)",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "SK"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-a6e07da58c8353baadda29f2efea1372"
-              },
-              "role"
             ]
           ]
         },
@@ -79491,24 +79212,7 @@
       "type": "primary",
       "accessed": "2026-10-17",
       "language": "en",
-      "excerpts": [
-        {
-          "text": "designated Notifying Authority and Market Surveillance Authority",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "CY"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-44979f109a605db6a0580c59b50e66e1"
-              },
-              "role"
-            ]
-          ]
-        }
-      ],
+      "excerpts": [],
       "origin": "CY",
       "snapshot": {
         "retrieved": "2026-10-17T14:26:25Z",
@@ -79857,23 +79561,6 @@
       "accessed": "2026-10-17",
       "language": "sk",
       "excerpts": [
-        {
-          "text": "Ministerstvo investícií je všeobecným orgánom dohľadu nad trhom",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "SK"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-a6e07da58c8353baadda29f2efea1372"
-              },
-              "role"
-            ]
-          ],
-          "gloss": "The Ministry of Investments is the general market-surveillance authority."
-        },
         {
           "text": "1447 VLÁDNY NÁVRH",
           "gloss": "1447 government bill",
@@ -84370,17 +84057,6 @@
                 "id": "related_bodies-44979f109a605db6a0580c59b50e66e1"
               },
               "designation_basis"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "CY"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-44979f109a605db6a0580c59b50e66e1"
-              },
-              "role"
             ]
           ],
           "accessed": "2026-10-17"
@@ -84533,17 +84209,6 @@
               {
                 "id": "related_bodies-44979f109a605db6a0580c59b50e66e1"
               },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "CY"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-44979f109a605db6a0580c59b50e66e1"
-              },
               "designation_state"
             ],
             [
@@ -84556,17 +84221,6 @@
                 "id": "related_bodies-44979f109a605db6a0580c59b50e66e1"
               },
               "designation_basis"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "CY"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-1c98c0ca4a4a5b12838d9260989c588b"
-              },
-              "role"
             ],
             [
               "jurisdictions",
@@ -84616,17 +84270,6 @@
               {
                 "id": "related_bodies-44979f109a605db6a0580c59b50e66e1"
               },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "CY"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-44979f109a605db6a0580c59b50e66e1"
-              },
               "designation_state"
             ]
           ],
@@ -84635,17 +84278,6 @@
         {
           "text": "Notifying Authority\n* Market Surveillance Authority (MSA)\n* Single Point of Contact for the application of the Regulation in Cyprus",
           "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "CY"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-44979f109a605db6a0580c59b50e66e1"
-              },
-              "role"
-            ],
             [
               "jurisdictions",
               {
@@ -84683,17 +84315,6 @@
               {
                 "id": "related_bodies-1c98c0ca4a4a5b12838d9260989c588b"
               },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "CY"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-1c98c0ca4a4a5b12838d9260989c588b"
-              },
               "designation_state"
             ]
           ],
@@ -84711,38 +84332,27 @@
               {
                 "id": "related_bodies-1c98c0ca4a4a5b12838d9260989c588b"
               },
-              "role"
+              "authority_roles"
             ],
             [
               "jurisdictions",
               {
                 "id": "CY"
               },
-              "related_bodies",
+              "claims",
               {
-                "id": "related_bodies-1c98c0ca4a4a5b12838d9260989c588b"
+                "id": "claims-35ffb93629ad4c24bcd57f914ce741d9"
               },
-              "authority_roles"
+              "text"
             ]
           ],
-          "accessed": "2026-10-17"
-        },
-        {
-          "text": "Additionally responsible for the enforcement of prohibited AI practices under Article 5, insofar as they fall within her domain of competence.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "CY"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-1c98c0ca4a4a5b12838d9260989c588b"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-10-17"
+          "accessed": "2026-10-17",
+          "anchors": [
+            {
+              "text": "The Commissioner for Personal Data Protection has been designated as:",
+              "kind": "heading"
+            }
+          ]
         }
       ],
       "origin": "CY",
@@ -91147,46 +90757,6 @@
       },
       "excerpts": [
         {
-          "text": "A sandbox for pre-certification of high-risk and foundation models",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "CY"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-22ce43cad11a5215b57cf4f76c7cd5bc"
-              },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "CY"
-              },
-              "closest_body",
-              "note"
-            ]
-          ]
-        },
-        {
-          "text": "It shall assess the system risk of AI models",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "CY"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-41db19d41cc45fc9b6919ceed4dc10a3"
-              },
-              "role"
-            ]
-          ]
-        },
-        {
           "text": "European AI Certification Lab",
           "supports": [
             [
@@ -91199,34 +90769,6 @@
             ]
           ],
           "accessed": "2026-10-18"
-        },
-        {
-          "text": "National AI Authority: Acts as the policy-setting, execution engine and governance gatekeeper with clear mandate and resources.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "CY"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-7584a6499a0054a29df3f7db8e950cd7"
-              },
-              "name"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "CY"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-7584a6499a0054a29df3f7db8e950cd7"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-11-14"
         },
         {
           "text": "European AI Certification Lab: A sandbox for pre-certification of high-risk and foundation models",
@@ -91247,163 +90789,8 @@
               {
                 "id": "CY"
               },
-              "related_bodies",
-              {
-                "id": "related_bodies-22ce43cad11a5215b57cf4f76c7cd5bc"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-11-14"
-        },
-        {
-          "text": "complemented by an annual audit by the Cyprus AI Security & Certification Authority",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "CY"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-77789cf4c2b25457bcc4cb32dc0d05e9"
-              },
-              "name"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "CY"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-77789cf4c2b25457bcc4cb32dc0d05e9"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-11-14"
-        },
-        {
-          "text": "National AI Cybersecurity Centre of Excellence",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "CY"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-8fb08f7e916d508c93f1a1d71ac4de1e"
-              },
-              "name"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "CY"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-8fb08f7e916d508c93f1a1d71ac4de1e"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-11-14"
-        },
-        {
-          "text": "National AI Misinformation and Security Council",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "CY"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-41db19d41cc45fc9b6919ceed4dc10a3"
-              },
-              "name"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "CY"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-41db19d41cc45fc9b6919ceed4dc10a3"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-11-14"
-        },
-        {
-          "text": "The Centre will support frontier security research, the development of practical security standards and guidance",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "CY"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-8fb08f7e916d508c93f1a1d71ac4de1e"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-11-14"
-        },
-        {
-          "text": "National AI Cybersecurity Centre of Excellence: Protects critical infrastructure in partnership with leading global players",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "CY"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-8fb08f7e916d508c93f1a1d71ac4de1e"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-11-14"
-        },
-        {
-          "text": "It shall assess the system risk of AI models and provide insight, guidelines, and policy recommendations to the regulating and policy-making authorities",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "CY"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-41db19d41cc45fc9b6919ceed4dc10a3"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-11-14"
-        },
-        {
-          "text": "posture on AI security and misinformation. All recommendations and guidelines are submitted to the National AI Taskforce.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "CY"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-41db19d41cc45fc9b6919ceed4dc10a3"
-              },
-              "role"
+              "closest_body",
+              "gap"
             ]
           ],
           "accessed": "2026-11-14"
@@ -94059,25 +93446,7 @@
       "accessed": "2026-10-17",
       "language": "el",
       "origin": "CY",
-      "excerpts": [
-        {
-          "text": "η οποία συστάθηκε με απόφαση του Υπουργικού Συμβουλίου",
-          "gloss": "which was established by a decision of the Council of Ministers",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "CY"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-de5bfa78102150f58957abe2a541c008"
-              },
-              "role"
-            ]
-          ]
-        }
-      ],
+      "excerpts": [],
       "snapshot": {
         "retrieved": "2026-10-19T00:11:40Z",
         "sha256": "a6c93dd4eebfec38a2515ce0972854e201c0e0636e856d90a64507801d3ac222",
@@ -94777,34 +94146,7 @@
       "accessed": "2026-10-17",
       "language": "sk",
       "origin": "SK",
-      "excerpts": [
-        {
-          "text": "14/08/2026",
-          "gloss": "14 August 2026 (call opening date).",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "SK"
-              },
-              "notes"
-            ]
-          ]
-        },
-        {
-          "text": "14/10/2026",
-          "gloss": "14 October 2026, call closing date.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "SK"
-              },
-              "notes"
-            ]
-          ]
-        }
-      ],
+      "excerpts": [],
       "snapshot": {
         "retrieved": "2026-10-19T00:12:05Z",
         "sha256": "77bac081ed31056255e9b06c8b6dc6240659ea9422cf5f89cdb7c9ea9ddcf655",
@@ -94822,32 +94164,7 @@
       "accessed": "2026-10-17",
       "language": "sk",
       "origin": "SK",
-      "excerpts": [
-        {
-          "text": "aplikovaný výskum, vývoj a testovanie aplikácií riešení umelej inteligencie v oblasti verejnej bezpečnosti",
-          "gloss": "Applied research, development and testing of artificial intelligence applications in public safety.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "SK"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-e8028b2e3cf550ad8099a81feeb06890"
-              },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "SK"
-              },
-              "notes"
-            ]
-          ]
-        }
-      ],
+      "excerpts": [],
       "snapshot": {
         "retrieved": "2026-10-19T00:12:05Z",
         "sha256": "8e58f7d2619a6b8d4a14e1fdbbb5f816e3d19bb32cbbb0b13b7a430a38622732",
@@ -94876,60 +94193,25 @@
               {
                 "id": "SK"
               },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "SK"
-              },
               "closest_body",
               "stage"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "SK"
-              },
-              "closest_body",
-              "note"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "SK"
-              },
-              "summary"
             ]
           ]
         },
         {
-          "text": "bude testovať platformu a modely",
-          "gloss": "Will test the platform and models.",
+          "text": "Komisia schválila uznesenie č. 8/2026, ktorým schvaľuje zámer národného projektu v rámci Programu Slovensko s názvom \"Národné laboratórium umelej inteligencie pre kybernetickú bezpečnosť (AI CyberLab)\"",
           "supports": [
             [
               "jurisdictions",
               {
                 "id": "SK"
               },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "SK"
-              },
               "closest_body",
-              "note"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "SK"
-              },
-              "summary"
+              "gap"
             ]
-          ]
+          ],
+          "gloss": "The commission approved resolution 8/2026, which approves the national project intent under Programme Slovakia named \"National Artificial Intelligence Laboratory for Cybersecurity (AI CyberLab)\"",
+          "accessed": "2026-10-19"
         }
       ],
       "snapshot": {
@@ -119577,28 +118859,8 @@
       "origin": "FR",
       "excerpts": [
         {
-          "text": "The declaration has been signed on Monday 9 November 2026 by the following Heads of States and Governments and CEOs:",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "CY"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-11-10"
-        },
-        {
           "text": "Heads of States and Governments: Austria, Bahrain, Canada, Croatia, Cyprus, Estonia, Finland, France, Ireland, Kenya, Latvia, Liechtenstein, Luxembourg, Netherlands, Norway, Portugal.",
           "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "CY"
-              },
-              "notes"
-            ],
             [
               "jurisdictions",
               {
@@ -119618,19 +118880,6 @@
               "kind": "heading"
             }
           ]
-        },
-        {
-          "text": "First, policy makers, researchers and developers are committed to establishing a common framework for the evaluation and risk management of frontier models, building on existing frameworks.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "CY"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-11-10"
         }
       ],
       "snapshot": {
@@ -119892,38 +119141,7 @@
       "accessed": "2026-11-11",
       "language": "el",
       "origin": "CY",
-      "excerpts": [
-        {
-          "text": "Το Υπουργικό Συμβούλιο ενέκρινε σήμερα Τρίτη, 10 Νοεμβρίου 2026, τη νέα",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "CY"
-              },
-              "notes"
-            ]
-          ],
-          "gloss": "The Council of Ministers today, Tuesday 10 November 2026, approved the new",
-          "accessed": "2026-11-11",
-          "url": "https://r.jina.ai/https://www.gov.cy/erevna-kainotomia-kai-psifiaki-politiki/dilosi-yfypourgou-erevnas-kainotomias-kai-psifiakis-politikis-dros-nikodimou-damianou-anaforika-me-ti-nea-ethniki-stratigiki-gia-tin-techniti-noimosyni-2026-2032/"
-        },
-        {
-          "text": "αναφορικά με τη Νέα Εθνική Στρατηγική για την Τεχνητή Νοημοσύνη 2026-2032",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "CY"
-              },
-              "notes"
-            ]
-          ],
-          "gloss": "on the new National Strategy for Artificial Intelligence 2026-2032",
-          "accessed": "2026-11-11",
-          "url": "https://r.jina.ai/https://www.gov.cy/erevna-kainotomia-kai-psifiaki-politiki/dilosi-yfypourgou-erevnas-kainotomias-kai-psifiakis-politikis-dros-nikodimou-damianou-anaforika-me-ti-nea-ethniki-stratigiki-gia-tin-techniti-noimosyni-2026-2032/"
-        }
-      ],
+      "excerpts": [],
       "access_note": "The page refused automated requests from the maintainers' host; quotations are from the r.jina.ai text rendering read on 11 November 2026.",
       "snapshot": {
         "retrieved": "2026-11-11T04:52:51Z",
