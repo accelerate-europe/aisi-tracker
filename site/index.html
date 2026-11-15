@@ -48,7 +48,7 @@
  * Region list: beside the map (below it and the map legend at 1100px and narrower, so the legend stays directly under the map (check_page check_legend_place), then at most --region-list wide, so a row's state and institute never drift apart), map and list tops aligned; an accordion whose open region (light tint, thin accent rule, turned chevron) lists its institutes with status marks (institute names right-aligned, like the counts above them), the others their heading, "established of all states" count and one line of names, both in ink; a divider between Europe and the other regions; the EU AI Office under Europe.
  * Record: a map, list or search pick opens the record beside the map (over the list on wide screens, which it hides while open, under the map on narrow ones) and focuses its heading, in view below the section bar, its values cited and qualified as on the card (status date: advisory recommendation, confidence), never more; "Full record ↓" goes to the card (Arrival), whose "↑ Back to map" returns to the same view with the record open; a state without a card links to its table row. Search uses the page's own suggestion list (floating surface, status mark and region per row, keyboard).
  * Naming: one display name per body everywhere (no status suffix; the country in brackets where two bodies share a name); tight places such as table cells use the recorded short form (data field short_name, never a bare generic acronym such as AISI) with the full name on hover; check_page check_institute_names. An institute has one display name and one short form everywhere; former names are marked as former ('then', 'former' or 'formerly', or 'now' with the current short form), source titles excepted (check_page check_former_names). Text with an English form shows that form, with the original available on hover, focus and tap through tipText (aria-description on a focusable element), without a second line, brackets or marker; otherwise the original shows as it is, with lang where known. This covers body names, source titles, Reports to (the producer supplies the original separately) and the Institute name (name_local when it differs); check_page check_source_alignment, check_nonidentified_folds, check_leadership_rows, check_institute_names. A related body's original omits a closing abbreviation repeated in English. A translated link's tap opens its tip with a link to the destination. Downloads keep both forms.
- * None-identified entries: three groups, Closest body, AI Act authorities and Other bodies; the closest body's text in body type, its stage only where it does not exist yet and never a reason it is not counted (Method says what qualifies); the AI Act authorities one line per body (name, roles in the summary's words from dataset.display.authority_roles, basis), single point of contact first, folded after three when two or more would be hidden; other bodies' roles muted, citations inline (owner, 15 Nov 2026); migrated bodies' role claims are separate cited sentences, starting --sp-2 below the name; the closest body's lead stays in the finding, its group shows its other role claims (expired ones marked) or just its name and stage, and is omitted when it has no role claim and the finding already names and cites it (hub default); research notes in one muted How we checked block; on phones the name sits above a full-width summary; wording every entry shares lives in Method (check_page check_nonidentified_folds, check_nonidentified_style).
+ * None-identified entries: three groups, Closest body, AI Act authorities and Other bodies; the closest body's text in body type, its stage only where it does not exist yet and never a reason it is not counted (Method says what qualifies); the AI Act authorities one line per body (name, roles in the summary's words from dataset.display.authority_roles, basis), single point of contact first, folded after three when two or more would be hidden; other bodies' roles muted, citations inline (owner, 15 Nov 2026); migrated bodies' role claims are separate cited sentences, starting --sp-2 below the name; the closest body's lead stays in the finding, its group shows its other role claims (expired ones marked) or just its name and stage, and is omitted when it has no role claim and the finding already names and cites it (hub default); a migrated record's muted How we checked block is generated from its full-check date, search languages, later search passes and next-check date, and names no document read; on phones the name sits above a full-width summary; wording every entry shares lives in Method (check_page check_nonidentified_folds, check_nonidentified_style).
  * Claims: current facts, body-role sentences and developments, their citations and closed Quote disclosures are in the saved page; bound excerpts, anchors and source re-read lines are built from page.json only on open. Translated quotes follow Naming, including the saved closest-body lead; only the Quote fold shows a muted marker straight after each full translated quote and anchor (owner, 15 Nov 2026).
  * Activity line: a muted qualifier after the closest body's name and stage, only for live activity claims for that body; institute cards and legacy records show none; words come from ACTIVITY_WORDS and the vocabulary's short.
  * Sources: entry source lists hold sources that support the entry; population and region sources (display.generic_sources) are named once in Method and stay in the downloads; check_page check_generic_sources.
@@ -218,8 +218,8 @@ a.standalone, .wordmark, .correction, .popover a, .dlist a { text-decoration-lin
 :is(a.standalone, .wordmark, .correction, .popover a):is(:hover, :focus-visible) { color: var(--ink); text-decoration-line: underline; }
 a, abbr.g, .smark[tabindex], .missing[tabindex], .budget-amount[tabindex], .quote-text[tabindex] { position: relative; } /* a focusable value mark is a tooltip control like a glossary term */
 a::before, abbr.g::before, .smark[tabindex]::before, .missing[tabindex]::before, .budget-amount[tabindex]::before, .quote-text[tabindex]::before { content: ""; position: absolute; inset-inline: 0; top: 50%; min-height: var(--hit); height: 100%; transform: translateY(-50%); }
-/* Inline source links use their text boxes, so tight meta lines cannot steal clicks. */
-:is(.srcs, .inline-links) a:not(.cn)::before { content: none; }
+/* Inline source links use their text boxes, so tight meta lines cannot steal clicks; the correction link has its own line (.source-after, one hit tall), so it keeps the full hit box. */
+:is(.srcs, .inline-links) a:not(.cn, .correction)::before { content: none; }
 .archive-copy { white-space: nowrap; } /* principle: Archived copies */
 a.archive { color: var(--muted); text-decoration-color: currentColor; }
 a.archive:is(:hover, :focus-visible) { color: var(--ink); }
@@ -951,6 +951,8 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     notDesignated: "Not designated.", // a closest body's activity line opens with the designation state
     activeIn: "Active in", more: function (n) { return "and " + n + " more"; }
   };
+  var HOW_WORDS = { title: "How we checked", earlier: function (n) { return n + " earlier searches"; } };
+  var HOW_SHOWN = 3; // Generated notes order: full check, next check when shown, searches newest first (authored order for ties); only earlier searches fold. The gate holds this limit.
   // Status definitions, short: the map legend shows each once, the full text is in Method.
   var SHORT = { established: "Created or designated by government.", planned: "Adopted by government, not yet created.", proposed: "Formally proposed, approval pending.", exploring: "Being studied or drafted, or recommended by an advisory commission.", none_identified: "No decision, plan, proposal or study found." };
   var ORDER = ["established","planned","proposed","exploring","none_identified"];
@@ -1183,9 +1185,9 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     return fragment;
   }
   // One footer for full records and mini cards: the collapsed card shows only the source control; the record's check date and the correction link follow the list, where readers scrutinise evidence.
-  function sourceFooter(j, m, order, S, roles) {
+  function sourceFooter(j, m, order, S, roles, how) {
     var foot = el("div", "foot"), count = el("span", "source-count", order.length + (order.length === 1 ? " source" : " sources")), after = [];
-    if (j.check.last_checked !== m.as_of) { var checked = el("span", null, "Checked "); checked.appendChild(dated(j.check.last_checked)); after.push(checked); }
+    if (!("claims" in j && how) && j.check.last_checked !== m.as_of) { var checked = el("span", null, "Checked "); checked.appendChild(dated(j.check.last_checked)); after.push(checked); }
     if (m.repository) after.push(correctionLink(j, m));
     var tail = after.length ? el("p", "source-after") : null;
     if (tail) tail.appendChild(separated(after));
@@ -1755,10 +1757,23 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     if (rest.length) groups.push(bodyGroup("Other bodies", rest.map(function (b) { return item(b.name_en || b.name, originalName(b), [b.role], b.display.source_links, b.id); })));
     return groups;
   }
-  // Research notes in one muted block. Wording every entry shares (what the search looked for, what the Commission list means) is in Method; the entry keeps only its own languages and flag.
+  // Research notes in one muted block. The legacy path keeps its search and Commission wording; migrated notes arrive as generated paragraphs.
   var SEARCHED = / ?Searched in (.+?) for a body its government has tasked with testing general-purpose or frontier AI models or named its AI safety or security institute\./;
   var COMMISSION_PENDING = "The Commission's contact list of 7 September 2026 marks this state's AI Act authority as pending final adoption; the national sources cited here give its actual designation status.";
   function howWeChecked(j, cite) {
+    if ("claims" in j) {
+      var generated = (j.notes || "").split(/\n\s*\n/).map(function (text) { return text.trim(); }).filter(Boolean);
+      if (!generated.length) return null;
+      var block = el("div", "how"); block.appendChild(el("p", "gl", HOW_WORDS.title));
+      generated.slice(0, HOW_SHOWN).forEach(function (text) { block.appendChild(el("p", null, text)); });
+      if (generated.length > HOW_SHOWN) {
+        var earlier = el("details", "more quiet how-earlier");
+        earlier.appendChild(el("summary", null, HOW_WORDS.earlier(generated.length - HOW_SHOWN)));
+        generated.slice(HOW_SHOWN).forEach(function (text) { earlier.appendChild(el("p", null, text)); });
+        block.appendChild(earlier);
+      }
+      return block;
+    }
     var langs = null, pending = false, paragraphs = [];
     (j.notes || "").split(/\n\s*\n/).forEach(function (text) {
       text = text.trim(); if (!text) return;
@@ -2915,7 +2930,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         var findingSources = Array.from(card.querySelectorAll("a.cn[data-source-id]")).map(function (a) { return a.dataset.sourceId; });
         nonIdentifiedBodies(j, cite, m, findingSources).forEach(function (group) { card.appendChild(group); });
         var how = howWeChecked(j, cite); if (how) card.appendChild(how);
-        var foot = sourceFooter(j, m, order, S, roles); foot.appendChild(stateDownload(j, m)); card.appendChild(foot); // a mini card's download sits in its fold, never in the summary row
+        var foot = sourceFooter(j, m, order, S, roles, how); foot.appendChild(stateDownload(j, m)); card.appendChild(foot); // a mini card's download sits in its fold, never in the summary row
         cards.appendChild(card);
       });
       sec.appendChild(cards); $("entries").appendChild(sec);
