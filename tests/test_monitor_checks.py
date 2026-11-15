@@ -565,10 +565,10 @@ def test_later_fallback_errors_are_per_source(tmp_path, monkeypatch, route, wher
     def failed_fetch(current, url):
         if current == route and url.endswith("/0"):
             raise ValueError("bad fallback response")
-    def failed_comparison(source, cited, meta, path, current):
+    def failed_comparison(source, cited, meta, path, current, sources=()):
         if current == route and source["id"] == "src0":
             raise ValueError("bad fallback response")
-        return original(source, cited, meta, path, current)
+        return original(source, cited, meta, path, current, sources)
     if where == "fetch":
         run.on_fetch = failed_fetch
     else:

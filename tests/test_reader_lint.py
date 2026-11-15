@@ -76,6 +76,30 @@ def test_reading_notes_belong_in_check_log():
     assert classes(d) == []
 
 
+@pytest.mark.parametrize("field", ["summary", "log"])
+@pytest.mark.parametrize("text, found", [
+    ("Read 2026-11-15-poland-centre.", "2026-11-15-poland-centre"),
+    ("Research pass 2026-11-15-poland-centre searched the ministry.", "Research pass 2026-11-15-poland-centre"),
+    ("RESEARCH PASS for the centre: 2026-11-15-poland-centre searched the ministry.", "RESEARCH PASS for the centre: 2026-11-15-poland-centre"),
+    ("Read the announcement dated 2026-11-15.", None),
+    ("Read source pl-nask-korea-aisi-2026.", None),
+    ("Research pass searched the ministry on 2026-11-15.", None),
+])
+def test_research_pass_ids_in_reader_text(field, text, found):
+    d = data(summary=text) if field == "summary" else data(check={"log": [{"date": AS_OF, "text": text}]})
+    pointer = "/jurisdictions/0/summary" if field == "summary" else "/jurisdictions/0/check/log/0/text"
+    hits = [hit for hit in lint_reader_text(d, set()) if hit[0] == "research pass id"]
+    assert hits == ([] if found is None else [("research pass id", "XX", pointer, found)])
+
+
+def test_research_pass_id_is_an_error_only_in_a_migrated_record():
+    d = data(check={"log": [{"date": AS_OF, "text": "Read 2026-11-15-poland-centre."}]})
+    assert lint_errors(d, {"XX"}) == ["/jurisdictions/0/check/log/0/text: research pass id: '2026-11-15-poland-centre'"]
+    assert lint_warnings(d, {"XX"}) == []
+    assert lint_errors(d, set()) == []
+    assert lint_warnings(d, set())[0].startswith("reader text [research pass id]: 1 in 1 records")
+
+
 def test_a_finding_in_check_log_is_listed():
     d = data(check={"log": [{"date": "2026-11-01", "text": "Article 5 designates the commission as single point of contact."}]})
     assert classes(d) == ["finding in check.log"]
@@ -101,6 +125,60 @@ def test_claims_are_checked_outside_their_quotes():
     assert classes(data(claims=[claim])) == []
     claim["text"] = "It is not a government evaluator."
     assert classes(data(claims=[claim])) == ["negative wording in a claim"]
+
+
+@pytest.mark.parametrize("span, opening", [
+    ("not only evaluates models", "not only"),
+    ("not only evaluates models but also develops tests", None),
+    ("Either evaluates models", "Either"),
+    ("either evaluates models OR develops tests", None),
+    ("neither evaluates models", "neither"),
+    ("neither evaluates models nor develops tests", None),
+    ("BOTH bodies evaluate models", "BOTH"),
+    ("both evaluates models and develops tests", None),
+    ("strengthens not only our joint commitment to safe and trustworthy artificial intelligence", "not only"),
+    ("but not only evaluates models", "not only"),
+    ("either evaluation oratory", "either"),
+    ("neither evaluation northern research", "neither"),
+    ("both bodies analyse androids", "both"),
+    ("bothered by eitherwise wording", None),
+])
+def test_correlatives_in_claim_quotes(span, opening):
+    claim = {"id": "claims-1", "kind": "function", "text": f'The institute says it "{span}".'}
+    d = data(claims=[claim])
+    hits = lint_reader_text(d, {"XX"})
+    assert hits == ([] if opening is None else [
+        ("open correlative in a quote", "XX", "/jurisdictions/0/claims/0/text", f"{opening}: {span[:80]}")])
+    assert lint_errors(d, {"XX"}) == []
+    assert bool(lint_warnings(d, {"XX"})) is (opening is not None)
+
+
+def test_correlative_partner_must_be_in_the_same_quote():
+    claim = {"id": "claims-1", "kind": "function", "text": 'It “not only evaluates models” and develops “tools but also tests”.'}
+    assert lint_reader_text(data(claims=[claim]), set()) == [
+        ("open correlative in a quote", "XX", "/jurisdictions/0/claims/0/text", "not only: not only evaluates models")]
+
+
+def test_each_open_correlative_is_reported():
+    claim = {"id": "claims-1", "kind": "function", "text": 'It "either evaluates either models".'}
+    assert lint_reader_text(data(claims=[claim]), set()) == [
+        ("open correlative in a quote", "XX", "/jurisdictions/0/claims/0/text", "either: either evaluates either models")
+    ] * 2
+
+
+def test_correlatives_are_checked_only_inside_claim_quotes():
+    d = data(summary='It "not only evaluates models".',
+             check={"log": [{"date": AS_OF, "text": 'Read that it "neither evaluates models".'}]},
+             claims=[{"id": "claims-1", "kind": "function", "text": 'It both evaluates models using "either tests or tools".'}])
+    assert "open correlative in a quote" not in classes(d)
+
+
+def test_correlatives_in_institute_claims():
+    d = data(institute_id="xx-institute")
+    d["institutes"] = [{"id": "xx-institute", "claims": [
+        {"id": "claims-1", "kind": "function", "text": 'It “neither evaluates models”.'}]}]
+    assert lint_reader_text(d, {"XX"}) == [
+        ("open correlative in a quote", "XX", "/institutes/0/claims/0/text", "neither: neither evaluates models")]
 
 
 def test_judgement_classes_are_warnings_even_when_migrated():

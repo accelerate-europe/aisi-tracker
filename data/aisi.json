@@ -391,7 +391,7 @@
         "model_testing": {
           "label": "Model testing",
           "short": "model testing",
-          "definition": "It ran or commissioned a test of an identifiable AI model, or a text assigns it testing AI models or systems.",
+          "definition": "It ran or commissioned tests of AI models that a text reports in enough detail to show real tests (how many, of what kind of model or test, or by what method), or a text assigns it testing AI models or systems.",
           "group": "Testing and science"
         },
         "evaluation_methods": {
@@ -3940,7 +3940,7 @@
           },
           {
             "date": "2026-11-15",
-            "text": "Research pass 2026-11-15-poland-centre searched NASK's and the Ministry of Digital Affairs' sites, the official journals, NASK's public information bulletin and OpenAI's pages, in Polish and English, for the centre's setting-up, leadership, size, OpenAI agreements, partners and description as Poland's AI safety institute."
+            "text": "NASK's and the Ministry of Digital Affairs' sites, the official journals, NASK's public information bulletin and OpenAI's pages were searched in Polish and English for the centre's setting-up, leadership, size, OpenAI agreements, partners and description as Poland's AI safety institute."
           }
         ]
       },
@@ -4023,7 +4023,7 @@
           "code": "international_cooperation",
           "basis": "activity",
           "body_id": "related_bodies-8e2bf69316145732aea04a2f9bbd82eb",
-          "text": "NASK's director says the cooperation between Korea's AI Safety Institute at ETRI and the centre \"strengthens not only our joint commitment to safe and trustworthy artificial intelligence\".",
+          "text": "NASK's director describes \"the cooperation between the Korea AI Safety Institute at ETRI and the AI Safety Research Center at NASK\".",
           "source_ids": [
             "pl-nask-korea-aisi-2026"
           ]
@@ -31218,6 +31218,76 @@
           "source_ids": [
             "gb-about"
           ]
+        },
+        {
+          "id": "claims-6b5a68f6de9748e0a6fa373ad8b6aa14",
+          "kind": "function",
+          "code": "evaluation_methods",
+          "basis": "mandate",
+          "text": "The government's announcement says the then AI Safety Institute, with i.AI and Number 10, will bring together AI talent to test and develop new open-source AI safety tools.",
+          "source_ids": [
+            "depth-gb-inspect"
+          ]
+        },
+        {
+          "id": "claims-f99a92b4f79b48bab1638919ddd96d31",
+          "kind": "function",
+          "code": "foresight",
+          "basis": "activity",
+          "text": "An AISI project team's report says current oversight rests on properties that are likely to erode over the next few years unless something is done to preserve them.",
+          "source_ids": [
+            "catalogue-gb-19"
+          ]
+        },
+        {
+          "id": "claims-f33e1edf3c2a4a14993353dfb4ed98ab",
+          "kind": "function",
+          "code": "model_testing",
+          "basis": "mandate",
+          "text": "The government's launch announcement says the institute is tasked with testing the safety of emerging types of AI.",
+          "source_ids": [
+            "gb-aisi-launch"
+          ]
+        },
+        {
+          "id": "claims-b06e9acd312c42c6afef1a36818b9f50",
+          "kind": "function",
+          "code": "regulatory_support",
+          "basis": "mandate",
+          "text": "DSIT's paper introducing the institute says its research will provide technical tools for governance and regulation.",
+          "source_ids": [
+            "gb-cp960-2023"
+          ]
+        },
+        {
+          "id": "claims-be6f898fa4d84ab1950efd2f440e8ff4",
+          "kind": "function",
+          "code": "research",
+          "basis": "activity",
+          "text": "AISI's blog says it funded Epoch AI to explore AI researchers' differing predictions on the automation of AI research and development.",
+          "source_ids": [
+            "depth-gb-blog"
+          ]
+        },
+        {
+          "id": "claims-4d5eeda7663f4d659d6e71243c25a157",
+          "kind": "function",
+          "code": "risk_monitoring",
+          "basis": "activity",
+          "text": "AISI's blog says its inaugural Frontier AI Trends Report draws on 2 years' worth of evaluations to give insights into the trajectory of AI development.",
+          "source_ids": [
+            "depth-gb-blog"
+          ]
+        },
+        {
+          "id": "claims-ec7fa65b316848e3abf76df549ca507a",
+          "kind": "function",
+          "code": "risk_monitoring",
+          "basis": "mandate",
+          "text": "DSIT's paper introducing the institute says it will work with other UK government functions to feed up-to-date information from the frontier of AI development and AI safety into government.",
+          "source_ids": [
+            "gb-cp960-2023"
+          ]
         }
       ]
     },
@@ -33499,6 +33569,66 @@
           "code": "certification",
           "basis": "mandate",
           "text": "The consolidated AI Act makes it responsible for conformity assessments and tests of the high-risk AI systems referred to in that article that are subject to third-party conformity assessment.",
+          "source_ids": [
+            "r5-eu-ai-act-article74"
+          ]
+        },
+        {
+          "id": "claims-86e416a30b5f41cab44bbdd966e98f18",
+          "kind": "function",
+          "code": "adoption",
+          "basis": "activity",
+          "text": "The Commission says the GenAI4EU initiative, one of those through which the AI Office supports innovators, contributes to novel use cases and emerging applications in 14 industrial sectors and the public sector.",
+          "source_ids": [
+            "eu-aioffice"
+          ]
+        },
+        {
+          "id": "claims-29f61078fac540f5b278ee99c76bc57d",
+          "kind": "function",
+          "code": "convening",
+          "basis": "mandate",
+          "text": "The AI Act assigns it providing the secretariat for the Board, convening the Board's meetings at the Chair's request and preparing the agenda.",
+          "source_ids": [
+            "r5-eu-ai-act-article74"
+          ]
+        },
+        {
+          "id": "claims-e9326b90cca642e88a8cabbb3bbffe7b",
+          "kind": "function",
+          "code": "model_testing",
+          "basis": "mandate",
+          "text": "The Commission's announcement of the AI Office says it will conduct testing and evaluation of general-purpose AI models.",
+          "source_ids": [
+            "eu-office-structure-2024"
+          ]
+        },
+        {
+          "id": "claims-73ee56ac3a9f48dba6b8f261ec59e75d",
+          "kind": "function",
+          "code": "regulatory_support",
+          "basis": "activity",
+          "text": "The Commission's answer says the AI Office has held numerous technical meetings with Anthropic to support implementation of the Code.",
+          "source_ids": [
+            "eu-pq-p001672-2026"
+          ]
+        },
+        {
+          "id": "claims-9f5848bdf4cb4f3580be71ffe96fc49e",
+          "kind": "function",
+          "code": "standards_guidance",
+          "basis": "activity",
+          "text": "Commission guidelines say the AI Office prepared the template that specifies when providers must update the public summary of the content used to train their models.",
+          "source_ids": [
+            "catalogue-eu-artifact-gpai"
+          ]
+        },
+        {
+          "id": "claims-7b80080e17d6465cbaeaa5e9b0663ba1",
+          "kind": "function",
+          "code": "standards_guidance",
+          "basis": "mandate",
+          "text": "The AI Act assigns it developing a questionnaire template, including through an automated tool, to help deployers comply with their obligations under that article in a simplified manner.",
           "source_ids": [
             "r5-eu-ai-act-article74"
           ]
@@ -42947,6 +43077,33 @@
             ]
           ],
           "accessed": "2026-10-17"
+        },
+        {
+          "text": "The ‘GenAI4EU' initiative, part of the 2024 AI innovation package, contributes to the development of novel use cases and emerging applications in 14 industrial sectors and the public sector.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "claims",
+              {
+                "id": "claims-86e416a30b5f41cab44bbdd966e98f18"
+              },
+              "text"
+            ]
+          ],
+          "anchors": [
+            {
+              "text": "The European AI Office was established within the European Commission as the foundation for a single AI governance system.",
+              "kind": "definition"
+            },
+            {
+              "text": "The AI Office actively supports innovators through policies and initiatives that spur growth across the EU:",
+              "kind": "heading"
+            }
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "EU",
@@ -46611,6 +46768,23 @@
               "date"
             ]
           ]
+        },
+        {
+          "text": "World's first AI Safety Institute launched in UK, tasked with testing the safety of emerging types of AI.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-f33e1edf3c2a4a14993353dfb4ed98ab"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "GB",
@@ -68067,6 +68241,23 @@
               "text"
             ]
           ]
+        },
+        {
+          "text": "Alongside the launch of Inspect, the AI Safety Institute, Incubator for AI (i.AI) and Number 10 will bring together leading AI talent from a range of areas to rapidly test and develop new open-source AI safety tools.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-6b5a68f6de9748e0a6fa373ad8b6aa14"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "GB",
@@ -69323,6 +69514,29 @@
             ]
           ],
           "accessed": "2026-10-17"
+        },
+        {
+          "text": "In cooperation with AI developers, the scientific community and other stakeholders, the AI Office will coordinate the drawing up of state-of-the-art codes of practice, conduct testing and evaluation of general-purpose AI models, request information as well as apply sanctions, when necessary.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "claims",
+              {
+                "id": "claims-e9326b90cca642e88a8cabbb3bbffe7b"
+              },
+              "text"
+            ]
+          ],
+          "anchors": [
+            {
+              "text": "Today the Commission has unveiled the AI Office, established within the Commission.",
+              "kind": "definition"
+            }
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "EU",
@@ -69496,6 +69710,29 @@
               },
               "title"
             ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Current oversight rests on properties which are likely to erode over the next few\nyears, absent intervention to preserve them.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-f99a92b4f79b48bab1638919ddd96d31"
+              },
+              "text"
+            ]
+          ],
+          "anchors": [
+            {
+              "text": "The following discussion represents the views of the project team at UK AISI",
+              "kind": "heading"
+            }
           ],
           "accessed": "2026-10-17"
         }
@@ -74875,7 +75112,32 @@
         "sha256": "13481bd90108505c477165c8aefb13dbe7a83847bad0e983e09115f78aeefe78",
         "text_sha256": "92b89a1d2953f812e9a29d8457a36f4cf52aa3001f180077014dfcf3780bc2b9",
         "text_scheme": 1
-      }
+      },
+      "excerpts": [
+        {
+          "text": "content used for training required under Article 53(1), \npoint (d), AI Act must be drawn up and made publicly available for all the \nprovider’s models placed on the market. The template that has been prepared \nby the AI Office specifies circumstances under which the summary must be \nupdated.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "claims",
+              {
+                "id": "claims-9f5848bdf4cb4f3580be71ffe96fc49e"
+              },
+              "text"
+            ]
+          ],
+          "anchors": [
+            {
+              "text": "the implementation \nof which is entrusted to the European Artificial Intelligence Office (‘AI Office’, see \nArticle 3(47) AI Act).",
+              "kind": "definition"
+            }
+          ],
+          "accessed": "2026-10-17"
+        }
+      ]
     },
     {
       "id": "catalogue-eu-artifact-template",
@@ -76844,6 +77106,40 @@
               },
               "credit",
               "date"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "AISI funded Epoch AI to explore AI researchers’ differing predictions on the automation of AI research and development and their suggestions for how to evaluate relevant capabilities.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-be6f898fa4d84ab1950efd2f440e8ff4"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Our inaugural Frontier AI Trends Report draws on 2 years' worth of evaluations to provide accessible insights into the trajectory of AI development.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-4d5eeda7663f4d659d6e71243c25a157"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-17"
@@ -93159,6 +93455,52 @@
           ],
           "accessed": "2026-10-17",
           "url": "https://r.jina.ai/https://eur-lex.europa.eu/legal-content/EN/AUTO/?uri=CELEX:02024R1689-20260727"
+        },
+        {
+          "text": "The AI Office shall provide the secretariat for the Board, convene the meetings upon request of the Chair, and prepare the agenda in accordance with the tasks of the Board pursuant to this Regulation and its rules of procedure.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "claims",
+              {
+                "id": "claims-29f61078fac540f5b278ee99c76bc57d"
+              },
+              "text"
+            ]
+          ],
+          "anchors": [
+            {
+              "text": "‘AI Office’ means the Commission’s function of contributing to the implementation, monitoring and supervision of AI systems and general-purpose AI models, and AI governance, provided for in Commission Decision of 24 January 2024",
+              "kind": "definition"
+            }
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "The AI Office shall develop a template for a questionnaire, including through an automated tool, to facilitate deployers in complying with their obligations under this Article in a simplified manner.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "claims",
+              {
+                "id": "claims-7b80080e17d6465cbaeaa5e9b0663ba1"
+              },
+              "text"
+            ]
+          ],
+          "anchors": [
+            {
+              "text": "‘AI Office’ means the Commission’s function of contributing to the implementation, monitoring and supervision of AI systems and general-purpose AI models, and AI governance, provided for in Commission Decision of 24 January 2024",
+              "kind": "definition"
+            }
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "legal_text": true,
@@ -106043,6 +106385,23 @@
             ]
           ],
           "accessed": "2026-10-21"
+        },
+        {
+          "text": "As a regulator, the AI Office has held numerous technical meetings with Anthropic to support implementation of the Code.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "claims",
+              {
+                "id": "claims-73ee56ac3a9f48dba6b8f261ec59e75d"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-21"
         }
       ],
       "snapshot": {
@@ -118000,7 +118359,7 @@
       },
       "excerpts": [
         {
-          "text": "Współpraca między Koreańskim Instytutem Badań nad Bezpieczeństwem Sztucznej Inteligencji w ETRI a Ośrodkiem Badań nad Bezpieczeństwem Sztucznej Inteligencji w NASK wzmacnia nie tylko nasze wspólne zaangażowanie w bezpieczną i godną zaufania sztuczną inteligencję",
+          "text": "The cooperation between the Korea AI Safety Institute at ETRI and the AI Safety Research Center at NASK strengthens our joint commitment to safe and trustworthy artificial intelligence.",
           "supports": [
             [
               "jurisdictions",
@@ -118014,7 +118373,7 @@
               "text"
             ]
           ],
-          "gloss": "The cooperation between the Korea AI Safety Institute at ETRI and the AI Safety Research Centre at NASK strengthens not only our joint commitment to safe and trustworthy artificial intelligence",
+          "gloss": "The cooperation between the Korea AI Safety Institute at ETRI and the AI Safety Research Center at NASK strengthens our joint commitment to safe and trustworthy artificial intelligence.",
           "accessed": "2026-11-15"
         }
       ]
@@ -120638,6 +120997,46 @@
               },
               "description"
             ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "The research of the AI Safety Institute will inform UK and international policymaking and provide technical tools for governance and regulation.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-b06e9acd312c42c6afef1a36818b9f50"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-11-14"
+        },
+        {
+          "text": "The Institute will work with other UK government functions, such as DSIT’s recently established Central AI Risk Function, to feed up to date information from the frontier of AI development and AI safety into government.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-ec7fa65b316848e3abf76df549ca507a"
+              },
+              "text"
+            ]
+          ],
+          "anchors": [
+            {
+              "text": "Introducing the AI Safety Institute",
+              "kind": "heading"
+            }
           ],
           "accessed": "2026-11-14"
         }
