@@ -42201,7 +42201,7 @@
         {
           "text": "Das Bundesministerium für Digitales und Staatsmodernisierung (BMDS) und das Bundesministerium des Innern (BMI) richten das AISI Deutschland in Berlin ein.",
           "accessed": "2026-10-17",
-          "gloss": "The Federal Ministry for Digital Transformation and Government Modernisation and the Federal Ministry of the Interior establish AISI Germany in Berlin.",
+          "gloss": "The Federal Ministry for Digital Transformation and Government Modernisation (BMDS) and the Federal Ministry of the Interior (BMI) are setting up AISI Deutschland in Berlin.",
           "supports": [
             [
               "jurisdictions",
@@ -45845,7 +45845,7 @@
             ]
           ],
           "accessed": "2026-10-19",
-          "gloss": "Research and development on the safety of collaborative robots and similar systems, guidelines, and work towards international standardisation are commissioned to AIST."
+          "gloss": "Commissioned to AIST: research and development on the safety of robots that work alongside people and similar systems, drawing up guidelines, and further study towards international standardisation."
         },
         {
           "text": "自民党デジタル社会推進本部 AI・web3小委員会提言(R7.12.19)",
@@ -46115,7 +46115,7 @@
             ]
           ],
           "accessed": "2026-10-24",
-          "gloss": "The institute's AI safety evaluation lab has only 7 staff. Excluding one person responsible for law and norms, 6 staff actually evaluate AI models technically."
+          "gloss": "The institute's AI safety evaluation lab had only 7 staff. Excluding one person responsible for law and norms, the staff who actually evaluate AI models technically are 6."
         }
       ],
       "origin": "KR",
@@ -46309,7 +46309,7 @@
             ]
           ],
           "accessed": "2026-10-19",
-          "gloss": "Including AI safety evaluation and verification, red-teaming, deepfake response, ethics and impact assessment."
+          "gloss": "including AI safety evaluation and verification, red-teaming, deepfake response, ethics and impact assessment, and so on"
         },
         {
           "text": "이번 분류는 의원실이 마련한 기능별 기준에 따라 과기정통부가 각 세부사업을 분류해 제출한 자료를 토대로 이뤄졌다.",
@@ -54139,7 +54139,6 @@
         },
         {
           "text": "LEAD Support State Department responsible for Science, Research, Technology and Innovation MICDE, NACOSTI, universities",
-          "gloss": "Lead: State Department responsible for Science, Research, Technology and Innovation. Support: MICDE (the ICT ministry), NACOSTI, universities.",
           "supports": [
             [
               "institutes",
@@ -55665,7 +55664,7 @@
             ]
           ],
           "accessed": "2026-10-21",
-          "gloss": "INESIA brings together researchers and engineers from the National Cybersecurity Agency (ANSSI), the National Institute for Research in Digital Science and Technology (Inria) and the National Laboratory of Metrology and Testing (LNE)."
+          "gloss": "INESIA brings together an ecosystem of researchers and engineers from the National Agency for the Security of Information Systems (ANSSI), the National Institute for Research in Digital Science and Technology (Inria), the National Laboratory of Metrology and Testing (LNE)"
         },
         {
           "text": "L’action de l’INESIA repose sur quatre principes fondamentaux : construire une démarche scientifique et stratégique, structurer une capacité souveraine d’évaluation, coordonner les expertises publiques et mutualiser les moyens",
@@ -57144,7 +57143,7 @@
               "date"
             ]
           ],
-          "gloss": "At today's session the Government adopted the National AI Strategy to 2030.",
+          "gloss": "At today's session the Government of the Republic of Slovenia adopted the National Strategy for Artificial Intelligence to 2030 (NsUI 2030).",
           "accessed": "2026-10-17"
         }
       ]
@@ -65492,7 +65491,7 @@
         {
           "text": "Des Weiteren hat der Nationale Sicherheitsrat die Folgen fortgeschrittener KI-Modelle für die Cybersicherheit in Deutschland bewertet und beschlossen, ein KI-Sicherheitsinstitut zu gründen.",
           "accessed": "2026-10-17",
-          "gloss": "The National Security Council assessed the consequences of advanced AI models for cybersecurity in Germany and decided to establish an AI safety institute.",
+          "gloss": "Furthermore, the National Security Council assessed the consequences of advanced AI models for cybersecurity in Germany and decided to establish an AI safety institute.",
           "supports": [
             [
               "institutes",
@@ -73381,7 +73380,7 @@
           "text": "こうした背景を踏まえて、データ品質の確保・管理を促進することを目的として、データ品質SWGが、AI Safety Institute(AISI)に設置された事業実証WGにおける分野横断SWGの一つとして設置されました。本チェックリストは、その活動の一環として、事業者におけるデータ品質管理の取組状況を網羅的に確認できるよう作成したものです。",
           "accessed": "2026-10-18",
           "url": "https://aisi.go.jp/assets/file/Data_quality_management_checklist.xlsx",
-          "gloss": "The Data Quality Sub-Working Group was established as a cross-sectoral group within the Business Demonstration Working Group at AISI to promote data quality management. This checklist was prepared as part of that work.",
+          "gloss": "Against this background, with the aim of promoting the assurance and management of data quality, the Data Quality SWG was established as one of the cross-sectoral SWGs in the Business Demonstration WG set up at the AI Safety Institute (AISI). As part of that work, this checklist was prepared so that the state of businesses' data quality management efforts can be checked comprehensively.",
           "supports": [
             [
               "institutes",
@@ -74064,7 +74063,7 @@
           "text": "官報法令改正条文データセット（以下、本データセット）は、AI Safety Institute（AISI）事業実証WG配下のデータ品質サブワーキンググループ（データ品質SWG）における2025年度の活動の一環として整備されたものです。",
           "accessed": "2026-10-18",
           "url": "https://aisi.go.jp/assets/file/20260415_data_quality_swg_report_gazette_data.zip",
-          "gloss": "The Gazette legal-amendment dataset was prepared as part of the FY2025 activities of the Data Quality Sub-Working Group under the AISI Business Demonstration Working Group.",
+          "gloss": "The Official Gazette law amendment provisions dataset (hereinafter, this dataset) was prepared as part of the FY2025 activities of the Data Quality Sub-Working Group (Data Quality SWG) under the AI Safety Institute (AISI) Business Demonstration WG.",
           "supports": [
             [
               "institutes",
@@ -80502,7 +80501,7 @@
             ]
           ],
           "accessed": "2026-10-17",
-          "gloss": "Under section 3 of Germany's AI Market Surveillance and Innovation Promotion Act, Germany has five notifying authorities:"
+          "gloss": "Under section 3 of the German AI Market Surveillance and Innovation Promotion Act (KI-MIG), there are five notifying authorities in Germany:"
         },
         {
           "text": "Die Zentralstelle der Länder für Gesundheitsschutz bei Arzneimitteln und Medizinprodukten (ZLG) für Anhang I Teil A Nr. 11 und 12",
@@ -85678,7 +85677,7 @@
             ]
           ],
           "accessed": "2026-10-17",
-          "gloss": "The agency is responsible for supervising compliance of high-risk AI systems governed by Union legislation in Annex I Section A with the requirements of Regulation (EU) 2024/1689.",
+          "gloss": "The agency is responsible for supervising the compliance of high-risk AI systems governed by the Union legislation in Section A of Annex I to Regulation 2024/1689/EU with the requirements of Regulation 2024/1689/EU",
           "anchors": [
             {
               "text": "Agencija za komunikacijska omrežja in storitve Republike Slovenije (v nadaljnjem besedilu: agencija)",
@@ -90839,7 +90838,7 @@
             ]
           ],
           "accessed": "2026-10-24",
-          "gloss": "AI Experiment Notes: Cyber Capability Evaluation of Claude Opus 4.8 Using ExploitBench, 2 October 2026"
+          "gloss": "AI Experiment Notes: Cyber Capability Evaluation of Claude Opus 4.8 Using ExploitBench: The Importance of Case-Level Analysis, 2 October 2026"
         },
         {
           "text": "AI Experiment Notes: The Proliferation of Advanced AI Cyber Capabilities to Open Models -2026年10月2日",
@@ -91365,7 +91364,7 @@
             ]
           ],
           "accessed": "2026-10-17",
-          "gloss": "The evaluation report of the 3rd joint testing exercise titled \"Advancing Methodologies for Agentic Evaluations Across Domains\" has been published."
+          "gloss": "The evaluation report of the 3rd joint testing exercise, \"Advances in Agent Evaluation Methods\", has been published."
         }
       ],
       "origin": "JP",
@@ -92973,7 +92972,7 @@
             ]
           ],
           "accessed": "2026-10-18",
-          "gloss": "The launch of public consultation on the National Strategy for Artificial Intelligence is announced."
+          "gloss": "The launch of the public consultation on the National Strategy for Artificial Intelligence (AI) is announced."
         }
       ]
     },
@@ -94242,7 +94241,7 @@
               "annual_basis"
             ]
           ],
-          "gloss": "The non-R&D budget starts from KRW 8.9 billion."
+          "gloss": "the non-R&D budget, from KRW 8.9 billion"
         },
         {
           "text": "'공존 가능한 신뢰 AI를 위한 AI 세이프티 기술개발' R&D 예산은 39억7500만원에서",
@@ -94281,7 +94280,7 @@
               "annual_amount"
             ]
           ],
-          "gloss": "The R&D budget for AI safety technology development for coexistent trustworthy AI starts from KRW 3.975 billion."
+          "gloss": "The R&D budget for 'AI safety technology development for trustworthy AI that can coexist', from KRW 3.975 billion"
         },
         {
           "text": "2027년도 AI안전연구소와 관련한 정부 예산안은 159억4400만원",
@@ -109063,7 +109062,7 @@
             ]
           ],
           "accessed": "2026-10-24",
-          "gloss": "This report uses ExploitBench, a benchmark based on known vulnerabilities"
+          "gloss": "In this report, ExploitBench, a benchmark using known vulnerabilities"
         },
         {
           "text": "Anthropic社のClaude Opus 4.8のサイバー能力を評価しました",
@@ -111645,7 +111644,7 @@
         },
         {
           "text": "KI Noreg skal rettleie om eignaheit ved val av konkrete modellar til ulike bruksområde.",
-          "gloss": "KI Norge is to give guidance on suitability when choosing specific models for different uses.",
+          "gloss": "KI Noreg is to give guidance on suitability when choosing specific models for different uses.",
           "supports": [
             [
               "institutes",
@@ -113522,7 +113521,7 @@
             ]
           ],
           "accessed": "2026-10-24",
-          "gloss": "2401 686 12 (budget title number)"
+          "gloss": "2401 686 12"
         },
         {
           "text": "Gegenstand laufender regierungsinterner Abstimmungen",
@@ -114709,7 +114708,7 @@
       "excerpts": [
         {
           "text": "Zu weitergehenden Detailplanungen des späteren Ausbaus können derzeit noch keine Angaben gemacht werden.",
-          "gloss": "Further details of the later expansion cannot yet be given.",
+          "gloss": "No information can yet be given on more detailed planning of the later expansion.",
           "supports": [
             [
               "institutes",
@@ -114761,7 +114760,7 @@
         },
         {
           "text": "die konkrete Ausgestaltung des Instituts, seines Aufgabenzuschnitts, seiner organisatorischen und rechtlichen Form, seiner personellen und technischen Ausstattung",
-          "gloss": "the institute's design, remit, organisational and legal form, staffing and technical equipment",
+          "gloss": "the specific design of the institute, its remit, its organisational and legal form, its staffing and technical equipment",
           "supports": [
             [
               "institutes",
@@ -115010,7 +115009,7 @@
         },
         {
           "text": "Eine eigenständige Befugnis des AISI Deutschland, gegen den Willen von Entwicklern, Anbietern oder Betreibern fortgeschrittener KI-\nModelle Informationen oder Modellzugang zu verlangen, ist daher nicht vorge-\nsehen.",
-          "gloss": "No independent power for AISI Deutschland to require information or model access against the wishes of developers, providers or operators of advanced AI models is envisaged.",
+          "gloss": "An independent power for AISI Deutschland to require information or model access against the wishes of developers, providers or operators of advanced AI models is therefore not envisaged.",
           "supports": [
             [
               "institutes",
@@ -115025,7 +115024,7 @@
         },
         {
           "text": "Soweit für technische Evaluierungen hoheitliche Informations- oder Zugriffsrechte erforderlich sind, richten sich diese nach den jeweils einschlägigen gesetzlichen Befugnissen der zuständigen Behörden, insbesondere nach der europäischen KI-Verordnung (KI-VO).",
-          "gloss": "Any public-authority information or access rights needed for technical evaluations follow the applicable statutory powers of the competent authorities, particularly the European AI Act.",
+          "gloss": "Where public-authority information or access rights are required for technical evaluations, these follow the relevant statutory powers of the competent authorities in each case, in particular the European AI Regulation (KI-VO).",
           "supports": [
             [
               "institutes",
@@ -115054,7 +115053,7 @@
         },
         {
           "text": "Der weitere organisatorische, personelle und finanzielle Auf- und Ausbau des AISI Deutschland erfolgt schrittweise, ein konkreter Zeitpunkt für dessen Abschluss ist daher bislang nicht festgelegt.",
-          "gloss": "The further organisational, staffing and financial development of AISI Deutschland proceeds step by step; no specific completion date has yet been set.",
+          "gloss": "The further organisational, staffing and financial development and expansion of AISI Deutschland proceeds step by step; no specific date for its completion has therefore yet been set.",
           "supports": [
             [
               "institutes",
@@ -116851,7 +116850,7 @@
       "excerpts": [
         {
           "text": "sono autorita' nazionali di vigilanza del mercato ai sensi del medesimo regolamento",
-          "gloss": "the following are national market surveillance authorities under the same Regulation",
+          "gloss": "are national market surveillance authorities under the same Regulation",
           "supports": [
             [
               "jurisdictions",
