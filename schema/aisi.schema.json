@@ -2904,6 +2904,63 @@
             }
           }
         },
+        "passes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "date",
+              "languages",
+              "places",
+              "fields"
+            ],
+            "properties": {
+              "date": {
+                "$ref": "#/$defs/date"
+              },
+              "languages": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "places": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 60
+                }
+              },
+              "fields": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "status",
+                    "head",
+                    "reports_to",
+                    "national_partners",
+                    "staff",
+                    "funding",
+                    "agreements",
+                    "model_access",
+                    "testing_capacity",
+                    "outputs",
+                    "closest_body",
+                    "related_bodies"
+                  ]
+                }
+              }
+            }
+          },
+          "description": "Searches after the last full check: when, in which languages, where, and for which fields. Shown under How we checked; the research pass id is not recorded here."
+        },
         "independent_source_ids": {
           "$ref": "#/$defs/source_ids",
           "description": "Historical source-independence audit metadata; not a condition of negative confidence under the confidence rule."
@@ -2969,7 +3026,7 @@
               }
             }
           },
-          "description": "Our search and reading notes, dated (\"Searched in Slovenian and English.\"). The only home for the search log; it states nothing about the world."
+          "description": "Our search and reading notes, dated (\"Searched in Slovenian and English.\"). The home of search-log notes for the 1.2.0 row checks; it states nothing about the world. Not shown on the page for a record without an authored summary."
         },
         "functions": {
           "type": "object",
