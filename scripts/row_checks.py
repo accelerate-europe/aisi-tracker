@@ -26,6 +26,16 @@ SENTENCE_BREAK = re.compile(
 DATED_NOTE = re.compile(r"\b(?:19|20)\d\d\b")
 
 
+def search_log_rows(institute: dict) -> dict[str, str]:
+    """The rows whose notes must be a dated search log, with the reason: a row not published, or national partners
+    stated with no cyber_agency entry (the cyber agency searched). The only home of these two conditions."""
+    rows = {field: "not_published" for field in ROWS if (institute.get(field) or {}).get("state") == "not_published"}
+    partners = institute.get("national_partners") or {}
+    if partners.get("state") == "stated" and not any(e.get("cyber_agency") for e in partners.get("entries", [])):
+        rows["national_partners"] = "no_cyber_agency"
+    return rows
+
+
 def own_card_role(role: str, institute: dict) -> str:
     """The Head row sits on the institute's own card, so a role ending in that institute's name drops it
     ("General Manager, Australian AI Safety Institute" reads "General Manager"); the people record keeps the full role."""
@@ -139,13 +149,16 @@ def check_rows(d: dict) -> list[str]:
                 errors.append(
                     f"{iid}: {field}: not_applicable requires no established institute"
                 )
-            if (
-                row
-                and row["state"] == "not_published"
-                and not DATED_NOTE.search(row.get("notes", ""))
-            ):
+        for field, reason in search_log_rows(institute).items():
+            if DATED_NOTE.search(institute[field].get("notes", "")):
+                continue
+            if reason == "not_published":
                 errors.append(
                     f"{iid}: {field}.notes must say what was searched and when (a dated search log)"
+                )
+            else:
+                errors.append(
+                    f"{iid}: no partner entry has cyber_agency, so national_partners.notes must name the cyber agency searched and the date"
                 )
         partners = institute.get("national_partners")
         if not partners:
@@ -161,13 +174,6 @@ def check_rows(d: dict) -> list[str]:
         ids = [e["id"] for e in entries]
         if len(ids) != len(set(ids)):
             errors.append(f"{iid}: national_partners entry ids are not unique")
-        if partners["state"] == "stated" and not any(
-            e.get("cyber_agency") for e in entries
-        ):
-            if not DATED_NOTE.search(partners.get("notes", "")):
-                errors.append(
-                    f"{iid}: no partner entry has cyber_agency, so national_partners.notes must name the cyber agency searched and the date"
-                )
         host = institute["host"].casefold().strip()
         reports = institute.get("reports_to", {})
         parents = {

@@ -213,6 +213,35 @@ def test_unbound_free_text_is_an_error_only_in_a_migrated_record(dataset, migrat
     assert item not in method_checks.unquoted_claims(d)["free text with no excerpt"]
 
 
+def test_required_search_log_notes_need_no_quote_in_a_migrated_record(dataset):
+    """Hub default (spec section 5): a row note that row_checks requires as a dated search log (a row not published,
+    or partners stated with no cyber agency) is left out of the quote rule in a migrated record and listed instead;
+    any other row note is still an error."""
+    d = copy.deepcopy(dataset)
+    d["jurisdictions"][0].pop("summary")
+    institute = d["institutes"][0]
+    institute["head"] = {"state": "not_published", "notes": "Searched the founding text on 2026-10-19."}
+    institute["national_partners"] = {"state": "stated", "notes": "Cyber agency searched: none, 2026-10-19.",
+                                      "entries": [{"id": "np-x", "name": "Partner", "relation": "works_with", "how": "Works with it.",
+                                                   "source_ids": [d["sources"][0]["id"]]}]}
+    institute["reports_to"] = {"state": "not_applicable", "notes": "Synthetic note on a row with no required log."}
+
+    def errors_for(field):
+        return [e for e in method_checks.migrated_unquoted_errors(d) if f"institutes[].{field}.notes" in e]
+
+    assert errors_for("head") == [] and errors_for("national_partners") == []
+    assert len(errors_for("reports_to")) == 1
+    assert method_checks.search_log_notes(d) == [
+        "search-log note, no quote required: gb-test head.notes (not_published): Searched the founding text on 2026-10-19.",
+        "search-log note, no quote required: gb-test national_partners.notes (no_cyber_agency): Cyber agency searched: none, 2026-10-19."]
+    institute["national_partners"]["entries"][0]["cyber_agency"] = True
+    institute["head"]["state"] = "not_applicable"
+    assert len(errors_for("head")) == 1 and len(errors_for("national_partners")) == 1
+    assert method_checks.search_log_notes(d) == []
+    d["jurisdictions"][0]["summary"] = "Synthetic."  # not migrated: nothing listed, warnings as before
+    assert method_checks.search_log_notes(d) == []
+
+
 def test_generated_first_output_description_is_not_unquoted():
     """The first_output event's description is generated from the output's title, so it is never an unquoted item
     (the UK and France have one; before the fix a migrated UK record failed on it)."""
