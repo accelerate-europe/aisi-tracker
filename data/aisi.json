@@ -2814,12 +2814,10 @@
         ]
       },
       "institute_id": "no-ki-norge",
-      "summary": "The 2027 budget proposes an AI safety mandate and model-evaluation capacity for KI Norge. It also names KI Norge as the contact point for international safety communities, including AI Safety Institutes.",
       "related_bodies": [
         {
           "name": "Nasjonal kommunikasjonsmyndighet (Nkom)",
           "name_en": "Norwegian Communications Authority (Nkom)",
-          "role": "The government selected it to coordinate work; draft section 3 proposes market coordination and single contact. Section 9.4 proposes residual notifying functions where no relevant sector authority exists.",
           "counts_as_aisi": false,
           "source_ids": [
             "no-ai-law-consultation-2025-authorities",
@@ -2839,7 +2837,6 @@
         {
           "name": "Norsk akkreditering",
           "name_en": "Norwegian Accreditation",
-          "role": "It would assess and monitor under proposed section 4, following government selection; it is distinct from sector notifying authorities.",
           "counts_as_aisi": false,
           "source_ids": [
             "no-ai-law-consultation-2025-authorities",
@@ -2876,7 +2873,13 @@
             "scope": "Compared the appointment announcement with KI Norge’s June article. Removed the unconfirmed actual start date and distinguished the existing agency department from its proposed safety mandate. Partial check only."
           }
         ],
-        "last_checked_basis": "historical_upper_bound"
+        "last_checked_basis": "historical_upper_bound",
+        "log": [
+          {
+            "date": "2026-10-16",
+            "text": "The Commission's list of AI Act contact points was read as the EU and EEA cross-check for Norway."
+          }
+        ]
       },
       "source_ids": [
         "no-budget",
@@ -2914,8 +2917,7 @@
       "identifier_source_ids": [
         "un-m49",
         "wikidata-jurisdiction-identifiers"
-      ],
-      "notes": "The Commission source is retained as the required EU/EEA cross-check. Its table lists EU Member State contact points and contains no entry for Norway; it does not substantiate a national designation or imply that the AI Act is incorporated into the EEA Agreement.\n\nThe proposal qualifies through the counterpart route: KI Norge would combine an AI safety mandate with the contact-point role for international safety communities, including AI Safety Institutes. Confidence is high in the primary evidence for this proposal; adoption is not inferred."
+      ]
     },
     {
       "id": "NL",
@@ -2931,12 +2933,10 @@
         ]
       },
       "institute_id": null,
-      "summary": "The cabinet is exploring whether to set up a Dutch AI safety institute, as its International AI Strategy of July 2026 states, and expects an advisory report by the end of 2026. Parliament adopted a motion in September 2026 asking the government to set one up; the government has not committed to it.",
       "related_bodies": [
         {
           "name": "Rijksinspectie Digitale Infrastructuur (RDI)",
           "name_en": "State Inspectorate for Digital Infrastructure (RDI)",
-          "role": "It is listed by the Commission as the proposed Dutch single point of contact, with final designation pending. Separately, consultation bill Article 2.3(2) proposes the Minister as statutory central contact. These are two source-reported formulations of a pending allocation, not two confirmed contact points; no minister-through-RDI delegation was verified. The bill's allocation to the Minister does not by itself establish a delegated RDI market-surveillance role; no such delegation was verified in this source check.",
           "counts_as_aisi": false,
           "source_ids": [
             "nl-ai-act-consultation-bill-2026",
@@ -2953,7 +2953,6 @@
         {
           "name": "Minister van Economische Zaken en Klimaat",
           "name_en": "Ministry of Economic Affairs and Climate Policy",
-          "role": "The Minister would cover Annex III point 1 systems under Article 2.1 of the consultation bill, subject to the stated Article 43 exclusions. Article 2.3(2) proposes the Minister as statutory central contact; the Commission contact list separately names RDI. Neither source establishes two designated contact points.",
           "counts_as_aisi": false,
           "source_ids": [
             "nl-ai-act-consultation-bill-2026",
@@ -2971,7 +2970,6 @@
         {
           "name": "Autoriteit Persoonsgegevens (AP)",
           "name_en": "Data Protection Authority (AP)",
-          "role": "It would cover prohibited AI, transparency and most Annex III high-risk systems by default under the consultation bill, subject to sector exceptions.",
           "counts_as_aisi": false,
           "source_ids": [
             "nl-ai-act-consultation-bill-2026",
@@ -3047,7 +3045,13 @@
             ]
           }
         ],
-        "language_note": "Dutch and English searched; Dutch is the only official language of the European Netherlands (Frisian not searched)."
+        "language_note": "Dutch and English searched; Dutch is the only official language of the European Netherlands (Frisian not searched).",
+        "log": [
+          {
+            "date": "2026-10-16",
+            "text": "The 2027 Economic Affairs and Climate budget (Kamerstuk 37020-XIII, nos. 1 and 2), the Interior and Kingdom Relations budget (37020-VII, no. 2) and the Miljoenennota (37020, no. 1) were searched for an institute-specific budget line."
+          }
+        ]
       },
       "source_ids": [
         "nl-kamerbrief-2026-09",
@@ -3075,7 +3079,6 @@
         "fr-elysee-paris-call-2026",
         "nl-cabinet-ai-vision-2026"
       ],
-      "notes": "A TNO study commissioned by the Ministry of Economic Affairs and Climate examined the option in June 2026. In parliament on 17 September 2026, the minister answered yes to a question about establishing an institute, preferably in close cooperation with other countries. Responding to motion 49 later in the debate, the minister said the cabinet would explore whether a national institute should be created and mainly look at whether it could link up with existing European initiatives. The record therefore remains exploring. On 17 September 2026 parliament adopted an MP's motion 49 by show of hands, asking the government to establish an AI safety institute in close cooperation with similar institutes in Germany, France and England. This parliamentary act does not count as a government commitment.\n\nThe written answer received on 1 June 2026 describes the Digitale Doetank exploration into an independent AI safety institute, modelled on the UK institute, running until September 2026. The answer received on 31 August 2026 still leaves the decision open. It expected an advisory report in September, after which the cabinet would decide whether and how to establish an institute, including its tasks, powers and necessary conditions. The 25 September letter frames the exploration as considering whether an institute could meet the need for insight and advice on AI’s impact on society and government, with the advisory report to be shared by the end of 2026. An advisory body would count only if the government designated it as its AI safety institute with an AI safety remit, or gave it the testing of advanced AI models.\n\nThe July strategy says the Netherlands will seek to join the International Network for Advanced AI Measurement, Evaluation and Science. This is an intention to seek membership, not confirmation of membership. The strategy also takes account of existing bodies that already advise the government on AI.\n\nNo institute-specific budget line was found in the 2027 Economic Affairs and Climate budget (Kamerstuk 37020-XIII, nos. 1 and 2), the Interior and Kingdom Relations budget (37020-VII, no. 2) or the Miljoenennota (37020, no. 1).\n\nThe Commission's contact list of 9 November 2026 marks this state's AI Act authority as pending final adoption; the national sources cited here give its actual designation status.\n\nOn 9 November 2026 the Netherlands was among the states that signed the Paris Call for AI Safety and Security, in which signatories commit to a common framework for the evaluation and risk management of frontier models.\n\nThe government's announcement of its AI vision on 6 November 2026 says the cabinet is investigating the possible establishment of a Dutch AI safety institute; this confirms the exploration and is not a commitment to establish one.",
       "region": {
         "id": "150",
         "name": "Europe",
@@ -3144,7 +3147,49 @@
         "un-m49",
         "wikidata-nl-identifier"
       ],
-      "identifier_notes": "Q55 is the constituent Netherlands, matching tracker population and European country scope. Q29999 is Kingdom of the Netherlands and holds current Wikidata ISO-code statements. ISO3/M49 are independently verified in the UN table; do not equate both entities."
+      "identifier_notes": "Q55 is the constituent Netherlands, matching tracker population and European country scope. Q29999 is Kingdom of the Netherlands and holds current Wikidata ISO-code statements. ISO3/M49 are independently verified in the UN table; do not equate both entities.",
+      "claims": [
+        {
+          "id": "claims-d02804da014341809713ab966510e344",
+          "kind": "fact",
+          "text": "Motion 37020 no. 49 asks the government to set up an AI safety institute in close cooperation with similar institutes in Germany, France and England.",
+          "source_ids": [
+            "nl-motion-37020-49"
+          ]
+        },
+        {
+          "id": "claims-ce9ee82903684cbe9436019dc45c920e",
+          "kind": "fact",
+          "text": "The House of Representatives' vote record marks motion 37020 no. 49 as adopted.",
+          "source_ids": [
+            "nl-motion-37020-49-vote"
+          ]
+        },
+        {
+          "id": "claims-34a078194cc247bfbaa0e5f4c2ef146e",
+          "kind": "fact",
+          "text": "The International AI Strategy says the Netherlands will also seek to join the International Network for Advanced AI Measurement, Evaluation and Science.",
+          "source_ids": [
+            "nl-intl-ai-strategy-2026"
+          ]
+        },
+        {
+          "id": "claims-eee9818ee33240dba6f8b410462fb2a4",
+          "kind": "fact",
+          "text": "The French presidency lists the Netherlands among the heads of state and government who signed the Paris Call declaration on 9 November 2026.",
+          "source_ids": [
+            "fr-elysee-paris-call-2026"
+          ]
+        },
+        {
+          "id": "claims-40ee3efaa6e8461cace15c0b8d5dfdf5",
+          "kind": "fact",
+          "text": "The cabinet's AI vision says it is also investigating the possible establishment of a Dutch AI safety institute that could help recognise and address new risks in time.",
+          "source_ids": [
+            "nl-cabinet-ai-vision-2026"
+          ]
+        }
+      ]
     },
     {
       "id": "SE",
@@ -3160,11 +3205,9 @@
         ]
       },
       "institute_id": null,
-      "summary": "In its report published on 26 Nov 2024, the government-appointed AI Commission recommended an independent Swedish AI safety institute near KTH and Cybercampus Sverige, focused on research into AI safety risks and able to host a testing laboratory. It proposed SEK 30m a year to run the institute and a linked SEK 50m research fund. This is an advisory recommendation, not an adopted government commitment or budget.",
       "related_bodies": [
         {
           "name": "National Cyber Security Centre (NCSC) at FRA",
-          "role": "It coordinates AI-related cyber work and is a contact point for developers of advanced models; its report is due 13 Nov 2026.",
           "counts_as_aisi": false,
           "source_ids": [
             "se-gov"
@@ -3175,7 +3218,6 @@
         {
           "name": "Post- och telestyrelsen (PTS)",
           "name_en": "Post and Telecom Authority (PTS)",
-          "role": "Its temporary remit covers assigned sectors and transparency and includes responsibility for the sandbox. The mandate runs through 31 December 2026.",
           "counts_as_aisi": false,
           "source_ids": [
             "se-government-ai-authorities-decision-2026",
@@ -3194,7 +3236,6 @@
         {
           "name": "Integritetsskyddsmyndigheten",
           "name_en": "Swedish Authority for Privacy Protection",
-          "role": "It covers residual prohibited uses, Annex III points 1, 5(b) outside financial supervision and 6-8, and Article 50(3) through 31 December 2026.",
           "counts_as_aisi": false,
           "source_ids": [
             "se-government-ai-authorities-decision-2026",
@@ -3211,7 +3252,6 @@
         {
           "name": "Finansinspektionen",
           "name_en": "Financial Supervisory Authority",
-          "role": "It covers Annex III points 5(b) within its remit and 5(c), including prohibited uses, through 31 December 2026.",
           "counts_as_aisi": false,
           "source_ids": [
             "se-government-ai-authorities-decision-2026",
@@ -3228,7 +3268,6 @@
         {
           "name": "Läkemedelsverket",
           "name_en": "Medical Products Agency",
-          "role": "It covers medical-device and in-vitro-diagnostic AI through 31 December 2026.",
           "counts_as_aisi": false,
           "source_ids": [
             "se-government-ai-authorities-decision-2026",
@@ -3246,7 +3285,6 @@
         {
           "name": "Styrelsen för ackreditering och teknisk kontroll (Swedac)",
           "name_en": "Board for Accreditation and Technical Control (Swedac)",
-          "role": "It covers residual notifying functions through 31 December 2026.",
           "counts_as_aisi": false,
           "source_ids": [
             "se-government-ai-authorities-decision-2026",
@@ -3330,7 +3368,13 @@
         "governance_source_ids": [
           "se-gov"
         ],
-        "governance_note": "The government assigns NCSC coordination of AI-driven cyber threats and a developer contact role; the retrieved mandate does not establish evaluation of advanced models."
+        "governance_note": "The government assigns NCSC coordination of AI-driven cyber threats and a developer contact role; the retrieved mandate does not establish evaluation of advanced models.",
+        "log": [
+          {
+            "date": "2026-10-16",
+            "text": "Searched for a government act after the AI Commission's recommendation of 26 November 2024 that would change the record's status."
+          }
+        ]
       },
       "source_ids": [
         "se-gov",
@@ -3344,7 +3388,6 @@
         "se-r8-publication",
         "se-sou-2025-12"
       ],
-      "notes": "The advisory recommendation counts as exploring from its original publication on 26 November 2024. High confidence concerns that recommendation, not adoption by the government. The National Cyber Security Centre's separate cyber-coordination and developer-contact role does not itself establish model evaluation. No superseding government act was identified.\n\nThe Commission's contact list of 9 November 2026 marks this state's AI Act authority as pending final adoption; the national sources cited here give its actual designation status.",
       "region": {
         "id": "150",
         "name": "Europe",
@@ -3375,6 +3418,27 @@
             "se-r8-publication"
           ]
         }
+      ],
+      "claims": [
+        {
+          "id": "claims-ade498f986fc4b46a1ab587d32e61bac",
+          "kind": "fact",
+          "text": "The AI Commission's report says an annual grant of SEK 30 million is needed to run the institute and that a SEK 50 million research fund should be linked to it.",
+          "source_ids": [
+            "se-sou-2025-12"
+          ]
+        },
+        {
+          "id": "claims-f296277fce99425184fd10933235cbd4",
+          "kind": "function",
+          "code": "convening",
+          "basis": "mandate",
+          "body_id": "related_bodies-c88e0fe3212b50bd8df977e34b5123ed",
+          "text": "The government has tasked it with being the contact point for companies that make advanced AI models.",
+          "source_ids": [
+            "se-gov"
+          ]
+        }
       ]
     },
     {
@@ -3391,7 +3455,6 @@
         ]
       },
       "institute_id": null,
-      "summary": "No qualifying institute identified. Consultation on legislation implementing the Council of Europe AI Convention is planned for spring 2027.",
       "next_check": {
         "date": "2027-06-30",
         "reason": "Consultation on legislation implementing the Council of Europe AI Convention, planned for spring 2027."
@@ -3450,7 +3513,13 @@
         "governance_source_ids": [
           "negative-second-ch-2026"
         ],
-        "governance_note": "The Federal Office of Justice describes the Swiss AI regulatory approach and preparation of a consultation draft. Absence of AI-specific legislation is context, not an explicit denial of an institute."
+        "governance_note": "The Federal Office of Justice describes the Swiss AI regulatory approach and preparation of a consultation draft. Absence of AI-specific legislation is context, not an explicit denial of an institute.",
+        "log": [
+          {
+            "date": "2026-10-17",
+            "text": "Searched in English and German for a body the government has tasked with testing general-purpose or frontier AI models, or named as its AI safety or security institute; the Federal Office of Justice's pages on AI regulation were read."
+          }
+        ]
       },
       "source_ids": [
         "ch-bk",
@@ -3473,8 +3542,7 @@
       "identifier_source_ids": [
         "un-m49",
         "wikidata-jurisdiction-identifiers"
-      ],
-      "notes": "The Federal Office of Justice describes work on a consultation draft for AI regulation. The Federal Office of Justice's retrieved page states that Switzerland currently has no AI-specific legislation; this is the page's assessment, not an independently verified inventory of all legislation. No Swiss body with a mandate to test AI models was found. Searched in English and German for a body its government has tasked with testing general-purpose or frontier AI models or named its AI safety or security institute.\n\nOn 28 October 2026 the Federal Council took note of the state of work on implementing the Council of Europe AI Convention, for which the Federal Office of Justice is drawing up the legally binding measures, with the consultation planned to open in spring 2027."
+      ]
     },
     {
       "id": "IT",
@@ -32358,7 +32426,17 @@
             "certification",
             "sandbox"
           ]
-        }
+        },
+        "log": [
+          {
+            "date": "2026-10-21",
+            "text": "Testing: the budget release of 7 October 2026 was read for testing by the institute, and the membership list of the international network was checked for Norway."
+          },
+          {
+            "date": "2026-10-21",
+            "text": "Model access: searched on 21 October 2026 in Norwegian and English for an access event, legal power or agreement with a developer that has a model in Epoch AI's frontier set; KI Norge's AI Act page and Nkom's enforcement page were read."
+          }
+        ]
       },
       "source_ids": [
         "no-budget",
@@ -32437,11 +32515,11 @@
       },
       "national_partners": {
         "state": "not_published",
-        "notes": "Cyber agency searched: NSM (including NCSC Norway), 2026-10-19 (no, en); none found. No direct KI Norge–NSM relation established. Six documents served the cyber search, including current institute pages and host report. Host-level NSM cooperation was not transferred to KI Norge. This is a bounded not-published finding, not proof that cooperation does not exist. Count includes multipurpose sources; exact source IDs: no-ki-holte-june, no-ki-about, no-nsm-about, no-digdir-report-2024, no-nsm-risk-2026, no-nsm-news. KI Norge is assigned to set up and run the AI regulatory sandbox under the AI Act jointly with Nkom and the Data Protection Authority, but no text assigns those two a task with the proposed AI safety mandate, so they are not entries."
+        "notes": "Cyber agency searched on 19 October 2026 in Norwegian and English: NSM (including NCSC Norway); six documents were read, including the institute's current pages, its host's report and NSM's own pages."
       },
       "testing_capacity": {
         "state": "not_published",
-        "notes": "proposed: 'Regjeringa vil utvide mandatet til KI Norge så det inkluderer arbeid med KI-sikkerheit, og foreslår 30 millionar kroner til å styrke arbeidet på dette feltet.' (the Government intends to extend KI Norge's mandate to include AI safety work and proposes NOK 30 million to strengthen this work) and 'Forslaget skal gi auka kapasitet til å evaluere KI-modeller' (the proposal is to give increased capacity to evaluate AI models), with the evaluation work 'i samarbeid med forskingsinstitusjonane' (in cooperation with the research institutions), which are not named (budget press release of the Ministry of Digitalisation and Public Governance, 7 October 2026). Norway is not a member of the international network, so no joint testing is credited.",
+        "notes": "The budget release says the government will extend KI Norge's mandate to include AI safety work and proposes NOK 30 million to strengthen this work.",
         "source_ids": [
           "no-budget"
         ],
@@ -32504,7 +32582,7 @@
         ]
       },
       "model_access": {
-        "notes": "No access event, legal power or agreement providing for access to, or evaluation of, the models of a developer that has a model in Epoch AI's frontier set was found. The Norwegian AI Act is not adopted ('Loven er ikke vedtatt i Norge'), and the Norwegian Communications Authority (Nkom), not KI Norge, is the designated national coordinating authority. The budget proposal's 'tilgang til metodar, testverktøy og vurderingar' (access to methods, test tools and assessments) concerns methods and tools, not models.",
+        "notes": "The budget release says the contact-point role is to give access to methods, test tools and assessments that Norway cannot build up alone.",
         "source_ids": [
           "no-ki-norge-ki-loven",
           "no-budget"
@@ -41984,13 +42062,6 @@
               {
                 "id": "NO"
               },
-              "summary"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "NO"
-              },
               "timeline",
               {
                 "id": "no-1"
@@ -42025,6 +42096,17 @@
                 "id": "no-1"
               },
               "event"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "funding",
+              {
+                "id": "funding-0475119a71cc5e2099e293d3a48356b0"
+              },
+              "description"
             ]
           ],
           "gloss": "proposes 30 million kroner",
@@ -42039,13 +42121,6 @@
                 "id": "no-ki-norge"
               },
               "mandate"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "NO"
-              },
-              "summary"
             ],
             [
               "jurisdictions",
@@ -42105,6 +42180,14 @@
                 "id": "no-1"
               },
               "description"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "testing_capacity",
+              "notes"
             ]
           ],
           "accessed": "2026-10-17"
@@ -42167,25 +42250,11 @@
               {
                 "id": "NO"
               },
-              "summary"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "NO"
-              },
               "timeline",
               {
                 "id": "no-1"
               },
               "description"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "NO"
-              },
-              "notes"
             ],
             [
               "institutes",
@@ -42232,6 +42301,21 @@
           ],
           "accessed": "2026-10-24",
           "gloss": "The evaluation work is to be done in cooperation with the research institutions"
+        },
+        {
+          "text": "I tillegg skal KI Norge vere kontaktpunktet mot internasjonale sikkerheitsmiljø, for eksempel AI Safety Institutes. Dette skal gi tilgang til metodar, testverktøy og vurderingar som Noreg ikkje kan bygge opp åleine.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "model_access",
+              "notes"
+            ]
+          ],
+          "gloss": "In addition, KI Norge is to be the contact point towards international safety communities, for example AI Safety Institutes. This is to give access to methods, test tools and assessments that Norway cannot build up alone.",
+          "accessed": "2026-10-21"
         }
       ],
       "origin": "NO",
@@ -42279,13 +42363,6 @@
                 "id": "nl-0"
               },
               "description"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "NL"
-              },
-              "notes"
             ]
           ],
           "gloss": "AI safety institute for the Netherlands.",
@@ -42304,13 +42381,6 @@
                 "id": "nl-0"
               },
               "date"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "NL"
-              },
-              "notes"
             ]
           ],
           "gloss": "Date: 10 June 2026.",
@@ -42357,21 +42427,28 @@
       "archive_url": "https://web.archive.org/web/20260730000242/https://www.regeringen.se/pressmeddelanden/2026/07/regeringen-agerar-for-att-starka-samhallets-arbete-med-cybersakerhet-kopplat-till-utvecklingen-av-nya-ai-modeller/",
       "excerpts": [
         {
-          "text": "Samordna arbetet med att förebygga, upptäcka och motverka AI-drivna cyberhot.",
+          "text": "Vara kontaktpunkt för företag som gör avancerade modeller för AI.",
           "supports": [
             [
               "jurisdictions",
               {
                 "id": "SE"
               },
-              "related_bodies",
+              "claims",
               {
-                "id": "related_bodies-c88e0fe3212b50bd8df977e34b5123ed"
+                "id": "claims-f296277fce99425184fd10933235cbd4"
               },
-              "role"
+              "text"
             ]
           ],
-          "gloss": "Coordinate work to prevent, detect and counter AI-driven cyber threats.",
+          "gloss": "Be the contact point for companies that make advanced AI models.",
+          "anchors": [
+            {
+              "text": "Regeringen har därför beslutat att ge Nationellt cybersäkerhetscenter (NCSC) vid Försvarets radioanstalt (FRA) i uppdrag att på nationell nivå tillsammans med berörda myndigheter:",
+              "kind": "heading",
+              "gloss": "The government has therefore decided to task the National Cyber Security Centre (NCSC) at the National Defence Radio Establishment (FRA), at national level together with the authorities concerned, to:"
+            }
+          ],
           "accessed": "2026-10-17"
         }
       ],
@@ -64221,13 +64298,6 @@
               {
                 "id": "NL"
               },
-              "summary"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "NL"
-              },
               "timeline",
               {
                 "id": "nl-2"
@@ -64244,13 +64314,6 @@
                 "id": "nl-2"
               },
               "event"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "NL"
-              },
-              "notes"
             ]
           ],
           "gloss": "An exploration of establishing an AI safety institute is under way.",
@@ -64260,13 +64323,6 @@
         {
           "text": "Het adviesrapport zal eind dit jaar met uw Kamer worden gedeeld.",
           "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "NL"
-              },
-              "summary"
-            ],
             [
               "jurisdictions",
               {
@@ -64282,21 +64338,6 @@
           "gloss": "The advisory report will be shared with parliament at the end of this year.",
           "url": "https://gegevensmagazijn.tweedekamer.nl/OData/v4/2.0/Document(bd406d2b-fb9d-4c05-8269-e58bbff04b4f)/resource",
           "accessed": "2026-10-17"
-        },
-        {
-          "text": "Daarbij kijken we of een AI-veiligheidsinstituut potentieel invulling kan bieden aan de behoeften voor inzicht en advies op de impact van AI voor de maatschappij en overheid.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "NL"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-10-26",
-          "gloss": "We are considering whether an AI safety institute could meet the need for insight and advice on the impact of AI on society and government.",
-          "url": "https://gegevensmagazijn.tweedekamer.nl/OData/v4/2.0/Document(bd406d2b-fb9d-4c05-8269-e58bbff04b4f)/resource"
         }
       ],
       "origin": "NL",
@@ -65745,113 +65786,7 @@
       "published": "2026-09-17",
       "accessed": "2026-10-17",
       "language": "nl",
-      "excerpts": [
-        {
-          "text": "Ja, en inderdaad het liefst in nauwe samenwerking met andere landen",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "NL"
-              },
-              "notes"
-            ]
-          ],
-          "gloss": "Yes, and indeed preferably in close cooperation with other countries",
-          "accessed": "2026-10-17"
-        },
-        {
-          "text": "We zullen verkennen of er een nationaal instituut moet komen",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "NL"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "NL"
-              },
-              "summary"
-            ]
-          ],
-          "gloss": "We will explore whether there should be a national institute",
-          "accessed": "2026-10-17"
-        },
-        {
-          "text": "De motie op stuk nr. 49 van de heer Dassen gaat over het AI-veiligheidsinstituut. We zullen verkennen of er een nationaal instituut moet komen",
-          "accessed": "2026-10-17",
-          "gloss": "Mr Dassen's motion 49 concerns the AI safety institute. We will explore whether there should be a national institute.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "NL"
-              },
-              "notes"
-            ]
-          ]
-        },
-        {
-          "text": "Is de minister-president het met mij eens dat het verstandig zou zijn als we in Nederland ook een veiligheidsinstituut zouden oprichten, en dat in nauwe samenwerking met die andere landen?",
-          "gloss": "Does the prime minister agree with me that it would be sensible for us to establish a safety institute in the Netherlands too, in close cooperation with those other countries?",
-          "accessed": "2026-10-17",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "NL"
-              },
-              "notes"
-            ]
-          ]
-        },
-        {
-          "text": "maar we zullen vooral kijken of we kunnen aansluiten bij andere Europese reeds lopende initiatieven",
-          "gloss": "but we will mainly look at whether we can link up with other European initiatives already under way",
-          "accessed": "2026-10-17",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "NL"
-              },
-              "notes"
-            ]
-          ]
-        },
-        {
-          "text": "Donderdag 17 september 2026",
-          "gloss": "Thursday 17 September 2026.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "NL"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-10-20"
-        },
-        {
-          "text": "Minister Jetten: Ja, en inderdaad het liefst in nauwe samenwerking met andere landen",
-          "gloss": "Minister Jetten: Yes, and indeed preferably in close cooperation with other countries.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "NL"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-10-20"
-        }
-      ],
+      "excerpts": [],
       "origin": "NL",
       "snapshot": {
         "retrieved": "2026-10-17T14:08:23Z",
@@ -77281,20 +77216,6 @@
                 "id": "CY"
               },
               "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "NL"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "SE"
-              },
-              "notes"
             ]
           ],
           "accessed": "2026-11-10"
@@ -77311,25 +77232,7 @@
               {
                 "id": "related_bodies-88c94229d9d359b39401c860242deda6"
               },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "NL"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-88c94229d9d359b39401c860242deda6"
-              },
               "authority_roles"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "NL"
-              },
-              "notes"
             ],
             [
               "jurisdictions",
@@ -77368,25 +77271,7 @@
               {
                 "id": "related_bodies-88c94229d9d359b39401c860242deda6"
               },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "NL"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-88c94229d9d359b39401c860242deda6"
-              },
               "designation_state"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "NL"
-              },
-              "notes"
             ],
             [
               "jurisdictions",
@@ -77908,20 +77793,6 @@
               "jurisdictions",
               {
                 "id": "CY"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "NL"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "SE"
               },
               "notes"
             ],
@@ -79557,25 +79428,7 @@
       "accessed": "2026-10-17",
       "published": "2026-06-16",
       "language": "sv",
-      "excerpts": [
-        {
-          "text": "till och med 31 december 2026 vara nationella behöriga myndigheter enligt AI-förordningen",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "SE"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-2b7055290e825b10b32885aee6de84cd"
-              },
-              "role"
-            ]
-          ],
-          "gloss": "To serve as national competent authorities under the AI Act through 31 December 2026."
-        }
-      ],
+      "excerpts": [],
       "origin": "SE",
       "title_en": "Mandate gives PTS central responsibility under the AI Regulation",
       "snapshot": {
@@ -80228,25 +80081,7 @@
         "text_sha256": "bf663ae01878301a5c2720c1352ec34f8fb325906c6b63478815c3728486d5b9",
         "text_scheme": 1
       },
-      "excerpts": [
-        {
-          "text": "Nasjonal kommunikasjonsmyndighet (Nkom) utpekt som koordinerende KI-tilsyn.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "NO"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-b4d2d434bb295ee0bb53655409c68c01"
-              },
-              "role"
-            ]
-          ],
-          "gloss": "The Norwegian Communications Authority (Nkom) appointed coordinating AI supervisor."
-        }
-      ],
+      "excerpts": [],
       "origin": "NO",
       "title_en": "Artificial intelligence law in Norway is now being circulated for consultation",
       "access_note": "Snapshot review on 17 October 2026, using cached responses: Original source: an HTTP error (HTTP 403); Fallback text copy: an error or challenge page; Separate archive.ph newest-capture lookup returned HTTP 429; the capture content was not checked. That review retained no usable source copy. On 19 October 2026 the linked Wayback capture of 6 August 2026 was checked against this URL, the document title and every bound quotation. On 21 October 2026 the complete response of the linked Wayback capture of 6 August 2026 was retained as the private source copy, and every bound quotation was found in it by the automated verifier."
@@ -80507,36 +80342,8 @@
       "language": "nl",
       "excerpts": [
         {
-          "text": "Onze Minister is de aanmeldende autoriteit",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "NL"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-2a1087f4f6895c56bde94140740fbf86"
-              },
-              "role"
-            ]
-          ],
-          "gloss": "Our Minister is the notifying authority."
-        },
-        {
           "text": "Onze Minister is het centrale contactpunt, bedoeld in artikel 70, tweede lid, van de verordening artificiële intelligentie.",
           "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "NL"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-2a1087f4f6895c56bde94140740fbf86"
-              },
-              "role"
-            ],
             [
               "jurisdictions",
               {
@@ -81059,23 +80866,6 @@
       "language": "sv",
       "excerpts": [
         {
-          "text": "Swedac ska i övrigt vara anmälande myndighet",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "SE"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-c7f5891b540f58518a65815f90820dc7"
-              },
-              "role"
-            ]
-          ],
-          "gloss": "Swedac is otherwise to be the notifying authority."
-        },
-        {
           "text": "Regeringen ger Post- och telestyrelsen (PTS), Integritetsskyddsmyndigheten, Finansinspektionen, Läkemedelsverket och Styrelsen för ackreditering och teknisk kontroll (Swedac) i uppdrag att vara nationella behöriga myndigheter enligt artikel 70.1",
           "gloss": "The government assigns the Post and Telecom Authority (PTS), the Authority for Privacy Protection, the Financial Supervisory Authority, the Medical Products Agency and the Swedish Board for Accreditation and Conformity Assessment (Swedac) to be national competent authorities under Article 70(1)",
           "supports": [
@@ -81541,23 +81331,6 @@
       },
       "excerpts": [
         {
-          "text": "Nasjonal kommunikasjonsmyndighet er nasjonalt kontaktpunkt for de nasjonale vedkommende myndighetene",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "NO"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-b4d2d434bb295ee0bb53655409c68c01"
-              },
-              "role"
-            ]
-          ],
-          "gloss": "The Norwegian Communications Authority is the national contact point for the national competent authorities"
-        },
-        {
           "text": "Høringsnotat Gjennomføring av forordningen om kunstig intelligens",
           "gloss": "Consultation paper: implementation of the regulation on artificial intelligence",
           "supports": [
@@ -81693,21 +81466,7 @@
       "type": "primary",
       "accessed": "2026-10-17",
       "language": "de",
-      "excerpts": [
-        {
-          "text": "In der Schweiz gibt es aktuell keine spezifische Gesetzgebung zur KI.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "CH"
-              },
-              "notes"
-            ]
-          ],
-          "gloss": "Switzerland currently has no AI-specific legislation."
-        }
-      ],
+      "excerpts": [],
       "origin": "CH",
       "title_en": "Artificial intelligence",
       "snapshot": {
@@ -97191,13 +96950,6 @@
               {
                 "id": "SE"
               },
-              "summary"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "SE"
-              },
               "timeline",
               {
                 "id": "se-advisory-recommendation-2024"
@@ -97211,13 +96963,6 @@
         {
           "text": "ett högteknologiskt testlaboratorium",
           "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "SE"
-              },
-              "summary"
-            ],
             [
               "jurisdictions",
               {
@@ -97266,13 +97011,6 @@
                 "id": "se-advisory-recommendation-2024"
               },
               "date"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "SE"
-              },
-              "summary"
             ]
           ],
           "accessed": "2026-10-18",
@@ -97281,13 +97019,6 @@
         {
           "text": "Regeringen beslutade den 7 december 2023 att tillsätta en kommitté",
           "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "SE"
-              },
-              "summary"
-            ],
             [
               "jurisdictions",
               {
@@ -99564,13 +99295,6 @@
                 "id": "nl-0"
               },
               "event"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "NL"
-              },
-              "notes"
             ]
           ],
           "accessed": "2026-10-19",
@@ -99600,13 +99324,6 @@
                 "id": "nl-0"
               },
               "event"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "NL"
-              },
-              "notes"
             ]
           ],
           "accessed": "2026-10-19",
@@ -99655,13 +99372,6 @@
                 "id": "nl-0"
               },
               "event"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "NL"
-              },
-              "notes"
             ]
           ],
           "accessed": "2026-10-19"
@@ -99690,13 +99400,6 @@
                 "id": "nl-0"
               },
               "event"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "NL"
-              },
-              "notes"
             ]
           ],
           "accessed": "2026-10-19"
@@ -99717,48 +99420,6 @@
       "origin": "SE",
       "excerpts": [
         {
-          "text": "Institutets huvuduppgift ska vara att bedriva och främja forskning kring säkerhetsrisker förknippade med AI.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "SE"
-              },
-              "summary"
-            ]
-          ],
-          "accessed": "2026-10-19",
-          "gloss": "The institute's main task should be to conduct and promote research into safety risks associated with AI."
-        },
-        {
-          "text": "Institutet bör vara en självständig myndighet",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "SE"
-              },
-              "summary"
-            ]
-          ],
-          "accessed": "2026-10-19",
-          "gloss": "The institute should be an independent government agency."
-        },
-        {
-          "text": "Vad gäller institutets hemvist föreslår vi att det placeras i nära anslutning till KTH och Cybercampus Sverige",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "SE"
-              },
-              "summary"
-            ]
-          ],
-          "accessed": "2026-10-19",
-          "gloss": "As for the institute's location, we propose that it be placed close to KTH and Cybercampus Sverige."
-        },
-        {
           "text": "AI-kommissionen föreslår att ett svenskt institut för AI-säkerhet ska etableras. Vi bedömer att ett årligt anslag för att driva institutet på 30 miljoner kronor är nödvändigt. Till institutet ska en forskningsfond på 50 miljoner kronor kopplas.",
           "supports": [
             [
@@ -99766,7 +99427,11 @@
               {
                 "id": "SE"
               },
-              "summary"
+              "claims",
+              {
+                "id": "claims-ade498f986fc4b46a1ab587d32e61bac"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-19",
@@ -113947,13 +113612,6 @@
                 "id": "nl-3"
               },
               "description"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "NL"
-              },
-              "notes"
             ]
           ],
           "accessed": "2026-10-26",
@@ -113972,13 +113630,6 @@
                 "id": "nl-3"
               },
               "description"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "NL"
-              },
-              "notes"
             ]
           ],
           "accessed": "2026-10-26",
@@ -114046,13 +113697,6 @@
                 "id": "nl-4"
               },
               "description"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "NL"
-              },
-              "summary"
             ]
           ],
           "accessed": "2026-10-26",
@@ -114066,7 +113710,11 @@
               {
                 "id": "NL"
               },
-              "notes"
+              "claims",
+              {
+                "id": "claims-34a078194cc247bfbaa0e5f4c2ef146e"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-26",
@@ -114085,13 +113733,6 @@
                 "id": "nl-4"
               },
               "description"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "NL"
-              },
-              "notes"
             ]
           ],
           "accessed": "2026-10-26",
@@ -114140,33 +113781,6 @@
                 "id": "nl-4"
               },
               "description"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "NL"
-              },
-              "summary"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "NL"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-10-26"
-        },
-        {
-          "text": "Furthermore, the Netherlands will seek to join the International Network for Advanced AI Measurement, Evaluation and Science.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "NL"
-              },
-              "notes"
             ]
           ],
           "accessed": "2026-10-26"
@@ -114222,13 +113836,6 @@
                 "id": "nl-4"
               },
               "description"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "NL"
-              },
-              "summary"
             ]
           ],
           "accessed": "2026-10-26",
@@ -114253,71 +113860,7 @@
       "language": "nl",
       "origin": "NL",
       "title_en": "Parliamentary questions (appendix) 2025-2026, No. 2895",
-      "excerpts": [
-        {
-          "text": "loopt er in dit kader een interdepartementale verkenning naar de mogelijke inrichting van een onafhankelijk AI-veiligheidsinstituut.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "NL"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-10-26",
-          "gloss": "An interdepartmental exploration is under way in this context into the possible establishment of an independent AI safety institute."
-        },
-        {
-          "text": "De verkenning zal naar verwachting in september resulteren in een adviesrapport.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "NL"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-10-26",
-          "gloss": "The exploration is expected to produce an advisory report in September."
-        },
-        {
-          "text": "Op basis van de uitkomsten daarvan zal het kabinet besluiten of en op welke wijze een dergelijk instituut kan worden ingericht, inclusief de taken, bevoegdheden en benodigde randvoorwaarden.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "NL"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "NL"
-              },
-              "summary"
-            ]
-          ],
-          "accessed": "2026-10-26",
-          "gloss": "On the basis of its findings, the cabinet will decide whether and how such an institute can be established, including its tasks, powers and necessary conditions."
-        },
-        {
-          "text": "(ontvangen 31 augustus 2026)",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "NL"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-10-26",
-          "gloss": "(received 31 August 2026)"
-        }
-      ],
+      "excerpts": [],
       "snapshot": {
         "retrieved": "2026-10-26T08:54:18Z",
         "sha256": "98b86e9c13a9357ead321d5d7b9e6614dc7752eebe9526e055e49879e210d12b",
@@ -114345,32 +113888,15 @@
               {
                 "id": "NL"
               },
-              "notes"
-            ],
-            [
-              "jurisdictions",
+              "claims",
               {
-                "id": "NL"
+                "id": "claims-d02804da014341809713ab966510e344"
               },
-              "summary"
+              "text"
             ]
           ],
           "accessed": "2026-10-26",
           "gloss": "Requests the government to establish an AI safety institute in close cooperation with similar institutes in Germany, France and England."
-        },
-        {
-          "text": "Voorgesteld 17 september 2026",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "NL"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-10-26",
-          "gloss": "Proposed on 17 September 2026"
         }
       ],
       "snapshot": {
@@ -114400,53 +113926,15 @@
               {
                 "id": "NL"
               },
-              "notes"
-            ],
-            [
-              "jurisdictions",
+              "claims",
               {
-                "id": "NL"
+                "id": "claims-ce9ee82903684cbe9436019dc45c920e"
               },
-              "summary"
+              "text"
             ]
           ],
           "accessed": "2026-10-26",
           "gloss": "Adopted."
-        },
-        {
-          "text": "Met handopsteken",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "NL"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-10-26",
-          "gloss": "By show of hands"
-        },
-        {
-          "text": "2026-09-17T21:30:00+02:00",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "NL"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "NL"
-              },
-              "summary"
-            ]
-          ],
-          "accessed": "2026-10-26",
-          "gloss": "17 September 2026 at 21:30 (UTC+02:00)."
         }
       ],
       "access_note": "The open data record for case 2026Z19154 links the adopted decision to the voting activity on 17 September 2026. Its subject omits England; the published motion text includes England.",
@@ -121590,13 +121078,6 @@
             [
               "jurisdictions",
               {
-                "id": "NL"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
                 "id": "HR"
               },
               "notes"
@@ -121673,13 +121154,6 @@
             [
               "jurisdictions",
               {
-                "id": "NL"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
                 "id": "HR"
               },
               "notes"
@@ -121704,9 +121178,26 @@
                 "id": "PT"
               },
               "notes"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "NL"
+              },
+              "claims",
+              {
+                "id": "claims-eee9818ee33240dba6f8b410462fb2a4"
+              },
+              "text"
             ]
           ],
-          "accessed": "2026-11-10"
+          "accessed": "2026-11-10",
+          "anchors": [
+            {
+              "text": "The declaration has been signed on Monday 9 November 2026 by the following Heads of States and Governments and CEOs:",
+              "kind": "heading"
+            }
+          ]
         },
         {
           "text": "First, policy makers, researchers and developers are committed to establishing a common framework for the evaluation and risk management of frontier models, building on existing frameworks.",
@@ -121750,13 +121241,6 @@
               "jurisdictions",
               {
                 "id": "LV"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "NL"
               },
               "notes"
             ],
@@ -122259,64 +121743,7 @@
       "accessed": "2026-11-11",
       "language": "de",
       "origin": "CH",
-      "excerpts": [
-        {
-          "text": "An seiner Sitzung vom 28. Oktober 2026 hat der Bundesrat den Stand der Arbeiten und erste Ergebnisse zur Kenntnis genommen.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "CH"
-              },
-              "notes"
-            ]
-          ],
-          "gloss": "At its meeting of 28 October 2026 the Federal Council took note of the state of work and first results.",
-          "accessed": "2026-11-11"
-        },
-        {
-          "text": "Das Bundesamt für Justiz (BJ) erarbeitet die rechtlich verbindlichen Massnahmen zur Umsetzung der KI-Konvention des Europarats.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "CH"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "CH"
-              },
-              "summary"
-            ]
-          ],
-          "gloss": "The Federal Office of Justice (FOJ) is drawing up the legally binding measures to implement the Council of Europe AI Convention.",
-          "accessed": "2026-11-11"
-        },
-        {
-          "text": "Die Eröffnung der Vernehmlassung ist für den Frühling 2027 geplant.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "CH"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "CH"
-              },
-              "summary"
-            ]
-          ],
-          "gloss": "The opening of the consultation is planned for spring 2027.",
-          "accessed": "2026-11-11"
-        }
-      ],
+      "excerpts": [],
       "snapshot": {
         "retrieved": "2026-11-11T04:52:50Z",
         "sha256": "efd44a9a5de9e6d9ff16364c5d2da854f1cdb0eae90b9e17370e41666d6b8542",
@@ -122422,7 +121849,11 @@
               {
                 "id": "NL"
               },
-              "notes"
+              "claims",
+              {
+                "id": "claims-40ee3efaa6e8461cace15c0b8d5dfdf5"
+              },
+              "text"
             ]
           ],
           "gloss": "The cabinet is also investigating the possible establishment of a Dutch AI safety institute, which could help to recognise and address new risks in time.",
