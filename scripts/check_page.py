@@ -4314,13 +4314,14 @@ def check_card_grid_edges(browser, base_url: str, data: dict) -> list[str]:
         if (
             tracks != ["3", "8"]
             or [bool(text.strip()) for text in finding.locator(".row > .k").all_inner_texts()] != [True, True]  # one label per row
+            # Dates in the value are joined by no-break spaces (nonbreakingDates), so the text is compared word by word.
             or finding.locator(".row")
             .nth(1)
             .locator(".v")
             .evaluate(
                 "e => { const c = e.cloneNode(true); c.querySelectorAll('.cites').forEach(n => n.remove()); return c.textContent.trim(); }"
-            )
-            != without_institute["summary"]
+            ).split()
+            != without_institute["summary"].split()
         ):
             errors.append(
                 f"{width}px: record without an institute lost its finding or fields"
