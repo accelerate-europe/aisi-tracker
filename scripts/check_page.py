@@ -36,7 +36,7 @@ from pathlib import Path
 from xml.etree import ElementTree
 from urllib.parse import urljoin, urlsplit
 
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Comment, NavigableString
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from browser_lock import browser_slot, lock_path  # noqa: E402
@@ -4329,13 +4329,14 @@ def check_card_grid_edges(browser, base_url: str, data: dict) -> list[str]:
         if (
             tracks != ["3", "8"]
             or [bool(text.strip()) for text in finding.locator(".row > .k").all_inner_texts()] != [True, True]  # one label per row
+            # Dates in the value are joined by no-break spaces (nonbreakingDates), so the text is compared word by word.
             or finding.locator(".row")
             .nth(1)
             .locator(".v")
             .evaluate(
                 "e => { const c = e.cloneNode(true); c.querySelectorAll('.cites').forEach(n => n.remove()); return c.textContent.trim(); }"
-            )
-            != without_institute["summary"]
+            ).split()
+            != without_institute["summary"].split()
         ):
             errors.append(
                 f"{width}px: record without an institute lost its finding or fields"
@@ -6069,6 +6070,111 @@ def check_tooltip_cues(page) -> list[str]:
     return errors
 
 
+def check_group_row_cover(page) -> list[str]:
+    """Principle Group rows: a sticky group row's ground reaches up to the section bar (no strip of text between them
+    when the bar's measured height is rounded) and sideways at least as far as an arrived card's tint spreads (no tint
+    beside the row). Read from the computed shadows, so it holds at every width and theme without scrolling."""
+    found = page.evaluate("""() => {
+        const probe = document.createElement('div'); probe.className = 'card arrived'; probe.style.position = 'absolute'; document.body.appendChild(probe);
+        const tint = getComputedStyle(probe).boxShadow; probe.remove();
+        return [tint, [...document.querySelectorAll('.group-nav')].filter(n => n.getClientRects().length).map(n => { const s = getComputedStyle(n);
+            return [n.textContent.trim().slice(0, 30), s.boxShadow, s.backgroundColor]; })]; }""")
+    return row_cover_errors(*found)
+
+
+def shadow_layers(value: str) -> list[dict]:
+    """A computed box-shadow ("rgb(23, 25, 26) 0px -8px 0px 8px, ...") as layers: colour, inset, x, y, blur, spread."""
+    if not value or value == "none":
+        return []
+    layers = []
+    for layer in re.split(r",(?![^(]*\))", value):
+        colour = (re.search(r"rgba?\([^)]*\)", layer) or [""])[0]
+        numbers = [float(n) for n in re.findall(r"(-?[\d.]+)px", layer.replace(colour, ""))] + [0.0] * 4
+        layers.append({"colour": colour, "inset": "inset" in layer, "x": numbers[0], "y": numbers[1], "blur": numbers[2], "spread": numbers[3]})
+    return layers
+
+
+def row_cover_errors(tint_shadow: str, rows: list) -> list[str]:
+    """One outer shadow layer in the row's own ground must cover, as one rectangle, the arrival tint's spread on both
+    sides and at least a pixel above the row: separate layers leave the upper corners open."""
+    tint = max([layer["spread"] for layer in shadow_layers(tint_shadow) if not layer["inset"]] or [0])
+    if not rows:
+        return [report_line("group row cover: no group row to check")]
+    errors = []
+    for text, shadow, ground in rows:
+        covers = [layer for layer in shadow_layers(shadow) if not layer["inset"] and layer["colour"] == ground
+                  and layer["blur"] == 0 and layer["x"] - layer["spread"] <= -tint and layer["x"] + layer["spread"] >= tint
+                  and layer["y"] - layer["spread"] <= -1 and layer["y"] + layer["spread"] >= 0]  # solid, down to the row's own bottom
+        if not covers:
+            errors.append(f"group row cover: {text!r} has no ground layer covering {tint:g}px on both sides and above the row as one rectangle")
+    return errors
+
+
+TERM_SCOPES = "details.card > summary, .card, #record"  # a folded card's summary row is its own view
+
+
+def term_scope(node):
+    """The nearest card summary row, card or record panel holding node (the page script's SCOPE)."""
+    for parent in node.parents:
+        if parent.name == "summary" and parent.parent is not None and parent.parent.name == "details" and "card" in parent.parent.get("class", []):
+            return parent
+        if "card" in (parent.get("class") or []) or parent.get("id") == "record":
+            return parent
+    return None
+
+
+def spelt_out(glossary: dict, label: str, state: str | None) -> str | None:
+    """The text that spells a term out just before it, lower-cased: its expansion's name up to the first sentence end,
+    then " (" ("ai security institute (" before AISI), as the page script reads it; None without an expansion."""
+    expansion = glossary.get(label)
+    if isinstance(expansion, dict):
+        expansion = expansion.get(state)
+    return re.split(r"[;(]|\.(?=\s|$)", expansion)[0].strip().lower() + " (" if expansion else None
+
+
+def check_terms_once(html, data: dict) -> list[str]:
+    """Principle Tooltip cues, on the saved page: in each card (its summary row and its body each) and the record
+    panel, a glossary term's first use is marked unless it spells the term out ("... Institute (AISI)"), and no later
+    use is. Expansions per state come from the card's data-j, as the page script reads them."""
+    soup = html if isinstance(html, BeautifulSoup) else BeautifulSoup(html, "html.parser")
+    glossary = data["dataset"].get("glossary") or {}
+    if not glossary:
+        return []
+    keys = sorted(glossary, key=len, reverse=True)
+    term = re.compile(r"(^|[^A-Za-z0-9-])(" + "|".join(map(re.escape, keys)) + r")(?![A-Za-z0-9-])")
+    errors = []
+    for box in soup.select(TERM_SCOPES):
+        host = box if box.has_attr("data-j") else box.find_parent(attrs={"data-j": True})
+        state = host["data-j"] if host else None
+        seen: set[str] = set()
+        name = box.get("id") or (box.find_parent(class_="card") or box).get("id") or "record"
+        for node in box.descendants:
+            if term_scope(node) is not box:
+                continue
+            if getattr(node, "name", None) == "abbr" and "g" in node.get("class", []) and "val" not in node.get("class", []):
+                label = node.get_text().strip()
+                if label in glossary and label in seen:
+                    errors.append(f"terms once: {name} marks {label!r} again after its first use")
+                elif label in glossary and isinstance(node.previous_sibling, NavigableString) and (spelt := spelt_out(glossary, label, state)) and str(node.previous_sibling).lower().endswith(spelt):
+                    errors.append(f"terms once: {name} marks {label!r} where the text spells it out")
+                seen.add(label)
+                continue
+            if not isinstance(node, NavigableString) or isinstance(node, Comment) or node.find_parent(["abbr", "a", "button", "option", "select", "script", "style"]) is not None or node.find_parent(class_="conf") is not None:
+                continue
+            text = str(node)
+            for match in term.finditer(text):
+                label, start = match.group(2), match.start(2)
+                expansion = glossary[label]
+                if isinstance(expansion, dict):
+                    expansion = expansion.get(state)
+                if not expansion or label in seen:
+                    continue
+                seen.add(label)
+                if not text[:start].lower().endswith(spelt_out(glossary, label, state)):
+                    errors.append(f"terms once: {name} leaves the first use of {label!r} unmarked")
+    return errors
+
+
 TEXT_CONTRAST = 4.5  # WCAG 1.4.3 AA: body and meta text
 LARGE_TEXT_CONTRAST = 3.0  # at least 24px, or 18.66px bold (WCAG large text)
 # How a colour painted inside an element reaches the screen: source-over onto the element's own background, the
@@ -7399,27 +7505,53 @@ def check_leadership_rows(html, data: dict) -> list[str]:
     return errors
 
 
-ROLE_PHRASES = {"single_point_of_contact": "single point of contact", "market_surveillance": "market surveillance", "notifying": "notifying"}
+SHOWN_AUTHORITIES = 3  # AI Act authorities shown before the fold (owner, 15 November)
 NON_LATIN_SCRIPT = re.compile(r"[\u0370-\u03ff\u0400-\u052f\u0530-\u058f\u0590-\u06ff\u0900-\u0dff\u0e00-\u0eff\u10a0-\u10ff\u1f00-\u1fff\u3040-\u30ff\u3400-\u9fff\uac00-\ud7af]")  # same scripts as method_checks.NON_LATIN, kept apart as the page gate's own oracle
 
 
-def expected_group_label(roles) -> str:
-    """Hand-worked heading of an AI Act authority group: its functions in the fixed order, joined with 'and'."""
-    ordered = [ROLE_PHRASES[r] for r in ("single_point_of_contact", "market_surveillance", "notifying") if r in (roles or [])]
-    if not ordered:
-        return "Other AI Act role"
-    return "AI Act " + (ordered[0] if len(ordered) == 1 else ", ".join(ordered[:-1]) + " and " + ordered[-1])
+def designation_problem(body: dict, line: str) -> str | None:
+    """Whether an AI Act authority's line states its designation as the data has it: designated by its basis;
+    proposed, with the latest formal step and its year where designation_step has them; otherwise neither."""
+    text, state = line.lower(), body.get("designation_state")
+    if state == "designated":
+        basis = (body.get("designation_basis") or "").replace("_", " ") or "an act"
+        if f"designated by {basis}" not in text or re.search(r"\bnot\b", text) or "proposed" in text:
+            return f"does not say it is designated by {basis}"
+    elif state == "proposed":
+        step = body.get("designation_step")
+        if "proposed" not in text or "designated by" in text or (step and (step["text"].lower() not in text or step["date"][:4] not in text)):
+            return "does not say it is proposed" + (f" with its latest step {step['text']!r} and its date" if step else "")
+    elif "designated" in text or "proposed" in text:
+        return "claims a designation the data does not record"
+    return None
+
+
+def authority_key(body: dict):
+    """Pattern 4's order: the single point of contact first, then the most roles, ties by name."""
+    roles = body.get("authority_roles") or []
+    return ("single_point_of_contact" not in roles, -len(roles), body.get("name_en") or body["name"])
+
+
+def shown_original(body: dict) -> str:
+    """The original name as a card shows it beneath the English one: a closing "(ABBR)" the English name also ends
+    with is said once, in the English name."""
+    match = re.search(r"\s*(\([^()]+\))$", body["name"])
+    return body["name"][: match.start()] if match and body.get("name_en", "").endswith(match.group(1)) else body["name"]
 
 
 def check_nonidentified_folds(html, data: dict) -> list[str]:
-    """None-identified fold-outs list bodies by role, English name first.
+    """None-identified fold-outs: the closest body, the AI Act authorities and other bodies, each group recognised by
+    its members, so the owner may reword a heading (test strategy D1); a heading must have text.
 
-    Every body appears once under a group heading for its role (closest candidate, AI Act authorities by
-    function, other bodies); a name in another language shows its English name with the original beneath, and
-    a non-Latin script never stands alone. Each body with sources cites them inline.
+    The closest body shows its note unless it is only its name, and one more line where it does not exist yet. The AI
+    Act authorities are one group in pattern 4's order, each line naming its roles in the published words
+    (dataset.display.authority_roles); with more than four, the first three show and the rest fold behind a summary
+    giving their number. A name in another language shows its English name with the original beneath, and a non-Latin
+    script never stands alone. Each body with sources cites them inline, and each role text is shown.
     """
     soup = BeautifulSoup(html, "html.parser")
     errors = []
+    words = (data.get("dataset", {}).get("display") or {}).get("authority_roles") or {}
     folds = Keyed(soup, "details.card.mini[id]", "id")
     for j in data["jurisdictions"]:
         card = folds.one(f"c-{j['id'].lower()}")
@@ -7427,64 +7559,86 @@ def check_nonidentified_folds(html, data: dict) -> list[str]:
             if j.get("status") == "none_identified" and j.get("europe_scope"):
                 errors.append(f"{j['id']} none-identified entry is missing")
             continue
+        if card.select("p.related"):
+            errors.append(f"{j['id']}: the fold-out carries a line about the bodies as a group; it was removed (owner, 15 November)")
         closest = j.get("closest_body")
-        bodies = [
-            b for b in j.get("related_bodies", [])
-            if not closest or (b["name"] != closest["name"] and not b["name"].startswith(closest["name"] + " ("))
-        ]
+        bodies = [b for b in j.get("related_bodies", [])
+                  if not closest or (b["name"] != closest["name"] and not b["name"].startswith(closest["name"] + " ("))]
         expected = {}
-        for b in bodies:
-            label = expected_group_label(b.get("authority_roles")) if b["kind"] == "ai_act_authority" else "Other bodies"
-            expected.setdefault(label, []).append(b)
         if closest:
-            expected["Closest candidate"] = [closest]
-        groups = {}
-        unmatched = []
+            expected["closest"] = [closest]
+        if authorities := sorted((b for b in bodies if b["kind"] == "ai_act_authority"), key=authority_key):
+            expected["authorities"] = authorities
+        if rest := [b for b in bodies if b["kind"] != "ai_act_authority"]:
+            expected["other"] = rest
+        groups, found = {}, []
         for group in card.select(".body-group"):
-            heading = group.select_one(".gl")
-            label = " ".join(heading.get_text().split()) if heading else ""
-            names = [" ".join("".join(t for t in n.find_all(string=True) if not t.find_parent(class_="cites")).split()) for n in group.select("li .body-name")]
+            names = []
+            for n in group.select("li .body-name"):
+                n = copy.copy(n)
+                for extra in n.select(".cites, .body-roles"):
+                    extra.extract()  # the numerals and an authority's roles are not part of the name
+                names.append(" ".join(n.get_text().split()))
+            found.append(names)
             matches = [key for key, members in expected.items() if names == [b.get("name_en") or b["name"] for b in members]]
             if len(matches) != 1 or matches[0] in groups:
-                unmatched.append(names)
-                continue
-            key = matches[0]
-            if not label or (key not in ("Other bodies", "Closest candidate") and label != key):
-                errors.append(f"{j['id']} fold-out groups: {key!r} heading is empty or differs from its authority roles")
-            groups[key] = group
-        if unmatched or set(groups) != set(expected):
-            errors.append(f"{j['id']} fold-out groups {sorted(groups)}, expected {sorted(expected)}")
+                errors.append(f"{j['id']} fold-out group lists {names}, which matches no expected group or repeats one")
+            if len(matches) == 1 and matches[0] not in groups:
+                groups[matches[0]] = group
+                heading = group.select_one(".gl")
+                if not heading or not heading.get_text().strip():
+                    errors.append(f"{j['id']} fold-out groups: the {matches[0]} heading is empty")
+        if list(groups) != list(expected):
+            errors.append(f"{j['id']} fold-out groups list {found}, expected {[[b.get('name_en') or b['name'] for b in m] for m in expected.values()]} in this order")
             continue
-        for label, members in expected.items():
-            items = groups[label].select("li")
-            if len(items) != len(members):
-                errors.append(f"{j['id']} group {label!r} lists {len(items)} bodies, expected {len(members)}")
-                continue
+        for key, members in expected.items():
+            group = groups[key]
+            items = group.select("li")
+            if key == "authorities":
+                fold = group.select_one("details.more")
+                hidden = len(members) - SHOWN_AUTHORITIES if len(members) > SHOWN_AUTHORITIES + 1 else 0
+                in_fold = len(fold.select("li")) if fold else 0
+                summary = fold.summary.get_text() if fold and fold.summary else ""
+                numbers = [int(n) for n in re.findall(r"\d+", summary)]
+                folded = []
+                for n in (fold.select("li .body-name") if fold else []):
+                    n = copy.copy(n)
+                    for extra in n.select(".cites, .body-roles"):
+                        extra.extract()
+                    folded.append(" ".join(n.get_text().split()))
+                wanted = [b.get("name_en") or b["name"] for b in members[len(members) - hidden:]] if hidden else []
+                if in_fold != hidden or folded != wanted or (hidden and numbers != [hidden]):
+                    errors.append(f"{j['id']} AI Act authorities: {folded} folded under {summary.strip()!r}, expected {wanted} under their number {hidden}")
             for li, b in zip(items, members):
                 cited = bool(li.select(".cn"))
-                for marks in li.select_one(".body-name").select(".cites"):
-                    marks.extract()  # the numerals are not part of the name
-                shown = " ".join(li.select_one(".body-name").get_text().split())
-                original = li.select_one(".orig")
                 want = b.get("name_en") or b["name"]
-                if shown != want:
-                    errors.append(f"{j['id']} body shows {shown!r}, expected {want!r}")
-                if NON_LATIN_SCRIPT.search(shown):
-                    errors.append(f"{j['id']} body {shown!r} stands in a non-Latin script without an English name")
-                if bool(b.get("name_en")) != (original is not None) or (original is not None and " ".join(original.get_text().split()) != b["name"]):
-                    errors.append(f"{j['id']} body {want!r}: the original name must sit beneath exactly when there is an English name")
-                state = {"designated": "Designated by", "proposed": "Proposed, not yet designated"}.get(b.get("designation_state"), "Designation not yet identified")
-                if b.get("kind") == "ai_act_authority" and state not in " ".join(groups[label].get_text().split()) and label != "Closest candidate":
-                    errors.append(f"{j['id']} body {want!r}: its designation status {state!r} is not shown")
-                role = " ".join(b.get("role", "").split())
+                if NON_LATIN_SCRIPT.search(want if b.get("name_en") else b["name"]) and not b.get("name_en"):
+                    errors.append(f"{j['id']} body {want!r} stands in a non-Latin script without an English name")
+                original = li.select_one(".orig")
+                if key != "closest" and (bool(b.get("name_en")) != (original is not None) or (original is not None and " ".join(original.get_text().split()) != shown_original(b))):
+                    errors.append(f"{j['id']} body {want!r}: the original name must sit beneath exactly when there is an English name, without an abbreviation the English name already closes with")
+                if key == "authorities":
+                    roles = li.select_one(".body-roles")
+                    line = " ".join("".join(t for t in roles.find_all(string=True) if not t.find_parent(class_="cites")).split()) if roles else ""
+                    missing = [words.get(r, r) for r in (b.get("authority_roles") or []) if words.get(r, r) not in line]
+                    if not line or missing:
+                        errors.append(f"{j['id']} body {want!r}: its line {line!r} does not name its roles {missing}")
+                    if problem := designation_problem(b, line):
+                        errors.append(f"{j['id']} body {want!r}: its line {line!r} {problem}")
                 for marks in li.select(".cites"):
                     marks.extract()
                 dets = [" ".join(d.get_text().split()) for d in li.select(".det")]
-                basis = groups[label].select_one(".basis")
-                basis_text = " ".join(basis.get_text().split()).lower() if basis else ""
-                # Each role text is recoverable: on the entry, as the group's shared sentence, or as the entry's part plus the shared closing words.
-                shown_role = any(d.lower() == role.lower() or (role.lower().startswith(d.lower().rstrip(".")) and d and role[len(d.rstrip(".")):].strip().lower() in basis_text) for d in dets)
-                if role and label != "Closest candidate" and not shown_role and role.lower() not in basis_text:
+                if key == "closest":
+                    note = " ".join((b.get("note") or "").split())
+                    shown_note = note if note and note != f"{b['name']}." else ""
+                    stage = (b.get("stage") or "exists").replace("_", " ")
+                    want_dets = [shown_note] if shown_note else []
+                    if stage != "exists":
+                        want_dets.append(stage)
+                    got = [d for d in dets]
+                    if len(got) != len(want_dets) or (shown_note and got[0] != shown_note) or (stage != "exists" and got[-1].rstrip(".").lower() != stage):
+                        errors.append(f"{j['id']} closest body shows {dets!r}: its note (unless only its name), then its stage ({stage!r}) only where it does not exist yet, and no reason")
+                elif (role := " ".join((b.get("role") or "").split())) and role not in dets:
                     errors.append(f"{j['id']} body {want!r}: its role text is nowhere in the entry")
                 if b.get("source_ids") and not cited:
                     errors.append(f"{j['id']} body {want!r} has no inline citation")
@@ -9220,6 +9374,7 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
         check_status_contrast,
         check_status_states,
         check_tooltip_cues,
+        check_group_row_cover,
     ):
         for error in check(page):
             require(False, error)

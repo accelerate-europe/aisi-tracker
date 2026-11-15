@@ -8,7 +8,7 @@ if __package__:
     from .method_copy import check_method_copy
     from .references import materialise_references
     from .published import IMPLIES, announcement, credit_date, first_designation, prepared_facts, status_basis
-    from .reader_text import check_reader_text  # type: ignore[import-not-found]
+    from .reader_text import check_reader_text, lint_errors, lint_report, lint_warnings  # type: ignore[import-not-found]
     from .row_checks import check_rows, required_row_pointers, search_log_rows
     from .flag_checks import check_flags, required_flag_pointers
     from .claim_checks import check_claims, required_claim_pointers
@@ -16,7 +16,7 @@ else:
     from method_copy import check_method_copy
     from references import materialise_references
     from published import IMPLIES, announcement, credit_date, first_designation, prepared_facts, status_basis
-    from reader_text import check_reader_text  # type: ignore[import-not-found, no-redef]
+    from reader_text import check_reader_text, lint_errors, lint_report, lint_warnings  # type: ignore[import-not-found, no-redef]
     from row_checks import check_rows, required_row_pointers, search_log_rows  # type: ignore[import-not-found, no-redef]
     from flag_checks import check_flags, required_flag_pointers  # type: ignore[import-not-found, no-redef]
     from claim_checks import check_claims, required_claim_pointers  # type: ignore[import-not-found, no-redef]
@@ -460,6 +460,16 @@ def unquoted_warnings(found: dict[str, list[str]]) -> list[str]:
     return lines
 
 
+def reader_text_warnings(d: dict) -> list[str]:
+    """The reader-text lint as Release warnings (reader_text.lint_warnings); d is authored."""
+    return lint_warnings(d, migrated_ids(d))
+
+
+def reader_text_report(d: dict) -> str:
+    """The full list behind the reader-text warning lines (reader_text.lint_report); d is authored."""
+    return lint_report(d, migrated_ids(d))
+
+
 def unquoted_report(found: dict[str, list[str]]) -> str:
     """The full list behind the count lines, for the report directory."""
     lines = ["# Unquoted claims", "", "Facts stated in fields that need no excerpt, with no excerpt bound (warning only).", ""]
@@ -484,6 +494,7 @@ def check_method_rules(d: dict, *, authored: dict | None = None) -> list[str]:
     errors += check_flags(d)
     errors += check_claims(d)
     errors += migrated_unquoted_errors(authored)
+    errors += lint_errors(d, migrated_ids(authored))  # mechanical reader-text classes; elsewhere counted by reader_text_warnings
     # Owner's decision of 14 Nov 2026: a related body cites a source. An error for Europe-scope records, whose
     # bodies were all sourced in 1.0.10; elsewhere still a release warning (unquoted_claims) until a later pass.
     errors += [

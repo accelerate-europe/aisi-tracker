@@ -548,6 +548,9 @@ def test_institute_names_pass_and_fail_on_each_rule():
     assert any("no funding rows" in e for e in check_page.check_institute_names(_names_html().replace('id="fund-rows"', 'id="x"'), data))
 
 
+WORDS = {"single_point_of_contact": "single point of contact", "market_surveillance": "market-surveillance authority", "notifying": "notifying authority"}
+
+
 def _fold_data():
     return {
         "jurisdictions": [{
@@ -558,15 +561,20 @@ def _fold_data():
                 {"name": "INSAIT (Sofia University)", "kind": "other", "source_ids": ["s1"]},
             ],
         }],
-        "dataset": {},
+        "dataset": {"display": {"authority_roles": WORDS}},
     }
 
 
-def _fold_html(status='<p class="basis">Proposed, not yet designated.</p>', det='<span class="det">Proposed market authority.</span>', original=True, label="AI Act market surveillance"):
+def _authority(name, roles="market-surveillance authority, proposed", original="", det=""):
+    return (f'<li><span class="body-name">{name}<span class="body-roles">: {roles}<span class="cites"><a class="cn">1</a></span></span></span>'
+            f'{original}{det}</li>')
+
+
+def _fold_html(roles="market-surveillance authority, proposed", det='<span class="det">Proposed market authority.</span>', original=True, label="AI Act authorities", extra=""):
     orig = '<span class="orig">Комисия за финансов надзор</span>' if original else ""
     return (
         '<details class="card mini" id="c-bg" data-j="BG"><summary><span class="name">Bulgaria</span></summary>'
-        f'<div class="body-group"><p class="gl">{label}</p>{status}<ul><li><span class="body-name">Financial Supervision Commission<span class="cites"><a class="cn">1</a></span></span>{orig}{det}</li></ul></div>'
+        f'<div class="body-group"><p class="gl">{label}</p><ul>{_authority("Financial Supervision Commission", roles, orig, det)}</ul>{extra}</div>'
         '<div class="body-group"><p class="gl">Other bodies</p><ul><li><span class="body-name">INSAIT (Sofia University)<span class="cites"><a class="cn">1</a></span></span></li></ul></div>'
         "</details>"
     )
@@ -575,16 +583,13 @@ def _fold_html(status='<p class="basis">Proposed, not yet designated.</p>', det=
 def test_nonidentified_folds_pass_and_fail_on_each_rule():
     data = _fold_data()
     assert check_page.check_nonidentified_folds(_fold_html(), data) == []
-    # The original name must sit beneath an English name.
+    assert check_page.check_nonidentified_folds(_fold_html(label="Authorities under the AI Act"), data) == []  # the owner may reword a heading
+    assert any("heading is empty" in e for e in check_page.check_nonidentified_folds(_fold_html(label=" "), data))
     assert any("original name must sit beneath" in e for e in check_page.check_nonidentified_folds(_fold_html(original=False), data))
-    # A body under the wrong function heading.
-    assert any("fold-out groups" in e for e in check_page.check_nonidentified_folds(_fold_html(label="AI Act notifying"), data))
-    # A body without its citation.
+    assert any("does not name its roles" in e for e in check_page.check_nonidentified_folds(_fold_html(roles="market surveillance, proposed"), data))
     assert any("no inline citation" in e for e in check_page.check_nonidentified_folds(_fold_html().replace('<a class="cn">1</a>', "", 1), data))
-    # A role text that is nowhere in the entry.
     assert any("role text is nowhere" in e for e in check_page.check_nonidentified_folds(_fold_html(det=""), data))
-    # A designation status that is not shown; an entry that did not render; a non-Latin name standing alone.
-    assert any("designation status" in e for e in check_page.check_nonidentified_folds(_fold_html(status=""), data))
+    assert any("removed" in e for e in check_page.check_nonidentified_folds(_fold_html().replace("</summary>", '</summary><p class="related">Listed.</p>'), data))
     gone = {"jurisdictions": [{"id": "BG", "status": "none_identified", "europe_scope": True}], "dataset": {}}
     assert any("entry is missing" in e for e in check_page.check_nonidentified_folds("<ul id='rules'></ul>", gone))
     alone = _fold_html(original=False).replace("Financial Supervision Commission<", "Комисия за финансов надзор<")
@@ -593,26 +598,48 @@ def test_nonidentified_folds_pass_and_fail_on_each_rule():
     assert any("non-Latin script" in e for e in check_page.blocking(check_page.check_nonidentified_folds(alone, data)))
 
 
-def test_nonidentified_fold_accepts_structured_closest_candidate():
+def test_ai_act_authorities_in_pattern_4_order_and_folded_after_three():
     data = _fold_data()
-    (jurisdiction,) = data["jurisdictions"]
-    jurisdiction["closest_body"] = {
-        "name": "INSAIT (Sofia University)",
-        "source_ids": ["s1"],
-    }
-    page = _fold_html().replace(">Other bodies<", ">Closest candidate<")
+    bodies = [{"name": n, "kind": "ai_act_authority", "authority_roles": r, "designation_state": "designated", "designation_basis": "law",
+               "source_ids": ["s1"], "role": ""} for n, r in [("Bravo", ["market_surveillance"]), ("Alpha", ["market_surveillance"]),
+                                                             ("Delta", ["single_point_of_contact"]), ("Echo", ["market_surveillance", "notifying"]),
+                                                             ("Charlie", ["notifying"])]]
+    data["jurisdictions"][0]["related_bodies"] = bodies
+    order = ["Delta", "Echo", "Alpha", "Bravo", "Charlie"]  # the single point of contact, then the most roles, ties by name
+    line = {"Delta": "single point of contact", "Echo": "market-surveillance authority and notifying authority", "Alpha": "market-surveillance authority",
+            "Bravo": "market-surveillance authority", "Charlie": "notifying authority"}
+    lis = [_authority(n, line[n] + ", designated by law") for n in order]
+    page = ('<details class="card mini" id="c-bg" data-j="BG"><summary>Bulgaria</summary><div class="body-group"><p class="gl">AI Act authorities</p>'
+            f'<ul>{"".join(lis[:3])}</ul><details class="more"><summary>2 more AI Act bodies</summary><ul>{"".join(lis[3:])}</ul></details></div></details>')
     assert check_page.check_nonidentified_folds(page, data) == []
+    unfolded = page.replace('</ul><details class="more"><summary>2 more AI Act bodies</summary><ul>', "")
+    assert any("folded" in e for e in check_page.check_nonidentified_folds(unfolded, data))
+    swapped = page.replace(lis[0], "@").replace(lis[1], lis[0]).replace("@", lis[1])
+    assert any("fold-out groups" in e for e in check_page.check_nonidentified_folds(swapped, data))
+    four = page.replace(lis[4], "")
+    data["jurisdictions"][0]["related_bodies"] = [b for b in bodies if b["name"] != "Charlie"]
+    assert any("folded" in e for e in check_page.check_nonidentified_folds(four, data))  # one hidden body is not worth a fold
+    assert check_page.check_nonidentified_folds(four.replace('</ul><details class="more"><summary>2 more AI Act bodies</summary><ul>', "").replace("</ul></details></div>", "</ul></div>"), data) == []
 
 
-@pytest.mark.parametrize("closest", [False, True])
-def test_fold_owner_headings_allow_rewording_but_need_text(closest):
+@pytest.mark.parametrize("stage, note, dets, ok", [
+    ("exists", "It says it tests models.", ["It says it tests models."], True),
+    ("exists", "It says it tests models.", ["It says it tests models.", "Exists."], False),  # no stage line for an existing body
+    ("planned", "It says it tests models.", ["It says it tests models.", "Planned."], True),
+    ("planned", "It says it tests models.", ["It says it tests models."], False),
+    ("exists", "INSAIT (Sofia University).", [], True),  # a note that is only the name is not said again
+    ("exists", "INSAIT (Sofia University).", ["INSAIT (Sofia University)."], False),
+])
+def test_closest_body_note_and_stage_line(stage, note, dets, ok):
     data = _fold_data()
-    if closest:
-        data["jurisdictions"][0]["closest_body"] = {"name": "INSAIT (Sofia University)", "source_ids": ["s1"]}
-    html = _fold_html().replace(">Other bodies<", ">A different heading<")
-    assert check_page.check_nonidentified_folds(html, data) == []
-    for broken in (html.replace("A different heading", " \n "), html.replace('<p class="gl">A different heading</p>', "")):
-        assert any("heading is empty" in error for error in check_page.blocking(check_page.check_nonidentified_folds(broken, data)))
+    data["jurisdictions"][0]["closest_body"] = {"name": "INSAIT (Sofia University)", "stage": stage, "note": note, "source_ids": ["s1"]}
+    lines = "".join(f'<span class="det">{d}</span>' for d in dets)
+    page = _fold_html().replace(
+        '<div class="body-group"><p class="gl">AI Act authorities</p>',
+        f'<div class="body-group closest"><p class="gl">Closest body</p><ul><li><span class="body-name">INSAIT (Sofia University)</span>{lines}<span class="cites"><a class="cn">1</a></span></li></ul></div>'
+        '<div class="body-group"><p class="gl">AI Act authorities</p>').replace(
+        '<div class="body-group"><p class="gl">Other bodies</p><ul><li><span class="body-name">INSAIT (Sofia University)<span class="cites"><a class="cn">1</a></span></span></li></ul></div>', "")
+    assert (check_page.check_nonidentified_folds(page, data) == []) is ok
 
 
 def test_generic_sources_stay_out_of_card_lists_and_in_method():
@@ -2277,7 +2304,7 @@ MOVED_TO_CONTENT = {  # content family module -> the check_page helpers it now r
     "record_rows": ("check_leadership_rows", "check_access_groups", "check_setup_groups"),
     "summary": ("check_summary_data", "check_figures_row", "check_two_significant_figures"),
     "activity": ("check_operating_output",),
-    "names": ("check_section_bar", "check_institute_names", "check_former_names", "check_nonidentified_folds"),
+    "names": ("check_section_bar", "check_institute_names", "check_former_names", "check_nonidentified_folds", "check_terms_once"),
     "staff": ("check_staff_figures",),
 }
 MOVED_HELPERS = tuple(h for helpers in MOVED_TO_CONTENT.values() for h in helpers)
@@ -2353,3 +2380,116 @@ def test_palette_theme_rows_are_keyed_only_by_their_own_state():
 def test_fold_text_ignores_case_and_accents_as_the_palette_does():
     assert check_page.fold_text("São Tomé") == "sao tome"
     assert check_page.fold_text(None) == ""
+
+
+@pytest.mark.parametrize("body, shown", [
+    ({"name": "Agenzia per la cybersicurezza nazionale (ACN)", "name_en": "National Cybersecurity Agency (ACN)"}, "Agenzia per la cybersicurezza nazionale"),
+    ({"name": "Datatilsynet (DT)", "name_en": "Danish Data Protection Agency"}, "Datatilsynet (DT)"),
+    ({"name": "Komisja (KRiBSI)"}, "Komisja (KRiBSI)"),
+])
+def test_original_name_says_a_shared_abbreviation_once(body, shown):
+    assert check_page.shown_original(body) == shown
+
+
+TINT = "rgb(250, 240, 220) 0px 0px 0px 8px"
+GROUND = "rgb(23, 25, 26)"
+
+
+@pytest.mark.parametrize("shadow, ok", [
+    (f"{GROUND} 0px -8px 0px 8px", True),  # one rectangle: sides, above and the upper corners
+    (f"{GROUND} 0px -1px 0px 0px inset, {GROUND} 0px -8px 0px 8px", True),  # the stuck row's inner rule beside it
+    (f"{GROUND} 0px -2px 0px 0px, {GROUND} -8px 0px 0px 0px, {GROUND} 8px 0px 0px 0px", False),  # separate layers: corners open
+    (f"{GROUND} 0px 0px 0px 8px", True),  # grown on every side covers above too
+    (f"{GROUND} 0px -8px 0px 4px", False),  # narrower than the tint
+    (f"{GROUND} 0px -1000px 0px 8px", False),  # moved so far up it leaves the row's sides
+    (f"{GROUND} 0px -8px 4px 8px", False),  # blurred: not solid
+    ("rgb(0, 0, 0) 0px -8px 0px 8px", False),  # not the row's own ground
+    ("none", False),
+])
+def test_group_row_cover_needs_one_rectangle(shadow, ok):
+    assert (check_page.row_cover_errors(TINT, [["Europe", shadow, GROUND]]) == []) is ok
+    assert check_page.blocking(check_page.row_cover_errors(TINT, [])) == []  # no row: a report line, not a failure
+
+
+def _terms(body, row="", data_j="PL"):
+    return (f'<details class="card mini" id="c-pl" data-j="{data_j}"><summary><h4>Poland</h4><span class="find">{row}</span></summary>{body}</details>'
+            '<p>NASK outside any card stays as it is.</p>')
+
+
+TERMS = {"dataset": {"glossary": {"NASK": "NASK research institute", "AISI": "AI Security Institute. We use the term.",
+                                  "KR": {"PL": "Polish commission"}}}}
+
+
+@pytest.mark.parametrize("html, found", [
+    (_terms('<p><abbr class="g">NASK</abbr> runs it; NASK says so.</p>'), []),
+    (_terms('<p>NASK runs it; <abbr class="g">NASK</abbr> says so.</p>'), ["leaves the first use of 'NASK' unmarked", "marks 'NASK' again"]),
+    (_terms('<p><abbr class="g">NASK</abbr> runs it; <abbr class="g">NASK</abbr> says so.</p>'), ["marks 'NASK' again"]),
+    (_terms('<p>The AI Security Institute (AISI) leads; AISI tests.</p>'), []),  # spelt out first: no mark at all
+    (_terms('<p>The AI Security Institute (AISI) leads; <abbr class="g">AISI</abbr> tests.</p>'), ["marks 'AISI' again"]),
+    (_terms('<p><abbr class="g">NASK</abbr> runs it.</p>', row='<abbr class="g">NASK</abbr> leads.'), []),  # the row is its own view
+    (_terms('<p><abbr class="g">NASK</abbr> runs it.</p>', row='NASK leads.'), ["leaves the first use of 'NASK' unmarked"]),
+    (_terms('<p><a href="#x">NASK</a> runs it; <abbr class="g">NASK</abbr> says so.</p>'), []),  # a link's text is never marked
+    (_terms('<p><abbr class="g">KR</abbr> meets; KR decides.</p>'), []),  # an expansion for this state
+    (_terms('<p>KR meets.</p>', data_j="CZ"), []),  # no expansion for this state: nothing to mark
+    (_terms('<p><abbr class="g val">NASK</abbr> 12; <abbr class="g">NASK</abbr> runs it.</p>'), []),  # a value tip is not a term mark
+    (_terms('<p>The AI Security Institute (<abbr class="g">AISI</abbr>) leads.</p>'), ["where the text spells it out"]),
+])
+def test_terms_marked_once_per_scope(html, found):
+    errors = check_page.check_terms_once(html, TERMS)
+    assert len(errors) == len(found) and all(any(f in e for e in errors) for f in found), errors
+
+
+def test_authority_line_states_the_recorded_designation():
+    data = _fold_data()
+    assert any("does not say it is proposed" in e for e in check_page.check_nonidentified_folds(_fold_html(roles="market-surveillance authority, designated by law"), data))
+    body = data["jurisdictions"][0]["related_bodies"][0]
+    body["designation_step"] = {"text": "bill tabled", "date": "2026-09-24"}
+    assert any("latest step" in e for e in check_page.check_nonidentified_folds(_fold_html(), data))
+    assert check_page.check_nonidentified_folds(_fold_html(roles="market-surveillance authority, proposed (bill tabled on 24 Sep 2026)"), data) == []
+    body.pop("designation_step")
+    body.update(designation_state="designated", designation_basis="law")
+    assert check_page.check_nonidentified_folds(_fold_html(roles="market-surveillance authority, designated by law"), data) == []
+    assert any("designated by law" in e for e in check_page.check_nonidentified_folds(_fold_html(roles="market-surveillance authority, designated by decree"), data))
+    assert any("designated by law" in e for e in check_page.check_nonidentified_folds(_fold_html(roles="market-surveillance authority, not designated by law"), data))
+    body.update(designation_state=None, designation_basis=None)
+    assert check_page.check_nonidentified_folds(_fold_html(roles="market-surveillance authority, designation not yet identified"), data) == []
+    assert any("does not record" in e for e in check_page.check_nonidentified_folds(_fold_html(roles="market-surveillance authority, designated"), data))
+
+
+def test_closest_body_stage_line_says_its_stage():
+    data = _fold_data()
+    data["jurisdictions"][0]["closest_body"] = {"name": "INSAIT (Sofia University)", "stage": "planned", "note": "It tests.", "source_ids": ["s1"]}
+    def page(lines):
+        dets = "".join(f'<span class="det">{d}</span>' for d in lines)
+        return _fold_html().replace(
+            '<div class="body-group"><p class="gl">Other bodies</p><ul><li><span class="body-name">INSAIT (Sofia University)<span class="cites"><a class="cn">1</a></span></span></li></ul></div>',
+            f'<div class="body-group closest"><p class="gl">Closest body</p><ul><li><span class="body-name">INSAIT (Sofia University)</span>{dets}<span class="cites"><a class="cn">1</a></span></li></ul></div>')
+    def closest_first(html):  # pattern order: the closest body's group comes first
+        a, rest = html.split('<div class="body-group closest">', 1)
+        closest, after = rest.split("</div>", 1)
+        return a.replace('<div class="body-group"><p class="gl">AI Act authorities</p>', '<div class="body-group closest">' + closest + '</div><div class="body-group"><p class="gl">AI Act authorities</p>', 1) + after
+    assert check_page.check_nonidentified_folds(closest_first(page(["It tests.", "Planned."])), data) == []
+    assert any("closest body shows" in e for e in check_page.check_nonidentified_folds(closest_first(page(["It tests.", "Proposed."])), data))
+    assert any("closest body shows" in e for e in check_page.check_nonidentified_folds(closest_first(page(["It tests.", "Planned; its government role does not qualify."])), data))
+
+
+def test_an_extra_or_repeated_group_fails():
+    data = _fold_data()
+    extra = _fold_html().replace("</details>", '<div class="body-group"><p class="gl">Again</p><ul><li><span class="body-name">INSAIT (Sofia University)</span></li></ul></div></details>')
+    assert any("matches no expected group or repeats one" in e for e in check_page.check_nonidentified_folds(extra, data))
+
+
+def test_fold_count_and_members_are_exact():
+    data = _fold_data()
+    bodies = [{"name": n, "kind": "ai_act_authority", "authority_roles": ["market_surveillance"], "designation_state": "designated",
+               "designation_basis": "law", "source_ids": ["s1"], "role": ""} for n in ("A1", "A2", "A3", "A4", "A5")]
+    data["jurisdictions"][0]["related_bodies"] = bodies
+    lis = [_authority(n, "market-surveillance authority, designated by law") for n in ("A1", "A2", "A3", "A4", "A5")]
+    def page(shown, hidden, summary):
+        return ('<details class="card mini" id="c-bg" data-j="BG"><summary>Bulgaria</summary><div class="body-group"><p class="gl">AI Act authorities</p>'
+                f'{shown}<details class="more"><summary>{summary}</summary><ul>{hidden}</ul></details></div></details>')
+    assert check_page.check_nonidentified_folds(page("<ul>" + "".join(lis[:3]) + "</ul>", "".join(lis[3:]), "2 more AI Act bodies"), data) == []
+    assert any("folded" in e for e in check_page.check_nonidentified_folds(page("<ul>" + "".join(lis[:3]) + "</ul>", "".join(lis[3:]), "12 more AI Act bodies"), data))
+    wrong = ('<details class="card mini" id="c-bg" data-j="BG"><summary>Bulgaria</summary><div class="body-group"><p class="gl">AI Act authorities</p>'
+             f'<details class="more"><summary>2 more AI Act bodies</summary><ul>{"".join(lis[:2])}</ul></details><ul>{"".join(lis[2:])}</ul></div></details>')
+    assert any("folded" in e for e in check_page.check_nonidentified_folds(wrong, data))
