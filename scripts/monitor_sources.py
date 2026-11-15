@@ -66,7 +66,7 @@ try:
     from .verify_excerpts import EXTRACTION_VERSION, Fetcher, content_problem, extract_text, literal_match
     from . import rereads
     from . import published as fact_pipeline
-    from .references import excerpt_spans
+    from .references import source_spans
 except ImportError:
     from snapshot_sources import (  # type: ignore[no-redef]  # Direct script entry point.
         PRIVATE_SNAPSHOTS,
@@ -83,7 +83,7 @@ except ImportError:
     from verify_excerpts import EXTRACTION_VERSION, Fetcher, content_problem, extract_text, literal_match  # type: ignore[no-redef]
     import rereads  # type: ignore[no-redef]
     import published as fact_pipeline  # type: ignore[no-redef]
-    from references import excerpt_spans  # type: ignore[no-redef]
+    from references import source_spans  # type: ignore[no-redef]
 
 MONITOR_VERSION = 1
 CLASSES = ("substantive", "gone", "trivial", "unchanged", "archived", "blocked", "failed", "skipped")
@@ -144,11 +144,6 @@ def text_change(old: str, new: str, width: int = SHINGLE) -> dict:
         "added": round(len(b - a) / len(b), 3) if b else 0.0,
         "kept_run": longest + width - 1 if longest else 0,
     }
-
-
-def bound(source: dict, excerpt: dict) -> bool:
-    """Same binding rule as snapshot_sources.bound_quotes."""
-    return excerpt.get("url") in {None, source["url"], source.get("archive_url")}
 
 
 def present(quote: str, views: list[str]) -> bool:
@@ -230,7 +225,7 @@ def observation(source: dict, final_url: str | None, reached: bool) -> dict:
 
 
 def compare_copy(
-    source: dict, cited: tuple[dict, Path], body: bytes, mime: str, provenance: dict
+    source: dict, cited: tuple[dict, Path], body: bytes, mime: str, provenance: dict, sources=()
 ) -> dict:
     """Compare bytes with a cited copy; provenance names route, final_url and http.
 
@@ -255,18 +250,14 @@ def compare_copy(
     if route == "jina":
         new_views += [markdown_view(view) for view in new_views]
     quotes = []
-    for excerpt in source.get("excerpts", []):
-        if not bound(source, excerpt):
-            continue
-        # An anchor is re-read as one more span with its own hash (docs/design/claims-1.1.md, section 4).
-        for span in excerpt_spans(excerpt):
-            now = present(span, new_views)
-            quotes.append({
-                "id": "sha256:" + hashlib.sha256(span.encode()).hexdigest(),
-                "text": span, "supports": [label(p) for p in excerpt["supports"]],
-                "in_cited_copy": present(span, old_views),
-                "in_checked_copy": now, "in_new_copy": now,
-            })
+    for _, excerpt, span, _ in source_spans(source, sources, bound_only=True):
+        now = present(span, new_views)
+        quotes.append({
+            "id": "sha256:" + hashlib.sha256(span.encode()).hexdigest(),
+            "text": span, "supports": [label(p) for p in excerpt["supports"]],
+            "in_cited_copy": present(span, old_views),
+            "in_checked_copy": now, "in_new_copy": now,
+        })
     row["quotes"] = quotes
     fields = text_fields(body, mime)
     row.update(fields)
@@ -324,7 +315,7 @@ def compare_copy(
     return {**row, "class": "trivial", "reason": reason}
 
 
-def checked_result(source: dict, cited: tuple[dict, Path], meta: dict, path: Path, route: str) -> dict:
+def checked_result(source: dict, cited: tuple[dict, Path], meta: dict, path: Path, route: str, sources=()) -> dict:
     row = {
         "source_id": source["id"], "url": source["url"], "route": route,
         "checked": meta.get("retrieved", utc_now()), "http": meta.get("http_status"),
@@ -350,11 +341,11 @@ def checked_result(source: dict, cited: tuple[dict, Path], meta: dict, path: Pat
             return {**row, "class": "blocked", "reason": problem}
     return {
         **row,
-        **compare_copy(source, cited, body, meta.get("content_type", ""), {**row, "path": path}),
+        **compare_copy(source, cited, body, meta.get("content_type", ""), {**row, "path": path}, sources),
     }
 
 
-def compare(source: dict, fetcher: Fetcher, directory: Path, fallback: Path) -> dict:
+def compare(source: dict, fetcher: Fetcher, directory: Path, fallback: Path, sources=()) -> dict:
     """Compatibility entry point for the direct route."""
     row = {"source_id": source["id"], "url": source["url"], "route": "none", "observation": "none"}
     if not source.get("snapshot", {}).get("sha256"):
@@ -366,7 +357,7 @@ def compare(source: dict, fetcher: Fetcher, directory: Path, fallback: Path) -> 
     if found is None:
         return {**row, "class": "failed", "reason": "no cited copy held privately"}
     meta = fetcher.fetch(source["url"], "live")
-    return checked_result(source, found, meta, fetcher.entry(source["url"]) / "response.bin", "direct")
+    return checked_result(source, found, meta, fetcher.entry(source["url"]) / "response.bin", "direct", sources)
 
 
 def run_browser(urls: list[str], out: Path, *, wait: float, deadline: float, delay: float, timeout: float) -> tuple[bool, int | None]:
@@ -627,7 +618,7 @@ def source_failure(source: dict, route: str, exc: Exception, attempts: list[dict
     return result
 
 
-def wayback(source: dict, cited: tuple[dict, Path], fetcher: Fetcher) -> dict:
+def wayback(source: dict, cited: tuple[dict, Path], fetcher: Fetcher, sources=()) -> dict:
     url = archive_lookup_target(source["url"])
     lookup = "https://archive.org/wayback/available?url=" + quote(url, safe="")
     meta = fetcher.fetch(lookup, "archive_lookup")
@@ -645,7 +636,7 @@ def wayback(source: dict, cited: tuple[dict, Path], fetcher: Fetcher) -> dict:
         return {**empty, "reason": "invalid availability response"}
     raw = f"https://web.archive.org/web/{stamp}id_/{url}"
     meta = fetcher.fetch(raw, "archive_raw")
-    result = checked_result(source, cited, meta, fetcher.entry(raw) / "response.bin", "wayback")
+    result = checked_result(source, cited, meta, fetcher.entry(raw) / "response.bin", "wayback", sources)
     final = meta.get("final_url", "")
     if result["class"] == "archived" and (
         urlsplit(final).hostname != "web.archive.org" or not archive_snapshot(final)
@@ -654,14 +645,14 @@ def wayback(source: dict, cited: tuple[dict, Path], fetcher: Fetcher) -> dict:
     return result
 
 
-def finish_routes(source: dict, cited: tuple[dict, Path], direct: dict, headless: dict, jina: Fetcher, archive: Fetcher) -> dict:
+def finish_routes(source: dict, cited: tuple[dict, Path], direct: dict, headless: dict, jina: Fetcher, archive: Fetcher, sources=()) -> dict:
     attempts = [attempt(direct), attempt(headless)]
     if headless["class"] == "trivial":
         return {**headless, "attempts": attempts}
     url = "https://r.jina.ai/" + source["url"]
     try:
         meta = jina.fetch(url, "render", headers={"X-No-Cache": "true"})
-        rendered = checked_result(source, cited, meta, jina.entry(url) / "response.bin", "jina")
+        rendered = checked_result(source, cited, meta, jina.entry(url) / "response.bin", "jina", sources)
     except Exception as exc:  # noqa: BLE001 - source-specific failures do not stop other sources
         return source_failure(source, "jina", exc, attempts)
     attempts.append(attempt(rendered))
@@ -683,7 +674,7 @@ def finish_routes(source: dict, cited: tuple[dict, Path], direct: dict, headless
                 "route": "headless+jina", "attempts": attempts,
                 "confirmed_quote_ids": sorted(confirmed)}
     try:
-        archived = wayback(source, cited, archive)
+        archived = wayback(source, cited, archive, sources)
     except Exception as exc:  # noqa: BLE001 - keep the failed route and continue with the next source
         return source_failure(source, "wayback", exc, attempts)
     attempts.append(attempt(archived))
@@ -698,7 +689,7 @@ def finish_routes(source: dict, cited: tuple[dict, Path], direct: dict, headless
     return {**direct, "attempts": attempts}
 
 
-def direct_results(selected: list[dict], fetcher: Fetcher, directory: Path, fallback: Path, workers: int, control: RunControl):
+def direct_results(selected: list[dict], fetcher: Fetcher, directory: Path, fallback: Path, workers: int, control: RunControl, sources=()):
     """Bound queued work; cancellation never starts the remaining source list."""
     pool = ThreadPoolExecutor(workers)
     jobs = {}
@@ -706,7 +697,7 @@ def direct_results(selected: list[dict], fetcher: Fetcher, directory: Path, fall
     def work(source):
         control.check()
         try:
-            return compare(source, fetcher, directory, fallback)
+            return compare(source, fetcher, directory, fallback, sources)
         except Exception as exc:  # noqa: BLE001 - interruption is a BaseException, not a source failure
             return source_failure(source, "direct", exc)
 
@@ -804,13 +795,14 @@ def markdown(report: dict, sources: dict[str, dict], cites: dict[str, list[str]]
             # Each span hash to every excerpt that carries it, as its quotation or as one of its anchors: a shared
             # span is reported once per owner, with its role in that excerpt.
             # The span's text comes from the dataset: check-log rows carry quote ids only.
-            owners: dict[str, list[tuple[dict, str | None]]] = defaultdict(list)
-            for e in src.get("excerpts", []):
-                for n, span in enumerate(excerpt_spans(e)):
-                    owners["sha256:" + hashlib.sha256(span.encode()).hexdigest()].append((e, span if n else None))
+            owners: dict[str, list[tuple[dict, dict, str | None]]] = defaultdict(list)
+            for owner, e, span, is_anchor in source_spans(src, sources.values()):
+                owners["sha256:" + hashlib.sha256(span.encode()).hexdigest()].append((owner, e, span if is_anchor else None))
             for qid in dict.fromkeys(q["id"] for q in quotes):
-                for excerpt, anchor in owners[qid]:
+                for owner, excerpt, anchor in owners[qid]:
                     lost = f"anchor \"{anchor[:200]}\" of \"{excerpt['text'][:120]}\"" if anchor else f"\"{excerpt['text'][:200]}\""
+                    if owner["id"] != src["id"]:
+                        lost += f" from source `{owner['id']}` ({owner['title']})"
                     out.append(f"    - {lost} supports {'; '.join(label(p) for p in excerpt['supports'])}")
         if not found:
             out.append("None.")
@@ -995,7 +987,7 @@ def digest_summary(report: dict, path: Path) -> dict:
     }
 
 
-def check_sources(args, selected: list[dict], log: CheckLog, start: dict, control: RunControl, caches: dict[str, Path]) -> None:
+def check_sources(args, selected: list[dict], log: CheckLog, start: dict, control: RunControl, caches: dict[str, Path], sources=()) -> None:
     for path in caches.values():
         path.mkdir(parents=True, exist_ok=True)
     direct = MonitorFetcher(caches["direct"], delay=args.delay, timeout=args.timeout, control=control)
@@ -1003,7 +995,7 @@ def check_sources(args, selected: list[dict], log: CheckLog, start: dict, contro
     archive = MonitorFetcher(caches["wayback"], delay=max(5, args.delay), timeout=args.timeout, control=control)
     fallback = ROOT / "work/snapshots"
     pending = []
-    for source, result in direct_results(selected, direct, args.directory, fallback, args.workers, control):
+    for source, result in direct_results(selected, direct, args.directory, fallback, args.workers, control, sources):
         if result["class"] in {"blocked", "failed"} and result["route"] == "direct" and not result.get("_terminal"):
             pending.append((source, result))
         else:
@@ -1028,11 +1020,11 @@ def check_sources(args, selected: list[dict], log: CheckLog, start: dict, contro
             meta_path = folder / "metadata.json"
             if acquired and meta_path.is_file():
                 meta = json.loads(meta_path.read_text(encoding="utf-8"))
-                rendered = checked_result(source, cited, meta, folder / "response.bin", "headless")
+                rendered = checked_result(source, cited, meta, folder / "response.bin", "headless", sources)
             else:
                 reason = "browser busy" if not acquired else f"browser helper exit {code}"
                 rendered = {"route": "headless", "class": "failed", "reason": reason, "fetch_status": "not_run", "http": None}
-            result = finish_routes(source, cited, plain, rendered, jina, archive)
+            result = finish_routes(source, cited, plain, rendered, jina, archive, sources)
         except Exception as exc:  # noqa: BLE001 - journal writes deliberately remain outside this handler
             result = source_failure(source, "headless", exc, [attempt(plain)])
         log.record(start["run_id"], start["dataset_revision"], source, result)
@@ -1095,7 +1087,7 @@ def run_monitor(args) -> int:
                 finished = {r["source_id"] for r in rows}
                 remaining = [s for s in selected if s["id"] not in finished]
                 if remaining:
-                    check_sources(args, remaining, log, start, control, caches)
+                    check_sources(args, remaining, log, start, control, caches, data["sources"])
                 rows = log.rows(run_id, sources, args.directory, ROOT / "work/snapshots")
                 if len(rows) != len(selected):
                     raise RuntimeError("not every source has a durable row")

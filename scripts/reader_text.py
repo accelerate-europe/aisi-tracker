@@ -3,9 +3,9 @@
 import re
 
 if __package__:
-    from .claim_checks import QUOTED
+    from .claim_checks import QUOTED, quoted_spans
 else:
-    from claim_checks import QUOTED  # type: ignore[import-not-found, no-redef]
+    from claim_checks import QUOTED, quoted_spans  # type: ignore[import-not-found, no-redef]
 
 # Recorded titles, names, published job titles, quotations, query strings, URLs
 # and identifiers are deliberately absent. Translations are our own prose.
@@ -153,6 +153,12 @@ RESIDUE = re.compile(
     r"|\bthe cited sources?\b|\bthe (?:only )?bodies found (?:are|were|is)\b|\bon its summary page\b",
     re.I,
 )
+# Internal date-and-slug pass ids, with an optional nearby research-pass label, must not reach readers.
+RESEARCH_PASS_ID = re.compile(
+    r"(?:\bresearch pass\b(?:\s+\w+){0,3}[\s:]+)?"
+    r"\b\d{4}-\d{2}-\d{2}-[a-z0-9]+(?:-[a-z0-9]+)*\b",
+    re.I,
+)
 # A month written short in prose ("26 Nov 2024"); the data writes "26 November 2024".
 SHORT_MONTH = re.compile(r"\b\d{1,2} " + _SHORT_MONTH + r" \d{4}\b")
 # Future or pending wording that points at a date already past: "several chapters commence 28 October 2026", "its
@@ -177,6 +183,13 @@ PAST_PLAN = re.compile(r"\b(?:was|were) (?:scheduled|expected|due|planned) (?:fo
 # Judgement classes: listed for the reviewer as release warnings, never errors (section 5: "a word list cannot catch
 # it reliably, so the build only lists claims with negative words to help the reviewer").
 NEGATIVE_WORD = re.compile(r"\b(?:not|no|none|never|without|neither|nor)\b", re.I)
+# An opener without its later partner in the same quoted span may signal a cut construction.
+CORRELATIVES = (
+    (re.compile(r"\bnot only\b", re.I), re.compile(r"\bbut\b", re.I)),
+    (re.compile(r"\beither\b", re.I), re.compile(r"\bor\b", re.I)),
+    (re.compile(r"\bneither\b", re.I), re.compile(r"\bnor\b", re.I)),
+    (re.compile(r"\bboth\b", re.I), re.compile(r"\band\b", re.I)),
+)
 VERDICT = re.compile(
     r"\bnot (?:a|an) (?:government|qualifying|national)[^.;]{0,40}(?:assignment|mandate|designation|role|institute)"
     r"|\bdo(?:es)? not (?:assign|qualify|supply|establish|count|meet|amount|determine)"
@@ -202,9 +215,11 @@ METHOD_VERB = re.compile(r"\b(?:search(?:ed|es)?|read|re-read|opened|could not|b
 
 LINT_CLASSES = {
     "workshop words": "error",
+    "research pass id": "error",
     "short month": "error",
     "future wording about a past date": "error",
     "negative wording in a claim": "warning",
+    "open correlative in a quote": "warning",
     "our verdict in prose": "warning",
     "', not X' tail": "warning",
     "verdict repeated in one record": "warning",
@@ -269,6 +284,8 @@ def lint_reader_text(data: dict, migrated: set[str]) -> list[tuple[str, str, str
         pointer = "/" + "/".join(str(key).replace("~", "~0").replace("/", "~1") for key in path)
         if kind != "log" and (found := RESIDUE.search(text)):
             hits.append(("workshop words", jid, pointer, found.group(0)))
+        if found := RESEARCH_PASS_ID.search(text):
+            hits.append(("research pass id", jid, pointer, found.group(0)))
         if found := SHORT_MONTH.search(text):
             hits.append(("short month", jid, pointer, found.group(0)))
         # A timeline event is worded as of its own date ("will enter into force on 21 February 2024"), so it is exempt.
@@ -276,6 +293,16 @@ def lint_reader_text(data: dict, migrated: set[str]) -> list[tuple[str, str, str
             hits.append(("future wording about a past date", jid, pointer, found))
         if kind == "claim" and (found := NEGATIVE_WORD.search(text)):
             hits.append(("negative wording in a claim", jid, pointer, found.group(0)))
+        if kind == "claim":
+            # reader_text masks source wording for the other classes; use its shared quote extraction here.
+            original = data
+            for key in path:
+                original = original[key]
+            for span in quoted_spans(original):
+                for opening, closing in CORRELATIVES:
+                    for found in opening.finditer(span):
+                        if not closing.search(span, found.end()):
+                            hits.append(("open correlative in a quote", jid, pointer, f"{found.group(0)}: {span[:80]}"))
         if found := PAST_PLAN.search(text):
             hits.append(("plan in the past tense", jid, pointer, found.group(0)))
         if kind != "log":  # our sentences, authored prose and claim texts outside their quotes

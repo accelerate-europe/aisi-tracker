@@ -67,7 +67,7 @@ def test_anchors_are_optional_and_valid(plain, anchored):
     [{"text": "", "kind": "heading"}],
     [{"text": "x" * 501, "kind": "heading"}],  # over the 500-character anchor limit
     [{**LEAD_IN, "url": "https://example.org/other-copy"}],  # never a copy of its own
-    [LEAD_IN, DEFINITION, {"text": "Article 3", "kind": "provision"}],  # three spans
+    [LEAD_IN, DEFINITION, {"text": "Article 3", "kind": "provision"}, DEFINITION],  # four spans
 ])
 def test_anchor_shape(anchored, anchors):
     quoted(anchored)["anchors"] = anchors
@@ -154,3 +154,92 @@ def test_lead_quote_must_still_be_in_the_excerpt():
     assert claim_checks.check_lead("lead", claim, {"text": [({}, excerpt)]})
     claim = {"text": f'The decision assigns it "{ITEM}".'}
     assert claim_checks.check_lead("lead", claim, {"text": [({}, excerpt)]}) == []
+
+
+@pytest.fixture
+def cross_copy(plain):
+    d = copy.deepcopy(plain)
+    named = {**source(d), "id": "unit-source", "url": "https://example.org/unit", "excerpts": [],
+             "snapshot": {"sha256": "a" * 64, "retrieved": "2026-10-17T00:00:00Z"}}
+    d["sources"].append(named)
+    quoted(d)["supports"] = ["/institutes/0/name"]
+    d["institutes"][0]["source_ids"].append(named["id"])
+    quoted(d)["anchors"] = [{"kind": "membership", "text": "The lab is part of the institute.", "source_id": named["id"]}]
+    return d
+
+
+@pytest.mark.parametrize("form", ["three", "other-definition", "same-membership"])
+def test_cross_copy_anchor_groups_are_valid(cross_copy, form):
+    anchor, = quoted(cross_copy)["anchors"]
+    if form == "three":
+        quoted(cross_copy)["anchors"] = [LEAD_IN, DEFINITION, anchor]
+    elif form == "other-definition":
+        anchor["kind"] = "definition"
+    else:
+        anchor.pop("source_id")
+    assert errors(cross_copy) == []
+    assert build.check_excerpts(cross_copy) == []
+    published = build.export_dataset(cross_copy)
+    assert errors(published, SCHEMA) == []
+    assert quoted(published)["anchors"] == quoted(cross_copy)["anchors"]
+    assert json.loads(csv_rows(cross_copy)[SOURCE, QUOTE]["anchors"]) == quoted(cross_copy)["anchors"]
+
+
+@pytest.mark.parametrize("kind", ["heading", "provision"])
+def test_other_copy_lead_is_rejected_by_schema_and_build(cross_copy, kind):
+    quoted(cross_copy)["anchors"][0]["kind"] = kind
+    assert errors(cross_copy)
+    assert any("other-copy anchor must be a definition or membership" in e for e in build.check_excerpts(cross_copy))
+
+
+@pytest.mark.parametrize("change, message", [
+    ("two-other", "anchors are at most"),
+    ("same-id", "leave source_id out"),
+    ("unknown", "is unknown"),
+    ("uncited", "does not cite anchor source"),
+    ("no-snapshot", "needs snapshot.sha256"),
+    ("two-same-links", "anchors are at most"),
+])
+def test_cross_copy_anchor_errors(cross_copy, change, message):
+    excerpt = quoted(cross_copy)
+    anchor, = excerpt["anchors"]
+    named = next(s for s in cross_copy["sources"] if s["id"] == "unit-source")
+    if change == "two-other":
+        excerpt["anchors"].append({**DEFINITION, "source_id": named["id"]})
+    elif change == "same-id":
+        anchor["source_id"] = SOURCE
+    elif change == "unknown":
+        anchor["source_id"] = "unknown"
+    elif change == "uncited":
+        cross_copy["institutes"][0]["source_ids"].remove(named["id"])
+    elif change == "no-snapshot":
+        named.pop("snapshot")
+    else:
+        excerpt["anchors"] = [DEFINITION, {"kind": "membership", "text": "Part of the institute."}]
+    assert any(message in e for e in build.check_excerpts(cross_copy))
+
+
+def test_other_copy_citation_can_be_in_any_ancestor_but_must_cover_every_support(cross_copy):
+    institute = cross_copy["institutes"][0]
+    institute["claims"] = [{"id": "test-claim", "kind": "function", "text": "Tests models.", "source_ids": [SOURCE]}]
+    quoted(cross_copy)["supports"] = ["/institutes/0/claims/0/text"]
+    assert build.check_excerpts(cross_copy) == []  # record ancestor, beyond the nearest citation
+    institute["source_ids"].remove("unit-source")
+    institute["claims"][0]["source_ids"].append("unit-source")
+    assert build.check_excerpts(cross_copy) == []  # claim citation
+    quoted(cross_copy)["supports"].append("/jurisdictions/0/summary")
+    found = build.check_excerpts(cross_copy)
+    assert len(found) == 1 and "/jurisdictions/0/summary" in found[0] and "does not cite anchor source" in found[0]
+
+
+def test_other_copy_gloss_uses_the_named_source_language(cross_copy):
+    named = next(s for s in cross_copy["sources"] if s["id"] == "unit-source")
+    named["language"] = "de"
+    assert any("non-English anchor needs an English gloss" in e for e in build.check_excerpts(cross_copy))
+    quoted(cross_copy)["anchors"][0]["gloss"] = "The lab belongs to the institute."
+    assert build.check_excerpts(cross_copy) == []
+    named["language"] = "en"
+    source(cross_copy)["language"] = "de"
+    quoted(cross_copy)["gloss"] = "Synthetic institute"
+    quoted(cross_copy)["anchors"][0].pop("gloss")
+    assert build.check_excerpts(cross_copy) == []

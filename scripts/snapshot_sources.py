@@ -29,7 +29,7 @@ try:
         normalise,
         pdf_text_views,
     )
-    from .references import excerpt_spans
+    from .references import source_spans
 except ImportError:
     from verify_excerpts import (  # type: ignore[no-redef]  # Direct script entry point.
         Fetcher,
@@ -44,7 +44,7 @@ except ImportError:
         normalise,
         pdf_text_views,
     )
-    from references import excerpt_spans  # type: ignore[no-redef]
+    from references import source_spans  # type: ignore[no-redef]
 
 ROOT = Path(__file__).resolve().parents[1]
 ARCHIVE_HOSTS = {
@@ -461,10 +461,9 @@ def change_reason(previous: dict, digest: str, fields: dict) -> str:
     return "text_changed"
 
 
-def bound_quotes(source: dict) -> list[str]:
-    """Quotations, and their anchors, whose declared copy is the source itself (no URL, its URL or its archive)."""
-    own = {None, source["url"], source.get("archive_url")}
-    return [span for e in source.get("excerpts", []) if e.get("url") in own for span in excerpt_spans(e)]
+def bound_quotes(source: dict, sources=()) -> list[str]:
+    """Spans bound to this source's copy, including anchors owned by other sources' excerpts."""
+    return [span for _, _, span, _ in source_spans(source, sources, bound_only=True)]
 
 
 def copy_views(body: bytes, mime: str, path: Path) -> list[str]:
@@ -748,6 +747,7 @@ def process_source(
     directory: Path,
     fallback: Path,
     lookup_archives: bool = False,
+    sources=(),
 ) -> dict:
     """Return only proposed public metadata; keep private paths in the private manifest."""
     attempts, archives = [], []
@@ -883,7 +883,7 @@ def process_source(
     if previous:
         change = change_reason(previous, hashlib.sha256(body).hexdigest(), fields)
         keep = change == "text_unchanged"
-        quotes = bound_quotes(source)
+        quotes = bound_quotes(source, sources)
         # Read the cited copy only where it is used, so a corrupt copy is still
         # repaired by a new save everywhere else.
         held = (
@@ -962,10 +962,11 @@ def process_source_safe(
     directory: Path,
     fallback: Path,
     lookup_archives: bool = False,
+    sources=(),
 ) -> dict:
     """Isolate malformed source/cache metadata without interrupting other results."""
     try:
-        return process_source(source, fetcher, directory, fallback, lookup_archives)
+        return process_source(source, fetcher, directory, fallback, lookup_archives, sources)
     except (OSError, ValueError, TypeError, KeyError) as exc:
         return {
             "source_id": source.get("id", "unknown"),
@@ -1053,6 +1054,7 @@ def main() -> None:
             args.directory,
             ROOT / "work/snapshots",
             args.lookup_archives,
+            data["sources"],
         )
 
     with ThreadPoolExecutor(max_workers=max(1, args.workers)) as pool:

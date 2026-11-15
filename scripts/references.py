@@ -40,9 +40,30 @@ def excerpt_identity(excerpt):
 
 
 def excerpt_spans(excerpt):
-    """The verbatim spans a saved copy must carry for an excerpt: its text, then its anchors' texts
-    (docs/design/claims-1.1.md, section 4). The monitor and the copies step re-read each one."""
-    return [excerpt["text"], *(anchor["text"] for anchor in excerpt.get("anchors", []))]
+    """The excerpt's text and anchors in its own copy (docs/design/claims-1.1.md, section 4)."""
+    return [excerpt["text"], *(a["text"] for a in excerpt.get("anchors", []) if "source_id" not in a)]
+
+
+def located_spans(source_id, excerpt):
+    """Every (source id, span) needed by an excerpt, including anchors in another source's copy."""
+    return [(source_id, excerpt["text"]),
+            *((a.get("source_id", source_id), a["text"]) for a in excerpt.get("anchors", []))]
+
+
+def source_spans(source, sources=(), *, bound_only=False):
+    """Yield (owning source, excerpt, span, is_anchor) for this source's copy, including incoming anchors.
+
+    Only same-copy spans depend on the owning excerpt's URL; other-copy anchors always bind to the named source.
+    """
+    for excerpt in source.get("excerpts", []):
+        if not bound_only or excerpt.get("url") in {None, source["url"], source.get("archive_url")}:
+            for index, span in enumerate(excerpt_spans(excerpt)):
+                yield source, excerpt, span, index > 0
+    for owner in sources:
+        for excerpt in owner.get("excerpts", []):
+            for anchor in excerpt.get("anchors", []):
+                if "source_id" in anchor and anchor["source_id"] == source.get("id"):
+                    yield owner, excerpt, anchor["text"], True
 
 
 def record_label(document, pointer):

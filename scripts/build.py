@@ -128,6 +128,7 @@ def valid_partial_date(s: str) -> bool:
 
 def check_excerpts(d: dict) -> list[str]:
     errors = []
+    sources = {s["id"]: s for s in d["sources"]}
     for source in d["sources"]:
         for excerpt in source.get("excerpts", []):
             where = f"source {source['id']} excerpt {excerpt_identity(excerpt)}"
@@ -135,21 +136,40 @@ def check_excerpts(d: dict) -> list[str]:
                 errors.append(f"{where}: source language is required for an excerpt")
             elif source["language"].split("-")[0] != "en" and not excerpt.get("gloss", "").strip():
                 errors.append(f"{where}: non-English excerpt needs an English gloss")
-            elif source["language"].split("-")[0] != "en" and any(not a.get("gloss", "").strip() for a in excerpt.get("anchors", [])):
-                errors.append(f"{where}: non-English anchor needs an English gloss")
-            groups = [a["kind"] == "definition" for a in excerpt.get("anchors", [])]
-            if len(groups) > 2 or len(groups) != len(set(groups)):
+            anchors = excerpt.get("anchors", [])
+            groups = ["other" if "source_id" in a else "lead" if a["kind"] in {"heading", "provision"} else "link" for a in anchors]
+            if len(groups) != len(set(groups)):
                 errors.append(
-                    f"{where}: anchors are at most one definition and at most one heading or provision (one link from the "
-                    "quote to its lead-in, one from a short name to its definition); for a longer chain widen the excerpt, "
-                    "or the claim waits"
+                    f"{where}: anchors are at most one same-copy heading or provision, one same-copy definition or membership, "
+                    "and one other-copy definition or membership; for a longer chain widen the excerpt, or the claim waits"
                 )
+            for anchor in anchors:
+                sid = anchor.get("source_id", source["id"])
+                if "source_id" in anchor:
+                    if anchor["kind"] not in {"definition", "membership"}:
+                        errors.append(f"{where}: an other-copy anchor must be a definition or membership; keep a heading or provision in the excerpt's copy")
+                    if sid == source["id"]:
+                        errors.append(f"{where}: anchor source_id names its own source; leave source_id out")
+                    if sid not in sources:
+                        errors.append(f"{where}: anchor source_id {sid!r} is unknown; cite a source in the dataset")
+                    elif not (sources[sid].get("snapshot") or {}).get("sha256"):
+                        errors.append(f"{where}: anchor source {sid!r} needs snapshot.sha256; save its cited copy")
+                language = sources.get(sid, {}).get("language")
+                if sid in sources and not language:
+                    errors.append(f"{where}: anchor source {sid!r} needs a language")
+                elif language and language.split("-")[0] != "en" and not anchor.get("gloss", "").strip():
+                    errors.append(f"{where}: non-English anchor needs an English gloss (source {sid})")
             for pointer in excerpt["supports"]:
                 try:
                     nodes = pointer_ancestors(d, pointer)
                 except (ValueError, KeyError, IndexError) as exc:
                     errors.append(f"{where}: pointer {pointer!r} does not resolve ({exc})")
                     continue
+                for anchor in anchors:
+                    if "source_id" in anchor and not any(
+                        isinstance(node, dict) and anchor["source_id"] in node.get("source_ids", []) for node in nodes
+                    ):
+                        errors.append(f"{where}: pointer {pointer!r} does not cite anchor source {anchor['source_id']!r}; add it to the claim's or an ancestor's source_ids")
                 # Identifier citations are separate from evidence for status and other claims.
                 tokens = pointer[1:].split("/")
                 if (
@@ -842,7 +862,7 @@ FIELD_DOCS = {
     "supports": "JSON-encoded array of RFC 6901 pointers supported by this excerpt in this exact dataset version.",
     "identifier_source_ids": "Citations supporting identifiers, distinct from citations for status; see sources.csv.",
     "source_id": "ID of the source containing the excerpt; see sources.csv.",
-    "anchors": "JSON-encoded array of the excerpt's anchors (sources[].excerpts[].anchors in aisi.json), each {text, kind, gloss?}: verbatim spans from the same copy that name whom the excerpt is about (kind definition, heading or provision); empty when the excerpt has none.",
+    "anchors": "JSON-encoded array of the excerpt's anchors (sources[].excerpts[].anchors in aisi.json), each {text, kind, gloss?, source_id?}: verbatim spans from the same copy unless source_id names another source (kind definition, heading, provision or membership); empty when the excerpt has none.",
     "source_url": "Canonical URL of the source containing the excerpt.",
     "source_ids": "Source ids, separated by '; '; see sources.csv.",
     "source_urls": "URLs of the cited sources, same order as source_ids.",

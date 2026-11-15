@@ -9532,15 +9532,18 @@ def claim_quote_fixture(data: dict) -> tuple[dict, list[str]]:
     state = {"state": "source_gone", "last_found": "2026-09-01", "since": "2026-09-02"}
     source = {"id": source_id, "url": "https://example.org/claim-fixture", "title": "Synthetic claim source", "publisher": "Fixture", "language": "de", "excerpts": []}
     fixture["sources"].append(source)
+    anchor_source = {"id": "fixture-anchor-source", "url": "https://example.org/anchor-fixture", "title": "Synthetic unit membership", "language": "fr"}
+    fixture["sources"].append(anchor_source)
 
     def add(record, kind, text, **extra):
         claim = {"id": f"fixture-claim-{record['id']}-{len(record.setdefault('claims', []))}", "kind": kind,
-                 "text": text, "source_ids": [source_id], "citations": {leaf: [source_id] for leaf in ("text", "act", "date")}, **extra}
+                 "text": text, "source_ids": [source_id, anchor_source["id"]], "citations": {leaf: [source_id] for leaf in ("text", "act", "date")}, **extra}
         record["claims"].append(claim)
         ri = fixture["jurisdictions"].index(record)
         pointer = f"/jurisdictions/{ri}/claims/{len(record['claims']) - 1}"
         source["excerpts"].append({"text": "Das Institut prüft Modelle.", "gloss": "The institute tests models.", "supports": [pointer + "/text"], "reread": state,
-                                   "anchors": [{"kind": "heading", "text": "Aufgaben", "gloss": "Tasks"}, {"kind": "definition", "text": "The Institute"}]})
+                                   "anchors": [{"kind": "heading", "text": "Aufgaben", "gloss": "Tasks"}, {"kind": "definition", "text": "The Institute"},
+                                               {"kind": "membership", "text": "Le laboratoire fait partie de l'institut.", "gloss": "The lab is part of the institute.", "source_id": anchor_source["id"]}]})
         if kind == "development":
             source["excerpts"].append({"text": "The government adopted the instrument on 1 September 2026.",
                                        "supports": [pointer + "/act", pointer + "/date"], "reread": state,
@@ -9620,6 +9623,13 @@ def check_claim_quotes(browser, base_url: str, data: dict) -> list[str]:
                                 errors.append(f"{identity}: missing anchors or source re-read line")
                             if not block.locator(".quote-anchor").evaluate_all("nodes => nodes.every(n => n.firstChild.nodeType === Node.TEXT_NODE && n.firstChild.textContent.trim())"):
                                 errors.append(f"{identity}: anchor kind label is missing")
+                            for line, anchor in zip(block.locator(".quote-anchor").all(), excerpt.get("anchors", [])):
+                                if "source_id" in anchor:
+                                    named = next(s for s in payload["sources"] if s["id"] == anchor["source_id"])
+                                    if not line.inner_text().endswith(" (" + named["title"] + ")"):
+                                        errors.append(f"{identity}: other-copy anchor source title is missing")
+                                    if anchor.get("gloss") and not line.locator(".translation").count():
+                                        errors.append(f"{identity}: other-copy anchor language is missing")
                             for node, span in zip(block.locator(".quote-text").all(), spans):
                                 if not span.get("gloss"):
                                     # An English original needs neither a tooltip nor a translation marker.
