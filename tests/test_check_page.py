@@ -598,6 +598,22 @@ def test_nonidentified_folds_pass_and_fail_on_each_rule():
     assert any("non-Latin script" in e for e in check_page.blocking(check_page.check_nonidentified_folds(alone, data)))
 
 
+def test_authority_line_read_across_its_glued_last_word():
+    """The page glues a line's last word to its citation marks in a span of its own (cite-glue): the check reads every
+    .body-roles span of the item, so "designated by" and "law" make one line."""
+    data = _fold_data()
+    body = data["jurisdictions"][0]["related_bodies"][0]
+    body.update(designation_state="designated", designation_basis="law")
+    glued = ('<li><span class="body-name">Financial Supervision Commission<span class="body-roles">: market-surveillance authority, designated by </span>'
+             '<span class="cite-glue"><span class="body-roles">law</span><span class="cites"><a class="cn">1</a></span></span></span>'
+             '<span class="orig">Комисия за финансов надзор</span><span class="det">Proposed market authority.</span></li>')
+    page = _fold_html().replace(_authority("Financial Supervision Commission", "market-surveillance authority, proposed",
+                                            '<span class="orig">Комисия за финансов надзор</span>', '<span class="det">Proposed market authority.</span>'), glued)
+    assert glued in page
+    assert not [e for e in check_page.check_nonidentified_folds(page, data) if "designated by" in e]
+    assert any("designated by" in e for e in check_page.check_nonidentified_folds(page.replace(">law<", "><"), data))
+
+
 def test_ai_act_authorities_in_pattern_4_order_and_folded_after_three():
     data = _fold_data()
     bodies = [{"name": n, "kind": "ai_act_authority", "authority_roles": r, "designation_state": "designated", "designation_basis": "law",

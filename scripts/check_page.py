@@ -7618,8 +7618,10 @@ def check_nonidentified_folds(html, data: dict) -> list[str]:
                 if key != "closest" and (bool(b.get("name_en")) != (original is not None) or (original is not None and " ".join(original.get_text().split()) != shown_original(b))):
                     errors.append(f"{j['id']} body {want!r}: the original name must sit beneath exactly when there is an English name, without an abbreviation the English name already closes with")
                 if key == "authorities":
-                    roles = li.select_one(".body-roles")
-                    line = " ".join("".join(t for t in roles.find_all(string=True) if not t.find_parent(class_="cites")).split()) if roles else ""
+                    # The line's last word is glued to its citation marks in a span of its own (cite-glue), so the line
+                    # is every .body-roles span of the item, in order, without the marks.
+                    spans = li.select(".body-roles")
+                    line = " ".join("".join(t for s in spans for t in s.find_all(string=True) if not t.find_parent(class_="cites")).split())
                     missing = [words.get(r, r) for r in (b.get("authority_roles") or []) if words.get(r, r) not in line]
                     if not line or missing:
                         errors.append(f"{j['id']} body {want!r}: its line {line!r} does not name its roles {missing}")
