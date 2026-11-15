@@ -35696,6 +35696,36 @@
           "source_ids": [
             "us-nist-march-slides"
           ]
+        },
+        {
+          "id": "claims-89ed3febc2ab477fa8544e388c36a71d",
+          "kind": "function",
+          "code": "adoption",
+          "basis": "activity",
+          "text": "NIST's post describes the then CAISI as one way NIST supports the American AI industry through collaborative research on AI metrology and model evaluations.",
+          "source_ids": [
+            "r5-us-raman-nist-post"
+          ]
+        },
+        {
+          "id": "claims-54d912529f554a5fbe1550c8fbb2ef22",
+          "kind": "function",
+          "code": "public_access_continuity",
+          "basis": "activity",
+          "text": "NIST says the then CAISI directly collaborated on national security tests with six or more agencies, including sharing privileged model access, national security expertise and testing resources.",
+          "source_ids": [
+            "us-nist-caisi-overview-2026"
+          ]
+        },
+        {
+          "id": "claims-e80d801892cd4e35a8543c6b89364fa0",
+          "kind": "function",
+          "code": "risk_monitoring",
+          "basis": "mandate",
+          "text": "The Commerce Secretary's statement assigns the then CAISI the task of leading evaluations and assessments of the capabilities of US and adversary AI systems, the adoption of foreign AI systems and the state of international AI competition.",
+          "source_ids": [
+            "us-commerce-2025"
+          ]
         }
       ]
     },
@@ -40011,7 +40041,8 @@
         "network-nist-2026",
         "my-csm-about",
         "my-csm-events",
-        "my-hansard-dr-2026-10-05"
+        "my-hansard-dr-2026-10-05",
+        "my-aisafe-overview"
       ],
       "notes": "AI Malaysia Berhad was itself created the same day from the National AI Office. The 2026-2030 National AI Action Plan does not mention the institute; it calls instead for a national 'AI Trust Function' to evaluate, monitor and respond to AI risks. In September 2026 AI Malaysia's chair still described setting up the institute as a priority in the works. This is the weakest 'established' record in the dataset: designation and mandate are stated in a primary government release, but no head, staff, budget or launch is published.\n\nThe ministry identifies AI Malaysia Berhad as a national AI entity under the Ministry of Digital and assigns it the national AI Safety Institute role. The institute's separate legal form and host classification are not specified in this announcement.",
       "website": "https://ai.gov.my/my-aisafe/",
@@ -40190,6 +40221,66 @@
           "text": "The Dewan Rakyat record says it is responsible for AI governance work covering safety benchmarking, risk assessment and incident reporting for corrective action.",
           "source_ids": [
             "my-hansard-dr-2026-10-05"
+          ]
+        },
+        {
+          "id": "claims-d8ea191dbb5748858e822c74278f612b",
+          "kind": "function",
+          "code": "certification",
+          "basis": "activity",
+          "text": "AI Malaysia's overview says the institute delivers the national AI Trust Function, which brings together testing of AI models and applications against standards.",
+          "source_ids": [
+            "my-aisafe-overview"
+          ]
+        },
+        {
+          "id": "claims-9ffc2525857043a9a8c96d2d820dffe5",
+          "kind": "function",
+          "code": "evaluation_methods",
+          "basis": "activity",
+          "text": "The National AI Office's overview says the institute \"develops tests, benchmarks and evaluation reports to assess AI systems against key areas of responsible AI\".",
+          "source_ids": [
+            "my-aisafe-overview"
+          ]
+        },
+        {
+          "id": "claims-ca125c781fc1444c9ce6fe7d9c4d9d8f",
+          "kind": "function",
+          "code": "incident_response",
+          "basis": "activity",
+          "text": "The National AI Office's overview says MY-AISafe \"manages incidents and tracks emerging threats\" once systems are in use.",
+          "source_ids": [
+            "my-aisafe-overview"
+          ]
+        },
+        {
+          "id": "claims-41d4578f3e434d30a44b608ca6ea3135",
+          "kind": "function",
+          "code": "international_cooperation",
+          "basis": "activity",
+          "text": "The National AI Office's overview lists shared methods, joint research and capacity building with AI safety institutes in other countries as part of MY-AISafe's work.",
+          "source_ids": [
+            "my-aisafe-overview"
+          ]
+        },
+        {
+          "id": "claims-90f0a690e6a244b2a1831dee395313c6",
+          "kind": "function",
+          "code": "model_testing",
+          "basis": "activity",
+          "text": "The National AI Office's overview says MY-AISafe tests systems before release using benchmarks, red teaming and evaluation reports.",
+          "source_ids": [
+            "my-aisafe-overview"
+          ]
+        },
+        {
+          "id": "claims-11f2d9b2361b4866a2f17dc24acd4b71",
+          "kind": "function",
+          "code": "risk_monitoring",
+          "basis": "mandate",
+          "text": "AI Malaysia's national action plan calls for a national AI Trust Function to evaluate, monitor, anticipate and respond to AI risks, and its overview says MY-AISafe delivers that function.",
+          "source_ids": [
+            "my-plan-2026"
           ]
         }
       ]
@@ -45004,6 +45095,30 @@
               },
               "text"
             ]
+          ],
+          "accessed": "2026-10-17",
+          "url": "https://content.govdelivery.com/accounts/USDOC/bulletins/3e381fb"
+        },
+        {
+          "text": "Lead evaluations and assessments of capabilities of U.S. and adversary AI systems, the adoption of foreign AI systems, and the state of international AI competition.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "claims",
+              {
+                "id": "claims-e80d801892cd4e35a8543c6b89364fa0"
+              },
+              "text"
+            ]
+          ],
+          "anchors": [
+            {
+              "text": "To that end, CAISI will:",
+              "kind": "heading"
+            }
           ],
           "accessed": "2026-10-17",
           "url": "https://content.govdelivery.com/accounts/USDOC/bulletins/3e381fb"
@@ -50524,6 +50639,34 @@
             ]
           ],
           "accessed": "2026-10-21"
+        },
+        {
+          "text": "Establish a national AI Trust Function to evaluate, monitor, anticipate and respond to AI risks.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "my-aisafe"
+              },
+              "claims",
+              {
+                "id": "claims-11f2d9b2361b4866a2f17dc24acd4b71"
+              },
+              "text"
+            ]
+          ],
+          "anchors": [
+            {
+              "text": "AI TRUST FUNCTIONE12",
+              "kind": "heading"
+            },
+            {
+              "text": "MY-AISAFE DELIVERS E12 AI TRUST FUNCTION, ONE OF THE PLAN’S 28 INITIATIVES",
+              "kind": "membership",
+              "source_id": "my-aisafe-overview"
+            }
+          ],
+          "accessed": "2026-10-17"
         }
       ]
     },
@@ -89324,6 +89467,29 @@
             ]
           ],
           "accessed": "2026-10-17"
+        },
+        {
+          "text": "Directly collaborated on national security tests with 6+ agencies including sharing privileged model access, \nnational security expertise, and testing resources.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "claims",
+              {
+                "id": "claims-54d912529f554a5fbe1550c8fbb2ef22"
+              },
+              "text"
+            ]
+          ],
+          "anchors": [
+            {
+              "text": "NIST CAISI Overview",
+              "kind": "heading"
+            }
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "US",
@@ -94531,6 +94697,23 @@
             ]
           ],
           "accessed": "2026-10-20"
+        },
+        {
+          "text": "CAISI is just one of the ways by which NIST serves as American industry’s national lab, by supporting the world-leading American AI industry through collaborative research on AI metrology and model evaluations.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "claims",
+              {
+                "id": "claims-89ed3febc2ab477fa8544e388c36a71d"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-19"
         }
       ],
       "snapshot": {
@@ -101461,6 +101644,97 @@
               "staffing_model",
               "code"
             ]
+          ],
+          "accessed": "2026-10-19"
+        },
+        {
+          "text": "The national AI Trust Function brings together: Standards and Policy AI safety and security standards, risk classiﬁcations and guidance on safe use Evaluation and Certiﬁcation Testing of AI models and applications against those standards",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "my-aisafe"
+              },
+              "claims",
+              {
+                "id": "claims-d8ea191dbb5748858e822c74278f612b"
+              },
+              "text"
+            ]
+          ],
+          "anchors": [
+            {
+              "text": "MY-AISAFE DELIVERS E12 AI TRUST FUNCTION, ONE OF THE PLAN’S 28 INITIATIVES",
+              "kind": "heading"
+            }
+          ],
+          "accessed": "2026-10-19"
+        },
+        {
+          "text": "MY-AISafe puts these principles into practice through testing, evaluation and technical evidence. The institute develops tests, benchmarks and evaluation reports to assess AI systems against key areas of responsible AI.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "my-aisafe"
+              },
+              "claims",
+              {
+                "id": "claims-9ffc2525857043a9a8c96d2d820dffe5"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-19"
+        },
+        {
+          "text": "MY-AISafe tests systems before release, then manages incidents and tracks emerging threats once they are in use. 1 Before release: Benchmarks, red teaming and evaluation reports.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "my-aisafe"
+              },
+              "claims",
+              {
+                "id": "claims-ca125c781fc1444c9ce6fe7d9c4d9d8f"
+              },
+              "text"
+            ],
+            [
+              "institutes",
+              {
+                "id": "my-aisafe"
+              },
+              "claims",
+              {
+                "id": "claims-90f0a690e6a244b2a1831dee395313c6"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-19"
+        },
+        {
+          "text": "International partners: Shared methods, joint research and capacity building with AI safety institutes in other countries.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "my-aisafe"
+              },
+              "claims",
+              {
+                "id": "claims-41d4578f3e434d30a44b608ca6ea3135"
+              },
+              "text"
+            ]
+          ],
+          "anchors": [
+            {
+              "text": "MY-AISafe's work is designed to be useful to the people building, deploying, evaluating and overseeing AI.",
+              "kind": "heading"
+            }
           ],
           "accessed": "2026-10-19"
         }
