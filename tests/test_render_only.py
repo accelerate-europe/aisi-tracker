@@ -973,7 +973,7 @@ console.log(JSON.stringify({names, list, institutes, rows, marks: cite(order),
         link = item['children'][0]
         shown = src.get('title_en', src['title'])
         assert text(link) == shown and link['href'] == src['url'] and 'tabIndex' not in link
-        assert link.get('lang') == (None if src.get('title_en') else src.get('language'))
+        assert link.get('lang') == (None if src.get('title_en') or src.get('language') == 'en' else src.get('language'))
         assert mark['dataset']['tip'] == shown + ' (Publisher)'
         assert mark['dataset']['tipSub'] == (src['title'] + ' · ' if src.get('title_en') else '') + 'example.org'
         assert ', Publisher, 2026-11-15' in text(item)
