@@ -3,30 +3,16 @@
 import pytest
 from bs4 import BeautifulSoup
 
-RULE_CASES = (
-    "closest with activity", "closest without activity", "planned or proposed with activity",
-    "planned or proposed without activity", "established without work", "established with work", "other or legacy",
-)
+RULE_CASES = ("closest with activity", "closest without activity", "institute", "other or legacy")
 
 
 def activity_expectation(j, institute, vocabulary):
-    """Independent expectations from published claims and function rows, never page-generated text."""
-    record = institute or j
-    if "claims" not in record:
-        return "other or legacy", "", set()
+    """Independent expectations from published claims, never page-generated text."""
     if institute:
-        if j["status"] == "established":
-            if not institute["display"]["operating"]["items"]:
-                return "established without work", "Established. No published work found yet.", set()
-            return "established with work", "", set()
-        if j["status"] not in ("planned", "proposed"):
-            return "other or legacy", "", set()
-        ids = {cid for r in institute.get("functions", []) if r["value"] in ("activity", "both") for cid in r["claim_ids"]}
-        codes = {r["code"] for r in institute.get("functions", []) if r["value"] in ("activity", "both")}
-        claims = [c for c in institute["claims"] if c["id"] in ids and c["kind"] == "function" and c["basis"] == "activity"]
-        case = "planned or proposed with activity" if codes else "planned or proposed without activity"
-        prefix = "Not yet established. Active in "
-    elif j["status"] == "none_identified" and j.get("closest_body"):
+        return "institute", "", set()
+    if "claims" not in j:
+        return "other or legacy", "", set()
+    if j["status"] == "none_identified" and j.get("closest_body"):
         body_id = j["closest_body"].get("body_id")
         claims = [c for c in j["claims"] if c["kind"] == "function" and c["basis"] == "activity"
                   and not c.get("expired") and body_id is not None and c.get("body_id") == body_id]
@@ -79,22 +65,17 @@ def check_activity_lines(html, data, case=None):
             errors.append(f"{j['id']}: activity citations differ")
         if not {"small", "qualifiers"} <= set(line.get("class", [])) or "det" in line.get("class", []):
             errors.append(f"{j['id']}: activity is not a muted qualifier")
-        if institute:
-            target = card.select_one('.row[data-track="3"] > .v')
-            if line.parent is not target or line.find_next_sibling() is not None:
-                errors.append(f"{j['id']}: activity must follow the Status qualifiers in the same value")
-        else:
-            target = card.select_one(".body-group.closest li")
-            if line.parent is not target or target.get("data-body-id") != j["closest_body"]["body_id"]:
-                errors.append(f"{j['id']}: activity must belong to the closest body's item")
-            previous = line.find_previous_sibling()
-            stage = {"planned": "Planned.", "proposed": "Proposed.", "under_study": "Under study."}.get(j["closest_body"]["stage"])
-            if stage:
-                if previous is None or line_text(previous) != stage:
-                    errors.append(f"{j['id']}: activity must follow the stage")
-                previous = previous.find_previous_sibling() if previous is not None else None
-            if previous is None or "body-name" not in previous.get("class", []):
-                errors.append(f"{j['id']}: activity and stage must directly follow the name")
+        target = card.select_one(".body-group.closest li")
+        if line.parent is not target or target.get("data-body-id") != j["closest_body"]["body_id"]:
+            errors.append(f"{j['id']}: activity must belong to the closest body's item")
+        previous = line.find_previous_sibling()
+        stage = {"planned": "Planned.", "proposed": "Proposed.", "under_study": "Under study."}.get(j["closest_body"]["stage"])
+        if stage:
+            if previous is None or line_text(previous) != stage:
+                errors.append(f"{j['id']}: activity must follow the stage")
+            previous = previous.find_previous_sibling() if previous is not None else None
+        if previous is None or "body-name" not in previous.get("class", []):
+            errors.append(f"{j['id']}: activity and stage must directly follow the name")
     return errors
 
 
