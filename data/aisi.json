@@ -32201,7 +32201,30 @@
             "scope": "Sources checked for developments from 13 November 2026: KI Norge's articles (newest dated 1 September, first item undated), Digdir's news archive (undated) and cooperation-portal news (13 November), the government's news (13 November), the government's release of 12 November on the UK-Norway statement of intent and its release of 13 November on a security expert group. The statement and the later memorandum it contemplates are already recorded; the expert-group release assigns KI Norge no task. KI Norge's publications or research listing was not found. Partial check, not a full record re-check."
           }
         ],
-        "last_checked_basis": "historical_upper_bound"
+        "last_checked_basis": "historical_upper_bound",
+        "functions": {
+          "date": "2026-11-14",
+          "codes": [
+            "model_testing",
+            "evaluation_methods",
+            "research",
+            "standards_guidance",
+            "regulatory_enforcement",
+            "regulatory_support",
+            "risk_monitoring",
+            "foresight",
+            "policy_advice",
+            "incident_response",
+            "international_cooperation",
+            "convening",
+            "capacity_building",
+            "talent",
+            "adoption",
+            "public_access_continuity",
+            "certification",
+            "sandbox"
+          ]
+        }
       },
       "source_ids": [
         "no-budget",
@@ -32468,6 +32491,26 @@
             "no-digdir-ki-norge-report-2025"
           ],
           "text": "To make KI Norge fully operational, Digdir brought technical, legal, innovation and public administration expertise together in an interim organisation from 1 December 2025."
+        },
+        {
+          "id": "claims-7fd387533a8f45fe918533a749033b3a",
+          "kind": "function",
+          "code": "model_testing",
+          "basis": "mandate",
+          "text": "The government's 2027 budget bill assigns it the evaluation of AI models, including their safety, in 2027.",
+          "source_ids": [
+            "no-prop1s-2026-27-dfd"
+          ]
+        },
+        {
+          "id": "claims-9bd2c6db801149b1b310cc9dd14e0d9a",
+          "kind": "function",
+          "code": "international_cooperation",
+          "basis": "mandate",
+          "text": "The government's 2027 budget bill makes it the contact point towards international AI safety communities such as AI Safety Institutes, aiming at cooperation on methods, assessments and test tools.",
+          "source_ids": [
+            "no-prop1s-2026-27-dfd"
+          ]
         }
       ]
     },
@@ -38548,7 +38591,30 @@
             "scope": "Sources checked for developments from 13 November 2026: the institute page (undated), AI Malaysia's news (stale, newest 14 May), the digital ministry's releases list (stale, newest 17 June 2025) and home page (13 November), its release of 13 November, which still describes the institute as being established, and its budget release of 6 November. The 2027 budget estimates give AI Malaysia, the host, RM9,000,000 for 2026 and RM13,663,400 for 2027, as the host's estimates rather than an institute allocation. Neither finding has been added to the data. The new sources report no testing, staff, output or agreement. The Hansard of 28 October is still marked draft; the Supply Bill schedules, their adoption and how the estimates relate to the recorded nearly MYR15m are unresolved. Partial check, not a full record re-check."
           }
         ],
-        "last_checked_basis": "historical_upper_bound"
+        "last_checked_basis": "historical_upper_bound",
+        "functions": {
+          "date": "2026-11-14",
+          "codes": [
+            "model_testing",
+            "evaluation_methods",
+            "research",
+            "standards_guidance",
+            "regulatory_enforcement",
+            "regulatory_support",
+            "risk_monitoring",
+            "foresight",
+            "policy_advice",
+            "incident_response",
+            "international_cooperation",
+            "convening",
+            "capacity_building",
+            "talent",
+            "adoption",
+            "public_access_continuity",
+            "certification",
+            "sandbox"
+          ]
+        }
       },
       "source_ids": [
         "my-digital-2026-07",
@@ -38699,7 +38765,49 @@
           "my-aisafe-overview"
         ],
         "notes": "The adopted National AI Action Plan 2026-2030 (revision of 18 August 2026) provides under the AI Trust Function (E12) to 'Recruit and train a specialised multidisciplinary team, including AI risk analysts, adversarial machine learning engineers and incident response leads', and AI Malaysia's overview says MY-AISafe delivers that function. No source yet states staff of its own, a host body's staff or posts (searched: the AI Malaysia site and careers page, Ministry of Digital releases, the Budget 2027 speech and Dewan Rakyat answers); the overview says 'The institute draws on expertise from government, industry, academia and research institutions'."
-      }
+      },
+      "claims": [
+        {
+          "id": "claims-e0b0c7a90d0743e0a8ac7c0cae15b3e8",
+          "kind": "function",
+          "code": "model_testing",
+          "basis": "mandate",
+          "text": "The Ministry of Digital's launch release assigns it a pillar of work that covers safety evaluations, testing and AI red teaming.",
+          "source_ids": [
+            "my-digital-2026-07"
+          ]
+        },
+        {
+          "id": "claims-a867aab2cc294349922476268ff28da1",
+          "kind": "function",
+          "code": "regulatory_support",
+          "basis": "mandate",
+          "text": "The Ministry of Digital's launch release assigns it governance, safety and regulatory support through the development of standards, risk management and compliance assurance.",
+          "source_ids": [
+            "my-digital-2026-07"
+          ]
+        },
+        {
+          "id": "claims-a6703736497f468aa19df991c9eb39d4",
+          "kind": "function",
+          "code": "policy_advice",
+          "basis": "mandate",
+          "text": "The Dewan Rakyat record says the government set it up, through the Ministry of Digital and AI Malaysia Berhad, to study clear mechanisms for regulating the use of AI in organisations across sectors.",
+          "source_ids": [
+            "my-hansard-dr-2026-10-05"
+          ]
+        },
+        {
+          "id": "claims-5a18937b6f3d4613be9d6863dd84a75d",
+          "kind": "function",
+          "code": "incident_response",
+          "basis": "mandate",
+          "text": "The Dewan Rakyat record says it is responsible for AI governance work covering safety benchmarking, risk assessment and incident reporting for corrective action.",
+          "source_ids": [
+            "my-hansard-dr-2026-10-05"
+          ]
+        }
+      ]
     },
     {
       "id": "in-aisi",
@@ -39116,7 +39224,30 @@
             "scope": "Sources checked for developments from 13 November 2026: the ICT ministry's home page (10 November), news (3 November), policy documents (newest dated title 22 January 2026, with undated items) and speeches and press releases (20 September), the Cabinet despatches (newest read 9 October) and the President's Cabinet briefs (10 February). No adoption of the draft AI policy and no act on the institute was found. A Mt Kenya Times report of 13 November on a court judgment of 12 November describes the policy as awaiting Cabinet approval; the judgment itself was not read, and the report is not evidence of adoption. Parliament's catalogue entry for its report on the AI Bill was read (issued 7 August, catalogued 12 October), but the report itself could not be retrieved. Partial check, not a full record re-check."
           }
         ],
-        "last_checked_basis": "historical_upper_bound"
+        "last_checked_basis": "historical_upper_bound",
+        "functions": {
+          "date": "2026-11-14",
+          "codes": [
+            "model_testing",
+            "evaluation_methods",
+            "research",
+            "standards_guidance",
+            "regulatory_enforcement",
+            "regulatory_support",
+            "risk_monitoring",
+            "foresight",
+            "policy_advice",
+            "incident_response",
+            "international_cooperation",
+            "convening",
+            "capacity_building",
+            "talent",
+            "adoption",
+            "public_access_continuity",
+            "certification",
+            "sandbox"
+          ]
+        }
       },
       "source_ids": [
         "ke-ai-strategy-2025",
@@ -39362,6 +39493,18 @@
           "decision_date": "2026-07",
           "id": "funding-b60809279d92488ebf5dcea4813d9da9",
           "notes": "Estimated cost in the draft policy's implementation matrix, with a timeframe of 0 to 24 months and no annual profile, to come from the Exchequer and development partners. The draft was issued for consultation and is not adopted, so the figure is a proposal, not a budget. The ECB publishes no reference rate for the Kenyan shilling, so the amount is not converted to euros and is not compared."
+        }
+      ],
+      "claims": [
+        {
+          "id": "claims-c9a798e398554a7abdf03d003c394160",
+          "kind": "function",
+          "code": "international_cooperation",
+          "basis": "activity",
+          "text": "The international network's joint testing report says that, with the UK, the EU AI Office, Australia, Canada and Korea, it contributed to the analysis phase of the project.",
+          "source_ids": [
+            "catalogue-agentic-report"
+          ]
         }
       ]
     }
@@ -48162,7 +48305,24 @@
                 "id": "my-aisafe"
               },
               "mandate_short"
+            ],
+            [
+              "institutes",
+              {
+                "id": "my-aisafe"
+              },
+              "claims",
+              {
+                "id": "claims-a867aab2cc294349922476268ff28da1"
+              },
+              "text"
             ]
+          ],
+          "anchors": [
+            {
+              "text": "The Malaysia AI Safety Institute will reinforce a safe, trusted, and responsible AI ecosystem through three main pillars:",
+              "kind": "heading"
+            }
           ]
         },
         {
@@ -48303,6 +48463,24 @@
             ]
           ],
           "accessed": "2026-10-19"
+        },
+        {
+          "text": "The Malaysia AI Safety Institute will reinforce a safe, trusted, and responsible AI ecosystem through three main pillars: AI RDCI (Research, Development, Commercialisation, and Innovation), which encompasses safety evaluations, testing, and AI Red Teaming",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "my-aisafe"
+              },
+              "claims",
+              {
+                "id": "claims-e0b0c7a90d0743e0a8ac7c0cae15b3e8"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17",
+          "url": "https://web.archive.org/web/20261016201248/https://www.digital.gov.my/en-GB/siaran/AI-Malaysia-Pemacu-Utama-Menuju-Negara-AI-2030"
         }
       ],
       "origin": "MY",
@@ -74297,6 +74475,23 @@
             ]
           ],
           "accessed": "2026-10-21"
+        },
+        {
+          "text": "In addition to UK AISI, EU AI Office, and Australia, AISIs from Kenya, Canada, and the Republic of Korea also contributed to the analysis phase of the project.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "ke-ai-safety-institute"
+              },
+              "claims",
+              {
+                "id": "claims-c9a798e398554a7abdf03d003c394160"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "International Network of AI Safety Institutes",
@@ -111033,6 +111228,44 @@
             ]
           ],
           "accessed": "2026-11-07"
+        },
+        {
+          "text": "I 2027 får KI Noreg i oppgåve å evaluere KI-modellar, inkludert sikkerheita i desse.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "claims",
+              {
+                "id": "claims-7fd387533a8f45fe918533a749033b3a"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-24",
+          "url": "https://web.archive.org/web/20261012015622if_/https://www.regjeringen.no/contentassets/df4dc3a3497342129b6d1681ad6d4c9e/nn-no/pdfs/prp202620270001dfddddpdfs.pdf",
+          "gloss": "In 2027 KI Norge is given the task of evaluating AI models, including their safety."
+        },
+        {
+          "text": "KI Noreg skal vere kontaktpunktet mot internasjonale sikkerheitsmiljø innan KI, til dømes AI Safety Institutes, med mål om samarbeid om mellom anna metodar, vurderingar og testverktøy Noreg ikkje kan bygge opp åleine.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "claims",
+              {
+                "id": "claims-9bd2c6db801149b1b310cc9dd14e0d9a"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-24",
+          "url": "https://web.archive.org/web/20261012015622if_/https://www.regjeringen.no/contentassets/df4dc3a3497342129b6d1681ad6d4c9e/nn-no/pdfs/prp202620270001dfddddpdfs.pdf",
+          "gloss": "KI Norge is to be the contact point towards international AI safety communities, for example AI Safety Institutes, with the aim of cooperation on, among other things, methods, assessments and test tools Norway cannot build up alone."
         }
       ],
       "snapshot": {
@@ -118917,8 +119150,37 @@
                 "id": "my-aisafe"
               },
               "mandate"
+            ],
+            [
+              "institutes",
+              {
+                "id": "my-aisafe"
+              },
+              "claims",
+              {
+                "id": "claims-5a18937b6f3d4613be9d6863dd84a75d"
+              },
+              "text"
             ]
           ]
+        },
+        {
+          "text": "Kerajaan juga melalui Kementerian Digital dan AI Malaysia Berhad telah menubuhkan Malaysia AI Safety Institute untuk mengkaji mekanisme yang jelas dan teratur bagi mengawal selia penerapan modul AI dalam operasi organisasi rentas sektor.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "my-aisafe"
+              },
+              "claims",
+              {
+                "id": "claims-a6703736497f468aa19df991c9eb39d4"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-11-10",
+          "gloss": "The government, through the Ministry of Digital and AI Malaysia Berhad, has also established the Malaysia AI Safety Institute to study clear and orderly mechanisms for regulating the application of AI modules in organisations' operations across sectors."
         }
       ],
       "snapshot": {
