@@ -3937,6 +3937,10 @@
           {
             "date": "2026-11-10",
             "text": "NASK's and OpenAI's announcements of their agreement of 23 October 2026 were read."
+          },
+          {
+            "date": "2026-11-15",
+            "text": "Research pass 2026-11-15-poland-centre searched NASK's and the Ministry of Digital Affairs' sites, the official journals, NASK's public information bulletin and OpenAI's pages, in Polish and English, for the centre's setting-up, leadership, size, OpenAI agreements, partners and description as Poland's AI safety institute."
           }
         ]
       },
@@ -4011,6 +4015,17 @@
           "text": "The Ministry of Digital Affairs says the new centre's researchers \"focus on innovative AI research, with an emphasis on cybersecurity\".",
           "source_ids": [
             "pl-nask"
+          ]
+        },
+        {
+          "id": "claims-5c00c4e30b05411da066d352a4619ac3",
+          "kind": "function",
+          "code": "international_cooperation",
+          "basis": "activity",
+          "body_id": "related_bodies-8e2bf69316145732aea04a2f9bbd82eb",
+          "text": "NASK's director says the cooperation between Korea's AI Safety Institute at ETRI and the centre \"strengthens not only our joint commitment to safe and trustworthy artificial intelligence\".",
+          "source_ids": [
+            "pl-nask-korea-aisi-2026"
           ]
         }
       ]
@@ -117965,6 +117980,44 @@
         "text_sha256": "9b9dab586dbc5d13283f31abb02a7f604f134477d48389c82823c961b404bd01",
         "text_scheme": 1
       }
+    },
+    {
+      "id": "pl-nask-korea-aisi-2026",
+      "url": "https://www.nask.pl/aktualnosci/polsko-koreanska-wspolpraca-nad-bezpieczenstwem-ai",
+      "title": "Polsko-koreańska współpraca nad bezpieczeństwem AI",
+      "publisher": "NASK National Research Institute",
+      "type": "primary",
+      "published": "2026-01-07",
+      "accessed": "2026-11-15",
+      "language": "pl",
+      "origin": "PL",
+      "title_en": "Polish-Korean cooperation on AI safety",
+      "snapshot": {
+        "retrieved": "2026-11-15T14:45:31Z",
+        "sha256": "bc627ce9a3966df64c30cf54a58880b92a46279ab8baa7ad9717d394ffb73b3a",
+        "text_sha256": "ffc4b379fb1c1238a96a5ce37475ae96d92734fce661f3f8b2af55b24d14176e",
+        "text_scheme": 1
+      },
+      "excerpts": [
+        {
+          "text": "Współpraca między Koreańskim Instytutem Badań nad Bezpieczeństwem Sztucznej Inteligencji w ETRI a Ośrodkiem Badań nad Bezpieczeństwem Sztucznej Inteligencji w NASK wzmacnia nie tylko nasze wspólne zaangażowanie w bezpieczną i godną zaufania sztuczną inteligencję",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "PL"
+              },
+              "claims",
+              {
+                "id": "claims-5c00c4e30b05411da066d352a4619ac3"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "The cooperation between the Korea AI Safety Institute at ETRI and the AI Safety Research Centre at NASK strengthens not only our joint commitment to safe and trustworthy artificial intelligence",
+          "accessed": "2026-11-15"
+        }
+      ]
     },
     {
       "id": "pl-nask-cert-openai-2026",
