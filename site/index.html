@@ -1345,7 +1345,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   // Claims: one display rule, also exported for the functions table. Text is assigned as text, never HTML.
   var FACTS_LABEL = "Facts", QUOTE_LABEL = "Quote", TRANSLATED = "translated from {language}";
   var QUOTE_LANGUAGES = { ar: "Arabic", bg: "Bulgarian", cs: "Czech", da: "Danish", de: "German", el: "Greek", en: "English", es: "Spanish", et: "Estonian", fi: "Finnish", fr: "French", hr: "Croatian", hu: "Hungarian", id: "Indonesian", is: "Icelandic", it: "Italian", ja: "Japanese", ko: "Korean", lt: "Lithuanian", lv: "Latvian", nb: "Norwegian Bokmål", nl: "Dutch", nn: "Norwegian Nynorsk", no: "Norwegian", pl: "Polish", pt: "Portuguese", ro: "Romanian", ru: "Russian", sk: "Slovak", sl: "Slovenian", sv: "Swedish", th: "Thai", tr: "Turkish", uk: "Ukrainian", zh: "Chinese" };
-  var ANCHOR_LABELS = { heading: "Heading:", definition: "Defined as:", provision: "Provision:" };
+  var ANCHOR_LABELS = { heading: "Heading:", definition: "Defined as:", provision: "Provision:", membership: "Part of:" };
   function quoteNode(text, gloss, lang, inSentence) {
     var box = el("span", "quotation"), quote = el("span", "quote-text", '"' + (gloss || text) + '"');
     if (gloss) { quote.setAttribute("aria-description", text); quote.tabIndex = 0; }
@@ -1357,15 +1357,15 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   function claimFields(c) { return c.kind === "development" ? ["text", "act", "date"] : ["text"]; }
   // Index the published pointers, not prose or source membership: an excerpt may bind both act and date.
   function claimIndex(d) {
-    var index = {}, leaves = {};
+    var index = {}, leaves = {}, sources = {};
     ["jurisdictions", "institutes"].forEach(function (collection) {
       (d[collection] || []).forEach(function (r, ri) { (r.claims || []).forEach(function (c, ci) {
         var pointer = "/" + collection + "/" + ri + "/claims/" + ci;
-        index[c.id] = { claim: c, pointer: pointer, excerpts: [] };
+        index[c.id] = { claim: c, pointer: pointer, excerpts: [], sources: sources };
         claimFields(c).forEach(function (leaf) { leaves[pointer + "/" + leaf] = c.id; });
       }); });
     });
-    (d.sources || []).forEach(function (s) { (s.excerpts || []).forEach(function (e, ei) {
+    (d.sources || []).forEach(function (s) { sources[s.id] = s; (s.excerpts || []).forEach(function (e, ei) {
       var ids = new Set((e.supports || []).map(function (p) { return leaves[p]; }).filter(Boolean));
       ids.forEach(function (id) { index[id].excerpts.push({ source: s, excerpt: e, index: ei }); });
     }); });
@@ -1378,7 +1378,12 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     entry.excerpts.forEach(function (bound) {
       var s = bound.source, e = bound.excerpt, block = el("div", "quote-excerpt"); block.dataset.sourceId = s.id; block.dataset.excerptIndex = bound.index;
       block.appendChild(quoteNode(e.text, e.gloss, s.language));
-      (e.anchors || []).forEach(function (a) { var line = el("span", "quote-anchor", ANCHOR_LABELS[a.kind] + " "); line.appendChild(quoteNode(a.text, a.gloss, s.language)); block.appendChild(line); });
+      (e.anchors || []).forEach(function (a) {
+        var named = a.source_id && entry.sources[a.source_id], line = el("span", "quote-anchor", ANCHOR_LABELS[a.kind] + " ");
+        line.appendChild(quoteNode(a.text, a.gloss, (named || s).language));
+        if (named) line.appendChild(document.createTextNode(" (" + named.title + ")"));
+        block.appendChild(line);
+      });
       var reread = rereadLine({ excerpts: [e] }); if (reread) block.appendChild(reread); // the quotation's own state, never its source's (principle: Re-read line)
       body.appendChild(block);
     });

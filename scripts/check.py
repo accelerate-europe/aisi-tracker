@@ -867,14 +867,14 @@ def supporting(data: dict, pointer: str) -> list[tuple[str, dict]]:
 
 
 def anchor_key(anchors: list[dict] | None) -> str:
-    """An excerpt's anchor kinds and texts as one value (the verifier's report rows carry the same two), so adding or
+    """An excerpt's anchor kinds, texts and source ids (also carried by the verifier's rows), so adding or
     editing an anchor re-verifies its excerpt. A gloss edit is a binding change, not a new quotation."""
-    return json.dumps([[a["kind"], a["text"]] for a in anchors or []], ensure_ascii=False)
+    return json.dumps([[a["kind"], a["text"], a.get("source_id", "")] for a in anchors or []], ensure_ascii=False)
 
 
 def anchored_copy(url: str | None, anchors: list[dict] | None) -> str:
     """The declared copy, part of the key only for an anchored excerpt: two excerpts with one text and different
-    copies are checked apart once anchors are involved, as each anchor must be in its own excerpt's copy. Without
+    copies are checked apart once anchors are involved, as same-copy anchors must be in their excerpt's copy. Without
     anchors a URL edit alone still does not re-verify, as before."""
     return (url or "") if anchors else ""
 
