@@ -2277,7 +2277,7 @@ MOVED_TO_CONTENT = {  # content family module -> the check_page helpers it now r
     "record_rows": ("check_leadership_rows", "check_access_groups", "check_setup_groups"),
     "summary": ("check_summary_data", "check_figures_row", "check_two_significant_figures"),
     "activity": ("check_operating_output",),
-    "names": ("check_section_bar", "check_institute_names", "check_former_names", "check_nonidentified_folds"),
+    "names": ("check_section_bar", "check_institute_names", "check_former_names", "check_nonidentified_folds", "check_terms_once"),
     "staff": ("check_staff_figures",),
 }
 MOVED_HELPERS = tuple(h for helpers in MOVED_TO_CONTENT.values() for h in helpers)
@@ -2353,3 +2353,60 @@ def test_palette_theme_rows_are_keyed_only_by_their_own_state():
 def test_fold_text_ignores_case_and_accents_as_the_palette_does():
     assert check_page.fold_text("São Tomé") == "sao tome"
     assert check_page.fold_text(None) == ""
+
+
+@pytest.mark.parametrize("body, shown", [
+    ({"name": "Agenzia per la cybersicurezza nazionale (ACN)", "name_en": "National Cybersecurity Agency (ACN)"}, "Agenzia per la cybersicurezza nazionale"),
+    ({"name": "Datatilsynet (DT)", "name_en": "Danish Data Protection Agency"}, "Datatilsynet (DT)"),
+    ({"name": "Komisja (KRiBSI)"}, "Komisja (KRiBSI)"),
+])
+def test_original_name_says_a_shared_abbreviation_once(body, shown):
+    assert check_page.shown_original(body) == shown
+
+
+TINT = "rgb(250, 240, 220) 0px 0px 0px 8px"
+GROUND = "rgb(23, 25, 26)"
+
+
+@pytest.mark.parametrize("shadow, ok", [
+    (f"{GROUND} 0px -8px 0px 8px", True),  # one rectangle: sides, above and the upper corners
+    (f"{GROUND} 0px -1px 0px 0px inset, {GROUND} 0px -8px 0px 8px", True),  # the stuck row's inner rule beside it
+    (f"{GROUND} 0px -2px 0px 0px, {GROUND} -8px 0px 0px 0px, {GROUND} 8px 0px 0px 0px", False),  # separate layers: corners open
+    (f"{GROUND} 0px 0px 0px 8px", True),  # grown on every side covers above too
+    (f"{GROUND} 0px -8px 0px 4px", False),  # narrower than the tint
+    (f"{GROUND} 0px -1000px 0px 8px", False),  # moved so far up it leaves the row's sides
+    (f"{GROUND} 0px -8px 4px 8px", False),  # blurred: not solid
+    ("rgb(0, 0, 0) 0px -8px 0px 8px", False),  # not the row's own ground
+    ("none", False),
+])
+def test_group_row_cover_needs_one_rectangle(shadow, ok):
+    assert (check_page.row_cover_errors(TINT, [["Europe", shadow, GROUND]]) == []) is ok
+    assert check_page.blocking(check_page.row_cover_errors(TINT, [])) == []  # no row: a report line, not a failure
+
+
+def _terms(body, row="", data_j="PL"):
+    return (f'<details class="card mini" id="c-pl" data-j="{data_j}"><summary><h4>Poland</h4><span class="find">{row}</span></summary>{body}</details>'
+            '<p>NASK outside any card stays as it is.</p>')
+
+
+TERMS = {"dataset": {"glossary": {"NASK": "NASK research institute", "AISI": "AI Security Institute. We use the term.",
+                                  "KR": {"PL": "Polish commission"}}}}
+
+
+@pytest.mark.parametrize("html, found", [
+    (_terms('<p><abbr class="g">NASK</abbr> runs it; NASK says so.</p>'), []),
+    (_terms('<p>NASK runs it; <abbr class="g">NASK</abbr> says so.</p>'), ["leaves the first use of 'NASK' unmarked", "marks 'NASK' again"]),
+    (_terms('<p><abbr class="g">NASK</abbr> runs it; <abbr class="g">NASK</abbr> says so.</p>'), ["marks 'NASK' again"]),
+    (_terms('<p>The AI Security Institute (AISI) leads; AISI tests.</p>'), []),  # spelt out first: no mark at all
+    (_terms('<p>The AI Security Institute (AISI) leads; <abbr class="g">AISI</abbr> tests.</p>'), ["marks 'AISI' again"]),
+    (_terms('<p><abbr class="g">NASK</abbr> runs it.</p>', row='<abbr class="g">NASK</abbr> leads.'), []),  # the row is its own view
+    (_terms('<p><abbr class="g">NASK</abbr> runs it.</p>', row='NASK leads.'), ["leaves the first use of 'NASK' unmarked"]),
+    (_terms('<p><a href="#x">NASK</a> runs it; <abbr class="g">NASK</abbr> says so.</p>'), []),  # a link's text is never marked
+    (_terms('<p><abbr class="g">KR</abbr> meets; KR decides.</p>'), []),  # an expansion for this state
+    (_terms('<p>KR meets.</p>', data_j="CZ"), []),  # no expansion for this state: nothing to mark
+    (_terms('<p><abbr class="g val">NASK</abbr> 12; <abbr class="g">NASK</abbr> runs it.</p>'), []),  # a value tip is not a term mark
+    (_terms('<p>The AI Security Institute (<abbr class="g">AISI</abbr>) leads.</p>'), ["where the text spells it out"]),
+])
+def test_terms_marked_once_per_scope(html, found):
+    errors = check_page.check_terms_once(html, TERMS)
+    assert len(errors) == len(found) and all(any(f in e for e in errors) for f in found), errors

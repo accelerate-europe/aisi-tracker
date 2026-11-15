@@ -48,7 +48,7 @@
  * Region list: beside the map (below it and the map legend at 1100px and narrower, so the legend stays directly under the map (check_page check_legend_place), then at most --region-list wide, so a row's state and institute never drift apart), map and list tops aligned; an accordion whose open region (light tint, thin accent rule, turned chevron) lists its institutes with status marks (institute names right-aligned, like the counts above them), the others their heading, "established of all states" count and one line of names, both in ink; a divider between Europe and the other regions; the EU AI Office under Europe.
  * Record: a map, list or search pick opens the record beside the map (over the list on wide screens, which it hides while open, under the map on narrow ones) and focuses its heading, in view below the section bar, its values cited and qualified as on the card (status date: advisory recommendation, confidence), never more; "Full record ↓" goes to the card (Arrival), whose "↑ Back to map" returns to the same view with the record open; a state without a card links to its table row. Search uses the page's own suggestion list (floating surface, status mark and region per row, keyboard).
  * Naming: one display name per body everywhere (no status suffix; the country in brackets where two bodies share a name); tight places such as table cells use the recorded short form (data field short_name, never a bare generic acronym such as AISI) with the full name on hover; check_page check_institute_names. An institute has one display name and one short form everywhere; former names are marked as former ('then', 'former' or 'formerly', or 'now' with the current short form), source titles excepted (check_page check_former_names). The rule covers institutes; other bodies are named with their original beneath in the none-identified entries.
- * None-identified entries: bodies grouped by role (closest candidate; AI Act authorities by function; other bodies), the English name first with the original muted beneath, the basis a group shares said once, citations inline; research notes in one muted How we checked block; on phones the name sits above a full-width summary; wording every entry shares lives in Method (check_page check_nonidentified_folds, check_nonidentified_style).
+ * None-identified entries: bodies grouped by role (closest candidate; AI Act authorities by function; other bodies), the English name first with the original muted beneath (a closing abbreviation said once, in the English name), the closest body's text in body type and other bodies' roles muted, the basis a group shares said once, citations inline; research notes in one muted How we checked block; on phones the name sits above a full-width summary; wording every entry shares lives in Method (check_page check_nonidentified_folds, check_nonidentified_style).
  * Sources: entry source lists hold sources that support the entry; population and region sources (display.generic_sources) are named once in Method and stay in the downloads; check_page check_generic_sources.
  * Archived copies: wherever a source list or Method names a source that has an archive URL, "(archived copy)" follows its link (after our English translation of a non-English title, in square brackets) as a quiet link in muted ink with a muted underline, no arrow, never broken across lines; superscript citations never carry one (check_page check_archive_links).
  * Re-read line: every source list item whose source has a quotation with a re-read state ends with one line of its own in the list's muted ink, from its quotations' states (docs/design/claims-1.1.md section 4): "Source last re-read {date}." while none is missing; else the worst state (the earliest start, then offline before not found, then the earliest last found): "Not found in the source on {date}; last found {date}; under review." (with ": N of M quotes" after the first date when some quotations are still found), "Source offline since {date}; last found {date}.", "Source could not be re-read since {date}; last found {date}."; a quotation or claim shown on its own shows its own state, never its source's; the page never says "verified" (check_page check_reread_lines).
@@ -60,7 +60,7 @@
  * Section bar: the title (not up to 460px; its short form up to 700px), then Map, Compare (Testing and access, Institutional set-up, Funding and staff), News, States (Europe, state by state; The world), Data (Data, Method; the group row says Downloads for Data), one row at every width with no sideways scroll or visible scrollbar from 360px, also with text 10% larger; an item is current while any of its sections is, the section whose top passed last deciding; above the first section of each multi-section group, a quiet group row names the group as in the bar (phones: links only) and links its sections; it sticks under the bar while the group is read, its current section's link marked like the bar's, and leaves with the group, so headings land below both rows (check_page check_section_bar, check_access_fixes, check_group_rows).
  * Figures row: below the map, in the counts row's figure type: median budget and median staff, each with its n and the highest, then the established institutes whose budget is not published; counts count established state institutes only, which an (i) at the end of the row says with their number (check_page check_figures_row).
  * Groups: a grouped list (Testing and access; Institutional set-up, by form with the host as note; the heading alone names the form, with no description on the page) shows a heading, one status square per member in list order, then each member's name linking to its card with a muted note; both share one layout: short groups stack in one column beside a long group (No privileged access found; the largest form) that spans two with its list in halves; a thin ink rule opens each group and hairlines separate members, none after the last; phones keep one column, each note under its state at one left edge (check_page check_access_groups, check_setup_groups, check_access_layout). Institutional set-up orders squares and list alike by status on the ladder, then name; Testing and access orders squares and list alike (testing: in house, in house and other bodies, other bodies, planned, not published; then status; then name), cites every counterpart from its own source list, so flag-only sources stay off the cards, and explains developers (latest event), provisions and MOU in tooltips (check_page check_access_tips).
- * Tooltip cues: the dotted underline marks abbreviations and glossary terms only (abbr.g, the legend names, "Privileged", "European", MOU, institute short names); a value with a tooltip ("Medium confidence", "28 days", "~EUR 1.0 per person", a median ceiling, a developer, a provision; "Not published") keeps its tooltip and focus with no underline (owner, 5 Nov 2026; check_page check_tooltip_cues).
+ * Tooltip cues: the dotted underline marks abbreviations and glossary terms only (abbr.g, the legend names, "Privileged", "European", MOU, institute short names); a value with a tooltip ("Medium confidence", "28 days", "~EUR 1.0 per person", a median ceiling, a developer, a provision; "Not published") keeps its tooltip and focus with no underline (owner, 5 Nov 2026; check_page check_tooltip_cues). In a card (its summary row and its body each), or the record panel, a term is marked once, at its first use there, and not at all where that use spells it out (check_page check_terms_once).
  * Missing: absence found by research is written out ("Not published" for unknown values with a tooltip, never zero; "None found yet"); absence by category (no institute yet) is structural: cards omit the row, the table shows a muted dash and hides a column that is inapplicable to every visible row. Each term explains itself in its tooltip, alike in cards and table (Not published, None found yet, None identified, and the dash once in the table's column headers); a complete list is no research gap, so the Network column says "Not a member" with its own tooltip and sorts it after members; no legend lines (check_page check_absence_wording).
  * Scope: each comparison section states which states it covers, and a state outside it shows a dash in every section, never Not published. Testing and access, Institutional set-up, and Funding and staff cover every institute whatever its status, stated in the Testing explanation and in plain sentences for Set-up and Funding. So Budget and Staff show on every institute's card, record and table row, Not published where nothing is found, and the table's dash means the state has no institute; Known activity stays with established institutes (check_page check_supporting_text, check_operating_output).
  * Figures: ISO currency + amount; ~ estimates to 3 significant figures, + lower bound, "up to" upper bound; technical counts labelled.
@@ -278,10 +278,12 @@ a.ico::before { position: static; transform: none; min-height: 0; }
 .full-method .secnav .navtitle { display: inline-flex; border-right: 0; } /* nothing follows it but the toggle */
 @media (max-width: 430px) { :root[data-js] .full-method .secnav .btn.theme-toggle { display: inline-flex; } } /* the short title beside the theme toggle, so the row fits with enlarged text */
 /* Group rows: above the first section of a group in the bar, the group's name and links to its sections, quiet like the bar;
-   each group is one box, so its row sticks under the bar while the group is read and leaves with the group's end. */
+   each group is one box, so its row sticks under the bar while the group is read and leaves with the group's end.
+   Its ground reaches past its box: up to the bar, so a rounded bar height leaves no strip of text between them, and
+   sideways by the arrival tint's spread, so a card reached by a link shows no tint beside the row (check_page check_group_row_cover). */
 .group { display: flex; flex-direction: column; gap: var(--gap-section); --nav-offset: calc(6rem + var(--groupnav-height, var(--groupnav-default))); --groupnav-offset: var(--groupnav-height, var(--groupnav-default)); }
-.group-nav { font: var(--type-label); display: flex; flex-wrap: wrap; align-items: first baseline; gap: 0 var(--sp-4); padding-block: var(--sp-1); color: var(--muted); position: sticky; top: var(--secnav-height, var(--secnav-default)); z-index: 4; background: var(--ground); }
-.group-nav.stuck { box-shadow: inset 0 calc(-1 * var(--rule)) 0 var(--line); } /* a rule inside its box, so sticking moves no layout */
+.group-nav { --row-cover: 0 calc(-1 * var(--sp-2)) 0 var(--sp-2) var(--ground); /* one rectangle: the row grown by the tint's spread on every side and moved up by it, so it covers above and beside, corners included, and nothing below */ font: var(--type-label); display: flex; flex-wrap: wrap; align-items: first baseline; gap: 0 var(--sp-4); padding-block: var(--sp-1); color: var(--muted); position: sticky; top: var(--secnav-height, var(--secnav-default)); z-index: 4; background: var(--ground); box-shadow: var(--row-cover); }
+.group-nav.stuck { box-shadow: inset 0 calc(-1 * var(--rule)) 0 var(--line), var(--row-cover); } /* a rule inside its box, so sticking moves no layout */
 .group-nav + section { margin-top: calc(var(--sp-2) - var(--gap-section)); } /* the gap on the section, not the row: a sticky row's margin would carry it past its group's end */
 .group-label { color: var(--ink); padding-right: var(--sp-4); border-right: var(--rule) solid var(--line); }
 .group-links { display: inline-flex; flex-wrap: wrap; align-items: first baseline; gap: 0 var(--sp-2); }
@@ -557,6 +559,7 @@ main section.first { display: flex; flex-direction: column; gap: var(--sp-5); bo
 .card.mini .body-group ul, .card.mini .how { display: flex; flex-direction: column; gap: var(--sp-2); margin: 0; padding: 0; list-style: none; }
 .card.mini .body-group li { display: flex; flex-direction: column; font: var(--type-body); }
 .card.mini .body-group .orig, .card.mini .body-group .det, .card.mini .body-group .basis, .card.mini .how { font: var(--type-meta); color: var(--muted); }
+.card.mini .body-group.closest .det { font: var(--type-body); color: var(--ink); } /* the closest body's text is read like the summary; other bodies' roles stay muted */
 .card.mini .how > .gl { color: var(--ink); }
 .card.mini .how p { font: var(--type-meta); }
 .card.mini > p.related { font: var(--type-meta); }
@@ -1012,20 +1015,31 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     var keys = Object.keys(G || {}).sort(function (a, b) { return b.length - a.length; });
     if (!keys.length) return;
     var re = new RegExp("(^|[^A-Za-z0-9-])(" + keys.map(function (k) { return k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }).join("|") + ")(?![A-Za-z0-9-])", "g");
-    var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, { acceptNode: function (n) { return n.parentNode.closest("abbr, a, button, option, select, script, style, .conf") ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT; } });
+    // A run over content an earlier run marked (data-gl) first takes its own marks out, so marking is decided from the text alone and a rerun gives the same marks.
+    var parents = new Set();
+    [].forEach.call(root.querySelectorAll("abbr.g[data-gl]"), function (a) { parents.add(a.parentNode); a.replaceWith(document.createTextNode(a.textContent)); });
+    parents.forEach(function (p) { p.normalize(); });
+    var walker =document.createTreeWalker(root, NodeFilter.SHOW_TEXT, { acceptNode: function (n) { return n.parentNode.closest("abbr, a, button, option, select, script, style, .conf") ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT; } });
     var nodes = []; while (walker.nextNode()) nodes.push(walker.currentNode);
+    // Once per card or record panel (principle: Tooltip cues): a term is marked at its first use there, or not at all where that use spells it out. A folded card's summary row is its own view: its copy of the finding is hidden while the card is open.
+    // Text nodes come in document order; a mark another function made (term(), no data-gl) counts only where it comes before the text.
+    var SCOPE = ".card > summary, .card, #record", seenIn = new Map();
+    var markedBefore = function (box, term, node) { return [].some.call(box.querySelectorAll("abbr.g:not(.val)"), function (a) { return a.textContent.trim() === term && a.parentNode.closest(SCOPE) === box && (a.compareDocumentPosition(node) & Node.DOCUMENT_POSITION_FOLLOWING); }); };
     nodes.forEach(function (n) {
-      var t = n.nodeValue, last = 0, m, frag = null; re.lastIndex = 0;
+      var t = n.nodeValue, last = 0, m, frag = null, box = n.parentNode.closest(SCOPE), seen = null; re.lastIndex = 0;
+      if (box) { if (!seenIn.has(box)) seenIn.set(box, new Set()); seen = seenIn.get(box); }
       while ((m = re.exec(t))) {
         var ex = G[m[2]];
         if (typeof ex === "object") { var host = n.parentNode.closest("[data-j]"); ex = host ? ex[host.dataset.j] : null; }
         if (!ex) continue;
         var start = m.index + m[1].length;
+        if (seen && (seen.has(m[2]) || markedBefore(box, m[2], n))) continue;
+        if (seen) seen.add(m[2]);
         // No tooltip where the sentence has just spelt the term out: "AI Security Institute (AISI)".
         if (t.slice(0, start).toLowerCase().endsWith(ex.split(/[;(]|\.(?=\s|$)/)[0].trim().toLowerCase() + " (")) continue; // the name up to its first sentence end, commas included ("Innovation, Science and ...")
         frag = frag || document.createDocumentFragment();
         frag.appendChild(document.createTextNode(t.slice(last, start)));
-        var ab = el("abbr", "g", m[2]); ab.dataset.exp = ex; ab.setAttribute("aria-label", m[2] + ", " + ex); ab.tabIndex = 0;
+        var ab = el("abbr", "g", m[2]); ab.dataset.exp = ex; ab.dataset.gl = ""; ab.setAttribute("aria-label", m[2] + ", " + ex); ab.tabIndex = 0;
         frag.appendChild(ab); last = start + m[2].length;
       }
       if (frag) { frag.appendChild(document.createTextNode(t.slice(last))); n.parentNode.replaceChild(frag, n); }
@@ -1511,6 +1525,8 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   var ROLE_ORDER = ["single_point_of_contact", "market_surveillance", "notifying"];
   var ROLE_NAME = { single_point_of_contact: "single point of contact", market_surveillance: "market surveillance", notifying: "notifying" };
   var BASIS_NAME = { law: "law", decree: "decree", government_decision: "government decision", cabinet_decision: "cabinet decision", ministerial_act: "ministerial act", administrative: "administrative act" };
+  // The original name beneath the English one, without a closing abbreviation the English name already ends with: "Agenzia per la cybersicurezza nazionale" under "National Cybersecurity Agency (ACN)".
+  function originalName(b) { if (!b.name_en) return ""; var m = /\s*(\([^()]+\))$/.exec(b.name); return m && b.name_en.slice(-m[1].length) === m[1] ? b.name.slice(0, m.index) : b.name; }
   function bodyItem(name, original, details, ids, cite) {
     var li = el("li"); li.appendChild(el("span", "body-name", name));
     if (original) li.appendChild(el("span", "orig", original));
@@ -1536,12 +1552,13 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     while (bodies.length >= 3 && words.every(function (w) { return w.length > n + 1 && w[w.length - 1 - n] === words[0][words[0].length - 1 - n]; })) n++;
     if (n >= 5 && !shared.length) { tail = words[0].slice(-n).join(" "); parts.push(tail.replace(/^./, function (c) { return c.toUpperCase(); })); }
     return { text: parts.concat(shared).map(function (t) { return t.replace(/\.$/, ""); }).join(". ") + (parts.length || shared.length ? "." : ""), shared: shared,
-      detail: function (b) { var role = shared.indexOf(b.role) >= 0 ? "" : tail ? b.role.slice(0, b.role.length - tail.length).trim() : b.role; return uniform ? [role] : [stateText(b) + ".", role]; } };
+      detail: function (b) { var role = shared.indexOf(b.role) >= 0 ? "" : tail ? b.role.slice(0, b.role.length - tail.length).trim().replace(/[,;:]$/, ".") : b.role; /* the part before the shared words ends as a sentence */ return uniform ? [role] : [stateText(b) + ".", role]; } };
   }
   function nonIdentifiedBodies(j, cite) {
     var groups = [], closest = j.closest_body, all = j.related_bodies || [];
     if (closest) {
       groups.push(bodyGroup("Closest candidate", "", [bodyItem(closest.name, "", [closest.note, STAGE[closest.stage].replace(/^./, function (c) { return c.toUpperCase(); }) + "; " + GAP[closest.gap] + "."] /* rule 2: what the body does first, why it does not qualify after */, closest.display.source_links, cite)]));
+      groups[groups.length - 1].classList.add("closest"); // its text in body type: the body nearest to an institute is read, not skimmed
     }
     var others = all.filter(function (b) { return !closest || (b.name !== closest.name && b.name.indexOf(closest.name + " (") !== 0); });
     var byRoles = {};
@@ -1552,11 +1569,11 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     Object.keys(byRoles).sort(function (x, y) { return (y ? y.split("+").length : 0) - (x ? x.split("+").length : 0) || ROLE_ORDER.indexOf(x.split("+")[0]) - ROLE_ORDER.indexOf(y.split("+")[0]); }).forEach(function (key) {
       var bodies = byRoles[key], basis = groupBasis(bodies);
       groups.push(bodyGroup(key ? "AI Act " + andJoin(key.split("+").map(function (r) { return ROLE_NAME[r]; })) : "Other AI Act role", basis.text, bodies.map(function (b) {
-        return bodyItem(b.name_en || b.name, b.name_en ? b.name : "", basis.detail(b), b.display.source_links, cite);
+        return bodyItem(b.name_en || b.name, originalName(b), basis.detail(b), b.display.source_links, cite);
       })));
     });
     var rest = others.filter(function (b) { return b.kind !== "ai_act_authority"; });
-    if (rest.length) groups.push(bodyGroup("Other bodies", "", rest.map(function (b) { return bodyItem(b.name_en || b.name, b.name_en ? b.name : "", [b.role], b.display.source_links, cite); })));
+    if (rest.length) groups.push(bodyGroup("Other bodies", "", rest.map(function (b) { return bodyItem(b.name_en || b.name, originalName(b), [b.role], b.display.source_links, cite); })));
     if (groups.length) { var note = el("p", "related", "Listed for context; none counts as an institute."); groups.unshift(note); }
     return groups;
   }

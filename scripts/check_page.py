@@ -36,7 +36,7 @@ from pathlib import Path
 from xml.etree import ElementTree
 from urllib.parse import urljoin, urlsplit
 
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Comment, NavigableString
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from browser_lock import browser_slot, lock_path  # noqa: E402
@@ -6061,6 +6061,111 @@ def check_tooltip_cues(page) -> list[str]:
     return errors
 
 
+def check_group_row_cover(page) -> list[str]:
+    """Principle Group rows: a sticky group row's ground reaches up to the section bar (no strip of text between them
+    when the bar's measured height is rounded) and sideways at least as far as an arrived card's tint spreads (no tint
+    beside the row). Read from the computed shadows, so it holds at every width and theme without scrolling."""
+    found = page.evaluate("""() => {
+        const probe = document.createElement('div'); probe.className = 'card arrived'; probe.style.position = 'absolute'; document.body.appendChild(probe);
+        const tint = getComputedStyle(probe).boxShadow; probe.remove();
+        return [tint, [...document.querySelectorAll('.group-nav')].filter(n => n.getClientRects().length).map(n => { const s = getComputedStyle(n);
+            return [n.textContent.trim().slice(0, 30), s.boxShadow, s.backgroundColor]; })]; }""")
+    return row_cover_errors(*found)
+
+
+def shadow_layers(value: str) -> list[dict]:
+    """A computed box-shadow ("rgb(23, 25, 26) 0px -8px 0px 8px, ...") as layers: colour, inset, x, y, blur, spread."""
+    if not value or value == "none":
+        return []
+    layers = []
+    for layer in re.split(r",(?![^(]*\))", value):
+        colour = (re.search(r"rgba?\([^)]*\)", layer) or [""])[0]
+        numbers = [float(n) for n in re.findall(r"(-?[\d.]+)px", layer.replace(colour, ""))] + [0.0] * 4
+        layers.append({"colour": colour, "inset": "inset" in layer, "x": numbers[0], "y": numbers[1], "blur": numbers[2], "spread": numbers[3]})
+    return layers
+
+
+def row_cover_errors(tint_shadow: str, rows: list) -> list[str]:
+    """One outer shadow layer in the row's own ground must cover, as one rectangle, the arrival tint's spread on both
+    sides and at least a pixel above the row: separate layers leave the upper corners open."""
+    tint = max([layer["spread"] for layer in shadow_layers(tint_shadow) if not layer["inset"]] or [0])
+    if not rows:
+        return [report_line("group row cover: no group row to check")]
+    errors = []
+    for text, shadow, ground in rows:
+        covers = [layer for layer in shadow_layers(shadow) if not layer["inset"] and layer["colour"] == ground
+                  and layer["blur"] == 0 and layer["x"] - layer["spread"] <= -tint and layer["x"] + layer["spread"] >= tint
+                  and layer["y"] - layer["spread"] <= -1 and layer["y"] + layer["spread"] >= 0]  # solid, down to the row's own bottom
+        if not covers:
+            errors.append(f"group row cover: {text!r} has no ground layer covering {tint:g}px on both sides and above the row as one rectangle")
+    return errors
+
+
+TERM_SCOPES = "details.card > summary, .card, #record"  # a folded card's summary row is its own view
+
+
+def term_scope(node):
+    """The nearest card summary row, card or record panel holding node (the page script's SCOPE)."""
+    for parent in node.parents:
+        if parent.name == "summary" and parent.parent is not None and parent.parent.name == "details" and "card" in parent.parent.get("class", []):
+            return parent
+        if "card" in (parent.get("class") or []) or parent.get("id") == "record":
+            return parent
+    return None
+
+
+def spelt_out(glossary: dict, label: str, state: str | None) -> str | None:
+    """The text that spells a term out just before it, lower-cased: its expansion's name up to the first sentence end,
+    then " (" ("ai security institute (" before AISI), as the page script reads it; None without an expansion."""
+    expansion = glossary.get(label)
+    if isinstance(expansion, dict):
+        expansion = expansion.get(state)
+    return re.split(r"[;(]|\.(?=\s|$)", expansion)[0].strip().lower() + " (" if expansion else None
+
+
+def check_terms_once(html, data: dict) -> list[str]:
+    """Principle Tooltip cues, on the saved page: in each card (its summary row and its body each) and the record
+    panel, a glossary term's first use is marked unless it spells the term out ("... Institute (AISI)"), and no later
+    use is. Expansions per state come from the card's data-j, as the page script reads them."""
+    soup = html if isinstance(html, BeautifulSoup) else BeautifulSoup(html, "html.parser")
+    glossary = data["dataset"].get("glossary") or {}
+    if not glossary:
+        return []
+    keys = sorted(glossary, key=len, reverse=True)
+    term = re.compile(r"(^|[^A-Za-z0-9-])(" + "|".join(map(re.escape, keys)) + r")(?![A-Za-z0-9-])")
+    errors = []
+    for box in soup.select(TERM_SCOPES):
+        host = box if box.has_attr("data-j") else box.find_parent(attrs={"data-j": True})
+        state = host["data-j"] if host else None
+        seen: set[str] = set()
+        name = box.get("id") or (box.find_parent(class_="card") or box).get("id") or "record"
+        for node in box.descendants:
+            if term_scope(node) is not box:
+                continue
+            if getattr(node, "name", None) == "abbr" and "g" in node.get("class", []) and "val" not in node.get("class", []):
+                label = node.get_text().strip()
+                if label in glossary and label in seen:
+                    errors.append(f"terms once: {name} marks {label!r} again after its first use")
+                elif label in glossary and isinstance(node.previous_sibling, NavigableString) and (spelt := spelt_out(glossary, label, state)) and str(node.previous_sibling).lower().endswith(spelt):
+                    errors.append(f"terms once: {name} marks {label!r} where the text spells it out")
+                seen.add(label)
+                continue
+            if not isinstance(node, NavigableString) or isinstance(node, Comment) or node.find_parent(["abbr", "a", "button", "option", "select", "script", "style"]) is not None or node.find_parent(class_="conf") is not None:
+                continue
+            text = str(node)
+            for match in term.finditer(text):
+                label, start = match.group(2), match.start(2)
+                expansion = glossary[label]
+                if isinstance(expansion, dict):
+                    expansion = expansion.get(state)
+                if not expansion or label in seen:
+                    continue
+                seen.add(label)
+                if not text[:start].lower().endswith(spelt_out(glossary, label, state)):
+                    errors.append(f"terms once: {name} leaves the first use of {label!r} unmarked")
+    return errors
+
+
 TEXT_CONTRAST = 4.5  # WCAG 1.4.3 AA: body and meta text
 LARGE_TEXT_CONTRAST = 3.0  # at least 24px, or 18.66px bold (WCAG large text)
 # How a colour painted inside an element reaches the screen: source-over onto the element's own background, the
@@ -7403,6 +7508,13 @@ def expected_group_label(roles) -> str:
     return "AI Act " + (ordered[0] if len(ordered) == 1 else ", ".join(ordered[:-1]) + " and " + ordered[-1])
 
 
+def shown_original(body: dict) -> str:
+    """The original name as a card shows it beneath the English one: a closing "(ABBR)" the English name also ends
+    with is said once, in the English name."""
+    match = re.search(r"\s*(\([^()]+\))$", body["name"])
+    return body["name"][: match.start()] if match and body.get("name_en", "").endswith(match.group(1)) else body["name"]
+
+
 def check_nonidentified_folds(html, data: dict) -> list[str]:
     """None-identified fold-outs list bodies by role, English name first.
 
@@ -7463,8 +7575,8 @@ def check_nonidentified_folds(html, data: dict) -> list[str]:
                     errors.append(f"{j['id']} body shows {shown!r}, expected {want!r}")
                 if NON_LATIN_SCRIPT.search(shown):
                     errors.append(f"{j['id']} body {shown!r} stands in a non-Latin script without an English name")
-                if bool(b.get("name_en")) != (original is not None) or (original is not None and " ".join(original.get_text().split()) != b["name"]):
-                    errors.append(f"{j['id']} body {want!r}: the original name must sit beneath exactly when there is an English name")
+                if bool(b.get("name_en")) != (original is not None) or (original is not None and " ".join(original.get_text().split()) != shown_original(b)):
+                    errors.append(f"{j['id']} body {want!r}: the original name must sit beneath exactly when there is an English name, without an abbreviation the English name already closes with")
                 state = {"designated": "Designated by", "proposed": "Proposed, not yet designated"}.get(b.get("designation_state"), "Designation not yet identified")
                 if b.get("kind") == "ai_act_authority" and state not in " ".join(groups[label].get_text().split()) and label != "Closest candidate":
                     errors.append(f"{j['id']} body {want!r}: its designation status {state!r} is not shown")
@@ -7475,7 +7587,9 @@ def check_nonidentified_folds(html, data: dict) -> list[str]:
                 basis = groups[label].select_one(".basis")
                 basis_text = " ".join(basis.get_text().split()).lower() if basis else ""
                 # Each role text is recoverable: on the entry, as the group's shared sentence, or as the entry's part plus the shared closing words.
-                shown_role = any(d.lower() == role.lower() or (role.lower().startswith(d.lower().rstrip(".")) and d and role[len(d.rstrip(".")):].strip().lower() in basis_text) for d in dets)
+                shown_role = any(d.lower() == role.lower() or (role.lower().startswith(d.lower().rstrip(".")) and d and role[len(d.rstrip(".")):].strip(" ,;:").lower() in basis_text) for d in dets)
+                if any(d.endswith((",", ";", ":")) for d in dets):
+                    errors.append(f"{j['id']} body {want!r}: a role text ends in a comma, semicolon or colon; the part before the group's shared words ends as a sentence")
                 if role and label != "Closest candidate" and not shown_role and role.lower() not in basis_text:
                     errors.append(f"{j['id']} body {want!r}: its role text is nowhere in the entry")
                 if b.get("source_ids") and not cited:
@@ -9212,6 +9326,7 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
         check_status_contrast,
         check_status_states,
         check_tooltip_cues,
+        check_group_row_cover,
     ):
         for error in check(page):
             require(False, error)
