@@ -4919,7 +4919,6 @@
         ]
       },
       "institute_id": null,
-      "summary": "No qualifying institute identified. An AI Act authority is proposed in draft law.",
       "next_check": {
         "date": "2027-10-16",
         "reason": "Routine yearly re-check of a state where an institute is plausible (in Europe, the G20 or the OECD, or a signatory of the Bletchley Declaration)."
@@ -4974,7 +4973,17 @@
         "governance_source_ids": [
           "cz-ctu-ai-department-2026"
         ],
-        "governance_note": "The regulator describes its new AI department and supervisory powers dependent on legislation; this supports the regulatory setup rather than an evaluation institute."
+        "governance_note": "The regulator describes its new AI department and supervisory powers dependent on legislation; this supports the regulatory setup rather than an evaluation institute.",
+        "log": [
+          {
+            "date": "2026-10-17",
+            "text": "ČTÚ's announcement of its AI department was read. Searched in English and Czech for a body the government has tasked with testing general-purpose or frontier AI models, or named as its AI safety or security institute."
+          },
+          {
+            "date": "2026-11-11",
+            "text": "The Ministry of Industry and Trade's release of 9 November 2026 was read."
+          }
+        ]
       },
       "source_ids": [
         "cz-ctu-ai-department-2026",
@@ -5004,7 +5013,6 @@
         {
           "name": "Český telekomunikační úřad (ČTÚ)",
           "name_en": "Czech Telecommunication Office (ČTÚ)",
-          "role": "Its AI department starts 1 September 2026; supervisory powers await approval of the relevant legislation.",
           "counts_as_aisi": false,
           "source_ids": [
             "cz-ctu-ai-department-2026",
@@ -5022,7 +5030,6 @@
         {
           "name": "Úřad pro technickou normalizaci, metrologii a státní zkušebnictví (ÚNMZ)",
           "name_en": "Office for Technical Standardisation, Metrology and State Testing (ÚNMZ)",
-          "role": "The government-approved implementation plan envisages this designation; the announcement does not establish final statutory powers.",
           "counts_as_aisi": false,
           "source_ids": [
             "cz-cas-ai-implementation-plan-2025",
@@ -5036,8 +5043,7 @@
           "kind": "ai_act_authority",
           "id": "related_bodies-e4c8fb3e338f53ceac078210be4fd4a1"
         }
-      ],
-      "notes": "The Commission's contact list of 9 November 2026 marks this state's AI Act authority as pending final adoption; the national sources cited here give its actual designation status.\n\nČTÚ's announcement describes its proposed AI Act market-surveillance and single-point-of-contact roles and the start of its AI department on 1 September 2026. The announcement says supervisory powers await the relevant legislation. Searched in English and Czech for a body its government has tasked with testing general-purpose or frontier AI models or named its AI safety or security institute.\n\nIn a release of 9 November 2026 the Ministry of Industry and Trade reported that the government had approved the bill implementing the AI Act, under which the Czech Telecommunication Office would be the main supervisory authority and single point of contact, and had set up a Government Council for Artificial Intelligence to coordinate the state's approach and cooperation with researchers and companies; the bill is not yet law, and the release does not give the council a model-evaluation remit."
+      ]
     },
     {
       "id": "EE",
@@ -5053,7 +5059,6 @@
         ]
       },
       "institute_id": null,
-      "summary": "No qualifying institute identified. TTJA describes its proposed AI Act supervisory role, and the Commission's contact list names it, pending final adoption.",
       "next_check": {
         "date": "2027-10-16",
         "reason": "Routine yearly re-check of a state where an institute is plausible (in Europe, the G20 or the OECD, or a signatory of the Bletchley Declaration)."
@@ -5112,7 +5117,13 @@
         "governance_source_ids": [
           "ee-ttja-ai-supervision"
         ],
-        "governance_note": "TTJA describes its prospective competent-authority role in AI-system supervision. The future wording is retained."
+        "governance_note": "TTJA describes its prospective competent-authority role in AI-system supervision. The future wording is retained.",
+        "log": [
+          {
+            "date": "2026-10-17",
+            "text": "TTJA's AI supervision page (updated 10 September 2026) was read, and Riigikogu, Riigi Teataja, TTJA and the economic ministry were searched for an enacted notifying-authority allocation. Searched in English and Estonian for a body the government has tasked with testing general-purpose or frontier AI models, or named as its AI safety or security institute."
+          }
+        ]
       },
       "source_ids": [
         "ee-ttja-ai-supervision",
@@ -5141,7 +5152,6 @@
         {
           "name": "Tarbijakaitse ja Tehnilise Järelevalve Amet (TTJA)",
           "name_en": "Consumer Protection and Technical Regulatory Authority (TTJA)",
-          "role": "Its own page describes supervision in future tense.",
           "counts_as_aisi": false,
           "source_ids": [
             "ee-ttja-ai-supervision",
@@ -5156,8 +5166,7 @@
           "kind": "ai_act_authority",
           "id": "related_bodies-e9418b44f082585ea0aaa36f10f7beae"
         }
-      ],
-      "notes": "TTJA's page, updated 10 September 2026, describes a proposed AI Act supervisory and single-point-of-contact role, using future tense for supervision. Searches of Riigikogu, Riigi Teataja, TTJA and the economic ministry did not retrieve an enacted notifying-authority allocation.\n\nThe Commission's contact list of 9 November 2026 marks this state's AI Act authority as pending final adoption; the national sources cited here give its actual designation status.\n\nSearched in English and Estonian for a body its government has tasked with testing general-purpose or frontier AI models or named its AI safety or security institute.\n\nOn 9 November 2026 Estonia was among the states that signed the Paris Call for AI Safety and Security, in which signatories commit to a common framework for the evaluation and risk management of frontier models."
+      ]
     },
     {
       "id": "PT",
@@ -5173,7 +5182,6 @@
         ]
       },
       "institute_id": null,
-      "summary": "No qualifying institute identified. ANACOM's AI Act market-surveillance and single-point-of-contact roles are described as prospective or pending in the cited sources.",
       "next_check": {
         "date": "2027-10-16",
         "reason": "Routine yearly re-check of a state where an institute is plausible (in Europe, the G20 or the OECD, or a signatory of the Bletchley Declaration)."
@@ -5230,7 +5238,13 @@
         "governance_source_ids": [
           "negative-second-pt-2026"
         ],
-        "governance_note": "The government page sets out the National AI Agenda and its implementation structure. ANACOM's separate proposed market-surveillance role is not an established evaluation mandate."
+        "governance_note": "The government page sets out the National AI Agenda and its implementation structure. ANACOM's separate proposed market-surveillance role is not an established evaluation mandate.",
+        "log": [
+          {
+            "date": "2026-10-17",
+            "text": "ANACOM's 2026-2028 activity plan was read, and a national notifying-authority allocation was searched for. Searched in English and Portuguese for a body the government has tasked with testing general-purpose or frontier AI models, or named as its AI safety or security institute."
+          }
+        ]
       },
       "source_ids": [
         "pt-anacom-planned-ai-authority-2025",
@@ -5259,7 +5273,6 @@
       "related_bodies": [
         {
           "name": "ANACOM",
-          "role": "It would supervise AI Act compliance under its 2026-2028 activity plan and act as single point of contact according to the Commission list dated 7 September 2026. Both sources describe designation as prospective or pending final adoption.",
           "counts_as_aisi": false,
           "source_ids": [
             "pt-anacom-planned-ai-authority-2025",
@@ -5274,8 +5287,7 @@
           "kind": "ai_act_authority",
           "id": "related_bodies-c71bf6e1658557c2a9f81e710f1185ac"
         }
-      ],
-      "notes": "ANACOM's 2026-2028 activity plan anticipates market-surveillance designation. The Commission's contact list dated 9 November 2026 marks its single-point-of-contact designation as pending final adoption. A national notifying-authority allocation was not verified in the retrieved sources.\n\nPortugal has a National AI Agenda. Searched in English and Portuguese for a body its government has tasked with testing general-purpose or frontier AI models or named its AI safety or security institute.\n\nOn 9 November 2026 Portugal was among the states that signed the Paris Call for AI Safety and Security, in which signatories commit to a common framework for the evaluation and risk management of frontier models."
+      ]
     },
     {
       "id": "IS",
@@ -5511,12 +5523,10 @@
       "id": "LU",
       "name": "Luxembourg",
       "institute_id": null,
-      "summary": "No qualifying institute identified. Draft bill 8476 would make the data protection authority the main AI Act market-surveillance body, and the national AI Factory released an open-source tool for building AI assessment sandboxes in June 2026.",
       "related_bodies": [
         {
           "name": "Commission nationale pour la protection des données (CNPD)",
           "name_en": "National Commission for Data Protection (CNPD)",
-          "role": "It would cover supervision by default under Bill 8476. Its separate notified-body function is not notifying-authority designation. It also runs a regulatory sandbox.",
           "counts_as_aisi": false,
           "source_ids": [
             "lu-bill8476-authority-allocations",
@@ -5532,29 +5542,8 @@
           "id": "related_bodies-e961f3b9eef9537db5b2d9854ac44805"
         },
         {
-          "name": "Luxembourg AI Factory",
-          "role": "It is the national platform for the responsible and secure adoption of AI, supported by a consortium of LuxProvide, Luxinnovation, the Luxembourg National Data Service, the University of Luxembourg and LIST; no government mandate to evaluate advanced models was found.",
-          "counts_as_aisi": false,
-          "kind": "other",
-          "id": "related_bodies-1de660304d885ce49aaeeebfa2833690",
-          "source_ids": [
-            "lu-paperjam-ai-factory-primary-proposal"
-          ]
-        },
-        {
-          "name": "AI Assessment Sandbox Configurator",
-          "role": "It is an open-source tool released by the Luxembourg AI Factory on 10 June 2026 and developed by LIST and the University of Luxembourg's SnT for building environments to test whether AI systems are trustworthy and compliant; it is not a body.",
-          "counts_as_aisi": false,
-          "source_ids": [
-            "lu-unilu-sandbox-configurator"
-          ],
-          "kind": "other",
-          "id": "related_bodies-cb4a0ec16c47581e95bdb31fee7cd659"
-        },
-        {
           "name": "Institut luxembourgeois de la normalisation, de l'accréditation, de la sécurité et qualité des produits et services (ILNAS)",
           "name_en": "Luxembourg Institute for Standardisation, Accreditation, Safety and Quality of Products and Services (ILNAS)",
-          "role": "Its proposed market-surveillance remit under Bill 8476 covers Annex I points 1-10 and Annex III point 2. It would perform notifying functions through OLAS.",
           "counts_as_aisi": false,
           "source_ids": [
             "lu-bill8476-authority-allocations",
@@ -5572,7 +5561,6 @@
         {
           "name": "Commissariat du gouvernement à la protection des données auprès de l'État",
           "name_en": "Government Commissioner for Data Protection with the State",
-          "role": "Its AI Act designation is proposed in Bill 8476.",
           "counts_as_aisi": false,
           "source_ids": [
             "lu-bill8476-authority-allocations",
@@ -5589,7 +5577,6 @@
         {
           "name": "Agence luxembourgeoise des médicaments et produits de santé",
           "name_en": "Luxembourg Agency for Medicines and Health Products",
-          "role": "It would cover Annex I points 11-12 under Bill 8476, linked to separate agency-creation legislation.",
           "counts_as_aisi": false,
           "source_ids": [
             "lu-bill8476-authority-allocations",
@@ -5607,7 +5594,6 @@
         {
           "name": "Autorité de contrôle judiciaire",
           "name_en": "Judicial Supervisory Authority",
-          "role": "It would cover judicial uses under Bill 8476.",
           "counts_as_aisi": false,
           "source_ids": [
             "lu-bill8476-authority-allocations",
@@ -5624,7 +5610,6 @@
         {
           "name": "Commission de surveillance du secteur financier",
           "name_en": "Financial Sector Supervisory Commission",
-          "role": "It would cover supervised financial entities under Bill 8476.",
           "counts_as_aisi": false,
           "source_ids": [
             "lu-bill8476-authority-allocations",
@@ -5641,7 +5626,6 @@
         {
           "name": "Commissariat aux assurances",
           "name_en": "Insurance Commissioner's Office",
-          "role": "It would cover supervised insurance entities under Bill 8476.",
           "counts_as_aisi": false,
           "source_ids": [
             "lu-bill8476-authority-allocations",
@@ -5658,7 +5642,6 @@
         {
           "name": "Institut Luxembourgeois de Régulation",
           "name_en": "Luxembourg Regulatory Institute",
-          "role": "It would cover Article 26 for specified essential/important operators under Bill 8476.",
           "counts_as_aisi": false,
           "source_ids": [
             "lu-bill8476-authority-allocations",
@@ -5675,7 +5658,6 @@
         {
           "name": "Autorité luxembourgeoise indépendante de l'audiovisuel",
           "name_en": "Luxembourg Independent Audiovisual Authority",
-          "role": "It would cover Article 50(2, 4) under Bill 8476.",
           "counts_as_aisi": false,
           "source_ids": [
             "lu-bill8476-authority-allocations",
@@ -5760,7 +5742,13 @@
         "governance_source_ids": [
           "lu-gouv-ai-act-2026"
         ],
-        "governance_note": "The government describes the proposed AI Act implementation arrangements under bill 8476; the draft remains distinct from enacted authority designation."
+        "governance_note": "The government describes the proposed AI Act implementation arrangements under bill 8476; the draft remains distinct from enacted authority designation.",
+        "log": [
+          {
+            "date": "2026-10-17",
+            "text": "Bill 8476 and the CNPD's page on its draft AI Act roles were read. Searched in English and French for a body the government has tasked with testing general-purpose or frontier AI models, or named as its AI safety or security institute."
+          }
+        ]
       },
       "source_ids": [
         "lu-gouv-ai-act-2026",
@@ -5800,7 +5788,7 @@
         "un-m49",
         "wikidata-jurisdiction-identifiers"
       ],
-      "notes": "The government bill envisages several AI Act roles for CNPD; these remain proposed roles in the retrieved bill.\n\nThe Commission's contact list of 9 November 2026 marks this state's AI Act authority as pending final adoption; the national sources cited here give its actual designation status.\n\nOn 9 November 2026 Luxembourg was among the states that signed the Paris Call for AI Safety and Security, in which signatories commit to a common framework for the evaluation and risk management of frontier models."
+      "claims": []
     },
     {
       "id": "GR",
@@ -6614,11 +6602,9 @@
       "id": "HU",
       "name": "Hungary",
       "institute_id": null,
-      "summary": "No qualifying institute identified. A 2025 decree names the minister for enterprise development as AI Act market-surveillance authority, and a Hungarian AI Council advises the government.",
       "related_bodies": [
         {
           "name": "Tudományos és technológiai miniszter",
-          "role": "The AI Act roles of the minister responsible for enterprise development are assigned under § 1(1)(b)-(c), Government Decree 344/2025. Under Decree 90/2026 §§ 168 and 168/A, § 168/A having been inserted by Decree 139/2026 of 31 August 2026, the Minister of Science and Technology is that minister for AI-related enterprise-development tasks. The Commission's contact list of 9 November 2026 names the Ministry of Science and Technology. The AI market surveillance authority (MI Piacfelügyeleti Hatóság) operates as a unit of the Ministry of Science and Technology, its website says. The Minister runs the planned AI sandbox.",
           "counts_as_aisi": false,
           "source_ids": [
             "hu-njt-344-2025",
@@ -6639,7 +6625,6 @@
         {
           "name": "Nemzeti Akkreditáló Hatóság",
           "name_en": "National Accreditation Authority",
-          "role": "Its AI Act role is assigned under § 1(1)(a), Government Decree 344/2025.",
           "counts_as_aisi": false,
           "source_ids": [
             "hu-njt-344-2025",
@@ -6655,7 +6640,6 @@
         },
         {
           "name": "Hungarian AI Council (Magyar MI Tanács)",
-          "role": "It is an advisory body without enforcement powers; it first met on 15 December 2025.",
           "counts_as_aisi": false,
           "source_ids": [
             "hu-njt-2025-75",
@@ -6727,7 +6711,13 @@
         "governance_source_ids": [
           "hu-njt-2025-75"
         ],
-        "governance_note": "The AI Act implementation law sets supervisory arrangements and an advisory AI Council without decision-making powers. Later decree amendments were not fully read."
+        "governance_note": "The AI Act implementation law sets supervisory arrangements and an advisory AI Council without decision-making powers. Later decree amendments were not fully read.",
+        "log": [
+          {
+            "date": "2026-10-17",
+            "text": "Act LXXV of 2025, Government Decree 344/2025 and Government Decree 90/2026 were read. Searched in English and Hungarian for a body the government has tasked with testing general-purpose or frontier AI models, or named as its AI safety or security institute."
+          }
+        ]
       },
       "source_ids": [
         "hu-njt-344-2025",
@@ -6740,7 +6730,6 @@
         "hu-agenceeurope-eufast-2026",
         "hu-mlex-eufast-2026"
       ],
-      "notes": "The enacted Act LXXV of 2025 and Decree 344/2025 designate the AI Act authorities; under the Act (section 4(1)) the notifying authority assesses, designates, notifies and monitors conformity assessment bodies on the basis of their accreditation. They create no testing institute. The Act (section 8) sets up the Hungarian AI Council as a body without decision-making power. Decree 224/2026 (1 October 2026) repealed § 5(1)(e) of Decree 344/2025.\n\nAgence Europe reported on 23 October 2026 that Hungary, in a non-paper, proposed embedding independent evaluators in the training and testing of frontier AI models, seconded by national safety institutes, cybersecurity agencies and research centres, and MLex reported on 3 November that Hungary was seeking support from EU countries for an EU Frontier AI Safety and Security Team. The proposal itself was not found. The reports concern an EU-level proposal and do not establish a Hungarian commitment to a national institute.",
       "region": {
         "id": "150",
         "name": "Europe",
@@ -6767,17 +6756,28 @@
       "identifier_source_ids": [
         "un-m49",
         "wikidata-jurisdiction-identifiers"
+      ],
+      "claims": [
+        {
+          "id": "claims-3a662597f628487f8ab1aec9d9b4f692",
+          "kind": "function",
+          "code": "policy_advice",
+          "basis": "mandate",
+          "body_id": "related_bodies-6df3d97198f454c39d08cf5d0d3b48b4",
+          "text": "Act LXXV of 2025 on the implementation of the AI Act tasks it with supporting, through proposals submitted to the government by the minister responsible for enterprise development, the shaping and implementation of the national AI strategy and policy.",
+          "source_ids": [
+            "hu-njt-2025-75"
+          ]
+        }
       ]
     },
     {
       "id": "RO",
       "name": "Romania",
       "institute_id": null,
-      "summary": "No qualifying institute identified. A March 2026 government memorandum proposes ANCOM as market-surveillance authority and single point of contact; the implementing law was still in draft in July 2026.",
       "related_bodies": [
         {
           "name": "ANCOM",
-          "role": "Its AI Act designation is proposed in a government memorandum; implementing legislation remains necessary.",
           "counts_as_aisi": false,
           "source_ids": [
             "ro-ancom-ai-implementation-2026",
@@ -6794,19 +6794,8 @@
           "id": "related_bodies-fd0ceba52edc5398bd88a11e86d08191"
         },
         {
-          "name": "RO AI Factory (ICI Bucharest)",
-          "role": "Its implementation began on 1 September 2026 with EuroHPC funding, hosted at ICI Bucharest, and it is expected to be operational by the end of 2027, providing high-performance computing and AI services; no model-evaluation mandate was found.",
-          "counts_as_aisi": false,
-          "kind": "other",
-          "id": "related_bodies-da09468063605435a174ab230a8738a8",
-          "source_ids": [
-            "ro-ici-ai-factory-2026"
-          ]
-        },
-        {
           "name": "Autoritatea pentru Digitalizarea României (ADR)",
           "name_en": "Authority for the Digitalisation of Romania",
-          "role": "It was selected by government memorandum.",
           "counts_as_aisi": false,
           "source_ids": [
             "ro-ancom-ai-governance-memorandum",
@@ -6823,7 +6812,6 @@
         {
           "name": "Autoritatea de Supraveghere Financiară",
           "name_en": "Financial Supervisory Authority",
-          "role": "It would cover the financial sector as identified by memorandum.",
           "counts_as_aisi": false,
           "source_ids": [
             "ro-ancom-ai-implementation-2026",
@@ -6841,7 +6829,6 @@
         {
           "name": "Banca Națională a României",
           "name_en": "National Bank of Romania",
-          "role": "It would cover the financial sector as identified by memorandum.",
           "counts_as_aisi": false,
           "source_ids": [
             "ro-ancom-ai-implementation-2026",
@@ -6859,7 +6846,6 @@
         {
           "name": "Autoritatea Națională de Supraveghere a Prelucrării Datelor cu Caracter Personal",
           "name_en": "National Supervisory Authority for Personal Data Processing",
-          "role": "It would cover specified biometric, law-enforcement, migration/border and justice/democratic-process uses as identified by memorandum.",
           "counts_as_aisi": false,
           "source_ids": [
             "ro-ancom-ai-implementation-2026",
@@ -6930,7 +6916,17 @@
         "governance_source_ids": [
           "ro-ancom-ai-implementation-2026"
         ],
-        "governance_note": "ANCOM's July update describes proposed market-surveillance responsibility and the need for implementing legislation; final enactment was not verified."
+        "governance_note": "ANCOM's July update describes proposed market-surveillance responsibility and the need for implementing legislation; final enactment was not verified.",
+        "log": [
+          {
+            "date": "2026-10-17",
+            "text": "ANCOM's implementation update and governance page were read. Searched in English and Romanian for a body the government has tasked with testing general-purpose or frontier AI models, or named as its AI safety or security institute."
+          },
+          {
+            "date": "2026-11-10",
+            "text": "The Senate's record of bill B597/2026 was read."
+          }
+        ]
       },
       "source_ids": [
         "ro-ancom-ai-implementation-2026",
@@ -6943,7 +6939,6 @@
         "ro-b597-text-2026",
         "ro-ici-ai-factory-2026"
       ],
-      "notes": "ANCOM's official implementation update and governance page were retrieved. They describe authority allocations selected by government memorandum, including ANCOM for market surveillance and the single point of contact, ADR for notification, and specified sectoral authorities. ANCOM's July 2026 update says implementing legislation remains necessary; final enactment was not verified.\n\nThe Commission's contact list of 9 November 2026 marks this state's AI Act authority as pending final adoption; the national sources cited here give its actual designation status.\n\nOn 28 October 2026 a legislative proposal from an unaffiliated deputy on the safe development of frontier AI systems and the prevention of catastrophic risks, B597/2026, was registered at the Senate. It provides for an AI Safety Authority, funded from the budget of the communications regulator ANCOM, that would carry out independent evaluations of frontier systems itself or through evaluation bodies it designates. It is not the government's own proposal.",
       "region": {
         "id": "150",
         "name": "Europe",
@@ -6970,7 +6965,8 @@
       "identifier_source_ids": [
         "un-m49",
         "wikidata-jurisdiction-identifiers"
-      ]
+      ],
+      "claims": []
     },
     {
       "id": "BG",
@@ -54671,39 +54667,7 @@
       "instrument_status_checked": "2026-10-21",
       "language": "hu",
       "archive_url": "https://web.archive.org/web/20260729234323/https://njt.jog.gov.hu/jogszabaly/2025-344-20-22",
-      "excerpts": [
-        {
-          "text": "egyedüli kapcsolattartó pont feladatainak ellátására a minisztert",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "HU"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-561ab77228a354879fd8de3926340be1"
-              },
-              "role"
-            ]
-          ],
-          "gloss": "the minister for performing the duties of the single point of contact"
-        },
-        {
-          "text": "Az 5. § (1) bekezdés e) pontját a 224/2026. (X. 1.) Korm. rendelet 7. §-a hatályon kívül helyezte.",
-          "accessed": "2026-11-10",
-          "gloss": "Section 5(1)(e) was repealed by section 7 of Government Decree 224/2026 (1 October).",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "HU"
-              },
-              "notes"
-            ]
-          ]
-        }
-      ],
+      "excerpts": [],
       "origin": "HU",
       "title_en": "Government Decree 344/2025 of 31 October (AI Act implementation)",
       "snapshot": {
@@ -55471,26 +55435,7 @@
       "language": "en",
       "access_note": "A source copy was read on 17 October 2026 for the attached excerpts. Earlier access limitations: Direct fetch returned HTTP 202 with no content; read through a text copy. Final offline snapshot review on 17 October 2026 retained the full University of Luxembourg article, dated 10 June 2026, describing the AI Assessment Sandbox Configurator and its LIST/SnT development. The original cached response is zero bytes, so it cannot supply a source copy; the empty-response rejection in the snapshot report does not indicate corruption of the retained archive. The registered query URL and descriptive archived article path were not accepted as aliases by the automatic target check. The text copy and separate archive lookup were not cached. The previous snapshot preserves the substantive article. The published snapshot hash identifies the retained archive capture at https://web.archive.org/web/20261017015404/https://www.uni.lu/snt-en/news/new-open-source-tool-accelerates-testing-for-trustworthy-artificial-intelligence/.",
       "archive_url": "https://web.archive.org/web/20261017015404/https://www.uni.lu/snt-en/news/new-open-source-tool-accelerates-testing-for-trustworthy-artificial-intelligence/",
-      "excerpts": [
-        {
-          "text": "Luxembourg AI Factory released an open-source tool, the AI Assessment Sandbox Configurator, on 10 June 2026.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "LU"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-cb4a0ec16c47581e95bdb31fee7cd659"
-              },
-              "role"
-            ]
-          ],
-          "url": "https://web.archive.org/web/20261017015404/https://www.uni.lu/snt-en/news/new-open-source-tool-accelerates-testing-for-trustworthy-artificial-intelligence/",
-          "accessed": "2026-10-17"
-        }
-      ],
+      "excerpts": [],
       "origin": "LU",
       "snapshot": {
         "retrieved": "2026-10-17T14:21:45Z",
@@ -55591,36 +55536,29 @@
       "archive_url": "https://web.archive.org/web/20261017015843/https://njt.jog.gov.hu/jogszabaly/2025-75-00-00",
       "excerpts": [
         {
-          "text": "A Magyar Mesterséges Intelligencia Tanács (a továbbiakban: Tanács) testületként működő, ügydöntő jogkörrel nem rendelkező szerv",
+          "text": "a) a vállalkozásfejlesztésért felelős miniszter (a továbbiakban: miniszter) útján a Kormány részére előterjesztett javaslataival támogatja a mesterséges intelligencia alkalmazásával kapcsolatos nemzeti MI-stratégia és -politika kialakítását és végrehajtását",
           "supports": [
             [
               "jurisdictions",
               {
                 "id": "HU"
               },
-              "related_bodies",
+              "claims",
               {
-                "id": "related_bodies-6df3d97198f454c39d08cf5d0d3b48b4"
+                "id": "claims-3a662597f628487f8ab1aec9d9b4f692"
               },
-              "role"
+              "text"
             ]
           ],
-          "gloss": "The Hungarian AI Council is a collegial body without decision-making powers.",
+          "gloss": "(a) through proposals submitted to the Government by the minister responsible for enterprise development (the minister), supports the shaping and implementation of the national AI strategy and policy on the use of artificial intelligence",
+          "anchors": [
+            {
+              "text": "A Magyar Mesterséges Intelligencia Tanács (a továbbiakban: Tanács) testületként működő, ügydöntő jogkörrel nem rendelkező szerv, amely",
+              "kind": "heading",
+              "gloss": "The Hungarian Artificial Intelligence Council (the Council) is a collegial body without decision-making powers, which"
+            }
+          ],
           "accessed": "2026-10-17"
-        },
-        {
-          "text": "megfelelőségértékelő szervezeteket az MI bejelentő hatóság – akkreditált státusz alapján – értékeli, jelöli ki, jelenti be és követi nyomon",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "HU"
-              },
-              "notes"
-            ]
-          ],
-          "gloss": "the AI notifying authority, on the basis of accredited status, assesses, designates, notifies and monitors conformity assessment bodies",
-          "accessed": "2026-11-10"
         }
       ],
       "origin": "HU",
@@ -55650,26 +55588,7 @@
         "text_scheme": 1
       },
       "archive_url": "https://web.archive.org/web/20260927101243if_/https://sztnh.gov.hu/sw/static/file/Zaronyilatkozat_MMIT_20251215_C.pdf",
-      "excerpts": [
-        {
-          "text": "A Magyar Mesterséges Intelligencia Tanács 2025. december 15-én megtartott alakuló ülésén",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "HU"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-6df3d97198f454c39d08cf5d0d3b48b4"
-              },
-              "role"
-            ]
-          ],
-          "gloss": "At the inaugural meeting of the Hungarian Artificial Intelligence Council held on 15 December 2025",
-          "accessed": "2026-11-10"
-        }
-      ]
+      "excerpts": []
     },
     {
       "id": "is-stjornarradid-action-plan-2025",
@@ -66058,53 +65977,7 @@
         "text_sha256": "5f97f5e1ab731e355a88fa4c1524da8c6c005b3d2ccdc61ecfb69c4d146b8e13",
         "text_scheme": 1
       },
-      "excerpts": [
-        {
-          "text": "the Luxembourg AI Factory is the national platform dedicated to the responsible and secure adoption of AI",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "LU"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-1de660304d885ce49aaeeebfa2833690"
-              },
-              "name"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "LU"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-1de660304d885ce49aaeeebfa2833690"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-11-14"
-        },
-        {
-          "text": "It is supported by a consortium composed of LuxProvide, Luxinnovation, the Luxembourg National Data Service (LNDS), the University of Luxembourg and the Luxembourg Institute of Science and Technology (LIST)",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "LU"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-1de660304d885ce49aaeeebfa2833690"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-11-14"
-        }
-      ]
+      "excerpts": []
     },
     {
       "id": "sk-oecd-cyberlab-primary-proposal",
@@ -77221,42 +77094,7 @@
             [
               "jurisdictions",
               {
-                "id": "CZ"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "EE"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "PT"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "LU"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
                 "id": "SI"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "RO"
               },
               "notes"
             ],
@@ -77800,42 +77638,7 @@
             [
               "jurisdictions",
               {
-                "id": "CZ"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "EE"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "PT"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "LU"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
                 "id": "SI"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "RO"
               },
               "notes"
             ],
@@ -77845,17 +77648,6 @@
                 "id": "CY"
               },
               "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "HU"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-561ab77228a354879fd8de3926340be1"
-              },
-              "role"
             ],
             [
               "jurisdictions",
@@ -77887,17 +77679,6 @@
           "accessed": "2026-11-10",
           "gloss": "Hungary Ministry of Science and Technology",
           "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "HU"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-561ab77228a354879fd8de3926340be1"
-              },
-              "role"
-            ],
             [
               "jurisdictions",
               {
@@ -79424,25 +79205,7 @@
       "accessed": "2026-10-17",
       "published": "2026-08-31",
       "language": "cs",
-      "excerpts": [
-        {
-          "text": "Nové oddělení bude po schválení příslušné legislativy zajišťovat výkon dozorových pravomocí ČTÚ",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "CZ"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-37a2089a60165502bdc297538657f264"
-              },
-              "role"
-            ]
-          ],
-          "gloss": "The new department will exercise CTU supervisory powers after the relevant legislation is approved."
-        }
-      ],
+      "excerpts": [],
       "origin": "CZ",
       "title_en": "ČTÚ strengthens oversight of artificial intelligence from September",
       "snapshot": {
@@ -79620,25 +79383,7 @@
       "type": "primary",
       "accessed": "2026-10-17",
       "language": "et",
-      "excerpts": [
-        {
-          "text": "hakkab tulevikus täitma pädeva asutuse rolli tehisintellektisüsteemide järelevalves.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "EE"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-e9418b44f082585ea0aaa36f10f7beae"
-              },
-              "role"
-            ]
-          ],
-          "gloss": "Will in future fulfil the competent-authority role in supervision of AI systems."
-        }
-      ],
+      "excerpts": [],
       "origin": "EE",
       "title_en": "Artificial intelligence systems",
       "snapshot": {
@@ -79851,70 +79596,6 @@
       "language": "ro",
       "excerpts": [
         {
-          "text": "ANCOM a fost propusă să exercite rolul de autoritate națională de supraveghere a pieței",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "RO"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-fd0ceba52edc5398bd88a11e86d08191"
-              },
-              "role"
-            ]
-          ],
-          "gloss": "ANCOM was proposed to act as national market-surveillance authority."
-        },
-        {
-          "text": "ANCOM a fost propusă să exercite rolul de autoritate națională de supraveghere a pieței și punct național unic de contact, alături de alte autorități desemnate drept autorități de supraveghere a pieței, precum: Autoritatea de Supraveghere Financiară și Banca Națională a României",
-          "gloss": "ANCOM was proposed to act as national market-surveillance authority and single point of contact, alongside other authorities designated as market-surveillance authorities, such as the Financial Supervisory Authority and the National Bank of Romania",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "RO"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-e807d1407eee5c629ed36715ef6c83fb"
-              },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "RO"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-b464dd1e1850581787b25c4dcc15162c"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-11-14"
-        },
-        {
-          "text": "Autoritatea Națională de Supraveghere a Prelucrării Datelor cu Caracter Personal – pentru sistemele de IA cu grad ridicat de risc din domeniul biometriei",
-          "gloss": "the National Supervisory Authority for Personal Data Processing, for high-risk AI systems in biometrics",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "RO"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-e4aedc56b2195fbaac83fa27f0837454"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-11-14"
-        },
-        {
           "text": "În prezent, autoritățile competente desemnate prin Memorandum lucrează, împreună cu alte autorități sectoriale, la elaborarea cadrului legislativ național necesar punerii în aplicare a Regulamentului",
           "gloss": "At present, the competent authorities designated by Memorandum are working, together with other sectoral authorities, on drafting the national legal framework needed to implement the Regulation",
           "supports": [
@@ -80033,21 +79714,7 @@
       "accessed": "2026-10-17",
       "published": "2024-12-04",
       "language": "fr",
-      "excerpts": [
-        {
-          "text": "La CNPD se verra attribuer plusieurs rôles",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "LU"
-              },
-              "notes"
-            ]
-          ],
-          "gloss": "CNPD will be assigned several roles."
-        }
-      ],
+      "excerpts": [],
       "origin": "LU",
       "title_en": "National implementation of the AI Act: CNPD designated as competent authority",
       "snapshot": {
@@ -80673,26 +80340,7 @@
         "text_sha256": "e311c6f41b305248f991695d106f48e1de40a69e1bd69fa130d18586d67e42e8",
         "text_scheme": 1
       },
-      "excerpts": [
-        {
-          "text": "Sendo expectável que a ANACOM venha a ser também designada como autoridade de fiscalização do mercado",
-          "gloss": "ANACOM is expected also to be designated as market-surveillance authority.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "PT"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-c71bf6e1658557c2a9f81e710f1185ac"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-10-17"
-        }
-      ],
+      "excerpts": [],
       "access_note": "The canonical URL is ANACOM's own PDF, whose direct retrieval failed. The official landing page https://anacom.pt/render.jsp?contentId=1820847 was read through its indexed text on 17 October 2026; it states “Publicado em 12.11.2025” and links the Flipbook. Direct landing/PDF retrieval failed. The substantive footnote was read in the ANACOM-published FlipHTML5 copy. The mirror displays 7 November, whereas the official landing page states 12 November; these dates refer to different publication surfaces. The quotation was first read in that mirror. Snapshot review on 17 October 2026, using cached responses: Original source: request timed out; Separately cited publisher mirror: an HTTP error (HTTP 403); Fallback text copy: request timed out; Separate archive.ph newest-capture lookup returned HTTP 429; the capture content was not checked. That review retained no usable source copy. On 19 October 2026 the linked Wayback capture of 13 November 2025 was checked against this URL and the quotation read in the FlipHTML5 copy; the recorded title, a citation label, was compared with the document by hand. On 21 October 2026 a direct retrieval of the ANACOM PDF succeeded and was retained as the private source copy; the automated verifier found the quotation read in the FlipHTML5 copy verbatim in it, so the excerpt is now bound to the PDF. The mirror returned HTTP 403 on the same day.",
       "origin": "PT",
       "title_en": "Multiannual Activity Plan 2026-2028, page 3 footnote 4"
@@ -81095,25 +80743,7 @@
       "accessed": "2026-10-17",
       "published": "2025-05-28",
       "language": "cs",
-      "excerpts": [
-        {
-          "text": "Tím se v ČR stane ÚNMZ",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "CZ"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-e4c8fb3e338f53ceac078210be4fd4a1"
-              },
-              "role"
-            ]
-          ],
-          "gloss": "ÚNMZ will become that authority in Czechia."
-        }
-      ],
+      "excerpts": [],
       "origin": "CZ",
       "title_en": "Government approved key document for AI development and safety in Czechia",
       "snapshot": {
@@ -81144,7 +80774,7 @@
               {
                 "id": "related_bodies-03de3ed9fce1599086859988ee0f1375"
               },
-              "role"
+              "designation_state"
             ]
           ],
           "gloss": "The Authority for the Digitalisation of Romania was designated by memorandum as notifying authority."
@@ -81256,25 +80886,7 @@
       "accessed": "2026-10-17",
       "published": "2024-12-23",
       "language": "fr",
-      "excerpts": [
-        {
-          "text": "La Commission nationale pour la protection des données est désignée autorité de surveillance du marché",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "LU"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-e961f3b9eef9537db5b2d9854ac44805"
-              },
-              "role"
-            ]
-          ],
-          "gloss": "The National Commission for Data Protection is designated as a market surveillance authority"
-        }
-      ],
+      "excerpts": [],
       "origin": "LU",
       "title_en": "Bill 8476, document as introduced, Articles 2, 7 and 8",
       "snapshot": {
@@ -82579,21 +82191,7 @@
       "type": "primary",
       "accessed": "2026-10-17",
       "language": "pt",
-      "excerpts": [
-        {
-          "text": "Agenda Nacional de Inteligência Artificial",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "PT"
-              },
-              "notes"
-            ]
-          ],
-          "gloss": "National Artificial Intelligence Agenda"
-        }
-      ],
+      "excerpts": [],
       "origin": "PT",
       "title_en": "National Artificial Intelligence Agenda (ANIA)",
       "snapshot": {
@@ -116169,26 +115767,7 @@
       "type": "primary",
       "language": "hu",
       "origin": "HU",
-      "excerpts": [
-        {
-          "text": "A Hatóság a Tudományos és Technológiai Minisztérium szervezeti egységeként működik.",
-          "gloss": "The Authority operates as an organisational unit of the Ministry of Science and Technology.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "HU"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-561ab77228a354879fd8de3926340be1"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-11-07"
-        }
-      ],
+      "excerpts": [],
       "accessed": "2026-11-07",
       "snapshot": {
         "retrieved": "2026-11-08T00:08:48Z",
@@ -118441,17 +118020,6 @@
                 "id": "related_bodies-561ab77228a354879fd8de3926340be1"
               },
               "name_en"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "HU"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-561ab77228a354879fd8de3926340be1"
-              },
-              "role"
             ]
           ]
         },
@@ -118470,35 +118038,6 @@
                 "id": "related_bodies-561ab77228a354879fd8de3926340be1"
               },
               "name_en"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "HU"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-561ab77228a354879fd8de3926340be1"
-              },
-              "role"
-            ]
-          ]
-        },
-        {
-          "text": "A 168/A. §-t a 139/2026. (VIII. 31.) Korm. rendelet 72. §-a iktatta be.",
-          "accessed": "2026-11-10",
-          "gloss": "Section 168/A was inserted by section 72 of Government Decree 139/2026 (31 August).",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "HU"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-561ab77228a354879fd8de3926340be1"
-              },
-              "role"
             ]
           ]
         }
@@ -119831,47 +119370,7 @@
       "accessed": "2026-11-10",
       "language": "en",
       "origin": "BE",
-      "excerpts": [
-        {
-          "text": "In a non-paper dated October 2026, addressed to the European Commission, the Member States and the Irish Presidency of the Council of the EU and seen by Agence Europe",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "HU"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-11-10"
-        },
-        {
-          "text": "the Hungarian government calls for the creation of an “EU Frontier AI Safety and Security Team”. Called ‘EU FAST’, the team would comprise pre-vetted, security-cleared independent evaluators embedded in the training and testing of advanced artificial intelligence (AI) models",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "HU"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-11-10"
-        },
-        {
-          "text": "These experts would be seconded by national safety institutes, cybersecurity agencies and research centres.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "HU"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-11-10"
-        }
-      ],
+      "excerpts": [],
       "snapshot": {
         "retrieved": "2026-11-10T19:46:15Z",
         "sha256": "d41a246b65e758470ac1532bc029bcdeb9c3578cc17622af6413de2e2619209a",
@@ -119890,21 +119389,7 @@
       "language": "en",
       "origin": "GB",
       "access_note": "Only the public introduction was read; the rest of the article is behind a paywall.",
-      "excerpts": [
-        {
-          "text": "Hungary is seeking support from EU countries for its plan to set up a new agency called the EU Frontier AI Safety and Security Team",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "HU"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-11-10"
-        }
-      ],
+      "excerpts": [],
       "snapshot": {
         "retrieved": "2026-11-10T19:46:15Z",
         "sha256": "f9c77ac0d228fc26751bcc584fd479adb88a6bc51f54ce7766e6fdce21b9a486",
@@ -120645,13 +120130,6 @@
             [
               "jurisdictions",
               {
-                "id": "EE"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
                 "id": "LV"
               },
               "notes"
@@ -120667,20 +120145,6 @@
               "jurisdictions",
               {
                 "id": "LI"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "LU"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "PT"
               },
               "notes"
             ]
@@ -120700,13 +120164,6 @@
             [
               "jurisdictions",
               {
-                "id": "EE"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
                 "id": "LV"
               },
               "notes"
@@ -120722,20 +120179,6 @@
               "jurisdictions",
               {
                 "id": "LI"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "LU"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "PT"
               },
               "notes"
             ],
@@ -120772,13 +120215,6 @@
             [
               "jurisdictions",
               {
-                "id": "EE"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
                 "id": "LV"
               },
               "notes"
@@ -120794,20 +120230,6 @@
               "jurisdictions",
               {
                 "id": "LI"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "LU"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "PT"
               },
               "notes"
             ]
@@ -120894,64 +120316,7 @@
       "accessed": "2026-11-10",
       "language": "ro",
       "origin": "RO",
-      "excerpts": [
-        {
-          "text": "Propunere legislativă privind dezvoltarea sigură a sistemelor de inteligență artificială de vârf și prevenirea riscurilor catastrofale pentru cetățeanul român",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "RO"
-              },
-              "notes"
-            ]
-          ],
-          "gloss": "Legislative proposal on the safe development of frontier artificial intelligence systems and the prevention of catastrophic risks for Romanian citizens",
-          "accessed": "2026-11-10"
-        },
-        {
-          "text": "deputat Neafiliat",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "RO"
-              },
-              "notes"
-            ]
-          ],
-          "gloss": "unaffiliated deputy",
-          "accessed": "2026-11-10"
-        },
-        {
-          "text": "Înregistrat la Senat pentru dezbatere cu nr.b597",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "RO"
-              },
-              "notes"
-            ]
-          ],
-          "gloss": "Registered at the Senate for debate as no. b597",
-          "accessed": "2026-11-10"
-        },
-        {
-          "text": "28-10-2026",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "RO"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-11-10",
-          "gloss": "28 October 2026"
-        }
-      ],
+      "excerpts": [],
       "snapshot": {
         "retrieved": "2026-11-10T22:13:09Z",
         "sha256": "3c649ead62356b71cbf178e19d4b86a28675cfcd8eba597b272a76887c73a437",
@@ -120970,64 +120335,7 @@
       "language": "ro",
       "origin": "RO",
       "access_note": "The PDF is a scan; its text layer is machine-recognised and drops some diacritics, so quotations follow that layer.",
-      "excerpts": [
-        {
-          "text": "Autoritatea pentru Siguranta Inteligentei Artificiale",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "RO"
-              },
-              "notes"
-            ]
-          ],
-          "gloss": "the AI Safety Authority",
-          "accessed": "2026-11-10"
-        },
-        {
-          "text": "evaluare independenta - evaluarea capabilitatilor Si a sigurantei unui sistem de varf,",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "RO"
-              },
-              "notes"
-            ]
-          ],
-          "gloss": "independent evaluation: the evaluation of the capabilities and safety of a frontier system,",
-          "accessed": "2026-11-10"
-        },
-        {
-          "text": "realizata de Autoritate sau de un organism de evaluare desemnat de aceasta",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "RO"
-              },
-              "notes"
-            ]
-          ],
-          "gloss": "carried out by the Authority or by an evaluation body it designates",
-          "accessed": "2026-11-10"
-        },
-        {
-          "text": "Autoritatea se finanteaza din bugetul ANCOM",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "RO"
-              },
-              "notes"
-            ]
-          ],
-          "gloss": "The Authority is funded from ANCOM's budget",
-          "accessed": "2026-11-10"
-        }
-      ],
+      "excerpts": [],
       "snapshot": {
         "retrieved": "2026-11-10T22:13:10Z",
         "sha256": "eab717242648b8430abbec92fced3c8e467ddaf311d0d794d7923d39e6b5b202",
@@ -121302,65 +120610,7 @@
       "language": "cs",
       "origin": "CZ",
       "access_note": "The page's date is shown only in its rendered form; the date quotation is from the r.jina.ai text rendering read on 11 November 2026.",
-      "excerpts": [
-        {
-          "text": "9.11.2026",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "CZ"
-              },
-              "notes"
-            ]
-          ],
-          "gloss": "9 November 2026",
-          "accessed": "2026-11-11",
-          "url": "https://r.jina.ai/https://mpo.gov.cz/cz/rozcestnik/pro-media/tiskove-zpravy/vlada-podporila-rozvoj-umele-inteligence-zrizenim-nove-rady-a-schvalenim-navrhu-zakona--295239/"
-        },
-        {
-          "text": "Zřídila Radu vlády pro umělou inteligenci a schválila návrh zákona, který v Česku zajistí uplatňování evropského aktu o umělé inteligenci a AI omnibusu.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "CZ"
-              },
-              "notes"
-            ]
-          ],
-          "gloss": "It set up the Government Council for Artificial Intelligence and approved a bill that will ensure the application in Czechia of the European AI Act and the AI omnibus.",
-          "accessed": "2026-11-11"
-        },
-        {
-          "text": "Rada bude koordinovat postup státu a spolupráci s výzkumníky a firmami.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "CZ"
-              },
-              "notes"
-            ]
-          ],
-          "gloss": "The council will coordinate the state's approach and cooperation with researchers and companies.",
-          "accessed": "2026-11-11"
-        },
-        {
-          "text": "Hlavním dozorovým orgánem a jednotným kontaktním místem bude Český telekomunikační úřad.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "CZ"
-              },
-              "notes"
-            ]
-          ],
-          "gloss": "The main supervisory authority and single point of contact will be the Czech Telecommunication Office.",
-          "accessed": "2026-11-11"
-        }
-      ],
+      "excerpts": [],
       "snapshot": {
         "retrieved": "2026-11-11T04:52:50Z",
         "sha256": "df775f8e856f0939f8bac1de7dca73d87cd1bf5bbb540079d7261094fcc801d1",
@@ -122282,120 +121532,7 @@
       "accessed": "2026-11-14",
       "language": "ro",
       "origin": "RO",
-      "excerpts": [
-        {
-          "text": "Astăzi, 1 septembrie 2026, debutează oficial implementarea proiectului „Romanian EuroHPC AI Factory at ICI Bucharest” – RO AI Factory",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "RO"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-da09468063605435a174ab230a8738a8"
-              },
-              "name"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "RO"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-da09468063605435a174ab230a8738a8"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-11-14",
-          "gloss": "Today, 1 September 2026, the implementation of the project “Romanian EuroHPC AI Factory at ICI Bucharest” (RO AI Factory) officially begins"
-        },
-        {
-          "text": "care funcționează ca Hosting Entity pentru RO AI Factory",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "RO"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-da09468063605435a174ab230a8738a8"
-              },
-              "name"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "RO"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-da09468063605435a174ab230a8738a8"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-11-14",
-          "gloss": "which acts as the Hosting Entity for RO AI Factory"
-        },
-        {
-          "text": "Operaționalizarea RO AI Factory este estimată până la sfârșitul anului 2027",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "RO"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-da09468063605435a174ab230a8738a8"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-11-14",
-          "gloss": "RO AI Factory is expected to become operational by the end of 2027"
-        },
-        {
-          "text": "finanțat de European High Performance Computing Joint Undertaking (EuroHPC JU)",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "RO"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-da09468063605435a174ab230a8738a8"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-11-14",
-          "gloss": "funded by the European High Performance Computing Joint Undertaking (EuroHPC JU)"
-        },
-        {
-          "text": "RO AI Factory va oferi infrastructură de calcul de înaltă performanță, alături de un ecosistem integrat de resurse, servicii, expertiză și competențe în domeniul inteligenței artificiale",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "RO"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-da09468063605435a174ab230a8738a8"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-11-14",
-          "gloss": "RO AI Factory will offer high-performance computing infrastructure, together with an integrated ecosystem of resources, services, expertise and skills in artificial intelligence"
-        }
-      ],
+      "excerpts": [],
       "snapshot": {
         "retrieved": "2026-11-14T12:13:33Z",
         "sha256": "8b7aba5b2ae0a32d3ed83724605cf4cf1f63c6817ab1043ceef5a7287cb2c98d",
