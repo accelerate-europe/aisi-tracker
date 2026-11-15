@@ -97,13 +97,29 @@ def marked(claim: dict) -> str:
     return f"{claim['text'].strip()} {state}"
 
 
-def closest_note(record: dict) -> str:
-    """The closest body's note: its role sentences, the kept lead in its place marked; its name alone when none is left."""
+def shown_lead(record: dict) -> dict | None:
+    """The closest body's claim that pattern 2 quotes: the kept lead, else the live lead."""
+    closest = record.get("closest_body") or {}
+    if kept := kept_lead(record):
+        return kept
+    lead = [c for c in role_claims(record, closest.get("body_id")) if c.get("lead")]
+    return lead[0] if lead else None
+
+
+def closest_texts(record: dict, *, without: dict | None = None) -> list[str]:
+    """The closest body's role sentences in authored order, the kept lead in its place marked, one claim left out."""
     closest = record["closest_body"]
     kept = kept_lead(record)
-    texts = [marked(c) if c is kept else c["text"].strip() for c in record.get("claims", [])
-             if c["kind"] == "function" and c.get("body_id") == closest["body_id"] and (c is kept or not c.get("expired"))]
-    return " ".join(texts) or sentence(closest["name"])
+    return [marked(c) if c is kept else c["text"].strip() for c in record.get("claims", [])
+            if c["kind"] == "function" and c.get("body_id") == closest["body_id"] and (c is kept or not c.get("expired"))
+            and c is not without]
+
+
+def closest_note(record: dict) -> str:
+    """The closest body's note: its role sentences other than the one the summary quotes (hub default of 15 November,
+    awaiting the owner: the card does not say the lead twice); its name as a sentence when none is left, so the
+    published note stays non-empty (schema), and the page shows no note that is only the name."""
+    return " ".join(closest_texts(record, without=shown_lead(record))) or sentence(record["closest_body"]["name"])
 
 
 def closest_warning(record: dict) -> str | None:
@@ -232,6 +248,6 @@ def generate(record: dict, institute: dict | None, basis_event: dict | None) -> 
     }
     if closest is not None:
         texts["note"] = closest_note(record)
-        if kept_lead(record):
-            texts["roles"][closest["body_id"]] = texts["note"]
+        if kept_lead(record):  # the body's role keeps every sentence, the kept lead marked
+            texts["roles"][closest["body_id"]] = " ".join(closest_texts(record))
     return texts
