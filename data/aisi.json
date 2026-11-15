@@ -33502,6 +33502,66 @@
           "source_ids": [
             "r5-eu-ai-act-article74"
           ]
+        },
+        {
+          "id": "claims-86e416a30b5f41cab44bbdd966e98f18",
+          "kind": "function",
+          "code": "adoption",
+          "basis": "activity",
+          "text": "The Commission says the GenAI4EU initiative, one of those through which the AI Office supports innovators, contributes to novel use cases and emerging applications in 14 industrial sectors and the public sector.",
+          "source_ids": [
+            "eu-aioffice"
+          ]
+        },
+        {
+          "id": "claims-29f61078fac540f5b278ee99c76bc57d",
+          "kind": "function",
+          "code": "convening",
+          "basis": "mandate",
+          "text": "The AI Act assigns it providing the secretariat for the Board, convening the Board's meetings at the Chair's request and preparing the agenda.",
+          "source_ids": [
+            "r5-eu-ai-act-article74"
+          ]
+        },
+        {
+          "id": "claims-e9326b90cca642e88a8cabbb3bbffe7b",
+          "kind": "function",
+          "code": "model_testing",
+          "basis": "mandate",
+          "text": "The Commission's announcement of the AI Office says it will conduct testing and evaluation of general-purpose AI models.",
+          "source_ids": [
+            "eu-office-structure-2024"
+          ]
+        },
+        {
+          "id": "claims-73ee56ac3a9f48dba6b8f261ec59e75d",
+          "kind": "function",
+          "code": "regulatory_support",
+          "basis": "activity",
+          "text": "The Commission's answer says the AI Office has held numerous technical meetings with Anthropic to support implementation of the Code.",
+          "source_ids": [
+            "eu-pq-p001672-2026"
+          ]
+        },
+        {
+          "id": "claims-9f5848bdf4cb4f3580be71ffe96fc49e",
+          "kind": "function",
+          "code": "standards_guidance",
+          "basis": "activity",
+          "text": "Commission guidelines say the AI Office prepared the template that specifies when providers must update the public summary of the content used to train their models.",
+          "source_ids": [
+            "catalogue-eu-artifact-gpai"
+          ]
+        },
+        {
+          "id": "claims-7b80080e17d6465cbaeaa5e9b0663ba1",
+          "kind": "function",
+          "code": "standards_guidance",
+          "basis": "mandate",
+          "text": "The AI Act assigns it developing a questionnaire template, including through an automated tool, to help deployers comply with their obligations under that article in a simplified manner.",
+          "source_ids": [
+            "r5-eu-ai-act-article74"
+          ]
         }
       ],
       "funding": [
@@ -42945,6 +43005,33 @@
               },
               "text"
             ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "The ‘GenAI4EU' initiative, part of the 2024 AI innovation package, contributes to the development of novel use cases and emerging applications in 14 industrial sectors and the public sector.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "claims",
+              {
+                "id": "claims-86e416a30b5f41cab44bbdd966e98f18"
+              },
+              "text"
+            ]
+          ],
+          "anchors": [
+            {
+              "text": "The European AI Office was established within the European Commission as the foundation for a single AI governance system.",
+              "kind": "definition"
+            },
+            {
+              "text": "The AI Office actively supports innovators through policies and initiatives that spur growth across the EU:",
+              "kind": "heading"
+            }
           ],
           "accessed": "2026-10-17"
         }
@@ -69323,6 +69410,29 @@
             ]
           ],
           "accessed": "2026-10-17"
+        },
+        {
+          "text": "In cooperation with AI developers, the scientific community and other stakeholders, the AI Office will coordinate the drawing up of state-of-the-art codes of practice, conduct testing and evaluation of general-purpose AI models, request information as well as apply sanctions, when necessary.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "claims",
+              {
+                "id": "claims-e9326b90cca642e88a8cabbb3bbffe7b"
+              },
+              "text"
+            ]
+          ],
+          "anchors": [
+            {
+              "text": "Today the Commission has unveiled the AI Office, established within the Commission.",
+              "kind": "definition"
+            }
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "EU",
@@ -74875,7 +74985,32 @@
         "sha256": "13481bd90108505c477165c8aefb13dbe7a83847bad0e983e09115f78aeefe78",
         "text_sha256": "92b89a1d2953f812e9a29d8457a36f4cf52aa3001f180077014dfcf3780bc2b9",
         "text_scheme": 1
-      }
+      },
+      "excerpts": [
+        {
+          "text": "content used for training required under Article 53(1), \npoint (d), AI Act must be drawn up and made publicly available for all the \nprovider’s models placed on the market. The template that has been prepared \nby the AI Office specifies circumstances under which the summary must be \nupdated.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "claims",
+              {
+                "id": "claims-9f5848bdf4cb4f3580be71ffe96fc49e"
+              },
+              "text"
+            ]
+          ],
+          "anchors": [
+            {
+              "text": "the implementation \nof which is entrusted to the European Artificial Intelligence Office (‘AI Office’, see \nArticle 3(47) AI Act).",
+              "kind": "definition"
+            }
+          ],
+          "accessed": "2026-10-17"
+        }
+      ]
     },
     {
       "id": "catalogue-eu-artifact-template",
@@ -93159,6 +93294,52 @@
           ],
           "accessed": "2026-10-17",
           "url": "https://r.jina.ai/https://eur-lex.europa.eu/legal-content/EN/AUTO/?uri=CELEX:02024R1689-20260727"
+        },
+        {
+          "text": "The AI Office shall provide the secretariat for the Board, convene the meetings upon request of the Chair, and prepare the agenda in accordance with the tasks of the Board pursuant to this Regulation and its rules of procedure.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "claims",
+              {
+                "id": "claims-29f61078fac540f5b278ee99c76bc57d"
+              },
+              "text"
+            ]
+          ],
+          "anchors": [
+            {
+              "text": "‘AI Office’ means the Commission’s function of contributing to the implementation, monitoring and supervision of AI systems and general-purpose AI models, and AI governance, provided for in Commission Decision of 24 January 2024",
+              "kind": "definition"
+            }
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "The AI Office shall develop a template for a questionnaire, including through an automated tool, to facilitate deployers in complying with their obligations under this Article in a simplified manner.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "claims",
+              {
+                "id": "claims-7b80080e17d6465cbaeaa5e9b0663ba1"
+              },
+              "text"
+            ]
+          ],
+          "anchors": [
+            {
+              "text": "‘AI Office’ means the Commission’s function of contributing to the implementation, monitoring and supervision of AI systems and general-purpose AI models, and AI governance, provided for in Commission Decision of 24 January 2024",
+              "kind": "definition"
+            }
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "legal_text": true,
@@ -106040,6 +106221,23 @@
                 "id": "staff-2e8b5d0c7a4f4e19b6c3d8a1f05e7b92"
               },
               "as_of"
+            ]
+          ],
+          "accessed": "2026-10-21"
+        },
+        {
+          "text": "As a regulator, the AI Office has held numerous technical meetings with Anthropic to support implementation of the Code.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "claims",
+              {
+                "id": "claims-73ee56ac3a9f48dba6b8f261ec59e75d"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-21"
