@@ -935,6 +935,13 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
 <script>
 (function () {
   var LABEL = { established:"Established", planned:"Planned", proposed:"Proposed", exploring:"Exploring", none_identified:"None identified" };
+  // Words for what a body does, one home for the functions table (Compare) and the cards' activity line (owner, 15 Nov 2026; copy sheet C10, C11).
+  // A function's own words come from dataset.vocabularies.function (label, and short for a line or a narrow column head).
+  var ACTIVITY_WORDS = {
+    active: "Active", assigned: "Assigned", both: "Assigned and active", notYet: "not yet established", // a function cell: a text shows it done, assigns it, or both
+    notDesignated: "Not designated.", notEstablished: "Not yet established.", established: "Established.", // a card's activity line opens with the designation state
+    activeIn: "Active in", noWork: "No published work found yet.", more: function (n) { return "and " + n + " more"; }
+  };
   // Status definitions, short: the map legend shows each once, the full text is in Method.
   var SHORT = { established: "Created or designated by government.", planned: "Adopted by government, not yet created.", proposed: "Formally proposed, approval pending.", exploring: "Being studied or drafted, or recommended by an advisory commission.", none_identified: "No decision, plan, proposal or study found." };
   var ORDER = ["established","planned","proposed","exploring","none_identified"];
