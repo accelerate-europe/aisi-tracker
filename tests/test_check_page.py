@@ -2241,7 +2241,7 @@ def test_the_definition_must_come_before_its_rule_link():
 
 def test_the_new_tab_notice_keeps_its_meaning_in_any_wording():
     source = check_page.check_external_markers.__code__.co_consts
-    script = next(c for c in source if isinstance(c, str) and "external link lost accessible new-tab text" in c)
+    script = next(c for c in source if isinstance(c, str) and "links open a new tab without saying so" in c)
     assert "/new (tab|window)/i" in script  # a notice that no longer says it opens a new tab or window fails
 
 

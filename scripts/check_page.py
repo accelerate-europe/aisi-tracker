@@ -509,6 +509,7 @@ USING_THE_DATA = "Using the data"
 
 
 PAGE_BYTES_BUDGET = 2_000_000  # search engines read only the first 2 MB of a page, so everything a reader should find must sit within it
+PAGE_BYTES_WARN = 0.95  # a report line once the world section ends past this share of the budget
 # What a first visit downloads, in gzip bytes (level 6, as the host compresses text; woff2 counts as stored). Budgets,
 # not timings, so the check is deterministic: a saved map drawing past its budget, or the data the page reads, or the
 # whole first load, fails the gate and asks for a decision instead of slowing the first screen unnoticed. Set about a
@@ -659,6 +660,8 @@ def check_page_size(dist: Path) -> list[str]:
         print(f"warning: index.html is {len(page)} bytes, beyond the {PAGE_BYTES_BUDGET} that search engines read", file=sys.stderr)
     if end > PAGE_BYTES_BUDGET:
         return [f"index.html: the world section ends at byte {end}, beyond the {PAGE_BYTES_BUDGET} that search engines read"]
+    if end > PAGE_BYTES_WARN * PAGE_BYTES_BUDGET:  # seen before it blocks: the next data merge may not fit
+        return [report_line(f"index.html: the world section ends at byte {end}, {end / PAGE_BYTES_BUDGET:.1%} of the {PAGE_BYTES_BUDGET} that search engines read; shrink the saved page before the next data merge")]
     return []
 
 
@@ -4112,6 +4115,12 @@ def check_external_markers(page) -> list[str]:
         + """
       const errors = [], links = [...document.querySelectorAll('a.ext')].filter(visible);
       if (!links.length) errors.push('external link markers missing');
+      // Every link that opens a new tab says so to screen readers, in any wording: a citation in its label, any other
+      // link in its description (the shared #opens-new-tab) or a hidden note of its own.
+      const said = a => [a.getAttribute('aria-label') || '', ...(a.getAttribute('aria-describedby') || '').split(' ').filter(Boolean).map(id => document.getElementById(id)?.textContent || ''),
+        ...[...a.querySelectorAll('.vh')].map(n => n.textContent)].some(t => /new (tab|window)/i.test(t));
+      const silent = [...document.querySelectorAll('a[target="_blank"]')].filter(a => !said(a));
+      if (silent.length) errors.push(`${silent.length} links open a new tab without saying so, first: ${(silent[0].textContent || silent[0].href).trim().slice(0, 60)}`);
       const probe = document.createElement('span');
       probe.style.forcedColorAdjust = 'none';
       probe.style.color = matchMedia('(forced-colors: active)').matches ? 'LinkText' : 'var(--muted)';
@@ -4122,7 +4131,7 @@ def check_external_markers(page) -> list[str]:
         if (marker.content !== '""' || !(marker.maskImage || marker.webkitMaskImage || '').includes('data:image/svg+xml')) fail('external marker is not an SVG mask');
         if (marker.backgroundColor !== colour || (marker.maskSize || marker.webkitMaskSize) !== 'contain' || (marker.maskRepeat || marker.webkitMaskRepeat) !== 'no-repeat') fail('external marker paint differs from theme');
         if (Math.abs(parseFloat(marker.width) / size - .65) > .03 || Math.abs(parseFloat(marker.height) / size - .65) > .03 || Math.abs(parseFloat(marker.marginInlineStart) / size - .2) > .03) fail('external marker size or gap differs from text scale');
-        if (link.target !== '_blank' || !link.relList.contains('noopener') || !/new (tab|window)/i.test(link.querySelector('.vh')?.textContent || '')) fail('external link lost accessible new-tab text');  // its meaning, in any wording
+        if (link.target !== '_blank' || !link.relList.contains('noopener')) fail('external link does not open in a new tab');
         if (!tail || getComputedStyle(tail).whiteSpace !== 'nowrap' || !tail.textContent.trim()) fail('external marker lost its no-wrap last word');
         if (getComputedStyle(link).display !== 'inline') return;
         const walker = document.createTreeWalker(link, NodeFilter.SHOW_TEXT);

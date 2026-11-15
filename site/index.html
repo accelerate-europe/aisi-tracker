@@ -915,6 +915,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
 </main>
 
 <footer class="gutter"><div class="measure" id="foot"></div></footer>
+<span id="opens-new-tab" hidden>opens in a new tab</span>
 <dialog class="palette" id="palette" role="dialog" aria-modal="true" aria-label="Find a state, section or action">
   <div class="palette-field"><span class="search ico i-search"><input class="field" id="palette-q" type="text" role="combobox" aria-autocomplete="list" aria-expanded="true" aria-controls="palette-list" placeholder="Find a state, section or action" aria-label="Find a state, section or action" autocomplete="off" spellcheck="false"></span></div>
   <div class="palette-list" id="palette-list" role="listbox" aria-label="Results"></div>
@@ -1169,12 +1170,12 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     return a;
   }
   function hostOf(url) { try { return new URL(url).hostname.replace(/^www\./, ""); } catch (e) { return ""; } }
-  // Every link that leaves the page opens in a new tab and says so to screen readers; stand-alone ones show a small arrow.
+  // Every link that leaves the page opens in a new tab and says so to screen readers (a citation in its label, any other link by the shared description #opens-new-tab); stand-alone ones show a small arrow.
   function externalLinks(root) {
     [].forEach.call(root.querySelectorAll('a[href^="http"]'), function (x) {
       if (x.dataset.ext) return; x.dataset.ext = "1"; x.target = "_blank"; x.rel = "noopener";
       if (x.classList.contains("cn")) { x.setAttribute("aria-label", x.getAttribute("aria-label") + ", opens in a new tab"); return; }
-      x.appendChild(el("span", "vh", " (opens in a new tab)"));
+      x.setAttribute("aria-describedby", ((x.getAttribute("aria-describedby") || "") + " opens-new-tab").trim()); // one shared description, not a hidden note in every link: the saved page stays inside the 2 MB search engines read
       if ((x.classList.contains("standalone") || x.closest(".srcs, .related")) && !x.classList.contains("archive")) {
         x.classList.add("ext");
         bindArrow(x);
