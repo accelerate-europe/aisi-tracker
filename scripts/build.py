@@ -34,7 +34,8 @@ if __package__:
     from .published import INTERVAL_KEYS, NO_ECB_RATE, budget_ratios, comparable_funding, annual_eur_estimate as annual_eur_estimate, known_activity as known_activity, output_activity_kind as output_activity_kind, publish, prepared_facts, timeline_status as timeline_status, eur_per_unit as eur_per_unit, significant as significant
     from .shared_claims import check_shared_claims, shared_claim_coverage  # type: ignore[import-not-found]
     from .method_copy import METHOD_TITLE, full_method_page
-    from .method_checks import check_method_rules, UNQUOTED_REPORT, primary_source_warnings, unquoted_claims, unquoted_report, unquoted_warnings, search_log_notes  # type: ignore[import-not-found]
+    from .method_checks import check_method_rules, UNQUOTED_REPORT, primary_source_warnings, unquoted_claims, unquoted_report, unquoted_warnings, search_log_notes, reader_text_warnings, reader_text_report  # type: ignore[import-not-found]
+    from .reader_text import READER_TEXT_REPORT  # type: ignore[import-not-found]
     from .source_origins import source_origin_report, write_source_origin_report
     from . import rereads
     from .agent_files import LICENSES, doi_url, api_files, api_landing_html, api_root, citation_cff, zenodo_json, head_links, share_tags, image_alt_text, json_ld_script, llms_txt, robots_txt, sitemap_xml, feed_xml, FEED_PATH, orientation_html, definition_markdown, public_url_errors
@@ -45,7 +46,8 @@ else:  # Direct script execution.
     from published import INTERVAL_KEYS, NO_ECB_RATE, budget_ratios, comparable_funding, annual_eur_estimate as annual_eur_estimate, known_activity as known_activity, output_activity_kind as output_activity_kind, publish, prepared_facts, timeline_status as timeline_status, eur_per_unit as eur_per_unit, significant as significant
     from shared_claims import check_shared_claims, shared_claim_coverage
     from method_copy import METHOD_TITLE, full_method_page
-    from method_checks import check_method_rules, UNQUOTED_REPORT, primary_source_warnings, unquoted_claims, unquoted_report, unquoted_warnings, search_log_notes
+    from method_checks import check_method_rules, UNQUOTED_REPORT, primary_source_warnings, unquoted_claims, unquoted_report, unquoted_warnings, search_log_notes, reader_text_warnings, reader_text_report
+    from reader_text import READER_TEXT_REPORT  # type: ignore[import-not-found, no-redef]
     from source_origins import source_origin_report, write_source_origin_report
     import rereads  # type: ignore[no-redef]
     from agent_files import LICENSES, doi_url, api_files, api_landing_html, api_root, citation_cff, zenodo_json, head_links, share_tags, image_alt_text, json_ld_script, llms_txt, robots_txt, sitemap_xml, feed_xml, FEED_PATH, orientation_html, definition_markdown, public_url_errors
@@ -1143,7 +1145,7 @@ def main() -> None:
             write_citation(path, text.encode("utf-8"))
             print(f"updated {path.relative_to(ROOT)}", file=sys.stderr)
     unquoted = unquoted_claims(d)
-    warnings = instrument_status_warnings(d, release=args.release) + late + primary_source_warnings(d) + unquoted_warnings(unquoted)
+    warnings = instrument_status_warnings(d, release=args.release) + late + primary_source_warnings(d) + unquoted_warnings(unquoted) + reader_text_warnings(d)
     warnings += [f"re-read: {line}" for line in rereads.alerts(published, rereads.load(), published["dataset"]["as_of"])]
     warnings += [f"closest body: {line}" for line in fact_pipeline.closest_body_warnings(d, published)]
     warnings += search_log_notes(d)
@@ -1158,6 +1160,10 @@ def main() -> None:
             (args.report_dir / UNQUOTED_REPORT).write_text(unquoted_report(unquoted), encoding="utf-8")
         except OSError as exc:
             print(f"warning: could not write the unquoted-claims list: {exc}", file=sys.stderr)
+        try:
+            (args.report_dir / READER_TEXT_REPORT).write_text(reader_text_report(d), encoding="utf-8")
+        except OSError as exc:
+            print(f"warning: could not write the reader-text list: {exc}", file=sys.stderr)
         try:
             origin_report = write_source_origin_report(published, args.report_dir)
         except OSError as exc:

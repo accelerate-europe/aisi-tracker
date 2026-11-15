@@ -1,5 +1,5 @@
 """Names and navigation on the saved page (test strategy D2, family 6): the section bar and group rows, institute
-and former names, and the none-identified folds, against the data. The page is read without its template's inert
+and former names, the none-identified folds and glossary terms marked once per card, against the data. The page is read without its template's inert
 copy (tests/content/page.py); before that, the section bar counted the template's group rows too.
 
 The checks are check_page.py's own, with their expectations from the data; here they read the saved, pre-rendered
@@ -15,6 +15,7 @@ FAMILY = {
     "institute names": lambda html, data: check_page.check_institute_names(html, data),
     "former names": lambda html, data: check_page.check_former_names(html, data),
     "none-identified folds": lambda html, data: check_page.check_nonidentified_folds(html, data),
+    "terms marked once": lambda html, data: check_page.check_terms_once(html, data),
 }
 
 
