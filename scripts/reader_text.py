@@ -1,5 +1,6 @@
 """Select authored dataset prose without changing recorded evidence or names."""
 
+import ast
 import re
 
 if __package__:
@@ -136,6 +137,34 @@ GLUED = re.compile(
 EACH_CONSTRUCTION = re.compile(
     r"\bthe [a-z]+ each (?!(?:year|month|week|day|time)s?\b)[a-z]+\b|\beach\b[^.;:]*?,\s+and each\b", re.I
 )
+# Status names should be defined in plain sentences, not appended as a one-word aside.
+STATUS_PARENTHESES = re.compile(r"\(\s*(?:active|assigned)\s*\)", re.I)
+
+
+def status_parentheses(text: str) -> list[str]:
+    """Find parenthesised status words within prose; a standalone label is not a sentence."""
+    hits = []
+    for sentence in re.split(r"[.!?\n]", text):
+        if re.search(r"[^\W\d_]", STATUS_PARENTHESES.sub("", sentence)):
+            hits.extend(match.group(0) for match in STATUS_PARENTHESES.finditer(sentence))
+    return hits
+
+
+def functions_copy_errors(html: str) -> list[str]:
+    """Check the flat FN_COPY string properties in the page script without executing it."""
+    string = r""""(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'"""
+    copy = re.search(r"\b(?:var|let|const)\s+FN_COPY\s*=\s*\{((?:" + string + r"|[^{}\"'])*?)\}\s*;", html)
+    if not copy:
+        return []
+    errors = []
+    for field in re.finditer(r"\b([A-Za-z_$][\w$]*)\s*:\s*(" + string + ")", copy.group(1)):
+        # These JavaScript string literals share Python's quoted-string escapes; no code is evaluated.
+        text = ast.literal_eval(field.group(2))
+        errors.extend(f"FN_COPY.{field.group(1)}: reword parenthesised status {found!r} as a plain sentence"
+                      for found in status_parentheses(text))
+    return errors
+
+
 # Dated observations of something other than our record check.
 DATED_OBSERVATIONS = {"identifier_notes"}
 
@@ -422,6 +451,8 @@ def check_reader_text(data: dict) -> list[str]:
             )
         if each := EACH_CONSTRUCTION.search(prose):
             errors.append(f"{pointer}: reword the distributive 'each' construction {each.group(0)!r}")
+        for found in status_parentheses(prose):
+            errors.append(f"{pointer}: reword parenthesised status {found!r} as a plain sentence")
         if glued := GLUED.search(prose):
             errors.append(f"{pointer}: a space is missing in {glued.group(0)!r}")
         bare = re.search(r"\b[a-z]+(?:_[a-z]+)+\b", prose, re.I)

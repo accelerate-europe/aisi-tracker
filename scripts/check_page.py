@@ -10586,6 +10586,33 @@ FN_NAMES = {"activity": "Active", "mandate": "Assigned", "both": "Assigned and a
 FN_STATUS_WORD = re.compile(r"\b(?:planned|proposed|exploring|announced)\b", re.I)
 
 
+def function_display_name(institute: dict) -> str:
+    """Full recorded name, with only a trailing parenthesised status omitted in this display."""
+    return re.sub(r"\s*\((?:planned|proposed|exploring|announced)\)$", "", institute["name"], flags=re.I)
+
+
+def function_summary(vocab: dict, counts: dict, total: int) -> str:
+    """Independent count buckets: vocabulary order within each tie, never split the third-place tie."""
+    buckets = defaultdict(list)
+    for code in vocab:
+        if counts[code]:
+            buckets[counts[code]].append(vocab[code]["short"])
+    if not buckets:
+        return ""
+    def joined(names):
+        return " and ".join(names) if len(names) < 3 else ", ".join(names[:-1]) + " and " + names[-1]
+    top = max(buckets)
+    if len(buckets[top]) > 3:
+        return f"Most common: {joined(buckets[top])} ({top} of {total} institutes each)."
+    named = []
+    for count in sorted(buckets, reverse=True):
+        if len(named) + len(buckets[count]) > 3:
+            break
+        for name in buckets[count]:
+            named.append(f"{name} ({count}" + (f" of {total} institutes)" if not named else ")"))
+    return f"Most common: {joined(named)}."
+
+
 def function_rows(data: dict) -> list[dict]:
     states = {j["id"]: j for j in data["jurisdictions"]}
     return sorted(data["institutes"], key=lambda i: (states[i["jurisdiction_id"]]["status"] != "established",
@@ -10613,11 +10640,13 @@ def function_quotes(data: dict) -> dict:
 
 def functions_structure(html: str, data: dict) -> list[str]:
     """Saved and hydrated table: order, values, accessible controls and absence of pre-rendered evidence."""
+    from reader_text import functions_copy_errors, status_parentheses
+
     soup = BeautifulSoup(html, "html.parser")
     section = soup.select_one('section[aria-labelledby="functions"]')
     if section is None:
         return ["Functions section is missing"]
-    errors = []
+    errors = functions_copy_errors(html)
     def need(ok, message):
         if not ok:
             errors.append(message)
@@ -10650,10 +10679,17 @@ def functions_structure(html: str, data: dict) -> list[str]:
     group_rows = section.select('.fn-group th')
     need([h.get_text() for h in group_rows] == ["Established", "Not yet established"], "Functions not-yet-established blocks/order differ")
     need(len(section.select('.fn-table > tbody')) == 2, "Functions needs two row blocks")
-    need(all(h.get("scope") == "rowgroup" and h.find_parent("tbody") and h.get("colspan") == str(len(columns) + 2) for h in group_rows), "Functions group scope/span differs")
+    need(all(h.get("scope") == "rowgroup" and h.find_parent("tbody") and h.get("colspan", "1") == "1" for h in group_rows), "Functions group scope/span differs")
+    for header in group_rows:
+        cells = header.parent.select(':scope > td[data-code]')
+        need([td.get("data-code") for td in cells] == columns, "Functions block band columns/order differ")
+        for n, (td, code) in enumerate(zip(cells, columns)):
+            need(td.get("aria-hidden") == "true" and not td.get_text() and not td.find(True), f"{code}: block band cell is not decorative/empty")
+            need("fn-column" in td.get("class", []) and ("fn-group-start" in td.get("class", [])) ==
+                 (n > 0 and vocab[code]["group"] != vocab[columns[n - 1]]["group"]), f"{code}: block band group gap differs")
     colgroups = section.select('.fn-table > colgroup')
     need([cg.get("span", "1") for cg in colgroups] == ["1"] + [str(sum(vocab[c]["group"] == g for c in columns)) for g in groups] + ["1"], "Functions column groups do not match the group heads")
-    for tr in section.select('.fn-table thead tr, .fn-table tbody tr[data-institute], .fn-table tfoot tr'):
+    for tr in section.select('.fn-table thead tr, .fn-table tbody tr, .fn-table tfoot tr'):
         pads = tr.select(":scope > .fn-pad")
         last = tr.find_all(["td", "th"], recursive=False)[-1:]
         need(len(pads) == 1 and last == pads and pads[0].name == "td" and pads[0].get("aria-hidden") == "true" and not pads[0].get_text(strip=True) and not pads[0].find(True),
@@ -10666,7 +10702,8 @@ def functions_structure(html: str, data: dict) -> list[str]:
         place = states[institute["jurisdiction_id"]]["name"]
         header = row.select_one('th[scope="row"]')
         heading = header.select_one('abbr.g[tabindex="0"]') if header else None
-        need(header and header.get_text() == place and heading and tip_of(heading) == institute["name"], f"{institute['id']}: row name/institute tip or count differs")
+        need(header and header.get_text() == place and heading and tip_of(heading) == function_display_name(institute), f"{institute['id']}: row name/institute tip or count differs")
+        need(not heading or not FN_STATUS_WORD.search(tip_of(heading)), f"{institute['id']}: status word in row tip")
         preceding = row.find_previous_sibling("tr", class_="fn-group")
         block_name = "Established" if states[institute["jurisdiction_id"]]["status"] == "established" else "Not yet established"
         need(preceding and preceding.get_text() == block_name, f"{institute['id']}: wrong row block")
@@ -10702,22 +10739,24 @@ def functions_structure(html: str, data: dict) -> list[str]:
     folded = section.select_one('.fn-empty')
     need(bool(folded) == bool(empty) and (not empty or folded is not None and folded.get_text() == f"No public text found at any institute yet for: {joined(empty)}."), "Functions folded empty codes differ")
     summary = section.select_one('.fn-summary')
-    marked = [c for c in columns if counts[c]]  # a column kept only for not-yet-coded values is not "least common"
+    marked = [c for c in columns if counts[c]]
     need(bool(summary) == bool(marked), "Functions summary presence differs")
     if marked and summary:
-        high, low = max(counts[c] for c in marked), min(counts[c] for c in marked)
-        most, least = [c for c in marked if counts[c] == high], [c for c in marked if counts[c] == low]
-        need(summary.get_text() == f"Most common: {joined(most)} ({high} of {len(institutes)} institutes). Least common: {joined(least)} ({low}{' each' if len(least) > 1 else ''}).", "Functions summary facts differ")
+        need(summary.get_text() == function_summary(vocab, counts, len(institutes)), "Functions summary facts differ")
         need(not any(i["name"] in summary.get_text() for i in institutes), "Functions summary names an institute")
     legend = section.select_one('ul.fn-legend[role="list"]')
     legend_values = ["activity", "mandate", "not_found"] + (["not_coded"] if wanted_counts["not_coded"] else [])
     need(legend and [(li.get("data-value"), li.get_text()) for li in legend.select("li[data-value]")] == [(v, "Blank: not found" if v == "not_found" else FN_NAMES[v]) for v in legend_values], "Functions legend differs from its two marks and absent values")
     blank_text = "A blank cell means we found no public text for it, not that the institute does not do it."
-    need([n.get_text() for n in section.select('.fn-blank')] == [blank_text, blank_text] and section.select_one('.fn-blank strong'), "Functions blank explanation missing")
+    need([n.get_text() for n in section.select('.fn-blank')] == [blank_text] and section.select_one('.fn-blank strong'), "Functions blank explanation missing or repeated")
+    need(section.get_text().count("not that the institute does not do it") == 1, "Functions blank caveat repeated")
     order = section.select_one('.fn-order')
     need(order and order.get_text() == "Rows: by the year the institute's current status began, oldest first.", "Functions row order explanation missing")
     provisional = section.select_one('.fn-provisional')
     need(provisional and provisional.get_text() == "The list of functions is provisional.", "Functions provisional line missing")
+    need(section.get_text().lower().count("provisional") == 1, "Functions provisional caveat repeated")
+    need(not status_parentheses(section.get_text(" ")), "Functions status word alone in parentheses")
+    need(not section.select('.fn-phone, .fn-phone-row, .fn-phone-detail'), "Functions phone markup was saved on desktop")
     need(not FN_STATUS_WORD.search(section.get_text(" ")), "Functions labels contain a status word")
     need(not section.select('.fn-detail-row, .fn-claim, .quote-body, blockquote'), "Functions detail was saved before a click")
     need(not any(text in section.get_text() for q in function_quotes(data).values() for text in (q["excerpt"]["text"], q["excerpt"].get("gloss")) if text), "Functions quote was pre-rendered")
@@ -10733,20 +10772,32 @@ def check_functions_table(browser, base_url: str, dist: Path, data: dict) -> lis
     hydrated(page, base_url)
     errors += ["hydrated: " + e for e in functions_structure(page.content(), data)]
     page.close()
+    saved = browser.new_page(viewport={"width": 390, "height": 900}, java_script_enabled=False)
+    saved.goto(base_url)
+    errors += saved.evaluate("""() => {
+      const errors=[], box=document.querySelector('#functions-table'), scroll=box.querySelector('.fn-scroll');
+      if(box.querySelector('.fn-phone')) errors.push('saved phone markup exists before hydration');
+      const thead=scroll && scroll.querySelector('thead');
+      if(!scroll || getComputedStyle(scroll).overflowX!=='auto' || !thead || getComputedStyle(thead).position==='sticky') errors.push('saved desktop table does not use phone scrolling fallback');
+      if(document.documentElement.scrollWidth>innerWidth+1) errors.push('saved functions table causes page overflow');
+      return errors;
+    }""")
+    saved.close()
     return errors
 
 
 def check_functions_detail(browser, base_url: str, data: dict) -> list[str]:
-    page = browser.new_page(viewport={"width": 390, "height": 900})
+    page = browser.new_page(viewport={"width": 1440, "height": 1000})
     errors = []
     page.on("pageerror", lambda error: errors.append("Functions JavaScript: " + str(error)))
     hydrated(page, base_url)
     # Every coded cell in one evaluation: no navigation or per-cell Playwright round trips.
-    errors += page.evaluate(r"""({data, quotes, names}) => {
+    errors += page.evaluate(r"""({data, quotes, names, displayNames}) => {
       const errors = [], box = document.querySelector('#functions-table'), table = box.querySelector('table');
       const institutes = Object.fromEntries(data.institutes.map(i => [i.id, i]));
       const buttons = [...table.querySelectorAll('.fn-cell')];
       const need = (ok, label) => { if (!ok) errors.push(label); };
+      /* FUNCTION_CLAIMS */
       for (const button of buttons) {
         const row = button.closest('tr'), code = button.parentElement.dataset.code;
         const institute = institutes[row.dataset.institute];
@@ -10757,35 +10808,11 @@ def check_functions_detail(browser, base_url: str, data: dict) -> list[str]:
         need(box.querySelectorAll('.fn-detail-row').length === 1 && row.nextElementSibling === detail &&
              detail.id === button.getAttribute('aria-controls') && button.getAttribute('aria-expanded') === 'true' &&
              detail.cells[0].colSpan === row.cells.length, key + ': detail placement/state differs');
-        need(detail.querySelector('.fn-detail-head')?.textContent === (institute.short_name || institute.acronym || institute.name) + ' · ' + data.dataset.vocabularies.function[code].label, key + ': institute/function heading differs');
+        need(detail.querySelector('.fn-detail-head')?.textContent === displayNames[institute.id] + ' · ' + data.dataset.vocabularies.function[code].label, key + ': institute/function heading differs');
         need(!detail.querySelector('.fn-detail-value'), key + ': detail repeats the cell value; each claim names its basis');
         // Exact evidence can itself say 'announced'; status labels may not. Never rewrite quotes or source titles.
         need(!/\b(planned|proposed|exploring|announced)\b/i.test(detail.querySelector('.fn-detail-head').textContent), key + ': status word in heading');
-        const items = [...detail.querySelectorAll('.fn-claim')];
-        need(JSON.stringify(items.map(n => n.dataset.claim)) === JSON.stringify(cell.claim_ids), key + ': claim order differs');
-        for (const id of cell.claim_ids) {
-          const item = items.find(n => n.dataset.claim === id), q = quotes[id];
-          if (!item) { errors.push(key + ': claim missing ' + id); continue; }
-          need(item.querySelector('.fn-claim-text')?.textContent === q.claim.text, key + ': claim text differs');
-          need(item.querySelector('.fn-basis')?.textContent === names[q.claim.basis].toLowerCase(), key + ': basis differs');
-          const block = item.querySelector('.quote-body > .quote-excerpt');
-          need(item.querySelectorAll('.quote-excerpt').length === 1 && block?.dataset.sourceId === q.source.id, key + ': shared quote block differs');
-          const shown = block?.querySelector(':scope > .quotation > .quote-text'), marker = block?.querySelector(':scope > .quotation > .translation');
-          need(shown?.textContent === '"' + (q.excerpt.gloss || q.excerpt.text) + '"', key + ': quote differs');
-          need(!q.excerpt.gloss || (shown?.getAttribute('aria-description') === q.excerpt.text && /^\s*translated from \S/.test(marker?.textContent || '')), key + ': translation marker or original differs');
-          need(!!q.excerpt.gloss || !marker, key + ': translation marker on an English quote');
-          const anchors = [...(block?.querySelectorAll('.quote-anchor') || [])];
-          need(anchors.length === (q.excerpt.anchors || []).length, key + ': anchor count differs');
-          (q.excerpt.anchors || []).forEach((anchor, n) => {
-            const quote = anchors[n]?.querySelector('.quote-text');
-            need(quote?.textContent === '"' + (anchor.gloss || anchor.text) + '"' && (!anchor.gloss || quote?.getAttribute('aria-description') === anchor.text), key + ': anchor quote differs');
-          });
-          need(!!block?.querySelector('.reread') === !!q.excerpt.reread, key + ': per-quote re-read line differs');
-          const reread = block?.querySelector('.reread');
-          if (reread) need(getComputedStyle(reread).display === 'block' && getComputedStyle(reread).color === getComputedStyle(item.querySelector('.fn-basis')).color, key + ': per-quote re-read line is not separate/muted');
-          const links = [...item.querySelectorAll('.fn-sources > li > a.standalone')];
-          need(JSON.stringify(links.map(a => a.href)) === JSON.stringify(q.claim.source_ids.map(sid => data.sources.find(s => s.id === sid).url)) && links.every(a => a.target === '_blank'), key + ': claim sources/order differ');
-        }
+        checkClaims(detail, cell, key);
         button.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape', bubbles: true}));
         need(!box.querySelector('.fn-detail-row') && button.getAttribute('aria-expanded') === 'false' && document.activeElement === button, key + ': Escape/focus differs');
       }
@@ -10802,7 +10829,8 @@ def check_functions_detail(browser, base_url: str, data: dict) -> list[str]:
         second.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape', bubbles: true}));
       }
       return errors;
-    }""", {"data": data, "quotes": function_quotes(data), "names": FN_NAMES})
+    }""".replace("/* FUNCTION_CLAIMS */", FN_CLAIMS_CHECK_JS), {"data": data, "quotes": function_quotes(data), "names": FN_NAMES,
+                                                           "displayNames": {i["id"]: function_display_name(i) for i in data["institutes"]}})
     if page.locator('.fn-cell').count():
         cell = page.locator('.fn-cell').first
         for key in ("Enter", " "):
@@ -10820,96 +10848,471 @@ def check_functions_detail(browser, base_url: str, data: dict) -> list[str]:
             errors.append("Functions: Escape outside the table closes the detail")
         cell.click()
     page.close()
-    context = browser.new_context(viewport={"width": 390, "height": 900}, has_touch=True, is_mobile=True)
-    page = context.new_page()
+    return errors
+
+
+FN_CLAIMS_CHECK_JS = r"""
+const checkClaims = (detail, cell, key) => {
+  const items = [...detail.querySelectorAll('.fn-claim')];
+  need(JSON.stringify(items.map(n => n.dataset.claim)) === JSON.stringify(cell.claim_ids), key + ': claim order differs');
+  for (const id of cell.claim_ids) {
+    const item = items.find(n => n.dataset.claim === id), q = quotes[id];
+    if (!item || !q) { errors.push(key + ': claim missing ' + id); continue; }
+    need(item.querySelector('.fn-claim-text')?.textContent === q.claim.text, key + ': claim text differs');
+    need(item.querySelector('.fn-basis')?.textContent === names[q.claim.basis].toLowerCase(), key + ': basis differs');
+    const block = item.querySelector('.quote-body > .quote-excerpt');
+    need(item.querySelectorAll('.quote-excerpt').length === 1 && block?.dataset.sourceId === q.source.id, key + ': shared quote block differs');
+    const shown = block?.querySelector(':scope > .quotation > .quote-text'), marker = block?.querySelector(':scope > .quotation > .translation');
+    need(shown?.textContent === '"' + (q.excerpt.gloss || q.excerpt.text) + '"', key + ': quote differs');
+    need(!q.excerpt.gloss || (shown?.getAttribute('aria-description') === q.excerpt.text && /^\s*translated from \S/.test(marker?.textContent || '')), key + ': translation marker or original differs');
+    need(!!q.excerpt.gloss || !marker, key + ': translation marker on an English quote');
+    const anchors = [...(block?.querySelectorAll('.quote-anchor') || [])];
+    need(anchors.length === (q.excerpt.anchors || []).length, key + ': anchor count differs');
+    (q.excerpt.anchors || []).forEach((anchor, n) => {
+      const quote = anchors[n]?.querySelector('.quote-text');
+      need(quote?.textContent === '"' + (anchor.gloss || anchor.text) + '"' && (!anchor.gloss || quote?.getAttribute('aria-description') === anchor.text), key + ': anchor quote differs');
+    });
+    need(!!block?.querySelector('.reread') === !!q.excerpt.reread, key + ': per-quote re-read line differs');
+    const reread = block?.querySelector('.reread');
+    if (reread) need(getComputedStyle(reread).display === 'block' && getComputedStyle(reread).color === getComputedStyle(item.querySelector('.fn-basis')).color, key + ': per-quote re-read line is not separate/muted');
+    const links = [...item.querySelectorAll('.fn-sources > li > a.standalone')];
+    need(JSON.stringify(links.map(a => a.href)) === JSON.stringify(q.claim.source_ids.map(sid => data.sources.find(s => s.id === sid).url)) && links.every(a => a.target === '_blank'), key + ': claim sources/order differ');
+  }
+};
+"""
+
+
+def function_phone_model(data: dict) -> dict:
+    """Expected phone rows and groups from the published values, including a missing code's uncoded fallback."""
+    institutes = function_rows(data)
+    states = {j["id"]: j for j in data["jurisdictions"]}
+    vocab = {code: value for code, value in data["dataset"]["vocabularies"]["function"].items() if not value.get("deprecated")}
+    lookup = {i["id"]: {row["code"]: row for row in i.get("functions", [])} for i in institutes}
+    def value(i, code):
+        return lookup[i["id"]].get(code, {"value": "not_coded", "claim_ids": []})
+    visible = [code for code in vocab if not all(value(i, code)["value"] == "not_found" for i in institutes)]
+    groups = [{"name": group, "codes": [code for code in visible if vocab[code]["group"] == group]}
+              for group in dict.fromkeys(vocab[code]["group"] for code in vocab)]
+    groups = [group for group in groups if group["codes"]]
+    columns = [code for group in groups for code in group["codes"]]
+    return {"groups": groups, "rows": [
+        {"id": i["id"], "country": states[i["jurisdiction_id"]]["name"], "name": function_display_name(i),
+         "block": "Established" if states[i["jurisdiction_id"]]["status"] == "established" else "Not yet established",
+         "functions": [{"code": code, "label": vocab[code]["label"], "group": vocab[code]["group"], **value(i, code)} for code in columns]}
+        for i in institutes]}
+
+
+def functions_phone_structure(html: str, data: dict) -> list[str]:
+    """Hydrated phone form: independent row, group, pip and accessible-control oracle."""
+    soup = BeautifulSoup(html, "html.parser")
+    box = soup.select_one('#functions-table')
+    if box is None:
+        return ["Functions phone section is missing"]
+    errors = []
+    def need(ok, message):
+        if not ok:
+            errors.append(message)
+    model = function_phone_model(data)
+    groups, expected_rows = model["groups"], model["rows"]
+    lists = box.select('.fn-phone')
+    need(len(lists) == 1 and not box.select('.fn-table, .fn-scroll'), "Functions phone must replace the desktop table")
+    if len(lists) != 1:
+        return errors
+    phone = lists[0]
+    heads = phone.select('.fn-phone-head > [data-group]')
+    need([(head.get("data-group"), head.get_text()) for head in heads] == [(g["name"], g["name"]) for g in groups], "Functions phone group heads/order differ")
+    blocks = phone.select(':scope > .fn-phone-block')
+    need([block.select_one(':scope > h3').get_text() if block.select_one(':scope > h3') else None for block in blocks] == ["Established", "Not yet established"], "Functions phone blocks/order differ")
+    rows = phone.select('.fn-phone-block > ul > li[data-institute]')
+    need([row.get("data-institute") for row in rows] == [row["id"] for row in expected_rows], "Functions phone rows/order differ")
+    for block, label in zip(blocks, ("Established", "Not yet established")):
+        need(block.select_one(':scope > ul[role="list"]'), "Functions phone block list semantics differ")
+        need([row.get("data-institute") for row in block.select(':scope > ul > li[data-institute]')] == [row["id"] for row in expected_rows if row["block"] == label], "Functions phone block membership differs")
+    controls = []
+    for row, expected in zip(rows, expected_rows):
+        key = expected["id"]
+        button = row.select_one(':scope > button.fn-phone-row')
+        need(button is not None and row.select('button') == [button], key + ': phone row must be one button')
+        if button is None:
+            continue
+        need(button.get("type") == "button" and button.get("aria-expanded") == "false" and button.get("aria-controls") and
+             button.get("aria-label") == f"{expected['country']}, {expected['name']}: show functions", key + ': phone row control/name differs')
+        controls.append(button.get("aria-controls"))
+        need(not button.select('[tabindex], button, a[href], input, select, textarea, [contenteditable="true"]'), key + ': phone row has nested focus targets')
+        country = button.select_one(':scope > span.fn-phone-country')
+        need(country and country.get_text() == expected["country"], key + ': phone country label differs')
+        need(not button.select('abbr, .g, [data-tip], [aria-description], [title]'), key + ': phone country has a tooltip')
+        need(button.get_text() == expected["country"] and not FN_STATUS_WORD.search(button.get("aria-label", "")), key + ': phone row has counts or status words')
+        pip_groups = button.select(':scope > .fn-pips')
+        need([group.get("data-group") for group in pip_groups] == [group["name"] for group in groups], key + ': phone pip groups/order differ')
+        for pips, group in zip(pip_groups, groups):
+            need(pips.get("aria-hidden") == "true", key + ': decorative phone pip group is exposed')
+            wanted = [row for row in expected["functions"] if row["group"] == group["name"]]
+            actual = pips.select(':scope > .fn-pip')
+            need([(pip.get("data-code"), pip.get("data-value")) for pip in actual] == [(row["code"], row["value"]) for row in wanted], key + ': phone pip values/order differ')
+            for pip, function in zip(actual, wanted):
+                shape = "activity" if function["value"] == "both" else function["value"]
+                need(set(pip.get("class", [])) == {"fn-pip", "fn-mark", "fn-" + shape} and pip.get("aria-hidden") == "true" and not pip.get_text(), key + '/' + function["code"] + ': phone pip mark differs')
+    need(len(set(controls)) == len(controls), "Functions phone detail controls are not unique")
+    need(not box.select('.fn-phone-detail, .fn-phone-claims, .fn-claim'), "Functions phone detail is present before opening a row")
+    legend = box.select('.fn-legend > li')
+    wanted_values = ["activity", "mandate", "not_found"]
+    if any(row["value"] == "not_coded" for institute in expected_rows for row in institute["functions"]):
+        wanted_values.append("not_coded")
+    need([li.get("data-value") for li in legend] == wanted_values, "Functions phone legend values/order differ")
+    for item, value in zip(legend, wanted_values):
+        label = "No public text found" if value == "not_found" else FN_NAMES[value]
+        need(item.get_text() == label and item.select_one('.fn-pip.fn-' + value), "Functions phone legend label/mark differs")
+    note = box.select_one('.fn-pip-note')
+    need(note and note.get_text() == "One pip per function, in the order of the groups above; tap a row for the names.", "Functions phone pip note differs")
+    need(len(box.select('.fn-blank')) == 1 and box.select_one('.fn-blank > strong'), "Functions phone blank caveat missing or repeated")
+    return errors
+
+
+# Transform the actual box, not its axis-aligned bounding rectangle. The content box
+# excludes the flag's leading padding when checking whether the head's text hits a rule.
+FN_POLYGON_JS = r"""
+  const polygon = (node, content = false) => {
+    if (node.getBoxQuads) { const q = node.getBoxQuads({box:content?'content':'border'})[0]; if (q) return [q.p1,q.p2,q.p3,q.p4]; }
+    const style = getComputedStyle(node), r = node.getBoundingClientRect(), m = new DOMMatrix(style.transform);
+    const [ox,oy] = style.transformOrigin.split(' ').map(parseFloat);
+    const transform = ([x,y]) => ({x:m.a*(x-ox)+m.c*(y-oy)+ox, y:m.b*(x-ox)+m.d*(y-oy)+oy});
+    const local = [[0,0],[node.offsetWidth,0],[node.offsetWidth,node.offsetHeight],[0,node.offsetHeight]].map(transform);
+    const left = Math.min(...local.map(p=>p.x)), top = Math.min(...local.map(p=>p.y));
+    const inset = side => parseFloat(style['border'+side+'Width']) + parseFloat(style['padding'+side]);
+    const l=inset('Left'), t=inset('Top'), right=node.offsetWidth-inset('Right'), bottom=node.offsetHeight-inset('Bottom');
+    const points = content ? [[l,t],[right,t],[right,bottom],[l,bottom]].map(transform) : local;
+    return points.map(p=>({x:p.x-left+r.left,y:p.y-top+r.top}));
+  };
+"""
+
+
+# Text polygons and painted table rules, shared by phone and desktop layout checks.
+FN_GEOMETRY = r"""() => {
+  const box = document.querySelector('#functions-table'), errors = [], labels = [], rules = [], seen = new Set();
+  const rect = r => [{x:r.left,y:r.top}, {x:r.right,y:r.top}, {x:r.right,y:r.bottom}, {x:r.left,y:r.bottom}];
+  /* FUNCTION_POLYGON */
+  const intersects = (a,b) => {
+    for (const poly of [a,b]) for (let n=0;n<poly.length;n++) {
+      const p=poly[n], q=poly[(n+1)%poly.length], length=Math.hypot(q.x-p.x,q.y-p.y);
+      if (!length) continue;
+      const axis={x:-(q.y-p.y)/length,y:(q.x-p.x)/length};
+      const project=points=>points.map(v=>v.x*axis.x+v.y*axis.y), ap=project(a),bp=project(b);
+      if (Math.min(Math.max(...ap),Math.max(...bp))-Math.max(Math.min(...ap),Math.min(...bp)) <= .3) return false;
+    }
+    return true;
+  };
+  for (const head of box.querySelectorAll('.fn-head .g')) {
+    labels.push({node:head,name:head.textContent,parts:[polygon(head,true)]}); seen.add(head);
+  }
+  const walker=document.createTreeWalker(box,NodeFilter.SHOW_TEXT);
+  while(walker.nextNode()) {
+    const node=walker.currentNode, owner=node.parentElement;
+    if (seen.has(node) || !node.textContent.trim() || owner.closest('.vh, .fn-head, script, style') ||
+        !owner.getClientRects().length || owner.closest('details:not([open])') && !owner.closest('summary')) continue;
+    const range=document.createRange(); range.selectNodeContents(node);
+    const parts=[...range.getClientRects()].filter(r=>r.width && r.height).map(rect);
+    if(parts.length) labels.push({node:owner,name:node.textContent.trim(),parts});
+    seen.add(node); // one label per text node; its wrapped line boxes are never compared with one another
+  }
+  for (const pip of box.querySelectorAll('.fn-mark')) {
+    const style=getComputedStyle(pip), r=pip.getBoundingClientRect();
+    if (r.width && r.height && (parseFloat(style.borderLeftWidth) || style.backgroundColor !== 'rgba(0, 0, 0, 0)'))
+      labels.push({node:pip,name:'mark '+(pip.dataset.code || pip.className),parts:[rect(r)]});
+  }
+  for (const cell of box.querySelectorAll('.fn-table th, .fn-table td, .fn-phone-head, .fn-phone-row')) {
+    const style=getComputedStyle(cell), r=cell.getBoundingClientRect(), bottom=parseFloat(style.borderBottomWidth);
+    if (bottom) rules.push({name:'row rule',p:rect({left:r.left,right:r.right,top:r.bottom-bottom,bottom:r.bottom})});
+    // Derive painted inset rules, including a wrong right-edge rule; do not invent a left rule from its class.
+    if (style.boxShadow !== 'none') {
+      const lengths=style.boxShadow.replace(/(?:rgba?|color)\([^)]+\)/g,'').match(/-?[\d.]+px/g)?.map(parseFloat) || [];
+      if(style.boxShadow.includes('inset') && lengths.length===4 && lengths[0] && !lengths.slice(1).some(Boolean)) {
+        const width=Math.abs(lengths[0]), left=lengths[0]>0?r.left+parseFloat(style.borderLeftWidth):r.right-parseFloat(style.borderRightWidth)-width;
+        rules.push({name:'column rule '+(cell.dataset.code || ''),p:rect({left,right:left+width,top:r.top,bottom:r.bottom})});
+      }
+    }
+  }
+  for (let n=0;n<labels.length;n++) {
+    const label=labels[n];
+    for (let k=n+1;k<labels.length;k++) {
+      const other=labels[k];
+      if(label.node===other.node || label.node.contains(other.node) || other.node.contains(label.node)) continue;
+      if(label.parts.some(a=>other.parts.some(b=>intersects(a,b)))) errors.push('text/mark collision: '+label.name+' / '+other.name);
+    }
+    for(const rule of rules) if(label.parts.some(p=>intersects(p,rule.p))) errors.push('text/mark crosses '+rule.name+': '+label.name);
+  }
+  return errors;
+}""".replace("/* FUNCTION_POLYGON */", FN_POLYGON_JS)
+
+
+def check_functions_phone(browser, base_url: str, data: dict) -> list[str]:
+    """Phone values, evidence and focus at both narrow widths, themes and text sizes; real keyboard and touch."""
+    page = browser.new_page(viewport={"width": 360, "height": 1000})
+    errors = []
+    page.on("pageerror", lambda error: errors.append("Functions phone JavaScript: " + str(error)))
     hydrated(page, base_url)
-    header = page.locator('.fn-table tbody th[scope="row"] abbr.g').first
-    header.tap()
-    if not page.locator('#tip').is_visible() or header.get_attribute('aria-description') not in page.locator('#tip').inner_text():
-        errors.append("Functions: tap on a jurisdiction does not show its institute tip")
-    if page.locator('.fn-cell').count():
-        cell = page.locator('.fn-cell').first
-        cell.tap()
-        if page.locator('.fn-detail-row').count() != 1:
-            errors.append("Functions: tap does not open a coded cell")
+    page.evaluate("document.fonts.ready")
+    payload = {"data": data, "quotes": function_quotes(data), "names": FN_NAMES, "model": function_phone_model(data)}
+    for width in (360, 390, 640):
+        page.set_viewport_size({"width": width, "height": 1000})
+        page.wait_for_selector('.fn-phone')
+        for theme in ("light", "dark"):
+            set_theme(page, theme)
+            for scale in ("100%", "110%"):
+                page.evaluate("scale => document.documentElement.style.fontSize = scale", scale)
+                page.evaluate("() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))")
+                prefix = f"phone {width}px {theme} {scale}: "
+                errors += [prefix + error for error in functions_phone_structure(page.content(), data)]
+                errors += [prefix + error for error in page.evaluate(r"""({data, quotes, names, model}) => {
+                  const errors = [], box = document.querySelector('#functions-table'), phone = box.querySelector('.fn-phone');
+                  const need = (ok, label) => { if (!ok) errors.push(label); };
+                  if (!phone) return ['phone form is missing'];
+                  /* FUNCTION_CLAIMS */
+                  const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+                  const transparent = color => color === 'transparent' || color === 'rgba(0, 0, 0, 0)';
+                  const overflow = key => {
+                    need(document.documentElement.scrollWidth <= innerWidth + 1, key + ': sideways page scroll');
+                    for (const node of [phone, ...phone.querySelectorAll('.fn-phone-row, .fn-pips, .fn-phone-detail, .fn-phone-claims')]) {
+                      if (node.scrollWidth > node.clientWidth + 1) { errors.push(key + ': sideways phone box scroll: ' + node.className); break; }
+                    }
+                  };
+                  const pip = (node, value, key, detail = false) => {
+                    if (!node) { errors.push(key + ': missing detail pip'); return; }
+                    const style = getComputedStyle(node), rect = node.getBoundingClientRect();
+                    const shape = value === 'both' ? 'activity' : value;
+                    need(node.classList.contains('fn-' + shape), key + ': pip mark differs');
+                    need(detail ? !node.hasAttribute('aria-hidden') && node.getAttribute('role') === 'img' && node.getAttribute('aria-label') === names[value] : node.getAttribute('aria-hidden') === 'true', key + ': pip accessible state differs');
+                    need(Math.abs(rect.width - 8) <= 1 && Math.abs(rect.height - (value === 'not_coded' ? 2 : 8)) <= 1, key + ': pip dimensions differ');
+                    if (value === 'activity' || value === 'both') need(!transparent(style.backgroundColor), key + ': active pip is not filled');
+                    else if (value === 'mandate' || value === 'not_found') need(transparent(style.backgroundColor) && parseFloat(style.borderLeftWidth) >= 1, key + ': pip outline missing');
+                    else need(!transparent(style.backgroundColor) && style.backgroundColor === getComputedStyle(box.querySelector('.fn-legend')).color, key + ': uncoded dash is not muted');
+                  };
+                  for (const pips of phone.querySelectorAll('.fn-pips')) {
+                    need(Math.abs(parseFloat(getComputedStyle(pips).columnGap) - 2) < .5, 'phone pip gap differs');
+                    for (const mark of pips.children) pip(mark, mark.dataset.value, mark.dataset.code);
+                  }
+                  const ring = box.querySelector('.fn-legend .fn-mandate'), empty = box.querySelector('.fn-legend .fn-not_found');
+                  need(ring && empty && getComputedStyle(ring).borderLeftColor !== getComputedStyle(empty).borderLeftColor, 'not-found outline is not fainter than Assigned');
+                  overflow('closed rows');
+                  const buttons = [...phone.querySelectorAll('.fn-phone-row')];
+                  for (const [n, button] of buttons.entries()) {
+                    const expected = model.rows[n], key = expected.id;
+                    button.focus({preventScroll: true}); button.click();
+                    const detail = phone.querySelector('.fn-phone-detail');
+                    if (!detail) { errors.push(key + ': no phone detail'); continue; }
+                    need(phone.querySelectorAll('.fn-phone-detail').length === 1 && button.nextElementSibling === detail &&
+                         detail.id === button.getAttribute('aria-controls') && button.getAttribute('aria-expanded') === 'true' &&
+                         detail.getAttribute('role') === 'region' && detail.getAttribute('aria-labelledby') === detail.querySelector('.fn-detail-head')?.id,
+                         key + ': phone detail placement/state differs');
+                    need(detail.querySelector('.fn-detail-head')?.textContent === expected.name, key + ': phone detail institute name differs');
+                    const headings = [...detail.querySelectorAll(':scope > h4')], lists = [...detail.querySelectorAll(':scope > .fn-phone-functions')];
+                    need(same(headings.map(h => h.textContent), model.groups.map(g => g.name)) && same(lists.map(l => l.dataset.group), model.groups.map(g => g.name)), key + ': phone detail groups/order differ');
+                    for (const [g, group] of model.groups.entries()) {
+                      const list = lists[g], heading = headings[g];
+                      need(list && heading && heading.nextElementSibling === list, key + ': phone detail group heading placement differs');
+                      need(same([...(list?.children || [])].map(li => li.dataset.code), group.codes), key + ': phone detail group functions/order differ');
+                    }
+                    const functions = [...detail.querySelectorAll('.fn-phone-functions > li')];
+                    need(same(functions.map(li => [li.dataset.code, li.dataset.value]), expected.functions.map(f => [f.code, f.value])), key + ': phone detail functions/values/order differ');
+                    need(!detail.querySelector('.fn-claim'), key + ': claims visible before selecting a function');
+                    for (const [k, item] of functions.entries()) {
+                      const f = expected.functions[k], label = item.querySelector(':scope > .fn-function-label');
+                      const marked = ['activity', 'mandate', 'both'].includes(f.value), labelKey = key + '/' + f.code;
+                      need(label && label.textContent === f.label && (label.tagName === 'BUTTON') === marked, labelKey + ': function label/control differs');
+                      pip(label?.querySelector('.fn-pip'), f.value, labelKey, true);
+                      if (!marked || !label) continue;
+                      need(label.getAttribute('aria-expanded') === 'false' && label.getAttribute('type') === 'button', labelKey + ': unopened function control differs');
+                      label.click();
+                      const claims = item.querySelector(':scope > .fn-phone-claims');
+                      need(claims && label.nextElementSibling === claims && claims.id === label.getAttribute('aria-controls') && label.getAttribute('aria-expanded') === 'true', labelKey + ': function claims placement/state differs');
+                      if (claims) checkClaims(claims, f, labelKey);
+                      overflow(labelKey);
+                      label.click();
+                      need(!item.querySelector('.fn-phone-claims') && label.getAttribute('aria-expanded') === 'false', labelKey + ': same function does not close claims');
+                    }
+                    need(!/\b(planned|proposed|exploring|announced)\b/i.test([...detail.querySelectorAll('.fn-detail-head, h4, .fn-function-label')].map(n => n.textContent).join(' ')), key + ': status word in phone detail labels');
+                    const escapeTarget = detail.querySelector('button.fn-function-label') || detail.querySelector(':scope > button');
+                    escapeTarget.focus({preventScroll: true});
+                    escapeTarget.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape', bubbles: true}));
+                    need(!phone.querySelector('.fn-phone-detail') && button.getAttribute('aria-expanded') === 'false' && document.activeElement === button, key + ': phone Escape/focus differs');
+                  }
+                  const [first, second] = buttons; // explicit interaction samples; every row/function is checked above
+                  if (first) {
+                    first.click(); first.click(); need(!phone.querySelector('.fn-phone-detail') && document.activeElement === first, 'same phone row does not close/return focus');
+                    first.click(); phone.querySelector('.fn-phone-detail > button').click();
+                    need(!phone.querySelector('.fn-phone-detail') && document.activeElement === first, 'phone Close does not return focus');
+                    first.click();
+                    const handled = new KeyboardEvent('keydown', {key: 'Escape', bubbles: true, cancelable: true}); handled.preventDefault(); first.dispatchEvent(handled);
+                    need(!!phone.querySelector('.fn-phone-detail'), 'handled Escape closes the phone detail');
+                    first.click();
+                  }
+                  if (first && second) {
+                    first.click(); second.click();
+                    need(phone.querySelectorAll('.fn-phone-detail').length === 1 && first.getAttribute('aria-expanded') === 'false' && second.getAttribute('aria-expanded') === 'true', 'another phone row leaves old detail open');
+                    second.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape', bubbles: true}));
+                  }
+                  return errors;
+                }""".replace("/* FUNCTION_CLAIMS */", FN_CLAIMS_CHECK_JS), payload)]
+    page.evaluate("document.documentElement.style.fontSize = '100%'")
+    if page.locator('.fn-phone-row').count():
+        row = page.locator('.fn-phone-row').first
+        for key in ("Enter", " "):
+            row.focus()
+            page.keyboard.press(key)
+            if page.locator('.fn-phone-detail').count() != 1 or row.get_attribute('aria-expanded') != 'true':
+                errors.append(f"Functions phone: real keyboard {key!r} does not open the detail")
+            function = page.locator('.fn-phone-detail button.fn-function-label').first
+            if function.count():
+                function.focus()
+                page.keyboard.press(key)
+                if function.get_attribute('aria-expanded') != 'true' or not page.locator('.fn-phone-claims').count():
+                    errors.append(f"Functions phone: real keyboard {key!r} does not open function claims")
+            page.keyboard.press('Escape')
+            if page.locator('.fn-phone-detail').count() or not row.evaluate('n => document.activeElement === n'):
+                errors.append(f"Functions phone: real Escape after {key!r} does not close/return focus")
+        row.click()
+        page.locator('#functions').evaluate("h => h.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape', bubbles: true}))")
+        if page.locator('.fn-phone-detail').count() != 1:
+            errors.append('Functions phone: Escape outside the list closes the detail')
+        # Cross the actual breakpoint in both directions while a detail is open.
+        page.set_viewport_size({"width": 641, "height": 1000})
+        page.wait_for_selector('.fn-table')
+        if page.locator('.fn-phone, .fn-detail').count():
+            errors.append('Functions phone: leaving phone width retains phone markup or detail')
+        focused = None
+        if page.locator('.fn-cell').count():
+            page.locator('.fn-cell').first.click()
+            focused = page.locator('.fn-cell').first.evaluate("n => n.closest('tr[data-institute]').dataset.institute")
+            page.locator('.fn-detail-row .fn-detail > button').focus()  # focus inside the open detail, not on the mark
+        page.set_viewport_size({"width": 640, "height": 1000})
+        page.wait_for_selector('.fn-phone')
+        if page.locator('.fn-table, .fn-scroll, .fn-detail').count():
+            errors.append('Functions phone: returning to phone width retains desktop markup or detail')
+        # Focus follows the institute across the form switch, in both directions.
+        if focused and page.evaluate("id => !!document.activeElement.closest(`li[data-institute=\"${id}\"]`) && document.activeElement.matches('.fn-phone-row')", focused) is not True:
+            errors.append('Functions phone: focus is lost when the form switches to phone')
+        page.set_viewport_size({"width": 641, "height": 1000})
+        page.wait_for_selector('.fn-table')
+        if focused and page.evaluate("id => !!document.activeElement.closest(`tr[data-institute=\"${id}\"]`)", focused) is not True:
+            errors.append('Functions phone: focus is lost when the form switches to desktop')
+        page.set_viewport_size({"width": 640, "height": 1000})
+        page.wait_for_selector('.fn-phone')
+        errors += ['phone breakpoint return: ' + error for error in functions_phone_structure(page.content(), data)]
+    page.close()
+    context = browser.new_context(viewport={"width": 390, "height": 900}, has_touch=True, is_mobile=True)
+    touch = context.new_page()
+    hydrated(touch, base_url)
+    row = touch.locator('.fn-phone-row').first
+    if row.count():
+        row.tap()
+        if touch.locator('.fn-phone-detail').count() != 1:
+            errors.append('Functions phone: touch row does not open its detail')
         else:
-            page.locator('.fn-detail > button').tap()
-            if page.locator('.fn-detail-row').count() or not cell.evaluate("n => document.activeElement === n"):
-                errors.append("Functions: touch Close does not return focus")
+            function = touch.locator('.fn-phone-detail button.fn-function-label').first
+            if function.count():
+                function.tap()
+                if function.get_attribute('aria-expanded') != 'true' or touch.locator('.fn-phone-claims').count() != 1:
+                    errors.append('Functions phone: touch function does not open claims')
+            touch.locator('.fn-phone-detail > button').tap()
+            if touch.locator('.fn-phone-detail').count() or not row.evaluate('n => document.activeElement === n'):
+                errors.append('Functions phone: touch Close does not close/return focus')
+        row.locator('.fn-phone-country').tap()  # the country is a plain span inside the row button
+        if touch.locator('.fn-phone-detail').count() != 1:
+            errors.append('Functions phone: tapping the country does not open its row')
+        else:
+            row.tap()
+            if touch.locator('.fn-phone-detail').count() or not row.evaluate('n => document.activeElement === n'):
+                errors.append('Functions phone: tapping the same row does not close/return focus')
     context.close()
     return errors
 
 
 def check_functions_layout(browser, base_url: str) -> list[str]:
-    page = browser.new_page(viewport={"width": 390, "height": 1000})
+    page = browser.new_page(viewport={"width": 1440, "height": 1000})
     hydrated(page, base_url)
     page.evaluate("document.fonts.ready")
     errors = []
-    for width in (360, 390, 1000, 1280, 1440):
+    for width in (360, 390, 640, 1000, 1280, 1440):
         page.set_viewport_size({"width": width, "height": 1000})
-        for theme in ("light", "dark"):
-            set_theme(page, theme)
-            page.locator('.fn-scroll').scroll_into_view_if_needed()
-            errors += [f"{width}px {theme}: {e}" for e in page.evaluate("""() => {
-              const errors = [], scroll = document.querySelector('.fn-scroll'), table = scroll.querySelector('table');
-              const th = table.querySelector('th[scope="row"]');
-              scroll.scrollLeft = 0;
-              if (document.documentElement.scrollWidth > innerWidth) errors.push('Functions causes sideways page scroll');
-              const heads = [...table.querySelectorAll('.fn-head .g')], groups = [...table.querySelectorAll('.fn-column-group > span')];
-              const overlaps = (a, b) => a.left < b.right - .5 && a.right > b.left + .5 && a.top < b.bottom - .5 && a.bottom > b.top + .5;
-              const track = head => { const cell = head.parentElement, rect = cell.getBoundingClientRect(), gutter = parseFloat(getComputedStyle(cell).borderLeftWidth); return {left: rect.left + gutter, width: rect.width - gutter, gutter}; };
-              for (const [n, head] of heads.entries()) {
-                const r = head.getBoundingClientRect(), cell = track(head);
-                const transform = new DOMMatrix(getComputedStyle(head).transform);
-                if (Math.abs(Math.atan2(transform.b, transform.a) * 180 / Math.PI + 60) > 5) errors.push('function head is not rotated about 60 degrees: ' + head.textContent);
-                // Rotation about left bottom leaves the bottom-left anchor on the common baseline at the column centre.
-                if (Math.abs(head.offsetLeft - cell.width / 2) > 2 || Math.abs(r.bottom - heads[0].getBoundingClientRect().bottom) > 1) errors.push('function head baseline/centre differs: ' + head.textContent);
-                if (n && head.parentElement.classList.contains('fn-group-start')) {
-                  const previous = track(heads[n - 1]);
-                  if (cell.gutter < 12 || cell.left - previous.left < previous.width + 12 || getComputedStyle(head.parentElement).boxShadow === 'none') errors.push('function group has no visible gutter/rule: ' + head.textContent);
-                }
-                // Parallel rotated labels: their axis-aligned boxes always overlap, so test the perpendicular gap between
-                // neighbouring baselines (horizontal anchor distance times sin 60 degrees) against the line height.
-                if (n) {
-                  const prev = heads[n - 1], dx = head.getBoundingClientRect().left - prev.getBoundingClientRect().left;
-                  const line = parseFloat(getComputedStyle(head).lineHeight) || parseFloat(getComputedStyle(head).fontSize) * 1.2;
-                  if (dx * Math.sin(Math.PI / 3) < line) errors.push('rotated heads overlap: ' + prev.textContent + '/' + head.textContent);
-                }
-                for (const group of groups) if (overlaps(r, group.getBoundingClientRect())) errors.push('rotated head overlaps group: ' + head.textContent + '/' + group.textContent);
-              }
-              for (const [n, group] of groups.entries()) {
-                const r = group.getBoundingClientRect(), range = document.createRange(); range.selectNodeContents(group);
-                if (new Set([...range.getClientRects()].map(r => Math.round(r.top))).size !== 1 || getComputedStyle(group).whiteSpace !== 'nowrap') errors.push('function group label wraps: ' + group.textContent);
-                if (groups[n + 1] && r.right > groups[n + 1].getBoundingClientRect().left - 2) errors.push('function group labels collide: ' + group.textContent);
-              }
-              const widths = heads.map(h => track(h).width);
-              if (widths.length && Math.max(...widths) - Math.min(...widths) > 1) errors.push('function columns have unequal widths');
-              for (const head of heads) {
-                const code = head.parentElement.dataset.code, r = head.parentElement.getBoundingClientRect();
-                for (const cell of table.querySelectorAll('td[data-code="' + code + '"]')) {
-                  const c = cell.getBoundingClientRect();
-                  if (Math.abs(c.left - r.left) > 1 || Math.abs(c.width - r.width) > 1 || cell.classList.contains('fn-group-start') !== head.parentElement.classList.contains('fn-group-start')) errors.push('function head/body gap alignment differs: ' + code);
-                }
-              }
-              const wider = table.getBoundingClientRect().width > scroll.clientWidth + 1;
-              scroll.scrollLeft = scroll.scrollWidth;
-              if (wider && scroll.scrollLeft <= 0) errors.push('wide Functions table cannot scroll');
-              if (innerWidth === 390 && !wider) errors.push('phone Functions table was squeezed to fit');
-              if (getComputedStyle(th).position !== 'sticky' || Math.abs(th.getBoundingClientRect().left - scroll.getBoundingClientRect().left) > 2) errors.push('first Functions column is not sticky');
-              const dot = getComputedStyle(document.querySelector('.fn-legend .fn-activity')), ring = getComputedStyle(document.querySelector('.fn-legend .fn-mandate'));
-              if (dot.backgroundColor === 'rgba(0, 0, 0, 0)' || parseFloat(ring.borderWidth) < 1 || ring.backgroundColor !== 'rgba(0, 0, 0, 0)') errors.push('Functions dot/ring shapes differ');
-              for (const cell of table.querySelectorAll('td[data-value="both"]')) if (!cell.querySelector('.fn-activity')) errors.push('both cell does not use the active dot');
-              for (const cell of table.querySelectorAll('td[data-value="not_found"]')) {
-                const before = getComputedStyle(cell, '::before'), painted = !['none', 'normal'].includes(before.content) && (parseFloat(before.width) > 0 || before.backgroundColor !== 'rgba(0, 0, 0, 0)');
-                if (painted || [...cell.children].some(n => !n.classList.contains('vh'))) errors.push('not-found cell is not blank');
-              }
-              if (!table.querySelector('.fn-cell')) return errors;
-              table.querySelector('.fn-cell').click();
-              const detail = table.querySelector('.fn-detail'), r = detail.getBoundingClientRect(), s = scroll.getBoundingClientRect();
-              if (getComputedStyle(detail).position !== 'sticky' || r.left < s.left - 1 || r.right > s.right + 1 || detail.scrollWidth > detail.clientWidth + 1) errors.push('Functions detail exceeds visible container');
-              detail.querySelector('button').click(); scroll.scrollLeft = 0;
-              return errors;
-            }""")]
+        page.wait_for_function("() => !!document.querySelector(innerWidth <= 640 ? '.fn-phone' : '.fn-table')")
+        for scale in (("100%", "110%") if width <= 640 else ("100%",)):
+            page.evaluate("scale => document.documentElement.style.fontSize = scale", scale)
+            for theme in ("light", "dark"):
+                set_theme(page, theme)
+                page.mouse.move(1, 1)
+                page.evaluate("document.activeElement.blur()")
+                page.locator('#functions').evaluate("n => n.closest('section').scrollIntoView({block:'start'})")
+                page.evaluate("() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))")
+                prefix = f"{width}px {theme} {scale}: "
+                errors += [prefix + e for e in page.evaluate(FN_GEOMETRY)]
+                errors += [prefix + e for e in page.evaluate(r"""() => {
+                  const errors=[], box=document.querySelector('#functions-table'), scroll=box.querySelector('.fn-scroll'), table=box.querySelector('.fn-table');
+                  if(document.documentElement.scrollWidth > innerWidth+1) errors.push('Functions causes sideways page scroll');
+                  if(!table) {
+                    for(const node of box.querySelectorAll('.fn-phone, .fn-phone *')) if(node.clientWidth && getComputedStyle(node).display !== 'inline' &&
+                        !node.closest('.vh') && node.scrollWidth > node.clientWidth+1) errors.push('phone box overflows: '+node.className);
+                    return errors;
+                  }
+                  scroll.scrollLeft=0;
+                  const heads=[...table.querySelectorAll('.fn-head')], groups=[...table.querySelectorAll('.fn-column-group > span')];
+                  const track=cell=> { const r=cell.getBoundingClientRect(), gutter=parseFloat(getComputedStyle(cell).borderLeftWidth); return {left:r.left+gutter,width:r.width-gutter,gutter}; };
+                  for(const [n,head] of heads.entries()) {
+                    const text=head.querySelector('.g'), transform=new DOMMatrix(getComputedStyle(text).transform), h=track(head);
+                    if(Math.abs(Math.atan2(transform.b,transform.a)*180/Math.PI+60)>5) errors.push('head rotation differs: '+head.dataset.code);
+                    if(Math.abs(text.offsetLeft-h.width/2)>2) errors.push('head centre differs: '+head.dataset.code);
+                    if(n && Math.abs(text.getBoundingClientRect().bottom-heads[0].querySelector('.g').getBoundingClientRect().bottom)>1) errors.push('head baseline differs: '+head.dataset.code);
+                    if(getComputedStyle(head).boxShadow !== 'none') errors.push('vertical rule drawn through a head: '+head.dataset.code);
+                    if(head.classList.contains('fn-group-start') && h.gutter<12) errors.push('group gutter too narrow');
+                    for(const cell of table.querySelectorAll('td[data-code="'+head.dataset.code+'"]')) {
+                      const c=track(cell), style=getComputedStyle(cell);
+                      if(Math.abs(c.left-h.left)>1 || Math.abs(c.width-h.width)>1) errors.push('head/body/totals column alignment differs: '+head.dataset.code);
+                      const start=n===0 || head.classList.contains('fn-group-start');
+                      if(!start && (style.boxShadow==='none' || !style.boxShadow.includes('inset'))) errors.push('missing column hairline: '+head.dataset.code);
+                      if(head.classList.contains('fn-group-start') && style.boxShadow==='none') errors.push('missing group rule: '+head.dataset.code);
+                    }
+                  }
+                  const widths=heads.map(h=>track(h).width);
+                  if(widths.length && Math.max(...widths)-Math.min(...widths)>1) errors.push('function tracks have unequal widths');
+                  for(const group of groups) {
+                    const range=document.createRange(); range.selectNodeContents(group);
+                    if(new Set([...range.getClientRects()].map(r=>Math.round(r.top))).size!==1) errors.push('group label wraps: '+group.textContent);
+                  }
+                  // Compare the actual painted shadow colours against the ground in either theme.
+                  const canvas=document.createElement('canvas'); canvas.width=canvas.height=1;
+                  const ctx=canvas.getContext('2d'), rgb=color=> {ctx.clearRect(0,0,1,1);ctx.fillStyle=color;ctx.fillRect(0,0,1,1);return [...ctx.getImageData(0,0,1,1).data].slice(0,3);};
+                  const probe=document.createElement('span'); probe.style.color='var(--ground)'; box.appendChild(probe);
+                  const ground=rgb(getComputedStyle(probe).color); probe.remove();
+                  const distance=color=>Math.hypot(...rgb(color).map((v,n)=>v-ground[n]));
+                  const shadowColor=shadow=>shadow.match(/(?:rgba?|color)\([^)]+\)/)?.[0];
+                  for(const cell of table.querySelectorAll('tbody td.fn-column:not(.fn-group-start, .fn-group-first), tfoot td.fn-column:not(.fn-group-start, .fn-group-first)')) {
+                    const style=getComputedStyle(cell), colour=shadowColor(style.boxShadow);
+                    if(!colour || distance(colour)>=distance(style.borderBottomColor)) errors.push('column hairline is not lighter than row/group rule');
+                    const lengths=style.boxShadow.replace(/(?:rgba?|color)\([^)]+\)/g,'').match(/-?[\d.]+px/g)?.map(parseFloat) || [];
+                    if(lengths.length!==4 || lengths[0]<=0 || lengths[0]>parseFloat(style.borderBottomWidth) || lengths[1] || lengths[2] || lengths[3]) errors.push('column hairline is not a thin painted left edge: '+(cell.closest('tr').dataset.institute || cell.closest('tr').className || 'totals')+'/'+cell.dataset.code+' (shadow '+style.boxShadow+'; bottom '+style.borderBottomWidth+')');
+                  }
+                  const wider=table.getBoundingClientRect().width>scroll.clientWidth+1;
+                  if(widths.length && [1280,1440].includes(innerWidth) && (wider || !scroll.classList.contains('fits'))) errors.push('desktop table does not fit/stick');
+                  if(innerWidth===1000 && (!wider || scroll.classList.contains('fits'))) errors.push('1000px table should scroll without fits');
+                  scroll.scrollLeft=scroll.scrollWidth;
+                  if(wider && scroll.scrollLeft<=0) errors.push('wide table cannot scroll');
+                  const rowHead=table.querySelector('tbody th[scope="row"]');
+                  if(getComputedStyle(rowHead).position!=='sticky' || Math.abs(rowHead.getBoundingClientRect().left-scroll.getBoundingClientRect().left)>2) errors.push('country column does not stay visible');
+                  for(const cell of table.querySelectorAll('td[data-value="not_found"]')) {
+                    const before=getComputedStyle(cell,'::before');
+                    if(!['none','normal'].includes(before.content) || [...cell.children].some(n=>!n.classList.contains('vh'))) errors.push('not-found cell is not blank');
+                  }
+                  const dot=getComputedStyle(box.querySelector('.fn-legend .fn-activity')),ring=getComputedStyle(box.querySelector('.fn-legend .fn-mandate'));
+                  if(dot.backgroundColor==='rgba(0, 0, 0, 0)' || parseFloat(ring.borderWidth)<1 || ring.backgroundColor!=='rgba(0, 0, 0, 0)') errors.push('dot/ring shapes differ');
+                  const button=table.querySelector('.fn-cell');
+                  if(button) {
+                    button.click();
+                    const detail=table.querySelector('.fn-detail'),r=detail.getBoundingClientRect(),s=scroll.getBoundingClientRect();
+                    if(getComputedStyle(detail).position!=='sticky' || r.left<s.left-1 || r.right>s.right+1 || detail.scrollWidth>detail.clientWidth+1) errors.push('detail exceeds visible container');
+                    detail.querySelector(':scope > button').click();
+                  }
+                  scroll.scrollLeft=0;
+                  return errors;
+                }""")]
     # The added Compare link must fit with the shared small-screen group-row spacing.
     page.set_viewport_size({"width": 360, "height": 1000})
     for scale in ("100%", "110%"):
@@ -10927,6 +11330,234 @@ def check_functions_layout(browser, base_url: str) -> list[str]:
                 errors.append(f"360px at {scale} text: {row['name']} group row wraps, overflows or retains separator dots ({row})")
             if row["name"] == "Compare":
                 errors.append(report_line(f"360px at {scale} text: Compare group row has {row['room']}px left"))
+    page.close()
+    return errors
+
+
+def check_functions_sticky(browser, base_url: str) -> list[str]:
+    page = browser.new_page(viewport={"width": 1280, "height": 1000})
+    hydrated(page, base_url)
+    page.evaluate("document.fonts.ready")
+    errors = []
+    for width in (1280, 1440, 1000):
+        page.set_viewport_size({"width": width, "height": 1000})
+        page.locator('.fn-table tbody tr[data-institute]').last.evaluate("n => window.scrollBy(0, n.getBoundingClientRect().bottom - innerHeight + 80)")
+        page.evaluate("() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))")
+        errors += [f"{width}px: {error}" for error in page.evaluate("""() => {
+          const errors=[], scroll=document.querySelector('.fn-scroll'), table=scroll.querySelector('table');
+          const heads=[...table.querySelectorAll('.fn-head')], fits=scroll.classList.contains('fits');
+          if(innerWidth===1000) {
+            if(fits || getComputedStyle(table.tHead).position==='sticky') errors.push('scrolling table has sticky heads');
+            return errors;
+          }
+          if(!fits) errors.push('fitting table lacks fits');
+          // The whole head sticks as one layer on the ground; its cells stay transparent so no cell covers a neighbour's rotated label.
+          const thead=getComputedStyle(table.tHead);
+          if(thead.position!=='sticky' || thead.backgroundColor==='rgba(0, 0, 0, 0)') errors.push('head is not one sticky layer on the ground');
+          const bars=table.closest('.group').querySelector('.group-nav').getBoundingClientRect().bottom;
+          const height=table.tHead.rows[0].getBoundingClientRect().height;
+          for(const label of table.querySelectorAll('.fn-column-group')) {
+            if(Math.abs(label.getBoundingClientRect().top-bars)>2) errors.push('group-label row not stuck below bars');
+          }
+          for(const head of heads) {
+            const r=head.getBoundingClientRect(), cell=table.querySelector('tbody td[data-code="'+head.dataset.code+'"]'), c=cell.getBoundingClientRect();
+            if(Math.abs(r.top-bars-height)>2) errors.push('rotated-head row not stuck below group labels: '+head.dataset.code);
+            if(Math.abs(r.left-c.left)>1 || Math.abs(r.width-c.width)>1) errors.push('sticky column shifted: '+head.dataset.code);
+            if(getComputedStyle(head).backgroundColor!=='rgba(0, 0, 0, 0)' && !head.classList.contains('fn-col-lit')) errors.push('head cell paints its own background over its neighbours: '+head.dataset.code);
+          }
+          const rows=[...table.querySelectorAll('tbody tr[data-institute]')], last=rows[rows.length-1].getBoundingClientRect();
+          if(last.bottom>innerHeight || last.top<bars+height) errors.push('last body row is not visible during sticky check');
+          return errors;
+        }""")]
+    page.close()
+    return errors
+
+
+def check_functions_tint(browser, base_url: str) -> list[str]:
+    """Every column's painted band, gutter boundaries and rotated flag, by hover and keyboard focus."""
+    page = browser.new_page(viewport={"width": 1280, "height": 1000})
+    hydrated(page, base_url)
+    page.evaluate("document.fonts.ready")
+    errors = []
+    codes = page.locator('.fn-table .fn-head').evaluate_all("nodes => nodes.map(n => n.dataset.code)")
+    if not codes:
+        page.close()
+        return ["Functions tint has no columns to exercise"]
+
+    def inspect(cell, active):
+        return cell.evaluate(r"""(cell, active) => {
+          const table=cell.closest('table'), errors=[], row=cell.parentElement, code=cell.dataset.code;
+          /* FUNCTION_POLYGON */
+          const transparent = colour => colour==='transparent' || colour==='rgba(0, 0, 0, 0)';
+          const close = (a,b,tolerance=.5) => Math.abs(a-b)<=tolerance;
+          const probe=document.createElement('span'); table.parentElement.appendChild(probe);
+          probe.style.backgroundColor='var(--ground)'; const ground=getComputedStyle(probe).backgroundColor;
+          probe.style.backgroundColor='var(--fn-tint)'; const tint=getComputedStyle(probe).backgroundColor; probe.remove();
+          const canvas=document.createElement('canvas'); canvas.width=canvas.height=1;
+          const ctx=canvas.getContext('2d'), rgba=colour=> {
+            ctx.clearRect(0,0,1,1); ctx.fillStyle=colour; ctx.fillRect(0,0,1,1);
+            return [...ctx.getImageData(0,0,1,1).data].join(',');
+          };
+          if(transparent(tint) || rgba(tint)===rgba(ground)) errors.push('tint does not differ from ground');
+          const paddingBox = node => {
+            const r=node.getBoundingClientRect(), s=getComputedStyle(node);
+            return {left:r.left+parseFloat(s.borderLeftWidth),right:r.right-parseFloat(s.borderRightWidth),
+                    top:r.top+parseFloat(s.borderTopWidth),bottom:r.bottom-parseFloat(s.borderBottomWidth)};
+          };
+          // Derive the painted box from computed clipping, including the transparent group border.
+          const paintBox = node => {
+            const s=getComputedStyle(node), r=node.getBoundingClientRect(), p=paddingBox(node);
+            if(s.backgroundClip==='padding-box') return p;
+            if(s.backgroundClip==='content-box') return {left:p.left+parseFloat(s.paddingLeft),right:p.right-parseFloat(s.paddingRight)};
+            return r;
+          };
+          const bridge = node => {
+            const style=getComputedStyle(node,'::after'), p=paddingBox(node), r=node.getBoundingClientRect();
+            const left=p.left+parseFloat(style.left), right=p.right-parseFloat(style.right);
+            const bottom=p.bottom-parseFloat(style.bottom), top=bottom-parseFloat(style.height);
+            if(style.content==='none' || style.position!=='absolute' || style.transform!=='none' || style.backgroundColor!==tint ||
+               !close(left,p.left) || !close(right,p.right) || !close(top,p.bottom) || !close(bottom,r.bottom))
+              errors.push('bottom rule is not bridged within the padding box: '+node.dataset.code);
+          };
+          const wanted=active?[...table.querySelectorAll('[data-code]')].filter(n=>n.dataset.code===code):[];
+          const actual=[...table.querySelectorAll('.fn-col-lit')];
+          if(actual.length!==wanted.length || actual.some(n=>!wanted.includes(n))) errors.push('wrong column tinted');
+          const litRows=[...table.querySelectorAll('.fn-row-lit')];
+          if(active ? litRows.length!==1 || litRows[0]!==row : litRows.length) errors.push('wrong row tinted');
+          const bands=[...table.querySelectorAll('tbody > tr.fn-group')];
+          if(bands.length!==2) errors.push('missing block bands');
+          const allRows=[...table.querySelectorAll('tbody > tr, tfoot > tr')];
+          let previousBottom=table.tHead.getBoundingClientRect().bottom, previousFromHead=true;
+          for(const r of allRows) {
+            const key=r.dataset.institute || (r.classList.contains('fn-group') ? r.textContent.trim() : 'totals');
+            const segments=[...r.querySelectorAll(':scope > td[data-code]')];
+            if(segments.filter(n=>n.dataset.code===code).length!==1) errors.push(key+': missing column segment');
+            for(const segment of segments) {
+              const style=getComputedStyle(segment), selected=active && segment.dataset.code===code;
+              const rowTint=active && r===row, painted=style.backgroundColor;
+              if(selected || rowTint) {
+                if(painted!==tint) errors.push(key+'/'+segment.dataset.code+': tint not painted');
+                const p=paddingBox(segment), b=paintBox(segment);
+                if(!rowTint && (style.backgroundClip!=='padding-box' || !close(b.left,p.left) || !close(b.right,p.right)))  // the lit row's own cell carries the row band across the gutter
+                  errors.push(key+'/'+segment.dataset.code+': tint escapes the cell padding box');
+              } else if(!transparent(painted) && painted!==ground) errors.push(key+'/'+segment.dataset.code+': unrelated cell tinted');
+              if(selected) {
+                const rect=segment.getBoundingClientRect();
+                if(style.boxShadow!=='none') errors.push(key+': rule interrupts column tint');
+                bridge(segment);
+                // While the sticky head is pinned away from the body (after focus scrolled the page), its joint to the
+                // first band is not adjacent; every other joint is still checked, and the hover passes check this one.
+                const headDetached=previousFromHead && table.tHead.getBoundingClientRect().top-table.getBoundingClientRect().top>1;  // the head is actually displaced from the table's top (pinned), not merely sticky-capable
+                if(!headDetached && !close(rect.top,previousBottom)) errors.push(key+': gap in column tint');
+                previousFromHead=false;
+                previousBottom=rect.bottom;
+              }
+            }
+          }
+          if(active && [...row.children].some(n=>getComputedStyle(n).backgroundColor!==tint)) errors.push('row tint not painted consistently');
+          for(const head of table.querySelectorAll('.fn-head')) {
+            const flag=head.querySelector('.fn-head-flag'), selected=active && head.dataset.code===code;
+            if(!flag) { errors.push('head flag missing: '+head.dataset.code); continue; }
+            const style=getComputedStyle(flag);
+            if(!selected) {
+              if(!transparent(style.backgroundColor)) errors.push('unrelated head flag tinted: '+head.dataset.code);
+              continue;
+            }
+            if(style.backgroundColor!==tint) errors.push('head flag does not share column tint');
+            if(!close(flag.offsetHeight,parseFloat(style.lineHeight),1)) errors.push('head flag is not a line-height band');
+            const points=polygon(flag), foot=points[3], end=points[2], p=paddingBox(head), baseline=head.getBoundingClientRect().bottom;
+            if(!close(foot.x,(p.left+p.right)/2,2) || !close(foot.y,baseline,2)) errors.push('head flag does not start at column centre/baseline');
+            if(Math.abs(Math.atan2(end.y-foot.y,end.x-foot.x)*180/Math.PI+60)>2 || end.y>=foot.y) errors.push('head flag does not follow rotated label');
+            bridge(head);
+          }
+          return errors;
+        }""".replace("/* FUNCTION_POLYGON */", FN_POLYGON_JS), active)
+
+    for width in (1280, 1440):
+        page.set_viewport_size({"width": width, "height": 1000})
+        for theme in ("light", "dark"):
+            set_theme(page, theme)
+            for code in codes:
+                prefix = f"{width}px {theme} {code}: "
+                # Every column, including the first and last in every group; blanks also respond to hover.
+                cells = page.locator(f'.fn-table tbody tr[data-institute] > td[data-code="{code}"]')
+                cell = cells.first
+                cell.hover()
+                errors += [prefix + "hover: " + e for e in inspect(cell, True)]
+                page.mouse.move(1, 1)
+                errors += [prefix + "pointer out: " + e for e in inspect(cell, False)]
+                marked = cells.filter(has=page.locator('.fn-cell'))
+                if not marked.count():  # a wholly uncoded column has no keyboard control
+                    continue
+                cell = marked.first
+                button = cell.locator('.fn-cell')
+                # Tab to this control from its preceding focus target; do not emulate focus with an event.
+                button.evaluate("""button => {
+                  const controls=[...button.closest('table').querySelectorAll('button, [tabindex="0"]')];
+                  controls[controls.indexOf(button)-1].focus({preventScroll:true});
+                }""")
+                page.keyboard.press("Tab")
+                if not button.evaluate("n => n===document.activeElement"):
+                    errors.append(prefix + "keyboard did not reach cell")
+                errors += [prefix + "focus: " + e for e in inspect(cell, True)]
+                cell.hover()
+                page.mouse.move(1, 1)
+                errors += [prefix + "focus after pointer out: " + e for e in inspect(cell, True)]
+                button.evaluate("n => n.blur()")
+                errors += [prefix + "focus out: " + e for e in inspect(cell, False)]
+            empty = page.locator('.fn-table tbody td[data-value="not_found"]').first
+            if empty.count():
+                empty.hover()
+                errors += [f"{width}px {theme} blank hover: " + e for e in inspect(empty, True)]
+                page.mouse.move(1, 1)
+    # The owner's three hover remarks, at a fitting and a scrolling width, light and dark: (1) above the rule under
+    # the heads only the flag, never an upright band, and the flag clears its neighbours' labels; (2) the row band is
+    # unbroken across group gutters; (3) the scroll box's ring shows for keyboard focus only.
+    for width in (1000, 1280):
+        page.set_viewport_size({"width": width, "height": 1000})
+        for theme in ("light", "dark"):
+            set_theme(page, theme)
+            cell = page.locator('.fn-table tbody tr[data-institute] td.fn-group-start .fn-cell').first
+            page.locator('.fn-table').evaluate("t => window.scrollTo(0, t.getBoundingClientRect().top + scrollY - 200)")  # head unpinned
+            cell.hover()
+            errors += [f"{width}px {theme} unpinned joint: {e}" for e in page.evaluate("""() => {
+              const table=document.querySelector('.fn-table'), lit=table.querySelector('tbody .fn-col-lit');
+              if(!lit) return ['no column lit'];
+              if(table.tHead.getBoundingClientRect().top-table.getBoundingClientRect().top>1) return ['head pinned in the unpinned pass'];
+              const band=table.querySelector('tbody tr.fn-group [data-code="'+lit.dataset.code+'"]');
+              return Math.abs(band.getBoundingClientRect().top-table.tHead.getBoundingClientRect().bottom)>0.5 ? ['gap between head and first band'] : [];
+            }""")]
+            errors += [f"{width}px {theme} hover shape: {e}" for e in page.evaluate("""() => {
+              const errors=[], table=document.querySelector('.fn-table'), lit=table.querySelector('tbody .fn-col-lit');
+              if(!lit) return ['no column lit'];
+              const code=lit.dataset.code, head=table.querySelector('thead .fn-head[data-code="'+code+'"]');
+              const transparent=c=>c==='rgba(0, 0, 0, 0)' || c==='transparent';
+              if(!transparent(getComputedStyle(head).backgroundColor)) errors.push('upright band in the head cell above the rule');
+              const flag=head.querySelector('.fn-head-flag'), heads=[...table.querySelectorAll('thead .fn-head .fn-head-flag')], n=heads.indexOf(flag);
+              const thick=flag.offsetHeight;
+              for(const other of [heads[n-1], heads[n+1]].filter(Boolean)) {
+                const dx=Math.abs(other.getBoundingClientRect().left-flag.getBoundingClientRect().left);
+                if(dx*Math.sin(Math.PI/3) < thick) errors.push('flag reaches a neighbouring label: '+other.textContent);
+              }
+              const row=table.querySelector('tr.fn-row-lit'), cells=[...row.children].filter(c=>!c.classList.contains('fn-pad'));
+              for(let k=1;k<cells.length;k++) {
+                const a=cells[k-1].getBoundingClientRect(), b=cells[k].getBoundingClientRect(), st=getComputedStyle(cells[k]);
+                if(Math.abs(b.left-a.right)>0.5 || st.backgroundClip!=='border-box' || transparent(st.backgroundColor)) { errors.push('row band breaks before '+(cells[k].dataset.code||'cell')); break; }
+              }
+              return errors;
+            }""")]
+            page.mouse.move(1, 1)
+            scroll = page.locator('.fn-scroll')
+            page.locator('.fn-table tfoot th').click()  # a plain label inside the box: the click focuses the scroll box itself
+            if scroll.evaluate("n => document.activeElement !== n"):
+                errors.append(f"{width}px {theme}: a click inside the table did not focus the scroll box (ring check would be vacuous)")
+            elif scroll.evaluate("n => getComputedStyle(n).outlineStyle !== 'none'"):
+                errors.append(f"{width}px {theme}: scroll box shows a focus ring after a mouse click")
+            page.locator('#functions-table details > summary').focus()  # the focus target just before the scroll box
+            page.keyboard.press("Tab")
+            if not scroll.evaluate("n => document.activeElement === n && getComputedStyle(n).outlineStyle !== 'none'"):
+                errors.append(f"{width}px {theme}: scroll box has no focus ring for keyboard focus")
+            page.evaluate("() => document.activeElement && document.activeElement.blur()")
     page.close()
     return errors
 
@@ -10949,6 +11580,9 @@ def browser_jobs(dist: Path, data: dict, screenshots: Path | None) -> list[tuple
         ("interactions", check_functions_table, (dist, data)),
         ("interactions", check_functions_detail, (data,)),
         ("interactions", check_functions_layout, ()),
+        ("interactions", check_functions_phone, (data,)),
+        ("interactions", check_functions_sticky, ()),
+        ("interactions", check_functions_tint, ()),
         ("interactions", check_funding_edges, (data,)),
         ("interactions", check_funding_large_text, ()),
         ("interactions", check_published_amount_fallback, (data,)),

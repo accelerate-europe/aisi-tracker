@@ -27,7 +27,7 @@
 <!-- build:head -->
 <style>
 /* Design principles
- * Functions table: institute rows in established and not-yet-established blocks, function columns in vocabulary groups, equal widths and rotated short heads. Active and both use a dot, assigned a ring; not found is blank, a search result rather than absence. The jurisdiction column stays visible during sideways scrolling. Quotes and sources open on demand below the selected institute (check_page check_functions_table, check_functions_detail, check_functions_layout).
+ * Functions table: institute rows in established and not-yet-established blocks, function columns in vocabulary groups, equal widths and rotated short heads. Active and both use a dot, assigned a ring; not found is blank, a search result rather than absence. The jurisdiction column stays visible during sideways scrolling. Hover and focus tint the row and one continuous column through the block bands and totals, with a rotated flag behind its head; group gutters stay clear. Quotes and sources open on demand below the selected institute (check_page check_functions_table, check_functions_detail, check_functions_layout, check_functions_tint).
  * Method: owner-owned reader summaries link to the full editorial rules on a separate page; rule anchors stay stable.
  * Type: title, label, body, meta, figure only, label, body and meta fixed up to 1200px and growing to their wide-screen sizes at 1440px, so the table and cards keep their 1100px fit; figure and title grow from phone width; shared size, weight, family and role-specific line height. The headline is the figure role with only its numbers at figure weight, its words at body weight.
  * Measure: running text (p, ul, ol) stops at one prose measure, so stacked siblings wrap at the same width; chart furniture and footer meta lines run full width as a whole (check_page check_text_measure).
@@ -638,24 +638,36 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
 .download-menu .popover > :hover { background: var(--highlight-fill); }
 
 /* Functions table (Compare) */
-.fn { min-width: 0; display: flex; flex-direction: column; gap: var(--gap-row); }
+.fn { --fn-hairline: color-mix(in srgb, var(--line) 65%, var(--ground)); --fn-tint: color-mix(in srgb, var(--highlight-fill) 55%, var(--ground)); min-width: 0; display: flex; flex-direction: column; gap: var(--gap-row); }
 .fn-scroll { position: relative; max-width: 100%; overflow-x: auto; container-type: inline-size; } /* positioned, so the cells' visually hidden text is clipped here and does not widen the page */
+.fn-scroll.fits { overflow: visible; container-type: normal; }
+.fn-scroll.fits thead { position: sticky; top: calc(var(--secnav-height, var(--secnav-default)) + var(--groupnav-offset, 0px)); z-index: 3; background: var(--ground); } /* the whole head sticks as one layer: cells stay transparent, so no cell paints over its neighbour's rotated label */
+.fn-scroll.fits .fn-detail { width: 100%; max-width: 100%; }
 .fn-table { border-collapse: separate; border-spacing: 0; width: max-content; font: var(--type-meta); }
 .fn-table .fn-pad { width: 6rem; min-width: 6rem; padding: 0; } /* an empty last column: room for the last rotated head, and the detail row reaches the scroll edge */
-.fn-table th, .fn-table td { position: relative; box-sizing: border-box; padding: var(--sp-2) 0; border-bottom: var(--rule) solid var(--line); text-align: center; vertical-align: middle; }
+.fn-table tr > :is(th, td) { position: relative; box-sizing: border-box; padding: var(--sp-2) 0; border-bottom: var(--rule) solid var(--line); text-align: center; vertical-align: middle; } /* keep the last row of each block and the totals ruled, overriding the shared table's last-row reset */
 .fn-table thead th { vertical-align: bottom; overflow-wrap: normal; hyphens: none; font: var(--type-meta); }
 .fn-table .fn-corner, .fn-table th[scope="row"] { width: 10rem; min-width: 10rem; padding-right: var(--sp-2); position: sticky; left: 0; z-index: 2; background: var(--ground); text-align: left; overflow-wrap: normal; }
 .fn-table th[scope="row"] { font: var(--type-body); } /* an assigned role (principle: Type), like the state names in Compare's lists */
-.fn-table .fn-column { box-sizing: content-box; width: 2.75rem; min-width: 2.75rem; max-width: 2.75rem; } /* equal function tracks; the group gutter is outside this width */
+.fn-table .fn-column { box-sizing: content-box; width: 2.4rem; min-width: 2.4rem; max-width: 2.4rem; } /* equal function tracks; the group gutter is outside this width */
 .fn-table .fn-head { height: 10rem; }
-.fn-head .g { position: absolute; left: 50%; bottom: var(--sp-2); white-space: nowrap; transform: rotate(-60deg); transform-origin: left bottom; }
+.fn-head .g { position: absolute; left: 50%; bottom: calc(-1 * var(--rule)); padding-left: var(--sp-1); white-space: nowrap; transform: rotate(-60deg); transform-origin: left bottom; color: var(--muted); } /* the flag's foot meets the column; its small leading inset keeps the text clear of the rule */
 .fn-table .fn-column-group { text-align: left; height: 1.75rem; padding: 0; }
 .fn-column-group > span { position: absolute; left: var(--sp-2); bottom: var(--sp-1); white-space: nowrap; } /* one line, and never widens its columns */
-.fn-table .fn-group-start { border-left: 1.5rem solid transparent; box-shadow: inset var(--rule) 0 var(--line); } /* an extra gutter and thin rule, shared by heads, cells and totals */
+.fn-table .fn-group-start { border-left: 1.75rem solid transparent; background-clip: padding-box; } /* the gutter continues through the heads, but its rule starts below them */
+.fn-table :is(tbody, tfoot) .fn-group-start { box-shadow: inset var(--rule) 0 var(--line); }
+.fn-table :is(tbody, tfoot) .fn-column:not(.fn-group-start, .fn-group-first) { box-shadow: inset var(--rule) 0 var(--fn-hairline); }
+.fn-table thead > tr:first-child > * { border-bottom: 0; }
 .fn-table .fn-column-group.fn-group-start { padding-left: var(--sp-2); }
-.fn-table .fn-group th { padding-top: var(--sp-4); text-align: left; font: var(--type-label); }
-.fn-group span { position: sticky; left: var(--sp-1); }
-.fn-table tr[data-institute]:is(:hover, :focus-within) > :is(th, td) { background: var(--highlight-fill); }
+.fn-table .fn-group th { padding-top: var(--sp-4); text-align: left; font: var(--type-label); width: 10rem; min-width: 10rem; position: sticky; left: 0; z-index: 2; background: var(--ground); }
+.fn-group span { white-space: nowrap; }
+.fn-table tr.fn-row-lit > :is(th, td), .fn-table :is(tbody, tfoot) .fn-col-lit { background-color: var(--fn-tint); }
+.fn-table :is(tbody, tfoot) .fn-column { background-clip: padding-box; } /* tint and inset rules start after the transparent group gutter */
+.fn-table :is(tbody, tfoot) .fn-column.fn-col-lit { box-shadow: none; }
+.fn-table .fn-column.fn-col-lit::after { content: ""; position: absolute; left: 0; right: 0; bottom: calc(-1 * var(--rule)); height: var(--rule); background: var(--fn-tint); pointer-events: none; } /* bridge the bottom rule only across the padding box, avoiding a coloured border join in the group gutter */
+.fn-head.fn-col-lit .fn-head-flag { background-color: var(--fn-tint); }
+.fn-table tr.fn-row-lit > :is(th, td) { background-clip: border-box; } /* the row band runs unbroken across the group gutters; a column's own tint stays in its padding box */
+.fn-scroll:focus:not(:focus-visible) { outline: none; } /* the box's ring is for keyboard focus only */
 .fn-table tfoot th, .fn-table tfoot td { color: var(--muted); font-variant-numeric: tabular-nums; }
 .fn-cell { display: inline-flex; align-items: center; justify-content: center; width: 100%; min-height: var(--hit); padding: 0; border: 0; background: transparent; color: var(--ink); cursor: pointer; }
 .fn-mark { display: inline-block; flex: 0 0 auto; width: .8rem; height: .8rem; vertical-align: middle; border-radius: 50%; color: var(--st-est-edge); }
@@ -676,6 +688,29 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
 .fn-sources { list-style: none; padding: 0; margin-top: var(--sp-2); }
 .fn-sources .reread { display: none; } /* the quote block above already carries the quotation's re-read line (principle: Re-read line) */
 .fn-detail > button { margin-top: var(--sp-4); }
+/* One phone form after hydration; rows and group headings share the same tracks. */
+.fn-phone-head, .fn-phone-row { display: grid; grid-template-columns: var(--fn-tracks); column-gap: var(--sp-1); align-items: center; }
+.fn-phone-head { font: var(--type-meta); color: var(--muted); align-items: end; padding-bottom: var(--sp-3); border-bottom: var(--rule) solid var(--line); }
+.fn-phone-head > span { min-width: 0; overflow-wrap: anywhere; hyphens: auto; text-align: center; } /* phones hyphenate ("Eco-system"); a forced break only where no hyphenation dictionary exists, never a sideways scroll */
+.fn-phone-block > h3 { font: var(--type-label); padding-block: var(--sp-4) var(--sp-2); }
+.fn-phone-block > ul { list-style: none; padding: 0; margin: 0; max-width: none; }
+.fn-phone-row { width: 100%; min-height: var(--hit); padding: var(--sp-3) 0; border: 0; border-bottom: var(--rule) solid var(--line); background: transparent; color: var(--ink); font: var(--type-body); text-align: left; cursor: pointer; }
+.fn-phone-country { min-width: 0; overflow-wrap: normal; }
+.fn-pips { display: flex; justify-content: center; gap: 2px; min-width: 0; }
+.fn-pip { width: 8px; height: 8px; box-sizing: border-box; }
+.fn-pip.fn-mandate { border-width: 1.5px; }
+.fn-pip.fn-not_found { border: 1px solid color-mix(in srgb, var(--muted) 55%, var(--ground)); }
+.fn-pip.fn-not_coded { height: 2px; align-self: center; }
+.fn-phone-detail { position: static; width: 100%; max-width: 100%; }
+.fn-phone-functions { list-style: none; padding: 0; margin: 0; max-width: none; }
+.fn-phone-detail h4 { margin-top: var(--sp-4); }
+.fn-function-label { display: flex; align-items: center; gap: var(--sp-2); min-height: var(--hit); padding: var(--sp-2) 0; font: var(--type-body); color: var(--ink); }
+button.fn-function-label { width: 100%; background: transparent; border: 0; text-align: left; cursor: pointer; }
+.fn-phone-claims { margin-block: var(--sp-2) var(--sp-4); }
+@media (max-width: 640px) {
+  html[data-prerendered] .fn-scroll.fits { overflow-x: auto; container-type: inline-size; }
+  html[data-prerendered] .fn-scroll.fits thead { position: static; }
+}
 /* Funding: common zero-based scale, with the full records in folds */
 .fund-axis { font: var(--type-meta); display: grid; grid-template-columns: minmax(10rem, 1fr) minmax(12.5rem, 1.5fr) 11rem; gap: var(--sp-1) var(--sp-6); align-items: first baseline; color: var(--muted); border-bottom: var(--rule) solid var(--line); padding-bottom: var(--sp-3); } /* the funding rows' tracks, so the scale sits over the bars */
 .fund-key { display: flex; flex-wrap: wrap; gap: var(--sp-1) var(--sp-4); align-items: first baseline; }
@@ -2993,24 +3028,27 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     // Functions table (Compare)
     (function () {
       var FN_COPY = {
-        intro: "Which of the {count} functions on a provisional list each institute's public texts report it doing (active) or give it (assigned). Select a mark for its quote and source.",
+        intro: "Which of {count} functions each institute is active in or has been assigned. Select a mark to see the quote and source.",
+        intro_phone: "Which of {count} functions each institute is active in or has been assigned. Tap a country to see its functions, then a function for its quote and source.",
         blank: "A blank cell means we found no public text for it, not that the institute does not do it.",
         prevalence: "Institutes with it",
         rows: "Rows: by the year the institute's current status began, oldest first.",
-        summary: "Most common: {most} ({mostCount} of {total} institutes). Least common: {least} ({leastCount}{each}).",
-        each: " each", empty: "No public text found at any institute yet for: {functions}.",
+        summary: "Most common: {functions}.", summary_first: "{function} ({count} of {total} institutes)", summary_next: "{function} ({count})", summary_tied: "{functions} ({count} of {total} institutes each)",
+        empty: "No public text found at any institute yet for: {functions}.",
         how_title: "How this is coded",
-        how: "We read each institute's founding, legal and plan texts and its own published work, and recorded a function only where a quote meets that function's test (hover a function's name for the test). {assigned} means a government text gives the institute the function; {active} means a public text reports the institute doing it. Not found means we found no such quote (most recent coding: {date}). It does not mean the institute does not do it. The list of functions is provisional and may change in a minor release. Each institute's values are in functions.csv and claims.csv under {data}.",
+        how: "We read each institute's founding, legal and plan texts and its own published work, and recorded a function only where a quote meets that function's test. {active}: a public text reports the institute doing it. {assigned}: a government text gives it the function. Most recent coding: {date}. Each institute's values are in functions.csv and claims.csv under {data}.",
         data: "Data", caption: "Functions by institute", institute: "Institute", scroll_hint: "Scrolls sideways",
         established: "Established", not_found: "not found", blank_legend: "Blank: not found", not_coded: "not yet coded",
-        provisional: "The list of functions is provisional.", close: "Close"
+        provisional: "The list of functions is provisional.", close: "Close",
+        pips: "One pip per function, in the order of the groups above; tap a row for the names.",
+        show: "{country}, {institute}: show functions", phone_not_found: "No public text found"
       };
       var names = { activity: ACTIVITY_WORDS.active, mandate: ACTIVITY_WORDS.assigned, both: ACTIVITY_WORDS.both, not_found: FN_COPY.not_found, not_coded: FN_COPY.not_coded };
       var box = $("functions-table"), vocab = m.vocabularies.function || {};
       var codes = Object.keys(vocab).filter(function (code) { return !vocab[code].deprecated; });
       var groups = []; codes.forEach(function (code) { if (groups.indexOf(vocab[code].group) < 0) groups.push(vocab[code].group); });
       function pending(i) { return J[i.jurisdiction_id].status !== "established"; }
-      function shortName(i) { return i.short_name || i.acronym || i.name; }
+      function displayName(i) { return i.name.replace(/\s*\((?:planned|proposed|exploring|announced)\)$/i, ""); } // only the trailing status suffix; the recorded name stays unchanged
       function capital(text) { return text.charAt(0).toUpperCase() + text.slice(1); }
       function year(j) { return j.status_since ? Number(j.status_since.slice(0, 4)) : Infinity; } // no date: last in its block
       function FN_ORDER(items) { // one ordering rule and its reader explanation
@@ -3031,111 +3069,214 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       function folded(code) { return institutes.every(function (i) { return rows[i.id][code].value === "not_found"; }); }
       var columns = []; groups.forEach(function (group) { codes.forEach(function (code) { if (vocab[code].group === group && !folded(code)) columns.push(code); }); });
       groups = groups.filter(function (group) { return columns.some(function (code) { return vocab[code].group === group; }); });
-      function columnClass(code) { var n = columns.indexOf(code); return "fn-column" + (n > 0 && vocab[columns[n - 1]].group !== vocab[code].group ? " fn-group-start" : ""); }
-      function mark(value) { var span = el("span", "fn-mark fn-" + (value === "both" ? "activity" : value)); span.setAttribute("aria-hidden", "true"); return span; }
+      function columnClass(code) { var n = columns.indexOf(code); return "fn-column" + (n === 0 ? " fn-group-first" : vocab[columns[n - 1]].group !== vocab[code].group ? " fn-group-start" : ""); }
+      function mark(value, pip) { var span = el("span", "fn-mark fn-" + (value === "both" ? "activity" : value) + (pip ? " fn-pip" : "")); span.setAttribute("aria-hidden", "true"); return span; }
       function pad() { var c = el("td", "fn-pad"); c.setAttribute("aria-hidden", "true"); return c; }
       function fnSources(ids) { var list = sourceList(ids, S); list.className = "fn-sources"; return list; }
       function fnSummary() {
-        var marked = columns.filter(function (c) { return counts[c]; }); // a column kept only for not-yet-coded values is not "least common"
+        var marked = codes.filter(function (c) { return counts[c]; }).sort(function (a, b) { return counts[b] - counts[a] || codes.indexOf(a) - codes.indexOf(b); });
         if (!marked.length) return "";
-        var high = Math.max.apply(null, marked.map(function (c) { return counts[c]; })), low = Math.min.apply(null, marked.map(function (c) { return counts[c]; }));
-        var most = marked.filter(function (c) { return counts[c] === high; }), least = marked.filter(function (c) { return counts[c] === low; });
-        var values = { most: andJoin(most.map(function (c) { return vocab[c].short; })), mostCount: high, total: institutes.length, least: andJoin(least.map(function (c) { return vocab[c].short; })), leastCount: low, each: least.length > 1 ? FN_COPY.each : "" };
-        return FN_COPY.summary.replace(/\{(\w+)\}/g, function (_, key) { return values[key]; });
+        // Rank by count, then vocabulary order. Take three unless third place splits a tie: stop before that
+        // tie. If more than three share the top count, name every leader with one shared count instead.
+        var top = marked.filter(function (c) { return counts[c] === counts[marked[0]]; }), limit = Math.min(3, marked.length), text;
+        if (top.length > 3) text = FN_COPY.summary_tied.replace("{functions}", andJoin(top.map(function (c) { return vocab[c].short; }))).replace("{count}", counts[top[0]]).replace("{total}", institutes.length);
+        else {
+          if (marked.length > limit && counts[marked[limit - 1]] === counts[marked[limit]]) { var tied = counts[marked[limit]]; while (limit && counts[marked[limit - 1]] === tied) limit--; }
+          text = andJoin(marked.slice(0, limit).map(function (c, n) { return (n ? FN_COPY.summary_next : FN_COPY.summary_first).replace("{function}", vocab[c].short).replace("{count}", counts[c]).replace("{total}", institutes.length); }));
+        }
+        return FN_COPY.summary.replace("{functions}", text);
       }
       function fnEmpty() {
         var empty = codes.filter(folded);
         return empty.length ? FN_COPY.empty.replace("{functions}", andJoin(empty.map(function (c) { return vocab[c].short; }))) : "";
       }
-      box.appendChild(el("p", "small", FN_COPY.intro.replace("{count}", codes.length)));
-      var blank = el("p", "fn-blank"); blank.appendChild(el("strong", null, FN_COPY.blank)); box.appendChild(blank);
-      var how = el("details", "more quiet"), body = el("p", "small"); how.appendChild(el("summary", null, FN_COPY.how_title));
-      var dates = institutes.map(function (i) { return i.check && i.check.functions && i.check.functions.date; }).filter(Boolean).sort();
-      var latest = dates.length ? dates[dates.length - 1] : ""; // ISO dates in ascending order; latest coding date
-      FN_COPY.how.replace("{assigned}", ACTIVITY_WORDS.assigned).replace("{active}", ACTIVITY_WORDS.active.toLowerCase()).split(/(\{date\}|\{data\})/).forEach(function (part) {
-        if (part === "{date}") body.appendChild(dated(latest));
-        else if (part === "{data}") { var a = el("a", null, FN_COPY.data); a.href = "#data"; body.appendChild(a); }
-        else body.appendChild(document.createTextNode(part));
-      });
-      how.appendChild(body); box.appendChild(how);
-      var summary = fnSummary(); if (summary) box.appendChild(el("p", "fn-summary", summary));
-      var hint = el("span", "vh", FN_COPY.scroll_hint); hint.id = "fn-scroll-hint"; box.appendChild(hint);
-      var scroll = el("div", "fn-scroll"); scroll.tabIndex = 0; scroll.setAttribute("role", "region");
-      scroll.setAttribute("aria-labelledby", "functions"); scroll.setAttribute("aria-describedby", hint.id);
-      var table = el("table", "fn-table"), head = el("thead"), groupHeads = el("tr"), heads = el("tr");
-      table.appendChild(el("caption", "vh", FN_COPY.caption));
-      table.appendChild(el("colgroup")); // the row-header column
-      groups.forEach(function (group) { var cg = el("colgroup"); cg.span = columns.filter(function (code) { return vocab[code].group === group; }).length; table.appendChild(cg); });
-      table.appendChild(el("colgroup")); // the spacer column
-      var corner = el("th", "fn-corner"); corner.scope = "col"; corner.rowSpan = 2; corner.appendChild(el("span", "vh", FN_COPY.institute)); groupHeads.appendChild(corner);
-      groups.forEach(function (group, n) {
-        var th = el("th", "fn-column-group" + (n ? " fn-group-start" : "")); th.scope = "colgroup";
-        th.colSpan = columns.filter(function (code) { return vocab[code].group === group; }).length;
-        th.appendChild(el("span", null, group)); groupHeads.appendChild(th);
-      });
-      columns.forEach(function (code) {
-        var th = el("th", "fn-head " + columnClass(code)); th.scope = "col"; th.dataset.code = code;
-        th.appendChild(term(capital(vocab[code].short), vocab[code].label + ": " + vocab[code].definition)); heads.appendChild(th);
-      });
-      groupHeads.appendChild(pad()); heads.appendChild(pad());
-      head.appendChild(groupHeads); head.appendChild(heads); table.appendChild(head);
-      [false, true].forEach(function (notYet) {
-        var tbody = el("tbody"), tr = el("tr", "fn-group"), th = el("th"); th.scope = "rowgroup"; th.colSpan = columns.length + 2;
-        th.appendChild(el("span", null, notYet ? capital(ACTIVITY_WORDS.notYet) : FN_COPY.established)); tr.appendChild(th); tbody.appendChild(tr);
-        institutes.filter(function (i) { return pending(i) === notYet; }).forEach(function (i) {
-          var tr = el("tr"), th = el("th"), place = J[i.jurisdiction_id].name; tr.dataset.institute = i.id; th.scope = "row";
-          th.appendChild(term(place, i.name)); tr.appendChild(th);
-          columns.forEach(function (code) {
-            var row = rows[i.id][code], td = el("td", columnClass(code)); td.dataset.value = row.value; td.dataset.code = code;
-            if (coded(row.value)) {
-              var button = el("button", "fn-cell"); button.type = "button"; button.appendChild(mark(row.value));
-              button.setAttribute("aria-expanded", "false"); button.setAttribute("aria-controls", "fn-detail-" + i.id);
-              button.setAttribute("aria-label", place + ", " + vocab[code].label + ": " + names[row.value]); td.appendChild(button);
-            } else td.appendChild(el("span", "vh", names[row.value])); // only not_coded draws a dash via ::before
-            tr.appendChild(td);
-          }); tr.appendChild(pad()); tbody.appendChild(tr);
-        });
-        table.appendChild(tbody);
-      });
-      var foot = el("tfoot"), total = el("tr"), label = el("th", null, FN_COPY.prevalence); label.scope = "row"; total.appendChild(label);
-      columns.forEach(function (code) { var td = el("td", columnClass(code), String(counts[code])); td.dataset.code = code; total.appendChild(td); }); total.appendChild(pad());
-      foot.appendChild(total); table.appendChild(foot);
-      scroll.appendChild(table); box.appendChild(scroll);
-      var empty = fnEmpty(); if (empty) box.appendChild(el("p", "small fn-empty", empty));
-      var legend = el("ul", "fn-legend"); legend.setAttribute("role", "list");
-      var legendValues = ["activity", "mandate", "not_found"];
-      if (institutes.some(function (i) { return columns.some(function (code) { return rows[i.id][code].value === "not_coded"; }); })) legendValues.push("not_coded");
-      legendValues.forEach(function (value) {
-        var li = el("li"); li.dataset.value = value; li.appendChild(mark(value)); li.appendChild(el("span", null, value === "not_found" ? FN_COPY.blank_legend : names[value])); legend.appendChild(li);
-      });
-      box.appendChild(legend); box.appendChild(el("p", "small fn-blank", FN_COPY.blank));
-      box.appendChild(el("p", "small fn-order", order.label));
-      box.appendChild(el("p", "small fn-provisional", FN_COPY.provisional));
-      var opened = null, detailRow = null;
-      function closeDetail(focus) {
-        if (!opened) return;
-        var previous = opened; previous.setAttribute("aria-expanded", "false"); detailRow.remove(); opened = null; detailRow = null;
-        if (focus) previous.focus({ preventScroll: true });
-      }
-      table.addEventListener("click", function (event) {
-        var button = event.target.closest(".fn-cell"); if (!button) return;
-        if (button === opened) { closeDetail(true); return; }
-        closeDetail(false);
-        var row = button.closest("tr"), code = button.parentNode.dataset.code, i = I[row.dataset.institute];
-        var detail = el("div", "fn-detail"), title = el("p", "fn-detail-head", shortName(i) + " · " + vocab[code].label);
-        title.id = "fn-detail-head"; detail.setAttribute("role", "region"); detail.setAttribute("aria-labelledby", title.id);
-        detail.appendChild(title); // each claim names its own basis, so a cell with both shows both
+      function appendClaims(detail, i, code) {
         rows[i.id][code].claim_ids.forEach(function (id) {
           var claim = CLAIM_INDEX[id].claim, item = el("div", "fn-claim"); item.dataset.claim = id;
           item.appendChild(el("p", "fn-basis", names[claim.basis].toLowerCase())); item.appendChild(el("p", "fn-claim-text", claim.text));
-          item.appendChild(claimQuoteBody(claim.id)); item.appendChild(fnSources(fieldCitations(claim, ["text"]))); detail.appendChild(item); // the gate checks the claim's complete source list and order
+          item.appendChild(claimQuoteBody(claim.id)); item.appendChild(fnSources(fieldCitations(claim, ["text"]))); detail.appendChild(item);
         });
-        var close = el("button", "btn", FN_COPY.close); close.type = "button"; close.addEventListener("click", function () { closeDetail(true); }); detail.appendChild(close);
-        detailRow = el("tr", "fn-detail-row"); detailRow.id = button.getAttribute("aria-controls"); var td = el("td"); td.colSpan = columns.length + 2;
-        td.appendChild(detail); detailRow.appendChild(td); row.after(detailRow); opened = button; button.setAttribute("aria-expanded", "true"); externalLinks(detail);
-      });
-      // Escape closes the detail only while focus is in the table, and only when no nested control has handled it.
-      table.addEventListener("keydown", function (event) { if (event.key === "Escape" && opened && !event.defaultPrevented) { event.preventDefault(); closeDetail(true); } });
+        externalLinks(detail);
+      }
+      var phone = window.matchMedia("(max-width: 640px)");
+      function build() {
+        box.replaceChildren(); // one form at a time; changing form also discards any open detail
+        var opened = null, detailRow = null;
+        function closeDetail(focus) {
+          if (!opened) return;
+          var previous = opened; previous.setAttribute("aria-expanded", "false"); detailRow.remove(); opened = null; detailRow = null;
+          if (focus) previous.focus({ preventScroll: true });
+        }
+        function closeButton(detail) {
+          var close = el("button", "btn", FN_COPY.close); close.type = "button"; close.addEventListener("click", function () { closeDetail(true); }); detail.appendChild(close);
+        }
+        function escapeDetail(event) { if (event.key === "Escape" && opened && !event.defaultPrevented) { event.preventDefault(); closeDetail(true); } }
+        box.appendChild(el("p", "small", (phone.matches ? FN_COPY.intro_phone : FN_COPY.intro).replace("{count}", codes.length))); // the phone form is opened by row, not by mark
+        var blank = el("p", "fn-blank"); blank.appendChild(el("strong", null, FN_COPY.blank)); box.appendChild(blank);
+        var how = el("details", "more quiet"), body = el("p", "small"); how.appendChild(el("summary", null, FN_COPY.how_title));
+        var dates = institutes.map(function (i) { return i.check && i.check.functions && i.check.functions.date; }).filter(Boolean).sort();
+        var latest = dates.length ? dates[dates.length - 1] : ""; // ISO dates in ascending order; latest coding date
+        FN_COPY.how.replace("{assigned}", ACTIVITY_WORDS.assigned).replace("{active}", ACTIVITY_WORDS.active).split(/(\{date\}|\{data\})/).forEach(function (part) {
+          if (part === "{date}") body.appendChild(dated(latest));
+          else if (part === "{data}") { var a = el("a", null, FN_COPY.data); a.href = "#data"; body.appendChild(a); }
+          else body.appendChild(document.createTextNode(part));
+        });
+        how.appendChild(body); box.appendChild(how);
+        var summary = fnSummary(); if (summary) box.appendChild(el("p", "fn-summary", summary));
+        if (phone.matches) {
+          var list = el("div", "fn-phone"), labels = el("div", "fn-phone-head");
+          list.style.setProperty("--fn-tracks", "minmax(5rem, 1.4fr) " + groups.map(function (group) { return "minmax(" + (columns.filter(function (code) { return vocab[code].group === group; }).length * 10 - 2) + "px, 1fr)"; }).join(" "));
+          labels.appendChild(el("span"));
+          groups.forEach(function (group) { var label = el("span", null, group); label.dataset.group = group; labels.appendChild(label); }); list.appendChild(labels);
+          [false, true].forEach(function (notYet) {
+            var block = el("div", "fn-phone-block"), heading = el("h3", null, notYet ? capital(ACTIVITY_WORDS.notYet) : FN_COPY.established), ul = el("ul"); ul.setAttribute("role", "list");
+            block.appendChild(heading); block.appendChild(ul);
+            institutes.filter(function (i) { return pending(i) === notYet; }).forEach(function (i) {
+              var li = el("li"), button = el("button", "fn-phone-row"), place = J[i.jurisdiction_id].name;
+              li.dataset.institute = i.id; button.type = "button"; button.appendChild(el("span", "fn-phone-country", place));
+              button.setAttribute("aria-label", FN_COPY.show.replace("{country}", place).replace("{institute}", displayName(i)));
+              button.setAttribute("aria-expanded", "false"); button.setAttribute("aria-controls", "fn-detail-" + i.id);
+              groups.forEach(function (group) {
+                var pips = el("span", "fn-pips"); pips.dataset.group = group; pips.setAttribute("aria-hidden", "true");
+                columns.filter(function (code) { return vocab[code].group === group; }).forEach(function (code) { var value = rows[i.id][code].value, pip = mark(value, true); pip.dataset.code = code; pip.dataset.value = value; pips.appendChild(pip); }); button.appendChild(pips);
+              }); li.appendChild(button); ul.appendChild(li);
+            }); list.appendChild(block);
+          });
+          list.addEventListener("click", function (event) {
+            var button = event.target.closest(".fn-phone-row, button.fn-function-label"); if (!button) return;
+            if (button.classList.contains("fn-function-label")) {
+              var existing = button.nextElementSibling, isOpen = button.getAttribute("aria-expanded") === "true";
+              if (isOpen) { existing.remove(); button.setAttribute("aria-expanded", "false"); return; }
+              var claims = el("div", "fn-phone-claims"); claims.id = button.getAttribute("aria-controls");
+              appendClaims(claims, I[button.closest("li[data-institute]").dataset.institute], button.parentNode.dataset.code);
+              button.after(claims); button.setAttribute("aria-expanded", "true"); return;
+            }
+            if (button === opened) { closeDetail(true); return; }
+            closeDetail(false);
+            var i = I[button.parentNode.dataset.institute], detail = el("div", "fn-detail fn-phone-detail"), title = el("p", "fn-detail-head", displayName(i));
+            detail.id = button.getAttribute("aria-controls"); title.id = detail.id + "-head"; detail.setAttribute("role", "region"); detail.setAttribute("aria-labelledby", title.id); detail.appendChild(title);
+            groups.forEach(function (group) {
+              var heading = el("h4", null, group), functions = el("ul", "fn-phone-functions"); functions.dataset.group = group;
+              columns.filter(function (code) { return vocab[code].group === group; }).forEach(function (code) {
+                var row = rows[i.id][code], li = el("li"), label = el(coded(row.value) ? "button" : "span", "fn-function-label"); li.dataset.code = code; li.dataset.value = row.value;
+                var pip = mark(row.value, true); pip.removeAttribute("aria-hidden"); pip.setAttribute("role", "img"); pip.setAttribute("aria-label", names[row.value]);
+                label.appendChild(pip); label.appendChild(el("span", null, vocab[code].label));
+                if (coded(row.value)) { label.type = "button"; label.setAttribute("aria-expanded", "false"); label.setAttribute("aria-controls", detail.id + "-" + code); }
+                li.appendChild(label); functions.appendChild(li);
+              }); detail.appendChild(heading); detail.appendChild(functions);
+            }); closeButton(detail); button.after(detail); opened = button; detailRow = detail; button.setAttribute("aria-expanded", "true");
+          });
+          list.addEventListener("keydown", escapeDetail); box.appendChild(list);
+        } else {
+          var hint = el("span", "vh", FN_COPY.scroll_hint); hint.id = "fn-scroll-hint"; box.appendChild(hint);
+          var scroll = el("div", "fn-scroll"); scroll.tabIndex = 0; scroll.setAttribute("role", "region");
+          scroll.setAttribute("aria-labelledby", "functions"); scroll.setAttribute("aria-describedby", hint.id);
+          var table = el("table", "fn-table"), head = el("thead"), groupHeads = el("tr"), heads = el("tr");
+          table.appendChild(el("caption", "vh", FN_COPY.caption));
+          table.appendChild(el("colgroup")); // the row-header column
+          groups.forEach(function (group) { var cg = el("colgroup"); cg.span = columns.filter(function (code) { return vocab[code].group === group; }).length; table.appendChild(cg); });
+          table.appendChild(el("colgroup")); // the spacer column
+          var corner = el("th", "fn-corner"); corner.scope = "col"; corner.rowSpan = 2; corner.appendChild(el("span", "vh", FN_COPY.institute)); groupHeads.appendChild(corner);
+          groups.forEach(function (group, n) {
+            var th = el("th", "fn-column-group" + (n ? " fn-group-start" : "")); th.scope = "colgroup";
+            th.colSpan = columns.filter(function (code) { return vocab[code].group === group; }).length;
+            th.appendChild(el("span", null, group)); groupHeads.appendChild(th);
+          });
+          columns.forEach(function (code) {
+            var th = el("th", "fn-head " + columnClass(code)); th.scope = "col"; th.dataset.code = code;
+            th.appendChild(term(capital(vocab[code].short), vocab[code].label + ": " + vocab[code].definition, "fn-head-flag")); heads.appendChild(th);
+          });
+          groupHeads.appendChild(pad()); heads.appendChild(pad());
+          head.appendChild(groupHeads); head.appendChild(heads); table.appendChild(head);
+          [false, true].forEach(function (notYet) {
+            var tbody = el("tbody"), tr = el("tr", "fn-group"), th = el("th"); th.scope = "rowgroup";
+            th.appendChild(el("span", null, notYet ? capital(ACTIVITY_WORDS.notYet) : FN_COPY.established)); tr.appendChild(th);
+            columns.forEach(function (code) { var td = el("td", columnClass(code)); td.dataset.code = code; td.setAttribute("aria-hidden", "true"); tr.appendChild(td); });
+            tr.appendChild(pad()); tbody.appendChild(tr);
+            institutes.filter(function (i) { return pending(i) === notYet; }).forEach(function (i) {
+              var tr = el("tr"), th = el("th"), place = J[i.jurisdiction_id].name; tr.dataset.institute = i.id; th.scope = "row";
+              th.appendChild(term(place, displayName(i))); tr.appendChild(th);
+              columns.forEach(function (code) {
+                var row = rows[i.id][code], td = el("td", columnClass(code)); td.dataset.value = row.value; td.dataset.code = code;
+                if (coded(row.value)) {
+                  var button = el("button", "fn-cell"); button.type = "button"; button.appendChild(mark(row.value));
+                  button.setAttribute("aria-expanded", "false"); button.setAttribute("aria-controls", "fn-detail-" + i.id);
+                  button.setAttribute("aria-label", place + ", " + vocab[code].label + ": " + names[row.value]); td.appendChild(button);
+                } else td.appendChild(el("span", "vh", names[row.value])); // only not_coded draws a dash via ::before
+                tr.appendChild(td);
+              }); tr.appendChild(pad()); tbody.appendChild(tr);
+            });
+            table.appendChild(tbody);
+          });
+          var foot = el("tfoot"), total = el("tr"), label = el("th", null, FN_COPY.prevalence); label.scope = "row"; total.appendChild(label);
+          columns.forEach(function (code) { var td = el("td", columnClass(code), String(counts[code])); td.dataset.code = code; total.appendChild(td); }); total.appendChild(pad());
+          foot.appendChild(total); table.appendChild(foot);
+          scroll.appendChild(table); box.appendChild(scroll);
+          bindTint(table);
+        }
+        var empty = fnEmpty(); if (empty) box.appendChild(el("p", "small fn-empty", empty));
+        var legend = el("ul", "fn-legend"); legend.setAttribute("role", "list");
+        var legendValues = ["activity", "mandate", "not_found"];
+        if (institutes.some(function (i) { return columns.some(function (code) { return rows[i.id][code].value === "not_coded"; }); })) legendValues.push("not_coded");
+        legendValues.forEach(function (value) {
+          var li = el("li"); li.dataset.value = value; li.appendChild(mark(value, phone.matches)); li.appendChild(el("span", null, value === "not_found" ? (phone.matches ? FN_COPY.phone_not_found : FN_COPY.blank_legend) : names[value])); legend.appendChild(li);
+        });
+        box.appendChild(legend);
+        if (phone.matches) box.appendChild(el("p", "small fn-pip-note", FN_COPY.pips));
+        box.appendChild(el("p", "small fn-order", order.label));
+        box.appendChild(el("p", "small fn-provisional", FN_COPY.provisional));
+        if (!table) return;
+        table.addEventListener("click", function (event) {
+          var button = event.target.closest(".fn-cell"); if (!button) return;
+          if (button === opened) { closeDetail(true); return; }
+          closeDetail(false);
+          var row = button.closest("tr"), code = button.parentNode.dataset.code, i = I[row.dataset.institute];
+          var detail = el("div", "fn-detail"), title = el("p", "fn-detail-head", displayName(i) + " · " + vocab[code].label);
+          title.id = "fn-detail-head"; detail.setAttribute("role", "region"); detail.setAttribute("aria-labelledby", title.id);
+          detail.appendChild(title); // each claim names its own basis, so a cell with both shows both
+          appendClaims(detail, i, code); closeButton(detail);
+          detailRow = el("tr", "fn-detail-row"); detailRow.id = button.getAttribute("aria-controls"); detailRow.dataset.owner = row.dataset.institute; var td = el("td"); td.colSpan = columns.length + 2; // the owner keeps focus inside the detail with its institute when the form switches
+          td.appendChild(detail); detailRow.appendChild(td); row.after(detailRow); opened = button; button.setAttribute("aria-expanded", "true"); externalLinks(detail);
+        });
+        // Escape closes the detail only while focus is in the table, and only when no nested control has handled it.
+        table.addEventListener("keydown", escapeDetail);
+        updateFits();
+      }
+      function updateFits() {
+        var scroll = box.querySelector(".fn-scroll"), table = box.querySelector(".fn-table"); if (!scroll || !table) return;
+        var fits = table.getBoundingClientRect().width <= scroll.clientWidth + 1 && !phone.matches;
+        scroll.classList.toggle("fits", fits); $("fn-scroll-hint").hidden = fits;
+        scroll.style.setProperty("--fn-group-height", table.tHead.rows[0].getBoundingClientRect().height + "px");
+      }
+      function bindTint(table) {
+        var pointer = null, focus = null;
+        function cell(node) { return node && node.closest && node.closest("tr[data-institute] > td[data-code]"); }
+        function paint() {
+          table.querySelectorAll(".fn-row-lit, .fn-col-lit").forEach(function (n) { n.classList.remove("fn-row-lit", "fn-col-lit"); });
+          var target = focus || pointer; if (!target) return;
+          target.parentNode.classList.add("fn-row-lit");
+          table.querySelectorAll("[data-code]").forEach(function (n) { if (n.dataset.code === target.dataset.code) n.classList.add("fn-col-lit"); });
+        }
+        function tint(event) {
+          if (event.type.indexOf("pointer") === 0) { if (event.pointerType === "touch") return; pointer = cell(event.type === "pointerout" ? event.relatedTarget : event.target); }
+          else focus = cell(event.type === "focusout" ? event.relatedTarget : event.target);
+          paint();
+        }
+        ["pointerover", "pointerout", "focusin", "focusout"].forEach(function (type) { table.addEventListener(type, tint); });
+      }
+      // Rebuild for the current form; a reader whose focus was on an institute keeps it on that institute's control.
+      function render() {
+        var active = box.contains(document.activeElement) && document.activeElement.closest("[data-institute], [data-owner]"), id = active && (active.dataset.institute || active.dataset.owner);
+        build();
+        if (!id) return;
+        var target = box.querySelector('li[data-institute="' + id + '"] .fn-phone-row') || box.querySelector('tr[data-institute="' + id + '"] .fn-cell') || box.querySelector('tr[data-institute="' + id + '"] th[scope="row"] [tabindex]');
+        if (target) target.focus({ preventScroll: true });
+      }
+      render();
+      phone.addEventListener("change", render);
+      var fitWatch = new ResizeObserver(updateFits); fitWatch.observe(box);
+      window.addEventListener("resize", updateFits, { passive: true });
+      document.fonts.ready.then(updateFits); requestAnimationFrame(updateFits);
     })();
     // Testing and access: four groups from the published model access value (dataset.vocabularies.model_access; derived in flag_checks.py, read here, never recomputed).
     // Both access values go in the first group; earlier access says the year of its latest event, so old access never reads as current.
