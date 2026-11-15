@@ -3558,12 +3558,10 @@
         ]
       },
       "institute_id": null,
-      "summary": "No qualifying institute identified. The only bodies found are AI Act authorities.",
       "related_bodies": [
         {
           "name": "Agenzia per la cybersicurezza nazionale (ACN)",
           "name_en": "National Cybersecurity Agency (ACN)",
-          "role": "Its market surveillance role is assigned under Article 5(1)(a), Legislative Decree 179/2026, in force 23 October 2026; Article 6 sets how it acts as single point of contact.",
           "counts_as_aisi": false,
           "source_ids": [
             "it-dlgs179-2026",
@@ -3586,7 +3584,6 @@
         {
           "name": "Agenzia per l'Italia digitale (AgID)",
           "name_en": "Agency for Digital Italy (AgID)",
-          "role": "Its AI Act role is assigned under Article 4, Legislative Decree 179/2026, in force 23 October 2026.",
           "counts_as_aisi": false,
           "source_ids": [
             "it-dlgs179-2026",
@@ -3607,7 +3604,6 @@
         {
           "name": "Banca d'Italia",
           "name_en": "Bank of Italy",
-          "role": "It covers high-risk AI systems used in lending and other financial services governed by the Consolidated Banking Act, under Article 5(1)(b), Legislative Decree 179/2026, in force 23 October 2026.",
           "counts_as_aisi": false,
           "source_ids": [
             "it-dlgs179-2026",
@@ -3627,7 +3623,6 @@
         },
         {
           "name": "CONSOB",
-          "role": "It covers high-risk AI systems used in financial services governed by the Consolidated Law on Financial Intermediation, under Article 5(1)(b), Legislative Decree 179/2026, in force 23 October 2026.",
           "counts_as_aisi": false,
           "source_ids": [
             "it-dlgs179-2026",
@@ -3647,7 +3642,6 @@
         },
         {
           "name": "IVASS",
-          "role": "It covers high-risk AI systems used in insurance, reinsurance and insurance distribution governed by the Private Insurance Code, under Article 5(1)(b), Legislative Decree 179/2026, in force 23 October 2026.",
           "counts_as_aisi": false,
           "source_ids": [
             "it-dlgs179-2026",
@@ -3668,7 +3662,6 @@
         {
           "name": "Garante per la protezione dei dati personali",
           "name_en": "Italian Data Protection Authority",
-          "role": "It is a market surveillance authority only for the uses covered by Article 74(8) of the AI Act, under Article 5(1)(c), Legislative Decree 179/2026, in force 23 October 2026.",
           "counts_as_aisi": false,
           "source_ids": [
             "it-dlgs179-2026",
@@ -3744,7 +3737,13 @@
         "governance_source_ids": [
           "it-law132-article20"
         ],
-        "governance_note": "Article 20 allocates AI Act notifying and market-surveillance roles to AgID and ACN; these regulatory functions do not establish a qualifying institute."
+        "governance_note": "Article 20 allocates AI Act notifying and market-surveillance roles to AgID and ACN; these regulatory functions do not establish a qualifying institute.",
+        "log": [
+          {
+            "date": "2026-10-17",
+            "text": "Searched in English and Italian for a body the government has tasked with testing general-purpose or frontier AI models, or named as its AI safety or security institute."
+          }
+        ]
       },
       "source_ids": [
         "it-gu-law132-2025-art20",
@@ -3772,8 +3771,7 @@
       "identifier_source_ids": [
         "un-m49",
         "wikidata-jurisdiction-identifiers"
-      ],
-      "notes": "Legislative Decree 179/2026, in force 23 October 2026, now assigns the AI Act authority roles: AgID as notifying authority; ACN, the Banca d'Italia, CONSOB and IVASS for market surveillance, with the financial sector split among the three supervisors; the Garante for the uses covered by Article 74(8). Article 20 of Law 132/2025 first designated AgID and ACN as national AI authorities. Searched in English and Italian for a body its government has tasked with testing general-purpose or frontier AI models or named its AI safety or security institute."
+      ]
     },
     {
       "id": "PL",
@@ -3979,11 +3977,9 @@
         ]
       },
       "institute_id": null,
-      "summary": "No qualifying institute identified. The bodies found are AI Act authorities, with the AI Office of Ireland as the single point of contact.",
       "related_bodies": [
         {
           "name": "AI Office of Ireland",
-          "role": "It coordinates a distributed model of sectoral regulators. It is an independent statutory office established 2 August 2026 under the Regulation of Artificial Intelligence Act 2026.",
           "counts_as_aisi": false,
           "source_ids": [
             "ie-ai-office-established-2026",
@@ -3999,7 +3995,6 @@
         },
         {
           "name": "Minister for Enterprise, Tourism and Employment",
-          "role": "The Minister covers Annex I Section A points 1, 2, 4, 5, 7, 9 and 10 under SI 366/2025. The original ministerial contact role is superseded by the separately sourced 2026 AI Office.",
           "counts_as_aisi": false,
           "source_ids": [
             "ie-ai-designation-si366-2025",
@@ -4015,7 +4010,6 @@
         },
         {
           "name": "Minister for Transport",
-          "role": "The Minister covers Annex I Section A points 3 and 8.",
           "counts_as_aisi": false,
           "source_ids": [
             "ie-ai-designation-si366-2025",
@@ -4031,7 +4025,6 @@
         },
         {
           "name": "Health Products Regulatory Authority",
-          "role": "It covers Annex I Section A points 11 and 12.",
           "counts_as_aisi": false,
           "source_ids": [
             "ie-ai-designation-si366-2025",
@@ -4048,7 +4041,6 @@
         },
         {
           "name": "Commission for Communications Regulation",
-          "role": "It covers Annex I Section A point 6.",
           "counts_as_aisi": false,
           "source_ids": [
             "ie-ai-designation-si366-2025",
@@ -4065,7 +4057,6 @@
         },
         {
           "name": "Health and Safety Authority",
-          "role": "It covers assigned workplace machinery, protective equipment, gas appliances and Annex I Section A points 4, 5 and 7.",
           "counts_as_aisi": false,
           "source_ids": [
             "ie-ai-designation-si366-2025",
@@ -4081,7 +4072,6 @@
         },
         {
           "name": "Competition and Consumer Protection Commission",
-          "role": "It covers toys, consumer protective equipment and domestic gas appliances.",
           "counts_as_aisi": false,
           "source_ids": [
             "ie-ai-designation-si366-2025",
@@ -4097,7 +4087,6 @@
         },
         {
           "name": "Marine Survey Office",
-          "role": "It covers Annex I Section A point 3.",
           "counts_as_aisi": false,
           "source_ids": [
             "ie-ai-designation-si366-2025",
@@ -4113,7 +4102,6 @@
         },
         {
           "name": "Commission for Railway Regulation",
-          "role": "It covers Annex I Section A point 8.",
           "counts_as_aisi": false,
           "source_ids": [
             "ie-ai-designation-si366-2025",
@@ -4129,7 +4117,6 @@
         },
         {
           "name": "Central Bank of Ireland",
-          "role": "Its AI Act role is assigned under Article 74(6).",
           "counts_as_aisi": false,
           "source_ids": [
             "ie-ai-designation-si366-2025",
@@ -4145,7 +4132,6 @@
         },
         {
           "name": "Data Protection Commission",
-          "role": "Its AI Act role is assigned under Article 74(8).",
           "counts_as_aisi": false,
           "source_ids": [
             "ie-ai-designation-si366-2025",
@@ -4214,7 +4200,13 @@
         "governance_source_ids": [
           "ie-ai-office-established-2026"
         ],
-        "governance_note": "The government describes the AI Office of Ireland and a distributed system of sectoral regulators, rather than an institute to evaluate advanced models."
+        "governance_note": "The government describes the AI Office of Ireland and a distributed system of sectoral regulators, rather than an institute to evaluate advanced models.",
+        "log": [
+          {
+            "date": "2026-10-17",
+            "text": "Searched in English, including gov.ie, for a body the government has tasked with testing general-purpose or frontier AI models, or named as its AI safety or security institute."
+          }
+        ]
       },
       "source_ids": [
         "ie-ai-office-established-2026",
@@ -4239,8 +4231,7 @@
       "identifier_source_ids": [
         "un-m49",
         "wikidata-jurisdiction-identifiers"
-      ],
-      "notes": "The AI Office of Ireland was established on 2 August 2026 under the Regulation of Artificial Intelligence Act 2026. It is the national single point of contact and coordinates a distributed model of sectoral regulators. SI 366/2025 separately allocates notifying and market-surveillance roles; Regulation 5 formally designates notifying authorities for Article 28 of the AI Act.\n\nSearched in English, including gov.ie, for a body its government has tasked with testing general-purpose or frontier AI models or named its AI safety or security institute.\n\nOn 9 November 2026 Ireland was among the states that signed the Paris Call for AI Safety and Security, in which signatories commit to a common framework for the evaluation and risk management of frontier models."
+      ]
     },
     {
       "id": "AT",
@@ -4256,23 +4247,10 @@
         ]
       },
       "institute_id": null,
-      "summary": "No qualifying institute identified. Austria has an AI Act service desk, and the data-protection authority describes sectoral supervisory competence.",
       "related_bodies": [
-        {
-          "name": "RTR KI-Servicestelle",
-          "name_en": "RTR AI Service Desk",
-          "role": "It is set up at the regulator RTR as a contact point and information hub on AI, in preparation for the AI Act.",
-          "counts_as_aisi": false,
-          "kind": "other",
-          "id": "related_bodies-18d1df10e92a59df8106f78e76a7b25e",
-          "source_ids": [
-            "at-dsb-ai-faq"
-          ]
-        },
         {
           "name": "Datenschutzbehörde",
           "name_en": "Data Protection Authority",
-          "role": "The DSB describes sectoral AI Act market-surveillance competence for Article 74(8) uses through its existing supervisory status under §§ 18 and 31 DSG. This is the authority's account of its role, not evidence of a separate national AI Act designation act or a general Austrian coordinator.",
           "counts_as_aisi": false,
           "source_ids": [
             "at-dsb-ai-faq",
@@ -4285,7 +4263,7 @@
           ],
           "designation_basis": "none_yet",
           "kind": "ai_act_authority",
-          "designation_note": "No separate national AI Act designation act was identified. DSB guidance describes sectoral competence under existing Austrian supervisory law. Article 74(8) requires member states to designate a competent data protection authority or another authority meeting the stated independence conditions; the EU provision alone is not recorded as national designation. The designation state is left unspecified: the cited sources establish neither a formal proposal nor a verified separate designation.",
+          "designation_note": "The data protection authority's guidance says that Article 74(8) of the AI Act gives the supervisory authorities for data protection the market-surveillance role for high-risk AI in areas such as law enforcement, border management, justice and democracy, and that under current law this competence falls to it under sections 18 and 31 of the Data Protection Act.",
           "id": "related_bodies-eb4847beae095e15994e517c89757ed3"
         }
       ],
@@ -4355,7 +4333,17 @@
         "governance_source_ids": [
           "at-dsb-ai-faq"
         ],
-        "governance_note": "The DSB FAQ explains its sectoral AI Act supervisory competence. Its undated statement on unresolved general designation is not treated as a dated absence finding."
+        "governance_note": "The DSB FAQ explains its sectoral AI Act supervisory competence. Its undated statement on unresolved general designation is not treated as a dated absence finding.",
+        "log": [
+          {
+            "date": "2026-10-17",
+            "text": "Searched for a national act designating the data protection authority under the AI Act, and read Article 74(8) of the AI Act."
+          },
+          {
+            "date": "2026-10-17",
+            "text": "The data protection authority's undated AI FAQ was read for the allocation of AI Act supervision. Searched in English and German for a body the government has tasked with testing general-purpose or frontier AI models, or named as its AI safety or security institute."
+          }
+        ]
       },
       "source_ids": [
         "at-dsb-ai-faq",
@@ -4380,7 +4368,7 @@
         "un-m49",
         "wikidata-jurisdiction-identifiers"
       ],
-      "notes": "The undated Datenschutzbehörde FAQ says the identity of the relevant general market-surveillance authority has not yet been fixed. Its publication date was not verified, so the statement about the general authority is not treated as a dated finding for 17 October 2026. This does not negate the separate sectoral competence described by the same guidance through Article 74(8) and the national supervisory status established by §§18 and 31 DSG.\n\nDatenschutzbehörde guidance describes its sectoral AI Act market-surveillance competence in the areas covered by Article 74(8). Searched in English and German for a body its government has tasked with testing general-purpose or frontier AI models or named its AI safety or security institute.\n\nOn 9 November 2026 Austria was among the states that signed the Paris Call for AI Safety and Security, in which signatories commit to a common framework for the evaluation and risk management of frontier models.\n\nOn 28 October 2026 the Federal Chancellery reported Austria's proposal for an international centre for cooperation on AI under the umbrella of the United Nations in Vienna, which it says could provide technical expertise, for example on evaluating AI models."
+      "claims": []
     },
     {
       "id": "FI",
@@ -4396,11 +4384,9 @@
         ]
       },
       "institute_id": null,
-      "summary": "No qualifying institute identified. The bodies found are AI Act authorities, with Traficom as the single point of contact.",
       "related_bodies": [
         {
           "name": "Traficom",
-          "role": "Its statutory remit covers assigned transport/digital infrastructure and transparency; its notifying remit covers Annex I Section A points 3 and 6.",
           "counts_as_aisi": false,
           "source_ids": [
             "fi-ai-supervision-act1377-2025",
@@ -4420,7 +4406,6 @@
         {
           "name": "Työ- ja elinkeinoministeriö",
           "name_en": "Ministry of Economic Affairs and Employment",
-          "role": "It covers Annex I Section A points 2, 4, 5, 7 and 10 and Annex III point 1.",
           "counts_as_aisi": false,
           "source_ids": [
             "fi-ai-supervision-act1377-2025",
@@ -4437,7 +4422,6 @@
         {
           "name": "Sosiaali- ja terveysministeriö",
           "name_en": "Ministry of Social Affairs and Health",
-          "role": "It covers Annex I Section A points 1, 8 and 9.",
           "counts_as_aisi": false,
           "source_ids": [
             "fi-ai-supervision-act1377-2025",
@@ -4454,7 +4438,6 @@
         {
           "name": "Lääkealan turvallisuus- ja kehittämiskeskus (Fimea)",
           "name_en": "Finnish Medicines Agency (Fimea)",
-          "role": "It covers Annex I Section A points 11 and 12.",
           "counts_as_aisi": false,
           "source_ids": [
             "fi-ai-supervision-act1377-2025",
@@ -4472,7 +4455,6 @@
         {
           "name": "Turvallisuus- ja kemikaalivirasto (Tukes)",
           "name_en": "Safety and Chemicals Agency (Tukes)",
-          "role": "It covers assigned products and water/gas infrastructure.",
           "counts_as_aisi": false,
           "source_ids": [
             "fi-ai-supervision-act1377-2025",
@@ -4489,7 +4471,6 @@
         {
           "name": "Tulli",
           "name_en": "Customs",
-          "role": "It covers assigned toy imports.",
           "counts_as_aisi": false,
           "source_ids": [
             "fi-ai-supervision-act1377-2025",
@@ -4506,7 +4487,6 @@
         {
           "name": "Lupa- ja valvontavirasto",
           "name_en": "Finnish Supervisory Agency",
-          "role": "It covers occupational-safety products and assigned uses under Annex III points 5(a) and 5(d).",
           "counts_as_aisi": false,
           "source_ids": [
             "fi-ai-supervision-act1377-2025",
@@ -4523,7 +4503,6 @@
         {
           "name": "Energiavirasto",
           "name_en": "Energy Authority",
-          "role": "It covers heating, electricity and assigned gas infrastructure.",
           "counts_as_aisi": false,
           "source_ids": [
             "fi-ai-supervision-act1377-2025",
@@ -4540,7 +4519,6 @@
         {
           "name": "Tietosuojavaltuutettu",
           "name_en": "Data Protection Ombudsman",
-          "role": "It covers prohibited uses and assigned Annex III sectors. Its separate notified-body role is not notifying-authority designation.",
           "counts_as_aisi": false,
           "source_ids": [
             "fi-ai-supervision-act1377-2025",
@@ -4557,7 +4535,6 @@
         {
           "name": "Finanssivalvonta",
           "name_en": "Financial Supervisory Authority",
-          "role": "It covers assigned financial uses under Annex III point 5.",
           "counts_as_aisi": false,
           "source_ids": [
             "fi-ai-supervision-act1377-2025",
@@ -4624,7 +4601,13 @@
         "governance_source_ids": [
           "fi-ai-supervision-act1377-2025"
         ],
-        "governance_note": "The AI supervision act allocates national AI Act responsibilities, including the single contact and sectoral supervision. These regulatory roles do not establish a qualifying model-evaluation institute."
+        "governance_note": "The AI supervision act allocates national AI Act responsibilities, including the single contact and sectoral supervision. These regulatory roles do not establish a qualifying model-evaluation institute.",
+        "log": [
+          {
+            "date": "2026-10-17",
+            "text": "Traficom's August 2026 guidance on AI supervision was read. Searched in English and Finnish for a body the government has tasked with testing general-purpose or frontier AI models, or named as its AI safety or security institute."
+          }
+        ]
       },
       "source_ids": [
         "fi-ai-supervision-act1377-2025",
@@ -4650,8 +4633,7 @@
       "identifier_source_ids": [
         "un-m49",
         "wikidata-jurisdiction-identifiers"
-      ],
-      "notes": "Traficom's August 2026 guidance describes its supervision of AI transparency and sectoral authorities' responsibilities for high-risk systems. Searched in English and Finnish for a body its government has tasked with testing general-purpose or frontier AI models or named its AI safety or security institute.\n\nOn 9 November 2026 Finland was among the states that signed the Paris Call for AI Safety and Security, in which signatories commit to a common framework for the evaluation and risk management of frontier models.\n\nFinland's president and Norway's prime minister held a virtual meeting of leaders from 29 countries on controlling the development of frontier AI models, announced on 28 October 2026, to be followed by an expert-level process among interested countries exploring options for improving AI safety and security.\n\nUnder the government's bill HE 270/2026, signed on 22 October 2026, Traficom would set up and run Finland's AI regulatory sandbox; the amendments to the AI supervision act are mainly intended to take effect on 1 February 2027."
+      ]
     },
     {
       "id": "DK",
@@ -4667,12 +4649,10 @@
         ]
       },
       "institute_id": null,
-      "summary": "No qualifying institute identified. Digitaliseringsstyrelsen coordinates the AI Act, with Datatilsynet and Domstolsstyrelsen also designated for supervision of prohibited AI practices.",
       "related_bodies": [
         {
           "name": "Digitaliseringsstyrelsen",
           "name_en": "Danish Agency for Digital Government",
-          "role": "Its market-surveillance remit covers Article 5(1)(a-c, e, f) under section 2 of Law 467/2025, effective 2 August 2025.",
           "counts_as_aisi": false,
           "source_ids": [
             "dk-ai-law467-2025",
@@ -4692,7 +4672,6 @@
         {
           "name": "Datatilsynet",
           "name_en": "Danish Data Protection Agency",
-          "role": "It covers Article 5(1)(d, g) under section 2 of Law 467/2025.",
           "counts_as_aisi": false,
           "source_ids": [
             "dk-ai-law467-2025",
@@ -4709,7 +4688,6 @@
         {
           "name": "Domstolsstyrelsen",
           "name_en": "Court Administration",
-          "role": "It monitors prohibited practices in courts acting outside their judicial capacity under section 2 of Law 467/2025; judicial decisions remain with the relevant court.",
           "counts_as_aisi": false,
           "source_ids": [
             "dk-ai-law467-2025",
@@ -4776,7 +4754,13 @@
         "governance_source_ids": [
           "dk-digst-ai-authorities-faq"
         ],
-        "governance_note": "The Digital Agency FAQ describes AI Act supervisory responsibilities and the central contact point; no qualifying model-evaluation mandate is established in the reviewed allocation."
+        "governance_note": "The Digital Agency FAQ describes AI Act supervisory responsibilities and the central contact point; no qualifying model-evaluation mandate is established in the reviewed allocation.",
+        "log": [
+          {
+            "date": "2026-10-17",
+            "text": "The Agency for Digital Government's FAQ on AI Act authorities was read. Searched in English and Danish for a body the government has tasked with testing general-purpose or frontier AI models, or named as its AI safety or security institute."
+          }
+        ]
       },
       "source_ids": [
         "dk-ai-law467-2025",
@@ -4799,8 +4783,7 @@
       "identifier_source_ids": [
         "un-m49",
         "wikidata-jurisdiction-identifiers"
-      ],
-      "notes": "The official FAQ identifies Digitaliseringsstyrelsen as a single contact and market authority, with Datatilsynet and Domstolsstyrelsen also responsible for prohibited practices. Searched in English and Danish for a body its government has tasked with testing general-purpose or frontier AI models or named its AI safety or security institute."
+      ]
     },
     {
       "id": "BE",
@@ -4816,7 +4799,6 @@
         ]
       },
       "institute_id": null,
-      "summary": "No qualifying institute identified. A September 2026 proposal concerns a national AI strategy; the minister confirmed on 6 October 2026 that formal AI Act market-surveillance and notifying-authority designation remained incomplete.",
       "next_check": {
         "date": "2027-10-16",
         "reason": "Routine yearly re-check of a state where an institute is plausible (in Europe, the G20 or the OECD, or a signatory of the Bletchley Declaration)."
@@ -4873,7 +4855,13 @@
         "governance_source_ids": [
           "be-parliament-ai-designation-oct2026"
         ],
-        "governance_note": "The minister's parliamentary answer describes pending formal AI Act authority designation. It is governance evidence, not an official statement that no institute exists."
+        "governance_note": "The minister's parliamentary answer describes pending formal AI Act authority designation. It is governance evidence, not an official statement that no institute exists.",
+        "log": [
+          {
+            "date": "2026-10-17",
+            "text": "The minister's answer to parliament of 6 October 2026 was read for the designation of AI Act authorities, and the September 2026 ministerial proposal for a national AI strategy was read."
+          }
+        ]
       },
       "source_ids": [
         "be-parliament-ai-designation-oct2026",
@@ -4901,7 +4889,6 @@
         {
           "name": "Institut belge des services postaux et des télécommunications (IBPT/BIPT)",
           "name_en": "Belgian Institute for Postal Services and Telecommunications (IBPT/BIPT)",
-          "role": "It would lead central supervision and much of the notifying work. Minister Vanessa Matz stated on 6 October 2026 that formal notifying/market designations had not yet occurred; federal law and cooperation agreement were in preparation.",
           "counts_as_aisi": false,
           "source_ids": [
             "be-parliament-ai-designation-oct2026",
@@ -4916,8 +4903,7 @@
           "kind": "ai_act_authority",
           "id": "related_bodies-6713d36a74925313b05d8bebcda3ffc3"
         }
-      ],
-      "notes": "A September 2026 ministerial proposal would develop a national AI strategy. On 6 October 2026, the minister told Parliament that formal AI Act market-surveillance and notifying-authority designation had not yet been completed. The retrieved answer did not resolve the single-point-of-contact allocation. Searched in English and French for a body its government has tasked with testing general-purpose or frontier AI models or named its AI safety or security institute."
+      ]
     },
     {
       "id": "CZ",
@@ -79386,24 +79372,7 @@
       "type": "primary",
       "accessed": "2026-10-17",
       "language": "en",
-      "excerpts": [
-        {
-          "text": "The AI Office of Ireland was established on 2 August 2026.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "IE"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-a093d0d1cabc56f5909efe89c0a0fdc7"
-              },
-              "role"
-            ]
-          ]
-        }
-      ],
+      "excerpts": [],
       "origin": "IE",
       "snapshot": {
         "retrieved": "2026-10-17T14:26:14Z",
@@ -79689,55 +79658,6 @@
       "language": "de",
       "excerpts": [
         {
-          "text": "Es ist noch nicht fixiert, wer dies in Österreich sein wird.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "AT"
-              },
-              "notes"
-            ]
-          ],
-          "gloss": "It is not yet fixed who this will be in Austria."
-        },
-        {
-          "text": "In Österreich kommt diese Zuständigkeit (nach aktueller Rechtslage) gemäß §§ 18, § 31 DSG der Datenschutzbehörde zu.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "AT"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-eb4847beae095e15994e517c89757ed3"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-10-17",
-          "gloss": "In Austria, under the current legal position, this competence falls to the Data Protection Authority under sections 18 and 31 DSG."
-        },
-        {
-          "text": "Art. 74 Abs. 8 KI-VO festgelegt, dass die für die DSGVO oder für die Richtlinie Polizei und Justiz zuständigen Aufsichtsbehörden die Funktion der Marktüberwachungsbehörde für KI-Systeme mit hohem Risiko u.a. im Bereich der Strafverfolgung, der Grenzverwaltung, der Justiz und der Demokratie zukommt.",
-          "gloss": "Article 74(8) of the AI Regulation assigns the GDPR or Police and Justice Directive supervisory authorities market-surveillance functions for high-risk AI, including law enforcement, border management, justice and democracy.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "AT"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-eb4847beae095e15994e517c89757ed3"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-10-17"
-        },
-        {
           "text": "In Österreich kommt diese Zuständigkeit (nach aktueller Rechtslage) gemäß §§ 18, § 31 DSG der Datenschutzbehörde zu.",
           "supports": [
             [
@@ -79753,35 +79673,6 @@
             ]
           ],
           "gloss": "In Austria, under the current legal position, this competence falls to the Data Protection Authority under sections 18 and 31 DSG."
-        },
-        {
-          "text": "Als Vorbereitung für die Umsetzung der KI-VO gibt es eine KI-Servicestelle, welche in der RTR GmbH eingerichtet ist und als Ansprechpartnerin und Informationshub zum Thema KI dient.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "AT"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-18d1df10e92a59df8106f78e76a7b25e"
-              },
-              "name"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "AT"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-18d1df10e92a59df8106f78e76a7b25e"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-11-14",
-          "gloss": "In preparation for implementing the AI Act there is an AI service desk, set up at RTR GmbH, which serves as a contact point and information hub on AI."
         }
       ],
       "access_note": "The FAQ is undated. Its sectoral competence statement was read with RIS §§18 and 31 DSG. Earlier EUR-Lex access attempts failed; a later review retrieved the original Article 74 and a rendered consolidated text, registered separately. The undated statement about the general market-surveillance authority is not treated as a dated absence finding.",
@@ -79901,23 +79792,6 @@
       "accessed": "2026-10-17",
       "language": "da",
       "excerpts": [
-        {
-          "text": "Digitaliseringsstyrelsen som centralt kontaktpunkt for AI-forordningen",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "DK"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-99d6373d4fdc54dc9979c00bee32e8b6"
-              },
-              "role"
-            ]
-          ],
-          "gloss": "The Agency for Digital Government as the central AI Act contact point."
-        },
         {
           "text": "Digitaliseringsstyrelsen",
           "supports": [
@@ -80363,13 +80237,6 @@
         {
           "text": "La Belgique n'a pas encore procédé à cette désignation formelle.",
           "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "BE"
-              },
-              "notes"
-            ],
             [
               "jurisdictions",
               {
@@ -81051,25 +80918,7 @@
       "instrument_status_checked": "2026-10-21",
       "published": "2025-12-29",
       "language": "fi",
-      "excerpts": [
-        {
-          "text": "Liikenne- ja viestintävirasto toimii tekoälyasetuksen 70 artiklan 2 kohdassa tarkoitettuna keskitettynä yhteyspisteenä.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "FI"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-dc971bc50f795549805c194a52e7fe38"
-              },
-              "role"
-            ]
-          ],
-          "gloss": "The Transport and Communications Agency serves as the central contact point under Article 70(2)."
-        }
-      ],
+      "excerpts": [],
       "origin": "FI",
       "title_en": "Act on the Supervision of Certain Artificial Intelligence Systems 1377/2025",
       "snapshot": {
@@ -81091,18 +80940,6 @@
       "published": "2025-07-25",
       "language": "en",
       "excerpts": [
-        {
-          "text": "For the purposes of Article 28, the following bodies are designated as notifying authorities:",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "IE"
-              },
-              "notes"
-            ]
-          ]
-        },
         {
           "text": "I, PETER BURKE, Minister for Enterprise, Tourism and Employment, in exercise of the powers conferred on me by section 3 of the European Communities Act 1972 (No. 27 of 1972)",
           "accessed": "2026-10-17",
@@ -81239,25 +81076,7 @@
       "instrument_status_checked": "2026-10-21",
       "published": "2025-05-15",
       "language": "da",
-      "excerpts": [
-        {
-          "text": "Digitaliseringsstyrelsen udpeges som bemyndigende myndighed",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "DK"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-99d6373d4fdc54dc9979c00bee32e8b6"
-              },
-              "role"
-            ]
-          ],
-          "gloss": "The Agency for Digital Government is designated as notifying authority."
-        }
-      ],
+      "excerpts": [],
       "origin": "DK",
       "title_en": "Act No. 467 of 14 May 2025 on supplementary provisions to the Artificial Intelligence Regulation",
       "snapshot": {
@@ -81548,21 +81367,7 @@
       "type": "primary",
       "accessed": "2026-10-17",
       "language": "fr",
-      "excerpts": [
-        {
-          "text": "Cette proposition constitue une base pour l’élaboration d’une stratégie nationale en matière d’IA",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "BE"
-              },
-              "notes"
-            ]
-          ],
-          "gloss": "This proposal forms a basis for developing a national AI strategy."
-        }
-      ],
+      "excerpts": [],
       "origin": "BE",
       "title_en": "Act on AI rather than be subjected to it: Belgium puts a 2.0 strategy in place | Vanessa Matz",
       "access_note": "Review of excerpts in a text copy on 17 October 2026: The ministerial text calls the proposal a basis for developing a national AI strategy with the federated entities. Its prospective wording is retained. The direct cached response was unavailable (http_error). The quoted passages were checked in the retained text copy; no obvious spoken accessibility expansion was observed. Original displayed typography was not independently verified, so it remains flagged as evidence checked only in a text copy. The published snapshot hash identifies the retained text copy at https://r.jina.ai/https://matz.belgium.be/fr/actualites/agir-sur-lia-plutot-que-la-subir-la-belgique-se-dote-dune-strategie-20.",
@@ -82721,21 +82526,7 @@
       "type": "primary",
       "accessed": "2026-10-17",
       "language": "it",
-      "excerpts": [
-        {
-          "text": "l'AgID è designata quale autorità di notifica",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "IT"
-              },
-              "notes"
-            ]
-          ],
-          "gloss": "AgID is designated as notifying authority."
-        }
-      ],
+      "excerpts": [],
       "origin": "IT",
       "title_en": "Economic and Financial Documentation: Article Detail",
       "access_note": "Review of excerpts in a text copy on 17 October 2026: The rendered legal article explicitly designates AgID as notifying authority and ACN as market-surveillance authority and single point of contact. The original response contains the legal-database navigation shell without the article text. The quoted passages were checked in the retained text copy; no obvious spoken accessibility expansion was observed. Original displayed typography was not independently verified, so it remains flagged as evidence checked only in a text copy. The published snapshot hash identifies the retained text copy at https://r.jina.ai/https://def.finanze.it/DocTribFrontend/getAttoNormativoDetail.do?ACTION=getArticolo&codiceOrdinamento=0000000000000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000&id=%7B727C8823-31DE-4724-AFD5-1A4EC58809B3%7D.",
@@ -85566,46 +85357,7 @@
       "legal_text": true,
       "instrument_status_checked": "2026-10-21",
       "access_note": "The official consolidated PDF linked by RIS, dated 17 October 2026, was retrieved with platform TLS verification. Sections 18(1) and 31(1) contain both quotations exactly after whitespace normalisation. The text copy expands the abbreviations into spoken accessibility wording, so the excerpts cite the PDF. The standard Python trust store rejected the certificate; curl with normal certificate verification retrieved the complete PDF. The published snapshot hash identifies the retained cited publisher copy at https://www.ris.bka.gv.at/GeltendeFassung/Bundesnormen/10001597/DSG%2c%20Fassung%20vom%2017.10.2026.pdf.",
-      "excerpts": [
-        {
-          "text": "Die Datenschutzbehörde wird als nationale Aufsichtsbehörde gemäß Art. 51 DSGVO eingerichtet.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "AT"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-eb4847beae095e15994e517c89757ed3"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-10-17",
-          "gloss": "The Data Protection Authority is established as the national supervisory authority under Article 51 GDPR.",
-          "url": "https://www.ris.bka.gv.at/GeltendeFassung/Bundesnormen/10001597/DSG%2c%20Fassung%20vom%2017.10.2026.pdf"
-        },
-        {
-          "text": "Die Datenschutzbehörde wird als nationale Aufsichtsbehörde für den in § 36 Abs. 1 genannten Anwendungsbereich eingerichtet.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "AT"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-eb4847beae095e15994e517c89757ed3"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-10-17",
-          "gloss": "The Data Protection Authority is established as the national supervisory authority for the scope specified in section 36(1).",
-          "url": "https://www.ris.bka.gv.at/GeltendeFassung/Bundesnormen/10001597/DSG%2c%20Fassung%20vom%2017.10.2026.pdf"
-        }
-      ],
+      "excerpts": [],
       "origin": "AT",
       "title_en": "Data Protection Act, sections 18 and 31: national supervisory authority",
       "snapshot": {
@@ -116105,81 +115857,7 @@
       "origin": "IT",
       "legal_text": true,
       "instrument_status_checked": "2026-11-07",
-      "excerpts": [
-        {
-          "text": "Entrata in vigore del provvedimento: 23/10/2026",
-          "gloss": "Entry into force of the measure: 23/10/2026",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "IT"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-d0f364f988eb57f3ae4326d78d0df766"
-              },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "IT"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-86ccb972e5f052fb83f1cd9a4847f890"
-              },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "IT"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-cfb18691f52652f9b1cf8001f6aa073a"
-              },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "IT"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-51b3a2a2081650b98424fc5125a8ce28"
-              },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "IT"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-4e74849e95025a8a87dd5a67d9253985"
-              },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "IT"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-9542f4c8ca8d43fba362f5198c45c7e6"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-11-07"
-        }
-      ],
+      "excerpts": [],
       "accessed": "2026-11-07",
       "snapshot": {
         "retrieved": "2026-11-08T00:08:47Z",
@@ -116205,17 +115883,6 @@
           "text": "l'AgID e' l'autorita' nazionale di notifica",
           "gloss": "AgID is the national notifying authority",
           "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "IT"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-86ccb972e5f052fb83f1cd9a4847f890"
-              },
-              "role"
-            ],
             [
               "jurisdictions",
               {
@@ -116265,29 +115932,7 @@
               {
                 "id": "related_bodies-d0f364f988eb57f3ae4326d78d0df766"
               },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "IT"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-d0f364f988eb57f3ae4326d78d0df766"
-              },
               "designation_basis"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "IT"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-cfb18691f52652f9b1cf8001f6aa073a"
-              },
-              "role"
             ],
             [
               "jurisdictions",
@@ -116309,17 +115954,6 @@
               {
                 "id": "related_bodies-51b3a2a2081650b98424fc5125a8ce28"
               },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "IT"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-51b3a2a2081650b98424fc5125a8ce28"
-              },
               "designation_basis"
             ],
             [
@@ -116331,29 +115965,7 @@
               {
                 "id": "related_bodies-4e74849e95025a8a87dd5a67d9253985"
               },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "IT"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-4e74849e95025a8a87dd5a67d9253985"
-              },
               "designation_basis"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "IT"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-9542f4c8ca8d43fba362f5198c45c7e6"
-              },
-              "role"
             ],
             [
               "jurisdictions",
@@ -116382,17 +115994,6 @@
               {
                 "id": "related_bodies-d0f364f988eb57f3ae4326d78d0df766"
               },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "IT"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-d0f364f988eb57f3ae4326d78d0df766"
-              },
               "designation_basis"
             ]
           ],
@@ -116402,17 +116003,6 @@
           "text": "la Banca d'Italia, quale autorita' competente sui sistemi di IA ad alto rischio utilizzati nell'erogazione di finanziamenti o di altri servizi finanziari disciplinati ai sensi del testo unico delle leggi in materia bancaria e creditizia",
           "gloss": "the Banca d'Italia, as the authority competent for high-risk AI systems used in providing loans or other financial services governed by the Consolidated Law on Banking and Credit",
           "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "IT"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-cfb18691f52652f9b1cf8001f6aa073a"
-              },
-              "role"
-            ],
             [
               "jurisdictions",
               {
@@ -116440,17 +116030,6 @@
               {
                 "id": "related_bodies-51b3a2a2081650b98424fc5125a8ce28"
               },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "IT"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-51b3a2a2081650b98424fc5125a8ce28"
-              },
               "designation_basis"
             ]
           ],
@@ -116469,17 +116048,6 @@
               {
                 "id": "related_bodies-4e74849e95025a8a87dd5a67d9253985"
               },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "IT"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-4e74849e95025a8a87dd5a67d9253985"
-              },
               "designation_basis"
             ]
           ],
@@ -116489,17 +116057,6 @@
           "text": "il Garante per la protezione dei dati personali, limitatamente a quanto previsto dall'articolo 74, paragrafo 8, del regolamento IA",
           "gloss": "the Italian Data Protection Authority, limited to what Article 74(8) of the AI Regulation provides",
           "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "IT"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-9542f4c8ca8d43fba362f5198c45c7e6"
-              },
-              "role"
-            ],
             [
               "jurisdictions",
               {
@@ -116546,26 +116103,7 @@
       "origin": "IT",
       "legal_text": true,
       "instrument_status_checked": "2026-11-07",
-      "excerpts": [
-        {
-          "text": "L'ACN, nello svolgimento delle funzioni di punto di contatto unico ai sensi dell'articolo 70 del regolamento IA",
-          "gloss": "ACN, in performing the functions of single point of contact under Article 70 of the AI Regulation",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "IT"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-d0f364f988eb57f3ae4326d78d0df766"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-11-07"
-        }
-      ],
+      "excerpts": [],
       "accessed": "2026-11-07",
       "snapshot": {
         "retrieved": "2026-11-08T00:08:49Z",
@@ -121100,13 +120638,6 @@
             [
               "jurisdictions",
               {
-                "id": "AT"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
                 "id": "CY"
               },
               "notes"
@@ -121115,20 +120646,6 @@
               "jurisdictions",
               {
                 "id": "EE"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "FI"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "IE"
               },
               "notes"
             ],
@@ -121176,13 +120693,6 @@
             [
               "jurisdictions",
               {
-                "id": "AT"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
                 "id": "CY"
               },
               "notes"
@@ -121191,20 +120701,6 @@
               "jurisdictions",
               {
                 "id": "EE"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "FI"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "IE"
               },
               "notes"
             ],
@@ -121269,13 +120765,6 @@
             [
               "jurisdictions",
               {
-                "id": "AT"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
                 "id": "CY"
               },
               "notes"
@@ -121284,20 +120773,6 @@
               "jurisdictions",
               {
                 "id": "EE"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "FI"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "IE"
               },
               "notes"
             ],
@@ -121941,47 +121416,7 @@
       "accessed": "2026-11-11",
       "language": "en",
       "origin": "FI",
-      "excerpts": [
-        {
-          "text": "Finnish President Alexander Stubb and Norwegian Prime Minister Jonas Gahr Støre held a virtual meeting for world leaders on how to follow up the call for control over development of frontier AI models.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "FI"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-11-11"
-        },
-        {
-          "text": "In the meeting, political leaders from 29 countries across the world shared their perspectives and inputs on international cooperation in AI risk management",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "FI"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-11-11"
-        },
-        {
-          "text": "The meeting will be followed by an expert level process between the interested countries to explore options for improving AI safety and security",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "FI"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-11-11"
-        }
-      ],
+      "excerpts": [],
       "snapshot": {
         "retrieved": "2026-11-11T04:52:50Z",
         "sha256": "82631dd2f5cae394942f50c20eeb9472c083b7d60b6ac7d0b11efdb0d7e51f1e",
@@ -122000,36 +121435,7 @@
       "accessed": "2026-11-11",
       "language": "de",
       "origin": "AT",
-      "excerpts": [
-        {
-          "text": "Im Mittelpunkt stand Österreichs Vorschlag, ein Zentrum für die Zusammenarbeit im Bereich künstliche Intelligenz (KI) unter dem Dach der Vereinten Nationen in Wien zu verankern.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "AT"
-              },
-              "notes"
-            ]
-          ],
-          "gloss": "The focus was Austria's proposal to establish a centre for cooperation on artificial intelligence (AI) under the umbrella of the United Nations in Vienna.",
-          "accessed": "2026-11-11"
-        },
-        {
-          "text": "könnte ein KI-Zentrum in Wien technische Expertise bereitstellen, etwa zur Bewertung von KI-Modellen",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "AT"
-              },
-              "notes"
-            ]
-          ],
-          "gloss": "an AI centre in Vienna could provide technical expertise, for example on evaluating AI models",
-          "accessed": "2026-11-11"
-        }
-      ],
+      "excerpts": [],
       "snapshot": {
         "retrieved": "2026-11-11T04:52:50Z",
         "sha256": "5f4939fd59c6ab3be280ddd43fcdbf2277ef7e9a0293c74b8d78f174cd2f4b14",
@@ -122652,64 +122058,7 @@
       "accessed": "2026-11-13",
       "language": "fi",
       "origin": "FI",
-      "excerpts": [
-        {
-          "text": "HE 270/2026 vp",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "FI"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-11-13",
-          "gloss": "Government bill 270/2026 (parliamentary year 2026)"
-        },
-        {
-          "text": "Liikenne- ja viestintäviraston tehtävänä olisi perustaa tekoälyn sääntelyn testiympäristö, ylläpitää sen toimintaa ja vastata siihen liittyvästä yhteistyöstä.",
-          "gloss": "The Transport and Communications Agency would be tasked with setting up the AI regulatory sandbox, maintaining its operation and being responsible for the related cooperation.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "FI"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-11-13"
-        },
-        {
-          "text": "Ehdotetut lait on tarkoitettu tulemaan voimaan eräiden tekoälyjärjestelmien valvonnasta annetun lain osalta pääosin 1.2.2027",
-          "gloss": "The proposed laws are intended to enter into force, as regards the Act on the Supervision of Certain Artificial Intelligence Systems, mainly on 1 February 2027",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "FI"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-11-13"
-        },
-        {
-          "text": "Helsingissä 22.10.2026",
-          "gloss": "Helsinki, 22 October 2026",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "FI"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-11-13"
-        }
-      ],
+      "excerpts": [],
       "snapshot": {
         "retrieved": "2026-11-13T19:42:42Z",
         "sha256": "98222abe969fd320fb39b62de0e8ee416a273840dd255c96dfbb822888ec8d4d",
