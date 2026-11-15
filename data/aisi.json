@@ -31034,7 +31034,7 @@
           "kind": "not_institute_specific",
           "amount": 13500000,
           "currency": "EUR",
-          "description": "€13.5m from France 2030 for Inria's AI Evaluation research programme, launched on 22 Sep 2026 and described as INESIA's scientific roadmap. This funds the programme, not INESIA's own operating budget.",
+          "description": "€13.5m from France 2030 for Inria's AI Evaluation research programme, launched on 22 September 2026 and described as INESIA's scientific roadmap. This funds the programme, not INESIA's own operating budget.",
           "source_ids": [
             "r4-fr-inria-evaluation-funding"
           ],
@@ -31513,7 +31513,7 @@
           "funding_source": "unknown",
           "id": "funding-ec218d998f89595bba604d03e1c3f308",
           "coverage": "whole_institute",
-          "notes": "The absence of a published budget concerns the institute as a whole. This record supplies no amount. The government's answer of 19 October 2026 gives no amounts for 2026 to 2029: answer 10 refers to answers 8 and 9 on continuing internal discussions and the use of existing BSI and BNetzA resources."
+          "notes": "The absence of a published budget concerns the institute as a whole. The government's answer of 19 October 2026 gives no amounts for 2026 to 2029: answer 10 refers to answers 8 and 9 on continuing internal discussions and the use of existing BSI and BNetzA resources."
         },
         {
           "kind": "not_institute_specific",
