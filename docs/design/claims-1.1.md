@@ -75,7 +75,7 @@ Real records; new ids are fresh UUIDs; excerpt texts are verbatim from the cited
 }
 ```
 
-The existing `us-claude35-2024` excerpt "The U.S. Artificial Intelligence Safety Institute (US AISI) and the UK Artificial Intelligence Safety Institute (UK AISI) conducted a joint pre-deployment evaluation of Anthropic’s latest model" gains the selector `["institutes", {"id": "gb-aisi"}, "claims", {"id": "claims-3f27…"}, "text"]`. Published `functions[]` includes `{"code": "model_testing", "value": "activity", "claim_ids": ["claims-3f27…"]}` and, with no foresight claim (round 4: not found), `{"code": "foresight", "value": "not_found", "claim_ids": []}`. A new code added later reads `not_coded` until the UK is coded against it. By hand: one sentence; one excerpt on `text`; code current; basis allowed for a function; no `body_id` on an institute; meets the test "ran a test of an identifiable AI model" (the quote names the UK institute as doing it and identifies the model by developer and release; the same source's title names it), so activity. The institute's own "we rigorously test leading AI systems" would not do: it names no model.
+The existing `us-claude35-2024` excerpt "The U.S. Artificial Intelligence Safety Institute (US AISI) and the UK Artificial Intelligence Safety Institute (UK AISI) conducted a joint pre-deployment evaluation of Anthropic’s latest model" gains the selector `["institutes", {"id": "gb-aisi"}, "claims", {"id": "claims-3f27…"}, "text"]`. Published `functions[]` includes `{"code": "model_testing", "value": "activity", "claim_ids": ["claims-3f27…"]}` and, with no foresight claim (round 4: not found), `{"code": "foresight", "value": "not_found", "claim_ids": []}`. A new code added later reads `not_coded` until the UK is coded against it. By hand: one sentence; one excerpt on `text`; code current; basis allowed for a function; no `body_id` on an institute; meets the test "ran or commissioned tests of AI models that a text reports in enough detail to show real tests" (the quote names the UK institute as doing it, says what kind of test it was and identifies the model by developer and release; the same source's title names it), so activity. The institute's own "we rigorously test leading AI systems" would not do: it gives no detail of the tests.
 
 **A body role with a gap: Poland's NASK centre.** Authored, in `jurisdictions[PL]`:
 
@@ -143,7 +143,7 @@ The link is recorded as an anchor, with the `source_id` of the copy it is found 
 
 | Slug | Label | Test |
 | --- | --- | --- |
-| `model_testing` | Model testing | It ran or commissioned a test of an identifiable AI model, or a text assigns it testing AI models or systems. |
+| `model_testing` | Model testing | It ran or commissioned tests of AI models that a text reports in enough detail to show real tests (how many, of what kind of model or test, or by what method), or a text assigns it testing AI models or systems. |
 | `evaluation_methods` | Evaluation methods and tools | It develops or publishes test methods, benchmarks, protocols or software; running existing benchmarks is model testing. |
 | `research` | Research | It conducts or funds research on a named AI-risk topic or programme that meets no other test. |
 | `standards_guidance` | Standards and guidelines | It publishes, or is tasked to develop, standards, codes or guidance addressed to AI developers, providers or deployers; no addressee or facilitating others' text does not count. |
