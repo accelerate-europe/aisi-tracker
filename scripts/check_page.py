@@ -11190,13 +11190,13 @@ FAVICON_HREFS = {
 }
 
 
-PAGE_DATA_LEFT_OUT = "check (except last_checked and method), snapshot, access_note and functions"
+PAGE_DATA_LEFT_OUT = "check (except last_checked and method), snapshot and access_note"
 
 
 def expected_page_data(data: dict) -> dict:
     """aisi.json as data/page.json must carry it, without its build mark: without a state's research log (check,
-    except last_checked and method), a source's private-copy metadata (snapshot, access_note), the download-only
-    functions of states and institutes. Claims and excerpt anchors stay for the cards' quotes. Written
+    except last_checked and method) and a source's private-copy metadata (snapshot, access_note). Functions stay for
+    the cards' activity line, claims and excerpt anchors for the cards' quotes. Written
     here from the documented list, not from the build's table, so a field the build drops without saying so fails."""
     want = copy.deepcopy(data)
     for j in want["jurisdictions"]:
@@ -11205,8 +11205,6 @@ def expected_page_data(data: dict) -> dict:
     for source in want["sources"]:
         source.pop("snapshot", None)
         source.pop("access_note", None)
-    for record in [*want["jurisdictions"], *want.get("institutes", [])]:
-        record.pop("functions", None)
     return want
 
 
@@ -11245,7 +11243,7 @@ def check_page_data(dist: Path, data: dict) -> list[str]:
     if len(meta) == 1 and meta[0].get("data-package") != f"data/datapackage.json?v={data['dataset']['version']}-{hashlib.sha256(package.encode('utf-8')).hexdigest()[:10]}":
         errors.append(f"index.html: the data package URL {meta[0].get('data-package')!r} is not versioned by its content")
     script = "\n".join(node.get_text() for node in soup.select("body > script:not([src])"))
-    for pattern in (r"\.snapshot\b", r"\baccess_note\b", r"\.check\.(?!last_checked\b|method\b)\w+", r"\.check\[", r"\bcheck\)", r"\.functions\b"):
+    for pattern in (r"\.snapshot\b", r"\baccess_note\b", r"\.check\.(?!last_checked\b|method\b)\w+", r"\.check\[", r"\bcheck\)"):
         for found in re.finditer(pattern, script):
             errors.append(f"page script reads a field data/page.json leaves out: {script[max(0, found.start() - 40):found.end() + 20]!r}")
     return errors
