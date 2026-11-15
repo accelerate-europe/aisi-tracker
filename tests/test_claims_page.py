@@ -47,15 +47,20 @@ def test_page_script_parses_without_chromium():
 
 
 @pytest.mark.parametrize("gloss, lang, marker", [(None, "en", ""), ("Models", "de", "German"), ("Models", "xx", "xx")])
-def test_quote_rule_translation_original_focus_and_language_fallback(gloss, lang, marker):
-    quote = page_call(f"window.quoteNode('<b>Modelle</b>', {json.dumps(gloss)}, {json.dumps(lang)})")
+@pytest.mark.parametrize("in_sentence", [False, True])
+def test_quote_rule_translation_original_focus_and_language_fallback(gloss, lang, marker, in_sentence):
+    option = ", true" if in_sentence else ""  # Quote folds keep the default.
+    quote = page_call(f"window.quoteNode('<b>Modelle</b>', {json.dumps(gloss)}, {json.dumps(lang)}{option})")
     english = quote["children"][0]
     assert texts(english) == '"' + (gloss or "<b>Modelle</b>") + '"'
     assert english["tag"] == "span"
     if gloss:
         assert english["attrs"] == {"aria-description": "<b>Modelle</b>"}
         assert english["tabIndex"] == 0
-        assert texts(quote).endswith("translated from " + marker)
+        if in_sentence:
+            assert len(quote["children"]) == 1
+        else:
+            assert texts(quote).endswith("translated from " + marker)
     else:
         assert english["attrs"] == {} and len(quote["children"]) == 1
 
@@ -85,14 +90,16 @@ def test_bindings_use_required_leaves_and_deduplicate_a_shared_act_and_date_exce
     assert body["children"][0]["dataset"] == {"sourceId": "s", "excerptIndex": 0}
 
 
-def test_lead_keeps_its_authored_quoted_substring_and_uses_the_full_original():
+@pytest.mark.parametrize("ending", [".", " with them."])
+def test_lead_keeps_its_authored_quoted_substring_and_uses_the_full_original(ending):
     data = bound_data()
     claim = data["jurisdictions"][0]["claims"][0]
-    claim.update(lead=True, text='It says "fact".')
+    claim.update(lead=True, text='It says "fact"' + ending)
     line = page_call(f"(CLAIM_INDEX = claimIndex({json.dumps(data)}), claimSentence(CLAIM_INDEX.fact.claim, CLAIM_INDEX.fact.claim.text))")
-    assert texts(line) == 'It says "fact" translated from German.'
+    assert texts(line) == 'It says "fact"' + ending
     original = line["children"][1]["children"][0]
     assert original["attrs"] == {"aria-description": "Fakt"}
+    assert original["tabIndex"] == 0
 
 
 @pytest.mark.parametrize("state, kept", [("source_gone", True), ("blocked_or_failed", True), ("quote_gone", False)])
@@ -103,6 +110,23 @@ def test_expired_leads_and_body_roles_match_summary_selection(state, kept):
         {"id": "old-role", "kind": "function", "body_id": "body", "expired": True}]}
     actual = page_call(f"(j = {json.dumps(record)}, [!!shownLead(j), bodyClaims(j, 'body').map(c => c.id)])")
     assert actual == [kept, (["role", "old-role"] if kept else ["lead", "role", "old-role"])]
+
+
+@pytest.mark.parametrize("named, sources, role, repeated", [
+    (True, ["s1", "s2"], None, True),
+    (True, ["s1"], None, False),
+    (False, ["s1", "s2"], None, False),
+    (True, ["s1", "s2"], {"lead": True}, True),
+    (True, ["s1", "s2"], {}, False),
+    (True, ["s1", "s2"], {"expired": True}, False),
+])
+def test_closest_body_repeated_requires_name_citations_and_no_role_claim(named, sources, role, repeated):
+    record = {"summary": "Closest body: Fixture lab." if named else "An authority is listed.",
+              "closest_body": {"name": "Fixture lab", "body_id": "lab", "display": {"source_links": ["s1", "s2"]}},
+              "claims": [] if role is None else [{"id": "role", "kind": "function", "body_id": "lab", **role}]}
+    assert page_call(f"closestBodyRepeated({json.dumps(record)}, {json.dumps(sources)})") is repeated
+    record.pop("claims")
+    assert page_call(f"closestBodyRepeated({json.dumps(record)}, {json.dumps(sources)})") is False
 
 
 def test_facts_keep_jurisdiction_then_institute_order_without_functions_or_expired_facts():
@@ -162,7 +186,7 @@ def test_development_sentence_and_all_three_citations_are_checked():
 def test_translated_lead_keeps_the_exact_sentence_in_the_saved_page():
     html, data = saved_claim_page()
     data["jurisdictions"][0]["claims"][0]["text"] = 'It says "a fact".'
-    html = html.replace("A fact.", 'It says <span class="quotation"><span class="quote-text" tabindex="0" aria-description="Fakt">"a fact"</span><span class="translation"> translated from German</span></span>.')
+    html = html.replace("A fact.", 'It says <span class="quotation"><span class="quote-text" tabindex="0" aria-description="Fakt">"a fact"</span></span>.')
     assert check_page.check_claim_cards(html, data) == []
 
 
