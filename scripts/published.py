@@ -501,7 +501,7 @@ def publish(data: dict, *, strict: bool | None = None, rereads: dict | None = No
     migrated = {j["id"] for j in data.get("jurisdictions", []) if "summary" not in j}
     for jurisdiction in facts.get("jurisdictions", []):
         if jurisdiction["id"] in migrated:
-            word_record(jurisdiction, institutes, facts["dataset"].get("vocabularies", {}))
+            word_record(jurisdiction, institutes, facts["dataset"].get("vocabularies", {}), facts["dataset"]["as_of"])
     return derive_display(facts)
 
 
@@ -834,6 +834,13 @@ def generate_texts(result: dict) -> list[str]:
     """
     errors = []
     institutes = {i["id"]: i for i in result.get("institutes", [])}
+    for record in [*result.get("jurisdictions", []), *institutes.values()]:
+        try:
+            summaries.check_language_names(record)
+        except summaries.GeneratorError as exc:
+            errors.append(str(exc))
+    if errors:
+        return errors
     for jurisdiction in result.get("jurisdictions", []):
         where = f"jurisdictions/{jurisdiction['id']}"
         bodies = jurisdiction.get("related_bodies", [])
@@ -857,7 +864,7 @@ def generate_texts(result: dict) -> list[str]:
             and not summaries.role_claims(jurisdiction, b.get("id"))
         ]
         try:
-            word_record(jurisdiction, institutes, result.get("dataset", {}).get("vocabularies", {}))
+            word_record(jurisdiction, institutes, result.get("dataset", {}).get("vocabularies", {}), result["dataset"]["as_of"])
         except summaries.GeneratorError as exc:
             errors.append(f"{where}: {exc}")
     return errors
@@ -871,13 +878,21 @@ def closest_body_warnings(data: dict, published: dict) -> list[str]:
             and (line := summaries.closest_warning(j)) is not None]
 
 
-def word_record(jurisdiction: dict, institutes: dict, vocabularies: dict) -> None:
+def next_check_warnings(data: dict, published: dict) -> list[str]:
+    """One release warning for each migrated record with an overdue next check."""
+    migrated = {j["id"] for j in data.get("jurisdictions", []) if "summary" not in j}
+    return [line for j in published.get("jurisdictions", []) if j["id"] in migrated
+            and (line := summaries.next_check_warning(j, published["dataset"]["as_of"])) is not None]
+
+
+def word_record(jurisdiction: dict, institutes: dict, vocabularies: dict, as_of: str) -> None:
     """Write a migrated record's generated summary, notes, roles and closest-body note; claims marked expired are left out."""
     _, _, basis = status_basis(jurisdiction.get("timeline", []))
     texts = summaries.generate(
         jurisdiction,
         institutes.get(jurisdiction.get("institute_id")),
         jurisdiction["timeline"][basis] if basis is not None else None,
+        as_of=as_of,
     )
     jurisdiction["summary"] = texts["summary"]
     if texts["notes"]:

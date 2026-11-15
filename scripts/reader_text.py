@@ -250,7 +250,7 @@ def stale(text: str, as_of: str) -> str | None:
 def _lint_leaves(data: dict, migrated: set[str]):
     """(record id, migrated?, path, text, kind) for the reader text of jurisdictions and institutes: authored prose
     (claim texts with their quoted spans masked) and check.log. In a migrated record the summary, notes, roles and
-    closest note are generated, so they are left out here: their words come from the claims and log checked here."""
+    closest note are generated, so they are left out here: their words come from claims and structured check fields."""
     owner = {j.get("institute_id"): j["id"] for j in data.get("jurisdictions", []) if j.get("institute_id")}
     for path, value in reader_text(data):
         if path[0] not in {"jurisdictions", "institutes"} or not page_facing(path, data):
@@ -269,6 +269,9 @@ def _lint_leaves(data: dict, migrated: set[str]):
     for index, j in enumerate(data.get("jurisdictions", [])):
         for k, entry in enumerate((j.get("check") or {}).get("log", [])):
             yield j["id"], j["id"] in migrated, ("jurisdictions", index, "check", "log", k, "text"), entry["text"], "log"
+        for k, entry in enumerate((j.get("check") or {}).get("passes", [])):
+            for n, place in enumerate(entry["places"]):
+                yield j["id"], j["id"] in migrated, ("jurisdictions", index, "check", "passes", k, "places", n), place, "prose"
 
 
 def lint_reader_text(data: dict, migrated: set[str]) -> list[tuple[str, str, str, str]]:

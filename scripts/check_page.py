@@ -7542,6 +7542,49 @@ def shown_original(body: dict) -> str:
     return body["name"][: match.start()] if match and body.get("name_en", "").endswith(match.group(1)) else body["name"]
 
 
+def check_how_we_checked(html: str, data: dict) -> list[str]:
+    """Migrated notes retain their generated paragraphs, three before a closed fold, without citations or reading logs.
+
+    Legacy notes can still name documents read; that path remains unchanged until those records migrate.
+    """
+    soup = BeautifulSoup(html, "html.parser")
+    errors = []
+    for j in data["jurisdictions"]:
+        if "claims" not in j:
+            continue
+        card = soup.find(id=f"c-{j['id'].lower()}")
+        if card is None:
+            continue
+        blocks = card.select(".how")
+        expected = [" ".join(p.split()) for p in re.split(r"\n\s*\n", j.get("notes", "")) if p.strip()]
+        if "mini" in card.get("class", []) and len(blocks) != bool(expected):
+            errors.append(f"{j['id']}: How we checked block missing or duplicated")
+        for block in blocks:
+            heading = block.select_one(":scope > .gl")
+            if not heading or not heading.get_text(strip=True):
+                errors.append(f"{j['id']}: How we checked heading is empty")
+            shown = [" ".join(p.get_text().split()) for p in block.select(":scope > p:not(.gl)")]
+            folds = block.select("details")
+            folded = [" ".join(p.get_text().split()) for fold in folds for p in fold.select("p")]
+            if shown != expected[:3] or folded != expected[3:]:
+                errors.append(f"{j['id']}: How we checked paragraphs differ from notes or the three-paragraph limit")
+            hidden = max(0, len(expected) - 3)
+            if len(folds) != bool(hidden) or any(fold.has_attr("open") for fold in folds):
+                errors.append(f"{j['id']}: How we checked needs one closed fold only for extra paragraphs")
+            elif hidden:
+                summary = folds[0].find("summary", recursive=False)
+                if summary is None or re.findall(r"\d+", summary.get_text()) != [str(hidden)]:
+                    errors.append(f"{j['id']}: How we checked fold count differs from its hidden paragraphs")
+            if block.select(".cn, .cites"):
+                errors.append(f"{j['id']}: generated How we checked has citation marks")
+            if re.search(r"\b(?:were|was) read\b|\d{4}-\d{2}-\d{2}-[a-z]", block.get_text(" "), re.I):
+                errors.append(f"{j['id']}: How we checked names a document read or a research pass id")
+            footer = card.select_one(".foot .source-after")
+            if expected and footer and re.search(r"\bChecked\b", footer.get_text()):
+                errors.append(f"{j['id']}: footer repeats the check date from How we checked")
+    return errors
+
+
 def check_nonidentified_folds(html, data: dict) -> list[str]:
     """None-identified fold-outs: the closest body, the AI Act authorities and other bodies, each group recognised by
     its members, so the owner may reword a heading (test strategy D1); a heading must have text.
@@ -7556,7 +7599,7 @@ def check_nonidentified_folds(html, data: dict) -> list[str]:
     from summaries import shown_lead
 
     soup = BeautifulSoup(html, "html.parser")
-    errors = []
+    errors = check_how_we_checked(html, data)
     words = (data.get("dataset", {}).get("display") or {}).get("authority_roles") or {}
     folds = Keyed(soup, "details.card.mini[id]", "id")
     for j in data["jurisdictions"]:
