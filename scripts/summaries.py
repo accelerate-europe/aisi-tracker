@@ -4,8 +4,9 @@ Design in docs/design/claims-1.1.md, section 3 (build step B). A migrated record
 input has no summary; only it is generated, and a record with an authored summary builds as it always has. Words in
 the patterns are fixed here; everything that varies comes from fields, claims and check. Negative findings come only
 from pattern 1, dated by check.last_checked. Expiry (section 4) is step C: a claim marked expired (claims[].expired,
-set by rereads.join in published.publish, which then words the record again) is skipped and nothing else here reads
-freshness.
+set by rereads.join in published.publish, which then words the record again) is skipped, with one exception: the
+closest body's lead claim, expired because its source is offline or could not be re-read, stays in pattern 2 and the
+closest-body note with its re-read state after it (owner, 15 November, "Keep last quote, marked"; section 4).
 
 A state without a status: pattern 1, then the first of patterns 2, 3 and 4 that applies. A state with a status:
 pattern 5, then pattern 6 when its institute has a mandate_short.
@@ -25,6 +26,10 @@ ROLE_WORDS = {"single_point_of_contact": "single point of contact",
 FORM_WORDS = {"new_body": "a new body", "unit_in_existing_body": "a unit within an existing body",
               "federation_of_existing_bodies": "a network of existing bodies", "university_centre": "a university centre"}
 STATUS_WORDS = {"planned": "Planned", "proposed": "Proposed", "exploring": "Exploring"}
+# The re-read states under which an expired lead claim is kept, marked, in the page's freshness wording (section 4).
+# A quote no longer found in a readable source is not kept: the fact may have changed (hub default, for the owner).
+KEPT_STATES = {"source_gone": "Source offline since {since}; last found {last_found}.",
+               "blocked_or_failed": "Source could not be re-read since {since}; last found {last_found}."}
 
 
 class GeneratorError(ValueError):
@@ -75,6 +80,43 @@ def role_text(record: dict, body_id: str | None) -> str:
     return " ".join(c["text"].strip() for c in role_claims(record, body_id))
 
 
+def kept_lead(record: dict) -> dict | None:
+    """The closest body's lead claim when it has expired and is kept, marked: its source is offline or unreadable."""
+    closest = record.get("closest_body") or {}
+    lead = [c for c in record.get("claims", []) if c["kind"] == "function" and c.get("lead")
+            and closest.get("body_id") is not None and c.get("body_id") == closest["body_id"]]
+    if lead and lead[0].get("expired") and lead[0].get("reread", {}).get("state") in KEPT_STATES:
+        return lead[0]
+    return None
+
+
+def marked(claim: dict) -> str:
+    """A kept lead claim's sentence and its re-read state."""
+    reread = claim["reread"]
+    state = KEPT_STATES[reread["state"]].format(since=long_date(reread["since"]), last_found=long_date(reread["last_found"]))
+    return f"{claim['text'].strip()} {state}"
+
+
+def closest_note(record: dict) -> str:
+    """The closest body's note: its role sentences, the kept lead in its place marked; its name alone when none is left."""
+    closest = record["closest_body"]
+    kept = kept_lead(record)
+    texts = [marked(c) if c is kept else c["text"].strip() for c in record.get("claims", [])
+             if c["kind"] == "function" and c.get("body_id") == closest["body_id"] and (c is kept or not c.get("expired"))]
+    return " ".join(texts) or sentence(closest["name"])
+
+
+def closest_warning(record: dict) -> str | None:
+    """For the release warnings and the next sweep: a migrated record whose closest body has no live role claim."""
+    closest = record.get("closest_body")
+    if closest is None or "body_id" not in closest or role_claims(record, closest["body_id"]):
+        return None
+    where = f"{record['id']}: closest body {closest['name']}"
+    if kept := kept_lead(record):
+        return f"{where}: its lead claim {kept['id']} expired ({kept['reread']['state']} since {kept['reread']['since']}) and is shown marked; re-check it in the next sweep"
+    return f"{where} has no live role claim and is shown by name alone; find a quote in the next sweep"
+
+
 def notes_text(record: dict) -> str:
     """The record's notes: check.log in date order (ties keep the authored order), one paragraph each."""
     log = sorted(enumerate(record.get("check", {}).get("log", [])), key=lambda pair: (pair[1]["date"], pair[0]))
@@ -90,6 +132,8 @@ def pattern_2(record: dict) -> str | None:
     if closest is None:
         return None
     line = f"{STAGE_PREFIX[closest['stage']]}: {sentence(closest['name'])}"
+    if kept := kept_lead(record):
+        return f"{line} {marked(kept)}"
     lead = [c for c in role_claims(record, closest.get("body_id")) if c.get("lead")]
     return f"{line} {lead[0]['text'].strip()}" if lead else line
 
@@ -187,11 +231,7 @@ def generate(record: dict, institute: dict | None, basis_event: dict | None) -> 
         "roles": {b["id"]: role_text(record, b["id"]) for b in record.get("related_bodies", [])},
     }
     if closest is not None:
-        note = role_text(record, closest["body_id"])
-        if not note:
-            raise GeneratorError(
-                f"{record['id']}: the closest body has no role claim, so its generated note would be empty; "
-                "closest_body.note must not be empty (a name-only closest body is a 1.2.0 question)"
-            )
-        texts["note"] = note
+        texts["note"] = closest_note(record)
+        if kept_lead(record):
+            texts["roles"][closest["body_id"]] = texts["note"]
     return texts

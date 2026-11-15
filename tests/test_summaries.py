@@ -151,9 +151,64 @@ def test_generate_roles_and_closest_note():
     assert texts["summary"] == RECORDS["PL"]["summary"]
 
 
-def test_generate_refuses_an_empty_closest_note_and_a_missing_body_id():
-    with pytest.raises(summaries.GeneratorError, match="no role claim"):
-        summaries.generate(RECORDS["ID"]["record"], None, None)
+def test_name_only_closest_body_note_is_its_name():
+    """Owner, 15 November: a closest body that never had a quote shows its name alone. The note pins today's output,
+    the name as a sentence (hub default, Q1); the page then shows the name twice, a 1.2.0 page fix (worklist)."""
+    record = RECORDS["ID"]["record"]
+    texts = summaries.generate(record, None, None)
+    assert texts["note"] == "AI Safety Institute Indonesia (AISII)."
+    assert texts["roles"][record["closest_body"]["body_id"]] == ""
+    assert texts["summary"].endswith(" Closest body: AI Safety Institute Indonesia (AISII).")
+    assert summaries.closest_warning(record) == (
+        "ID: closest body AI Safety Institute Indonesia (AISII) has no live role claim and is shown by name alone; "
+        "find a quote in the next sweep")
+
+
+def expired_lead(state):
+    entry = copy.deepcopy(RECORDS["PL"]["record"])
+    lead = next(c for c in entry["claims"] if c.get("lead"))
+    lead.update(expired=True, reread={"state": state, "since": "2026-11-02", "last_found": "2026-10-14"})
+    return entry, lead
+
+
+@pytest.mark.parametrize("state, mark", [
+    ("source_gone", "Source offline since 2 November 2026; last found 14 October 2026."),
+    ("blocked_or_failed", "Source could not be re-read since 2 November 2026; last found 14 October 2026.")])
+def test_offline_lead_is_kept_marked(state, mark):
+    """Owner, 15 November, "Keep last quote, marked": the expired lead stays in the line and the note, its state after it."""
+    record, lead = expired_lead(state)
+    texts = summaries.generate(record, None, None)
+    line = f"Closest body: NASK AI Safety Research Centre. {lead['text']} {mark}"
+    assert summaries.pattern_2(record) == line
+    assert texts["summary"].endswith(" " + line)
+    assert texts["note"] == f"{lead['text']} {mark}"
+    assert texts["roles"][record["closest_body"]["body_id"]] == texts["note"]
+    assert summaries.closest_warning(record) == (
+        f"PL: closest body NASK AI Safety Research Centre: its lead claim {lead['id']} expired ({state} since 2026-11-02) "
+        "and is shown marked; re-check it in the next sweep")
+
+
+def test_lost_quote_lead_is_not_kept():
+    """Hub default: a quote no longer in a readable source leaves; the body falls back to its name alone."""
+    record, _ = expired_lead("quote_gone")
+    texts = summaries.generate(record, None, None)
+    assert summaries.pattern_2(record) == "Closest body: NASK AI Safety Research Centre."
+    assert texts["note"] == "NASK AI Safety Research Centre."
+    assert "name alone" in summaries.closest_warning(record)
+
+
+def test_kept_lead_keeps_live_role_claims_and_drops_other_expired_ones():
+    record, lead = expired_lead("source_gone")
+    body = record["closest_body"]["body_id"]
+    record["claims"][:0] = [{"id": "c-live", "kind": "function", "body_id": body, "text": "It says it does research."},
+                            {"id": "c-gone", "kind": "function", "body_id": body, "text": "Gone.", "expired": True,
+                             "reread": {"state": "source_gone", "since": "2026-11-02", "last_found": "2026-10-14"}}]
+    note = summaries.generate(record, None, None)["note"]
+    assert note == f"It says it does research. {lead['text']} Source offline since 2 November 2026; last found 14 October 2026."
+    assert summaries.closest_warning(record) is None  # a live role claim is left
+
+
+def test_generate_refuses_a_missing_body_id():
     record = copy.deepcopy(RECORDS["PL"]["record"])
     del record["closest_body"]["body_id"]
     with pytest.raises(summaries.GeneratorError, match="body_id"):

@@ -84,24 +84,43 @@ def test_migrated_record_is_generated(migrated):
     assert tables["closest_bodies"][0]["note"] == state["closest_body"]["note"]
 
 
-def test_expired_claim_leaves_the_generated_texts(migrated):
-    """Step C marks claims expired after the texts are first worded; the published texts are worded without them."""
+def lead_lost(migrated, state):
+    """Publish the fixture before and after the lead claim's quote takes the re-read state `state` since 2025."""
     nothing = {"checked_to": None, "runs": [], "sources": {}}
     before = published_facts.publish(migrated, rereads=nothing)
-    state = before["jurisdictions"][0]
-    lead_index = next(i for i, c in enumerate(state["claims"]) if c["id"] == LEAD)
-    claims = {c["id"]: c["text"] for c in state["claims"]}
-    gone = {s["id"]: {rereads.quote_id(e["text"]): {"state": "source_gone", "last_found": "2025-01-01", "since": "2025-01-02",
+    lead_index = next(i for i, c in enumerate(before["jurisdictions"][0]["claims"]) if c["id"] == LEAD)
+    gone = {s["id"]: {rereads.quote_id(e["text"]): {"state": state, "last_found": "2025-01-01", "since": "2025-01-02",
                                                        "last_attempt": before["dataset"]["as_of"]}
                       for e in s.get("excerpts", []) if f"/jurisdictions/0/claims/{lead_index}/text" in e["supports"]}
             for s in before["sources"]}
     after = published_facts.publish(migrated, rereads={"checked_to": before["dataset"]["as_of"], "runs": ["r1"],
                                                         "sources": {k: v for k, v in gone.items() if v}})
+    return before, after
+
+
+def test_expired_claim_leaves_the_generated_texts(migrated):
+    """Step C marks claims expired after the texts are first worded; the published texts are worded without them.
+    A lead claim whose quote is gone from a readable source leaves too (hub default)."""
+    before, after = lead_lost(migrated, "quote_gone")
     state = after["jurisdictions"][0]
+    claims = {c["id"]: c["text"] for c in state["claims"]}
     assert {c["id"]: c["expired"] for c in state["claims"]}[LEAD] is True
     assert claims[LEAD] in before["jurisdictions"][0]["summary"]
     assert claims[LEAD] not in state["summary"] and claims[LEAD] not in state["closest_body"]["note"]
     assert state["closest_body"]["note"] == claims[ROLE]
+    assert located_errors(after, SCHEMA) == []
+    assert published_facts.closest_body_warnings(migrated, after) == []  # a live role claim is left
+
+
+def test_offline_lead_claim_is_kept_marked(migrated):
+    """Owner, 15 November, "Keep last quote, marked": an expired lead whose source is offline stays, with its state."""
+    _, after = lead_lost(migrated, "source_gone")
+    state = after["jurisdictions"][0]
+    claims = {c["id"]: c["text"] for c in state["claims"]}
+    mark = "Source offline since 2 January 2025; last found 1 January 2025."
+    assert {c["id"]: c["expired"] for c in state["claims"]}[LEAD] is True
+    assert state["summary"].endswith(f" Closest body: Synthetic model test centre. {claims[LEAD]} {mark}")
+    assert state["closest_body"]["note"] == f"{claims[ROLE]} {claims[LEAD]} {mark}"
     assert located_errors(after, SCHEMA) == []
 
 
@@ -142,12 +161,21 @@ def test_migrated_closest_body_needs_gap_excerpt_and_body_id(migrated):
     assert any("closest_body.body_id" in e for e in build.check_consistency(d))
 
 
-def test_migrated_closest_body_without_role_claim_fails(migrated):
+def test_migrated_closest_body_without_role_claim_shows_its_name_and_warns(migrated):
+    """Owner, 15 November: never quoted, the name alone; the build warns for the next sweep instead of failing."""
     d = copy.deepcopy(migrated)
-    d["jurisdictions"][0]["claims"] = [c for c in d["jurisdictions"][0]["claims"] if c["kind"] != "function"]
+    d["jurisdictions"][0]["claims"] = []  # all, so no excerpt pointer shifts
     for source in d["sources"]:
         source["excerpts"] = [e for e in source.get("excerpts", []) if not any("/claims/" in p for p in e["supports"])]
-    assert any("generated note would be empty" in e for e in build.check_consistency(d))
+    assert build.check_consistency(d) == []
+    published = build.export_dataset(d)
+    assert located_errors(published, SCHEMA) == []
+    state = published["jurisdictions"][0]
+    assert state["closest_body"]["note"] == "Synthetic model test centre."
+    assert state["summary"].endswith(" Closest body: Synthetic model test centre.")
+    assert published_facts.closest_body_warnings(d, published) == [
+        f"{state['id']}: closest body Synthetic model test centre has no live role claim and is shown by name alone; "
+        "find a quote in the next sweep"]
 
 
 def test_migrated_body_needs_a_role_claim(migrated):

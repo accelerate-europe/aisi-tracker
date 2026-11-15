@@ -863,6 +863,14 @@ def generate_texts(result: dict) -> list[str]:
     return errors
 
 
+def closest_body_warnings(data: dict, published: dict) -> list[str]:
+    """Release warnings for the next sweep: each migrated record whose closest body has no live role claim, shown with
+    its kept lead claim marked or by name alone (docs/design/claims-1.1.md, section 4)."""
+    migrated = {j["id"] for j in data.get("jurisdictions", []) if "summary" not in j}
+    return [line for j in published.get("jurisdictions", []) if j["id"] in migrated
+            and (line := summaries.closest_warning(j)) is not None]
+
+
 def word_record(jurisdiction: dict, institutes: dict) -> None:
     """Write a migrated record's generated summary, notes, roles and closest-body note; claims marked expired are left out."""
     _, _, basis = status_basis(jurisdiction.get("timeline", []))

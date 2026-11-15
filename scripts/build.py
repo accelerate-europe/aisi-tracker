@@ -1145,6 +1145,7 @@ def main() -> None:
     unquoted = unquoted_claims(d)
     warnings = instrument_status_warnings(d, release=args.release) + late + primary_source_warnings(d) + unquoted_warnings(unquoted)
     warnings += [f"re-read: {line}" for line in rereads.alerts(published, rereads.load(), published["dataset"]["as_of"])]
+    warnings += [f"closest body: {line}" for line in fact_pipeline.closest_body_warnings(d, published)]
     for warning in warnings:
         print(f"warning: {warning}", file=sys.stderr)
     if args.report_dir:
