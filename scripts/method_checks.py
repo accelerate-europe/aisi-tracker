@@ -104,7 +104,7 @@ def required_excerpt_pointers(d: dict, *, authored: dict | None = None) -> set[s
                     )
     required.update(required_row_pointers(d))
     required.update(required_flag_pointers(d))
-    required.update(required_claim_pointers(d))
+    required.update(required_claim_pointers(d, authored))
     return required
 
 

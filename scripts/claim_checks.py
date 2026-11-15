@@ -7,10 +7,11 @@ institute; on a jurisdiction it is about the related body its body_id names. A f
 code and sits on an institute or on a jurisdiction with a status. A development claim is a state's
 lead development, at most one, on a jurisdiction with none identified: its act and date are bound
 too, the act to a primary source of the state, dated within three years before check.last_checked.
-When closest_body.body_id names the closest body, its gap needs an excerpt and, if the body has role
-claims, exactly one is marked lead and quotes its excerpt's gloss (or the excerpt). Those two rules
-bind where body_id is set, which a migrated record (no authored summary) must do for its closest body
-(published.generate_texts); designation_step is optional.
+When closest_body.body_id names the closest body and the body has role claims, exactly one is marked
+lead and quotes its excerpt's gloss (or the excerpt). In a migrated record (no authored summary), which
+must set body_id for its closest body (published.generate_texts), the gap also needs an excerpt; an
+unmigrated record's gap stays explained by its authored note, as no quote can show an absence (hub
+default, 15 November, awaiting the owner); designation_step is optional.
 Function codes, their tests and groups live only in dataset.vocabularies.function; a retired code
 stays there with deprecated and replaced_by. check.functions (institutes only) lists the codes an
 institute was coded against: a listed code with no claim is not_found, an unlisted current code
@@ -73,12 +74,14 @@ def function_rows(institute: dict, vocabularies: dict) -> list[dict] | None:
     return rows
 
 
-def required_claim_pointers(d: dict) -> set[str]:
+def required_claim_pointers(d: dict, authored: dict | None = None) -> set[str]:
     """Exact leaves that need a bound excerpt.
 
     Every claim's text, and a development's act and date; the gap of a closest body that names its
-    related body (closest_body.body_id); each designation_step's text and date.
+    related body (closest_body.body_id) in a migrated record, judged on the authored input (no authored
+    summary); each designation_step's text and date.
     """
+    authored_summary = {j["id"]: "summary" in j for j in (d if authored is None else authored)["jurisdictions"]}
     required = set()
     for collection in ("jurisdictions", "institutes"):
         for n, record in enumerate(d[collection]):
@@ -86,7 +89,7 @@ def required_claim_pointers(d: dict) -> set[str]:
                 keys = CLAIM_LEAVES.get(claim.get("kind"), ("text",))
                 required.update(f"/{collection}/{n}/claims/{k}/{key}" for key in keys)
     for n, record in enumerate(d["jurisdictions"]):
-        if "body_id" in record.get("closest_body", {}):
+        if "body_id" in record.get("closest_body", {}) and not authored_summary.get(record["id"], False):
             required.add(f"/jurisdictions/{n}/closest_body/gap")
         for k, body in enumerate(record.get("related_bodies", [])):
             if "designation_step" in body:
