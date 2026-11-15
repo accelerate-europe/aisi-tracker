@@ -3456,6 +3456,28 @@
           "source_ids": [
             "se-gov"
           ]
+        },
+        {
+          "id": "claims-58225919f2c94f7789fcd359b6a3d452",
+          "kind": "function",
+          "code": "regulatory_enforcement",
+          "basis": "mandate",
+          "body_id": "related_bodies-2b7055290e825b10b32885aee6de84cd",
+          "text": "PTS says the government assignment includes being the market-surveillance authority responsible for certain prohibited AI uses and certain high-risk AI systems.",
+          "source_ids": [
+            "se-pts-temporary-ai-mandate-2026"
+          ]
+        },
+        {
+          "id": "claims-59d7edad46ee4af3aaf0331e0bd8a377",
+          "kind": "function",
+          "code": "regulatory_support",
+          "basis": "mandate",
+          "body_id": "related_bodies-c7f5891b540f58518a65815f90820dc7",
+          "text": "The government's decision makes Swedac, in all other respects, the notifying authority responsible for designating and notifying conformity-assessment bodies under the AI Act.",
+          "source_ids": [
+            "se-government-ai-authorities-decision-2026"
+          ]
         }
       ]
     },
@@ -3789,6 +3811,52 @@
       "identifier_source_ids": [
         "un-m49",
         "wikidata-jurisdiction-identifiers"
+      ],
+      "claims": [
+        {
+          "id": "claims-c510dde35bf44ac5b67c5081f3fadac8",
+          "kind": "function",
+          "code": "regulatory_enforcement",
+          "basis": "mandate",
+          "body_id": "related_bodies-cfb18691f52652f9b1cf8001f6aa073a",
+          "text": "The legislative decree makes it a national market-surveillance authority under the AI Regulation, as the competent authority for high-risk AI systems used in providing loans or other financial services governed by the consolidated banking law.",
+          "source_ids": [
+            "it-dlgs179-2026-art5"
+          ]
+        },
+        {
+          "id": "claims-e22fda0962444fb484341b399dd083c0",
+          "kind": "function",
+          "code": "regulatory_enforcement",
+          "basis": "mandate",
+          "body_id": "related_bodies-51b3a2a2081650b98424fc5125a8ce28",
+          "text": "The legislative decree makes it a national market-surveillance authority under the AI Regulation, as the competent authority for high-risk AI systems used in providing financial services governed by the consolidated law on financial intermediation.",
+          "source_ids": [
+            "it-dlgs179-2026-art5"
+          ]
+        },
+        {
+          "id": "claims-6a6ef170229346458d09a39c3dee79c9",
+          "kind": "function",
+          "code": "regulatory_enforcement",
+          "basis": "mandate",
+          "body_id": "related_bodies-4e74849e95025a8a87dd5a67d9253985",
+          "text": "The legislative decree makes it a national market-surveillance authority under the AI Regulation, as the competent authority for high-risk AI systems used in insurance or reinsurance business and in distributing insurance products governed by the Private Insurance Code.",
+          "source_ids": [
+            "it-dlgs179-2026-art5"
+          ]
+        },
+        {
+          "id": "claims-3d356c439f29421d96cd6dc9c19bc484",
+          "kind": "function",
+          "code": "regulatory_enforcement",
+          "basis": "mandate",
+          "body_id": "related_bodies-9542f4c8ca8d43fba362f5198c45c7e6",
+          "text": "The legislative decree makes it a national market-surveillance authority under the AI Regulation, limited to what Article 74(8) of that regulation provides.",
+          "source_ids": [
+            "it-dlgs179-2026-art5"
+          ]
+        }
       ]
     },
     {
@@ -4338,6 +4406,16 @@
       "institute_id": null,
       "related_bodies": [
         {
+          "name": "RTR KI-Servicestelle",
+          "name_en": "RTR AI Service Desk",
+          "counts_as_aisi": false,
+          "kind": "other",
+          "id": "related_bodies-18d1df10e92a59df8106f78e76a7b25e",
+          "source_ids": [
+            "at-dsb-ai-faq"
+          ]
+        },
+        {
           "name": "Datenschutzbehörde",
           "name_en": "Data Protection Authority",
           "counts_as_aisi": false,
@@ -4457,7 +4535,19 @@
         "un-m49",
         "wikidata-jurisdiction-identifiers"
       ],
-      "claims": []
+      "claims": [
+        {
+          "id": "claims-000fc7c8186f42259182d4fae500cb56",
+          "kind": "function",
+          "code": "regulatory_support",
+          "basis": "activity",
+          "body_id": "related_bodies-18d1df10e92a59df8106f78e76a7b25e",
+          "text": "The data protection authority's FAQ says that, in preparation for implementing the AI Act, an AI service desk set up in RTR serves as a contact point and information hub on AI.",
+          "source_ids": [
+            "at-dsb-ai-faq"
+          ]
+        }
+      ]
     },
     {
       "id": "FI",
@@ -5495,7 +5585,19 @@
       "id": "LI",
       "name": "Liechtenstein",
       "institute_id": null,
-      "related_bodies": [],
+      "related_bodies": [
+        {
+          "name": "Stabsstelle für Digitale Innovation",
+          "name_en": "Office for Digital Innovation",
+          "counts_as_aisi": false,
+          "kind": "other",
+          "id": "related_bodies-db50035a13d65f138c591fc054483a95",
+          "source_ids": [
+            "li-government-ai-act-implementation-2026",
+            "li-asit-visit-2025"
+          ]
+        }
+      ],
       "next_check": {
         "date": "2027-06-30",
         "reason": "Check whether an EEA-incorporated AI Act authority is designated."
@@ -5600,7 +5702,30 @@
         "un-m49",
         "wikidata-jurisdiction-identifiers"
       ],
-      "claims": []
+      "claims": [
+        {
+          "id": "claims-5fa872ad647845dc9512146627b9018d",
+          "kind": "function",
+          "code": "regulatory_support",
+          "basis": "activity",
+          "body_id": "related_bodies-db50035a13d65f138c591fc054483a95",
+          "text": "The government's report says the Office for Digital Innovation (SDI) actively informs about developments and regulatory requirements related to the AI Act, including through workshops, newsletters and direct exchange.",
+          "source_ids": [
+            "li-government-ai-act-implementation-2026"
+          ]
+        },
+        {
+          "id": "claims-65373f11195543bab8bf07bcb7ff0fff",
+          "kind": "function",
+          "code": "sandbox",
+          "basis": "mandate",
+          "body_id": "related_bodies-db50035a13d65f138c591fc054483a95",
+          "text": "The government's report says the Office for Digital Innovation is currently designing the AI regulatory sandbox that Article 57 of the AI Act requires.",
+          "source_ids": [
+            "li-government-ai-act-implementation-2026"
+          ]
+        }
+      ]
     },
     {
       "id": "LU",
@@ -5623,6 +5748,15 @@
           "designation_basis": "none_yet",
           "kind": "ai_act_authority",
           "id": "related_bodies-e961f3b9eef9537db5b2d9854ac44805"
+        },
+        {
+          "name": "Luxembourg AI Factory",
+          "counts_as_aisi": false,
+          "kind": "other",
+          "id": "related_bodies-1de660304d885ce49aaeeebfa2833690",
+          "source_ids": [
+            "lu-paperjam-ai-factory-primary-proposal"
+          ]
         },
         {
           "name": "Institut luxembourgeois de la normalisation, de l'accréditation, de la sécurité et qualité des produits et services (ILNAS)",
@@ -5871,7 +6005,19 @@
         "un-m49",
         "wikidata-jurisdiction-identifiers"
       ],
-      "claims": []
+      "claims": [
+        {
+          "id": "claims-6582f6a05aae448eb67a9057eea2850a",
+          "kind": "function",
+          "code": "adoption",
+          "basis": "mandate",
+          "body_id": "related_bodies-1de660304d885ce49aaeeebfa2833690",
+          "text": "The Ministry of the Economy says the Luxembourg AI Factory is the national platform dedicated to the responsible and secure adoption of AI.",
+          "source_ids": [
+            "lu-paperjam-ai-factory-primary-proposal"
+          ]
+        }
+      ]
     },
     {
       "id": "GR",
@@ -6852,7 +6998,20 @@
         ],
         "body_id": "related_bodies-79e93e398efc50d3aa6d1d88ae3e6308"
       },
-      "claims": []
+      "claims": [
+        {
+          "id": "claims-09e925bbd91c4afcbbf7758414009ffb",
+          "kind": "function",
+          "code": "model_testing",
+          "basis": "mandate",
+          "body_id": "related_bodies-79e93e398efc50d3aa6d1d88ae3e6308",
+          "lead": true,
+          "text": "The ministry's project plan says research organisations develop new knowledge, models and methods, while \"AI CyberLab will ensure their verification, testing and implementation support\" when they are introduced into public administration information systems, from a cybersecurity perspective.",
+          "source_ids": [
+            "sk-ai-cyberlab-zamer"
+          ]
+        }
+      ]
     },
     {
       "id": "HU",
@@ -7927,6 +8086,17 @@
           "source_ids": [
             "lv-likumi-ai-centre"
           ]
+        },
+        {
+          "id": "claims-31758bb33306492196575fa8f611bbca",
+          "kind": "function",
+          "code": "risk_monitoring",
+          "basis": "mandate",
+          "body_id": "related_bodies-dfe423ca3f655331836f4c5ef5c43a20",
+          "text": "The Artificial Intelligence Centre Law tasks it with identifying security risks associated with AI solutions in the public and private sectors.",
+          "source_ids": [
+            "lv-likumi-ai-centre"
+          ]
         }
       ]
     },
@@ -7969,6 +8139,15 @@
           "designation_basis": "cabinet_decision",
           "kind": "ai_act_authority",
           "id": "related_bodies-1c98c0ca4a4a5b12838d9260989c588b"
+        },
+        {
+          "name": "National AI Taskforce",
+          "counts_as_aisi": false,
+          "kind": "other",
+          "id": "related_bodies-de5bfa78102150f58957abe2a541c008",
+          "source_ids": [
+            "cy-r6-presidency-strategy-consultation"
+          ]
         },
         {
           "name": "European AI Certification Lab",
@@ -8196,6 +8375,17 @@
           "text": "The deputy ministry says it has been designated market-surveillance authority for high-risk AI systems in points 1, 6, 7 and 8 of Annex III of the AI Act.",
           "source_ids": [
             "cy-dmrid-authority-designation-2025"
+          ]
+        },
+        {
+          "id": "claims-7f0ee5facc7441ca94b1e3d62d31c0a0",
+          "kind": "function",
+          "code": "policy_advice",
+          "basis": "activity",
+          "body_id": "related_bodies-de5bfa78102150f58957abe2a541c008",
+          "text": "The Presidency says the Strategy was drawn up by the National AI Taskforce, which a Council of Ministers decision set up.",
+          "source_ids": [
+            "cy-r6-presidency-strategy-consultation"
           ]
         }
       ]
@@ -55415,6 +55605,24 @@
           ],
           "accessed": "2026-10-18",
           "gloss": "AI CyberLab"
+        },
+        {
+          "text": "Výskumné organizácie vyvíjajú nové poznatky, modely a metodiky, pričom AI CyberLab zabezpečí ich overenie, testovanie a implementačnú podporu pri zavádzaní do informačných systémov verejnej správy z pohľadu kybernetickej bezpečnosti.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "SK"
+              },
+              "claims",
+              {
+                "id": "claims-09e925bbd91c4afcbbf7758414009ffb"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "Research organisations develop new knowledge, models and methods, while AI CyberLab will ensure their verification, testing and implementation support when they are introduced into public administration information systems, from a cybersecurity perspective.",
+          "accessed": "2026-10-17"
         }
       ],
       "access_note": "Complete project PDF retrieved again on 17 October 2026; pages 3 and 5–6 were checked for the relationship between generative-model threats and public-administration deployment testing."
@@ -55646,6 +55854,36 @@
               "text": "nodibinājuma \"Mākslīgā intelekta centrs\" (turpmāk — centrs)",
               "kind": "definition",
               "gloss": "the foundation \"Artificial Intelligence Centre\" (the centre)"
+            }
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "apzināt ar mākslīgā intelekta risinājumiem saistītos drošības riskus publiskajā un privātajā sektorā",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "LV"
+              },
+              "claims",
+              {
+                "id": "claims-31758bb33306492196575fa8f611bbca"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "to identify the security risks associated with artificial intelligence solutions in the public and private sectors",
+          "anchors": [
+            {
+              "text": "4. pants. Centra uzdevumi",
+              "kind": "provision",
+              "gloss": "Section 4. Tasks of the Centre"
+            },
+            {
+              "text": "nodibinājuma \"Mākslīgā intelekta centrs\" (turpmāk — centrs)",
+              "kind": "definition",
+              "gloss": "of the foundation “Artificial Intelligence Centre” (hereinafter, the Centre)"
             }
           ],
           "accessed": "2026-10-17"
@@ -66703,7 +66941,25 @@
         "text_sha256": "5f97f5e1ab731e355a88fa4c1524da8c6c005b3d2ccdc61ecfb69c4d146b8e13",
         "text_scheme": 1
       },
-      "excerpts": []
+      "excerpts": [
+        {
+          "text": "the Luxembourg AI Factory is the national platform dedicated to the responsible and secure adoption of AI",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "LU"
+              },
+              "claims",
+              {
+                "id": "claims-6582f6a05aae448eb67a9057eea2850a"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        }
+      ]
     },
     {
       "id": "sk-oecd-cyberlab-primary-proposal",
@@ -79705,7 +79961,33 @@
       "accessed": "2026-10-17",
       "published": "2026-06-16",
       "language": "sv",
-      "excerpts": [],
+      "excerpts": [
+        {
+          "text": "vara marknadskontrollmyndighet med ansvar för vissa förbjudna AI-användningsområden samt vissa AI-system med hög risk",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "SE"
+              },
+              "claims",
+              {
+                "id": "claims-58225919f2c94f7789fcd359b6a3d452"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "to be the market-surveillance authority responsible for certain prohibited AI uses and certain high-risk AI systems",
+          "anchors": [
+            {
+              "text": "För PTS innefattar regeringsuppdraget att:",
+              "kind": "heading",
+              "gloss": "For PTS, the government assignment includes:"
+            }
+          ],
+          "accessed": "2026-10-17"
+        }
+      ],
       "origin": "SE",
       "title_en": "Mandate gives PTS central responsibility under the AI Regulation",
       "snapshot": {
@@ -79852,6 +80134,24 @@
             ]
           ],
           "gloss": "In Austria, under the current legal position, this competence falls to the Data Protection Authority under sections 18 and 31 DSG."
+        },
+        {
+          "text": "Als Vorbereitung für die Umsetzung der KI-VO gibt es eine KI-Servicestelle, welche in der RTR GmbH eingerichtet ist und als Ansprechpartnerin und Informationshub zum Thema KI dient.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "AT"
+              },
+              "claims",
+              {
+                "id": "claims-000fc7c8186f42259182d4fae500cb56"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "In preparation for implementing the AI Act there is an AI service desk, set up in RTR GmbH, which serves as a contact point and information hub on AI.",
+          "accessed": "2026-10-17"
         }
       ],
       "access_note": "The FAQ is undated. Its sectoral competence statement was read with RIS §§18 and 31 DSG. Earlier EUR-Lex access attempts failed; a later review retrieved the original Article 74 and a rendered consolidated text, registered separately. The undated statement about the general market-surveillance authority is not treated as a dated absence finding.",
@@ -80496,7 +80796,51 @@
       "accessed": "2026-10-17",
       "published": "2026-05-12",
       "language": "de",
-      "excerpts": [],
+      "excerpts": [
+        {
+          "text": "Die SDI informiert aktiv über relevante Entwicklungen und regulatorische Anforderungen im Zusammenhang mit dem AI Act, unter anderem durch Workshops, Newsletter und den direkten Austausch.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "LI"
+              },
+              "claims",
+              {
+                "id": "claims-5fa872ad647845dc9512146627b9018d"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "The SDI actively informs about relevant developments and regulatory requirements in connection with the AI Act, among other things through workshops, newsletters and direct exchange.",
+          "anchors": [
+            {
+              "text": "Die Stabsstelle für Digitale Innovation (SDI)",
+              "kind": "definition",
+              "gloss": "The Office for Digital Innovation (SDI)"
+            }
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Die Stabsstelle für Digitale Innovation (SDI) konzipiert derzeit das in Art. 57 AI Act vorgeschriebene KI-Reallabor (AI-Sandbox)",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "LI"
+              },
+              "claims",
+              {
+                "id": "claims-65373f11195543bab8bf07bcb7ff0fff"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "The Office for Digital Innovation (SDI) is currently designing the AI regulatory sandbox (AI sandbox) required by Art. 57 of the AI Act",
+          "accessed": "2026-10-17"
+        }
+      ],
       "origin": "LI",
       "title_en": "Response to interpellation 59/2026: Artificial intelligence, cloud computing and technological infrastructure",
       "snapshot": {
@@ -80753,6 +81097,24 @@
             ]
           ],
           "accessed": "2026-11-14"
+        },
+        {
+          "text": "Swedac ska i övrigt vara anmälande myndighet med ansvar för att utse och anmäla organ för bedömning av överensstämmelse enligt AI-förordningen.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "SE"
+              },
+              "claims",
+              {
+                "id": "claims-59d7edad46ee4af3aaf0331e0bd8a377"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "Swedac is otherwise to be the notifying authority responsible for designating and notifying conformity-assessment bodies under the AI Act.",
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "SE",
@@ -94446,7 +94808,26 @@
       "accessed": "2026-10-17",
       "language": "el",
       "origin": "CY",
-      "excerpts": [],
+      "excerpts": [
+        {
+          "text": "Η Στρατηγική εκπονήθηκε από την Εθνική Εξειδικευμένη Επιτροπή για την Τεχνητή Νοημοσύνη (National AI Taskforce), η οποία συστάθηκε με απόφαση του Υπουργικού Συμβουλίου",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "CY"
+              },
+              "claims",
+              {
+                "id": "claims-7f0ee5facc7441ca94b1e3d62d31c0a0"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "The Strategy was drawn up by the National Specialised Committee for Artificial Intelligence (National AI Taskforce), which was established by a decision of the Council of Ministers",
+          "accessed": "2026-10-19"
+        }
+      ],
       "snapshot": {
         "retrieved": "2026-10-19T00:11:40Z",
         "sha256": "a6c93dd4eebfec38a2515ce0972854e201c0e0636e856d90a64507801d3ac222",
@@ -115440,9 +115821,27 @@
                 "id": "related_bodies-cfb18691f52652f9b1cf8001f6aa073a"
               },
               "designation_basis"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "IT"
+              },
+              "claims",
+              {
+                "id": "claims-c510dde35bf44ac5b67c5081f3fadac8"
+              },
+              "text"
             ]
           ],
-          "accessed": "2026-11-07"
+          "accessed": "2026-11-07",
+          "anchors": [
+            {
+              "text": "sono autorita' nazionali di vigilanza del mercato ai sensi del medesimo regolamento",
+              "kind": "heading",
+              "gloss": "are national market-surveillance authorities under the same regulation"
+            }
+          ]
         },
         {
           "text": "la CONSOB, quale autorita' competente sui sistemi di IA ad alto rischio utilizzati nell'erogazione dei servizi finanziari disciplinati ai sensi del testo unico delle disposizioni in materia di intermediazione finanziaria",
@@ -115458,9 +115857,27 @@
                 "id": "related_bodies-51b3a2a2081650b98424fc5125a8ce28"
               },
               "designation_basis"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "IT"
+              },
+              "claims",
+              {
+                "id": "claims-e22fda0962444fb484341b399dd083c0"
+              },
+              "text"
             ]
           ],
-          "accessed": "2026-11-07"
+          "accessed": "2026-11-07",
+          "anchors": [
+            {
+              "text": "sono autorita' nazionali di vigilanza del mercato ai sensi del medesimo regolamento",
+              "kind": "heading",
+              "gloss": "are national market-surveillance authorities under the same regulation"
+            }
+          ]
         },
         {
           "text": "l'IVASS, quale autorita' competente sui sistemi di IA ad alto rischio utilizzati nell'esercizio dell'attivita' assicurativa o riassicurativa e di distribuzione di prodotti assicurativi disciplinati ai sensi del codice delle assicurazioni private",
@@ -115476,9 +115893,27 @@
                 "id": "related_bodies-4e74849e95025a8a87dd5a67d9253985"
               },
               "designation_basis"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "IT"
+              },
+              "claims",
+              {
+                "id": "claims-6a6ef170229346458d09a39c3dee79c9"
+              },
+              "text"
             ]
           ],
-          "accessed": "2026-11-07"
+          "accessed": "2026-11-07",
+          "anchors": [
+            {
+              "text": "sono autorita' nazionali di vigilanza del mercato ai sensi del medesimo regolamento",
+              "kind": "heading",
+              "gloss": "are national market-surveillance authorities under the same regulation"
+            }
+          ]
         },
         {
           "text": "il Garante per la protezione dei dati personali, limitatamente a quanto previsto dall'articolo 74, paragrafo 8, del regolamento IA",
@@ -115505,9 +115940,27 @@
                 "id": "related_bodies-9542f4c8ca8d43fba362f5198c45c7e6"
               },
               "name"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "IT"
+              },
+              "claims",
+              {
+                "id": "claims-3d356c439f29421d96cd6dc9c19bc484"
+              },
+              "text"
             ]
           ],
-          "accessed": "2026-11-07"
+          "accessed": "2026-11-07",
+          "anchors": [
+            {
+              "text": "sono autorita' nazionali di vigilanza del mercato ai sensi del medesimo regolamento",
+              "kind": "heading",
+              "gloss": "are national market-surveillance authorities under the same regulation"
+            }
+          ]
         }
       ],
       "accessed": "2026-11-07",
