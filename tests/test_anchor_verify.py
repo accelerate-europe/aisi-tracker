@@ -70,9 +70,10 @@ def test_a_heading_after_the_quote_fails(tmp_path):
     assert row["status"] == "anchor_not_before_quote" and row["anchors"][0]["distance"] < 0
 
 
-def test_a_definition_may_follow_the_quote(tmp_path):
+@pytest.mark.parametrize("kind", ["definition", "membership"])
+def test_a_definition_or_membership_may_follow_the_quote(tmp_path, kind):
     body = EU.replace(b"</body>", b"<p>In this Decision, the Office (the \xe2\x80\x98AI Office\xe2\x80\x99) means the Office.</p></body>")
-    definition = {"text": "the Office (the ‘AI Office’) means the Office.", "kind": "definition"}
+    definition = {"text": "the Office (the ‘AI Office’) means the Office.", "kind": kind}
     assert run(tmp_path, body, {"text": ITEM, "anchors": [definition]})["status"] == "matched"
 
 
@@ -143,7 +144,7 @@ def test_placement_takes_the_view_where_the_anchor_precedes():
     assert verify.anchor_placement("第3条", "Quote text here", text) >= 0
 
 
-@pytest.mark.parametrize("status, verdict", [("matched", "PASS"), ("anchor_mismatch", "FAIL"), ("anchor_not_before_quote", "FAIL")])
+@pytest.mark.parametrize("status, verdict", [("matched", "PASS"), ("anchor_mismatch", "FAIL"), ("anchor_not_before_quote", "FAIL"), ("not_cached", "NOT RUN")])
 def test_compare_fails_on_an_anchor_failure(tmp_path, monkeypatch, status, verdict):
     report = tmp_path / "report"
     report.mkdir()
@@ -158,3 +159,91 @@ def test_compare_fails_on_an_anchor_failure(tmp_path, monkeypatch, status, verdi
     monkeypatch.setattr(check, "run", lambda ctx, step, cmd: (0, None, tmp_path / "log"))
     result, _ = check.verify_quotes(Ctx, {}, [("eu", ITEM, "", check.anchor_key([LEAD_IN]))])
     assert result == verdict
+
+
+def cross_copy_row(tmp_path, named_body, *, body=EU, anchor=None, quote=ITEM):
+    fetcher = verify.Fetcher(tmp_path / "cache", offline=True)
+    source = {"id": "eu-decision", "url": "https://example.org/decision"}
+    named = {"id": "unit-source", "url": "https://example.org/unit"}
+    cached(fetcher, source["url"], body)
+    if named_body is not None:
+        cached(fetcher, named["url"], named_body)
+    excerpt = {"text": quote, "supports": ["/institutes/0/claims/0/text"],
+               "anchors": [anchor if anchor is not None else {**DEFINITION, "source_id": named["id"]}]}
+    return verify.verify_source(source, [(0, excerpt)], fetcher, sources={source["id"]: source, named["id"]: named})["excerpts"][0]
+
+
+@pytest.mark.parametrize("kind", ["definition", "membership"])
+def test_other_copy_anchor_matches_without_placement_or_distance(tmp_path, kind):
+    anchor = {**DEFINITION, "kind": kind, "source_id": "unit-source"}
+    row = cross_copy_row(tmp_path, EU, body=EU.replace(DEFINITION["text"].encode(), b""), anchor=anchor)
+    assert row["status"] == "matched"
+    result, = row["anchors"]
+    assert result["status"] == "matched" and result["source_id"] == "unit-source"
+    assert "distance" not in result
+    assert check.anchor_key(row["anchors"]) == check.anchor_key([anchor])
+
+
+def test_other_copy_anchor_is_not_rescued_by_the_quotes_own_copy(tmp_path):
+    row = cross_copy_row(tmp_path, EU.replace(DEFINITION["text"].encode(), b""))
+    assert row["status"] == "anchor_mismatch"
+    assert row["anchors"][0]["source_id"] == "unit-source"
+
+
+def test_other_copy_anchor_unavailable_is_unverified_in_compare(tmp_path, monkeypatch):
+    row = cross_copy_row(tmp_path, None)
+    anchor, = row["anchors"]
+    assert row["status"] == "not_cached"
+    assert anchor["status"] == "not_checked" and anchor["source_id"] == "unit-source"
+    assert "distance" not in anchor
+    data = tmp_path / "aisi.json"
+    data.write_text("{}")
+    verify.write_report(tmp_path / "excerpt-verification.json", [{"source_id": "eu-decision", "excerpts": [row], "attempts": []}], data)
+
+    class Ctx:
+        cache = work = report = tmp_path
+        snapshots = None
+
+    monkeypatch.setattr(check, "run", lambda ctx, step, cmd: (0, None, tmp_path / "log"))
+    result, _ = check.verify_quotes(Ctx, {}, [("eu-decision", ITEM, "", check.anchor_key(row["anchors"]))])
+    assert result == "NOT RUN"
+
+
+def test_unmatched_quote_keeps_other_copy_anchor_source_id(tmp_path):
+    row = cross_copy_row(tmp_path, EU, quote="This quote is not in the decision.")
+    assert row["status"] == "mismatch"
+    assert row["anchors"] == [{**DEFINITION, "source_id": "unit-source", "status": "not_checked"}]
+
+
+def test_same_copy_anchor_cannot_match_another_sources_copy(tmp_path):
+    row = cross_copy_row(tmp_path, EU, body=EU.replace(DEFINITION["text"].encode(), b""), anchor=DEFINITION)
+    assert row["status"] == "anchor_mismatch"
+
+
+def test_other_copy_anchor_report_names_its_source(tmp_path):
+    row = cross_copy_row(tmp_path, EU)
+    data = tmp_path / "aisi.json"
+    data.write_text("{}")
+    verify.write_report(tmp_path / "report.json", [{"source_id": "eu-decision", "excerpts": [row], "attempts": []}], data)
+    assert "| Anchor source |" in (tmp_path / "report.md").read_text()
+    assert "| unit-source | definition | matched |  |" in (tmp_path / "report.md").read_text()
+    saved = json.loads((tmp_path / "report.json").read_text())
+    assert saved["sources"][0]["excerpts"][0]["anchors"][0]["source_id"] == "unit-source"
+
+
+def test_source_id_changes_the_anchor_key_but_gloss_stays_a_binding_change():
+    own = [DEFINITION]
+    first = [{**DEFINITION, "source_id": "first"}]
+    second = [{**DEFINITION, "source_id": "second"}]
+    assert len({check.anchor_key(a) for a in (own, first, second)}) == 3
+    old = {"sources": [{"id": "eu", "excerpts": [{"text": ITEM, "supports": [], "anchors": first}]}]}
+    new = {"sources": [{"id": "eu", "excerpts": [{"text": ITEM, "supports": [], "anchors": second}]}]}
+    assert check.excerpt_keys(new) - check.excerpt_keys(old)
+    new["sources"][0]["excerpts"][0]["anchors"] = [{**first[0], "gloss": "An edited gloss."}]
+    assert check.excerpt_keys(new) == check.excerpt_keys(old)
+    assert check.binding_changes(old, new)
+
+
+def test_other_copy_anchor_with_an_unknown_source_is_a_mismatch(tmp_path):
+    row = cross_copy_row(tmp_path, EU, anchor={**DEFINITION, "source_id": "no-such-source"})
+    assert row["status"] == "anchor_mismatch" and row["anchors"][0]["source_id"] == "no-such-source"
