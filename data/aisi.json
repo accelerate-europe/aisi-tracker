@@ -391,7 +391,7 @@
         "model_testing": {
           "label": "Model testing",
           "short": "model testing",
-          "definition": "It ran or commissioned a test of an identifiable AI model, or a text assigns it testing AI models or systems.",
+          "definition": "It ran or commissioned tests of AI models that a text reports in enough detail to show real tests (how many, of what kind of model or test, or by what method), or a text assigns it testing AI models or systems.",
           "group": "Testing and science"
         },
         "evaluation_methods": {
