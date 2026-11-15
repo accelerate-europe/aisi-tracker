@@ -5408,21 +5408,7 @@
       "id": "LI",
       "name": "Liechtenstein",
       "institute_id": null,
-      "summary": "No qualifying institute identified. The government adopted an AI strategy for its own administration in April 2026; it covers internal use, not testing of models.",
-      "related_bodies": [
-        {
-          "name": "Stabsstelle für Digitale Innovation",
-          "name_en": "Office for Digital Innovation",
-          "role": "It is the central coordination and advisory office for innovation, digitalisation and new technologies in the national administration, and in May 2026 it was designing the AI regulatory sandbox the AI Act requires; no model-evaluation mandate was found.",
-          "counts_as_aisi": false,
-          "kind": "other",
-          "id": "related_bodies-db50035a13d65f138c591fc054483a95",
-          "source_ids": [
-            "li-government-ai-act-implementation-2026",
-            "li-asit-visit-2025"
-          ]
-        }
-      ],
+      "related_bodies": [],
       "next_check": {
         "date": "2027-06-30",
         "reason": "Check whether an EEA-incorporated AI Act authority is designated."
@@ -5480,7 +5466,17 @@
         "governance_source_ids": [
           "li-government-ai-act-implementation-2026"
         ],
-        "governance_note": "Government report 59/2026 discusses EEA incorporation and preparatory AI Act responsibilities; final authority allocations remain unresolved."
+        "governance_note": "Government report 59/2026 discusses EEA incorporation and preparatory AI Act responsibilities; final authority allocations remain unresolved.",
+        "log": [
+          {
+            "date": "2026-10-17",
+            "text": "The government's report 59/2026 of 12 May 2026 was read. Searched in English and German for a body the government has tasked with testing general-purpose or frontier AI models, or named as its AI safety or security institute."
+          },
+          {
+            "date": "2026-11-10",
+            "text": "The Commission's AI Act contact list of 9 November 2026 was read."
+          }
+        ]
       },
       "source_ids": [
         "li-government-ai-act-implementation-2026",
@@ -5490,7 +5486,6 @@
         "eu-ai-act-authorities-2026",
         "fr-elysee-paris-call-2026"
       ],
-      "notes": "The strategy is reported by a secondary source (Liechtenstein Marketing); the government release was not opened. Government report 59/2026, dated 12 May 2026, describes EEA incorporation and preparatory work on AI Act responsibility, market surveillance and coordination. Final market-surveillance, notifying and single-point-of-contact allocations were not verified in the retrieved sources.\n\nThe Commission source is retained as the required EU/EEA cross-check. Its table lists EU Member State contact points and contains no entry for Liechtenstein; it does not substantiate a national designation or imply that the AI Act is incorporated into the EEA Agreement.\n\nOn 9 November 2026 Liechtenstein was among the states that signed the Paris Call for AI Safety and Security, in which signatories commit to a common framework for the evaluation and risk management of frontier models.",
       "region": {
         "id": "150",
         "name": "Europe",
@@ -5517,7 +5512,8 @@
       "identifier_source_ids": [
         "un-m49",
         "wikidata-jurisdiction-identifiers"
-      ]
+      ],
+      "claims": []
     },
     {
       "id": "LU",
@@ -5956,19 +5952,7 @@
       "id": "HR",
       "name": "Croatia",
       "institute_id": null,
-      "summary": "No qualifying institute identified. On 16 October 2026 the justice and digital transformation minister presented the National AI Development Plan to 2032 and its Action Plan to 2028 (33 measures, EUR 382.1 million to 2028), opening a 30-day public consultation; no safety or testing body is named.",
-      "related_bodies": [
-        {
-          "name": "Ministry of Justice, Public Administration and Digital Transformation (MPUDT)",
-          "role": "It presented the National AI Development Plan and runs the consultation; it is not a model-evaluation body.",
-          "counts_as_aisi": false,
-          "source_ids": [
-            "hr-mpudt-plan-2026-10"
-          ],
-          "kind": "other",
-          "id": "related_bodies-6720b9545d4b526381299d7335ea6380"
-        }
-      ],
+      "related_bodies": [],
       "next_check": {
         "date": "2026-11-20",
         "reason": "Outcome of the consultation on the national AI plan."
@@ -6028,7 +6012,13 @@
         "governance_source_ids": [
           "hr-mpudt-plan-2026-10"
         ],
-        "governance_note": "The ministry's announcement describes the national AI plan and public consultation; the underlying plan was not opened, so coverage is limited to the announcement."
+        "governance_note": "The ministry's announcement describes the national AI plan and public consultation; the underlying plan was not opened, so coverage is limited to the announcement.",
+        "log": [
+          {
+            "date": "2026-10-17",
+            "text": "The ministry's release of 16 October 2026 on the National AI Development Plan and the 2026 legislative plan were read. Searched in English and Croatian for a body the government has tasked with testing general-purpose or frontier AI models, or named as its AI safety or security institute."
+          }
+        ]
       },
       "source_ids": [
         "hr-mpudt-plan-2026-10",
@@ -6037,7 +6027,6 @@
         "ai-act-tracker",
         "fr-elysee-paris-call-2026"
       ],
-      "notes": "The plan documents themselves were not opened; the description rests on the ministry's press release. No AI Act authority designation was found.\n\nThe 2026 legislative plan lists a bill implementing Regulation (EU) 2024/1689. Final market-surveillance, notifying and single-point-of-contact allocations were not verified in the retrieved sources.\n\nOn 9 November 2026 Croatia was among the states that signed the Paris Call for AI Safety and Security, in which signatories commit to a common framework for the evaluation and risk management of frontier models.",
       "region": {
         "id": "150",
         "name": "Europe",
@@ -6064,7 +6053,8 @@
       "identifier_source_ids": [
         "un-m49",
         "wikidata-jurisdiction-identifiers"
-      ]
+      ],
+      "claims": []
     },
     {
       "id": "SI",
@@ -7981,11 +7971,9 @@
       "id": "MT",
       "name": "Malta",
       "institute_id": null,
-      "summary": "No qualifying institute identified. The Malta Digital Innovation Authority is the AI Act market-surveillance and notifying authority and is responsible for setting up the national AI regulatory sandbox; the realigned national AI strategy (83 measures) names no evaluation institute on its summary page.",
       "related_bodies": [
         {
           "name": "Malta Digital Innovation Authority",
-          "role": "It is responsible for the establishment and functioning of the national AI regulatory sandbox. Regulations 3 and 7 designate it as market authority, single contact and notifying authority. National Accreditation Board (Malta) performs conformity-body assessment and monitoring under Article 28(1).",
           "counts_as_aisi": false,
           "source_ids": [
             "mt-ai-regulations-ln226-2025",
@@ -8005,7 +7993,6 @@
         },
         {
           "name": "Information and Data Protection Commissioner (IDPC)",
-          "role": "The Commissioner is the sectoral AI Act market-surveillance authority under regulation 3 of Legal Notice 227/2025, including for specified law-enforcement systems. Regulations 5-7 and 9-12 came into force on 2 August 2026.",
           "counts_as_aisi": false,
           "source_ids": [
             "mt-mdia-ai-authorities",
@@ -8067,7 +8054,17 @@
         "governance_source_ids": [
           "mt-mdia-ai-authorities"
         ],
-        "governance_note": "MDIA describes its lead AI Act market-surveillance and single-contact responsibilities, consistent with an authority rather than a qualifying evaluation institute."
+        "governance_note": "MDIA describes its lead AI Act market-surveillance and single-contact responsibilities, consistent with an authority rather than a qualifying evaluation institute.",
+        "log": [
+          {
+            "date": "2026-10-17",
+            "text": "MDIA's strategy page of 20 November 2025 and the official texts of Legal Notice 226 of 2025 and Legal Notice 227 of 2025 were read. Searched in English for a body the government has tasked with testing general-purpose or frontier AI models, or named as its AI safety or security institute."
+          },
+          {
+            "date": "2026-10-21",
+            "text": "MDIA's AI-authorities page was read."
+          }
+        ]
       },
       "source_ids": [
         "mt-mdia-strategy-2025",
@@ -8076,7 +8073,6 @@
         "mt-regulations-ln226",
         "ai-act-tracker"
       ],
-      "notes": "MDIA's strategy page (published 20 November 2025) describes the realigned strategy with three pillars and 83 measures. The official text of Legal Notice 226/2025 and MDIA's AI-authorities page were also retrieved. Regulations 3 and 7 designate MDIA as market-surveillance authority, single point of contact and notifying authority. The full strategy and measures list were not read.",
       "region": {
         "id": "150",
         "name": "Europe",
@@ -8103,6 +8099,30 @@
       "identifier_source_ids": [
         "un-m49",
         "wikidata-jurisdiction-identifiers"
+      ],
+      "claims": [
+        {
+          "id": "claims-d7029e85995e4469a0c9bfe7c61c7d36",
+          "kind": "function",
+          "code": "sandbox",
+          "basis": "mandate",
+          "body_id": "related_bodies-0d7ba905bff754c7b2d682718d6218d8",
+          "text": "Legal Notice 226 of 2025 makes it the national authority responsible for the establishment and functioning of a national AI regulatory sandbox.",
+          "source_ids": [
+            "mt-ai-regulations-ln226-2025"
+          ]
+        },
+        {
+          "id": "claims-d0eb3be864b3449696cc6a0783a412e5",
+          "kind": "function",
+          "code": "regulatory_enforcement",
+          "basis": "mandate",
+          "body_id": "related_bodies-d5ac427a128a5f599eb55bb15a23c283",
+          "text": "Legal Notice 227 of 2025 makes it the market-surveillance authority for listed high-risk AI systems, among them high-risk systems used for law enforcement in so far as their use is permitted by law.",
+          "source_ids": [
+            "mt-idpc-ai-regulations-ln227-2025"
+          ]
+        }
       ]
     },
     {
@@ -54357,21 +54377,7 @@
       "language": "en",
       "access_note": "A source copy was read on 17 October 2026 for the attached excerpts. Earlier access limitations: Secondary report of a government decision of 14 April 2026; the government's own release was not opened.",
       "published": "2026-04",
-      "excerpts": [
-        {
-          "text": "the government adopted the Liechtenstein State Administration’s (LLV) AI strategy.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "LI"
-              },
-              "summary"
-            ]
-          ],
-          "accessed": "2026-10-17"
-        }
-      ],
+      "excerpts": [],
       "origin": "LI",
       "snapshot": {
         "retrieved": "2026-10-17T14:21:27Z",
@@ -55379,26 +55385,7 @@
       "accessed": "2026-10-17",
       "language": "hr",
       "archive_url": "https://web.archive.org/web/20261017015239/https://mpudt.gov.hr/vijesti-8/ministar-habijan-predstavio-nacionalni-plan-za-razvoj-umjetne-inteligencije-do-2032-godine-i-novosti-u-pravosudju/31137",
-      "excerpts": [
-        {
-          "text": "predstavio Nacionalni plan za razvoj umjetne inteligencije za razdoblje do 2032. godine i Akcijski plan za njegovu provedbu do 2028. godine.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "HR"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-6720b9545d4b526381299d7335ea6380"
-              },
-              "role"
-            ]
-          ],
-          "gloss": "Presented the National AI Development Plan to 2032 and its implementation Action Plan to 2028.",
-          "accessed": "2026-10-17"
-        }
-      ],
+      "excerpts": [],
       "origin": "HR",
       "title_en": "Minister Habijan presented the National Plan for Artificial Intelligence Development to 2032 and new developments in the judiciary",
       "snapshot": {
@@ -55654,26 +55641,7 @@
         "text_sha256": "f4f5476530eb80f994a0ac006b5558b7a770495c225624a5f5d1a51fd21debca",
         "text_scheme": 1
       },
-      "excerpts": [
-        {
-          "text": "Zentrale Koordinations- und Beratungsstelle für Innovation, Digitalisierung und neue Technologien in der LLV",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "LI"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-db50035a13d65f138c591fc054483a95"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-11-14",
-          "gloss": "Central coordination and advisory office for innovation, digitalisation and new technologies in the national administration (LLV)"
-        }
-      ]
+      "excerpts": []
     },
     {
       "id": "recheck-lac-dl-2026",
@@ -78930,24 +78898,7 @@
         "text_sha256": "ce5998a4de01061df1a3650d35296c2200b519b7f96446460a2c8f6e8af762e8",
         "text_scheme": 1
       },
-      "excerpts": [
-        {
-          "text": "the MDIA is designated as Malta’s lead market surveillance authority, the single point of contact",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "MT"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-0d7ba905bff754c7b2d682718d6218d8"
-              },
-              "role"
-            ]
-          ]
-        }
-      ],
+      "excerpts": [],
       "origin": "MT",
       "access_note": "Snapshot review on 17 October 2026, using cached responses: Original source: an HTTP error (HTTP 403); Fallback text copy: an error or challenge page; Separate archive.ph newest-capture lookup returned HTTP 429; the capture content was not checked. That review retained no usable source copy. On 21 October 2026 the complete response of the linked Wayback capture of 13 October 2026 was retained as the private source copy, and every bound quotation was found in it by the automated verifier."
     },
@@ -79678,21 +79629,7 @@
       "accessed": "2026-10-17",
       "published": "2026-03-06",
       "language": "hr",
-      "excerpts": [
-        {
-          "text": "Zakon o provedbi Uredbe (EU) 2024/1689",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "HR"
-              },
-              "notes"
-            ]
-          ],
-          "gloss": "Law implementing Regulation(EU)2024/1689."
-        }
-      ],
+      "excerpts": [],
       "origin": "HR",
       "title_en": "Legislative alignment plan of the Republic of Croatia for 2026",
       "access_note": "Review of excerpts in a text copy on 17 October 2026: The quotation is item 27 in the legislative programme, naming the proposed AI Act implementation law. It supports legislative-plan context, not enactment. The direct cached response was unavailable (unreachable). The quoted passages were checked in the retained text copy; no obvious spoken accessibility expansion was observed. Original displayed typography was not independently verified, so it remains flagged as evidence checked only in a text copy. The published snapshot hash identifies the retained text copy at https://r.jina.ai/https://narodne-novine.nn.hr/clanci/sluzbeni/full/2026_03_26_291.html.",
@@ -79712,50 +79649,7 @@
       "accessed": "2026-10-17",
       "published": "2026-05-12",
       "language": "de",
-      "excerpts": [
-        {
-          "text": "Die KI-Verordnung befindet sich im EWR-Übernahmeprozess",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "LI"
-              },
-              "notes"
-            ]
-          ],
-          "gloss": "The AI Regulation is in the EEA incorporation process."
-        },
-        {
-          "text": "Die Stabsstelle für Digitale Innovation (SDI) konzipiert derzeit das in Art. 57 AI Act vorgeschriebene KI-Reallabor (AI-Sandbox)",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "LI"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-db50035a13d65f138c591fc054483a95"
-              },
-              "name"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "LI"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-db50035a13d65f138c591fc054483a95"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-11-14",
-          "gloss": "The Office for Digital Innovation (SDI) is currently designing the AI regulatory sandbox (AI sandbox) required by Art. 57 of the AI Act"
-        }
-      ],
+      "excerpts": [],
       "origin": "LI",
       "title_en": "Response to interpellation 59/2026: Artificial intelligence, cloud computing and technological infrastructure",
       "snapshot": {
@@ -80340,20 +80234,21 @@
       "language": "en",
       "excerpts": [
         {
-          "text": "The Malta Digital Innovation Authority shall be designated as the Notifying Authority",
+          "text": "The Malta Digital Innovation Authority shall be the national authority responsible for the establishment and functioning of a national AI regulatory sandbox",
           "supports": [
             [
               "jurisdictions",
               {
                 "id": "MT"
               },
-              "related_bodies",
+              "claims",
               {
-                "id": "related_bodies-0d7ba905bff754c7b2d682718d6218d8"
+                "id": "claims-d7029e85995e4469a0c9bfe7c61c7d36"
               },
-              "role"
+              "text"
             ]
-          ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "MT",
@@ -84406,37 +84301,9 @@
                 "id": "related_bodies-d5ac427a128a5f599eb55bb15a23c283"
               },
               "authority_roles"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "MT"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-d5ac427a128a5f599eb55bb15a23c283"
-              },
-              "role"
             ]
           ],
           "accessed": "2026-10-17"
-        },
-        {
-          "text": "Regulations 5 to 7 and 9 to 12 shall come into force on the 2nd August 2026.",
-          "accessed": "2026-10-17",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "MT"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-d5ac427a128a5f599eb55bb15a23c283"
-              },
-              "role"
-            ]
-          ]
         },
         {
           "text": "high-risk systems used for law enforcement, in so far as their use is permitted by law",
@@ -84447,12 +84314,22 @@
               {
                 "id": "MT"
               },
-              "related_bodies",
+              "claims",
               {
-                "id": "related_bodies-d5ac427a128a5f599eb55bb15a23c283"
+                "id": "claims-d0eb3be864b3449696cc6a0783a412e5"
               },
-              "role"
+              "text"
             ]
+          ],
+          "anchors": [
+            {
+              "text": "3. The Commissioner shall be designated as the market surveillance authority for the purpose of Regulation (EU) 2024/1689 for the following high-risk AI systems:",
+              "kind": "heading"
+            },
+            {
+              "text": "\"Commissioner\" means the Information and Data Protection Commissioner",
+              "kind": "definition"
+            }
           ]
         },
         {
@@ -119578,20 +119455,6 @@
                 "id": "CY"
               },
               "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "HR"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "LI"
-              },
-              "notes"
             ]
           ],
           "accessed": "2026-11-10"
@@ -119603,20 +119466,6 @@
               "jurisdictions",
               {
                 "id": "CY"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "HR"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "LI"
               },
               "notes"
             ],
@@ -119647,20 +119496,6 @@
               "jurisdictions",
               {
                 "id": "CY"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "HR"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "LI"
               },
               "notes"
             ]
