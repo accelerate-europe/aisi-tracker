@@ -6972,21 +6972,9 @@
       "id": "BG",
       "name": "Bulgaria",
       "institute_id": null,
-      "summary": "No qualifying institute identified. Bill 52-654-01-151, tabled by MPs on 24 September 2026 with proposed AI Act authority allocations, was rejected at first reading by the parliamentary committee on 4 November 2026. The INSAIT research institute is not a government evaluator.",
       "related_bodies": [
         {
-          "name": "Ministry of Innovation and Digital Transformation",
-          "role": "The 2026 draft bill assigns AI-policy responsibility to the Minister of Innovation and Digital Transformation and provides for a national coordinator. Enactment and an institute to evaluate advanced models were not established by the retrieved bill.",
-          "counts_as_aisi": false,
-          "source_ids": [
-            "bg-ai-bill151-2026-authorities"
-          ],
-          "kind": "other",
-          "id": "related_bodies-a95720d42a855facaf5ad79e6ee4ff13"
-        },
-        {
           "name": "INSAIT",
-          "role": "It is based in Sofia, and its website lists foundation models including BgGPT, a Bulgarian language model; no state mandate for it to evaluate models was found.",
           "counts_as_aisi": false,
           "kind": "other",
           "id": "related_bodies-c1353e6dfb135bde8b5daeef997324c8",
@@ -6997,13 +6985,11 @@
         {
           "name": "Министър на иновациите и дигиталната трансформация",
           "name_en": "Minister of Innovation and Digital Transformation",
-          "role": "The Minister's AI Act designation is proposed in Article 5(2) of parliamentary bill 52-654-01-151, introduced 24 September 2026 by MPs. The text is a bill, not an enacted designation.",
           "counts_as_aisi": false,
           "source_ids": [
             "bg-ai-bill151-2026-authorities",
             "eu-ai-act-authorities-2026"
           ],
-          "designation_state": "proposed",
           "authority_roles": [
             "notifying"
           ],
@@ -7014,13 +7000,11 @@
         {
           "name": "Комисия за регулиране на съобщенията",
           "name_en": "Communications Regulation Commission",
-          "role": "Its AI Act designation is proposed in Article 5(4) of parliamentary bill 52-654-01-151. The Commission's contact list of 9 November 2026 names it, marked as pending final adoption.",
           "counts_as_aisi": false,
           "source_ids": [
             "bg-ai-bill151-2026-authorities",
             "eu-ai-act-authorities-2026"
           ],
-          "designation_state": "proposed",
           "authority_roles": [
             "single_point_of_contact"
           ],
@@ -7031,13 +7015,11 @@
         {
           "name": "Комисия за финансов надзор",
           "name_en": "Financial Supervision Commission",
-          "role": "It would cover insurance, investment and pensions under Article 5(1) of parliamentary bill 52-654-01-151.",
           "counts_as_aisi": false,
           "source_ids": [
             "bg-ai-bill151-2026-authorities",
             "eu-ai-act-authorities-2026"
           ],
-          "designation_state": "proposed",
           "authority_roles": [
             "market_surveillance"
           ],
@@ -7048,13 +7030,11 @@
         {
           "name": "Българска народна банка",
           "name_en": "Bulgarian National Bank",
-          "role": "It would cover credit, financial and payment institutions under Article 5(1) of parliamentary bill 52-654-01-151.",
           "counts_as_aisi": false,
           "source_ids": [
             "bg-ai-bill151-2026-authorities",
             "eu-ai-act-authorities-2026"
           ],
-          "designation_state": "proposed",
           "authority_roles": [
             "market_surveillance"
           ],
@@ -7065,13 +7045,11 @@
         {
           "name": "Изпълнителна агенция Медицински надзор",
           "name_en": "Executive Agency Medical Supervision",
-          "role": "It would cover healthcare establishments under Article 5(1) of parliamentary bill 52-654-01-151.",
           "counts_as_aisi": false,
           "source_ids": [
             "bg-ai-bill151-2026-authorities",
             "eu-ai-act-authorities-2026"
           ],
-          "designation_state": "proposed",
           "authority_roles": [
             "market_surveillance"
           ],
@@ -7082,13 +7060,11 @@
         {
           "name": "Изпълнителна агенция по лекарствата",
           "name_en": "Bulgarian Drug Agency",
-          "role": "It would cover pharmaceuticals and AI medical devices under Article 5(1) of parliamentary bill 52-654-01-151.",
           "counts_as_aisi": false,
           "source_ids": [
             "bg-ai-bill151-2026-authorities",
             "eu-ai-act-authorities-2026"
           ],
-          "designation_state": "proposed",
           "authority_roles": [
             "market_surveillance"
           ],
@@ -7099,13 +7075,11 @@
         {
           "name": "Съвет за електронни медии",
           "name_en": "Council for Electronic Media",
-          "role": "It would cover media and video-sharing services under Article 5(1) of parliamentary bill 52-654-01-151.",
           "counts_as_aisi": false,
           "source_ids": [
             "bg-ai-bill151-2026-authorities",
             "eu-ai-act-authorities-2026"
           ],
-          "designation_state": "proposed",
           "authority_roles": [
             "market_surveillance"
           ],
@@ -7116,13 +7090,11 @@
         {
           "name": "Изпълнителна агенция Автомобилна администрация",
           "name_en": "Executive Agency Automobile Administration",
-          "role": "It would cover transport services under Article 5(1) of parliamentary bill 52-654-01-151.",
           "counts_as_aisi": false,
           "source_ids": [
             "bg-ai-bill151-2026-authorities",
             "eu-ai-act-authorities-2026"
           ],
-          "designation_state": "proposed",
           "authority_roles": [
             "market_surveillance"
           ],
@@ -7133,13 +7105,11 @@
         {
           "name": "Комисия за защита на личните данни",
           "name_en": "Commission for Personal Data Protection",
-          "role": "It would cover Article 74(8) high-risk systems, excluding Annex III point 8 under Article 5(1) of parliamentary bill 52-654-01-151.",
           "counts_as_aisi": false,
           "source_ids": [
             "bg-ai-bill151-2026-authorities",
             "eu-ai-act-authorities-2026"
           ],
-          "designation_state": "proposed",
           "authority_roles": [
             "market_surveillance"
           ],
@@ -7150,13 +7120,11 @@
         {
           "name": "Инспекторат към Висшия съдебен съвет",
           "name_en": "Inspectorate to the Supreme Judicial Council",
-          "role": "It would cover Annex III point 8 systems used by or supporting judicial authorities under Article 5(1) of parliamentary bill 52-654-01-151.",
           "counts_as_aisi": false,
           "source_ids": [
             "bg-ai-bill151-2026-authorities",
             "eu-ai-act-authorities-2026"
           ],
-          "designation_state": "proposed",
           "authority_roles": [
             "market_surveillance"
           ],
@@ -7167,13 +7135,11 @@
         {
           "name": "Министър на правосъдието",
           "name_en": "Minister of Justice",
-          "role": "The Minister would cover Annex III point 8 systems used for alternative dispute resolution under Article 5(1) of parliamentary bill 52-654-01-151.",
           "counts_as_aisi": false,
           "source_ids": [
             "bg-ai-bill151-2026-authorities",
             "eu-ai-act-authorities-2026"
           ],
-          "designation_state": "proposed",
           "authority_roles": [
             "market_surveillance"
           ],
@@ -7184,13 +7150,11 @@
         {
           "name": "Държавна агенция за метрологичен и технически надзор",
           "name_en": "State Agency for Metrological and Technical Surveillance",
-          "role": "It would cover all remaining sectors under Article 5(1) of parliamentary bill 52-654-01-151.",
           "counts_as_aisi": false,
           "source_ids": [
             "bg-ai-bill151-2026-authorities",
             "eu-ai-act-authorities-2026"
           ],
-          "designation_state": "proposed",
           "authority_roles": [
             "market_surveillance"
           ],
@@ -7257,7 +7221,17 @@
         "governance_source_ids": [
           "bg-ai-bill151-2026-authorities"
         ],
-        "governance_note": "The scanned parliamentary bill was visually reviewed for proposed AI Act authority allocations; these remain proposals, not enacted designations."
+        "governance_note": "The scanned parliamentary bill was visually reviewed for proposed AI Act authority allocations; these remain proposals, not enacted designations.",
+        "log": [
+          {
+            "date": "2026-10-17",
+            "text": "Article 5 of bill 52-654-01-151 was read. Searched in English and Bulgarian for a body the government has tasked with testing general-purpose or frontier AI models, or named as its AI safety or security institute."
+          },
+          {
+            "date": "2026-11-07",
+            "text": "BTA's report of 4 November 2026 on the innovation committee's vote on bill 52-654-01-151 was read."
+          }
+        ]
       },
       "source_ids": [
         "bg-parliament-ai-bill",
@@ -7268,7 +7242,6 @@
         "ai-act-tracker",
         "bg-bta-2026-11-04"
       ],
-      "notes": "The parliamentary bill PDF was read, including Article 5 on pages 5–6. It proposes ten market-surveillance authorities, the Minister of Innovation and Digital Transformation as notifying authority, and the Communications Regulation Commission as single point of contact. These allocations remain proposals in the retrieved bill. On 4 November 2026 the National Assembly's Committee on Innovation and Digital Transformation rejected the bill at first reading, with nine abstentions, five votes in favour and none against, the national news agency BTA reported.\n\nThe July 2026 cabinet account envisages a new law implementing the AI Act; the September parliamentary bill provides the later proposed allocation described here. The secondary regulations.ai overview instead attributes national strategy leadership to the Ministry of Electronic Governance; that account conflicts with the later bill's proposed ministry name. No enacted reorganisation was established by these sources.",
       "region": {
         "id": "150",
         "name": "Europe",
@@ -7295,17 +7268,28 @@
       "identifier_source_ids": [
         "un-m49",
         "wikidata-jurisdiction-identifiers"
+      ],
+      "claims": [
+        {
+          "id": "claims-58abd4a3c7834968bf483e34b71a7016",
+          "kind": "function",
+          "code": "talent",
+          "basis": "activity",
+          "body_id": "related_bodies-c1353e6dfb135bde8b5daeef997324c8",
+          "text": "INSAIT says a student takes part in its special four-year EXPLORER bachelor's programme aimed at developing talented Bulgarian students.",
+          "source_ids": [
+            "bg-insait-digitalk"
+          ]
+        }
       ]
     },
     {
       "id": "LT",
       "name": "Lithuania",
       "institute_id": null,
-      "summary": "No qualifying institute identified. The Communications Regulatory Authority is the AI Act market-surveillance body and a pilot AI sandbox is in place; Kaunas University of Technology is building a university AI centre.",
       "related_bodies": [
         {
           "name": "Communications Regulatory Authority (RRT)",
-          "role": "Its AI Act roles are assigned under law amendments adopted 14 January 2025; sectoral allocation is still being developed in the ministry account.",
           "counts_as_aisi": false,
           "source_ids": [
             "lt-ai-authorities-ministry",
@@ -7322,7 +7306,6 @@
         },
         {
           "name": "Innovation Agency",
-          "role": "Its AI Act role is assigned under law amendments adopted by Parliament on 14 January 2025. It is also a sandbox partner.",
           "counts_as_aisi": false,
           "source_ids": [
             "lt-ai-authorities-ministry",
@@ -7335,16 +7318,6 @@
           "designation_basis": "law",
           "kind": "ai_act_authority",
           "id": "related_bodies-871b94a361b75d9a9550525d7841cda6"
-        },
-        {
-          "name": "KTU SustAInLivWork centre of excellence",
-          "role": "It is a university centre for testing and validating AI solutions in industry, transport, energy and health; it has no government mandate over advanced models.",
-          "counts_as_aisi": false,
-          "source_ids": [
-            "lt-ktu-centre"
-          ],
-          "kind": "other",
-          "id": "related_bodies-fa5e09687e545a9fa0ab328323f094e7"
         }
       ],
       "next_check": {
@@ -7406,7 +7379,13 @@
         "governance_source_ids": [
           "lt-ai-authorities-ministry"
         ],
-        "governance_note": "The ministry describes the Innovation Agency and Communications Regulatory Authority's AI Act functions; this is substantive national governance evidence."
+        "governance_note": "The ministry describes the Innovation Agency and Communications Regulatory Authority's AI Act functions; this is substantive national governance evidence.",
+        "log": [
+          {
+            "date": "2026-10-17",
+            "text": "The Ministry of the Economy and Innovation's AI page was read. Searched in English and Lithuanian for a body the government has tasked with testing general-purpose or frontier AI models, or named as its AI safety or security institute."
+          }
+        ]
       },
       "source_ids": [
         "lt-ktu-centre",
@@ -7414,7 +7393,6 @@
         "ai-act-tracker",
         "eu-ai-act-authorities-2026"
       ],
-      "notes": "The Ministry of Economy and Innovation's AI page was retrieved. It reports that amendments adopted on 14 January 2025 designate the Innovation Agency as notifying authority and the Communications Regulatory Authority as market-surveillance authority and single point of contact. The ministry account describes further sectoral allocation work.",
       "region": {
         "id": "150",
         "name": "Europe",
@@ -7441,17 +7419,16 @@
       "identifier_source_ids": [
         "un-m49",
         "wikidata-jurisdiction-identifiers"
-      ]
+      ],
+      "claims": []
     },
     {
       "id": "LV",
       "name": "Latvia",
       "institute_id": null,
-      "summary": "No qualifying institute identified. The Artificial Intelligence Centre promotes AI adoption, identifies security risks and runs a regulatory sandbox. The current law and ministry accounts describe applied testing and risk management, without establishing a mandate to evaluate advanced models for capabilities or behaviour risks.",
       "related_bodies": [
         {
           "name": "Artificial Intelligence Centre (MIC)",
-          "role": "It is a foundation under the AI Centre Law with adoption, security-risk identification, research-support and regulatory-sandbox functions. Ministry accounts describe supervised testing before market entry or public-sector deployment, plus defence adoption and deepfake analysis. A national mandate to evaluate advanced models for capabilities or behaviour risks was not established.",
           "counts_as_aisi": false,
           "source_ids": [
             "lv-lvportals-sandbox-primary-proposal",
@@ -7465,7 +7442,6 @@
         {
           "name": "Patērētāju tiesību aizsardzības centrs (PTAC)",
           "name_en": "Consumer Rights Protection Centre (PTAC)",
-          "role": "Its AI Act roles are assigned under Cabinet minutes of 25 February 2025, § 49, paragraphs 5 and 8.",
           "counts_as_aisi": false,
           "source_ids": [
             "lv-cabinet-ai-authorities-2025",
@@ -7483,7 +7459,6 @@
         {
           "name": "Datu valsts inspekcija",
           "name_en": "Data State Inspectorate",
-          "role": "It exercises market surveillance within its remit under Cabinet minutes of 25 February 2025, § 49, paragraph 6; DVI also affirmed the role on 9 October 2026.",
           "counts_as_aisi": false,
           "source_ids": [
             "lv-dvi-ai-market-surveillance-2026",
@@ -7501,7 +7476,6 @@
         {
           "name": "Ekonomikas ministrija",
           "name_en": "Ministry of Economics",
-          "role": "Its AI Act role is assigned under Cabinet minutes of 25 February 2025, § 49, paragraph 2; LATAK performs accreditation rather than the ministry's notifying role.",
           "counts_as_aisi": false,
           "source_ids": [
             "lv-cabinet-ai-authorities-2025",
@@ -7628,7 +7602,13 @@
           "lv-r6-centre-overview",
           "lv-r6-centre-defence"
         ],
-        "governance_note": "The current consolidated law and Latvian and English ministry accounts establish national governance, applied risk management and sandbox testing. They do not establish the qualifying remit to evaluate advanced models; confidence is medium following both language searches."
+        "governance_note": "The current consolidated law and Latvian and English ministry accounts establish national governance, applied risk management and sandbox testing. They do not establish the qualifying remit to evaluate advanced models; confidence is medium following both language searches.",
+        "log": [
+          {
+            "date": "2026-10-17",
+            "text": "The Artificial Intelligence Centre Law (version in force from 1 June 2026), the ministry's account of the sandbox rules of 13 January 2026, its overview of the centre updated on 2 July 2026 and the defence ministry's release of February 2026 were read. Searched in English and Latvian for a body the government has tasked with testing general-purpose or frontier AI models, or named as its AI safety or security institute."
+          }
+        ]
       },
       "source_ids": [
         "lv-likumi-ai-centre",
@@ -7642,7 +7622,6 @@
         "lv-r6-centre-defence",
         "fr-elysee-paris-call-2026"
       ],
-      "notes": "The current AI Centre Law, displayed as in force from 1 June 2026, retains security-risk identification and research-capacity tasks in section 4(1)(2). Sections 8–9 concern a regulatory environment for developing, testing and validating AI systems and compliance with law and ethical standards. This supports applied testing; it does not establish the remit required here to evaluate advanced models for capabilities or behaviour risks. The ministry's English account of the rules approved on 13 January 2026 describes supervised testing before market placement or public-administration deployment. February 2026 defence funding supports advice, technology analysis, defence AI adoption and assessment of deepfake use. The ministry overview, updated on 2 July 2026, describes adoption and commercialisation support. No later qualifying designation or mandate extension was found in Latvian and English searches. The Centre's broader risk powers are not a prohibition on future model evaluation; reassess if a technical mandate is published.\n\nOn 9 November 2026 Latvia was among the states that signed the Paris Call for AI Safety and Security, in which signatories commit to a common framework for the evaluation and risk management of frontier models.",
       "region": {
         "id": "150",
         "name": "Europe",
@@ -7669,6 +7648,30 @@
       "identifier_source_ids": [
         "un-m49",
         "wikidata-jurisdiction-identifiers"
+      ],
+      "claims": [
+        {
+          "id": "claims-7b25fd5a6fa3419d89caa9b84da9f18a",
+          "kind": "function",
+          "code": "sandbox",
+          "basis": "mandate",
+          "body_id": "related_bodies-dfe423ca3f655331836f4c5ef5c43a20",
+          "text": "The Artificial Intelligence Centre Law tasks it with organising, with the competent institutions, a special regulatory environment in which rules different from those in force may apply, so that AI systems can be developed, tested and improved.",
+          "source_ids": [
+            "lv-likumi-ai-centre"
+          ]
+        },
+        {
+          "id": "claims-06ddecfb054e4dcc8f069e55ffb17cae",
+          "kind": "function",
+          "code": "adoption",
+          "basis": "mandate",
+          "body_id": "related_bodies-dfe423ca3f655331836f4c5ef5c43a20",
+          "text": "The Artificial Intelligence Centre Law tasks it with promoting the application of AI technologies in the public and private sectors.",
+          "source_ids": [
+            "lv-likumi-ai-centre"
+          ]
+        }
       ]
     },
     {
@@ -54707,21 +54710,7 @@
       "access_note": "A source copy was read on 17 October 2026 for the attached excerpts. Earlier access limitations: Secondary tracker; the draft AI Act itself was not opened.",
       "archive_url": "https://web.archive.org/web/20261017011848/https://regulations.ai/regulations/RAI-BG-NA-SUMMARY-2026",
       "published": "2026-09-12",
-      "excerpts": [
-        {
-          "text": "Bulgaria governs artificial intelligence through national strategic policies led by the Ministry of Electronic Governance",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "BG"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-10-17"
-        }
-      ],
+      "excerpts": [],
       "origin": "CH",
       "snapshot": {
         "retrieved": "2026-10-17T14:21:30Z",
@@ -54761,37 +54750,26 @@
                 "id": "related_bodies-c1353e6dfb135bde8b5daeef997324c8"
               },
               "name"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "BG"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-c1353e6dfb135bde8b5daeef997324c8"
-              },
-              "role"
             ]
           ],
           "accessed": "2026-11-13"
         },
         {
-          "text": "1784 Sofia, Bulgaria",
+          "text": "as a participant in INSAIT's special four-year EXPLORER bachelor's program aimed at developing talented Bulgarian students",
           "supports": [
             [
               "jurisdictions",
               {
                 "id": "BG"
               },
-              "related_bodies",
+              "claims",
               {
-                "id": "related_bodies-c1353e6dfb135bde8b5daeef997324c8"
+                "id": "claims-58abd4a3c7834968bf483e34b71a7016"
               },
-              "role"
+              "text"
             ]
           ],
-          "accessed": "2026-11-13"
+          "accessed": "2026-10-17"
         }
       ]
     },
@@ -54806,25 +54784,7 @@
       "language": "en",
       "access_note": "A source copy was read on 17 October 2026 for the attached excerpts. Earlier access limitations: Lithuanian ministry pages (eimin.lrv.lt, lithuania.lt) returned HTTP 403, so no government source was readable.",
       "archive_url": "https://web.archive.org/web/20261017012232/https://en.ktu.edu/news/new-centre-in-kaunas-a-strategic-investment-in-sustainable-artificial-intelligence-in-lithuania/",
-      "excerpts": [
-        {
-          "text": "Kaunas University of Technology (KTU) is developing the Centre of Excellence of Artificial Intelligence for Sustainable Living and Working, SustAInLivWork,",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "LT"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-fa5e09687e545a9fa0ab328323f094e7"
-              },
-              "name"
-            ]
-          ],
-          "accessed": "2026-10-17"
-        }
-      ],
+      "excerpts": [],
       "origin": "LT",
       "snapshot": {
         "retrieved": "2026-10-17T14:21:31Z",
@@ -54856,35 +54816,59 @@
       "access_note": "Consolidated mobile law text retrieved on 17 October 2026, displaying the version in force from 1 June 2026. Its full desktop-version link returned an error; the mobile text was complete.",
       "excerpts": [
         {
-          "text": "apzināt ar mākslīgā intelekta risinājumiem saistītos drošības riskus publiskajā un privātajā sektorā",
-          "gloss": "Identify security risks associated with AI solutions in the public and private sectors.",
+          "text": "Centrs sadarbībā ar kompetentajām institūcijām organizē speciālo regulatīvo vidi, kurā var darboties no spēkā esošiem normatīvajiem aktiem atšķirīgi noteikumi, lai nodrošinātu mākslīgā intelekta sistēmu izstrādi, pārbaudi un attīstību.",
           "supports": [
             [
               "jurisdictions",
               {
                 "id": "LV"
               },
-              "summary"
-            ],
-            [
-              "jurisdictions",
+              "claims",
               {
-                "id": "LV"
+                "id": "claims-7b25fd5a6fa3419d89caa9b84da9f18a"
               },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "LV"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-dfe423ca3f655331836f4c5ef5c43a20"
-              },
-              "role"
+              "text"
             ]
-          ]
+          ],
+          "gloss": "The centre, in cooperation with the competent institutions, organises a special regulatory environment in which rules different from those of the regulations in force may apply, in order to ensure the development, testing and improvement of artificial intelligence systems.",
+          "anchors": [
+            {
+              "text": "nodibinājuma \"Mākslīgā intelekta centrs\" (turpmāk — centrs)",
+              "kind": "definition",
+              "gloss": "the foundation \"Artificial Intelligence Centre\" (the centre)"
+            }
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "veicināt mākslīgā intelekta tehnoloģiju pielietojumu publiskajā un privātajā sektorā",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "LV"
+              },
+              "claims",
+              {
+                "id": "claims-06ddecfb054e4dcc8f069e55ffb17cae"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "promote the application of artificial intelligence technologies in the public and private sectors",
+          "anchors": [
+            {
+              "text": "4. pants. Centra uzdevumi (1) Centram ir šādi uzdevumi:",
+              "kind": "heading",
+              "gloss": "Section 4. Tasks of the centre (1) The centre has the following tasks:"
+            },
+            {
+              "text": "nodibinājuma \"Mākslīgā intelekta centrs\" (turpmāk — centrs)",
+              "kind": "definition",
+              "gloss": "the foundation \"Artificial Intelligence Centre\" (the centre)"
+            }
+          ],
+          "accessed": "2026-10-17"
         }
       ]
     },
@@ -66045,25 +66029,7 @@
       "language": "en",
       "archive_url": "https://web.archive.org/web/20260515104227/https://www.varam.gov.lv/en/article/ministry-smart-administration-and-regional-development-develops-regulatory-framework-safe-testing-artificial-intelligence-solutions-special-regulatory-environment",
       "published": "2026-01-14",
-      "excerpts": [
-        {
-          "text": "the Artificial Intelligence Centre organises a special regulatory environment and ensures the processing of personal data",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "LV"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-dfe423ca3f655331836f4c5ef5c43a20"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-10-17"
-        }
-      ],
+      "excerpts": [],
       "origin": "LV",
       "snapshot": {
         "retrieved": "2026-10-17T14:23:28Z",
@@ -77164,149 +77130,6 @@
             [
               "jurisdictions",
               {
-                "id": "BG"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-b173c82822855ee784d0272880ce3aef"
-              },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "BG"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-06fe88afbf4b584895a61fef69c43312"
-              },
-              "designation_state"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "BG"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-b173c82822855ee784d0272880ce3aef"
-              },
-              "designation_state"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "BG"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-1b6e5484c420551683309e3557fd8031"
-              },
-              "designation_state"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "BG"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-50dc53621f775ba69532395f8a4050fc"
-              },
-              "designation_state"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "BG"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-8fae863e4117514bb7464473cf6d11b4"
-              },
-              "designation_state"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "BG"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-581b65ac8f705b1a9d2b0810bfa5af1e"
-              },
-              "designation_state"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "BG"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-3e152fe184b359fc8ee0bd53180513c9"
-              },
-              "designation_state"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "BG"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-a9185be5637a563ca75a87ed062800af"
-              },
-              "designation_state"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "BG"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-7fde843de3825f9a9f6b60d07abf7508"
-              },
-              "designation_state"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "BG"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-54128178102c5fcab52f3522048b957d"
-              },
-              "designation_state"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "BG"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-3651ed932d1b534db17886606ddfc629"
-              },
-              "designation_state"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "BG"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-30c27d74676c592b93a3a3ab8edaff7e"
-              },
-              "designation_state"
-            ],
-            [
-              "jurisdictions",
-              {
                 "id": "CZ"
               },
               "related_bodies",
@@ -77652,17 +77475,6 @@
             [
               "jurisdictions",
               {
-                "id": "BG"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-b173c82822855ee784d0272880ce3aef"
-              },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
                 "id": "SK"
               },
               "related_bodies",
@@ -77698,156 +77510,6 @@
               "related_bodies",
               {
                 "id": "related_bodies-465a88301b9f5fde85c9eac8d8f4c129"
-              },
-              "designation_state"
-            ]
-          ]
-        },
-        {
-          "text": "Bulgaria *Комисия за регулиране на съобщенията (КРС)",
-          "accessed": "2026-11-10",
-          "gloss": "Bulgaria *Communications Regulation Commission (CRC)",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "BG"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-b173c82822855ee784d0272880ce3aef"
-              },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "BG"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-06fe88afbf4b584895a61fef69c43312"
-              },
-              "designation_state"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "BG"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-b173c82822855ee784d0272880ce3aef"
-              },
-              "designation_state"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "BG"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-1b6e5484c420551683309e3557fd8031"
-              },
-              "designation_state"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "BG"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-50dc53621f775ba69532395f8a4050fc"
-              },
-              "designation_state"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "BG"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-8fae863e4117514bb7464473cf6d11b4"
-              },
-              "designation_state"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "BG"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-581b65ac8f705b1a9d2b0810bfa5af1e"
-              },
-              "designation_state"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "BG"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-3e152fe184b359fc8ee0bd53180513c9"
-              },
-              "designation_state"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "BG"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-a9185be5637a563ca75a87ed062800af"
-              },
-              "designation_state"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "BG"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-7fde843de3825f9a9f6b60d07abf7508"
-              },
-              "designation_state"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "BG"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-54128178102c5fcab52f3522048b957d"
-              },
-              "designation_state"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "BG"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-3651ed932d1b534db17886606ddfc629"
-              },
-              "designation_state"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "BG"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-30c27d74676c592b93a3a3ab8edaff7e"
               },
               "designation_state"
             ]
@@ -79249,24 +78911,7 @@
         "text_sha256": "d5fe93105e37275fb6807b145dd01a70a4fb3ae259ca0856b0760d6e520af958",
         "text_scheme": 1
       },
-      "excerpts": [
-        {
-          "text": "the Innovation Agency was designated with the functions of the notifying authority",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "LT"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-871b94a361b75d9a9550525d7841cda6"
-              },
-              "role"
-            ]
-          ]
-        }
-      ],
+      "excerpts": [],
       "origin": "LT",
       "access_note": "Snapshot review on 17 October 2026, using cached responses: Original source: an HTTP error (HTTP 403); Fallback text copy: an error or challenge page; Separate archive.ph newest-capture lookup returned HTTP 429; the capture content was not checked. That review retained no usable source copy. A separate web-reader retrieval on 17 October 2026 returned the ministry page, including its 14 January 2025 designation paragraph and sectoral-allocation discussion. Those primary passages were read; the failed complete-copy attempts above remain a distinct preservation limitation. On 19 October 2026 the linked Wayback capture of 10 March 2026 was checked against this URL, the document title and every bound quotation. On 21 October 2026 the complete response of the linked Wayback capture of 10 March 2026 was retained as the private source copy, and every bound quotation was found in it by the automated verifier."
     },
@@ -79995,25 +79640,7 @@
       "accessed": "2026-10-17",
       "published": "2026-10-09",
       "language": "lv",
-      "excerpts": [
-        {
-          "text": "Inspekcija ir arī viena no tirgus uzraudzības iestādēm MI akta izpratnē",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "LV"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-e300a3e28f9d5b3cab3b7fcb1007b159"
-              },
-              "role"
-            ]
-          ],
-          "gloss": "The Inspectorate is also one of the market-surveillance authorities under the AI Act."
-        }
-      ],
+      "excerpts": [],
       "origin": "LV",
       "title_en": "AI Act supervision",
       "snapshot": {
@@ -80032,21 +79659,7 @@
       "accessed": "2026-10-17",
       "published": "2026-07-09",
       "language": "bg",
-      "excerpts": [
-        {
-          "text": "паралелно с приемането на нов закон за прилагане на Акта за изкуствения интелект",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "BG"
-              },
-              "notes"
-            ]
-          ],
-          "gloss": "In parallel with adoption of a new law implementing the Artificial Intelligence Act."
-        }
-      ],
+      "excerpts": [],
       "origin": "BG",
       "title_en": "Agenda for the Council of Ministers meeting of 9 July 2026",
       "snapshot": {
@@ -80229,38 +79842,10 @@
       "language": "lv",
       "excerpts": [
         {
-          "text": "Ekonomikas ministrija veic MI aktā noteiktās paziņojošās iestādes funkcijas un uzdevumus.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "LV"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-b6417ce54fe5574a92f19a8f2f110b25"
-              },
-              "role"
-            ]
-          ],
-          "gloss": "The Economics Ministry performs the notifying-authority functions and tasks under the AI Act."
-        },
-        {
           "text": "Datu valsts inspekcijai nodrošināt mākslīgā intelekta tirgus uzraudzību augsta riska mākslīgā intelekta sistēmām, kas uzskaitītas MI akta III pielikuma 1. punktā,",
           "accessed": "2026-10-17",
           "gloss": "The Data State Inspectorate is to ensure AI market surveillance for high-risk AI systems listed in point 1 of Annex III to the AI Act,",
           "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "LV"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-e300a3e28f9d5b3cab3b7fcb1007b159"
-              },
-              "role"
-            ],
             [
               "jurisdictions",
               {
@@ -80290,17 +79875,6 @@
           "accessed": "2026-10-17",
           "gloss": "Minutes No. 8 of the Cabinet meeting of 25 February 2025",
           "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "LV"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-e300a3e28f9d5b3cab3b7fcb1007b159"
-              },
-              "role"
-            ],
             [
               "jurisdictions",
               {
@@ -80388,43 +79962,7 @@
       "published": "2026-09-24",
       "access_note": "A source copy was read on 17 October 2026 for the attached excerpts. Earlier access limitations: Scanned 48-page PDF. Downloaded directly; pdftotext empty. Visually inspected PDF pages 3–6, including Article 5 authority allocations.",
       "language": "bg",
-      "excerpts": [
-        {
-          "text": "Министърът на иновациите и дигиталната трансформация е нотифициращ орган",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "BG"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-06fe88afbf4b584895a61fef69c43312"
-              },
-              "role"
-            ]
-          ],
-          "gloss": "The Minister of Innovation and Digital Transformation is the notifying authority."
-        },
-        {
-          "text": "Държавната политика за използването и развитието на изкуствения интелект се провежда от министъра на иновациите и дигиталната трансформация.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "BG"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-a95720d42a855facaf5ad79e6ee4ff13"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-10-17",
-          "gloss": "State policy on the use and development of artificial intelligence is conducted by the Minister of Innovation and Digital Transformation."
-        }
-      ],
+      "excerpts": [],
       "origin": "BG",
       "title_en": "Bill on the use and development of artificial intelligence, 52-654-01-151, Article 5",
       "snapshot": {
@@ -95450,39 +94988,7 @@
       "language": "lv",
       "origin": "LV",
       "access_note": "The page records an update on 2 July 2026; its original publication date is 1 April 2025.",
-      "excerpts": [
-        {
-          "text": "atbalstītu mākslīgā intelekta risinājumu ieviešanu, testēšanu un komercializāciju.",
-          "gloss": "Support the implementation, testing and commercialisation of artificial intelligence solutions.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "LV"
-              },
-              "summary"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "LV"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "LV"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-dfe423ca3f655331836f4c5ef5c43a20"
-              },
-              "role"
-            ]
-          ]
-        }
-      ],
+      "excerpts": [],
       "snapshot": {
         "retrieved": "2026-10-19T00:12:09Z",
         "sha256": "de0c9901d05e2b88c8da05596b9d6f90e223e67e64f56b3225169033e210c03e",
@@ -95501,32 +95007,7 @@
       "accessed": "2026-10-17",
       "language": "lv",
       "origin": "LV",
-      "excerpts": [
-        {
-          "text": "mākslīgā intelekta risinājumu integrāciju valsts aizsardzības spēju attīstībā.",
-          "gloss": "Integration of artificial intelligence solutions into the development of national defence capabilities.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "LV"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "LV"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-dfe423ca3f655331836f4c5ef5c43a20"
-              },
-              "role"
-            ]
-          ]
-        }
-      ],
+      "excerpts": [],
       "snapshot": {
         "retrieved": "2026-10-19T00:12:09Z",
         "sha256": "634cb601e9b33cd790299795d627dc642d468b9628d8c28edd852716afe0ad32",
@@ -115720,36 +115201,7 @@
       "published": "2026-11-04",
       "language": "bg",
       "origin": "BG",
-      "excerpts": [
-        {
-          "text": "Членовете на постоянната парламентарна Комисия по иновации и дигитална трансформация отхвърлиха на първо четене проект на Закон за използването и развитието на изкуствения интелект (ИИ).",
-          "gloss": "The members of the standing parliamentary Committee on Innovation and Digital Transformation rejected at first reading the draft Law on the Use and Development of Artificial Intelligence (AI).",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "BG"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-11-07"
-        },
-        {
-          "text": "Деветима гласуваха „въздържал се“, петима – „за“, а гласове „против“ нямаше.",
-          "gloss": "Nine voted to abstain, five in favour, and there were no votes against.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "BG"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-11-07"
-        }
-      ],
+      "excerpts": [],
       "accessed": "2026-11-07",
       "snapshot": {
         "retrieved": "2026-11-08T00:08:47Z",
@@ -120130,13 +119582,6 @@
             [
               "jurisdictions",
               {
-                "id": "LV"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
                 "id": "HR"
               },
               "notes"
@@ -120158,13 +119603,6 @@
               "jurisdictions",
               {
                 "id": "CY"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "LV"
               },
               "notes"
             ],
@@ -120209,13 +119647,6 @@
               "jurisdictions",
               {
                 "id": "CY"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "LV"
               },
               "notes"
             ],
