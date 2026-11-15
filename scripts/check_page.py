@@ -10510,14 +10510,15 @@ def chrome_session(chrome: str, dist: Path):
 
 
 # Functions table (Compare): independent oracles use the complete published data, never page claims' indices.
-FN_NAMES = {"activity": "active", "mandate": "assigned", "both": "assigned and active",
+FN_NAMES = {"activity": "Active", "mandate": "Assigned", "both": "Assigned and active",
             "not_found": "not found", "not_coded": "not yet coded"}
 FN_STATUS_WORD = re.compile(r"\b(?:planned|proposed|exploring|announced)\b", re.I)
 
 
-def function_columns(data: dict) -> list[dict]:
+def function_rows(data: dict) -> list[dict]:
     states = {j["id"]: j for j in data["jurisdictions"]}
     return sorted(data["institutes"], key=lambda i: (states[i["jurisdiction_id"]]["status"] != "established",
+                                                   int(states[i["jurisdiction_id"]]["status_since"][:4]),
                                                    states[i["jurisdiction_id"]]["name"], i["id"]))
 
 
@@ -10549,71 +10550,106 @@ def functions_structure(html: str, data: dict) -> list[str]:
     def need(ok, message):
         if not ok:
             errors.append(message)
-    columns = function_columns(data)
+    institutes = function_rows(data)
     states = {j["id"]: j for j in data["jurisdictions"]}
     vocab = {c: v for c, v in data["dataset"]["vocabularies"]["function"].items() if not v.get("deprecated")}
-    groups = list(dict.fromkeys(v["group"] for v in vocab.values()))
+    lookup = {i["id"]: {r["code"]: r for r in i["functions"]} for i in institutes}
+    counts = {code: sum(lookup[i["id"]][code]["value"] in ("mandate", "activity", "both") for i in institutes) for code in vocab}
+    def is_folded(code):  # every institute coded against it, none with a mark; a not-yet-coded function stays a column
+        return all(lookup[i["id"]][code]["value"] == "not_found" for i in institutes)
+    groups = [g for g in dict.fromkeys(v["group"] for v in vocab.values()) if any(not is_folded(c) and v["group"] == g for c, v in vocab.items())]
+    columns = [code for group_name in groups for code, v in vocab.items() if not is_folded(code) and v["group"] == group_name]
     group = section.parent
     need(group.select_one(":scope > section") == section, "Functions is not first in Compare")
     nav = group.select_one('.group-nav a')
     need(nav and nav.get("href") == "#functions", "Compare group row does not start with Functions")
     need(soup.select_one('.secnav a[href="#functions"][data-sections="functions testing set-up funding"]'), "Compare bar target differs")
-    headers = section.select('.fn-table thead th[data-institute]')
-    need([h.get("data-institute") for h in headers] == [i["id"] for i in columns], "Functions columns/order differ")
+    headers = section.select('.fn-table thead th[data-code]')
+    need([h.get("data-code") for h in headers] == columns, "Functions columns/order differ")
     need(len(section.select('.fn-table thead th[scope="col"]')) == len(columns) + 1, "Functions column scopes/count differ")
-    for header, institute in zip(headers, columns):
-        place = states[institute["jurisdiction_id"]]["name"]
-        head = header.select_one("abbr.g")
-        need(head and head.get_text() == place and tip_of(head) == institute["name"], f"{institute['id']}: header name/institute tip differs")
-        pending = states[institute["jurisdiction_id"]]["status"] != "established"
-        need(bool(header.select_one(".fn-nyo")) == pending and ("fn-pending" in header.get("class", [])) == pending,
-             f"{institute['id']}: not-yet-established header/tint differs")
+    for n, (header, code) in enumerate(zip(headers, columns)):
+        v = vocab[code]
+        heading = header.select_one('abbr.g[tabindex="0"]')
+        need(heading and heading.get_text() == v["short"][:1].upper() + v["short"][1:] and tip_of(heading) == f"{v['label']}: {v['definition']}", f"{code}: function label/test differs")
+        need(("fn-group-start" in header.get("class", [])) == (n > 0 and v["group"] != vocab[columns[n - 1]]["group"]), f"{code}: head group gap differs")
+    group_heads = section.select('.fn-table th[scope="colgroup"]')
+    need([h.get_text() for h in group_heads] == groups, "Functions vocabulary groups/order differ")
+    for header, group_name in zip(group_heads, groups):
+        need(header.get("colspan") == str(sum(vocab[c]["group"] == group_name for c in columns)), f"{group_name}: column group span differs")
     group_rows = section.select('.fn-group th')
-    need([h.get_text() for h in group_rows] == groups, "Functions vocabulary groups/order differ")
-    need(all(h.get("scope") == "rowgroup" and h.find_parent("tbody") and h.get("colspan") == str(len(columns) + 1) for h in group_rows), "Functions group scope/span differs")
-    expected_order = [code for group_name in groups for code, v in vocab.items() if v["group"] == group_name]
-    rows = section.select('.fn-table tr[data-code]')
-    need([r.get("data-code") for r in rows] == expected_order, "Functions code order differs within vocabulary groups")
-    wanted_counts = Counter(row["value"] for i in columns for row in i["functions"])
+    need([h.get_text() for h in group_rows] == ["Established", "Not yet established"], "Functions not-yet-established blocks/order differ")
+    need(len(section.select('.fn-table > tbody')) == 2, "Functions needs two row blocks")
+    need(all(h.get("scope") == "rowgroup" and h.find_parent("tbody") and h.get("colspan") == str(len(columns) + 2) for h in group_rows), "Functions group scope/span differs")
+    colgroups = section.select('.fn-table > colgroup')
+    need([cg.get("span", "1") for cg in colgroups] == ["1"] + [str(sum(vocab[c]["group"] == g for c in columns)) for g in groups] + ["1"], "Functions column groups do not match the group heads")
+    for tr in section.select('.fn-table thead tr, .fn-table tbody tr[data-institute], .fn-table tfoot tr'):
+        pads = tr.select(":scope > .fn-pad")
+        last = tr.find_all(["td", "th"], recursive=False)[-1:]
+        need(len(pads) == 1 and last == pads and pads[0].name == "td" and pads[0].get("aria-hidden") == "true" and not pads[0].get_text(strip=True) and not pads[0].find(True),
+             "Functions spacer column: each head, institute and total row ends with one empty aria-hidden td.fn-pad")
+    rows = section.select('.fn-table tbody tr[data-institute]')
+    need([r.get("data-institute") for r in rows] == [i["id"] for i in institutes], "Functions rows/order differ")
+    wanted_counts = Counter(lookup[i["id"]][c]["value"] for i in institutes for c in columns)
     need(Counter(td.get("data-value") for td in section.select('.fn-table td[data-value]')) == wanted_counts, "Functions value counts differ")
-    lookup = {i["id"]: {r["code"]: r for r in i["functions"]} for i in columns}
-    for row in rows:
-        code = row.get("data-code")
-        if code not in vocab:
-            continue
-        label = vocab[code]["label"]
-        heading = row.select_one('th[scope="row"] abbr.g')
-        need(heading and heading.get_text() == label and tip_of(heading) == vocab[code]["definition"], f"{code}: function label/test differs")
+    for row, institute in zip(rows, institutes):
+        place = states[institute["jurisdiction_id"]]["name"]
+        header = row.select_one('th[scope="row"]')
+        heading = header.select_one('abbr.g[tabindex="0"]') if header else None
+        need(header and header.get_text() == place and heading and tip_of(heading) == institute["name"], f"{institute['id']}: row name/institute tip or count differs")
         preceding = row.find_previous_sibling("tr", class_="fn-group")
-        need(preceding and preceding.get_text() == vocab[code]["group"], f"{code}: wrong group")
-        cells = row.select(":scope > td")
-        need(len(cells) == len(columns), f"{code}: wrong cell count")
-        for td, institute in zip(cells, columns):
+        block_name = "Established" if states[institute["jurisdiction_id"]]["status"] == "established" else "Not yet established"
+        need(preceding and preceding.get_text() == block_name, f"{institute['id']}: wrong row block")
+        cells = row.select(":scope > td:not(.fn-pad)")
+        need([td.get("data-code") for td in cells] == columns, f"{institute['id']}: wrong cell count/order")
+        for n, (td, code) in enumerate(zip(cells, columns)):
             expected = lookup[institute["id"]][code]
             value = expected["value"]
             key = f"{institute['id']}/{code}"
             need(td.get("data-value") == value, key + ": value differs")
-            pending = states[institute["jurisdiction_id"]]["status"] != "established"
-            need(("fn-pending" in td.get("class", [])) == pending, key + ": column tint differs")
+            need(("fn-group-start" in td.get("class", [])) == (n > 0 and vocab[code]["group"] != vocab[columns[n - 1]]["group"]), key + ": body group gap differs")
             button = td.select_one("button.fn-cell")
             if value in ("mandate", "activity", "both"):
-                short = institute.get("short_name") or institute.get("acronym") or institute["name"]
-                need(button and button.get("type") == "button" and button.get("aria-label") == f"{short}, {label}: {FN_NAMES[value]}"
+                need(button and button.get("type") == "button" and button.get("aria-label") == f"{place}, {vocab[code]['label']}: {FN_NAMES[value]}"
                      and button.get("aria-expanded") == "false" and bool(button.get("aria-controls")), key + ": coded control/name differs")
             else:
-                need(not td.select("button") and td.get_text() == FN_NAMES[value], key + ": absent value must be unbuttoned and named")
-            if value in ("mandate", "activity", "both"):  # absent values draw their mark as the cell's ::before
-                need(td.select_one(f'.fn-mark.fn-{value}[aria-hidden="true"]'), key + ": mark differs")
+                need(not td.select("button") and td.get_text() == FN_NAMES[value] and td.select_one('.vh'), key + ": absent value must be unbuttoned and named")
+            if value in ("mandate", "activity", "both"):
+                mark = "activity" if value == "both" else value
+                need(td.select_one(f'.fn-mark.fn-{mark}[aria-hidden="true"]'), key + ": mark differs")
+            else:
+                need(not td.select('.fn-mark'), key + ": absent cell has a visible mark element")
             need(not td.select("[data-tip], [data-tip-sub], [data-tip-ext], [data-exp]"), key + ": evidence/tooltip attributes on a cell")
+    totals = section.select('.fn-table tfoot td:not(.fn-pad)')
+    need([(td.get("data-code"), td.get_text()) for td in totals] == [(c, str(counts[c])) for c in columns], "Functions prevalence counts/order differ")
+    prevalence = section.select_one('.fn-table tfoot th[scope="row"]')
+    need(prevalence and prevalence.get_text() == "Institutes with it", "Functions prevalence label differs")
+    # Independent data-derived sentence oracle; the implementation lives only in JavaScript.
+    def joined(codes):
+        names = [vocab[c]["short"] for c in codes]
+        return " and ".join(names) if len(names) < 3 else ", ".join(names[:-1]) + " and " + names[-1]
+    empty = [c for c in vocab if is_folded(c)]
+    folded = section.select_one('.fn-empty')
+    need(bool(folded) == bool(empty) and (not empty or folded is not None and folded.get_text() == f"No public text found at any institute yet for: {joined(empty)}."), "Functions folded empty codes differ")
+    summary = section.select_one('.fn-summary')
+    marked = [c for c in columns if counts[c]]  # a column kept only for not-yet-coded values is not "least common"
+    need(bool(summary) == bool(marked), "Functions summary presence differs")
+    if marked and summary:
+        high, low = max(counts[c] for c in marked), min(counts[c] for c in marked)
+        most, least = [c for c in marked if counts[c] == high], [c for c in marked if counts[c] == low]
+        need(summary.get_text() == f"Most common: {joined(most)} ({high} of {len(institutes)} institutes). Least common: {joined(least)} ({low}{' each' if len(least) > 1 else ''}).", "Functions summary facts differ")
+        need(not any(i["name"] in summary.get_text() for i in institutes), "Functions summary names an institute")
     legend = section.select_one('ul.fn-legend[role="list"]')
-    need(legend and Counter(li.get("data-value") for li in legend.select("li[data-value]")) == Counter({v: 1 for v in wanted_counts}), "Functions legend differs from present values")
-    need(legend and legend.select_one("li .fn-nyo-sample") and legend.select_one("li .fn-nyo-sample").parent.get_text(strip=True),
-         "Functions legend lacks the not-yet-established note")
+    legend_values = ["activity", "mandate", "not_found"] + (["not_coded"] if wanted_counts["not_coded"] else [])
+    need(legend and [(li.get("data-value"), li.get_text()) for li in legend.select("li[data-value]")] == [(v, "Blank: not found" if v == "not_found" else FN_NAMES[v]) for v in legend_values], "Functions legend differs from its two marks and absent values")
+    blank_text = "A blank cell means we found no public text for it, not that the institute does not do it."
+    need([n.get_text() for n in section.select('.fn-blank')] == [blank_text, blank_text] and section.select_one('.fn-blank strong'), "Functions blank explanation missing")
+    order = section.select_one('.fn-order')
+    need(order and order.get_text() == "Rows: by the year the institute's current status began, oldest first.", "Functions row order explanation missing")
     provisional = section.select_one('.fn-provisional')
     need(provisional and provisional.get_text() == "The list of functions is provisional.", "Functions provisional line missing")
     need(not FN_STATUS_WORD.search(section.get_text(" ")), "Functions labels contain a status word")
-    need(not section.select('.fn-detail-row, .fn-claim, blockquote'), "Functions detail was saved before a click")
-    need(not any(q["excerpt"]["text"] in section.get_text() for q in function_quotes(data).values()), "Functions quote was pre-rendered")
+    need(not section.select('.fn-detail-row, .fn-claim, .quote-body, blockquote'), "Functions detail was saved before a click")
+    need(not any(text in section.get_text() for q in function_quotes(data).values() for text in (q["excerpt"]["text"], q["excerpt"].get("gloss")) if text), "Functions quote was pre-rendered")
     scroll = section.select_one('.fn-scroll[role="region"][tabindex="0"][aria-labelledby="functions"]')
     need(scroll and scroll.get("aria-describedby") and soup.find(id=scroll["aria-describedby"]), "Functions scroll region lacks its name/hint")
     need(section.select_one('.fn-table caption.vh'), "Functions table lacks its hidden caption")
@@ -10638,20 +10674,20 @@ def check_functions_detail(browser, base_url: str, data: dict) -> list[str]:
     errors += page.evaluate(r"""({data, quotes, names}) => {
       const errors = [], box = document.querySelector('#functions-table'), table = box.querySelector('table');
       const institutes = Object.fromEntries(data.institutes.map(i => [i.id, i]));
-      const states = Object.fromEntries(data.jurisdictions.map(j => [j.id, j]));
       const buttons = [...table.querySelectorAll('.fn-cell')];
       const need = (ok, label) => { if (!ok) errors.push(label); };
       for (const button of buttons) {
-        const row = button.closest('tr'), code = row.dataset.code;
-        const institute = institutes[table.tHead.rows[0].cells[button.parentElement.cellIndex].dataset.institute];
+        const row = button.closest('tr'), code = button.parentElement.dataset.code;
+        const institute = institutes[row.dataset.institute];
         const cell = institute.functions.find(f => f.code === code), key = institute.id + '/' + code;
         button.focus({preventScroll: true}); button.click();
         const detail = box.querySelector('.fn-detail-row');
         if (!detail) { errors.push(key + ': no detail'); continue; }
         need(box.querySelectorAll('.fn-detail-row').length === 1 && row.nextElementSibling === detail &&
              detail.id === button.getAttribute('aria-controls') && button.getAttribute('aria-expanded') === 'true' &&
-             detail.cells[0].colSpan === data.institutes.length + 1, key + ': detail placement/state differs');
-        need(!!detail.querySelector('.fn-detail-head .fn-nyo') === (states[institute.jurisdiction_id].status !== 'established'), key + ': operating note differs');
+             detail.cells[0].colSpan === row.cells.length, key + ': detail placement/state differs');
+        need(detail.querySelector('.fn-detail-head')?.textContent === (institute.short_name || institute.acronym || institute.name) + ' · ' + data.dataset.vocabularies.function[code].label, key + ': institute/function heading differs');
+        need(!detail.querySelector('.fn-detail-value'), key + ': detail repeats the cell value; each claim names its basis');
         // Exact evidence can itself say 'announced'; status labels may not. Never rewrite quotes or source titles.
         need(!/\b(planned|proposed|exploring|announced)\b/i.test(detail.querySelector('.fn-detail-head').textContent), key + ': status word in heading');
         const items = [...detail.querySelectorAll('.fn-claim')];
@@ -10660,18 +10696,24 @@ def check_functions_detail(browser, base_url: str, data: dict) -> list[str]:
           const item = items.find(n => n.dataset.claim === id), q = quotes[id];
           if (!item) { errors.push(key + ': claim missing ' + id); continue; }
           need(item.querySelector('.fn-claim-text')?.textContent === q.claim.text, key + ': claim text differs');
-          need(item.querySelector('.fn-basis')?.textContent === names[q.claim.basis], key + ': basis differs');
-          // Owner's rule (15 Nov 2026): our English first; the original on the marker's tip, never shown first.
-          const shown = item.querySelector('blockquote'), marker = item.querySelector('.fn-gloss abbr');
-          need(shown?.textContent === (q.excerpt.gloss || q.excerpt.text), key + ': quote differs');
-          need(q.excerpt.gloss ? shown.lang === 'en' : (!q.source.language || shown.lang === q.source.language), key + ': quote language differs');
-          // The original is the marker's tip: its one home is aria-description (tipText in the page, tip_of here).
-          need(!q.excerpt.gloss || (marker?.getAttribute('aria-description') === q.excerpt.text && /^translated from \S/.test(marker.textContent)), key + ': translation marker or original differs');
+          need(item.querySelector('.fn-basis')?.textContent === names[q.claim.basis].toLowerCase(), key + ': basis differs');
+          const block = item.querySelector('.quote-body > .quote-excerpt');
+          need(item.querySelectorAll('.quote-excerpt').length === 1 && block?.dataset.sourceId === q.source.id, key + ': shared quote block differs');
+          const shown = block?.querySelector(':scope > .quotation > .quote-text'), marker = block?.querySelector(':scope > .quotation > .translation');
+          need(shown?.textContent === '"' + (q.excerpt.gloss || q.excerpt.text) + '"', key + ': quote differs');
+          need(!q.excerpt.gloss || (shown?.getAttribute('aria-description') === q.excerpt.text && /^\s*translated from \S/.test(marker?.textContent || '')), key + ': translation marker or original differs');
           need(!!q.excerpt.gloss || !marker, key + ': translation marker on an English quote');
-          for (const sid of q.claim.source_ids) {
-            const source = data.sources.find(s => s.id === sid), links = [...item.querySelectorAll('a')];
-            need(links.some(a => a.href === source.url && a.target === '_blank'), key + ': source link missing ' + sid);
-          }
+          const anchors = [...(block?.querySelectorAll('.quote-anchor') || [])];
+          need(anchors.length === (q.excerpt.anchors || []).length, key + ': anchor count differs');
+          (q.excerpt.anchors || []).forEach((anchor, n) => {
+            const quote = anchors[n]?.querySelector('.quote-text');
+            need(quote?.textContent === '"' + (anchor.gloss || anchor.text) + '"' && (!anchor.gloss || quote?.getAttribute('aria-description') === anchor.text), key + ': anchor quote differs');
+          });
+          need(!!block?.querySelector('.reread') === !!q.excerpt.reread, key + ': per-quote re-read line differs');
+          const reread = block?.querySelector('.reread');
+          if (reread) need(getComputedStyle(reread).display === 'block' && getComputedStyle(reread).color === getComputedStyle(item.querySelector('.fn-basis')).color, key + ': per-quote re-read line is not separate/muted');
+          const links = [...item.querySelectorAll('.fn-sources > li > a.standalone')];
+          need(JSON.stringify(links.map(a => a.href)) === JSON.stringify(q.claim.source_ids.map(sid => data.sources.find(s => s.id === sid).url)) && links.every(a => a.target === '_blank'), key + ': claim sources/order differ');
         }
         button.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape', bubbles: true}));
         need(!box.querySelector('.fn-detail-row') && button.getAttribute('aria-expanded') === 'false' && document.activeElement === button, key + ': Escape/focus differs');
@@ -10680,6 +10722,9 @@ def check_functions_detail(browser, base_url: str, data: dict) -> list[str]:
       if (first) {
         first.click(); first.click(); need(!box.querySelector('.fn-detail-row') && document.activeElement === first, 'same cell does not close/return focus');
         first.click(); box.querySelector('.fn-detail > button').click(); need(!box.querySelector('.fn-detail-row') && document.activeElement === first, 'Close does not return focus');
+        first.click();
+        const handled = new KeyboardEvent('keydown', {key: 'Escape', bubbles: true, cancelable: true}); handled.preventDefault(); first.dispatchEvent(handled);
+        need(!!box.querySelector('.fn-detail-row'), 'handled Escape closes the detail'); first.click();
       }
       if (first && second) {
         first.click(); second.click(); need(box.querySelectorAll('.fn-detail-row').length === 1 && first.getAttribute('aria-expanded') === 'false', 'opening another cell leaves old detail');
@@ -10704,14 +10749,32 @@ def check_functions_detail(browser, base_url: str, data: dict) -> list[str]:
             errors.append("Functions: Escape outside the table closes the detail")
         cell.click()
     page.close()
+    context = browser.new_context(viewport={"width": 390, "height": 900}, has_touch=True, is_mobile=True)
+    page = context.new_page()
+    hydrated(page, base_url)
+    header = page.locator('.fn-table tbody th[scope="row"] abbr.g').first
+    header.tap()
+    if not page.locator('#tip').is_visible() or header.get_attribute('aria-description') not in page.locator('#tip').inner_text():
+        errors.append("Functions: tap on a jurisdiction does not show its institute tip")
+    if page.locator('.fn-cell').count():
+        cell = page.locator('.fn-cell').first
+        cell.tap()
+        if page.locator('.fn-detail-row').count() != 1:
+            errors.append("Functions: tap does not open a coded cell")
+        else:
+            page.locator('.fn-detail > button').tap()
+            if page.locator('.fn-detail-row').count() or not cell.evaluate("n => document.activeElement === n"):
+                errors.append("Functions: touch Close does not return focus")
+    context.close()
     return errors
 
 
 def check_functions_layout(browser, base_url: str) -> list[str]:
     page = browser.new_page(viewport={"width": 390, "height": 1000})
     hydrated(page, base_url)
+    page.evaluate("document.fonts.ready")
     errors = []
-    for width in (360, 390, 1000, 1440):
+    for width in (360, 390, 1000, 1280, 1440):
         page.set_viewport_size({"width": width, "height": 1000})
         for theme in ("light", "dark"):
             set_theme(page, theme)
@@ -10719,18 +10782,56 @@ def check_functions_layout(browser, base_url: str) -> list[str]:
             errors += [f"{width}px {theme}: {e}" for e in page.evaluate("""() => {
               const errors = [], scroll = document.querySelector('.fn-scroll'), table = scroll.querySelector('table');
               const th = table.querySelector('th[scope="row"]');
+              scroll.scrollLeft = 0;
               if (document.documentElement.scrollWidth > innerWidth) errors.push('Functions causes sideways page scroll');
+              const heads = [...table.querySelectorAll('.fn-head .g')], groups = [...table.querySelectorAll('.fn-column-group > span')];
+              const overlaps = (a, b) => a.left < b.right - .5 && a.right > b.left + .5 && a.top < b.bottom - .5 && a.bottom > b.top + .5;
+              const track = head => { const cell = head.parentElement, rect = cell.getBoundingClientRect(), gutter = parseFloat(getComputedStyle(cell).borderLeftWidth); return {left: rect.left + gutter, width: rect.width - gutter, gutter}; };
+              for (const [n, head] of heads.entries()) {
+                const r = head.getBoundingClientRect(), cell = track(head);
+                const transform = new DOMMatrix(getComputedStyle(head).transform);
+                if (Math.abs(Math.atan2(transform.b, transform.a) * 180 / Math.PI + 60) > 5) errors.push('function head is not rotated about 60 degrees: ' + head.textContent);
+                // Rotation about left bottom leaves the bottom-left anchor on the common baseline at the column centre.
+                if (Math.abs(head.offsetLeft - cell.width / 2) > 2 || Math.abs(r.bottom - heads[0].getBoundingClientRect().bottom) > 1) errors.push('function head baseline/centre differs: ' + head.textContent);
+                if (n && head.parentElement.classList.contains('fn-group-start')) {
+                  const previous = track(heads[n - 1]);
+                  if (cell.gutter < 12 || cell.left - previous.left < previous.width + 12 || getComputedStyle(head.parentElement).boxShadow === 'none') errors.push('function group has no visible gutter/rule: ' + head.textContent);
+                }
+                // Parallel rotated labels: their axis-aligned boxes always overlap, so test the perpendicular gap between
+                // neighbouring baselines (horizontal anchor distance times sin 60 degrees) against the line height.
+                if (n) {
+                  const prev = heads[n - 1], dx = head.getBoundingClientRect().left - prev.getBoundingClientRect().left;
+                  const line = parseFloat(getComputedStyle(head).lineHeight) || parseFloat(getComputedStyle(head).fontSize) * 1.2;
+                  if (dx * Math.sin(Math.PI / 3) < line) errors.push('rotated heads overlap: ' + prev.textContent + '/' + head.textContent);
+                }
+                for (const group of groups) if (overlaps(r, group.getBoundingClientRect())) errors.push('rotated head overlaps group: ' + head.textContent + '/' + group.textContent);
+              }
+              for (const [n, group] of groups.entries()) {
+                const r = group.getBoundingClientRect(), range = document.createRange(); range.selectNodeContents(group);
+                if (new Set([...range.getClientRects()].map(r => Math.round(r.top))).size !== 1 || getComputedStyle(group).whiteSpace !== 'nowrap') errors.push('function group label wraps: ' + group.textContent);
+                if (groups[n + 1] && r.right > groups[n + 1].getBoundingClientRect().left - 2) errors.push('function group labels collide: ' + group.textContent);
+              }
+              const widths = heads.map(h => track(h).width);
+              if (widths.length && Math.max(...widths) - Math.min(...widths) > 1) errors.push('function columns have unequal widths');
+              for (const head of heads) {
+                const code = head.parentElement.dataset.code, r = head.parentElement.getBoundingClientRect();
+                for (const cell of table.querySelectorAll('td[data-code="' + code + '"]')) {
+                  const c = cell.getBoundingClientRect();
+                  if (Math.abs(c.left - r.left) > 1 || Math.abs(c.width - r.width) > 1 || cell.classList.contains('fn-group-start') !== head.parentElement.classList.contains('fn-group-start')) errors.push('function head/body gap alignment differs: ' + code);
+                }
+              }
               const wider = table.getBoundingClientRect().width > scroll.clientWidth + 1;
               scroll.scrollLeft = scroll.scrollWidth;
               if (wider && scroll.scrollLeft <= 0) errors.push('wide Functions table cannot scroll');
               if (innerWidth === 390 && !wider) errors.push('phone Functions table was squeezed to fit');
               if (getComputedStyle(th).position !== 'sticky' || Math.abs(th.getBoundingClientRect().left - scroll.getBoundingClientRect().left) > 2) errors.push('first Functions column is not sticky');
-              // Compared on the legend's samples, which show exactly the values present.
-              const shapes = [...document.querySelectorAll('.fn-legend li[data-value] .fn-mark')].filter(m => /fn-(activity|mandate|both)/.test(m.className)).map(mark => {
-                const c = getComputedStyle(mark), p = getComputedStyle(mark, '::after');
-                return [c.borderStyle, c.borderWidth, c.backgroundColor !== 'rgba(0, 0, 0, 0)', p.content].join('|');
-              });
-              if (new Set(shapes).size !== shapes.length) errors.push('coded Functions marks differ only by colour');
+              const dot = getComputedStyle(document.querySelector('.fn-legend .fn-activity')), ring = getComputedStyle(document.querySelector('.fn-legend .fn-mandate'));
+              if (dot.backgroundColor === 'rgba(0, 0, 0, 0)' || parseFloat(ring.borderWidth) < 1 || ring.backgroundColor !== 'rgba(0, 0, 0, 0)') errors.push('Functions dot/ring shapes differ');
+              for (const cell of table.querySelectorAll('td[data-value="both"]')) if (!cell.querySelector('.fn-activity')) errors.push('both cell does not use the active dot');
+              for (const cell of table.querySelectorAll('td[data-value="not_found"]')) {
+                const before = getComputedStyle(cell, '::before'), painted = !['none', 'normal'].includes(before.content) && (parseFloat(before.width) > 0 || before.backgroundColor !== 'rgba(0, 0, 0, 0)');
+                if (painted || [...cell.children].some(n => !n.classList.contains('vh'))) errors.push('not-found cell is not blank');
+              }
               if (!table.querySelector('.fn-cell')) return errors;
               table.querySelector('.fn-cell').click();
               const detail = table.querySelector('.fn-detail'), r = detail.getBoundingClientRect(), s = scroll.getBoundingClientRect();
@@ -10738,6 +10839,23 @@ def check_functions_layout(browser, base_url: str) -> list[str]:
               detail.querySelector('button').click(); scroll.scrollLeft = 0;
               return errors;
             }""")]
+    # The added Compare link must fit with the shared small-screen group-row spacing.
+    page.set_viewport_size({"width": 360, "height": 1000})
+    for scale in ("100%", "110%"):
+        page.evaluate("scale => document.documentElement.style.fontSize = scale", scale)
+        measures = page.evaluate("""() => [...document.querySelectorAll('.group-nav')].map(row => {
+          const links = [...row.querySelectorAll('a')], label = row.querySelector('.group-label');
+          // Only what is drawn: phones hide the group label, whose empty rect would read as a second line.
+          const rects = [label, ...links].filter(n => n.getClientRects().length).map(n => { const range = document.createRange(); range.selectNodeContents(n); return range.getBoundingClientRect(); });
+          return {name: label.textContent, lines: new Set(rects.map(r => Math.round(r.top))).size,
+            room: Math.floor(row.getBoundingClientRect().right - Math.max(...rects.map(r => r.right))),
+            dots: [...row.querySelectorAll('.group-sep')].some(n => getComputedStyle(n).display !== 'none')};
+        })""")
+        for row in measures:
+            if row["lines"] != 1 or row["room"] < 0 or row["dots"]:
+                errors.append(f"360px at {scale} text: {row['name']} group row wraps, overflows or retains separator dots ({row})")
+            if row["name"] == "Compare":
+                errors.append(report_line(f"360px at {scale} text: Compare group row has {row['room']}px left"))
     page.close()
     return errors
 
