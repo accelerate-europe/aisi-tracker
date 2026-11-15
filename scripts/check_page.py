@@ -10039,7 +10039,7 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
                 f"{selector}: tabbing away leaves menu open",
             )
     require(
-        page.locator("th:visible").evaluate_all(
+        page.locator("table.world th:visible").evaluate_all(  # the sortable table's headers; the functions table has none
             "nodes => nodes.every(th => { const b=th.querySelector('button').getBoundingClientRect(); return Math.abs(th.clientWidth-b.width)<2 && Math.abs(th.clientHeight-b.height)<2; })"  # inside the header rule
         ),
         "sort button does not fill its header cell",
