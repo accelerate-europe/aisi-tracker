@@ -155,3 +155,13 @@ def test_functions_structure_keeps_a_group_coded_nowhere(functions):
             .replace('<td data-code="advice">1</td>', '<td data-code="advice">0</td>')
             .replace("Least common: research and advice (1 each).", "Least common: research (1)."))
     assert check_page.functions_structure(html, data) == []
+
+
+def test_function_rows_put_an_undated_status_last_in_its_block(functions):
+    """A record without status_since (an edge the card-grid gate exercises) sorts after the dated ones, never fails."""
+    data, _ = functions
+    data = copy.deepcopy(data)
+    for j in data["jurisdictions"]:
+        j.setdefault("status_since", "2024-01-01")
+    data["jurisdictions"][0].pop("status_since")
+    assert [i["id"] for i in check_page.function_rows(data)] == ["z", "a"]

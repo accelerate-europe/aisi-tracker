@@ -10528,7 +10528,7 @@ FN_STATUS_WORD = re.compile(r"\b(?:planned|proposed|exploring|announced)\b", re.
 def function_rows(data: dict) -> list[dict]:
     states = {j["id"]: j for j in data["jurisdictions"]}
     return sorted(data["institutes"], key=lambda i: (states[i["jurisdiction_id"]]["status"] != "established",
-                                                   int(states[i["jurisdiction_id"]]["status_since"][:4]),
+                                                   int((states[i["jurisdiction_id"]].get("status_since") or "9999")[:4]),  # no date: last in its block
                                                    states[i["jurisdiction_id"]]["name"], i["id"]))
 
 

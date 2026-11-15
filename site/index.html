@@ -2984,14 +2984,18 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       function pending(i) { return J[i.jurisdiction_id].status !== "established"; }
       function shortName(i) { return i.short_name || i.acronym || i.name; }
       function capital(text) { return text.charAt(0).toUpperCase() + text.slice(1); }
+      function year(j) { return j.status_since ? Number(j.status_since.slice(0, 4)) : Infinity; } // no date: last in its block
       function FN_ORDER(items) { // one ordering rule and its reader explanation
         return { label: FN_COPY.rows, rows: items.slice().sort(function (a, b) {
           var ja = J[a.jurisdiction_id], jb = J[b.jurisdiction_id];
-          return Number(pending(a)) - Number(pending(b)) || Number(ja.status_since.slice(0, 4)) - Number(jb.status_since.slice(0, 4)) || ja.name.localeCompare(jb.name) || a.id.localeCompare(b.id);
+          return Number(pending(a)) - Number(pending(b)) || year(ja) - year(jb) || ja.name.localeCompare(jb.name) || a.id.localeCompare(b.id);
         }) };
       }
       var order = FN_ORDER(d.institutes), institutes = order.rows, rows = {}, counts = {};
-      institutes.forEach(function (i) { rows[i.id] = {}; i.functions.forEach(function (row) { rows[i.id][row.code] = row; }); });
+      institutes.forEach(function (i) {
+        rows[i.id] = {}; (i.functions || []).forEach(function (row) { rows[i.id][row.code] = row; });
+        codes.forEach(function (code) { if (!rows[i.id][code]) rows[i.id][code] = { code: code, value: "not_coded", claim_ids: [] }; }); // a code without a row reads as not yet coded
+      });
       function coded(value) { return ["mandate", "activity", "both"].indexOf(value) >= 0; }
       codes.forEach(function (code) { counts[code] = institutes.filter(function (i) { return coded(rows[i.id][code].value); }).length; });
       // Vocabulary order within each group; new codes may have been appended to the vocabulary.
