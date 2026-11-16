@@ -8527,7 +8527,6 @@
       "kind": "state",
       "europe_scope": false,
       "institute_id": "us-caissi",
-      "summary": "CAISSI (formerly the US AI Safety Institute, then CAISI) is part of NIST.",
       "next_check": {
         "date": "2027-04-16",
         "reason": "Routine full re-check of an institute record, every six months."
@@ -8553,7 +8552,13 @@
             "scope": "Date note: bound the November 2023 announcement to the record notes; no other field re-checked."
           }
         ],
-        "last_checked_basis": "historical_upper_bound"
+        "last_checked_basis": "historical_upper_bound",
+        "log": [
+          {
+            "date": "2026-10-16",
+            "text": "Read the Commerce announcement of 1 November 2023 and NIST's announcement of 7 February 2024 for the institute's establishment chronology."
+          }
+        ]
       },
       "source_ids": [
         "us-caissi",
@@ -8644,7 +8649,7 @@
           "date": "2026-09-30",
           "event": "named",
           "instrument": "unknown",
-          "description": "NIST's super intelligence page, in the earliest archived capture found (30 September 2026), names the Center for Advancing Innovation and Standards for Super Intelligence (CAISSI) and says NIST is updating its communications under the Executive Order of 29 September 2026; NIST's release of 16 October 2026 also uses the name. No published act gives the date of the change.",
+          "description": "NIST's super intelligence page names the Center for Advancing Innovation and Standards for Super Intelligence (CAISSI).",
           "source_ids": [
             "us-si-page-archive-2026-09-30",
             "us-caissi-archive-2026-10-03",
@@ -8661,8 +8666,7 @@
       "identifier_source_ids": [
         "un-m49",
         "wikidata-jurisdiction-identifiers"
-      ],
-      "notes": "The status date is the first retrieved official confirmation that the institute was established, published on 7 February 2024. It is not a verified exact founding date. The Commerce Department announced on 1 November 2023 that it would establish the institute; that announcement is recorded as a commitment, not as the founding."
+      ]
     },
     {
       "id": "CA",
@@ -8670,7 +8674,6 @@
       "kind": "state",
       "europe_scope": false,
       "institute_id": "ca-caisi",
-      "summary": "The Canadian AI Safety Institute sits inside the industry ministry ISED.",
       "next_check": {
         "date": "2027-04-16",
         "reason": "Routine full re-check of an institute record, every six months."
@@ -34079,7 +34082,7 @@
       "jurisdiction_id": "US",
       "host": "National Institute of Standards and Technology (NIST)",
       "legal_form": "unit_in_existing_body",
-      "mandate": "Makes voluntary agreements with developers and evaluators of superintelligence (SI) systems and leads unclassified evaluations of SI capabilities that may pose national security risks, focusing on cybersecurity, biosecurity and chemical weapons.",
+      "mandate": "Makes voluntary agreements with private sector super intelligence (SI) developers and evaluators and leads unclassified evaluations of SI capabilities that may pose national security risks.",
       "website": "https://www.nist.gov/caissi",
       "names": [
         {
@@ -34119,13 +34122,12 @@
           "amount": 10000000,
           "currency": "USD",
           "period": "FY2024 and FY2025 enacted",
-          "description": "USD 10m a year",
+          "description": "The Senate committee minority release says the bill's USD 10 million for CAISI matches the enacted FY2024 and FY2025 levels.",
           "source_ids": [
             "us-senate-fy26",
             "r11-us-fiscal-year"
           ],
           "confidence": "medium",
-          "notes": "Enacted levels as stated in a committee minority release.",
           "funding_source": "national_government",
           "annual_amount": 10000000,
           "annual_basis": "FY2024 and FY2025 enacted levels as reported retrospectively by the Senate Commerce Committee minority; not actual expenditure.",
@@ -34151,7 +34153,6 @@
             "r5-us-fy2027-request"
           ],
           "confidence": "high",
-          "notes": "The named ceiling appears in the Congressional Record explanatory statement, not as an institute-specific amount in the act itself. Section 4 gives the statement effect for allocation and implementation. NIST's FY2027 request describes an existing base of USD 11m for CAISI (now CAISSI), consistent with treating this ceiling as the institute's funding.",
           "funding_source": "national_government",
           "annual_amount": 10000000,
           "annual_basis": "FY2026 ceiling of up to USD 10m in the explanatory statement given effect by section 4 of Public Law 119-74; not a guaranteed allocation or expenditure.",
@@ -34181,7 +34182,7 @@
             "r5-us-fy2027-request",
             "r11-us-fiscal-year"
           ],
-          "notes": "The request describes USD 11m existing base plus USD 16m increase. This base is not a revision to the FY2026 enacted ceiling of up to USD 10m.",
+          "notes": "The request describes an existing USD 11 million base and a USD 16 million increase for CAISI.",
           "annual_period": {
             "start": "2026-10-01",
             "end": "2027-09-30"
@@ -34211,7 +34212,6 @@
             "start": "2026-10-01",
             "end": "2027-09-30"
           },
-          "notes": "Committee report language accompanying the House bill, not an enacted appropriation. No Senate or enacted FY2027 figure was found on 24 October 2026.",
           "coverage": "whole_institute",
           "id": "funding-8d2f4b6a1c9e47f3b05a7e3c1d6f2b98"
         },
@@ -34227,7 +34227,6 @@
           "commitment": "announced",
           "funding_source": "national_government",
           "decision_date": "2024-07-19",
-          "notes": "One-off investment from the Technology Modernization Fund, outside the annual appropriation. The announcement states no funding period, so no annual figure is derived.",
           "coverage": "whole_institute",
           "id": "funding-3a7c9e1f5b2d48a6c4e0f8b2d6a1c973"
         }
@@ -34238,7 +34237,7 @@
           "total_qualifier": "about",
           "target": 80,
           "as_of": "2024",
-          "description": "The Cabinet Office of Japan's April 2026 comparison reports about 30 US staff as of 2024 and a target of 80, with no target date. Japan AISI's January 2025 English overview gives the same approximate total and target. No US primary confirmation of that historical total and target was located.",
+          "description": "Japan AISI's overview reports approximately 30 US staff and a target of around 80.",
           "source_ids": [
             "r3-jp-aisi-overview-english-2025",
             "jp-cao-2604"
@@ -34252,7 +34251,7 @@
           "total_qualifier": "exact",
           "target": 80,
           "as_of": "2026-09",
-          "description": "ZDNet Korea reported 34 US personnel and a plan to expand to 80, citing materials from South Korean lawmaker Lee Jeong-heon's office. The report gives the count as current in September 2026, its publication month. No US primary confirmation of the count, staffing scope or target date was found.",
+          "description": "ZDNet Korea reports 34 relevant US staff and plans to expand to 80, citing a lawmaker's office.",
           "source_ids": [
             "kr-zdnet"
           ],
@@ -34370,7 +34369,45 @@
             "certification",
             "sandbox"
           ]
-        }
+        },
+        "log": [
+          {
+            "date": "2026-10-16",
+            "text": "Read the archived NIST super intelligence page captured on 30 September 2026, the current NIST institute pages, Executive Order 14434 and the June 2025 Commerce decision for the institute's name and mandate history."
+          },
+          {
+            "date": "2026-10-24",
+            "text": "Read the FY2027 House Appropriations Committee report and searched for Senate and enacted FY2027 funding figures."
+          },
+          {
+            "date": "2026-10-16",
+            "text": "Read the Congressional Record explanatory statement, Public Law 119-74, NIST's FY2027 request and the Technology Modernization Fund announcement for funding amounts, allocation provisions and periods."
+          },
+          {
+            "date": "2026-10-16",
+            "text": "Read Japan AISI's January 2025 overview, the Japanese Cabinet Office's April 2026 comparison and ZDNet Korea's September 2026 report, and searched for US primary confirmation of the staffing counts and targets."
+          },
+          {
+            "date": "2026-10-16",
+            "text": "Read NIST's organisational post and Axios's report of 20 July 2026 for the acting director's role and appointment date."
+          },
+          {
+            "date": "2026-10-21",
+            "text": "Searched in English for CISA and the NSA AI Security Center and read the TRAINS announcement for their relations with the institute."
+          },
+          {
+            "date": "2026-10-16",
+            "text": "Read the access sources against Epoch AI's model release dates and frontier-model list, including the GLM-5.3 and Kimi K3 assessments, the Claude 3.5 Sonnet testing account, the Llama 3.1-405B pilot report, the Claude Opus 5.5 system card and Executive Order 14434, for access routes, dates, developer eligibility and legal powers."
+          },
+          {
+            "date": "2026-10-16",
+            "text": "Read the August 2024 memoranda announcement and the May 2026 NIST agreements release and bulletin for model-access terms and partnership changes."
+          },
+          {
+            "date": "2026-10-16",
+            "text": "Read the original reports, archived posts, publication catalogue entries and official announcements for the output catalogue's institutional credit, publication dates and technical content."
+          }
+        ]
       },
       "source_ids": [
         "us-caissi",
@@ -34434,8 +34471,7 @@
         "fix-output-us-entry-4",
         "us-commerce-2024-02"
       ],
-      "notes": "The current NIST pages use CAISSI. The name-history start is the earliest archived use of the name found, NIST's super intelligence page as captured on 30 September 2026. Executive Order 14434 of 29 September 2026, which directs the executive branch to use 'Super Intelligence' in place of 'Artificial Intelligence', is the likely trigger, but it does not name this centre or set a date for its rename. The current ministerial basis refers to the June 2025 CAISI decision; the retained establishment date refers to its US AISI predecessor. Canada's CAISI, the Canadian AI Safety Institute, is a different body.",
-      "mandate_short": "Leads national security evaluations of superintelligence (SI) systems and develops guidelines to measure and improve their security.",
+      "mandate_short": "Leads unclassified evaluations of super intelligence (SI) capabilities that may pose national security risks.",
       "legal_basis": {
         "type": "ministerial_act",
         "state": "in_force",
@@ -34457,7 +34493,7 @@
         {
           "state": "signed",
           "date": "2024-08-29",
-          "scope": "Historical MOU signed in August 2024, providing model access before and after release and collaborative research on capabilities, safety risks and mitigations. In May 2026 NIST said its previously announced partnerships had been renegotiated, without naming the counterparties in that statement. Current terms are not published in the retrieved announcements; the historical signed state does not establish that the original terms remain in force.",
+          "scope": "MOU signed in August 2024, providing model access before and after release and collaborative research on capabilities, safety risks and mitigations. In May 2026 NIST said its previously announced partnerships had been renegotiated.",
           "source_ids": [
             "us-nist-mou-2024",
             "us-nist-agreements-2026",
@@ -34472,7 +34508,7 @@
         {
           "state": "signed",
           "date": "2024-08-29",
-          "scope": "Historical MOU signed in August 2024, providing model access before and after release and collaborative research on capabilities, safety risks and mitigations. In May 2026 NIST said its previously announced partnerships had been renegotiated, without naming the counterparties in that statement. Current terms are not published in the retrieved announcements; the historical signed state does not establish that the original terms remain in force.",
+          "scope": "MOU signed in August 2024, providing model access before and after release and collaborative research on capabilities, safety risks and mitigations. In May 2026 NIST said its previously announced partnerships had been renegotiated.",
           "source_ids": [
             "us-nist-mou-2024",
             "us-nist-agreements-2026",
@@ -34939,7 +34975,6 @@
             "us-raman-nist-bio",
             "us-raman-confirmed-2026"
           ],
-          "notes": "Role confirmed by NIST organisational post. July 2026 transition reported by Axios on 20 July from a named Commerce spokesperson; exact effective day was not independently established. Confidence is medium for the combined record because the start month rests on a press account, while the role is primary-confirmed.",
           "id": "people-ccd2b978e1045a9b9cb2f0e2539cbdae",
           "background": "Raman came to NIST from Purdue University, where Raman was named Dean of Engineering in February 2023, and is also NIST Director, sworn in on 30 June 2026."
         }
@@ -35117,8 +35152,7 @@
             ],
             "acronym": "OpenMined"
           }
-        ],
-        "notes": "Cyber agency searched: CISA and NSA AI Security Center, 2026-10-21 (en). CISA and NSA are represented in TRAINS."
+        ]
       },
       "testing_capacity": {
         "modes": [
@@ -35129,10 +35163,11 @@
             ]
           }
         ],
-        "notes": "The institute was renamed from CAISI to CAISSI after Executive Order 14434 (29 September 2026), which does not name it; the GLM-5.3 assessment predates the rename. Evaluators from across government take part through the TRAINS Taskforce, which the institute convenes, so this is not testing by other bodies.",
+        "notes": "NIST says CAISI evaluated GLM-5.3 on four vulnerability-discovery and exploit-development benchmarks. NIST also says CAISI has completed more than 40 evaluations, including on state-of-the-art models that remain unreleased.",
         "source_ids": [
           "us-eo-14434",
-          "us-nist-agreements-2026"
+          "us-nist-agreements-2026",
+          "us-glm53"
         ]
       },
       "model_access": {
@@ -35339,7 +35374,7 @@
             ]
           }
         ],
-        "notes": "Event dates are the model's public release date in Epoch AI's data unless the source dates the access itself; the sources state that the access came before release, so the access took place on or before that date. The Epoch AI models cited for the leading-developer test were released at least a month before each such date. NIST's release of 5 May 2026 says 'developers frequently provide CAISI with models that have reduced or removed safeguards' and that the institute 'has completed more than 40 such evaluations, including on state-of-the-art models that remain unreleased'; it names no model or developer for this access, so it is not a dated event. Not counted: GLM-5.3 (Z.ai, September 2026) and Kimi K3 (Moonshot, July 2026), assessed after public release with no access route stated; the June 2024 Claude 3.5 Sonnet testing, which the UK institute ran and 'shared their results with the US AI Safety Institute'; the Llama 3.1-405B network pilot, whose weights are public; and Claude Opus 5.5 (September 2026), whose system card says Anthropic 'collaborated with the U.S. Center for AI Standards and Innovation (CAISI)' on measurement without stating pre-release access. Microsoft has had no model in Epoch AI's frontier set released since 1 January 2023; its latest there is Megatron-Turing NLG 530B (2021, with Nvidia). No legal power: Executive Order 14434 has no access provision for the institute.",
+        "notes": "NIST says developers frequently provide CAISI with models that have reduced or removed safeguards to evaluate national security capabilities and risks.",
         "source_ids": [
           "us-nist-agreements-2026",
           "us-glm53",
@@ -35438,7 +35473,7 @@
         "source_ids": [
           "us-usajobs"
         ],
-        "notes": "Its posts are advertised as NIST vacancies under direct-hire authority and paid under NIST's own pay system (Member of Technical Staff advert, February 2026)."
+        "notes": "The vacancy notice says the position is covered by NIST's Alternative Personnel Management System, a pay-for-performance system."
       },
       "claims": [
         {
@@ -35560,6 +35595,14 @@
           "source_ids": [
             "us-nist-caisi-overview-2026"
           ]
+        },
+        {
+          "id": "claims-80803470003045eaa1444d7f6ac5db12",
+          "kind": "fact",
+          "text": "NIST says CAISSI will focus its evaluations on demonstrable risks, such as cybersecurity, biosecurity and chemical weapons.",
+          "source_ids": [
+            "us-caissi"
+          ]
         }
       ]
     },
@@ -35571,7 +35614,7 @@
       "jurisdiction_id": "CA",
       "host": "Innovation, Science and Economic Development Canada (ISED)",
       "legal_form": "unit_in_existing_body",
-      "mandate": "Researches risks from advanced AI systems and develops measures to address them.",
+      "mandate": "Advances scientific understanding of the risks associated with the most advanced AI systems, develops measures to reduce those risks and builds trust to foster AI innovation.",
       "website": "https://ised-isde.canada.ca/site/ised/canadian-artificial-intelligence-safety-institute",
       "funding": [
         {
@@ -35580,7 +35623,7 @@
           "currency": "CAD",
           "years": 5,
           "period": "2024-25 to 2028-29",
-          "description": "CAD 50m over five years",
+          "description": "The launch announcement gives CAISI an initial budget of CAD 50 million over five years.",
           "source_ids": [
             "ca-budget",
             "ca-launch",
@@ -35610,7 +35653,7 @@
             "r5-ca-additional-funding-qp",
             "r5-ca-ai-for-all"
           ],
-          "notes": "The retrieved sources publish no funding period or annual profile, so we do not annualise it, do not use it in place of the 2024 five-year allocation, and do not add the two envelopes to a current annual budget. The one-off label denotes this additional fixed envelope, not payment in one fiscal year. The strategy names CAISI as the recipient, and the Question Period Note explicitly calls this additional funding. It is an institute-wide envelope, kept separate from the earlier five-year allocation rather than added to its annual mean. The Question Period Note also associates the envelope with AI transparency and a Canada Trusted AI Certification programme. It gives no split; the explicit CAISI allocation supports the whole-institute classification while the scope of certification spending remains uncertain.",
+          "notes": "The Question Period note links the CAD 50 million investment to expanding CAISI, AI transparency and a Canada Trusted AI Certification programme.",
           "id": "funding-f9ea264762c8593293364a58539295d9",
           "coverage": "whole_institute"
         },
@@ -35690,7 +35733,7 @@
               "id": "annual_profile-a6cb2b90cb4c464a9be20f9b57f9bf3d"
             }
           ],
-          "notes": "ISED's 2026-27 Departmental Plan lists the CAISI project under the Advanced and Emerging Technology programme with a start of 2024-25 and an end of 2028-29 (CAISI Budget 2024), as does its 2025-26 results report, so this stream sits inside the CAD 50m five-year allocation and is not additional to it. ISED's 2024-25 results report and its 2025-26 Departmental Plan give the start as 2025-26, but the 2024-25 results report also records CAD 2,999,545 of actual spending in 2024-25 against nothing planned, as funding received in-year, and says the stream was launched in November 2024; the record therefore starts in 2024-25. ISED's 2025-26 Departmental Results Report gives CAD 6m as 2025-26 actual spending (authorities used), equal to planned spending. CIFAR reported on 21 January 2026 that the government awarded it CAD 27m through the institute for its AI safety research programme, with no period stated, and that the programme awarded CAD 2.4m in 2025 to 12 projects; both concern this stream and are not added to it.",
+          "notes": "ISED's results report says the CAISI CIFAR research stream launched in November 2024.",
           "coverage": "component",
           "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
         }
@@ -35803,7 +35846,33 @@
             "certification",
             "sandbox"
           ]
-        }
+        },
+        "log": [
+          {
+            "date": "2026-10-16",
+            "text": "Read the AI for All strategy, the Question Period funding note, ISED's departmental plans and results reports, and CIFAR's report of 21 January 2026 for funding periods, research-stream spending and grant awards."
+          },
+          {
+            "date": "2026-10-20",
+            "text": "Searched in English and French for the Canadian Centre for Cyber Security and its parent Communications Security Establishment Canada; read CSE's annual report and the Centre's English and French About pages for their relations with CAISI."
+          },
+          {
+            "date": "2026-10-16",
+            "text": "Read the Cohere memorandum announcements and the UK-Canada joint statement, and searched for an access event, legal power or agreement providing access to models of a developer in Epoch AI's frontier set."
+          },
+          {
+            "date": "2026-10-16",
+            "text": "Read ISED's institute page and briefing, the NRC's AI safety page, the joint testing reports, the renewed UK-Canada partnership and the national AI strategy for testing, staffing and research delivery."
+          },
+          {
+            "date": "2026-10-16",
+            "text": "Read the June 2025 Cohere announcements and ISED's briefing for the February 2026 appearance, and searched for a signed memorandum naming the institute."
+          },
+          {
+            "date": "2026-10-16",
+            "text": "Read the multilingual and agentic testing reports, their publication listings, the synthetic-content research agenda, ISED's briefing and the evaluation-reporting guidance for institutional credit, publication dates and technical content."
+          }
+        ]
       },
       "source_ids": [
         "ca-launch",
@@ -35837,7 +35906,7 @@
         "ca-uk-alignment-2025",
         "ca-kr-mou-2026"
       ],
-      "mandate_short": "Researches risks from advanced artificial intelligence and ways to reduce them.",
+      "mandate_short": "Advances scientific understanding of the risks of the most advanced AI systems and develops measures to reduce them.",
       "legal_basis": {
         "type": "ministerial_act",
         "state": "in_force",
@@ -36064,7 +36133,6 @@
           }
         }
       ],
-      "notes": "Research is also funded through CIFAR and NRC.",
       "head": {
         "state": "stated",
         "person_id": "people-e51819a0b781512099c82d5c0352b7c9",
@@ -36157,11 +36225,10 @@
             "acronym": "CSE",
             "cyber_agency": true
           }
-        ],
-        "notes": "Cyber agency searched: Canadian Centre for Cyber Security (CCCS) and its parent Communications Security Establishment Canada (CSE), 2026-10-20 (en, fr). The CSE annual report names strategic direction for CAISI; no separate CCCS cooperation was found in its English or French about pages or targeted searches."
+        ]
       },
       "testing_capacity": {
-        "notes": "Function statement, not counted as testing: 'We conduct projects supporting the government's priorities on AI safety, including joint testing with international counterparts' (ISED institute page). ISED says the institute 'directly conducts projects supporting the Government's priorities on AI safety through the National Research Council', a stream 'implemented through a Memorandum of Understanding (MOU) with the National Research Council (NRC)'. The National Research Council says its researchers took part in a joint testing exercise through the institute, evaluating AI agents and how well AI prevents harmful content in nine languages. No headcount or technical staff is published. Joint network testing reported, 2025-06-26 (multilingual exercise) and 2025-07-17 (agentic exercise); the network reports credit Canada with analysis. The renewed UK-Canada partnership of 13 October 2026 mentions 'exploring staff exchanges and coordinated evaluation activities'. The national AI strategy says Canada will invest $50 million to expand the institute's capabilities, including to conduct transparent evaluations of AI models.",
+        "notes": "The NRC says its researchers joined experts from eight other countries to evaluate autonomous AI systems known as AI agents.",
         "source_ids": [
           "r5-ca-ai-for-all",
           "ca-ised",
@@ -36183,7 +36250,7 @@
         ]
       },
       "model_access": {
-        "notes": "No access event, legal power or agreement providing for access to, or evaluation of, the models of a developer that has a model in Epoch AI's frontier set was found. Under the Cohere MOU of June 2025 'Cohere will collaborate with the Canadian AI Safety Institute'; no access term was retrieved, and Cohere has no model in Epoch AI's frontier set. No statute gives the institute access powers.",
+        "notes": "The joint statement says Cohere will collaborate with the Canadian AI Safety Institute under the Canadian memorandum of understanding.",
         "source_ids": [
           "gb-ca-joint-statement-2025",
           "epoch-frontier-models"
@@ -36245,7 +36312,7 @@
         "source_ids": [
           "ca-caisi-srsr-briefing"
         ],
-        "notes": "The office in ISED leads policy coordination and international engagement; research runs through an investigator-led stream funded through CIFAR and government-directed projects at the National Research Council."
+        "notes": "ISED's briefing says CAISI has a dedicated office at ISED responsible for policy coordination and international engagement."
       },
       "claims": [
         {
@@ -44647,40 +44714,6 @@
                 "id": "us-caissi"
               },
               "name"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "US"
-              },
-              "summary"
-            ],
-            [
-              "institutes",
-              {
-                "id": "us-caissi"
-              },
-              "mandate"
-            ],
-            [
-              "institutes",
-              {
-                "id": "us-caissi"
-              },
-              "mandate_short"
-            ]
-          ],
-          "accessed": "2026-10-17"
-        },
-        {
-          "text": "Establish voluntary agreements with private sector SI developers and evaluators",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "us-caissi"
-              },
-              "mandate"
             ]
           ],
           "accessed": "2026-10-17"
@@ -44695,29 +44728,21 @@
               {
                 "id": "us-caissi"
               },
-              "mandate_short"
+              "mandate"
             ],
             [
               "institutes",
               {
                 "id": "us-caissi"
               },
-              "mandate"
-            ]
-          ]
-        },
-        {
-          "text": "Work with NIST organizations to develop guidelines and best practices to measure and improve the security of SI systems, and work with NIST staff to assist industry to develop voluntary standards.",
-          "accessed": "2026-10-18",
-          "url": "https://www.nist.gov/caissi",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "us-caissi"
-              },
               "mandate_short"
             ]
+          ],
+          "anchors": [
+            {
+              "kind": "heading",
+              "text": "To that end, CAISSI will:"
+            }
           ]
         },
         {
@@ -44728,7 +44753,11 @@
               {
                 "id": "us-caissi"
               },
-              "mandate"
+              "claims",
+              {
+                "id": "claims-80803470003045eaa1444d7f6ac5db12"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-24"
@@ -44772,17 +44801,6 @@
                 "id": "us-2026-10-03-named"
               },
               "event"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "US"
-              },
-              "timeline",
-              {
-                "id": "us-2026-10-03-named"
-              },
-              "description"
             ]
           ],
           "accessed": "2026-10-21"
@@ -44972,6 +44990,23 @@
             ]
           ],
           "accessed": "2026-10-17"
+        },
+        {
+          "text": "The bill makes available $10 million for CAISI, formerly known as the AI Safety Institute, which is equivalent to the FY24/FY25 enacted levels.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "funding",
+              {
+                "id": "funding-49bf58d07a505a11baa9a9fa6a2fbf95"
+              },
+              "description"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "US",
@@ -45024,6 +45059,14 @@
               },
               "staffing_model",
               "code"
+            ],
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "staffing_model",
+              "notes"
             ]
           ],
           "accessed": "2026-10-21"
@@ -45848,24 +45891,6 @@
             ]
           ],
           "accessed": "2026-10-17"
-        },
-        {
-          "text": "이정헌 더불어민주당 의원",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "us-caissi"
-              },
-              "staff",
-              {
-                "id": "staff-0516799cbe7f55c998315aa678ea154a"
-              },
-              "description"
-            ]
-          ],
-          "accessed": "2026-10-17",
-          "gloss": "Democratic Party lawmaker Lee Jeong-heon."
         },
         {
           "text": "연구소 AI 안전 평가실 인력은 7명뿐이었다. 법제·규범 담당자 1명을 제외하면 실제 AI 모델을 기술적으로 평가하는 인력은 6명이다.",
@@ -46707,13 +46732,6 @@
               {
                 "id": "CA"
               },
-              "summary"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "CA"
-              },
               "timeline",
               {
                 "id": "ca-2024-designated"
@@ -46944,6 +46962,23 @@
           ],
           "accessed": "2026-10-17",
           "url": "https://web.archive.org/web/20261016194417/https://www.canada.ca/en/innovation-science-economic-development/news/2024/11/canada-launches-canadian-artificial-intelligence-safety-institute.html"
+        },
+        {
+          "text": "The Canadian Artificial Intelligence Safety Institute (CAISI) will have an initial budget of $50 million over five years.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-360a59a37fde5cc8ba0a03ce3a00ea5f"
+              },
+              "description"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "CA",
@@ -48251,20 +48286,6 @@
             ]
           ],
           "accessed": "2026-10-17"
-        },
-        {
-          "text": "We study how advanced AI systems work and provide tools to ensure that the Government of Canada is well positioned to address AI safety risks as they arise.",
-          "accessed": "2026-10-18",
-          "url": "https://ised-isde.canada.ca/site/ised/en/canadian-artificial-intelligence-safety-institute",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "ca-caisi"
-              },
-              "mandate_short"
-            ]
-          ]
         },
         {
           "text": "CAISI is led by Innovation, Science and Economic Development Canada",
@@ -61659,6 +61680,14 @@
                 "code": "in_house"
               },
               "code"
+            ],
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "testing_capacity",
+              "notes"
             ]
           ],
           "accessed": "2026-10-17"
@@ -61834,13 +61863,6 @@
               {
                 "id": "US"
               },
-              "summary"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "US"
-              },
               "timeline",
               {
                 "id": "us-2024-designated"
@@ -61930,13 +61952,6 @@
                 "id": "us-2023-commitment"
               },
               "event"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "US"
-              },
-              "notes"
             ]
           ],
           "accessed": "2026-10-17"
@@ -61971,13 +61986,6 @@
                 "id": "us-2023-commitment"
               },
               "date"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "US"
-              },
-              "notes"
             ]
           ],
           "accessed": "2026-10-17"
@@ -62888,6 +62896,34 @@
             ]
           ],
           "accessed": "2026-10-21"
+        },
+        {
+          "text": "To thoroughly evaluate national security-related capabilities and risks, developers frequently provide CAISI with models that have reduced or removed safeguards.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "model_access",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "To date, CAISI has completed more than 40 such evaluations, including on state-of-the-art models that remain unreleased.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "testing_capacity",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "US",
@@ -68118,17 +68154,6 @@
                 "id": "funding-443aa6a31d205192966af69e21022fb1"
               },
               "annual_basis"
-            ],
-            [
-              "institutes",
-              {
-                "id": "us-caissi"
-              },
-              "funding",
-              {
-                "id": "funding-443aa6a31d205192966af69e21022fb1"
-              },
-              "notes"
             ]
           ],
           "url": "https://www.govinfo.gov/content/pkg/PLAW-119publ74/html/PLAW-119publ74.htm",
@@ -68219,17 +68244,6 @@
                 "id": "funding-443aa6a31d205192966af69e21022fb1"
               },
               "description"
-            ],
-            [
-              "institutes",
-              {
-                "id": "us-caissi"
-              },
-              "funding",
-              {
-                "id": "funding-443aa6a31d205192966af69e21022fb1"
-              },
-              "notes"
             ],
             [
               "institutes",
@@ -69987,17 +70001,6 @@
               },
               "credit",
               "institute_id"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "US"
-              },
-              "timeline",
-              {
-                "id": "us-2026-10-03-named"
-              },
-              "description"
             ]
           ]
         }
@@ -85072,6 +85075,20 @@
             ]
           ],
           "accessed": "2026-10-17"
+        },
+        {
+          "text": "Under the Canadian MOU, Cohere will collaborate with the Canadian AI Safety Institute and develop their commitment to building cutting-edge data centres in Canada.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "model_access",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "GB",
@@ -85165,26 +85182,6 @@
           ]
         },
         {
-          "text": "The Institute advances scientific understanding of the risks associated with the most advanced AI systems and develops measures to address those risks.",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "ca-caisi"
-              },
-              "mandate_short"
-            ],
-            [
-              "institutes",
-              {
-                "id": "ca-caisi"
-              },
-              "mandate"
-            ]
-          ],
-          "accessed": "2026-10-19"
-        },
-        {
           "text": "Ultimately, CAISI's operational model is designed to leverage existing resources and partnerships, including the three national AI Institutes (Amii, MILA and Vector) as well as the government researchers, to conduct cutting edge research on AI safety issues",
           "supports": [
             [
@@ -85208,6 +85205,14 @@
               },
               "staffing_model",
               "code"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "staffing_model",
+              "notes"
             ]
           ],
           "accessed": "2026-10-21"
@@ -85225,6 +85230,26 @@
                 "id": "claims-9b1b78c24b4848fabf57585f7135b4c2"
               },
               "text"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "CAISI's mandate is to advance scientific understanding of the risks associated with the most advanced AI systems, develop measures to reduce those risks and build trust to foster AI innovation.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "mandate"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "mandate_short"
             ]
           ],
           "accessed": "2026-10-17"
@@ -89196,13 +89221,6 @@
               },
               "legal_basis",
               "type"
-            ],
-            [
-              "institutes",
-              {
-                "id": "us-caissi"
-              },
-              "notes"
             ]
           ],
           "accessed": "2026-10-17"
@@ -92245,17 +92263,6 @@
                 "id": "staff-ba649582e29f57c9815becaf698a7abb"
               },
               "target"
-            ],
-            [
-              "institutes",
-              {
-                "id": "us-caissi"
-              },
-              "staff",
-              {
-                "id": "staff-ba649582e29f57c9815becaf698a7abb"
-              },
-              "description"
             ]
           ],
           "accessed": "2026-10-17"
@@ -92297,7 +92304,13 @@
               "description"
             ]
           ],
-          "accessed": "2026-10-17"
+          "accessed": "2026-10-17",
+          "anchors": [
+            {
+              "kind": "heading",
+              "text": "United States"
+            }
+          ]
         }
       ],
       "access_note": "Original PDF retrieved. The rendered layout of slide 8 was visually checked: the staffing figures appear in the United States column. Its heading and staffing sentence are quoted separately because text extraction interleaves the neighbouring country columns. The cover explicitly prints 2025-01-06; the publication date is read from the document, not inferred from its filename.",
@@ -93699,39 +93712,7 @@
                 "id": "funding-f3b3fb7fc53a5ab4a7f73be9d93358c9"
               },
               "annual_amount"
-            ]
-          ]
-        },
-        {
-          "text": "existing base of $11 million",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "us-caissi"
-              },
-              "funding",
-              {
-                "id": "funding-f3b3fb7fc53a5ab4a7f73be9d93358c9"
-              },
-              "notes"
             ],
-            [
-              "institutes",
-              {
-                "id": "us-caissi"
-              },
-              "funding",
-              {
-                "id": "funding-443aa6a31d205192966af69e21022fb1"
-              },
-              "notes"
-            ]
-          ]
-        },
-        {
-          "text": "increase of $16 million",
-          "supports": [
             [
               "institutes",
               {
@@ -93799,17 +93780,6 @@
                 "id": "funding-f9ea264762c8593293364a58539295d9"
               },
               "coverage"
-            ],
-            [
-              "institutes",
-              {
-                "id": "ca-caisi"
-              },
-              "funding",
-              {
-                "id": "funding-f9ea264762c8593293364a58539295d9"
-              },
-              "notes"
             ]
           ]
         },
@@ -93884,31 +93854,12 @@
                 "id": "funding-f9ea264762c8593293364a58539295d9"
               },
               "coverage"
-            ],
-            [
-              "institutes",
-              {
-                "id": "ca-caisi"
-              },
-              "funding",
-              {
-                "id": "funding-f9ea264762c8593293364a58539295d9"
-              },
-              "notes"
             ]
           ]
         },
         {
           "text": "Canada will invest $50 million to expand the capabilities of the Canadian AI Safety Institute to track emerging AI risks, advance technical research, and to conduct transparent evaluations of AI models.",
           "supports": [
-            [
-              "institutes",
-              {
-                "id": "ca-caisi"
-              },
-              "testing_capacity",
-              "notes"
-            ],
             [
               "institutes",
               {
@@ -94278,17 +94229,6 @@
                 "id": "people-ccd2b978e1045a9b9cb2f0e2539cbdae"
               },
               "role"
-            ],
-            [
-              "institutes",
-              {
-                "id": "us-caissi"
-              },
-              "people",
-              {
-                "id": "people-ccd2b978e1045a9b9cb2f0e2539cbdae"
-              },
-              "notes"
             ]
           ]
         }
@@ -94335,17 +94275,6 @@
                 "id": "people-ccd2b978e1045a9b9cb2f0e2539cbdae"
               },
               "role"
-            ],
-            [
-              "institutes",
-              {
-                "id": "us-caissi"
-              },
-              "people",
-              {
-                "id": "people-ccd2b978e1045a9b9cb2f0e2539cbdae"
-              },
-              "notes"
             ]
           ]
         },
@@ -94373,17 +94302,6 @@
                 "id": "people-ccd2b978e1045a9b9cb2f0e2539cbdae"
               },
               "role"
-            ],
-            [
-              "institutes",
-              {
-                "id": "us-caissi"
-              },
-              "people",
-              {
-                "id": "people-ccd2b978e1045a9b9cb2f0e2539cbdae"
-              },
-              "notes"
             ]
           ]
         },
@@ -110896,17 +110814,6 @@
               {
                 "id": "funding-3a7c9e1f5b2d48a6c4e0f8b2d6a1c973"
               },
-              "notes"
-            ],
-            [
-              "institutes",
-              {
-                "id": "us-caissi"
-              },
-              "funding",
-              {
-                "id": "funding-3a7c9e1f5b2d48a6c4e0f8b2d6a1c973"
-              },
               "kind"
             ]
           ],
@@ -111035,23 +110942,6 @@
                 "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
               },
               "coverage"
-            ]
-          ],
-          "accessed": "2026-10-24"
-        },
-        {
-          "text": "Start date 2025-26 End date 2028-29 (CAISI Budget 2024)",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "ca-caisi"
-              },
-              "funding",
-              {
-                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
-              },
-              "notes"
             ]
           ],
           "accessed": "2026-10-24"
@@ -116255,14 +116145,6 @@
                 "code": "via_other_bodies"
               },
               "code"
-            ],
-            [
-              "institutes",
-              {
-                "id": "ca-caisi"
-              },
-              "testing_capacity",
-              "notes"
             ]
           ],
           "accessed": "2026-11-07"
@@ -116282,20 +116164,6 @@
               },
               "code"
             ],
-            [
-              "institutes",
-              {
-                "id": "ca-caisi"
-              },
-              "testing_capacity",
-              "notes"
-            ]
-          ],
-          "accessed": "2026-11-07"
-        },
-        {
-          "text": "Our experts helped the international research team evaluate the effectiveness of AI at preventing harmful content in 9 different languages",
-          "supports": [
             [
               "institutes",
               {
@@ -117113,17 +116981,6 @@
                 "id": "annual_profile-a33b0f9c8ee141ffb043b6d9a2fcb563"
               },
               "end"
-            ],
-            [
-              "institutes",
-              {
-                "id": "ca-caisi"
-              },
-              "funding",
-              {
-                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
-              },
-              "notes"
             ]
           ],
           "accessed": "2026-11-08"
@@ -117189,17 +117046,6 @@
                 "id": "annual_profile-a33b0f9c8ee141ffb043b6d9a2fcb563"
               },
               "amount"
-            ],
-            [
-              "institutes",
-              {
-                "id": "ca-caisi"
-              },
-              "funding",
-              {
-                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
-              },
-              "notes"
             ]
           ],
           "accessed": "2026-11-08"
@@ -117217,17 +117063,6 @@
                 "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
               },
               "description"
-            ],
-            [
-              "institutes",
-              {
-                "id": "ca-caisi"
-              },
-              "funding",
-              {
-                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
-              },
-              "notes"
             ],
             [
               "institutes",
@@ -117259,17 +117094,6 @@
               {
                 "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
               },
-              "notes"
-            ],
-            [
-              "institutes",
-              {
-                "id": "ca-caisi"
-              },
-              "funding",
-              {
-                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
-              },
               "period"
             ],
             [
@@ -117286,13 +117110,7 @@
                 "id": "annual_profile-a33b0f9c8ee141ffb043b6d9a2fcb563"
               },
               "start"
-            ]
-          ],
-          "accessed": "2026-11-08"
-        },
-        {
-          "text": "Start date 2025-26 End date 2028-29 (CAISI Budget 2024)",
-          "supports": [
+            ],
             [
               "institutes",
               {
@@ -117328,36 +117146,8 @@
       "access_note": "Publication date from the page's dcterms.issued metadata (date modified 6 November 2026). Every financial table on the page labels its second column 2025‑26 actual spending, beside 2023‑24 actual spending; only the column headed 2025‑26 actual spending (authorities used) is used here.",
       "excerpts": [
         {
-          "text": "Contributions to the Canadian Institute for Advanced Research—Canadian Artificial Intelligence Safety Institute",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "ca-caisi"
-              },
-              "funding",
-              {
-                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-11-08"
-        },
-        {
           "text": "2025‑26 actual spending (authorities used)",
           "supports": [
-            [
-              "institutes",
-              {
-                "id": "ca-caisi"
-              },
-              "funding",
-              {
-                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
-              },
-              "notes"
-            ],
             [
               "institutes",
               {
@@ -117410,17 +117200,6 @@
               {
                 "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
               },
-              "notes"
-            ],
-            [
-              "institutes",
-              {
-                "id": "ca-caisi"
-              },
-              "funding",
-              {
-                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
-              },
               "description"
             ],
             [
@@ -117451,23 +117230,6 @@
             ]
           ],
           "accessed": "2026-11-08"
-        },
-        {
-          "text": "Start date 2024-25 End date 2028-29 (CAISI Budget 2024)",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "ca-caisi"
-              },
-              "funding",
-              {
-                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-11-08"
         }
       ],
       "snapshot": {
@@ -117487,59 +117249,7 @@
       "accessed": "2026-11-08",
       "language": "en",
       "origin": "CA",
-      "excerpts": [
-        {
-          "text": "Through CAISI, the government awarded CIFAR $27M to lead an independent, multidisciplinary program dedicated to advancing AI safety research.",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "ca-caisi"
-              },
-              "funding",
-              {
-                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-11-08"
-        },
-        {
-          "text": "In 2025, the CAISI Research Program at CIFAR awarded $2.4M in funding to advance innovative research in AI safety",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "ca-caisi"
-              },
-              "funding",
-              {
-                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-11-08"
-        },
-        {
-          "text": "$2.4M was deployed to catalyze 12 groundbreaking research projects designed to identify and mitigate the risks of advanced artificial intelligence (AI) systems.",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "ca-caisi"
-              },
-              "funding",
-              {
-                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-11-08"
-        }
-      ],
+      "excerpts": [],
       "snapshot": {
         "retrieved": "2026-11-08T08:06:29Z",
         "sha256": "0fd8ca95252ea18853f27d2a6afe7b4117976ac63412fa07a6f3ece686deef22",
@@ -117985,23 +117695,6 @@
                 "id": "annual_profile-a6cb2b90cb4c464a9be20f9b57f9bf3d"
               },
               "amount"
-            ]
-          ],
-          "accessed": "2026-11-08"
-        },
-        {
-          "text": "Start date 2024-25 End date 2028-29 (CAISI Budget 2024)",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "ca-caisi"
-              },
-              "funding",
-              {
-                "id": "funding-b61e4d8a2f0c4937a8d5c2e7f1b3a046"
-              },
-              "notes"
             ]
           ],
           "accessed": "2026-11-08"
@@ -122470,30 +122163,6 @@
               },
               "event"
             ],
-            [
-              "jurisdictions",
-              {
-                "id": "US"
-              },
-              "timeline",
-              {
-                "id": "us-2026-10-03-named"
-              },
-              "description"
-            ],
-            [
-              "institutes",
-              {
-                "id": "us-caissi"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-11-14"
-        },
-        {
-          "text": "Per the Sept. 29, 2026, Executive Order on Inaugurating the Era of Super Intelligence, NIST is working to update its communications to incorporate the term",
-          "supports": [
             [
               "jurisdictions",
               {
