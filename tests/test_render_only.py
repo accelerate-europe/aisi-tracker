@@ -422,6 +422,38 @@ def test_recent_development_sample_is_independent_and_order_sensitive():
     assert errors(["es-moncloa", "es-plan"])
     assert errors(["es-plan", "es-moncloa", "es-moncloa"])
 
+    # A record's card numbers its sources in the record's own citation order, which may differ from the catalogue
+    # order (NL nl-0, 16 November 2026). The row follows its card; a different set of sources still fails.
+    def card_errors(ids):
+        card = '<article class="card" data-j="ES"><div class="srcs"><ol><li data-source-id="es-moncloa"></li><li data-source-id="es-plan"></li></ol></div></article>'
+        cites = "".join(f'<a class="cn" data-source-id="{sid}">1</a>' for sid in ids)
+        html = card + f'<ul id="development-list"><li class="development-row" data-j="ES" data-events="es-1"><time class="development-date" data-date="{event["date"]}"></time><span class="development-name">{jurisdiction["name"]}</span><p class="development-text">{event["short"]}<span class="cites">{cites}</span></p></li></ul>'
+        return [e for e in check_summary_data(html, fixture) if "development citations differ" in e]
+
+    assert card_errors(["es-moncloa", "es-plan"]) == []
+    assert card_errors(["es-plan", "es-moncloa"])
+    assert card_errors(["es-moncloa"])
+    assert card_errors(["es-moncloa", "es-plan", "es-plan"])
+    assert card_errors(["es-moncloa", "es-plan", "other"])
+
+
+def test_card_source_orders_follow_the_page_without_a_card():
+    from bs4 import BeautifulSoup
+    from scripts.check_page import card_source_orders
+
+    data = {
+        "sources": [{"id": "a"}, {"id": "b"}, {"id": "c"}],
+        "jurisdictions": [{"id": "XX", "institute_id": "xx-i", "display": {"source_links": ["b", "c"]}}],
+        "institutes": [{"id": "xx-i", "display": {"source_links": ["a", "b"]}}],
+    }
+    # No card: the jurisdiction's links, then the institute's, first occurrence kept (the page's recordSources).
+    assert card_source_orders(BeautifulSoup("", "html.parser"), data) == {"XX": ["b", "c", "a"]}
+    # A card's source list wins; an empty one does not count.
+    card = '<article class="card" data-j="XX"><div class="srcs"><ol><li data-source-id="c"></li><li data-source-id="a"></li></ol></div></article>'
+    assert card_source_orders(BeautifulSoup(card, "html.parser"), data) == {"XX": ["c", "a"]}
+    empty = '<article class="card" data-j="XX"></article>'
+    assert card_source_orders(BeautifulSoup(empty, "html.parser"), data) == {"XX": ["b", "c", "a"]}
+
 
 def test_fixture_refresh_rebinds_evidence_and_flags_at_current_positions():
     from scripts.published import publish
