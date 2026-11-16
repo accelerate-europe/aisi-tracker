@@ -29294,11 +29294,11 @@
         },
         "log": [
           {
-            "date": "2026-10-16",
+            "date": "2026-11-10",
             "text": "Staffing: the written parliamentary answers, the institute's About page and the Japanese Cabinet Office comparison table, with its footnote date, were read."
           },
           {
-            "date": "2026-10-16",
+            "date": "2026-10-17",
             "text": "The external paper Emerging Practices in Frontier AI Safety Frameworks was read as background and is not counted as an institute publication."
           },
           {
@@ -31530,7 +31530,6 @@
       "funding": [
         {
           "kind": "none_disclosed",
-          "description": "The SGDSN lists coordinating public expertise and pooling resources among the four principles of INESIA's action.",
           "source_ids": [
             "fr-dge",
             "fr-sgdsn-aisi"
@@ -31642,7 +31641,7 @@
             "text": "Cyber agency searched on 19 October 2026 in French and English: ANSSI; the DGE announcement, the roadmap and ANSSI's own page were read for its relation to the institute. Failed fetches are in the sources' access notes."
           },
           {
-            "date": "2026-10-16",
+            "date": "2026-10-20",
             "text": "Testing: the multilingual exercise report of 26 June 2025 and the roadmap announcement were read for testing credited to the institute or its members, and searched for a stand-alone evaluation of a named model."
           },
           {
@@ -32090,7 +32089,6 @@
       "funding": [
         {
           "kind": "none_disclosed",
-          "description": "No institute-specific budget amount disclosed",
           "source_ids": [
             "de-bmds",
             "de-bt-8727-2026"
@@ -32100,7 +32098,7 @@
           "funding_source": "unknown",
           "id": "funding-ec218d998f89595bba604d03e1c3f308",
           "coverage": "whole_institute",
-          "notes": "The absence of a published budget concerns the institute as a whole. The government's answer of 19 October 2026 gives no amounts for 2026 to 2029: answer 10 refers to answers 8 and 9 on continuing internal discussions and the use of existing BSI and BNetzA resources."
+          "notes": "The government's answer of 19 October 2026 refers the question on the institute's 2026 budget funds to its answers to questions 8 and 9. The answer says that budget questions, among others, are the subject of continuing discussions within government."
         },
         {
           "kind": "not_institute_specific",
@@ -32640,7 +32638,7 @@
             "text": "Searched for a budget amount or staff count for the Instituto de Seguridad de la Inteligencia Artificial itself: the IA360 plan, AESIA's own plan and pages, Finance Ministry and Council of Ministers spending notes, written questions and answers in the Congress, and the press, in Spanish and English. The figures found concern AESIA, not the institute."
           },
           {
-            "date": "2026-10-16",
+            "date": "2026-10-24",
             "text": "The plan was read for a constitutive instrument for the institute."
           },
           {
@@ -32648,11 +32646,11 @@
             "text": "Cyber agency searched on 19 October 2026 in Spanish and English: INCIBE and CCN; the plan and five cyber-related documents were read, and signed instruments naming them were searched for."
           },
           {
-            "date": "2026-10-16",
+            "date": "2026-10-24",
             "text": "Testing: the IA360 plan was read for a constitutive instrument and for testing by the institute or its partner bodies."
           },
           {
-            "date": "2026-10-16",
+            "date": "2026-10-24",
             "text": "Model access: searched for an access event, legal power or agreement with a developer that has a model in Epoch AI's frontier set, and the plan was read for an agreement with a developer."
           }
         ],
@@ -55432,24 +55430,6 @@
           ],
           "accessed": "2026-10-21",
           "gloss": "INESIA brings together an ecosystem of researchers and engineers from the National Agency for the Security of Information Systems (ANSSI), the National Institute for Research in Digital Science and Technology (Inria), the National Laboratory of Metrology and Testing (LNE)"
-        },
-        {
-          "text": "L’action de l’INESIA repose sur quatre principes fondamentaux : construire une démarche scientifique et stratégique, structurer une capacité souveraine d’évaluation, coordonner les expertises publiques et mutualiser les moyens",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "fr-inesia"
-              },
-              "funding",
-              {
-                "id": "funding-5900b7d819c0501a83196d3281da8527"
-              },
-              "description"
-            ]
-          ],
-          "gloss": "INESIA's action rests on four fundamental principles: building a scientific and strategic approach, structuring a sovereign evaluation capacity, coordinating public expertise and pooling resources",
-          "accessed": "2026-10-18"
         },
         {
           "text": "Enfin, des méthodes d'évaluation adaptées à la cybersécurité des systèmes et des produits intégrant de l'IA seront développées (Projet n°4.).",
@@ -114429,17 +114409,6 @@
               },
               "funding",
               {
-                "id": "funding-ec218d998f89595bba604d03e1c3f308"
-              },
-              "notes"
-            ],
-            [
-              "institutes",
-              {
-                "id": "de-aisi"
-              },
-              "funding",
-              {
                 "id": "funding-4d2b8e6f1a3c47d9b5e0c8a2f6d1b937"
               },
               "notes"
@@ -114584,17 +114553,6 @@
               {
                 "id": "de-aisi"
               },
-              "funding",
-              {
-                "id": "funding-ec218d998f89595bba604d03e1c3f308"
-              },
-              "notes"
-            ],
-            [
-              "institutes",
-              {
-                "id": "de-aisi"
-              },
               "testing_capacity",
               "notes"
             ]
@@ -114614,7 +114572,7 @@
               {
                 "id": "funding-ec218d998f89595bba604d03e1c3f308"
               },
-              "description"
+              "notes"
             ]
           ],
           "accessed": "2026-11-02"
@@ -114644,17 +114602,6 @@
                 "id": "funding-4d2b8e6f1a3c47d9b5e0c8a2f6d1b937"
               },
               "notes"
-            ],
-            [
-              "institutes",
-              {
-                "id": "de-aisi"
-              },
-              "funding",
-              {
-                "id": "funding-ec218d998f89595bba604d03e1c3f308"
-              },
-              "description"
             ]
           ],
           "accessed": "2026-11-02"

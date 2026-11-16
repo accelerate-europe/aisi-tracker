@@ -370,7 +370,7 @@ def unquoted_claims(d: dict) -> dict[str, list[str]]:
 
 
 def migrated_ids(d: dict) -> set[str]:
-    """Jurisdictions whose authored input has no summary: their summary, notes, roles and closest note are generated."""
+    """Jurisdictions whose authored input has no summary: their reader texts, including undisclosed funding, are generated."""
     return {j["id"] for j in d["jurisdictions"] if "summary" not in j}
 
 
@@ -423,6 +423,10 @@ def unquoted_items(d: dict) -> list[tuple[str, str, str]]:
         free_text(shown, f"/jurisdictions/{n}", "jurisdictions[]", record["id"], jid)
     for n, record in enumerate(d["institutes"]):
         shown = {key: value for key, value in record.items() if key != "check"}
+        if record["jurisdiction_id"] in migrated and "funding" in shown:
+            shown["funding"] = [{key: value for key, value in funding.items()
+                                 if not (funding.get("kind") == "none_disclosed" and key == "description")}
+                                for funding in shown["funding"]]
         free_text(shown, f"/institutes/{n}", "institutes[]", record["id"], record["jurisdiction_id"])
     return items
 
