@@ -14,6 +14,10 @@ pattern 5, then pattern 6 when its institute has a mandate_short.
 """
 
 import datetime as dt
+import re
+import string
+
+JOIN_MAX_CHARS = 200
 
 MONTHS = ("January", "February", "March", "April", "May", "June", "July", "August", "September", "October",
           "November", "December")
@@ -102,9 +106,86 @@ def role_claims(record: dict, body_id: str | None) -> list[dict]:
     return live([c for c in record.get("claims", []) if c["kind"] == "function" and c.get("body_id") == body_id])
 
 
+def join_role_claims(claims: list[dict], *, decisions: list[dict] | None = None) -> str:
+    """Word consecutive live role claims with identical sources in authored order.
+
+    Join a whole run only up to JOIN_MAX_CHARS, at the longest cut under (a) a reporting verb with lower-case
+    remainders or (b) remainders starting with 'to '. Cuts need two words and even straight quotes; joins reject
+    remainders all starting with the same pronoun. Otherwise keep sentences, adding 'also' before later verbs
+    under (a), without the pronoun guard, or (c) a shared opening followed by one word then 'it' or 'its'.
+    Optional decisions describe the final wording for the case report.
+    """
+    verbs = {"says", "say", "reports", "report", "lists", "plans", "tasks", "gives", "calls", "makes", "assigns", "requires"}
+    texts = [c["text"] for c in claims]
+    tokens = [text.split() for text in texts]
+    rendered = []
+    start = 0
+    while start < len(claims):
+        end = start + 1
+        sources = claims[start].get("source_ids")
+        while sources and end < len(claims) and claims[end].get("source_ids") == sources:
+            end += 1
+        run = tokens[start:end]
+        common = []
+        for column in zip(*run):
+            if len(set(column)) != 1:
+                break
+            common.append(column[0])
+        joined, join_rule, also_cut = None, None, None
+        prefix = ""
+        if end - start > 1:
+            for length in range(len(common), 1, -1):
+                candidate = " ".join(common[:length])
+                remainders = [" ".join(words[length:]) for words in run]
+                if candidate.count('"') % 2:
+                    continue
+                rule_a = common[length - 1].rstrip(string.punctuation + "’”…") in verbs and all(r[:1].islower() for r in remainders)
+                if rule_a and also_cut is None:
+                    also_cut = length
+                openings = {words[length] if length < len(words) else "" for words in run}
+                if joined is not None or (len(openings) == 1 and openings <= {"it", "its", "they", "their"}):
+                    continue
+                rule = "a" if rule_a else "b" if all(r.startswith("to ") for r in remainders) else None
+                if rule is not None:
+                    prefix = candidate
+                    join_rule = rule
+                    parts = [r.removesuffix(".") for r in remainders]
+                    conjunction = " and " if len(parts) == 2 else ", and "
+                    joined = prefix + " " + ", ".join(parts[:-1]) + conjunction + parts[-1] + "."
+        if joined is not None and len(joined) <= JOIN_MAX_CHARS:
+            rendered.append(joined)
+            if decisions is not None:
+                decisions.append({"start": start, "end": end - 1, "step": "joined", "length": len(joined),
+                                  "rule": join_rule, "prefix": prefix})
+        else:
+            reason = f"joined length {len(joined)} exceeds {JOIN_MAX_CHARS}" if joined is not None else "no qualifying join cut"
+            for index in range(start, end):
+                text, step, why = texts[index], "unchanged", reason
+                insertion = None
+                if index == start:
+                    why = "first sentence of the run"
+                    if end - start == 1:
+                        why = "different sources" if len(claims) > 1 and sources else "no consecutive same-source claim"
+                elif also_cut is not None:
+                    insertion, step = also_cut - 1, "also (a)"
+                elif len(common) >= 2 and len(tokens[index]) > len(common) + 1 and tokens[index][len(common) + 1] in {"it", "its"}:
+                    insertion, step = len(common), "also (c)"
+                else:
+                    why += "; no qualifying also (a) or (c)"
+                if insertion is not None:
+                    # Insert at the original word offset, retaining every existing character and quotation.
+                    at = list(re.finditer(r"\S+", text))[insertion].start()
+                    text = text[:at] + "also " + text[at:]
+                rendered.append(text)
+                if decisions is not None:
+                    decisions.append({"start": index, "end": index, "step": step, "reason": why})
+        start = end
+    return " ".join(rendered)
+
+
 def role_text(record: dict, body_id: str | None) -> str:
     """A related body's role: its role claims' sentences; empty when it has none."""
-    return " ".join(c["text"].strip() for c in role_claims(record, body_id))
+    return join_role_claims(role_claims(record, body_id))
 
 
 def kept_lead(record: dict) -> dict | None:
@@ -133,20 +214,28 @@ def shown_lead(record: dict) -> dict | None:
     return lead[0] if lead else None
 
 
-def closest_texts(record: dict, *, without: dict | None = None) -> list[str]:
-    """The closest body's role sentences in authored order, the kept lead in its place marked, one claim left out."""
+def closest_texts(record: dict, *, without: dict | None = None) -> str:
+    """Join the closest body's live roles, keeping the marked expired lead separate and in its authored place."""
     closest = record["closest_body"]
     kept = kept_lead(record)
-    return [marked(c) if c is kept else c["text"].strip() for c in record.get("claims", [])
-            if c["kind"] == "function" and c.get("body_id") == closest["body_id"] and (c is kept or not c.get("expired"))
-            and c is not without]
+    parts, pending = [], []
+    for claim in record.get("claims", []):
+        if claim["kind"] != "function" or claim.get("body_id") != closest["body_id"] or claim is without:
+            continue
+        if claim is kept:
+            parts.extend([join_role_claims(pending), marked(claim)])
+            pending = []
+        elif not claim.get("expired"):
+            pending.append(claim)
+    parts.append(join_role_claims(pending))
+    return " ".join(part for part in parts if part)
 
 
 def closest_note(record: dict) -> str:
     """The closest body's note: its role sentences other than the one the summary quotes (hub default of 15 November,
     awaiting the owner: the card does not say the lead twice); its name as a sentence when none is left, so the
     published note stays non-empty (schema), and the page shows no note that is only the name."""
-    return " ".join(closest_texts(record, without=shown_lead(record))) or sentence(record["closest_body"]["name"])
+    return closest_texts(record, without=shown_lead(record)) or sentence(record["closest_body"]["name"])
 
 
 def closest_warning(record: dict) -> str | None:
@@ -345,5 +434,5 @@ def generate(record: dict, institute: dict | None, basis_event: dict | None, *, 
     if closest is not None:
         texts["note"] = closest_note(record)
         if kept_lead(record):  # the body's role keeps every sentence, the kept lead marked
-            texts["roles"][closest["body_id"]] = " ".join(closest_texts(record))
+            texts["roles"][closest["body_id"]] = closest_texts(record)
     return texts
