@@ -188,10 +188,52 @@ def test_shared_opening_without_a_qualifying_cut_stays_apart():
     assert summaries.join_role_claims(roles) == "The centre tests models. The centre funds research."
 
 
-def test_rule_a_rejects_capitalised_name_fragments():
+def test_nepal_capitalised_remainders_use_also_a_twice():
+    roles = claims(
+        "The policy tasks AI Excellence Centres with research.",
+        "The policy tasks AI Excellence Centres with training.",
+        "The policy tasks AI Excellence Centres with advice.")
+    before = copy.deepcopy(roles)
+    decisions = []
+    assert summaries.join_role_claims(roles, decisions=decisions) == (
+        "The policy tasks AI Excellence Centres with research. "
+        "The policy also tasks AI Excellence Centres with training. "
+        "The policy also tasks AI Excellence Centres with advice.")
+    assert [d["step"] for d in decisions] == ["unchanged", "also (a)", "also (a)"]
+    assert roles == before
+
+
+def test_nepal_national_ai_centre_uses_also_a_for_only_the_qualifying_pair():
+    roles = claims(
+        "The policy tasks the National AI Centre with promoting and encouraging AI study, research, development and application.",
+        "The policy tasks the National AI Centre with acting as the focal point for international coordination and cooperation on AI.",
+        "The policy provides for skill-based training for policymakers, employees and professionals in the public and private sectors through the National AI Centre, AI Excellence Centres, training centres and relevant organisations working in this field.")
+    before = copy.deepcopy(roles)
+    decisions = []
+    assert summaries.join_role_claims(roles, decisions=decisions) == (
+        "The policy tasks the National AI Centre with promoting and encouraging AI study, research, development and application. "
+        "The policy also tasks the National AI Centre with acting as the focal point for international coordination and cooperation on AI. "
+        "The policy provides for skill-based training for policymakers, employees and professionals in the public and private sectors through the National AI Centre, AI Excellence Centres, training centres and relevant organisations working in this field.")
+    assert [d["step"] for d in decisions] == ["unchanged", "also (a)", "unchanged"]
+    assert roles == before
+
+
+def test_also_c_uses_the_pairwise_prefix_when_the_run_has_no_common_prefix():
+    roles = claims("The law establishes a centre.", "The law defines its remit.", "Other guidance covers training.")
+    decisions = []
+    assert summaries.join_role_claims(roles, decisions=decisions) == (
+        "The law establishes a centre. The law also defines its remit. Other guidance covers training.")
+    assert [d["step"] for d in decisions] == ["unchanged", "also (c)", "unchanged"]
+
+
+def test_capitalised_remainder_blocks_a_short_join_but_allows_also_a():
     roles = claims("The decision tasks Digital Affairs with testing models.", "The decision tasks Finance with funding research.")
-    assert summaries.join_role_claims(roles) == (
-        "The decision tasks Digital Affairs with testing models. The decision tasks Finance with funding research.")
+    candidate = "The decision tasks Digital Affairs with testing models and Finance with funding research."
+    assert len(candidate) < summaries.JOIN_MAX_CHARS
+    decisions = []
+    assert summaries.join_role_claims(roles, decisions=decisions) == (
+        "The decision tasks Digital Affairs with testing models. The decision also tasks Finance with funding research.")
+    assert [d["step"] for d in decisions] == ["unchanged", "also (a)"]
 
 
 def test_reporting_verb_with_trailing_punctuation():
@@ -218,7 +260,7 @@ def test_open_quote_cut_falls_back_to_an_earlier_qualifying_cut():
 
 
 @pytest.mark.parametrize("different_source, expected", [
-    (False, "The centre plans to test models. The centre plans to study risks. The centre also reports its findings. The centre reports the costs."),
+    (False, "The centre plans to test models. The centre also plans to study risks. The centre also reports its findings. The centre reports the costs."),
     (True, "The centre plans to test models and to study risks. The centre reports its findings and the costs."),
 ])
 def test_source_change_ends_the_run(different_source, expected):
@@ -230,11 +272,11 @@ def test_source_change_ends_the_run(different_source, expected):
     assert summaries.join_role_claims(roles) == expected
 
 
-def test_a_same_source_run_without_a_common_opening_stays_unchanged():
+def test_a_nonqualifying_pair_does_not_block_other_sentences_in_the_run():
     roles = claims("The centre plans to test models.", "The centre plans to study risks.", "Other staff publish findings.",
                    "The centre plans to fund research.")
     assert summaries.join_role_claims(roles) == (
-        "The centre plans to test models. The centre plans to study risks. Other staff publish findings. The centre plans to fund research.")
+        "The centre plans to test models. The centre also plans to study risks. Other staff publish findings. The centre also plans to fund research.")
 
 
 def record_with_roles(roles):

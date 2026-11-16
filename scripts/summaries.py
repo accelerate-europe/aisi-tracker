@@ -112,7 +112,8 @@ def join_role_claims(claims: list[dict], *, decisions: list[dict] | None = None)
     Join a whole run only up to JOIN_MAX_CHARS, at the longest cut under (a) a reporting verb with lower-case
     remainders or (b) remainders starting with 'to '. Cuts need two words and even straight quotes; joins reject
     remainders all starting with the same pronoun. Otherwise keep sentences, adding 'also' before later verbs
-    under (a), without the pronoun guard, or (c) a shared opening followed by one word then 'it' or 'its'.
+    under (a), without the lower-case or pronoun guards, or (c) a shared opening followed by one word then 'it' or 'its'.
+    Each later sentence's 'also' cut uses its common prefix with the run's first sentence.
     Optional decisions describe the final wording for the case report.
     """
     verbs = {"says", "say", "reports", "report", "lists", "plans", "tasks", "gives", "calls", "makes", "assigns", "requires"}
@@ -131,7 +132,7 @@ def join_role_claims(claims: list[dict], *, decisions: list[dict] | None = None)
             if len(set(column)) != 1:
                 break
             common.append(column[0])
-        joined, join_rule, also_cut = None, None, None
+        joined, join_rule = None, None
         prefix = ""
         if end - start > 1:
             for length in range(len(common), 1, -1):
@@ -139,9 +140,8 @@ def join_role_claims(claims: list[dict], *, decisions: list[dict] | None = None)
                 remainders = [" ".join(words[length:]) for words in run]
                 if candidate.count('"') % 2:
                     continue
-                rule_a = common[length - 1].rstrip(string.punctuation + "’”…") in verbs and all(r[:1].islower() for r in remainders)
-                if rule_a and also_cut is None:
-                    also_cut = length
+                ends_on_verb = common[length - 1].rstrip(string.punctuation + "’”…") in verbs
+                rule_a = ends_on_verb and all(r[:1].islower() for r in remainders)
                 openings = {words[length] if length < len(words) else "" for words in run}
                 if joined is not None or (len(openings) == 1 and openings <= {"it", "its", "they", "their"}):
                     continue
@@ -166,12 +166,21 @@ def join_role_claims(claims: list[dict], *, decisions: list[dict] | None = None)
                     why = "first sentence of the run"
                     if end - start == 1:
                         why = "different sources" if len(claims) > 1 and sources else "no consecutive same-source claim"
-                elif also_cut is not None:
-                    insertion, step = also_cut - 1, "also (a)"
-                elif len(common) >= 2 and len(tokens[index]) > len(common) + 1 and tokens[index][len(common) + 1] in {"it", "its"}:
-                    insertion, step = len(common), "also (c)"
                 else:
-                    why += "; no qualifying also (a) or (c)"
+                    pair_common = []
+                    for first, later in zip(tokens[start], tokens[index]):
+                        if first != later:
+                            break
+                        pair_common.append(first)
+                    for length in range(len(pair_common), 1, -1):
+                        candidate = " ".join(pair_common[:length])
+                        if candidate.count('"') % 2 == 0 and pair_common[length - 1].rstrip(string.punctuation + "’”…") in verbs:
+                            insertion, step = length - 1, "also (a)"
+                            break
+                    if insertion is None and len(pair_common) >= 2 and len(tokens[index]) > len(pair_common) + 1 and tokens[index][len(pair_common) + 1] in {"it", "its"}:
+                        insertion, step = len(pair_common), "also (c)"
+                    if insertion is None:
+                        why += "; no qualifying also (a) or (c)"
                 if insertion is not None:
                     # Insert at the original word offset, retaining every existing character and quotation.
                     at = list(re.finditer(r"\S+", text))[insertion].start()
