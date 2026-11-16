@@ -25,6 +25,11 @@ on:
         description: "Pick the checks from the changes since the merge base with this ref (e.g. origin/next); empty runs everything"
         required: false
         default: ""
+      preview:
+        description: "Publish a preview of this branch (docs/preview.md); a push to next publishes one without asking"
+        type: boolean
+        required: false
+        default: false
 # Least privilege: the jobs read the repository; only deploy may publish to Pages.
 permissions:
   contents: read
@@ -356,14 +361,19 @@ jobs:
     env:
       PREVIEW_URL: https://accelerate-europe.github.io/aisi-tracker-preview/
     steps:
-      # No secret, or no site in this run: succeed without checking out the preview repository.
-      # Every later step uses this output; a skipped site is not a failed build attempt.
+      # A run by hand publishes only when asked (-f preview=true); no secret, or no site in this run: succeed
+      # without checking out the preview repository. Every later step uses this output; a skipped site is not a
+      # failed build attempt.
       - id: enabled
         env:
           KEY: ${{ secrets.PREVIEW_DEPLOY_KEY }}
           SITE: ${{ needs.site.result }}
+          EVENT: ${{ github.event_name }}
+          REQUESTED: ${{ inputs.preview }}
         run: |
-          if [ -z "$KEY" ]; then
+          if [ "$EVENT" = workflow_dispatch ] && [ "$REQUESTED" != true ]; then
+            echo "preview: preview not requested for this run; nothing published"
+          elif [ -z "$KEY" ]; then
             echo "preview: secret PREVIEW_DEPLOY_KEY is not set; nothing published"
           elif [ "$SITE" = skipped ]; then
             echo "preview: this run built no site; nothing published"

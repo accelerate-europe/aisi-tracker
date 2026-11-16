@@ -418,3 +418,45 @@ def test_lease_lost_on_moved_or_deleted_branch():
     assert preview.lease_lost("def\trefs/heads/gh-pages", "abc")
     assert preview.lease_lost("def\trefs/heads/gh-pages", "")  # created by another run after we saw none
     assert not preview.lease_lost("abc\trefs/heads/gh-pages", "abc")  # unchanged: a transport or auth failure
+
+
+def count_fixture(n, start="2026-11-14T00:00:00Z", live=None):
+    """n frozen builds an hour apart (oldest first), all within the age limit at BUILT, each 10 bytes."""
+    first = preview.timestamp(start)
+    frozen = {f"{i:010x}": {"commit": f"{i:010x}" + "0" * 30, "built": (first + dt.timedelta(hours=i)).isoformat(), "size": 10}
+              for i in range(1, n + 1)}
+    folders = {"next": {"branch": "next", "size": 10, "current": {"commit": live or "f" * 40}}}
+    return {"folders": folders, "frozen": frozen}
+
+
+def test_count_limit_prunes_the_oldest_unkept_build():
+    assert preview.FROZEN_COUNT == 10
+    manifest = count_fixture(11)
+    result, removed = preview.retention(manifest, set(), set(), preview.timestamp(BUILT), budget=10**9)
+    assert removed == {"b/" + f"{1:010x}"}
+    assert set(result["frozen"]) == {f"{i:010x}" for i in range(2, 12)}
+    result, removed = preview.retention(count_fixture(10), set(), set(), preview.timestamp(BUILT), budget=10**9)
+    assert not removed and len(result["frozen"]) == 10
+
+
+def test_count_limit_never_prunes_or_counts_kept_and_live_builds():
+    # The two oldest are kept, the third is next's current build; 11 unkept follow, so only the oldest of those goes.
+    manifest = count_fixture(14, live=f"{3:010x}" + "0" * 30)
+    kept = {f"{1:010x}", f"{2:010x}"}
+    result, removed = preview.retention(manifest, kept, set(), preview.timestamp(BUILT), budget=10**9)
+    assert removed == {"b/" + f"{4:010x}"}
+    assert kept | {f"{3:010x}"} <= set(result["frozen"])
+    assert len([sha for sha in result["frozen"] if sha not in kept | {f"{3:010x}"}]) == preview.FROZEN_COUNT
+
+
+def test_count_limit_with_age_and_size_rules():
+    # Age first: three builds past FROZEN_DAYS go, leaving nine, under the count; nothing else goes.
+    manifest = count_fixture(12, start="2026-10-20T00:00:00Z")
+    for i in range(4, 13):
+        manifest["frozen"][f"{i:010x}"]["built"] = (preview.timestamp("2026-11-14T00:00:00Z") + dt.timedelta(hours=i)).isoformat()
+    result, removed = preview.retention(manifest, set(), set(), preview.timestamp(BUILT), budget=10**9)
+    assert removed == {"b/" + f"{i:010x}" for i in (1, 2, 3)}
+    # Count, then size: of 12 recent builds the count leaves the 10 newest; a budget for next and 8 builds removes 2 more, oldest first.
+    result, removed = preview.retention(count_fixture(12), set(), set(), preview.timestamp(BUILT), budget=90)
+    assert removed == {"b/" + f"{i:010x}" for i in (1, 2, 3, 4)}
+    assert set(result["frozen"]) == {f"{i:010x}" for i in range(5, 13)}
