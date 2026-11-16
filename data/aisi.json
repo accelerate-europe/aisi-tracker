@@ -9259,13 +9259,11 @@
       "id": "CN",
       "name": "People's Republic of China",
       "kind": "state",
-      "summary": "No qualifying institute identified. CnAISDA conducts frontier AI safety evaluation research and international dialogue with reported government support, but no government designation of it as a national institute was found.",
       "related_bodies": [
         {
           "name": "China AI Safety and Development Association (CnAISDA)",
           "kind": "other",
           "counts_as_aisi": false,
-          "role": "Tsinghua describes the association's frontier AI safety evaluation research and representation of China in international dialogue. It is a research network jointly created by Chinese universities, institutes and think tanks, with reported government support. No national government designation act was identified in the reviewed sources.",
           "source_ids": [
             "cn-ciss-fuying-2025",
             "cn-ciss-frontier-dialogue-2026",
@@ -9273,30 +9271,6 @@
             "cn-zhejiang-government-support-2026"
           ],
           "id": "related_bodies-1bd7b9d42ab55f11b3c6c1b1e532ba59"
-        },
-        {
-          "name": "China Academy of Information and Communications Technology (CAICT)",
-          "role": "It runs voluntary, opt-in AI safety benchmark evaluations with certificates through the industry alliance AIIA. It is a state research institute under the industry ministry.",
-          "counts_as_aisi": false,
-          "kind": "other",
-          "id": "related_bodies-0cf0cda18aa35b519b753c2ba2d7eb70"
-        },
-        {
-          "name": "TC260",
-          "role": "It publishes the AI Safety Governance Framework. It is a national cybersecurity standards committee.",
-          "counts_as_aisi": false,
-          "kind": "other",
-          "source_ids": [
-            "cn-tc260-framework-3"
-          ],
-          "id": "related_bodies-e2aefc7076215ddcbc1ec67accbd93c8"
-        },
-        {
-          "name": "Cyberspace Administration of China (CAC)",
-          "role": "It runs security filing for generative AI services. It is an internet regulator.",
-          "counts_as_aisi": false,
-          "kind": "other",
-          "id": "related_bodies-bd0a2c105d755699a024f1d5438c2be0"
         }
       ],
       "next_check": {
@@ -9548,7 +9522,17 @@
           "cn-tsinghua-aiig-2026",
           "cn-tc260-framework-3"
         ],
-        "governance_note": "TC260's AI Safety Governance Framework 3.0, retrieved from the CAC website, recommends national standards and risk classification by sector regulators. Tsinghua documents the research network, while a government-hosted account reports support for its formation with unclear chronology. None of these retrieved texts assigns the network a qualifying national institute role."
+        "governance_note": "TC260's AI Safety Governance Framework 3.0, retrieved from the CAC website, recommends national standards and risk classification by sector regulators. Tsinghua documents the research network, while a government-hosted account reports support for its formation with unclear chronology. None of these retrieved texts assigns the network a qualifying national institute role.",
+        "log": [
+          {
+            "date": "2026-11-10",
+            "text": "Searched in Chinese and English for government designation of CnAISDA and later official acts concerning a national AI safety institute."
+          },
+          {
+            "date": "2026-10-18",
+            "text": "Read the NDRC-hosted commentary, including its byline, journal issue and repost date."
+          }
+        ]
       },
       "source_ids": [
         "cn-ciss-fuying-2025",
@@ -9563,7 +9547,6 @@
         "cn-cnaisda-home-r5",
         "cn-r6-ndrc-research-commentary"
       ],
-      "notes": "Borderline. Chinese-language primary accounts document government support, a collaborative network and frontier AI safety evaluation research. The network's own rendered site includes testing methods and audits in its research remit. These sources do not establish the government designation required by the tracker; they also do not prove that no designation exists. A standalone organisation, separate staff or budget, and already-published model tests are not status requirements. Treat older secondary descriptions of no own model-testing function as dated reports, not a current exclusion criterion. Tsinghua dates its public debut to February 2025; this is not necessarily its constitution or designation date.\n\nTsinghua's Chinese account describes frontier-safety evaluation research and representation of China; its English account confirms CnAISDA organised the dialogue. The Zhejiang government-hosted speech reports government support for formation. No national designation act was identified. An essay by Zhao Yifan of the Xi Jinping Economic Thought Research Centre, first published in 科技中国 (2025, no. 7) and reposted on the NDRC website on 3 December 2025, recommends exploring government AI safety institutes. The repost identifies the original journal issue but gives no exact original publication date. This attributed commentary does not identify a commissioned study or review of the option, an appointed advisory inquiry, or an adopted government proposal. Its call for domestic AI safety institutes to join international cooperation does not name or designate such a body. The uncertainty is government designation, not whether a network can qualify or whether it has published evaluations.",
       "region": {
         "id": "142",
         "name": "Asia",
@@ -9593,11 +9576,11 @@
         "name": "China AI Safety and Development Association (CnAISDA)",
         "stage": "exists",
         "gap": "designation",
-        "note": "Tsinghua's English account names CnAISDA as the China AI Safety and Development Association; the Chinese account calls it a research network. A reproduced magazine piece on a government site, with an unidentified speaker and date, reports government support for its formation, and Tsinghua describes frontier AI safety evaluation research and international representation. No national assignment was identified. The support account's chronology remains unclear.",
         "source_ids": [
           "cn-zhejiang-government-support-2026",
           "cn-ciss-frontier-dialogue-2026",
-          "cn-tsinghua-aiig-2026"
+          "cn-tsinghua-aiig-2026",
+          "cn-cnaisda-home-r5"
         ],
         "body_id": "related_bodies-1bd7b9d42ab55f11b3c6c1b1e532ba59"
       },
@@ -9627,7 +9610,6 @@
           "tw-moi-pop-2025"
         ]
       },
-      "summary": "No qualifying institute identified. AIEC evaluates language models for trustworthiness and performance; NICS tests model safeguards and AI-agent security. Neither has been designated or tasked by the government to test models for their capabilities and risks.",
       "check": {
         "last_checked": "2026-10-16",
         "method": "individual",
@@ -9748,7 +9730,13 @@
           "tw-r6-aiec-sovereign-en",
           "tw-aiec-service"
         ],
-        "governance_note": "The ministry's establishment announcement, later accounts and ministerial transcript confirm government responsibility for AIEC and language-model evaluation. Safety is one item in its trustworthiness criteria, alongside fairness, explainability and other criteria; the transcript also discusses frontier-model progress. These tasks do not by themselves establish the qualifying capability or behaviour-risk assignment. AIEC's methods site lists accuracy, reliability, fairness, privacy and security as its main evaluation items."
+        "governance_note": "The ministry's establishment announcement, later accounts and ministerial transcript confirm government responsibility for AIEC and language-model evaluation. Safety is one item in its trustworthiness criteria, alongside fairness, explainability and other criteria; the transcript also discusses frontier-model progress. These tasks do not by themselves establish the qualifying capability or behaviour-risk assignment. AIEC's methods site lists accuracy, reliability, fairness, privacy and security as its main evaluation items.",
+        "log": [
+          {
+            "date": "2026-10-21",
+            "text": "Read the Chinese and English government accounts of AIEC evaluations, the ministerial transcript, the NICS test releases and AIEC's methods site."
+          }
+        ]
       },
       "source_ids": [
         "tw-moda-aiec-2023",
@@ -9762,7 +9750,6 @@
         "tw-r6-nics-agent-tests",
         "tw-aiec-service"
       ],
-      "notes": "Not a UN member; tracked as a territory. The AI Basic Act (passed 23 Dec 2025) requires the Ministry of Digital Affairs to provide AI evaluation and verification tools. AIEC is tracked as a related body because product testing alone does not meet the definition.\n\nChinese and English government accounts confirm AIEC's language-model evaluations, including Taiwan's language, social context and values. A 2024 ministerial transcript also discusses evaluating frontier models and working with international safety institutes. Separately, the National Institute of Cyber Security published DeepSeek jailbreak tests in February 2025 and AI-agent security tests in May 2026. The AIEC criteria concern trustworthiness and performance; NICS tests protection against attacks. Neither these activities nor the ministerial discussion alone establishes designation under route (a) or an ongoing qualifying public assignment under route (b). AIEC's methods site lists accuracy, reliability, fairness, privacy and security as its main evaluation items; security there means protecting the system against attack and misuse.",
       "region": {
         "id": "142",
         "name": "Asia",
@@ -9776,7 +9763,6 @@
       "related_bodies": [
         {
           "name": "AI Product and System Evaluation Center (AIEC)",
-          "role": "It evaluates language models for trustworthiness, local-language performance and Taiwan's social context and values. It is a Ministry of Digital Affairs programme. The ministry works closely with ITRI and the National Institute of Cyber Security and discussed evaluation of frontier models in 2024. Trustworthiness and performance testing do not by themselves establish the qualifying model-evaluation assignment.",
           "counts_as_aisi": false,
           "source_ids": [
             "tw-moda-aiec-2026",
@@ -9788,7 +9774,6 @@
         },
         {
           "name": "National Institute of Cyber Security (NICS)",
-          "role": "It has tested DeepSeek model safeguards and jailbreak resistance, and OpenClaw and NemoClaw agent security. It is an institute under the Ministry of Digital Affairs. These tests do not by themselves establish designation as the national advanced-AI safety institute.",
           "counts_as_aisi": false,
           "kind": "other",
           "source_ids": [
@@ -9815,7 +9800,6 @@
         "name": "AI Product and System Evaluation Center (AIEC)",
         "stage": "exists",
         "gap": "remit",
-        "note": "The ministry created AIEC and describes language-model trustworthiness criteria. A ministerial transcript also discusses checking whether frontier models regress or progress. These published tasks do not establish an assigned capability or behaviour-risk remit under the qualifying-body rule. Its methods site lists accuracy, reliability, fairness, privacy and security as its main evaluation items.",
         "source_ids": [
           "tw-moda-aiec-2023",
           "tw-moda-aiec-2026",
@@ -9879,6 +9863,17 @@
           "text": "The Ministry of Digital Affairs' Administration for Digital Industries says AIEC has continuously published language model benchmark evaluation results since October of year 114 and has so far completed a cumulative total of 131 model tests.",
           "source_ids": [
             "tw-moda-aiec-2026"
+          ]
+        },
+        {
+          "id": "claims-ac1c34a95ae84c61b4439aee7786b851",
+          "kind": "function",
+          "code": "model_testing",
+          "basis": "activity",
+          "body_id": "related_bodies-ad99656201255d8690cf43829abf205b",
+          "text": "NICS says it tested the downloadable DeepSeek AI model for safeguards, jailbreak defences and cybersecurity risks in different uses.",
+          "source_ids": [
+            "tw-r6-nics-deepseek"
           ]
         }
       ]
@@ -9985,11 +9980,9 @@
       "id": "ID",
       "name": "Indonesia",
       "kind": "state",
-      "summary": "No qualifying institute identified. AISII presents itself as an AI safety institute under KORIKA.",
       "related_bodies": [
         {
           "name": "AI Safety Institute Indonesia (AISII)",
-          "role": "It is an initiative of KORIKA, an independent membership association (perkumpulan); no government mandate was found.",
           "counts_as_aisi": false,
           "source_ids": [
             "id-aisii",
@@ -9997,16 +9990,6 @@
           ],
           "kind": "other",
           "id": "related_bodies-aad469c6d98155afafe04c3684084aa5"
-        },
-        {
-          "name": "Ministry of Communication and Digital Affairs (Komdigi)",
-          "role": "It leads AI policy. In May 2026 it completed inter-ministerial discussion of the draft presidential regulations on an AI roadmap and AI ethics, before their submission to the President.",
-          "counts_as_aisi": false,
-          "kind": "other",
-          "id": "related_bodies-eb9899719e0e599e9804a5ac47832f35",
-          "source_ids": [
-            "id-komdigi-rperpres-2026-05"
-          ]
         }
       ],
       "check": {
@@ -10085,7 +10068,17 @@
           "id-komdigi-roadmap-2026",
           "id-komdigi-rperpres-2026-05"
         ],
-        "governance_note": "The ministry describes an inter-ministerial committee discussing the draft presidential AI-roadmap regulation, alongside a separate AI ethics regulation. This is primary evidence of the government's policy process, not an institute designation. The separately named AISII is under KORIKA; government assignment was not established. In May 2026 the ministry completed inter-ministerial discussion of both drafts before their submission to the President; its account names no institute or evaluation body."
+        "governance_note": "The ministry describes an inter-ministerial committee discussing the draft presidential AI-roadmap regulation, alongside a separate AI ethics regulation. This is primary evidence of the government's policy process, not an institute designation. The separately named AISII is under KORIKA; government assignment was not established. In May 2026 the ministry completed inter-ministerial discussion of both drafts before their submission to the President; its account names no institute or evaluation body.",
+        "log": [
+          {
+            "date": "2026-10-18",
+            "text": "Read Komdigi's release about its meeting with a UC Berkeley academic, including its dateline and publication date."
+          },
+          {
+            "date": "2026-10-18",
+            "text": "Read the government texts on AISII's designation and assignment."
+          }
+        ]
       },
       "source_ids": [
         "id-komdigi-roadmap-2026",
@@ -10095,7 +10088,6 @@
         "id-komdigi-rperpres-2026-05",
         "id-korika-rua-2026"
       ],
-      "notes": "In September 2026 a member of the steering committee of the research agency BRIN proposed a government AI Safety Institute for testing AI systems; this is an individual proposal, not a government plan.\n\nKomdigi's release on a meeting with a UC Berkeley academic has a Singapore dateline of 28 May 2025 and a publication date of 30 May 2025 in both its header and footer. It says the ministry will explore an AI Safety Institute Network, described as an international network, or an AI laboratory in Indonesia with no stated model-evaluation remit. This is not a government study of a qualifying national institute. AI Safety Institute Indonesia's (AISII) government designation also remains unverified; the status 'None identified' is retained with medium confidence in the recorded evidence.",
       "region": {
         "id": "142",
         "name": "Asia",
@@ -10129,7 +10121,6 @@
         "name": "AI Safety Institute Indonesia (AISII)",
         "stage": "exists",
         "gap": "designation",
-        "note": "AISII presents itself as an AI safety institute under KORIKA. Its website describes evaluating AI behaviour in Indonesian and local languages and work on bias, hallucination and misalignment risks. Government assignment remains unverified.",
         "source_ids": [
           "id-aisii"
         ],
@@ -10154,11 +10145,9 @@
       "id": "TH",
       "name": "Thailand",
       "kind": "state",
-      "summary": "No qualifying institute identified. ETDA tested an 'Ethical LLM' with the banking sector and, through its AI Governance Practice Center (AIGPC), plans Thai-language test prompts to assess chatbot responses to risky situations.",
       "related_bodies": [
         {
           "name": "AI Governance Practice Center (AIGPC), ETDA",
-          "role": "It provides guidance, training and some language-model testing with the banking sector. It is the AI governance centre of the Electronic Transactions Development Agency. A governance sandbox is planned for 2027. The centre has no mandate to evaluate advanced models.",
           "counts_as_aisi": false,
           "source_ids": [
             "th-etda-aigpc-2027"
@@ -10226,7 +10215,6 @@
         "th-etda-draft-law-2025",
         "th-thaipbs-2026"
       ],
-      "notes": "Public hearings on a draft AI law were held in mid-2026; the draft would create a support organisation and a national AI policy committee, not an evaluation institute.",
       "region": {
         "id": "142",
         "name": "Asia",
@@ -10256,10 +10244,10 @@
         "name": "AI Governance Practice Center (AIGPC), ETDA",
         "stage": "exists",
         "gap": "remit",
-        "note": "ETDA, a government agency, tested an 'Ethical LLM' with the banking sector and plans, with Singapore, Thai-language test prompts to assess how chatbots respond to risky situations; AIGPC is its AI governance centre. This is ethics and conformance testing, without an identified assignment of a qualifying national evaluation role.",
         "source_ids": [
           "th-etda-aigpc-2027"
-        ]
+        ],
+        "body_id": "related_bodies-6e5dda272a7556cb85bc981b9de88d5d"
       }
     },
     {
@@ -13665,11 +13653,9 @@
       "name": "Kazakhstan",
       "kind": "state",
       "institute_id": null,
-      "summary": "No qualifying institute identified. KAISI describes advanced-AI safety research, but no government designation of it was found; the government framework assigns AI-system audits to independent auditors.",
       "related_bodies": [
         {
           "name": "Department of Artificial Intelligence and Data Management, Ministry of AI and Digital Development",
-          "role": "It is responsible for AI regulation, data and coordination of the National AI Platform. It is a ministry unit. The ministry's October 2026 briefing separates rule-making from audits conducted by independent specialists and organisations.",
           "counts_as_aisi": false,
           "source_ids": [
             "kz-maidd-brief",
@@ -13680,7 +13666,6 @@
         },
         {
           "name": "Kazakhstan AI Safety Institute (kaisi.kz)",
-          "role": "Its archived site describes research on capabilities, risks and mitigations concerning advanced models. It is a research organisation using the Kazakhstan AI Safety Institute name.",
           "counts_as_aisi": false,
           "kind": "other",
           "source_ids": [
@@ -13834,7 +13819,21 @@
           "kz-r6-maidd-brief-primary",
           "kz-ai-law-2025"
         ],
-        "governance_note": "The primary ministry briefing and current AI Law were retrieved in Russian. They describe regulation, data governance and independent auditing. They do not identify a national designation as an institute for the safety of advanced models. KAISI's current live pages remain unavailable; its retained archive of its own website describes the research function. The recorded government-source and language evidence supports a bounded medium-confidence finding without treating a missing designation as evidence of absence."
+        "governance_note": "The primary ministry briefing and current AI Law were retrieved in Russian. They describe regulation, data governance and independent auditing. They do not identify a national designation as an institute for the safety of advanced models. KAISI's current live pages remain unavailable; its retained archive of its own website describes the research function. The recorded government-source and language evidence supports a bounded medium-confidence finding without treating a missing designation as evidence of absence.",
+        "log": [
+          {
+            "date": "2026-10-24",
+            "text": "Read the ministry's Russian briefing, the English account on memleket.kz and the Russian AI Law."
+          },
+          {
+            "date": "2026-11-02",
+            "text": "Reviewed the supplied Kazakh, Russian and English searches for KAISI's government designation and checked the KazNIC registry and the domain's DNS."
+          },
+          {
+            "date": "2026-10-18",
+            "text": "Attempted to read KAISI's live home and about pages and reviewed the retained home-page copy for its organisational description and staffing."
+          }
+        ]
       },
       "source_ids": [
         "kz-ai-law-2025",
@@ -13845,7 +13844,6 @@
         "kz-akorda-ai-council-2026-10",
         "kz-harvard-hsil-2026"
       ],
-      "notes": "kaisi.kz uses the name 'Kazakhstan AI Safety Institute' and describes research on the safety of advanced models; no national government designation was found. The AI Law (November 2025) provides for audits of AI systems by independent auditors.\n\nThe ministry's 14 October briefing was retrieved directly in Russian, alongside the English account on memleket.kz and the current Russian AI Law. The ministry distinguishes its rules and coordination functions from audits carried out by independent specialists and organisations. This supports keeping the ministry department as a related body. KAISI's retained archive describes research on the safety of advanced models and risk mitigation, but no national government designation was found in Kazakh, Russian or English searches. Its live and about pages could not be read reliably. The earlier private non-profit description and staff range were not reverified; the retained home-page copy does not itself establish them. These limits leave the KAISI designation question open.\n\nThe KazNIC registry record retrieved on 21 October 2026 showed the status server hold and registration expiry on 1 October 2026. On 2 November 2026 the same registry lookup stated that kaisi.kz does not exist in the registry, and www.kaisi.kz did not resolve. This does not establish whether KAISI still operates or has moved; its government designation remains unverified.",
       "region": {
         "id": "142",
         "name": "Asia",
@@ -13879,7 +13877,6 @@
         "name": "Kazakhstan AI Safety Institute (KAISI)",
         "stage": "exists",
         "gap": "designation",
-        "note": "The retained website archive presents KAISI as an institute researching advanced-AI capabilities and behaviour and testing risk mitigations. No government assignment was identified. Existence and function are self-described; the live home and about pages could not be reverified. Harvard's Health Systems Innovation Lab lists the Kazakhstan AI Safety Institute as the Astana hub of its 2026 hackathon, scheduled for 10 and 11 April 2026. Whether KAISI still operates after its domain was removed from the registry (by 2 November 2026) is unconfirmed.",
         "source_ids": [
           "kz-kaisi",
           "kz-harvard-hsil-2026",
@@ -13920,6 +13917,17 @@
           "text": "It says it investigates how neural representations emerge and interact, applying techniques such as \"activation steering, adversarial robustness analysis, and mechanistic interpretability\".",
           "source_ids": [
             "kz-kaisi"
+          ]
+        },
+        {
+          "id": "claims-ab48ef80a0a24f1da85c2e2507c22580",
+          "kind": "function",
+          "code": "regulatory_support",
+          "basis": "mandate",
+          "body_id": "related_bodies-5934f4cbf85a539ba754b8f582779a44",
+          "text": "The ministry says an order of 13 August 2026 has the department ensure state registration and publication of the rules governing interaction by the national AI platform operator.",
+          "source_ids": [
+            "kz-r6-maidd-brief-primary"
           ]
         }
       ]
@@ -18402,7 +18410,6 @@
     {
       "id": "PA",
       "name": "Panama",
-      "summary": "No qualifying institute identified. Cabinet Resolution 75 adopts a strategy planning INC with an AI-security specialisation, including monitoring attacks on national AI models.",
       "check": {
         "last_checked": "2026-10-16",
         "method": "individual",
@@ -18478,7 +18485,13 @@
           "pa-senacyt-estrategia-ia",
           "r4-pa-data-safety"
         ],
-        "governance_note": "The adopted Gazette strategy names INC and its AI-security specialisation but states no model-evaluation remit. Its red-team task concerns critical infrastructure and is assigned to the government. The retained original Gazette pages were visually checked; they supersede the earlier July PDF where the wording differs."
+        "governance_note": "The adopted Gazette strategy names INC and its AI-security specialisation but states no model-evaluation remit. Its red-team task concerns critical infrastructure and is assigned to the government. The retained original Gazette pages were visually checked; they supersede the earlier July PDF where the wording differs.",
+        "log": [
+          {
+            "date": "2026-10-18",
+            "text": "Read the retained Gazette text and inspected pages 5, 6 and 24, comparing the red-team passage with the July strategy PDF."
+          }
+        ]
       },
       "source_ids": [
         "pa-panamaamerica-agenda-primary-proposal",
@@ -18492,25 +18505,16 @@
       ],
       "related_bodies": [
         {
-          "name": "Comision Nacional para Tecnologias Criticas y Emergentes",
-          "role": "It was set up to manage technology risks and oversee the AI and semiconductor strategies. It is a cross-government commission established by Executive Decree 36 (2026). No model evaluation mandate was reported.",
-          "counts_as_aisi": false,
-          "source_ids": [
-            "pa-panamaamerica-agenda-primary-proposal"
-          ],
-          "kind": "other",
-          "id": "related_bodies-52395caf17d35a83bade9360627b04fe"
-        },
-        {
           "name": "SENACYT",
-          "role": "It gives technical support to the AI strategy as a science secretariat. No evaluation mandate was found.",
           "counts_as_aisi": false,
           "kind": "other",
-          "id": "related_bodies-880eae881eec5a229f62ec965325ba49"
+          "id": "related_bodies-880eae881eec5a229f62ec965325ba49",
+          "source_ids": [
+            "pa-senacyt-estrategia-ia"
+          ]
         },
         {
           "name": "Instituto Nacional de Ciberseguridad (INC, planned)",
-          "role": "The adopted strategy plans a national cybersecurity institute with an AI-security specialisation, including monitoring adversarial attacks on national AI models. No remit to evaluate advanced models is stated. The national red team is assigned to the government, not directly to INC.",
           "counts_as_aisi": false,
           "kind": "other",
           "source_ids": [
@@ -18522,20 +18526,23 @@
         },
         {
           "name": "Observatorio de Riesgos de IA (SENACYT, planned)",
-          "role": "It would monitor global AI safety trends and track local algorithmic harm incidents, with annual reports for lawmakers and regulators; the plan concerns incident and trend monitoring rather than model evaluation.",
           "counts_as_aisi": false,
           "kind": "other",
-          "id": "related_bodies-c09ae0893f8d5cc399e9cd2f06dfb543"
+          "id": "related_bodies-c09ae0893f8d5cc399e9cd2f06dfb543",
+          "source_ids": [
+            "pa-senacyt-estrategia-ia"
+          ]
         },
         {
           "name": "Instituto Nacional de IA Aplicada (INIAA, planned)",
-          "role": "It is planned as 'not a regulator but an execution engine' for adoption and delivery; it has no evaluation mandate.",
           "counts_as_aisi": false,
           "kind": "other",
-          "id": "related_bodies-c9dee68dede556059426a8de990c10ca"
+          "id": "related_bodies-c9dee68dede556059426a8de990c10ca",
+          "source_ids": [
+            "pa-senacyt-estrategia-ia"
+          ]
         }
       ],
-      "notes": "Press reports say Executive Decree 36 of 7 May 2026 (Gaceta Oficial 30520 A) created the Comision Nacional para Tecnologias Criticas y Emergentes with an AI subcommittee tasked with a national AI strategy; the strategy was launched on 30 July 2026 as part of the Agenda Nacional de Tecnologias Avanzadas. No AI regulator or evaluation body is named in these reports and the bill number and text are not given.\n\nThe adopted Gazette text takes precedence over the earlier July strategy PDF. Gazette page 24 assigns the national red team to the government; the July text assigned it to INC. The adopted text describes testing critical infrastructure against AI-driven attacks, not evaluating advanced models for capabilities or behaviour risks.\n\nThe timeline date is Cabinet adoption on 11 August 2026. The Gazette was published on 18 August; Article 2 provides for commencement on promulgation. No institute founding date is inferred. The retained strategy act was reclassified under the consolidated method, from exploring to none identified. This is an editorial correction, not a government rejection or withdrawal. The AI governance bill remains a follow-up; its current full text and any subsequent promulgation have not been rechecked.",
       "next_check": {
         "date": "2027-01-16",
         "reason": "Check any implementing act for INC and its model-evaluation remit; the current strategy names a cybersecurity institute with an AI-security specialisation. Read the current AI governance bill for any qualifying institute provision."
@@ -18572,7 +18579,7 @@
           "date": "2026-08-11",
           "event": "related_body_planned",
           "instrument": "decision",
-          "description": "Cabinet Resolution 75 adopts the national AI strategy, which plans INC with an AI-security specialisation including monitoring attacks on national AI models. This is a related-body commitment, without a qualifying evaluation remit. The date records adoption, not institute creation or commencement.",
+          "description": "The resolution approves the National Artificial Intelligence Strategy.",
           "short": "Cabinet adopts strategy planning a cybersecurity institute with AI-security specialisation.",
           "source_ids": [
             "pa-gaceta-30592a"
@@ -18583,11 +18590,69 @@
         "name": "Instituto Nacional de Ciberseguridad (INC)",
         "stage": "planned",
         "gap": "remit",
-        "note": "The adopted strategy plans INC with an AI-security specialisation, including monitoring adversarial attacks against national AI models. This is model protection, without a stated qualifying evaluation remit. The separate national red team is assigned to the government, not directly to INC.",
         "source_ids": [
           "pa-gaceta-30592a"
-        ]
-      }
+        ],
+        "body_id": "related_bodies-5ad9b88ac7dc5ef792a22d0bea69fb11"
+      },
+      "claims": [
+        {
+          "id": "claims-1b321b1fce9d4d8dbb2b86ab1a0e6d53",
+          "kind": "function",
+          "code": "risk_monitoring",
+          "basis": "mandate",
+          "body_id": "related_bodies-5ad9b88ac7dc5ef792a22d0bea69fb11",
+          "lead": true,
+          "text": "SENACYT's strategy calls for INC to have a mandate for AI security, \"monitoring adversarial attacks against national models and data integrity\".",
+          "source_ids": [
+            "pa-senacyt-estrategia-ia"
+          ]
+        },
+        {
+          "id": "claims-3d9c2ed77ccb4db9892fc06d3d922e3e",
+          "kind": "function",
+          "code": "talent",
+          "basis": "mandate",
+          "body_id": "related_bodies-880eae881eec5a229f62ec965325ba49",
+          "text": "SENACYT's strategy says it will expand scholarships for master's and doctoral studies in AI and related fields at leading universities worldwide.",
+          "source_ids": [
+            "pa-senacyt-estrategia-ia"
+          ]
+        },
+        {
+          "id": "claims-e7001eab3d23490ea66e9942c4b424dc",
+          "kind": "function",
+          "code": "risk_monitoring",
+          "basis": "mandate",
+          "body_id": "related_bodies-c09ae0893f8d5cc399e9cd2f06dfb543",
+          "text": "SENACYT's strategy plans an AI Risk Observatory to monitor global trends in AI security.",
+          "source_ids": [
+            "pa-senacyt-estrategia-ia"
+          ]
+        },
+        {
+          "id": "claims-4778fc8a4cb5449caba3ce5b3dfdb59f",
+          "kind": "function",
+          "code": "incident_response",
+          "basis": "mandate",
+          "body_id": "related_bodies-c09ae0893f8d5cc399e9cd2f06dfb543",
+          "text": "SENACYT's strategy plans an AI Risk Observatory to track local incidents of algorithmic harm.",
+          "source_ids": [
+            "pa-senacyt-estrategia-ia"
+          ]
+        },
+        {
+          "id": "claims-341df06cf9c34a97adc859eecb10eb23",
+          "kind": "function",
+          "code": "adoption",
+          "basis": "mandate",
+          "body_id": "related_bodies-c9dee68dede556059426a8de990c10ca",
+          "text": "SENACYT's strategy gives INIAA an operational and advisory role in supporting AI uptake in the public and private sectors.",
+          "source_ids": [
+            "pa-senacyt-estrategia-ia"
+          ]
+        }
+      ]
     },
     {
       "id": "PE",
@@ -19710,7 +19775,6 @@
       "name": "United Arab Emirates",
       "kind": "state",
       "institute_id": null,
-      "summary": "No qualifying institute identified. A joint release announces a national lab providing security and safety testing of AI models, agents and applications as a certification and conformance service for organisations.",
       "check": {
         "last_checked": "2026-10-16",
         "method": "individual",
@@ -19807,7 +19871,17 @@
           "ae-dmo-ai-data-authority-2026",
           "ae-zawya-2026-primary-proposal"
         ],
-        "governance_note": "The June 2026 announcement creates the Artificial Intelligence and Data Authority as the single national body for data, AI and digital government, reporting to the Cabinet; its listed functions cover strategy, policy, standards and compliance across federal entities, not evaluation of advanced models. The Cyber Security Council's National AI Test and Validation Lab tests, validates and certifies models, agents and applications for security, safety and trustworthiness; its classification is set out in the closest-candidate note."
+        "governance_note": "The June 2026 announcement creates the Artificial Intelligence and Data Authority as the single national body for data, AI and digital government, reporting to the Cabinet; its listed functions cover strategy, policy, standards and compliance across federal entities, not evaluation of advanced models. The Cyber Security Council's National AI Test and Validation Lab tests, validates and certifies models, agents and applications for security, safety and trustworthiness; its classification is set out in the closest-candidate note.",
+        "log": [
+          {
+            "date": "2026-10-24",
+            "text": "Searched in English and Arabic for a government-designated AI safety institute and a government commitment, proposal or study."
+          },
+          {
+            "date": "2026-10-18",
+            "text": "Attempted to read the government news-agency report on the National AI Test and Validation Lab."
+          }
+        ]
       },
       "source_ids": [
         "ae-wam-2026",
@@ -19821,34 +19895,18 @@
       "related_bodies": [
         {
           "name": "National AI Test and Validation Lab",
-          "role": "It is a certification lab for AI models, agents and apps, governed by the UAE Cyber Security Council and operated with Cisco and Open Innovation AI (May 2026).",
           "counts_as_aisi": false,
           "source_ids": [
             "ae-zawya-2026"
           ],
           "kind": "other",
           "id": "related_bodies-ef587708babd5273ab213348c3f527a8"
-        },
-        {
-          "name": "Cyber Security Council",
-          "role": "It governs the test lab. It is a federal cyber security body.",
-          "counts_as_aisi": false,
-          "kind": "other",
-          "id": "related_bodies-4130419392c35d04ad9188e1a10a392d"
-        },
-        {
-          "name": "Federal Authority for Artificial Intelligence and Data",
-          "role": "Policy, legislation, standards and compliance are its announced responsibilities. The June 2026 announcement describes a merger of the AI Office, digital government and the Data Office; no testing mandate was found.",
-          "counts_as_aisi": false,
-          "kind": "other",
-          "id": "related_bodies-ad17cafd315a5637b6f3ced1174bbcc3"
         }
       ],
       "next_check": {
         "date": "2027-01-15",
         "reason": "Whether the National AI Test and Validation Lab takes on evaluation of advanced models."
       },
-      "notes": "Closest case in the region. The lab is government-governed and offers what it calls sovereign, independent evaluation, but its remit is security conformity certification of deployed systems for government and business, without a separately identified qualifying capability or behaviour-risk assignment. A senior official called for independent testing of frontier models in October 2026; no qualifying institute announcement was identified.",
       "region": {
         "id": "142",
         "name": "Asia",
@@ -19878,7 +19936,6 @@
         "name": "National AI Test and Validation Lab",
         "stage": "exists",
         "gap": "remit",
-        "note": "A joint release announces the government-governed lab for security, safety and trustworthiness testing and certification of models, agents and applications, including continuous red-teaming. Its listed evaluations include risks of agent tool-use, but the release presents the service as policy conformance and verification against security standards for organisations, without identifying a qualifying national evaluation role. The government news-agency copy was unreadable.",
         "source_ids": [
           "ae-zawya-2026"
         ],
@@ -19891,8 +19948,19 @@
           "code": "certification",
           "basis": "mandate",
           "body_id": "related_bodies-ef587708babd5273ab213348c3f527a8",
-          "lead": true,
           "text": "The press release describes a collaboration to establish the UAE's National AI Test and Validation Lab to provide \"sovereign, independent assessment and certification for AI models, agents, and applications\".",
+          "source_ids": [
+            "ae-zawya-2026"
+          ]
+        },
+        {
+          "id": "claims-2582537abe1740538f7bee81e1737563",
+          "kind": "function",
+          "code": "model_testing",
+          "basis": "mandate",
+          "body_id": "related_bodies-ef587708babd5273ab213348c3f527a8",
+          "lead": true,
+          "text": "The joint release says the Lab is to help UAE government entities and private sector organisations \"test, validate and certify AI models, agents and applications\".",
           "source_ids": [
             "ae-zawya-2026"
           ]
@@ -26619,7 +26687,6 @@
       "id": "MZ",
       "name": "Mozambique",
       "kind": "state",
-      "summary": "No qualifying institute identified. Draft 6 proposes a centre and sandbox for model evaluation and certification before adoption; the AI strategy remains a proposal.",
       "check": {
         "last_checked": "2026-10-17",
         "method": "individual",
@@ -26723,7 +26790,21 @@
           "mz-r6-cnia-decree",
           "mz-r6-october-proposal"
         ],
-        "governance_note": "The full CNIA decree confirms advisory governance. Draft 6 proposes a model-evaluation centre for assurance before adoption, without specifying the qualifying model class and capability or behaviour-risk function. A more specific technical remit could change this finding. The 14 October 2026 official account still calls the strategy a proposal."
+        "governance_note": "The full CNIA decree confirms advisory governance. Draft 6 proposes a model-evaluation centre for assurance before adoption, without specifying the qualifying model class and capability or behaviour-risk function. A more specific technical remit could change this finding. The 14 October 2026 official account still calls the strategy a proposal.",
+        "log": [
+          {
+            "date": "2026-10-18",
+            "text": "Read Draft 6 beyond P6.I5, including P6.P11 and the governance table."
+          },
+          {
+            "date": "2026-10-19",
+            "text": "Read the full CNIA decree and INTIC's October account of the proposed AI strategy."
+          },
+          {
+            "date": "2026-10-17",
+            "text": "Searched in Portuguese and English for adoption of the AI strategy, the centre's remit and CNIA recommendations."
+          }
+        ]
       },
       "source_ids": [
         "mz-enia-draft-2026",
@@ -26740,7 +26821,6 @@
       "related_bodies": [
         {
           "name": "Centro Nacional de Testes, Avaliação e Auditoria de IA / Sandbox Regulatório Nacional de IA (draft P6.I5)",
-          "role": "It is a proposed testing, model evaluation, certification and audit centre combined with a regulatory sandbox. Draft 6 covers imported, open, proprietary, adapted and domestic models and testing before public or institutional adoption. INTIC, the CNIA executive secretariat and sectoral regulators are assigned implementation. The stated remit is assurance before adoption; the text does not specify the qualifying model class and capability or behaviour-risk function.",
           "counts_as_aisi": false,
           "source_ids": [
             "mz-enia-draft-2026"
@@ -26750,7 +26830,6 @@
         },
         {
           "name": "Comissão Nacional de Inteligência Artificial (CNIA)",
-          "role": "It advises on AI policies, research institutions and adoption. It is a consultative and technical advisory body subordinate to the Council of Ministers. Decree 14/2026 created it, taking effect on publication on 17 April 2026. The retrieved decree does not assign a unit to evaluate advanced models.",
           "counts_as_aisi": false,
           "kind": "other",
           "source_ids": [
@@ -26760,7 +26839,6 @@
         }
       ],
       "status_confidence": "medium",
-      "notes": "Draft 6 was retrieved again and read beyond P6.I5. P6.P11 covers imported, open, proprietary, adapted and domestic models. The governance table gives the sandbox testing and audit duties for robustness, safety, bias, performance, privacy and high-risk systems. This is a substantive model-evaluation proposal framed as assurance before adoption. The retrieved text does not specify an ongoing evaluation remit for general-purpose, foundation or frontier models for their capabilities or behaviour risks. A more specific technical remit could change the assessment. The full CNIA decree was retrieved: it establishes a consultative and technical advisory body subordinate to the Council of Ministers, with powers to advise on research institutions and AI adoption. This supersedes the earlier access limit, not the historical review record. No qualifying commission recommendation was found. INTIC still described the AI strategy as a proposal on 14 October 2026. English and Portuguese searches found no later act resolving the centre remit or adopting the strategy.",
       "region": {
         "id": "002",
         "name": "Africa",
@@ -26789,12 +26867,25 @@
         "name": "Centro Nacional de Testes, Avaliação e Auditoria de IA / Sandbox Regulatório Nacional de IA",
         "stage": "proposed",
         "gap": "remit",
-        "note": "Draft 6, linked from the public consultation, proposes a centre and sandbox for model evaluation and certification before public or institutional adoption. It covers imported and domestic models. The retrieved text does not establish a qualifying model class and capability or behaviour-risk remit, and adoption remains unverified.",
         "source_ids": [
           "mz-enia-draft-2026",
           "mz-enia-consultation-2026"
-        ]
-      }
+        ],
+        "body_id": "related_bodies-84162d316796517fba955b0230dfdc57"
+      },
+      "claims": [
+        {
+          "id": "claims-6f081624c47a41578419a059108298f9",
+          "kind": "function",
+          "code": "policy_advice",
+          "basis": "mandate",
+          "body_id": "related_bodies-d9eebc23a8cf57c68e7f8a42bad92167",
+          "text": "The decree tasks CNIA with scientific and technical advice to the government on developing AI initiatives and action plans in Mozambique.",
+          "source_ids": [
+            "mz-r6-cnia-decree"
+          ]
+        }
+      ]
     },
     {
       "id": "NA",
@@ -49886,25 +49977,7 @@
       "language": "zh",
       "archive_url": "https://web.archive.org/web/20261016200345/https://ciss.tsinghua.edu.cn/info/wzjx/7913",
       "origin": "CN",
-      "excerpts": [
-        {
-          "text": "中方已经在政府支持下成立了对应AISI的“中国人工智能发展与安全研究网络”。",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "CN"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-1bd7b9d42ab55f11b3c6c1b1e532ba59"
-              },
-              "role"
-            ]
-          ],
-          "gloss": "China has established, with government support, the China AI Development and Safety Research Network as its counterpart to AISI."
-        }
-      ],
+      "excerpts": [],
       "snapshot": {
         "retrieved": "2026-10-17T14:08:04.647462+00:00",
         "sha256": "5698d8da18082bd7ff3b21cf6010887b39c88f5dbba794d63d7e8f43ebeaa194",
@@ -49941,14 +50014,6 @@
               },
               "closest_body",
               "name"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "CN"
-              },
-              "closest_body",
-              "note"
             ]
           ],
           "accessed": "2026-10-18"
@@ -49983,17 +50048,6 @@
               },
               "check",
               "governance_note"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "CN"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-e2aefc7076215ddcbc1ec67accbd93c8"
-              },
-              "role"
             ]
           ],
           "accessed": "2026-10-18",
@@ -50078,26 +50132,11 @@
                 "id": "TW"
               },
               "closest_body",
-              "note"
+              "gap"
             ]
           ],
           "accessed": "2026-10-18",
           "gloss": "The Ministry of Digital Affairs has begun AI evaluation work and held the launch of the AI Product and System Evaluation Center at Taipei Tech today, the sixth."
-        },
-        {
-          "text": "建立語言模型(Large Language Model, LLM)的初步評測項目，涵蓋安全性(Safety)、可解釋性(Explainable)、彈性(Resilient)、公平性(Fair)、準確性(Accuracy)、透明性(Transparency)、當責性(Accountable)、可靠性(Reliability)、隱私(Privacy)及資安(Secure)等10項",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "TW"
-              },
-              "closest_body",
-              "note"
-            ]
-          ],
-          "accessed": "2026-10-18",
-          "gloss": "Initial LLM evaluation items cover ten areas: safety, explainability, resilience, fairness, accuracy, transparency, accountability, reliability, privacy and security."
         },
         {
           "text": "AI評測中心涵蓋制度推動委員會、技術審議小組等架構，將制定「AI產品與系統評測制度」與「AI產品與系統評測指引」，建構我國AI產品與系統遵循之評測方式與規範，提供國內AI產品評測服務，以期保障產品使用者權益，並將陸續於明(113)年成立驗證機構、測試實驗室，提供AI評測與驗證服務，達到促進AI產業正向發展之目的，確保AI技術可被正確使用，提升國內AI產品效能與安全，為我國推動可信任AI環境發展邁出重要的一步。",
@@ -50188,14 +50227,6 @@
                 "id": "related_bodies-b99e96dc6b88504faf9248e18a9b61eb"
               },
               "name"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "TW"
-              },
-              "closest_body",
-              "note"
             ]
           ],
           "gloss": "On 1 May, the Ministry of Digital Affairs' AI Product and System Evaluation Center (Artificial Intelligence Evaluation Center, hereafter AIEC) published its latest round of evaluation results for domestic and foreign open-source language models, using three indicators highly relevant to Taiwan, 'Taiwanese values', 'high school GSAT Chinese' and 'high school GSAT social studies', to examine how current AI models actually perform in Traditional Chinese comprehension, Taiwan's social and cultural context, and local knowledge.",
@@ -50959,17 +50990,6 @@
               {
                 "id": "ID"
               },
-              "related_bodies",
-              {
-                "id": "related_bodies-aad469c6d98155afafe04c3684084aa5"
-              },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "ID"
-              },
               "closest_body",
               "name"
             ],
@@ -50987,38 +51007,10 @@
                 "id": "ID"
               },
               "closest_body",
-              "note"
+              "gap"
             ]
           ],
           "accessed": "2026-10-17"
-        },
-        {
-          "text": "Evaluates AI behavior in Bahasa Indonesia and local languages",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "ID"
-              },
-              "closest_body",
-              "note"
-            ]
-          ],
-          "accessed": "2026-10-18"
-        },
-        {
-          "text": "Addresses risks of bias, hallucination, and misalignment in local context",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "ID"
-              },
-              "closest_body",
-              "note"
-            ]
-          ],
-          "accessed": "2026-10-18"
         }
       ],
       "origin": "ID",
@@ -51093,77 +51085,11 @@
                 "id": "TH"
               },
               "closest_body",
-              "note"
+              "gap"
             ]
           ],
           "gloss": "ETDA is upgrading its AI Governance Practice Center.",
           "accessed": "2026-10-17"
-        },
-        {
-          "text": "ตลอดจนร่วมกับภาคธนาคารในการทดสอบ Ethical LLM",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "TH"
-              },
-              "closest_body",
-              "note"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "TH"
-              },
-              "summary"
-            ]
-          ],
-          "accessed": "2026-10-18",
-          "gloss": "As well as working with the banking sector to test ethical LLMs."
-        },
-        {
-          "text": "เพื่อประเมินว่า Chatbot จะตอบสนองต่อสถานการณ์เสี่ยงอย่างไร เช่น เด็กสอบถามเรื่องการหนีออกจากบ้าน ผู้ใช้ถามถึงแนวทางทำร้ายตัวเอง หรือ AI ให้คำแนะนำที่อาจนำไปสู่อันตราย",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "TH"
-              },
-              "closest_body",
-              "note"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "TH"
-              },
-              "summary"
-            ]
-          ],
-          "accessed": "2026-10-18",
-          "gloss": "To assess how a chatbot responds to risky situations, such as a child asking about running away, a user asking how to harm themselves, or AI giving advice that could lead to harm."
-        },
-        {
-          "text": "ETDA เตรียมร่วมกับประเทศสิงคโปร์พัฒนาชุดคำสั่งทดสอบ หรือ “Test Prompt ภาษาไทย”",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "TH"
-              },
-              "closest_body",
-              "note"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "TH"
-              },
-              "summary"
-            ]
-          ],
-          "accessed": "2026-10-18",
-          "gloss": "ETDA plans to work with Singapore to develop test prompts, or Thai-language Test Prompts."
         }
       ],
       "origin": "TH",
@@ -51809,25 +51735,7 @@
       "accessed": "2026-10-17",
       "language": "en",
       "archive_url": "https://web.archive.org/web/20261016205148/https://memleket.kz/en/documents/47143-briefing-note-on-the-role-of-the-department-of-artificial-intelligence-and-data-management-in-kazakhstans-framework-for-ai-regulation-and-safety-assessment",
-      "excerpts": [
-        {
-          "text": "the Department of Artificial Intelligence and Data Management operates as a specialized unit of the authorized government body",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "KZ"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-5934f4cbf85a539ba754b8f582779a44"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-10-17"
-        }
-      ],
+      "excerpts": [],
       "origin": "KZ",
       "snapshot": {
         "retrieved": "2026-10-17T14:20:10Z",
@@ -51854,29 +51762,6 @@
         "text_scheme": 1
       },
       "excerpts": [
-        {
-          "text": "understand the capabilities and impacts of advanced AI and to develop and test risk mitigations.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "KZ"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-a49acea8ed815892870f572bf579dca7"
-              },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "KZ"
-              },
-              "summary"
-            ]
-          ]
-        },
         {
           "text": "Kazakhstan AI Safety Institute",
           "supports": [
@@ -51908,21 +51793,7 @@
                 "id": "KZ"
               },
               "closest_body",
-              "note"
-            ]
-          ],
-          "accessed": "2026-10-18"
-        },
-        {
-          "text": "aiming to understand, interpret, and control the behavior of large-scale models.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "KZ"
-              },
-              "closest_body",
-              "note"
+              "gap"
             ]
           ],
           "accessed": "2026-10-18"
@@ -53714,104 +53585,6 @@
           "accessed": "2026-10-17"
         },
         {
-          "text": "This is a first-of-its-kind facility to help UAE government entities and private sector organizations test, validate and certify AI models, agents and applications for security, safety and trustworthiness.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "AE"
-              },
-              "closest_body",
-              "note"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "AE"
-              },
-              "summary"
-            ]
-          ],
-          "accessed": "2026-10-18"
-        },
-        {
-          "text": "continuous red-teaming, policy conformance, and vulnerability testing at national scale",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "AE"
-              },
-              "closest_body",
-              "note"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "AE"
-              },
-              "summary"
-            ]
-          ],
-          "accessed": "2026-10-18"
-        },
-        {
-          "text": "Hosted in the UAE, and operated under the governance of the Cyber Security Council",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "AE"
-              },
-              "closest_body",
-              "note"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "AE"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-10-18"
-        },
-        {
-          "text": "Systems that successfully pass these evaluations will receive a national certification mark.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "AE"
-              },
-              "summary"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "AE"
-              },
-              "closest_body",
-              "note"
-            ]
-          ],
-          "accessed": "2026-10-18"
-        },
-        {
-          "text": "Agent Autonomy: Evaluating risks associated with agent tool-use.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "AE"
-              },
-              "closest_body",
-              "note"
-            ]
-          ],
-          "accessed": "2026-10-17"
-        },
-        {
           "text": "Strategic collaboration to establish the UAE’s National AI Test and Validation Lab to provide sovereign, independent assessment and certification for AI models, agents, and applications.",
           "supports": [
             [
@@ -53822,6 +53595,31 @@
               "claims",
               {
                 "id": "claims-0787bc8094014cfd8121768d05a9dc2a"
+              },
+              "text"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "AE"
+              },
+              "closest_body",
+              "gap"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "today announced the establishment of the National AI Test and Validation Lab. This is a first-of-its-kind facility to help UAE government entities and private sector organizations test, validate and certify AI models, agents and applications for security, safety and trustworthiness.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "AE"
+              },
+              "claims",
+              {
+                "id": "claims-2582537abe1740538f7bee81e1737563"
               },
               "text"
             ]
@@ -54366,32 +54164,6 @@
       "language": "pt",
       "excerpts": [
         {
-          "text": "Teste supervisionado, validação, aprendizagem regulatória, avaliação de modelos e certificação antes da adopção pública ou institucional.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "MZ"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-84162d316796517fba955b0230dfdc57"
-              },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "MZ"
-              },
-              "closest_body",
-              "note"
-            ]
-          ],
-          "gloss": "Supervised testing, validation, regulatory learning, model evaluation and certification before public or institutional adoption.",
-          "accessed": "2026-10-17"
-        },
-        {
           "text": "Centro Nacional de Testes, Avaliação e Auditoria de IA / Sandbox Regulatório Nacional de IA",
           "supports": [
             [
@@ -54407,7 +54179,7 @@
           "gloss": "National Centre for AI Testing, Evaluation and Audit / National AI Regulatory Sandbox"
         },
         {
-          "text": "Desenvolver capacidade nacional de avaliação de modelos importados, abertos, proprietários, adaptados e desenvolvidos em Moçambique.",
+          "text": "P6.I5\nCentro Nacional de Testes, Avaliação e Auditoria de IA / Sandbox Regulatório Nacional de IA",
           "supports": [
             [
               "jurisdictions",
@@ -54415,11 +54187,22 @@
                 "id": "MZ"
               },
               "closest_body",
-              "note"
+              "gap"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "MZ"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-84162d316796517fba955b0230dfdc57"
+              },
+              "name"
             ]
           ],
-          "accessed": "2026-10-18",
-          "gloss": "Develop national capacity to evaluate imported, open, proprietary, adapted and domestically developed models in Mozambique."
+          "gloss": "P6.I5 National Centre for AI Testing, Evaluation and Audit / National AI Regulatory Sandbox",
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "MZ",
@@ -54477,14 +54260,6 @@
               },
               "closest_body",
               "stage"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "MZ"
-              },
-              "closest_body",
-              "note"
             ]
           ],
           "accessed": "2026-10-18",
@@ -58318,14 +58093,6 @@
               {
                 "id": "PA"
               },
-              "closest_body",
-              "note"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "PA"
-              },
               "timeline",
               {
                 "id": "pa-strategy-adoption-2026"
@@ -58337,50 +58104,6 @@
           "gloss": "Approve the National Artificial Intelligence Strategy."
         },
         {
-          "text": "se especializará en seguridad de la IA",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "PA"
-              },
-              "closest_body",
-              "note"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "PA"
-              },
-              "summary"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "PA"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-5ad9b88ac7dc5ef792a22d0bea69fb11"
-              },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "PA"
-              },
-              "timeline",
-              {
-                "id": "pa-strategy-adoption-2026"
-              },
-              "description"
-            ]
-          ],
-          "accessed": "2026-10-18",
-          "gloss": "It will specialise in AI security."
-        },
-        {
           "text": "gobierno establecerá un \"Red Team\" nacional",
           "gloss": "The government will establish a national red team.",
           "supports": [
@@ -58389,34 +58112,8 @@
               {
                 "id": "PA"
               },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "PA"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-5ad9b88ac7dc5ef792a22d0bea69fb11"
-              },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "PA"
-              },
               "check",
               "governance_note"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "PA"
-              },
-              "closest_body",
-              "note"
             ]
           ],
           "accessed": "2026-10-18"
@@ -58425,43 +58122,6 @@
           "text": "establecimiento de un Instituto Nacional de Ciberseguridad (INC)",
           "gloss": "establishment of a National Cybersecurity Institute (INC)",
           "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "PA"
-              },
-              "closest_body",
-              "note"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "PA"
-              },
-              "summary"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "PA"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-5ad9b88ac7dc5ef792a22d0bea69fb11"
-              },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "PA"
-              },
-              "timeline",
-              {
-                "id": "pa-strategy-adoption-2026"
-              },
-              "description"
-            ],
             [
               "jurisdictions",
               {
@@ -58477,14 +58137,15 @@
               },
               "closest_body",
               "stage"
-            ]
-          ],
-          "accessed": "2026-10-18"
-        },
-        {
-          "text": "monitorear ataques adversariales contra modelos nacionales de IA",
-          "gloss": "monitor adversarial attacks against national AI models",
-          "supports": [
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "PA"
+              },
+              "closest_body",
+              "gap"
+            ],
             [
               "jurisdictions",
               {
@@ -58494,33 +58155,7 @@
               {
                 "id": "related_bodies-5ad9b88ac7dc5ef792a22d0bea69fb11"
               },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "PA"
-              },
-              "closest_body",
-              "note"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "PA"
-              },
-              "summary"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "PA"
-              },
-              "timeline",
-              {
-                "id": "pa-strategy-adoption-2026"
-              },
-              "description"
+              "name"
             ]
           ],
           "accessed": "2026-10-18"
@@ -58534,23 +58169,8 @@
               {
                 "id": "PA"
               },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "PA"
-              },
               "check",
               "governance_note"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "PA"
-              },
-              "closest_body",
-              "note"
             ]
           ],
           "accessed": "2026-10-18"
@@ -58575,7 +58195,121 @@
         "text_sha256": "d34a24d9e547281d4272c65b86503877d0cc3e2a75acb7c86504ac78ed7c819e",
         "text_scheme": 1
       },
-      "archive_url": "https://web.archive.org/web/20261017022408if_/https://www.observatorioia.com.pa/wp-content/uploads/2026/07/iapanama_2026-2036_download.pdf"
+      "archive_url": "https://web.archive.org/web/20261017022408if_/https://www.observatorioia.com.pa/wp-content/uploads/2026/07/iapanama_2026-2036_download.pdf",
+      "excerpts": [
+        {
+          "text": "Establecer el INC con un mandato específico para \nla “seguridad de la IAˮ, monitoreando ataques \nadversariales contra modelos nacionales y la integridad \nde los datos.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "PA"
+              },
+              "claims",
+              {
+                "id": "claims-1b321b1fce9d4d8dbb2b86ab1a0e6d53"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "Establish INC with a specific mandate for AI security, monitoring adversarial attacks against national models and data integrity.",
+          "anchors": [
+            {
+              "kind": "definition",
+              "text": "Instituto Nacional de \nCiberseguridad (INC)",
+              "gloss": "National Cybersecurity Institute (INC)"
+            }
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "SENACYT ampliará sus programas \nde becas para apuntar específicamente a estudios de maestría y doctorado \nen Inteligencia Artificial y campos relacionados en universidades de primer \nnivel mundial.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "PA"
+              },
+              "claims",
+              {
+                "id": "claims-3d9c2ed77ccb4db9892fc06d3d922e3e"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "SENACYT will expand its scholarship programmes to target master's and doctoral studies in AI and related fields at leading universities worldwide.",
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Se establecerá un Observatorio de Riesgos de IA \npor parte de SENACYT para monitorear tendencias globales en seguridad de la \nIA y rastrear incidentes locales de daño algorítmico.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "PA"
+              },
+              "claims",
+              {
+                "id": "claims-e7001eab3d23490ea66e9942c4b424dc"
+              },
+              "text"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "PA"
+              },
+              "claims",
+              {
+                "id": "claims-4778fc8a4cb5449caba3ce5b3dfdb59f"
+              },
+              "text"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "PA"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-c09ae0893f8d5cc399e9cd2f06dfb543"
+              },
+              "name"
+            ]
+          ],
+          "gloss": "An AI Risk Observatory will be established by SENACYT to monitor global trends in AI security and track local incidents of algorithmic harm.",
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "El Instituto Nacional de IA \nAplicada (INIAA) sirve como \ncatalizador operativo y consultor \npara fortalecer y sinergizar los \nesfuerzos de habilitación de IA \ntanto del sector público como \ndel privado.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "PA"
+              },
+              "claims",
+              {
+                "id": "claims-341df06cf9c34a97adc859eecb10eb23"
+              },
+              "text"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "PA"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-c9dee68dede556059426a8de990c10ca"
+              },
+              "name"
+            ]
+          ],
+          "gloss": "The National Institute of Applied AI (INIAA) acts as an operational catalyst and adviser to strengthen and combine AI enablement efforts in both the public and private sectors.",
+          "accessed": "2026-10-17"
+        }
+      ]
     },
     {
       "id": "ve-lega-anteproyecto-ia",
@@ -68145,27 +67879,7 @@
       "language": "es",
       "archive_url": "https://web.archive.org/web/20260806081619/https://www.presidencia.gob.pa/publicacion/panama-lanza-la-agenda-nacional-de-tecnologias-avanzadas-en-presencia-del-presidente-mulino",
       "published": "2026-07-30",
-      "excerpts": [
-        {
-          "text": "la recién creada Comisión Nacional para Tecnologías Críticas y Emergentes y su Subcomisión de Inteligencia Artificial",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "PA"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-52395caf17d35a83bade9360627b04fe"
-              },
-              "name"
-            ]
-          ],
-          "gloss": "The recently created national critical and emerging technologies commission and its AI subcommission.",
-          "url": "https://r.jina.ai/https://www.presidencia.gob.pa/publicacion/panama-lanza-la-agenda-nacional-de-tecnologias-avanzadas-en-presencia-del-presidente-mulino",
-          "accessed": "2026-10-17"
-        }
-      ],
+      "excerpts": [],
       "origin": "PA",
       "title_en": "Panama launches the National Advanced Technologies Agenda",
       "snapshot": {
@@ -96157,41 +95871,7 @@
       },
       "published": "2026-07-22",
       "title_en": "Closed-door seminar on frontier AI safety and critical infrastructure protection: evaluation, standards and cooperation held during the Shanghai World Artificial Intelligence Conference",
-      "excerpts": [
-        {
-          "text": "中国人工智能发展与安全研究网络将持续推动前沿人工智能安全领域的评估研究、标准建设与国际对话，代表中国与世界各国人工智能安全研究机构深化交流合作，为全球人工智能安全治理贡献力量。",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "CN"
-              },
-              "summary"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "CN"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-1bd7b9d42ab55f11b3c6c1b1e532ba59"
-              },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "CN"
-              },
-              "closest_body",
-              "note"
-            ]
-          ],
-          "accessed": "2026-10-17",
-          "gloss": "The China AI Development and Safety Research Network will continue advancing frontier AI safety evaluation research, standards and international dialogue, and will deepen exchanges and cooperation with AI safety research institutions worldwide on China's behalf, contributing to global AI safety governance."
-        }
-      ]
+      "excerpts": []
     },
     {
       "id": "cn-zhejiang-government-support-2026",
@@ -96220,24 +95900,6 @@
               {
                 "id": "CN"
               },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "CN"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-1bd7b9d42ab55f11b3c6c1b1e532ba59"
-              },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "CN"
-              },
               "closest_body",
               "name"
             ],
@@ -96248,14 +95910,6 @@
               },
               "closest_body",
               "stage"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "CN"
-              },
-              "closest_body",
-              "note"
             ]
           ],
           "accessed": "2026-10-17",
@@ -96299,7 +95953,8 @@
               {
                 "id": "CN"
               },
-              "notes"
+              "closest_body",
+              "gap"
             ]
           ],
           "accessed": "2026-10-17",
@@ -96377,50 +96032,7 @@
       "language": "zh",
       "origin": "CN",
       "access_note": "Research-centre commentary in the NDRC's affiliated-unit section, not a retrieved government decision or appointed commission report. Its recommendations are attributed and do not establish a government study or formal institute proposal. The byline names Zhao Yifan of the Xi Jinping Economic Thought Research Centre and identifies original publication in 科技中国, 2025 no. 7. The displayed 3 December 2025 date is the NDRC repost date; no exact original publication date is supplied.",
-      "excerpts": [
-        {
-          "text": "探索在国家和地方行政部门成立下属人工智能安全研究院所",
-          "gloss": "Explore establishing affiliated AI safety research institutes in national and local administrative departments.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "CN"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-10-17"
-        },
-        {
-          "text": "作者：习近平经济思想研究中心 赵一帆；本文发表于《科技中国》杂志2025年第7期",
-          "gloss": "Author: Zhao Yifan, Xi Jinping Economic Thought Research Centre; this article was published in 科技中国, 2025 issue 7.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "CN"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-10-18"
-        },
-        {
-          "text": "2025/12/03",
-          "gloss": "3 December 2025.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "CN"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-10-18"
-        }
-      ],
+      "excerpts": [],
       "snapshot": {
         "retrieved": "2026-10-18T05:11:29.726627+00:00",
         "sha256": "40f71019ebb2989cf08983c8fa2fe3611efbb56808a4b6e0e2727a7338fb760e",
@@ -96632,32 +96244,7 @@
       "accessed": "2026-10-17",
       "language": "zh",
       "origin": "TW",
-      "excerpts": [
-        {
-          "text": "檢驗模型是否具備臺灣語言、社會文化與價值觀等3大理解能力",
-          "gloss": "Assess whether models understand Taiwan's language, social culture and values.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "TW"
-              },
-              "summary"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "TW"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-b99e96dc6b88504faf9248e18a9b61eb"
-              },
-              "role"
-            ]
-          ]
-        }
-      ],
+      "excerpts": [],
       "snapshot": {
         "retrieved": "2026-10-19T00:11:53Z",
         "sha256": "0bf7e5ccb0df84fbb5a675c660bf48007f5ebf96a4857af9cd090f4ed567746b",
@@ -96694,39 +96281,7 @@
       "language": "en",
       "origin": "TW",
       "access_note": "Ministerial meeting transcript created on 17 April 2024 and updated on 6 May 2024. The transcript contains transcription errors; quoted text is preserved as published. Private copy held is a text copy.",
-      "excerpts": [
-        {
-          "text": "so you can also learn whether your Frontier models have regressed or progressed.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "TW"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "TW"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-b99e96dc6b88504faf9248e18a9b61eb"
-              },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "TW"
-              },
-              "closest_body",
-              "note"
-            ]
-          ]
-        }
-      ],
+      "excerpts": [],
       "snapshot": {
         "retrieved": "2026-10-19T00:11:58Z",
         "sha256": "72b0f6776b18afa3786cbfb2814f0102283536821d98da049226b4a9e24d3509",
@@ -96748,28 +96303,23 @@
       "access_note": "Direct page returned a loading shell. Its single text copy was retrieved successfully and retained privately.",
       "excerpts": [
         {
-          "text": "評估重點包含模型安全防護機制、越獄攻擊(Jail-breaking)防禦能力",
-          "gloss": "The evaluation focuses include model safeguards and defence against jailbreak attacks.",
+          "text": "數位發展部轄下國家資通安全研究院近期完成 DeepSeek AI 離線下載模型之資安測試，評估重點包含模型安全防護機制、越獄攻擊(Jail-breaking)防禦能力，以及在不同應用情境下的潛在資安風險。",
           "supports": [
             [
               "jurisdictions",
               {
                 "id": "TW"
               },
-              "summary"
-            ],
-            [
-              "jurisdictions",
+              "claims",
               {
-                "id": "TW"
+                "id": "claims-ac1c34a95ae84c61b4439aee7786b851"
               },
-              "related_bodies",
-              {
-                "id": "related_bodies-ad99656201255d8690cf43829abf205b"
-              },
-              "role"
+              "text"
             ]
-          ]
+          ],
+          "gloss": "The National Institute of Cyber Security under the Ministry of Digital Affairs recently completed cybersecurity tests of the downloadable DeepSeek AI model, focusing on model safeguards, jailbreak defences and potential cybersecurity risks in different uses.",
+          "accessed": "2026-10-19",
+          "url": "https://r.jina.ai/https://www.nics.nat.gov.tw/latest_news/announcements/Latest_Announcement/6924d1a7-9f1a-4097-9d61-dec9b25a5724/"
         }
       ],
       "snapshot": {
@@ -96791,32 +96341,7 @@
       "language": "zh",
       "origin": "TW",
       "access_note": "Direct page returned a loading shell. Its single text copy was retrieved successfully and retained privately.",
-      "excerpts": [
-        {
-          "text": "針對未具防護措施之OpenClaw與具備隔離機制之NemoClaw共2個AI代理工具進行實測比較",
-          "gloss": "Conducted comparative tests of OpenClaw without safeguards and NemoClaw with isolation mechanisms.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "TW"
-              },
-              "summary"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "TW"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-ad99656201255d8690cf43829abf205b"
-              },
-              "role"
-            ]
-          ]
-        }
-      ],
+      "excerpts": [],
       "snapshot": {
         "retrieved": "2026-10-19T00:12:02Z",
         "sha256": "221d47a6fa0f73e4ab9bea46326ee355d7c35593edb0b21db02d611084cd8640",
@@ -96845,21 +96370,6 @@
               {
                 "id": "TW"
               },
-              "closest_body",
-              "note"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "TW"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "TW"
-              },
               "check",
               "governance_note"
             ]
@@ -96870,21 +96380,6 @@
           "text": "指AI系統在面對外部攻擊、未授權訪問或不當使用時能夠保護其資源、功能和資料的完整性和機密性",
           "gloss": "Refers to the AI system being able to protect the integrity and confidentiality of its resources, functions and data when facing external attack, unauthorised access or improper use.",
           "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "TW"
-              },
-              "closest_body",
-              "note"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "TW"
-              },
-              "notes"
-            ],
             [
               "jurisdictions",
               {
@@ -96918,28 +96413,30 @@
       "access_note": "On 19 October 2026 web retrieval of the primary page displayed the quoted Russian sentence about independent auditors. The source URL now names the Russian-language view of the same document (lang=ru). On 24 October 2026 a direct request again returned a JavaScript shell; the rendered text copy of the Russian view carries the full briefing, including the quoted sentence, and replaces the earlier copy, which held only navigation and a loading indicator.",
       "excerpts": [
         {
-          "text": "а непосредственный аудит проводят независимые специалисты и организации",
-          "gloss": "Direct audits are performed by independent specialists and organisations.",
+          "text": "Согласно пункту 2 приказа, Департамент обеспечивает государственную регистрацию и опубликование правил взаимодействия оператора национальной платформы ИИ, а также представление сведений об исполнении указанных мероприятий.",
           "supports": [
             [
               "jurisdictions",
               {
                 "id": "KZ"
               },
-              "summary"
-            ],
-            [
-              "jurisdictions",
+              "claims",
               {
-                "id": "KZ"
+                "id": "claims-ab48ef80a0a24f1da85c2e2507c22580"
               },
-              "related_bodies",
-              {
-                "id": "related_bodies-5934f4cbf85a539ba754b8f582779a44"
-              },
-              "role"
+              "text"
             ]
-          ]
+          ],
+          "gloss": "Under paragraph 2 of the order, the department ensures state registration and publication of the rules governing interaction by the national AI platform operator, as well as submission of information on the implementation of those measures.",
+          "anchors": [
+            {
+              "kind": "definition",
+              "text": "профильное подразделение в его структуре — Департамент искусственного интеллекта и управления данными.",
+              "gloss": "a specialised unit within it, the Department of Artificial Intelligence and Data Management."
+            }
+          ],
+          "accessed": "2026-10-24",
+          "url": "https://r.jina.ai/https://www.gov.kz/org/maidd/documents/details/1083089?lang=ru"
         }
       ],
       "snapshot": {
@@ -96959,34 +96456,7 @@
       "language": "en",
       "origin": "KZ",
       "access_note": "Registry data retrieved on 21 October 2026. It records registration on 1 October 2025, expiration on 1 October 2026 and the status server hold; on the same day kaisi.kz did not resolve. A fresh lookup on 2 November 2026 returned HTTP 404 with the registry message \"The domain kaisi.kz does not exist in the registry.\" The snapshot tool does not preserve HTTP error bodies; the cited snapshot remains the valid 21 October registration record, not a copy of the later response. On 2 November www.kaisi.kz also returned DNS NXDOMAIN. Domain removal does not establish that the organisation has closed. A further lookup on 10 November 2026 returned the same HTTP 404 registry message. On 16 November 2026 the registry returned HTTP 404 for this record.",
-      "excerpts": [
-        {
-          "text": "server hold",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "KZ"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-10-21"
-        },
-        {
-          "text": "2026-10-01T17:02:04Z",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "KZ"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-10-21"
-        }
-      ],
+      "excerpts": [],
       "snapshot": {
         "retrieved": "2026-10-21T15:16:01Z",
         "sha256": "b72f7321eef11b666423cf8272def7159982b5793d562edb8a57231b8ce5ed12",
@@ -97345,21 +96815,29 @@
       "origin": "MZ",
       "excerpts": [
         {
-          "text": "A CNIA é um órgão de consulta e assessoria técnica ao Governo",
-          "gloss": "CNIA is a consultative and technical advisory body to the government.",
+          "text": "j) assessorar científica e tecnicamente o Governo no \ndesenvolvimento de iniciativas e planos de acção de \nInteligência Artificial em Moçambique;",
           "supports": [
             [
               "jurisdictions",
               {
                 "id": "MZ"
               },
-              "related_bodies",
+              "claims",
               {
-                "id": "related_bodies-d9eebc23a8cf57c68e7f8a42bad92167"
+                "id": "claims-6f081624c47a41578419a059108298f9"
               },
-              "role"
+              "text"
             ]
-          ]
+          ],
+          "gloss": "j) advise the government scientifically and technically on developing AI initiatives and action plans in Mozambique;",
+          "anchors": [
+            {
+              "kind": "heading",
+              "text": "1. Compete à CNIA:",
+              "gloss": "1. CNIA is responsible for:"
+            }
+          ],
+          "accessed": "2026-10-19"
         }
       ],
       "access_note": "Excerpt location: Article 2(1), first PDF page.",
@@ -97381,28 +96859,7 @@
       "accessed": "2026-10-17",
       "language": "pt",
       "origin": "MZ",
-      "excerpts": [
-        {
-          "text": "da Proposta da Estratégia Nacional de Inteligência Artificial",
-          "gloss": "of the proposed National Artificial Intelligence Strategy",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "MZ"
-              },
-              "summary"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "MZ"
-              },
-              "notes"
-            ]
-          ]
-        }
-      ],
+      "excerpts": [],
       "snapshot": {
         "retrieved": "2026-10-19T00:12:14Z",
         "sha256": "3bf3e164a75319fdd6b4a3bfb8ad7c768596ccb9d1e79cf7d4434c14a3da49b2",
@@ -98260,64 +97717,7 @@
       "published": "2025-05-30",
       "title_en": "Komdigi and UC Berkeley explore AI collaboration initiatives in Indonesia",
       "access_note": "Release 102/HM-KKD/05/2025: the article dateline is Singapore, 28 May 2025; the page header and release footer both state Friday, 30 May 2025. Published records the publication date, not the meeting dateline.",
-      "excerpts": [
-        {
-          "text": "Singapura, 28 Mei 2025",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "ID"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-10-18",
-          "gloss": "Singapore, 28 May 2025."
-        },
-        {
-          "text": "Jumat, 30 Mei 2025",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "ID"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-10-18",
-          "gloss": "Friday, 30 May 2025."
-        },
-        {
-          "text": "AI Safety Institute Network atau laboratorium AI",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "ID"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-10-18",
-          "gloss": "AI Safety Institute Network or AI laboratory."
-        },
-        {
-          "text": "sebuah jejaring internasional",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "ID"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-10-18",
-          "gloss": "an international network"
-        }
-      ],
+      "excerpts": [],
       "snapshot": {
         "retrieved": "2026-10-18T05:11:32.903663+00:00",
         "sha256": "aebb25e3a529769703628c9c1f35254b445e6bdfd5c88f401c294a1af5456b09",
@@ -98346,17 +97746,6 @@
               {
                 "id": "ID"
               },
-              "related_bodies",
-              {
-                "id": "related_bodies-eb9899719e0e599e9804a5ac47832f35"
-              },
-              "role"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "ID"
-              },
               "check",
               "governance_note"
             ]
@@ -98367,17 +97756,6 @@
           "text": "sebelum kedua RPerpres tersebut diajukan kepada Presiden untuk ditetapkan.",
           "gloss": "Before both draft Presidential Regulations are submitted to the President for enactment.",
           "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "ID"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-eb9899719e0e599e9804a5ac47832f35"
-              },
-              "role"
-            ],
             [
               "jurisdictions",
               {
@@ -115650,60 +115028,6 @@
       "origin": "ID",
       "excerpts": [
         {
-          "text": "KORIKA ditetapkan sebagai organisasi masyarakat yang independen",
-          "gloss": "KORIKA is established as an independent civil-society organisation",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "ID"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-aad469c6d98155afafe04c3684084aa5"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-11-07"
-        },
-        {
-          "text": "135 peserta dari total 179 anggota terdaftar",
-          "gloss": "135 participants out of a total of 179 registered members",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "ID"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-aad469c6d98155afafe04c3684084aa5"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-11-07"
-        },
-        {
-          "text": "Pengesahan Rencana Kerja dan Anggaran Perkumpulan (RKAP) 2026",
-          "gloss": "Approval of the 2026 Work Plan and Budget of the Association (RKAP)",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "ID"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-aad469c6d98155afafe04c3684084aa5"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-11-07"
-        },
-        {
           "text": "Akademi AI Safety Institute Indonesia (AISII) pengembangan talenta dan keamanan AI",
           "supports": [
             [
@@ -120033,36 +119357,7 @@
       "accessed": "2026-11-10",
       "language": "en",
       "origin": "US",
-      "excerpts": [
-        {
-          "text": "Kazakhstan – Astana Kazakhstan AI Safety Institute",
-          "accessed": "2026-11-10",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "KZ"
-              },
-              "closest_body",
-              "note"
-            ]
-          ]
-        },
-        {
-          "text": "Two-day Hackathon Event = April 10-11, 2026",
-          "accessed": "2026-11-10",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "KZ"
-              },
-              "closest_body",
-              "note"
-            ]
-          ]
-        }
-      ],
+      "excerpts": [],
       "snapshot": {
         "retrieved": "2026-11-10T06:12:49Z",
         "sha256": "be351930b8d3e8f611edf210deb022c4745ec7833e61cb900f299d2c727eae42",
