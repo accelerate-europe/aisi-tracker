@@ -8415,7 +8415,6 @@
       "kind": "supranational",
       "europe_scope": false,
       "institute_id": "eu-ai-office",
-      "summary": "The EU AI Office evaluates general-purpose AI models with systemic risk for all 27 member states.",
       "next_check": {
         "date": "2027-04-16",
         "reason": "Routine full re-check of an institute record, every six months."
@@ -8508,7 +8507,6 @@
       "related_bodies": [
         {
           "name": "European Union Agency for Cybersecurity (ENISA)",
-          "role": "The EU cybersecurity agency; the EU's institute record is the AI Office. A Commission spokesperson said on 11 September 2026 that, after safeguards and terms were agreed with Anthropic, the Commission had official access to its model Mythos 5 and the cybersecurity agency was testing it. The Next Web reported on 10 September that access came more than three months after Anthropic agreed in principle in June; Techzine reported the same day that the access was limited to defensive use and that the agency did not have access to Mythos 5.1.",
           "counts_as_aisi": false,
           "source_ids": [
             "eu-midday-briefing-2026-09-11",
@@ -8518,6 +8516,27 @@
           ],
           "kind": "other",
           "id": "related_bodies-37c9ea7f5e1b74ab17d6fcc2295fb100"
+        }
+      ],
+      "claims": [
+        {
+          "id": "claims-359d3772c5d34adaa7fca7626f6fcd0f",
+          "kind": "function",
+          "code": "model_testing",
+          "basis": "activity",
+          "body_id": "related_bodies-37c9ea7f5e1b74ab17d6fcc2295fb100",
+          "text": "Techzine quotes the Commission as saying ENISA has been granted access to Mythos 5 and is testing the model.",
+          "source_ids": [
+            "eu-techzine-enisa-mythos-2026"
+          ]
+        },
+        {
+          "id": "claims-cdaf24169fd04bb8a8b2b958d6de7acd",
+          "kind": "fact",
+          "text": "Techzine reports that ENISA's access is explicitly limited to defensive use.",
+          "source_ids": [
+            "eu-techzine-enisa-mythos-2026"
+          ]
         }
       ]
     },
@@ -9214,7 +9233,7 @@
             "au-industry",
             "depth-au-forum"
           ],
-          "short": "Department describes institute as part of it; no dated founding act found."
+          "short": "Department describes institute as part of it."
         }
       ],
       "iso3": "AUS",
@@ -9869,19 +9888,7 @@
       "name": "Malaysia",
       "kind": "state",
       "institute_id": "my-aisafe",
-      "summary": "The government announced the Malaysia AI Safety Institute (MY-AISafe) in July 2026 as a function of AI Malaysia Berhad, a national AI entity under the Ministry of Digital.",
-      "related_bodies": [
-        {
-          "name": "AI Malaysia Berhad",
-          "role": "Serving as the national AI Safety Institute is one of its pillars. It is a national AI entity under the Ministry of Digital.",
-          "counts_as_aisi": false,
-          "kind": "other",
-          "id": "related_bodies-82a98300434f584c997273949537a132",
-          "source_ids": [
-            "my-digital-2026-07"
-          ]
-        }
-      ],
+      "related_bodies": [],
       "next_check": {
         "date": "2027-01-31",
         "reason": "Whether MY-AISafe has staff, a head and a budget; AI Governance Bill."
@@ -9907,7 +9914,13 @@
             "scope": "Status confidence raised to high: the Ministry of Digital release states the establishment. Partial check, not a full record re-check."
           }
         ],
-        "last_checked_basis": "historical_upper_bound"
+        "last_checked_basis": "historical_upper_bound",
+        "log": [
+          {
+            "date": "2026-10-17",
+            "text": "Read sources for the institute's staff, budget and head."
+          }
+        ]
       },
       "source_ids": [
         "my-digital-2026-07",
@@ -9918,7 +9931,6 @@
         "eap-asean-ai-safe-2025",
         "my-bernama-asean-2026"
       ],
-      "notes": "The government release says the institute has been established. In September 2026, AI Malaysia's chair still listed the institute as a priority; the sources reviewed do not identify its staff, budget or head. The ASEAN AI Safety Network secretariat is to be based in Kuala Lumpur, as announced in January 2026.",
       "region": {
         "id": "142",
         "name": "Asia",
@@ -9957,6 +9969,16 @@
       "identifier_source_ids": [
         "un-m49",
         "wikidata-jurisdiction-identifiers"
+      ],
+      "claims": [
+        {
+          "id": "claims-4b87da2b0944493aa1a925c2bdb5121f",
+          "kind": "fact",
+          "text": "The Ministry of Digital says the ASEAN AI Safety Network secretariat will be based in Kuala Lumpur.",
+          "source_ids": [
+            "my-digital-asean-secretariat-2026"
+          ]
+        }
       ]
     },
     {
@@ -19576,7 +19598,6 @@
       "name": "India",
       "kind": "state",
       "institute_id": "in-aisi",
-      "summary": "The November 2025 India AI Governance Guidelines describe the IndiaAI Safety Institute as recently established and propose testing and evaluation of AI systems for risks. A May 2025 expression of interest invited partner institutions to join it.",
       "next_check": {
         "date": "2027-01-15",
         "reason": "Whether a director has been appointed and evaluation work has started."
@@ -19602,7 +19623,13 @@
             "scope": "Date note: bound the guidelines' 'recently established' phrase to the record notes; no other field re-checked."
           }
         ],
-        "last_checked_basis": "historical_upper_bound"
+        "last_checked_basis": "historical_upper_bound",
+        "log": [
+          {
+            "date": "2026-10-19",
+            "text": "Read the January institute announcement, the India AI Governance Guidelines and the PIB statement of the guidelines' publication date for the establishment timeline."
+          }
+        ]
       },
       "source_ids": [
         "in-indiaai-partners-2025",
@@ -19637,14 +19664,14 @@
           "date": "2025",
           "event": "designated",
           "instrument": "administrative",
-          "description": "The January announcement describes an institute being set up; the November India AI Governance Guidelines call it recently established. These sources bound establishment to 2025; the exact founding date is not verified.",
+          "description": "The India AI Governance Guidelines describe the AI Safety Institute as recently established.",
           "source_ids": [
             "in-guidelines-2025",
             "in-pib-2025-01-30",
             "in-pib-guidelines-date-2025",
             "in-indiaai-partners-2025"
           ],
-          "short": "Guidelines describe institute as recently established; exact founding date remains unverified."
+          "short": "Guidelines describe institute as recently established."
         },
         {
           "id": "in-2025-01-commitment",
@@ -19676,8 +19703,7 @@
       "identifier_source_ids": [
         "un-m49",
         "wikidata-jurisdiction-identifiers"
-      ],
-      "notes": "The year 2025 is an inferred interval: the January 2025 announcement describes an institute being established, and the India AI Governance Guidelines, released on 5 November 2025, call it recently established. The founding day is not verified; the guidelines publication day is not used as the founding date. The 2025 date rests on the single phrase 'recently established' in the guidelines."
+      ]
     },
     {
       "id": "AE",
@@ -33475,7 +33501,7 @@
       "jurisdiction_id": "EU",
       "host": "European Commission",
       "legal_form": "unit_in_existing_body",
-      "mandate": "Enforces the AI Act rules for general-purpose AI models, including evaluating models with systemic risk.",
+      "mandate": "Is to conduct testing and evaluation of general-purpose AI models, request information and apply sanctions when necessary.",
       "website": "https://digital-strategy.ec.europa.eu/en/policies/ai-office",
       "check": {
         "last_checked": "2026-10-16",
@@ -33546,7 +33572,43 @@
         "log": [
           {
             "date": "2026-11-14",
-            "text": "Searched for a budget amount for the AI Office: the Commission decision establishing it, the Commission's own pages, answers to Parliament's written questions, the budgetary statement of the 2025 AI Act amendment package and the press. No Commission figure was found; in the material read, a starting budget of EUR 46.5m was found only in press reports attributing it to a Member of the European Parliament."
+            "text": "Searched for a budget amount for the AI Office: the Commission decision establishing it, the Commission's own pages, answers to Parliament's written questions, the budgetary statement of the 2025 AI Act amendment package and the press."
+          },
+          {
+            "date": "2026-10-24",
+            "text": "Read the Commission's answer to parliamentary question P-001672/2026 and the AI Office page and compared their staffing figures."
+          },
+          {
+            "date": "2026-10-17",
+            "text": "Read the first General-Purpose AI Code of Practice draft announcement for authorship and the AI Office's role in its publication."
+          },
+          {
+            "date": "2026-10-19",
+            "text": "Read the Commission decision establishing the European AI Office for the announcement-to-establishment interval."
+          },
+          {
+            "date": "2026-11-08",
+            "text": "Read POLITICO's reports of 31 July 2026 and 6 March 2024 for staffing, recruitment and budget figures for the AI Office and its units."
+          },
+          {
+            "date": "2026-11-08",
+            "text": "Read the AI Office's general-purpose AI safety tender announcement and EC-CNECT/2025/OP/0032 specifications for funding, lot values and contract durations."
+          },
+          {
+            "date": "2026-10-19",
+            "text": "Searched in English for ENISA's relation to the AI Office; read the ENISA webinar, About, opinion and programming material and searched the Cyber AI Strategy web and PDF copies."
+          },
+          {
+            "date": "2026-10-21",
+            "text": "Searched for evaluations of named provider models by the AI Office and for published evaluations by its contractors."
+          },
+          {
+            "date": "2026-10-21",
+            "text": "Searched for use of the model-access power and for developer access given to the AI Office, including access for its evaluation contractors."
+          },
+          {
+            "date": "2026-10-21",
+            "text": "Read the general-purpose AI Code of Practice material for an access agreement."
           }
         ],
         "functions": {
@@ -33595,14 +33657,15 @@
         "eu-ai-office-tender-gpai-2025",
         "eu-tender-op-0032-specifications",
         "eu-politico-tudorache-2024",
-        "r5-eu-ai-act-article74"
+        "r5-eu-ai-act-article74",
+        "eu-office-structure-2024"
       ],
       "staff": [
         {
           "total": 140,
           "total_qualifier": "at_least",
           "as_of": "2026-06-03",
-          "description": "More than 140 staff, including over 40 in the AI safety unit, most of them with technical profiles (Commission answer to parliamentary question P-001672/2026). The AI Office's own page (updated 8 September 2026) gives more than 125 staff; the answer to Parliament is kept as the more specific source.",
+          "description": "The Commission reports that the AI Office employs more than 140 staff, including over 40 in its AI safety unit, most of whom have technical profiles, including in cybersecurity.",
           "source_ids": [
             "eu-pq-p001672-2026",
             "eu-aioffice"
@@ -33716,7 +33779,6 @@
           "id": "agreements-8ca5744acde3539a888e75c7d1c28dcb"
         }
       ],
-      "notes": "The first General-Purpose AI Code of Practice draft is excluded from the output catalogue: independent experts drafted it and the AI Office published it as facilitator. This does not meet the institute-authorship or own-work credit rule. The announcement-to-establishment interval counts from the Commission decision of 24 January 2024, the first government act on the Office; earlier announcements of the AI Act's political agreement are not counted. POLITICO reported on 31 July 2026 that the Commission was hiring contract agents for two units of the Office, one for AI regulation and compliance and one for the risks of cutting-edge models, which had a combined staff of 71, and that it expected 40 jobs to open in the two units during 2027; this press report does not change the staff figure. The Office's call for tenders EC-CNECT/2025/OP/0032 of 10 July 2025 for technical support on general-purpose AI safety has a total budget of EUR 9m from the Digital Europe Programme, in six lots with maximum values of EUR 1.08m to EUR 2m and durations of 24 or 36 months. This is a procurement ceiling, not a funding record. POLITICO reported on 6 March 2024 that the MEP Dragoș Tudorache, citing conversations with Commission officials, said the Office's starting budget would be EUR 46.5m; a Commission spokesperson said its funding would be reallocated from the Digital Europe Programme but declined to give specifics. This press report is not a funding record. The same report said that a Commission spokesperson had put the Office's planned total staff at 98, two of them working at the European Data Protection Supervisor, with 18 coming from other Commission units and 80 hired externally as contract staff or seconded national experts; this press report does not change the staff figure.",
       "head": {
         "state": "stated",
         "person_id": "people-ff3044c04c6d5bc490489df29a84f83a",
@@ -33769,8 +33831,7 @@
               "eu-decision-oj"
             ]
           }
-        ],
-        "notes": "Cyber agency searched: ENISA, 2026-10-19 (en); found. ENISA programme explicitly lists EC AI Office among Partners. Six cyber-search fetches reached the stop rule; two 2026 strategy responses unusable. No bilateral signed instrument claimed. Count includes multipurpose sources; exact source IDs: eu-enisa-webinar, eu-enisa-about, eu-enisa-opinion, eu-cyber-ai-strategy, eu-enisa-spd-2026, eu-cyber-ai-strategy-pdf."
+        ]
       },
       "testing_capacity": {
         "modes": [
@@ -33790,10 +33851,11 @@
             "named_as": "AI Office"
           }
         ],
-        "notes": "Testing reported, 2025-07-17: the AI Office ran the agentic evaluations for the cybersecurity strand of the network's joint testing; no AI Office evaluation of a named provider model was found. External evaluation support was procured under EC-CNECT/2025/OP/0032: lots 1 to 5 (CBRN, cyber offence, loss of control, harmful manipulation and sociotechnical risks) include ad hoc evaluations of general-purpose AI models chosen by the AI Office, and lot 6 builds an agentic evaluation interface for it. The award notice (OJ S 249/2025, 26 December 2025) lists the contractors by lot: lot 1 FAR AI, SecureBio and SaferAI; lot 2 Capgemini Consulting, Wavestone and the Laboratoire national de métrologie et d'essais; lot 3 EquiStamp, Model Evaluation and Threat Research and Epoch Artificial Intelligence; lot 4 EquiStamp, Clarity AI Research and the Centre pour la Sécurité de l'IA; lot 5 Technopolis Consulting Group Belgium, WIK-Consult and TNO; lot 6 the French ministry responsible for the budget and the Laboratoire national de métrologie et d'essais. No completed contractor evaluation has been published.",
+        "notes": "The Commission reports that the AI Office ran agentic evaluations for the cybersecurity strand of the network's joint testing. It also reports that the AI Office launched a call for tenders for technical support in assessing and monitoring systemic risks of general-purpose AI models.",
         "source_ids": [
           "eu-joint-testing-2025",
-          "eu-ted-864574-2025"
+          "eu-ted-864574-2025",
+          "eu-ai-office-tender-gpai-2025"
         ]
       },
       "model_access": {
@@ -33807,7 +33869,7 @@
             "eu-ir-2026-1755"
           ]
         },
-        "notes": "Commission Implementing Regulation (EU) 2026/1755 sets the arrangements: the access 'shall be appropriate to the objectives of the evaluation' and may include access through APIs, internal access, source code and model weights. No use of the power was found, and no access given to the AI Office by a developer was found; the network joint testing used open-weight models. Signing the general-purpose AI Code of Practice is not counted as an access agreement. Whether the evaluation contractors get privileged access is unknown: the tender specifications make the contractor responsible for 'the API costs associated with the GPAI model' and say 'Where not feasible, the AI Office shall aim to provide the required access.'",
+        "notes": "The implementing regulation says requested access must fit the evaluation's objectives and may include APIs, internal access, source code, model weights, hosting infrastructure and access to inspect and modify the system state. The tender specifications make the contractor responsible for evaluation costs, including API costs.",
         "source_ids": [
           "eu-ir-2026-1755",
           "eu-tender-op-0032-specifications",
@@ -34077,7 +34139,6 @@
       "funding": [
         {
           "kind": "none_disclosed",
-          "description": "The decision assigns external statutory staff costs and operational expenditure to Digital Europe Programme appropriations.",
           "source_ids": [
             "eu-decision-oj"
           ],
@@ -34086,7 +34147,7 @@
           "funding_source": "supranational",
           "coverage": "whole_institute",
           "id": "funding-7507fd8b7767470bbecb06ab3f94cca2",
-          "notes": "The Commission decision of 24 January 2024 covers the human resources costs of the Office's external statutory staff by redeploying Digital Europe Programme administrative support appropriations, and its operational expenditure from the Programme's Specific Objective 2. This record supplies no amount."
+          "notes": "The founding decision assigns the costs of the Office's external statutory staff to redeployed Digital Europe Programme administrative support appropriations. It assigns operational expenditure to the programme's Specific Objective 2, Artificial Intelligence."
         }
       ]
     },
@@ -39925,7 +39986,6 @@
       "funding": [
         {
           "kind": "none_disclosed",
-          "description": "No budget for the institute published",
           "source_ids": [
             "my-digital-2026-07"
           ],
@@ -39933,8 +39993,7 @@
           "commitment": "not_applicable",
           "funding_source": "unknown",
           "id": "funding-e0bbc501458f5e98b1de48188017e135",
-          "coverage": "whole_institute",
-          "notes": "The absence of a published budget concerns MY-AISafe itself. This record supplies no amount."
+          "coverage": "whole_institute"
         },
         {
           "kind": "not_institute_specific",
@@ -39950,7 +40009,7 @@
             "r5-my-budget2027-ms",
             "r5-my-budget2027-en"
           ],
-          "notes": "Amount is approximate, expressed as nearly/almost in both official texts. No MY-AISafe earmark or share is stated. Retain the separate no institute-specific budget finding. The budget speech names AI Malaysia Berhad as recipient, with no MY-AISafe earmark. The proposal therefore belongs to the parent body, not the institute.",
+          "notes": "The budget speech says AI Malaysia Berhad will receive almost 15 million ringgit.",
           "annual_amount": 15000000,
           "annual_basis_code": "other",
           "annual_basis": "Nearly MYR 15m proposed for parent body AI Malaysia Berhad in the 2027 budget; approximate annual parent-body amount, not a MY-AISafe allocation or expenditure.",
@@ -40039,7 +40098,40 @@
             "certification",
             "sandbox"
           ]
-        }
+        },
+        "log": [
+          {
+            "date": "2026-10-19",
+            "text": "Searched in English and Malay for the institute's head; read its page and overview, AI Malaysia's home page and news list, the inaugural board statement of 11 September 2026, the launch release of 28 July 2026 in English and Malay, and the National AI Action Plan 2026-2030.",
+            "row": "head"
+          },
+          {
+            "date": "2026-10-19",
+            "text": "Searched in English and Malay for NACSA, CyberSecurity Malaysia and MyCERT relations with MY-AISafe; read the institute page and overview, AI Malaysia's home page, the English and Malay launch releases, the board statement, the National AI Action Plan and NACSA's Cyber Security Act page.",
+            "row": "national_partners"
+          },
+          {
+            "date": "2026-10-20",
+            "text": "Read CyberSecurity Malaysia's corporate overview and events pages, the institute overview and the action plan for cooperation with MY-AISafe.",
+            "row": "national_partners"
+          },
+          {
+            "date": "2026-10-21",
+            "text": "Read the institute overview and the action plan's E12 proposed actions for the testing remit."
+          },
+          {
+            "date": "2026-10-17",
+            "text": "Searched for joint network testing credited to Malaysia."
+          },
+          {
+            "date": "2026-10-21",
+            "text": "Searched for access events, legal powers or agreements providing access to or evaluation of frontier developers' models."
+          },
+          {
+            "date": "2026-11-14",
+            "text": "Searched AI Malaysia's site and careers page, Ministry of Digital releases, the Budget 2027 speech and Dewan Rakyat answers for institute staff and posts."
+          }
+        ]
       },
       "source_ids": [
         "my-digital-2026-07",
@@ -40054,7 +40146,6 @@
         "my-hansard-dr-2026-10-05",
         "my-aisafe-overview"
       ],
-      "notes": "AI Malaysia Berhad was itself created the same day from the National AI Office. The 2026-2030 National AI Action Plan does not mention the institute; it calls instead for a national 'AI Trust Function' to evaluate, monitor and respond to AI risks. In September 2026 AI Malaysia's chair still described setting up the institute as a priority in the works. This is the weakest 'established' record in the dataset: designation and mandate are stated in a primary government release, but no head, staff, budget or launch is published.\n\nThe ministry identifies AI Malaysia Berhad as a national AI entity under the Ministry of Digital and assigns it the national AI Safety Institute role. The institute's separate legal form and host classification are not specified in this announcement.",
       "website": "https://ai.gov.my/my-aisafe/",
       "mandate_short": "Evaluates, tests and red-teams AI systems; supports standards and regulation.",
       "legal_basis": {
@@ -40075,8 +40166,7 @@
       "identifier_notes": "No matching Wikidata institute item verified in label and official-name searches on 17 October 2026; null does not establish that no item exists.",
       "outputs": [],
       "head": {
-        "state": "not_published",
-        "notes": "Searched 19 Oct 2026 (en, ms): MY-AISafe page on ai.gov.my, the MY-AISafe overview PDF, the AI Malaysia home page and news list, the 11 Sep 2026 inaugural board statement (names the AI Malaysia board only: chair Aireen Omar; no MY-AISafe head and no AI Malaysia chief executive), the 28 Jul 2026 launch release (EN on digital.gov.my, MS PDF), the National AI Action Plan 2026-2030 (E12 AI Trust Function: only a recruitment plan for a \"specialised multidisciplinary team\"). No named director or head of MY-AISafe in any of them. The contact route is a generic AI Malaysia mailbox."
+        "state": "not_published"
       },
       "reports_to": {
         "state": "stated",
@@ -40115,12 +40205,11 @@
               "my-plan-2026"
             ]
           }
-        ],
-        "notes": "Cyber agency searched: NACSA (National Cyber Security Agency, under the National Security Council, Prime Minister's Department); CyberSecurity Malaysia as second, 2026-10-19 (en, ms); none found. No NACSA, CyberSecurity Malaysia or MyCERT link to MY-AISafe in any fetched document. Searched: MY-AISafe page and overview PDF, AI Malaysia home page, launch release (EN and MS), board statement, National AI Action Plan 2026-2030 (full text grep for NACSA, cyber, CERT: NACSA appears only in the abbreviations list, never in the text; the E12 row speaks generically of integrating \"cybersecurity, communications, financial and law enforcement agencies\" into a coordinated response framework), nacsa.gov.my Act 854 page (Cyber Security Act 2024, in force 26 Aug 2024; contact block: National Security Council, Prime Minister's Department; no AI wording). Not published, not absence of any link. CyberSecurity Malaysia corporate overview and events pages were fetched on 20 October 2026; neither named cooperation with MY-AISafe. The institute overview and action plan also named no such cooperation."
+        ]
       },
       "testing_capacity": {
         "state": "planned",
-        "notes": "The institute's overview, marked for reference only, uses the present tense ('MY-AISafe tests systems before release, then manages incidents and tracks emerging threats once they are in use'), but it describes a body launched on 28 July 2026 that was still in preparation in September 2026; this is read as its mandate, not as reported testing. The plan's E12 items sit under its proposed actions, which the overview says the institute delivers. No joint network testing credited to Malaysia was found.",
+        "notes": "AI Malaysia's overview says MY-AISafe tests systems before release using benchmarks, red teaming and evaluation reports.",
         "source_ids": [
           "my-plan-2026",
           "my-aisafe-overview",
@@ -40128,10 +40217,6 @@
         ]
       },
       "model_access": {
-        "notes": "No access event, legal power or agreement providing for access to, or evaluation of, the models of a developer that has a model in Epoch AI's frontier set was found. The AI Governance Bill was in public consultation from 10 to 31 July 2026, with tabling in Parliament targeted for 2027.",
-        "source_ids": [
-          "my-aisafe-overview"
-        ],
         "searches": [
           {
             "date": "2026-10-21",
@@ -40190,7 +40275,7 @@
           "my-plan-2026",
           "my-aisafe-overview"
         ],
-        "notes": "The adopted National AI Action Plan 2026-2030 (revision of 18 August 2026) provides under the AI Trust Function (E12) to 'Recruit and train a specialised multidisciplinary team, including AI risk analysts, adversarial machine learning engineers and incident response leads', and AI Malaysia's overview says MY-AISafe delivers that function. No source yet states staff of its own, a host body's staff or posts (searched: the AI Malaysia site and careers page, Ministry of Digital releases, the Budget 2027 speech and Dewan Rakyat answers); the overview says 'The institute draws on expertise from government, industry, academia and research institutions'."
+        "notes": "The action plan's AI Trust Function calls for recruiting and training a specialised multidisciplinary team, including AI risk analysts, adversarial machine learning engineers and incident response leads."
       },
       "claims": [
         {
@@ -40282,6 +40367,14 @@
           "source_ids": [
             "my-plan-2026"
           ]
+        },
+        {
+          "id": "claims-164e850681c94f5aaaa5702113060a48",
+          "kind": "fact",
+          "text": "Scoop reports that a Malaysia AI Safety Institute is among AI Malaysia Bhd's priorities.",
+          "source_ids": [
+            "my-scoop-2026-09"
+          ]
         }
       ]
     },
@@ -40298,7 +40391,6 @@
       "funding": [
         {
           "kind": "none_disclosed",
-          "description": "No dedicated budget published; the November 2025 governance guidelines recommend giving it adequate resources",
           "source_ids": [
             "in-guidelines-2025"
           ],
@@ -40307,7 +40399,7 @@
           "funding_source": "unknown",
           "id": "funding-6e6d3f865072561abd59e69a6074094e",
           "coverage": "whole_institute",
-          "notes": "The absence of a dedicated budget concerns India AISI as a whole. A recommendation to resource it does not supply a funding amount."
+          "notes": "The guidelines recommend providing adequate resources to the IndiaAI Safety Institute for research, draft standards, evaluation metrics, testing methods and benchmarks, collaboration and technical guidance."
         },
         {
           "kind": "not_institute_specific",
@@ -40326,7 +40418,7 @@
           "decision_date": "2024-03",
           "annual_basis": "Arithmetic mean of the five-year pillar outlay; the pillar is broader than the institute, and the figure is not expenditure.",
           "annual_basis_code": "period_mean",
-          "notes": "The answer gives the pillar outlay, not an institute allocation, and does not name the institute. IndiaAI places the institute within this pillar. The mission was launched in March 2024 with a five-year outlay; the answer does not give exact start and end dates, so no annual period is recorded.",
+          "notes": "IndiaAI says the institute was established as part of the IndiaAI Mission's Safe & Trusted AI pillar.",
           "coverage": "not_institute_specific",
           "id": "funding-c93e1a7d5b2f4e80a6d4b9c1e7f3a512"
         }
@@ -40408,7 +40500,43 @@
             "certification",
             "sandbox"
           ]
-        }
+        },
+        "log": [
+          {
+            "date": "2026-10-21",
+            "text": "Read the PIB account of the Safe & Trusted AI pillar's projects for credit to the institute."
+          },
+          {
+            "date": "2026-10-24",
+            "text": "Read the Hindustan Times explainer of 8 August 2026 for the institute's establishment."
+          },
+          {
+            "date": "2026-10-19",
+            "text": "Searched in English for an appointed director or named head of the IndiaAI Safety Institute and for CERT-In cooperation; read the Digital India Corporation vacancy page, the director advertisement and job description, the general-manager advertisement, the PIB release of 30 January 2025 and archived IndiaAI institute and call-for-partners pages.",
+            "row": "head"
+          },
+          {
+            "date": "2026-10-19",
+            "text": "Searched in English for CERT-In and NCIIPC cooperation with the IndiaAI Safety Institute; read archived CERT-In material, searched NCIIPC and MeitY's CERT-In page, and read archived IndiaAI institute and call-for-partners pages, the PIB release and the DIC job description.",
+            "row": "national_partners"
+          },
+          {
+            "date": "2026-10-21",
+            "text": "Read the India AI Governance Guidelines, the May 2025 call for partners and the PIB project account for the institute's testing remit and work credited to it."
+          },
+          {
+            "date": "2026-11-14",
+            "text": "Searched for joint network testing credited to India."
+          },
+          {
+            "date": "2026-11-07",
+            "text": "Searched for access events, legal powers or agreements providing access to or evaluation of frontier developers' models."
+          },
+          {
+            "date": "2026-10-19",
+            "text": "Read the India AI Governance Guidelines for the allocation of enforcement powers."
+          }
+        ]
       },
       "source_ids": [
         "in-indiaai-2025",
@@ -40427,8 +40555,7 @@
         "in-ht-explainer-2026-08",
         "in-pib-2026-07-27"
       ],
-      "notes": "Announced by the IT minister in January 2025; the November 2025 India AI Governance Guidelines call it recently established and propose testing and evaluation of AI systems for risks. The 9 May date concerns a call for partner institutions, not a verified designation date. The exact founding date remains unknown. Not a member of the international network. Projects funded under the IndiaAI Mission's safe and trusted AI pillar are mission grants, not output credited to the institute. A Hindustan Times explainer of 8 August 2026 says the institute is yet to be formally set up.",
-      "mandate_short": "Guidelines propose research, risk assessment, testing and draft standards.",
+      "mandate_short": "Should test and evaluate AI systems for risks, according to the guidelines.",
       "legal_basis": {
         "type": "administrative",
         "state": "in_force",
@@ -40450,8 +40577,7 @@
       "identifier_notes": "No matching Wikidata institute item verified in label and official-name searches on 17 October 2026; null does not establish that no item exists.",
       "outputs": [],
       "head": {
-        "state": "not_published",
-        "notes": "Searched 19 Oct 2026 (en): Digital India Corporation (DIC) vacancy page and the advertisement PDF (also hosted on meity.gov.in): post \"Director - IndiaAI Safety Institute\", one contractual position, advertised 19 May 2026, applications to 2 Jun 2026, reporting to COO-IndiaAI; PIB release of 30 Jan 2025 (announcement, no head); IndiaAI article and call-for-partners page (via Wayback, as indiaai.gov.in did not respond); three web searches (director appointed / head named / CERT-In cooperation) returned only the vacancy, its press coverage and the Wayback-archived IndiaAI pages. No appointee published. A separate DIC advertisement for a General Manager, Safe and Trusted AI pillar (held in-dic-gm-2026, re-fetched) mentions supporting build-out of the Institute; not a head."
+        "state": "not_published"
       },
       "reports_to": {
         "state": "stated",
@@ -40462,12 +40588,11 @@
         ]
       },
       "national_partners": {
-        "state": "not_published",
-        "notes": "Cyber agency searched: CERT-In (NCIIPC as second), 2026-10-19 (en); none found. No CERT-In or NCIIPC link to the IndiaAI Safety Institute in any fetched document. Access: cert-in.org.in and nciipc.gov.in did not respond; read through Wayback: CERT-In capture of 13 Oct 2026 is a frameset, read via the fw_ frame URL (home page; text \"CERT-In has been designated to serve as the national agency\" for cyber security under IT Amendment Act 2008, \"Directions ... under Section 70B\"), NCIIPC capture of 23 Mar 2026 is an Airtel court-order block page (no content). One r.jina.ai fetch of meity.gov.in/content/cert-in returned only the path (page is a JS shell; direct curl also an empty Next.js shell): flagged, no quote taken. Other fetches: IndiaAI call-for-partners and Institute articles (Wayback), PIB release, DIC job description. Recorded as not published; CERT-In status as national agency is held in the Wayback frame text only."
+        "state": "not_published"
       },
       "testing_capacity": {
         "state": "planned",
-        "notes": "The guidelines' section on the institute is recommendatory ('should'): a published government document setting a future task. The May 2025 call says 'The various IndiaAI Safety Institute Cells will function as decentralised capacity of the IndiaAI Safety Institute, executing the assigned technical mandate', but names no partner and assigns no testing. The institute 'oversees the implementation of projects selected under the two rounds of Expressions of Interest (EoIs) under the Safe & Trusted AI pillar', which is oversight of grant projects, not testing for the institute. India is not a member of the international network, so no joint testing is credited.",
+        "notes": "The guidelines say AISI should test and evaluate AI systems for risks.",
         "source_ids": [
           "in-guidelines-2025",
           "in-indiaai-partners-2025",
@@ -40475,10 +40600,6 @@
         ]
       },
       "model_access": {
-        "notes": "No access event, legal power or agreement providing for access to, or evaluation of, the models of a developer that has a model in Epoch AI's frontier set was found. India has no AI statute; the guidelines leave enforcement with sector regulators ('while sector regulators continue to exercise enforcement powers').",
-        "source_ids": [
-          "in-guidelines-2025"
-        ],
         "searches": [
           {
             "date": "2026-10-21",
@@ -44018,23 +44139,6 @@
             ]
           ],
           "accessed": "2026-10-19"
-        },
-        {
-          "text": "The AI Office employs more than 125 staff",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "eu-ai-office"
-              },
-              "staff",
-              {
-                "id": "staff-2e8b5d0c7a4f4e19b6c3d8a1f05e7b92"
-              },
-              "description"
-            ]
-          ],
-          "accessed": "2026-10-24"
         },
         {
           "text": "The AI Office also oversees the AI Pact, which allows businesses to engage with the Commission and other stakeholders to share best practices and join activities.",
@@ -49978,13 +50082,6 @@
               {
                 "id": "MY"
               },
-              "summary"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "MY"
-              },
               "timeline",
               {
                 "id": "my-2026-07-28-designated"
@@ -50081,42 +50178,6 @@
                 "id": "my-aisafe"
               },
               "host"
-            ],
-            [
-              "institutes",
-              {
-                "id": "my-aisafe"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "MY"
-              },
-              "summary"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "MY"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-82a98300434f584c997273949537a132"
-              },
-              "name"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "MY"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-82a98300434f584c997273949537a132"
-              },
-              "role"
             ]
           ],
           "accessed": "2026-10-19"
@@ -50130,31 +50191,6 @@
                 "id": "my-aisafe"
               },
               "host"
-            ],
-            [
-              "institutes",
-              {
-                "id": "my-aisafe"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "MY"
-              },
-              "summary"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "MY"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-82a98300434f584c997273949537a132"
-              },
-              "role"
             ]
           ],
           "accessed": "2026-10-19"
@@ -50446,6 +50482,14 @@
               },
               "staffing_model",
               "code"
+            ],
+            [
+              "institutes",
+              {
+                "id": "my-aisafe"
+              },
+              "staffing_model",
+              "notes"
             ]
           ],
           "accessed": "2026-10-21"
@@ -50533,11 +50577,15 @@
           "text": "An AI Governance Bill and a Malaysia AI Safety Institute are the priorities of AI Malaysia Bhd",
           "supports": [
             [
-              "jurisdictions",
+              "institutes",
               {
-                "id": "MY"
+                "id": "my-aisafe"
               },
-              "notes"
+              "claims",
+              {
+                "id": "claims-164e850681c94f5aaaa5702113060a48"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-17"
@@ -51207,21 +51255,7 @@
       "archive_url": "https://web.archive.org/web/20260207005350/https://bernama.com/en/news.php?id=2513540",
       "language": "en",
       "origin": "MY",
-      "excerpts": [
-        {
-          "text": "The Secretariat of the ASEAN Artificial Intelligence (AI) Safety Network will be based in Kuala Lumpur",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "MY"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-10-17"
-        }
-      ],
+      "excerpts": [],
       "snapshot": {
         "retrieved": "2026-10-17T14:20:07Z",
         "sha256": "c5421e94313342aa26f6023f6e5d99b89f3409ce0c81bd2c4d01491f9e471f35",
@@ -52535,31 +52569,6 @@
                 "id": "in-2025-designated"
               },
               "event"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "IN"
-              },
-              "summary"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "IN"
-              },
-              "timeline",
-              {
-                "id": "in-2025-designated"
-              },
-              "description"
-            ],
-            [
-              "institutes",
-              {
-                "id": "in-aisi"
-              },
-              "mandate_short"
             ]
           ],
           "accessed": "2026-10-17"
@@ -52573,19 +52582,6 @@
                 "id": "in-aisi"
               },
               "name"
-            ]
-          ],
-          "accessed": "2026-10-17"
-        },
-        {
-          "text": "The AISI can operate on a hub-and-spoke model",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "IN"
-              },
-              "summary"
             ]
           ],
           "accessed": "2026-10-17"
@@ -52630,7 +52626,7 @@
               {
                 "id": "in-2025-designated"
               },
-              "description"
+              "date"
             ],
             [
               "jurisdictions",
@@ -52641,21 +52637,7 @@
               {
                 "id": "in-2025-designated"
               },
-              "date"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "IN"
-              },
-              "summary"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "IN"
-              },
-              "notes"
+              "description"
             ]
           ]
         },
@@ -52669,28 +52651,7 @@
               {
                 "id": "in-aisi"
               },
-              "mandate_short"
-            ],
-            [
-              "institutes",
-              {
-                "id": "in-aisi"
-              },
               "mandate"
-            ],
-            [
-              "institutes",
-              {
-                "id": "in-aisi"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "IN"
-              },
-              "summary"
             ],
             [
               "institutes",
@@ -52721,12 +52682,7 @@
                 "id": "claims-ccfdba5cb8ef48dea4f5c32de099a15b"
               },
               "text"
-            ]
-          ]
-        },
-        {
-          "text": "Develop draft guidelines, codes, standards, respective evaluation metrics and testing frameworks in collaboration with relevant agencies and sectoral regulators.",
-          "supports": [
+            ],
             [
               "institutes",
               {
@@ -52734,6 +52690,19 @@
               },
               "mandate_short"
             ],
+            [
+              "institutes",
+              {
+                "id": "in-aisi"
+              },
+              "testing_capacity",
+              "notes"
+            ]
+          ]
+        },
+        {
+          "text": "Develop draft guidelines, codes, standards, respective evaluation metrics and testing frameworks in collaboration with relevant agencies and sectoral regulators.",
+          "supports": [
             [
               "institutes",
               {
@@ -52792,6 +52761,17 @@
                 "id": "claims-cd4e3c781bb8419aa01f547962211a18"
               },
               "text"
+            ],
+            [
+              "institutes",
+              {
+                "id": "in-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-6e6d3f865072561abd59e69a6074094e"
+              },
+              "notes"
             ]
           ],
           "accessed": "2026-10-17"
@@ -53324,17 +53304,6 @@
               {
                 "id": "funding-c93e1a7d5b2f4e80a6d4b9c1e7f3a512"
               },
-              "notes"
-            ],
-            [
-              "institutes",
-              {
-                "id": "in-aisi"
-              },
-              "funding",
-              {
-                "id": "funding-c93e1a7d5b2f4e80a6d4b9c1e7f3a512"
-              },
               "coverage"
             ],
             [
@@ -53347,6 +53316,17 @@
                 "id": "funding-c93e1a7d5b2f4e80a6d4b9c1e7f3a512"
               },
               "annual_basis"
+            ],
+            [
+              "institutes",
+              {
+                "id": "in-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-c93e1a7d5b2f4e80a6d4b9c1e7f3a512"
+              },
+              "notes"
             ]
           ],
           "accessed": "2026-10-17"
@@ -54828,6 +54808,14 @@
                 "id": "claims-d2a39520239642d5bf05275cd06a7ea5"
               },
               "text"
+            ],
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "testing_capacity",
+              "notes"
             ]
           ],
           "accessed": "2026-10-17"
@@ -64715,17 +64703,6 @@
               {
                 "id": "in-2025-designated"
               },
-              "description"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "IN"
-              },
-              "timeline",
-              {
-                "id": "in-2025-designated"
-              },
               "date"
             ]
           ],
@@ -64742,17 +64719,6 @@
               "timeline",
               {
                 "id": "in-2025-01-commitment"
-              },
-              "description"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "IN"
-              },
-              "timeline",
-              {
-                "id": "in-2025-designated"
               },
               "description"
             ]
@@ -65289,19 +65255,6 @@
           "accessed": "2026-10-17"
         },
         {
-          "text": "general-purpose AI models",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "EU"
-              },
-              "summary"
-            ]
-          ],
-          "accessed": "2026-10-17"
-        },
-        {
           "text": "The European Artificial Intelligence Office (the ‘Office’) is established.",
           "accessed": "2026-10-17",
           "url": "https://r.jina.ai/https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=OJ:C_202401459",
@@ -65480,17 +65433,6 @@
               {
                 "id": "funding-7507fd8b7767470bbecb06ab3f94cca2"
               },
-              "description"
-            ],
-            [
-              "institutes",
-              {
-                "id": "eu-ai-office"
-              },
-              "funding",
-              {
-                "id": "funding-7507fd8b7767470bbecb06ab3f94cca2"
-              },
               "notes"
             ]
           ],
@@ -65499,17 +65441,6 @@
         {
           "text": "Operational expenditure of the Office shall be covered by the financial resources allocated to Specific Objective 2 'Artificial Intelligence' of the Digital Europe Programme.",
           "supports": [
-            [
-              "institutes",
-              {
-                "id": "eu-ai-office"
-              },
-              "funding",
-              {
-                "id": "funding-7507fd8b7767470bbecb06ab3f94cca2"
-              },
-              "description"
-            ],
             [
               "institutes",
               {
@@ -67286,7 +67217,11 @@
               {
                 "id": "MY"
               },
-              "notes"
+              "claims",
+              {
+                "id": "claims-4b87da2b0944493aa1a925c2bdb5121f"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-17"
@@ -70768,6 +70703,13 @@
                 "id": "claims-e9326b90cca642e88a8cabbb3bbffe7b"
               },
               "text"
+            ],
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "mandate"
             ]
           ],
           "anchors": [
@@ -89278,30 +89220,6 @@
                 "id": "in-2025-designated"
               },
               "date"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "IN"
-              },
-              "timeline",
-              {
-                "id": "in-2025-designated"
-              },
-              "description"
-            ]
-          ],
-          "accessed": "2026-10-17"
-        },
-        {
-          "text": "The India AI Governance Guidelines were released on 5 November 2025.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "IN"
-              },
-              "notes"
             ]
           ],
           "accessed": "2026-10-17"
@@ -93631,32 +93549,7 @@
       "published": "2024-11-14",
       "language": "en",
       "origin": "EU",
-      "excerpts": [
-        {
-          "text": "The first draft of the Code was prepared by independent experts",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "eu-ai-office"
-              },
-              "notes"
-            ]
-          ]
-        },
-        {
-          "text": "As facilitator of the Code drawing-up, the European AI Office publishes the draft today.",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "eu-ai-office"
-              },
-              "notes"
-            ]
-          ]
-        }
-      ],
+      "excerpts": [],
       "snapshot": {
         "retrieved": "2026-10-19T00:10:56Z",
         "sha256": "8d2dc10c71e60d89528c519eaea4c61674711cf712d24617d64082ffb7c14d67",
@@ -94110,17 +94003,6 @@
                 "id": "funding-a911e70079da5c01af610ef8ccf3e001"
               },
               "coverage"
-            ],
-            [
-              "institutes",
-              {
-                "id": "my-aisafe"
-              },
-              "funding",
-              {
-                "id": "funding-a911e70079da5c01af610ef8ccf3e001"
-              },
-              "notes"
             ]
           ],
           "gloss": "AI Malaysia Berhad receives nearly 15 million ringgit."
@@ -101370,6 +101252,14 @@
                 "id": "claims-90f0a690e6a244b2a1831dee395313c6"
               },
               "text"
+            ],
+            [
+              "institutes",
+              {
+                "id": "my-aisafe"
+              },
+              "testing_capacity",
+              "notes"
             ]
           ],
           "accessed": "2026-10-19"
@@ -107212,82 +107102,18 @@
           "accessed": "2026-10-21"
         },
         {
-          "text": "The volumes/values of the purchases for each lot over the total duration of the contract are:",
+          "text": "The contractor is responsible for any costs associated with the requested evaluation, including but not limited to, the API costs associated with the GPAI model.",
           "supports": [
             [
               "institutes",
               {
                 "id": "eu-ai-office"
               },
+              "model_access",
               "notes"
             ]
           ],
-          "accessed": "2026-11-08"
-        },
-        {
-          "text": "Lot 2 - Cyber Offence Risk Modelling and Evaluation 2,000,000€",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "eu-ai-office"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-11-08"
-        },
-        {
-          "text": "Lot 6 - Agentic Evaluation Interface 1,080,000€",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "eu-ai-office"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-11-08"
-        },
-        {
-          "text": "Lot 1 - CBRN Risk Modelling and Evaluation 36 months",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "eu-ai-office"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-11-08"
-        },
-        {
-          "text": "Lot 6 - Agentic Evaluation Interface 24 months",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "eu-ai-office"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-11-08"
-        },
-        {
-          "text": "Lot Maximum value",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "eu-ai-office"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-11-08"
+          "accessed": "2026-10-21"
         }
       ],
       "snapshot": {
@@ -107448,6 +107274,20 @@
               "model_access",
               "legal_power",
               "conditions"
+            ]
+          ],
+          "accessed": "2026-11-10"
+        },
+        {
+          "text": "The access requested shall be appropriate to the objectives of the evaluation. Such access may include access through application programming interfaces (‘APIs’), internal access, access to source code, access to model weights, access to the infrastructure used for hosting the general-purpose AI model, access to inspect and modify the system state during interaction with the model.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "model_access",
+              "notes"
             ]
           ],
           "accessed": "2026-11-10"
@@ -108088,19 +107928,19 @@
               {
                 "id": "eu-ai-office"
               },
-              "staff",
-              {
-                "id": "staff-2e8b5d0c7a4f4e19b6c3d8a1f05e7b92"
-              },
-              "description"
+              "staffing_model",
+              "code"
             ],
             [
               "institutes",
               {
                 "id": "eu-ai-office"
               },
-              "staffing_model",
-              "code"
+              "staff",
+              {
+                "id": "staff-2e8b5d0c7a4f4e19b6c3d8a1f05e7b92"
+              },
+              "description"
             ]
           ],
           "accessed": "2026-10-21"
@@ -111379,17 +111219,6 @@
                 "id": "funding-c93e1a7d5b2f4e80a6d4b9c1e7f3a512"
               },
               "commitment"
-            ],
-            [
-              "institutes",
-              {
-                "id": "in-aisi"
-              },
-              "funding",
-              {
-                "id": "funding-c93e1a7d5b2f4e80a6d4b9c1e7f3a512"
-              },
-              "notes"
             ]
           ],
           "accessed": "2026-10-24"
@@ -112900,21 +112729,7 @@
       "published": "2026-08-08",
       "language": "en",
       "origin": "IN",
-      "excerpts": [
-        {
-          "text": "The Ministry of Electronics and Information Technology (MeitY) held a first consultation in October 2024 on establishing an Indian AI Safety Institute along the UK and US lines. That body is yet to be formally set up.",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "in-aisi"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-10-24"
-        }
-      ],
+      "excerpts": [],
       "accessed": "2026-10-24",
       "snapshot": {
         "retrieved": "2026-10-24T17:49:33Z",
@@ -117273,47 +117088,7 @@
       "language": "en",
       "origin": "BE",
       "access_note": "The site refuses automated requests (HTTP 403); the text was read through https://r.jina.ai/ on 8 November 2026, with the Published Time metadata header.",
-      "excerpts": [
-        {
-          "text": "The EU's executive confirmed Friday that it is seeking contract agents for two units within the two-year-old Artificial Intelligence Office",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "eu-ai-office"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-11-08"
-        },
-        {
-          "text": "One of the units seeking staffing is in charge of AI regulation and compliance, while another is specifically focused on policing how cutting-edge AI models handle risks such as cybersecurity attacks or loss of control.",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "eu-ai-office"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-11-08"
-        },
-        {
-          "text": "Both units currently have a combined staff of 71 people. The Commission expects 40 jobs to open up in both units over the course of 2027.",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "eu-ai-office"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-11-08"
-        }
-      ],
+      "excerpts": [],
       "snapshot": {
         "retrieved": "2026-11-08T08:06:31Z",
         "sha256": "71354739830bba2ef3714d01ba390ae679008905cfd6295fafb079c23c5bfc0d",
@@ -117341,32 +117116,7 @@
               {
                 "id": "eu-ai-office"
               },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-11-08"
-        },
-        {
-          "text": "This project will be funded under the Digital Europe Programme, with a total budget of €9 million",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "eu-ai-office"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-11-08"
-        },
-        {
-          "text": "The call is divided into 6 lots",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "eu-ai-office"
-              },
+              "testing_capacity",
               "notes"
             ]
           ],
@@ -117770,73 +117520,7 @@
       "language": "en",
       "origin": "BE",
       "access_note": "The site refuses automated requests (HTTP 403); the text was read through https://r.jina.ai/ on 8 November 2026, with the Published Time metadata header.",
-      "excerpts": [
-        {
-          "text": "Tudorache, based on conversations with Commission officials, said the AI Office’s starting budget will be €46.5 million",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "eu-ai-office"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-11-08"
-        },
-        {
-          "text": "Commission spokesperson Bahrke said that the funding for the AI Office would be reallocated from the EU tech-funding initiative Digital Europe Programme, but declined to give specifics about the budget.",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "eu-ai-office"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-11-08"
-        },
-        {
-          "text": "Commission spokesperson Johannes Bahrke said its total staff would number 98 people",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "eu-ai-office"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-11-08"
-        },
-        {
-          "text": "with two working out of the EU’s privacy regulator, the European Data Protection Supervisor.",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "eu-ai-office"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-11-08"
-        },
-        {
-          "text": "Of those 98, 18 people will come from other Commission units and 80 will be hired externally, either as fixed-term contractors or as national experts dispatched from EU countries.",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "eu-ai-office"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-11-08"
-        }
-      ],
+      "excerpts": [],
       "snapshot": {
         "retrieved": "2026-11-08T08:28:15Z",
         "sha256": "05d0f4832bead88d7da3c51a3ac1f49743728ab13060cff5c60eca2e05b83a2d",
@@ -119487,74 +119171,6 @@
       "access_note": "Video page of the Commission's midday briefing; the quotations are from its transcript: a journalist's question and the spokesperson's answers.",
       "excerpts": [
         {
-          "text": "ENISA's recently unveiled access to Anthropics Mythos model",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "EU"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-37c9ea7f5e1b74ab17d6fcc2295fb100"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-11-10"
-        },
-        {
-          "text": "we had constructive engagement with a company like Anthropic and we needed of course to put in place appropriate safeguards and terms and conditions for a safe access that has now been achieved and this materialized in us having now official access.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "EU"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-37c9ea7f5e1b74ab17d6fcc2295fb100"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-11-10"
-        },
-        {
-          "text": "we're focusing on 5 and that one now which we're currently testing",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "EU"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-37c9ea7f5e1b74ab17d6fcc2295fb100"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-11-10"
-        },
-        {
-          "text": "our cybersecurity Agency is currently testing it",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "EU"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-37c9ea7f5e1b74ab17d6fcc2295fb100"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-11-10"
-        },
-        {
           "text": "The AI Act is fully enforced. It's not just a set of rules on paper anymore. The Commission has enforcement powers. We have already started to use them with the RFIs that were sent to several companies to make sure that they comply with their obligations.",
           "supports": [
             [
@@ -119596,25 +119212,7 @@
       "accessed": "2026-11-10",
       "language": "en",
       "origin": "NL",
-      "excerpts": [
-        {
-          "text": "more than three months from June, when the company agreed in principle to give ENISA access.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "EU"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-37c9ea7f5e1b74ab17d6fcc2295fb100"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-11-10"
-        }
-      ],
+      "excerpts": [],
       "snapshot": {
         "retrieved": "2026-11-10T19:13:06Z",
         "sha256": "868b4f919bd4dd8e68ff529c651ec15b11c7b1d62918db61c63c0453121bbbca",
@@ -119641,31 +119239,32 @@
               {
                 "id": "EU"
               },
-              "related_bodies",
+              "claims",
               {
-                "id": "related_bodies-37c9ea7f5e1b74ab17d6fcc2295fb100"
+                "id": "claims-cdaf24169fd04bb8a8b2b958d6de7acd"
               },
-              "role"
+              "text"
             ]
           ],
           "accessed": "2026-11-10"
         },
         {
-          "text": "ENISA does not have access to the latest version, Mythos 5.1",
+          "text": "European Commission spokesperson Thomas Regnier stated via email: “Following our constructive collaboration with Anthropic, we can confirm that the EU cybersecurity agency ENISA has been granted access to Mythos 5 and is now testing the model.”",
           "supports": [
             [
               "jurisdictions",
               {
                 "id": "EU"
               },
-              "related_bodies",
+              "claims",
               {
-                "id": "related_bodies-37c9ea7f5e1b74ab17d6fcc2295fb100"
+                "id": "claims-359d3772c5d34adaa7fca7626f6fcd0f"
               },
-              "role"
+              "text"
             ]
           ],
-          "accessed": "2026-11-10"
+          "accessed": "2026-11-10",
+          "url": "https://r.jina.ai/https://www.techzine.eu/news/security/144207/eu-cybersecurity-agency-gains-access-to-mythos-5-after-a-3-month-delay/"
         }
       ],
       "snapshot": {
