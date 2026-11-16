@@ -12,12 +12,12 @@ from scripts.check_page import GENERIC_PARTNER_HOW, PLURAL_PARTNER_HOW, expected
 PAGE = Path(__file__).resolve().parents[1] / "site/index.html"
 
 
-def partner_fold(items):
+def partner_fold(items, label="Partners"):
     source = PAGE.read_text()
     helper = source[
         source.index("  function partnersFold(") : source.index("  function recordSources(")
     ]
-    data = {"state": "stated", "items": items[:6], "fold_items": items}
+    data = {"state": "stated", "items": items if label == "Members" else items[:6], "fold_items": items}
     stub = """
 function el(tag, className, text) {
   return {tag, className, text, children: [], appendChild(child) { this.children.push(child); }};
@@ -25,15 +25,20 @@ function el(tag, className, text) {
 const document = {createTextNode: text => el("text", "", text)};
 const cite = (ids, label) => ({className: "cites", ids, label});
 """
-    script = stub + helper + "\nconst p = " + json.dumps(data) + """;
-const fold = partnersFold(p, cite);
+    script = stub + helper + "\nconst label = " + json.dumps(label) + ";\nconst p = " + json.dumps(data) + """;
+const fold = partnersFold(p, cite, label);
 const assert = require("node:assert/strict");
-assert.equal(partnersFold({state: "stated"}, cite), null);
-assert.equal(partnersFold({state: "stated", fold_items: []}, cite), null);
+assert.equal(partnersFold({state: "stated"}, cite, label), null);
+assert.equal(partnersFold({state: "stated", fold_items: []}, cite, label), null);
 for (const state of ["not_published", "not_applicable"]) {
-  assert.equal(partnersFold({state, fold_items: p.fold_items}, cite), null);
+  assert.equal(partnersFold({state, fold_items: p.fold_items}, cite, label), null);
 }
 const items = fold.children.find(child => child.tag === "ul").children;
+for (const item of items) {
+  for (const name of item.children.filter(child => child.className === "pname")) {
+    assert.equal(name.children.find(child => child.className === "cites").label, label);
+  }
+}
 console.log(JSON.stringify(items.map(item => ({
   names: item.children.filter(child => child.className === "pname").map(name => ({
     name: name.text, cited: name.children.find(child => child.className === "cites").ids
@@ -47,13 +52,14 @@ console.log(JSON.stringify(items.map(item => ({
     return json.loads(result.stdout)
 
 
-def test_partner_fold_renders_every_item_with_its_citations():
+@pytest.mark.parametrize("label", ["Members", "Partners"])
+def test_partner_fold_renders_every_item_with_its_citations(label):
     # Hand-worked eight-item order: the first six also appear on the card.
     items = [
         {"name": f"Body {n}", "how": f"Does task {n}.", "cited": [f"source-{n}"]}
         for n in range(8)
     ]
-    assert partner_fold(items) == [
+    assert partner_fold(items, label) == [
         {"names": [{"name": f"Body {n}", "cited": [f"source-{n}"]}], "how": f"does task {n}."}
         for n in range(8)
     ]
@@ -71,18 +77,39 @@ def test_partner_fold_renders_every_item_with_its_citations():
         ("Is named as a technical partner that the institute works with.", ""),
     ],
 )
-def test_partner_fold_groups_without_losing_name_citations(singular, plural):
+@pytest.mark.parametrize("label", ["Members", "Partners"])
+def test_partner_fold_groups_without_losing_name_citations(singular, plural, label):
     items = [
         {"name": "A", "how": singular, "cited": ["a-name", "a-how"]},
         {"name": "B", "how": "Does another task.", "cited": ["b"]},
         {"name": "C", "how": singular, "cited": ["c-name", "c-how"]},
     ]
-    assert partner_fold(items) == [
+    assert partner_fold(items, label) == [
         {"names": [{"name": "A", "cited": ["a-name", "a-how"]}, {"name": "C", "cited": ["c-name", "c-how"]}], "how": plural},
         {"names": [{"name": "B", "cited": ["b"]}], "how": "does another task."},
     ]
     # A singleton must retain the singular wording; generic claims remain names only.
-    assert partner_fold(items[:1])[0]["how"] == (singular[:1].lower() + singular[1:] if plural else "")
+    assert partner_fold(items[:1], label)[0]["how"] == (singular[:1].lower() + singular[1:] if plural else "")
+
+
+def test_partner_value_renders_a_tail_without_items():
+    source = PAGE.read_text()
+    helper = source[source.index("  function partnersValue(") : source.index("  function partnersFold(")]
+    script = """
+function el(tag, className, text) {
+  return {tag, className, text, children: [], appendChild(child) { this.children.push(child); }};
+}
+const separated = parts => parts;
+const missing = na => ({missing: true, na});
+""" + helper + """
+const assert = require("node:assert/strict");
+const value = partnersValue({state: "stated", items: [], tail: "cyber agency not published"});
+assert.equal(value.className, "partners");
+assert.deepEqual(value.children[0].map(part => [part.className, part.text]), [["partners-none", "cyber agency not published"]]);
+assert.equal(partnersValue({state: "not_published", items: []}).missing, true);
+assert.equal(partnersValue({state: "not_applicable", items: []}).na, true);
+"""
+    subprocess.run(["node", "-e", script], check=True, capture_output=True, text=True)
 
 
 def page_partner_maps():
@@ -548,7 +575,7 @@ def card_table_citation_gaps(data):
     ]
     card_start = source.index("  function instituteCard(")
     card_rows = source[
-        source.index("    if (inst) {", card_start) : source.index(
+        source.index("    function bodiesRow(", card_start) : source.index(
             "    var rest = recordSources(j)", card_start
         )
     ]
@@ -619,10 +646,10 @@ console.log(JSON.stringify(rows));
     assert result.returncode == 0, result.stderr
     rows = json.loads(result.stdout)
     fields = {row["field"] for row in rows}
-    # Head, Reports to and Partners appear only for institutes that have the fields (tests/test_rows.py).
+    # Members, Head, Reports to and Partners follow their presence rules (tests/test_rows.py).
     # Cards label the row "Status"; the table's column is "Status since".
     assert {"Institute", "Status", "Status since", "Form", "Mandate", "Finding", "Budget", "Staff"} <= fields <= {
-        "Institute", "Status", "Status since", "Form", "Mandate", "Finding", "Budget", "Staff", "Head", "Reports to", "Partners",
+        "Institute", "Status", "Status since", "Form", "Mandate", "Finding", "Budget", "Staff", "Members", "Head", "Reports to", "Partners",
     }
     sources = {item["id"] for item in data["sources"]}
     return [

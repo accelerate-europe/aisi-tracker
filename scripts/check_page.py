@@ -1156,7 +1156,7 @@ def check_origins(browser, base_url: str, dist: Path) -> list[str]:
 
 
 # Structural card field identities, independent of reader-facing labels.
-CARD_TRACKS = {"Institute": "2", "Status": "3", "Form": "4", "Head": "5", "Reports to": "6", "Partners": "7", "Mandate": "8", "Budget": "9", "Staff": "10", "Known activity": "11", "Related funding": "12", "Facts": "13"}
+CARD_TRACKS = {"Institute": "2", "Status": "3", "Form": "4", "Members": "5", "Head": "6", "Reports to": "7", "Partners": "8", "Mandate": "9", "Budget": "10", "Staff": "11", "Known activity": "12", "Related funding": "13", "Facts": "14"}
 # Displayed values with no supporting quotation yet, by (table column or card label, jurisdiction id).
 KNOWN_UNCITED = {}
 CITED_COLUMNS = ("inst", "since", "op", "budget", "staff", "net")  # Region and status: reference data and derived status
@@ -2512,7 +2512,7 @@ def check_activity_tooltip(page) -> list[str]:
     """Keyboard reaches the definition of "since"; the tip opens below the whole value, clear of the kind lines; Escape dismisses."""
     errors = []
     page.mouse.move(0, 0)  # a pointer left over the page would hover whatever scrolls under it
-    for where in ('.card .row[data-track="11"]', '#world-rows td[data-col="op"]'):
+    for where in (f'.card .row[data-track="{CARD_TRACKS["Known activity"]}"]', '#world-rows td[data-col="op"]'):
         mark = page.locator(f"{where} .smark.value:has(.activity-kind)").first
         if not mark.count() or not mark.is_visible():
             continue
@@ -2542,7 +2542,7 @@ def check_activity_width(page) -> list[str]:
         """() => {
       const table = document.querySelector('table.world'), hidden = table.classList.contains('hide-op'), errors = [];
       table.classList.remove('hide-op');
-      for (const n of document.querySelectorAll('[data-col="op"] .smark.value:not(.activity), [data-col="op"] .activity-clause, [data-col="op"] .activity-since, .card .row[data-track="11"] .smark.value:not(.activity), .card .row[data-track="11"] .activity-clause, .card .row[data-track="11"] .activity-since'))
+      for (const n of document.querySelectorAll('[data-col="op"] .smark.value:not(.activity), [data-col="op"] .activity-clause, [data-col="op"] .activity-since, .card .row[data-track="12"] .smark.value:not(.activity), .card .row[data-track="12"] .activity-clause, .card .row[data-track="12"] .activity-since'))
         if (new Set([...n.getClientRects()].map(r => Math.round(r.top))).size !== 1)  // fragments (text, glued citation) on one line share a top
           errors.push('Known activity breaks mid-phrase: ' + n.textContent.trim());
       table.classList.toggle('hide-op', hidden);
@@ -3283,9 +3283,9 @@ def check_figures_row(soup, data: dict) -> list[str]:
     missing = 0
     cards = Keyed(soup, ".card[data-j]")
     for jid in counted:
-        row = cards.one(jid, '.row[data-track="9"]')
+        row = cards.one(jid, f'.row[data-track="{CARD_TRACKS["Budget"]}"]')
         value_node = row.select_one(".v") if row else None
-        errors.extend(zero_match_errors("figures_row", f'.card[data-j="{jid}"] .row[data-track="9"] .v', int(value_node is not None)))
+        errors.extend(zero_match_errors("figures_row", f'.card[data-j="{jid}"] .row[data-track="{CARD_TRACKS["Budget"]}"] .v', int(value_node is not None)))
         value = value_node.get_text(" ", strip=True) if value_node else ""
         missing += value == MISSING_TEXT
     want = (f"{missing} of {len(counted)}", FIGURES_NO_BUDGET)
@@ -4213,11 +4213,11 @@ def check_card_grid(page) -> list[str]:
         + """
       // Three card shapes; structurally absent fields are omitted. Each field owns a fixed track so shapes stay aligned.
       const SHAPES = {
-        established: ['2', '3', '4', '8', '9', '10', '11'],  // Head, Reports to and Partners are optional here: check_leadership_rows holds them to the data
-        record: ['2', '3', '4', '8', '9', '10'],
-        none: ['3', '8'],
+        established: ['2', '3', '4', '9', '10', '11', '12'],  // Members, Head, Reports to and Partners are optional here: check_leadership_rows holds them to the data
+        record: ['2', '3', '4', '9', '10', '11'],
+        none: ['3', '9'],
       };
-      const OPTIONAL = ['12', '5', '6', '7', '13'];
+      const OPTIONAL = ['5', '6', '7', '8', '13', '14'];
       const errors = [];
       document.querySelectorAll('.cards:not(.minis)').forEach(grid => {
         const cards = [...grid.querySelectorAll('.card')], rows = [...grid.children];
@@ -4250,7 +4250,7 @@ def check_card_grid(page) -> list[str]:
             if (innerWidth <= 640 && getComputedStyle(card).display !== 'flex') errors.push(REPORT + 'phone card lost its flex stack');
             if (innerWidth > 640) {
               if (!getComputedStyle(card).gridTemplateRows.startsWith('subgrid')) errors.push(REPORT + 'card does not use row subgrid');
-              const placed = [[card.querySelector(':scope > .top'), 1, 'top'], [card.querySelector(':scope > .foot'), 14, 'footer']]
+              const placed = [[card.querySelector(':scope > .top'), 1, 'top'], [card.querySelector(':scope > .foot'), 15, 'footer']]
                 .concat(fieldRows.map((n, k) => [n, tracks[k], tracks[k]]));
               placed.forEach(([n, track, label]) => {
                 if (!n || getComputedStyle(n).gridRowStart !== String(track)) errors.push(REPORT + `${label} is not in its fixed track ${track}: ${card.id}`);
@@ -4258,8 +4258,8 @@ def check_card_grid(page) -> list[str]:
             }
           });
           if (innerWidth <= 640 || siblings.length < 2) return;
-          // Compare per track among the cards that fill it; Mandate and Finding share track 8.
-          for (const track of [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 'footer']) {
+          // Compare per track among the cards that fill it; Mandate and Finding share track 9.
+          for (const track of [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 'footer']) {
             for (const side of track === 'footer' ? ['.source-footer-line'] : ['.k', '.v']) {
               const ys = siblings.map(card => {
                 const row = track === 'footer' ? card.querySelector('.foot') : card.querySelector(`:scope > .row[data-track="${track}"]`);
@@ -4373,7 +4373,7 @@ def check_card_grid_edges(browser, base_url: str, data: dict) -> list[str]:
         finding = page.locator(f"#c-{without_institute['id'].lower()}")
         tracks = finding.locator(".row").evaluate_all("rows => rows.map(r => r.dataset.track)")
         if (
-            tracks != ["3", "8"]
+            tracks != [CARD_TRACKS["Status"], CARD_TRACKS["Mandate"]]  # Finding shares the Mandate track
             or [bool(text.strip()) for text in finding.locator(".row > .k").all_inner_texts()] != [True, True]  # one label per row
             # Dates in the value are joined by no-break spaces (nonbreakingDates), so the text is compared word by word.
             or finding.locator(".row")
@@ -7246,7 +7246,7 @@ def check_institute_names(html, data: dict) -> list[str]:
     return errors
 
 
-LEADERSHIP_ROWS = ("Head", "Reports to", "Partners")  # card labels, in card order, directly after Form
+LEADERSHIP_ROWS = ("Members", "Head", "Reports to", "Partners")  # card labels, in card order, directly after Form
 PARTNER_RELATIONS = ("member", "works_with", "planned")  # card order after the cyber agency
 CARD_PARTNERS = 6  # the card shows at most this many; the oracle's own copy of the cap
 MISSING_TEXT = "Not published"  # dataset.method/missing-values, leadership and reporting-line.
@@ -7307,20 +7307,29 @@ def expected_leadership(data: dict) -> dict[str, dict[str, tuple[str, list[str],
                     enumerate(partners["entries"]),
                     key=lambda pair: (not pair[1].get("cyber_agency"), PARTNER_RELATIONS.index(pair[1]["relation"])),
                 )
-                shown = entries[:CARD_PARTNERS]
-                texts = [
-                    f"{e.get('acronym') or e.get('name_en') or e['name']} ({e['what']}, {vocabularies['partner_relation'][e['relation']]['label']})"
-                    for _, e in shown
-                ]
-                hows = [
-                    (e.get("acronym") or e.get("name_en") or e["name"], e["how"],
-                     row_sources(data, n, [f"national_partners/entries/{k}/{field}" for field in ("name", "how")]))
-                    for k, e in entries
-                ]
-                cites = row_sources(data, n, [f"national_partners/entries/{k}/{field}" for k, _ in shown for field in ("name", "relation", "how", "cyber_agency", "what")])
-                if not any(e.get("cyber_agency") for e in partners["entries"]):
-                    texts.append(vocabularies["partner_cyber_none_published"])  # the tail is worded in the vocabulary only
-                rows["Partners"] = ("", texts, cites, hows)
+                members = [(k, e) for k, e in entries if e["relation"] == "member"]
+                others = [(k, e) for k, e in entries if e["relation"] != "member"]
+                has_cyber = any(e.get("cyber_agency") for _, e in entries)
+                for label, bodies in (("Members", members), ("Partners", others)):
+                    if (label == "Members" and not members) or (label == "Partners" and members and not others and has_cyber):
+                        continue
+                    shown = bodies if label == "Members" else bodies[:CARD_PARTNERS]
+                    texts = []
+                    for _, e in shown:
+                        name = e.get("acronym") or e.get("name_en") or e["name"]
+                        description = e["what"]
+                        if label == "Partners":
+                            description += ", " + vocabularies["partner_relation"][e["relation"]]["label"]
+                        texts.append(f"{name} ({description})")
+                    hows = [
+                        (e.get("acronym") or e.get("name_en") or e["name"], e["how"],
+                         row_sources(data, n, [f"national_partners/entries/{k}/{field}" for field in ("name", "how")]))
+                        for k, e in bodies
+                    ]
+                    cites = row_sources(data, n, [f"national_partners/entries/{k}/{field}" for k, _ in shown for field in ("name", "relation", "how", "cyber_agency", "what")])
+                    if label == "Partners" and not has_cyber:
+                        texts.append(vocabularies["partner_cyber_none_published"])  # the tail is worded in the vocabulary only
+                    rows[label] = ("", texts, cites, hows)
             else:
                 rows["Partners"] = ("NA" if partners["state"] == "not_applicable" else MISSING_TEXT, [], [], [])
         expected[institute["id"]] = rows
@@ -7448,11 +7457,11 @@ def check_euro_amounts(html, data: dict) -> list[str]:
 
 
 def check_leadership_rows(html, data: dict) -> list[str]:
-    """Head, Reports to and Partners: present with the data, in order after Form, with the stated words, order and citations.
+    """Members, Head, Reports to and Partners: match the data, in order after Form, with the stated words and citations.
 
     The rows are absent for an institute without the fields (the page does not change before the data lands) and present on
-    every card once any institute has them. Texts, partner order, labels and the muted tail are worked out here from the data
-    and its vocabularies, not read from the page's own selection.
+    every card once any institute has them, except Members and Partners follow their entry and tail rules. Texts, body order,
+    labels and the muted tail are worked out here from the data and its vocabularies, not the page's own selection.
     """
     soup = BeautifulSoup(html, "html.parser")
     expected = expected_leadership(data)
@@ -7465,8 +7474,9 @@ def check_leadership_rows(html, data: dict) -> list[str]:
         if card is None:
             continue  # an institute without a card is the card checks' concern
         rows = expected[institute["id"]]
-        if any_rows and set(rows) != set(LEADERSHIP_ROWS):
-            errors.append(f"{institute['id']}: data lacks {sorted(set(LEADERSHIP_ROWS) - set(rows))}; every institute needs all three rows once any has them")
+        missing_fields = {"head", "reports_to", "national_partners"} - institute.keys()
+        if any_rows and missing_fields:
+            errors.append(f"{institute['id']}: data lacks {sorted(missing_fields)}; every institute needs all three rows once any has them")
         tracks = [r.get("data-track") for r in card.select(":scope > .row")]
         shown = [track for track in tracks if track in {CARD_TRACKS[label] for label in LEADERSHIP_ROWS}]
         want = [label for label in LEADERSHIP_ROWS if label in rows]
@@ -7475,7 +7485,7 @@ def check_leadership_rows(html, data: dict) -> list[str]:
             errors.append(f"{jid}: card rows {shown} differ from the data's {wanted_tracks}")
             continue
         if want and ("4" not in tracks or tracks[tracks.index("4") + 1 : tracks.index("4") + 1 + len(want)] != wanted_tracks):
-            errors.append(report_line(f"{jid}: Head, Reports to and Partners must follow Form directly, in that order: {tracks}"))
+            errors.append(report_line(f"{jid}: Members, Head, Reports to and Partners must follow Form directly, in that order when present: {tracks}"))
         for label in want:
             text, items, cites, hows = rows[label]
             row = card.select_one(f':scope > .row[data-track="{CARD_TRACKS[label]}"]')
@@ -7487,22 +7497,22 @@ def check_leadership_rows(html, data: dict) -> list[str]:
             if label == "Reports to" and reports.get("state") == "stated" and reports.get("name_en"):
                 if not original_tip_matches(value.select_one(".original-text"), reports["name_en"], reports["name"]):
                     errors.append(f"{jid} Reports to: the English name must carry the original in a focusable tooltip")
-            if label == "Partners" and not text:
+            if label in ("Members", "Partners") and not text:
                 # The page keeps a citation with its last word by cloning the enclosing spans, so compare the line's text, not its elements.
                 clone = copy.copy(value)
                 for mark in clone.select(".cites, .meta-dot, details.partner-how"):
                     mark.decompose()
                 got = " ".join(clone.get_text().split())  # the line only: a how sentence on it would differ from the expected texts
                 if got != " ".join(items):
-                    errors.append(f"{jid} Partners: shows {got!r}, expected {' '.join(items)!r}")
+                    errors.append(f"{jid} {label}: shows {got!r}, expected {' '.join(items)!r}")
                 tail = " ".join("".join(n.get_text() for n in value.select(".partners-none")).split())
                 has_cyber = any(e.get("cyber_agency") for e in partners_entries(data, institute))
-                want_tail = "" if has_cyber else items[-1]
+                want_tail = data["dataset"]["vocabularies"]["partner_cyber_none_published"] if label == "Partners" and not has_cyber else ""
                 if tail != want_tail:
-                    errors.append(f"{jid} Partners: the muted tail reads {tail!r}, expected {want_tail or 'none'!r}")
+                    errors.append(f"{jid} {label}: the muted tail reads {tail!r}, expected {want_tail or 'none'!r}")
                 ids = sorted({a.get("data-source-id") for a in value.select(".cn") if a.find_parent("details", class_="partner-how") is None})
                 if ids != cites:
-                    errors.append(f"{jid} Partners: citations {ids}, expected {cites}")
+                    errors.append(f"{jid} {label}: citations {ids}, expected {cites}")
                 # Groups and names follow first occurrence in priority order; every name keeps its own sources.
                 folded = []
                 fold_cites = []
@@ -7527,21 +7537,23 @@ def check_leadership_rows(html, data: dict) -> list[str]:
                     elif len(members) > 1:
                         sentence = PLURAL_PARTNER_HOW.get(how, how)
                         if how not in PLURAL_PARTNER_HOW:
-                            errors.append(f"{jid} Partners: shared explanation needs explicit plural wording: {how!r}")
+                            errors.append(f"{jid} {label}: shared explanation needs explicit plural wording: {how!r}")
                     else:
                         sentence = how
                     want_fold.append(([name for name, _ in members], sentence[:1].lower() + sentence[1:]))
                     want_cites.extend(sorted(set(ids)) for _, ids in members)
                 if folded != want_fold:
-                    errors.append(f"{jid} Partners: fold-out shows {folded}, expected {want_fold}")
+                    errors.append(f"{jid} {label}: fold-out shows {folded}, expected {want_fold}")
                 if fold_cites != want_cites:
-                    errors.append(f"{jid} Partners: fold-out citations {fold_cites}, expected {want_cites}")
+                    errors.append(f"{jid} {label}: fold-out citations {fold_cites}, expected {want_cites}")
+                if len(value.select("details.partner-how")) != int(bool(hows)):
+                    errors.append(f"{jid} {label}: expected {'one fold-out' if hows else 'no fold-out'}")
                 fold = value.select_one("details.partner-how")
                 if fold is not None:
                     if any(a.find_parent("li") is None for a in fold.select(".cn")):
-                        errors.append(f"{jid} Partners: fold-out citation outside a partner item")
+                        errors.append(f"{jid} {label}: fold-out citation outside a partner item")
                     if fold.has_attr("open"):
-                        errors.append(f"{jid} Partners: the fold-out must start closed")
+                        errors.append(f"{jid} {label}: the fold-out must start closed")
                 continue
             clone = copy.copy(value)
             for mark in clone.select(".cites, .vh"):
@@ -8928,7 +8940,7 @@ def check_budget_output(html, data, expected=None):
             continue
         wanted = expected[identity]  # every institute: Funding and staff covers all of them (principle: Scope)
         card = cards.one(jid)
-        budget = card.select_one('.row[data-track="9"] .v') if card else None
+        budget = card.select_one(f'.row[data-track="{CARD_TRACKS["Budget"]}"] .v') if card else None
         table = world_rows.one(jid, '[data-col="budget"]')
         for view, node in (("card", budget), ("table", table)):
             if view == "table" and jurisdictions[jid].get("kind") == "supranational":
@@ -8944,7 +8956,7 @@ def check_budget_output(html, data, expected=None):
             if jid == "JP" and selected and selected.select_one(".budget-amount") and selected.select_one(".budget-amount").get_text(strip=True) != "~EUR 52m (JPY 8.8bn)":
                 errors.append("JP: Budget must show latest own JPY 8.8bn allocation, as ~EUR 52m (JPY 8.8bn)")
         if card and any(row.get("coverage") == "not_institute_specific" for row in institute.get("funding", [])):
-            if not card.select_one('.row[data-track="12"]'):
+            if not card.select_one(f'.row[data-track="{CARD_TRACKS["Related funding"]}"]'):
                 errors.append(f"{jid}: wider funding must use a separate Related funding line")
     return errors
 

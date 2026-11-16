@@ -204,7 +204,7 @@ def orientation(published: dict) -> list[tuple[str, str]]:
          "Not every amount is the AISI's own adopted budget. A figure can be another body's or a wider programme's money (`coverage`: not_institute_specific), "
          "only part of the budget (`coverage`: component) or proposed rather than adopted (`commitment`: proposed)."),
         ("Leadership and national partners",
-         "An AISI's head (`head`), the ministry-level body it reports to (`reports_to`) and the national bodies it works with (`national_partners`) each have a state: stated, not published or not applicable (`state`). "
+         "An AISI's head (`head`), the ministry-level body it reports to (`reports_to`) and the national bodies it is made up of or works with (`national_partners`) each have a state: stated, not published or not applicable (`state`). "
          "The head's name and title are in the AISI's list of named leaders, such as directors and their deputies (`people`, linked by `head.person_id`). "
          "Each partner's relation is member (a constituent of a federated AISI), works with, or planned (`relation`). "
          "Only the national cyber security agency, marked `cyber_agency`, is searched for at every AISI, so a missing partner of another kind does not mean there is none."),

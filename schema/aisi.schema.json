@@ -2189,6 +2189,39 @@
                       }
                     }
                   },
+                  "members": {
+                    "type": "object",
+                    "required": [
+                      "state",
+                      "cited"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "$ref": "#/$defs/row_state"
+                      },
+                      "cited": {
+                        "$ref": "#/$defs/source_ids"
+                      },
+                      "items": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/$defs/partner_row_item"
+                        },
+                        "description": "Every member body of a network of existing bodies (relation member), in card order: cyber agency first, then authored order; never capped."
+                      },
+                      "tail": {
+                        "type": "null"
+                      },
+                      "fold_items": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/$defs/partner_row_item"
+                        },
+                        "description": "The same members with name/how citations for the fold-out."
+                      }
+                    }
+                  },
                   "partners": {
                     "type": "object",
                     "required": [
@@ -2208,7 +2241,7 @@
                         "items": {
                           "$ref": "#/$defs/partner_row_item"
                         },
-                        "description": "At most six, in card order: cyber agency first, then member, works with, planned, then authored order."
+                        "description": "At most six, in card order: cyber agency first, then works with, planned, then authored order; members are in the Members row."
                       },
                       "tail": {
                         "type": [
@@ -2226,7 +2259,7 @@
                     }
                   }
                 },
-                "description": "Card rows Head, Reports to and Partners, present when the institute has the fields. Texts, order and labels are generated; partner order is cyber agency first, then relation (member, works with, planned), then authored order, and the card shows at most six."
+                "description": "Card rows Members, Head, Reports to and Partners, present when the institute has the fields. Texts, order and labels are generated. Members (only for a network of existing bodies) lists every partner entry with relation member; Partners lists the others, cyber agency first, then relation (works with, planned), then authored order, at most six, and is absent when members exist and no other entry or cyber search tail remains."
               },
               "intervals": {
                 "type": "object",
