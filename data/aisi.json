@@ -12992,14 +12992,13 @@
       "name": "Armenia",
       "kind": "state",
       "institute_id": null,
-      "summary": "No qualifying institute identified. The Ministry of High-Tech Industry's Virtual Institute of AI is a platform for researchers, start-ups and companies, with no evaluation mandate described.",
       "related_bodies": [
         {
           "name": "Virtual Institute of AI",
-          "role": "It links researchers and start-ups to mentoring, funding and cloud support as a Ministry of High-Tech Industry platform. No model-evaluation mandate was described.",
           "counts_as_aisi": false,
           "source_ids": [
-            "am-eu4digital-primary-proposal"
+            "am-eu4digital-primary-proposal",
+            "am-r4-ai-institute-homepage"
           ],
           "kind": "other",
           "id": "related_bodies-3d8ea1b564b95a1193712516f4512ac0"
@@ -13086,6 +13085,19 @@
       "identifier_source_ids": [
         "un-m49",
         "wikidata-jurisdiction-identifiers"
+      ],
+      "claims": [
+        {
+          "id": "claims-bf066637dcc143d6a0baa59245347ef8",
+          "kind": "function",
+          "code": "adoption",
+          "basis": "activity",
+          "body_id": "related_bodies-3d8ea1b564b95a1193712516f4512ac0",
+          "text": "The ministry says the AI Virtual Institute is an open innovation platform that supports technology enterprises and researchers in building growing technology companies.",
+          "source_ids": [
+            "am-r4-ai-institute-homepage"
+          ]
+        }
       ]
     },
     {
@@ -13093,19 +13105,7 @@
       "name": "Azerbaijan",
       "kind": "state",
       "institute_id": null,
-      "summary": "No qualifying institute identified. The 2025-2028 AI strategy tasks the special communications and information security service with analysing information-security risks of AI in state bodies, not evaluating AI models.",
-      "related_bodies": [
-        {
-          "name": "State Service for Special Communications and Information Security",
-          "role": "It is tasked by the AI strategy with analysing information-security risks of AI in state bodies; this is not model evaluation.",
-          "counts_as_aisi": false,
-          "source_ids": [
-            "az-techaz"
-          ],
-          "kind": "other",
-          "id": "related_bodies-a0ab98032aaa598eb83e904f3b012d82"
-        }
-      ],
+      "related_bodies": [],
       "next_check": {
         "date": "2027-01-15",
         "reason": "Routine re-check on a two-year rotation of states with no reported plans."
@@ -13184,6 +13184,19 @@
       "identifier_source_ids": [
         "un-m49",
         "wikidata-jurisdiction-identifiers"
+      ],
+      "claims": [
+        {
+          "id": "claims-40bc317e3f9741a5b8c6ee947bdc5c59",
+          "kind": "development",
+          "code": "public_body",
+          "text": "tasks the State Service for Special Communications and Information Security with analysing information-security risks in areas of AI use in state bodies and taking the necessary measures for AI-related information security in state bodies",
+          "act": "the President issued an order approving the AI Strategy for 2025–2028",
+          "date": "2025-03-19",
+          "source_ids": [
+            "az-techaz-primary-proposal"
+          ]
+        }
       ]
     },
     {
@@ -13416,7 +13429,6 @@
       "id": "GE",
       "name": "Georgia",
       "institute_id": null,
-      "summary": "No qualifying institute identified. In July 2026 the economy minister said the government is working on a national AI strategy and establishing the country's first AI research centre in Kutaisi. A Digital Governance Agency report of 20 October 2026 reports discussion of the process of developing the national AI strategy.",
       "next_check": {
         "date": "2027-03-31",
         "reason": "Adoption of the national AI strategy and the mandate of the Kutaisi AI research centre."
@@ -13478,14 +13490,19 @@
         "governance_source_ids": [
           "ge-dga-2026-10-20"
         ],
-        "governance_note": "The Digital Governance Agency's report of 20 October 2026 describes the development of the national AI strategy and planned AI-based advisory and self-service initiatives at the House of Justice. This is administrative AI governance, not a national institute to evaluate advanced models. It provides bounded primary governance context, not proof of absence or a complete national inventory."
+        "governance_note": "The Digital Governance Agency's report of 20 October 2026 describes the development of the national AI strategy and planned AI-based advisory and self-service initiatives at the House of Justice. This is administrative AI governance, not a national institute to evaluate advanced models. It provides bounded primary governance context, not proof of absence or a complete national inventory.",
+        "log": [
+          {
+            "date": "2026-10-17",
+            "text": "Read Imedi's account of the economy minister's statement and the PMCG study; searched for a government release of the statement."
+          }
+        ]
       },
       "source_ids": [
         "ge-dga-2026-10-20",
         "ge-imedi-digital-economy-2026",
         "ge-pmcg"
       ],
-      "notes": "The minister's statement was reported by Imedi (secondary) on 18 July 2026, from a meeting on global AI governance in Shanghai; no government release was found. A strategy or research centre would not count without a model-evaluation mandate. The earlier 2021 PMCG study is background only.",
       "region": {
         "id": "142",
         "name": "Asia",
@@ -13517,11 +13534,9 @@
       "id": "KG",
       "name": "Kyrgyzstan",
       "institute_id": null,
-      "summary": "No qualifying institute identified. The digital ministry plans a national AI centre (a lab and technology hub) and has drafted AI ethics and risk-assessment rules based on self-assessment, with no independent testing body.",
       "related_bodies": [
         {
           "name": "Planned national AI centre",
-          "role": "It is planned as a laboratory and technology hub, announced in February 2026 by the First Deputy Minister of Digital Development; no model-evaluation mandate was described.",
           "counts_as_aisi": false,
           "source_ids": [
             "kg-24kg-ai-centre"
@@ -13627,14 +13642,19 @@
         ],
         "independent_source_ids": [],
         "language_note": "The recorded ru query uses a national or official language selected for this country-specific check. Other national or official languages were not exhaustively searched. Search source_ids identify registered source URLs matched in the retrieved result set, which may include irrelevant hits. An empty list means no registered source URL was matched, not that the web response was empty. The earlier audit used independent_source_ids for substantive corroboration; governance_source_ids, where present, identifies the selected primary governance evidence. English queries were also run on 17 October 2026; the previously recorded national or official-language coverage and its limits are unchanged. On 24 October 2026 the record was searched again in English, Russian and Kyrgyz; the result links of each query were matched against registered sources in the same way.",
-        "independence_note": "Historical audit under the superseded two-independent-sources rule: Two substantively independent evidence origins were not established. Multiple pages from one owner, mirrors, reports of the same underlying announcement and general regional coverage are not counted as independent corroboration."
+        "independence_note": "Historical audit under the superseded two-independent-sources rule: Two substantively independent evidence origins were not established. Multiple pages from one owner, mirrors, reports of the same underlying announcement and general regional coverage are not counted as independent corroboration.",
+        "log": [
+          {
+            "date": "2026-10-17",
+            "text": "Read 24.kg reports of ministry statements and draft resolutions."
+          }
+        ]
       },
       "source_ids": [
         "kg-24kg-ai-centre",
         "kg-24kg-ai-ethics",
         "kg-24kg-ai-risk"
       ],
-      "notes": "Sources are press reports (24.kg) of ministry statements and draft resolutions; the government texts were not opened. The draft rules would require ethics assessment for government bodies and high-risk systems through self-assessment.",
       "region": {
         "id": "142",
         "name": "Asia",
@@ -13660,6 +13680,19 @@
       "identifier_source_ids": [
         "un-m49",
         "wikidata-jurisdiction-identifiers"
+      ],
+      "claims": [
+        {
+          "id": "claims-580ba0288c8b4010aea2f523bc3b1db4",
+          "kind": "function",
+          "code": "talent",
+          "basis": "mandate",
+          "body_id": "related_bodies-fdad2f5177b952f6a2fda4df12581b60",
+          "text": "24.kg reports the deputy digital minister's announcement that the planned national AI centre will provide a platform for training new personnel.",
+          "source_ids": [
+            "kg-24kg-ai-centre"
+          ]
+        }
       ]
     },
     {
@@ -14737,7 +14770,6 @@
       "id": "TJ",
       "name": "Tajikistan",
       "institute_id": null,
-      "summary": "No qualifying institute or commitment identified. The AI strategy covers economic adoption, regulation and coordination. A university Institute of Digital Technologies and Artificial Intelligence was created in March 2026 for specialist education; a regional AI centre in the IT Hub Dushanbe project is planned for research, model training and infrastructure. No mandate to evaluate advanced models for their capabilities or behaviour risks was found for either.",
       "next_check": {
         "date": "2028-10-15",
         "reason": "Routine re-check on a two-year rotation of states with no reported plans."
@@ -14797,7 +14829,17 @@
         "governance_source_ids": [
           "tj-recheck2-strategy-2040"
         ],
-        "governance_note": "The national AI strategy's institutional, coordination and standards provisions were retrieved; the teaching institute and regional centre are not established as evaluators of advanced models."
+        "governance_note": "The national AI strategy's institutional, coordination and standards provisions were retrieved; the teaching institute and regional centre are not established as evaluators of advanced models.",
+        "log": [
+          {
+            "date": "2026-10-17",
+            "text": "Read paragraphs 33 and 45–51 of the Russian AI strategy, the university's explanation of the creation decree and the Tajik official publication on the IT Hub groundbreaking."
+          },
+          {
+            "date": "2026-10-17",
+            "text": "Read the University of Innovation and Digital Technologies' English article on the proposed international day for safe AI; searched for an institute-specific safety study."
+          }
+        ]
       },
       "source_ids": [
         "tj-president-home",
@@ -14805,33 +14847,17 @@
         "tj-recheck2-teaching-institute",
         "tj-recheck2-regional-ai-centre"
       ],
-      "notes": "Read the Russian AI strategy institutional provisions (paragraphs 33 and 45-51), the university explanation of the 10 March 2026 creation decree, and the Tajik official publication on the 9 June 2026 IT Hub groundbreaking. The latter describes model training and regional research infrastructure, not evaluation of frontier-model risks. Also read the University of Innovation and Digital Technologies English article on the proposed international day for safe AI; it describes diplomacy and educational priorities, not an AISI. No institute-specific safety study found. The strategy copy includes its January 2025 amendment; it is not evidence that all listed institutional actions have been completed. Previous broad-search source retained.",
       "kind": "state",
       "status_confidence": "medium",
       "related_bodies": [
         {
           "name": "Institute of Digital Technologies and Artificial Intelligence, International University of Tourism and Entrepreneurship of Tajikistan",
-          "role": "It was established by government resolution on 10 March 2026 as a university educational institution for specialist training; no national mandate to evaluate the safety of advanced models was identified.",
           "counts_as_aisi": false,
           "source_ids": [
             "tj-recheck2-teaching-institute"
           ],
           "kind": "other",
           "id": "related_bodies-80e96e8fbff750a291e31aa275f2c8d1"
-        },
-        {
-          "name": "Regional Artificial Intelligence Centre, IT Hub Dushanbe (planned)",
-          "role": "The June 2026 official announcement describes research laboratories, specialist training, model training and data infrastructure; no mandate to evaluate advanced models for their capabilities or behaviour risks was identified.",
-          "counts_as_aisi": false,
-          "kind": "other",
-          "id": "related_bodies-4dcc643b7dc157aeb8415e2842419cbb"
-        },
-        {
-          "name": "Agency of Innovation and Digital Technologies under the President of Tajikistan",
-          "role": "The amended AI strategy identifies the agency as the public authority for digital technologies and the digital economy; general coordination and regulatory functions do not establish an AISI.",
-          "counts_as_aisi": false,
-          "kind": "other",
-          "id": "related_bodies-9c5fa69247965495b00e812f5907ffef"
         }
       ],
       "region": {
@@ -14857,13 +14883,36 @@
       "identifier_source_ids": [
         "un-m49",
         "wikidata-jurisdiction-identifiers"
+      ],
+      "claims": [
+        {
+          "id": "claims-69f1ade09c5d42c09e57b6e098d87fe7",
+          "kind": "function",
+          "code": "talent",
+          "basis": "mandate",
+          "body_id": "related_bodies-80e96e8fbff750a291e31aa275f2c8d1",
+          "text": "The university says the Institute of Digital Technologies and Artificial Intelligence was created to train highly qualified specialists with foreign-language skills and modern knowledge.",
+          "source_ids": [
+            "tj-recheck2-teaching-institute"
+          ]
+        },
+        {
+          "id": "claims-844232b106c7402f8ce11fa817a52f2c",
+          "kind": "development",
+          "code": "public_body",
+          "text": "create an Institute of Digital Technologies and AI within the university",
+          "act": "the President signed government resolutions on new public institutions at the International University of Tourism and Entrepreneurship",
+          "date": "2026-03-10",
+          "source_ids": [
+            "tj-recheck2-teaching-institute"
+          ]
+        }
       ]
     },
     {
       "id": "TM",
       "name": "Turkmenistan",
       "institute_id": null,
-      "summary": "No qualifying institute or commitment identified. The communications minister announced a planned AI Development/Competence Centre at TurkmenTelecom for applied research, training and digital priorities. A draft national AI strategy was reviewed with UNDP in May 2026. The announcements give the centre no mandate to evaluate advanced models for their capabilities or behaviour risks.",
       "next_check": {
         "date": "2028-11-15",
         "reason": "Routine re-check on a two-year rotation of states with no reported plans."
@@ -14926,7 +14975,13 @@
           "tm-recheck2-ai-strategy-workshop",
           "r4-tm-ai-legal-framework"
         ],
-        "governance_note": "The existing UNDP account describes draft national AI-strategy consultation. The newly retrieved state-agency release records presidential approval of work on AI-use rules, government responsibilities, standards and technical regulations. Neither retrieved account specifies a national institute evaluating advanced models for capabilities or behaviour risks."
+        "governance_note": "The existing UNDP account describes draft national AI-strategy consultation. The newly retrieved state-agency release records presidential approval of work on AI-use rules, government responsibilities, standards and technical regulations. Neither retrieved account specifies a national institute evaluating advanced models for capabilities or behaviour risks.",
+        "log": [
+          {
+            "date": "2026-10-17",
+            "text": "Read the State Radio Frequency Service's March announcement in Turkmen, Turkmengaz's June account, TurkmenTelecom's March workshop report, UNDP's May announcement in English and the Russian official accounts of January AI legal-framework proposals and the February digital-economy programme."
+          }
+        ]
       },
       "source_ids": [
         "tm-recheck2-ai-centre-plan",
@@ -14936,23 +14991,24 @@
         "r4-tm-ai-legal-framework",
         "tm-gov-2026-10-16-ai-code"
       ],
-      "notes": "Read the State Radio Frequency Service March announcement in Turkmen, the Turkmengaz June account of the minister's speech, TurkmenTelecom's March strategy-workshop report, the UNDP May workshop announcement in English, and Russian official accounts of January AI legal-framework proposals and the February digital-economy programme. The ministerial centre announcement concerns research, professional training and sectoral AI pilots. Neither the centre nor the draft-strategy workshop specifies evaluation of advanced general-purpose models for their capabilities or behaviour risks; a general AI strategy study is not exploration of an AISI. The draft strategy itself was not retrieved. Previous broad-search source retained. A domestic transport-enterprise republication repeats workshop reporting; the substantive ministry-role account is UNDP's. An official report of 16 October 2026 says Turkmenistan proposed an international code for the peaceful use of AI in international relations and diplomacy; it is a diplomatic proposal, not a national law, strategy or institute.",
       "kind": "state",
       "status_confidence": "medium",
       "related_bodies": [
         {
           "name": "AI Development/Competence Centre at TurkmenTelecom (planned)",
-          "role": "Ministerial announcements describe an AI centre for national digital priorities, applied research and specialist training, including sectoral pilot projects. No remit to evaluate advanced models for their capabilities or behaviour risks was identified.",
           "counts_as_aisi": false,
           "kind": "other",
-          "id": "related_bodies-62875bfb12bf520d928cf13b8cf5e366"
+          "id": "related_bodies-62875bfb12bf520d928cf13b8cf5e366",
+          "source_ids": [
+            "tm-recheck2-ai-centre-purpose"
+          ]
         },
         {
           "name": "Ministry of Communications",
-          "role": "UNDP describes the Ministry of Communications as leading national AI strategy work with UNDP; a general strategy-development process does not itself establish an AI safety institute or a study of that option.",
           "counts_as_aisi": false,
           "source_ids": [
-            "tm-recheck2-ai-strategy-workshop"
+            "tm-recheck2-ai-strategy-workshop",
+            "tm-recheck2-ai-centre-purpose"
           ],
           "kind": "other",
           "id": "related_bodies-caaf2317dc015a39aa7b7d901b5e0f84"
@@ -14981,41 +15037,55 @@
       "identifier_source_ids": [
         "un-m49",
         "wikidata-jurisdiction-identifiers"
+      ],
+      "claims": [
+        {
+          "id": "claims-77898c1e5a594201b5c4a4d2a8e3325f",
+          "kind": "function",
+          "code": "talent",
+          "basis": "mandate",
+          "body_id": "related_bodies-62875bfb12bf520d928cf13b8cf5e366",
+          "text": "The government account says the planned centre will train highly qualified specialists, support national digital priorities and conduct research.",
+          "source_ids": [
+            "tm-recheck2-ai-centre-purpose"
+          ]
+        },
+        {
+          "id": "claims-4add20db2760440baceda7157d03a4ca",
+          "kind": "function",
+          "code": "adoption",
+          "basis": "mandate",
+          "body_id": "related_bodies-caaf2317dc015a39aa7b7d901b5e0f84",
+          "text": "The government account says the communications ministry will work with international partners on pilot projects using AI for forecasting in the oil and gas sector.",
+          "source_ids": [
+            "tm-recheck2-ai-centre-purpose"
+          ]
+        }
       ]
     },
     {
       "id": "TR",
       "name": "Turkey",
       "kind": "state",
-      "summary": "No qualifying institute or commitment identified. Action 16 of the 2026-2030 plan strengthens TÜBİTAK BİLGEM AI Institute capacity for AI safety and performance evaluation and requires high-impact systems to be tested before deployment and major updates.",
       "related_bodies": [
         {
           "name": "TÜBİTAK BİLGEM Artificial Intelligence Institute",
-          "role": "Its tests cover security, performance, robustness, bias, explainability, data protection and cyber resistance. Pre-deployment and major-update testing applies to high-impact systems defined by sensitive uses. It is an existing public AI institute whose general AI safety-assessment capacity is strengthened by action 16. A national general-purpose/frontier capability or behaviour-risk evaluation remit remains unresolved.",
           "counts_as_aisi": false,
           "kind": "other",
           "source_ids": [
-            "tr-recheck2-plan-copy",
+            "tr-action-plan",
             "tr-r6-yze-en"
           ],
           "id": "related_bodies-a3752ffebbe754e59fec908533fa039b"
         },
         {
           "name": "Cybersecurity Presidency (Siber Güvenlik Başkanlığı)",
-          "role": "It coordinates technical safety assessment alongside existing public bodies; participation in the action plan is not designation of an AISI.",
           "counts_as_aisi": false,
           "kind": "other",
-          "id": "related_bodies-b0f21216b34e5cb28c980913659d9ea2"
-        },
-        {
-          "name": "National AI Ethics Board (planned in action 4)",
-          "role": "It would provide guidance, ethical assessment and referral of submissions. Binding supervision would remain with sectoral regulators. No designation to evaluate advanced models was found.",
-          "counts_as_aisi": false,
+          "id": "related_bodies-b0f21216b34e5cb28c980913659d9ea2",
           "source_ids": [
-            "tr-cms"
-          ],
-          "kind": "other",
-          "id": "related_bodies-c3d28f8a9a515840b2f630754cbbcff1"
+            "tr-r6-parliament-inquiry"
+          ]
         }
       ],
       "next_check": {
@@ -15155,7 +15225,29 @@
           "tr-r6-yze-en",
           "tr-r6-parliament-inquiry"
         ],
-        "governance_note": "The ministry plan strengthens safety-assessment capacity within the existing AI institute; its detailed high-impact definition concerns sensitive uses. The complete inquiry recommendation table proposes governance and deployment-related tests without naming a qualifying institute. The report attributes the inquiry's creation and member selection to Parliament; its background chapters were not read in full. None of these sources resolves the mandate covering advanced models."
+        "governance_note": "The ministry plan strengthens safety-assessment capacity within the existing AI institute; its detailed high-impact definition concerns sensitive uses. The complete inquiry recommendation table proposes governance and deployment-related tests without naming a qualifying institute. The report attributes the inquiry's creation and member selection to Parliament; its background chapters were not read in full. None of these sources resolves the mandate covering advanced models.",
+        "log": [
+          {
+            "date": "2026-10-17",
+            "text": "Re-read actions 4 and 16 in the Alomaliye-hosted copy of the ministry's plan, at PDF pages 25 and 35, printed pages 16 and 26."
+          },
+          {
+            "date": "2026-10-19",
+            "text": "Read the AI Institute's English website; reviewed all 100 recommendations in the parliamentary inquiry report at printed pages 768–783 and the formation account at printed pages 24 and 26."
+          },
+          {
+            "date": "2026-11-10",
+            "text": "Searched in Turkish and English for a later qualifying designation."
+          },
+          {
+            "date": "2026-10-17",
+            "text": "Requested the ministry-hosted plan and attempted one text retrieval; read the substantive third-party copy."
+          },
+          {
+            "date": "2026-10-17",
+            "text": "Reviewed the summit announcement, Gazette circular metadata and CMS explanation."
+          }
+        ]
       },
       "source_ids": [
         "tr-action-plan",
@@ -15167,7 +15259,6 @@
         "tr-r6-yze-en",
         "tr-r6-parliament-inquiry"
       ],
-      "notes": "Actions 4 and 16 were re-read in the ministry plan's Alomaliye-hosted copy, at PDF pages 25 and 35 (printed pages 16 and 26). Action 16 strengthens safety-evaluation capacity within TÜBİTAK BİLGEM AI Institute, covering test methods, tools and guides for security, performance, robustness, bias, explainability, data protection and cyber resistance. It separately requires high-impact systems to be evaluated against these criteria before deployment and major updates, without naming the evaluator in that sentence. Action 4 defines high-impact systems through sensitive uses such as health, education, employment, credit, biometrics and policing. This supports deployment assurance but does not resolve a national remit to evaluate general-purpose or frontier models for capabilities or behaviour risks. The institute's English website describes core technology development and links between research and industry. The March 2026 parliamentary inquiry report recommends a broad AI governance authority (19), independent audits (42) and pre-use tests of models and systems for national-security risks, especially in critical infrastructure (47). Recommendation 47 includes misuse scenarios and cyber vulnerabilities, but names no institute. The final audit reviewed all 100 recommendations, at printed pages 768–783, and found no proposal for a qualifying institute to evaluate advanced models. The formation account at printed pages 24 and 26 attributes creation and member selection to Parliament. The background chapters were not read in full. Turkish and English searches did not identify a later qualifying designation. A fresh request for the ministry-hosted plan returned Request Rejected, and one attempt to retrieve a text copy failed. The previously preserved official PDF remains a separate historical retrieval; the substantive third-party copy was used and did not compare its bytes with the official snapshot. The earlier review of the summit announcement, Gazette circular metadata and CMS explanation remains part of the source history; those records do not resolve the technical remit.",
       "status_confidence": "medium",
       "region": {
         "id": "142",
@@ -15192,6 +15283,42 @@
       "identifier_source_ids": [
         "un-m49",
         "wikidata-jurisdiction-identifiers"
+      ],
+      "claims": [
+        {
+          "id": "claims-9fd4ce1ebb444a4a9abeb2093f5b277a",
+          "kind": "function",
+          "code": "adoption",
+          "basis": "mandate",
+          "body_id": "related_bodies-b0f21216b34e5cb28c980913659d9ea2",
+          "text": "Parliament's report says the Cybersecurity Presidency is tasked with leading public-sector AI applications, identifying requirements with the relevant institutions and establishing shared data infrastructure.",
+          "source_ids": [
+            "tr-r6-parliament-inquiry"
+          ]
+        },
+        {
+          "id": "claims-db5630d50293485784aade04a48b7b4c",
+          "kind": "function",
+          "code": "model_testing",
+          "basis": "mandate",
+          "body_id": "related_bodies-a3752ffebbe754e59fec908533fa039b",
+          "text": "The action plan says the AI Institute's safety assessment capacity will be strengthened to ensure the safety of AI systems and content, evaluate technical performance and run standards-based verification.",
+          "source_ids": [
+            "tr-action-plan"
+          ]
+        },
+        {
+          "id": "claims-f4ef3323073744c383c15f5969a89fac",
+          "kind": "development",
+          "code": "testing_duty",
+          "text": "plans assessment of high-impact AI systems before deployment and major version updates",
+          "act": "the Presidency issued Circular 2026/9 on the AI Action Plan for 2026–2030",
+          "date": "2026-08-17",
+          "source_ids": [
+            "tr-action-plan",
+            "tr-gazette-2026"
+          ]
+        }
       ]
     },
     {
@@ -15308,11 +15435,9 @@
       "name": "Uzbekistan",
       "kind": "state",
       "institute_id": null,
-      "summary": "No qualifying institute identified. The AI centre under the digital ministry promotes and reviews AI projects, with no model-evaluation mandate.",
       "related_bodies": [
         {
           "name": "Centre for the Development of AI and the Digital Economy",
-          "role": "It runs the national AI portal and monitors AI projects. It is a state body under the Ministry of Digital Technologies. It is not a model-evaluation institute.",
           "counts_as_aisi": false,
           "source_ids": [
             "uz-up189"
@@ -15406,6 +15531,30 @@
       "identifier_source_ids": [
         "un-m49",
         "wikidata-jurisdiction-identifiers"
+      ],
+      "claims": [
+        {
+          "id": "claims-a1749d8ccf7d464d831cea16a6935cdd",
+          "kind": "function",
+          "code": "adoption",
+          "basis": "mandate",
+          "body_id": "related_bodies-e406f8a2db38576b9352b8d890c52b8b",
+          "text": "The decree makes the centre responsible for commissioning and implementing AI projects financed by the Reconstruction and Development Fund under this decree.",
+          "source_ids": [
+            "uz-up189"
+          ]
+        },
+        {
+          "id": "claims-a9413ab2131c42758fe0864e1c5d957e",
+          "kind": "development",
+          "code": "public_body",
+          "text": "makes the Centre for the Development of AI and the Digital Economy responsible for commissioning and implementing AI projects financed by the Reconstruction and Development Fund under the decree",
+          "act": "the President issued a decree on further AI development",
+          "date": "2025-10-22",
+          "source_ids": [
+            "uz-up189"
+          ]
+        }
       ]
     },
     {
@@ -19986,7 +20135,6 @@
       "name": "Saudi Arabia",
       "kind": "state",
       "institute_id": null,
-      "summary": "No qualifying institute identified. The data and AI authority SDAIA issues AI risk and ethics frameworks; no model-evaluation institute run by it was found.",
       "next_check": {
         "date": "2027-10-16",
         "reason": "Routine yearly re-check of a state where an institute is plausible (in Europe, the G20 or the OECD, or a signatory of the Bletchley Declaration)."
@@ -20060,22 +20208,27 @@
         "governance_source_ids": [
           "sa-sdaia-ai-page"
         ],
-        "governance_note": "SDAIA's AI page describes the authority as the national reference body for regulating the data and AI sector, with an AI adoption framework, AI ethics principles and a national AI readiness index. It describes no model-evaluation institute."
+        "governance_note": "SDAIA's AI page describes the authority as the national reference body for regulating the data and AI sector, with an AI adoption framework, AI ethics principles and a national AI readiness index. It describes no model-evaluation institute.",
+        "log": [
+          {
+            "date": "2026-10-17",
+            "text": "Read Gowling's July account of the AI risk management framework."
+          },
+          {
+            "date": "2026-11-10",
+            "text": "Searched indexed public English and Arabic sources for a government-designated AI safety institute with a remit to evaluate advanced models."
+          },
+          {
+            "date": "2026-10-24",
+            "text": "Attempted to read the additional SDAIA page directly and through text extraction."
+          }
+        ]
       },
       "source_ids": [
         "sa-gowling-2026",
         "sa-sdaia-ai-page"
       ],
-      "related_bodies": [
-        {
-          "name": "SDAIA",
-          "role": "It published a National AI Risk Management Framework in April 2026 that sets no model-testing rules. It is a national data and AI authority.",
-          "counts_as_aisi": false,
-          "kind": "other",
-          "id": "related_bodies-d98ac9de98a05d15b2c4055b353a72d7"
-        }
-      ],
-      "notes": "A draft Responsible AI Policy, consulted on in April–May 2026, would require deployers of high-risk systems to run red-teaming and security tests and commission annual third-party audits. These are proposed duties on deployers.\n\nGowling's July 2026 account describes SDAIA's framework as governance guidance without performance benchmarks or model-testing rules. Searches covered indexed public English and Arabic sources for a government-designated AI safety institute with a remit to evaluate advanced models. The additional SDAIA page could not be read: the direct request was rejected, and one text-extraction attempt returned only a logo and an AI Year heading. Search-result text was not treated as a verified second source.",
+      "related_bodies": [],
       "region": {
         "id": "142",
         "name": "Asia",
@@ -20100,14 +20253,14 @@
       "identifier_source_ids": [
         "un-m49",
         "wikidata-jurisdiction-identifiers"
-      ]
+      ],
+      "claims": []
     },
     {
       "id": "IL",
       "name": "Israel",
       "kind": "state",
       "institute_id": null,
-      "summary": "No qualifying institute identified. Government sources describe the National AI Directorate and an institute for applied AI, alongside cyber defence and regulatory testing. The AI Index reports an AI Security Research Unit, unconfirmed by primary sources.",
       "check": {
         "last_checked": "2026-10-16",
         "method": "individual",
@@ -20255,7 +20408,21 @@
           "il-r6-national-ai-launch",
           "il-r6-nagel-report"
         ],
-        "governance_note": "Retrieved government programme material identifies the Directorate, applied research institute, regulatory testing and AI cyber-defence work. The Hebrew Nagel report concerns national AI research, compute and coordination. The only evidence for the separately reported AI Security Research Unit is a third-party catalogue entry that supplies no primary citation for the unit; its existence and remit have not been verified in a primary source. This evidence gap keeps confidence low."
+        "governance_note": "Retrieved government programme material identifies the Directorate, applied research institute, regulatory testing and AI cyber-defence work. The Hebrew Nagel report concerns national AI research, compute and coordination. The only evidence for the separately reported AI Security Research Unit is a third-party catalogue entry that supplies no primary citation for the unit; its existence and remit have not been verified in a primary source. This evidence gap keeps confidence low.",
+        "log": [
+          {
+            "date": "2026-10-19",
+            "text": "Read the National AI Directorate's programme page and the Foreign Ministry account in English, and the Nagel committee report in Hebrew."
+          },
+          {
+            "date": "2026-10-19",
+            "text": "Retrieved and visually checked the All Tech Is Human table cited by AI Index."
+          },
+          {
+            "date": "2026-11-10",
+            "text": "Searched in Hebrew and English for the reported AI Security Research Unit."
+          }
+        ]
       },
       "source_ids": [
         "il-globes-2026",
@@ -20270,7 +20437,6 @@
       "related_bodies": [
         {
           "name": "National AI Directorate",
-          "role": "It coordinates the national AI programme, including compute, research, skills and applications, as a Prime Minister's Office body. Its programme page does not identify a qualifying institute to evaluate the safety of advanced models.",
           "counts_as_aisi": false,
           "source_ids": [
             "il-globes-2026",
@@ -20282,7 +20448,6 @@
         },
         {
           "name": "National Institute for Impact Driven AI",
-          "role": "It is described in the National AI Directorate's programme as applying AI to medicine, genomics, climate and infrastructure. No explicit mandate to evaluate advanced models for capabilities or behaviour risks was identified.",
           "counts_as_aisi": false,
           "kind": "other",
           "source_ids": [
@@ -20291,7 +20456,6 @@
           "id": "related_bodies-86376fd4dd9f565898df7c8cc00607f9"
         }
       ],
-      "notes": "The cabinet approved the national AI programme in June 2026; the Directorate's plan lists a national AI institute, dedicated cybersecurity laboratories and a national ethics council, whose retrieved descriptions do not establish evaluation of advanced models for capabilities or behaviour risks.\n\nThe National AI Directorate's programme page and Foreign Ministry account were retrieved in English, with Hebrew evidence from the Nagel committee report. The programme describes an institute for applied AI and regulatory testing, plus separate defence of AI infrastructure and systems; these do not state a mandate to evaluate advanced models for capabilities or behaviour risks. The All Tech Is Human table cited by AI Index was retrieved and visually checked. It attributes an AI Security Research Unit to the National Cyber Directorate, but gives no primary citation for that row. Hebrew and English follow-up searches did not verify it. The Directorate's August 2026 plan provides for three laboratories with the National Cyber Directorate, one of them to secure AI systems against attack, which does not meet the definition; the plan names no AI security research unit. The two catalogues therefore remain one unresolved evidence chain.",
       "region": {
         "id": "142",
         "name": "Asia",
@@ -20320,14 +20484,37 @@
       "next_check": {
         "date": "2027-01-31",
         "reason": "Verify the reported National Cyber Directorate AI Security Research Unit through a primary act; none was found in October 2026. Check whether the planned laboratories with the National Cyber Directorate are created and whether any receives a remit to evaluate advanced models for capabilities or behaviour risks."
-      }
+      },
+      "claims": [
+        {
+          "id": "claims-ee7a4e2430074cb0aa9e6ec344ce37aa",
+          "kind": "function",
+          "code": "talent",
+          "basis": "activity",
+          "body_id": "related_bodies-8ae64c9fe45a50c794b32a8b01445424",
+          "text": "The National AI Directorate says it is training scientific talent in mathematics, physics and doctoral research and running a national project to prepare the labour market for AI.",
+          "source_ids": [
+            "il-r6-ai-action-frontiers"
+          ]
+        },
+        {
+          "id": "claims-efc41bab1cc645e186ad2f561bc82395",
+          "kind": "function",
+          "code": "adoption",
+          "basis": "activity",
+          "body_id": "related_bodies-86376fd4dd9f565898df7c8cc00607f9",
+          "text": "The National AI Directorate says the institute deploys AI in personalised medicine, genomic analysis, climate resilience and everyday infrastructure.",
+          "source_ids": [
+            "il-r6-ai-action-frontiers"
+          ]
+        }
+      ]
     },
     {
       "id": "QA",
       "name": "Qatar",
       "kind": "state",
       "institute_id": null,
-      "summary": "No qualifying institute identified. A 2026 decision creates a National Centre for AI in the communications ministry for strategy, regulation and adoption; it does not assign model testing.",
       "next_check": {
         "date": "2027-12-15",
         "reason": "Routine re-check on a two-year rotation of states with no reported plans."
@@ -20421,7 +20608,13 @@
         "governance_source_ids": [
           "qa-cabinet-decision-34-2026"
         ],
-        "governance_note": "Council of Ministers Decision No. 34 of 2026, published in the Official Gazette on 19 October 2026, places a National Centre for Artificial Intelligence under the communications minister. It gives the centre the national AI strategy, AI regulatory and technical frameworks, policies and guidance for responsible and safe use, and mechanisms to measure compliance with them. It does not assign the evaluation or testing of AI models; the tasks of the director's office are left to a later ministerial decision."
+        "governance_note": "Council of Ministers Decision No. 34 of 2026, published in the Official Gazette on 19 October 2026, places a National Centre for Artificial Intelligence under the communications minister. It gives the centre the national AI strategy, AI regulatory and technical frameworks, policies and guidance for responsible and safe use, and mechanisms to measure compliance with them. It does not assign the evaluation or testing of AI models; the tasks of the director's office are left to a later ministerial decision.",
+        "log": [
+          {
+            "date": "2026-10-24",
+            "text": "Searched indexed public English and Arabic sources for a government-designated AI safety institute with a remit to evaluate advanced models."
+          }
+        ]
       },
       "source_ids": [
         "qa-qna-2026",
@@ -20431,15 +20624,16 @@
       "related_bodies": [
         {
           "name": "Ministry of Communications and Information Technology",
-          "role": "It leads the national AI strategy, including its ethics and governance area.",
           "counts_as_aisi": false,
           "kind": "other",
-          "id": "related_bodies-f1c25c68cae1522e8e1d6648f18adcaf"
+          "id": "related_bodies-f1c25c68cae1522e8e1d6648f18adcaf",
+          "source_ids": [
+            "qa-qna-2026"
+          ]
         },
         {
           "name": "المركز الوطني للذكاء الاصطناعي",
           "name_en": "National Centre for Artificial Intelligence",
-          "role": "Its remit covers the national AI strategy, AI regulatory frameworks and policies, platforms, research and adoption support. It was set up in 2026 as a communications ministry unit attached to the minister. The decision does not assign model evaluation or testing.",
           "counts_as_aisi": false,
           "source_ids": [
             "qa-cabinet-decision-34-2026",
@@ -20474,7 +20668,52 @@
         "un-m49",
         "wikidata-jurisdiction-identifiers"
       ],
-      "notes": "Council of Ministers Decision No. 34 of 2026, ratified by the Amir and published in the Official Gazette on 19 October 2026, creates a National Centre for Artificial Intelligence among the units attached to the communications minister. Its departments prepare and follow up the national AI strategy, develop AI regulatory and technical frameworks, policies, guidance and tools for responsible and safe use, measure compliance with those frameworks, build prototypes, carry out research and form partnerships to support adoption. The decision does not assign the evaluation or testing of AI models; the tasks of the director's office are left to a later ministerial decision. QNA describes a national AI strategy covering education, talent, ethics, governance, research and data. Searches covered indexed public English and Arabic sources for a government-designated AI safety institute with a remit to evaluate advanced models."
+      "claims": [
+        {
+          "id": "claims-1452c1dc88fd4823879b016b8616fcff",
+          "kind": "function",
+          "code": "adoption",
+          "basis": "activity",
+          "body_id": "related_bodies-f1c25c68cae1522e8e1d6648f18adcaf",
+          "text": "QNA reports that the communications ministry signed agreements with international companies, including PwC Middle East and OpenAI, to develop AI uses.",
+          "source_ids": [
+            "qa-qna-2026"
+          ]
+        },
+        {
+          "id": "claims-7110ef5966d442bfa224702d88aed0a1",
+          "kind": "function",
+          "code": "policy_advice",
+          "basis": "mandate",
+          "body_id": "related_bodies-4866f5bb18595aeb9fcb288725601fa3",
+          "text": "The decision tasks the centre's strategies, compliance and quality department with proposing legislation to regulate, encourage and develop AI use in the state, with the competent administrative unit.",
+          "source_ids": [
+            "qa-cabinet-decision-34-2026"
+          ]
+        },
+        {
+          "id": "claims-2cf495cb906c4f8b8b6513af00a7eef3",
+          "kind": "function",
+          "code": "adoption",
+          "basis": "mandate",
+          "body_id": "related_bodies-4866f5bb18595aeb9fcb288725601fa3",
+          "text": "The decision tasks the centre's partnerships and empowerment department with forming strategic partnerships with government bodies and the private sector to support AI adoption.",
+          "source_ids": [
+            "qa-cabinet-decision-34-2026"
+          ]
+        },
+        {
+          "id": "claims-3e559f222f8149008decb966e89d20ba",
+          "kind": "development",
+          "code": "public_body",
+          "text": "includes the National Centre for AI among the administrative units attached to the minister",
+          "act": "the Council of Ministers issued Decision 34 amending the communications ministry's organisation",
+          "date": "2026-09-02",
+          "source_ids": [
+            "qa-cabinet-decision-34-2026"
+          ]
+        }
+      ]
     },
     {
       "id": "EG",
@@ -20843,7 +21082,6 @@
       "name": "Jordan",
       "kind": "state",
       "institute_id": null,
-      "summary": "No qualifying institute identified. Jordan has a national AI strategy (2023-2027) and an AI ethics charter, and nothing more was found.",
       "next_check": {
         "date": "2027-06-15",
         "reason": "Routine re-check on a two-year rotation of states with no reported plans."
@@ -20896,7 +21134,13 @@
         "governance_source_ids": [
           "negative-second-jo-2026"
         ],
-        "governance_note": "The digital economy ministry identifies the 2020 AI policy, 2023-2027 national strategy and implementation plan, and national AI code of ethics."
+        "governance_note": "The digital economy ministry identifies the 2020 AI policy, 2023-2027 national strategy and implementation plan, and national AI code of ethics.",
+        "log": [
+          {
+            "date": "2026-10-17",
+            "text": "Searched indexed public English and Arabic sources for a government-designated AI safety institute with a remit to evaluate advanced models."
+          }
+        ]
       },
       "source_ids": [
         "negative-second-jo-2026",
@@ -20926,8 +21170,7 @@
       "identifier_source_ids": [
         "un-m49",
         "wikidata-jurisdiction-identifiers"
-      ],
-      "notes": "The ministry describes an AI strategy and implementation plan, a national AI code of ethics, and organisational readiness assessment for public-sector adoption. The strategy and implementation plan cover 2023-2027. Searches covered indexed public English and Arabic sources for a government-designated AI safety institute with a remit to evaluate advanced models."
+      ]
     },
     {
       "id": "PK",
@@ -21300,7 +21543,6 @@
       "name": "Bahrain",
       "kind": "state",
       "institute_id": null,
-      "summary": "No qualifying institute identified. Bahrain has a national AI policy and a UNESCO readiness assessment, and nothing more was found.",
       "next_check": {
         "date": "2027-02-15",
         "reason": "Routine re-check on a two-year rotation of states with no reported plans."
@@ -21353,21 +21595,19 @@
         "governance_source_ids": [
           "bh-iga-2025"
         ],
-        "governance_note": "The iGA's account identifies the ministerial ICT committee, its AI framework work and readiness assessment, giving substantive national governance context."
+        "governance_note": "The iGA's account identifies the ministerial ICT committee, its AI framework work and readiness assessment, giving substantive national governance context.",
+        "log": [
+          {
+            "date": "2026-10-17",
+            "text": "Searched indexed public English and Arabic sources for a government-designated AI safety institute with a remit to evaluate advanced models."
+          }
+        ]
       },
       "source_ids": [
         "bh-iga-2025",
         "negative-second-bh-2026"
       ],
-      "related_bodies": [
-        {
-          "name": "Information & eGovernment Authority",
-          "role": "It leads digital government and AI readiness work.",
-          "counts_as_aisi": false,
-          "kind": "other",
-          "id": "related_bodies-97a0d1e4a658529ab8ef0a32916f61fd"
-        }
-      ],
+      "related_bodies": [],
       "region": {
         "id": "142",
         "name": "Asia",
@@ -21393,7 +21633,7 @@
         "un-m49",
         "wikidata-jurisdiction-identifiers"
       ],
-      "notes": "The National Cyber Security Center runs a responsible-AI awareness campaign. The campaign addresses safe and responsible use across public and private entities. Searches covered indexed public English and Arabic sources for a government-designated AI safety institute with a remit to evaluate advanced models."
+      "claims": []
     },
     {
       "id": "IR",
@@ -22004,7 +22244,6 @@
       "id": "IQ",
       "name": "Iraq",
       "institute_id": null,
-      "summary": "No qualifying institute identified. The Communications and Media Commission opened a draft regulation on licensing and risk-classifying AI services for consultation in September 2026, and the national AI strategy is still being revised.",
       "check": {
         "last_checked": "2026-10-16",
         "method": "individual",
@@ -22057,34 +22296,20 @@
         "governance_source_ids": [
           "iq-cmc-draft-2026"
         ],
-        "governance_note": "The CMC consultation draft sets risk classification and provider testing duties. The reviewed provisions do not create an institute for evaluation of advanced models; not every article was read."
+        "governance_note": "The CMC consultation draft sets risk classification and provider testing duties. The reviewed provisions do not create an institute for evaluation of advanced models; not every article was read.",
+        "log": [
+          {
+            "date": "2026-10-17",
+            "text": "Read parts of the CMC draft regulation, including its risk-classification and provider-testing provisions."
+          }
+        ]
       },
       "source_ids": [
         "iq-cmc-draft-2026",
         "iq-businessnews-cmc-2026",
         "iq-businessnews-planning-2026"
       ],
-      "related_bodies": [
-        {
-          "name": "Communications and Media Commission",
-          "role": "The CMC consultation draft's contents list licensing requirements and risk classification; Iraq Business News dates the consultation to 23 September 2026. The draft is not evidence of enacted rules or an institute to evaluate advanced models.",
-          "counts_as_aisi": false,
-          "source_ids": [
-            "iq-cmc-draft-2026",
-            "iq-businessnews-cmc-2026"
-          ],
-          "kind": "other",
-          "id": "related_bodies-945d392d56a05f6287e52c4fe0374c5c"
-        },
-        {
-          "name": "National Centre for Artificial Intelligence",
-          "role": "It is attached to the Prime Minister's Office; no evaluation or testing role was described in the sources read.",
-          "counts_as_aisi": false,
-          "kind": "other",
-          "id": "related_bodies-ec51adb95a835489a1507b391a1ef0fb"
-        }
-      ],
-      "notes": "The CMC draft regulation (Art. 12) sets a CMC risk-classification methodology, and Art. 13 requires providers of generative and general-purpose models to run periodic safety, security and bias tests before public release and after major changes. These are duties on providers plus CMC classification; the draft creates no CMC testing body or institute for evaluating advanced models. Not every article was read in full. The national AI strategy was discussed at a planning ministry meeting in April 2026, attended by the Prime Minister's adviser on AI, and was reported as under revision.",
+      "related_bodies": [],
       "next_check": {
         "date": "2027-01-15",
         "reason": "Final text of the CMC regulation and the revised national AI strategy."
@@ -22114,13 +22339,13 @@
       "identifier_source_ids": [
         "un-m49",
         "wikidata-jurisdiction-identifiers"
-      ]
+      ],
+      "claims": []
     },
     {
       "id": "KW",
       "name": "Kuwait",
       "institute_id": null,
-      "summary": "No qualifying institute identified. UNDP and the Central Agency for Information Technology assessed the state of AI in Kuwait in September 2026; our searches found no AI safety or evaluation body.",
       "check": {
         "last_checked": "2026-10-16",
         "method": "individual",
@@ -22169,22 +22394,23 @@
         "governance_source_ids": [
           "negative-second-kw-2026"
         ],
-        "governance_note": "CITRA's public-consultation page identifies national AI-adoption guidance and its regulatory process; it is a consultation record, not adopted regulation."
+        "governance_note": "CITRA's public-consultation page identifies national AI-adoption guidance and its regulatory process; it is a consultation record, not adopted regulation.",
+        "log": [
+          {
+            "date": "2026-10-17",
+            "text": "Attempted to read the CAIT website; read secondary accounts of the national AI strategy and the UNDP/CAIT assessment release."
+          },
+          {
+            "date": "2026-10-17",
+            "text": "Searched indexed public English and Arabic sources for a government-designated AI safety institute with a remit to evaluate advanced models."
+          }
+        ]
       },
       "source_ids": [
         "negative-second-kw-2026",
         "kw-undp-aila-2026"
       ],
-      "related_bodies": [
-        {
-          "name": "Central Agency for Information Technology (CAIT)",
-          "role": "It leads government digital transformation and partnered with UNDP on the AI Landscape Assessment (September 2026).",
-          "counts_as_aisi": false,
-          "kind": "other",
-          "id": "related_bodies-370a98657136500ca8f027d7466db120"
-        }
-      ],
-      "notes": "The CAIT site was unreachable. Secondary reports disagree on finalisation of the national AI strategy. The UNDP/CAIT assessment covers the AI ecosystem, government use, regulation and ethics; its findings were not available in the retrieved release.\n\nCITRA solicited public comments on responsible AI-adoption guidance. Searches covered indexed public English and Arabic sources for a government-designated AI safety institute with a remit to evaluate advanced models.",
+      "related_bodies": [],
       "next_check": {
         "date": "2027-04-15",
         "reason": "Publication of the UNDP assessment and any national AI strategy or governance body."
@@ -22214,13 +22440,13 @@
       "identifier_source_ids": [
         "un-m49",
         "wikidata-jurisdiction-identifiers"
-      ]
+      ],
+      "claims": []
     },
     {
       "id": "LB",
       "name": "Lebanon",
       "institute_id": null,
-      "summary": "No qualifying institute identified. The ministry's draft AI strategy proposes an AI Evaluation Office for sensitive-domain deployment and an AI Security and Red-Team Lab. The draft does not specify the lab's technical remit.",
       "check": {
         "last_checked": "2026-10-16",
         "method": "individual",
@@ -22309,57 +22535,24 @@
         "governance_source_ids": [
           "lb-mitai-strategy-2032"
         ],
-        "governance_note": "The readable ministry draft distinguishes sensitive-deployment evaluation from its separately named security and red-team lab; the latter's technical remit is unspecified. The ministry describes proposals for discussion; formal consultation or submission has not been verified."
+        "governance_note": "The readable ministry draft distinguishes sensitive-deployment evaluation from its separately named security and red-team lab; the latter's technical remit is unspecified. The ministry describes proposals for discussion; formal consultation or submission has not been verified.",
+        "log": [
+          {
+            "date": "2026-10-17",
+            "text": "Searched in Arabic and English for official adoption of the strategy and a clarified model-evaluation mandate."
+          },
+          {
+            "date": "2026-10-17",
+            "text": "Attempted to read the ministry's web pages and their rendered fallbacks; read the English strategy PDF."
+          }
+        ]
       },
       "source_ids": [
         "lb-mitai-strategy-2032",
         "lb-lbc-leap-2025",
         "lb-regulations-ai-2026"
       ],
-      "related_bodies": [
-        {
-          "name": "Ministry of State for Technology and Artificial Intelligence (MITAI/OMSITAI)",
-          "role": "It leads the national digital transformation and AI strategy; its earlier five-year LEAP plan covers 2025-2030.",
-          "counts_as_aisi": false,
-          "kind": "other",
-          "id": "related_bodies-93bc175f998d5760acbd675a2508eb2d"
-        },
-        {
-          "name": "Lebanese Digital and AI Agency (LEDAIA, proposed)",
-          "role": "It is proposed in the 2032 strategy as its 'executive engine', carrying delivery and technical oversight.",
-          "counts_as_aisi": false,
-          "kind": "other",
-          "id": "related_bodies-94912f866eab5370b84a1393f215336d"
-        },
-        {
-          "name": "Lebanon AI Evaluation Office (proposed)",
-          "role": "It is proposed in the ministry's 2032 draft strategy to independently assess whether AI systems are fit for sensitive-domain deployment, reporting to the AI National Council. This deployment-assurance role does not by itself establish evaluation of advanced models for capabilities or behaviour risks.",
-          "counts_as_aisi": false,
-          "source_ids": [
-            "lb-mitai-strategy-2032"
-          ],
-          "kind": "other",
-          "id": "related_bodies-8e412fdd47d255c1be3bb35baf600289"
-        },
-        {
-          "name": "Cybersecurity Institute with an AI Security and Red-Team Lab (proposed)",
-          "role": "The ministry's draft strategy lists an AI Security and Red-Team Lab within the Cybersecurity Institute's cybersecurity and digital-trust programme. The lab's technical remit is not specified; a qualifying mandate to evaluate advanced models remains unresolved.",
-          "counts_as_aisi": false,
-          "kind": "other",
-          "source_ids": [
-            "lb-mitai-strategy-2032"
-          ],
-          "id": "related_bodies-54a6e3a9b5675e6986cf27afe5904159"
-        },
-        {
-          "name": "AI National Council (proposed)",
-          "role": "It would sign off a quarterly scoreboard as an oversight body comprising private sector, diaspora, university and civil society members.",
-          "counts_as_aisi": false,
-          "kind": "other",
-          "id": "related_bodies-3499438e9a3f54c4908b6deeba9c53df"
-        }
-      ],
-      "notes": "The ministry's strategy draft describes the Evaluation Office as assessing whether AI systems are fit for sensitive-domain deployment. Its cybersecurity programme also names an AI Security and Red-Team Lab, but does not set out that lab's technical remit. The earlier statement that neither body evaluates advanced models was too categorical. The draft labels its initiatives and entities as proposals for discussion, subject to ministries' agreement, rather than agreed commitments. A qualifying remit and evidence of formal consultation or submission would be needed for proposed status; this working draft alone would support at most exploring. Arabic and English searches found no later official adoption or clarified model-evaluation mandate. The ministry's web pages returned empty shells and their single rendered fallbacks failed; the full English PDF was readable.",
+      "related_bodies": [],
       "next_check": {
         "date": "2026-11-30",
         "reason": "Check whether the ministry draft enters formal consultation or submission and whether either body gains a stated model-level remit."
@@ -22389,7 +22582,8 @@
       "identifier_source_ids": [
         "un-m49",
         "wikidata-jurisdiction-identifiers"
-      ]
+      ],
+      "claims": []
     },
     {
       "id": "LY",
@@ -22798,7 +22992,6 @@
       "id": "OM",
       "name": "Oman",
       "institute_id": null,
-      "summary": "No qualifying institute identified. The 2025 policy on safe and ethical use of AI assigns monitoring to the transport and communications ministry and sector regulators, and launch coverage of a February 2026 UNESCO readiness assessment names no testing body.",
       "check": {
         "last_checked": "2026-10-16",
         "method": "individual",
@@ -22847,7 +23040,13 @@
         "governance_source_ids": [
           "om-mtcit-policy-2025"
         ],
-        "governance_note": "The ministry circular assigns safe and ethical AI-use responsibilities and monitoring; it does not establish a dedicated evaluator of advanced models. The annex was not included in the retrieved text."
+        "governance_note": "The ministry circular assigns safe and ethical AI-use responsibilities and monitoring; it does not establish a dedicated evaluator of advanced models. The annex was not included in the retrieved text.",
+        "log": [
+          {
+            "date": "2026-10-17",
+            "text": "Read the announcement of the UNESCO readiness assessment results and attempted to open the report."
+          }
+        ]
       },
       "source_ids": [
         "om-mtcit-policy-2025",
@@ -22858,17 +23057,16 @@
       "related_bodies": [
         {
           "name": "Ministry of Transport, Communications and Information Technology",
-          "role": "It issued the AI policy (Circular 11/2025, 9 April 2025); it monitors compliance by government units and reports to the Council of Ministers.",
           "counts_as_aisi": false,
           "source_ids": [
-            "om-ona-ram-2026"
+            "om-ona-ram-2026",
+            "om-mtcit-policy-2025"
           ],
           "kind": "other",
           "id": "related_bodies-e392f09174265b35b89cc4b62f334d88"
         },
         {
           "name": "Sector regulators",
-          "role": "They monitor compliance with the policy by the institutions in the sectors they supervise.",
           "counts_as_aisi": false,
           "kind": "other",
           "id": "related_bodies-467fa5e9fe2f58de883dcb7c25eb5f63",
@@ -22878,13 +23076,14 @@
         },
         {
           "name": "AI Experts Committee",
-          "role": "It advises decision-makers on AI opportunities and challenges. It is an advisory committee formed by the transport and communications ministry under Ministerial Decision 124/2025, with a three-year term. No testing role was described.",
           "counts_as_aisi": false,
           "kind": "other",
-          "id": "related_bodies-d37c350a6dc35c38b542395d4d853d07"
+          "id": "related_bodies-d37c350a6dc35c38b542395d4d853d07",
+          "source_ids": [
+            "om-mtcit-ai-experts-committee"
+          ]
         }
       ],
-      "notes": "The policy requires developers to run pre-deployment ethical, social and environmental impact assessments and periodic accuracy checks including independent technical reviews, but it creates no testing body, safety institute or committee and takes the form of a circular. The UNESCO readiness assessment results were launched on 15 February 2026 as the national reference for AI governance; the report itself was not opened (HTTP 403). The AI Experts Committee (Ministerial Decision 124/2025) is advisory with a three-year term and has no testing mandate.",
       "next_check": {
         "date": "2027-02-15",
         "reason": "Whether Oman acts on the UNESCO recommendations (for example mandatory impact assessments) or creates an AI oversight body."
@@ -22914,13 +23113,58 @@
       "identifier_source_ids": [
         "un-m49",
         "wikidata-jurisdiction-identifiers"
+      ],
+      "claims": [
+        {
+          "id": "claims-1396a29a8b4b4132b9a4e7fd641df5c9",
+          "kind": "function",
+          "code": "regulatory_enforcement",
+          "basis": "mandate",
+          "body_id": "related_bodies-e392f09174265b35b89cc4b62f334d88",
+          "text": "The policy tasks the ministry with monitoring state administrative units' compliance and reporting compliance results to the Council of Ministers.",
+          "source_ids": [
+            "om-mtcit-policy-2025"
+          ]
+        },
+        {
+          "id": "claims-022ac06e950f4904acac4deccdcbbc22",
+          "kind": "function",
+          "code": "regulatory_enforcement",
+          "basis": "mandate",
+          "body_id": "related_bodies-467fa5e9fe2f58de883dcb7c25eb5f63",
+          "text": "The policy tasks sector regulators with monitoring compliance by institutions in the sectors they supervise.",
+          "source_ids": [
+            "om-mtcit-policy-2025"
+          ]
+        },
+        {
+          "id": "claims-867794396aa24d3da28d17b401bd18e4",
+          "kind": "function",
+          "code": "policy_advice",
+          "basis": "mandate",
+          "body_id": "related_bodies-d37c350a6dc35c38b542395d4d853d07",
+          "text": "The ministry formed the AI Experts Committee to advise decision-makers on opportunities and challenges in developing and adopting AI in Oman.",
+          "source_ids": [
+            "om-mtcit-ai-experts-committee"
+          ]
+        },
+        {
+          "id": "claims-e9b44f5b573f4a9bbc30295f67b3581e",
+          "kind": "development",
+          "code": "testing_duty",
+          "text": "requires an assessment of the ethical, social and environmental impact of AI systems before their deployment and use, with the results kept in the system documentation",
+          "act": "the transport, communications and information technology ministry issued Circular 11/2025 on safe and ethical AI use",
+          "date": "2025-04-09",
+          "source_ids": [
+            "om-mtcit-policy-2025"
+          ]
+        }
       ]
     },
     {
       "id": "SY",
       "name": "Syria",
       "institute_id": null,
-      "summary": "No qualifying institute identified. The communications ministry is running AI training and partnership activity, and no national AI strategy or evaluation body was found, though official information is scarce after the conflict.",
       "check": {
         "last_checked": "2026-10-16",
         "method": "individual",
@@ -22995,22 +23239,23 @@
         ],
         "independent_source_ids": [],
         "language_note": "The recorded ar query uses a national or official language selected for this country-specific check. Other national or official languages were not exhaustively searched. Some submitted strings contain site. rather than site:; these literal strings are preserved and are not treated as domain-restricted searches. Search source_ids identify registered source URLs matched in the retrieved result set, which may include irrelevant hits. An empty list means no registered source URL was matched, not that the web response was empty. The earlier audit used independent_source_ids for substantive corroboration; governance_source_ids, where present, identifies the selected primary governance evidence. Preserved result batches, using 1-based positions in check.searches: SY-search = searches 1, 2 (en, ar). Each multi-query batch has only a combined returned result set; its source_ids cannot be attributed to individual queries. Historical query dates are recorded as 17 October 2026 in the phase6 search-boundary ledger. On 24 October 2026 the record was searched again in Arabic and English; the result links of each query were matched against registered sources in the same way.",
-        "independence_note": "Historical audit under the superseded two-independent-sources rule: Two substantively independent evidence origins were not established. Multiple pages from one owner, mirrors, reports of the same underlying announcement and general regional coverage are not counted as independent corroboration."
+        "independence_note": "Historical audit under the superseded two-independent-sources rule: Two substantively independent evidence origins were not established. Multiple pages from one owner, mirrors, reports of the same underlying announcement and general regional coverage are not counted as independent corroboration.",
+        "log": [
+          {
+            "date": "2026-10-24",
+            "text": "Searched indexed public English and Arabic sources for a government-designated AI safety institute with a remit to evaluate advanced models."
+          },
+          {
+            "date": "2026-10-24",
+            "text": "Read a search result on Syrian AI strategy."
+          }
+        ]
       },
       "source_ids": [
         "negative-second-sy-2026",
         "sy-sana-2026"
       ],
-      "related_bodies": [
-        {
-          "name": "Ministry of Communications and Technology",
-          "role": "It co-sponsors AI training initiatives and the first national AI conference (June 2026); no safety or evaluation mandate was described.",
-          "counts_as_aisi": false,
-          "kind": "other",
-          "id": "related_bodies-718d6acd839f5a40a0af9cafd181f355"
-        }
-      ],
-      "notes": "The earlier state news agency report covers a June 2026 AI conference and a one-million-users training initiative. A search result claiming a 2025-2030 strategy and national AI council appeared to concern Egypt and was excluded.\n\nThe Ministry of Information held a government AI-use workshop on 30 December 2025. The workshop took place in Damascus. Searches covered indexed public English and Arabic sources for a government-designated AI safety institute with a remit to evaluate advanced models.",
+      "related_bodies": [],
       "next_check": {
         "date": "2027-04-15",
         "reason": "Whether a national AI strategy or governance body is published."
@@ -23040,13 +23285,13 @@
       "identifier_source_ids": [
         "un-m49",
         "wikidata-jurisdiction-identifiers"
-      ]
+      ],
+      "claims": []
     },
     {
       "id": "YE",
       "name": "Yemen",
       "institute_id": null,
-      "summary": "No qualifying institute identified. In April 2026, Yemeni and Egyptian ministers discussed digital transformation and digital capacity building.",
       "check": {
         "last_checked": "2026-10-16",
         "method": "individual",
@@ -23119,14 +23364,19 @@
         ],
         "independent_source_ids": [],
         "language_note": "The recorded ar query uses a national or official language selected for this country-specific check. Other national or official languages were not exhaustively searched. Search source_ids identify registered source URLs matched in the retrieved result set, which may include irrelevant hits. An empty list means no registered source URL was matched, not that the web response was empty. The earlier audit used independent_source_ids for substantive corroboration; governance_source_ids, where present, identifies the selected primary governance evidence. English queries were also run on 17 October 2026; the previously recorded national or official-language coverage and its limits are unchanged. On 24 October 2026 the record was searched again in Arabic and English; the result links of each query were matched against registered sources in the same way.",
-        "independence_note": "Historical audit under the superseded two-independent-sources rule: Two substantively independent evidence origins were not established. Multiple pages from one owner, mirrors, reports of the same underlying announcement and general regional coverage are not counted as independent corroboration."
+        "independence_note": "Historical audit under the superseded two-independent-sources rule: Two substantively independent evidence origins were not established. Multiple pages from one owner, mirrors, reports of the same underlying announcement and general regional coverage are not counted as independent corroboration.",
+        "log": [
+          {
+            "date": "2026-10-24",
+            "text": "Searched for government and UN sources on Yemeni AI policy."
+          }
+        ]
       },
       "source_ids": [
         "ye-itweb-2026",
         "ye-itweb-2026-primary-proposal",
         "ye-ust-2025"
       ],
-      "notes": "Official information is scarce. The communications ministry's stated priorities in April 2026 (rehabilitating infrastructure, e-government roadmap, possible 5G) do not mention AI, and a 2025 academic study lists the lack of AI laws and regulations among the main obstacles. No government or UN source on Yemeni AI policy was found; evidence of absence is thin. Further web searches were not possible once the shared search budget ran out.",
       "region": {
         "id": "142",
         "name": "Asia",
@@ -52013,7 +52263,45 @@
         "sha256": "e74d321e73492285d11df2bff7aa802921c58f6b8936d1956d6161f39099a829",
         "text_sha256": "af32447648a1bc30e7a2b51bdfa027e05e4ee67155552fba6590fd4ab1854aaf",
         "text_scheme": 1
-      }
+      },
+      "excerpts": [
+        {
+          "text": "Yapay zekâ sistemlerinin ve içeriklerinin güvenliğini sağlamak, teknik performansını değerlendirmek ve standartlara dayalı doğrulama süreçlerini işletmek üzere TÜBİTAK BİLGEM Yapay Zekâ Enstitüsü bünyesinde yapay zekâ güvenlik değerlendirme kapasitesi güçlendirilecektir.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "TR"
+              },
+              "claims",
+              {
+                "id": "claims-db5630d50293485784aade04a48b7b4c"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "AI safety assessment capacity within the TÜBİTAK BİLGEM Artificial Intelligence Institute will be strengthened to ensure the safety of AI systems and content, evaluate technical performance and operate standards-based verification processes.",
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Yüksek etkili yapay zekâ sistemleri canlıya alınmadan önce ve büyük sürüm güncellemelerinde bu kriterler bakımından değerlendirmeye tabi tutulacaktır.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "TR"
+              },
+              "claims",
+              {
+                "id": "claims-f4ef3323073744c383c15f5969a89fac"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "High-impact AI systems will be assessed against these criteria before deployment and major version updates.",
+          "accessed": "2026-10-17"
+        }
+      ]
     },
     {
       "id": "tr-cms",
@@ -52025,25 +52313,7 @@
       "accessed": "2026-10-17",
       "language": "en",
       "archive_url": "https://web.archive.org/web/20261016204650/https://cms.law/en/tur/legal-updates/turkiye-unveils-new-ai-action-plan",
-      "excerpts": [
-        {
-          "text": "In parallel, a National AI Ethics Board will develop practical ethical principles and guidance and support public trust in AI systems.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "TR"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-c3d28f8a9a515840b2f630754cbbcff1"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-10-17"
-        }
-      ],
+      "excerpts": [],
       "origin": "TR",
       "snapshot": {
         "retrieved": "2026-10-17T14:20:10Z",
@@ -52349,6 +52619,78 @@
           "gloss": "are assigned to the Centre for the Development of Artificial Intelligence and the Digital Economy under the Ministry of Digital Technologies",
           "url": "https://web.archive.org/web/20261016205357/https://lex.uz/en/acts/7790236",
           "accessed": "2026-10-17"
+        },
+        {
+          "text": "(г) Центр является заказчиком проектов по внедрению технологий искусственного интеллекта реализуемых за счет средств, выделяемых Фондом реконструкции и развития в соответствии с настоящим Указом, а также ответственным органом по их применению на практике.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "UZ"
+              },
+              "claims",
+              {
+                "id": "claims-a1749d8ccf7d464d831cea16a6935cdd"
+              },
+              "text"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "UZ"
+              },
+              "claims",
+              {
+                "id": "claims-a9413ab2131c42758fe0864e1c5d957e"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "The Centre commissions projects to introduce AI technologies funded by the Reconstruction and Development Fund under this decree and is responsible for putting them into practice.",
+          "anchors": [
+            {
+              "kind": "definition",
+              "text": "При этом задача создания, поддержки, развития и обеспечения информационной безопасности портала возлагаются на Центр развития искусственного интеллекта и цифровой экономики при Министерстве цифровых технологий (далее — Центр);",
+              "gloss": "The creation, maintenance, development and information security of the portal are assigned to the Centre for the Development of AI and the Digital Economy under the Ministry of Digital Technologies (the Centre)."
+            }
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Указ Президента Республики Узбекистан О дополнительных мерах по дальнейшему развитию технологий искусственного интеллекта",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "UZ"
+              },
+              "claims",
+              {
+                "id": "claims-a9413ab2131c42758fe0864e1c5d957e"
+              },
+              "act"
+            ]
+          ],
+          "gloss": "Decree of the President of Uzbekistan on additional measures for the further development of AI technologies.",
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "УП-189-сон 22.10.2025.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "UZ"
+              },
+              "claims",
+              {
+                "id": "claims-a9413ab2131c42758fe0864e1c5d957e"
+              },
+              "date"
+            ]
+          ],
+          "gloss": "UP-189, 22 October 2025.",
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "UZ",
@@ -52420,25 +52762,7 @@
       "accessed": "2026-10-17",
       "language": "en",
       "archive_url": "https://web.archive.org/web/20261016205838/https://tech.az/en/posts/artificial-intelligence-strategy-adopted-in-azerbaijan-4788",
-      "excerpts": [
-        {
-          "text": "The State Service for Special Communications and Information Security will analyze information security risks in areas where artificial intelligence is applied in state institutions",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "AZ"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-a0ab98032aaa598eb83e904f3b012d82"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-10-17"
-        }
-      ],
+      "excerpts": [],
       "origin": "AZ",
       "snapshot": {
         "retrieved": "2026-10-17T14:20:17Z",
@@ -52501,7 +52825,38 @@
         "text_sha256": "4e5cdb4582af2bacb422aa52f15f193b642f8ceff4a5668b0fec0ecde638e203",
         "text_scheme": 1
       },
-      "archive_url": "https://web.archive.org/web/20261016210249if_/https://www.resmigazete.gov.tr/eskiler/2026/08/20260818-8.pdf"
+      "archive_url": "https://web.archive.org/web/20261016210249if_/https://www.resmigazete.gov.tr/eskiler/2026/08/20260818-8.pdf",
+      "excerpts": [
+        {
+          "text": "GENELGE Cumhurbaşkanlığından: Konu: Türkiye Yapay Zekâ Eylem Planı (2026-2030) GENELGE 2026/9 17 Ağustos 2026",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "TR"
+              },
+              "claims",
+              {
+                "id": "claims-f4ef3323073744c383c15f5969a89fac"
+              },
+              "act"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "TR"
+              },
+              "claims",
+              {
+                "id": "claims-f4ef3323073744c383c15f5969a89fac"
+              },
+              "date"
+            ]
+          ],
+          "gloss": "Circular from the Presidency: Subject: Türkiye AI Action Plan (2026–2030), Circular 2026/9, 17 August 2026.",
+          "accessed": "2026-10-17"
+        }
+      ]
     },
     {
       "id": "kz-ai-law-2025",
@@ -53493,20 +53848,7 @@
       "accessed": "2026-10-17",
       "archive_url": "https://web.archive.org/web/20261017000417/https://gowlingwlg.com/en/insights-resources/articles/2026/what-saudi-arabias-ai-risk-management-framework-means-for-organisations",
       "language": "en",
-      "excerpts": [
-        {
-          "text": "it does not set performance benchmarks or model-testing rules.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "SA"
-              },
-              "notes"
-            ]
-          ]
-        }
-      ],
+      "excerpts": [],
       "origin": "SA",
       "snapshot": {
         "retrieved": "2026-10-17T14:05:09.433097+00:00",
@@ -53525,25 +53867,7 @@
       "accessed": "2026-10-17",
       "archive_url": "https://web.archive.org/web/20261017000610/https://en.globes.co.il/en/article-israels-ai-directorate-launches-modest-national-plan-1001552634",
       "language": "en",
-      "excerpts": [
-        {
-          "text": "the Prime Minister's Office has been promoting the National Artificial Intelligence Directorate that has been established under its auspices",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "IL"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-8ae64c9fe45a50c794b32a8b01445424"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-10-17"
-        }
-      ],
+      "excerpts": [],
       "origin": "IL",
       "snapshot": {
         "retrieved": "2026-10-17T14:20:29Z",
@@ -53564,17 +53888,22 @@
       "archive_url": "https://web.archive.org/web/20261017000916/https://qna.org.qa/ar-QA/news/news-details?id=%D8%AE%D8%B7%D9%88%D8%A7%D8%AA-%D9%82%D8%B7%D8%B1-%D8%AA%D9%82%D9%88%D8%AF%D9%87%D8%A7-%D8%A7%D9%84%D9%89-%D9%85%D9%88%D8%A7%D8%B6%D8%B9-%D8%A7%D9%84%D8%B5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%B9%D8%A7%D9%84%D9%85%D9%8A%D8%A7-%D9%81%D9%8A-%D8%A7%D8%B3%D8%AA%D8%AE%D8%AF%D8%A7%D9%85-%D8%A7%D9%84%D8%B0%D9%83%D8%A7%D8%A1-%D8%A7%D9%84%D8%A7%D8%B5%D8%B7%D9%86%D8%A7%D8%B9%D9%8A-%D8%AA%D9%82%D8%B1%D9%8A%D8%B1&date=7/06/2026",
       "excerpts": [
         {
-          "text": "تغطي ستة محاور تشمل التعليم، وتوظيف الكفاءات، والأخلاقيات، والحوكمة، والبحوث العلمية، والبيانات.",
+          "text": "وإلى جانب ذلك، تبرز جهود وزارة الاتصالات وتكنولوجيا المعلومات التي عقدت سلسلة اتفاقات مع شركات عالمية متخصصة، ومن أبرزها اتفاقية التعاون مع \"بي دبليو سي الشرق الأوسط\" و\"أوبن إي آي\" لتطوير استخدامات الذكاء الاصطناعي.",
           "supports": [
             [
               "jurisdictions",
               {
                 "id": "QA"
               },
-              "notes"
+              "claims",
+              {
+                "id": "claims-1452c1dc88fd4823879b016b8616fcff"
+              },
+              "text"
             ]
           ],
-          "gloss": "It covers six areas: education, recruitment of talent, ethics, governance, scientific research and data."
+          "gloss": "The Ministry of Communications and Information Technology also signed a series of agreements with specialist international companies, notably a cooperation agreement with PwC Middle East and OpenAI to develop AI uses.",
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "QA",
@@ -57100,8 +57429,19 @@
       "archive_url": "https://web.archive.org/web/20261017013516/https://24.kg/article/363327",
       "excerpts": [
         {
-          "text": "речь идет о полноценной лаборатории и технологическом хабе, который объединит IT-сферу, исследования и разработки",
+          "text": "В Кыргызстане уже в 2026 году начнется строительство национального центра искусственного интеллекта. Об этом в интервью «Биринчи радио» сообщил первый заместитель министра цифрового развития и инновационных технологий Нурсултан Кубанов. По его словам, запуск центра станет мощным стимулом для всей страны: создаст условия для возвращения кыргызстанских IT-специалистов из-за рубежа; привлечет интерес и участие международных технологических компаний; обеспечит площадку для подготовки новых кадров.",
           "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "KG"
+              },
+              "claims",
+              {
+                "id": "claims-580ba0288c8b4010aea2f523bc3b1db4"
+              },
+              "text"
+            ],
             [
               "jurisdictions",
               {
@@ -57111,10 +57451,10 @@
               {
                 "id": "related_bodies-fdad2f5177b952f6a2fda4df12581b60"
               },
-              "role"
+              "name"
             ]
           ],
-          "gloss": "It concerns a fully fledged laboratory and technology hub that will bring together IT, research and development",
+          "gloss": "Construction of a national AI centre in Kyrgyzstan will start in 2026, the first deputy minister of digital development and innovative technologies, Nursultan Kubanov, said in an interview with Birinchi Radio; according to him, the centre will encourage Kyrgyz IT specialists to return from abroad, attract international technology companies and provide a platform for training new personnel.",
           "accessed": "2026-10-17"
         }
       ],
@@ -57265,21 +57605,7 @@
       "accessed": "2026-10-17",
       "language": "en",
       "archive_url": "https://web.archive.org/web/20261017014339/https://imedi.ge/en/economy/10426/georgian-economy-minister-georgias-digital-transformation-aims-to-create-opportunities-ensure-every-citizen-benefits-from-digital-economy",
-      "excerpts": [
-        {
-          "text": "in Kutaisi’s technology hub we are establishing the country’s first artificial intelligence research centre.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "GE"
-              },
-              "summary"
-            ]
-          ],
-          "accessed": "2026-10-17"
-        }
-      ],
+      "excerpts": [],
       "origin": "GE",
       "access_note": "The exact quotation occurs in an article paragraph inside a hidden streamed-HTML container. The visible-only extraction does not recover it. One attempt to retrieve a text copy on 17 October 2026 timed out; the quotation remains flagged for a rendered-page check.",
       "snapshot": {
@@ -59406,62 +59732,7 @@
       "access_note": "PDF with a partly garbled text layer and scanned pages that are legible as images; first pages and the articles on risk classification and general-purpose models were read. The three quoted Arabic headings were visually verified on 17 October 2026 and rechecked on 19 October against the contents on PDF page 2 (articles 5, 6 and 12). The text layer fragments and reorders Arabic glyphs, so the quotations rely on visual verification. The document is marked as a draft for public consultation.",
       "archive_url": "https://web.archive.org/web/20261003222805/https://cmc.iq/wp-content/uploads/2026/09/%D8%A7%D9%84%D9%84%D8%A7%D9%8A%D9%94%D8%AD%D8%A9-%D8%A7%D9%84%D8%AA%D9%86%D8%B8%D9%8A%D9%85%D9%8A%D8%A9-%D9%84%D8%AE%D8%AF%D9%85%D8%A7%D8%AA-%D8%A7%D9%84%D8%B0%D9%83%D8%A7%D8%A1-%D8%A7%D9%84%D8%A7%D8%B5%D8%B7%D9%86%D8%A7%D8%B9%D9%8A-%D9%81%D9%8A-%D8%AC%D9%85%D9%87%D9%88%D8%B1%D9%8A%D8%A9-%D8%A7%D9%84%D8%B9%D8%B1%D8%A7%D9%82%D9%8A-%D8%A7%D9%84%D9%89-%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D8%B4%D8%A7%D8%B1%D8%A9-%D8%A7%D9%84%D8%B9%D8%A7%D9%85%D8%A9-1287.pdf",
       "origin": "IQ",
-      "excerpts": [
-        {
-          "text": "تصنيف التراخيص",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "IQ"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-945d392d56a05f6287e52c4fe0374c5c"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-10-17",
-          "gloss": "Licence classification"
-        },
-        {
-          "text": "متطلبات الترخيص",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "IQ"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-945d392d56a05f6287e52c4fe0374c5c"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-10-17",
-          "gloss": "Licence requirements"
-        },
-        {
-          "text": "منهجية تقييم وتصنيف مخاطر أنظمة الذكاء الاصطناعي",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "IQ"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-945d392d56a05f6287e52c4fe0374c5c"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-10-17",
-          "gloss": "Methodology for assessing and classifying the risks of artificial intelligence systems"
-        }
-      ],
+      "excerpts": [],
       "snapshot": {
         "retrieved": "2026-10-17T14:08:04.647601+00:00",
         "sha256": "14fd51c483399405f9acb2083e3257ed063220c0d5c1fcdf76437f7067b2b870",
@@ -59479,25 +59750,7 @@
       "accessed": "2026-10-17",
       "language": "en",
       "archive_url": "https://web.archive.org/web/20261017024907/https://www.iraq-businessnews.com/2026/09/28/public-consultation-opens-on-iraqs-draft-ai-regulation/",
-      "excerpts": [
-        {
-          "text": "The Communications and Media Commission (CMC) announced the move, inviting stakeholders to submit comments within 30 days from 23 September 2026.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "IQ"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-945d392d56a05f6287e52c4fe0374c5c"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-10-17"
-        }
-      ],
+      "excerpts": [],
       "origin": "GB",
       "snapshot": {
         "retrieved": "2026-10-17T14:22:26Z",
@@ -59867,15 +60120,94 @@
               {
                 "id": "OM"
               },
-              "related_bodies",
+              "claims",
               {
-                "id": "related_bodies-467fa5e9fe2f58de883dcb7c25eb5f63"
+                "id": "claims-022ac06e950f4904acac4deccdcbbc22"
               },
-              "role"
+              "text"
             ]
           ],
           "accessed": "2026-11-14",
           "gloss": "regulatory bodies monitor the compliance of institutions in the sectors they supervise with the policy"
+        },
+        {
+          "text": "تتولى وزارة النقل والاتصالات وتقنية تقنية المعلومات مراقبة التزام وحدات الجهاز الاداري للدولة بالسياسة وعرض نتائج التقيد والالتزام لمجلس الوزراء.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "OM"
+              },
+              "claims",
+              {
+                "id": "claims-1396a29a8b4b4132b9a4e7fd641df5c9"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "The Ministry of Transport, Communications and Information Technology monitors state administrative units' compliance with the policy and presents compliance results to the Council of Ministers.",
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "إجراء تقييم للأثر الأخلاقي، والاجتماعي والبيئي لأنظمة الذكاء الاصطناعي قبل نشرها واستخدامها والاحتفاظ بنتائج هذا التقييم ضمن وثائق النظام.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "OM"
+              },
+              "claims",
+              {
+                "id": "claims-e9b44f5b573f4a9bbc30295f67b3581e"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "Assess the ethical, social and environmental impact of AI systems before deployment and use, and retain the assessment results in the system documentation.",
+          "anchors": [
+            {
+              "kind": "heading",
+              "text": "ثالثا: ضوابط واشتراطات تطوير أنظمة الذكاء الاصطناعي:",
+              "gloss": "Third: controls and requirements for developing AI systems:"
+            }
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "وزارة النقل والاتصالات وتقنية المعلومات: تعميم رقم ١١ / ٢٠٢٥ السياسة العامة للاستخدام الآمن والأخلاقي لأنظمة الذكاء الاصطناعي أبريل ٢٠٢٥م",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "OM"
+              },
+              "claims",
+              {
+                "id": "claims-e9b44f5b573f4a9bbc30295f67b3581e"
+              },
+              "act"
+            ]
+          ],
+          "gloss": "Ministry of Transport, Communications and Information Technology: Circular 11/2025, General Policy for the Safe and Ethical Use of AI Systems, April 2025.",
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "صدر في: ١٠ شوال ١٤٤٦هـ الموافق ٩ أبريل ٢٠٢٥م",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "OM"
+              },
+              "claims",
+              {
+                "id": "claims-e9b44f5b573f4a9bbc30295f67b3581e"
+              },
+              "date"
+            ]
+          ],
+          "gloss": "Issued on 10 Shawwal 1446 AH, corresponding to 9 April 2025.",
+          "accessed": "2026-10-17"
         }
       ]
     },
@@ -59986,55 +60318,7 @@
       "language": "en",
       "access_note": "A source copy was read on 17 October 2026 for the attached excerpts. Earlier access limitations: Cover is dated September 2026; PDF metadata shows creation on 7 Oct 2026. The document states its initiatives and entities are proposals for discussion, not agreed commitments. Full PDF retrieved again on 17 October 2026. The ministry landing pages https://www.mitai.gov.lb/strategy and https://www.mitai.gov.lb/ returned title-only shells; their single text-only fallbacks failed. The PDF remained readable.",
       "archive_url": "https://web.archive.org/web/20261017030154/https://www.mitai.gov.lb/documents/National_AI_Strategy_for_Lebanon_2032.pdf",
-      "excerpts": [
-        {
-          "text": "Independent evaluation of whether AI systems are fit for sensitive-domain deployment. Publishes to the AI National Council.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "LB"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-8e412fdd47d255c1be3bb35baf600289"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-10-17"
-        },
-        {
-          "text": "AI Security and Red-Team Lab",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "LB"
-              },
-              "summary"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "LB"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "LB"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-54a6e3a9b5675e6986cf27afe5904159"
-              },
-              "role"
-            ]
-          ]
-        }
-      ],
+      "excerpts": [],
       "origin": "LB",
       "snapshot": {
         "retrieved": "2026-10-17T14:22:31Z",
@@ -60128,7 +60412,27 @@
         "sha256": "d5b4ec79bed0763c4636579380ff373d1403c590d5ce6e1051a0f806845a6f36",
         "text_sha256": "89a420bc668caa45a12c29fa51a777c6bed04f82d53af11505b0dab44743faa4",
         "text_scheme": 1
-      }
+      },
+      "excerpts": [
+        {
+          "text": "تنفيذا للمبادرات والمشاريع المتضمنة في البرنامج الوطني للذكاء الاصطناعي والتقنيات الرقمية المقتدمة، شكّلت وزارة النقل والاتصالات وتقنية المعلومات لجنة خبراء الذكاء الاصطناعي بموجب القرار الوزاري رقم 124/2025، بهدف تقديم المشورة والمقترحات لصنّاع القرار بشأن الفرص والتحديات المرتبطة بتطوير تقنيات الذكاء الاصطناعي واعتمادها في سلطنة عُمان.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "OM"
+              },
+              "claims",
+              {
+                "id": "claims-867794396aa24d3da28d17b401bd18e4"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "To implement the initiatives and projects in the national programme for AI and advanced digital technologies, the Ministry of Transport, Communications and Information Technology formed the AI Experts Committee under Ministerial Decision 124/2025 to provide advice and proposals to decision-makers on opportunities and challenges associated with developing and adopting AI technologies in Oman.",
+          "accessed": "2026-10-17"
+        }
+      ]
     },
     {
       "id": "ao-aipolicy-2026",
@@ -67348,21 +67652,61 @@
       "archive_url": "https://web.archive.org/web/20260607050612/https://iutet.tj/ru/%D1%80%D0%B0%D0%B7%D1%8A%D1%8F%D1%81%D0%BD%D0%B5%D0%BD%D0%B8%D0%B5-%D0%BF%D0%BE%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D0%B9-%D0%BF%D1%80%D0%B0%D0%B2%D0%B8%D1%82%D0%B5%D0%BB%D1%8C/",
       "excerpts": [
         {
-          "text": "В целях подготовки высококвалифицированных, владеющих иностранными языками и современными знаниями специалистов",
+          "text": "В целях подготовки высококвалифицированных, владеющих иностранными языками и современными знаниями специалистов по указанным направлениям очередной инициативой Лидера нации стало создание при Международном университете туризма и предпринимательства Таджикистана государственных учреждений «Академия туризма», «Институт мировой экономики и дипломатии» и «Институт цифровых технологий и искусственного интеллекта».",
           "supports": [
             [
               "jurisdictions",
               {
                 "id": "TJ"
               },
-              "related_bodies",
+              "claims",
               {
-                "id": "related_bodies-80e96e8fbff750a291e31aa275f2c8d1"
+                "id": "claims-69f1ade09c5d42c09e57b6e098d87fe7"
               },
-              "role"
+              "text"
             ]
           ],
-          "gloss": "To train highly qualified specialists with foreign-language skills and modern knowledge.",
+          "gloss": "To train highly qualified specialists in these fields with foreign-language skills and modern knowledge, a further initiative of the Leader of the Nation was to create the public institutions Academy of Tourism, Institute of World Economy and Diplomacy, and Institute of Digital Technologies and Artificial Intelligence at the International University of Tourism and Entrepreneurship of Tajikistan.",
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Сегодня Президент Республики Таджикистан, Лидер нации уважаемый Эмомали Рахмон подписал постановления Правительства Республики Таджикистан о создании государственных учреждений «Академия туризма», «Институт мировой экономики и дипломатии» и «Институт цифровых технологий и искусственного интеллекта» в составе Международного университета туризма и предпринимательства Таджикистана.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "TJ"
+              },
+              "claims",
+              {
+                "id": "claims-844232b106c7402f8ce11fa817a52f2c"
+              },
+              "text"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "TJ"
+              },
+              "claims",
+              {
+                "id": "claims-844232b106c7402f8ce11fa817a52f2c"
+              },
+              "act"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "TJ"
+              },
+              "claims",
+              {
+                "id": "claims-844232b106c7402f8ce11fa817a52f2c"
+              },
+              "date"
+            ]
+          ],
+          "gloss": "Today the President of Tajikistan, Emomali Rahmon, signed government resolutions creating the public institutions Academy of Tourism, Institute of World Economy and Diplomacy, and Institute of Digital Technologies and Artificial Intelligence within the International University of Tourism and Entrepreneurship of Tajikistan.",
           "accessed": "2026-10-17"
         }
       ],
@@ -67425,7 +67769,70 @@
         "sha256": "cea08f2712406921c42d3936a908c1da5b707fb4a75306d21138d00bdebaa798",
         "text_sha256": "18592254050b9d273eaa9ebd88e52c91a6693dc8f5ed7df4025d548e2ac0b410",
         "text_scheme": 1
-      }
+      },
+      "excerpts": [
+        {
+          "text": "Täze merkez milli sanly ileri tutulýan ugurlary goldamak, ylmy-barlag işlerini geçirmek hem-de ýokary hünärli işgärleri taýýarlamak bilen meşgullanar.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "TM"
+              },
+              "claims",
+              {
+                "id": "claims-77898c1e5a594201b5c4a4d2a8e3325f"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "The new centre will support national digital priorities, conduct research and train highly qualified specialists.",
+          "anchors": [
+            {
+              "kind": "definition",
+              "text": "Bu maksatlara ýetmek üçin, «Türkmentelekom» döwlet elektroaragatnaşyk kompaniýasynyň binýadynda emeli aň ulgamynda Başarnyklar merkezini döretmek göz öňünde tutulýar.",
+              "gloss": "To achieve these objectives, an AI Competence Centre is envisaged at the state telecommunications company TurkmenTelecom."
+            }
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Nebitgaz pudagynda çaklamalary amala aşyrmak üçin emeli aňy ulanmak boýunça synag taslamalaryny durmuşa geçirmek meýilleşdirilýär. Türkmenistanyň Aragatnaşyk ministrligi bu ugurdaky işleri halkara hyzmatdaşlar bilen bilelikde alyp barar.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "TM"
+              },
+              "claims",
+              {
+                "id": "claims-4add20db2760440baceda7157d03a4ca"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "Pilot projects using AI for forecasting in the oil and gas sector are planned; the Ministry of Communications of Turkmenistan will carry out this work with international partners.",
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Bu maksatlara ýetmek üçin, «Türkmentelekom» döwlet elektroaragatnaşyk kompaniýasynyň binýadynda emeli aň ulgamynda Başarnyklar merkezini döretmek göz öňünde tutulýar.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "TM"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-62875bfb12bf520d928cf13b8cf5e366"
+              },
+              "name"
+            ]
+          ],
+          "gloss": "To achieve these objectives, an AI Competence Centre is envisaged at the state telecommunications company TurkmenTelecom.",
+          "accessed": "2026-10-17"
+        }
+      ]
     },
     {
       "id": "tm-recheck2-ai-strategy-workshop",
@@ -67436,26 +67843,7 @@
       "accessed": "2026-10-17",
       "language": "en",
       "published": "2026-05-20",
-      "excerpts": [
-        {
-          "text": "jointly with the Ministry of Communications of Turkmenistan, organized a workshop on key findings of the draft Strategy.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "TM"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-caaf2317dc015a39aa7b7d901b5e0f84"
-              },
-              "role"
-            ]
-          ],
-          "url": "https://r.jina.ai/https://www.undp.org/turkmenistan/press-releases/undp-supports-national-efforts-shape-turkmenistans-artificial-intelligence-strategy",
-          "accessed": "2026-10-17"
-        }
-      ],
+      "excerpts": [],
       "origin": "UNDP",
       "snapshot": {
         "retrieved": "2026-10-17T14:23:18Z",
@@ -67483,39 +67871,7 @@
         "text_sha256": "af32447648a1bc30e7a2b51bdfa027e05e4ee67155552fba6590fd4ab1854aaf",
         "text_scheme": 1
       },
-      "excerpts": [
-        {
-          "text": "Yüksek etkili yapay zekâ sistemleri canlıya alınmadan önce",
-          "gloss": "High-impact AI systems before going live.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "TR"
-              },
-              "summary"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "TR"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "TR"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-a3752ffebbe754e59fec908533fa039b"
-              },
-              "role"
-            ]
-          ]
-        }
-      ]
+      "excerpts": []
     },
     {
       "id": "tr-recheck2-summit",
@@ -68322,7 +68678,63 @@
         "text_scheme": 1
       },
       "instrument_status_checked": "2026-11-08",
-      "access_note": "Order No. 530 of 19 March 2025. Its status was confirmed in the Ministry of Justice's register of legal acts, e-qanun.az (https://e-qanun.az/framework/59218), on 8 November 2026: Qüvvədədir (in force), with no later versions."
+      "access_note": "Order No. 530 of 19 March 2025. Its status was confirmed in the Ministry of Justice's register of legal acts, e-qanun.az (https://e-qanun.az/framework/59218), on 8 November 2026: Qüvvədədir (in force), with no later versions.",
+      "excerpts": [
+        {
+          "text": "Государственной службе специальной связи и информационной безопасности Азербайджанской Республики провести анализ рисков информационной безопасности в сферах применения искусственного интеллекта в государственных органах (структурах), в том числе принять необходимые меры для обеспечения в государственных органах (структурах) информационной безопасности, связанной с искусственным интеллектом.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "AZ"
+              },
+              "claims",
+              {
+                "id": "claims-40bc317e3f9741a5b8c6ee947bdc5c59"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "The State Service for Special Communications and Information Security of Azerbaijan is to analyse information-security risks in areas of AI use in state bodies, including taking the necessary measures to ensure their AI-related information security.",
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Распоряжение Президента Азербайджанской Республики Об утверждении «Стратегии искусственного интеллекта Азербайджанской Республики на 2025–2028 годы»",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "AZ"
+              },
+              "claims",
+              {
+                "id": "claims-40bc317e3f9741a5b8c6ee947bdc5c59"
+              },
+              "act"
+            ]
+          ],
+          "gloss": "Order of the President of Azerbaijan approving the Artificial Intelligence Strategy of Azerbaijan for 2025–2028.",
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "город Баку, 19 марта 2025 года",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "AZ"
+              },
+              "claims",
+              {
+                "id": "claims-40bc317e3f9741a5b8c6ee947bdc5c59"
+              },
+              "date"
+            ]
+          ],
+          "gloss": "Baku, 19 March 2025",
+          "accessed": "2026-10-17"
+        }
+      ]
     },
     {
       "id": "bd-fe-2026-primary-proposal",
@@ -68829,21 +69241,7 @@
       "language": "en",
       "archive_url": "https://web.archive.org/web/20260610114232/https://sis.gov.eg/en/media-center/news/egypt-yemen-discuss-cooperation-in-digital-transformation/",
       "published": "2026-04-09",
-      "excerpts": [
-        {
-          "text": "Yemeni counterpart Shadi Saleh Basura to discuss ways of strengthening bilateral cooperation in digital transformation and digital capacity building.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "YE"
-              },
-              "summary"
-            ]
-          ],
-          "accessed": "2026-10-17"
-        }
-      ],
+      "excerpts": [],
       "origin": "EG",
       "snapshot": {
         "retrieved": "2026-10-17T14:23:44Z",
@@ -84239,20 +84637,7 @@
       "type": "primary",
       "accessed": "2026-10-17",
       "language": "en",
-      "excerpts": [
-        {
-          "text": "the AI National Strategy and Implementation Plan 2023-2027",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "JO"
-              },
-              "notes"
-            ]
-          ]
-        }
-      ],
+      "excerpts": [],
       "origin": "JO",
       "snapshot": {
         "retrieved": "2026-10-17T14:27:30Z",
@@ -84388,20 +84773,7 @@
       "type": "primary",
       "accessed": "2026-10-17",
       "language": "en",
-      "excerpts": [
-        {
-          "text": "promote the safe and responsible use of artificial intelligence across public and private sector entities in Bahrain",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "BH"
-              },
-              "notes"
-            ]
-          ]
-        }
-      ],
+      "excerpts": [],
       "origin": "BH",
       "snapshot": {
         "retrieved": "2026-10-17T14:27:39Z",
@@ -84496,22 +84868,7 @@
       "type": "primary",
       "accessed": "2026-10-17",
       "language": "ar",
-      "excerpts": [
-        {
-          "text": "طلب استشارة عامة الدليل الإرشادي لتبني الذكاء الاصطناعي في دولة الكويت",
-          "accessed": "2026-10-17",
-          "gloss": "Request for public consultation: guideline for adopting artificial intelligence in the State of Kuwait.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "KW"
-              },
-              "notes"
-            ]
-          ]
-        }
-      ],
+      "excerpts": [],
       "origin": "KW",
       "title_en": "Public Authority for Communications and Information Technology: public consultations",
       "snapshot": {
@@ -84529,21 +84886,7 @@
       "type": "primary",
       "accessed": "2026-10-17",
       "language": "ar",
-      "excerpts": [
-        {
-          "text": "وزارة الإعلام تنظم ورشة عمل بدمشق حول آليات توظيف الذكاء الاصطناعي في القطاع الحكومي",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "SY"
-              },
-              "notes"
-            ]
-          ],
-          "gloss": "The Ministry of Information organises a Damascus workshop on applying AI in government."
-        }
-      ],
+      "excerpts": [],
       "origin": "SY",
       "title_en": "Ministry of Information organises a workshop in Damascus on mechanisms for using artificial intelligence in the government sector",
       "snapshot": {
@@ -93165,21 +93508,7 @@
       "language": "en",
       "accessed": "2026-10-17",
       "published": "2026-03-06",
-      "excerpts": [
-        {
-          "text": "organized by the Ministry of Communications and the United Nations Development Programme",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "TM"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-10-17"
-        }
-      ],
+      "excerpts": [],
       "access_note": "Domestic government transport-enterprise republication of reporting on the ministry/UNDP workshop; not a firsthand statement by the AI-policy authority. Retained as a domestic secondary companion to UNDP's firsthand account.",
       "snapshot": {
         "retrieved": "2026-10-17T14:18:23.241709+00:00",
@@ -94570,7 +94899,26 @@
         "sha256": "7907b3fca4a3323fc265fefb9b34811f0acbae6db8621355f1cc9537959582fe",
         "text_sha256": "720de1e5a8cd995c58134aa611415ef2869d6da43f30508a41e33b026d9874e6",
         "text_scheme": 1
-      }
+      },
+      "excerpts": [
+        {
+          "text": "AI Virtual Institute is a platform for open innovation, which is a strategic initiative of the Ministry Of High-Tech Industry and Artificial Intelligence to empower tech enterprises and researchers for building fast-growing technology companies.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "AM"
+              },
+              "claims",
+              {
+                "id": "claims-bf066637dcc143d6a0baa59245347ef8"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        }
+      ]
     },
     {
       "id": "r4-ge-dga-english",
@@ -97352,20 +97700,46 @@
           ]
         },
         {
-          "text": "personalized medicine, genomic analytics, climate resilience, and smart daily infrastructure",
+          "text": "We are simultaneously training Israel's next scientific vanguard in deep mathematics, physics and PhD-level research while rapidly driving a national upskilling project to adapt the entire labor market for the AI era.",
           "supports": [
             [
               "jurisdictions",
               {
                 "id": "IL"
               },
-              "related_bodies",
+              "claims",
               {
-                "id": "related_bodies-86376fd4dd9f565898df7c8cc00607f9"
+                "id": "claims-ee7a4e2430074cb0aa9e6ec344ce37aa"
               },
-              "role"
+              "text"
             ]
-          ]
+          ],
+          "accessed": "2026-10-19",
+          "url": "https://r.jina.ai/https://govextra.gov.il/livedai/en/home/action-frontiers/"
+        },
+        {
+          "text": "We deploy AI to solve humanity's most vital challenges: personalized medicine, genomic analytics, climate resilience, and smart daily infrastructure-transforming breakthrough models into life-saving, real-world solutions",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "IL"
+              },
+              "claims",
+              {
+                "id": "claims-efc41bab1cc645e186ad2f561bc82395"
+              },
+              "text"
+            ]
+          ],
+          "anchors": [
+            {
+              "kind": "heading",
+              "text": "NATIONAL INSTITUTE FOR IMPACT DRIVEN AI"
+            }
+          ],
+          "accessed": "2026-10-19",
+          "url": "https://r.jina.ai/https://govextra.gov.il/livedai/en/home/action-frontiers/"
         }
       ],
       "snapshot": {
@@ -97384,24 +97758,7 @@
       "accessed": "2026-10-17",
       "language": "en",
       "origin": "IL",
-      "excerpts": [
-        {
-          "text": "launched the National AI Program",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "IL"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-8ae64c9fe45a50c794b32a8b01445424"
-              },
-              "role"
-            ]
-          ]
-        }
-      ],
+      "excerpts": [],
       "snapshot": {
         "retrieved": "2026-10-19T00:11:47Z",
         "sha256": "a1a51f2e80427357bbeba66a9d330d811fc90aead19bada031663f4bc699db66",
@@ -97437,34 +97794,7 @@
       "language": "en",
       "origin": "US",
       "access_note": "The established-institutes table was downloaded and visually inspected. Israel's row names AI Security Research Unit, National Cyber Directorate and December 2024, but supplies no row-specific primary citation. These are unverified catalogue claims, not facts adopted by the tracker.",
-      "excerpts": [
-        {
-          "text": "AI Security Research Unit",
-          "url": "https://images.squarespace-cdn.com/content/v1/60355084905d134a93c099a8/c2a09725-6e7f-46b3-9e9d-14e524227dae/Established%2BInstitutes%2B%28Fully%2BOperational%29.png",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "IL"
-              },
-              "notes"
-            ]
-          ]
-        },
-        {
-          "text": "National Cyber Directorate",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "IL"
-              },
-              "notes"
-            ]
-          ],
-          "url": "https://images.squarespace-cdn.com/content/v1/60355084905d134a93c099a8/c2a09725-6e7f-46b3-9e9d-14e524227dae/Established%2BInstitutes%2B%28Fully%2BOperational%29.png"
-        }
-      ],
+      "excerpts": [],
       "snapshot": {
         "retrieved": "2026-10-19T00:11:52Z",
         "sha256": "e640e390f8c04ad71da08cc9461e92197cda444f762e96c6d3847e651aa51ec2",
@@ -97482,34 +97812,7 @@
       "language": "en",
       "origin": "IL",
       "access_note": "The cover is dated August 2026 without a day. The Directorate also publishes a Hebrew version at https://govextra.gov.il/media/bkwfd2t2/israel-ai-plan_hebrew.pdf, which describes the same three laboratories with the National Cyber Directorate.",
-      "excerpts": [
-        {
-          "text": "Establish three laboratories together with the National Cyber Directorate.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "IL"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-10-21"
-        },
-        {
-          "text": "A laboratory will drive solutions for securing AI systems throughout their life cycle",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "IL"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-10-21"
-        }
-      ],
+      "excerpts": [],
       "snapshot": {
         "retrieved": "2026-10-21T15:01:50Z",
         "sha256": "62b2ccf03e1d20c9baf03da4068bd11424b8dff84725f372032af433cc57ca68",
@@ -98432,20 +98735,7 @@
       "accessed": "2026-10-17",
       "language": "en",
       "origin": "TR",
-      "excerpts": [
-        {
-          "text": "Artificial Intelligence Institute develops core technologies in the field of artificial intelligence.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "TR"
-              },
-              "notes"
-            ]
-          ]
-        }
-      ],
+      "excerpts": [],
       "snapshot": {
         "retrieved": "2026-10-19T00:12:23Z",
         "sha256": "1bcdf1fb96e6d21146af47bfcf4f80af9d14352eba65a025dc2ccca68acbf3f8",
@@ -98470,7 +98760,39 @@
         "sha256": "c972b36457821800f3da7aa8f8343718586704189eb82f9343ee220fad1c8bdb",
         "text_sha256": "6012a2c8c21b45bbaf290f6f70d00d93d19589f170b508150875e901fe9de024",
         "text_scheme": 1
-      }
+      },
+      "excerpts": [
+        {
+          "text": "Kamuda yapay zekâ uygulamalarına öncülük etmek, buna yönelik; gereksinimleri ilgili kurumlar ile birlikte tespit etmek, ortak veri alanı altyapıs ını hayata geçirmek, uygulamalarda kullanılacak verilerin kalite kriter ve standartlarını belirlemek ve bunlara uygunluk vermek.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "TR"
+              },
+              "claims",
+              {
+                "id": "claims-9fd4ce1ebb444a4a9abeb2093f5b277a"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "Lead AI applications in the public sector, identify requirements with the relevant institutions, implement shared data infrastructure, set data quality criteria and standards for those applications and approve conformity with them.",
+          "anchors": [
+            {
+              "kind": "heading",
+              "text": "SGB'nin güncel başlıca görev ve yetkileri arasında ilgili mevzuatla v erilen diğer görevleri yapmak yanında aşağıdakiler yer almaktadır:",
+              "gloss": "SGB's main current duties and powers include the following, alongside other duties assigned by the relevant legislation:"
+            },
+            {
+              "kind": "definition",
+              "text": "SGB : Siber Güvenlik Başkanlığı",
+              "gloss": "SGB: Cybersecurity Presidency"
+            }
+          ],
+          "accessed": "2026-10-19"
+        }
+      ]
     },
     {
       "id": "sd-r6-nic-authorities",
@@ -115311,13 +115633,6 @@
               {
                 "id": "QA"
               },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "QA"
-              },
               "check",
               "governance_note"
             ],
@@ -115344,26 +115659,8 @@
               {
                 "id": "QA"
               },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "QA"
-              },
               "check",
               "governance_note"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "QA"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-4866f5bb18595aeb9fcb288725601fa3"
-              },
-              "role"
             ]
           ],
           "accessed": "2026-10-25",
@@ -115377,26 +115674,8 @@
               {
                 "id": "QA"
               },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "QA"
-              },
               "check",
               "governance_note"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "QA"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-4866f5bb18595aeb9fcb288725601fa3"
-              },
-              "role"
             ]
           ],
           "accessed": "2026-10-25",
@@ -115410,26 +115689,8 @@
               {
                 "id": "QA"
               },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "QA"
-              },
               "check",
               "governance_note"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "QA"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-4866f5bb18595aeb9fcb288725601fa3"
-              },
-              "role"
             ]
           ],
           "accessed": "2026-10-25",
@@ -115443,69 +115704,12 @@
               {
                 "id": "QA"
               },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "QA"
-              },
               "check",
               "governance_note"
             ]
           ],
           "accessed": "2026-10-25",
           "gloss": "Preparing and implementing mechanisms to measure compliance with the regulatory frameworks, policies, principles and technical frameworks for artificial intelligence"
-        },
-        {
-          "text": "تـصـمـيـم وتـطـويـر النماذج الأولية لتطبيقات الذكاء الاصطناعي",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "QA"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "QA"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-4866f5bb18595aeb9fcb288725601fa3"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-10-25",
-          "gloss": "Designing and developing prototypes of artificial intelligence applications"
-        },
-        {
-          "text": "إعـــداد وتطويـــر البحـــوث والدراســـات الخاصـــة بالـــذكاء الاصطناعـــي والمنصـــات والتطبيقـــات ذات الصلـــة",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "QA"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "QA"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-4866f5bb18595aeb9fcb288725601fa3"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-10-25",
-          "gloss": "Preparing and developing research and studies on artificial intelligence and the related platforms and applications"
         },
         {
           "text": "إقامـــة شـــراكات اســـتراتيجية مـــع الجهـــات الحكوميـــة والقطـــاع الخـــاص لدعـــم تبنـــي تقنيـــات الـــذكاء الاصطناعـــي",
@@ -115515,36 +115719,111 @@
               {
                 "id": "QA"
               },
-              "notes"
-            ],
-            [
-              "jurisdictions",
+              "claims",
               {
-                "id": "QA"
+                "id": "claims-2cf495cb906c4f8b8b6513af00a7eef3"
               },
-              "related_bodies",
-              {
-                "id": "related_bodies-4866f5bb18595aeb9fcb288725601fa3"
-              },
-              "role"
+              "text"
             ]
           ],
           "accessed": "2026-10-25",
-          "gloss": "Establishing strategic partnerships with government bodies and the private sector to support the adoption of artificial intelligence technologies"
+          "gloss": "Establishing strategic partnerships with government bodies and the private sector to support the adoption of artificial intelligence technologies",
+          "anchors": [
+            {
+              "kind": "membership",
+              "text": "المركز الوطني للذكاء الاصطناعي، يتألف من مكتب مدير المركز. إدارة الاستراتيجيات والامتثال والجودة. إدارة منصات الذكاء الاصطناعي. إدارة الشراكات والتمكين.",
+              "gloss": "The National Centre for Artificial Intelligence comprises the centre director's office, the strategies, compliance and quality department, the AI platforms department and the partnerships and empowerment department."
+            },
+            {
+              "kind": "heading",
+              "text": "تختص إدارة الشراكات والتمكين بما يلي:",
+              "gloss": "The partnerships and empowerment department is responsible for the following:"
+            }
+          ]
         },
         {
-          "text": "نُصـادق علـى هـذا القـرار ويتـم إصـداره",
+          "text": "اقتـــراح التشـــريعات اللازمـــة لتنظيـــم وتحفيـــز وتطويـــر اســـتخدام الـــذكاء الاصطناعـــي فـــي الدولـــة، بالتنســـيق مـــع الوحـــدة الإداريـــة المختصـــة.",
           "supports": [
             [
               "jurisdictions",
               {
                 "id": "QA"
               },
-              "notes"
+              "claims",
+              {
+                "id": "claims-7110ef5966d442bfa224702d88aed0a1"
+              },
+              "text"
             ]
           ],
-          "accessed": "2026-10-25",
-          "gloss": "We ratify this decision and it is issued"
+          "gloss": "Propose the legislation needed to regulate, encourage and develop AI use in the state, in coordination with the competent administrative unit.",
+          "anchors": [
+            {
+              "kind": "membership",
+              "text": "المركز الوطني للذكاء الاصطناعي، يتألف من مكتب مدير المركز. إدارة الاستراتيجيات والامتثال والجودة. إدارة منصات الذكاء الاصطناعي. إدارة الشراكات والتمكين.",
+              "gloss": "The National Centre for Artificial Intelligence comprises the centre director's office, the strategies, compliance and quality department, the AI platforms department and the partnerships and empowerment department."
+            },
+            {
+              "kind": "heading",
+              "text": "تختص إدارة الاستراتيجيات والامتثال والجودة بما يلي:",
+              "gloss": "The strategies, compliance and quality department is responsible for the following:"
+            }
+          ],
+          "accessed": "2026-10-25"
+        },
+        {
+          "text": "الوحدات الإداريـة التـابـعـة للـوزيـر:أولاا: 1 ..مكتب الوزير 2 ..المـكـتـب الفـنـي 3 ..إدارة التدقيق الداخلي 4 ..إدارة التـخـطـيـط والجـودة والابتكار 5 ..إدارة الشـؤون الـقـانـونيـة 6 . :المركز الوطني للذكاء الاصطناعي، يتألف من",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "QA"
+              },
+              "claims",
+              {
+                "id": "claims-3e559f222f8149008decb966e89d20ba"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "First, the administrative units attached to the minister: 1. Minister's office; 2. Technical office; 3. Internal audit department; 4. Planning, quality and innovation department; 5. Legal affairs department; 6. National Centre for Artificial Intelligence, comprising:",
+          "accessed": "2026-10-25"
+        },
+        {
+          "text": "2026 ) لسنـة34( قـرار مجلـس الـوزراء رقـم بتعديـل تنظيـم بعـض الوحـدات الإداريـة التـي تتألـف منهـا وزارة الاتصـالات وتكنولوجيـا المعلومـات وتعييـن اختصاصاتهـا",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "QA"
+              },
+              "claims",
+              {
+                "id": "claims-3e559f222f8149008decb966e89d20ba"
+              },
+              "act"
+            ]
+          ],
+          "gloss": "Council of Ministers Decision 34 of 2026 amending the organisation of certain administrative units of the Ministry of Communications and Information Technology and determining their responsibilities.",
+          "accessed": "2026-10-25"
+        },
+        {
+          "text": "هـ1448/03/20 :صـدر في الـديـوان الأميـري بتـاريخ م2026/09/02 : المـوافــق",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "QA"
+              },
+              "claims",
+              {
+                "id": "claims-3e559f222f8149008decb966e89d20ba"
+              },
+              "date"
+            ]
+          ],
+          "gloss": "Issued at the Amiri Diwan on 20 Rabi al-Awwal 1448 AH, corresponding to 2 September 2026.",
+          "accessed": "2026-10-25"
         }
       ],
       "snapshot": {
@@ -115568,13 +115847,6 @@
         {
           "text": "National Center for Artificial Intelligence (AI), comprising",
           "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "QA"
-              },
-              "notes"
-            ],
             [
               "jurisdictions",
               {
@@ -115605,26 +115877,8 @@
               {
                 "id": "QA"
               },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "QA"
-              },
               "check",
               "governance_note"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "QA"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-4866f5bb18595aeb9fcb288725601fa3"
-              },
-              "role"
             ]
           ],
           "accessed": "2026-10-25"
@@ -115637,26 +115891,8 @@
               {
                 "id": "QA"
               },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "QA"
-              },
               "check",
               "governance_note"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "QA"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-4866f5bb18595aeb9fcb288725601fa3"
-              },
-              "role"
             ]
           ],
           "accessed": "2026-10-25"
@@ -115669,26 +115905,8 @@
               {
                 "id": "QA"
               },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "QA"
-              },
               "check",
               "governance_note"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "QA"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-4866f5bb18595aeb9fcb288725601fa3"
-              },
-              "role"
             ]
           ],
           "accessed": "2026-10-25"
@@ -115701,87 +115919,8 @@
               {
                 "id": "QA"
               },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "QA"
-              },
               "check",
               "governance_note"
-            ]
-          ],
-          "accessed": "2026-10-25"
-        },
-        {
-          "text": "Designing and developing prototypes for Artificial Intelligence (AI) applications",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "QA"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "QA"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-4866f5bb18595aeb9fcb288725601fa3"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-10-25"
-        },
-        {
-          "text": "Preparing and developing research and studies related to Artificial Intelligence (AI), platforms, and relevant applications",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "QA"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "QA"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-4866f5bb18595aeb9fcb288725601fa3"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-10-25"
-        },
-        {
-          "text": "Establishing strategic partnerships with government entities and the private sector to support the adoption of Artificial Intelligence (AI) technologies",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "QA"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "QA"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-4866f5bb18595aeb9fcb288725601fa3"
-              },
-              "role"
             ]
           ],
           "accessed": "2026-10-25"
@@ -121055,13 +121194,6 @@
               {
                 "id": "GE"
               },
-              "summary"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "GE"
-              },
               "check",
               "governance_note"
             ]
@@ -121100,21 +121232,7 @@
       "accessed": "2026-11-10",
       "language": "en",
       "origin": "TM",
-      "excerpts": [
-        {
-          "text": "Turkmenistan is proposing the development of an International code for the peaceful use of artificial intelligence in international relations and diplomacy",
-          "accessed": "2026-11-10",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "TM"
-              },
-              "notes"
-            ]
-          ]
-        }
-      ],
+      "excerpts": [],
       "snapshot": {
         "retrieved": "2026-11-10T06:12:49Z",
         "sha256": "b1a3d7dae75f21de4e4ff2ff563af13d823ca2d700c00a11b969a67bfa0eb670",
