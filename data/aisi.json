@@ -439,7 +439,7 @@
         "policy_advice": {
           "label": "Policy advice",
           "short": "policy advice",
-          "definition": "It publishes or is tasked with policy research, recommendations or options for government on AI.",
+          "definition": "It advises government or parliament on AI policy or legislation, or a text tasks it to: advice, recommendations, options or policy research addressed to them, published or not; general reporting on capabilities and risks is risk monitoring, and support for rules already in force is regulator support.",
           "group": "Informing government"
         },
         "incident_response": {
@@ -31205,7 +31205,7 @@
             "id": "gb-access-gemini-4-argon",
             "model": "Gemini 4 Argon",
             "developer": "Google DeepMind",
-            "date": "2026-09-30",
+            "date": "2026-10-13",
             "kind": "deeper_than_public",
             "epoch_basis": "leading_developer",
             "epoch_model": "Gemini 1.0 Ultra",
@@ -51498,7 +51498,7 @@
       "type": "secondary",
       "accessed": "2026-10-17",
       "language": "en",
-      "access_note": "The live site failed during the earlier review. On 2026-10-17 the declared Wayback capture was retrieved in full and read, including its mission, research and contact text. The private copy and published checksum refer to that capture. The earlier private non-profit characterisation was not substantiated by the retained capture. The published snapshot hash identifies the retained archive capture at https://web.archive.org/web/20260608151050/https://www.kaisi.kz/. In a separate status review, live home and about pages failed direct retrieval and their single fallback requests for text copies. The archived page also failed a fresh web request and one text-only fallback. The previously retained 8 June 2026 capture was read locally; it describes research on the safety of advanced models, but does not itself substantiate the private non-profit label or staff count. The original saved capture and checksum remain unchanged. On 21 October 2026 kaisi.kz did not resolve, directly or through one text-copy attempt; the KazNIC registry record shows the domain expired on 1 October 2026 and is on server hold. The 8 June 2026 capture remains the latest copy of the site read. The domain still does not resolve as of 23 October 2026.",
+      "access_note": "The live site failed during the earlier review. On 2026-10-17 the declared Wayback capture was retrieved in full and read, including its mission, research and contact text. The private copy and published checksum refer to that capture. The earlier private non-profit characterisation was not substantiated by the retained capture. The published snapshot hash identifies the retained archive capture at https://web.archive.org/web/20260608151050/https://www.kaisi.kz/. In a separate status review, live home and about pages failed direct retrieval and their single fallback requests for text copies. The archived page also failed a fresh web request and one text-only fallback. The previously retained 8 June 2026 capture was read locally; it describes research on the safety of advanced models, but does not itself substantiate the private non-profit label or staff count. The original saved capture and checksum remain unchanged. On 21 October 2026 kaisi.kz did not resolve, directly or through one text-copy attempt; the KazNIC registry record shows the domain expired on 1 October 2026 and is on server hold. The 8 June 2026 capture remains the latest copy of the site read. The domain still does not resolve as of 23 October 2026. On 16 November 2026 the host no longer resolved; the archived copy is cited.",
       "archive_url": "https://web.archive.org/web/20260608151050/https://www.kaisi.kz/",
       "origin": "KZ",
       "snapshot": {
@@ -53018,7 +53018,7 @@
       "type": "secondary",
       "published": "2026-01-13",
       "accessed": "2026-10-16",
-      "access_note": "Blocks automated readers; content confirmed via FNH. Metadata check on 17 October 2026: automated retrieval returned HTTP 403. Missing metadata remains unknown. Private copy held from the Wayback capture of the page (the live site blocks automated readers).",
+      "access_note": "Blocks automated readers; content confirmed via FNH. Metadata check on 17 October 2026: automated retrieval returned HTTP 403. Missing metadata remains unknown. Private copy held from the Wayback capture of the page (the live site blocks automated readers). On 16 November 2026 the live page returned HTTP 404; the archived copy is cited.",
       "archive_url": "https://web.archive.org/web/20260419121244/https://meatechwatch.com/2026/01/13/morocco-launches-maroc-ia-2030-roadmap-to-strengthen-ai-governance-digital-sovereignty/",
       "origin": null,
       "snapshot": {
@@ -62565,7 +62565,7 @@
       "accessed": "2026-10-17",
       "language": "en",
       "archive_url": "https://web.archive.org/web/20260508044139/https://www.nist.gov/news-events/news/2026/05/caisi-signs-agreements-regarding-frontier-ai-national-security-testing",
-      "access_note": "A substantive archived source copy was retrieved and retained on 17 October 2026 and read for the attached excerpts. Direct inspection of the saved HTML confirms the article body. This supersedes the earlier note that the archive contents could not be retrieved; the private copy preserves the archived HTML, not a claim of current live availability. The published snapshot hash identifies the retained archive capture at https://web.archive.org/web/20260508044139/https://www.nist.gov/news-events/news/2026/05/caisi-signs-agreements-regarding-frontier-ai-national-security-testing. The original NIST page returns HTTP 404 as of 21 October 2026 and no relocated NIST page was found, so the archived copy is retained. The live NIST page returned HTTP 404 on 24 October 2026 and no moved copy was found on nist.gov; the archived copy of 8 May 2026 and the retained private copy remain the evidence.",
+      "access_note": "A substantive archived source copy was retrieved and retained on 17 October 2026 and read for the attached excerpts. Direct inspection of the saved HTML confirms the article body. This supersedes the earlier note that the archive contents could not be retrieved; the private copy preserves the archived HTML, not a claim of current live availability. The published snapshot hash identifies the retained archive capture at https://web.archive.org/web/20260508044139/https://www.nist.gov/news-events/news/2026/05/caisi-signs-agreements-regarding-frontier-ai-national-security-testing. The original NIST page returns HTTP 404 as of 21 October 2026 and no relocated NIST page was found, so the archived copy is retained. The live NIST page returned HTTP 404 on 24 October 2026 and no moved copy was found on nist.gov; the archived copy of 8 May 2026 and the retained private copy remain the evidence. On 16 November 2026 the live page returned HTTP 404; the archived copy is cited.",
       "excerpts": [
         {
           "text": "CAISI Signs Agreements Regarding Frontier AI National Security Testing With Google DeepMind, Microsoft and xAI",
@@ -63153,7 +63153,7 @@
       "accessed": "2026-10-17",
       "language": "ja",
       "archive_url": "https://web.archive.org/web/20260125033104/https://www.kantei.go.jp/jp/101_kishida/actions/202312/21ai.html",
-      "access_note": "A substantive archived source copy was retrieved and retained on 17 October 2026 and read for the attached excerpts. Direct inspection of the saved HTML confirms the article body. This supersedes the earlier note that the archive contents could not be retrieved; the private copy preserves the archived HTML, not a claim of current live availability. The published snapshot hash identifies the retained archive capture at https://web.archive.org/web/20260125033104/https://www.kantei.go.jp/jp/101_kishida/actions/202312/21ai.html. The original Prime Minister's Office page returns HTTP 404 as of 21 October 2026; the office no longer publishes this cabinet's activity pages and no relocated official copy was found, so the archived copy is retained. The live URL returned HTTP 404 on 24 October 2026; the archived copy and the retained private copy remain the evidence.",
+      "access_note": "A substantive archived source copy was retrieved and retained on 17 October 2026 and read for the attached excerpts. Direct inspection of the saved HTML confirms the article body. This supersedes the earlier note that the archive contents could not be retrieved; the private copy preserves the archived HTML, not a claim of current live availability. The published snapshot hash identifies the retained archive capture at https://web.archive.org/web/20260125033104/https://www.kantei.go.jp/jp/101_kishida/actions/202312/21ai.html. The original Prime Minister's Office page returns HTTP 404 as of 21 October 2026; the office no longer publishes this cabinet's activity pages and no relocated official copy was found, so the archived copy is retained. The live URL returned HTTP 404 on 24 October 2026; the archived copy and the retained private copy remain the evidence. On 16 November 2026 the live page returned HTTP 404; the archived copy is cited.",
       "excerpts": [
         {
           "text": "ＡＩセーフティ・インスティテュートを来年１月めどで設立することとします。",
@@ -63827,7 +63827,7 @@
       "legal_text": true,
       "instrument_status_checked": "2026-10-21",
       "language": "ko",
-      "access_note": "A source copy was read on 17 October 2026 for the attached excerpts. Earlier access limitations: Article text as amended by Act 21311 (20 Jan 2026), in force 22 Jan 2026; the Act itself first entered into force on 22 Jan 2026.",
+      "access_note": "A source copy was read on 17 October 2026 for the attached excerpts. Earlier access limitations: Article text as amended by Act 21311 (20 Jan 2026), in force 22 Jan 2026; the Act itself first entered into force on 22 Jan 2026. On 16 November 2026 this page returned HTTP 404 and no archived copy is declared; the copy read on 17 October 2026 holds the quotations.",
       "excerpts": [
         {
           "text": "[시행 2026. 1. 22.]",
@@ -66075,7 +66075,8 @@
         "sha256": "dfc6e3a9b857c73c878d752771270b3258913b3b76b92812f398d1ca4226d499",
         "text_sha256": "5ca3551b03680f451d4c51bd0d4594dd4f285b2172f8caf3fe85b292c236a8c6",
         "text_scheme": 1
-      }
+      },
+      "access_note": "On 16 November 2026 the live page returned HTTP 404; the archived copy is cited."
     },
     {
       "id": "ne-government-cnac-2025",
@@ -66114,7 +66115,8 @@
         "sha256": "862af34a413e1cfad169eeeb493de1a57e0b6e732f16605bafdb4fea12cd4973",
         "text_sha256": "4fde16f0e29ae6adf1fc525490f513e8b1dec4db23eabdafb5c87112aed121c3",
         "text_scheme": 1
-      }
+      },
+      "access_note": "On 16 November 2026 the live page returned HTTP 404; the archived copy is cited."
     },
     {
       "id": "tg-government-ai-strategy-2024",
@@ -96043,7 +96045,7 @@
       "accessed": "2026-10-21",
       "language": "en",
       "origin": "KZ",
-      "access_note": "Registry data retrieved on 21 October 2026. It records registration on 1 October 2025, expiration on 1 October 2026 and the status server hold; on the same day kaisi.kz did not resolve. A fresh lookup on 2 November 2026 returned HTTP 404 with the registry message \"The domain kaisi.kz does not exist in the registry.\" The snapshot tool does not preserve HTTP error bodies; the cited snapshot remains the valid 21 October registration record, not a copy of the later response. On 2 November www.kaisi.kz also returned DNS NXDOMAIN. Domain removal does not establish that the organisation has closed. A further lookup on 10 November 2026 returned the same HTTP 404 registry message.",
+      "access_note": "Registry data retrieved on 21 October 2026. It records registration on 1 October 2025, expiration on 1 October 2026 and the status server hold; on the same day kaisi.kz did not resolve. A fresh lookup on 2 November 2026 returned HTTP 404 with the registry message \"The domain kaisi.kz does not exist in the registry.\" The snapshot tool does not preserve HTTP error bodies; the cited snapshot remains the valid 21 October registration record, not a copy of the later response. On 2 November www.kaisi.kz also returned DNS NXDOMAIN. Domain removal does not establish that the organisation has closed. A further lookup on 10 November 2026 returned the same HTTP 404 registry message. On 16 November 2026 the registry returned HTTP 404 for this record.",
       "excerpts": [
         {
           "text": "server hold",
@@ -106163,7 +106165,7 @@
           "accessed": "2026-10-21"
         },
         {
-          "text": "Gemini 4 Argon,Google DeepMind,2026-09-30",
+          "text": "Gemini 4 Argon,Google DeepMind,2026-10-13",
           "supports": [
             [
               "institutes",
@@ -106210,13 +106212,13 @@
               "notes"
             ]
           ],
-          "accessed": "2026-10-21"
+          "accessed": "2026-11-16"
         }
       ],
       "snapshot": {
-        "retrieved": "2026-10-21T09:14:29Z",
-        "sha256": "3ef26619430a93ee4d126bc46e91699fe6f2b15ea7b8e830f0a565e32caaa224",
-        "text_sha256": "2fc6615a44a3aeb01f9c84ed7121e2816b56c40d3c97d8fd4aa0893081dbe4ea",
+        "retrieved": "2026-11-16T08:51:09Z",
+        "sha256": "83c8d3384cf7b380f47d21010ca3d96650ed2a6c295745ce4121bfc8225feebb",
+        "text_sha256": "369bf7a377e714db8fcfaf44662b5f881fb6d7ebf1135d67449575682295c966",
         "text_scheme": 1
       }
     },
@@ -121179,7 +121181,7 @@
       "origin": "FR",
       "excerpts": [
         {
-          "text": "Heads of States and Governments: Austria, Bahrain, Canada, Croatia, Cyprus, Estonia, Finland, France, Ireland, Kenya, Latvia, Liechtenstein, Luxembourg, Netherlands, Norway, Portugal.",
+          "text": "Heads of States and Governments: Austria, Bahrain, Canada, Croatia, Cyprus, Estonia, Finland, France, Germany, Ireland, Kenya, Latvia, Liechtenstein, Luxembourg, Netherlands, Norway, Portugal.",
           "supports": [
             [
               "jurisdictions",
@@ -121193,7 +121195,7 @@
               "text"
             ]
           ],
-          "accessed": "2026-11-10",
+          "accessed": "2026-11-16",
           "anchors": [
             {
               "text": "The declaration has been signed on Monday 9 November 2026 by the following Heads of States and Governments and CEOs:",
@@ -121203,9 +121205,9 @@
         }
       ],
       "snapshot": {
-        "retrieved": "2026-11-10T22:13:08Z",
-        "sha256": "d396581c937391e5b970a7ab199a8cc3680c1c9b3662062cec312cc0ba585275",
-        "text_sha256": "86b6c331dc0a78fcc4e8a93279f80bf46afe68d0d762b786d24029b30c3f7af8",
+        "retrieved": "2026-11-16T08:51:09Z",
+        "sha256": "d0eaf90a604f99c84ecc94d4a0db7a41d0e8e963400a50667b7a867d85888bb3",
+        "text_sha256": "1e6cc7788424576cbcbfca494a56edcb6e8754c930147f28db67b83f7b77ed15",
         "text_scheme": 1
       }
     },
