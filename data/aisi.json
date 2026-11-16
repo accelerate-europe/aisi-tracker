@@ -25571,21 +25571,15 @@
       "name": "Kenya",
       "kind": "state",
       "institute_id": "ke-ai-safety-institute",
-      "summary": "Kenya's AI Strategy 2025-2030 lists a national AI risk and safety institute as a flagship project, and the July 2026 draft AI policy would establish a Kenya AI Safety Institute for testing and evaluation. The cited sources do not show that a national institute has been designated. The network testing report published on 26 June 2025 credits a contribution to 'Kenya AISI'. This may mean Kenya's delegation; the report does not say which body made the contribution.",
       "related_bodies": [
         {
-          "name": "Ministry of Information, Communications and the Digital Economy (MICDE)",
-          "role": "It leads the AI strategy and the draft AI policy; it owns the policy and is not an evaluation body.",
-          "counts_as_aisi": false,
-          "kind": "other",
-          "id": "related_bodies-c3944eb2589f53c1b9fc7afcd5ee2ed8"
-        },
-        {
           "name": "Special Envoy for Technology (Amb. Philip Thigo)",
-          "role": "The Special Envoy represented Kenya at the November 2024 launch of the international network of AI safety institutes.",
           "counts_as_aisi": false,
           "kind": "other",
-          "id": "related_bodies-0fee94dff79057a4a00a8c67e747b919"
+          "id": "related_bodies-0fee94dff79057a4a00a8c67e747b919",
+          "source_ids": [
+            "ke-kna-network-2024"
+          ]
         }
       ],
       "next_check": {
@@ -25613,7 +25607,17 @@
             "scope": "Aligned the network-report credit date in the summary with the output credited_from date and the Singapore AISI publication page; no full record recheck."
           }
         ],
-        "last_checked_basis": "historical_upper_bound"
+        "last_checked_basis": "historical_upper_bound",
+        "log": [
+          {
+            "date": "2026-10-17",
+            "text": "Read the record's cited sources for a national designation of the institute."
+          },
+          {
+            "date": "2026-10-21",
+            "text": "Read Kenya News Agency's network-launch report and the multilingual testing report for the institute's institutional status."
+          }
+        ]
       },
       "source_ids": [
         "ke-ai-strategy-2025",
@@ -25627,7 +25631,6 @@
         "fix-output-network-multilingual-arxiv",
         "r5-sg-multilingual-full-report-page"
       ],
-      "notes": "Kenya is a member of the International Network for Advanced AI Measurement, Evaluation and Science. Kenya News Agency reports that Special Envoy for Technology Philip Thigo represented Kenya at the November 2024 network launch. The draft policy, including sections 3.7.5 and 4.5, would establish the institute; the document reviewed was issued for consultation. Neither the representation report nor the 'Kenya AISI' testing-report credit establishes the institute's formal institutional status.\n\nStatus confidence is medium because the strategy's flagship project 5.2.3, 'Develop a national AI risk and safety institute', names no model evaluation; the evaluation remit appears only in the July 2026 draft policy, which is not adopted.",
       "region": {
         "id": "002",
         "name": "Africa",
@@ -25700,6 +25703,19 @@
       "identifier_source_ids": [
         "un-m49",
         "wikidata-jurisdiction-identifiers"
+      ],
+      "claims": [
+        {
+          "id": "claims-fd95960d8b8d419e946a6b69daea7c47",
+          "kind": "function",
+          "code": "international_cooperation",
+          "basis": "activity",
+          "body_id": "related_bodies-0fee94dff79057a4a00a8c67e747b919",
+          "text": "Kenya News Agency reports that the Special Envoy for Technology represented Kenya in joining the inaugural International Network of AI Safety Institutes.",
+          "source_ids": [
+            "ke-kna-network-2024"
+          ]
+        }
       ]
     },
     {
@@ -40651,7 +40667,7 @@
       "jurisdiction_id": "KE",
       "host": "Not yet designated; the Ministry of Information, Communications and the Digital Economy leads the policy",
       "legal_form": "unknown",
-      "mandate": "Would conduct AI safety research, testing, evaluation, benchmarking, red-teaming, incident analysis and technical cooperation as a national technical institution; would support regulators without displacing their mandates (draft AI policy, section 3.7.5).",
+      "mandate": "The roadmap calls for a National AI Risk and Safety Institute to lead research, oversight and capacity building in AI safety and governance.",
       "website": null,
       "check": {
         "last_checked": "2026-10-16",
@@ -40729,7 +40745,29 @@
             "certification",
             "sandbox"
           ]
-        }
+        },
+        "log": [
+          {
+            "date": "2026-11-14",
+            "text": "Read the record's sources for a government designation of the institute."
+          },
+          {
+            "date": "2026-10-19",
+            "text": "Read the sources for the planned institute's legal form."
+          },
+          {
+            "date": "2026-10-24",
+            "text": "Read the July 2026 draft policy's implementation matrix for the lead and supporting bodies assigned to establish the institute."
+          },
+          {
+            "date": "2026-10-17",
+            "text": "Searched for an access event, legal power or agreement providing access to or evaluation of models from a developer with a model in Epoch AI's frontier set."
+          },
+          {
+            "date": "2026-10-24",
+            "text": "Read the draft AI policy for model-access provisions for the institute."
+          }
+        ]
       },
       "source_ids": [
         "ke-ai-strategy-2025",
@@ -40740,8 +40778,7 @@
         "catalogue-agentic-report",
         "gb-joint-testing"
       ],
-      "notes": "The 2025 strategy and July 2026 consultation draft plan a national institute. Section 8.5 of the June 2025 multilingual testing report explicitly credits 'Kenya AISI', rather than only Kenya. No government designation of that institute was located; the credit may identify the participating delegation. The planned status and the named contribution are recorded separately. The sources do not specify a legal form for the planned institute. The July 2026 draft policy names the State Department responsible for Science, Research, Technology and Innovation as lead for establishing the institute, with the ICT ministry (MICDE) among the supporting bodies; the draft is not adopted, so the host entry is unchanged (noted 24 October 2026).",
-      "mandate_short": "Planned national body for AI safety research, oversight and capacity building.",
+      "mandate_short": "Is to lead research, oversight and capacity building in AI safety and governance.",
       "placement": {
         "host_type": "unknown",
         "source_ids": [
@@ -40809,7 +40846,7 @@
       },
       "testing_capacity": {
         "state": "not_published",
-        "notes": "Adopted text names the institute without testing: the AI Strategy 2025-2030 lists the flagship project '5.2.3 Develop a national AI risk and safety institute', and the roadmap says 'Establish a National AI Risk and Safety Institute to lead research, oversight, and capacity building in AI safety and governance.' proposed: 'Establish the Kenya AI Safety Institute as the national technical institution responsible for AI safety research, testing, evaluation, benchmarking, red-teaming, incident analysis, and technical cooperation.' (Draft Kenya AI and Other Emerging Technologies Policy, July 2026), open for public comment until 4 August 2026 before Cabinet consideration. Joint network testing reported, 2025-06-26 (multilingual exercise, Kiswahili section 'Contributed by Kenya AISI') and 2025-07-17 (agentic exercise: 'Kenya also constructed a new set of tasks and tools'), as task design and analysis rather than running tests; no government designation of a Kenyan institute at those dates was found.",
+        "notes": "The international network's joint testing report says that AISIs from Kenya, Canada and the Republic of Korea contributed to the project's analysis phase alongside UK AISI, the EU AI Office and Australia.",
         "source_ids": [
           "ke-ai-strategy-2025",
           "ke-ai-roadmap-2025",
@@ -40874,10 +40911,6 @@
         ]
       },
       "model_access": {
-        "notes": "No access event, legal power or agreement providing for access to, or evaluation of, the models of a developer that has a model in Epoch AI's frontier set was found. The draft policy has no model-access provision for the institute.",
-        "source_ids": [
-          "ke-draft-policy-2026"
-        ],
         "searches": [
           {
             "date": "2026-10-21",
@@ -40938,7 +40971,7 @@
         "source_ids": [
           "ke-draft-policy-2026"
         ],
-        "notes": "proposed: the consultation draft Kenya AI and Emerging Technologies Policy (July 2026) lists 'staff recruited' among the indicators for establishing the institute within 0 to 24 months; the draft has not been adopted.",
+        "notes": "The draft policy's implementation matrix lists staff recruitment among the indicators for establishing the Kenya AI Safety Institute over 0 to 24 months.",
         "searches": [
           {
             "date": "2026-10-21",
@@ -40964,7 +40997,7 @@
           "kind": "one_off",
           "amount": 2000000000,
           "currency": "KES",
-          "description": "KES 2,000m estimated to establish the Kenya AI Safety Institute within 0 to 24 months, in the July 2026 draft AI policy; its implementation matrix does not say from which date the 24 months count.",
+          "description": "The draft policy's implementation matrix lists establishing the Kenya AI Safety Institute over 0 to 24 months.",
           "source_ids": [
             "ke-draft-policy-2026"
           ],
@@ -40974,7 +41007,7 @@
           "coverage": "whole_institute",
           "decision_date": "2026-07",
           "id": "funding-b60809279d92488ebf5dcea4813d9da9",
-          "notes": "Estimated cost in the draft policy's implementation matrix, with a timeframe of 0 to 24 months and no annual profile, to come from the Exchequer and development partners. The draft was issued for consultation and is not adopted, so the figure is a proposal, not a budget. The ECB publishes no reference rate for the Kenyan shilling, so the amount is not converted to euros and is not compared."
+          "notes": "The draft policy's implementation matrix lists the Exchequer and development partners alongside establishing the Kenya AI Safety Institute."
         }
       ],
       "claims": [
@@ -53621,25 +53654,11 @@
               {
                 "id": "KE"
               },
-              "summary"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "KE"
-              },
               "timeline",
               {
                 "id": "ke-2025-strategy"
               },
               "description"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "KE"
-              },
-              "notes"
             ]
           ],
           "accessed": "2026-10-17"
@@ -53695,6 +53714,13 @@
                 "id": "ke-ai-safety-institute"
               },
               "mandate_short"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ke-ai-safety-institute"
+              },
+              "mandate"
             ]
           ],
           "accessed": "2026-10-19"
@@ -53728,13 +53754,6 @@
               {
                 "id": "KE"
               },
-              "summary"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "KE"
-              },
               "timeline",
               {
                 "id": "ke-2026-draft-policy"
@@ -53754,13 +53773,6 @@
                 "id": "ke-ai-safety-institute"
               },
               "mandate_short"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "KE"
-              },
-              "notes"
             ],
             [
               "jurisdictions",
@@ -53799,17 +53811,6 @@
               {
                 "id": "funding-b60809279d92488ebf5dcea4813d9da9"
               },
-              "description"
-            ],
-            [
-              "institutes",
-              {
-                "id": "ke-ai-safety-institute"
-              },
-              "funding",
-              {
-                "id": "funding-b60809279d92488ebf5dcea4813d9da9"
-              },
               "coverage"
             ],
             [
@@ -53822,6 +53823,25 @@
                 "id": "funding-b60809279d92488ebf5dcea4813d9da9"
               },
               "funding_source"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ke-ai-safety-institute"
+              },
+              "staffing_model",
+              "notes"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ke-ai-safety-institute"
+              },
+              "funding",
+              {
+                "id": "funding-b60809279d92488ebf5dcea4813d9da9"
+              },
+              "description"
             ],
             [
               "institutes",
@@ -53878,30 +53898,6 @@
                 "id": "funding-b60809279d92488ebf5dcea4813d9da9"
               },
               "commitment"
-            ],
-            [
-              "institutes",
-              {
-                "id": "ke-ai-safety-institute"
-              },
-              "funding",
-              {
-                "id": "funding-b60809279d92488ebf5dcea4813d9da9"
-              },
-              "description"
-            ]
-          ],
-          "accessed": "2026-10-24"
-        },
-        {
-          "text": "LEAD Support State Department responsible for Science, Research, Technology and Innovation MICDE, NACOSTI, universities",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "ke-ai-safety-institute"
-              },
-              "notes"
             ]
           ],
           "accessed": "2026-10-24"
@@ -53929,13 +53925,6 @@
         {
           "text": "CALL FOR COMMENTS ON THE DRAFT KENYA ARTIFICIAL INTELLIGENCE AND OTHER EMERGING TECHNOLOGIES POLICY",
           "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "KE"
-              },
-              "notes"
-            ],
             [
               "jurisdictions",
               {
@@ -53988,7 +53977,11 @@
               {
                 "id": "KE"
               },
-              "notes"
+              "claims",
+              {
+                "id": "claims-fd95960d8b8d419e946a6b69daea7c47"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-17"
@@ -61205,20 +61198,6 @@
         {
           "text": "Contributed by Kenya AISI",
           "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "KE"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "KE"
-              },
-              "summary"
-            ],
             [
               "institutes",
               {
@@ -76351,6 +76330,14 @@
                 "id": "claims-c9a798e398554a7abdf03d003c394160"
               },
               "text"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ke-ai-safety-institute"
+              },
+              "testing_capacity",
+              "notes"
             ]
           ],
           "accessed": "2026-10-17"
@@ -94619,13 +94606,6 @@
                 "id": "intl-network-multilingual-2025"
               },
               "date"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "KE"
-              },
-              "summary"
             ]
           ]
         },
