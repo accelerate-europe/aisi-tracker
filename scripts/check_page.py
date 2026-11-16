@@ -10995,13 +10995,16 @@ def functions_phone_structure(html: str, data: dict) -> list[str]:
         need(button.get("type") == "button" and button.get("aria-expanded") == "false" and button.get("aria-controls") and
              button.get("aria-label") == f"{expected['country']}, {expected['name']}: show functions", key + ': phone row control/name differs')
         controls.append(button.get("aria-controls"))
-        need(not button.select('[tabindex], button, a[href], input, select, textarea, [contenteditable="true"]'), key + ': phone row has nested focus targets')
-        country = button.select_one(':scope > span.fn-phone-country')
+        need(not button.find() and not button.get_text(), key + ': phone row button must be empty')
+        need(row.select('button, [tabindex], a[href], input, select, textarea, [contenteditable="true"]') == [button], key + ': phone row has other focus targets')
+        country = row.select_one(':scope > span.fn-phone-country')
         need(country and country.get_text() == expected["country"], key + ': phone country label differs')
-        need(not button.select('abbr, .g, [data-tip], [aria-description], [title]'), key + ': phone country has a tooltip')
-        need(button.get_text() == expected["country"] and not FN_STATUS_WORD.search(button.get("aria-label", "")), key + ': phone row has counts or status words')
-        pip_groups = button.select(':scope > .fn-pips')
+        need(country and country.get("aria-hidden") == "true", key + ': decorative phone country is exposed')
+        need(not row.select('abbr, .g, [data-tip], [aria-description], [title]'), key + ': phone country has a tooltip')
+        need(row.get_text(strip=True) == expected["country"] and not FN_STATUS_WORD.search(button.get("aria-label", "")), key + ': phone row has counts or status words')
+        pip_groups = row.select(':scope > .fn-pips')
         need(len(pip_groups) == len(groups), key + ': phone pip groups/order differ')
+        need(row.find_all(recursive=False) == [button, country, *pip_groups], key + ': phone row children/order differ')
         # The published model fixes block/row order, group order and column order within each group.
         # Decorative pips carry only their shape class; values come from that ordered model.
         for pips, group in zip(pip_groups, groups):
@@ -11144,20 +11147,40 @@ FN_GEOMETRY = r"""() => {
 }""".replace("/* FUNCTION_POLYGON */", FN_POLYGON_JS)
 
 
+FN_PHONE_BOUNDS_JS = """
+  const phoneBounds = node => {
+    if (!node) return null;
+    let rects;
+    if (node.matches('.fn-pips')) {
+      // The structure oracle fixes pip order; measure the painted run, not its stretched grid item.
+      const pips = [...node.querySelectorAll(':scope > .fn-pip')];
+      if (!pips.length) return null;
+      rects = [pips[0].getBoundingClientRect(), pips[pips.length - 1].getBoundingClientRect()];
+    } else {
+      const range = document.createRange(); range.selectNodeContents(node);
+      rects = [...range.getClientRects()].filter(r => r.width && r.height);
+    }
+    if (!rects.length) return null;
+    return {left: Math.min(...rects.map(r => r.left)), right: Math.max(...rects.map(r => r.right)),
+            top: Math.min(...rects.map(r => r.top)), bottom: Math.max(...rects.map(r => r.bottom))};
+  };
+"""
+
+
 def check_functions_phone(browser, base_url: str, data: dict) -> list[str]:
-    """Phone values, evidence and focus at both narrow widths, themes and text sizes; real keyboard and touch."""
+    """Phone words, gutters, alignment, values, evidence and focus; real keyboard and touch."""
     page = browser.new_page(viewport={"width": 360, "height": 1000})
     errors = []
     page.on("pageerror", lambda error: errors.append("Functions phone JavaScript: " + str(error)))
     hydrated(page, base_url)
     page.evaluate("document.fonts.ready")
     payload = {"data": data, "quotes": function_quotes(data), "names": FN_NAMES, "model": function_phone_model(data)}
-    for width in (360, 390, 640):
+    for width in (320, 360, 390, 640):
         page.set_viewport_size({"width": width, "height": 1000})
         page.wait_for_selector('.fn-phone')
-        for theme in ("light", "dark"):
+        for theme in (("light",) if width == 320 else ("light", "dark")):
             set_theme(page, theme)
-            for scale in ("100%", "110%"):
+            for scale in (("100%",) if width == 320 else ("100%", "110%")):
                 page.evaluate("scale => document.documentElement.style.fontSize = scale", scale)
                 page.evaluate("() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))")
                 prefix = f"phone {width}px {theme} {scale}: "
@@ -11168,12 +11191,48 @@ def check_functions_phone(browser, base_url: str, data: dict) -> list[str]:
                   const need = (ok, label) => { if (!ok) errors.push(label); };
                   if (!phone) return ['phone form is missing'];
                   /* FUNCTION_CLAIMS */
+                  /* PHONE_BOUNDS */
                   const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
                   const transparent = color => color === 'transparent' || color === 'rgba(0, 0, 0, 0)';
+                  const heads = [...phone.querySelectorAll('.fn-phone-head > span')].slice(1); // structure check enforces the empty country head
                   const overflow = key => {
                     need(document.documentElement.scrollWidth <= innerWidth + 1, key + ': sideways page scroll');
                     for (const node of [phone, ...phone.querySelectorAll('.fn-phone-row, .fn-pips, .fn-phone-detail, .fn-phone-claims')]) {
                       if (node.scrollWidth > node.clientWidth + 1) { errors.push(key + ': sideways phone box scroll: ' + node.className); break; }
+                    }
+                    const section = phone.closest('section'), bounds = section.getBoundingClientRect(), style = getComputedStyle(section);
+                    const left = bounds.left + parseFloat(style.borderLeftWidth) + parseFloat(style.paddingLeft);
+                    const right = bounds.right - parseFloat(style.borderRightWidth) - parseFloat(style.paddingRight);
+                    const gutter = parseFloat(getComputedStyle(section.closest('.gutter') || section).paddingLeft);
+                    for (const node of [phone, ...phone.querySelectorAll('*')]) {
+                      if (!node.getClientRects().length) continue;
+                      const r = node.getBoundingClientRect();
+                      need(r.right <= right + .5 && r.left >= left - .5, key + ': phone descendant crosses section content edge: ' + node.className);
+                    }
+                    for (const label of [...heads, ...phone.querySelectorAll('.fn-phone-country')]) {
+                      const name = key + ': ' + label.textContent;
+                      need(getComputedStyle(label).hyphens !== 'auto', name + ': automatic hyphenation');
+                      need(label.scrollWidth <= label.clientWidth, name + ': label overflows');
+                      const walker = document.createTreeWalker(label, NodeFilter.SHOW_TEXT);
+                      while (walker.nextNode()) {
+                        const text = walker.currentNode;
+                        for (const word of text.textContent.matchAll(/\S+/gu)) {
+                          const range = document.createRange(); range.setStart(text, word.index); range.setEnd(text, word.index + word[0].length);
+                          need(range.getClientRects().length === 1, name + ': word breaks across lines: ' + word[0]);
+                        }
+                      }
+                    }
+                    for (const row of phone.querySelectorAll('.fn-phone-block > ul > li')) {
+                      const name = key + ': ' + row.dataset.institute;
+                      const groups = [...row.querySelectorAll(':scope > .fn-pips')];
+                      for (const [g, pips] of groups.entries()) {
+                        const head = phoneBounds(heads[g]), run = phoneBounds(pips);
+                        need(head && run && Math.abs((head.left + head.right - run.left - run.right) / 2) <= 1,
+                             name + ': visible pip/head centres differ: ' + g);
+                      }
+                      const last = groups[groups.length - 1]?.querySelector(':scope > .fn-pip:last-child');
+                      need(last && document.documentElement.clientWidth - last.getBoundingClientRect().right >= Math.max(left, gutter) - .5,
+                           name + ': last pip enters page gutter');
                     }
                   };
                   const pip = (node, value, key, detail = false) => {
@@ -11191,7 +11250,18 @@ def check_functions_phone(browser, base_url: str, data: dict) -> list[str]:
                   need(buttons.length === model.rows.length, 'phone row count differs');
                   for (const [n, button] of buttons.entries()) {
                     const expected = model.rows[n]; if (!expected) continue;
-                    const groups = [...button.querySelectorAll(':scope > .fn-pips')];
+                    need(!button.children.length && !button.textContent, expected.id + ': phone row button must be empty');
+                    need(!/grid|flex/.test(getComputedStyle(button).display), expected.id + ': phone row button uses grid or flex');
+                    const row = button.parentElement, groups = [...row.querySelectorAll(':scope > .fn-pips')];
+                    const rowStyle = getComputedStyle(row), buttonStyle = getComputedStyle(button), hit = button.getBoundingClientRect(), bounds = row.getBoundingClientRect();
+                    need(rowStyle.display === 'grid' && rowStyle.gridTemplateColumns.startsWith('subgrid'), expected.id + ': phone list item is not a subgrid');
+                    need(buttonStyle.gridRowStart === '1' && Math.abs(hit.left - bounds.left) <= 1 && Math.abs(hit.right - bounds.right) <= 1 &&
+                         hit.height >= parseFloat(buttonStyle.minHeight), expected.id + ': phone button does not cover the row');
+                    for (const node of row.querySelectorAll(':scope > .fn-phone-country, :scope > .fn-pips')) {
+                      const style = getComputedStyle(node);
+                      need(style.gridRowStart === '1' && style.alignSelf === 'center' && style.position === 'relative' && Number(style.zIndex) > 0 &&
+                           style.pointerEvents === 'none', expected.id + ': phone visual does not sit above/pass taps to the button');
+                    }
                     need(groups.length === model.groups.length, expected.id + ': phone pip groups/order differ');
                     for (const [g, group] of model.groups.entries()) {
                       const pips = groups[g], key = expected.id + '/' + group.name;
@@ -11211,7 +11281,8 @@ def check_functions_phone(browser, base_url: str, data: dict) -> list[str]:
                     button.focus({preventScroll: true}); button.click();
                     const detail = phone.querySelector('.fn-phone-detail');
                     if (!detail) { errors.push(key + ': no phone detail'); continue; }
-                    need(phone.querySelectorAll('.fn-phone-detail').length === 1 && button.nextElementSibling === detail &&
+                    need(phone.querySelectorAll('.fn-phone-detail').length === 1 && button.parentElement.lastElementChild === detail &&
+                         getComputedStyle(detail).gridRowStart === '2' &&
                          detail.id === button.getAttribute('aria-controls') && button.getAttribute('aria-expanded') === 'true' &&
                          detail.getAttribute('role') === 'region' && detail.getAttribute('aria-labelledby') === detail.querySelector('.fn-detail-head')?.id,
                          key + ': phone detail placement/state differs');
@@ -11226,6 +11297,7 @@ def check_functions_phone(browser, base_url: str, data: dict) -> list[str]:
                     const functions = [...detail.querySelectorAll('.fn-phone-functions > li')];
                     need(functions.length === expected.functions.length, key + ': phone detail function count differs');
                     need(!detail.querySelector('.fn-claim'), key + ': claims visible before selecting a function');
+                    overflow(key + ': open detail');
                     for (const [k, item] of functions.entries()) {
                       const f = expected.functions[k]; if (!f) continue;
                       const label = item.querySelector(':scope > .fn-function-label');
@@ -11264,7 +11336,7 @@ def check_functions_phone(browser, base_url: str, data: dict) -> list[str]:
                     second.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape', bubbles: true}));
                   }
                   return errors;
-                }""".replace("/* FUNCTION_CLAIMS */", FN_CLAIMS_CHECK_JS), payload)]
+                }""".replace("/* FUNCTION_CLAIMS */", FN_CLAIMS_CHECK_JS).replace("/* PHONE_BOUNDS */", FN_PHONE_BOUNDS_JS), payload)]
     page.evaluate("document.documentElement.style.fontSize = '100%'")
     if page.locator('.fn-phone-row').count():
         row = page.locator('.fn-phone-row').first
@@ -11340,6 +11412,7 @@ def check_functions_phone(browser, base_url: str, data: dict) -> list[str]:
     context = browser.new_context(viewport={"width": 390, "height": 900}, has_touch=True, is_mobile=True)
     touch = context.new_page()
     hydrated(touch, base_url)
+    touch.evaluate("document.fonts.ready")
     row = touch.locator('.fn-phone-row').first
     if row.count():
         row.tap()
@@ -11354,13 +11427,32 @@ def check_functions_phone(browser, base_url: str, data: dict) -> list[str]:
             touch.locator('.fn-phone-detail > button').tap()
             if touch.locator('.fn-phone-detail').count() or not row.evaluate('n => document.activeElement === n'):
                 errors.append('Functions phone: touch Close does not close/return focus')
-        row.locator('.fn-phone-country').tap()  # the country is a plain span inside the row button
-        if touch.locator('.fn-phone-detail').count() != 1:
-            errors.append('Functions phone: tapping the country does not open its row')
-        else:
-            row.tap()
-            if touch.locator('.fn-phone-detail').count() or not row.evaluate('n => document.activeElement === n'):
-                errors.append('Functions phone: tapping the same row does not close/return focus')
+    for item in touch.locator('.fn-phone-block > ul > li').all():
+        button = item.locator(':scope > button.fn-phone-row')
+        for visual in item.locator(':scope > .fn-phone-country, :scope > .fn-pips').all():
+            button.evaluate("n => n.scrollIntoView({block: 'center', behavior: 'instant'})")
+            point = visual.evaluate("""node => {
+              /* PHONE_BOUNDS */
+              const r = phoneBounds(node);
+              if (!r) return null;
+              const x = (r.left + r.right) / 2, y = (r.top + r.bottom) / 2;
+              return {x, y, hitsButton: document.elementFromPoint(x, y) === node.parentElement.querySelector(':scope > button.fn-phone-row')};
+            }""".replace("/* PHONE_BOUNDS */", FN_PHONE_BOUNDS_JS))
+            key = item.get_attribute('data-institute') + '/' + visual.get_attribute('class')
+            if not point or not point['hitsButton']:
+                errors.append(f'Functions phone {key}: visible centre does not hit the row button')
+                continue
+            # Locator.tap on a pointer-transparent label would wait for it to receive the event.
+            touch.touchscreen.tap(point['x'], point['y'])
+            detail = item.locator(':scope > .fn-phone-detail')
+            if (touch.locator('.fn-phone-detail').count() != 1 or detail.count() != 1 or
+                    detail.get_attribute('id') != button.get_attribute('aria-controls') or button.get_attribute('aria-expanded') != 'true'):
+                errors.append(f'Functions phone {key}: tapping the visible centre does not open its row')
+                button.press('Escape')
+                continue
+            button.tap()
+            if touch.locator('.fn-phone-detail').count() or not button.evaluate('n => document.activeElement === n'):
+                errors.append(f'Functions phone {key}: tapping the same row does not close/return focus')
     context.close()
     return errors
 

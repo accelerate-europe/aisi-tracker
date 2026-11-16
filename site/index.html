@@ -687,21 +687,25 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
 .fn-sources { list-style: none; padding: 0; margin-top: var(--sp-2); }
 .fn-sources .reread { display: none; } /* the quote block above already carries the quotation's re-read line (principle: Re-read line) */
 .fn-detail > button { margin-top: var(--sp-4); }
-/* Both forms are saved; CSS selects one before and after hydration. Rows and group headings share the same tracks. */
+/* Both forms are saved; CSS selects one. Subgrids share content-sized tracks through the list wrappers. */
 .fn-phone, .fn-phone-only { display: none; }
-.fn-phone-head, .fn-phone-row { display: grid; grid-template-columns: var(--fn-tracks); column-gap: var(--sp-1); align-items: center; }
+.fn-phone { grid-template-columns: minmax(min-content, 1fr) repeat(var(--fn-groups), minmax(min-content, auto)); column-gap: var(--sp-1); }
+.fn-phone-head, .fn-phone-block, .fn-phone-block > ul, .fn-phone-block > ul > li { display: grid; grid-column: 1 / -1; grid-template-columns: subgrid; column-gap: var(--sp-1); }
 .fn-phone-head { font: var(--type-meta); color: var(--muted); align-items: end; padding-bottom: var(--sp-3); border-bottom: var(--rule) solid var(--line); }
-.fn-phone-head > span { min-width: 0; overflow-wrap: anywhere; hyphens: auto; text-align: center; } /* phones hyphenate ("Eco-system"); a forced break only where no hyphenation dictionary exists, never a sideways scroll */
-.fn-phone-block > h3 { font: var(--type-label); padding-block: var(--sp-4) var(--sp-2); }
+.fn-phone-head > span, .fn-phone-country { overflow-wrap: normal; word-break: normal; hyphens: manual; }
+.fn-phone-head > span { text-align: center; }
+.fn-phone-block > h3 { grid-column: 1 / -1; font: var(--type-label); padding-block: var(--sp-4) var(--sp-2); }
 .fn-phone-block > ul { list-style: none; padding: 0; margin: 0; max-width: none; }
-.fn-phone-row { width: 100%; min-height: var(--hit); padding: var(--sp-3) 0; border: 0; border-bottom: var(--rule) solid var(--line); background: transparent; color: var(--ink); font: var(--type-body); text-align: left; cursor: pointer; }
-.fn-phone-country { min-width: 0; overflow-wrap: normal; }
-.fn-pips { display: flex; justify-content: center; gap: 2px; min-width: 0; }
+.fn-phone-row { display: block; grid-column: 1 / -1; grid-row: 1; width: 100%; min-height: var(--hit); padding: var(--sp-3) 0; border: 0; border-bottom: var(--rule) solid var(--line); background: transparent; color: var(--ink); font: var(--type-body); text-align: left; cursor: pointer; }
+/* The empty button is the full-row hit area; its visual siblings share the list item's tracks. */
+.fn-phone-country, .fn-phone-block > ul > li > .fn-pips { grid-row: 1; align-self: center; position: relative; z-index: 1; pointer-events: none; }
+.fn-phone-country { grid-column: 1; padding-block: var(--sp-3); font: var(--type-body); }
+.fn-pips { display: flex; justify-content: center; gap: 2px; min-width: max-content; } /* .fn-mark keeps every pip from shrinking */
 .fn-pip { width: 8px; height: 8px; box-sizing: border-box; }
 .fn-pip.fn-mandate { border-width: 1.5px; }
 .fn-pip.fn-not_found { border: 1px solid color-mix(in srgb, var(--muted) 55%, var(--ground)); }
 .fn-pip.fn-not_coded { height: 2px; align-self: center; }
-.fn-phone-detail { position: static; width: 100%; max-width: 100%; }
+.fn-phone-detail { grid-column: 1 / -1; grid-row: 2; position: static; min-width: 0; width: 100%; max-width: 100%; }
 .fn-phone-functions { list-style: none; padding: 0; margin: 0; max-width: none; }
 .fn-phone-detail h4 { margin-top: var(--sp-4); }
 .fn-function-label { display: flex; align-items: center; gap: var(--sp-2); min-height: var(--hit); padding: var(--sp-2) 0; font: var(--type-body); color: var(--ink); }
@@ -709,12 +713,16 @@ button.fn-function-label { width: 100%; background: transparent; border: 0; text
 .fn-phone-claims { margin-block: var(--sp-2) var(--sp-4); }
 @media (max-width: 640px) {
   .fn-scroll, .fn-desktop-only { display: none; }
-  .fn-phone, .fn-phone-only { display: block; }
+  .fn-phone { display: grid; }
+  .fn-phone-only { display: block; }
   .fn-legend.fn-phone-only { display: grid; } /* the legend keeps its spaced lines */
   /* Without the page script the pip rows cannot open, so phones keep the readable table. */
   :root:not([data-js]) .fn-phone, :root:not([data-js]) .fn-phone-only { display: none; }
   :root:not([data-js]) .fn-scroll, :root:not([data-js]) .fn-intro.fn-desktop-only { display: block; }
   :root:not([data-js]) .fn-legend.fn-desktop-only { display: grid; }
+}
+@media (max-width: 390px) {
+  .fn-phone-head { font-size: var(--map-label-size-narrow); }
 }
 /* The saved page was rendered at 1440 px, where the table fits: until the script measures again, every width keeps the scroll box and a static head. */
 html[data-prerendered] .fn-scroll.fits { overflow-x: auto; container-type: inline-size; }
@@ -3151,7 +3159,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         function escapeDetail(event) { if (event.key === "Escape" && opened && !event.defaultPrevented) { event.preventDefault(); closeDetail(true); } }
         if (isPhone) {
           var list = el("div", "fn-phone"), labels = el("div", "fn-phone-head");
-          list.style.setProperty("--fn-tracks", "minmax(5rem, 1.4fr) " + groups.map(function (group) { return "minmax(" + (columns.filter(function (code) { return vocab[code].group === group; }).length * 10 - 2) + "px, 1fr)"; }).join(" "));
+          list.style.setProperty("--fn-groups", groups.length);
           labels.appendChild(el("span"));
           groups.forEach(function (group) { labels.appendChild(el("span", null, group)); }); list.appendChild(labels);
           [false, true].forEach(function (notYet) {
@@ -3159,13 +3167,14 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
             block.appendChild(heading); block.appendChild(ul);
             institutes.filter(function (i) { return pending(i) === notYet; }).forEach(function (i) {
               var li = el("li"), button = el("button", "fn-phone-row"), place = J[i.jurisdiction_id].name;
-              li.dataset.institute = i.id; button.type = "button"; button.appendChild(el("span", "fn-phone-country", place));
+              li.dataset.institute = i.id; button.type = "button"; li.appendChild(button);
               button.setAttribute("aria-label", FN_COPY.show.replace("{country}", place).replace("{institute}", displayName(i)));
               button.setAttribute("aria-expanded", "false"); button.setAttribute("aria-controls", "fn-phone-detail-" + i.id);
-              groups.forEach(function (group) {
-                var pips = el("span", "fn-pips"); pips.setAttribute("aria-hidden", "true");
-                columns.filter(function (code) { return vocab[code].group === group; }).forEach(function (code) { pips.appendChild(mark(rows[i.id][code].value, true)); }); button.appendChild(pips);
-              }); li.appendChild(button); ul.appendChild(li);
+              var country = el("span", "fn-phone-country", place); country.setAttribute("aria-hidden", "true"); li.appendChild(country);
+              groups.forEach(function (group, n) {
+                var pips = el("span", "fn-pips"); pips.setAttribute("aria-hidden", "true"); pips.style.gridColumn = n + 2;
+                columns.filter(function (code) { return vocab[code].group === group; }).forEach(function (code) { pips.appendChild(mark(rows[i.id][code].value, true)); }); li.appendChild(pips);
+              }); ul.appendChild(li);
             }); list.appendChild(block);
           });
           list.addEventListener("click", function (event) {
@@ -3190,7 +3199,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
                 if (coded(row.value)) { li.dataset.code = code; label.type = "button"; label.setAttribute("aria-expanded", "false"); label.setAttribute("aria-controls", detail.id + "-" + code); }
                 li.appendChild(label); functions.appendChild(li);
               }); detail.appendChild(heading); detail.appendChild(functions);
-            }); closeButton(detail); button.after(detail); opened = button; detailRow = detail; button.setAttribute("aria-expanded", "true");
+            }); closeButton(detail); button.parentNode.appendChild(detail); opened = button; detailRow = detail; button.setAttribute("aria-expanded", "true");
           });
           list.addEventListener("keydown", escapeDetail); box.appendChild(list);
         } else {

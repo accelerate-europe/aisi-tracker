@@ -328,10 +328,10 @@ def functions_phone(functions):
     <p class="fn-blank"><strong>A blank cell means we found no public text for it, not that the institute does not do it.</strong></p>
     <div class="fn-phone"><div class="fn-phone-head"><span></span><span>Science</span><span>Policy</span></div>
     <div class="fn-phone-block"><h3>Established</h3><ul role="list"><li data-institute="z">
-    <button type="button" class="fn-phone-row" aria-label="Zulu, Zulu Institute: show functions" aria-expanded="false" aria-controls="fn-phone-detail-z"><span class="fn-phone-country">Zulu</span><span class="fn-pips" aria-hidden="true"><span class="fn-mark fn-activity fn-pip" aria-hidden="true"></span><span class="fn-mark fn-not_found fn-pip" aria-hidden="true"></span></span><span class="fn-pips" aria-hidden="true"><span class="fn-mark fn-mandate fn-pip" aria-hidden="true"></span></span></button>
+    <button type="button" class="fn-phone-row" aria-label="Zulu, Zulu Institute: show functions" aria-expanded="false" aria-controls="fn-phone-detail-z"></button><span class="fn-phone-country" aria-hidden="true">Zulu</span><span class="fn-pips" aria-hidden="true"><span class="fn-mark fn-activity fn-pip" aria-hidden="true"></span><span class="fn-mark fn-not_found fn-pip" aria-hidden="true"></span></span><span class="fn-pips" aria-hidden="true"><span class="fn-mark fn-mandate fn-pip" aria-hidden="true"></span></span>
     </li></ul></div>
     <div class="fn-phone-block"><h3>Not yet established</h3><ul role="list"><li data-institute="a">
-    <button type="button" class="fn-phone-row" aria-label="Alpha, Alpha Institute: show functions" aria-expanded="false" aria-controls="fn-phone-detail-a"><span class="fn-phone-country">Alpha</span><span class="fn-pips" aria-hidden="true"><span class="fn-mark fn-activity fn-pip" aria-hidden="true"></span><span class="fn-mark fn-activity fn-pip" aria-hidden="true"></span></span><span class="fn-pips" aria-hidden="true"><span class="fn-mark fn-not_coded fn-pip" aria-hidden="true"></span></span></button>
+    <button type="button" class="fn-phone-row" aria-label="Alpha, Alpha Institute: show functions" aria-expanded="false" aria-controls="fn-phone-detail-a"></button><span class="fn-phone-country" aria-hidden="true">Alpha</span><span class="fn-pips" aria-hidden="true"><span class="fn-mark fn-activity fn-pip" aria-hidden="true"></span><span class="fn-mark fn-activity fn-pip" aria-hidden="true"></span></span><span class="fn-pips" aria-hidden="true"><span class="fn-mark fn-not_coded fn-pip" aria-hidden="true"></span></span>
     </li></ul></div></div>
     <ul class="fn-legend fn-phone-only" role="list"><li data-value="activity"><span class="fn-mark fn-activity fn-pip" aria-hidden="true"></span>Active</li><li data-value="mandate"><span class="fn-mark fn-mandate fn-pip" aria-hidden="true"></span>Assigned</li><li data-value="not_found"><span class="fn-mark fn-not_found fn-pip" aria-hidden="true"></span>No public text found</li><li data-value="not_coded"><span class="fn-mark fn-not_coded fn-pip" aria-hidden="true"></span>not yet coded</li></ul>
     <p class="fn-pip-note fn-phone-only">One pip per function, in the order of the groups above; tap a row for the names.</p>
@@ -353,8 +353,14 @@ def test_functions_phone_structure_accepts_groups_values_and_row_order(functions
     ('Zulu, Zulu Institute: show functions', 'Zulu, Zulu Institute: proposed', "status words"),
     ('aria-expanded="false" aria-controls="fn-phone-detail-z"', 'aria-expanded="true" aria-controls="fn-phone-detail-z"', "row control/name"),
     ('aria-controls="fn-phone-detail-a"', 'aria-controls="fn-phone-detail-z"', "controls are not unique"),
-    ('<span class="fn-phone-country">', '<span class="fn-phone-country" tabindex="0">', "nested focus targets"),
-    ('<span class="fn-phone-country">', '<span class="fn-phone-country" aria-description="Zulu Institute">', "country has a tooltip"),
+    ('</button>', '<span></span></button>', "row button must be empty"),
+    ('</button>', 'Zulu</button>', "row button must be empty"),
+    ('</button>', ' </button>', "row button must be empty"),
+    ('class="fn-phone-country"', 'class="fn-phone-country" tabindex="0"', "other focus targets"),
+    ('class="fn-phone-country"', 'class="fn-phone-country" aria-description="Zulu Institute"', "country has a tooltip"),
+    ('class="fn-phone-country" aria-hidden="true"', 'class="fn-phone-country"', "decorative phone country"),
+    ('class="fn-phone-country" aria-hidden="true"', 'class="fn-phone-country" aria-hidden="false"', "decorative phone country"),
+    ('</button>', '</button><a href="#functions">Extra</a>', "other focus targets"),
     ('>Zulu</span>', '>Wrong country</span>', "country label"),
     ('>Zulu</span>', '>Zulu (2)</span>', "counts or status words"),
     ('class="fn-mark fn-not_found fn-pip"', 'class="fn-mark fn-activity fn-pip"', "pip mark differs"),
@@ -372,13 +378,31 @@ def test_functions_phone_structure_rejects_mutations(functions_phone, old, new, 
     assert any(finding in error for error in check_page.functions_phone_structure(html.replace(old, new), data))
 
 
+@pytest.mark.parametrize("fixture", ["functions_phone", "functions_both"])
+@pytest.mark.parametrize(("selector", "finding"), [
+    ('.fn-phone-country', "country label differs"),
+    ('.fn-pips', "pip groups/order differ"),
+])
+def test_functions_phone_visuals_must_be_row_siblings(request, fixture, selector, finding):
+    """The hydrated and saved forms both reject putting visual content back inside the button."""
+    from bs4 import BeautifulSoup
+
+    data, html = request.getfixturevalue(fixture)
+    soup = BeautifulSoup(html, "html.parser")
+    row = soup.select_one('.fn-phone li[data-institute="z"]')
+    row.select_one(':scope > button').append(row.select_one(':scope > ' + selector).extract())
+    errors = check_page.functions_phone_structure(str(soup), data)
+    assert any("row button must be empty" in error for error in errors)
+    assert any(finding in error for error in errors)
+
+
 @pytest.mark.parametrize(("selector", "change", "finding"), [
-    ('.fn-pips', "reverse", "pip count/order"),
-    ('.fn-pips', "remove", "pip groups/order"),
-    ('.fn-pips', "duplicate", "pip groups/order"),
-    ('.fn-pips > .fn-pip', "reverse", "pip mark differs"),
-    ('.fn-pips > .fn-pip', "remove", "pip count/order"),
-    ('.fn-pips > .fn-pip', "duplicate", "pip count/order"),
+    (':scope > .fn-pips', "reverse", "pip count/order"),
+    (':scope > .fn-pips', "remove", "pip groups/order"),
+    (':scope > .fn-pips', "duplicate", "pip groups/order"),
+    (':scope > .fn-pips > .fn-pip', "reverse", "pip mark differs"),
+    (':scope > .fn-pips > .fn-pip', "remove", "pip count/order"),
+    (':scope > .fn-pips > .fn-pip', "duplicate", "pip count/order"),
 ])
 def test_functions_phone_structure_checks_pip_positions_and_counts(functions_phone, selector, change, finding):
     from bs4 import BeautifulSoup
