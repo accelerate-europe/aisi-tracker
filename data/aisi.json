@@ -33944,7 +33944,7 @@
           "eu-pq-p001672-2026",
           "eu-decision-oj"
         ],
-        "notes": "The Commission decision establishing the Office provides that its officials are staff of the Directorate-General for Communication Networks, Content and Technology already assigned to the work or redeployed within it, and that the costs of its external staff are covered from the Digital Europe Programme's administrative budget."
+        "notes": "The Commission decision establishing the Office provides that its officials are staff of the Directorate-General for Communication Networks, Content and Technology already assigned to the work or redeployed within it, and that the costs of its external statutory staff are covered from the Digital Europe Programme's administrative budget."
       },
       "claims": [
         {
@@ -34212,7 +34212,7 @@
           "amount": 10000000,
           "currency": "USD",
           "period": "FY2026 enacted",
-          "description": "Up to USD 10m for CAISI (now CAISSI) in the FY2026 explanatory statement, given effect by the act approved on 23 January 2026",
+          "description": "Up to USD 10m for CAISI (now CAISSI) in the FY2026 explanatory statement.",
           "source_ids": [
             "us-crec-2026-01-08",
             "us-plaw-119-74",
@@ -34222,7 +34222,7 @@
           "confidence": "high",
           "funding_source": "national_government",
           "annual_amount": 10000000,
-          "annual_basis": "FY2026 ceiling of up to USD 10m in the explanatory statement given effect by section 4 of Public Law 119-74; not a guaranteed allocation or expenditure.",
+          "annual_basis": "FY2026 ceiling of up to USD 10m in the explanatory statement.",
           "decision_date": "2026-01-23",
           "annual_basis_code": "other",
           "annual_period": {
@@ -34273,7 +34273,7 @@
           "funding_source": "national_government",
           "decision_date": "2026-05-15",
           "annual_amount": 15000000,
-          "annual_basis": "Proposed FY2027 ceiling in a House committee report; not enacted funding or expenditure. The ceiling includes a directed grant programme on hardware security for AI chips.",
+          "annual_basis": "Proposed FY2027 ceiling in a House committee report, including a directed grant programme on hardware security for AI chips.",
           "annual_basis_code": "other",
           "annual_period": {
             "start": "2026-10-01",
@@ -34634,7 +34634,7 @@
           "counterparty": "UK Department for Science, Innovation and Technology, for the UK AI Safety Institute",
           "state": "signed",
           "date": "2024-04-01",
-          "scope": "MOU to align evaluation methods, exchange information and expertise, and undertake joint testing of advanced AI models, systems and agents.",
+          "scope": "MOU to align evaluation methods, exchange information and expertise, and intend at least one joint testing exercise on a publicly accessible model.",
           "source_ids": [
             "r3-us-uk-mou-release",
             "depth-uk-us-mou"
@@ -34676,7 +34676,7 @@
           "counterparty": "Scale AI",
           "state": "announced",
           "date": "2025-02-10",
-          "scope": "Announced research agreement to develop improved methods to test frontier AI models, including evaluations jointly developed with Scale's research lab; model builders may voluntarily test with Scale and choose whether to share results with the institute. NIST's update of March 2026 lists Scale AI among the partners under research and development or data transfer agreements, without the type or date of its agreement.",
+          "scope": "Scale AI announced a research agreement to develop improved methods to test frontier AI models, including evaluations jointly developed with Scale's research lab; model builders may voluntarily test with Scale and choose whether to share results with the institute. NIST's update of March 2026 lists Scale AI among the partners under research and development or data transfer agreements.",
           "source_ids": [
             "us-scale-aisi-2025",
             "us-nist-march-slides"
@@ -35062,7 +35062,7 @@
           "us-trains",
           "us-semafor-2026-10-28"
         ],
-        "notes": "Semafor reported on 28 October 2026 a White House official's statement that senior institute officials will collaborate with White House colleagues within the Super Intelligence Force; the reporting line is unchanged."
+        "notes": "Semafor reported on 28 October 2026 a White House official's statement that senior institute officials will collaborate with White House colleagues within the Super Intelligence Force."
       },
       "national_partners": {
         "state": "stated",
@@ -35689,7 +35689,7 @@
           "confidence": "high",
           "commitment": "adopted",
           "funding_source": "national_government",
-          "annual_basis": "Arithmetic mean of the explicitly stated CAD 50m five-year allocation; annual disbursements and spending are not stated. Budget 2024 chapter 4 gives a yearly profile only for the combined Safe and Responsible Use of AI measures, not a separate institute profile.",
+          "annual_basis": "Arithmetic mean of the explicitly stated CAD 50m five-year allocation.",
           "annual_basis_code": "period_mean",
           "annual_period": {
             "start": "2024-04-01",
@@ -35732,7 +35732,7 @@
           "confidence": "high",
           "commitment": "announced",
           "funding_source": "national_government",
-          "annual_basis": "Planned contribution for 2026-27, the fiscal year containing the dataset date, in ISED's 2026-27 Departmental Plan; planned spending, not expenditure. One research stream only.",
+          "annual_basis": "Planned contribution for 2026-27 in ISED's 2026-27 Departmental Plan.",
           "annual_basis_code": "allocation_current_year",
           "annual_profile": [
             {
@@ -35984,7 +35984,7 @@
         {
           "state": "announced",
           "date": "2025-06-15",
-          "scope": "Government MOU with Cohere, announced on 15 June 2025, to deepen understanding of AI risks and their evaluation and mitigation. The joint government statement names CAISI as collaborator; ISED's briefing for a February 2026 appearance says CAISI concluded the MOU in June 2025. No signed institute document was retrieved, so the recorded role is named implementer and the state remains announced.",
+          "scope": "Government MOU with Cohere, announced on 15 June 2025, to deepen understanding of AI risks and their evaluation and mitigation. The joint government statement names CAISI as collaborator; ISED's briefing for a February 2026 appearance says CAISI concluded the MOU in June 2025.",
           "source_ids": [
             "ca-cohere-2025",
             "ca-qp-caisi-2025",
@@ -36015,7 +36015,7 @@
           "counterparty": "UK AI Security Institute",
           "state": "signed",
           "date": "2025-07",
-          "scope": "Partnership signed in July 2025: CAISI will contribute CAD 1m through CIFAR to the UK AI Security Institute's Alignment Project. The contribution was announced on 30 July; the signing day is not stated.",
+          "scope": "Partnership signed in July 2025: CAISI will contribute CAD 1m through CIFAR to the UK AI Security Institute's Alignment Project. The contribution was announced on 30 July.",
           "source_ids": [
             "ca-qp-caisi-2025",
             "ca-uk-alignment-2025"
@@ -36043,7 +36043,7 @@
           "counterparty": "UK Government, for the UK AI Security Institute",
           "state": "announced",
           "date": "2026-10-13",
-          "scope": "Renewed partnership committing the institutes to cooperation on frontier AI risks, evaluations and safeguards, including information sharing and exploring staff exchanges and coordinated evaluations.",
+          "scope": "Renewed partnership committing the institutes to cooperation on frontier AI risks and evaluations, including information sharing and exploring staff exchanges and coordinated evaluations.",
           "source_ids": [
             "r3-ca-uk-renewal-domestic",
             "gb-ca-renewal-2026"
@@ -37747,7 +37747,7 @@
           "kind": "function",
           "code": "international_cooperation",
           "basis": "mandate",
-          "text": "Its host's founding announcement assigns it work on international cooperation with bodies in other countries, such as the UK and US AI Safety Institutes.",
+          "text": "IPA's founding announcement assigns it work on international cooperation with bodies in other countries, such as the UK and US AI Safety Institutes.",
           "source_ids": [
             "jp-ipa-2024-02"
           ]
@@ -37839,7 +37839,7 @@
           "figure_source": "press_report",
           "funding_source": "national_government",
           "annual_amount": 8900000000,
-          "annual_basis": "2026 non-R&D component reported in domestic press from lawmaker/MSIT material; excludes the separately reported R&D component. This amount alone is not the whole institute-related budget. It is not expenditure.",
+          "annual_basis": "2026 non-R&D component reported by Aju News from lawmaker/MSIT material.",
           "annual_basis_code": "other",
           "annual_period": {
             "start": "2026-01-01",
@@ -37853,7 +37853,7 @@
           "amount": 20100000000,
           "currency": "KRW",
           "period": "2026",
-          "description": "Ministry items classed as 'AI safety and trust' using criteria from a lawmaker's office; covers more than the institute",
+          "description": "Ministry items classed as 'AI safety and trust' using criteria from a lawmaker's office.",
           "source_ids": [
             "kr-ddaily"
           ],
@@ -37863,7 +37863,7 @@
           "funding_source": "national_government",
           "annual_amount": 20100000000,
           "annual_basis_code": "other",
-          "annual_basis": "2026 nominal total of ministry AI safety and trust items, classified by the ministry using a lawmaker's criteria and reported by Digital Daily. This is broader than the institute, is press-sourced and is not expenditure.",
+          "annual_basis": "2026 total of ministry AI safety and trust items, classified by the ministry using a lawmaker's criteria and reported by Digital Daily.",
           "id": "funding-0c50c85a75475b80a745207537a2bd0b",
           "coverage": "not_institute_specific",
           "notes": "Digital Daily says the ministry classified detailed programmes using functional criteria prepared by a lawmaker's office. The 'safety and trust' category includes AI safety evaluation and verification, red-teaming, deepfake response, ethics and impact assessment."
@@ -38146,7 +38146,7 @@
         },
         {
           "state": "signed",
-          "scope": "Science ministry memorandum of understanding; the institute and Anthropic to cooperate on safety evaluations of AI models and autonomous agents. The source does not state the signing date.",
+          "scope": "Science ministry memorandum of understanding; the institute and Anthropic to cooperate on safety evaluations of AI models and autonomous agents.",
           "source_ids": [
             "kr-msit-anthropic-2026"
           ],
@@ -38187,7 +38187,7 @@
           "counterparty_type": "institute",
           "counterparty": "Singapore AI Safety Institute",
           "state": "signed",
-          "scope": "Memorandum of understanding between the two institutes to strengthen cooperation centred on AI safety evaluation, announced on 19 January 2026 by the Korean institute; signing date not stated.",
+          "scope": "Memorandum of understanding between the two institutes to strengthen cooperation centred on AI safety evaluation, announced on 19 January 2026 by the Korean institute.",
           "source_ids": [
             "kr-sg-mou-2026"
           ],
@@ -38373,13 +38373,14 @@
             "named_as": "KR AISI"
           }
         ],
-        "notes": "Kakao says it carried out a joint safety evaluation of its own language model with the institute in 2025: '카카오는 지난해 인공지능안전연구소와 함께 자체 언어모델 'Kanana-1.5-9.8B'를 대상으로 공동 안전성 평가를 진행했으며' (last year Kakao, together with the AI Safety Institute, carried out a joint safety evaluation of its own language model Kanana-1.5-9.8B). Article 10(1) of the Enforcement Decree of the AI Basic Act lists '인공지능안전 관련 평가 시스템의 구축 및 운영' (building and operating AI safety evaluation systems) among the institute's tasks. Joint network testing reported, 2025-06-26 (multilingual exercise) and 2025-07-17 (agentic exercise). On 3 November 2026 the institute said it had evaluated the harmfulness of two open-weight models against versions with their refusal training removed; it keeps the detailed results private and published only the SHA-256 hash of the report.",
+        "notes": "Kakao says it carried out a joint safety evaluation of its own language model with the institute in 2025: '카카오는 지난해 인공지능안전연구소와 함께 자체 언어모델 'Kanana-1.5-9.8B'를 대상으로 공동 안전성 평가를 진행했으며' (last year Kakao, together with the AI Safety Institute, carried out a joint safety evaluation of its own language model Kanana-1.5-9.8B). Article 10(1) of the Enforcement Decree of the AI Basic Act lists '인공지능안전 관련 평가 시스템의 구축 및 운영' (building and operating AI safety evaluation systems) among the institute's tasks. Joint network testing reported, June 2025 (multilingual exercise) and 2025-07-17 (agentic exercise). On 3 November 2026 the institute said it had evaluated the harmfulness of two open-weight models against versions with their refusal training removed; it keeps the detailed results private and published the SHA-256 hash of the report.",
         "source_ids": [
           "kr-kakao-mou-2026",
           "kr-ai-basic-act-decree",
           "network-multilingual-2025",
           "catalogue-agentic-report",
-          "kr-uncensored-eval-2026"
+          "kr-uncensored-eval-2026",
+          "gb-joint-testing"
         ]
       },
       "model_access": {
@@ -38689,7 +38690,7 @@
           "coverage": "not_institute_specific",
           "years": 5,
           "period": "Five years from 1 October 2022",
-          "annual_basis": "Arithmetic mean of the SGD 50m grant over the five years NTU states, counted from the grant's start on 1 October 2022; annual disbursements are not stated. Related funding for the Digital Trust Centre before its designation, not the institute budget.",
+          "annual_basis": "Arithmetic mean of the SGD 50m grant over the five years NTU states, counted from the grant's start on 1 October 2022, for the Digital Trust Centre before its designation as Singapore's AI Safety Institute.",
           "annual_basis_code": "period_mean",
           "annual_period": {
             "start": "2022-10-01",
@@ -38848,7 +38849,7 @@
           "counterparty": "Microsoft",
           "state": "signed",
           "date": "2026-06-12",
-          "scope": "IMDA MOU includes joint agentic AI evaluation research and an explicit role for Singapore AISI in developing a framework for trusted frontier-model access. It does not itself promise model access.",
+          "scope": "IMDA MOU includes joint agentic AI evaluation research and an explicit role for Singapore AISI in exploring a framework for trusted frontier-model access.",
           "source_ids": [
             "depth-sg-microsoft"
           ],
@@ -38873,7 +38874,7 @@
           "counterparty_type": "institute",
           "counterparty": "Korea AI Safety Institute",
           "state": "signed",
-          "scope": "Memorandum of understanding between the two institutes to strengthen cooperation centred on AI safety evaluation, announced on 19 January 2026 by the Korean institute; signing date not stated. No Singapore source mentions it.",
+          "scope": "Memorandum of understanding between the two institutes to strengthen cooperation centred on AI safety evaluation, announced on 19 January 2026 by the Korean institute.",
           "source_ids": [
             "kr-sg-mou-2026"
           ],
@@ -39487,7 +39488,7 @@
         {
           "state": "signed",
           "date": "2026-04-01",
-          "scope": "Government memorandum of understanding; technical exchanges with the institute on emerging capabilities and risks, and joint safety evaluations. The government MOU states signed on 1 April 2026; Anthropic's 31 March announcement says signed that day. The reason for the discrepancy is not established.",
+          "scope": "Government memorandum of understanding; technical exchanges with the institute on emerging capabilities and risks, and joint safety evaluations. The government MOU states signed on 1 April 2026; Anthropic's 31 March announcement says signed that day.",
           "source_ids": [
             "au-anthropic-mou-2026",
             "au-anthropic-news-2026"
@@ -39501,7 +39502,7 @@
         {
           "state": "announced",
           "date": "2026-10-06",
-          "scope": "Anthropic reported on 6 October 2026 that it was finalising a separate agreement with the Australian AI Safety Institute for independent model evaluations. Completion was not established by the report.",
+          "scope": "Forbes Australia reported on 6 October 2026 that Anthropic said it was finalising an agreement with the Australian AI Safety Institute for independent model evaluations.",
           "source_ids": [
             "au-forbes-2026"
           ],
@@ -39516,7 +39517,7 @@
           "counterparty": "UK Government, for the UK AI Security Institute",
           "state": "signed",
           "date": "2026-05-25",
-          "scope": "MOU supporting institute cooperation on evaluation methods, research findings and AI safety and security.",
+          "scope": "MOU supporting institute cooperation on evaluation methods and joint research on AI safety and security.",
           "source_ids": [
             "depth-au-uk-mou"
           ],
@@ -39543,7 +39544,7 @@
           "counterparty": "Microsoft",
           "state": "signed",
           "date": "2026-04-23",
-          "scope": "Government memorandum of understanding, a statement of intent without legal effect; Microsoft intends to work with the institute on human–AI interaction risks and on technical exchanges and research, including methods for evaluating high-risk capabilities. It does not provide for access to Microsoft’s models.",
+          "scope": "Government memorandum of understanding, intended as a statement of intent; Microsoft intends to work with the institute on human–AI interaction risks and on technical exchanges and research, including methods for evaluating high-risk capabilities.",
           "source_ids": [
             "au-microsoft-mou-2026"
           ],
@@ -39983,7 +39984,7 @@
           "commitment": "proposed",
           "confidence": "high",
           "funding_source": "national_government",
-          "description": "Nearly MYR 15m proposed for parent body AI Malaysia Berhad in Budget 2027.",
+          "description": "Nearly MYR 15m proposed for AI Malaysia Berhad in Budget 2027.",
           "decision_date": "2026-10-09",
           "source_ids": [
             "r5-my-budget2027-ms",
@@ -40406,7 +40407,7 @@
           "commitment": "adopted",
           "funding_source": "national_government",
           "decision_date": "2024-03",
-          "annual_basis": "Arithmetic mean of the five-year pillar outlay; the pillar is broader than the institute, and the figure is not expenditure.",
+          "annual_basis": "Arithmetic mean of the five-year pillar outlay.",
           "annual_basis_code": "period_mean",
           "notes": "IndiaAI says the institute was established as part of the IndiaAI Mission's Safe & Trusted AI pillar.",
           "coverage": "not_institute_specific",
@@ -45248,6 +45249,24 @@
           ],
           "accessed": "2026-10-17",
           "url": "https://content.govdelivery.com/accounts/USDOC/bulletins/3e381fb"
+        },
+        {
+          "text": "Establish voluntary agreements with private sector AI developers and evaluators, and lead unclassified evaluations of AI capabilities that may pose risks to national security.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "US"
+              },
+              "timeline",
+              {
+                "id": "us-2025-06-03-mandate-changed"
+              },
+              "description"
+            ]
+          ],
+          "accessed": "2026-10-17",
+          "url": "https://content.govdelivery.com/accounts/USDOC/bulletins/3e381fb"
         }
       ],
       "origin": "US",
@@ -46327,6 +46346,17 @@
                 "id": "funding-0c50c85a75475b80a745207537a2bd0b"
               },
               "period"
+            ],
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-0c50c85a75475b80a745207537a2bd0b"
+              },
+              "annual_basis"
             ]
           ],
           "accessed": "2026-10-17"
@@ -46410,6 +46440,24 @@
           ],
           "gloss": "This classification was based on material submitted by the Ministry of Science and ICT, which classified each detailed programme according to functional criteria prepared by the lawmaker’s office.",
           "accessed": "2026-10-19"
+        },
+        {
+          "text": "AI 안전성 평가·검증, 레드팀, 딥페이크 대응, 윤리·영향평가 등을 포함한 ‘안전·신뢰’ 분야",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-0c50c85a75475b80a745207537a2bd0b"
+              },
+              "notes"
+            ]
+          ],
+          "gloss": "The 'safety and trust' field, including AI safety evaluation and verification, red-teaming, deepfake response, ethics and impact assessment.",
+          "accessed": "2026-10-18"
         }
       ],
       "origin": "KR",
@@ -46693,6 +46741,40 @@
             }
           ],
           "accessed": "2026-10-17"
+        },
+        {
+          "text": "appointed Nanyang Technological University ( NTU) to establish the DTC, led by \nProfessor Lam Kwok Yen.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "SG"
+              },
+              "timeline",
+              {
+                "id": "sg-2024-05-22-designated"
+              },
+              "description"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "The Digital Trust Centre has been designated as \nSingapore’s AI Safety Institute (AISI).",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "sg-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-aa4eb9dd0f8e5c199d30dbd5b4354075"
+              },
+              "annual_basis"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "SG",
@@ -46850,6 +46932,20 @@
                 "id": "claims-0a8fe7b2123a4eccadab20b1b5bc7436"
               },
               "text"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "IMDA is the overall government agency for the Singapore AISI, responsible for developing baseline policy, as well as fronting international engagements and partnerships related to AI safety with other AISIs and government agencies.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "sg-aisi"
+              },
+              "staffing_model",
+              "notes"
             ]
           ],
           "accessed": "2026-10-17"
@@ -47182,6 +47278,51 @@
               "funding",
               {
                 "id": "funding-360a59a37fde5cc8ba0a03ce3a00ea5f"
+              },
+              "description"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "funding",
+              {
+                "id": "funding-360a59a37fde5cc8ba0a03ce3a00ea5f"
+              },
+              "annual_basis"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "the Honourable François-Philippe Champagne, Minister of Innovation, Science and Industry, announced the launch of the Canadian Artificial Intelligence Safety Institute (CAISI)",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "CA"
+              },
+              "timeline",
+              {
+                "id": "ca-2024-designated"
+              },
+              "description"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "November 12, 2024 – Montréal, Quebec",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "CA"
+              },
+              "timeline",
+              {
+                "id": "ca-2024-launched"
               },
               "description"
             ]
@@ -50393,6 +50534,25 @@
             {
               "text": "The Malaysia AI Safety Institute will reinforce a safe, trusted, and responsible AI ecosystem through three main pillars:",
               "kind": "heading"
+            }
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "AI RDCI (Research, Development, Commercialisation, and Innovation), which encompasses safety evaluations, testing, and AI Red Teaming; strategic collaborations for talent development, expertise sharing, and technology transfer at both national and international levels; and governance, safety, and regulatory support through the development of standards, risk management, and compliance assurance.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "my-aisafe"
+              },
+              "mandate"
+            ]
+          ],
+          "anchors": [
+            {
+              "kind": "heading",
+              "text": "The Malaysia AI Safety Institute will reinforce a safe, trusted, and responsible AI ecosystem through three main pillars:"
             }
           ],
           "accessed": "2026-10-17"
@@ -54841,6 +55001,23 @@
             ]
           ],
           "accessed": "2026-10-17"
+        },
+        {
+          "text": "Kenya’s Artificial Intelligence (AI) Strategy 2025-2030 launched at the KICC, Nairobi",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "KE"
+              },
+              "timeline",
+              {
+                "id": "ke-2025-strategy"
+              },
+              "description"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "KE",
@@ -55193,6 +55370,20 @@
               "description"
             ]
           ]
+        },
+        {
+          "text": "Jointly conducted by participants across the International Network, including representatives from Singapore, Japan, Australia, Canada, European Commission, France, Kenya, South Korea and the United Kingdom.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "testing_capacity",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "GB",
@@ -61593,6 +61784,20 @@
             ]
           ],
           "accessed": "2026-10-21"
+        },
+        {
+          "text": "AI \nSafety Institutes (AISIs) and government mandated offices from Singapore, Japan, \nAustralia, Canada, European Union, France, Kenya and South Korea and UK AI Security \nInstitute conducted a joint testing exercise aimed at improving the efficacy of model \nevaluations across different languages.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "testing_capacity",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "International Network of AI Safety Institutes",
@@ -61951,6 +62156,23 @@
               "state"
             ]
           ]
+        },
+        {
+          "text": "Raimondo named Elizabeth Kelly to lead the institute as its inaugural director and Elham Tabassi to serve as chief technology officer.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "US"
+              },
+              "timeline",
+              {
+                "id": "us-2024-designated"
+              },
+              "description"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "US",
@@ -62062,6 +62284,23 @@
           ],
           "accessed": "2026-10-17",
           "url": "https://web.archive.org/web/20260211063744/https://www.commerce.gov/news/press-releases/2023/11/direction-president-biden-department-commerce-establish-us-artificial"
+        },
+        {
+          "text": "the U.S. Department of Commerce, through the National Institute of Standards and Technology (NIST), will establish the U.S. Artificial Intelligence Safety Institute (USAISI)",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "US"
+              },
+              "timeline",
+              {
+                "id": "us-2023-commitment"
+              },
+              "description"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "US",
@@ -63205,6 +63444,23 @@
             ]
           ],
           "accessed": "2026-10-17"
+        },
+        {
+          "text": "The institute is housed at Innovation, Science, and Economic Development Canada",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "CA"
+              },
+              "timeline",
+              {
+                "id": "ca-2024-designated"
+              },
+              "description"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "CA",
@@ -63273,6 +63529,24 @@
             ]
           ],
           "gloss": "We will establish an AI Safety Institute, aiming for January next year.",
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "令和５年１２月２１日、岸田総理は、総理大臣官邸で第７回ＡＩ（人工知能）戦略会議に出席しました。",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "JP"
+              },
+              "timeline",
+              {
+                "id": "jp-2023-12-21-commitment"
+              },
+              "description"
+            ]
+          ],
+          "gloss": "On 21 December 2023, Prime Minister Kishida attended the seventh AI Strategy Council meeting at the Prime Minister's Office.",
           "accessed": "2026-10-17"
         }
       ],
@@ -63574,6 +63848,42 @@
           ],
           "gloss": "Kenji Hiramoto took office as secretary-general. Kenji Hiramoto. Date of appointment: 14 February 2024. Name: Kenji Hiramoto. Post: Secretary-General, AI Safety Institute. Employment: full-time.",
           "accessed": "2026-11-14"
+        },
+        {
+          "text": "IPA内に事務局を設置し、今後、幅広い人材を募集して数十人規模の体制を目指します。",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "JP"
+              },
+              "timeline",
+              {
+                "id": "jp-2024-02-14-launched"
+              },
+              "description"
+            ]
+          ],
+          "gloss": "A secretariat is established within IPA, with plans to recruit broadly and aim for a team of several dozen people.",
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "AIの安全性の評価手法の検討等を行う機関として、AIセーフティ・インスティテュートを設立しました。",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "JP"
+              },
+              "timeline",
+              {
+                "id": "jp-2024-02-14-launched"
+              },
+              "description"
+            ]
+          ],
+          "gloss": "The AI Safety Institute was established as a body to study methods for evaluating AI safety, among other work.",
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "JP",
@@ -63794,6 +64104,24 @@
           ],
           "gloss": "will establish the AI Safety Institute quickly within the Electronics and Telecommunications Research Institute with the minimum necessary personnel",
           "accessed": "2026-10-17"
+        },
+        {
+          "text": "이종호 과학기술정보통신부 장관은",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "KR"
+              },
+              "timeline",
+              {
+                "id": "kr-2024-05-22-commitment"
+              },
+              "description"
+            ]
+          ],
+          "gloss": "Minister of Science and ICT Lee Jong-ho",
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "KR",
@@ -63941,6 +64269,17 @@
               },
               "legal_basis",
               "state"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "KR"
+              },
+              "timeline",
+              {
+                "id": "kr-2026-01-22-designated"
+              },
+              "description"
             ]
           ],
           "gloss": "[Effective 22 January 2026]",
@@ -64164,6 +64503,42 @@
               "gloss": "the Artificial Intelligence Safety Institute (the \"Safety Institute\")"
             }
           ]
+        },
+        {
+          "text": "제12조(인공지능안전연구소) ① 과학기술정보통신부장관은 인공지능과 관련하여 발생할 수 있는 위험으로부터 국민의 생명ㆍ신체ㆍ재산 등을 보호하고 인공지능사회의 신뢰 기반을 유지하기 위한 상태(이하 “인공지능안전”이라 한다)를 확보하기 위한 업무를 전문적이고 효율적으로 수행하기 위하여 인공지능안전연구소(이하 “안전연구소”라 한다)를 운영할 수 있다.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "KR"
+              },
+              "timeline",
+              {
+                "id": "kr-2026-01-22-designated"
+              },
+              "description"
+            ]
+          ],
+          "gloss": "Article 12 (AI Safety Institute): the Minister of Science and ICT may operate an AI Safety Institute to perform professionally and efficiently work securing AI safety, protecting people's lives, bodies and property from AI-related risks and maintaining the basis of trust in an AI society.",
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "1. 인공지능안전 관련 위험 정의 및 분석",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "KR"
+              },
+              "timeline",
+              {
+                "id": "kr-2026-01-22-designated"
+              },
+              "description"
+            ]
+          ],
+          "gloss": "1. Definition and analysis of AI safety risks.",
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "KR",
@@ -64269,6 +64644,23 @@
               "scope"
             ]
           ]
+        },
+        {
+          "text": "AISI and OpenAI agreed to continuously cooperate by sharing knowledge and best practices on safety evaluation methodologies and benchmarks for each high-risk area",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-1bbe5c2a2fd45733bfd20313b061be7f"
+              },
+              "scope"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "KR",
@@ -64352,6 +64744,23 @@
                 "id": "agreements-9600eed74a855bb4bdd43019181c980e"
               },
               "participation"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "The Ministry of Science and ICT (MSIT, Deputy Prime Minister and Minister: Bae Kyung-hoon) announced that it has signed a memorandum of understanding (MOU) with Anthropic, a global AI research and development company, to cooperate on AI safety and cybersecurity.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-9600eed74a855bb4bdd43019181c980e"
+              },
+              "scope"
             ]
           ],
           "accessed": "2026-10-17"
@@ -64648,6 +65057,17 @@
                 "id": "agreements-314d5b57479a5fc7a2c40bfdb76b1da4"
               },
               "date"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-314d5b57479a5fc7a2c40bfdb76b1da4"
+              },
+              "scope"
             ]
           ],
           "accessed": "2026-10-17"
@@ -64777,6 +65197,17 @@
               },
               "model_access",
               "notes"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-71c44af8b5b659c9b667334ac51b3b75"
+              },
+              "scope"
             ]
           ],
           "accessed": "2026-10-17"
@@ -64870,6 +65301,40 @@
             ]
           ],
           "accessed": "2026-10-19"
+        },
+        {
+          "text": "Union Minister for Electronics & Information Technology, Railways, Information & Broadcasting, Shri Ashwini Vaishnaw",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "IN"
+              },
+              "timeline",
+              {
+                "id": "in-2025-01-commitment"
+              },
+              "description"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "The Union Minister announced the setting up of IndiaAI Safety Institute under the Safe and Trusted Pillar of the IndiaAI Mission to address AI risks & Safety Challenges.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "IN"
+              },
+              "timeline",
+              {
+                "id": "in-2025-01-commitment"
+              },
+              "description"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "IN",
@@ -65371,6 +65836,28 @@
                 "id": "eu-1"
               },
               "date"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "EU"
+              },
+              "timeline",
+              {
+                "id": "eu-2024-01-24-commitment"
+              },
+              "description"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "EU"
+              },
+              "timeline",
+              {
+                "id": "eu-1"
+              },
+              "description"
             ]
           ],
           "accessed": "2026-10-17"
@@ -65471,6 +65958,17 @@
                 "id": "eu-ai-office"
               },
               "mandate_short"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "EU"
+              },
+              "timeline",
+              {
+                "id": "eu-1"
+              },
+              "description"
             ]
           ],
           "accessed": "2026-10-19"
@@ -65498,6 +65996,14 @@
               },
               "reports_to",
               "name"
+            ],
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "staffing_model",
+              "notes"
             ]
           ],
           "accessed": "2026-10-19"
@@ -65582,6 +66088,14 @@
               {
                 "id": "funding-7507fd8b7767470bbecb06ab3f94cca2"
               },
+              "notes"
+            ],
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "staffing_model",
               "notes"
             ]
           ],
@@ -68848,6 +69362,146 @@
             ]
           ],
           "accessed": "2026-10-20"
+        },
+        {
+          "text": "Signed in duplicate at New Delhi, India, on the 20th day of February 2026 in the English and French languages, all texts having equal validity.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-d5bc534826ee5014a76f045d50822a08"
+              },
+              "scope"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-c8fe6157fbee589e8787f97c552539f8"
+              },
+              "scope"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Exchange information on AI technologies, risks, methodologies, tools and evaluations;",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-d5bc534826ee5014a76f045d50822a08"
+              },
+              "scope"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-c8fe6157fbee589e8787f97c552539f8"
+              },
+              "scope"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Conduct joint studies to establish best practices for addressing risks of synthetic content that has been significantly modified or generated by AI;",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-d5bc534826ee5014a76f045d50822a08"
+              },
+              "scope"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-c8fe6157fbee589e8787f97c552539f8"
+              },
+              "scope"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Conduct joint research and development activities to advance measurement science related to AI.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-d5bc534826ee5014a76f045d50822a08"
+              },
+              "scope"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-c8fe6157fbee589e8787f97c552539f8"
+              },
+              "scope"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Facilitate exchanges of talent between the two countries, including between the Participants' respective AI Safety Institutes and between non-governmental organizations;",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-d5bc534826ee5014a76f045d50822a08"
+              },
+              "scope"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-c8fe6157fbee589e8787f97c552539f8"
+              },
+              "scope"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "CA",
@@ -70866,6 +71520,23 @@
               "text": "Today the Commission has unveiled the AI Office, established within the Commission.",
               "kind": "definition"
             }
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Unit on AI safety focusing on the identification of systemic risks of very capable general-purpose models, possible mitigation measures as well as evaluation and testing approaches;",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "EU"
+              },
+              "timeline",
+              {
+                "id": "eu-2024-06-16-launched"
+              },
+              "description"
+            ]
           ],
           "accessed": "2026-10-17"
         }
@@ -76781,6 +77452,57 @@
             ]
           ],
           "accessed": "2026-10-17"
+        },
+        {
+          "text": "The UK and US have signed a Memorandum of Understanding which will see them work together to develop tests for the most advanced AI models.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "agreements",
+              {
+                "id": "agreements-2e3769de3fa758ccbf6bfcc1e7d09080"
+              },
+              "scope"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Institutes to develop shared capabilities through information-sharing, close cooperation, and expert personnel exchanges",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "agreements",
+              {
+                "id": "agreements-2e3769de3fa758ccbf6bfcc1e7d09080"
+              },
+              "scope"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "the partnership will see both countries working to align their scientific approaches and working closely to accelerate and rapidly iterate robust suites of evaluations for AI models, systems, and agents.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "agreements",
+              {
+                "id": "agreements-2e3769de3fa758ccbf6bfcc1e7d09080"
+              },
+              "scope"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "GB",
@@ -76936,6 +77658,42 @@
                 "id": "agreements-d703af8681b95884b6ef76f805f8884a"
               },
               "date"
+            ]
+          ],
+          "accessed": "2026-10-17",
+          "url": "https://r.jina.ai/https://www.minister.industry.gov.au/t-ayres/media/australia-and-uk-partner-strengthen-ai-safety-and-security"
+        },
+        {
+          "text": "Sharing information and expertise on emerging AI capabilities and risks, and best-practices for testing AI systems",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-d703af8681b95884b6ef76f805f8884a"
+              },
+              "scope"
+            ]
+          ],
+          "accessed": "2026-10-17",
+          "url": "https://r.jina.ai/https://www.minister.industry.gov.au/t-ayres/media/australia-and-uk-partner-strengthen-ai-safety-and-security"
+        },
+        {
+          "text": "Conducting joint research, including novel approaches to measure, test and manage risks",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-d703af8681b95884b6ef76f805f8884a"
+              },
+              "scope"
             ]
           ],
           "accessed": "2026-10-17",
@@ -77099,6 +77857,23 @@
             ]
           ],
           "accessed": "2026-10-20"
+        },
+        {
+          "text": "Under this agreement, CAISI and OpenMined will collaborate on research into privacy-preserving methods for conducting AI evaluations, enabling rigorous measurement of AI systems even when the underlying data, models, or benchmarks must remain confidential",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "agreements",
+              {
+                "id": "agreements-6a3be5439dc15bf7aa254cff92a1faaa"
+              },
+              "scope"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "US",
@@ -77319,6 +78094,34 @@
             ]
           ],
           "accessed": "2026-10-17"
+        },
+        {
+          "text": "The two administrations, like-minded partners, agreed to address the safety of general-purpose AI models through information exchanges and best practices, joint testing and evaluations, development of tools and benchmarks, standardisation activities, as well as research on how to advance safe and trustworthy AI.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "sg-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-4c4113478a8f59739aa63ec51a18cd26"
+              },
+              "scope"
+            ],
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "agreements",
+              {
+                "id": "agreements-d61ad4a4377453a193363176ffefe56a"
+              },
+              "scope"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "EU",
@@ -77398,6 +78201,40 @@
               },
               "state"
             ],
+            [
+              "institutes",
+              {
+                "id": "sg-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-484ff3ac5ff85981863bd27549a8c6f5"
+              },
+              "scope"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "The scope of the MOU will include joint research into agentic AI and the development \nof evaluation methods, tools, and benchmarks for AI models, including in the area of \nmultilingual AI safety.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "sg-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-484ff3ac5ff85981863bd27549a8c6f5"
+              },
+              "scope"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "IMDA, the Singapore AI Safety Institute  and Microsoft will work together , with \nparticipation from other Singapore government agencies  to explore a framework for \nhow governments and infrastructure operators can responsibly structure access to \nfrontier AI models for purposes such as safety and security testing.",
+          "supports": [
             [
               "institutes",
               {
@@ -84500,6 +85337,23 @@
             ]
           ],
           "accessed": "2026-10-17"
+        },
+        {
+          "text": "It captures the active exchanges between Singapore’s Infocomm Media Development Authority (IMDA), the Digital Trust Centre (DTC) at the Nanyang Technological University (NTU) which has been designated as Singapore’s AI Safety Institute; the UK Department of Science, Technology, and Innovation, and the UK AI Safety Institute on research collaboration, international standards development, and safety testing.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "sg-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-736fd8fc09c05e11ba356a43530ec041"
+              },
+              "scope"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "SG",
@@ -85175,6 +86029,17 @@
               },
               "model_access",
               "notes"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-8ef36eb7d4595fc3a1d19c9e0e97c36a"
+              },
+              "scope"
             ]
           ],
           "accessed": "2026-10-17"
@@ -85339,6 +86204,23 @@
                 "id": "ca-caisi"
               },
               "mandate_short"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "CAISI concluded an MOU with Canadian model developer Cohere in June 2025 to work together to enhance understanding of AI risks and how to evaluate and mitigate them to foster trust in AI",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-8ef36eb7d4595fc3a1d19c9e0e97c36a"
+              },
+              "scope"
             ]
           ],
           "accessed": "2026-10-17"
@@ -94090,6 +94972,60 @@
             ]
           ],
           "gloss": "The 2027 government budget proposal related to the AI Safety Institute is KRW 15.944 billion."
+        },
+        {
+          "text": "6일 국회과학기술정보방송통신위원회 소속 이정헌 더불어민주당 의원이 과학기술정보통신부로부터 받은 자료에 따르면 2027년도 AI안전연구소와 관련한 정부 예산안은 159억4400만원으로 올해 대비 23.8% 증가한다.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-eb798d93b6345b24b6fb8f1c45ad7e4a"
+              },
+              "annual_basis"
+            ]
+          ],
+          "gloss": "According to material received from the Ministry of Science and ICT by Democratic Party lawmaker Lee Jung-hun of the National Assembly's science committee on the 6th, the 2027 government budget proposal related to the AI Safety Institute is KRW 15.944 billion, up 23.8% from this year.",
+          "accessed": "2026-10-19"
+        },
+        {
+          "text": "전체 예산을 끌어올린 것은 R&D다.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-fc602e01866d59ba8fdc9b20579087fd"
+              },
+              "description"
+            ]
+          ],
+          "gloss": "R&D drove the increase in the overall budget.",
+          "accessed": "2026-10-19"
+        },
+        {
+          "text": "비 R&D 예산은 89억원에서 90억5300만원으로 1.7% 늘어나는 데 그쳤다.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-fc602e01866d59ba8fdc9b20579087fd"
+              },
+              "description"
+            ]
+          ],
+          "gloss": "The non-R&D budget rose only 1.7%, from KRW 8.9 billion to KRW 9.053 billion.",
+          "accessed": "2026-10-19"
         }
       ],
       "snapshot": {
@@ -102826,6 +103762,23 @@
               "kind": "heading"
             }
           ]
+        },
+        {
+          "text": "NIST Artificial Intelligence Update\nMarch 27, 2026",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "agreements",
+              {
+                "id": "agreements-0a6ff279c685891cc23cc8c53031c0b8"
+              },
+              "scope"
+            ]
+          ],
+          "accessed": "2026-10-20"
         }
       ],
       "snapshot": {
@@ -107640,6 +108593,21 @@
           ],
           "gloss": "Under the agreement, Kakao provides its AI models and AI agents for AI safety evaluation and supports the infrastructure needed for evaluation and evaluation-tool development. The AI Safety Institute is responsible for evaluation and improving methods; the two sides will jointly review results, agree their disclosure and cooperate on developing AI safety evaluation tools.",
           "accessed": "2026-10-21"
+        },
+        {
+          "text": "카카오는 지난해 인공지능안전연구소와 함께 자체 언어모델 'Kanana-1.5-9.8B'를 대상으로 공동 안전성 평가를 진행했으며",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "testing_capacity",
+              "notes"
+            ]
+          ],
+          "gloss": "Last year Kakao, together with the AI Safety Institute, carried out a joint safety evaluation of its own language model Kanana-1.5-9.8B.",
+          "accessed": "2026-10-21"
         }
       ]
     },
@@ -107701,6 +108669,28 @@
             {
               "text": "제10조(인공지능안전연구소의 운영 등)",
               "kind": "provision",
+              "gloss": "Article 10 (Operation of the AI Safety Institute, etc.)"
+            }
+          ],
+          "accessed": "2026-10-21"
+        },
+        {
+          "text": "2. 인공지능안전 관련 평가 시스템의 구축 및 운영",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "testing_capacity",
+              "notes"
+            ]
+          ],
+          "gloss": "2. Building and operating evaluation systems related to AI safety.",
+          "anchors": [
+            {
+              "kind": "provision",
+              "text": "제10조(인공지능안전연구소의 운영 등)",
               "gloss": "Article 10 (Operation of the AI Safety Institute, etc.)"
             }
           ],
@@ -110513,6 +111503,17 @@
                 "id": "funding-8d2f4b6a1c9e47f3b05a7e3c1d6f2b98"
               },
               "coverage"
+            ],
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "funding",
+              {
+                "id": "funding-8d2f4b6a1c9e47f3b05a7e3c1d6f2b98"
+              },
+              "annual_basis"
             ]
           ],
           "accessed": "2026-10-24"
@@ -111387,6 +112388,23 @@
                 "id": "funding-c93e1a7d5b2f4e80a6d4b9c1e7f3a512"
               },
               "commitment"
+            ]
+          ],
+          "accessed": "2026-10-24"
+        },
+        {
+          "text": "The implementation of ‘IndiaAI Mission’ is with a total outlay of Rs. 10,371.92 Cr for a period of \n5 years. The detailed allocation of budgetary outlay among its seven key pillars is as follows:",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "in-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-c93e1a7d5b2f4e80a6d4b9c1e7f3a512"
+              },
+              "description"
             ]
           ],
           "accessed": "2026-10-24"
@@ -112265,6 +113283,24 @@
             ]
           ],
           "accessed": "2026-10-24"
+        },
+        {
+          "text": "This includes exchanges on frontier governance frameworks, including methods for evaluating high-risk capabilities.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-0148193f7ffd5123b6db677df3184ac2"
+              },
+              "scope"
+            ]
+          ],
+          "accessed": "2026-10-24",
+          "url": "https://r.jina.ai/https://www.industry.gov.au/publications/memorandum-understanding-between-australian-government-and-microsoft-collaboration-ai-opportunities"
         }
       ],
       "snapshot": {
@@ -116022,6 +117058,20 @@
             ]
           ],
           "accessed": "2026-11-07"
+        },
+        {
+          "text": "a White House official told Semafor in a statement.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "reports_to",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-07"
         }
       ],
       "accessed": "2026-11-07",
@@ -118053,6 +119103,23 @@
         },
         {
           "text": "AI builders of any size can test with Scale and choose whether to share the results with the U.S. AISI.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "agreements",
+              {
+                "id": "agreements-0a6ff279c685891cc23cc8c53031c0b8"
+              },
+              "scope"
+            ]
+          ],
+          "accessed": "2026-11-09"
+        },
+        {
+          "text": "Relying on the methods jointly developed under this agreement, model builders of all sizes will be able to voluntarily and efficiently access reliable new forms of testing with Scale",
           "supports": [
             [
               "institutes",
