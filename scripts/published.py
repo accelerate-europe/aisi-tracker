@@ -844,7 +844,7 @@ def generate_texts(result: dict) -> list[str]:
     migrated = {j["id"] for j in result.get("jurisdictions", []) if "summary" not in j}
     for institute in institutes.values():
         for funding in institute.get("funding", []):
-            if funding["kind"] != "none_disclosed":
+            if funding.get("kind") != "none_disclosed":
                 continue
             where = f"institutes/{institute['id']}/funding/{funding['id']}/description"
             if institute["jurisdiction_id"] in migrated:

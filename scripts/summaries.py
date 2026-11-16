@@ -340,7 +340,7 @@ def generate(record: dict, institute: dict | None, basis_event: dict | None, *, 
         "notes": notes_text(record, as_of),
         "roles": {b["id"]: role_text(record, b["id"]) for b in record.get("related_bodies", [])},
         "funding_descriptions": {f["id"]: UNDISCLOSED_FUNDING[f["coverage"]]
-                                 for f in (institute or {}).get("funding", []) if f["kind"] == "none_disclosed"},
+                                 for f in (institute or {}).get("funding", []) if f.get("kind") == "none_disclosed"},
     }
     if closest is not None:
         texts["note"] = closest_note(record)

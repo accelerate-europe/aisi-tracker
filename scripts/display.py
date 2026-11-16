@@ -898,7 +898,7 @@ def derive_display(published_data):
                 ),
             )
             # A migrated record's undisclosed funding has a generated description, which is no source statement.
-            if row["kind"] == "none_disclosed" and row.get("description") in summaries.UNDISCLOSED_FUNDING.values():
+            if row.get("kind") == "none_disclosed" and row.get("description") in summaries.UNDISCLOSED_FUNDING.values():
                 row["display"]["generated_description"] = True
     for jurisdiction in data.get("jurisdictions", []):
         jurisdiction["display"]["source_links"] = union(record_sources(jurisdiction))

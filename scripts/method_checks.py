@@ -426,7 +426,7 @@ def unquoted_items(d: dict) -> list[tuple[str, str, str]]:
         if record["jurisdiction_id"] in migrated:
             if "funding" in shown:
                 shown["funding"] = [{key: value for key, value in funding.items()
-                                     if not (funding["kind"] == "none_disclosed" and key == "description")}
+                                     if not (funding.get("kind") == "none_disclosed" and key == "description")}
                                     for funding in shown["funding"]]
             # A row note that row_checks requires as a dated search log cannot carry a quote (hub default, spec
             # section 5); it is listed by search_log_notes instead, and review checks it states nothing about the world.
