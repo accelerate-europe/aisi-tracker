@@ -29,6 +29,8 @@ LIVE_URL = "https://aisi.accelerate-europe.org/"
 ROOT_FILES = {"index.html", "404.html", "robots.txt", ".nojekyll", "manifest.json", "keep.txt"}
 RESERVED = ROOT_FILES | {"b", ".git", ".github", "cname", ".", "..", ""}
 BUDGET = 900_000_000
+FROZEN_DAYS = 21  # an unkept frozen build goes after this many days
+FROZEN_COUNT = 10  # at most this many unkept frozen builds stay, the newest by first publish
 ROBOTS = "User-agent: *\nDisallow: /\n"
 KEEP_HEADER = "# One ten-character commit per line. Kept builds are not pruned.\n"
 
@@ -334,9 +336,14 @@ def retention(manifest: dict, kept: set[str], branches: set[str], now: dt.dateti
     # Timestamp, then SHA: a deterministic tie-break independent of directory order.
     order = sorted(frozen, key=lambda sha: (timestamp(frozen[sha]["built"]), sha))
     for sha in order:
-        if sha not in protected and now - timestamp(frozen[sha]["built"]) > dt.timedelta(days=21):
+        if sha not in protected and now - timestamp(frozen[sha]["built"]) > dt.timedelta(days=FROZEN_DAYS):
             removed.add("b/" + sha)
             del frozen[sha]
+    # At most FROZEN_COUNT unkept builds, newest by first publish; kept and live builds neither go nor count.
+    unprotected = [sha for sha in order if sha in frozen and sha not in protected]
+    for sha in unprotected[:max(0, len(unprotected) - FROZEN_COUNT)]:
+        removed.add("b/" + sha)
+        del frozen[sha]
     size = overhead + sum(e.get("size", 0) for e in result["folders"].values()) + sum(e["size"] for e in frozen.values())
     for sha in order:
         if size <= budget:
@@ -371,10 +378,10 @@ def index_html(manifest: dict, kept: set[str]) -> str:
                     f'<a data-run="{entry["run_id"]}" href="{esc(attempt["run_url"])}">CI run</a></td></tr>')
     frozen = []
     for sha, entry in sorted(manifest["frozen"].items(), key=lambda item: (item[1]["built"], item[0]), reverse=True):
-        expiry = (timestamp(entry["built"]) + dt.timedelta(days=21)).date().isoformat()
-        life = "kept" if sha in kept else f"Until {expiry}; may go sooner when space runs out"
+        expiry = (timestamp(entry["built"]) + dt.timedelta(days=FROZEN_DAYS)).date().isoformat()
+        life = "kept" if sha in kept else f"Until {expiry} at most; sooner once {FROZEN_COUNT} newer frozen builds that are neither kept nor a branch's current build exist, or space runs out"
         if sha not in kept and any(e.get("current", {}).get("commit", "")[:10] == sha for e in manifest["folders"].values()):
-            life = f"Current live build; protected while current (21-day date: {expiry})"
+            life = f"Current live build; protected while current ({FROZEN_DAYS}-day date: {expiry})"
         frozen.append(f'<tr><td><a href="b/{sha}/">{sha}</a></td><td>{esc(entry["branch"])}<br>{vienna(entry["built"])}<br>'
                       f'<a href="{esc(entry["run_url"])}">First publish: run {entry["run_id"]}, attempt {entry["run_attempt"]}</a></td><td>{life}</td></tr>')
     script = """
@@ -390,6 +397,8 @@ document.querySelectorAll('[data-run]').forEach(async function (link) {
     return root_page("AISI tracker previews", '<h1>Preview, not published</h1><p>Times are Europe/Vienna.</p>'
                      '<table><thead><tr><th>Branch</th><th>Current build</th><th>Last attempt</th></tr></thead><tbody>' + ''.join(rows) + '</tbody></table>'
                      '<h2>Frozen builds</h2><p>An exact build is the first published build of that commit. '
+                     f'The {FROZEN_COUNT} newest unkept frozen builds stay, each for {FROZEN_DAYS} days at most, and fewer if space runs out; '
+                     'kept builds and the current build of each branch stay and do not count. '
                      'To keep one, add its ten-character commit to <a href="https://github.com/accelerate-europe/aisi-tracker-preview/edit/gh-pages/keep.txt">keep.txt in the preview repository</a>.</p>'
                      '<table><thead><tr><th>Commit</th><th>Provenance</th><th>Retention</th></tr></thead><tbody>' + ''.join(frozen) + '</tbody></table>', script)
 
