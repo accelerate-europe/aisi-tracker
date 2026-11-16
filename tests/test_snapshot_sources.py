@@ -1633,3 +1633,135 @@ def test_corrupt_cited_copy_does_not_block_a_text_change_without_quotes(source, 
     new = page(main=ARTICLE.replace("</p>", " It was revised.</p>"))
     result = refetched(source, fetcher, tmp_path, new)
     assert (result["status"], result["change"]) == ("saved", "text_changed")
+
+
+ARCHIVED = b"<html><title>Institute annual report on frontier safety evaluations 2026</title><p>Our institute published its first safety evaluation.</p></html>"
+LIVE_NOW = b"<html><title>Institute annual report on frontier safety evaluations 2026</title><p>Our institute published its first safety evaluation.</p><p>It has since published a second.</p></html>"
+
+
+def headless_browser(monkeypatch, body, status="ok"):
+    """The browser helper, replaced by one that writes a render of the page, as monitor_browser.write_result does."""
+    from scripts import monitor_browser, monitor_sources
+
+    calls = []
+
+    def browser(urls, out, **kwargs):
+        calls.append((urls, out))
+        for url in urls:
+            monitor_browser.write_result(out, body, {
+                "url": url, "final_url": url, "method": "headless", "http_status": 200, "status": status,
+                "content_type": "text/html", "retrieved": "2026-11-16T09:00:00Z", "sha256": hashlib.sha256(body).hexdigest(),
+            })
+        return True, 0
+
+    monkeypatch.setattr(monitor_sources, "run_browser", browser)
+    return calls
+
+
+def archived_source(source, fetcher):
+    source["archive_url"] = "https://web.archive.org/web/20261015000000/https://example.gov/report"
+    fetcher.add(source["archive_url"], ARCHIVED)
+    return source
+
+
+def test_without_headless_a_failed_live_request_takes_the_archive(source, tmp_path, monkeypatch):
+    calls = headless_browser(monkeypatch, LIVE_NOW)
+    fetcher = FakeFetcher(tmp_path / "cache")
+    result = run(archived_source(source, fetcher), fetcher, tmp_path)
+    assert (result["status"], result["method"]) == ("saved", "archive")
+    assert calls == []
+
+
+def test_headless_render_is_the_live_copy_when_the_live_request_fails(source, tmp_path, monkeypatch):
+    calls = headless_browser(monkeypatch, LIVE_NOW)
+    fetcher = FakeFetcher(tmp_path / "cache")
+    archived_source(source, fetcher)
+    snap.render_headless([source["url"]], tmp_path / "headless", 60)
+    result = snap.process_source(source, fetcher, tmp_path / "private", tmp_path / "fallback", headless=tmp_path / "headless")
+    assert (result["status"], result["method"], result["evidence_url"]) == ("saved", "headless", source["url"])
+    assert result["snapshot"]["sha256"] == hashlib.sha256(LIVE_NOW).hexdigest()
+    assert {"url": source["url"], "route": "headless", "status": "ok"} in result["attempts"]
+    assert result["archives"][0]["status"] == "verified" and "proposed_archive_removal" not in result
+    manifest = json.loads((tmp_path / "private/test-report/manifest.json").read_text())
+    assert [row["method"] for row in manifest] == ["headless"]
+    assert len(calls) == 1
+
+
+@pytest.mark.parametrize("body,status", [
+    (b"<html><title>Just a moment</title><p>Verify you are human</p></html>", "ok"),
+    (b"<html><title>Other page</title><p>Unrelated text about something else entirely.</p></html>", "ok"),
+    (b"", "timeout"),
+])
+def test_unusable_headless_render_leaves_the_archive(source, tmp_path, monkeypatch, body, status):
+    headless_browser(monkeypatch, body, status)
+    fetcher = FakeFetcher(tmp_path / "cache")
+    archived_source(source, fetcher)
+    snap.render_headless([source["url"]], tmp_path / "headless", 60)
+    result = snap.process_source(source, fetcher, tmp_path / "private", tmp_path / "fallback", headless=tmp_path / "headless")
+    assert result["method"] == "archive"
+    attempt, = [a for a in result["attempts"] if a.get("route") == "headless"]
+    assert attempt["status"] != "ok"
+
+
+def test_main_only_and_route_in_the_report_line(source, tmp_path, monkeypatch, capsys):
+    headless_browser(monkeypatch, LIVE_NOW)
+    fetcher = FakeFetcher(tmp_path / "cache")
+    archived_source(source, fetcher)
+    data = tmp_path / "data.json"
+    other = {**copy.deepcopy(source), "id": "other", "url": "https://example.gov/other"}
+    data.write_text(json.dumps({"sources": [source, other]}))
+    real = snap.Fetcher  # the cache is the fake; the headless renders are read by the real fetcher
+    monkeypatch.setattr(snap, "Fetcher", lambda cache, **k: fetcher if cache == tmp_path / "cache" else real(cache, **k))
+    monkeypatch.setattr(sys, "argv", ["snapshot_sources.py", "--data", str(data), "--directory", str(tmp_path / "private"),
+                                      "--report", str(tmp_path / "report.json"), "--cache", str(tmp_path / "cache"),
+                                      "--headless", "--only", source["id"]])
+    snap.main()
+    out = capsys.readouterr().out
+    assert out.splitlines() == ["headless renders: 1", "1/1 test-report: saved (new_snapshot) via headless"]
+
+
+def test_failed_batch_never_reads_an_earlier_render(source, tmp_path, monkeypatch, capsys):
+    """An earlier run's render under CACHE/headless is never read: each run renders into a folder of its own."""
+    from scripts import monitor_browser, monitor_sources
+
+    old = tmp_path / "cache" / "headless" / "20261101T000000Z-abcdef"
+    monitor_browser.write_result(old, LIVE_NOW, {
+        "url": source["url"], "final_url": source["url"], "method": "headless", "http_status": 200, "status": "ok",
+        "content_type": "text/html", "retrieved": "2026-11-01T00:00:00Z", "sha256": hashlib.sha256(LIVE_NOW).hexdigest()})
+    monitor_browser.write_result(tmp_path / "cache" / "headless", LIVE_NOW, json.loads((next(old.iterdir()) / "metadata.json").read_text()))
+    monkeypatch.setattr(monitor_sources, "run_browser", lambda urls, out, **kwargs: (False, None))  # the lock was busy
+    fetcher = FakeFetcher(tmp_path / "cache")
+    archived_source(source, fetcher)
+    data = tmp_path / "data.json"
+    data.write_text(json.dumps({"sources": [source]}))
+    real = snap.Fetcher
+    monkeypatch.setattr(snap, "Fetcher", lambda cache, **k: fetcher if cache == tmp_path / "cache" else real(cache, **k))
+    monkeypatch.setattr(sys, "argv", ["snapshot_sources.py", "--data", str(data), "--directory", str(tmp_path / "private"),
+                                      "--report", str(tmp_path / "report.json"), "--cache", str(tmp_path / "cache"), "--headless"])
+    snap.main()
+    assert capsys.readouterr().out.splitlines() == ["headless renders: 1, not rendered (browser busy)", "1/1 test-report: saved (new_snapshot) via archive"]
+
+
+def test_prepass_error_is_reported_for_its_source_only(source, tmp_path, monkeypatch, capsys):
+    headless_browser(monkeypatch, LIVE_NOW)
+    fetcher = FakeFetcher(tmp_path / "cache")
+    archived_source(source, fetcher)
+    bad = {**copy.deepcopy(source), "id": "bad", "url": "https://example.gov/bad"}
+    fetch = fetcher.fetch
+
+    def broken(url, method="live"):
+        if url == bad["url"]:
+            raise ValueError("Cache URL mismatch")
+        return fetch(url, method)
+
+    fetcher.fetch = broken
+    data = tmp_path / "data.json"
+    data.write_text(json.dumps({"sources": [source, bad]}))
+    real = snap.Fetcher
+    monkeypatch.setattr(snap, "Fetcher", lambda cache, **k: fetcher if cache == tmp_path / "cache" else real(cache, **k))
+    monkeypatch.setattr(sys, "argv", ["snapshot_sources.py", "--data", str(data), "--directory", str(tmp_path / "private"),
+                                      "--report", str(tmp_path / "report.json"), "--cache", str(tmp_path / "cache"), "--headless", "--workers", "1"])
+    snap.main()
+    lines = capsys.readouterr().out.splitlines()
+    assert "headless renders: 1" in lines
+    assert sorted(line.split(" ", 1)[1] for line in lines[1:]) == ["bad: failed", "test-report: saved (new_snapshot) via headless"]
