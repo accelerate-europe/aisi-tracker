@@ -12,6 +12,54 @@ def claims(*texts, sources=("source",)):
             for n, text in enumerate(texts)]
 
 
+@pytest.mark.parametrize("first, second, expected", [
+    ("The policy says it guides research.", "The policy says its teams test models.",
+     "The policy says it guides research and its teams test models."),
+    ("The policies say it guides research.", "The policies say its teams test models.",
+     "The policies say it guides research and its teams test models."),
+    ("The policy tasks researchers with testing models.", "The policy tasks officials with reviewing results.",
+     "The policy tasks researchers with testing models and officials with reviewing results."),
+    ("The policies task researchers with testing models.", "The policies task officials with reviewing results.",
+     "The policies task researchers with testing models and officials with reviewing results."),
+])
+def test_both_verb_forms_qualify_for_a_join(first, second, expected):
+    decisions = []
+    assert summaries.join_role_claims(claims(first, second), decisions=decisions) == expected
+    assert [d["step"] for d in decisions] == ["joined"]
+    assert decisions[0]["rule"] == "a"
+
+
+@pytest.mark.parametrize("first, second, expected", [
+    ("The policy says it guides research.", "The policy says it supports training.",
+     "The policy says it guides research. The policy also says it supports training."),
+    ("The policies say it guides research.", "The policies say it supports training.",
+     "The policies say it guides research. The policies also say it supports training."),
+    ("The policy tasks it with testing models.", "The policy tasks it with reviewing results.",
+     "The policy tasks it with testing models. The policy also tasks it with reviewing results."),
+    ("The policies task it with testing models.", "The policies task it with reviewing results.",
+     "The policies task it with testing models. The policies also task it with reviewing results."),
+])
+def test_both_verb_forms_qualify_for_also_a(first, second, expected):
+    decisions = []
+    assert summaries.join_role_claims(claims(first, second), decisions=decisions) == expected
+    assert [d["step"] for d in decisions] == ["unchanged", "also (a)"]
+
+
+def test_saudi_sdaia_uses_also_task_twice():
+    roles = claims(
+        "SDAIA's organisational arrangements task it with regulating the data and AI sectors by setting policies, standards and controls for them and how they are handled, circulating these to the relevant governmental and non-governmental entities and monitoring compliance, in accordance with the relevant legal provisions.",
+        "SDAIA's organisational arrangements task it with building specialised national expertise and capabilities in the data and AI sectors and developing and implementing educational and training programmes in those fields, in coordination with the ministry.",
+        "SDAIA's organisational arrangements task it with stimulating growth in the data and AI sectors, encouraging innovation and investment in them, and coordinating with the ministry on this matter.")
+    before = copy.deepcopy(roles)
+    decisions = []
+    assert summaries.join_role_claims(roles, decisions=decisions) == (
+        "SDAIA's organisational arrangements task it with regulating the data and AI sectors by setting policies, standards and controls for them and how they are handled, circulating these to the relevant governmental and non-governmental entities and monitoring compliance, in accordance with the relevant legal provisions. "
+        "SDAIA's organisational arrangements also task it with building specialised national expertise and capabilities in the data and AI sectors and developing and implementing educational and training programmes in those fields, in coordination with the ministry. "
+        "SDAIA's organisational arrangements also task it with stimulating growth in the data and AI sectors, encouraging innovation and investment in them, and coordinating with the ministry on this matter.")
+    assert [d["step"] for d in decisions] == ["unchanged", "also (a)", "also (a)"]
+    assert roles == before
+
+
 def test_pa_rule_b_uses_longest_qualifying_cut():
     roles = claims(
         "SENACYT's strategy plans an AI Risk Observatory to monitor global trends in AI security.",
