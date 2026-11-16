@@ -286,6 +286,18 @@ def undisclosed_funding():
     return authored, funding
 
 
+@pytest.fixture
+def legacy_undisclosed(undisclosed_funding):
+    """A legacy record with undisclosed funding, built in the copy: once every institute's record is migrated, the
+    data holds none. An authored summary makes Malaysia's record legacy again; its description is then authored."""
+    authored, _ = undisclosed_funding
+    next(j for j in authored["jurisdictions"] if j["id"] == "MY")["summary"] = "MY-AISafe was launched in July 2026."
+    institute = next(i for i in authored["institutes"] if i["id"] == "my-aisafe")
+    funding = next(f for f in institute["funding"] if f["kind"] == "none_disclosed")
+    funding["description"] = "No budget for the institute published"
+    return authored, institute, funding
+
+
 @pytest.mark.parametrize("coverage, expected", [
     ("whole_institute", "No budget published for the institute as a whole."),
     ("component", "No budget published for this part of the institute."),
@@ -309,7 +321,6 @@ def test_real_undisclosed_funding_migration_and_legacy_descriptions(undisclosed_
     assert flagged == {f["id"] for i in authored["institutes"] if i["jurisdiction_id"] in migrated
                        for f in i.get("funding", []) if f["kind"] == "none_disclosed"}  # the page hides exactly these statements
     generated = set()
-    legacy = set()
     for institute in authored["institutes"]:
         for funding in institute.get("funding", []):
             if institute["jurisdiction_id"] in migrated and funding["kind"] == "none_disclosed":
@@ -318,10 +329,7 @@ def test_real_undisclosed_funding_migration_and_legacy_descriptions(undisclosed_
                 assert descriptions[funding["id"]] == "No budget published for the institute as a whole."
             else:
                 assert descriptions[funding["id"]] == funding["description"]
-                if funding["kind"] == "none_disclosed":
-                    legacy.add(institute["id"])
-    assert generated == {"fr-inesia", "de-aisi"}
-    assert legacy == {"eu-ai-office", "my-aisafe", "in-aisi"}
+    assert {"fr-inesia", "de-aisi"} <= generated  # and every other migrated record's undisclosed funding
     assert schema_errors(authored, authored_schema(SCHEMA, strict=True)) == []
     assert located_errors(published, SCHEMA) == []
 
@@ -347,21 +355,24 @@ def test_only_undisclosed_funding_can_omit_description_in_authored_schema(undisc
             assert any(error.message == "'description' is a required property" for error in errors)
 
 
-def test_legacy_undisclosed_funding_still_requires_description(undisclosed_funding):
-    authored, _ = undisclosed_funding
-    institute = next(i for i in authored["institutes"] if i["id"] == "my-aisafe")
-    funding = next(f for f in institute["funding"] if f["kind"] == "none_disclosed")
+def test_legacy_undisclosed_funding_keeps_its_authored_description(legacy_undisclosed):
+    authored, institute, funding = legacy_undisclosed
+    published = next(i for i in build.export_dataset(authored)["institutes"] if i["id"] == institute["id"])
+    result = next(f for f in published["funding"] if f["id"] == funding["id"])
+    assert result["description"] == funding["description"] and not result["display"].get("generated_description")
+
+
+def test_legacy_undisclosed_funding_still_requires_description(legacy_undisclosed):
+    authored, _, funding = legacy_undisclosed
     del funding["description"]
     with pytest.raises(ValueError, match="description is required while the record authors its summary"):
         build.export_dataset(authored)
 
 
-def test_legacy_undisclosed_funding_may_not_repeat_a_generated_line(undisclosed_funding):
+def test_legacy_undisclosed_funding_may_not_repeat_a_generated_line(legacy_undisclosed):
     # The generated lines are what marks a description as generated (display.generated_description), so a legacy
     # record that authored one word for word would lose its source statement on the page.
-    authored, _ = undisclosed_funding
-    institute = next(i for i in authored["institutes"] if i["id"] == "my-aisafe")
-    funding = next(f for f in institute["funding"] if f["kind"] == "none_disclosed")
+    authored, _, funding = legacy_undisclosed
     funding["description"] = "No budget published for the institute as a whole."
     with pytest.raises(ValueError, match="may not repeat a generated line"):
         build.export_dataset(authored)
@@ -386,10 +397,8 @@ def test_generated_funding_description_needs_no_quote_but_allows_evidence(undisc
     assert any("institutes[].funding[].notes: fr-inesia" in item for _, _, item in method_checks.unquoted_items(authored))
 
 
-def test_legacy_undisclosed_funding_description_still_needs_a_quote(undisclosed_funding):
-    authored, _ = undisclosed_funding
-    institute = next(i for i in authored["institutes"] if i["id"] == "my-aisafe")
-    funding = next(f for f in institute["funding"] if f["kind"] == "none_disclosed")
+def test_legacy_undisclosed_funding_description_still_needs_a_quote(legacy_undisclosed):
+    authored, institute, funding = legacy_undisclosed
     selector = ["institutes", {"id": institute["id"]}, "funding", {"id": funding["id"]}, "description"]
     for source in authored["sources"]:
         for excerpt in source.get("excerpts", []):
