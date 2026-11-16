@@ -47,25 +47,30 @@ def functions():
     <p class="fn-summary">Most common: testing (2 of 2 institutes), advice (1) and research (1).</p>
     <span id="hint" class="vh">Scrolls sideways</span>
     <div class="fn-scroll" role="region" tabindex="0" aria-labelledby="functions" aria-describedby="hint">
-    <table class="fn-table"><caption class="vh">Functions by institute</caption><colgroup></colgroup><colgroup span="2"></colgroup><colgroup></colgroup><colgroup></colgroup><thead><tr>
-    <th scope="col" rowspan="2">Institute</th><th scope="colgroup" colspan="2">Science</th><th scope="colgroup" colspan="1">Policy</th><td class="fn-pad" aria-hidden="true"></td>
+    <table class="fn-table"><caption class="vh">Functions by institute</caption><colgroup></colgroup><colgroup span="2"></colgroup><colgroup span="3"></colgroup><colgroup></colgroup><thead><tr>
+    <th scope="col" rowspan="2">Institute</th><th scope="colgroup" colspan="2">Science</th><th scope="colgroup" colspan="3">Policy</th><td class="fn-pad" aria-hidden="true"></td>
     </tr><tr>
     <th scope="col" data-code="testing"><abbr class="g" tabindex="0" aria-description="Testing: Tests models.">Testing</abbr></th>
     <th scope="col" data-code="research"><abbr class="g" tabindex="0" aria-description="Research: Does research.">Research</abbr></th>
-    <th scope="col" data-code="advice" class="fn-group-start"><abbr class="g" tabindex="0" aria-description="Advice: Advises government.">Advice</abbr></th><td class="fn-pad" aria-hidden="true"></td>
+    <th scope="col" data-code="advice" class="fn-group-start"><abbr class="g" tabindex="0" aria-description="Advice: Advises government.">Advice</abbr></th>
+    <th scope="col" data-code="foresight"><abbr class="g" tabindex="0" aria-description="Foresight: Forecasts.">Foresight</abbr></th>
+    <th scope="col" data-code="incidents"><abbr class="g" tabindex="0" aria-description="Incidents: Responds.">Incidents</abbr></th><td class="fn-pad" aria-hidden="true"></td>
     </tr></thead>
-    <tbody><tr class="fn-group"><th scope="rowgroup">Established</th><td class="fn-column fn-group-first" data-code="testing" aria-hidden="true"></td><td class="fn-column" data-code="research" aria-hidden="true"></td><td class="fn-column fn-group-start" data-code="advice" aria-hidden="true"></td><td class="fn-pad" aria-hidden="true"></td></tr>
+    <tbody><tr class="fn-group"><th scope="rowgroup">Established</th><td class="fn-column fn-group-first" data-code="testing" aria-hidden="true"></td><td class="fn-column" data-code="research" aria-hidden="true"></td><td class="fn-column fn-group-start" data-code="advice" aria-hidden="true"></td><td class="fn-column" data-code="foresight" aria-hidden="true"></td><td class="fn-column" data-code="incidents" aria-hidden="true"></td><td class="fn-pad" aria-hidden="true"></td></tr>
     <tr data-institute="z"><th scope="row"><abbr class="g" tabindex="0" aria-description="Zulu Institute">Zulu</abbr></th>
     <td data-code="testing" data-value="activity"><button type="button" class="fn-cell" aria-label="Zulu, Testing: Active" aria-expanded="false" aria-controls="detail-z"><span class="fn-mark fn-activity" aria-hidden="true"></span></button></td>
     <td data-code="research" data-value="not_found"><span class="vh">not found</span></td>
-    <td data-code="advice" data-value="mandate" class="fn-group-start"><button type="button" class="fn-cell" aria-label="Zulu, Advice: Assigned" aria-expanded="false" aria-controls="detail-z"><span class="fn-mark fn-mandate" aria-hidden="true"></span></button></td><td class="fn-pad" aria-hidden="true"></td></tr>
-    </tbody><tbody><tr class="fn-group"><th scope="rowgroup">Not yet established</th><td class="fn-column fn-group-first" data-code="testing" aria-hidden="true"></td><td class="fn-column" data-code="research" aria-hidden="true"></td><td class="fn-column fn-group-start" data-code="advice" aria-hidden="true"></td><td class="fn-pad" aria-hidden="true"></td></tr>
+    <td data-code="advice" data-value="mandate" class="fn-group-start"><button type="button" class="fn-cell" aria-label="Zulu, Advice: Assigned" aria-expanded="false" aria-controls="detail-z"><span class="fn-mark fn-mandate" aria-hidden="true"></span></button></td>
+    <td data-code="foresight" data-value="not_found"><span class="vh">not found</span></td>
+    <td data-code="incidents" data-value="not_found"><span class="vh">not found</span></td><td class="fn-pad" aria-hidden="true"></td></tr>
+    </tbody><tbody><tr class="fn-group"><th scope="rowgroup">Not yet established</th><td class="fn-column fn-group-first" data-code="testing" aria-hidden="true"></td><td class="fn-column" data-code="research" aria-hidden="true"></td><td class="fn-column fn-group-start" data-code="advice" aria-hidden="true"></td><td class="fn-column" data-code="foresight" aria-hidden="true"></td><td class="fn-column" data-code="incidents" aria-hidden="true"></td><td class="fn-pad" aria-hidden="true"></td></tr>
     <tr data-institute="a"><th scope="row"><abbr class="g" tabindex="0" aria-description="Alpha Institute">Alpha</abbr></th>
     <td data-code="testing" data-value="both"><button type="button" class="fn-cell" aria-label="Alpha, Testing: Assigned and active" aria-expanded="false" aria-controls="detail-a"><span class="fn-mark fn-activity" aria-hidden="true"></span></button></td>
     <td data-code="research" data-value="activity"><button type="button" class="fn-cell" aria-label="Alpha, Research: Active" aria-expanded="false" aria-controls="detail-a"><span class="fn-mark fn-activity" aria-hidden="true"></span></button></td>
-    <td data-code="advice" data-value="not_coded" class="fn-group-start"><span class="vh">not yet coded</span></td><td class="fn-pad" aria-hidden="true"></td></tr>
-    </tbody><tfoot><tr><th scope="row">Institutes with it</th><td data-code="testing">2</td><td data-code="research">1</td><td data-code="advice">1</td><td class="fn-pad" aria-hidden="true"></td></tr></tfoot></table></div>
-    <p class="fn-empty">No public text found at any institute yet for: foresight and incidents.</p>
+    <td data-code="advice" data-value="not_coded" class="fn-group-start"><span class="vh">not yet coded</span></td>
+    <td data-code="foresight" data-value="not_found"><span class="vh">not found</span></td>
+    <td data-code="incidents" data-value="not_found"><span class="vh">not found</span></td><td class="fn-pad" aria-hidden="true"></td></tr>
+    </tbody><tfoot><tr><th scope="row">Institutes with it</th><td data-code="testing">2</td><td data-code="research">1</td><td data-code="advice">1</td><td data-code="foresight">0</td><td data-code="incidents">0</td><td class="fn-pad" aria-hidden="true"></td></tr></tfoot></table></div>
     <ul class="fn-legend fn-desktop-only" role="list"><li data-value="activity">Active</li><li data-value="mandate">Assigned</li><li data-value="not_found">Blank: not found</li><li data-value="not_coded">not yet coded</li></ul>
     <p class="fn-order">Rows: by the year the institute's current status began, oldest first.</p>
     <p class="fn-provisional">The list of functions is provisional.</p>
@@ -73,10 +78,30 @@ def functions():
     return data, html
 
 
-def test_functions_structure_accepts_row_blocks_and_folded_codes(functions):
+def test_functions_structure_keeps_unanimous_not_found_columns(functions):
     data, html = functions
     assert check_page.functions_structure(html, data) == []
     assert [i["id"] for i in check_page.function_rows(data)] == ["z", "a"]
+
+
+def test_functions_structure_rejects_a_missing_vocabulary_column(functions):
+    from bs4 import BeautifulSoup
+
+    data, html = functions
+    soup = BeautifulSoup(html, "html.parser")
+    for cell in soup.select('.fn-table [data-code="incidents"]'):
+        cell.decompose()
+    soup.select_one('th[scope="colgroup"][colspan="3"]')["colspan"] = "2"
+    soup.select_one('colgroup[span="3"]')["span"] = "2"
+    assert "Functions columns/order differ" in check_page.functions_structure(str(soup), data)
+
+
+def test_functions_desktop_missing_function_uses_uncoded_value(functions):
+    data, html = functions
+    data = copy.deepcopy(data)
+    institute = next(i for i in data["institutes"] if i["id"] == "a")
+    institute["functions"] = [row for row in institute["functions"] if row["code"] != "advice"]
+    assert check_page.functions_structure(html, data) == []
 
 
 def test_function_rows_order_by_year_then_name_then_id(functions):
@@ -92,7 +117,7 @@ def test_function_rows_order_by_year_then_name_then_id(functions):
 
 @pytest.mark.parametrize(("old", "new", "finding"), [
     ('data-value="activity"', 'data-value="mandate"', "value counts"),
-    ('<td data-code="advice">1</td><td class="fn-pad" aria-hidden="true"></td>', '<td data-code="advice">1</td><td class="fn-pad"></td>', "spacer column"),
+    ('<td data-code="incidents">0</td><td class="fn-pad" aria-hidden="true"></td>', '<td data-code="incidents">0</td><td class="fn-pad"></td>', "spacer column"),
     ('<colgroup span="2"></colgroup>', '<colgroup span="3"></colgroup>', "column groups"),
     ('aria-label="Zulu, Testing: Active"', 'aria-label="ZI, Testing: Active"', "coded control/name"),
     ('aria-label="Alpha, Testing: Assigned and active"', 'aria-label="Alpha, Testing: Active"', "coded control/name"),
@@ -110,7 +135,6 @@ def test_function_rows_order_by_year_then_name_then_id(functions):
     ('<tr data-institute="z">', '<tr data-institute="a">', "rows/order"),
     ('<td data-code="testing">2</td>', '<td data-code="testing">3</td>', "prevalence counts"),
     ('<td data-code="testing">2</td>', '<td data-code="foresight">2</td>', "prevalence counts"),
-    ('for: foresight and incidents.', 'for: incidents.', "folded empty codes"),
     ('class="fn-group-start"', 'class="missing-gap"', "group gap"),
     ('fn-mark fn-activity', 'fn-mark fn-both', "mark differs"),
     ('Most common: testing (2 of 2 institutes),', 'Most common: Zulu Institute (2 of 2 institutes),', "summary facts"),
@@ -179,8 +203,15 @@ def test_function_summary_keeps_vocabulary_order_and_whole_ties(values, expected
 def test_function_jobs_are_registered_for_shards(functions):
     jobs = check_page.browser_jobs(Path("dist"), functions[0], None)
     names = [check_page.job_id(*job) for job in jobs]
-    for name in ("check_functions_table", "check_functions_detail", "check_functions_layout", "check_functions_phone", "check_functions_sticky", "check_functions_tint"):
+    for name in ("check_functions_table", "check_functions_detail", "check_functions_layout", "check_functions_phone", "check_functions_sticky", "check_functions_tint", "check_functions_zero_carrier"):
         assert names.count("interactions/" + name) == 1
+
+
+def test_functions_group_type_requires_its_leading_token():
+    page = (Path(__file__).resolve().parents[1] / "site/index.html").read_text()
+    changed = page.replace("/var(--leading-fn-group)", "/2")
+    assert changed != page
+    assert check_page.report_line("fn-group line height does not use its role token") in check_page.check_style_source(changed)
 
 
 @pytest.fixture
@@ -236,8 +267,7 @@ def test_function_flag_geometry_uses_half_pixel_tolerance(slanted_function_flag,
 
 
 def test_functions_structure_keeps_a_group_coded_nowhere(functions):
-    """A function no institute has been coded against stays a column (it is not folded as not found), its group
-    stays a group, and it is not named in the most common summary."""
+    """A group with uncoded and not-found functions stays visible and is absent from the summary."""
     data, html = functions
     data = copy.deepcopy(data)
     next(r for r in data["institutes"][1]["functions"] if r["code"] == "advice")["value"] = "not_coded"
@@ -322,16 +352,16 @@ def test_function_copy_status_rule_reads_only_fn_copy_strings():
 
 @pytest.fixture
 def functions_phone(functions):
-    """Hand-written phone projection: all five values, one folded pair and two status blocks."""
+    """Hand-written phone projection: all five values, two unanimous not-found codes and two status blocks."""
     data, _ = functions
     html = '''<section aria-labelledby="functions"><h2 id="functions">Functions</h2><div id="functions-table">
     <p class="fn-blank"><strong>A blank cell means we found no public text for it, not that the institute does not do it.</strong></p>
     <div class="fn-phone"><div class="fn-phone-head"><span></span><span>Science</span><span>Policy</span></div>
     <div class="fn-phone-block"><h3>Established</h3><ul role="list"><li data-institute="z">
-    <button type="button" class="fn-phone-row" aria-label="Zulu, Zulu Institute: show functions" aria-expanded="false" aria-controls="fn-phone-detail-z"></button><span class="fn-phone-country" aria-hidden="true">Zulu</span><span class="fn-pips" aria-hidden="true"><span class="fn-mark fn-activity fn-pip" aria-hidden="true"></span><span class="fn-mark fn-not_found fn-pip" aria-hidden="true"></span></span><span class="fn-pips" aria-hidden="true"><span class="fn-mark fn-mandate fn-pip" aria-hidden="true"></span></span>
+    <button type="button" class="fn-phone-row" aria-label="Zulu, Zulu Institute: show functions" aria-expanded="false" aria-controls="fn-phone-detail-z"></button><span class="fn-phone-country" aria-hidden="true">Zulu</span><span class="fn-pips" aria-hidden="true"><span class="fn-mark fn-activity fn-pip" aria-hidden="true"></span><span class="fn-mark fn-not_found fn-pip" aria-hidden="true"></span></span><span class="fn-pips" aria-hidden="true"><span class="fn-mark fn-mandate fn-pip" aria-hidden="true"></span><span class="fn-mark fn-not_found fn-pip" aria-hidden="true"></span><span class="fn-mark fn-not_found fn-pip" aria-hidden="true"></span></span>
     </li></ul></div>
     <div class="fn-phone-block"><h3>Not yet established</h3><ul role="list"><li data-institute="a">
-    <button type="button" class="fn-phone-row" aria-label="Alpha, Alpha Institute: show functions" aria-expanded="false" aria-controls="fn-phone-detail-a"></button><span class="fn-phone-country" aria-hidden="true">Alpha</span><span class="fn-pips" aria-hidden="true"><span class="fn-mark fn-activity fn-pip" aria-hidden="true"></span><span class="fn-mark fn-activity fn-pip" aria-hidden="true"></span></span><span class="fn-pips" aria-hidden="true"><span class="fn-mark fn-not_coded fn-pip" aria-hidden="true"></span></span>
+    <button type="button" class="fn-phone-row" aria-label="Alpha, Alpha Institute: show functions" aria-expanded="false" aria-controls="fn-phone-detail-a"></button><span class="fn-phone-country" aria-hidden="true">Alpha</span><span class="fn-pips" aria-hidden="true"><span class="fn-mark fn-activity fn-pip" aria-hidden="true"></span><span class="fn-mark fn-activity fn-pip" aria-hidden="true"></span></span><span class="fn-pips" aria-hidden="true"><span class="fn-mark fn-not_coded fn-pip" aria-hidden="true"></span><span class="fn-mark fn-not_found fn-pip" aria-hidden="true"></span><span class="fn-mark fn-not_found fn-pip" aria-hidden="true"></span></span>
     </li></ul></div></div>
     <ul class="fn-legend fn-phone-only" role="list"><li data-value="activity"><span class="fn-mark fn-activity fn-pip" aria-hidden="true"></span>Active</li><li data-value="mandate"><span class="fn-mark fn-mandate fn-pip" aria-hidden="true"></span>Assigned</li><li data-value="not_found"><span class="fn-mark fn-not_found fn-pip" aria-hidden="true"></span>No public text found</li><li data-value="not_coded"><span class="fn-mark fn-not_coded fn-pip" aria-hidden="true"></span>not yet coded</li></ul>
     <p class="fn-pip-note fn-phone-only">One pip per function, in the order of the groups above; tap a row for the names.</p>
@@ -444,6 +474,24 @@ def test_functions_saved_forms_accept_both_and_scope_legends(functions_both):
         assert check(html, data) == []
 
 
+@pytest.mark.parametrize("selector", ['section[aria-labelledby="functions"]', '.fn-scroll', '.fn-phone'])
+@pytest.mark.parametrize(("paragraph", "findings"), [
+    ('<p class="fn-empty">No public text found at any institute yet for: foresight and incidents.</p>',
+     ["Functions obsolete .fn-empty element is present", "Functions obsolete folded-functions sentence is present"]),
+    ('<p class="fn-empty"></p>', ["Functions obsolete .fn-empty element is present"]),
+    ('<p>No public text found\n at any institute <span>yet for</span>: foresight and incidents.</p>',
+     ["Functions obsolete folded-functions sentence is present"]),
+])
+def test_functions_structure_rejects_obsolete_empty_paragraph(functions_both, selector, paragraph, findings):
+    from bs4 import BeautifulSoup
+
+    data, html = functions_both
+    assert check_page.functions_structure(html, data) == []
+    soup = BeautifulSoup(html, "html.parser")
+    soup.select_one(selector).append(BeautifulSoup(paragraph, "html.parser").p)
+    assert check_page.functions_structure(str(soup), data) == findings
+
+
 @pytest.mark.parametrize(("old", "new", "finding"), [
     ('class="fn-phone"', 'class="missing-phone"', "exactly one saved .fn-phone"),
     ('class="fn-scroll"', 'class="missing-scroll"', "exactly one saved .fn-scroll"),
@@ -485,15 +533,32 @@ def test_functions_phone_missing_function_uses_uncoded_value(functions_phone):
     assert check_page.functions_phone_structure(html, data) == []
 
 
-def test_functions_phone_model_folds_only_unanimous_not_found(functions_phone):
+def test_functions_phone_model_keeps_unanimous_not_found_columns_and_groups(functions_phone):
     data, _ = functions_phone
     data = copy.deepcopy(data)
     for institute in data["institutes"]:
         for row in institute["functions"]:
             if row["code"] == "advice":
                 row["value"] = "not_found"
-    assert check_page.function_phone_model(data)["groups"] == [{"name": "Science", "codes": ["testing", "research"]}]
-    next(row for row in data["institutes"][0]["functions"] if row["code"] == "advice")["value"] = "not_coded"
-    assert check_page.function_phone_model(data)["groups"] == [
-        {"name": "Science", "codes": ["testing", "research"]}, {"name": "Policy", "codes": ["advice"]},
+    groups = [
+        {"name": "Science", "codes": ["testing", "research"]},
+        {"name": "Policy", "codes": ["advice", "foresight", "incidents"]},
     ]
+    model = check_page.function_phone_model(data)
+    assert model["groups"] == groups
+    for row in model["rows"]:
+        assert [function["code"] for function in row["functions"]] == ["testing", "research", "advice", "foresight", "incidents"]
+        assert all(function["value"] == "not_found" for function in row["functions"] if function["group"] == "Policy")
+    next(row for row in data["institutes"][0]["functions"] if row["code"] == "advice")["value"] = "not_coded"
+    assert check_page.function_phone_model(data)["groups"] == groups
+
+
+def test_functions_phone_structure_rejects_a_missing_not_found_pip(functions_phone):
+    from bs4 import BeautifulSoup
+
+    data, html = functions_phone
+    soup = BeautifulSoup(html, "html.parser")
+    # The third Policy pip represents incidents, even though every institute is not-found for it.
+    for row in soup.select('.fn-phone li[data-institute]'):
+        row.select(':scope > .fn-pips')[1].select(':scope > .fn-pip')[2].decompose()
+    assert any("phone pip count/order differs" in error for error in check_page.functions_phone_structure(str(soup), data))

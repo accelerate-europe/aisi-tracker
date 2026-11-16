@@ -29,7 +29,7 @@
 /* Design principles
  * Functions table: institute rows in established and not-yet-established blocks, function columns in vocabulary groups, equal widths and rotated short heads. Active and both use a dot, assigned a ring; not found is blank, a search result rather than absence. The jurisdiction column stays visible during sideways scrolling. Hover and focus tint the row and one continuous column through the block bands and totals, with a slanted band behind its head; group gutters stay clear. Group labels follow the heads' lean; rules stay upright below the heads and none crosses the head zone. Quotes and sources open on demand below the selected institute (check_page check_functions_table, check_functions_detail, check_functions_layout, check_functions_tint).
  * Method: owner-owned reader summaries link to the full editorial rules on a separate page; rule anchors stay stable.
- * Type: title, label, body, meta, figure only, label, body and meta fixed up to 1200px and growing to their wide-screen sizes at 1440px, so the table and cards keep their 1100px fit; figure and title grow from phone width; shared size, weight, family and role-specific line height. The headline is the figure role with only its numbers at figure weight, its words at body weight.
+ * Type: title, label, body, meta, figure, plus fn-group for functions group labels on narrow phones; label, body and meta fixed up to 1200px and growing to their wide-screen sizes at 1440px, so the table and cards keep their 1100px fit; figure and title grow from phone width; shared size, weight, family and role-specific line height. The headline is the figure role with only its numbers at figure weight, its words at body weight.
  * Measure: running text (p, ul, ol) stops at one prose measure, so stacked siblings wrap at the same width; chart furniture and footer meta lines run full width as a whole (check_page check_text_measure).
  * Inline emphasis: inherit the paragraph's size and family, at most medium weight; no run-in heading role.
  * Sources: a collapsed card ends with the counted sources control alone (muted meta, no top rule, inline hit height); the check date and correction follow the expanded list.
@@ -639,6 +639,7 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
 .download-menu .popover > :hover { background: var(--highlight-fill); }
 
 /* Functions table (Compare) */
+:root { --size-fn-group: 11px; --leading-fn-group: var(--leading-meta); --type-fn-group: var(--weight-meta) var(--size-fn-group)/var(--leading-fn-group) var(--body); }
 .fn { --fn-hairline: color-mix(in srgb, var(--line) 65%, var(--ground)); --fn-tint: color-mix(in srgb, var(--highlight-fill) 55%, var(--ground)); min-width: 0; display: flex; flex-direction: column; gap: var(--gap-row); }
 .fn-scroll { position: relative; max-width: 100%; overflow-x: auto; container-type: inline-size; } /* positioned, so the cells' visually hidden text is clipped here and does not widen the page */
 .fn-scroll.fits { overflow: visible; container-type: normal; }
@@ -723,7 +724,7 @@ button.fn-function-label { width: 100%; background: transparent; border: 0; text
   :root:not([data-js]) .fn-legend.fn-desktop-only { display: grid; }
 }
 @media (max-width: 390px) {
-  .fn-phone-head { font-size: var(--map-label-size-narrow); }
+  .fn-phone-head { font: var(--type-fn-group); }
 }
 /* The saved page was rendered at 1440 px, where the table fits: until the script measures again, every width keeps the scroll box and a static head. */
 html[data-prerendered] .fn-scroll.fits { overflow-x: auto; container-type: inline-size; }
@@ -3073,7 +3074,6 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         prevalence: "Institutes with it",
         rows: "Rows: by the year the institute's current status began, oldest first.",
         summary: "Most common: {functions}.", summary_first: "{function} ({count} of {total} institutes)", summary_next: "{function} ({count})", summary_tied: "{functions} ({count} of {total} institutes each)",
-        empty: "No public text found at any institute yet for: {functions}.",
         how_title: "How this is coded",
         how: "We read each institute's founding, legal and plan texts and its own published work, and recorded a function only where a quote meets that function's test. {active}: a public text reports the institute doing it. {assigned}: a government text gives it the function. Most recent coding: {date}. Each institute's values are in functions.csv and claims.csv under {data}.",
         data: "Data", caption: "Functions by institute", institute: "Institute", scroll_hint: "Scrolls sideways",
@@ -3104,10 +3104,8 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       function coded(value) { return ["mandate", "activity", "both"].indexOf(value) >= 0; }
       codes.forEach(function (code) { counts[code] = institutes.filter(function (i) { return coded(rows[i.id][code].value); }).length; });
       // Vocabulary order within each group; new codes may have been appended to the vocabulary.
-      // A function is folded only when every institute was coded against it and none has a mark; one not yet coded anywhere stays a column.
-      function folded(code) { return institutes.every(function (i) { return rows[i.id][code].value === "not_found"; }); }
-      var columns = []; groups.forEach(function (group) { codes.forEach(function (code) { if (vocab[code].group === group && !folded(code)) columns.push(code); }); });
-      groups = groups.filter(function (group) { return columns.some(function (code) { return vocab[code].group === group; }); });
+      // Keep every non-deprecated function, including columns with no public text found anywhere.
+      var columns = []; groups.forEach(function (group) { codes.forEach(function (code) { if (vocab[code].group === group) columns.push(code); }); });
       function columnClass(code) { var n = columns.indexOf(code); return "fn-column" + (n === 0 ? " fn-group-first" : vocab[columns[n - 1]].group !== vocab[code].group ? " fn-group-start" : ""); }
       function mark(value, pip) { var span = el("span", "fn-mark fn-" + (value === "both" ? "activity" : value) + (pip ? " fn-pip" : "")); span.setAttribute("aria-hidden", "true"); return span; }
       function pad() { var c = el("td", "fn-pad"); c.setAttribute("aria-hidden", "true"); return c; }
@@ -3125,10 +3123,6 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
           text = andJoin(marked.slice(0, limit).map(function (c, n) { return (n ? FN_COPY.summary_next : FN_COPY.summary_first).replace("{function}", vocab[c].short).replace("{count}", counts[c]).replace("{total}", institutes.length); }));
         }
         return FN_COPY.summary.replace("{functions}", text);
-      }
-      function fnEmpty() {
-        var empty = codes.filter(folded);
-        return empty.length ? FN_COPY.empty.replace("{functions}", andJoin(empty.map(function (c) { return vocab[c].short; }))) : "";
       }
       function appendClaims(detail, i, code) {
         rows[i.id][code].claim_ids.forEach(function (id) {
@@ -3154,7 +3148,6 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         how.appendChild(body); box.appendChild(how);
         var summary = fnSummary(); if (summary) box.appendChild(el("p", "fn-summary", summary));
         buildForm(false); buildForm(true);
-        var empty = fnEmpty(); if (empty) box.appendChild(el("p", "small fn-empty", empty));
         var legendValues = ["activity", "mandate", "not_found"];
         if (institutes.some(function (i) { return columns.some(function (code) { return rows[i.id][code].value === "not_coded"; }); })) legendValues.push("not_coded");
         [false, true].forEach(function (isPhone) {
