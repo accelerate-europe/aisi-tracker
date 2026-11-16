@@ -39173,7 +39173,13 @@
             "certification",
             "sandbox"
           ]
-        }
+        },
+        "log": [
+          {
+            "date": "2026-11-16",
+            "text": "Re-read the institute's page on 16 November 2026 from a headless browser copy, as plain requests timed out: its second goal now reads \"emerging AI capabilities, risks and harms\" and its CSIRO item begins \"AISI commissioned\". Four quotations re-bound to that copy; no function gained or lost."
+          }
+        ]
       },
       "source_ids": [
         "au-minister",
@@ -39227,7 +39233,7 @@
           "id": "people-7dbf99b9dc455d868390dd815eecc114"
         }
       ],
-      "mandate_short": "Analyses and tests new AI models; supports regulators on emerging AI risks.",
+      "mandate_short": "Analyses and tests new AI models; supports regulators on emerging AI capabilities and risks.",
       "legal_basis": {
         "type": "administrative",
         "state": "in_force",
@@ -39642,7 +39648,7 @@
           "kind": "function",
           "code": "regulatory_support",
           "basis": "mandate",
-          "text": "The department lists supporting regulators and agencies in responding to emerging AI risks and harms as one of its goals.",
+          "text": "The department lists supporting regulators and agencies in responding to emerging AI capabilities, risks and harms as one of its goals.",
           "source_ids": [
             "au-industry"
           ]
@@ -48120,8 +48126,8 @@
       "title": "AI Safety Institute",
       "publisher": "Department of Industry, Science and Resources",
       "type": "primary",
-      "accessed": "2026-10-17",
-      "access_note": "A source copy was read on 17 October 2026 for the attached excerpts. Earlier access limitations: Refuses automated requests from our network (Oct 2026); opened by reviewers via a browser or reader proxy. Metadata check on 17 October 2026: requests timed out, including a second retrieval method. Missing metadata remains unknown. A later retrieval supplied readable body text; language was verified on 17 October 2026. The published snapshot hash identifies the retained archive capture at https://web.archive.org/web/20261015131505/https://www.industry.gov.au/science-technology-and-innovation/technology/artificial-intelligence/ai-safety-institute.",
+      "accessed": "2026-11-16",
+      "access_note": "A source copy was read on 17 October 2026 for the attached excerpts. Earlier access limitations: Refuses automated requests from our network (Oct 2026); opened by reviewers via a browser or reader proxy. Metadata check on 17 October 2026: requests timed out, including a second retrieval method. Missing metadata remains unknown. A later retrieval supplied readable body text; language was verified on 17 October 2026. On 16 November 2026 plain requests from our network timed out; a headless browser opened the live page, which was saved and read, and the published snapshot hash identifies that copy. Four quotations were re-read from it; the archive capture of 15 October 2026 holds their earlier wording.",
       "archive_url": "https://web.archive.org/web/20261015131505/https://www.industry.gov.au/science-technology-and-innovation/technology/artificial-intelligence/ai-safety-institute",
       "language": "en",
       "excerpts": [
@@ -48163,9 +48169,8 @@
           "accessed": "2026-10-17"
         },
         {
-          "text": "Analyse and test new AI models and applications. Support regulators and agencies in responding to emerging AI risks and harms.",
-          "accessed": "2026-10-18",
-          "url": "https://web.archive.org/web/20261015131505/https://www.industry.gov.au/science-technology-and-innovation/technology/artificial-intelligence/ai-safety-institute",
+          "text": "Analyse and test new AI models and applications. Support regulators and agencies in responding to emerging AI capabilities, risks and harms.",
+          "accessed": "2026-11-16",
           "supports": [
             [
               "institutes",
@@ -48190,7 +48195,7 @@
           "accessed": "2026-10-19"
         },
         {
-          "text": "Support regulators and agencies in responding to emerging AI risks and harms.",
+          "text": "Support regulators and agencies in responding to emerging AI capabilities, risks and harms.",
           "supports": [
             [
               "institutes",
@@ -48200,7 +48205,7 @@
               "mandate_short"
             ]
           ],
-          "accessed": "2026-10-19"
+          "accessed": "2026-11-16"
         },
         {
           "text": "Australia’s AI Safety Institute was announced as a key action under the National AI Plan. It is part of the Department of Industry, Science and Resources.",
@@ -48295,7 +48300,7 @@
           "accessed": "2026-10-19"
         },
         {
-          "text": "We commissioned the CSIRO to research scalable oversight to draw new insights for the field of AI alignment.",
+          "text": "AISI commissioned the CSIRO to research scalable oversight to draw new insights for the field of AI alignment.",
           "supports": [
             [
               "institutes",
@@ -48334,7 +48339,7 @@
               "how"
             ]
           ],
-          "accessed": "2026-10-19"
+          "accessed": "2026-11-16"
         },
         {
           "text": "Australia’s AI Safety Institute partners closely with the National AI Centre (NAIC), which leads engagement with industry and the public on practical guidance for safe and responsible AI adoption.",
@@ -48454,7 +48459,7 @@
           "accessed": "2026-10-21"
         },
         {
-          "text": "Australia’s AI Safety Institute has 3 goals: Analyse and test new AI models and applications. Support regulators and agencies in responding to emerging AI risks and harms.",
+          "text": "Australia’s AI Safety Institute has 3 goals: Analyse and test new AI models and applications. Support regulators and agencies in responding to emerging AI capabilities, risks and harms.",
           "supports": [
             [
               "institutes",
@@ -48479,15 +48484,14 @@
               "text"
             ]
           ],
-          "accessed": "2026-10-17",
-          "url": "https://web.archive.org/web/20261015131505/https://www.industry.gov.au/science-technology-and-innovation/technology/artificial-intelligence/ai-safety-institute"
+          "accessed": "2026-11-16"
         }
       ],
       "origin": "AU",
       "snapshot": {
-        "retrieved": "2026-10-17T14:20:01Z",
-        "sha256": "ea66fc270ad8b556359b649d88569b1d57f4ddc2bf7d2da701ebb8e5250dbf26",
-        "text_sha256": "fad6ec3205a6985d6fe01f74e0df44b799cc22c1a293fe0a748b7b699275c37b",
+        "retrieved": "2026-11-16T14:14:41Z",
+        "sha256": "e7948d2677165707cd2ccfab64b1d75a02bd119827b77d964786740ee7424c80",
+        "text_sha256": "85dea50efefb2875638a7c26fd07271f3934fedb93aa983c1d7c1278051423f4",
         "text_scheme": 1
       }
     },
