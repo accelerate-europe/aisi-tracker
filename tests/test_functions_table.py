@@ -66,7 +66,7 @@ def functions():
     <td data-code="advice" data-value="not_coded" class="fn-group-start"><span class="vh">not yet coded</span></td><td class="fn-pad" aria-hidden="true"></td></tr>
     </tbody><tfoot><tr><th scope="row">Institutes with it</th><td data-code="testing">2</td><td data-code="research">1</td><td data-code="advice">1</td><td class="fn-pad" aria-hidden="true"></td></tr></tfoot></table></div>
     <p class="fn-empty">No public text found at any institute yet for: foresight and incidents.</p>
-    <ul class="fn-legend" role="list"><li data-value="activity">Active</li><li data-value="mandate">Assigned</li><li data-value="not_found">Blank: not found</li><li data-value="not_coded">not yet coded</li></ul>
+    <ul class="fn-legend fn-desktop-only" role="list"><li data-value="activity">Active</li><li data-value="mandate">Assigned</li><li data-value="not_found">Blank: not found</li><li data-value="not_coded">not yet coded</li></ul>
     <p class="fn-order">Rows: by the year the institute's current status began, oldest first.</p>
     <p class="fn-provisional">The list of functions is provisional.</p>
     </div></section></div>'''
@@ -114,7 +114,6 @@ def test_function_rows_order_by_year_then_name_then_id(functions):
     ('class="fn-group-start"', 'class="missing-gap"', "group gap"),
     ('fn-mark fn-activity', 'fn-mark fn-both', "mark differs"),
     ('Most common: testing (2 of 2 institutes),', 'Most common: Zulu Institute (2 of 2 institutes),', "summary facts"),
-    ('<div id="functions-table">', '<div id="functions-table"><div class="fn-phone"></div>', "phone markup"),
     ('<div id="functions-table">', '<div id="functions-table"><p>It does this (active).</p>', "status word alone in parentheses"),
     ('<span class="vh">not found</span>', '<span>not found</span>', "absent value"),
     ('<p class="fn-blank"><strong>', '<p class="missing-blank"><strong>', "blank explanation"),
@@ -182,6 +181,58 @@ def test_function_jobs_are_registered_for_shards(functions):
     names = [check_page.job_id(*job) for job in jobs]
     for name in ("check_functions_table", "check_functions_detail", "check_functions_layout", "check_functions_phone", "check_functions_sticky", "check_functions_tint"):
         assert names.count("interactions/" + name) == 1
+
+
+@pytest.fixture
+def slanted_function_flag():
+    # A 40px track after a gutter: a 60px lean over 60*sqrt(3) height.
+    # Hand-worked corners, independent of the page's CSS and measurement routine.
+    return {"track": {"left": 100, "right": 140, "top": 20, "bottom": 123.923048454},
+            "points": [[160, 20], [200, 20], [140, 123.923048454], [100, 123.923048454]],
+            "group": [160, 280], "matrix": [1, 0, -.577350269, 1, 0, 0],
+            "exists": True, "position": "absolute", "head_transparent": True, "label_transparent": True,
+            "tinted": True, "label_z": 1, "label_on_top": True}
+
+
+def test_function_flag_geometry_accepts_slanted_track_after_gutter(slanted_function_flag):
+    assert check_page.function_flag_geometry_errors(slanted_function_flag) == []
+
+
+@pytest.mark.parametrize(("field", "value", "finding"), [
+    ("exists", False, "missing"),
+    ("position", "static", "positioned"),
+    ("head_transparent", False, "background"),
+    ("label_transparent", False, "background"),
+    ("tinted", False, "tint"),
+    ("matrix", [1, 0, 0, 1, 0, 0], "skewed"),
+    ("matrix", [1, 0, .577350269, 1, 0, 0], "skewed"),
+    ("group", [161, 280], "escapes its shifted group"),
+    ("group", [160, 199], "escapes its shifted group"),
+    ("label_z", 0, "on top"),
+    ("label_on_top", False, "on top"),
+])
+def test_function_flag_geometry_rejects_wrong_paint_skew_group_or_stacking(slanted_function_flag, field, value, finding):
+    slanted_function_flag[field] = value
+    assert any(finding in e for e in check_page.function_flag_geometry_errors(slanted_function_flag))
+
+
+@pytest.mark.parametrize(("corner", "axis", "delta", "finding"), [
+    (3, 0, -28, "foot"),  # wrong origin at the border box includes the group gutter
+    (2, 0, -20, "foot"),  # the old label-sized band does not fill the track
+    (3, 1, 1, "foot"),  # bottom border is not part of the padding-box flag
+    (0, 1, 16, "full head-zone lean"),  # old head padding makes H and the band drift apart
+    (1, 0, -16, "full head-zone lean"),
+])
+def test_function_flag_geometry_rejects_wrong_foot_and_top(slanted_function_flag, corner, axis, delta, finding):
+    slanted_function_flag["points"][corner][axis] += delta
+    assert any(finding in e for e in check_page.function_flag_geometry_errors(slanted_function_flag))
+
+
+@pytest.mark.parametrize(("shift", "accepted"), [(0.49, True), (0.51, False)])
+def test_function_flag_geometry_uses_half_pixel_tolerance(slanted_function_flag, shift, accepted):
+    for point in slanted_function_flag["points"]:
+        point[0] += shift
+    assert (check_page.function_flag_geometry_errors(slanted_function_flag) == []) is accepted
 
 
 def test_functions_structure_keeps_a_group_coded_nowhere(functions):
@@ -275,15 +326,15 @@ def functions_phone(functions):
     data, _ = functions
     html = '''<section aria-labelledby="functions"><h2 id="functions">Functions</h2><div id="functions-table">
     <p class="fn-blank"><strong>A blank cell means we found no public text for it, not that the institute does not do it.</strong></p>
-    <div class="fn-phone"><div class="fn-phone-head"><span></span><span data-group="Science">Science</span><span data-group="Policy">Policy</span></div>
+    <div class="fn-phone"><div class="fn-phone-head"><span></span><span>Science</span><span>Policy</span></div>
     <div class="fn-phone-block"><h3>Established</h3><ul role="list"><li data-institute="z">
-    <button type="button" class="fn-phone-row" aria-label="Zulu, Zulu Institute: show functions" aria-expanded="false" aria-controls="fn-detail-z"><span class="fn-phone-country">Zulu</span><span class="fn-pips" data-group="Science" aria-hidden="true"><span class="fn-mark fn-activity fn-pip" data-code="testing" data-value="activity" aria-hidden="true"></span><span class="fn-mark fn-not_found fn-pip" data-code="research" data-value="not_found" aria-hidden="true"></span></span><span class="fn-pips" data-group="Policy" aria-hidden="true"><span class="fn-mark fn-mandate fn-pip" data-code="advice" data-value="mandate" aria-hidden="true"></span></span></button>
+    <button type="button" class="fn-phone-row" aria-label="Zulu, Zulu Institute: show functions" aria-expanded="false" aria-controls="fn-phone-detail-z"><span class="fn-phone-country">Zulu</span><span class="fn-pips" aria-hidden="true"><span class="fn-mark fn-activity fn-pip" aria-hidden="true"></span><span class="fn-mark fn-not_found fn-pip" aria-hidden="true"></span></span><span class="fn-pips" aria-hidden="true"><span class="fn-mark fn-mandate fn-pip" aria-hidden="true"></span></span></button>
     </li></ul></div>
     <div class="fn-phone-block"><h3>Not yet established</h3><ul role="list"><li data-institute="a">
-    <button type="button" class="fn-phone-row" aria-label="Alpha, Alpha Institute: show functions" aria-expanded="false" aria-controls="fn-detail-a"><span class="fn-phone-country">Alpha</span><span class="fn-pips" data-group="Science" aria-hidden="true"><span class="fn-mark fn-activity fn-pip" data-code="testing" data-value="both" aria-hidden="true"></span><span class="fn-mark fn-activity fn-pip" data-code="research" data-value="activity" aria-hidden="true"></span></span><span class="fn-pips" data-group="Policy" aria-hidden="true"><span class="fn-mark fn-not_coded fn-pip" data-code="advice" data-value="not_coded" aria-hidden="true"></span></span></button>
+    <button type="button" class="fn-phone-row" aria-label="Alpha, Alpha Institute: show functions" aria-expanded="false" aria-controls="fn-phone-detail-a"><span class="fn-phone-country">Alpha</span><span class="fn-pips" aria-hidden="true"><span class="fn-mark fn-activity fn-pip" aria-hidden="true"></span><span class="fn-mark fn-activity fn-pip" aria-hidden="true"></span></span><span class="fn-pips" aria-hidden="true"><span class="fn-mark fn-not_coded fn-pip" aria-hidden="true"></span></span></button>
     </li></ul></div></div>
-    <ul class="fn-legend" role="list"><li data-value="activity"><span class="fn-mark fn-activity fn-pip" aria-hidden="true"></span>Active</li><li data-value="mandate"><span class="fn-mark fn-mandate fn-pip" aria-hidden="true"></span>Assigned</li><li data-value="not_found"><span class="fn-mark fn-not_found fn-pip" aria-hidden="true"></span>No public text found</li><li data-value="not_coded"><span class="fn-mark fn-not_coded fn-pip" aria-hidden="true"></span>not yet coded</li></ul>
-    <p class="fn-pip-note">One pip per function, in the order of the groups above; tap a row for the names.</p>
+    <ul class="fn-legend fn-phone-only" role="list"><li data-value="activity"><span class="fn-mark fn-activity fn-pip" aria-hidden="true"></span>Active</li><li data-value="mandate"><span class="fn-mark fn-mandate fn-pip" aria-hidden="true"></span>Assigned</li><li data-value="not_found"><span class="fn-mark fn-not_found fn-pip" aria-hidden="true"></span>No public text found</li><li data-value="not_coded"><span class="fn-mark fn-not_coded fn-pip" aria-hidden="true"></span>not yet coded</li></ul>
+    <p class="fn-pip-note fn-phone-only">One pip per function, in the order of the groups above; tap a row for the names.</p>
     </div></section>'''
     return data, html
 
@@ -294,31 +345,102 @@ def test_functions_phone_structure_accepts_groups_values_and_row_order(functions
 
 
 @pytest.mark.parametrize(("old", "new", "finding"), [
-    ('<div class="fn-phone">', '<table class="fn-table"></table><div class="fn-phone">', "replace the desktop table"),
-    ('data-group="Science">Science</span>', 'data-group="Policy">Policy</span>', "group heads/order"),
+    ('<div class="fn-phone">', '<div class="fn-phone"></div><div class="fn-phone">', "exactly one phone list"),
+    ('<span>Science</span>', '<span>Policy</span>', "group heads/order"),
     ('<h3>Not yet established</h3>', '<h3>proposed</h3>', "blocks/order"),
     ('data-institute="z"', 'data-institute="a"', "rows/order"),
     ('Zulu, Zulu Institute: show functions', 'Zulu: 2 functions with a public text', "row control/name"),
     ('Zulu, Zulu Institute: show functions', 'Zulu, Zulu Institute: proposed', "status words"),
-    ('aria-expanded="false" aria-controls="fn-detail-z"', 'aria-expanded="true" aria-controls="fn-detail-z"', "row control/name"),
-    ('aria-controls="fn-detail-a"', 'aria-controls="fn-detail-z"', "controls are not unique"),
+    ('aria-expanded="false" aria-controls="fn-phone-detail-z"', 'aria-expanded="true" aria-controls="fn-phone-detail-z"', "row control/name"),
+    ('aria-controls="fn-phone-detail-a"', 'aria-controls="fn-phone-detail-z"', "controls are not unique"),
     ('<span class="fn-phone-country">', '<span class="fn-phone-country" tabindex="0">', "nested focus targets"),
     ('<span class="fn-phone-country">', '<span class="fn-phone-country" aria-description="Zulu Institute">', "country has a tooltip"),
     ('>Zulu</span>', '>Wrong country</span>', "country label"),
     ('>Zulu</span>', '>Zulu (2)</span>', "counts or status words"),
-    ('data-code="research" data-value="not_found"', 'data-code="research" data-value="activity"', "pip values/order"),
-    ('data-code="testing" data-value="both"', 'data-code="foresight" data-value="both"', "pip values/order"),
-    ('class="fn-mark fn-not_found fn-pip" data-code="research"', 'class="fn-mark fn-activity fn-pip" data-code="research"', "pip mark differs"),
-    ('data-group="Science" aria-hidden="true"', 'data-group="Science" aria-hidden="false"', "decorative phone pip group"),
+    ('class="fn-mark fn-not_found fn-pip"', 'class="fn-mark fn-activity fn-pip"', "pip mark differs"),
+    ('class="fn-mark fn-activity fn-pip"', 'class="fn-mark fn-both fn-pip"', "pip mark differs"),
+    ('class="fn-mark fn-activity fn-pip"', 'class="fn-mark fn-activity fn-mandate fn-pip"', "pip mark differs"),
+    ('class="fn-pips" aria-hidden="true"', 'class="fn-pips" aria-hidden="false"', "decorative phone pip group"),
     ('No public text found</li>', 'Blank: not found</li>', "legend label/mark"),
-    ('<p class="fn-pip-note">', '<p>', "pip note"),
-    ('<div class="fn-phone">', '<div class="fn-phone-detail"></div><div class="fn-phone">', "detail is present"),
+    ('<p class="fn-pip-note fn-phone-only">', '<p>', "pip note"),
+    ('<div class="fn-phone">', '<div class="fn-phone"><div class="fn-phone-detail"></div>', "detail is present"),
     ('<p class="fn-blank"><strong>', '<p><strong>', "blank caveat"),
 ])
 def test_functions_phone_structure_rejects_mutations(functions_phone, old, new, finding):
     data, html = functions_phone
     assert old in html
     assert any(finding in error for error in check_page.functions_phone_structure(html.replace(old, new), data))
+
+
+@pytest.mark.parametrize(("selector", "change", "finding"), [
+    ('.fn-pips', "reverse", "pip count/order"),
+    ('.fn-pips', "remove", "pip groups/order"),
+    ('.fn-pips', "duplicate", "pip groups/order"),
+    ('.fn-pips > .fn-pip', "reverse", "pip mark differs"),
+    ('.fn-pips > .fn-pip', "remove", "pip count/order"),
+    ('.fn-pips > .fn-pip', "duplicate", "pip count/order"),
+])
+def test_functions_phone_structure_checks_pip_positions_and_counts(functions_phone, selector, change, finding):
+    from bs4 import BeautifulSoup
+
+    data, html = functions_phone
+    soup = BeautifulSoup(html, "html.parser")
+    row = soup.select_one('li[data-institute="z"]')
+    # First two groups, or the two Science pips: their positions and shapes differ in this fixture.
+    first, second, *_ = row.select(selector)
+    if change == "reverse":
+        first.insert_before(second.extract())
+    elif change == "remove":
+        first.decompose()
+    else:
+        first.insert_after(copy.deepcopy(first))
+    assert any(finding in error for error in check_page.functions_phone_structure(str(soup), data))
+
+
+@pytest.fixture
+def functions_both(functions, functions_phone):
+    """The saved page contains both hand-written projections with one shared set of caveats."""
+    from bs4 import BeautifulSoup
+
+    data, html = functions
+    soup = BeautifulSoup(html, "html.parser")
+    phone = BeautifulSoup(functions_phone[1], "html.parser")
+    box = soup.select_one('#functions-table')
+    for selector in ('.fn-phone', '.fn-legend', '.fn-pip-note'):
+        box.append(phone.select_one(selector).extract())
+    intros = BeautifulSoup('''<p class="fn-intro fn-desktop-only">Which of 5 functions each institute is active in or has been assigned. Select a mark to see the quote and source.</p><p class="fn-intro fn-phone-only">Which of 5 functions each institute is active in or has been assigned. Tap a country to see its functions, then a function for its quote and source.</p>''', "html.parser")
+    for intro in list(intros.children):
+        box.append(intro.extract())
+    return data, str(soup)
+
+
+def test_functions_saved_forms_accept_both_and_scope_legends(functions_both):
+    data, html = functions_both
+    for check in (check_page.functions_forms_structure, check_page.functions_structure, check_page.functions_phone_structure):
+        assert check(html, data) == []
+
+
+@pytest.mark.parametrize(("old", "new", "finding"), [
+    ('class="fn-phone"', 'class="missing-phone"', "exactly one saved .fn-phone"),
+    ('class="fn-scroll"', 'class="missing-scroll"', "exactly one saved .fn-scroll"),
+    ('class="fn-legend fn-phone-only"', 'class="fn-legend"', "exactly one saved .fn-legend.fn-phone-only"),
+    ('class="fn-pip-note fn-phone-only"', 'class="fn-pip-note"', "exactly one saved .fn-pip-note.fn-phone-only"),
+    ('class="fn-intro fn-phone-only"', 'class="fn-intro fn-desktop-only"', "phone intro differs"),
+    ('Tap a country to see its functions, then a function for its quote and source.', 'Select a mark to see the quote and source.', "phone intro differs"),
+    ('Which of 5 functions', 'Which of 4 functions', "intro differs"),
+    ('aria-controls="fn-phone-detail-z"', 'aria-controls="detail-z"', "forms share detail controls"),
+    ('<div class="fn-phone">', '<div class="fn-phone"><div class="fn-phone-detail"></div>', "detail was saved"),
+])
+def test_functions_saved_forms_reject_missing_forms_copy_and_shared_controls(functions_both, old, new, finding):
+    data, html = functions_both
+    assert old in html
+    assert any(finding in error for error in check_page.functions_forms_structure(html.replace(old, new), data))
+
+
+def test_functions_phone_structure_ignores_desktop_detail(functions_both):
+    data, html = functions_both
+    html = html.replace('<table class="fn-table">', '<div class="fn-detail"><div class="fn-claim">Desktop evidence</div></div><table class="fn-table">')
+    assert check_page.functions_phone_structure(html, data) == []
 
 
 def test_functions_phone_structure_rejects_wrong_block_without_reordering(functions_phone):

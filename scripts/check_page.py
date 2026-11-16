@@ -10744,7 +10744,7 @@ def functions_structure(html: str, data: dict) -> list[str]:
     if marked and summary:
         need(summary.get_text() == function_summary(vocab, counts, len(institutes)), "Functions summary facts differ")
         need(not any(i["name"] in summary.get_text() for i in institutes), "Functions summary names an institute")
-    legend = section.select_one('ul.fn-legend[role="list"]')
+    legend = section.select_one('ul.fn-legend.fn-desktop-only[role="list"]')
     legend_values = ["activity", "mandate", "not_found"] + (["not_coded"] if wanted_counts["not_coded"] else [])
     need(legend and [(li.get("data-value"), li.get_text()) for li in legend.select("li[data-value]")] == [(v, "Blank: not found" if v == "not_found" else FN_NAMES[v]) for v in legend_values], "Functions legend differs from its two marks and absent values")
     blank_text = "A blank cell means we found no public text for it, not that the institute does not do it."
@@ -10756,7 +10756,6 @@ def functions_structure(html: str, data: dict) -> list[str]:
     need(provisional and provisional.get_text() == "The list of functions is provisional.", "Functions provisional line missing")
     need(section.get_text().lower().count("provisional") == 1, "Functions provisional caveat repeated")
     need(not status_parentheses(section.get_text(" ")), "Functions status word alone in parentheses")
-    need(not section.select('.fn-phone, .fn-phone-row, .fn-phone-detail'), "Functions phone markup was saved on desktop")
     need(not FN_STATUS_WORD.search(section.get_text(" ")), "Functions labels contain a status word")
     need(not section.select('.fn-detail-row, .fn-claim, .quote-body, blockquote'), "Functions detail was saved before a click")
     need(not any(text in section.get_text() for q in function_quotes(data).values() for text in (q["excerpt"]["text"], q["excerpt"].get("gloss")) if text), "Functions quote was pre-rendered")
@@ -10766,23 +10765,81 @@ def functions_structure(html: str, data: dict) -> list[str]:
     return errors
 
 
+def functions_forms_structure(html: str, data: dict) -> list[str]:
+    """Both saved forms and their media-specific copy must exist before hydration."""
+    soup = BeautifulSoup(html, "html.parser")
+    box = soup.select_one('#functions-table')
+    if box is None:
+        return ["Functions section is missing"]
+    errors = []
+    for selector in ('.fn-scroll', '.fn-scroll > .fn-table', '.fn-phone', '.fn-legend.fn-desktop-only', '.fn-legend.fn-phone-only', '.fn-pip-note.fn-phone-only'):
+        if len(box.select(selector)) != 1:
+            errors.append(f"Functions needs exactly one saved {selector}")
+    count = sum(not v.get("deprecated") for v in data["dataset"]["vocabularies"]["function"].values())
+    lead = f"Which of {count} functions each institute is active in or has been assigned. "
+    for form, tail in (("desktop", "Select a mark to see the quote and source."),
+                       ("phone", "Tap a country to see its functions, then a function for its quote and source.")):
+        intros = box.select('.fn-intro.fn-' + form + '-only')
+        if len(intros) != 1 or intros[0].get_text() != lead + tail:
+            errors.append(f"Functions {form} intro differs")
+    desktop_controls = {n.get('aria-controls') for n in box.select('.fn-scroll .fn-cell')}
+    phone_controls = {n.get('aria-controls') for n in box.select('.fn-phone .fn-phone-row')}
+    if desktop_controls & phone_controls:
+        errors.append("Functions forms share detail controls")
+    if box.select('.fn-detail, .fn-detail-row, .fn-phone-detail, .fn-phone-claims'):
+        errors.append("Functions detail was saved before a click")
+    return errors
+
+
+FN_FORM_VISIBILITY = """() => {
+  const errors=[], box=document.querySelector('#functions-table'), narrow=innerWidth<=640;
+  if(!box) return ['functions section is missing'];
+  const check=(selector, shown) => {
+    const nodes=[...box.querySelectorAll(selector)];
+    if(nodes.length!==1) { errors.push('expected one '+selector); return; }
+    const node=nodes[0], display=getComputedStyle(node).display;
+    if(shown ? display==='none' || !node.getClientRects().length : display!=='none') errors.push(selector+' must be '+(shown?'displayed':'display: none'));
+  };
+  check('.fn-scroll', !narrow); check('.fn-phone', narrow);
+  for(const kind of ['.fn-intro', '.fn-legend']) {
+    check(kind+'.fn-desktop-only', !narrow); check(kind+'.fn-phone-only', narrow);
+  }
+  check('.fn-pip-note', narrow);
+  const hint=box.querySelector('#fn-scroll-hint');
+  if(narrow && (!hint || getComputedStyle(hint).display!=='none')) errors.push('phone exposes desktop scroll hint');
+  const hidden=box.querySelector(narrow?'.fn-scroll':'.fn-phone');
+  if(hidden && [...hidden.querySelectorAll('.fn-detail, .fn-phone-claims')].some(n=>n.getClientRects().length)) errors.push('hidden form has visible detail');
+  return errors;
+}"""
+
+
 def check_functions_table(browser, base_url: str, dist: Path, data: dict) -> list[str]:
-    errors = ["saved: " + e for e in functions_structure((dist / "index.html").read_text(), data)]
+    html = (dist / "index.html").read_text()
+    errors = ["saved: " + e for check in (functions_forms_structure, functions_structure, functions_phone_structure) for e in check(html, data)]
     page = browser.new_page(viewport={"width": 1440, "height": 1000})
     hydrated(page, base_url)
-    errors += ["hydrated: " + e for e in functions_structure(page.content(), data)]
+    html = page.content()
+    errors += ["hydrated: " + e for check in (functions_forms_structure, functions_structure, functions_phone_structure) for e in check(html, data)]
+    for width in (1440, 1000, 390, 360):
+        page.set_viewport_size({"width": width, "height": 1000})
+        errors += [f"hydrated {width}px: " + e for e in page.evaluate(FN_FORM_VISIBILITY)]
     page.close()
-    saved = browser.new_page(viewport={"width": 390, "height": 900}, java_script_enabled=False)
+    saved = browser.new_page(viewport={"width": 1440, "height": 900}, java_script_enabled=False)
     saved.goto(base_url)
-    errors += saved.evaluate("""() => {
-      const errors=[], box=document.querySelector('#functions-table'), scroll=box.querySelector('.fn-scroll');
-      if(box.querySelector('.fn-phone')) errors.push('saved phone markup exists before hydration');
-      const thead=scroll && scroll.querySelector('thead');
-      if(!scroll || getComputedStyle(scroll).overflowX!=='auto' || !thead || getComputedStyle(thead).position==='sticky') errors.push('saved desktop table does not use phone scrolling fallback');
-      if(document.documentElement.scrollWidth>innerWidth+1) errors.push('saved functions table causes page overflow');
-      return errors;
-    }""")
+    for width in (1440, 1000, 390, 360):
+        saved.set_viewport_size({"width": width, "height": 900})
+        if width > 640:  # without the script a phone keeps the table (checked below); with it, the hydrated passes above check the pips
+            errors += [f"saved {width}px: " + e for e in saved.evaluate(FN_FORM_VISIBILITY)]
+        if saved.evaluate("document.documentElement.scrollWidth > innerWidth + 1"):
+            errors.append(f"saved {width}px: functions section causes page overflow")
     saved.close()
+    # Without the page script the pip rows cannot open, so a phone shows the saved table instead.
+    nojs = browser.new_context(viewport={"width": 390, "height": 900}, java_script_enabled=False)
+    plain = nojs.new_page()
+    plain.goto(base_url)
+    if not plain.evaluate("() => { const t=document.querySelector('#functions-table .fn-scroll'), p=document.querySelector('#functions-table .fn-phone'); return !!t && t.getClientRects().length > 0 && (!p || !p.getClientRects().length); }"):
+        errors.append("saved 390px without script: the readable table is not shown, or the pip list is")
+    nojs.close()
     return errors
 
 
@@ -10903,7 +10960,7 @@ def function_phone_model(data: dict) -> dict:
 
 
 def functions_phone_structure(html: str, data: dict) -> list[str]:
-    """Hydrated phone form: independent row, group, pip and accessible-control oracle."""
+    """Saved and hydrated phone form: independent row, group, pip and accessible-control oracle."""
     soup = BeautifulSoup(html, "html.parser")
     box = soup.select_one('#functions-table')
     if box is None:
@@ -10915,19 +10972,19 @@ def functions_phone_structure(html: str, data: dict) -> list[str]:
     model = function_phone_model(data)
     groups, expected_rows = model["groups"], model["rows"]
     lists = box.select('.fn-phone')
-    need(len(lists) == 1 and not box.select('.fn-table, .fn-scroll'), "Functions phone must replace the desktop table")
+    need(len(lists) == 1, "Functions needs exactly one phone list")
     if len(lists) != 1:
         return errors
     phone = lists[0]
-    heads = phone.select('.fn-phone-head > [data-group]')
-    need([(head.get("data-group"), head.get_text()) for head in heads] == [(g["name"], g["name"]) for g in groups], "Functions phone group heads/order differ")
+    heads = phone.select('.fn-phone-head > span')
+    need([head.get_text() for head in heads] == ["", *(g["name"] for g in groups)], "Functions phone group heads/order differ")
     blocks = phone.select(':scope > .fn-phone-block')
     need([block.select_one(':scope > h3').get_text() if block.select_one(':scope > h3') else None for block in blocks] == ["Established", "Not yet established"], "Functions phone blocks/order differ")
-    rows = phone.select('.fn-phone-block > ul > li[data-institute]')
+    rows = phone.select('.fn-phone-block > ul > li')
     need([row.get("data-institute") for row in rows] == [row["id"] for row in expected_rows], "Functions phone rows/order differ")
     for block, label in zip(blocks, ("Established", "Not yet established")):
         need(block.select_one(':scope > ul[role="list"]'), "Functions phone block list semantics differ")
-        need([row.get("data-institute") for row in block.select(':scope > ul > li[data-institute]')] == [row["id"] for row in expected_rows if row["block"] == label], "Functions phone block membership differs")
+        need([row.get("data-institute") for row in block.select(':scope > ul > li')] == [row["id"] for row in expected_rows if row["block"] == label], "Functions phone block membership differs")
     controls = []
     for row, expected in zip(rows, expected_rows):
         key = expected["id"]
@@ -10944,18 +11001,20 @@ def functions_phone_structure(html: str, data: dict) -> list[str]:
         need(not button.select('abbr, .g, [data-tip], [aria-description], [title]'), key + ': phone country has a tooltip')
         need(button.get_text() == expected["country"] and not FN_STATUS_WORD.search(button.get("aria-label", "")), key + ': phone row has counts or status words')
         pip_groups = button.select(':scope > .fn-pips')
-        need([group.get("data-group") for group in pip_groups] == [group["name"] for group in groups], key + ': phone pip groups/order differ')
+        need(len(pip_groups) == len(groups), key + ': phone pip groups/order differ')
+        # The published model fixes block/row order, group order and column order within each group.
+        # Decorative pips carry only their shape class; values come from that ordered model.
         for pips, group in zip(pip_groups, groups):
             need(pips.get("aria-hidden") == "true", key + ': decorative phone pip group is exposed')
             wanted = [row for row in expected["functions"] if row["group"] == group["name"]]
             actual = pips.select(':scope > .fn-pip')
-            need([(pip.get("data-code"), pip.get("data-value")) for pip in actual] == [(row["code"], row["value"]) for row in wanted], key + ': phone pip values/order differ')
+            need(len(actual) == len(wanted), key + ': phone pip count/order differs')
             for pip, function in zip(actual, wanted):
                 shape = "activity" if function["value"] == "both" else function["value"]
                 need(set(pip.get("class", [])) == {"fn-pip", "fn-mark", "fn-" + shape} and pip.get("aria-hidden") == "true" and not pip.get_text(), key + '/' + function["code"] + ': phone pip mark differs')
     need(len(set(controls)) == len(controls), "Functions phone detail controls are not unique")
-    need(not box.select('.fn-phone-detail, .fn-phone-claims, .fn-claim'), "Functions phone detail is present before opening a row")
-    legend = box.select('.fn-legend > li')
+    need(not phone.select('.fn-phone-detail, .fn-phone-claims, .fn-claim'), "Functions phone detail is present before opening a row")
+    legend = box.select('.fn-legend.fn-phone-only > li')
     wanted_values = ["activity", "mandate", "not_found"]
     if any(row["value"] == "not_coded" for institute in expected_rows for row in institute["functions"]):
         wanted_values.append("not_coded")
@@ -10969,8 +11028,46 @@ def functions_phone_structure(html: str, data: dict) -> list[str]:
     return errors
 
 
+def function_flag_geometry_errors(measured: dict) -> list[str]:
+    """Check the painted pseudo-element's measured corners, independently of its CSS declarations."""
+    errors = []
+    track, points = measured["track"], measured["points"]
+
+    def close(a, b):
+        return abs(a - b) <= .5
+
+    if not measured["exists"]:
+        errors.append("head ::before flag is missing")
+    if measured["position"] != "absolute":
+        errors.append("head flag is not positioned against its cell")
+    if not measured["head_transparent"] or not measured["label_transparent"]:
+        errors.append("head cell or label paints an upright/label background")
+    if not measured["tinted"]:
+        errors.append("head flag does not share column tint")
+    expected_matrix = [1, 0, -math.tan(math.pi / 6), 1, 0, 0]
+    if any(abs(a - b) > .0001 for a, b in zip(measured["matrix"], expected_matrix)):
+        errors.append("head flag is not skewed by -30 degrees")
+    if not all(close(actual, expected) for actual, expected in (
+        (points[3][0], track["left"]), (points[2][0], track["right"]),
+        (points[3][1], track["bottom"]), (points[2][1], track["bottom"]),
+    )):
+        errors.append("head flag foot differs from column padding box at the rule")
+    lean = (track["bottom"] - track["top"]) * math.tan(math.pi / 6)
+    if not all(close(actual, expected) for actual, expected in (
+        (points[0][0], track["left"] + lean), (points[1][0], track["right"] + lean),
+        (points[0][1], track["top"]), (points[1][1], track["top"]),
+    )):
+        errors.append("head flag top does not follow the full head-zone lean")
+    left, right = measured["group"]
+    if min(points[0][0], points[1][0]) < left - .5 or max(points[0][0], points[1][0]) > right + .5:
+        errors.append("head flag top escapes its shifted group")
+    if measured["label_z"] < 1 or not measured["label_on_top"]:
+        errors.append("head label is not on top at its centre")
+    return errors
+
+
 # Transform the actual box, not its axis-aligned bounding rectangle. The content box
-# excludes the flag's leading padding when checking whether the head's text hits a rule.
+# excludes the label's leading padding when checking whether its text hits a rule.
 FN_POLYGON_JS = r"""
   const polygon = (node, content = false) => {
     if (node.getBoxQuads) { const q = node.getBoxQuads({box:content?'content':'border'})[0]; if (q) return [q.p1,q.p2,q.p3,q.p4]; }
@@ -11003,6 +11100,7 @@ FN_GEOMETRY = r"""() => {
     return true;
   };
   for (const head of box.querySelectorAll('.fn-head .g')) {
+    if (!head.getClientRects().length) continue;
     labels.push({node:head,name:head.textContent,parts:[polygon(head,true)]}); seen.add(head);
   }
   const walker=document.createTreeWalker(box,NodeFilter.SHOW_TEXT);
@@ -11021,6 +11119,7 @@ FN_GEOMETRY = r"""() => {
       labels.push({node:pip,name:'mark '+(pip.dataset.code || pip.className),parts:[rect(r)]});
   }
   for (const cell of box.querySelectorAll('.fn-table th, .fn-table td, .fn-phone-head, .fn-phone-row')) {
+    if (!cell.getClientRects().length) continue;
     const style=getComputedStyle(cell), r=cell.getBoundingClientRect(), bottom=parseFloat(style.borderBottomWidth);
     if (bottom) rules.push({name:'row rule',p:rect({left:r.left,right:r.right,top:r.bottom-bottom,bottom:r.bottom})});
     // Derive painted inset rules, including a wrong right-edge rule; do not invent a left rule from its class.
@@ -11062,6 +11161,7 @@ def check_functions_phone(browser, base_url: str, data: dict) -> list[str]:
                 page.evaluate("scale => document.documentElement.style.fontSize = scale", scale)
                 page.evaluate("() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))")
                 prefix = f"phone {width}px {theme} {scale}: "
+                errors += [prefix + error for error in page.evaluate(FN_FORM_VISIBILITY)]
                 errors += [prefix + error for error in functions_phone_structure(page.content(), data)]
                 errors += [prefix + error for error in page.evaluate(r"""({data, quotes, names, model}) => {
                   const errors = [], box = document.querySelector('#functions-table'), phone = box.querySelector('.fn-phone');
@@ -11077,26 +11177,37 @@ def check_functions_phone(browser, base_url: str, data: dict) -> list[str]:
                     }
                   };
                   const pip = (node, value, key, detail = false) => {
-                    if (!node) { errors.push(key + ': missing detail pip'); return; }
+                    if (!node) { errors.push(key + ': missing pip'); return; }
                     const style = getComputedStyle(node), rect = node.getBoundingClientRect();
                     const shape = value === 'both' ? 'activity' : value;
-                    need(node.classList.contains('fn-' + shape), key + ': pip mark differs');
+                    need(same([...node.classList].sort(), ['fn-mark', 'fn-pip', 'fn-' + shape].sort()), key + ': pip mark differs');
                     need(detail ? !node.hasAttribute('aria-hidden') && node.getAttribute('role') === 'img' && node.getAttribute('aria-label') === names[value] : node.getAttribute('aria-hidden') === 'true', key + ': pip accessible state differs');
                     need(Math.abs(rect.width - 8) <= 1 && Math.abs(rect.height - (value === 'not_coded' ? 2 : 8)) <= 1, key + ': pip dimensions differ');
                     if (value === 'activity' || value === 'both') need(!transparent(style.backgroundColor), key + ': active pip is not filled');
                     else if (value === 'mandate' || value === 'not_found') need(transparent(style.backgroundColor) && parseFloat(style.borderLeftWidth) >= 1, key + ': pip outline missing');
-                    else need(!transparent(style.backgroundColor) && style.backgroundColor === getComputedStyle(box.querySelector('.fn-legend')).color, key + ': uncoded dash is not muted');
+                    else need(!transparent(style.backgroundColor) && style.backgroundColor === getComputedStyle(box.querySelector('.fn-legend.fn-phone-only')).color, key + ': uncoded dash is not muted');
                   };
-                  for (const pips of phone.querySelectorAll('.fn-pips')) {
-                    need(Math.abs(parseFloat(getComputedStyle(pips).columnGap) - 2) < .5, 'phone pip gap differs');
-                    for (const mark of pips.children) pip(mark, mark.dataset.value, mark.dataset.code);
+                  const buttons = [...phone.querySelectorAll('.fn-phone-row')];
+                  need(buttons.length === model.rows.length, 'phone row count differs');
+                  for (const [n, button] of buttons.entries()) {
+                    const expected = model.rows[n]; if (!expected) continue;
+                    const groups = [...button.querySelectorAll(':scope > .fn-pips')];
+                    need(groups.length === model.groups.length, expected.id + ': phone pip groups/order differ');
+                    for (const [g, group] of model.groups.entries()) {
+                      const pips = groups[g], key = expected.id + '/' + group.name;
+                      if (!pips) continue;
+                      need(Math.abs(parseFloat(getComputedStyle(pips).columnGap) - 2) < .5, key + ': phone pip gap differs');
+                      const wanted = expected.functions.filter(f => f.group === group.name), marks = [...pips.children];
+                      need(marks.length === wanted.length, key + ': phone pip count/order differs');
+                      wanted.forEach((f, k) => pip(marks[k], f.value, expected.id + '/' + f.code));
+                    }
                   }
-                  const ring = box.querySelector('.fn-legend .fn-mandate'), empty = box.querySelector('.fn-legend .fn-not_found');
+                  const ring = box.querySelector('.fn-legend.fn-phone-only .fn-mandate'), empty = box.querySelector('.fn-legend.fn-phone-only .fn-not_found');
                   need(ring && empty && getComputedStyle(ring).borderLeftColor !== getComputedStyle(empty).borderLeftColor, 'not-found outline is not fainter than Assigned');
                   overflow('closed rows');
-                  const buttons = [...phone.querySelectorAll('.fn-phone-row')];
                   for (const [n, button] of buttons.entries()) {
-                    const expected = model.rows[n], key = expected.id;
+                    const expected = model.rows[n]; if (!expected) continue;
+                    const key = expected.id;
                     button.focus({preventScroll: true}); button.click();
                     const detail = phone.querySelector('.fn-phone-detail');
                     if (!detail) { errors.push(key + ': no phone detail'); continue; }
@@ -11106,17 +11217,18 @@ def check_functions_phone(browser, base_url: str, data: dict) -> list[str]:
                          key + ': phone detail placement/state differs');
                     need(detail.querySelector('.fn-detail-head')?.textContent === expected.name, key + ': phone detail institute name differs');
                     const headings = [...detail.querySelectorAll(':scope > h4')], lists = [...detail.querySelectorAll(':scope > .fn-phone-functions')];
-                    need(same(headings.map(h => h.textContent), model.groups.map(g => g.name)) && same(lists.map(l => l.dataset.group), model.groups.map(g => g.name)), key + ': phone detail groups/order differ');
+                    need(same(headings.map(h => h.textContent), model.groups.map(g => g.name)) && lists.length === model.groups.length, key + ': phone detail groups/order differ');
                     for (const [g, group] of model.groups.entries()) {
                       const list = lists[g], heading = headings[g];
                       need(list && heading && heading.nextElementSibling === list, key + ': phone detail group heading placement differs');
-                      need(same([...(list?.children || [])].map(li => li.dataset.code), group.codes), key + ': phone detail group functions/order differ');
+                      need(list?.children.length === group.codes.length, key + ': phone detail group function count differs');
                     }
                     const functions = [...detail.querySelectorAll('.fn-phone-functions > li')];
-                    need(same(functions.map(li => [li.dataset.code, li.dataset.value]), expected.functions.map(f => [f.code, f.value])), key + ': phone detail functions/values/order differ');
+                    need(functions.length === expected.functions.length, key + ': phone detail function count differs');
                     need(!detail.querySelector('.fn-claim'), key + ': claims visible before selecting a function');
                     for (const [k, item] of functions.entries()) {
-                      const f = expected.functions[k], label = item.querySelector(':scope > .fn-function-label');
+                      const f = expected.functions[k]; if (!f) continue;
+                      const label = item.querySelector(':scope > .fn-function-label');
                       const marked = ['activity', 'mandate', 'both'].includes(f.value), labelKey = key + '/' + f.code;
                       need(label && label.textContent === f.label && (label.tagName === 'BUTTON') === marked, labelKey + ': function label/control differs');
                       pip(label?.querySelector('.fn-pip'), f.value, labelKey, true);
@@ -11170,33 +11282,59 @@ def check_functions_phone(browser, base_url: str, data: dict) -> list[str]:
             page.keyboard.press('Escape')
             if page.locator('.fn-phone-detail').count() or not row.evaluate('n => document.activeElement === n'):
                 errors.append(f"Functions phone: real Escape after {key!r} does not close/return focus")
+        page.evaluate("window.__fnNodes = [...document.querySelector('#functions-table').querySelectorAll('*')]")
         row.click()
         page.locator('#functions').evaluate("h => h.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape', bubbles: true}))")
         if page.locator('.fn-phone-detail').count() != 1:
             errors.append('Functions phone: Escape outside the list closes the detail')
-        # Cross the actual breakpoint in both directions while a detail is open.
-        page.set_viewport_size({"width": 641, "height": 1000})
-        page.wait_for_selector('.fn-table')
-        if page.locator('.fn-phone, .fn-detail').count():
-            errors.append('Functions phone: leaving phone width retains phone markup or detail')
-        focused = None
-        if page.locator('.fn-cell').count():
-            page.locator('.fn-cell').first.click()
-            focused = page.locator('.fn-cell').first.evaluate("n => n.closest('tr[data-institute]').dataset.institute")
-            page.locator('.fn-detail-row .fn-detail > button').focus()  # focus inside the open detail, not on the mark
-        page.set_viewport_size({"width": 640, "height": 1000})
-        page.wait_for_selector('.fn-phone')
-        if page.locator('.fn-table, .fn-scroll, .fn-detail').count():
-            errors.append('Functions phone: returning to phone width retains desktop markup or detail')
-        # Focus follows the institute across the form switch, in both directions.
-        if focused and page.evaluate("id => !!document.activeElement.closest(`li[data-institute=\"${id}\"]`) && document.activeElement.matches('.fn-phone-row')", focused) is not True:
-            errors.append('Functions phone: focus is lost when the form switches to phone')
-        page.set_viewport_size({"width": 641, "height": 1000})
-        page.wait_for_selector('.fn-table')
-        if focused and page.evaluate("id => !!document.activeElement.closest(`tr[data-institute=\"${id}\"]`)", focused) is not True:
-            errors.append('Functions phone: focus is lost when the form switches to desktop')
-        page.set_viewport_size({"width": 640, "height": 1000})
-        page.wait_for_selector('.fn-phone')
+        # CSS alone switches forms: base nodes and each form's independent detail survive.
+        phone_detail = page.locator('.fn-phone-detail').element_handle()
+        def cross_breakpoint(width):
+            page.set_viewport_size({"width": width, "height": 1000})
+            page.wait_for_selector('.fn-phone' if width <= 640 else '.fn-scroll')
+            errors.extend(f"breakpoint {width}px: " + error for error in page.evaluate(FN_FORM_VISIBILITY))
+            if not page.evaluate("window.__fnNodes.every(n => document.querySelector('#functions-table').contains(n))"):
+                errors.append(f"Functions {width}px: crossing the breakpoint rebuilt DOM nodes")
+        cross_breakpoint(641)
+        if not phone_detail or not phone_detail.evaluate("n => n.isConnected && !n.getClientRects().length"):
+            errors.append('Functions phone: open detail was removed or remains visible at desktop width')
+        institute = row.evaluate("n => n.closest('li[data-institute]').dataset.institute")
+        # Prefer the same institute to catch ID collisions when both forms have an open detail.
+        cell = page.locator(f'.fn-scroll tr[data-institute="{institute}"] .fn-cell').first
+        if not cell.count():
+            cell = page.locator('.fn-scroll .fn-cell').first
+        desktop_detail = None
+        if cell.count():
+            cell.click()
+            desktop_detail = page.locator('.fn-scroll .fn-detail').element_handle()
+            if not page.evaluate("() => { const ids=[...document.querySelector('#functions-table').querySelectorAll('[id]')].map(n=>n.id); return new Set(ids).size===ids.length; }"):
+                errors.append('Functions: open forms have duplicate detail IDs')
+            page.locator('.fn-scroll .fn-detail > button').focus()
+        desktop_owner = desktop_detail and cell.evaluate("n => n.closest('tr[data-institute]').dataset.institute")
+        cross_breakpoint(640)  # pageerror listener also catches exceptions with focus inside the now-hidden form
+        # Focus moves to the same institute in the visible form at once, before anything else touches it.
+        if desktop_owner and page.evaluate("id => { const a=document.activeElement; return !!a && a.matches('.fn-phone-row') && a.closest('li[data-institute]').dataset.institute === id; }", desktop_owner) is not True:
+            errors.append('Functions phone: focus inside the desktop detail does not move to that institute in the phone form')
+        if not phone_detail or not phone_detail.evaluate("n => n.isConnected && !!n.getClientRects().length") or row.get_attribute('aria-expanded') != 'true':
+            errors.append('Functions phone: returning to phone width lost its open detail')
+        if desktop_detail and not desktop_detail.evaluate("n => n.isConnected && !n.getClientRects().length"):
+            errors.append('Functions desktop: open detail was removed or remains visible at phone width')
+        row.press('Escape')
+        if page.locator('.fn-phone-detail').count() or not row.evaluate('n => document.activeElement === n'):
+            errors.append('Functions phone: Escape after crossing the breakpoint does not close/return focus')
+        if desktop_detail and not desktop_detail.evaluate("n => n.isConnected"):
+            errors.append('Functions phone: Escape closed the hidden desktop detail')
+        phone_owner = row.evaluate("n => n.closest('li[data-institute]').dataset.institute")
+        cross_breakpoint(641)
+        if page.evaluate("id => { const a=document.activeElement; return !!a && a.getClientRects().length > 0 && !!a.closest('.fn-scroll tr[data-institute=\"' + id + '\"]'); }", phone_owner) is not True:
+            errors.append('Functions desktop: focus on a phone row does not move to that institute in the table')
+        if desktop_detail:
+            if not desktop_detail.evaluate("n => n.isConnected && !!n.getClientRects().length") or cell.get_attribute('aria-expanded') != 'true':
+                errors.append('Functions desktop: returning to desktop width lost its open detail')
+            page.locator('.fn-scroll .fn-detail > button').click()
+            if page.locator('.fn-scroll .fn-detail').count() or not cell.evaluate('n => document.activeElement === n'):
+                errors.append('Functions desktop: Close after crossing the breakpoint does not close/return focus')
+        cross_breakpoint(640)
         errors += ['phone breakpoint return: ' + error for error in functions_phone_structure(page.content(), data)]
     page.close()
     context = browser.new_context(viewport={"width": 390, "height": 900}, has_touch=True, is_mobile=True)
@@ -11234,7 +11372,7 @@ def check_functions_layout(browser, base_url: str) -> list[str]:
     errors = []
     for width in (360, 390, 640, 1000, 1280, 1440):
         page.set_viewport_size({"width": width, "height": 1000})
-        page.wait_for_function("() => !!document.querySelector(innerWidth <= 640 ? '.fn-phone' : '.fn-table')")
+        page.wait_for_selector('.fn-phone' if width <= 640 else '.fn-scroll')
         for scale in (("100%", "110%") if width <= 640 else ("100%",)):
             page.evaluate("scale => document.documentElement.style.fontSize = scale", scale)
             for theme in ("light", "dark"):
@@ -11247,8 +11385,9 @@ def check_functions_layout(browser, base_url: str) -> list[str]:
                 errors += [prefix + e for e in page.evaluate(FN_GEOMETRY)]
                 errors += [prefix + e for e in page.evaluate(r"""() => {
                   const errors=[], box=document.querySelector('#functions-table'), scroll=box.querySelector('.fn-scroll'), table=box.querySelector('.fn-table');
+                  /* FUNCTION_POLYGON */
                   if(document.documentElement.scrollWidth > innerWidth+1) errors.push('Functions causes sideways page scroll');
-                  if(!table) {
+                  if(!scroll || !scroll.getClientRects().length) {
                     for(const node of box.querySelectorAll('.fn-phone, .fn-phone *')) if(node.clientWidth && getComputedStyle(node).display !== 'inline' &&
                         !node.closest('.vh') && node.scrollWidth > node.clientWidth+1) errors.push('phone box overflows: '+node.className);
                     return errors;
@@ -11257,9 +11396,10 @@ def check_functions_layout(browser, base_url: str) -> list[str]:
                   const heads=[...table.querySelectorAll('.fn-head')], groups=[...table.querySelectorAll('.fn-column-group > span')];
                   const track=cell=> { const r=cell.getBoundingClientRect(), gutter=parseFloat(getComputedStyle(cell).borderLeftWidth); return {left:r.left+gutter,width:r.width-gutter,gutter}; };
                   for(const [n,head] of heads.entries()) {
-                    const text=head.querySelector('.g'), transform=new DOMMatrix(getComputedStyle(text).transform), h=track(head);
+                    const text=head.querySelector('.g'), textStyle=getComputedStyle(text), transform=new DOMMatrix(textStyle.transform), h=track(head);
                     if(Math.abs(Math.atan2(transform.b,transform.a)*180/Math.PI+60)>5) errors.push('head rotation differs: '+head.dataset.code);
-                    if(Math.abs(text.offsetLeft-h.width/2)>2) errors.push('head centre differs: '+head.dataset.code);
+                    const line=parseFloat(textStyle.lineHeight), shift=Math.cos(Math.PI/6)*line/2;
+                    if(Math.abs(parseFloat(textStyle.left)-h.width/2-shift)>.5 || Math.abs(parseFloat(textStyle.bottom)+line/4)>.5) errors.push('head band-centre shift differs: '+head.dataset.code);
                     if(n && Math.abs(text.getBoundingClientRect().bottom-heads[0].querySelector('.g').getBoundingClientRect().bottom)>1) errors.push('head baseline differs: '+head.dataset.code);
                     if(getComputedStyle(head).boxShadow !== 'none') errors.push('vertical rule drawn through a head: '+head.dataset.code);
                     if(head.classList.contains('fn-group-start') && h.gutter<12) errors.push('group gutter too narrow');
@@ -11276,6 +11416,29 @@ def check_functions_layout(browser, base_url: str) -> list[str]:
                   for(const group of groups) {
                     const range=document.createRange(); range.selectNodeContents(group);
                     if(new Set([...range.getClientRects()].map(r=>Math.round(r.top))).size!==1) errors.push('group label wraps: '+group.textContent);
+                  }
+                  // The first padding edge meets the group's first track; its tip is H*tan(30deg) to the right.
+                  let first=0;
+                  for(const group of groups) {
+                    const members=heads.slice(first,first+group.parentElement.colSpan); first+=members.length;
+                    if(!members.length) { errors.push('group has no heads: '+group.textContent); continue; }
+                    const head=members[0], r=head.getBoundingClientRect(), s=getComputedStyle(head);
+                    const height=r.height-parseFloat(s.borderTopWidth)-parseFloat(s.borderBottomWidth), lean=height*Math.tan(Math.PI/6);
+                    if(Math.abs(group.getBoundingClientRect().left-track(head).left-lean)>4) errors.push('group label does not follow its first head tip: '+group.textContent);
+                    const tableBox=table.getBoundingClientRect(), labelBox=group.getBoundingClientRect();
+                    if(labelBox.left<tableBox.left-.5 || labelBox.right>tableBox.right+.5) errors.push('shifted group label escapes table: '+group.textContent);
+                    for(const member of members) {
+                      if(polygon(member.querySelector('.g')).some(p=>p.x<tableBox.left-.5 || p.x>tableBox.right+.5)) errors.push('leaning head escapes table: '+member.dataset.code);
+                      if(track(member).left+track(member).width+lean>tableBox.right+.5) errors.push('head tip escapes table: '+member.dataset.code);
+                    }
+                  }
+                  // Transparent gutter borders are spacing, not painted lines. Include descendants and pseudos.
+                  const transparent=c=>c==='transparent' || c==='rgba(0, 0, 0, 0)';
+                  for(const node of table.tHead.querySelectorAll('*')) for(const pseudo of [null,'::before','::after']) {
+                    const s=getComputedStyle(node,pseudo);
+                    if(pseudo && ['none','normal'].includes(s.content)) continue;
+                    for(const side of ['Left','Right']) if(parseFloat(s['border'+side+'Width']) && !transparent(s['border'+side+'Color'])) errors.push('painted vertical border in head zone: '+node.className+(pseudo||''));
+                    if(s.boxShadow.includes('inset')) errors.push('inset rule in head zone: '+node.className+(pseudo||''));
                   }
                   // Compare the actual painted shadow colours against the ground in either theme.
                   const canvas=document.createElement('canvas'); canvas.width=canvas.height=1;
@@ -11301,7 +11464,7 @@ def check_functions_layout(browser, base_url: str) -> list[str]:
                     const before=getComputedStyle(cell,'::before');
                     if(!['none','normal'].includes(before.content) || [...cell.children].some(n=>!n.classList.contains('vh'))) errors.push('not-found cell is not blank');
                   }
-                  const dot=getComputedStyle(box.querySelector('.fn-legend .fn-activity')),ring=getComputedStyle(box.querySelector('.fn-legend .fn-mandate'));
+                  const dot=getComputedStyle(box.querySelector('.fn-legend.fn-desktop-only .fn-activity')),ring=getComputedStyle(box.querySelector('.fn-legend.fn-desktop-only .fn-mandate'));
                   if(dot.backgroundColor==='rgba(0, 0, 0, 0)' || parseFloat(ring.borderWidth)<1 || ring.backgroundColor!=='rgba(0, 0, 0, 0)') errors.push('dot/ring shapes differ');
                   const button=table.querySelector('.fn-cell');
                   if(button) {
@@ -11312,7 +11475,7 @@ def check_functions_layout(browser, base_url: str) -> list[str]:
                   }
                   scroll.scrollLeft=0;
                   return errors;
-                }""")]
+                }""".replace("/* FUNCTION_POLYGON */", FN_POLYGON_JS))]
     # The added Compare link must fit with the shared small-screen group-row spacing.
     page.set_viewport_size({"width": 360, "height": 1000})
     for scale in ("100%", "110%"):
@@ -11363,7 +11526,7 @@ def check_functions_sticky(browser, base_url: str) -> list[str]:
             const r=head.getBoundingClientRect(), cell=table.querySelector('tbody td[data-code="'+head.dataset.code+'"]'), c=cell.getBoundingClientRect();
             if(Math.abs(r.top-bars-height)>2) errors.push('rotated-head row not stuck below group labels: '+head.dataset.code);
             if(Math.abs(r.left-c.left)>1 || Math.abs(r.width-c.width)>1) errors.push('sticky column shifted: '+head.dataset.code);
-            if(getComputedStyle(head).backgroundColor!=='rgba(0, 0, 0, 0)' && !head.classList.contains('fn-col-lit')) errors.push('head cell paints its own background over its neighbours: '+head.dataset.code);
+            if(getComputedStyle(head).backgroundColor!=='rgba(0, 0, 0, 0)') errors.push('head cell paints its own background over its neighbours: '+head.dataset.code);
           }
           const rows=[...table.querySelectorAll('tbody tr[data-institute]')], last=rows[rows.length-1].getBoundingClientRect();
           if(last.bottom>innerHeight || last.top<bars+height) errors.push('last body row is not visible during sticky check');
@@ -11374,7 +11537,7 @@ def check_functions_sticky(browser, base_url: str) -> list[str]:
 
 
 def check_functions_tint(browser, base_url: str) -> list[str]:
-    """Every column's painted band, gutter boundaries and rotated flag, by hover and keyboard focus."""
+    """Every column's painted band, gutter boundaries and slanted flag, by hover and keyboard focus."""
     page = browser.new_page(viewport={"width": 1280, "height": 1000})
     hydrated(page, base_url)
     page.evaluate("document.fonts.ready")
@@ -11384,9 +11547,10 @@ def check_functions_tint(browser, base_url: str) -> list[str]:
         page.close()
         return ["Functions tint has no columns to exercise"]
 
-    def inspect(cell, active):
-        return cell.evaluate(r"""(cell, active) => {
+    def inspect(cell, active, *, geometry=True):
+        result = cell.evaluate(r"""(cell, active) => {
           const table=cell.closest('table'), errors=[], row=cell.parentElement, code=cell.dataset.code;
+          let flagGeometry=null;
           /* FUNCTION_POLYGON */
           const transparent = colour => colour==='transparent' || colour==='rgba(0, 0, 0, 0)';
           const close = (a,b,tolerance=.5) => Math.abs(a-b)<=tolerance;
@@ -11456,24 +11620,52 @@ def check_functions_tint(browser, base_url: str) -> list[str]:
           }
           if(active && [...row.children].some(n=>getComputedStyle(n).backgroundColor!==tint)) errors.push('row tint not painted consistently');
           for(const head of table.querySelectorAll('.fn-head')) {
-            const flag=head.querySelector('.fn-head-flag'), selected=active && head.dataset.code===code;
-            if(!flag) { errors.push('head flag missing: '+head.dataset.code); continue; }
-            const style=getComputedStyle(flag);
+            const label=head.querySelector('.fn-head-flag'), selected=active && head.dataset.code===code;
+            if(!label) { errors.push('head label missing: '+head.dataset.code); continue; }
+            const style=getComputedStyle(head,'::before'), labelStyle=getComputedStyle(label), headStyle=getComputedStyle(head);
+            if(!transparent(headStyle.backgroundColor)) errors.push('upright band in head cell: '+head.dataset.code);
+            if(!transparent(labelStyle.backgroundColor)) errors.push('rotated label has its own tint: '+head.dataset.code);
             if(!selected) {
               if(!transparent(style.backgroundColor)) errors.push('unrelated head flag tinted: '+head.dataset.code);
               continue;
             }
-            if(style.backgroundColor!==tint) errors.push('head flag does not share column tint');
-            if(!close(flag.offsetHeight,parseFloat(style.lineHeight),1)) errors.push('head flag is not a line-height band');
-            const points=polygon(flag), foot=points[3], end=points[2], p=paddingBox(head), baseline=head.getBoundingClientRect().bottom;
-            if(!close(foot.x,(p.left+p.right)/2,2) || !close(foot.y,baseline,2)) errors.push('head flag does not start at column centre/baseline');
-            if(Math.abs(Math.atan2(end.y-foot.y,end.x-foot.x)*180/Math.PI+60)>2 || end.y>=foot.y) errors.push('head flag does not follow rotated label');
+            const p=paddingBox(head), m=new DOMMatrix(style.transform), number=value=>parseFloat(value)||0;
+            const size=dimension=>number(style[dimension])+(style.boxSizing==='border-box'?0:
+              (dimension==='width'?['Left','Right']:['Top','Bottom']).reduce((n,side)=>n+number(style['padding'+side])+number(style['border'+side+'Width']),0));
+            const width=size('width'), height=size('height'), [ox,oy]=style.transformOrigin.split(' ').map(number);
+            const x=p.left+number(style.left), y=p.bottom-number(style.bottom)-height;
+            const points=[[0,0],[width,0],[width,height],[0,height]].map(([a,b])=>[
+              x+m.a*(a-ox)+m.c*(b-oy)+ox+m.e, y+m.b*(a-ox)+m.d*(b-oy)+oy+m.f]);
+            const heads=[...table.querySelectorAll('.fn-head')], index=heads.indexOf(head);
+            let first=0;
+            const group=[...table.querySelectorAll('.fn-column-group')].find(g=>{const owns=index>=first && index<first+g.colSpan; first+=g.colSpan; return owns;});
+            if(!group) { errors.push('head has no column group: '+head.dataset.code); continue; }
+            // No underline is drawn: the shifted group's span is its label anchor plus its padding-box width.
+            const g=paddingBox(group), left=group.querySelector('span').getBoundingClientRect().left;
+            const corners=polygon(label), centre={x:corners.reduce((sum,p)=>sum+p.x,0)/4,y:corners.reduce((sum,p)=>sum+p.y,0)/4};
+            const hit=document.elementFromPoint(centre.x,centre.y);
+            flagGeometry={track:p,points,group:[left,left+g.right-g.left],matrix:[m.a,m.b,m.c,m.d,m.e,m.f],
+              exists:!['none','normal'].includes(style.content) && style.display!=='none' && style.visibility==='visible',position:style.position,
+              head_transparent:transparent(headStyle.backgroundColor),label_transparent:transparent(labelStyle.backgroundColor),
+              tinted:style.backgroundColor===tint,label_z:number(labelStyle.zIndex),label_on_top:hit===label || label.contains(hit)};
             bridge(head);
           }
-          return errors;
+          return {errors,flag:flagGeometry};
         }""".replace("/* FUNCTION_POLYGON */", FN_POLYGON_JS), active)
+        if active and geometry:
+            result["errors"] += function_flag_geometry_errors(result["flag"]) if result["flag"] else ["no selected head flag measured"]
+        return result["errors"]
 
-    for width in (1280, 1440):
+    def expose_head(cell):
+        # At the scrolling width, a visible body cell does not guarantee that its leaning label is visible.
+        cell.evaluate("""cell => {
+          const table=cell.closest('table'), scroll=table.parentElement, head=table.querySelector('.fn-head[data-code="'+cell.dataset.code+'"]');
+          const label=head.querySelector('.fn-head-flag').getBoundingClientRect(), box=scroll.getBoundingClientRect();
+          scroll.scrollLeft+=(label.left+label.right-box.left-box.right)/2;
+          window.scrollTo(0,table.getBoundingClientRect().top+scrollY-200);
+        }""")
+
+    for width in (1000, 1280, 1440):
         page.set_viewport_size({"width": width, "height": 1000})
         for theme in ("light", "dark"):
             set_theme(page, theme)
@@ -11482,6 +11674,7 @@ def check_functions_tint(browser, base_url: str) -> list[str]:
                 # Every column, including the first and last in every group; blanks also respond to hover.
                 cells = page.locator(f'.fn-table tbody tr[data-institute] > td[data-code="{code}"]')
                 cell = cells.first
+                expose_head(cell)
                 cell.hover()
                 errors += [prefix + "hover: " + e for e in inspect(cell, True)]
                 page.mouse.move(1, 1)
@@ -11499,16 +11692,21 @@ def check_functions_tint(browser, base_url: str) -> list[str]:
                 page.keyboard.press("Tab")
                 if not button.evaluate("n => n===document.activeElement"):
                     errors.append(prefix + "keyboard did not reach cell")
+                expose_head(cell)  # Tab may scroll a late marked row past the non-sticky head at 1000px.
                 errors += [prefix + "focus: " + e for e in inspect(cell, True)]
                 cell.hover()
                 page.mouse.move(1, 1)
+                expose_head(cell)
                 errors += [prefix + "focus after pointer out: " + e for e in inspect(cell, True)]
                 button.evaluate("n => n.blur()")
                 errors += [prefix + "focus out: " + e for e in inspect(cell, False)]
             empty = page.locator('.fn-table tbody td[data-value="not_found"]').first
             if empty.count():
+                expose_head(empty)
                 empty.hover()
-                errors += [f"{width}px {theme} blank hover: " + e for e in inspect(empty, True)]
+                # Every head already had a visible-label hover pass above. This extra blank can be far down
+                # the body, beyond the non-sticky head's viewport; here exercise only its row/column paint.
+                errors += [f"{width}px {theme} blank hover: " + e for e in inspect(empty, True, geometry=False)]
                 page.mouse.move(1, 1)
     # The owner's three hover remarks, at a fitting and a scrolling width, light and dark: (1) above the rule under
     # the heads only the flag, never an upright band, and the flag clears its neighbours' labels; (2) the row band is
@@ -11529,15 +11727,17 @@ def check_functions_tint(browser, base_url: str) -> list[str]:
             }""")]
             errors += [f"{width}px {theme} hover shape: {e}" for e in page.evaluate("""() => {
               const errors=[], table=document.querySelector('.fn-table'), lit=table.querySelector('tbody .fn-col-lit');
+              /* FUNCTION_POLYGON */
               if(!lit) return ['no column lit'];
               const code=lit.dataset.code, head=table.querySelector('thead .fn-head[data-code="'+code+'"]');
               const transparent=c=>c==='rgba(0, 0, 0, 0)' || c==='transparent';
               if(!transparent(getComputedStyle(head).backgroundColor)) errors.push('upright band in the head cell above the rule');
-              const flag=head.querySelector('.fn-head-flag'), heads=[...table.querySelectorAll('thead .fn-head .fn-head-flag')], n=heads.indexOf(flag);
-              const thick=flag.offsetHeight;
+              const label=head.querySelector('.fn-head-flag'), heads=[...table.querySelectorAll('thead .fn-head .fn-head-flag')], n=heads.indexOf(label);
+              const r=head.getBoundingClientRect(), s=getComputedStyle(head), normal=p=>p.x*Math.cos(Math.PI/6)+p.y*.5;
+              const bottom=r.bottom-parseFloat(s.borderBottomWidth), left=normal({x:r.left+parseFloat(s.borderLeftWidth),y:bottom}), right=normal({x:r.right-parseFloat(s.borderRightWidth),y:bottom});
               for(const other of [heads[n-1], heads[n+1]].filter(Boolean)) {
-                const dx=Math.abs(other.getBoundingClientRect().left-flag.getBoundingClientRect().left);
-                if(dx*Math.sin(Math.PI/3) < thick) errors.push('flag reaches a neighbouring label: '+other.textContent);
+                const projection=polygon(other,true).map(normal);
+                if(Math.min(right,Math.max(...projection))-Math.max(left,Math.min(...projection))>.5) errors.push('flag reaches a neighbouring label: '+other.textContent);
               }
               const row=table.querySelector('tr.fn-row-lit'), cells=[...row.children].filter(c=>!c.classList.contains('fn-pad'));
               for(let k=1;k<cells.length;k++) {
@@ -11545,7 +11745,7 @@ def check_functions_tint(browser, base_url: str) -> list[str]:
                 if(Math.abs(b.left-a.right)>0.5 || st.backgroundClip!=='border-box' || transparent(st.backgroundColor)) { errors.push('row band breaks before '+(cells[k].dataset.code||'cell')); break; }
               }
               return errors;
-            }""")]
+            }""".replace("/* FUNCTION_POLYGON */", FN_POLYGON_JS))]
             page.mouse.move(1, 1)
             scroll = page.locator('.fn-scroll')
             page.locator('.fn-table tfoot th').click()  # a plain label inside the box: the click focuses the scroll box itself
