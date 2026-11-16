@@ -4034,17 +4034,6 @@
       },
       "claims": [
         {
-          "id": "claims-1e75bf0fbfcd4b829a0294ed13f131bb",
-          "kind": "function",
-          "code": "research",
-          "basis": "mandate",
-          "body_id": "related_bodies-8e2bf69316145732aea04a2f9bbd82eb",
-          "text": "NASK says the centre will lead its cooperation with OpenAI and \"will research the safety of increasingly advanced AI systems\" with it.",
-          "source_ids": [
-            "pl-nask-openai-2026"
-          ]
-        },
-        {
           "id": "claims-bb5ea3f0ab994d51932261f30ee36269",
           "kind": "function",
           "code": "research",
@@ -4076,6 +4065,17 @@
           "text": "On NASK's research teams page, the centre's Department of Security and Transparency of Artificial Intelligence says \"We develop methods for generating, analyzing and auditing models, and develop methods and software to support their analysis\".",
           "source_ids": [
             "pl-r8-research-teams"
+          ]
+        },
+        {
+          "id": "claims-77618512de744bbc8291bfbf5b3560ce",
+          "kind": "function",
+          "code": "talent",
+          "basis": "mandate",
+          "body_id": "related_bodies-8e2bf69316145732aea04a2f9bbd82eb",
+          "text": "The Ministry of Digital Affairs quotes the centre's director: the centre \"is also tasked with educating and supporting society in the informed use of modern AI technologies\".",
+          "source_ids": [
+            "pl-nask"
           ]
         }
       ]
@@ -9797,17 +9797,6 @@
           "basis": "mandate",
           "body_id": "related_bodies-b99e96dc6b88504faf9248e18a9b61eb",
           "text": "The ministry's launch announcement says the centre will successively establish certification bodies and testing laboratories next year (113) to provide AI evaluation and verification services.",
-          "source_ids": [
-            "tw-moda-aiec-2023"
-          ]
-        },
-        {
-          "id": "claims-e0110a4d5db7435db3f1d81589dc28fe",
-          "kind": "function",
-          "code": "evaluation_methods",
-          "basis": "activity",
-          "body_id": "related_bodies-b99e96dc6b88504faf9248e18a9b61eb",
-          "text": "The ministry says the centre drew up 10 evaluation items for language models.",
           "source_ids": [
             "tw-moda-aiec-2023"
           ]
@@ -32504,16 +32493,6 @@
           ]
         },
         {
-          "id": "claims-0b8cf14a4fe84dd98f73c93f98c94d16",
-          "kind": "function",
-          "code": "capacity_building",
-          "basis": "mandate",
-          "text": "The founding ministries' announcement says that in a second phase the institute will ensure a structured transfer of security-relevant findings on AI into the federal government, administration, business and civil society.",
-          "source_ids": [
-            "de-bmds"
-          ]
-        },
-        {
           "id": "claims-5c0b259e725942878f6269ca5cb9c344",
           "kind": "function",
           "code": "evaluation_methods",
@@ -35534,16 +35513,6 @@
           "source_ids": [
             "r5-us-raman-nist-post"
           ]
-        },
-        {
-          "id": "claims-54d912529f554a5fbe1550c8fbb2ef22",
-          "kind": "function",
-          "code": "public_access_continuity",
-          "basis": "activity",
-          "text": "NIST says the then CAISI directly collaborated on national security tests with six or more agencies, including sharing privileged model access, national security expertise and testing resources.",
-          "source_ids": [
-            "us-nist-caisi-overview-2026"
-          ]
         }
       ]
     },
@@ -38416,16 +38385,6 @@
           ]
         },
         {
-          "id": "claims-7906d738915740988e8c7d0a1f053497",
-          "kind": "function",
-          "code": "capacity_building",
-          "basis": "activity",
-          "text": "It says it provides \"AI safety-related consulting to companies\", for example on international evaluations, certifications and compliance with foreign regulations.",
-          "source_ids": [
-            "kr-aisi-sub31"
-          ]
-        },
-        {
           "id": "claims-3c0a171f93634bbbb83571ff38797b62",
           "kind": "function",
           "code": "convening",
@@ -39001,6 +38960,16 @@
           "text": "IMDA's fact sheet says the Digital Trust Centre will help to focus on outcomes that include testing the trustworthiness of AI and developing algorithms to test and evaluate the fairness of AI.",
           "source_ids": [
             "sg-imda-dtc-factsheet-2022"
+          ]
+        },
+        {
+          "id": "claims-0a8fe7b2123a4eccadab20b1b5bc7436",
+          "kind": "function",
+          "code": "talent",
+          "basis": "activity",
+          "text": "It says it has conducted workshops and red teaming challenges \"for knowledge sharing and capacity building in technical testing capabilities\".",
+          "source_ids": [
+            "sg-site"
           ]
         }
       ]
@@ -40089,6 +40058,16 @@
           "text": "AI Malaysia's national action plan calls for a national AI Trust Function to evaluate, monitor, anticipate and respond to AI risks, and its overview says MY-AISafe delivers that function.",
           "source_ids": [
             "my-plan-2026"
+          ]
+        },
+        {
+          "id": "claims-f59ff46521b346b4807be58f5ad6696b",
+          "kind": "function",
+          "code": "talent",
+          "basis": "mandate",
+          "text": "The ministry says the institute will work through strategic collaborations for talent development, expertise sharing and technology transfer at national and international levels.",
+          "source_ids": [
+            "my-digital-2026-07"
           ]
         }
       ]
@@ -42271,31 +42250,6 @@
           "accessed": "2026-10-17"
         },
         {
-          "text": "In einer zweiten Phase wird das KI-Sicherheitsinstitut thematisch und kapazitär weiter ausgebaut. Es wird einen strukturierten Wissenstransfer sicherheitsrelevanter Erkenntnisse zu künstlicher Intelligenz in Bundesregierung, Verwaltung, Wirtschaft und Zivilgesellschaft sicherstellen.",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "de-aisi"
-              },
-              "claims",
-              {
-                "id": "claims-0b8cf14a4fe84dd98f73c93f98c94d16"
-              },
-              "text"
-            ]
-          ],
-          "gloss": "In a second phase the AI safety institute will be further expanded in topics and capacity. It will ensure a structured transfer of security-relevant findings on artificial intelligence into the federal government, administration, business and civil society.",
-          "anchors": [
-            {
-              "text": "Deutsches KI-Sicherheitsinstitut „AISI Deutschland“ nimmt Arbeit auf",
-              "kind": "definition",
-              "gloss": "German AI Safety Institute “AISI Deutschland” starts work"
-            }
-          ],
-          "accessed": "2026-10-17"
-        },
-        {
           "text": "Bereits jetzt findet ein fachlicher Austausch zwischen den beteiligten Behörden sowie mit internationalen Partnerinstitutionen, unter anderem mit Frankreich, dem Vereinigten Königreich und dem EU AI Office, statt.",
           "supports": [
             [
@@ -43679,6 +43633,31 @@
             ]
           ],
           "gloss": "The new centre's researchers focus on innovative AI research, with an emphasis on cybersecurity, which is key for NASK.",
+          "anchors": [
+            {
+              "text": "w NASK powstał Ośrodek Badań nad Bezpieczeństwem Sztucznej Inteligencji",
+              "kind": "definition",
+              "gloss": "an AI Safety Research Centre was established within NASK"
+            }
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Ośrodek ma również za zadanie edukować i wspierać społeczeństwo w świadomym korzystaniu z nowoczesnych technologii AI",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "PL"
+              },
+              "claims",
+              {
+                "id": "claims-77618512de744bbc8291bfbf5b3560ce"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "The centre is also tasked with educating and supporting society in the informed use of modern AI technologies",
           "anchors": [
             {
               "text": "w NASK powstał Ośrodek Badań nad Bezpieczeństwem Sztucznej Inteligencji",
@@ -46599,6 +46578,23 @@
               "claims",
               {
                 "id": "claims-b5e257f0ae2c493795921b43bba939cf"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "This is done through the workshops and red teaming challenges that we have conducted for knowledge sharing and capacity building in technical testing capabilities.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "sg-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-0a8fe7b2123a4eccadab20b1b5bc7436"
               },
               "text"
             ]
@@ -49730,36 +49726,6 @@
             }
           ],
           "accessed": "2026-10-17"
-        },
-        {
-          "text": "AI評測中心針對語言模型擬定10項評測項目",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "TW"
-              },
-              "claims",
-              {
-                "id": "claims-e0110a4d5db7435db3f1d81589dc28fe"
-              },
-              "text"
-            ]
-          ],
-          "gloss": "The AI Evaluation Center drew up 10 evaluation items for language models",
-          "anchors": [
-            {
-              "text": "數位發展部已展開AI評測工作，並在今(6)日於台北科技大學舉辦「AI產品與系統評測中心」啟動活動",
-              "kind": "definition",
-              "gloss": "The Ministry of Digital Affairs has begun AI evaluation work and held a launch event for the AI Product and System Evaluation Center at Taipei Tech today, the sixth."
-            },
-            {
-              "text": "數位發展部「AI產品與系統評測中心」啟動 推動我國AI評測制度與可信任AI環境發展",
-              "kind": "heading",
-              "gloss": "The Ministry of Digital Affairs launches the AI Product and System Evaluation Center, promoting the development of our country's AI evaluation system and a trustworthy AI environment"
-            }
-          ],
-          "accessed": "2026-10-17"
         }
       ]
     },
@@ -50192,6 +50158,29 @@
           ],
           "accessed": "2026-10-17",
           "url": "https://web.archive.org/web/20261016201248/https://www.digital.gov.my/en-GB/siaran/AI-Malaysia-Pemacu-Utama-Menuju-Negara-AI-2030"
+        },
+        {
+          "text": "strategic collaborations for talent development, expertise sharing, and technology transfer at both national and international levels;",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "my-aisafe"
+              },
+              "claims",
+              {
+                "id": "claims-f59ff46521b346b4807be58f5ad6696b"
+              },
+              "text"
+            ]
+          ],
+          "anchors": [
+            {
+              "text": "The Malaysia AI Safety Institute will reinforce a safe, trusted, and responsible AI ecosystem through three main pillars:",
+              "kind": "heading"
+            }
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "MY",
@@ -89192,29 +89181,6 @@
             ]
           ],
           "accessed": "2026-10-17"
-        },
-        {
-          "text": "Directly collaborated on national security tests with 6+ agencies including sharing privileged model access, \nnational security expertise, and testing resources.",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "us-caissi"
-              },
-              "claims",
-              {
-                "id": "claims-54d912529f554a5fbe1550c8fbb2ef22"
-              },
-              "text"
-            ]
-          ],
-          "anchors": [
-            {
-              "text": "NIST CAISI Overview",
-              "kind": "heading"
-            }
-          ],
-          "accessed": "2026-10-17"
         }
       ],
       "origin": "US",
@@ -101150,29 +101116,6 @@
               },
               "what"
             ]
-          ],
-          "accessed": "2026-10-19"
-        },
-        {
-          "text": "We provide AI safety-related consulting to companies (e.g., international evaluations, certifications, compliance with foreign regulations).",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "kr-aisi"
-              },
-              "claims",
-              {
-                "id": "claims-7906d738915740988e8c7d0a1f053497"
-              },
-              "text"
-            ]
-          ],
-          "anchors": [
-            {
-              "text": "AI safety consulting service",
-              "kind": "heading"
-            }
           ],
           "accessed": "2026-10-19"
         }
@@ -120303,26 +120246,7 @@
       "accessed": "2026-11-10",
       "language": "pl",
       "origin": "PL",
-      "excerpts": [
-        {
-          "text": "Po stronie NASK współpracę poprowadzi Ośrodek Badań nad Bezpieczeństwem Sztucznej Inteligencji, który pełni funkcję polskiego Instytutu Bezpieczeństwa Sztucznej Inteligencji (AISI). Wspólnie z OpenAI będzie badać bezpieczeństwo coraz bardziej zaawansowanych systemów AI.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "PL"
-              },
-              "claims",
-              {
-                "id": "claims-1e75bf0fbfcd4b829a0294ed13f131bb"
-              },
-              "text"
-            ]
-          ],
-          "gloss": "On NASK's side the cooperation will be led by the AI Safety Research Centre, which serves as the Polish Artificial Intelligence Safety Institute (AISI). Together with OpenAI it will research the safety of increasingly advanced AI systems.",
-          "accessed": "2026-11-10"
-        }
-      ],
+      "excerpts": [],
       "snapshot": {
         "retrieved": "2026-11-10T19:46:15Z",
         "sha256": "856b38746e1695ea8418ba71484aafcf5d9d40f33c9f09151ac8d2e2309cd5ed",
