@@ -439,7 +439,7 @@
         "policy_advice": {
           "label": "Policy advice",
           "short": "policy advice",
-          "definition": "It publishes or is tasked with policy research, recommendations or options for government on AI.",
+          "definition": "It advises government or parliament on AI policy or legislation, or a text tasks it to: advice, recommendations, options or policy research addressed to them, published or not; general reporting on capabilities and risks is risk monitoring, and support for rules already in force is regulator support.",
           "group": "Informing government"
         },
         "incident_response": {
