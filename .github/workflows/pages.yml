@@ -347,3 +347,92 @@ jobs:
       # and no job needs this one.
       - name: smoke checks of https://aisi.accelerate-europe.org/
         run: uv run --locked scripts/smoke_site.py
+  preview:
+    needs: [plan, site]
+    if: ${{ !cancelled() && github.repository == 'accelerate-europe/aisi-tracker' && ((github.event_name == 'push' && github.ref == 'refs/heads/next') || (github.event_name == 'workflow_dispatch' && github.ref_type == 'branch' && github.ref != 'refs/heads/main')) }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      PREVIEW_URL: https://accelerate-europe.github.io/aisi-tracker-preview/
+    steps:
+      # No secret, or no site in this run: succeed without checking out the preview repository.
+      # Every later step uses this output; a skipped site is not a failed build attempt.
+      - id: enabled
+        env:
+          KEY: ${{ secrets.PREVIEW_DEPLOY_KEY }}
+          SITE: ${{ needs.site.result }}
+        run: |
+          if [ -z "$KEY" ]; then
+            echo "preview: secret PREVIEW_DEPLOY_KEY is not set; nothing published"
+          elif [ "$SITE" = skipped ]; then
+            echo "preview: this run built no site; nothing published"
+          elif [ "$SITE" = success ] || [ "$SITE" = failure ]; then
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.enabled.outputs.publish == 'true'
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - if: steps.enabled.outputs.publish == 'true'
+        uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86 # v5.4.2
+        with:
+          version: "0.11.14"
+          enable-cache: true
+          cache-dependency-glob: |
+            uv.lock
+            scripts/*.lock
+      - if: steps.enabled.outputs.publish == 'true' && needs.site.result == 'success'
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: site
+          path: ${{ runner.temp }}
+      # Mark a copy of the existing artifact. The live build and its gate use the original bytes.
+      - id: transform
+        if: steps.enabled.outputs.publish == 'true' && needs.site.result == 'success'
+        env:
+          BRANCH: ${{ github.ref_name }}
+          SHA: ${{ github.sha }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          FEEDBACK_MAIL: ${{ vars.PREVIEW_FEEDBACK_MAIL }}
+        run: |
+          mkdir "$RUNNER_TEMP/preview-input"
+          tar -C "$RUNNER_TEMP/preview-input" -xf "$RUNNER_TEMP/site.tar"
+          uv run --locked scripts/preview.py transform "$RUNNER_TEMP/preview-input" "$RUNNER_TEMP/preview-marked" \
+            --branch "$BRANCH" --sha "$SHA" --run-url "$RUN_URL" --built "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            --feedback-mail "$FEEDBACK_MAIL" --preview-url "$PREVIEW_URL"
+          if [ -d "$RUNNER_TEMP/preview-marked" ]; then echo "ready=true" >> "$GITHUB_OUTPUT"; fi
+      - if: steps.enabled.outputs.publish == 'true' && steps.transform.outputs.ready == 'true'
+        run: uv run --locked -q scripts/check_page.py --install-chrome
+      - if: steps.enabled.outputs.publish == 'true' && steps.transform.outputs.ready == 'true'
+        run: uv run --locked scripts/check_preview.py --dist "$RUNNER_TEMP/preview-marked" --shots "$RUNNER_TEMP/preview-shots"
+      - if: ${{ !cancelled() && steps.enabled.outputs.publish == 'true' && steps.transform.outputs.ready == 'true' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: preview-shots
+          path: ${{ runner.temp }}/preview-shots
+          if-no-files-found: error
+          retention-days: 30
+          overwrite: true
+      # A failed site changes only the attempt record, keeping the last good folder. The publisher fetches a
+      # fresh tree and source branch list on every lease retry, so web edits of keep.txt are carried forward.
+      - if: steps.enabled.outputs.publish == 'true' && (needs.site.result == 'failure' || steps.transform.outputs.ready == 'true')
+        env:
+          KEY: ${{ secrets.PREVIEW_DEPLOY_KEY }}
+          BRANCH: ${{ github.ref_name }}
+          SHA: ${{ github.sha }}
+          RUN_ID: ${{ github.run_id }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          SITE: ${{ needs.site.result }}
+        run: |
+          umask 077
+          printf '%s\n' "$KEY" > "$RUNNER_TEMP/preview-deploy-key"
+          unset KEY
+          curl --fail --silent --show-error https://api.github.com/meta | jq -r '.ssh_keys[] | "github.com " + .' > "$RUNNER_TEMP/preview-known-hosts"
+          export GIT_SSH_COMMAND="ssh -i '$RUNNER_TEMP/preview-deploy-key' -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile='$RUNNER_TEMP/preview-known-hosts'"
+          set --
+          if [ "$SITE" = success ]; then set -- --transformed "$RUNNER_TEMP/preview-marked"; fi
+          uv run --locked scripts/preview.py push "$@" --branch "$BRANCH" --sha "$SHA" \
+            --run-id "$RUN_ID" --run-attempt "$RUN_ATTEMPT" --run-url "$RUN_URL" \
+            --attempted "$(date -u +%Y-%m-%dT%H:%M:%SZ)" --preview-url "$PREVIEW_URL"
