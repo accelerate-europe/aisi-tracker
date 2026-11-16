@@ -74,15 +74,17 @@ def test_anchor_shape(anchored, anchors):
     assert errors(anchored)
 
 
-def test_anchor_limit_is_500_and_the_excerpt_limit_stays_300(anchored):
-    """Owner, 15 November: an anchor may hold up to 500 characters, so a naming sentence and its lead-in fit in one
-    span; the quotation itself keeps its 300."""
+def test_anchor_and_excerpt_limits_are_500(anchored):
+    """Owner, 16 November: the quotation and each anchor share the 500-character limit."""
     quoted(anchored)["anchors"] = [{"text": "x" * 500, "kind": "heading"}]
     assert errors(anchored) == []
     quoted(anchored)["anchors"] = [{"text": "x" * 501, "kind": "heading"}]
     assert errors(anchored)
     quoted(anchored)["anchors"] = [LEAD_IN]
-    quoted(anchored)["text"] = "x" * 301
+    excerpt = quoted(anchored)
+    excerpt["text"] = "x" * 500
+    assert errors(anchored) == []
+    excerpt["text"] = "x" * 501
     assert errors(anchored)
 
 
@@ -110,6 +112,7 @@ def test_anchors_are_published_and_in_the_csv(plain, anchored):
     before, after = csv_rows(plain), csv_rows(anchored)
     row = after[SOURCE, QUOTE]
     assert list(row) == build.EMPTY_COLUMNS["source_excerpts"]
+    assert list(row) == ["id", "source_id", "source_url", "text", "gloss", "supports", "url", "accessed", "anchors", "shown"]
     assert json.loads(row["anchors"]) == [LEAD_IN, DEFINITION]
     assert before[SOURCE, QUOTE]["anchors"] == ""
     assert {k: r for k, r in after.items() if k != (SOURCE, QUOTE)} == {k: r for k, r in before.items() if k != (SOURCE, QUOTE)}

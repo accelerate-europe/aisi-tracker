@@ -18,6 +18,9 @@ function el(tag, cls, text) {
   return {tag, tagName: tag.toUpperCase(), className: cls || '', attrs: {}, dataset: {}, children: [],
     classList: {add(c) {}},
     setAttribute(k, v) { this.attrs[k] = v; },
+    removeAttribute(k) { delete this.attrs[k]; },
+    addEventListener(k, f) { this[k] = f; },
+    querySelector(selector) { return this.children.find(n => n.className === selector.slice(1)); },
     appendChild(n) { this.children.push(n); return n; },
     set textContent(t) { this.children = [{text: t}]; },
     get textContent() { return this.children.map(n => n.text ?? n.textContent).join(''); },
@@ -65,6 +68,16 @@ def test_quote_rule_translation_original_focus_and_language_fallback(gloss, lang
             assert texts(quote).endswith("translated from " + marker)
     else:
         assert english["attrs"] == {} and len(quote["children"]) == 1
+
+
+@pytest.mark.parametrize("gloss", [None, "", " \t", "English translation"])
+def test_quote_without_shown_has_no_cut_controls(gloss):
+    box = page_call(f"quoteNode('Original quotation', {json.dumps(gloss)}, 'de')")
+    assert all(child.get("tag") != "button" for child in box["children"])
+    quote = box["children"][0]
+    assert "aria-haspopup" not in quote["attrs"] and "aria-controls" not in quote["attrs"]
+    if not gloss or not gloss.strip():
+        assert quote["attrs"] == {} and texts(box) == '"Original quotation"'
 
 
 def bound_data():
@@ -205,6 +218,116 @@ def test_browser_fixture_covers_every_role_and_development_binding():
     for owner, anchor in other_copy:
         named = next(s for s in fixture["sources"] if s["id"] == anchor["source_id"])
         assert named["title"] and named["language"] != owner["language"]
+
+
+def test_browser_fixture_drops_the_data_bindings_of_the_claims_it_replaces():
+    # A migrated record with claims of its own: their excerpts pointed at positions the fixture's claims take over,
+    # so a fixture claim had two bindings and the shown-quote job failed on CI (16 November 2026).
+    data = {"jurisdictions": [{"id": "AA", "status": "planned"},
+                              {"id": "BB", "status": "none_identified", "europe_scope": True,
+                               "claims": [{"id": "real-0", "kind": "function", "text": "A."}, {"id": "real-1", "kind": "function", "text": "B."}]}],
+            "institutes": [], "sources": [{"id": "real-source", "excerpts": [
+                {"text": "Real.", "supports": ["/jurisdictions/1/claims/1/text", "/jurisdictions/0/status"]}]}]}
+    fixture, _ = check_page.claim_quote_fixture(data)
+    shown = check_page.card_claims(fixture["jurisdictions"][1], {})
+    assert [len(check_page.claim_bindings(fixture, c["id"])) for c in shown] == [1, 1, 1, 1, 1, 2]
+    real = next(s for s in fixture["sources"] if s["id"] == "real-source")["excerpts"][0]
+    assert real["supports"] == ["/jurisdictions/0/status"]
+    assert data["sources"][0]["excerpts"][0]["supports"][0] == "/jurisdictions/1/claims/1/text"  # the input is untouched
+
+
+@pytest.mark.parametrize("translated", [False, True])
+def test_shown_quote_gate_is_an_independent_job_with_valid_fixture(translated):
+    from scripts import build, claim_checks
+
+    data = {"jurisdictions": [{"id": "AA", "status": "planned"}, {"id": "BB", "status": "none_identified", "europe_scope": True}], "institutes": [], "sources": []}
+    fixture, cases, quote = check_page.shown_quote_fixture(data, translated)
+    assert len(cases) == 2 and 300 < len(quote["text"]) <= 500 and data["sources"] == []
+    assert not [e for e in build.check_excerpts(fixture) if "shown" in e]
+    for jid, cid in cases:
+        record = next(j for j in fixture["jurisdictions"] if j["id"] == jid)
+        claim = next(c for c in record["claims"] if c["id"] == cid)
+        source, _, bound = check_page.claim_bindings(fixture, cid)[0]  # fixture uniqueness asserted below
+        assert len(check_page.claim_bindings(fixture, cid)) == 1 and bound["shown"] == quote["shown"]
+        if claim.get("lead"):
+            assert claim_checks.check_lead("lead", claim, {"text": [(source, bound)]}) == []
+    assert ("interactions", check_page.check_shown_quotes, (data,)) in check_page.browser_jobs(Path("site"), data, None)
+
+
+@pytest.mark.parametrize("parts, expected", [
+    ([{"text": "First visible quotation."}], "First visible quotation. [...]"),
+    ([{"text": "Middle visible quotation."}], "[...] Middle visible quotation. [...]"),
+    ([{"text": "Last visible quotation."}], "[...] Last visible quotation."),
+    ([{"text": "First visible quotation."}, {"text": "Last visible quotation."}], "First visible quotation. [...] Last visible quotation."),
+    ([{"text": "First visible quotation."}, {"text": "Middle visible quotation."}, {"text": "Last visible quotation."}], "First visible quotation. [...] Middle visible quotation. [...] Last visible quotation."),
+])
+def test_cut_markers_follow_omitted_edges_and_part_order(parts, expected):
+    text = "First visible quotation. " + "Hidden context. " * 12 + "Middle visible quotation. " + "Hidden context. " * 8 + "Last visible quotation."
+    result = page_call(f"quoteDisplay({json.dumps(text)}, null, {json.dumps(parts)})")
+    assert result == {"text": expected, "gloss": None}
+
+
+def test_saved_lead_check_requires_the_whole_original():
+    html, data = saved_claim_page()
+    record = data["jurisdictions"][0]
+    record.update(status="none_identified", europe_scope=True, closest_body={"body_id": "body"})
+    claim, = record["claims"]
+    claim.update(kind="function", body_id="body", lead=True, text='It says "a fact".')
+    bound = data["sources"][0]["excerpts"][0]
+    part = "An original-language quotation."
+    bound.update(text="Opening context. " + part + " Hidden context. " * 20,
+                 shown=[{"text": part, "gloss": "A fact"}])
+    original = bound["text"]
+    html = html.replace("A fact.", f'It says <span class="quotation"><span class="quote-text" tabindex="0" aria-description="{original}">"a fact"</span><button class="quote-whole">Whole quote</button></span>.')
+    assert check_page.check_claim_cards(html, data) == []
+    assert any("bound original" in e for e in check_page.check_claim_cards(html.replace(original, "[...] " + part + " [...]"), data))
+
+
+@pytest.mark.parametrize("translated", [False, True])
+def test_shown_quote_toggle_keeps_the_same_text_and_button_nodes(translated):
+    text = "Opening. <b>First visible quotation.</b> " + "Hidden context. " * 20 + "Last visible quotation. Closing."
+    parts = [{"text": "<b>First visible quotation.</b>"}, {"text": "Last visible quotation."}]
+    gloss = "A full English translation." if translated else None
+    if translated:
+        for part in parts:
+            part["gloss"] = "Translation of " + part["text"]
+    args = ", ".join(json.dumps(v) for v in (text, gloss, "de" if translated else "en", False, parts))
+    result = page_call("""(() => {
+      var box = quoteNode(""" + args + """), quote = box.querySelector('.quote-text'), button = box.querySelector('.btn quote-whole');
+      function state() { return {text: quote.textContent, original: quote.attrs['aria-description'] || null, expanded: button.attrs['aria-expanded'], label: button.textContent}; }
+      var states = [state()]; button.click(); states.push(state()); button.click(); states.push(state());
+      return {states, same: quote === box.querySelector('.quote-text') && button === box.querySelector('.btn quote-whole'), type: button.type, quote};
+    })()""")
+    cut = "[...] " + " [...] ".join(p.get("gloss", p["text"]) for p in parts) + " [...]"
+    original = text if translated else None
+    assert result["states"] == [
+        {"text": '"' + cut + '"', "original": original, "expanded": "false", "label": "Whole quote"},
+        {"text": '"' + (gloss or text) + '"', "original": text if translated else None, "expanded": "true", "label": "Short quote"},
+        {"text": '"' + cut + '"', "original": original, "expanded": "false", "label": "Whole quote"},
+    ]
+    assert result["same"] and result["type"] == "button"
+    assert result["quote"]["children"] == [{"text": '"' + cut + '"'}]  # markup stays text
+    assert "aria-haspopup" not in result["quote"]["attrs"] and "aria-controls" not in result["quote"]["attrs"]
+
+
+@pytest.mark.parametrize("translated", [False, True])
+def test_lead_keeps_quoted_span_and_toggles_inline_with_a_whole_original_tip(translated):
+    data = {"jurisdictions": [{"id": "AA", "status": "planned"}, {"id": "BB", "status": "none_identified", "europe_scope": True}], "institutes": [], "sources": []}
+    fixture, cases, excerpt = check_page.shown_quote_fixture(data, translated)
+    _, cid = next(case for case in cases if case[0] == "BB")
+    result = page_call("""(() => {
+      CLAIM_INDEX = claimIndex(""" + json.dumps(fixture) + """);
+      var claim = CLAIM_INDEX[""" + json.dumps(cid) + """].claim, line = claimSentence(claim, claim.text);
+      var box = line.querySelector('.quotation'), quote = box.querySelector('.quote-text'), button = box.querySelector('.btn quote-whole');
+      function state() { return {sentence: line.textContent, original: quote.attrs['aria-description'] || null}; }
+      var states = [state()]; button.click(); states.push(state()); button.click(); states.push(state());
+      return {states, quote};
+    })()""")
+    original = excerpt["text"] if translated else None
+    short = {"sentence": 'It says it "tests models"Whole quote.', "original": original}
+    assert result["states"] == [short, {"sentence": 'It says it "' + excerpt.get("gloss", excerpt["text"]) + '"Short quote.', "original": original}, short]
+    assert "quoteCut" not in result["quote"]
+    assert "aria-haspopup" not in result["quote"]["attrs"] and "aria-controls" not in result["quote"]["attrs"]
 
 
 def test_other_copy_anchor_shows_its_source_title_language_and_original():
