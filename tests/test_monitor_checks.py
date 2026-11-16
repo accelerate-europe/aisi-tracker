@@ -194,12 +194,14 @@ def test_live_loss_outranks_an_archive_capture_that_still_has_the_quotation(run)
 
 
 def test_partial_render_missing_one_of_several_quotes(tmp_path, monkeypatch):
+    """A render without the region of a quotation does not compare it: no loss, the render is not comparable."""
     run = Run(tmp_path, monkeypatch, excerpts=["founded in 2024", "publishes reports"])
     run.responses["headless"] = page("<p>The institute was founded in 2024.</p>")
     assert run.run() == 0
     row, = run.rows()
-    assert row["reason"] == "fallback_quote_unconfirmed"
-    assert {q["in_checked_copy"] for q in row["quotes"]} == {True, False}
+    headless, = [a for a in row["attempts"] if a["route"] == "headless"]
+    assert (headless["class"], headless["reason"]) == ("failed", "not_comparable")
+    assert row["reason"] != "fallback_quote_unconfirmed"
 
 
 def test_different_missing_quotes_do_not_confirm(tmp_path, monkeypatch):
@@ -837,3 +839,65 @@ def test_signal_during_browser_phase_is_resumable(tmp_path, monkeypatch):
     rows = run.rows()
     assert sorted(r["source_id"] for r in rows) == ["src0", "src1", "src2"]
     assert {(r["class"], r["route"]) for r in rows} == {("trivial", "headless")}
+
+
+def test_live_page_not_compared_is_reported_and_counted_across_runs(run):
+    """A render without a quotation's region and no other live copy: not a loss, not a pass. The capture that still
+    holds the quotation decides the class, the row names the quotation, and the report counts and marks the runs."""
+    run.responses.update(headless=page("<p>Its staff work with partners across government.</p>"), wayback=OLD)
+    for _ in range(monitor.NOT_COMPARED_MARK):
+        assert run.run("--digest") == 0
+    rows = run.rows()
+    assert [r["class"] for r in rows] == ["archived"] * monitor.NOT_COMPARED_MARK
+    assert all(len(r["live_not_compared"]) == 2 and "headless" in r["not_compared_reason"] for r in rows)
+    report = json.loads((run.report / "monitor.json").read_text())
+    entry, = report["not_compared"]
+    assert (entry["source_id"], entry["not_compared_runs"]) == ("src0", monitor.NOT_COMPARED_MARK)
+    text = (run.report / "monitor.md").read_text()
+    assert "Live page not compared: 1 sources" in text and f"**{monitor.NOT_COMPARED_MARK} runs in a row**" in text
+    assert '"founded in 2024"' in text.split("## Live page not compared")[1]
+    assert run.digests[-1]["not_compared"] == [{"source_id": "src0", "runs": monitor.NOT_COMPARED_MARK, "marked": True}]
+
+
+def test_not_compared_runs_count_back_to_a_compared_run():
+    row = lambda run_id, gap: {"run_id": run_id, "source_id": "s", **({"live_not_compared": ["q"]} if gap else {})}  # noqa: E731
+    history = [row("r1", True), row("r2", False), row("r3", True), row("r4", True), {"run_id": "r4", "source_id": "other"}]
+    assert monitor.not_compared_runs(row("r5", True), history) == 3
+    assert monitor.not_compared_runs(row("r4", True), history) == 2
+    assert monitor.not_compared_runs(row("r5", False), history) == 0
+
+
+def test_mixed_kept_lost_and_not_compared_quotes(tmp_path, monkeypatch):
+    """Both fallbacks keep one quotation, lose one in a passage they render, and lack the region of a third (their
+    render stops before the last paragraph): the loss is confirmed, the third is not compared (not listed as lost),
+    and the re-read export reads it as an access failure, not a loss."""
+    from scripts import rereads
+
+    last = "Annual reports describe completed evaluations"
+    run = Run(tmp_path, monkeypatch, excerpts=["founded in 2024", "publishes reports", last])
+    cut = OLD.replace(b"publishes reports", b"publishes papers")
+    cut = cut[:cut.index(b"<p>Annual reports")] + b"</main></body></html>"
+    run.responses.update(headless=cut, jina=cut)
+    assert run.run() == 0
+    row, = run.rows()
+    ids = {q: _qid(q) for q in ("founded in 2024", "publishes reports", last)}
+    assert (row["class"], row["reason"]) == ("substantive", "quote_lost")
+    assert row["confirmed_quote_ids"] == [ids["publishes reports"]]
+    assert row["live_not_compared"] == [ids[last]]
+    recorded = {q["id"]: q for q in row["quotes"]}
+    assert recorded[ids[last]]["comparable"] is False
+    states = {name: rereads.evidence(row, qid) for name, qid in ids.items()}
+    assert states == {"founded in 2024": "confirmed", "publishes reports": "quote_gone", last: "blocked_or_failed"}
+    text = (run.report / "monitor.md").read_text()
+    losses, rest = text.split("## Live page not compared")
+    assert last not in losses and last in rest
+
+
+def test_an_archive_through_a_fallback_route_does_not_clear_not_compared(tmp_path, monkeypatch):
+    """jina ending at a capture that holds the quotation is no live comparison: the alert stays."""
+    run = Run(tmp_path, monkeypatch)
+    run.responses.update(headless=page("<p>Its staff work with partners across government.</p>"),
+                         jina={"body": OLD, "final_url": "https://web.archive.org/web/20260102030405/" + URL})
+    assert run.run() == 0
+    row, = run.rows()
+    assert len(row["live_not_compared"]) == 2

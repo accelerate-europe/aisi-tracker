@@ -43,7 +43,7 @@ import sys
 import threading
 import time
 import uuid
-from collections import Counter, defaultdict
+from collections import Counter, defaultdict, deque
 from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
 from contextlib import contextmanager
 from datetime import UTC, date, datetime, timedelta
@@ -63,7 +63,7 @@ try:
         stored_copy,
         text_fields,
     )
-    from .verify_excerpts import EXTRACTION_VERSION, Fetcher, content_problem, extract_text, literal_match
+    from .verify_excerpts import EXTRACTION_VERSION, Fetcher, content_problem, extract_text, literal_match, normalise
     from . import rereads
     from . import published as fact_pipeline
     from .references import source_spans
@@ -80,7 +80,7 @@ except ImportError:
         stored_copy,
         text_fields,
     )
-    from verify_excerpts import EXTRACTION_VERSION, Fetcher, content_problem, extract_text, literal_match  # type: ignore[no-redef]
+    from verify_excerpts import EXTRACTION_VERSION, Fetcher, content_problem, extract_text, literal_match, normalise  # type: ignore[no-redef]
     import rereads  # type: ignore[no-redef]
     import published as fact_pipeline  # type: ignore[no-redef]
     from references import source_spans  # type: ignore[no-redef]
@@ -148,6 +148,142 @@ def text_change(old: str, new: str, width: int = SHINGLE) -> dict:
 
 def present(quote: str, views: list[str]) -> bool:
     return any(literal_match(quote, view) for view in views)
+
+
+# A fallback copy (a headless render, jina's text, a capture) is another extractor's reading of the page, so its text
+# differs from the cited copy in layout as well as content: spacing around hyphens, brackets and full stops, PDF line
+# and table breaks, Korean word spacing, list markers, cells in another reading order. The fallback compare reads both
+# copies as folded lines (verifier normalisation, list markers and table rules dropped, then no whitespace at all) and
+# finds a quotation by its pieces, cut where the cited copy breaks lines or elements, in order within a short span.
+# Between two pieces the fallback may hold only whole lines of its own that the cited copy also has near the quotation
+# (table cells read in another order), never other text, so a word inserted at a cited line break is still a change.
+# It counts a quotation as lost only when the cited text around it is in the new copy, so a render that lacks that
+# region (a paywall cut, a body-only render) is not comparable for that quotation.
+LIST_MARKER = re.compile(r"^\s*(?:[-+*•▪◦‣⁃·]|\d{1,3}[.)])\s+")
+TABLE_RULE = re.compile(r"[|│]")
+LINE_BREAK = re.compile(r"[\n\r  ]")
+CONTEXT_CHARS = 40  # folded characters of cited text on each side of a quotation that place it
+PIECE_SPAN = (3, 200)  # pieces in order within 3 x the quotation's folded length plus 200 characters
+GAP_WINDOW = 600  # folded characters of cited text on each side of the quotation where lines between pieces must occur
+
+
+def folded_lines(view: str) -> list[str]:
+    lines = (TABLE_RULE.sub(" ", LIST_MARKER.sub("", normalise(line))) for line in LINE_BREAK.split(view))
+    return [f for f in ("".join(line.split()) for line in lines) if f]
+
+
+def fold(text: str) -> str:
+    return "".join(folded_lines(text))
+
+
+def _finds(needle: str, hay: str, start: int = 0):
+    """Each index of needle in hay at or after start that does not cut a number at either edge."""
+    at = hay.find(needle, start)
+    while at >= 0:
+        end = at + len(needle)
+        if not (needle[0].isdigit() and at and hay[at - 1].isdigit()) and not (
+            needle[-1].isdigit() and end < len(hay) and hay[end].isdigit()
+        ):
+            yield at
+        at = hay.find(needle, at + 1)
+
+
+def folded_view(view: str) -> tuple[str, list[int]]:
+    """A view's folded lines joined, and the offsets where its lines start and the text ends."""
+    lines = folded_lines(view)
+    bounds, offset = [0], 0
+    for line in lines:
+        offset += len(line)
+        bounds.append(offset)
+    return "".join(lines), bounds
+
+
+def cited_placement(quote: str, views: list[str]) -> tuple[list[str], str, str, str] | None:
+    """The quotation's pieces as the cited copy breaks it, the folded cited text just before and after it, and the
+    wider folded cited text around it (GAP_WINDOW)."""
+    needle = fold(quote)
+    if not needle:
+        return None
+    for view in views:
+        hay, bounds = folded_view(view)
+        at = next(_finds(needle, hay), None)
+        if at is None:
+            continue
+        end = at + len(needle)
+        pieces = [hay[max(at, lo):min(end, hi)] for lo, hi in zip(bounds, bounds[1:]) if max(at, lo) < min(end, hi)]
+        return (pieces, hay[max(0, at - CONTEXT_CHARS):at], hay[end:end + CONTEXT_CHARS],
+                hay[max(0, at - GAP_WINDOW):end + GAP_WINDOW])
+    return None
+
+
+def _fits(piece: str, hay: str, at: int) -> bool:
+    """piece sits in hay at at, without cutting a number at either edge."""
+    end = at + len(piece)
+    return hay.startswith(piece, at) and not (piece[0].isdigit() and at and hay[at - 1].isdigit()) and not (
+        piece[-1].isdigit() and end < len(hay) and hay[end].isdigit())
+
+
+def pieces_in_order(pieces: list[str], hay: str, bounds: list[int], limit: int, window: str) -> bool:
+    """Every piece found in order, the first to the end of the last within limit characters; between two pieces either
+    nothing or whole lines of hay, each found in window.
+
+    One sweep per piece over every reachable end at once, each end keeping the latest start that reaches it (the
+    most room left within limit). A piece follows an end directly, or, when the end is a line start, at a later line
+    start with only window lines between: the ends allowed for a line start form a range that only moves forward, so
+    a sliding maximum answers each in constant time. Linear in the lines of hay per piece; nothing is cut off."""
+    line_of = {b: k for k, b in enumerate(bounds[:-1])}
+    good = [hay[a:b] in window for a, b in zip(bounds, bounds[1:])]
+    ends: dict[int, int] = {}  # end of the pieces so far -> latest first-piece start reaching it
+    for at in _finds(pieces[0], hay):
+        ends[at + len(pieces[0])] = at
+    for piece in pieces[1:]:
+        reached: dict[int, int] = {}
+
+        def reach(at: int, first: int) -> None:
+            if at + len(piece) - first <= limit and _fits(piece, hay, at):
+                reached[at + len(piece)] = max(first, reached.get(at + len(piece), first))
+
+        for end, first in ends.items():
+            reach(end, first)  # directly after
+        line_ends = sorted((line_of[end], first) for end, first in ends.items() if end in line_of)
+        queue: deque[tuple[int, int]] = deque()  # (line, first) of ends that may still open a gap, firsts decreasing
+        i, last_bad = 0, -1
+        for k in range(len(good)):
+            # Ends at lines below k can reach line k's start through lines that are all in the window.
+            while i < len(line_ends) and line_ends[i][0] < k:
+                line, first = line_ends[i]
+                while queue and queue[-1][1] <= first:
+                    queue.pop()
+                queue.append((line, first))
+                i += 1
+            while queue and queue[0][0] <= last_bad:
+                queue.popleft()  # a line outside the window lies between that end and line k
+            if queue:
+                reach(bounds[k], queue[0][1])
+            if not good[k]:
+                last_bad = k
+        ends = reached
+        if not ends:
+            return False
+    return bool(ends)
+
+
+def fallback_presence(quote: str, old_views: list[str], new_views: list[str]) -> tuple[bool, bool]:
+    """(present, comparable) for a quotation in a fallback copy, read as folded lines (see LIST_MARKER above)."""
+    if present(quote, new_views):
+        return True, True
+    placed = cited_placement(quote, old_views)
+    pieces, before, after, window = placed if placed else ([fold(quote)], "", "", "")
+    if not any(pieces):
+        return False, True
+    folded = [folded_view(view) for view in new_views]
+    limit = PIECE_SPAN[0] * sum(map(len, pieces)) + PIECE_SPAN[1]
+    if any(pieces_in_order(pieces, hay, bounds, limit, window) for hay, bounds in folded):
+        return True, True
+    if placed is None:  # not found in the cited copy's folded text: nothing places it, so the loss stands
+        return False, True
+    region = any(all(side in hay for side in (before, after) if side) for hay, _ in folded)
+    return False, region
 
 
 def label(path: list) -> str:
@@ -251,12 +387,17 @@ def compare_copy(
         new_views += [markdown_view(view) for view in new_views]
     quotes = []
     for _, excerpt, span, _ in source_spans(source, sources, bound_only=True):
-        now = present(span, new_views)
+        cited_has = present(span, old_views)
+        if route == "direct" or not cited_has:
+            now, comparable = present(span, new_views), True
+        else:
+            now, comparable = fallback_presence(span, old_views, new_views)
         quotes.append({
             "id": "sha256:" + hashlib.sha256(span.encode()).hexdigest(),
             "text": span, "supports": [label(p) for p in excerpt["supports"]],
-            "in_cited_copy": present(span, old_views),
+            "in_cited_copy": cited_has,
             "in_checked_copy": now, "in_new_copy": now,
+            **({} if comparable else {"comparable": False}),
         })
     row["quotes"] = quotes
     fields = text_fields(body, mime)
@@ -265,7 +406,7 @@ def compare_copy(
         return {**row, "class": "unchanged", "reason": "same_file"}
     if not any(view.strip() for view in new_views):
         return {**row, "class": "failed", "reason": "new copy has no readable text"}
-    lost = [q for q in quotes if q["in_cited_copy"] and not q["in_checked_copy"]]
+    lost = [q for q in quotes if q["in_cited_copy"] and not q["in_checked_copy"] and q.get("comparable", True)]
     # The text hash leaves out furniture, so quotation loss is checked first.
     if route == "direct" and not lost and fields and fields.get("text_sha256") == previous.get("text_sha256"):
         return {**row, "class": "unchanged", "reason": "same_text"}
@@ -296,6 +437,9 @@ def compare_copy(
                 return {**row, "class": "failed", "reason": "not_comparable"}
             if lost:
                 return {**row, "class": "failed", "reason": "fallback_quote_unconfirmed"}
+            if any(not q.get("comparable", True) for q in carried):
+                # The render lacks the region of a quotation: kept quotations count, the rest are not compared.
+                return {**row, "class": "failed", "reason": "not_comparable"}
             return {**row, "class": "trivial", "reason": "quotes_kept"}
         if change.get("old_words", 0) and change["kept_run"] >= min(KEPT_RUN, change["old_words"] / 2):
             return {**row, "class": "trivial", "reason": "small_change"}
@@ -548,7 +692,7 @@ class CheckLog:
             "http": result.get("http"), "final_url": result.get("final_url"),
             "file_sha256": result.get("file_sha256"), "text_sha256": result.get("text_sha256"),
             "text_scheme": result.get("text_scheme"), "response": None,
-            "quotes": [{k: q[k] for k in ("id", "in_cited_copy", "in_checked_copy")}
+            "quotes": [{k: q[k] for k in ("id", "in_cited_copy", "in_checked_copy", "comparable") if k in q}
                        for q in result.get("quotes", [])],
             "class": result["class"], "reason": result["reason"],
             "verifier": {"monitor": MONITOR_VERSION, "extraction": EXTRACTION_VERSION, "text_scheme": TEXT_SCHEME},
@@ -557,6 +701,9 @@ class CheckLog:
             row["capture"] = result.get("capture")
         if "confirmed_quote_ids" in result:
             row["confirmed_quote_ids"] = result["confirmed_quote_ids"]
+        if result.get("live_not_compared"):
+            row["live_not_compared"] = result["live_not_compared"]
+            row["not_compared_reason"] = result["not_compared_reason"]
         with file_lock(self.directory / "checks.lock"):
             if any(r["run_id"] == run_id and r["source_id"] == source["id"]
                    for r in read_lines(self.directory / "checks.jsonl")):
@@ -604,7 +751,8 @@ def attempt(result: dict) -> dict:
 def lost_quotes(result: dict) -> set[str]:
     if result["reason"] != "fallback_quote_unconfirmed":
         return set()
-    return {q["id"] for q in result.get("quotes", []) if q["in_cited_copy"] and not q["in_checked_copy"]}
+    return {q["id"] for q in result.get("quotes", [])
+            if q["in_cited_copy"] and not q["in_checked_copy"] and q.get("comparable", True)}
 
 
 def source_failure(source: dict, route: str, exc: Exception, attempts: list[dict] | None = None) -> dict:
@@ -656,8 +804,20 @@ def finish_routes(source: dict, cited: tuple[dict, Path], direct: dict, headless
     except Exception as exc:  # noqa: BLE001 - source-specific failures do not stop other sources
         return source_failure(source, "jina", exc, attempts)
     attempts.append(attempt(rendered))
+    # Quotations no live route compared: a render lacked their region, and no other live copy kept or lost them.
+    # A capture can only say the cited copy still holds them, so the row names them (not_compared_runs in the report).
+    # Only live observations count: a fallback that ended at an archive capture compares nothing on the live page.
+    live = [r for r in (headless, rendered) if r.get("observation") == "live"]
+    flagged = {q["id"] for r in live for q in r.get("quotes", []) if q.get("comparable") is False}
+    settled = {q["id"] for r in live for q in r.get("quotes", []) if q["in_checked_copy"]}
+    gap = sorted(flagged - settled - set().union(*(lost_quotes(r) for r in live)))
+    if gap:
+        routes = [r["route"] for r in live if any(q.get("comparable") is False for q in r.get("quotes", []))]
+        note = {"live_not_compared": gap, "not_compared_reason": f"the live render lacks the quotation's region ({', '.join(routes)})"}
+    else:
+        note = {}
     if rendered["class"] == "trivial" and not lost_quotes(headless):
-        return {**rendered, "attempts": attempts}
+        return {**rendered, "attempts": attempts, **note}
     confirmed = lost_quotes(headless) & lost_quotes(rendered)
     # Every quotation either comparable fallback missed stays in the row: confirmed when both missed it,
     # otherwise reported as unconfirmed.
@@ -672,21 +832,21 @@ def finish_routes(source: dict, cited: tuple[dict, Path], direct: dict, headless
     if confirmed:
         return {**with_missing(rendered), "class": "substantive", "reason": "quote_lost",
                 "route": "headless+jina", "attempts": attempts,
-                "confirmed_quote_ids": sorted(confirmed)}
+                "confirmed_quote_ids": sorted(confirmed), **note}
     try:
         archived = wayback(source, cited, archive, sources)
     except Exception as exc:  # noqa: BLE001 - keep the failed route and continue with the next source
-        return source_failure(source, "wayback", exc, attempts)
+        return {**source_failure(source, "wayback", exc, attempts), **note}
     attempts.append(attempt(archived))
     # A live page missing a quotation outranks an older capture that still has it: the loss stays visible,
     # with the capture among the attempts.
     for result in (rendered, headless):
         if lost_quotes(result):
             return {**with_missing(result), "class": "failed", "reason": "fallback_quote_unconfirmed",
-                    "attempts": attempts}
+                    "attempts": attempts, **note}
     if archived["class"] == "archived":
-        return {**archived, "attempts": attempts}
-    return {**direct, "attempts": attempts}
+        return {**archived, "attempts": attempts, **note}
+    return {**direct, "attempts": attempts, **note}
 
 
 def direct_results(selected: list[dict], fetcher: Fetcher, directory: Path, fallback: Path, workers: int, control: RunControl, sources=()):
@@ -777,14 +937,33 @@ def markdown(report: dict, sources: dict[str, dict], cites: dict[str, list[str]]
         "| --- | --- |",
         *(f"| {k} | {counts.get(k, 0)} |" for k in CLASSES),
         "",
+        f"Live page not compared: {len(report.get('not_compared', []))} sources (see below; neither a loss nor a pass).",
+        "",
     ]
+
+    def quote_lines(src: dict, qids) -> list[str]:
+        # Each span hash to every excerpt that carries it, as its quotation or as one of its anchors: a shared
+        # span is reported once per owner, with its role in that excerpt.
+        # The span's text comes from the dataset: check-log rows carry quote ids only.
+        owners: dict[str, list[tuple[dict, dict, str | None]]] = defaultdict(list)
+        for owner, e, span, is_anchor in source_spans(src, sources.values()):
+            owners["sha256:" + hashlib.sha256(span.encode()).hexdigest()].append((owner, e, span if is_anchor else None))
+        lines = []
+        for qid in dict.fromkeys(qids):
+            for owner, excerpt, anchor in owners[qid]:
+                text = f"anchor \"{anchor[:200]}\" of \"{excerpt['text'][:120]}\"" if anchor else f"\"{excerpt['text'][:200]}\""
+                if owner["id"] != src["id"]:
+                    text += f" from source `{owner['id']}` ({owner['title']})"
+                lines.append(f"    - {text} supports {'; '.join(label(p) for p in excerpt['supports'])}")
+        return lines
+
     for confirmed, heading in ((True, "Quotations no longer present"), (False, "Unconfirmed quotation losses")):
         out += [f"## {heading}", ""]
         found = False
         for r in rows:
             if r["reason"] not in {"quote_lost", "fallback_quote_unconfirmed"}:
                 continue
-            quotes = [q for q in r["quotes"] if q["in_cited_copy"] and not q["in_checked_copy"] and (
+            quotes = [q for q in r["quotes"] if q["in_cited_copy"] and not q["in_checked_copy"] and q.get("comparable", True) and (
                 (r["route"] == "direct" or q["id"] in r.get("confirmed_quote_ids", [])) == confirmed
             )]
             if not quotes:
@@ -792,21 +971,25 @@ def markdown(report: dict, sources: dict[str, dict], cites: dict[str, list[str]]
             found = True
             src = sources[r["source_id"]]
             out.append(f"- [{src['title']}]({r['url']}) (`{r['source_id']}`, {r['route']})")
-            # Each span hash to every excerpt that carries it, as its quotation or as one of its anchors: a shared
-            # span is reported once per owner, with its role in that excerpt.
-            # The span's text comes from the dataset: check-log rows carry quote ids only.
-            owners: dict[str, list[tuple[dict, dict, str | None]]] = defaultdict(list)
-            for owner, e, span, is_anchor in source_spans(src, sources.values()):
-                owners["sha256:" + hashlib.sha256(span.encode()).hexdigest()].append((owner, e, span if is_anchor else None))
-            for qid in dict.fromkeys(q["id"] for q in quotes):
-                for owner, excerpt, anchor in owners[qid]:
-                    lost = f"anchor \"{anchor[:200]}\" of \"{excerpt['text'][:120]}\"" if anchor else f"\"{excerpt['text'][:200]}\""
-                    if owner["id"] != src["id"]:
-                        lost += f" from source `{owner['id']}` ({owner['title']})"
-                    out.append(f"    - {lost} supports {'; '.join(label(p) for p in excerpt['supports'])}")
+            out += quote_lines(src, (q["id"] for q in quotes))
         if not found:
             out.append("None.")
         out.append("")
+    gaps = [r for r in rows if r.get("live_not_compared")]
+    out += [
+        f"## Live page not compared ({len(gaps)})", "",
+        "No live route reached a copy with these quotations' region, so the live page was not compared for them. "
+        "A capture or the cited copy still holding them says nothing about the live page. "
+        f"Marked when {NOT_COMPARED_MARK} or more runs in a row could not compare them.", "",
+    ]
+    for r in gaps:
+        src = sources[r["source_id"]]
+        runs = r.get("not_compared_runs", 1)
+        mark = f" **{runs} runs in a row**" if runs >= NOT_COMPARED_MARK else f" ({runs} run{'s' if runs > 1 else ''} in a row)"
+        out.append(f"- [{src['title']}]({r['url']}) (`{r['source_id']}`): {r['not_compared_reason']}; now {r['class']} / {r['reason']}.{mark}")
+        out += quote_lines(src, r["live_not_compared"])
+    if not gaps:
+        out.append("None.")
     out += ["", "## Page text changed (no quotation lost)", ""]
     changed = [r for r in rows if r.get("reason") == "text_changed"]
     if not changed:
@@ -957,14 +1140,38 @@ def statistics(rows: list[dict]) -> dict:
     }
 
 
-def build_report(args, data: dict, start: dict, rows: list[dict], seconds: float, error: str | None, interrupted: bool) -> dict:
+NOT_COMPARED_MARK = 3  # consecutive runs with a quotation no live route compared, before the report marks the source
+
+
+def not_compared_runs(row: dict, history: list[dict]) -> int:
+    """Consecutive runs that checked the source, ending with this row's run, whose row names live_not_compared."""
+    if not row.get("live_not_compared"):
+        return 0
+    runs = {r["run_id"]: r for r in history if r["source_id"] == row["source_id"]}
+    runs[row["run_id"]] = row
+    order = list(dict.fromkeys(r["run_id"] for r in history if r["source_id"] == row["source_id"]))
+    order = order if row["run_id"] in order else [*order, row["run_id"]]
+    count = 0
+    for run_id in reversed(order[: order.index(row["run_id"]) + 1]):
+        if not runs[run_id].get("live_not_compared"):
+            break
+        count += 1
+    return count
+
+
+def build_report(args, data: dict, start: dict, rows: list[dict], seconds: float, error: str | None, interrupted: bool,
+                 history: list[dict] = ()) -> dict:
+    """history: every check-log row (all runs), from which a source's run of not-compared checks is counted."""
     rows = sorted(rows, key=lambda r: (CLASSES.index(r["class"]), r["source_id"]))
+    rows = [{**r, "not_compared_runs": not_compared_runs(r, history)} if r.get("live_not_compared") else r for r in rows]
     return {
         "run_id": start["run_id"], "started": start["time"], "seconds": seconds,
         "dataset_revision": start["dataset_revision"], "dataset_version": start["dataset_revision"]["version"],
         "thresholds": {"shingle": SHINGLE, "kept_run": KEPT_RUN, "shell_chars": SHELL_CHARS},
         **statistics(rows),
         "reasons": dict(Counter(f"{r['class']}/{r['reason']}" for r in rows)),
+        "not_compared": [{k: r[k] for k in ("source_id", "live_not_compared", "not_compared_reason", "not_compared_runs")}
+                         for r in rows if r.get("live_not_compared")],
         "sources": rows, "unreached": [r for r in rows if r["class"] != "skipped" and (
             r["observation"] != "live" or r["class"] in {"blocked", "failed"}
         )],
@@ -982,6 +1189,8 @@ def digest_summary(report: dict, path: Path) -> dict:
         "substantive": entries(lambda r: r["class"] == "substantive"),
         "gone": entries(lambda r: r["class"] == "gone"),
         "unconfirmed": entries(lambda r: r["reason"] in {"fallback_quote_unconfirmed", "archive_quote_missing"}),
+        "not_compared": [{"source_id": r["source_id"], "runs": r["not_compared_runs"], "marked": r["not_compared_runs"] >= NOT_COMPARED_MARK}
+                         for r in report.get("not_compared", [])],
         "next_checks_due": [r["id"] for r in report["next_checks"] if r["due"]], "report": str(path),
         "reread_alerts": report.get("reread_alerts", []),
     }
@@ -1099,7 +1308,7 @@ def run_monitor(args) -> int:
                 error = str(exc) or type(exc).__name__
                 log.event(run_id, "interrupted", error=error)
                 rows = log.rows(run_id, sources, args.directory, ROOT / "work/snapshots")
-            report = build_report(args, data, start, rows, time.monotonic() - clock, error, interrupted)
+            report = build_report(args, data, start, rows, time.monotonic() - clock, error, interrupted, log.read("checks"))
             try:
                 report["reread_alerts"] = reread_alerts(data, log.read("checks"), args.today.isoformat())
             except (KeyError, ValueError, TypeError, IndexError, ArithmeticError) as exc:

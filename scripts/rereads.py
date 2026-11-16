@@ -67,6 +67,9 @@ def evidence(row: dict, qid: str, own_archive: bool = False) -> str | None:
     if quote and not quote["in_cited_copy"] and not quote["in_checked_copy"]:
         # Carried by neither copy: the monitor cannot compare this quote, whatever the row's class.
         return None
+    if quote and quote.get("comparable") is False:
+        # A fallback render lacked the quote's region: the live page was not compared for it, an access failure.
+        return "blocked_or_failed"
     lost = bool(quote and quote["in_cited_copy"] and not quote["in_checked_copy"])
     # Only a live re-read confirms or loses a quote; an archive observation is at most an access failure.
     live = row["route"] in LIVE_ROUTES and (row.get("observation") == "live" or own_archive)

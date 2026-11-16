@@ -79,6 +79,11 @@ def build(summary: dict) -> tuple[str, str]:
     ]
     shown = [min(8, len(rows)) for _, rows in groups]
     tail = []
+    # Quotations no live route compared: neither a loss nor a pass; the monitor marks a run of them.
+    gaps = summary.get("not_compared", [])
+    if gaps:
+        long = sorted(f"{g['source_id']} ({g['runs']} runs)" for g in gaps if g["marked"])
+        tail.append(f"Live page not compared: {len(gaps)}" + (f"; marked: {', '.join(long[:5])}" if long else ""))
     # Maintenance alerts from the re-read states (scripts/rereads.py): the count and the first three, shortened.
     alerts = summary.get("reread_alerts", [])
     if alerts:
