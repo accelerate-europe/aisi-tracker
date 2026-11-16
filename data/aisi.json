@@ -8268,6 +8268,17 @@
           "source_ids": [
             "cy-r6-presidency-strategy-consultation"
           ]
+        },
+        {
+          "id": "claims-fa1d9dac397647c0917c9d61ed680b2a",
+          "kind": "function",
+          "code": "regulatory_enforcement",
+          "basis": "mandate",
+          "body_id": "related_bodies-1c98c0ca4a4a5b12838d9260989c588b",
+          "text": "The deputy ministry says the Commissioner for Personal Data Protection is responsible for enforcing the Article 5 prohibitions on AI practices insofar as they fall within her domain of competence.",
+          "source_ids": [
+            "cy-dmrid-authority-designation-2025"
+          ]
         }
       ]
     },
@@ -35751,6 +35762,16 @@
           "source_ids": [
             "us-caissi"
           ]
+        },
+        {
+          "id": "claims-52fea9c569ee4ecba000001c0663f787",
+          "kind": "function",
+          "code": "capacity_building",
+          "basis": "mandate",
+          "text": "NIST says America’s AI Action Plan charges CAISI (now CAISSI) with publishing guidelines and resources for federal agencies to conduct their own evaluations of AI systems.",
+          "source_ids": [
+            "depth-us-gsa"
+          ]
         }
       ]
     },
@@ -38750,6 +38771,16 @@
           "text": "The ministry says cases reported by the AI Safety Guardians undergo validity checks and confirmed cases are to be used as basic material for AI safety evaluation and risk research, among other uses.",
           "source_ids": [
             "kr-ai-safety-guardians-2026"
+          ]
+        },
+        {
+          "id": "claims-da45a9cb1e9c41589d1e1eea35d2be32",
+          "kind": "function",
+          "code": "evaluation_methods",
+          "basis": "mandate",
+          "text": "The Ministry of Science and ICT says AISI and OpenAI agreed to cooperate by exchanging technical information to develop an evaluation framework reflecting the Korean language and Korea’s social context.",
+          "source_ids": [
+            "kr-msit-openai-2026"
           ]
         }
       ]
@@ -64395,6 +64426,23 @@
             ]
           ],
           "accessed": "2026-10-17"
+        },
+        {
+          "text": "Through this MOU, AISI and OpenAI agreed to continuously cooperate by sharing knowledge and best practices on safety evaluation methodologies and benchmarks for each high-risk area, exchanging technical information to develop an evaluation framework reflecting the Korean language and Korea’s social context, and establishing internationally applicable AI safety evaluation standards.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-da45a9cb1e9c41589d1e1eea35d2be32"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "KR",
@@ -77674,6 +77722,23 @@
             ]
           ],
           "accessed": "2026-10-20"
+        },
+        {
+          "text": "Building on CAISI’s ongoing work with leading AI companies and with other government partners, this collaboration advances America’s AI Action Plan, which charges CAISI with supporting “the development of the science of measuring and evaluating AI models” and publishing guidelines and resources for “federal agencies to conduct their own evaluations of AI systems.”",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "claims",
+              {
+                "id": "claims-52fea9c569ee4ecba000001c0663f787"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ]
     },
@@ -86905,6 +86970,24 @@
               "kind": "heading"
             }
           ]
+        },
+        {
+          "text": "The Commissioner for Personal Data Protection has been designated as: \n    *   Market Surveillance Authority (MSA) for high-risk AI systems referred to in points 1, 6, 7, and 8 of Annex III of the AI Act. Additionally responsible for the enforcement of prohibited AI practices under Article 5, insofar as they fall within her domain of competence.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "CY"
+              },
+              "claims",
+              {
+                "id": "claims-fa1d9dac397647c0917c9d61ed680b2a"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17",
+          "url": "https://r.jina.ai/https://www.gov.cy/dmrid/en/uncategorized/regulation-eu-2024-1689-establishing-harmonised-rules-on-artificial-intelligence-ai-act/"
         }
       ],
       "origin": "CY",
