@@ -7,6 +7,7 @@ import hashlib
 import json
 import os
 import re
+import time
 import unicodedata
 import uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -741,6 +742,26 @@ def preserved_original(
     return None
 
 
+def live_failed(source: dict, fetcher) -> bool:
+    """The live request gives no valid copy (the cases --headless renders before processing). A malformed cache or
+    source is left to processing, which reports it for that source (process_source_safe)."""
+    try:
+        return valid_response(fetcher, normalise_method(fetcher.fetch(source["url"], "live"), "live"))[0] is None
+    except (OSError, ValueError, TypeError, KeyError):
+        return False
+
+
+def render_headless(urls: list[str], out: Path, timeout: float) -> tuple[bool, int | None]:
+    """One headless Chromium batch inside the shared browser lock (the monitor's browser helper), from the main
+    thread (the lock's signal handlers need it). Results land in out keyed like the cache."""
+    try:
+        from .monitor_sources import run_browser
+    except ImportError:
+        from monitor_sources import run_browser  # type: ignore[no-redef]  # Direct script entry point.
+    return run_browser(urls, out, wait=1800, deadline=time.monotonic() + 1800 + (4 * timeout + 5) * len(urls),
+                       delay=2.0, timeout=timeout)
+
+
 def process_source(
     source: dict,
     fetcher,
@@ -748,10 +769,17 @@ def process_source(
     fallback: Path,
     lookup_archives: bool = False,
     sources=(),
+    headless: Path | None = None,
 ) -> dict:
-    """Return only proposed public metadata; keep private paths in the private manifest."""
+    """Return only proposed public metadata; keep private paths in the private manifest.
+
+    headless: the folder of headless renders (render_headless). When the live request gives no valid copy, a valid
+    render there that carries the source's identity is a live copy (method headless) and is preferred to an archive
+    capture, so a changed live page can become the cited copy where plain requests fail.
+    """
     attempts, archives = [], []
     chosen = None
+    chosen_fetcher = fetcher  # where the chosen copy's bytes are read: the cache, or the headless renders
     live = normalise_method(fetcher.fetch(source["url"], "live"), "live")
     live_body, problem = valid_response(fetcher, live)
     if (
@@ -768,6 +796,17 @@ def process_source(
     attempts.append({"url": source["url"], "status": problem or "ok"})
     if problem is None and live_body is not None:
         chosen = prefer_rendered_html(source, fetcher, live, live_body, attempts)
+    elif headless is not None:
+        rendered_by = Fetcher(headless, offline=True)
+        meta = normalise_method(rendered_by.fetch(source["url"], "headless"), "headless")
+        body, problem = valid_response(rendered_by, meta)
+        if body is not None and not any(
+            identity_matches(source, text) for _, text in identity_views(rendered_by, meta, body)
+        ):
+            body, problem = None, "identity_not_verified"
+        attempts.append({"url": source["url"], "route": "headless", "status": problem or "ok"})
+        if body is not None:
+            chosen, chosen_fetcher = meta, rendered_by
     verified_archive = None
     declared_mirror = None
     rejected_archive = None
@@ -869,7 +908,7 @@ def process_source(
                 "reason": "existing_original_preserved",
                 "fallback_used": False,
             }
-    body, problem = valid_response(fetcher, chosen)
+    body, problem = valid_response(chosen_fetcher, chosen)
     if body is None:
         return {
             **row,
@@ -900,7 +939,7 @@ def process_source(
             new_views = copy_views(
                 body,
                 chosen.get("content_type", ""),
-                fetcher.entry(chosen["url"]) / "response.bin",
+                chosen_fetcher.entry(chosen["url"]) / "response.bin",
             )
             old_views = copy_views(held[1].read_bytes(), held[0].get("mime", ""), held[1])
             in_new = [any(literal_match(q, v) for v in new_views) for q in quotes]
@@ -963,10 +1002,11 @@ def process_source_safe(
     fallback: Path,
     lookup_archives: bool = False,
     sources=(),
+    headless: Path | None = None,
 ) -> dict:
     """Isolate malformed source/cache metadata without interrupting other results."""
     try:
-        return process_source(source, fetcher, directory, fallback, lookup_archives, sources)
+        return process_source(source, fetcher, directory, fallback, lookup_archives, sources, headless)
     except (OSError, ValueError, TypeError, KeyError) as exc:
         return {
             "source_id": source.get("id", "unknown"),
@@ -1014,6 +1054,14 @@ def main() -> None:
         action="store_true",
         help="recompute text hashes from the stored copies the published hashes name; never fetches",
     )
+    parser.add_argument(
+        "--headless",
+        action="store_true",
+        help="when the live request gives no valid copy, render the page in headless Chromium (shared browser lock) "
+        "and prefer a valid render to an archive capture; renders are kept in CACHE/headless",
+    )
+    parser.add_argument("--headless-timeout", type=float, default=60, help="seconds per headless page or download")
+    parser.add_argument("--only", action="append", metavar="SOURCE_ID", help="process only these sources (repeatable)")
     parser.add_argument("--workers", type=int, default=4)
     parser.add_argument("--timeout", type=float, default=18)
     parser.add_argument(
@@ -1044,7 +1092,12 @@ def main() -> None:
             counts[key] = counts.get(key, 0) + 1
         print(json.dumps(counts, sort_keys=True))
         return
+    if args.headless and args.offline:
+        parser.error("--headless renders pages, so it cannot run --offline")
     fetcher = Fetcher(args.cache, offline=args.offline, timeout=args.timeout)
+    selected = [s for s in data["sources"] if not args.only or s["id"] in args.only]
+    if args.only and len(selected) != len(set(args.only)):
+        parser.error(f"unknown source IDs: {sorted(set(args.only) - {s['id'] for s in selected})}")
     results = []
 
     def process(source):
@@ -1055,10 +1108,21 @@ def main() -> None:
             ROOT / "work/snapshots",
             args.lookup_archives,
             data["sources"],
+            renders,
         )
 
+    # This run's renders only, in a folder of their own: a failed batch never lets an earlier render be read.
+    renders = args.cache / "headless" / (time.strftime("%Y%m%dT%H%M%SZ-", time.gmtime()) + uuid.uuid4().hex[:6]) if args.headless else None
+    if args.headless:
+        # Render every source whose live request fails, in one browser batch from this thread, before processing.
+        with ThreadPoolExecutor(max_workers=max(1, args.workers)) as pool:
+            failing = [s["url"] for s, failed in zip(selected, pool.map(lambda s: live_failed(s, fetcher), selected)) if failed]
+        if failing:
+            acquired, code = render_headless(list(dict.fromkeys(failing)), renders, args.headless_timeout)
+            print(f"headless renders: {len(failing)}" + ("" if acquired and code == 0 else f", not rendered (browser {'busy' if not acquired else f'helper exit {code}'})"), flush=True)
+
     with ThreadPoolExecutor(max_workers=max(1, args.workers)) as pool:
-        pending = {pool.submit(process, source): source for source in data["sources"]}
+        pending = {pool.submit(process, source): source for source in selected}
         for future in as_completed(pending):
             source = pending[future]
             result = future.result()
@@ -1066,8 +1130,9 @@ def main() -> None:
             if args.apply:
                 apply_result(source, result)
             print(
-                f"{len(results)}/{len(data['sources'])} {source['id']}: {result['status']}"
+                f"{len(results)}/{len(selected)} {source['id']}: {result['status']}"
                 + (f" ({result['change']})" if result.get("change") else "")
+                + (f" via {result['method']}" if result.get("method") else "")
                 + (
                     " (permission fallback: work/snapshots)"
                     if result.get("fallback_used")
