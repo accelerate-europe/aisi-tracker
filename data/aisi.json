@@ -8791,7 +8791,6 @@
       "kind": "state",
       "europe_scope": false,
       "institute_id": "jp-aisi",
-      "summary": "Japan AISI sits inside IPA, the national IT and cyber agency.",
       "next_check": {
         "date": "2027-04-16",
         "reason": "Routine full re-check of an institute record, every six months."
@@ -8903,7 +8902,6 @@
       "kind": "state",
       "europe_scope": false,
       "institute_id": "kr-aisi",
-      "summary": "Korea AISI sits inside ETRI, a state research institute.",
       "next_check": {
         "date": "2027-04-16",
         "reason": "Routine full re-check of an institute record, every six months."
@@ -36436,7 +36434,6 @@
           "annual_basis": "Nominal FY2024 supplementary amount. This is one-off supplementary funding attributed to that fiscal year, not a recurring allocation or expenditure in that year; no annual disbursement profile was retrieved.",
           "id": "funding-8f4ea7ceaf9d5be69600d6df1c6fa215",
           "coverage": "whole_institute",
-          "notes": "The Cabinet Office comparison lists this amount in Japan AISI's budget cell, so it is treated as the institute's own allocation. It is not recurring annual spending.",
           "annual_period": {
             "start": "2024-04-01",
             "end": "2025-03-31"
@@ -36460,7 +36457,7 @@
           "annual_basis": "Nominal FY2025 supplementary amount. This is one-off supplementary funding attributed to that fiscal year, not a recurring allocation or expenditure in that year; no annual disbursement profile was retrieved.",
           "id": "funding-7d0b36a48cc65315865a6d6ec83ddeb6",
           "coverage": "whole_institute",
-          "notes": "Stated purposes include AI evaluation methods, dedicated testbeds and compute. Includes work commissioned to AIST on safety research, guidelines and international standardisation for robots working with people, not model evaluation. The Cabinet Office assigns the full package to strengthening AISI and says AISI itself develops evaluation tools. The AIST commission is listed within that package, so the total is treated as AISI's own funding, not a separate host programme or recurring annual spending. The source does not identify the appropriation recipient for every part.",
+          "notes": "The Cabinet Office draft gives AI evaluation methods, dedicated testbeds and compute among the purposes. It also lists work commissioned to AIST on safety research for robots that work alongside people, guidelines and study towards international standardisation.",
           "annual_period": {
             "start": "2025-04-01",
             "end": "2026-03-31"
@@ -36473,7 +36470,7 @@
           "total_qualifier": "exact",
           "target": 60,
           "as_of": "2026-04",
-          "description": "The 7 April 2026 Cabinet Office document's comparison table gives 31 including concurrent appointments from IPA and RIKEN. The target of 60 is from a governing-party (LDP) recommendation of 19 December 2025 that the document reproduces, which asks to expand urgently from the then current 30; a separate government plan has ministries second staff from April to around July 2026. The prime minister's instruction of 19 December 2025 aims for 200, with no target date stated. The count is the one the document gives as current in April 2026, its publication month; it states no separate headcount date.",
+          "description": "The Cabinet Office comparison gives 31 staff, including concurrent appointments from IPA and RIKEN. The document also gives the Prime Minister's instruction of 19 December 2025 to aim for a team of 200 comparable with the UK.",
           "source_ids": [
             "jp-cao-2604"
           ],
@@ -36484,7 +36481,7 @@
           "total": 30,
           "total_qualifier": "at_least",
           "as_of": "2026-01",
-          "description": "Just over 30 staff including concurrent appointments within IPA, of whom 20 are dedicated staff. The lower-bound total is not a dedicated-only count.",
+          "description": "The Cabinet Office reports 20 dedicated staff and just over 30 including concurrent appointments within IPA, moving towards a team of 60.",
           "source_ids": [
             "jp-cao-2601"
           ],
@@ -36597,7 +36594,26 @@
             "certification",
             "sandbox"
           ]
-        }
+        },
+        "log": [
+          {
+            "date": "2026-10-24",
+            "text": "Read the Cabinet Office staffing PDFs and compared the April table with the governing-party recommendation of 19 December 2025."
+          },
+          {
+            "date": "2026-10-19",
+            "text": "Searched in Japanese and English for the National Cybersecurity Office (NCO) and JPCERT/CC and their relations with AISI; read AISI's home, About and partnership pages, the partnership agreement, the Japanese and English decks, and NCO's home, About, overview and organisation pages.",
+            "row": "national_partners"
+          },
+          {
+            "date": "2026-10-24",
+            "text": "Read the institute's evaluation note, the April Cabinet Office draft, the July AI Basic Plan and the joint testing reports for testing by the institute."
+          },
+          {
+            "date": "2026-10-21",
+            "text": "Searched for legal powers and agreements providing access to or evaluation of frontier developers' models; read the developer memoranda, Anthropic's statement and the AI Promotion Act for access terms."
+          }
+        ]
       },
       "source_ids": [
         "jp-cao-2604",
@@ -37403,7 +37419,6 @@
           }
         }
       ],
-      "notes": "Historical staffing figures were checked against the underlying Cabinet Office PDFs. The April comparison table gives 31; the governing-party (LDP) recommendation of 19 December 2025 that the same document reproduces gives 30; their different wording is retained rather than silently reconciled.",
       "head": {
         "state": "stated",
         "person_id": "people-b2221cf0153f51bbb54c609c96e106c6",
@@ -37473,16 +37488,16 @@
               "jp-aisi-deck-jp"
             ]
           }
-        ],
-        "notes": "Cyber agency searched: NCO (National Cybersecurity Office, 国家サイバー統括室), 2026-10-19 (ja, en); none found. NCO is listed among the relevant ministries and agencies in the J-AISI structure (deck, JP and EN) with no task assigned with the institute, so it is not an entry; the same applies to the other listed ministries and agencies. Fetches: aisi.go.jp top, about, partnership page + agreement PDF, JP and EN decks, cyber.go.jp top/about/overview/organize. No bilateral AISI-NCO instrument or joint output found; JPCERT/CC (roster suggestion) not found in any fetched AISI document. Deck footnote on the structure slide reads \"＊2025年4月時点\" (as of April 2025), so the member list may be older than the July 2026 deck date."
+        ]
       },
       "testing_capacity": {
-        "notes": "The institute's evaluation note of 2 October 2026 reports its own cyber capability evaluation of Claude Opus 4.8, carried out in June 2026. An older Cabinet Office draft of 7 April 2026 said: '主要国AISIのように、技術評価のR＆Dリソース・体制が十分になく、自らAI評価ツールを作ったり、評価することができていない。' (unlike major countries' institutes, it lacks sufficient R&D resources and structures for technical evaluation, and has not been able to build AI evaluation tools or carry out evaluations itself) and '現在は、パートナー協定を結んでいる国研（NICT、産総研、NII、理研、IPA等）の成果を活用するのみ。最近、民間企業への外注を開始。' (at present it only uses the outputs of the national research institutes with which it has partnership agreements, such as NICT, AIST, NII, RIKEN and IPA, and it recently began outsourcing to private companies); the newer statement decides. The Cabinet-decided AI Basic Plan of July 2026 sets out a stronger evaluation role. Joint network testing reported, 2025-06-26 (multilingual exercise: 'Australia and Japan also ran independent tests in Mandarin Chinese and Japanese') and 2025-07-17 (agentic exercise).",
+        "notes": "The institute says it evaluated the cyber capabilities of Anthropic's Claude Opus 4.8.",
         "source_ids": [
           "jp-ai-basic-plan-2026",
           "jp-cao-2604",
           "network-multilingual-2025",
-          "catalogue-agentic-report"
+          "catalogue-agentic-report",
+          "jp-aisi-note-exploitbench-2026"
         ],
         "modes": [
           {
@@ -37494,13 +37509,14 @@
         ]
       },
       "model_access": {
-        "notes": "The June 2026 evaluation of Claude Opus 4.8 ran with the real-time cyber safeguards normally applied in deployment removed; the note does not say how that access was provided. No legal power, and no agreement providing for access to or evaluation of a frontier developer's models, was found. Agreements with such developers provide for neither access to nor evaluation of their models: the Anthropic memorandum of cooperation (29 October 2025) is 'an agreement to conduct the exchange of information and best practices on methods for companies to evaluate capabilities, limitations, and risks of AI models', and the OpenAI memorandum (29 May 2026) only explores cooperation on safety evaluation and benchmarks. Anthropic's announcement of 31 March 2026 refers to 'the arrangements we have with safety institutes in the US, UK, and Japan, where early access and technical information sharing has helped governments', which is undated and names no model. The AI Promotion Act (Act No. 53 of 2025) does not mention the institute. The report of 30 October 2026 says GLM-5.3, GLM-5.2 and Claude Opus 4.8 were used via API; it describes no access beyond that, so it is not counted as an access event.",
+        "notes": "The institute says its evaluation of Claude Opus 4.8 used the model with the real-time cyber safeguards normally applied during deployment disabled. Its comparison report says all three models were used through APIs and evaluated on the same 41 ExploitBench tasks.",
         "source_ids": [
           "jp-anthropic-moc-2025",
           "jp-openai-moc-2026",
           "au-anthropic-news-2026",
           "jp-ai-promotion-act",
-          "jp-aisi-note-glm-pdf-2026"
+          "jp-aisi-note-glm-pdf-2026",
+          "jp-aisi-note-exploitbench-2026"
         ],
         "searches": [
           {
@@ -37754,7 +37770,7 @@
           "amount": 8900000000,
           "currency": "KRW",
           "period": "2026",
-          "description": "KRW 8.9bn non-R&D component in 2026, reported by domestic press from parliamentary data; excludes R&D and is not the whole institute-related budget.",
+          "description": "Aju News reports a non-R&D budget of KRW 8.9 billion.",
           "source_ids": [
             "kr-national-finance-act",
             "kr-zdnet",
@@ -37762,7 +37778,6 @@
           ],
           "confidence": "low",
           "figure_source": "press_report",
-          "notes": "Figure from a lawmaker's office, reported in the press. The stated-currency annual amount is one component, not a comparable whole institute-related budget.",
           "funding_source": "national_government",
           "annual_amount": 8900000000,
           "annual_basis": "2026 non-R&D component reported in domestic press from lawmaker/MSIT material; excludes the separately reported R&D component. This amount alone is not the whole institute-related budget. It is not expenditure.",
@@ -37792,7 +37807,7 @@
           "annual_basis": "2026 nominal total of ministry AI safety and trust items, classified by the ministry using a lawmaker's criteria and reported by Digital Daily. This is broader than the institute, is press-sourced and is not expenditure.",
           "id": "funding-0c50c85a75475b80a745207537a2bd0b",
           "coverage": "not_institute_specific",
-          "notes": "The newspaper reports that the ministry classified detailed programmes using functional criteria from the lawmaker's office. The category includes evaluation, red-teaming, deepfake response, ethics and impact assessment. It does not identify this total as the institute's allocation."
+          "notes": "Digital Daily says the ministry classified detailed programmes using functional criteria prepared by a lawmaker's office. The 'safety and trust' category includes AI safety evaluation and verification, red-teaming, deepfake response, ethics and impact assessment."
         },
         {
           "kind": "annual",
@@ -37803,12 +37818,11 @@
           "confidence": "low",
           "figure_source": "press_report",
           "funding_source": "national_government",
-          "description": "KRW 3.975bn R&D component for AI safety technology development related to the institute in 2026, reported by Aju News; excludes non-R&D and is not the whole institute-related budget.",
+          "description": "Aju News reports an R&D budget of KRW 3.975 billion for AI safety technology for trustworthy AI.",
           "source_ids": [
             "r5-kr-aju-budget-2027",
             "kr-national-finance-act"
           ],
-          "notes": "The underlying primary table was not retrieved. This R&D component is distinct from the KRW 8.9bn non-R&D amount; neither component alone is the whole institute-related budget.",
           "annual_amount": 3975000000,
           "annual_basis_code": "other",
           "annual_period": {
@@ -37836,7 +37850,6 @@
             "r5-kr-aju-budget-2027",
             "kr-national-finance-act"
           ],
-          "notes": "The underlying primary table was not retrieved. The amount has a broader scope than the existing 2026 non-R&D amount, so no like-for-like growth comparison is made.",
           "annual_period": {
             "start": "2027-01-01",
             "end": "2027-12-31"
@@ -37849,7 +37862,7 @@
           "commitment": "adopted",
           "currency": "KRW",
           "period": "2026 total",
-          "description": "KRW 12.875bn in 2026, the sum of the reported non-R&D and R&D components related to the AI Safety Institute.",
+          "description": "Aju News reports a non-R&D budget of KRW 8.9 billion and an AI safety technology R&D budget of KRW 3.975 billion.",
           "source_ids": [
             "kr-national-finance-act",
             "kr-zdnet",
@@ -37857,7 +37870,6 @@
           ],
           "confidence": "low",
           "figure_source": "our_estimate",
-          "notes": "ZDNet describes KRW 8.9bn as the institute budget without separating R&D. The retrieved Aju News account separates non-R&D and R&D; this derived total adds those components. The underlying primary budget table was not retrieved; confidence remains low.",
           "funding_source": "national_government",
           "annual_basis": "Sum of the recorded 2026 non-R&D component (KRW 8.9bn) and R&D component (KRW 3.975bn), reported in domestic press; not expenditure.",
           "annual_basis_code": "other",
@@ -37978,7 +37990,26 @@
             "certification",
             "sandbox"
           ]
-        }
+        },
+        "log": [
+          {
+            "date": "2026-10-24",
+            "text": "Read the Aju News, ZDNet Korea and Digital Daily budget reports for funding components and their scope, and searched for the underlying primary budget tables."
+          },
+          {
+            "date": "2026-10-19",
+            "text": "Searched in Korean and English for KISA and the NIS National Cyber Security Center and their relations with AISI; read AISI's Korean home page and English home, leadership, vision, organisation, policy, assessment, research and collaboration pages, KISA's Korean and English pages, the NIS home page and the MSIT-Anthropic memorandum.",
+            "row": "national_partners"
+          },
+          {
+            "date": "2026-10-21",
+            "text": "Searched for an access event, legal power or agreement providing access to or evaluation of frontier developers' models; read the developer memoranda, the Singapore joint evaluation report, the AI Basic Act and its Enforcement Decree for access terms and powers."
+          },
+          {
+            "date": "2026-10-17",
+            "text": "Searched for an official current headcount for the institute."
+          }
+        ]
       },
       "source_ids": [
         "kr-site",
@@ -38270,8 +38301,7 @@
               "kr-aisi-sub33"
             ]
           }
-        ],
-        "notes": "Cyber agency searched: KISA (Korea Internet & Security Agency); NIS National Cyber Security Center as second, 2026-10-19 (ko, en); none found. No AISI-KISA or AISI-NIS relation published in any fetched document. Fetched: AISI English site (home, leadership, vision, organisation, policy, assessment, research, collaboration pages), AISI Korean home, KISA English and Korean homepages (200; no AISI mention found by title/menu scan, KISA about page /EN/about/sub01 returned 404), NIS homepage (200, JS shell with no text), plus one web search (ko, en) that returned only KISA-MSIT AI-security business programmes (2026-05) and no AISI link. The AISI policy page names \"national security risk response\" and \"AI-induced vulnerabilities in national infrastructure\" as tasks but names no cyber body; the AISI research page lists cybersecurity research only as a topic. The MSIT-Anthropic MOU (held kr-msit-anthropic-2026) is on AI safety and cybersecurity but names no cyber agency. Recorded as not published for the cyber domain, not as absence of any link."
+        ]
       },
       "testing_capacity": {
         "modes": [
@@ -38294,7 +38324,7 @@
         ]
       },
       "model_access": {
-        "notes": "No access event, legal power or agreement providing for access to, or evaluation of, the models of a developer that has a model in Epoch AI's frontier set was found. Access to a model outside Epoch AI's frontier set: Kakao, which has never had a model in that set, jointly evaluated Kanana-1.5-9.8B with the institute in 2025 (access type not stated), and under the MOU of 28 September 2026 '카카오는 AI 안전성 평가 대상이 되는 자사 AI 모델과 AI 에이전트를 제공하고' (Kakao provides its own AI models and AI agents to be evaluated for AI safety), starting with pre- and post-deployment evaluation of language models. The OpenAI agreement (17 June 2026) shares evaluation methods and benchmarks and provides for neither access to nor evaluation of OpenAI's models; the Anthropic MOU (announced 29 June 2026, signing date not stated) is the science ministry's agreement, under which the institute is to cooperate, not an agreement between the institute and Anthropic. The bilateral agent evaluation with Singapore used models through public APIs. No legal power: the fact-finding powers of Article 40 of the AI Basic Act sit with the Minister of Science and ICT, and Article 10(3) of the Enforcement Decree lets the institute request materials only from state bodies.",
+        "notes": "Kakao says it provides its AI models and agents for safety evaluation under the agreement and supports the infrastructure needed for evaluation and evaluation-tool development.",
         "source_ids": [
           "kr-kakao-mou-2026",
           "epoch-frontier-models",
@@ -38367,7 +38397,6 @@
           "kr-aisi-recruit"
         ]
       },
-      "notes": "The science ministry planned in October 2024 for the institute to have about 30 staff in three research labs; its programme for the launch on 27 November 2024 counted 12 institute staff. Money Today reported that at the parliamentary audit of 20 October 2026, asked whether the AI safety evaluation organisation rents two GPU cloud servers from a private cloud company, ETRI's president answered that it uses external resources because GPUs are in very short supply. On 12 November 2026 the science ministry and the institute launched the AI Safety Guardians, 80 people selected from 138 applicants who are to find and report AI errors and risks; reported cases confirmed after validity checks are to be used as basic material for AI safety evaluation and risk research.",
       "staff": [
         {
           "total": 38,
@@ -38375,7 +38404,7 @@
           "technical": 6,
           "technical_qualifier": "at_least",
           "as_of": "2026-10",
-          "description": "A member of the National Assembly said at the October 2026 parliamentary audit that the institute's staff had grown from 26 to 38 and is still short of peer institutes, as reported in the press. ZDNet Korea reported, from ministry and institute material, that the evaluation lab has 7 staff, 6 of them technical evaluators. The count is the one given as current at the October 2026 audit. No official current headcount was found. The technical count of at least 6 is the evaluation lab's technical evaluators, which is only part of the institute. At the parliamentary audit of 20 October 2026, asked whether only six staff can analyse AI models' risks and run hacking simulations, the president of ETRI, the institute's host, answered that six people handle this work, as reported by Money Today.",
+          "description": "Kyungje Ilbo reports that a lawmaker said the institute's staff had grown from 26 to 38. ZDNet Korea reports seven staff in its AI safety evaluation lab, including six technical evaluators.",
           "source_ids": [
             "kr-nate",
             "kr-zdnet",
@@ -38556,6 +38585,30 @@
           "text": "The decree lists advice and education related to AI safety among the institute's businesses.",
           "source_ids": [
             "kr-ai-basic-act-decree"
+          ]
+        },
+        {
+          "id": "claims-82487b3df16d41d98e26d57563591a32",
+          "kind": "fact",
+          "text": "Money Today reports that the AI Safety Institute rents GPU servers from a private cloud company.",
+          "source_ids": [
+            "kr-mt-2026-10-20"
+          ]
+        },
+        {
+          "id": "claims-682c28788b4c4f68a5d4750925bbdea8",
+          "kind": "fact",
+          "text": "The ministry says the AI Safety Guardians comprise 80 people selected from 138 applicants in two open calls in August and September.",
+          "source_ids": [
+            "kr-ai-safety-guardians-2026"
+          ]
+        },
+        {
+          "id": "claims-c0ab4a34b92042a582fc018e39f08d52",
+          "kind": "fact",
+          "text": "The ministry says cases reported by the AI Safety Guardians undergo validity checks and confirmed cases are to be used as basic material for AI safety evaluation and risk research, among other uses.",
+          "source_ids": [
+            "kr-ai-safety-guardians-2026"
           ]
         }
       ]
@@ -45267,17 +45320,6 @@
                 "id": "funding-8f4ea7ceaf9d5be69600d6df1c6fa215"
               },
               "coverage"
-            ],
-            [
-              "institutes",
-              {
-                "id": "jp-aisi"
-              },
-              "funding",
-              {
-                "id": "funding-8f4ea7ceaf9d5be69600d6df1c6fa215"
-              },
-              "notes"
             ]
           ],
           "accessed": "2026-10-17"
@@ -45340,17 +45382,6 @@
                 "id": "funding-7d0b36a48cc65315865a6d6ec83ddeb6"
               },
               "period"
-            ],
-            [
-              "institutes",
-              {
-                "id": "jp-aisi"
-              },
-              "funding",
-              {
-                "id": "funding-7d0b36a48cc65315865a6d6ec83ddeb6"
-              },
-              "notes"
             ]
           ],
           "accessed": "2026-10-17"
@@ -45497,78 +45528,6 @@
           "accessed": "2026-10-17"
         },
         {
-          "text": "＊IPAや理研からの併任",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "jp-aisi"
-              },
-              "staff",
-              {
-                "id": "staff-917e35062a56588f89df273ad7c59a43"
-              },
-              "description"
-            ]
-          ],
-          "gloss": "Concurrent appointments from IPA and RIKEN.",
-          "accessed": "2026-10-17"
-        },
-        {
-          "text": "各省庁は、早ければ令和８年4月から、遅くとも7月頃までに、出向者を出すことを調整する。",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "jp-aisi"
-              },
-              "staff",
-              {
-                "id": "staff-917e35062a56588f89df273ad7c59a43"
-              },
-              "description"
-            ]
-          ],
-          "gloss": "Ministries will arrange secondments from April 2026 at the earliest and by around July at the latest.",
-          "accessed": "2026-10-17"
-        },
-        {
-          "text": "人工知能戦略本部 総理ご指示（2025.12.19)",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "jp-aisi"
-              },
-              "staff",
-              {
-                "id": "staff-917e35062a56588f89df273ad7c59a43"
-              },
-              "description"
-            ]
-          ],
-          "gloss": "AI Strategy Headquarters: Prime Minister's instructions (19 December 2025).",
-          "accessed": "2026-10-17"
-        },
-        {
-          "text": "英国並みの２００人体制を目指して",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "jp-aisi"
-              },
-              "staff",
-              {
-                "id": "staff-917e35062a56588f89df273ad7c59a43"
-              },
-              "description"
-            ]
-          ],
-          "gloss": "Aiming for a team of 200 comparable with the UK.",
-          "accessed": "2026-10-17"
-        },
-        {
           "text": "**2024年時点情報",
           "gloss": "Information as of 2024.",
           "supports": [
@@ -45617,39 +45576,10 @@
                 "id": "funding-7d0b36a48cc65315865a6d6ec83ddeb6"
               },
               "coverage"
-            ],
-            [
-              "institutes",
-              {
-                "id": "jp-aisi"
-              },
-              "funding",
-              {
-                "id": "funding-7d0b36a48cc65315865a6d6ec83ddeb6"
-              },
-              "notes"
             ]
           ],
           "accessed": "2026-10-19",
           "gloss": "AISI itself develops evaluation tools."
-        },
-        {
-          "text": "AI評価手法の構築、専用テストベッド・計算資源の整備等",
-          "gloss": "Building AI evaluation methods, preparing dedicated testbeds and compute, and similar measures.",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "jp-aisi"
-              },
-              "funding",
-              {
-                "id": "funding-7d0b36a48cc65315865a6d6ec83ddeb6"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-10-19"
         },
         {
           "text": "産総研に委託し、人との協働ロボット等の安全性に係る研究開発、ガイドライン\nの策定、更に国際標準化に向けた検討を実施。",
@@ -45692,17 +45622,6 @@
               {
                 "id": "staff-917e35062a56588f89df273ad7c59a43"
               },
-              "description"
-            ],
-            [
-              "institutes",
-              {
-                "id": "jp-aisi"
-              },
-              "staff",
-              {
-                "id": "staff-917e35062a56588f89df273ad7c59a43"
-              },
               "target"
             ]
           ],
@@ -45725,6 +45644,78 @@
             ]
           ],
           "gloss": "About 200 or more people (of whom 90 are specialists)",
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "AI評価手法の構築、専用テストベッド・計算資源の整備等",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-7d0b36a48cc65315865a6d6ec83ddeb6"
+              },
+              "notes"
+            ]
+          ],
+          "gloss": "Building AI evaluation methods, preparing dedicated testbeds and compute, and similar measures.",
+          "accessed": "2026-10-19"
+        },
+        {
+          "text": "31人（併任含む＊）\n令和6年補正：3.8億円\n＊IPAや理研からの併任",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "staff",
+              {
+                "id": "staff-917e35062a56588f89df273ad7c59a43"
+              },
+              "description"
+            ]
+          ],
+          "gloss": "31 people (including concurrent appointments); FY2024 supplementary budget: JPY 380 million; concurrent appointments from IPA and RIKEN.",
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "英国並みの２００人体制を目指して",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "staff",
+              {
+                "id": "staff-917e35062a56588f89df273ad7c59a43"
+              },
+              "description"
+            ]
+          ],
+          "gloss": "Aiming for a team of 200 comparable with the UK.",
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "人工知能戦略本部 総理ご指示（2025.12.19)",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "staff",
+              {
+                "id": "staff-917e35062a56588f89df273ad7c59a43"
+              },
+              "description"
+            ]
+          ],
+          "gloss": "AI Strategy Headquarters: Prime Minister's instructions (19 December 2025).",
           "accessed": "2026-10-17"
         }
       ],
@@ -45761,17 +45752,6 @@
               {
                 "id": "staff-e6a1c96602e6553b83decec5ffc934ba"
               },
-              "description"
-            ],
-            [
-              "institutes",
-              {
-                "id": "jp-aisi"
-              },
-              "staff",
-              {
-                "id": "staff-e6a1c96602e6553b83decec5ffc934ba"
-              },
               "total"
             ],
             [
@@ -45784,6 +45764,17 @@
                 "id": "staff-e6a1c96602e6553b83decec5ffc934ba"
               },
               "total_qualifier"
+            ],
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "staff",
+              {
+                "id": "staff-e6a1c96602e6553b83decec5ffc934ba"
+              },
+              "description"
             ]
           ],
           "gloss": "20 dedicated staff; just over 30 including concurrent appointments within IPA, moving towards a team of 60.",
@@ -45836,17 +45827,6 @@
                 "id": "funding-eb798d93b6345b24b6fb8f1c45ad7e4a"
               },
               "annual_amount"
-            ],
-            [
-              "institutes",
-              {
-                "id": "kr-aisi"
-              },
-              "funding",
-              {
-                "id": "funding-eb798d93b6345b24b6fb8f1c45ad7e4a"
-              },
-              "description"
             ]
           ],
           "gloss": "Korea's AI Safety Institute budget this year is KRW 8.9 billion.",
@@ -45904,17 +45884,6 @@
               {
                 "id": "staff-01c3c07170645ef1a37faf78ac7508ff"
               },
-              "description"
-            ],
-            [
-              "institutes",
-              {
-                "id": "kr-aisi"
-              },
-              "staff",
-              {
-                "id": "staff-01c3c07170645ef1a37faf78ac7508ff"
-              },
               "technical"
             ],
             [
@@ -45927,6 +45896,17 @@
                 "id": "staff-01c3c07170645ef1a37faf78ac7508ff"
               },
               "technical_qualifier"
+            ],
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "staff",
+              {
+                "id": "staff-01c3c07170645ef1a37faf78ac7508ff"
+              },
+              "description"
             ]
           ],
           "accessed": "2026-10-24",
@@ -46109,7 +46089,7 @@
               {
                 "id": "funding-0c50c85a75475b80a745207537a2bd0b"
               },
-              "notes"
+              "description"
             ],
             [
               "institutes",
@@ -46120,7 +46100,7 @@
               {
                 "id": "funding-0c50c85a75475b80a745207537a2bd0b"
               },
-              "description"
+              "notes"
             ]
           ],
           "accessed": "2026-10-19",
@@ -70428,13 +70408,6 @@
               {
                 "id": "KR"
               },
-              "summary"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "KR"
-              },
               "timeline",
               {
                 "id": "kr-2024-11-27-designated"
@@ -93918,7 +93891,7 @@
               {
                 "id": "funding-eb798d93b6345b24b6fb8f1c45ad7e4a"
               },
-              "description"
+              "annual_basis"
             ],
             [
               "institutes",
@@ -93929,7 +93902,18 @@
               {
                 "id": "funding-eb798d93b6345b24b6fb8f1c45ad7e4a"
               },
-              "annual_basis"
+              "description"
+            ],
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-d0f61d15548153b9830f74f6e14ec324"
+              },
+              "description"
             ]
           ],
           "gloss": "the non-R&D budget, from KRW 8.9 billion"
@@ -93957,7 +93941,7 @@
               {
                 "id": "funding-a4935c40a4e750e8844af6de22176e13"
               },
-              "description"
+              "annual_amount"
             ],
             [
               "institutes",
@@ -93968,7 +93952,18 @@
               {
                 "id": "funding-a4935c40a4e750e8844af6de22176e13"
               },
-              "annual_amount"
+              "description"
+            ],
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-d0f61d15548153b9830f74f6e14ec324"
+              },
+              "description"
             ]
           ],
           "gloss": "The R&D budget for 'AI safety technology development for trustworthy AI that can coexist', from KRW 3.975 billion"
@@ -107621,6 +107616,21 @@
           ],
           "accessed": "2026-10-24",
           "gloss": "the AI Safety Institute is responsible for carrying out the evaluations and refining the methodology, and both parties jointly review the results and agree the scope of disclosure"
+        },
+        {
+          "text": "협약에 따라 카카오는 AI 안전성 평가 대상이 되는 자사 AI 모델과 AI 에이전트를 제공하고, 평가 수행 및 평가 도구 개발에 필요한 인프라를 지원한다. 인공지능안전연구소는 평가 수행과 방법론 고도화를 담당하며, 양사는 평가 결과를 공동 검토하고 공개 범위를 협의하며 AI 안전성 평가도구 개발에도 협력할 예정이다.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "model_access",
+              "notes"
+            ]
+          ],
+          "gloss": "Under the agreement, Kakao provides its AI models and AI agents for AI safety evaluation and supports the infrastructure needed for evaluation and evaluation-tool development. The AI Safety Institute is responsible for evaluation and improving methods; the two sides will jointly review results, agree their disclosure and cooperate on developing AI safety evaluation tools.",
+          "accessed": "2026-10-21"
         }
       ]
     },
@@ -108133,20 +108143,6 @@
       "origin": "KR",
       "excerpts": [
         {
-          "text": "AI 안전 정책·평가·기술 분야의 3개 연구실, 총 30여 명 규모로 조직을 구성·운영할 계획입니다.",
-          "gloss": "The plan is to organise and run it with three research labs in AI safety policy, evaluation and technology, about 30 people in total.",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "kr-aisi"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-10-21"
-        },
-        {
           "text": "AI안전연구소를 중심으로 산·학·연이 참여하는 AI 안전 파트너십을 구축하여 AI 안전 정책·기술 분야 연구 협력을 촉진할 계획입니다.",
           "supports": [
             [
@@ -108202,34 +108198,6 @@
       "language": "ko",
       "origin": "KR",
       "excerpts": [
-        {
-          "text": "연구소 직원 총 12명",
-          "gloss": "Institute staff, 12 in total.",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "kr-aisi"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-10-21"
-        },
-        {
-          "text": "’24.11.27.(수), 09:30~10:30 / AI안전연구소(판교 글로벌R&D센터)",
-          "gloss": "27 November 2024 (Wednesday), 09:30 to 10:30, at the AI Safety Institute (Pangyo Global R&D Center).",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "kr-aisi"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-10-21"
-        },
         {
           "text": "연구소 투어 및 격려 ※ 연구소 직원 총 12명",
           "supports": [
@@ -108749,6 +108717,14 @@
                 "id": "claims-3187a3884be94f1eb17a126a06dc6f81"
               },
               "text"
+            ],
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "testing_capacity",
+              "notes"
             ]
           ],
           "accessed": "2026-10-24",
@@ -108768,6 +108744,14 @@
                 "id": "jp-access-claude-opus-4-8"
               },
               "kind"
+            ],
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "model_access",
+              "notes"
             ]
           ],
           "accessed": "2026-10-24",
@@ -115728,7 +115712,6 @@
         },
         {
           "text": "3 モデルとも API を通じて利用し、ExploitBench による共通の 41 課題で評価しました。",
-          "gloss": "All three models were used via API and evaluated on the same 41 ExploitBench tasks.",
           "supports": [
             [
               "institutes",
@@ -115739,6 +115722,7 @@
               "notes"
             ]
           ],
+          "gloss": "All three models were used via API and evaluated on the same 41 ExploitBench tasks.",
           "accessed": "2026-11-07"
         }
       ],
@@ -119840,17 +119824,6 @@
                 "id": "staff-01c3c07170645ef1a37faf78ac7508ff"
               },
               "technical_qualifier"
-            ],
-            [
-              "institutes",
-              {
-                "id": "kr-aisi"
-              },
-              "staff",
-              {
-                "id": "staff-01c3c07170645ef1a37faf78ac7508ff"
-              },
-              "description"
             ]
           ],
           "accessed": "2026-11-10"
@@ -119880,17 +119853,6 @@
                 "id": "staff-01c3c07170645ef1a37faf78ac7508ff"
               },
               "technical_qualifier"
-            ],
-            [
-              "institutes",
-              {
-                "id": "kr-aisi"
-              },
-              "staff",
-              {
-                "id": "staff-01c3c07170645ef1a37faf78ac7508ff"
-              },
-              "description"
             ]
           ],
           "accessed": "2026-11-10"
@@ -119920,75 +119882,26 @@
                 "id": "staff-01c3c07170645ef1a37faf78ac7508ff"
               },
               "technical_qualifier"
-            ],
-            [
-              "institutes",
-              {
-                "id": "kr-aisi"
-              },
-              "staff",
-              {
-                "id": "staff-01c3c07170645ef1a37faf78ac7508ff"
-              },
-              "description"
             ]
           ],
           "accessed": "2026-11-10"
         },
         {
-          "text": "AI 안전평가 조직에서 민간 클라우드사로부터 GPU 클라우드 서버 2대를 빌려 사용하고 있는지를 묻자",
+          "text": "AI안전연구소가 자체 연산 인프라 부족으로 민간 클라우드사의 GPU 서버까지 빌려 쓰고 있는 상황에서 ETRI도 현재 인력과 인프라가 충분하지 않다는 점을 인정했다.",
           "supports": [
             [
               "institutes",
               {
                 "id": "kr-aisi"
               },
-              "notes"
-            ]
-          ],
-          "gloss": "asked whether the AI safety evaluation organisation was renting two GPU cloud servers from a private cloud company",
-          "accessed": "2026-11-10"
-        },
-        {
-          "text": "GPU가 상당히 부족하기 때문에 외부에 있는 리소스를 쓰고 있다",
-          "supports": [
-            [
-              "institutes",
+              "claims",
               {
-                "id": "kr-aisi"
+                "id": "claims-82487b3df16d41d98e26d57563591a32"
               },
-              "notes"
+              "text"
             ]
           ],
-          "gloss": "because GPUs are in very short supply, we are using external resources",
-          "accessed": "2026-11-10"
-        },
-        {
-          "text": "20일 국회 과학기술정보방송통신위원회의 국가과학기술연구회(NST) 및 소관 연구기관 국정감사에서",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "kr-aisi"
-              },
-              "notes"
-            ]
-          ],
-          "gloss": "on the 20th, at the National Assembly Science, ICT, Broadcasting and Communications Committee's audit of the National Research Council of Science and Technology (NST) and its research institutes",
-          "accessed": "2026-11-10"
-        },
-        {
-          "text": "ETRI 원장",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "kr-aisi"
-              },
-              "notes"
-            ]
-          ],
-          "gloss": "ETRI president",
+          "gloss": "As the AI Safety Institute was renting GPU servers from a private cloud company because of a shortage of its own computing infrastructure, ETRI also acknowledged that its current staff and infrastructure were insufficient.",
           "accessed": "2026-11-10"
         }
       ],
@@ -121807,20 +121720,6 @@
       "origin": "KR",
       "excerpts": [
         {
-          "text": "과학기술정보통신부는 인공지능안전연구소(이하 안전연구소)와 함께 12일 서울 여의도 글래드 호텔에서 'AI 안전 지킴이' 발대식을 개최했다.",
-          "gloss": "The Ministry of Science and ICT, together with the AI Safety Institute (the Safety Institute), held the launch ceremony of the 'AI Safety Guardians' on the 12th at the Glad Hotel in Yeouido, Seoul.",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "kr-aisi"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-11-13"
-        },
-        {
           "text": "'AI 안전 지킴이'는 지난 8월과 9월 두 차례 공개 모집을 통해 지원한 138명 중 최종 선발된 80명으로 구성됐다.",
           "gloss": "The 'AI Safety Guardians' are made up of 80 people finally selected from the 138 who applied in two open calls in August and September.",
           "supports": [
@@ -121829,50 +121728,44 @@
               {
                 "id": "kr-aisi"
               },
-              "notes"
+              "claims",
+              {
+                "id": "claims-682c28788b4c4f68a5d4750925bbdea8"
+              },
+              "text"
             ]
           ],
-          "accessed": "2026-11-13"
+          "accessed": "2026-11-13",
+          "anchors": [
+            {
+              "kind": "heading",
+              "text": "과기정통부·AI안전연구소, AI 안전 국민 모니터링단 80명 위촉 사실왜곡·편향·보안 취약점 등 4대 분야 오류사례 상시 제보 체계 구축",
+              "gloss": "MSIT and the AI Safety Institute appoint 80 citizen AI safety monitors and establish a system for ongoing reports of errors in four areas, including factual distortion, bias and security vulnerabilities."
+            }
+          ]
         },
         {
-          "text": "이들은 내년 8월까지 약 1년간 인공지능 오류·위험 사례를 찾아내는 등",
-          "gloss": "For about a year, until August next year, they will, among other things, find cases of AI errors and risks",
+          "text": "AI 안전 지킴이가 제보한 사례는 정확성, 위험도, 재현 가능성, 활용 가능성 등 유효성 검증을 거쳐 확정된다.\n\n확정된 사례는 AI 안전성 평가와 위험 연구의 기초 자료 등으로 활용될 예정이다.",
           "supports": [
             [
               "institutes",
               {
                 "id": "kr-aisi"
               },
-              "notes"
+              "claims",
+              {
+                "id": "claims-c0ab4a34b92042a582fc018e39f08d52"
+              },
+              "text"
             ]
           ],
-          "accessed": "2026-11-13"
-        },
-        {
-          "text": "AI 안전 지킴이가 제보한 사례는 정확성, 위험도, 재현 가능성, 활용 가능성 등 유효성 검증을 거쳐 확정된다.",
-          "gloss": "Cases reported by the AI Safety Guardians are confirmed after validity checks on accuracy, level of risk, reproducibility and usability, among others.",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "kr-aisi"
-              },
-              "notes"
-            ]
-          ],
-          "accessed": "2026-11-13"
-        },
-        {
-          "text": "확정된 사례는 AI 안전성 평가와 위험 연구의 기초 자료 등으로 활용될 예정이다.",
-          "gloss": "Confirmed cases are to be used as, among other things, basic material for AI safety evaluation and risk research.",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "kr-aisi"
-              },
-              "notes"
-            ]
+          "gloss": "Cases reported by the AI Safety Guardians are confirmed after validity checks on accuracy, risk level, reproducibility and usability, among others. Confirmed cases are to be used as basic material for AI safety evaluation and risk research, among other uses.",
+          "anchors": [
+            {
+              "kind": "heading",
+              "text": "과기정통부·AI안전연구소, AI 안전 국민 모니터링단 80명 위촉 사실왜곡·편향·보안 취약점 등 4대 분야 오류사례 상시 제보 체계 구축",
+              "gloss": "MSIT and the AI Safety Institute appoint 80 citizen AI safety monitors and establish a system for ongoing reports of errors in four areas, including factual distortion, bias and security vulnerabilities."
+            }
           ],
           "accessed": "2026-11-13"
         }
