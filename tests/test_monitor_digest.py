@@ -304,3 +304,10 @@ def test_body_limit_holds_without_source_rows(summary):
     _, body = digest.build(summary)
     assert len(body) <= digest.BODY_LIMIT
     assert body.endswith(summary["report"])
+
+
+def test_live_page_not_compared_is_its_own_line(summary):
+    summary["not_compared"] = [{"source_id": "src-body-only", "runs": 1, "marked": False},
+                               {"source_id": "src-paywall", "runs": 4, "marked": True}]
+    _, body = digest.build(summary)
+    assert "Live page not compared: 2; marked: src-paywall (4 runs)" in body.splitlines()

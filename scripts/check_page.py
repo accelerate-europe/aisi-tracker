@@ -1577,6 +1577,39 @@ def in_numeral_order(ids, order):
     return sorted(ids, key=lambda sid: order.index(sid) if sid in order else len(order))
 
 
+def card_source_orders(soup, data) -> dict:
+    """Each record's source numbering as the page shows it: its card's source list.
+
+    The page numbers a record's sources in the record's own citation order (site/index.html SOURCE_ORDERS), not the
+    dataset's catalogue order; every citation group of that record (card rows, developments, Known activity) reads its
+    numerals in that order. Records without a card follow the page's own fallback: the jurisdiction's source links,
+    then its institute's, each in catalogue order, first occurrence kept.
+    """
+    catalogue = {source["id"]: index for index, source in enumerate(data.get("sources", []))}
+    orders = {
+        str(card["data-j"]): [li.get("data-source-id") for li in card.select(".srcs li")]
+        for card in soup.select(".card[data-j]")
+        if card.select(".srcs li")
+    }
+    institutes = {i.get("id"): i for i in data.get("institutes", [])}
+
+    def links(record):
+        # The page's recordSources(record): the record's own catalogue links, in catalogue order.
+        if not record:
+            return []
+        shown = (record.get("display") or {}).get("source_links")
+        if shown is not None:
+            return list(shown)
+        return sorted({sid for sid in entry_sources(record) if sid in catalogue}, key=catalogue.__getitem__)
+
+    for jurisdiction in data.get("jurisdictions", []):
+        if jurisdiction["id"] not in orders:
+            # As the page: the jurisdiction's links, then its institute's, first occurrence kept.
+            cited = links(jurisdiction) + links(institutes.get(jurisdiction.get("institute_id")))
+            orders[jurisdiction["id"]] = [sid for sid in dict.fromkeys(cited) if sid in catalogue]
+    return orders
+
+
 def check_citation_ends(soup) -> list[str]:
     """Every citation group ends its value; partner names carry their own citations in the fold."""
     errors: list[str] = []
@@ -1621,7 +1654,7 @@ def check_source_alignment(html: str, data: dict) -> list[str]:
     errors = []
     if soup.select(".orig, .title-en"):
         errors.append("translations: original names and translated titles must not have a second visible line or bracketed span")
-    orders = {}
+    orders = card_source_orders(soup, data)
     jurisdictions = {j["id"]: j for j in data["jurisdictions"]}
     institutes = {i["jurisdiction_id"]: i for i in data["institutes"]}
 
@@ -1646,7 +1679,6 @@ def check_source_alignment(html: str, data: dict) -> list[str]:
     for card in soup.select(".card[data-j]"):
         jid = str(card["data-j"])
         ids = [li.get("data-source-id") for li in card.select(".srcs li")]
-        orders[jid] = ids
         if len(ids) != len(set(ids)) or None in ids:
             errors.append(f"{jid}: source list has missing or duplicate IDs")
         if "mini" in card.get("class", []):
@@ -1689,14 +1721,7 @@ def check_source_alignment(html: str, data: dict) -> list[str]:
                     )
             errors.extend(zero_match_errors("source_alignment", f"{jid} .row[data-track] for card/table citations", compared))
 
-    # Documented display order: source-catalogue order, duplicates removed.
-    catalogue = {sid: index for index, sid in enumerate(sources)}
-    for jurisdiction in data["jurisdictions"]:
-        if jurisdiction["id"] not in orders:
-            orders[jurisdiction["id"]] = sorted(
-                {sid for sid in entry_sources(jurisdiction) if sid in sources},
-                key=catalogue.__getitem__,
-            )
+    # Records without a card: documented display order, source-catalogue order (card_source_orders).
     for li in required("li[data-source-id]", cited_cards):
         sid = str(li["data-source-id"])
         link = li.select_one("a[href]")
@@ -2207,7 +2232,7 @@ def check_operating_output(
     errors = []
     # Structural absence is judged before hidden text is removed: the dash is aria-hidden, "Not applicable" is visually hidden.
     structural = {id(cell) for cell in soup.select("#world-rows td") if is_structural_absence(cell)}
-    source_order = {source["id"]: n for n, source in enumerate(data["sources"])}
+    orders = card_source_orders(soup, data)
     clause_sources = {
         id(clause): [a.get("data-source-id") for a in clause.select(".cn")]
         for clause in soup.select(".activity-clause, .activity-since")
@@ -2258,10 +2283,10 @@ def check_operating_output(
             evidence = expected_activity(institute, credit_sources)
             if node and institute is not None:
                 # Each kind line cites its own earliest item; the since lines carry no citations.
-                cited = [sorted(e["source_ids"], key=source_order.__getitem__) for e in evidence]
                 if any(clause_sources[id(n)] for n in node.select(".activity-since")):
                     errors.append(f"{j['id']}: {view} Known activity since line carries a citation")
                 clauses = node.select(".activity-clause")
+                cited = [in_numeral_order(list(dict.fromkeys(e["source_ids"])), orders.get(j["id"], [])) for e in evidence]
                 if [c.get("data-kind") for c in clauses] != [e["kind"] for e in evidence] or [
                     clause_sources[id(c)] for c in clauses
                 ] != cited:
@@ -3637,6 +3662,7 @@ def check_summary_data(html: str, data: dict) -> list[str]:
     ordered.sort(key=lambda item: item[0][1], reverse=True)
     ordered = ordered[:10]
     rows = soup.select(".development-row")
+    orders = card_source_orders(soup, data)
     if len(soup.select("#development-list > li:not(.earlier)")) != min(3, len(ordered)) or len(
         soup.select("#development-list > li.earlier")
     ) != max(0, len(ordered) - 3):
@@ -3661,9 +3687,7 @@ def check_summary_data(html: str, data: dict) -> list[str]:
         ids = list(
             dict.fromkeys(sid for event in events for sid in expected_event_sources(data, jurisdictions[jid], event))
         )
-        source_order = {source["id"]: index for index, source in enumerate(data["sources"])}
-        ids.sort(key=lambda sid: source_order[sid])
-        if [a.get("data-source-id") for a in row.select(".cn")] != ids:
+        if [a.get("data-source-id") for a in row.select(".cn")] != in_numeral_order(ids, orders.get(jid, [])):
             errors.append("development citations differ from grouped event sources")
         if text:
             for cites in text.select(".cites"):
