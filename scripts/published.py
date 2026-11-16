@@ -827,9 +827,9 @@ def materialise_facts(data: dict, *, strict: bool = False) -> dict:
 
 
 def generate_texts(result: dict) -> list[str]:
-    """Word the summary, notes, related-body roles and closest-body note of each migrated record (no authored summary).
+    """Word each migrated record's summary, notes, body roles, closest note and undisclosed funding descriptions.
 
-    A record with an authored summary keeps all four as authored and must author role and note; a migrated record
+    A record with an authored summary keeps its texts as authored and must author role, note and description; a migrated record
     may author none of them (docs/design/claims-1.1.md, section 1, "A migrated record").
     """
     errors = []
@@ -841,6 +841,21 @@ def generate_texts(result: dict) -> list[str]:
             errors.append(str(exc))
     if errors:
         return errors
+    migrated = {j["id"] for j in result.get("jurisdictions", []) if "summary" not in j}
+    for institute in institutes.values():
+        for funding in institute.get("funding", []):
+            if funding["kind"] != "none_disclosed":
+                continue
+            where = f"institutes/{institute['id']}/funding/{funding['id']}/description"
+            if institute["jurisdiction_id"] in migrated:
+                if "description" in funding:
+                    errors.append(f"{where}: generated in a migrated record; must not be authored")
+            elif "description" not in funding:
+                errors.append(f"{where}: description is required while the record authors its summary")
+            elif funding["description"] in summaries.UNDISCLOSED_FUNDING.values():
+                # The generated lines mark generated descriptions (display.generated_description), so an authored one
+                # may not repeat them word for word.
+                errors.append(f"{where}: an authored description may not repeat a generated line; say what the source says")
     for jurisdiction in result.get("jurisdictions", []):
         where = f"jurisdictions/{jurisdiction['id']}"
         bodies = jurisdiction.get("related_bodies", [])
@@ -886,15 +901,19 @@ def next_check_warnings(data: dict, published: dict) -> list[str]:
 
 
 def word_record(jurisdiction: dict, institutes: dict, vocabularies: dict, as_of: str) -> None:
-    """Write a migrated record's generated summary, notes, roles and closest-body note; claims marked expired are left out."""
+    """Write a migrated record's generated texts; claims marked expired are left out."""
     _, _, basis = status_basis(jurisdiction.get("timeline", []))
+    institute = institutes.get(jurisdiction.get("institute_id"))
     texts = summaries.generate(
         jurisdiction,
-        institutes.get(jurisdiction.get("institute_id")),
+        institute,
         jurisdiction["timeline"][basis] if basis is not None else None,
         as_of=as_of,
     )
     jurisdiction["summary"] = texts["summary"]
+    for funding in (institute or {}).get("funding", []):
+        if funding["id"] in texts["funding_descriptions"]:
+            funding["description"] = texts["funding_descriptions"][funding["id"]]
     if texts["notes"]:
         jurisdiction["notes"] = texts["notes"]
     else:

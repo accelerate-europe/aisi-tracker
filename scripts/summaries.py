@@ -1,9 +1,10 @@
-"""Generated reader text for a migrated record: the summary, notes, related-body roles and the closest body's note.
+"""Generated reader text for a migrated record: summary, notes, body roles, closest-body note and undisclosed funding.
 
 Design in docs/design/claims-1.1.md, section 3 (build step B). A migrated record is a jurisdiction whose authored
 input has no summary; only it is generated, and a record with an authored summary builds as it always has. Words in
-the patterns are fixed here; everything that varies comes from fields, claims and check. Negative findings come only
-from pattern 1, dated by check.last_checked. Expiry (section 4) is step C: a claim marked expired (claims[].expired,
+the patterns are fixed here; everything that varies comes from fields, claims and check. Negative findings come from
+pattern 1, dated by check.last_checked, or the structured none_disclosed funding state. Expiry (section 4) is step C:
+a claim marked expired (claims[].expired,
 set by rereads.join in published.publish, which then words the record again) is skipped, with one exception: the
 closest body's lead claim, expired because its source is offline or could not be re-read, stays in pattern 2 and the
 closest-body note with its re-read state after it (owner, 15 November, "Keep last quote, marked"; section 4).
@@ -47,6 +48,11 @@ ROLE_WORDS = {"single_point_of_contact": "single point of contact",
 FORM_WORDS = {"new_body": "a new body", "unit_in_existing_body": "a unit within an existing body",
               "federation_of_existing_bodies": "a network of existing bodies", "university_centre": "a university centre"}
 STATUS_WORDS = {"planned": "Planned", "proposed": "Proposed", "exploring": "Exploring"}
+UNDISCLOSED_FUNDING = {
+    "whole_institute": "No budget published for the institute as a whole.",
+    "component": "No budget published for this part of the institute.",
+    "not_institute_specific": "No budget published for this wider funding.",
+}
 # The re-read states under which an expired lead claim is kept, marked, in the page's freshness wording (section 4).
 # A quote no longer found in a readable source is not kept: the fact may have changed (hub default, for the owner).
 KEPT_STATES = {"source_gone": "Source offline since {since}; last found {last_found}.",
@@ -325,7 +331,7 @@ def summary_leaves(record: dict, institute: dict | None, basis: int | None) -> l
 
 
 def generate(record: dict, institute: dict | None, basis_event: dict | None, *, as_of: str) -> dict:
-    """The generated texts of a migrated record: summary, notes, roles by body id, and the closest body's note."""
+    """The generated texts of a migrated record, with roles and undisclosed funding descriptions keyed by id."""
     closest = record.get("closest_body")
     if closest is not None and "body_id" not in closest:
         raise GeneratorError(f"{record['id']}: a migrated record's closest body names its related body (closest_body.body_id)")
@@ -333,6 +339,8 @@ def generate(record: dict, institute: dict | None, basis_event: dict | None, *, 
         "summary": summary_text({**record, "status_basis_event": basis_event}, institute),
         "notes": notes_text(record, as_of),
         "roles": {b["id"]: role_text(record, b["id"]) for b in record.get("related_bodies", [])},
+        "funding_descriptions": {f["id"]: UNDISCLOSED_FUNDING[f["coverage"]]
+                                 for f in (institute or {}).get("funding", []) if f["kind"] == "none_disclosed"},
     }
     if closest is not None:
         texts["note"] = closest_note(record)

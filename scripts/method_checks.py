@@ -370,7 +370,7 @@ def unquoted_claims(d: dict) -> dict[str, list[str]]:
 
 
 def migrated_ids(d: dict) -> set[str]:
-    """Jurisdictions whose authored input has no summary: their summary, notes, roles and closest note are generated."""
+    """Jurisdictions whose authored input has no summary: their reader texts, including undisclosed funding, are generated."""
     return {j["id"] for j in d["jurisdictions"] if "summary" not in j}
 
 
@@ -424,6 +424,10 @@ def unquoted_items(d: dict) -> list[tuple[str, str, str]]:
     for n, record in enumerate(d["institutes"]):
         shown = {key: value for key, value in record.items() if key != "check"}
         if record["jurisdiction_id"] in migrated:
+            if "funding" in shown:
+                shown["funding"] = [{key: value for key, value in funding.items()
+                                     if not (funding["kind"] == "none_disclosed" and key == "description")}
+                                    for funding in shown["funding"]]
             # A row note that row_checks requires as a dated search log cannot carry a quote (hub default, spec
             # section 5); it is listed by search_log_notes instead, and review checks it states nothing about the world.
             for field in search_log_rows(record):

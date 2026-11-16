@@ -897,6 +897,9 @@ def derive_display(published_data):
                     *(row["citations"].get(field, []) for field in fields)
                 ),
             )
+            # A migrated record's undisclosed funding has a generated description, which is no source statement.
+            if row["kind"] == "none_disclosed" and row.get("description") in summaries.UNDISCLOSED_FUNDING.values():
+                row["display"]["generated_description"] = True
     for jurisdiction in data.get("jurisdictions", []):
         jurisdiction["display"]["source_links"] = union(record_sources(jurisdiction))
         # A related body's or closest candidate's own sources, for the marker after its entry (catalogue links, not field evidence).

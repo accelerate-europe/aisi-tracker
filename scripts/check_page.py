@@ -1756,6 +1756,8 @@ def check_source_alignment(html: str, data: dict) -> list[str]:
                 if record is None:
                     errors.append(f"{jid}: {kind} record has unknown identity")
                     continue
+                if kind == "funding" and (record.get("display") or {}).get("generated_description") and rendered.select_one(".source-statement"):
+                    errors.append(f"{jid}: a generated undisclosed-funding line is shown as a source statement")
                 if kind == "funding" and record.get("amount") is not None:
                     for selector, fields in (
                         (".funding-native", ["amount", "currency", "amount_qualifier", "period", "commitment", "kind", "coverage"]),
