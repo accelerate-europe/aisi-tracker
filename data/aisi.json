@@ -2052,7 +2052,9 @@
           "instrument": "press_release",
           "description": "Government announces £100 million in initial funding for an expert Foundation Model Taskforce, the institute's documented predecessor.",
           "source_ids": [
-            "gb-taskforce-2023"
+            "gb-taskforce-2023",
+            "gb-taskforce-rename",
+            "gb-aisi-launch"
           ],
           "short": "Foundation Model Taskforce announced with £100 million initial funding."
         },
@@ -2106,7 +2108,7 @@
           "date": "2025-02-14",
           "event": "mandate_changed",
           "instrument": "press_release",
-          "description": "Government redirects the institute towards serious AI risks to security and public safety, including criminal misuse; status remains established.",
+          "description": "Government redirects the institute towards serious AI risks to security and public safety, including criminal misuse.",
           "source_ids": [
             "gb-rename"
           ],
@@ -3108,7 +3110,8 @@
           "source_ids": [
             "nl-tno",
             "nl-tno-cybersecure",
-            "nl-tno-cybersecure-en"
+            "nl-tno-cybersecure-en",
+            "nl-ah-2093-2026"
           ],
           "short": "Ministry-commissioned TNO study of an AI safety institute option is published."
         },
@@ -28990,7 +28993,8 @@
           "period": "2026-27 to 2029-30",
           "description": "£360m allocated over 2026-27 to 2029-30, including the additional £120m announced at Budget 2026 on top of the £240m set out earlier.",
           "source_ids": [
-            "gb-pq-39199-2026"
+            "gb-pq-39199-2026",
+            "gb-pq-33991-2026"
           ],
           "confidence": "high",
           "commitment": "announced",
@@ -29128,7 +29132,7 @@
           "commitment": "announced",
           "funding_source": "national_government",
           "decision_date": "2026-10-24",
-          "notes": "The Budget announcement states no period; a written answer of 6 November 2026 places the £120m over 2026-27 to 2029-30, within the institute's £360m allocation.",
+          "notes": "A written answer of 6 November 2026 places the £120m over 2026-27 to 2029-30, within the institute's £360m allocation.",
           "coverage": "component",
           "id": "funding-618ed3226ee75def870a5fb0f9501479",
           "years": 4,
@@ -29794,7 +29798,8 @@
           "type": "report",
           "title": "Frontier AI Taskforce: first progress report",
           "source_ids": [
-            "gb-taskforce-rename"
+            "gb-taskforce-rename",
+            "gb-aisi-launch"
           ],
           "lineage": "frontier-ai-taskforce-first-progress-report",
           "attribution": "institutional_author",
@@ -29833,7 +29838,7 @@
           ],
           "lineage": "inspect-ai-safety-evaluation-platform",
           "attribution": "own_publication",
-          "attribution_note": "AISI publishes its original evaluation framework. The dated GOV.UK launch on 10 May 2024 is the earliest verified public release used here. The institute index also displays 21 April 2024, but an archived April release has not been verified.",
+          "attribution_note": "AISI publishes its original evaluation framework. The dated GOV.UK launch on 10 May 2024 is the public release used here. The institute index also displays 21 April 2024.",
           "qualifies_as": "published_work",
           "qualification_note": "Institute-published platform for running AI safety evaluations; an evaluation artefact rather than a general software tool.",
           "credit": {
@@ -30114,7 +30119,7 @@
           ],
           "lineage": "replibench-evaluating-the-autonomous-replication-capabilities-of-language-model-agents",
           "attribution": "own_publication",
-          "attribution_note": "Full RepliBench report published through AISI's document CDN and its own substantive release; the April release precedes the May repository record.",
+          "attribution_note": "Full RepliBench report published through AISI's document CDN and its own substantive release.",
           "qualifies_as": "published_work",
           "qualification_note": "Institute-credited technical research with methods or findings, rather than policy, programme reporting or guidance alone.",
           "credit": {
@@ -30132,7 +30137,7 @@
           ],
           "lineage": "research-agenda",
           "attribution": "own_publication",
-          "attribution_note": "AISI publishes the full original research agenda on its own site, outlining its own research methods, priority risk domains and future research objectives. The original publication appears in its dated blog index.",
+          "attribution_note": "AISI publishes the original research agenda on its own site, outlining its own research methods, priority risk domains and future research objectives. The original publication appears in its dated blog index.",
           "qualifies_as": "none",
           "qualification_note": "Research priorities and planned work, rather than reported evaluations or a technical research result.",
           "credit": {
@@ -30589,7 +30594,8 @@
           "title": "Propensity Inference: Environmental Contributors to LLM Behaviour",
           "source_ids": [
             "catalogue-gb-25",
-            "r3-gb-how-do-environmental-factors-impact-ai-behaviour"
+            "r3-gb-how-do-environmental-factors-impact-ai-behaviour",
+            "depth-gb-research"
           ],
           "lineage": "propensity-inference-environmental-contributors-to-llm-behaviour",
           "attribution": "own_publication",
@@ -30794,7 +30800,7 @@
           ],
           "lineage": "alignment-investigation-mythos-5-aisi-incident",
           "attribution": "own_publication",
-          "attribution_note": "The institute’s blog post of 23 October 2026 publishes the technical report by its Alignment Red Team.",
+          "attribution_note": "The institute’s blog post of 23 October 2026 publishes the technical report.",
           "qualifies_as": "published_work",
           "qualification_note": "Reports the method and findings of the institute’s own alignment experiments on a model.",
           "credit": {
@@ -30929,7 +30935,8 @@
           "fix-output-us-entry-14",
           "depth-us-kimi",
           "depth-gb-supply-chain",
-          "gb-pq-39196-2026"
+          "gb-pq-39196-2026",
+          "catalogue-us-artifact-o1"
         ]
       },
       "model_access": {
@@ -31257,7 +31264,7 @@
             "named_as": "Taskforce"
           }
         ],
-        "notes": "Event dates are the model's public release date in Epoch AI's data unless the source dates the access itself; for every event except Gemini 4 Argon the sources state that the access came before release, so the access took place on or before that date. The Epoch AI models cited for the leading-developer test were released at least a month before each such date. Not counted: Kimi K3 (Moonshot, July 2026), as Moonshot has never had a model in Epoch AI's frontier set and the access route is not stated; the Llama 3.1-405B network pilot (October to November 2024), as its weights are public. The developer agreements are the commitments of Anthropic, Google DeepMind and OpenAI to give the institute's predecessor 'deep model access', announced in 2023. No statutory power: no AI bill has been laid. The institute says it has independently evaluated more than 55 models before release, working with industry; the post names no models, so they are not counted as access events. Gemini 4 Argon is dated 13 October 2026, Epoch AI's release date; Google announced it on 30 September 2026, when it was rolling out to a set of trusted cyber defenders through Google's Fairwind Program, with an initial cohort of cyber defenders and trusted testers, and release to developers, enterprises and consumers, starting with paid API customers and Google AI Ultra subscribers, was to follow. The sources do not date the institute's access. A written answer of 2 November 2026 says all the institute's current collaboration agreements are with developers based in the UK and the US; one of 6 November says its evaluations are governed by agreements with the developers and their results are not typically published.",
+        "notes": "Event dates are the model's public release date in Epoch AI's data unless the source dates the access itself; for every event except Gemini 4 Argon the sources state that the access came before release, so the access took place on or before that date. The Epoch AI models cited for the leading-developer test were released at least a month before each such date. Not counted: Kimi K3 (Moonshot, July 2026), as the access route is not stated; the Llama 3.1-405B network pilot (October to November 2024), as its weights are public. The developer agreements are the commitments of Anthropic, Google DeepMind and OpenAI to give the institute's predecessor 'deep model access', announced in 2023. The institute says it has independently evaluated more than 55 models before release, working with industry; the post names no models, so they are not counted as access events. Gemini 4 Argon is dated 13 October 2026, Epoch AI's release date; Google announced it on 30 September 2026, when it was rolling out to a set of trusted cyber defenders through Google's Fairwind Program, with an initial cohort of cyber defenders and trusted testers, and release to developers, enterprises and consumers, starting with paid API customers and Google AI Ultra subscribers, was to follow. The sources do not date the institute's access. A written answer of 2 November 2026 says all the institute's current collaboration agreements are with developers based in the UK and the US; one of 6 November says its evaluations are governed by agreements with the developers and their results are not typically published.",
         "source_ids": [
           "depth-us-kimi",
           "sg-pilot-2024",
@@ -31269,7 +31276,8 @@
           "gb-minister-speech-2026-10-12",
           "google-gemini-4-argon-2026",
           "gb-pq-38577-2026",
-          "gb-pq-38559-2026"
+          "gb-pq-38559-2026",
+          "gb-aisi-launch"
         ],
         "searches": [
           {
@@ -31544,14 +31552,14 @@
           "kind": "not_institute_specific",
           "amount": 13500000,
           "currency": "EUR",
-          "description": "€13.5m from France 2030 for Inria's AI Evaluation research programme, launched on 22 September 2026 and described as INESIA's scientific roadmap. This funds the programme, not INESIA's own operating budget.",
+          "description": "€13.5m from France 2030 for Inria's AI Evaluation research programme, launched on 22 September 2026 and described as INESIA's scientific roadmap. This funds the programme.",
           "source_ids": [
             "r4-fr-inria-evaluation-funding"
           ],
           "confidence": "high",
           "commitment": "announced",
           "funding_source": "national_government",
-          "notes": "No funding period or yearly profile is stated in the announcement, so no annual figure or funding decision date is inferred from the launch. Inria identifies itself as the programme operator and France 2030 as funder. Describing the programme as INESIA's scientific roadmap does not establish an INESIA operating allocation. The source's à hauteur de is read as stating the allocated amount, not a maximum, so no amount bound is recorded.",
+          "notes": "Inria identifies itself as the programme operator and France 2030 as funder. The source's à hauteur de is read as stating the allocated amount, not a maximum, so no amount bound is recorded.",
           "id": "funding-ff6f1638b2625427bba577f6303e0621",
           "coverage": "not_institute_specific"
         }
@@ -31685,7 +31693,7 @@
         "fr-commission-ia-report-2026",
         "r3-gb-network-best-practice-release"
       ],
-      "notes": "Adopted a 2026-27 roadmap in Feb 2026. The named June 2025 joint-testing contribution was verified. SGDSN's network-representation statement was read on 17 October 2026, and a complete archived copy of the article was retained on 18 October; direct retrieval of the original remains blocked by a cookie-validation page. Other French testing work is credited to Inria, LNE and PEReN rather than to INESIA.\n\nOn 10 November 2026 the French presidency announced the handover of the report of the expert commission on generative AI and vulnerabilities; the report recommends strengthening INESIA's mandate and resources, with lasting funding and recruitment of experts. These are recommendations, not adopted changes.",
+      "notes": "Adopted a 2026-27 roadmap in Feb 2026. Other French testing work is credited to Inria, LNE and PEReN rather than to INESIA.\n\nOn 10 November 2026 the French presidency announced the handover of the report of the expert commission on generative AI and vulnerabilities; the report recommends strengthening INESIA's mandate and resources, with lasting funding and recruitment of experts. These are recommendations.",
       "mandate_short": "Builds public expertise in evaluating and securing advanced AI, and supports AI Act implementation.",
       "legal_basis": {
         "type": "administrative",
@@ -31757,7 +31765,7 @@
           ],
           "lineage": "roadmap-2026-2027",
           "attribution": "institutional_author",
-          "attribution_note": "The official DGE announcement explicitly identifies this as the roadmap adopted by INESIA and links the named document. It is a formal original institute roadmap, not a generic government AI strategy. The linked PDF could not be retrieved, so the publication and attribution are supported by the dated official announcement.",
+          "attribution_note": "The official DGE announcement explicitly identifies this as the roadmap adopted by INESIA and links the named document. It is a formal original institute roadmap, not a generic government AI strategy. The publication and attribution are supported by the dated official announcement.",
           "qualifies_as": "none",
           "qualification_note": "Institute programme roadmap, not reported testing or technical research.",
           "credit": {
@@ -31776,7 +31784,7 @@
           ],
           "lineage": "evaluation-prioritisation-guidance",
           "attribution": "institutional_author",
-          "attribution_note": "The official SGDSN search-index text explicitly names INESIA as publishing the blog post and supplies its title and date. Direct page retrieval was blocked, so publication credit relies on the retrieved index text.",
+          "attribution_note": "The official SGDSN search-index text explicitly names INESIA as publishing the blog post and supplies its title and date.",
           "qualifies_as": "none",
           "qualification_note": "Substantive guidance remains in the publication catalogue but does not itself report a qualifying evaluation, test result, benchmark or technical research result.",
           "credit": {
@@ -32117,7 +32125,7 @@
             "start": "2027-01-01",
             "end": "2027-12-31"
           },
-          "notes": "Related funding. The government's written answer of 5 October 2026 names the title as the institute's 2027 funding source without an amount, and says organisational and budget questions that shape staffing are still being settled within government. The amount for the title is from the Bundestag press service's summary of the draft (2026: EUR 89m), which gives the title by name; the title number is from the written answer. The answer of 19 October 2026 gives no institute-specific amount for 2026 to 2029 and leaves budget questions under discussion.",
+          "notes": "Related funding. The government's written answer of 5 October 2026 names the title as the institute's 2027 funding source, and says organisational and budget questions that shape staffing are still being settled within government. The amount for the title is from the Bundestag press service's summary of the draft (2026: EUR 89m), which gives the title by name; the title number is from the written answer. The answer of 19 October 2026 leaves budget questions under discussion.",
           "coverage": "not_institute_specific",
           "id": "funding-4d2b8e6f1a3c47d9b5e0c8a2f6d1b937"
         }
@@ -32241,7 +32249,7 @@
         "de-bsi-ki-themen-2026-10",
         "de-ki-taskforce-2030"
       ],
-      "notes": "Intends to take an active part in the international network. The BSI institute page describes AISI Deutschland as still being set up. BSI publishes a monthly digest, 'Aktuelle KI-Sicherheitsthemen' (issues 08, 09 and 10/2026), as part of setting up the institute; the August issue names AISI Deutschland as recommending in-depth investigation of frontier models but not their broad deployment. The digests are BSI's, not counted as institute outputs. The government's answer of 19 October 2026 leaves the institute's further design, remit, organisational and legal form, staffing, technical equipment and budget under discussion. No completion date is fixed for its stepwise build-up. Parliamentary scrutiny runs through the responsible ministries; no separate regular institute report to the Bundestag is envisaged. The federal government's AI taskforce report of 2 November 2026 calls the current stage an initiation phase and plans to expand the institute step by step into an independent national competence and evaluation institute (build-up phase II).",
+      "notes": "Intends to take an active part in the international network. The BSI institute page describes AISI Deutschland as still being set up. BSI publishes a digest, 'Aktuelle KI-Sicherheitsthemen' (issues 08, 09 and 10/2026), as part of setting up the institute; the August issue names AISI Deutschland as recommending in-depth investigation of frontier models but not their broad deployment. The digests are BSI's, not counted as institute outputs. The government's answer of 19 October 2026 leaves the institute's further design, remit, organisational and legal form, staffing, technical equipment and budget under discussion. Parliamentary scrutiny runs through the responsible ministries. The federal government's AI taskforce report of 2 November 2026 calls the current stage an initiation phase and plans to expand the institute step by step into an independent national competence and evaluation institute (build-up phase II).",
       "name_local": "AI Safety and Security Institute Deutschland",
       "short_name": "AISI Deutschland",
       "mandate_short": "Analyses leading AI models, especially their cyber capabilities and risks.",
@@ -32340,7 +32348,7 @@
       },
       "testing_capacity": {
         "state": "planned",
-        "notes": "Focus statement, not counted as testing: in the first phase of operation 'liegt ein wichtiger Schwerpunkt in der Analyse und Bewertung führender KI-Modelle' (an important focus is the analysis and assessment of leading AI models). In a first phase the Federal Office for Information Security (BSI) and the Federal Network Agency form a virtual nucleus of the institute. BSI's institute page says 'Zurzeit befindet sich das Institut noch im Aufbau. Der Fokus liegt zunächst auf der Beratung von Verwaltung und Politik' (the institute is still being set up; the initial focus is advising government and policy-makers). The government's answer of 19 October 2026 says the institute initially pools existing BSI and BNetzA capabilities and uses and develops existing testing and evaluation methods. It names no completed or ongoing model evaluation by the institute. No separate posts are allocated for the first phase, and technical equipment and further capacity remain under discussion; no joint network testing is credited. The UK-Germany joint statement of 30 June 2026 says both countries 'will share best practice on AI evaluation'. The federal government's AI taskforce report 'Deutschland als KI-Nation 2030' of 2 November 2026 sets a target for 2030 that the institute examine and assess at least 75 per cent of new frontier AI models for security-policy impact within four months; it reports no testing.",
+        "notes": "Focus statement, not counted as testing: in the first phase of operation 'liegt ein wichtiger Schwerpunkt in der Analyse und Bewertung führender KI-Modelle' (an important focus is the analysis and assessment of leading AI models). In a first phase the Federal Office for Information Security (BSI) and the Federal Network Agency form a virtual nucleus of the institute. BSI's institute page says 'Zurzeit befindet sich das Institut noch im Aufbau. Der Fokus liegt zunächst auf der Beratung von Verwaltung und Politik' (the institute is still being set up; the initial focus is advising government and policy-makers). The government's answer of 19 October 2026 says the institute initially pools existing BSI and BNetzA capabilities and uses and develops existing testing and evaluation methods. It says no separate posts are allocated for the first phase, and that technical equipment and further capacity remain under discussion. The UK-Germany joint statement of 30 June 2026 says both countries 'will share best practice on AI evaluation'. The federal government's AI taskforce report 'Deutschland als KI-Nation 2030' of 2 November 2026 sets a target for 2030 that the institute examine and assess at least 75 per cent of new frontier AI models for security-policy impact within four months.",
         "source_ids": [
           "de-breg",
           "de-bmds",
@@ -32351,7 +32359,7 @@
         ]
       },
       "model_access": {
-        "notes": "No access event, legal power or agreement providing for access to, or evaluation of, the models of a developer that has a model in Epoch AI's frontier set was found. BSI states 'Das AISI Deutschland übernimmt ausdrücklich keine Regulierungs- oder Marktüberwachungsfunktion' (AISI Deutschland expressly takes on no regulatory or market-surveillance function), so the Federal Network Agency's AI Act market-surveillance powers are not the institute's. The government's written answer of 6 October 2026 to a parliamentary question says the institute has 'eine wichtige Rolle beim Zugang zu Frontier-KI-Modellen, der internationalen Vernetzung und bei der Bewertung von Sicherheitsrisiken und -anforderungen' (an important role in access to frontier AI models, international networking and assessing security risks and requirements). In the answer of 19 October 2026, the government reports discussions with leading developers and providers to secure access to the most capable models for the institute; it does not report an access event or a developer agreement. No independent institute power to compel information or model access is envisaged. Any necessary public-authority access rights follow the competent authorities' statutory powers, especially the AI Act; this does not establish a legal power of the institute.",
+        "notes": "BSI states 'Das AISI Deutschland übernimmt ausdrücklich keine Regulierungs- oder Marktüberwachungsfunktion' (AISI Deutschland expressly takes on no regulatory or market-surveillance function). The government's written answer of 6 October 2026 to a parliamentary question says the institute has 'eine wichtige Rolle beim Zugang zu Frontier-KI-Modellen, der internationalen Vernetzung und bei der Bewertung von Sicherheitsrisiken und -anforderungen' (an important role in access to frontier AI models, international networking and assessing security risks and requirements). In the answer of 19 October 2026, the government reports discussions with leading developers and providers to secure access to the most capable models for the institute. It says no independent institute power to compel information or model access is envisaged; any necessary public-authority access rights follow the competent authorities' statutory powers, especially the AI Act.",
         "source_ids": [
           "de-bsi-aisi",
           "de-bt-wa-153-2026",
@@ -32954,7 +32962,8 @@
           "description": "NOK 10.0m adopted for KI Norge (budget post 28) in 2026, before the proposed AI safety mandate.",
           "source_ids": [
             "no-prop1s-2026-27-dfd",
-            "r11-no-fiscal-year"
+            "r11-no-fiscal-year",
+            "no-budget"
           ],
           "annual_amount": 10000000,
           "annual_basis": "Adopted 2026 appropriation for KI Norge's general work, shown as the 2026 adopted budget in the 2027 budget proposal; funding of the body before its proposed AI safety mandate, not expenditure.",
@@ -33098,7 +33107,7 @@
       },
       "name_local": "KI Norge",
       "short_name": "KI Norge",
-      "notes": "The budget proposal combines an AI safety mandate with a contact-point role for international safety communities, including AI Safety Institutes. It also describes guidance on risk and suitable use when choosing specific models. The counterpart route supports proposed status; the proposal does not establish an operating institute. Other staff figures differ: a May 2026 press report gave about ten staff, and a job advertisement read on 24 October 2026 offered 16 permanent posts.",
+      "notes": "The budget proposal combines an AI safety mandate with a contact-point role for international safety communities, including AI Safety Institutes. It also describes guidance on risk and suitable use when choosing specific models. The counterpart route supports proposed status. Other staff figures differ: a May 2026 press report gave about ten staff, and a job advertisement offered 16 permanent posts.",
       "wikidata": null,
       "identifier_notes": "No matching Wikidata institute item verified in label and official-name searches on 17 October 2026; null does not establish that no item exists.",
       "agreements": [
@@ -33126,9 +33135,10 @@
           "source_ids": [
             "r5-no-holte-appointment",
             "no-ki-holte-june",
-            "no-holte-appointment-dfd"
+            "no-holte-appointment-dfd",
+            "no-budget"
           ],
-          "notes": "Digdir's 7 May 2026 announcement gave August 2026 as the planned start. KI Norge's article published on 1 June 2026 presents Holte as director and gives 12 June 2026 as the organisation's official launch. His actual start date is unresolved. The additional AI safety and model-evaluation mandate remains proposed. This appointment does not establish an operational safety institute.",
+          "notes": "Digdir's 7 May 2026 announcement gave August 2026 as the planned start. KI Norge's article published on 1 June 2026 presents Holte as director and gives 12 June 2026 as the organisation's official launch. The additional AI safety and model-evaluation mandate remains proposed.",
           "id": "people-2d72b937814c5e4885e71e2f8af219e3",
           "background": "Holte was Director of Labour and Welfare from 2020 to 2025."
         }
@@ -33669,7 +33679,7 @@
           "id": "agreements-8ca5744acde3539a888e75c7d1c28dcb"
         }
       ],
-      "notes": "The first General-Purpose AI Code of Practice draft is excluded from the output catalogue: independent experts drafted it and the AI Office published it as facilitator. This does not meet the institute-authorship or own-work credit rule. The announcement-to-establishment interval counts from the Commission decision of 24 January 2024, the first government act on the Office; earlier announcements of the AI Act's political agreement are not counted. POLITICO reported on 31 July 2026 that the Commission was hiring contract agents for two units of the Office, one for AI regulation and compliance and one for the risks of cutting-edge models, which had a combined staff of 71, and that it expected 40 jobs to open in the two units during 2027; this press report does not change the staff figure. The Office's call for tenders EC-CNECT/2025/OP/0032 of 10 July 2025 for technical support on general-purpose AI safety has a total budget of EUR 9m from the Digital Europe Programme, in six lots with maximum values of EUR 1.08m to EUR 2m and durations of 24 or 36 months. This is a procurement ceiling, not a funding record. POLITICO reported on 6 March 2024 that the MEP Dragoș Tudorache, citing conversations with Commission officials, said the Office's starting budget would be EUR 46.5m; a Commission spokesperson said its funding would be reallocated from the Digital Europe Programme but declined to give specifics. This press report is not a funding record. The same report said that a Commission spokesperson had put the Office's planned total staff at 98, two of them working at the European Data Protection Supervisor, with 18 coming from other Commission units and 80 hired externally as contract staff or seconded national experts; this press report does not change the staff figure.",
+      "notes": "The first General-Purpose AI Code of Practice draft is excluded from the output catalogue: independent experts drafted it and the AI Office published it as facilitator. This does not meet the institute-authorship or own-work credit rule. The announcement-to-establishment interval counts from the Commission decision of 24 January 2024; earlier announcements of the AI Act's political agreement are not counted. POLITICO reported on 31 July 2026 that the Commission was hiring contract agents for two units of the Office, one for AI regulation and compliance and one for the risks of cutting-edge models, which had a combined staff of 71, and that it expected 40 jobs to open in the two units during 2027; this press report does not change the staff figure. The Office's call for tenders EC-CNECT/2025/OP/0032 of 10 July 2025 for technical support on general-purpose AI safety has a total budget of EUR 9m from the Digital Europe Programme, in six lots with maximum values of EUR 1.08m to EUR 2m and durations of 24 or 36 months. This is a procurement ceiling, not a funding record. POLITICO reported on 6 March 2024 that the MEP Dragoș Tudorache, citing conversations with Commission officials, said the Office's starting budget would be EUR 46.5m; a Commission spokesperson said its funding would be reallocated from the Digital Europe Programme but declined to give specifics. This press report is not a funding record. The same report said that a Commission spokesperson had put the Office's planned total staff at 98, two of them working at the European Data Protection Supervisor, with 18 coming from other Commission units and 80 hired externally as contract staff or seconded national experts; this press report does not change the staff figure.",
       "head": {
         "state": "stated",
         "person_id": "people-ff3044c04c6d5bc490489df29a84f83a",
@@ -33743,10 +33753,11 @@
             "named_as": "AI Office"
           }
         ],
-        "notes": "Testing reported, 2025-07-17: the AI Office ran the agentic evaluations for the cybersecurity strand of the network's joint testing; no AI Office evaluation of a named provider model was found. External evaluation support was procured under EC-CNECT/2025/OP/0032: lots 1 to 5 (CBRN, cyber offence, loss of control, harmful manipulation and sociotechnical risks) include ad hoc evaluations of general-purpose AI models chosen by the AI Office, and lot 6 builds an agentic evaluation interface for it. The award notice (OJ S 249/2025, 26 December 2025) lists the contractors by lot: lot 1 FAR AI, SecureBio and SaferAI; lot 2 Capgemini Consulting, Wavestone and the Laboratoire national de métrologie et d'essais; lot 3 EquiStamp, Model Evaluation and Threat Research and Epoch Artificial Intelligence; lot 4 EquiStamp, Clarity AI Research and the Centre pour la Sécurité de l'IA; lot 5 Technopolis Consulting Group Belgium, WIK-Consult and TNO; lot 6 the French ministry responsible for the budget and the Laboratoire national de métrologie et d'essais. No completed contractor evaluation has been published.",
+        "notes": "Testing reported, 2025-07-17: the AI Office ran the agentic evaluations for the cybersecurity strand of the network's joint testing. External evaluation support was procured under EC-CNECT/2025/OP/0032: lots 1 to 5 (CBRN, cyber offence, loss of control, harmful manipulation and sociotechnical risks) include ad hoc evaluations of general-purpose AI models chosen by the AI Office, and lot 6 builds an agentic evaluation interface for it. The award notice (OJ S 249/2025, 26 December 2025) lists the contractors by lot: lot 1 FAR AI, SecureBio and SaferAI; lot 2 Capgemini Consulting, Wavestone and the Laboratoire national de métrologie et d'essais; lot 3 EquiStamp, Model Evaluation and Threat Research and Epoch Artificial Intelligence; lot 4 EquiStamp, Clarity AI Research and the Centre pour la Sécurité de l'IA; lot 5 Technopolis Consulting Group Belgium, WIK-Consult and TNO; lot 6 the French ministry responsible for the budget and the Laboratoire national de métrologie et d'essais.",
         "source_ids": [
           "eu-joint-testing-2025",
-          "eu-ted-864574-2025"
+          "eu-ted-864574-2025",
+          "eu-tender-op-0032-specifications"
         ]
       },
       "model_access": {
@@ -33760,7 +33771,7 @@
             "eu-ir-2026-1755"
           ]
         },
-        "notes": "Commission Implementing Regulation (EU) 2026/1755 sets the arrangements: the access 'shall be appropriate to the objectives of the evaluation' and may include access through APIs, internal access, source code and model weights. No use of the power was found, and no access given to the AI Office by a developer was found; the network joint testing used open-weight models. Signing the general-purpose AI Code of Practice is not counted as an access agreement. Whether the evaluation contractors get privileged access is unknown: the tender specifications make the contractor responsible for 'the API costs associated with the GPAI model' and say 'Where not feasible, the AI Office shall aim to provide the required access.'",
+        "notes": "Commission Implementing Regulation (EU) 2026/1755 sets the arrangements: the access 'shall be appropriate to the objectives of the evaluation' and may include access through APIs, internal access, source code and model weights. The network joint testing used open-weight models. Signing the general-purpose AI Code of Practice is not counted as an access agreement. The tender specifications make the contractor responsible for 'the API costs associated with the GPAI model' and say 'Where not feasible, the AI Office shall aim to provide the required access.'",
         "source_ids": [
           "eu-ir-2026-1755",
           "eu-tender-op-0032-specifications",
@@ -34039,7 +34050,7 @@
           "funding_source": "supranational",
           "coverage": "whole_institute",
           "id": "funding-7507fd8b7767470bbecb06ab3f94cca2",
-          "notes": "The Commission decision of 24 January 2024 covers the human resources costs of the Office's external statutory staff by redeploying Digital Europe Programme administrative support appropriations, and its operational expenditure from the Programme's Specific Objective 2. This record supplies no amount."
+          "notes": "The Commission decision of 24 January 2024 covers the human resources costs of the Office's external statutory staff by redeploying Digital Europe Programme administrative support appropriations, and its operational expenditure from the Programme's Specific Objective 2."
         }
       ]
     },
@@ -40882,6 +40893,40 @@
             ]
           ],
           "accessed": "2026-10-17"
+        },
+        {
+          "text": "This new name will reflect its focus on serious AI risks with security implications",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "GB"
+              },
+              "timeline",
+              {
+                "id": "gb-2025-mandate-changed"
+              },
+              "description"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "The Institute's focus from the start has been on security and we've built a team of scientists focused on evaluating serious risks to the public.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "GB"
+              },
+              "timeline",
+              {
+                "id": "gb-2025-mandate-changed"
+              },
+              "description"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "GB",
@@ -41198,6 +41243,40 @@
                 "id": "claims-ee398e53899849d9a3eb3183952b3c63"
               },
               "text"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "£66m in funding per financial year and long-term resourcing commitments",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-2da3817e81915eca86fd0a0799453a97"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Our Chief Technology Officer Jade Leung is also the Prime Minister's AI Advisor, and she previously led the Governance team at OpenAI.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "people",
+              {
+                "id": "people-540493becb4c5a4dbd2bdb9cf61476fe"
+              },
+              "notes"
             ]
           ],
           "accessed": "2026-10-17"
@@ -41886,6 +41965,60 @@
           ],
           "accessed": "2026-10-17",
           "gloss": "(INESIA), the State gives concrete form to its commitment to a controlled development of AI within a framework of trust and security. This institute has the mission of federating, without creating a new legal structure, the national actors in evaluation and security"
+        },
+        {
+          "text": "à fédérer un écosystème dynamique de chercheurs et d'ingénieurs issus de l'ANSSI, d'Inria, du LNE et du PEReN.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "FR"
+              },
+              "timeline",
+              {
+                "id": "fr-1"
+              },
+              "description"
+            ]
+          ],
+          "gloss": "to bring together an active community of researchers and engineers from ANSSI, Inria, LNE and PEReN.",
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Piloté par le secrétariat général de la défense et de la sécurité nationale (SGDSN) au nom du Premier ministre et par la Direction générale des Entreprises (DGE)",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "FR"
+              },
+              "timeline",
+              {
+                "id": "fr-1"
+              },
+              "description"
+            ]
+          ],
+          "gloss": "Steered by the Secretariat-General for Defence and National Security (SGDSN) on behalf of the Prime Minister and by the Directorate-General for Enterprise (DGE)",
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Mme Clara Chappaz, ministre déléguée chargée de l'Intelligence artificielle et du Numérique, annonce le lancement d'un institut national consacré à l'évaluation et la sécurité de l'IA",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "FR"
+              },
+              "timeline",
+              {
+                "id": "fr-2"
+              },
+              "description"
+            ]
+          ],
+          "gloss": "Ms Clara Chappaz, Minister Delegate for Artificial Intelligence and Digital Affairs, announces the launch of a national institute devoted to AI evaluation and safety.",
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "FR",
@@ -42161,6 +42294,14 @@
                 "id": "claims-3471353e22c8451ba08064730b29dd3f"
               },
               "text"
+            ],
+            [
+              "institutes",
+              {
+                "id": "de-aisi"
+              },
+              "testing_capacity",
+              "notes"
             ]
           ],
           "gloss": "The Federal Office for Information Security (BSI) and the Federal Network Agency (BNetzA) form, in a first phase, the “virtual” nucleus of the AI security institute",
@@ -42336,6 +42477,35 @@
             ]
           ],
           "gloss": "In a first phase the Federal Office for Information Security (BSI) and the Federal Network Agency (BNetzA) form the \"virtual\" nucleus of the AI safety institute",
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Das deutsche KI-Sicherheitsinstitut wird sich ferner aktiv in das internationale Netzwerk von KI-Sicherheitsinstituten einbringen",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "de-aisi"
+              },
+              "notes"
+            ]
+          ],
+          "gloss": "The German AI security institute will take an active part in the international network of AI safety institutes.",
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "In der jetzt laufenden ersten Phase des Institutsbetriebs liegt ein wichtiger Schwerpunkt in der Analyse und Bewertung führender KI-Modelle",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "de-aisi"
+              },
+              "testing_capacity",
+              "notes"
+            ]
+          ],
+          "gloss": "In the current first phase of the institute's operation, an important focus is the analysis and assessment of leading AI models.",
           "accessed": "2026-10-17"
         }
       ],
@@ -43112,6 +43282,24 @@
             }
           ],
           "accessed": "2026-10-17"
+        },
+        {
+          "text": "4. Instituto de Seguridad de la Inteligencia Artificial en la AESIA. España se dotará de un Instituto de Seguridad de la Inteligencia Artificial",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "ES"
+              },
+              "timeline",
+              {
+                "id": "es-1"
+              },
+              "description"
+            ]
+          ],
+          "gloss": "4. Institute for the Security of Artificial Intelligence within AESIA. Spain will establish an Institute for the Security of Artificial Intelligence",
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "ES",
@@ -43374,6 +43562,46 @@
               },
               "staffing_model",
               "notes"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "funding",
+              {
+                "id": "funding-e47a2c9b1d5f4086b3c8a1e6d9f2b705"
+              },
+              "description"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "funding",
+              {
+                "id": "funding-e47a2c9b1d5f4086b3c8a1e6d9f2b705"
+              },
+              "notes"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "notes"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "people",
+              {
+                "id": "people-2d72b937814c5e4885e71e2f8af219e3"
+              },
+              "notes"
             ]
           ],
           "accessed": "2026-10-17"
@@ -43477,6 +43705,13 @@
               },
               "staffing_model",
               "notes"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "notes"
             ]
           ],
           "accessed": "2026-10-24",
@@ -43517,6 +43752,60 @@
             ]
           ],
           "gloss": "In addition, KI Norge is to be the contact point towards international safety communities, for example AI Safety Institutes. This is to give access to methods, test tools and assessments that Norway cannot build up alone.",
+          "accessed": "2026-10-21"
+        },
+        {
+          "text": "Samla foreslår regjeringa ei satsing på KI og nye digitaliseringstiltak i 2027 på om lag 2,2 milliardar kroner.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "NO"
+              },
+              "timeline",
+              {
+                "id": "no-1"
+              },
+              "description"
+            ]
+          ],
+          "gloss": "In total, the government proposes spending about 2.2 billion kroner on AI and new digitalisation measures in 2027.",
+          "accessed": "2026-10-21"
+        },
+        {
+          "text": "Evalueringsarbeidet skal skje i samarbeid med forskingsinstitusjonane, som i dag sit på fagkompetansen som slike evalueringar krev.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "NO"
+              },
+              "timeline",
+              {
+                "id": "no-1"
+              },
+              "description"
+            ]
+          ],
+          "gloss": "The evaluation work will take place in cooperation with the research institutions that currently hold the expertise these evaluations require.",
+          "accessed": "2026-10-21"
+        },
+        {
+          "text": "Forslaget skal gi auka kapasitet til å evaluere KI-modeller",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "people",
+              {
+                "id": "people-2d72b937814c5e4885e71e2f8af219e3"
+              },
+              "notes"
+            ]
+          ],
+          "gloss": "The proposal is to increase capacity to evaluate AI models.",
           "accessed": "2026-10-21"
         }
       ],
@@ -47319,6 +47608,14 @@
                 "id": "gb-access-agreement-taskforce-anthropic"
               },
               "agreement_id"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "model_access",
+              "notes"
             ]
           ]
         },
@@ -47443,6 +47740,17 @@
                 "id": "gb-2023-09-07-named"
               },
               "description"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "GB"
+              },
+              "timeline",
+              {
+                "id": "gb-2023-04-24-named"
+              },
+              "description"
             ]
           ],
           "accessed": "2026-10-21"
@@ -47505,6 +47813,37 @@
             ]
           ],
           "accessed": "2026-11-14"
+        },
+        {
+          "text": "Independent report Frontier AI Taskforce: first progress report",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "frontier-ai-taskforce-first-progress-report"
+              },
+              "attribution_note"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "A core goal of the Taskforce is to give AI researchers inside the government the same resources to work on AI Safety that they would find at leading companies like Anthropic, DeepMind, or OpenAI.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "model_access",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "GB",
@@ -47691,6 +48030,28 @@
                 "id": "gb-2"
               },
               "description"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "GB"
+              },
+              "timeline",
+              {
+                "id": "gb-2023-04-24-named"
+              },
+              "description"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "frontier-ai-taskforce-first-progress-report"
+              },
+              "attribution_note"
             ]
           ],
           "accessed": "2026-10-17"
@@ -47711,6 +48072,37 @@
             ]
           ],
           "accessed": "2026-10-17"
+        },
+        {
+          "text": "After four months of building the first team inside a G7 Government that can evaluate the risks of frontier AI models, it has been confirmed today that the Frontier AI Taskforce will now evolve to become the AI Safety Institute, with Ian Hogarth continuing as its Chair.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "GB"
+              },
+              "timeline",
+              {
+                "id": "gb-3"
+              },
+              "description"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "the Frontier AI Taskforce will now evolve to become the AI Safety Institute",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "model_access",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "GB",
@@ -47719,7 +48111,8 @@
         "sha256": "892a7718e6ca45af9473b00cb640278afbb10d0e5e5f795e86a8737e6438faeb",
         "text_sha256": "6f3918ff0c21e6a5c276133eedb978b383d11b7ad1eedf2ba267438c50695f81",
         "text_scheme": 1
-      }
+      },
+      "output_role": "context"
     },
     {
       "id": "au-industry",
@@ -49226,6 +49619,13 @@
               },
               "credit",
               "institute_id"
+            ],
+            [
+              "institutes",
+              {
+                "id": "fr-inesia"
+              },
+              "notes"
             ]
           ],
           "accessed": "2026-10-17",
@@ -49359,6 +49759,20 @@
             ]
           ],
           "gloss": "Inria, the LNE and PEReN carried out joint testing exercises on advanced AI models, whose results were published in July 2025",
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Inria, le LNE et le PEReN ont mené des exercices d'essais conjoints de modèles d'IA avancés, dont les résultats ont été publiés en juillet 2025",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "fr-inesia"
+              },
+              "notes"
+            ]
+          ],
+          "gloss": "Inria, LNE and PEReN carried out joint testing exercises on advanced AI models, with results published in July 2025.",
           "accessed": "2026-10-17"
         }
       ],
@@ -54962,6 +55376,31 @@
                 "id": "claims-d2a39520239642d5bf05275cd06a7ea5"
               },
               "text"
+            ],
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "testing_capacity",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "It was one of the three Network’s members that ran the agentic evaluations for the cybersecurity strand.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "fr-inesia"
+              },
+              "outputs",
+              {
+                "lineage": "network-agentic-2025"
+              },
+              "attribution_note"
             ]
           ],
           "accessed": "2026-10-17"
@@ -55426,6 +55865,36 @@
               "gloss": "AISI Deutschland brings together technical, strategic and security-policy expertise in one central body. Its core tasks include in particular:"
             }
           ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Zurzeit befindet sich das Institut noch im Aufbau. Der Fokus liegt zunächst auf der Beratung von Verwaltung und Politik",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "de-aisi"
+              },
+              "testing_capacity",
+              "notes"
+            ]
+          ],
+          "gloss": "The institute is currently still being set up. Its initial focus is advising government administration and policy-makers.",
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Das AISI Deutschland übernimmt ausdrücklich keine Regulierungs- oder Marktüberwachungsfunktion.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "de-aisi"
+              },
+              "model_access",
+              "notes"
+            ]
+          ],
+          "gloss": "AISI Deutschland expressly takes on no regulatory or market-surveillance function.",
           "accessed": "2026-10-17"
         }
       ],
@@ -61593,6 +62062,17 @@
               },
               "credit",
               "institute_id"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "network-multilingual-2025"
+              },
+              "attribution_note"
             ]
           ]
         },
@@ -62639,6 +63119,20 @@
             ]
           ],
           "accessed": "2026-10-21"
+        },
+        {
+          "text": "The U.S. Artificial Intelligence Safety Institute (US AISI) and the UK Artificial Intelligence Safety Institute (UK AISI) conducted a joint pre-deployment evaluation of Anthropic's latest model – the upgraded Claude 3.5 Sonnet (released October 22, 2024).",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "testing_capacity",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "US",
@@ -64602,6 +65096,28 @@
                 "id": "claims-2374a6bc543044d79674e38d471b29da"
               },
               "text"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "model_access",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "For this proof of concept, the Network used an open foundation model, Llama-3.1 405B.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "model_access",
+              "notes"
             ]
           ],
           "accessed": "2026-10-17"
@@ -65350,6 +65866,17 @@
               },
               "legal_basis",
               "type"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "DE"
+              },
+              "timeline",
+              {
+                "id": "de-1"
+              },
+              "description"
             ]
           ]
         }
@@ -65626,6 +66153,14 @@
                 "id": "funding-7507fd8b7767470bbecb06ab3f94cca2"
               },
               "notes"
+            ],
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "staffing_model",
+              "notes"
             ]
           ],
           "accessed": "2026-11-14"
@@ -65811,6 +66346,33 @@
               "kind": "definition"
             }
           ]
+        },
+        {
+          "text": "following the political agreement of the co-legislators achieved on 8 December 2023",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "The Office shall be part of the administrative structure of the Directorate-General for Communication Networks, Content and Technology (the 'Directorate-General').",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "staffing_model",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "EU",
@@ -69575,6 +70137,23 @@
             ]
           ],
           "accessed": "2026-10-17"
+        },
+        {
+          "text": "the release of the AI Safety Institute's homegrown Inspect evaluations platform.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "inspect-ai-safety-evaluation-platform"
+              },
+              "attribution_note"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "GB",
@@ -69696,6 +70275,51 @@
               },
               "credit",
               "date"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "uk-aisi-alignment-evaluation-case-study"
+              },
+              "attribution_note"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Propensity Inference: Environmental Contributors to LLM Behaviour",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "propensity-inference-environmental-contributors-to-llm-behaviour"
+              },
+              "attribution_note"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Evaluating Whether GPT-6 Astra Performs Unsanctioned Supply-Chain Attacks Red Team • Sep 28, 2026",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "evaluating-whether-gpt-6-astra-performs-unsanctioned-supply-chain-attacks"
+              },
+              "attribution_note"
             ]
           ],
           "accessed": "2026-10-17"
@@ -69853,6 +70477,28 @@
                 "id": "claims-cc4b4a9808b4461a896887d7759ef525"
               },
               "text"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "testing_capacity",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "conducted a joint evaluation of Moonshot AI's latest model, Kimi K3 (released on July 16, 2026 and slated for open-weight release by July 27, 2026).",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "model_access",
+              "notes"
             ]
           ],
           "accessed": "2026-10-17"
@@ -70433,6 +71079,14 @@
               },
               "credit",
               "institute_id"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "testing_capacity",
+              "notes"
             ]
           ],
           "accessed": "2026-10-17"
@@ -71523,6 +72177,23 @@
             ]
           ],
           "accessed": "2026-10-17"
+        },
+        {
+          "text": "The UK AI Security Institute (AISI) has conducted evaluations of frontier AI systems since November 2023 across domains critical to national security and public safety. This report presents our first public analysis of the trends we've observed.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "aisi-frontier-ai-trends-report-2025"
+              },
+              "attribution_note"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "GB",
@@ -71642,6 +72313,23 @@
               },
               "credit",
               "institute_id"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "This technical report presents methods developed by the UK AI Security Institute for assessing whether advanced AI systems reliably follow intended goals.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "uk-aisi-alignment-evaluation-case-study"
+              },
+              "attribution_note"
             ]
           ],
           "accessed": "2026-10-17"
@@ -72274,6 +72962,23 @@
             ]
           ],
           "accessed": "2026-10-17"
+        },
+        {
+          "text": "In this paper, we cover how and why frontier AI developers might also want to use safety cases.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "safety-cases-a-scalable-approach-to-frontier-ai-safety"
+              },
+              "attribution_note"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "GB",
@@ -72378,6 +73083,23 @@
                 "id": "claims-5fba9aa420344b75a4a43a7a041e01ae"
               },
               "text"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Safeguards Analysis Team UK AI Safety Institute Department for Science, Innovation and Technology",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "principles-for-evaluating-misuse-safeguards-of-frontier-ai-systems"
+              },
+              "attribution_note"
             ]
           ],
           "accessed": "2026-10-17"
@@ -75642,6 +76364,20 @@
             ]
           ],
           "accessed": "2026-10-17"
+        },
+        {
+          "text": "The evaluation exercise was conducted jointly by US AISI and UK AISI and this report describes the methodology and findings of US AISI and UK AISI's evaluations.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "testing_capacity",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "US",
@@ -76355,6 +77091,14 @@
                 "id": "claims-5ad34bd4030d47c0851583a0a40a9879"
               },
               "text"
+            ],
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "model_access",
+              "notes"
             ]
           ],
           "accessed": "2026-10-17"
@@ -78557,6 +79301,17 @@
               },
               "credit",
               "date"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "research-agenda"
+              },
+              "attribution_note"
             ]
           ],
           "accessed": "2026-10-17"
@@ -78591,6 +79346,40 @@
                 "id": "claims-4d5eeda7663f4d659d6e71243c25a157"
               },
               "text"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Open sourcing our testing framework Inspect Blog Organisation • Apr 21, 2024",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "inspect-ai-safety-evaluation-platform"
+              },
+              "attribution_note"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "HiBayES: Improving LLM evaluation with hierarchical Bayesian modelling Blog Science of Evaluations • May 12, 2025",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "hibayes"
+              },
+              "attribution_note"
             ]
           ],
           "accessed": "2026-10-17"
@@ -86471,7 +87260,26 @@
         "sha256": "1d89a2a77ef0dc0f5d44391be107ee17e85f12004527918d0fd68a6ba71c9b4c",
         "text_sha256": "2db9f14697f90b34ce34ec1e9d5233b4de7f706e3dad748c23440e9266dd3be0",
         "text_scheme": 1
-      }
+      },
+      "excerpts": [
+        {
+          "text": "Today, we're releasing Inspect Cyber to standardise and streamline the process of creating and running agentic cyber evaluations",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "inspect-cyber"
+              },
+              "attribution_note"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        }
+      ]
     },
     {
       "id": "fix-output-uk-extra-7",
@@ -86706,6 +87514,23 @@
             ]
           ],
           "accessed": "2026-10-17"
+        },
+        {
+          "text": "During a routine cyber evaluation, AISI identified an incident in which AI agents took sustained, unsanctioned action directed at real people and organisations.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "security-incident-inc-2026-07-28-01"
+              },
+              "attribution_note"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "GB",
@@ -86762,6 +87587,23 @@
               "institute_id"
             ]
           ]
+        },
+        {
+          "text": "The core components of an LFT are (i) a prompt, which asks the LLM to generate detailed instructions to accomplish a high-level goal; and (ii) an autograder which uses a rubric written by domain experts to assign a score to the instructions provided.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "long-form-tasks"
+              },
+              "attribution_note"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "GB",
@@ -86816,6 +87658,17 @@
               },
               "credit",
               "institute_id"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "early-evaluation-lessons"
+              },
+              "attribution_note"
             ]
           ]
         }
@@ -86864,6 +87717,23 @@
               },
               "credit",
               "institute_id"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Building on Inspect's momentum, today we are releasing the AISI Engineering Playbook, a complete resource that captures the methods and practices we've developed while evaluating frontier AI systems.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "engineering-playbook"
+              },
+              "attribution_note"
             ]
           ],
           "accessed": "2026-10-17"
@@ -87786,6 +88656,23 @@
             ]
           ],
           "accessed": "2026-10-17"
+        },
+        {
+          "text": "Our first technical blog post shares a snapshot of our methods and results.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "advanced-evaluations-may-2024"
+              },
+              "attribution_note"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "GB",
@@ -87850,6 +88737,40 @@
               },
               "credit",
               "institute_id"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Our QA evaluations involve posing open-ended questions and assessing the responses based on detailed grading guidance.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "question-answer-evaluation-insights"
+              },
+              "attribution_note"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "This blog post shares our experiences and key insights from this work.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "question-answer-evaluation-insights"
+              },
+              "attribution_note"
             ]
           ],
           "accessed": "2026-10-17"
@@ -87982,6 +88903,40 @@
               },
               "credit",
               "institute_id"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Contributors Chair Prof. Yoshua Bengio",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "international-ai-safety-report-2026"
+              },
+              "attribution_note"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Annual Report International AI Safety Report 2026 The second International AI Safety Report, published in February 2026, is the next iteration of the comprehensive review of latest scientific research on the capabilities and risks of general-purpose AI systems.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "international-ai-safety-report-2026"
+              },
+              "attribution_note"
             ]
           ],
           "accessed": "2026-10-17"
@@ -88470,6 +89425,40 @@
             ]
           ],
           "accessed": "2026-10-19"
+        },
+        {
+          "text": "We conduct expert probing, where cyber experts prompt models to assess how much useful information can be extracted from them.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "research-agenda"
+              },
+              "attribution_note"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "We will continue to evaluate and scan the horizon to ensure we focus our research on the most critical risks, one emerging area we are exploring is routes to help combat Child Sexual Abuse Material (CSAM) risks stemming from both proprietary and open-source models.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "research-agenda"
+              },
+              "attribution_note"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "GB",
@@ -91074,6 +92063,23 @@
               "text"
             ]
           ]
+        },
+        {
+          "text": "This guidance builds on and is intended to complement existing best practice publications – most notably NIST AI 800-2 – while providing specific recommendations to third-party evaluators, such as on capability elicitation.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "naaimes-automated-evaluation-best-practice-2026"
+              },
+              "attribution_note"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "GB",
@@ -93372,6 +94378,28 @@
                 "id": "funding-2da3817e81915eca86fd0a0799453a97"
               },
               "description"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-9efb56f77c7a5a6c8ca9eee9f9db9191"
+              },
+              "description"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-2da3817e81915eca86fd0a0799453a97"
+              },
+              "notes"
             ]
           ]
         },
@@ -93421,6 +94449,28 @@
                 "id": "funding-2da3817e81915eca86fd0a0799453a97"
               },
               "description"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-9efb56f77c7a5a6c8ca9eee9f9db9191"
+              },
+              "description"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-2da3817e81915eca86fd0a0799453a97"
+              },
+              "notes"
             ]
           ]
         },
@@ -93507,8 +94557,75 @@
                 "id": "funding-2da3817e81915eca86fd0a0799453a97"
               },
               "description"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-9efb56f77c7a5a6c8ca9eee9f9db9191"
+              },
+              "description"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-2da3817e81915eca86fd0a0799453a97"
+              },
+              "notes"
             ]
           ]
+        },
+        {
+          "text": "Funding reflects planned activity to maintain current operations over the SR period",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-9efb56f77c7a5a6c8ca9eee9f9db9191"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "However, this means figures in this publication should be treated as a guide and will not necessarily reconcile to outturn data at the end of each financial year.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-9efb56f77c7a5a6c8ca9eee9f9db9191"
+              },
+              "notes"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-2da3817e81915eca86fd0a0799453a97"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "snapshot": {
@@ -97300,6 +98417,24 @@
           ],
           "accessed": "2026-10-18",
           "gloss": "a high-technology testing laboratory"
+        },
+        {
+          "text": "AI-kommissionen föreslår också att institutet ska ha kapacitet att vara värd för ett högteknologiskt testlaboratorium",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "SE"
+              },
+              "timeline",
+              {
+                "id": "se-advisory-recommendation-2024"
+              },
+              "description"
+            ]
+          ],
+          "gloss": "The AI Commission also proposes that the institute should have the capacity to host a high-technology testing laboratory.",
+          "accessed": "2026-10-18"
         }
       ],
       "snapshot": {
@@ -98650,6 +99785,17 @@
               },
               "credit",
               "institute_id"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "loss-of-oversight-how-ai-systems-may-become-harder-to-audit-monitor-and-investigate"
+              },
+              "attribution_note"
             ]
           ]
         },
@@ -98710,6 +99856,23 @@
               "institute_id"
             ]
           ]
+        },
+        {
+          "text": "Apr 22, 2025",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "replibench-evaluating-the-autonomous-replication-capabilities-of-language-model-agents"
+              },
+              "attribution_note"
+            ]
+          ],
+          "accessed": "2026-10-18"
         }
       ],
       "snapshot": {
@@ -98747,6 +99910,17 @@
               },
               "credit",
               "institute_id"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "hibayes"
+              },
+              "attribution_note"
             ]
           ]
         }
@@ -107474,6 +108648,184 @@
             ]
           ],
           "accessed": "2026-11-08"
+        },
+        {
+          "text": "Lot 1 - CBRN Risk Modelling and Evaluation 1,850,000€ Lot 2 - Cyber Offence Risk Modelling and Evaluation 2,000,000€ Lot 3 - Loss of Control Risk Modelling and Evaluation 1,800,000€",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-10-21"
+        },
+        {
+          "text": "Lot 4 - Harmful Manipulation Risk Modelling and Evaluation 1,300,000€ Lot 5 - Sociotechnical Risk Modelling and Evaluation 1,300,000€ Lot 6 - Agentic Evaluation Interface 1,080,000€",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-10-21"
+        },
+        {
+          "text": "Lot 1 - CBRN Risk Modelling and Evaluation 36 months Lot 2 - Cyber Offence Risk Modelling and Evaluation 36 months Lot 3 - Loss of Control Risk Modelling and Evaluation 36 months",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-10-21"
+        },
+        {
+          "text": "Lot 4 - Harmful Manipulation Risk Modelling and Evaluation 36 months Lot 5 - Sociotechnical Risk Modelling and Evaluation 36 months Lot 6 - Agentic Evaluation Interface 24 months",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-10-21"
+        },
+        {
+          "text": "This tender has been split into six lots. Five of those lots are dedicated to specific systemic risks, namely (i) CBRN risks, (ii) cyber offence risks, (iii) loss of control risks, (iv) harmful manipulation risks and (v) sociotechnical risks.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "testing_capacity",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-10-21"
+        },
+        {
+          "text": "Ad hoc and on demand services for complex evaluations, including for example redteaming and uplift evaluations.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "testing_capacity",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-10-21"
+        },
+        {
+          "text": "to coordinate \"uplift evaluations\" for a GPAI model of the AI Office's choosing",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "testing_capacity",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-10-21"
+        },
+        {
+          "text": "Lot 6: agentic evaluation interface Software, Cloud infrastructure support, and methodology to evaluate GPAI on diverse types of benchmarks, focusing on agentic interaction and complex agentic benchmarks.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "testing_capacity",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-10-21"
+        },
+        {
+          "text": "Every risk-specific lot has a similar structure, containing the following services:",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "testing_capacity",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-10-21"
+        },
+        {
+          "text": "to execute evaluations with a GPAI model of the AI Office's choosing",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "testing_capacity",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-10-21"
+        },
+        {
+          "text": "to coordinate an evaluation of a GPAI model of the AI Office's choosing",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "testing_capacity",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-10-21"
+        },
+        {
+          "text": "The contractor is responsible for any costs associated with the requested evaluation, including but not limited to, the API costs associated with the GPAI model.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "model_access",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-10-21"
+        },
+        {
+          "text": "Where reasonably feasibly, the contractor should ensure they have permission from the GPAI model provider to temporarily break the terms of service for the purpose of the exercise. Where not feasible, the AI Office shall aim to provide the required access.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "model_access",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-10-21"
         }
       ],
       "snapshot": {
@@ -107601,6 +108953,132 @@
             ]
           ],
           "accessed": "2026-10-21"
+        },
+        {
+          "text": "OJ S 249/2025 26/12/2025 Contract or concession award notice – standard regime",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "testing_capacity",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-10-21"
+        },
+        {
+          "text": "Result lot identifier: LOT-0001 Winner selection status: At least one winner was chosen. 6.1.2. Information about winners Winner: Leader of tendering party: FAR AI, Inc. Official name: SecureBio Official name: SaferAI",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "testing_capacity",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-10-21"
+        },
+        {
+          "text": "Leader of tendering party: CAPGEMINI CONSULTING Official name: WAVESTONE Official name: LABORATOIRE NATIONAL DE METROLOGIE ET D'ESSAIS Tender: Tender identifier: CAPGEMINI CONSULTING Identifier of lot or group of lots: LOT-0002",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "testing_capacity",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-10-21"
+        },
+        {
+          "text": "Leader of tendering party: EquiStamp Inc. 864574-2025 Page 11/20 Official name: Model Evaluation and Threat Research, Inc. Official name: Epoch Artificial Intelligence, Inc. Tender: Tender identifier: EquiStamp Inc. Identifier of lot or group of lots: LOT-0003",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "testing_capacity",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-10-21"
+        },
+        {
+          "text": "Leader of tendering party: EquiStamp Inc. Official name: Clarity AI Research Inc Official name: Centre pour la Sécurité de l'IA Tender: Tender identifier: EquiStamp Inc. Identifier of lot or group of lots: LOT-0004",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "testing_capacity",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-10-21"
+        },
+        {
+          "text": "Result lot identifier: LOT-0005 Winner selection status: At least one winner was chosen.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "testing_capacity",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-10-21"
+        },
+        {
+          "text": "Leader of tendering party: TECHNOPOLIS CONSULTING GROUP BELGIUM Official name: WIK-CONSULT GMBH Official name: NEDERLANDSE ORGANISATIE VOOR TOEGEPAST NATUURWETENSCHAPPELIJK ONDERZOEK TNO",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "testing_capacity",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-10-21"
+        },
+        {
+          "text": "Result lot identifier: LOT-0006 Winner selection status: At least one winner was chosen.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "testing_capacity",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-10-21"
+        },
+        {
+          "text": "Leader of tendering party: MINISTERE DU BUDGET DES COMPTES PUBLICS ET DE LA FONCTION PUBLIQUE ET DE LA REFORME DE L'ETAT Official name: LABORATOIRE NATIONAL DE METROLOGIE ET D'ESSAIS",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "testing_capacity",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-10-21"
         }
       ],
       "snapshot": {
@@ -107634,6 +109112,34 @@
               "model_access",
               "legal_power",
               "conditions"
+            ]
+          ],
+          "accessed": "2026-11-10"
+        },
+        {
+          "text": "The access requested shall be appropriate to the objectives of the evaluation.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "model_access",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-10"
+        },
+        {
+          "text": "Such access may include access through application programming interfaces ('APIs'), internal access, access to source code, access to model weights",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "model_access",
+              "notes"
             ]
           ],
           "accessed": "2026-11-10"
@@ -107988,7 +109494,23 @@
         "sha256": "905a9192e5f21fadb1a857fb8068aa452c15dc646f03c8b1a813853c0f06652c",
         "text_sha256": "4b259dd145fb5659ab963fd41a68dbba02d9f49b93ec2a5de1a8add748ec5ad9",
         "text_scheme": 1
-      }
+      },
+      "excerpts": [
+        {
+          "text": "Both countries will share best practice on AI evaluation to improve collective understanding of advanced AI systems (inter alia including the implication of advanced AI systems for cybersecurity) and contribute to the international evidence base.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "de-aisi"
+              },
+              "testing_capacity",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-10-21"
+        }
+      ]
     },
     {
       "id": "gb-pq-30890-2026",
@@ -108111,6 +109633,42 @@
             ]
           ],
           "accessed": "2026-10-24"
+        },
+        {
+          "text": "\"dateAnswerCorrected\":\"2026-10-22T00:00:00\"",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "staff",
+              {
+                "id": "staff-7c1f0e4a9b2d4c6e8a3f5b1d2e9c4a70"
+              },
+              "description"
+            ]
+          ],
+          "accessed": "2026-11-10",
+          "url": "https://questions-statements-api.parliament.uk/api/writtenquestions/questions/1944727?expandMember=true"
+        },
+        {
+          "text": "\"originalAnswerText\":\"<p>The headcount of the AI Security Institute is 241, equivalent to 211.2 full time equivalent (FTE) posts (as of 12 October 2026).",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "staff",
+              {
+                "id": "staff-7c1f0e4a9b2d4c6e8a3f5b1d2e9c4a70"
+              },
+              "description"
+            ]
+          ],
+          "accessed": "2026-11-10",
+          "url": "https://questions-statements-api.parliament.uk/api/writtenquestions/questions/1944727?expandMember=true"
         }
       ],
       "snapshot": {
@@ -108206,6 +109764,17 @@
                 "id": "funding-9efb56f77c7a5a6c8ca9eee9f9db9191"
               },
               "description"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-ddcdd902bdc5873816ddd014c1742ad6"
+              },
+              "notes"
             ]
           ],
           "accessed": "2026-10-24"
@@ -111276,6 +112845,17 @@
                 "id": "funding-0475119a71cc5e2099e293d3a48356b0"
               },
               "notes"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "funding",
+              {
+                "id": "funding-e47a2c9b1d5f4086b3c8a1e6d9f2b705"
+              },
+              "notes"
             ]
           ],
           "accessed": "2026-10-24"
@@ -111345,6 +112925,17 @@
                 "id": "funding-0475119a71cc5e2099e293d3a48356b0"
               },
               "notes"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "funding",
+              {
+                "id": "funding-e47a2c9b1d5f4086b3c8a1e6d9f2b705"
+              },
+              "description"
             ]
           ],
           "accessed": "2026-10-24"
@@ -111539,6 +113130,64 @@
             ]
           ],
           "gloss": "Through KI Norge the directorate also has a particular responsibility to guide on, and be a driving force for, responsible and innovative use of AI in both the public and private sectors.",
+          "accessed": "2026-10-24"
+        },
+        {
+          "text": "Frå 2027 blir det foreslått å auke løyvinga med 30 mill. kroner til å styrkje KI Noreg med kapasitet til å evaluere KI-modellar, samt skaffe kunnskap om konsekvensar og risiko knytt til avansert kunstig intelligens.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "funding",
+              {
+                "id": "funding-0475119a71cc5e2099e293d3a48356b0"
+              },
+              "description"
+            ]
+          ],
+          "gloss": "From 2027, an increase of NOK 30 million is proposed to strengthen KI Norge's capacity to evaluate AI models and obtain knowledge about the consequences and risks of advanced artificial intelligence.",
+          "accessed": "2026-10-24"
+        },
+        {
+          "text": "Rekneskap 2025 Saldert budsjett 2026 Forslag 2027",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "funding",
+              {
+                "id": "funding-0475119a71cc5e2099e293d3a48356b0"
+              },
+              "notes"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "funding",
+              {
+                "id": "funding-e47a2c9b1d5f4086b3c8a1e6d9f2b705"
+              },
+              "description"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "funding",
+              {
+                "id": "funding-e47a2c9b1d5f4086b3c8a1e6d9f2b705"
+              },
+              "notes"
+            ]
+          ],
+          "gloss": "Accounts 2025; adopted budget 2026; proposal 2027.",
           "accessed": "2026-10-24"
         }
       ],
@@ -111879,6 +113528,17 @@
               },
               "credit",
               "institute_id"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "alignment-investigation-mythos-5-aisi-incident"
+              },
+              "attribution_note"
             ]
           ],
           "accessed": "2026-10-24"
@@ -112367,6 +114027,40 @@
               },
               "credit",
               "date"
+            ]
+          ],
+          "accessed": "2026-10-24"
+        },
+        {
+          "text": "The AI Office addressed the raised points both orally during the workshop and through a written report (that you can download below).",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "outputs",
+              {
+                "lineage": "requirements-qualified-independent-external-evaluators"
+              },
+              "attribution_note"
+            ]
+          ],
+          "accessed": "2026-10-24"
+        },
+        {
+          "text": "This report expresses the current views of the AI Office, which may be subject to change as the field of AI evaluations develops.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "outputs",
+              {
+                "lineage": "requirements-qualified-independent-external-evaluators"
+              },
+              "attribution_note"
             ]
           ],
           "accessed": "2026-10-24"
@@ -113401,6 +115095,57 @@
             ]
           ],
           "accessed": "2026-10-24"
+        },
+        {
+          "text": "Antwort des Parlamentarischen Staatssekretärs Thomas Jarzombek vom 5. Oktober 2026",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "de-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-4d2b8e6f1a3c47d9b5e0c8a2f6d1b937"
+              },
+              "notes"
+            ]
+          ],
+          "gloss": "Answer by Parliamentary State Secretary Thomas Jarzombek of 5 October 2026.",
+          "accessed": "2026-10-24"
+        },
+        {
+          "text": "Die konkrete Ausgestaltung des Instituts, seines Aufgabenzuschnitts sowie weiterer organisatorischer und haushalterischer Fragen, die den Personalbedarf maßgeblich beeinflussen, sind Gegenstand laufender regierungsinterner Abstimmungen.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "de-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-4d2b8e6f1a3c47d9b5e0c8a2f6d1b937"
+              },
+              "notes"
+            ]
+          ],
+          "gloss": "The institute's design, remit and further organisational and budget questions that materially influence staffing needs are subject to continuing discussions within government.",
+          "accessed": "2026-10-24"
+        },
+        {
+          "text": "Antwort des Staatssekretärs Dr. Géza Andreas von Geyr vom 6. Oktober 2026",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "de-aisi"
+              },
+              "model_access",
+              "notes"
+            ]
+          ],
+          "gloss": "Answer by State Secretary Dr Géza Andreas von Geyr of 6 October 2026.",
+          "accessed": "2026-10-24"
         }
       ],
       "snapshot": {
@@ -113522,6 +115267,24 @@
               "annual_period"
             ]
           ],
+          "accessed": "2026-10-24"
+        },
+        {
+          "text": "Für das Bundesministerium für Digitales und Staatsmodernisierung (BMDS) sind im Regierungsentwurf für den Bundeshaushalt 2027 Ausgaben in Höhe von rund 1,44 Milliarden Euro vorgesehen.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "de-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-4d2b8e6f1a3c47d9b5e0c8a2f6d1b937"
+              },
+              "description"
+            ]
+          ],
+          "gloss": "The government draft federal budget for 2027 provides expenditure of around €1.44 billion for the Federal Ministry for Digitalisation and State Modernisation (BMDS).",
           "accessed": "2026-10-24"
         }
       ],
@@ -114133,6 +115896,17 @@
               "timeline",
               {
                 "id": "nl-3"
+              },
+              "description"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "NL"
+              },
+              "timeline",
+              {
+                "id": "nl-0"
               },
               "description"
             ]
@@ -117750,6 +119524,21 @@
             ]
           ],
           "accessed": "2026-11-08"
+        },
+        {
+          "text": "Ingénieur.e évaluation de l'IA / PentestIA",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "fr-inesia"
+              },
+              "staffing_model",
+              "notes"
+            ]
+          ],
+          "gloss": "AI evaluation engineer / PentestIA",
+          "accessed": "2026-11-08"
         }
       ],
       "snapshot": {
@@ -118388,6 +120177,19 @@
             ]
           ],
           "accessed": "2026-11-08"
+        },
+        {
+          "text": "Dragoș Tudorache, the liberal Romanian member of the European Parliament",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-08"
         }
       ],
       "snapshot": {
@@ -118853,6 +120655,28 @@
                 "id": "funding-ddcdd902bdc5873816ddd014c1742ad6"
               },
               "annual_period"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-9efb56f77c7a5a6c8ca9eee9f9db9191"
+              },
+              "notes"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-618ed3226ee75def870a5fb0f9501479"
+              },
+              "notes"
             ]
           ]
         },
