@@ -34122,7 +34122,7 @@
           "amount": 10000000,
           "currency": "USD",
           "period": "FY2024 and FY2025 enacted",
-          "description": "The Senate committee minority release says the bill's USD 10 million for CAISI matches the enacted FY2024 and FY2025 levels.",
+          "description": "The Senate committee minority release says the bill's USD 10 million for CAISI (now CAISSI) matches the enacted FY2024 and FY2025 levels.",
           "source_ids": [
             "us-senate-fy26",
             "r11-us-fiscal-year"
@@ -34182,7 +34182,7 @@
             "r5-us-fy2027-request",
             "r11-us-fiscal-year"
           ],
-          "notes": "The request describes an existing USD 11 million base and a USD 16 million increase for CAISI.",
+          "notes": "The request describes an existing USD 11 million base and a USD 16 million increase for CAISI (now CAISSI).",
           "annual_period": {
             "start": "2026-10-01",
             "end": "2027-09-30"
