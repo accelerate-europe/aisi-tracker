@@ -116,7 +116,9 @@ def join_role_claims(claims: list[dict], *, decisions: list[dict] | None = None)
     Each later sentence's 'also' cut uses its common prefix with the run's first sentence.
     Optional decisions describe the final wording for the case report.
     """
-    verbs = {"says", "say", "reports", "report", "lists", "plans", "tasks", "gives", "calls", "makes", "assigns", "requires"}
+    base_verbs = {"say", "report", "list", "plan", "task", "give", "call", "make", "assign", "require"}
+    # All ten form the third-person singular by adding "s".
+    verbs = base_verbs | {verb + "s" for verb in base_verbs}
     texts = [c["text"] for c in claims]
     tokens = [text.split() for text in texts]
     rendered = []
