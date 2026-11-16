@@ -58,15 +58,18 @@ def dist(tmp_path):
             f'<meta name="twitter:image" content="{preview.LIVE_URL}social-preview.png">'
             '<meta name="aisi-page-data" content="data/page.json?v=old-mark" data-package="data/datapackage.json?v=old" data-build="old-mark">'
             f'<script type="application/ld+json">{{"url": "{preview.LIVE_URL}", "identifier": "https://doi.org/10.5281/zenodo.12345"}}</script>'
-            '</head><body><p id="cite">Old citation <a href="https://doi.org/10.5281/zenodo.12345">DOI</a></p>'
-            '<template id="page-template"><p id="cite"></p></template>'
+            '</head><body><header class="masthead"><p class="updated" id="updated"><span>Updated 15 Nov 2026</span> <a href="#changes">v1.2.3</a></p></header>'
+            '<p id="cite">Old citation <a href="https://doi.org/10.5281/zenodo.12345">DOI</a></p>'
+            '<template id="page-template"><header class="masthead"><p class="updated" id="updated"></p></header><p id="cite"></p></template>'
             '<script>var doiUrl = m.doi ? "https://doi.org/" + m.doi : "";</script></body></html>')
-    for path in ("index.html", "method.html", "api/v1/index.html"):
+    for path in ("index.html", "method.html"):
         (root / path).write_text(page)
+    # The API landing page has its own small stylesheet and no site header.
+    (root / "api/v1/index.html").write_text('<!doctype html><html><head></head><body><main><p>Static JSON files, version 1.2.3, data as of 2026-11-16.</p></main></body></html>')
     (root / "404.html").write_text('<html><head><link rel="icon" href="/favicon.svg"></head><body><a href="/">Home</a></body></html>')
     (root / "favicon.svg").write_text('<svg xmlns="http://www.w3.org/2000/svg"/>')
     (root / "data/tiny.csv").write_text("id,version\nexample,2\n")
-    (root / "llms.txt").write_text(f"# Tracker\n## Cite as\n{CITATION}\n[Page]({preview.LIVE_URL})\n[Data]({preview.LIVE_URL}data/aisi.json)\n[API]({preview.LIVE_URL}api/v1/index.json)\n")
+    (root / "llms.txt").write_text(f"# Tracker\n> Published by Example; version 1.2.3, data as of 16 November 2026.\n## Cite as\n{CITATION}\n[Page]({preview.LIVE_URL})\n[Data]({preview.LIVE_URL}data/aisi.json)\n[API]({preview.LIVE_URL}api/v1/index.json)\n")
     (root / "feed.xml").write_text(f'''<feed xmlns="http://www.w3.org/2005/Atom"><id>tag:aisi.accelerate-europe.org,2026:feed</id><title>Tracker</title><link href="{preview.LIVE_URL}feed.xml"/><entry><id>tag:aisi.accelerate-europe.org,2026:release/1.2.3</id><link href="{preview.LIVE_URL}#changes"/></entry></feed>''')
     (root / "sitemap.xml").write_text(preview.LIVE_URL)
     (root / "robots.txt").write_text("Allow: /\nSitemap: " + preview.LIVE_URL + "sitemap.xml")
@@ -130,18 +133,26 @@ def test_banner_template_and_all_pages(dist, tmp_path):
     transform(dist, out, branch='work/<safe>&test', feedback_mail="override@example.org")
     for path in out.rglob("*.html"):
         soup = BeautifulSoup(path.read_text(), "html.parser")
-        assert soup.body.find(recursive=False)["class"] == ["preview-banner"]
+        band = ["preview-banner", "gutter"] if path.name != "404.html" and "api" not in path.parts else ["preview-banner"]
+        assert soup.body.find(recursive=False)["class"] == band
         assert soup.select_one('meta[name="robots"]')["content"] == "noindex, nofollow"
         assert not soup.select('link[rel="canonical"], meta[property="og:url"], script[type="application/ld+json"]')
         assert soup.select_one(".preview-banner [data-preview-path]")["data-preview-path"] == path.relative_to(out).as_posix()
-        assert "16 Nov 2026, 14:05 Europe/Vienna" in soup.select_one(".preview-banner").get_text()
+        row = soup.select_one(".preview-banner .pv-row").get_text(" ", strip=True)
+        assert row == "Preview, not published work/<safe>&test · aaaaaaaaaa · 16 Nov 2026, 14:05 Feedback Details"
+        details = [li.get_text(strip=True) for li in soup.select(".preview-banner .pv-details li")]
+        assert details == ["Data as of 16 Nov 2026", "Build time in Vienna time (CET)", "CI run for this build",
+                           "Link to this exact build", "Frozen builds are removed after a while unless kept.", "Published site"]
+        assert soup.select_one(".preview-banner .pv-details").has_attr("hidden")
+        assert soup.select_one(".preview-banner .pv-toggle")["aria-expanded"] == "false"
+        assert soup.select_one(".preview-banner .pv-id").find("a") is None  # the commit is plain text
         assert soup.select_one(".preview-banner a[href^='mailto:']")["href"].startswith("mailto:override@example.org?")
         assert "work/<safe>&test" in soup.select_one(".preview-banner").get_text()
         assert soup.select_one("safe") is None
         for cite in soup.find_all(id="cite"):
             assert cite.string == preview.NOTICE
         for template in soup.select("#page-template"):
-            assert template.find(recursive=False)["class"] == ["preview-banner"]
+            assert template.find(recursive=False)["class"] == band
         assert "'contextmenu'" in str(soup.head) and "'hashchange'" in str(soup.head)
     assert 'href="/' not in (out / "404.html").read_text()
 
@@ -460,3 +471,25 @@ def test_count_limit_with_age_and_size_rules():
     result, removed = preview.retention(count_fixture(12), set(), set(), preview.timestamp(BUILT), budget=90)
     assert removed == {"b/" + f"{i:010x}" for i in (1, 2, 3, 4)}
     assert set(result["frozen"]) == {f"{i:010x}" for i in range(5, 13)}
+
+
+def test_version_shown_as_unreleased_changes(dist, tmp_path):
+    """No preview page presents the last release as what the reader sees; the downloads keep their fields."""
+    out = tmp_path / "marked"
+    transform(dist, out)
+    for name in ("index.html", "method.html"):
+        soup = BeautifulSoup((out / name).read_text(), "html.parser")
+        saved = [p for p in soup.find_all(id="updated") if p.find_parent("template") is None][0]
+        assert " ".join(saved.get_text().split()) == "Unreleased changes since v1.2.3 · data as of 16 Nov 2026"
+        assert saved.select_one('a[href="#changes"]').get_text() == "v1.2.3"
+        assert "Unreleased changes since" in soup.select_one(".preview-banner")["data-preview-updated"]
+        assert "MutationObserver" in str(soup.head)
+    assert "unreleased changes since version 1.2.3, data as of 2026-11-16" in (out / "api/v1/index.html").read_text()
+    assert "; unreleased changes since version 1.2.3, data as of 16 November 2026." in (out / "llms.txt").read_text()
+    assert preview.read_json(out / "data/aisi.json")["dataset"]["version"] == "1.2.3"
+
+
+def test_version_sentence_missing_fails_loudly(dist, tmp_path):
+    (dist / "llms.txt").write_text("# Tracker\n")
+    with pytest.raises(ValueError, match="mark as unreleased"):
+        transform(dist, tmp_path / "marked")

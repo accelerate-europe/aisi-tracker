@@ -55,17 +55,94 @@ class Handler(SimpleHTTPRequestHandler):
         self.wfile.write(body)
 
 
+# Visible text outside the band and the version history (#changes), joined node by node: every mention of the
+# build's version must read as the base of unreleased changes ("since v1.0.10"), never as the version shown.
+BARE_VERSION = """version => {
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, { acceptNode(node) {
+    const el = node.parentElement;
+    if (!el || el.closest('.preview-banner, #changes, template, script, style')) return NodeFilter.FILTER_REJECT;
+    return el.getClientRects().length ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+  } });
+  // Text is joined within one block only: "since" in another paragraph or heading does not qualify a version.
+  const BLOCK = 'p, h1, h2, h3, h4, h5, h6, li, dt, dd, td, th, summary, figcaption, blockquote, pre, div, section, header, footer, main, nav, aside';
+  let text = '', block = null;
+  for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+    const owner = node.parentElement.closest(BLOCK);
+    if (owner !== block) { text += '\\n'; block = owner; }
+    text += node.data;
+  }
+  const found = [];
+  const pattern = new RegExp('v?' + version.replace(/\\./g, '\\\\.') + '(?![\\\\d.])', 'g');
+  for (let m = pattern.exec(text); m; m = pattern.exec(text)) {
+    if (!/since (version )?$/.test(text.slice(Math.max(0, m.index - 20), m.index))) found.push(text.slice(Math.max(0, m.index - 40), m.index + 20));
+  }
+  return found;
+}"""
+
+# The left edge of the header's content below the band: the site's header column, else the page's main column.
+HEADER_LEFT = """() => {
+  const box = document.querySelector('.masthead .measure') || document.querySelector('main');
+  const rect = box.getBoundingClientRect();
+  return rect.left + parseFloat(getComputedStyle(box).paddingLeft);
+}"""
+
+
+def check_band_layout(page, width: int) -> None:
+    """Closed: one line at desktop width, label and actions on one line at phone width, height limits, aligned."""
+    band = page.locator("body > .preview-banner")
+    tops = {name: page.locator(f"body > .preview-banner .{name}").bounding_box()["y"] for name in ("pv-title", "pv-id", "pv-actions")}
+    height = band.bounding_box()["height"]
+    if width >= 1000:
+        assert max(tops.values()) - min(tops.values()) <= 2, f"band is not one line at {width}px: {tops}"
+        assert height <= 48, f"closed band is {height:.0f}px high at {width}px"
+    else:
+        assert abs(tops["pv-title"] - tops["pv-actions"]) <= 2, f"label and actions not on one line at {width}px: {tops}"
+        assert tops["pv-id"] > max(tops["pv-title"], tops["pv-actions"]) + 5, f"identity is not on the second line at {width}px: {tops}"
+        assert height <= 72, f"closed band is {height:.0f}px high at {width}px"
+    # A long work-branch name keeps the same limits: it is cut, not wrapped.
+    if not getattr(check_band_layout, "long_branch", False):
+        branch = page.locator("body > .preview-banner .pv-branch")
+        original = branch.inner_text()
+        branch.evaluate("e => { e.textContent = 'work/preview-banner-layout-and-accessibility-with-a-very-long-branch-name'; }")
+        try:
+            check_band_layout.long_branch = True
+            check_band_layout(page, width)
+        finally:
+            check_band_layout.long_branch = False
+            branch.evaluate("(e, text) => { e.textContent = text; }", original)
+    left = page.locator("body > .preview-banner .pv-row").bounding_box()["x"]
+    header = page.evaluate(HEADER_LEFT)
+    assert abs(left - header) <= 1, f"band content starts at {left:.1f}px, the header at {header:.1f}px ({width}px)"
+
+
+def check_details_keyboard(page) -> None:
+    toggle = page.locator("body > .preview-banner .pv-toggle")
+    details = page.locator("body > .preview-banner .pv-details")
+    assert toggle.get_attribute("aria-expanded") == "false" and not details.is_visible(), "Details is open by default"
+    toggle.focus()
+    page.keyboard.press("Enter")
+    assert toggle.get_attribute("aria-expanded") == "true" and details.is_visible(), "Enter does not open Details"
+    assert details.locator("li").count() == 6
+    page.keyboard.press("Space")
+    assert toggle.get_attribute("aria-expanded") == "false" and not details.is_visible(), "Space does not close Details"
+
+
 def check_banner(page, meta: dict, logical: str, expected_frozen: str) -> None:
     banner = page.locator("body > .preview-banner")
     assert banner.count() == 1, "expected exactly one visible banner"
     assert banner.is_visible(), "banner is hidden"
-    assert page.locator("body > :first-child").get_attribute("class") == "preview-banner"
-    text = banner.inner_text()
-    for part in ("Preview, not published", meta["branch"], meta["commit"][:10], vienna(meta["built"]),
-                 "Europe/Vienna", "Data as of " + data_date(meta["as_of"]), "CI run", "Link to this exact build", "Send feedback", "unless kept"):
-        assert part in text, f"banner lacks {part!r}"
+    assert "preview-banner" in page.locator("body > :first-child").get_attribute("class").split()
+    row = " ".join(banner.locator(".pv-row").inner_text().split())
+    identity = f"{meta['branch']} · {meta['commit'][:10]} · {vienna(meta['built'])}"
+    assert row == f"Preview, not published {identity} Feedback Details", f"band line reads {row!r}"
+    details = [" ".join(t.split()) for t in banner.locator(".pv-details li").all_text_contents()]
+    assert details[0] == "Data as of " + data_date(meta["as_of"]) and details[1].startswith("Build time in Vienna time (CE"), details
+    assert "unless kept" in details[4], details
     assert banner.locator('a', has_text="CI run").get_attribute("href") == meta["run_url"]
-    assert banner.locator('a', has_text=meta["commit"][:10]).get_attribute("href") == SOURCE_REPO + "/commit/" + meta["commit"]
+    assert banner.locator(".pv-id a").count() == 0, "the commit is plain text"
+    assert page.evaluate(BARE_VERSION, meta["version"]) == [], f"{logical} shows the released version as its own"
+    if page.locator("#updated").count() and page.locator("#updated").inner_text().strip():
+        assert " ".join(page.locator("#updated").inner_text().split()).startswith(f"Unreleased changes since v{meta['version']}")
     mail = banner.locator('a[href^="mailto:"]').get_attribute("href")
     from urllib.parse import parse_qs
     assert parse_qs(urlsplit(mail).query)["subject"] == [f"AISI preview {meta['branch']} {meta['commit'][:10]}"]
@@ -136,6 +213,7 @@ def check_page(browser, base: str, placement: str, logical: str, meta: dict, wid
             page.wait_for_function("document.documentElement.hasAttribute('data-prerendered')")
         expected = frozen_url(url, logical, meta["commit"])
         check_banner(page, meta, logical, expected)
+        check_band_layout(page, width)
         label = f"{placement.replace('/', '-')}-{logical.replace('/', '-')}-{width}-{theme}"
         page.locator("body > .preview-banner").screenshot(path=str(shots / f"{label}-{'blocked' if blocked else 'before'}.png"))
         if logical == "index.html" and not blocked:
@@ -145,6 +223,8 @@ def check_page(browser, base: str, placement: str, logical: str, meta: dict, wid
             page.wait_for_function("!document.documentElement.hasAttribute('data-prerendered')")
         page.wait_for_load_state("networkidle")
         check_banner(page, meta, logical, expected)
+        check_band_layout(page, width)
+        check_details_keyboard(page)
         if logical == "index.html":
             card = page.locator("#c-fr")
             assert card.is_visible(), "#c-fr did not reveal its card"
@@ -174,6 +254,22 @@ def check_page(browser, base: str, placement: str, logical: str, meta: dict, wid
         assert not errors, "\n".join(errors)
 
 
+def self_test(chrome: str) -> None:
+    """The version check's own counterexample: "since" in another block does not qualify the version."""
+    with sync_playwright() as playwright:
+        browser = playwright.chromium.launch(executable_path=chrome, env=browser_env())
+        try:
+            page = browser.new_page()
+            page.set_content('<p>Unreleased changes since </p><h1>v1.2.3</h1>')
+            assert page.evaluate(BARE_VERSION, "1.2.3"), "the version check accepts 'since' from another block"
+            page.set_content('<p>Unreleased changes since <a href="#changes">v1.2.3</a> · data as of 16 Nov 2026</p><p>version 1.2.30</p>')
+            assert page.evaluate(BARE_VERSION, "1.2.3") == [], "the version check rejects a qualified version"
+            page.set_content('<p>Updated 16 Nov 2026 · <a>v1.2.3</a></p>')
+            assert page.evaluate(BARE_VERSION, "1.2.3"), "the version check accepts the bare released version"
+        finally:
+            browser.close()
+
+
 def check(dist: Path, shots: Path, chrome: str) -> None:
     meta = read_json(dist / "preview-build.json")
     short = meta["commit"][:10]
@@ -182,6 +278,7 @@ def check(dist: Path, shots: Path, chrome: str) -> None:
     (shots / "assumed-root.json").write_text(json.dumps(roots, indent=2) + "\n", encoding="utf-8")
     assert not roots, "assumed-root references: " + "; ".join(roots)
     requests = []
+    self_test(chrome)
     with tempfile.TemporaryDirectory(prefix="check-preview-") as tmp:
         root = Path(tmp)
         preview = root / PREFIX.strip("/")
