@@ -9837,7 +9837,7 @@
           "code": "evaluation_methods",
           "basis": "mandate",
           "body_id": "related_bodies-b99e96dc6b88504faf9248e18a9b61eb",
-          "text": "The ministry's launch announcement says the centre will draw up an evaluation system and evaluation guidelines for AI products and systems, setting the evaluation methods and norms they are to follow.",
+          "text": "The ministry's launch announcement says the centre will draw up an evaluation system and evaluation guidelines for AI products and systems, setting the evaluation methods and norms domestic AI products and systems are to follow.",
           "source_ids": [
             "tw-moda-aiec-2023"
           ]
@@ -58205,6 +58205,24 @@
             ]
           ],
           "accessed": "2026-10-18"
+        },
+        {
+          "text": "Resolución de Gabinete N° 75\n(martes 11 de agosto 2026)\nQUE APRUEBA LA ESTRATEGIA NACIONAL DE INTELIGENCIA ARTIFICIAL DE LA REPÚBLICA DE PANAMÁ",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "PA"
+              },
+              "timeline",
+              {
+                "id": "pa-strategy-adoption-2026"
+              },
+              "description"
+            ]
+          ],
+          "gloss": "Cabinet Resolution No. 75 (Tuesday 11 August 2026), approving the National Artificial Intelligence Strategy of the Republic of Panama.",
+          "accessed": "2026-10-17"
         }
       ]
     },
@@ -96496,7 +96514,7 @@
       "access_note": "On 19 October 2026 web retrieval of the primary page displayed the quoted Russian sentence about independent auditors. The source URL now names the Russian-language view of the same document (lang=ru). On 24 October 2026 a direct request again returned a JavaScript shell; the rendered text copy of the Russian view carries the full briefing, including the quoted sentence, and replaces the earlier copy, which held only navigation and a loading indicator.",
       "excerpts": [
         {
-          "text": "Согласно пункту 2 приказа, Департамент обеспечивает государственную регистрацию и опубликование правил взаимодействия оператора национальной платформы ИИ, а также представление сведений об исполнении указанных мероприятий.",
+          "text": "Участие Департамента в нормативном сопровождении сферы ИИ подтверждается приказом от 13 августа 2026 года № 482/НҚ. Согласно пункту 2 приказа, Департамент обеспечивает государственную регистрацию и опубликование правил взаимодействия оператора национальной платформы ИИ, а также представление сведений об исполнении указанных мероприятий.",
           "supports": [
             [
               "jurisdictions",
@@ -96510,7 +96528,7 @@
               "text"
             ]
           ],
-          "gloss": "Under paragraph 2 of the order, the department ensures state registration and publication of the rules governing interaction by the national AI platform operator, as well as submission of information on the implementation of those measures.",
+          "gloss": "The department's involvement in regulatory support for AI is confirmed by order No. 482/НҚ of 13 August 2026; under paragraph 2 of the order, the department ensures state registration and publication of the rules governing interaction by the national AI platform operator, as well as submission of information on the implementation of those measures.",
           "anchors": [
             {
               "kind": "definition",
