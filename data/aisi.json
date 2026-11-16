@@ -37407,7 +37407,7 @@
           ],
           "lineage": "gazette-validation-data",
           "attribution": "own_publication",
-          "attribution_note": "Original J-AISI publication on its output site. The title follows the published English name or a literal English rendering of the Japanese title. This is the separately downloadable Gazette dataset linked alongside the activity report on the 15 April 2026 release page. The ZIP README independently gives the dataset name and release date 2026-04-15.",
+          "attribution_note": "Original J-AISI publication on its output site. The title follows the published English name or a literal English rendering of the Japanese title. This is the separately downloadable Gazette dataset. The ZIP README independently gives the dataset name and release date 2026-04-15.",
           "qualifies_as": "published_work",
           "qualification_note": "Dataset used in the data-quality report's AI output verification experiment; retained as an evaluation artefact, not merely a collection of legal texts.",
           "credit": {
@@ -74155,6 +74155,42 @@
           ],
           "accessed": "2026-10-17",
           "gloss": "AI Safety Approach Book (a document towards the dissemination of AI safety), 26 March 2025."
+        },
+        {
+          "text": "Release of the AISI Business Demonstration Working Group’s Vision Paper ~Toward a Trustworthy and Innovative AI Society~ -2025年6月30日",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "business-demonstration-vision"
+              },
+              "attribution_note"
+            ]
+          ],
+          "gloss": "Release of the AISI Business Demonstration Working Group's Vision Paper, Toward a Trustworthy and Innovative AI Society, 30 June 2025.",
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Publication of the Guide to Evaluation Perspectives on AI Safety in the Healthcare Sector -2026年4月2日",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "healthcare-evaluation-guide"
+              },
+              "attribution_note"
+            ]
+          ],
+          "gloss": "Publication of the Guide to Evaluation Perspectives on AI Safety in the Healthcare Sector, 2 April 2026.",
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "JP",
@@ -74483,6 +74519,17 @@
               },
               "credit",
               "institute_id"
+            ],
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "national-status-report-2025"
+              },
+              "attribution_note"
             ]
           ]
         },
@@ -75020,6 +75067,17 @@
                 "lineage": "gazette-validation-data"
               },
               "title"
+            ],
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "gazette-validation-data"
+              },
+              "attribution_note"
             ]
           ],
           "accessed": "2026-10-17",
@@ -75062,6 +75120,17 @@
               },
               "credit",
               "date"
+            ],
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "gazette-validation-data"
+              },
+              "attribution_note"
             ]
           ]
         }
@@ -75707,6 +75776,17 @@
               },
               "credit",
               "institute_id"
+            ],
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "national-status-report-2024"
+              },
+              "attribution_note"
             ]
           ]
         },
@@ -92285,6 +92365,17 @@
               },
               "credit",
               "date"
+            ],
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "exploitbench-claude-opus-4-8"
+              },
+              "attribution_note"
             ]
           ],
           "accessed": "2026-10-24",
@@ -92315,6 +92406,17 @@
               },
               "credit",
               "date"
+            ],
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "proliferation-advanced-ai-cyber-capabilities-open-models"
+              },
+              "attribution_note"
             ]
           ],
           "accessed": "2026-10-24",
@@ -117018,6 +117120,17 @@
                 "id": "claims-72f4568fa0034f67a59e982f431fe34b"
               },
               "text"
+            ],
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "rok-fortress"
+              },
+              "attribution_note"
             ]
           ],
           "accessed": "2026-11-07"
@@ -117500,6 +117613,17 @@
               },
               "credit",
               "institute_id"
+            ],
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "glm-5-3-cyber-capabilities"
+              },
+              "attribution_note"
             ]
           ],
           "accessed": "2026-11-07"
