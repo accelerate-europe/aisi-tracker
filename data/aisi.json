@@ -10268,14 +10268,13 @@
       "id": "VN",
       "name": "Vietnam",
       "kind": "state",
-      "summary": "No qualifying institute identified. The AI Law in force since March 2026 makes the science ministry the AI regulator and relies on self-assessment or certified conformity assessment for high-risk systems.",
       "related_bodies": [
         {
           "name": "Ministry of Science and Technology (MOST)",
-          "role": "It manages AI for the state under the 2025 AI Law. It runs the national AI portal for risk notifications and incident reports.",
           "counts_as_aisi": false,
           "source_ids": [
-            "vn-mst-portal-2026"
+            "vn-mst-portal-2026",
+            "vn-ai-law-134"
           ],
           "kind": "other",
           "id": "related_bodies-e6f3aac8b3f75b0b8a98a1f3f39e49aa"
@@ -10364,25 +10363,37 @@
       "identifier_source_ids": [
         "un-m49",
         "wikidata-jurisdiction-identifiers"
+      ],
+      "claims": [
+        {
+          "id": "claims-e0619e41e6c44ceeb3a9d643518395c7",
+          "kind": "development",
+          "code": "testing_duty",
+          "text": "requires businesses to assess safety, retain records and take responsibility when the regulator conducts subsequent checks",
+          "act": "the Law on Artificial Intelligence came into force",
+          "date": "2026-03-01",
+          "source_ids": [
+            "vn-mst-ai-law-2026"
+          ]
+        },
+        {
+          "id": "claims-ec19432f04924843a3c3e0e656757b19",
+          "kind": "function",
+          "code": "convening",
+          "basis": "mandate",
+          "body_id": "related_bodies-e6f3aac8b3f75b0b8a98a1f3f39e49aa",
+          "text": "The AI Law designates the science and technology ministry as the national focal body responsible to the Government for state management of AI.",
+          "source_ids": [
+            "vn-ai-law-134"
+          ]
+        }
       ]
     },
     {
       "id": "PH",
       "name": "Philippines",
       "kind": "state",
-      "summary": "No qualifying institute identified. The science ministry launched a national AI research centre in 2026, and several pending bills would create AI regulators.",
-      "related_bodies": [
-        {
-          "name": "National AI Center for Research and Innovation (NAICRI)",
-          "role": "It is an AI research and computing hub of the Department of Science and Technology, launched February 2026; it has no evaluation mandate.",
-          "counts_as_aisi": false,
-          "source_ids": [
-            "ph-dost-naicri-2026"
-          ],
-          "kind": "other",
-          "id": "related_bodies-d0d5fa9c50e95c4cbb2234a14b173801"
-        }
-      ],
+      "related_bodies": [],
       "next_check": {
         "date": "2027-10-16",
         "reason": "Routine yearly re-check of a state where an institute is plausible (in Europe, the G20 or the OECD, or a signatory of the Bletchley Declaration)."
@@ -10439,7 +10450,6 @@
         "ph-dost-naicri-2026",
         "ph-rappler-2026"
       ],
-      "notes": "Pending bills in the 20th Congress propose regulators or advisory bodies (an AI Development Authority, a Bureau of AI Systems, a Philippine Council on AI); none is framed as an institute to evaluate advanced models.",
       "region": {
         "id": "142",
         "name": "Asia",
@@ -10464,6 +10474,19 @@
       "identifier_source_ids": [
         "un-m49",
         "wikidata-jurisdiction-identifiers"
+      ],
+      "claims": [
+        {
+          "id": "claims-841e855789734d3a9bd359cfa25a83e6",
+          "kind": "development",
+          "code": "public_body",
+          "text": "is an institutional anchor for AI research, advanced computing and innovation",
+          "act": "DOST formally launched NAICRI",
+          "date": "2026-02-26",
+          "source_ids": [
+            "ph-dost-naicri-2026"
+          ]
+        }
       ]
     },
     {
@@ -10558,7 +10581,6 @@
       "id": "MN",
       "name": "Mongolia",
       "kind": "state",
-      "summary": "No qualifying institute identified. The 2025 national strategy on big data and AI focuses on data, an ethical AI framework, sectoral adoption and AI infrastructure investment.",
       "next_check": {
         "date": "2027-10-15",
         "reason": "Routine re-check on a two-year rotation of states with no reported plans."
@@ -10740,19 +10762,7 @@
     {
       "id": "BN",
       "name": "Brunei",
-      "summary": "No qualifying institute identified. AITI, the telecoms and ICT authority, published a voluntary AI governance and ethics guide in April 2025 and no AI-specific regulator or evaluation body was found.",
-      "related_bodies": [
-        {
-          "name": "Authority for Info-communications Technology Industry of Brunei Darussalam (AITI)",
-          "role": "It issued the AI governance and ethics guide with an AI Governance and Ethics Working Group. It is an ICT sector authority.",
-          "counts_as_aisi": false,
-          "source_ids": [
-            "bn-aiti-guide-2025"
-          ],
-          "kind": "other",
-          "id": "related_bodies-232080cf0da3573ca143df3ba9a0cb65"
-        }
-      ],
+      "related_bodies": [],
       "next_check": {
         "date": "2027-04-30",
         "reason": "Whether a national AI strategy or any national AI evaluation body is adopted."
@@ -10803,13 +10813,18 @@
         "governance_source_ids": [
           "bn-aiti-guide-2025"
         ],
-        "governance_note": "AITI identifies the AI Governance and Ethics Working Group and its national governance guide. The primary page does not itself establish that the guide is voluntary."
+        "governance_note": "AITI identifies the AI Governance and Ethics Working Group and its national governance guide. The primary page does not itself establish that the guide is voluntary.",
+        "log": [
+          {
+            "date": "2026-10-17",
+            "text": "Read AITI's guide announcement and the ISEAS Perspective; searched for a published Data and AI Strategy and searched in English and Malay."
+          }
+        ]
       },
       "source_ids": [
         "bn-aiti-guide-2025",
         "eap-iseas-2026"
       ],
-      "notes": "The AITI page does not say whether the guide is voluntary; the ISEAS Perspective (secondary) describes Brunei's guidance as voluntary. A Data and AI Strategy was reported as in preparation in mid-2025 but no published version was found. Searched in English and Malay terms.",
       "region": {
         "id": "142",
         "name": "Asia",
@@ -10835,24 +10850,13 @@
       "identifier_source_ids": [
         "un-m49",
         "wikidata-jurisdiction-identifiers"
-      ]
+      ],
+      "claims": []
     },
     {
       "id": "KH",
       "name": "Cambodia",
-      "summary": "No qualifying institute identified. The Ministry of Post and Telecommunications is drafting a national AI strategy (2025 to 2030) and no AI safety or testing body is named in the ministry's own pages.",
-      "related_bodies": [
-        {
-          "name": "Ministry of Post and Telecommunications (MPTC)",
-          "role": "It leads the drafting of the National AI Strategy with UN-ESCAP support.",
-          "counts_as_aisi": false,
-          "source_ids": [
-            "kh-mptc-2025-04"
-          ],
-          "kind": "other",
-          "id": "related_bodies-1b19882cbe19504aa63f65010e630017"
-        }
-      ],
+      "related_bodies": [],
       "next_check": {
         "date": "2027-04-30",
         "reason": "Whether a national AI strategy or any national AI evaluation body is adopted."
@@ -10903,7 +10907,13 @@
         "governance_source_ids": [
           "kh-mptc-2025-04"
         ],
-        "governance_note": "MPTC identifies itself as lead ministry for the draft national AI strategy and describes the drafting process; subsequent adoption was not verified."
+        "governance_note": "MPTC identifies itself as lead ministry for the draft national AI strategy and describes the drafting process; subsequent adoption was not verified.",
+        "log": [
+          {
+            "date": "2026-10-17",
+            "text": "Read the ministry's April and May announcements and later press reports; searched for an adoption document and searched in Khmer and English."
+          }
+        ]
       },
       "source_ids": [
         "kh-mptc-2025-04",
@@ -10911,7 +10921,6 @@
         "eap-iseas-2026",
         "kh-r4-ai-research-centre-procurement"
       ],
-      "notes": "Latest primary sources are from April and May 2025 and show the strategy still in draft; later press reports suggest adoption was still pending in mid-2026, but no adoption document was found. Khmer-language and English searches.",
       "region": {
         "id": "142",
         "name": "Asia",
@@ -10937,24 +10946,13 @@
       "identifier_source_ids": [
         "un-m49",
         "wikidata-jurisdiction-identifiers"
-      ]
+      ],
+      "claims": []
     },
     {
       "id": "LA",
       "name": "Laos",
-      "summary": "No qualifying institute identified. The Ministry of Technology and Communications leads a draft National AI Strategy; the government agreed in principle in September 2026 to adopt a 2026-2035 AI strategy; final approval not reported.",
-      "related_bodies": [
-        {
-          "name": "Ministry of Technology and Communications",
-          "role": "It leads the draft National AI Strategy and the UNESCO AI readiness assessment.",
-          "counts_as_aisi": false,
-          "source_ids": [
-            "la-kpl-2026-01"
-          ],
-          "kind": "other",
-          "id": "related_bodies-a7b0bc0f289c55429d64d8df01b82750"
-        }
-      ],
+      "related_bodies": [],
       "next_check": {
         "date": "2027-04-30",
         "reason": "Whether a national AI strategy or any national AI evaluation body is adopted."
@@ -11010,14 +11008,19 @@
         "governance_source_ids": [
           "la-kpl-2026-01"
         ],
-        "governance_note": "The state news agency's ministry-event account identifies the ministry-led national AI-strategy and UNESCO readiness process; later adoption remains unverified."
+        "governance_note": "The state news agency's ministry-event account identifies the ministry-led national AI-strategy and UNESCO readiness process; later adoption remains unverified.",
+        "log": [
+          {
+            "date": "2026-10-17",
+            "text": "Read the September press account and the state news agency's January readiness-assessment report; searched in Lao and English."
+          }
+        ]
       },
       "source_ids": [
         "la-kpl-2026-01",
         "la-star-2026-09",
         "eap-iseas-2026"
       ],
-      "notes": "The September 2026 decision rests on press coverage (secondary); the primary source is the state news agency report of January 2026 on the UNESCO readiness assessment. Lao-language and English searches.",
       "region": {
         "id": "142",
         "name": "Asia",
@@ -11043,12 +11046,12 @@
       "identifier_source_ids": [
         "un-m49",
         "wikidata-jurisdiction-identifiers"
-      ]
+      ],
+      "claims": []
     },
     {
       "id": "MM",
       "name": "Myanmar",
-      "summary": "No qualifying institute identified. State sources report a National Artificial Intelligence Development Department and work on a draft National AI Strategy and Policy, but no body with a mandate to evaluate advanced models and no commitment to a safety institute.",
       "next_check": {
         "date": "2027-04-30",
         "reason": "Check the National Artificial Intelligence Development Department mandate and a readable full or adopted AI strategy for responsibilities for evaluating advanced models."
@@ -11098,7 +11101,17 @@
           "mm-recheck2-ai-development-department-2026",
           "mm-recheck2-ai-strategy-draft-2025"
         ],
-        "governance_note": "State sources describe a National AI Development Department and strategy/policy drafting. The reviewed material does not assign a mandate to evaluate advanced models."
+        "governance_note": "State sources describe a National AI Development Department and strategy/policy drafting. The reviewed material does not assign a mandate to evaluate advanced models.",
+        "log": [
+          {
+            "date": "2026-10-17",
+            "text": "Read the Ministry of Information announcement of 19 February 2025, the Ministry of Foreign Affairs account of 29 August 2025 and Myanmar Digital News of 22 July 2026."
+          },
+          {
+            "date": "2026-10-17",
+            "text": "Read OpenDevelopment Myanmar metadata for the version-five draft strategy and attempted to retrieve a text copy."
+          }
+        ]
       },
       "source_ids": [
         "mm-recheck2-ai-strategy-draft-2025",
@@ -11106,33 +11119,17 @@
         "mm-recheck2-ai-metrology-2025",
         "eap-iseas-2026"
       ],
-      "notes": "Opened and read the Burmese Ministry of Information announcement dated 19 February 2025 (https://www.moi.gov.mm/news/67356), which describes strategy/policy drafting; the Ministry of Foreign Affairs account dated 29 August 2025 of AI policy work and AI-powered metrology cooperation (https://www.mofa.gov.mm/en/dr-aung-zeya-deputy-minister-of-science-and-technology-of-myanmar-and-consul-general-of-myanmar-attended-2025-asean-oriented-standardization-cooperation-forum-27-8-2025/); and Myanmar Digital News dated 22 July 2026 (https://mdn.gov.mm/en/pyidaungsu-hluttaw-weighs-ordinance-continuation-waico-signing), saying the ministry \"has established the National Artificial Intelligence Development Department\". The latter is evidence of an existing AI development body, not a precise founding date or evaluation mandate. Its international-cooperation discussion on AI misuse does not assign model evaluation to the department. No qualifying commitment, formal institute proposal or government study of an AISI was identified. A search lead for a version-5 draft strategy on OpenDevelopment Myanmar yielded only metadata; its one attempt to retrieve a text copy failed, so the full draft was not reviewed. The old claim that no national AI strategy work was found is superseded. Official state sources are used for what they announce, without treating general AI development or metrology as evaluation of the safety of advanced models.",
       "kind": "state",
       "status_confidence": "medium",
       "related_bodies": [
         {
           "name": "National Institute of Metrology of Myanmar",
-          "role": "It signed an agreement on AI-powered metrology cooperation in August 2025; this does not establish a mandate to evaluate advanced AI models.",
           "counts_as_aisi": false,
           "kind": "other",
-          "id": "related_bodies-5b5eba6c11f55705996c4d56da5f85e6"
-        },
-        {
-          "name": "Ministry of Science and Technology",
-          "role": "It led National AI Strategy and National AI Policy drafting reported in 2025; the retrieved announcements do not propose a named AI safety institute.",
-          "counts_as_aisi": false,
-          "kind": "other",
-          "id": "related_bodies-4283884913a65142964a6d25c9be7d00"
-        },
-        {
-          "name": "National Artificial Intelligence Development Department",
-          "role": "It is reported as established under the Ministry of Digital Development and Communications by July 2026 to accelerate AI technology development; no mandate to evaluate advanced models was found.",
-          "counts_as_aisi": false,
+          "id": "related_bodies-5b5eba6c11f55705996c4d56da5f85e6",
           "source_ids": [
-            "mm-recheck2-ai-development-department-2026"
-          ],
-          "kind": "other",
-          "id": "related_bodies-5d48b4343f06513db0512f71355596e3"
+            "mm-recheck2-ai-metrology-2025"
+          ]
         }
       ],
       "region": {
@@ -11158,31 +11155,25 @@
       "identifier_source_ids": [
         "un-m49",
         "wikidata-jurisdiction-identifiers"
+      ],
+      "claims": [
+        {
+          "id": "claims-5ad2642dc84e46ff8b90884e285749f7",
+          "kind": "function",
+          "code": "international_cooperation",
+          "basis": "activity",
+          "body_id": "related_bodies-5b5eba6c11f55705996c4d56da5f85e6",
+          "text": "The foreign ministry reports an agreement on AI-powered metrology between the National Institute of Metrology of Myanmar and the Guangxi Zhuang Autonomous Region Institute of Metrology and Test.",
+          "source_ids": [
+            "mm-recheck2-ai-metrology-2025"
+          ]
+        }
       ]
     },
     {
       "id": "TL",
       "name": "Timor-Leste",
-      "summary": "No qualifying institute identified. Timor-Leste completed a UNESCO AI readiness assessment with the Ministry of Transport and Communications, and the main digital strategy (Timor Digital 2032) does not explicitly address AI.",
-      "related_bodies": [
-        {
-          "name": "Ministry of Transport and Communications",
-          "role": "It is a partner in the UNESCO AI readiness assessment. This was reported by Catalpa International.",
-          "counts_as_aisi": false,
-          "source_ids": [
-            "tl-catalpa-2026"
-          ],
-          "kind": "other",
-          "id": "related_bodies-b63ae36340705323ad20560a369380f2"
-        },
-        {
-          "name": "TIC Timor",
-          "role": "It is a partner in the readiness assessment. It is a government ICT agency.",
-          "counts_as_aisi": false,
-          "kind": "other",
-          "id": "related_bodies-f009b6b606135061809622af8bd139e4"
-        }
-      ],
+      "related_bodies": [],
       "next_check": {
         "date": "2027-04-30",
         "reason": "Whether a national AI strategy or any national AI evaluation body is adopted."
@@ -11231,14 +11222,23 @@
         "governance_source_ids": [
           "tl-catalpa-2026"
         ],
-        "governance_note": "Delivery partner Catalpa International's firsthand account identifies the ministry, TIC Timor and UNESCO as the national AI-readiness assessment partners. This is process evidence; the full readiness report was not read."
+        "governance_note": "Delivery partner Catalpa International's firsthand account identifies the ministry, TIC Timor and UNESCO as the national AI-readiness assessment partners. This is process evidence; the full readiness report was not read.",
+        "log": [
+          {
+            "date": "2026-10-18",
+            "text": "Read the UNESCO catalogue record for the AI readiness assessment, Catalpa International's project page and the ISEAS paper."
+          },
+          {
+            "date": "2026-10-17",
+            "text": "Searched in English and using Portuguese terms."
+          }
+        ]
       },
       "source_ids": [
         "tl-unesco-ai-readiness-2025",
         "tl-catalpa-2026",
         "eap-iseas-2026"
       ],
-      "notes": "Cited foreign sources for the governance context: UNESCO; Catalpa International; ISEAS-Yusof Ishak Institute. The UNESCO AI readiness assessment report is catalogued in UNESDOC (2025, 96 pages); only its catalogue record was read, not the report. The delivery partner's project page is a firsthand account of its participation; the ISEAS paper is secondary analysis. English and Portuguese-term searches.",
       "region": {
         "id": "142",
         "name": "Asia",
@@ -11264,12 +11264,12 @@
       "identifier_source_ids": [
         "un-m49",
         "wikidata-jurisdiction-identifiers"
-      ]
+      ],
+      "claims": []
     },
     {
       "id": "KP",
       "name": "North Korea",
-      "summary": "No qualifying institute identified. Official information is scarce, and reputable outside sources describe state AI work as research institutes plus military and cyber applications, with no safety or evaluation body reported.",
       "next_check": {
         "date": "2027-04-30",
         "reason": "Any new reporting on a state AI institution or regulation."
@@ -11346,13 +11346,22 @@
         ],
         "independent_source_ids": [],
         "language_note": "The recorded ko query uses a national or official language selected for this country-specific check. Other national or official languages were not exhaustively searched. Search source_ids identify registered source URLs matched in the retrieved result set, which may include irrelevant hits. An empty list means no registered source URL was matched, not that the web response was empty. The earlier audit used independent_source_ids for substantive corroboration; governance_source_ids, where present, identifies the selected primary governance evidence. English queries were also run on 17 October 2026; the previously recorded national or official-language coverage and its limits are unchanged. On 24 October 2026 the record was searched again in Korean and English; the result links of each query were matched against registered sources in the same way.",
-        "independence_note": "Historical audit under the superseded two-independent-sources rule: Reports of drone priorities and an intelligence-service assessment do not establish two substantive sources about qualifying institute status. Confidence was low under that rule; none_identified is a bounded search finding, not proof of absence."
+        "independence_note": "Historical audit under the superseded two-independent-sources rule: Reports of drone priorities and an intelligence-service assessment do not establish two substantive sources about qualifying institute status. Confidence was low under that rule; none_identified is a bounded search finding, not proof of absence.",
+        "log": [
+          {
+            "date": "2026-10-17",
+            "text": "Read Al Jazeera and Radio Free Asia's Korean service; attempted to read 38 North's page."
+          },
+          {
+            "date": "2026-10-24",
+            "text": "Searched in English and Korean."
+          }
+        ]
       },
       "source_ids": [
         "kp-aljazeera-2025-09",
         "kp-rfa-2026-06"
       ],
-      "notes": "Cited foreign sources for the governance context: Al Jazeera; Radio Free Asia (Korean service). Official information is scarce and the picture rests on state media quotations and outside analysts (Al Jazeera citing 38 North and US intelligence; a South Korean state-linked institute's 2026 assessment as reported by RFA). A negative finding here is weak. 38 North's own page was blocked to automated readers. Searched in English and Korean.",
       "region": {
         "id": "142",
         "name": "Asia",
@@ -21177,7 +21186,6 @@
       "name": "Pakistan",
       "kind": "state",
       "institute_id": null,
-      "summary": "No qualifying institute identified. The 2025 National AI Policy establishes an AI Council and plans centres of excellence and sandboxes, but no model-evaluation body.",
       "next_check": {
         "date": "2027-12-15",
         "reason": "Routine re-check on a two-year rotation of states with no reported plans."
@@ -21258,21 +21266,19 @@
         "governance_source_ids": [
           "negative-second-pk-2026"
         ],
-        "governance_note": "The government's February 2026 account of the Indus AI Summit describes the Islamabad Declaration, whose principles are meant to guide AI implementation across all tiers of government. It names no body to evaluate advanced models. The 2025 National AI Policy itself could not be retrieved from the ministry site (HTTP 404)."
+        "governance_note": "The government's February 2026 account of the Indus AI Summit describes the Islamabad Declaration, whose principles are meant to guide AI implementation across all tiers of government. It names no body to evaluate advanced models. The 2025 National AI Policy itself could not be retrieved from the ministry site (HTTP 404).",
+        "log": [
+          {
+            "date": "2026-10-24",
+            "text": "Searched indexed public English and Urdu sources for a government-designated AI safety institute with a remit to evaluate advanced models."
+          }
+        ]
       },
       "source_ids": [
         "negative-second-pk-2026",
         "pk-regulations-ai"
       ],
-      "related_bodies": [
-        {
-          "name": "AI Council",
-          "role": "It oversees the National AI Policy 2025 as a ministerial council.",
-          "counts_as_aisi": false,
-          "kind": "other",
-          "id": "related_bodies-cc8d14baefb95ac4a21a35c4c6699635"
-        }
-      ],
+      "related_bodies": [],
       "region": {
         "id": "142",
         "name": "Asia",
@@ -21298,14 +21304,13 @@
         "un-m49",
         "wikidata-jurisdiction-identifiers"
       ],
-      "notes": "A government account of the February 2026 Indus AI Summit describes sovereign compute, research investment and national governance initiatives. The government headline reports that the Indus AI Summit 2026 concluded in Islamabad. Searches covered indexed public English and Urdu sources for a government-designated AI safety institute with a remit to evaluate advanced models."
+      "claims": []
     },
     {
       "id": "BD",
       "name": "Bangladesh",
       "kind": "state",
       "institute_id": null,
-      "summary": "No qualifying institute identified. A draft National AI Policy 2026-2030 proposes an oversight committee to audit AI systems for bias, and is not yet adopted.",
       "next_check": {
         "date": "2027-01-15",
         "reason": "Routine re-check on a two-year rotation of states with no reported plans."
@@ -21368,18 +21373,7 @@
         "bd-dailystar-2026",
         "bd-fe-2026"
       ],
-      "related_bodies": [
-        {
-          "name": "Independent Oversight Committee (proposed)",
-          "role": "It would audit AI systems for bias under the draft policy; it is not an evaluation institute.",
-          "counts_as_aisi": false,
-          "source_ids": [
-            "bd-dailystar-2026"
-          ],
-          "kind": "other",
-          "id": "related_bodies-5c59014320525d2a9d8a4fe69b807c52"
-        }
-      ],
+      "related_bodies": [],
       "region": {
         "id": "142",
         "name": "Asia",
@@ -21404,14 +21398,14 @@
       "identifier_source_ids": [
         "un-m49",
         "wikidata-jurisdiction-identifiers"
-      ]
+      ],
+      "claims": []
     },
     {
       "id": "LK",
       "name": "Sri Lanka",
       "kind": "state",
       "institute_id": null,
-      "summary": "No qualifying institute identified. Cabinet approved implementation of Sri Lanka's national AI strategy on 26 August 2024. In August 2026 the deputy minister described establishing a National AI Institute as a top priority plan for the ministry; the announcement does not state its remit.",
       "next_check": {
         "date": "2027-06-15",
         "reason": "Routine re-check on a two-year rotation of states with no reported plans."
@@ -21503,7 +21497,13 @@
           "negative-second-lk-2026",
           "lk-broad-ai-institute-proposal-2026"
         ],
-        "governance_note": "The Cabinet record approves implementation of the national AI strategy. The ministry separately calls a National AI Institute a top priority; a July 2026 news report of the deputy minister's remarks describes it as strengthening capacity in AI research, ethics and policymaking. The inaccessible archived strategy copy is not relied upon."
+        "governance_note": "The Cabinet record approves implementation of the national AI strategy. The ministry separately calls a National AI Institute a top priority; a July 2026 news report of the deputy minister's remarks describes it as strengthening capacity in AI research, ethics and policymaking. The inaccessible archived strategy copy is not relied upon.",
+        "log": [
+          {
+            "date": "2026-10-24",
+            "text": "Searched indexed public English and Sinhala sources for a government-designated AI safety institute with a remit to evaluate advanced models."
+          }
+        ]
       },
       "source_ids": [
         "lk-strategy-2024",
@@ -21535,8 +21535,7 @@
       "identifier_source_ids": [
         "un-m49",
         "wikidata-jurisdiction-identifiers"
-      ],
-      "notes": "The Cabinet decision dated 26 August 2024 approved implementation of the national AI strategy. Searches covered indexed public English and Sinhala sources for a government-designated AI safety institute with a remit to evaluate advanced models. A July 2026 news report of the deputy minister's remarks says the planned National AI Institute would strengthen local capacity in AI research, ethics and policymaking; no remit to evaluate advanced models was found."
+      ]
     },
     {
       "id": "BH",
@@ -21640,7 +21639,6 @@
       "name": "Iran",
       "kind": "state",
       "institute_id": null,
-      "summary": "No qualifying institute identified. An October 2025 report says Parliament approved creation of a National AI Organisation for coordination and development under presidential supervision.",
       "next_check": {
         "date": "2027-05-15",
         "reason": "Routine re-check on a two-year rotation of states with no reported plans."
@@ -21719,20 +21717,22 @@
         ],
         "independent_source_ids": [],
         "language_note": "The recorded fa query uses a national or official language selected for this country-specific check. Other national or official languages were not exhaustively searched. Some submitted strings contain site. rather than site:; these literal strings are preserved and are not treated as domain-restricted searches. Search source_ids identify registered source URLs matched in the retrieved result set, which may include irrelevant hits. An empty list means no registered source URL was matched, not that the web response was empty. The earlier audit used independent_source_ids for substantive corroboration; governance_source_ids, where present, identifies the selected primary governance evidence. Preserved result batches, using 1-based positions in check.searches: IR-extra-search = searches 1, 2 (fa, fa); IR-search = searches 3, 4 (en, fa). Each multi-query batch has only a combined returned result set; its source_ids cannot be attributed to individual queries. Historical query dates are recorded as 17 October 2026 in the phase6 search-boundary ledger. On 24 October 2026 the record was searched again in English and Persian; the result links of each query were matched against registered sources in the same way.",
-        "independence_note": "Historical audit under the superseded two-independent-sources rule: Two substantively independent evidence origins were not established. Multiple pages from one owner, mirrors, reports of the same underlying announcement and general regional coverage are not counted as independent corroboration."
+        "independence_note": "Historical audit under the superseded two-independent-sources rule: Two substantively independent evidence origins were not established. Multiple pages from one owner, mirrors, reports of the same underlying announcement and general regional coverage are not counted as independent corroboration.",
+        "log": [
+          {
+            "date": "2026-10-18",
+            "text": "Read TV BRICS's account citing Mehr News Agency."
+          },
+          {
+            "date": "2026-10-24",
+            "text": "Read the private legal reproduction at nezamat.ir and Tasnim's accounts; searched indexed public English and Persian sources for a government-designated AI safety institute with a remit to evaluate advanced models."
+          }
+        ]
       },
       "source_ids": [
         "ir-tvbrics-2025"
       ],
-      "related_bodies": [
-        {
-          "name": "National AI Organisation",
-          "role": "It is an AI strategy and development body under the President, approved by parliament in October 2025.",
-          "counts_as_aisi": false,
-          "kind": "other",
-          "id": "related_bodies-116cf40271465fc1820eb1bfa5d38cce"
-        }
-      ],
+      "related_bodies": [],
       "region": {
         "id": "142",
         "name": "Asia",
@@ -21758,13 +21758,12 @@
         "un-m49",
         "wikidata-jurisdiction-identifiers"
       ],
-      "notes": "Cited foreign sources for the governance context: TV BRICS (citing Mehr News Agency). Retrieved accounts discuss the National AI Organisation and competing reorganisation proposals. The legal text retrieved from nezamat.ir is a private reproduction; Tasnim's accounts are media reports. A primary national designation source was not retrieved. Searches covered indexed public English and Persian sources for a government-designated AI safety institute with a remit to evaluate advanced models."
+      "claims": []
     },
     {
       "id": "AF",
       "name": "Afghanistan",
       "institute_id": null,
-      "summary": "No qualifying institute identified; few official sources are available. Ministry material describes applied innovation projects, none with a mandate to evaluate advanced models.",
       "check": {
         "last_checked": "2026-10-16",
         "method": "individual",
@@ -21836,13 +21835,18 @@
         ],
         "independent_source_ids": [],
         "language_note": "The recorded fa query uses a national or official language selected for this country-specific check. Other national or official languages were not exhaustively searched. Search source_ids identify registered source URLs matched in the retrieved result set, which may include irrelevant hits. An empty list means no registered source URL was matched, not that the web response was empty. The earlier audit used independent_source_ids for substantive corroboration; governance_source_ids, where present, identifies the selected primary governance evidence. Preserved result batches, using 1-based positions in check.searches: AF-search = searches 1, 2 (en, fa). Each multi-query batch has only a combined returned result set; its source_ids cannot be attributed to individual queries. Historical query dates are recorded as 17 October 2026 in the phase6 search-boundary ledger. On 24 October 2026 the record was searched again in English, Dari (Persian) and Pashto; the result links of each query were matched against registered sources in the same way.",
-        "independence_note": "Historical audit under the superseded two-independent-sources rule: Two substantively independent evidence origins were not established. Multiple pages from one owner, mirrors, reports of the same underlying announcement and general regional coverage are not counted as independent corroboration."
+        "independence_note": "Historical audit under the superseded two-independent-sources rule: Two substantively independent evidence origins were not established. Multiple pages from one owner, mirrors, reports of the same underlying announcement and general regional coverage are not counted as independent corroboration.",
+        "log": [
+          {
+            "date": "2026-10-24",
+            "text": "Searched indexed public English and Dari/Persian sources for a government-designated AI safety institute with a remit to evaluate advanced models."
+          }
+        ]
       },
       "source_ids": [
         "af-mcit-home",
         "negative-second-af-2026"
       ],
-      "notes": "The ministry describes review of practical innovation proposals, including an AI examination-question generator. Official coverage of institutional AI governance was sparse in the retrieved results. Searches covered indexed public English and Dari/Persian sources for a government-designated AI safety institute with a remit to evaluate advanced models.",
       "region": {
         "id": "142",
         "name": "Asia",
@@ -21878,7 +21882,6 @@
       "id": "BT",
       "name": "Bhutan",
       "institute_id": null,
-      "summary": "No qualifying institute identified. The 2025 National AI Strategy proposes a national AI governing body and ethical guidelines but no model-evaluation body.",
       "check": {
         "last_checked": "2026-10-16",
         "method": "individual",
@@ -21964,7 +21967,13 @@
           "bt-govtech-ais-2025",
           "negative-second-bt-2026"
         ],
-        "governance_note": "The retrieved GovTech strategy and civil-service AI guideline provide substantive primary governance evidence. Formal strategy approval remains unconfirmed. Confidence stays low because the retained Dzongkha queries do not establish an adequate national-language check for an AI safety or evaluation institute."
+        "governance_note": "The retrieved GovTech strategy and civil-service AI guideline provide substantive primary governance evidence. Formal strategy approval remains unconfirmed. Confidence stays low because the retained Dzongkha queries do not establish an adequate national-language check for an AI safety or evaluation institute.",
+        "log": [
+          {
+            "date": "2026-10-24",
+            "text": "Searched indexed public English and Dzongkha sources for a government-designated AI safety institute with a remit to evaluate advanced models."
+          }
+        ]
       },
       "source_ids": [
         "bt-govtech-ais-2025",
@@ -21973,20 +21982,15 @@
       "related_bodies": [
         {
           "name": "GovTech Agency",
-          "role": "It drafted the National AI Strategy 2025 and leads digital policy.",
           "counts_as_aisi": false,
           "kind": "other",
-          "id": "related_bodies-c9296c9beaf55847aa991dad78ed91f5"
-        },
-        {
-          "name": "National AI governing body (proposed)",
-          "role": "The strategy lists the proposed governing body as an action under its governance enabler. No mandate to evaluate models was stated.",
-          "counts_as_aisi": false,
-          "kind": "other",
-          "id": "related_bodies-5ed53c76ee9750dd98a71d7b57f90522"
+          "id": "related_bodies-c9296c9beaf55847aa991dad78ed91f5",
+          "source_ids": [
+            "bt-govtech-ais-2025",
+            "negative-second-bt-2026"
+          ]
         }
       ],
-      "notes": "The strategy describes gaps in AI oversight, accountability, transparency and risk safeguards. Its governance actions include a national AI governing body and framework; formal approval by the GovTech Commission was not confirmed, and the proposed body has no stated remit to evaluate advanced models.\n\nThe cover of the official civil-service generative-AI usage guideline is dated 2024; the document concerns responsible adoption by the civil service. Searches covered indexed public English and Dzongkha sources for a government-designated AI safety institute with a remit to evaluate advanced models.",
       "next_check": {
         "date": "2027-04-15",
         "reason": "Whether the strategy is formally approved and the national AI governing body is given a mandate."
@@ -22016,6 +22020,41 @@
       "identifier_source_ids": [
         "un-m49",
         "wikidata-jurisdiction-identifiers"
+      ],
+      "claims": [
+        {
+          "id": "claims-faeff4ba85d1406598a98c10aa3bc918",
+          "kind": "function",
+          "code": "talent",
+          "basis": "activity",
+          "body_id": "related_bodies-c9296c9beaf55847aa991dad78ed91f5",
+          "text": "GovTech says it operates a five-year AI lab programme that builds technical and non-technical talent.",
+          "source_ids": [
+            "bt-govtech-ais-2025"
+          ]
+        },
+        {
+          "id": "claims-8d2fed80de9a498dac17a44dd7b73591",
+          "kind": "function",
+          "code": "adoption",
+          "basis": "activity",
+          "body_id": "related_bodies-c9296c9beaf55847aa991dad78ed91f5",
+          "text": "GovTech says it operates a five-year AI lab programme for AI innovators and start-ups that supports the development of scalable minimum viable products.",
+          "source_ids": [
+            "bt-govtech-ais-2025"
+          ]
+        },
+        {
+          "id": "claims-1723eafb36954c07bb32b786bf2e1a61",
+          "kind": "function",
+          "code": "policy_advice",
+          "basis": "activity",
+          "body_id": "related_bodies-c9296c9beaf55847aa991dad78ed91f5",
+          "text": "The guideline credits GovTech and the Royal Civil Service Commission with developing guidance on generative AI use in the Civil Service.",
+          "source_ids": [
+            "negative-second-bt-2026"
+          ]
+        }
       ]
     },
     {
@@ -22705,7 +22744,6 @@
       "id": "MV",
       "name": "Maldives",
       "institute_id": null,
-      "summary": "No qualifying institute identified. A National AI Masterplan covering risk management and a legal framework was announced in October 2024 and appears still to be in draft, and no evaluation body is named.",
       "check": {
         "last_checked": "2026-10-16",
         "method": "individual",
@@ -22750,7 +22788,13 @@
         "governance_source_ids": [
           "mv-presidency-2024"
         ],
-        "governance_note": "The President's Office describes the AI masterplan, risk management and planned legal framework with responsible ministries; subsequent adoption was not verified."
+        "governance_note": "The President's Office describes the AI masterplan, risk management and planned legal framework with responsible ministries; subsequent adoption was not verified.",
+        "log": [
+          {
+            "date": "2026-10-17",
+            "text": "Read the President's Office masterplan announcement and the Regulations.AI account; searched in English for an adopted plan and searched for Dhivehi sources."
+          }
+        ]
       },
       "source_ids": [
         "mv-presidency-2024",
@@ -22761,19 +22805,7 @@
       ],
       "related_bodies": [
         {
-          "name": "Maldives Digital Service",
-          "role": "It was established on 15 January 2026, when the National Centre for Information Technology (NCIT) was abolished, and was to assume all of NCIT's responsibilities; NCIT had worked with the steering committee that compiled the UNESCO readiness assessment launched on 31 July 2025.",
-          "counts_as_aisi": false,
-          "kind": "other",
-          "id": "related_bodies-a6b1512bedd95938ab05f7b885dc34e5",
-          "source_ids": [
-            "mv-presidency-2026-mds",
-            "mv-seemv-ram-2025"
-          ]
-        },
-        {
           "name": "Ministry of Homeland Security and Technology",
-          "role": "It is responsible, with the economic development ministry, for presenting the masterplan to Cabinet.",
           "counts_as_aisi": false,
           "source_ids": [
             "mv-presidency-2024"
@@ -22782,7 +22814,6 @@
           "id": "related_bodies-90908af4f8a05a00bfa0483fb6d78633"
         }
       ],
-      "notes": "The President's Office announcement (17 October 2024) says the masterplan covers 'risk management in utilising AI' and a legal framework. An aggregator reports the masterplan as still a draft, with a planned independent AI governance body; this was not confirmed against an official text. Searches in English found no adopted plan; Dhivehi sources were not found.",
       "next_check": {
         "date": "2027-04-15",
         "reason": "Cabinet approval of the masterplan and whether it creates an AI governance or testing body."
@@ -22812,13 +22843,25 @@
       "identifier_source_ids": [
         "un-m49",
         "wikidata-jurisdiction-identifiers"
+      ],
+      "claims": [
+        {
+          "id": "claims-526b7ecfcf4044e4a15ec340ff94e510",
+          "kind": "function",
+          "code": "policy_advice",
+          "basis": "mandate",
+          "body_id": "related_bodies-90908af4f8a05a00bfa0483fb6d78633",
+          "text": "The President decided that, once the AI masterplan is formulated, the homeland security and technology ministry and the economic development and trade ministry will present the documentation to Cabinet.",
+          "source_ids": [
+            "mv-presidency-2024"
+          ]
+        }
       ]
     },
     {
       "id": "NP",
       "name": "Nepal",
       "institute_id": null,
-      "summary": "No qualifying institute identified. The National AI Policy 2025 gives the AI Regulation Council compliance duties and the National AI Centre standards, programme evaluation and risk-management functions. These provisions do not establish evaluation of advanced models for capabilities or behaviour risks.",
       "check": {
         "last_checked": "2026-10-16",
         "method": "individual",
@@ -22912,7 +22955,21 @@
           "np-mocit-ai-policy-2025",
           "np-lawcommission-ai-policy"
         ],
-        "governance_note": "The Nepali original and English ministry policy specify Council compliance and Centre coordination, standards and programme evaluation. Neither establishes the qualifying remit to test advanced models. Both search languages were used, supporting medium confidence for this bounded negative."
+        "governance_note": "The Nepali original and English ministry policy specify Council compliance and Centre coordination, standards and programme evaluation. Neither establishes the qualifying remit to test advanced models. Both search languages were used, supporting medium confidence for this bounded negative.",
+        "log": [
+          {
+            "date": "2026-10-19",
+            "text": "Read the Nepali and English ministry policies, including the Council's compliance clause and the Centre's functions."
+          },
+          {
+            "date": "2026-10-17",
+            "text": "Read The Rising Nepal's account of the National AI Centre inauguration; searched for a constituting decision."
+          },
+          {
+            "date": "2026-10-17",
+            "text": "Searched in Nepali and English for later official extensions of the Centre's and Council's remits to evaluating advanced models."
+          }
+        ]
       },
       "source_ids": [
         "np-mocit-ai-policy-2025",
@@ -22926,7 +22983,6 @@
       "related_bodies": [
         {
           "name": "AI Regulation Council",
-          "role": "Its Nepali compliance clause requires adherence to approved AI policies, laws and standards. The English version also says to test compliance. It is a minister-chaired Council under policy section 10.1. The Rising Nepal reported on 10 November 2025 that the minister said the Council had formed. No constituting decision was retrieved.",
           "counts_as_aisi": false,
           "source_ids": [
             "np-mocit-ai-policy-2025",
@@ -22938,7 +22994,6 @@
         },
         {
           "name": "National AI Centre",
-          "role": "Policy section 10.2 assigns it programme evaluation, product and service standards, risk mitigation and the Council secretariat. It is a centre under the communications ministry, reported by The Rising Nepal as inaugurated on 10 November 2025. These tasks do not establish evaluation of advanced models for capabilities or behaviour risks.",
           "counts_as_aisi": false,
           "kind": "other",
           "source_ids": [
@@ -22950,13 +23005,14 @@
         },
         {
           "name": "AI Excellence Centres",
-          "role": "They are planned in universities and research institutions for AI research and training.",
           "counts_as_aisi": false,
           "kind": "other",
-          "id": "related_bodies-d18a70b7f8e553a1afb77df87ba7c42d"
+          "id": "related_bodies-d18a70b7f8e553a1afb77df87ba7c42d",
+          "source_ids": [
+            "np-mocit-ai-policy-2025"
+          ]
         }
       ],
-      "notes": "The Nepali and English ministry policies distinguish the Council's compliance role in section 10.1.1(d) from the Centre's standards, programme evaluation and risk-management functions in section 10.2.1. The Nepali clause says to ensure compliance with approved policies, laws and standards; the English version adds testing. Neither wording establishes general-purpose or frontier-model capability or behaviour-risk evaluation. Policy actions 9.5 and 9.10 concern benchmarking, standardisation, certification and a regulatory sandbox. Section 14 addresses risks to policy implementation, rather than a model-testing mandate. The earlier review flag incorrectly attributed the Council's compliance clause to the Centre. The Rising Nepal reports the Centre's inauguration on 10 November 2025 and the minister's statement that the Council had formed; no constituting decision was retrieved. Nepali and English searches found no later official extension to a qualifying remit to evaluate advanced models.",
       "next_check": {
         "date": "2027-01-15",
         "reason": "Seek constituting decisions and any later testing rules for the AI Regulation Council and National AI Centre; reassess if either receives a technical remit to evaluate advanced models for capabilities or behaviour risks."
@@ -22986,6 +23042,85 @@
       "identifier_source_ids": [
         "un-m49",
         "wikidata-jurisdiction-identifiers"
+      ],
+      "claims": [
+        {
+          "id": "claims-1346b3cc968c4701b16823b3edf6030d",
+          "kind": "function",
+          "code": "policy_advice",
+          "basis": "mandate",
+          "body_id": "related_bodies-b7035d2cc38b5f46b77f35c157b6f0dc",
+          "text": "The policy tasks the AI Regulation Council with recommending that the Government of Nepal align relevant national laws and standards with international treaties and norms.",
+          "source_ids": [
+            "np-mocit-ai-policy-2025"
+          ]
+        },
+        {
+          "id": "claims-3b349c6637da4af58c322d6b8be40e0d",
+          "kind": "function",
+          "code": "adoption",
+          "basis": "mandate",
+          "body_id": "related_bodies-51c6b62b04725a1f874c5741512d8df9",
+          "text": "The policy tasks the National AI Centre with promoting and encouraging AI study, research, development and application.",
+          "source_ids": [
+            "np-mocit-ai-policy-2025"
+          ]
+        },
+        {
+          "id": "claims-c158999ffcde4337ab81ff9183d647c8",
+          "kind": "function",
+          "code": "convening",
+          "basis": "mandate",
+          "body_id": "related_bodies-51c6b62b04725a1f874c5741512d8df9",
+          "text": "The policy tasks the National AI Centre with acting as the focal point for international coordination and cooperation on AI.",
+          "source_ids": [
+            "np-mocit-ai-policy-2025"
+          ]
+        },
+        {
+          "id": "claims-dd12fa39e790498aa7db4dfbeb0abffe",
+          "kind": "function",
+          "code": "talent",
+          "basis": "mandate",
+          "body_id": "related_bodies-51c6b62b04725a1f874c5741512d8df9",
+          "text": "The policy provides for skill-based training for policymakers, employees and professionals in the public and private sectors through the National AI Centre, AI Excellence Centres, training centres and relevant organisations working in this field.",
+          "source_ids": [
+            "np-mocit-ai-policy-2025"
+          ]
+        },
+        {
+          "id": "claims-dcb95961845c4271bfecdc8b840feebc",
+          "kind": "function",
+          "code": "talent",
+          "basis": "mandate",
+          "body_id": "related_bodies-d18a70b7f8e553a1afb77df87ba7c42d",
+          "text": "The policy tasks AI Excellence Centres with training and workshops to develop AI skills for students and researchers.",
+          "source_ids": [
+            "np-mocit-ai-policy-2025"
+          ]
+        },
+        {
+          "id": "claims-88953f661aab4ebdb1c8ede49f622bb0",
+          "kind": "function",
+          "code": "policy_advice",
+          "basis": "mandate",
+          "body_id": "related_bodies-d18a70b7f8e553a1afb77df87ba7c42d",
+          "text": "The policy tasks AI Excellence Centres with giving suggestions and recommendations to the National AI Centre for policy formulation.",
+          "source_ids": [
+            "np-mocit-ai-policy-2025"
+          ]
+        },
+        {
+          "id": "claims-d4734b79f1c641b7a048ff1facec3f76",
+          "kind": "function",
+          "code": "adoption",
+          "basis": "mandate",
+          "body_id": "related_bodies-d18a70b7f8e553a1afb77df87ba7c42d",
+          "text": "The policy tasks AI Excellence Centres with facilitating and coordinating AI use in agriculture, education, health, finance, tourism, transport, energy, public service and security.",
+          "source_ids": [
+            "np-mocit-ai-policy-2025"
+          ]
+        }
       ]
     },
     {
@@ -51848,7 +51983,56 @@
         "sha256": "5a19b1adf1ff6fd63372b0e76a7c0832e5fc095f9b39db9116bd7edc62bc0bfa",
         "text_sha256": "e43761681911c063af552b25eb47d237fccea0c3d2437b5807df17950bc23dde",
         "text_scheme": 1
-      }
+      },
+      "excerpts": [
+        {
+          "text": "Theo luật, doanh nghiệp không phải xin phép trước khi triển khai hệ thống AI, nhưng phải tự đánh giá mức độ an toàn, lưu giữ hồ sơ và chịu trách nhiệm khi cơ quan quản lý thực hiện hậu kiểm.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "VN"
+              },
+              "claims",
+              {
+                "id": "claims-e0619e41e6c44ceeb3a9d643518395c7"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "Under the law, businesses do not have to seek permission before deploying AI systems, but must assess safety themselves, retain records and take responsibility when the regulator conducts subsequent checks.",
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Luật Trí tuệ nhân tạo chính thức có hiệu lực từ hôm nay, ngày 01/3/2026.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "VN"
+              },
+              "claims",
+              {
+                "id": "claims-e0619e41e6c44ceeb3a9d643518395c7"
+              },
+              "act"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "VN"
+              },
+              "claims",
+              {
+                "id": "claims-e0619e41e6c44ceeb3a9d643518395c7"
+              },
+              "date"
+            ]
+          ],
+          "gloss": "The AI Law officially takes effect today, 1 March 2026.",
+          "accessed": "2026-10-17"
+        }
+      ]
     },
     {
       "id": "vn-mst-portal-2026",
@@ -51860,26 +52044,7 @@
       "accessed": "2026-10-17",
       "language": "vi",
       "archive_url": "https://web.archive.org/web/20260829181011/https://mst.gov.vn/chinh-thuc-van-hanh-cong-thong-tin-dien-tu-va-co-so-du-lieu-quoc-gia-ve-tri-tue-nhan-tao-197260828221343433.htm",
-      "excerpts": [
-        {
-          "text": "Bộ Khoa học và Công nghệ chính thức công bố và đưa vào vận hành Cổng thông tin điện tử",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "VN"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-e6f3aac8b3f75b0b8a98a1f3f39e49aa"
-              },
-              "role"
-            ]
-          ],
-          "gloss": "The Ministry of Science and Technology officially announced and put the electronic portal into operation.",
-          "accessed": "2026-10-17"
-        }
-      ],
+      "excerpts": [],
       "origin": "VN",
       "snapshot": {
         "retrieved": "2026-10-17T14:20:04Z",
@@ -51900,18 +52065,46 @@
       "language": "en",
       "excerpts": [
         {
-          "text": "the formal launch of the National Artificial Intelligence Center for Research and Innovation (NAICRI)",
+          "text": "The capstone of Year 1 came on February 26, 2026, with the formal launch of the National Artificial Intelligence Center for Research and Innovation (NAICRI) — the Philippines' first institutional anchor for AI research, advanced computing, and innovation.",
           "supports": [
             [
               "jurisdictions",
               {
                 "id": "PH"
               },
-              "related_bodies",
+              "claims",
               {
-                "id": "related_bodies-d0d5fa9c50e95c4cbb2234a14b173801"
+                "id": "claims-841e855789734d3a9bd359cfa25a83e6"
               },
-              "name"
+              "text"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "PH"
+              },
+              "claims",
+              {
+                "id": "claims-841e855789734d3a9bd359cfa25a83e6"
+              },
+              "date"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "DOST Secretary Renato U. Solidum Jr., alongside DOST Undersecretary for Research and Development Dr. Leah J. Buendia, and DOST-ASTI Director Dr. Franz A. de Leon, formally launches the NAICRI — establishing the Philippines' first institutional anchor for AI research, advanced computing, and innovation under the theme \"Intelligence for the Nation, Knowledge for Generation.\"",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "PH"
+              },
+              "claims",
+              {
+                "id": "claims-841e855789734d3a9bd359cfa25a83e6"
+              },
+              "act"
             ]
           ],
           "accessed": "2026-10-17"
@@ -51947,13 +52140,6 @@
               },
               "check",
               "independent_source_ids"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "PH"
-              },
-              "notes"
             ]
           ]
         }
@@ -52045,21 +52231,7 @@
       "accessed": "2026-10-17",
       "archive_url": "https://web.archive.org/web/20250723034541/https://montsame.mn/en/read/369839",
       "language": "en",
-      "excerpts": [
-        {
-          "text": "the Strategy aims at establishing the necessary infrastructure and legal framework, including the creation of a National Council on Artificial Intelligence",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "MN"
-              },
-              "summary"
-            ]
-          ],
-          "accessed": "2026-10-17"
-        }
-      ],
+      "excerpts": [],
       "origin": "MN",
       "snapshot": {
         "retrieved": "2026-10-17T14:20:05Z",
@@ -52212,18 +52384,22 @@
       "origin": "VN",
       "excerpts": [
         {
-          "text": "Luật này có hiệu lực thi hành từ ngày 01 tháng 3 năm 2026, trừ các nội dung liên quan quy định tại Điều 35 của Luật này.",
+          "text": "Bộ Khoa học và Công nghệ là cơ quan đầu mối, chịu trách nhiệm trước Chính phủ thực hiện quản lý nhà nước về trí tuệ nhân tạo trên phạm vi cả nước;",
           "supports": [
             [
               "jurisdictions",
               {
                 "id": "VN"
               },
-              "summary"
+              "claims",
+              {
+                "id": "claims-ec19432f04924843a3c3e0e656757b19"
+              },
+              "text"
             ]
           ],
-          "accessed": "2026-10-17",
-          "gloss": "This Law takes effect on 1 March 2026, except for the matters specified in Article 35."
+          "gloss": "The Ministry of Science and Technology is the focal body responsible to the Government for state management of AI nationwide.",
+          "accessed": "2026-10-17"
         }
       ],
       "snapshot": {
@@ -54032,25 +54208,7 @@
       "accessed": "2026-10-17",
       "archive_url": "https://web.archive.org/web/20260211111757/https://www.thedailystar.net/business/economy/news/draft-ai-policy-targets-innovation-better-public-services-4090431",
       "language": "en",
-      "excerpts": [
-        {
-          "text": "An Independent Oversight Committee, established through an act of Parliament, will audit AI systems for bias",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "BD"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-5c59014320525d2a9d8a4fe69b807c52"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-10-17"
-        }
-      ],
+      "excerpts": [],
       "origin": "BD",
       "snapshot": {
         "retrieved": "2026-10-17T14:20:31Z",
@@ -54117,20 +54275,7 @@
       "published": "2025-10-29",
       "accessed": "2026-10-17",
       "language": "en",
-      "excerpts": [
-        {
-          "text": "an independent body tasked with coordinating and advancing the country’s AI ecosystem under the supervision of the President.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "IR"
-              },
-              "summary"
-            ]
-          ]
-        }
-      ],
+      "excerpts": [],
       "origin": "RU",
       "access_note": "Private copy held from the live page (a later retrieval succeeded after an earlier HTTP 403).",
       "snapshot": {
@@ -56400,25 +56545,7 @@
       "accessed": "2026-10-17",
       "language": "en",
       "archive_url": "https://web.archive.org/web/20261017005248/https://www.aiti.gov.bn/news/2025/guide-on-artificial-intelligence-governance-and-ethics-for-brunei-darussalam/",
-      "excerpts": [
-        {
-          "text": "the AI Governance and Ethics Working Group have developed the ‘Guide on Artificial Intelligence Governance and Ethics for Brunei Darussalam.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "BN"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-232080cf0da3573ca143df3ba9a0cb65"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-10-17"
-        }
-      ],
+      "excerpts": [],
       "origin": "BN",
       "snapshot": {
         "retrieved": "2026-10-17T14:21:13Z",
@@ -56437,25 +56564,7 @@
       "accessed": "2026-10-17",
       "language": "en",
       "archive_url": "https://web.archive.org/web/20261017005448/https://mptc.gov.kh/en/2025/04/press-release-on-the-deep-dive-workshop-on-draft-national-artificial-intelligence-strategy/",
-      "excerpts": [
-        {
-          "text": "development of the draft National AI Strategy, with MPTC serving as the lead ministry in this effort.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "KH"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-1b19882cbe19504aa63f65010e630017"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-10-17"
-        }
-      ],
+      "excerpts": [],
       "origin": "KH",
       "snapshot": {
         "retrieved": "2026-10-17T14:21:15Z",
@@ -56493,26 +56602,7 @@
       "language": "en",
       "access_note": "A source copy was read on 17 October 2026 for the attached excerpts. Earlier access limitations: State news agency report of a Ministry of Technology and Communications event. The published snapshot hash identifies the retained archive capture at https://web.archive.org/web/20261017005837/https://kpl.gov.la/EN/detail.aspx?id=96675.",
       "archive_url": "https://web.archive.org/web/20261017005837/https://kpl.gov.la/EN/detail.aspx?id=96675",
-      "excerpts": [
-        {
-          "text": "jointly organised by the Ministry of Technology and Communications and UNESCO, in partnership with the United Nations Country Team.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "LA"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-a7b0bc0f289c55429d64d8df01b82750"
-              },
-              "name"
-            ]
-          ],
-          "url": "https://web.archive.org/web/20261017005837/https://kpl.gov.la/EN/detail.aspx?id=96675",
-          "accessed": "2026-10-17"
-        }
-      ],
+      "excerpts": [],
       "origin": "LA",
       "snapshot": {
         "retrieved": "2026-10-17T14:21:19Z",
@@ -56550,25 +56640,7 @@
       "language": "en",
       "access_note": "A source copy was read on 17 October 2026 for the attached excerpts. Earlier access limitations: Delivery partner's project page for the UNESCO AI readiness assessment; the page carries no publication date, so only the year is given.",
       "archive_url": "https://web.archive.org/web/20260814083055/https://catalpa.io/projects/ai-readiness-in-timor-leste-designing-the-future-responsibly/",
-      "excerpts": [
-        {
-          "text": "Catalpa partnered with the Ministry of Transport and Communications, TIC Timor, and UNESCO to deliver the country’s first national AI Readiness Assessment",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "TL"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-b63ae36340705323ad20560a369380f2"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-10-17"
-        }
-      ],
+      "excerpts": [],
       "origin": "AU",
       "snapshot": {
         "retrieved": "2026-10-17T14:21:21Z",
@@ -56587,21 +56659,7 @@
       "accessed": "2026-10-17",
       "language": "en",
       "archive_url": "https://web.archive.org/web/20261017010036/https://www.aljazeera.com/amp/news/2025/9/19/kim-jong-un-declares-ai-military-drone-development-a-top-priority",
-      "excerpts": [
-        {
-          "text": "emphasised “rapidly developing the newly-introduced artificial intelligence technology” as a “top priority” in order to increase his military’s unmanned weapons systems.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "KP"
-              },
-              "summary"
-            ]
-          ],
-          "accessed": "2026-10-17"
-        }
-      ],
+      "excerpts": [],
       "origin": "QA",
       "snapshot": {
         "retrieved": "2026-10-17T14:21:22Z",
@@ -59573,7 +59631,37 @@
         "text_sha256": "25b883346aaec772df981d66695200236eec3937e4b6adac68ebec6ef2cbf50c",
         "text_scheme": 1
       },
-      "archive_url": "https://web.archive.org/web/20261017024011if_/https://tech.gov.bt/wp-content/uploads/2025/10/National-AI-Strategy-2025.pdf"
+      "archive_url": "https://web.archive.org/web/20261017024011if_/https://tech.gov.bt/wp-content/uploads/2025/10/National-AI-Strategy-2025.pdf",
+      "excerpts": [
+        {
+          "text": "GovTech Agency also operates a five-year AI lab program designed to cultivate an ecosystem for AI innovators and startups, building tech and non-tech talent through capacity-building and supporting the development of scalable minimum viable products.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "BT"
+              },
+              "claims",
+              {
+                "id": "claims-faeff4ba85d1406598a98c10aa3bc918"
+              },
+              "text"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "BT"
+              },
+              "claims",
+              {
+                "id": "claims-8d2fed80de9a498dac17a44dd7b73591"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        }
+      ]
     },
     {
       "id": "dj-escwa-2026",
@@ -59937,18 +60025,18 @@
       "archive_url": "https://web.archive.org/web/20260405185309/https://presidency.gov.mv/Press/Article/31907",
       "excerpts": [
         {
-          "text": "relevant documentation would be presented to the cabinet by the Ministry of Homeland Security and Technology and the Ministry of Economic Development and Trade.",
+          "text": "The masterplan consists of risk management in utilising AI and the design of a legal framework on AI technology. The decision was made, after deliberations during the cabinet meeting held on October 16, 2024. At the meeting, President Dr Muizzu also decided that upon formulation of the masterplan, relevant documentation would be presented to the cabinet by the Ministry of Homeland Security and Technology and the Ministry of Economic Development and Trade.",
           "supports": [
             [
               "jurisdictions",
               {
                 "id": "MV"
               },
-              "related_bodies",
+              "claims",
               {
-                "id": "related_bodies-90908af4f8a05a00bfa0483fb6d78633"
+                "id": "claims-526b7ecfcf4044e4a15ec340ff94e510"
               },
-              "role"
+              "text"
             ]
           ],
           "accessed": "2026-10-17"
@@ -59980,25 +60068,7 @@
         "text_scheme": 1
       },
       "access_note": "The published snapshot hash identifies the retained archive capture at https://web.archive.org/web/20261017025410/https://see.mv/97862.",
-      "excerpts": [
-        {
-          "text": "The comprehensive report was compiled by a steering committee representing diverse sectors, working in conjunction with the NCIT under the initiative of UNESCO.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "MV"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-a6b1512bedd95938ab05f7b885dc34e5"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-11-14"
-        }
-      ]
+      "excerpts": []
     },
     {
       "id": "mv-regulations-ai-2026",
@@ -60031,19 +60101,157 @@
       "access_note": "A source copy was read on 17 October 2026 for the attached excerpts. Earlier access limitations: Linked from the ministry's policy page (mocit.gov.np/category/240); text extracted locally. The PDF itself carries no approval date. On 19 October 2026 the linked Wayback capture of 4 October 2026 was checked against this URL, the document title and every bound quotation.",
       "excerpts": [
         {
-          "text": "Test and ensure compliance with approved AI policies, laws, and standards.",
+          "text": "Recommend to the Government of Nepal to align relevant national laws and standards with international treaties and norms.",
           "supports": [
             [
               "jurisdictions",
               {
                 "id": "NP"
               },
-              "related_bodies",
+              "claims",
               {
-                "id": "related_bodies-b7035d2cc38b5f46b77f35c157b6f0dc"
+                "id": "claims-1346b3cc968c4701b16823b3edf6030d"
               },
-              "role"
+              "text"
             ]
+          ],
+          "anchors": [
+            {
+              "kind": "heading",
+              "text": "10.1.1 Functions, Duties and Powers of the AI Regulation Council"
+            }
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Promote, encourage, and regulate the study, research, development, and application of AI.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "NP"
+              },
+              "claims",
+              {
+                "id": "claims-3b349c6637da4af58c322d6b8be40e0d"
+              },
+              "text"
+            ]
+          ],
+          "anchors": [
+            {
+              "kind": "heading",
+              "text": "10.2.1 Functions, Duties and Powers of the National AI Centre"
+            }
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Act as the focal point for coordination and cooperation on AI-related matters at the international level.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "NP"
+              },
+              "claims",
+              {
+                "id": "claims-c158999ffcde4337ab81ff9183d647c8"
+              },
+              "text"
+            ]
+          ],
+          "anchors": [
+            {
+              "kind": "heading",
+              "text": "10.2.1 Functions, Duties and Powers of the National AI Centre"
+            }
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Conduct skill-based training programs for policymakers, employees, and professionals in the public and private sectors through the National AI Centre, AI Excellence Centres, training Centres, and relevant organizations working in this field.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "NP"
+              },
+              "claims",
+              {
+                "id": "claims-dd12fa39e790498aa7db4dfbeb0abffe"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Organize training and workshops to develop AI skills for students and researchers.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "NP"
+              },
+              "claims",
+              {
+                "id": "claims-dcb95961845c4271bfecdc8b840feebc"
+              },
+              "text"
+            ]
+          ],
+          "anchors": [
+            {
+              "kind": "heading",
+              "text": "10.3.1 Functions, Duties and Powers of AI Excellence Centre"
+            }
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Provide necessary suggestions and recommendations to the National AI Centre for policy formulation.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "NP"
+              },
+              "claims",
+              {
+                "id": "claims-88953f661aab4ebdb1c8ede49f622bb0"
+              },
+              "text"
+            ]
+          ],
+          "anchors": [
+            {
+              "kind": "heading",
+              "text": "10.3.1 Functions, Duties and Powers of AI Excellence Centre"
+            }
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Do necessary facilitation and coordination in the use of AI technologies in agriculture, education, health, finance, tourism, transportation, energy, public service, and security.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "NP"
+              },
+              "claims",
+              {
+                "id": "claims-d4734b79f1c641b7a048ff1facec3f76"
+              },
+              "text"
+            ]
+          ],
+          "anchors": [
+            {
+              "kind": "heading",
+              "text": "10.3.1 Functions, Duties and Powers of AI Excellence Centre"
+            }
           ],
           "accessed": "2026-10-17"
         }
@@ -68265,25 +68473,7 @@
       "accessed": "2026-10-17",
       "language": "en",
       "published": "2026-07-22",
-      "excerpts": [
-        {
-          "text": "has established the Na­tional Artificial Intelligence Development Department",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "MM"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-5d48b4343f06513db0512f71355596e3"
-              },
-              "name"
-            ]
-          ],
-          "accessed": "2026-10-17"
-        }
-      ],
+      "excerpts": [],
       "origin": "MM",
       "snapshot": {
         "retrieved": "2026-10-17T14:23:24Z",
@@ -68307,7 +68497,26 @@
         "sha256": "d7f2ad1f08465440a8baeb252920d5392ff8b6e6eef851004285f82322e45015",
         "text_sha256": "45aa494d60b97b97593316a2f6c44bc3f2b55f750028eefa89c0bad79d3fa058",
         "text_scheme": 1
-      }
+      },
+      "excerpts": [
+        {
+          "text": "Later, during the signing ceremony, an Agreement on Cooperation in AI-Powered Metrology was concluded between the Guangxi Zhuang Autonomous Region Institute of Metrology and Test and the National Institute of Metrology of Myanmar.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "MM"
+              },
+              "claims",
+              {
+                "id": "claims-5ad2642dc84e46ff8b90884e285749f7"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        }
+      ]
     },
     {
       "id": "au-myefo-2025-26",
@@ -84663,13 +84872,6 @@
               {
                 "id": "PK"
               },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "PK"
-              },
               "check",
               "governance_note"
             ]
@@ -84716,42 +84918,8 @@
               {
                 "id": "LK"
               },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "LK"
-              },
-              "summary"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "LK"
-              },
               "check",
               "governance_note"
-            ]
-          ]
-        },
-        {
-          "text": "Press briefing of Cabinet Decision taken on 2024-08-26 (Subject to Confirmation at the next Meeting)",
-          "accessed": "2026-10-17",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "LK"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "LK"
-              },
-              "summary"
             ]
           ]
         }
@@ -84790,21 +84958,7 @@
       "type": "primary",
       "accessed": "2026-10-17",
       "language": "fa",
-      "excerpts": [
-        {
-          "text": "سیستم تولید سوالات امتحان با استفاده از هوش مصنوعی",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "AF"
-              },
-              "notes"
-            ]
-          ],
-          "gloss": "A system generating examination questions using AI."
-        }
-      ],
+      "excerpts": [],
       "origin": "AF",
       "title_en": "Ministry of Communications and Information Technology evaluated a number of innovative proposals | Ministry of Communications and Information Technology",
       "snapshot": {
@@ -84826,30 +84980,21 @@
       "access_note": "The retrieved official document cover explicitly dates the guideline 2024. The URL upload directory is 2025/03; it is not used as the document date. The first online publication day was not established.",
       "excerpts": [
         {
-          "text": "This guideline therefore will provide an overarching framework on using AI responsibly in the Civil Service.",
-          "accessed": "2026-10-17",
+          "text": "Guideline for Generative Artificial Intelligence Usage in the Civil Service 2024 Developed by Royal Civil Service Commission and Government Technology Royal Government of Bhutan",
           "supports": [
             [
               "jurisdictions",
               {
                 "id": "BT"
               },
-              "notes"
-            ]
-          ]
-        },
-        {
-          "text": "Guideline for Generative Artificial Intelligence Usage in the Civil Service 2024",
-          "accessed": "2026-10-17",
-          "supports": [
-            [
-              "jurisdictions",
+              "claims",
               {
-                "id": "BT"
+                "id": "claims-1723eafb36954c07bb32b786bf2e1a61"
               },
-              "notes"
+              "text"
             ]
-          ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "BT",
@@ -85254,13 +85399,6 @@
           "text": "Furthermore, the Deputy Minister stated that establishing a National AI Institute—backed by sovereign digital infrastructure strengthened through projects like DIGIECON 2030 and SLUDI—is a top priority plan for the ministry.",
           "accessed": "2026-10-17",
           "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "LK"
-              },
-              "summary"
-            ],
             [
               "jurisdictions",
               {
@@ -98294,32 +98432,7 @@
       "language": "ne",
       "origin": "NP",
       "access_note": "PDF URL was obtained from the Law Commission policy page. Direct browser retrieval failed, but the complete PDF was retrieved with curl. Nepali extraction has font-mapping errors; sections 10.1–10.2 on printed pages 13–14 were checked visually. Publication day was not inferred from PDF creation metadata. On 19 October 2026 the quoted compliance clause was checked against PDF page 14 (printed page 13), section 10.1.1(d). The quotation is verbatim; font-mapping errors in the extracted text prevent reliable automatic matching. The Nepali clause requires compliance and does not add testing.",
-      "excerpts": [
-        {
-          "text": "ए.आई. सम्बन्धी स्वीकृत नीति, कानून र मापदण्डको पालना सुनिश्चित गर्ने/गराउने,",
-          "gloss": "Ensure, or cause compliance with, approved AI policies, laws and standards.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "NP"
-              },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "NP"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-b7035d2cc38b5f46b77f35c157b6f0dc"
-              },
-              "role"
-            ]
-          ]
-        }
-      ],
+      "excerpts": [],
       "snapshot": {
         "retrieved": "2026-10-19T00:12:10Z",
         "sha256": "e49551b3f46abdb52ae3c4fbef4e5863df403fb5ee3a5889a54f08b079e3c13a",
@@ -111174,13 +111287,6 @@
               {
                 "id": "LK"
               },
-              "notes"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "LK"
-              },
               "check",
               "governance_note"
             ]
@@ -123762,53 +123868,7 @@
       "accessed": "2026-11-14",
       "language": "en",
       "origin": "MV",
-      "excerpts": [
-        {
-          "text": "President Dr Mohamed Muizzu has established the Maldives Digital Service under the administrative oversight of the Ministry of Homeland Security and Technology, following the abolishment of the National Centre for Information Technology (NCIT).",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "MV"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-a6b1512bedd95938ab05f7b885dc34e5"
-              },
-              "name"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "MV"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-a6b1512bedd95938ab05f7b885dc34e5"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-11-14"
-        },
-        {
-          "text": "The Maldives Digital Service will assume all responsibilities previously undertaken by the NCIT",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "MV"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-a6b1512bedd95938ab05f7b885dc34e5"
-              },
-              "role"
-            ]
-          ],
-          "accessed": "2026-11-14"
-        }
-      ],
+      "excerpts": [],
       "snapshot": {
         "retrieved": "2026-11-14T11:58:13Z",
         "sha256": "c135631ce8882c1b22081c6a377804c53f86868325a6ac8b81ec770d0c0ee73f",
