@@ -136,6 +136,28 @@ def check_excerpts(d: dict) -> list[str]:
                 errors.append(f"{where}: source language is required for an excerpt")
             elif source["language"].split("-")[0] != "en" and not excerpt.get("gloss", "").strip():
                 errors.append(f"{where}: non-English excerpt needs an English gloss")
+            if "shown" in excerpt:
+                cut_where = f"source {source['id']} excerpt {excerpt['text'][:60]!r}"
+                parts = excerpt["shown"]
+                if len(excerpt["text"]) <= 300:
+                    errors.append(f"{cut_where}: shown needs an excerpt longer than 300 characters")
+                if sum(len(part["text"]) for part in parts) > 300:
+                    errors.append(f"{cut_where}: shown parts together exceed 300 characters")
+                end = None
+                for part in parts:
+                    if len(part["text"].strip()) < 20:
+                        errors.append(f"{cut_where}: shown part needs at least 20 characters after stripping whitespace")
+                    start = excerpt["text"].find(part["text"])
+                    if start < 0 or (end is not None and start < end):
+                        errors.append(f"{cut_where}: shown part is missing, out of order or overlapping")
+                    if start >= 0:
+                        if start != excerpt["text"].rfind(part["text"]):
+                            errors.append(f"{cut_where}: shown part must occur exactly once in the excerpt")
+                        if start == end:
+                            errors.append(f"{cut_where}: shown parts must not be adjacent; keep a gap between them")
+                        end = start + len(part["text"])
+                    if bool(part.get("gloss", "").strip()) != bool(excerpt.get("gloss", "").strip()):
+                        errors.append(f"{cut_where}: shown part gloss must be present exactly when the excerpt has a gloss")
             anchors = excerpt.get("anchors", [])
             groups = ["other" if "source_id" in a else "lead" if a["kind"] in {"heading", "provision"} else "link" for a in anchors]
             if len(groups) != len(set(groups)):
@@ -784,6 +806,7 @@ def tables(d: dict) -> dict[str, list[dict]]:
         "id": excerpt_identity(excerpt), "source_id": source["id"], "source_url": source["url"], "text": excerpt["text"], "gloss": excerpt.get("gloss", ""),
         "supports": json.dumps(excerpt["supports"], ensure_ascii=False), "url": excerpt.get("url", ""), "accessed": excerpt.get("accessed", ""),
         "anchors": json.dumps(excerpt["anchors"], ensure_ascii=False) if excerpt.get("anchors") else "",
+        "shown": " [...] ".join(part["text"] for part in excerpt.get("shown", [])),
     } for source in d["sources"] for excerpt in source.get("excerpts", [])]
     bodies = [{
         "id": body.get("id", ""), "jurisdiction_id": j["id"], "name": body["name"], "name_en": body.get("name_en", ""), "kind": body["kind"], "role": body["role"], "counts_as_aisi": val(body.get("counts_as_aisi")),
@@ -863,6 +886,7 @@ FIELD_DOCS = {
     "identifier_source_ids": "Citations supporting identifiers, distinct from citations for status; see sources.csv.",
     "source_id": "ID of the source containing the excerpt; see sources.csv.",
     "anchors": "JSON-encoded array of the excerpt's anchors (sources[].excerpts[].anchors in aisi.json), each {text, kind, gloss?, source_id?}: verbatim spans from the same copy unless source_id names another source (kind definition, heading, provision or membership); empty when the excerpt has none.",
+    "shown": "The display parts' original text joined by ' [...] '; empty when the excerpt has no display cut.",
     "source_url": "Canonical URL of the source containing the excerpt.",
     "source_ids": "Source ids, separated by '; '; see sources.csv.",
     "source_urls": "URLs of the cited sources, same order as source_ids.",
@@ -978,7 +1002,7 @@ EMPTY_COLUMNS = {
     "outputs": ["id", "institute_id", "date", "credited_from", "credit_institute_id", "credit_date", "type", "title", "lineage", "attribution", "qualifies_as", "qualification_note", "source_ids", "source_urls"],
     "known_activity": ["id", "institute_id", "kind", "date", "lineage", "source_ids", "source_urls"],
     "network_milestones": ["id", "body", "type", "date", "description", "short", "source_ids", "source_urls"],
-    "source_excerpts": ["id", "source_id", "source_url", "text", "gloss", "supports", "url", "accessed", "anchors"],
+    "source_excerpts": ["id", "source_id", "source_url", "text", "gloss", "supports", "url", "accessed", "anchors", "shown"],
     "related_bodies": ["id", "jurisdiction_id", "name", "name_en", "kind", "role", "counts_as_aisi", "designation_state", "authority_roles", "designation_step_text", "designation_step_date", "source_ids", "source_urls"],
     "closest_bodies": ["id", "jurisdiction_id", "name", "stage", "gap", "note", "body_id", "active_in", "source_ids", "source_urls"],
 }

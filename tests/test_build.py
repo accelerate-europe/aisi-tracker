@@ -531,7 +531,7 @@ def test_excerpt_length_and_missing_nested_citation(dataset):
     from jsonschema import Draft202012Validator
 
     validator = Draft202012Validator(json.loads(build.SCHEMA.read_text()))
-    dataset["sources"][0]["excerpts"][0]["text"] = "x" * 301
+    dataset["sources"][0]["excerpts"][0]["text"] = "x" * 501
     assert any("too long" in e.message for e in validator.iter_errors(dataset))
     dataset["sources"][0]["excerpts"][0]["text"] = "Synthetic"
     dataset["institutes"][0]["agreements"][0].pop("source_ids")

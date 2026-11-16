@@ -147,13 +147,20 @@ def check_development(where: str, record: dict, claim: dict, vocabularies: dict,
 
 
 def check_lead(where: str, claim: dict, leaves: dict) -> list[str]:
-    """The lead claim quotes its excerpt: a quoted span in the gloss, or in the excerpt when it has none (case ignored)."""
+    """The lead quotes its excerpt's gloss or text, and a visible part when cut (case ignored)."""
     spans = quoted_spans(claim["text"])
-    for _, excerpt in leaves.get("text", []):
-        quote = (excerpt.get("gloss") or excerpt["text"]).casefold()
-        if any(span.strip().casefold() in quote for span in spans if span.strip()):
+    cut_errors = []
+    for source, excerpt in leaves.get("text", []):
+        quote = (excerpt.get("gloss", "").strip() or excerpt["text"]).casefold()
+        matching = [span.strip().casefold() for span in spans if span.strip() and span.strip().casefold() in quote]
+        if "shown" in excerpt:
+            visible = [(part.get("gloss", "").strip() or part["text"]).casefold() for part in excerpt["shown"]]
+            if any(span in part for span in matching for part in visible):
+                return []
+            cut_errors.append(f"{where}: source {source['id']} excerpt {excerpt['text'][:60]!r}: the lead claim's quoted span must be inside a shown part's gloss or text as well as the whole excerpt")
+        elif matching:
             return []
-    return [f"{where}: the lead claim's text quotes, in quotation marks, a span of its excerpt's gloss, or of the excerpt when it has none"]
+    return cut_errors or [f"{where}: the lead claim's text quotes, in quotation marks, a span of its excerpt's gloss, or of the excerpt when it has none"]
 
 
 def schema_node(path: str) -> bool:

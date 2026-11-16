@@ -9494,7 +9494,7 @@ def check_claim_cards(html: str, data: dict) -> list[str]:
                 errors.append(f"{c['id']}: missing claim sentence")
                 continue
             plain = copy.copy(line)
-            for extra in plain.select(".cites, .translation"):
+            for extra in plain.select(".cites, .translation, .quote-whole"):
                 extra.decompose()
             text = " ".join(plain.get_text().split())
             if c["kind"] == "development":
@@ -9505,7 +9505,7 @@ def check_claim_cards(html: str, data: dict) -> list[str]:
                 errors.append(f"{c['id']}: sentence {text!r}, expected {expected_text!r}")
             if c is lead:
                 bindings = claim_bindings(data, c["id"])
-                if len(bindings) == 1 and bindings[0][2].get("gloss"):
+                if len(bindings) == 1 and bindings[0][2].get("gloss", "").strip():
                     quotes = line.select(".quote-text[aria-description]")
                     if len(quotes) != 1 or quotes[0].get("aria-description") != bindings[0][2]["text"]:
                         errors.append(f"{c['id']}: translated lead lacks its bound original")
@@ -9585,6 +9585,108 @@ def claim_quote_fixture(data: dict) -> tuple[dict, list[str]]:
     return fixture, [status["id"], migrated["id"]]
 
 
+def shown_quote_fixture(data: dict, translated: bool) -> tuple[dict, list[tuple[str, str]], dict]:
+    """A card fact and a closest-body lead share a long quote with two visible parts and omitted edges."""
+    fixture, ids = claim_quote_fixture(data)
+    text = ("Einleitender Kontext. Das Institut prüft Modelle. " + "Zusätzlicher Kontext zum Auftrag. " * 8
+            + "Es veröffentlicht die Ergebnisse. Abschliessender Kontext.")
+    gloss = ("Opening context. The institute tests models. " + "Additional context about its mandate. " * 7
+             + "It publishes the results. Closing context.")
+    quote = {"text": text if translated else gloss, "shown": [
+        {"text": "Das Institut prüft Modelle." if translated else "The institute tests models."},
+        {"text": "Es veröffentlicht die Ergebnisse." if translated else "It publishes the results."},
+    ]}
+    if translated:
+        quote["gloss"] = gloss
+        for part, english in zip(quote["shown"], ("The institute tests models.", "It publishes the results.")):
+            part["gloss"] = english
+    cases = []
+    for jid in ids:
+        record = next(j for j in fixture["jurisdictions"] if j["id"] == jid)
+        claim, = [c for c in record["claims"] if c["id"].startswith("fixture-claim-") and (c["kind"] == "fact" or c.get("lead"))]
+        (source, _, bound), = claim_bindings(fixture, claim["id"])
+        bound.pop("gloss", None)
+        bound.update(copy.deepcopy(quote))
+        source["language"] = "de" if translated else "en"
+        cases.append((jid, claim["id"]))
+    return fixture, cases, quote
+
+
+def check_shown_quotes(browser, base_url: str, data: dict) -> list[str]:
+    """Cuts expand in place on desktop and touch; original-language tips always show the whole span."""
+    errors = []
+    for translated in (False, True):
+        fixture, cases, quote = shown_quote_fixture(data, translated)
+        shown = "[...] The institute tests models. [...] It publishes the results. [...]"
+        plain_record, plain_claim = min(
+            ((j, c) for j in fixture["jurisdictions"] for c in j.get("claims", [])
+             if c["id"].startswith("fixture-claim-") and c["kind"] == "function" and not c.get("lead") and not c.get("expired")),
+            key=lambda pair: pair[1]["id"],
+        )
+        (_, _, plain_quote), = claim_bindings(fixture, plain_claim["id"])
+        for touch in (False, True):
+            page = browser.new_page(viewport={"width": 390 if touch else 1440, "height": 1000}, has_touch=touch, is_mobile=touch)
+            try:
+                page.route(PAGE_DATA, lambda route: route.fulfill(json=fixture))
+                hydrated(page, base_url)
+
+                def toggle_check(box, cut, full, label, glossed=False):
+                    text = box.locator(":scope > .quote-text")
+                    button = box.locator(":scope > button.quote-whole")
+                    if button.count() != 1 or button.get_attribute("type") != "button":
+                        errors.append(f"{label}: missing Whole quote button")
+                        return
+                    for step, (expanded, expected) in enumerate(((False, cut), (True, full), (False, cut))):
+                        if text.text_content() != '"' + expected + '"' or button.get_attribute("aria-expanded") != str(expanded).lower():
+                            errors.append(f"{label}: {'whole' if expanded else 'cut'} quote or expanded state differs")
+                        if button.inner_text() != ("Short quote" if expanded else "Whole quote"):
+                            errors.append(f"{label}: toggle label differs")
+                        if text.get_attribute("aria-haspopup") or text.get_attribute("aria-controls"):
+                            errors.append(f"{label}: quote gained popup controls")
+                        if glossed and text.get_attribute("aria-description") != quote["text"]:
+                            errors.append(f"{label}: original is not the whole quotation")
+                        if step < 2:
+                            button.tap() if touch else button.click()
+
+                def original_check(target, original, label):
+                    target.scroll_into_view_if_needed()
+                    page.keyboard.press("Escape")
+                    target.tap() if touch else target.focus()
+                    popup = page.locator("#tip")
+                    if not popup.is_visible() or popup.get_attribute("role") != "tooltip" or popup.inner_text() != original:
+                        errors.append(f"{label}: original-language tooltip does not show the whole original")
+                    if popup.locator(".quote-whole").count() or popup.get_attribute("aria-label"):
+                        errors.append(f"{label}: original-language tooltip gained a quote control or label")
+                    page.keyboard.press("Escape")
+
+                for jid, cid in cases:
+                    card = page.locator(f"#c-{jid.lower()}")
+                    card.evaluate("n => { if (n.tagName === 'DETAILS') n.open = true; n.querySelectorAll('details.more').forEach(d => d.open = true); }")
+                    fold = card.locator(f'details.quote[data-quote-claim="{cid}"]')
+                    fold.locator("summary").tap() if touch else fold.locator("summary").click()
+                    box = fold.locator(".quote-excerpt > .quotation")
+                    box.wait_for(state="visible")
+                    toggle_check(box, shown, quote.get("gloss", quote["text"]), cid, translated)
+                    lead = card.locator(f'.claim[data-claim-id="{cid}"] > .claim-text > .quotation')
+                    if lead.count():
+                        toggle_check(lead, "tests models", quote.get("gloss", quote["text"]), cid + " lead", translated)
+                    if translated:
+                        original_check(box.locator(":scope > .quote-text"), quote["text"], cid)
+                        if lead.count():
+                            original_check(lead.locator(":scope > .quote-text"), quote["text"], cid + " lead")
+                # An ordinary excerpt still has no cut control, and its tip keeps its original role after a toggle.
+                fold = page.locator(f'#c-{plain_record["id"].lower()} details.quote[data-quote-claim="{plain_claim["id"]}"]')
+                fold.locator("summary").tap() if touch else fold.locator("summary").click()
+                box = fold.locator(".quote-excerpt > .quotation")
+                box.wait_for(state="visible")
+                if box.locator(".quote-whole, [aria-haspopup], [aria-controls]").count():
+                    errors.append(f"{plain_claim['id']}: quote without shown gained cut controls")
+                original_check(box.locator(":scope > .quote-text"), plain_quote["text"], plain_claim["id"])
+            finally:
+                page.close()
+    return errors
+
+
 def check_claim_quotes(browser, base_url: str, data: dict) -> list[str]:
     """Open every disclosure on selected real cards and fixture cards, with keyboard and touch originals."""
     errors = []
@@ -9616,7 +9718,7 @@ def check_claim_quotes(browser, base_url: str, data: dict) -> list[str]:
                         bound = claim_bindings(payload, lead["id"])
                         original = bound[0][2] if len(bound) == 1 else None  # text has exactly one binding
                         quote = card.locator(f'.claim[data-claim-id="{lead["id"]}"] > .claim-text .quote-text')
-                        if original and original.get("gloss") and (quote.count() != 1 or quote.get_attribute("aria-description") != original["text"]):
+                        if original and original.get("gloss", "").strip() and (quote.count() != 1 or quote.get_attribute("aria-description") != original["text"]):
                             errors.append(f"{jid}: saved lead does not carry its bound original")
                     for fold in card.locator("details.quote").all():
                         identity = fold.get_attribute("data-quote-claim")
@@ -9634,6 +9736,8 @@ def check_claim_quotes(browser, base_url: str, data: dict) -> list[str]:
                                 errors.append(f"{identity}: missing bound excerpt {source['id']}/{ei}")
                                 continue
                             spans = [excerpt, *excerpt.get("anchors", [])]
+                            if excerpt.get("shown"):
+                                block.locator(".quote-whole").click()
                             shown = block.locator(".quote-text").all_text_contents()
                             if shown != ['"' + (span.get("gloss") or span["text"]) + '"' for span in spans]:
                                 errors.append(f"{identity}: quote or anchor text differs")
@@ -10919,10 +11023,13 @@ const checkClaims = (detail, cell, key) => {
     need(item.querySelector('.fn-basis')?.textContent === names[q.claim.basis].toLowerCase(), key + ': basis differs');
     const block = item.querySelector('.quote-body > .quote-excerpt');
     need(item.querySelectorAll('.quote-excerpt').length === 1 && block?.dataset.sourceId === q.source.id, key + ': shared quote block differs');
+    const whole = block?.querySelector('.quote-whole[aria-expanded="false"]');
+    if (q.excerpt.shown) { need(!!whole, key + ': missing Whole quote control'); whole?.click(); }
     const shown = block?.querySelector(':scope > .quotation > .quote-text'), marker = block?.querySelector(':scope > .quotation > .translation');
     need(shown?.textContent === '"' + (q.excerpt.gloss || q.excerpt.text) + '"', key + ': quote differs');
     need(!q.excerpt.gloss || (shown?.getAttribute('aria-description') === q.excerpt.text && /^\s*translated from \S/.test(marker?.textContent || '')), key + ': translation marker or original differs');
     need(!!q.excerpt.gloss || !marker, key + ': translation marker on an English quote');
+    if (q.excerpt.shown) whole?.click();
     const anchors = [...(block?.querySelectorAll('.quote-anchor') || [])];
     need(anchors.length === (q.excerpt.anchors || []).length, key + ': anchor count differs');
     (q.excerpt.anchors || []).forEach((anchor, n) => {
@@ -11869,6 +11976,7 @@ def browser_jobs(dist: Path, data: dict, screenshots: Path | None) -> list[tuple
         ("interactions", shared_links, ()),
         ("interactions", check_development_edges, (data,)),
         ("interactions", check_access_edges, (data,)),
+        ("interactions", check_shown_quotes, (data,)),
         ("interactions", check_functions_table, (dist, data)),
         ("interactions", check_functions_detail, (data,)),
         ("interactions", check_functions_layout, ()),
