@@ -33277,7 +33277,7 @@
           "no-ki-about",
           "no-doffin-2026-116502"
         ],
-        "notes": "proposed: 'foreslår 30 millionar kroner' (proposes NOK 30 million) to give KI Norge capacity to evaluate AI models, with the work done 'i samarbeid med forskingsinstitusjonane' (in cooperation with the research institutions), budget press release of the Ministry of Digitalisation and Public Governance, 7 October 2026, not yet voted. KI Norge is a unit of the Norwegian Digitalisation Agency. Contractor: under a contract award notice of 22 October 2026, the Digitalisation Agency procured one consultant as executive assistant to KI Norge's management, a new role, full time for one year with options.",
+        "notes": "proposed: 'foreslår 30 millionar kroner' (proposes NOK 30 million) to give KI Norge 'auka kapasitet til å evaluere KI-modeller' (more capacity to evaluate AI models), with the work done 'i samarbeid med forskingsinstitusjonane' (in cooperation with the research institutions), budget press release of the Ministry of Digitalisation and Public Governance, 7 October 2026. KI Norge is a unit of the Norwegian Digitalisation Agency. Contractor: a contract award notice of 22 October 2026 records a need for one administrative support for the management in an executive assistant role, a new role for one consultant, full time for one year with an option of 6 plus 6 months.",
         "searches": [
           {
             "date": "2026-10-21",
@@ -43131,6 +43131,14 @@
                 "id": "no-1"
               },
               "date"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "staffing_model",
+              "notes"
             ]
           ],
           "gloss": "7 October 2026",
@@ -43281,6 +43289,14 @@
               },
               "testing_capacity",
               "notes"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "staffing_model",
+              "notes"
             ]
           ],
           "accessed": "2026-10-17"
@@ -43376,6 +43392,14 @@
                 "id": "no-ki-norge"
               },
               "mandate"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "staffing_model",
+              "notes"
             ]
           ],
           "accessed": "2026-10-24",
@@ -43390,6 +43414,14 @@
                 "id": "no-ki-norge"
               },
               "mandate"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "staffing_model",
+              "notes"
             ]
           ],
           "accessed": "2026-10-24",
@@ -100320,6 +100352,14 @@
               },
               "reports_to",
               "name"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "staffing_model",
+              "notes"
             ]
           ],
           "gloss": "KI Norge is a unit in the Norwegian Digitalisation Agency.",
