@@ -9032,7 +9032,6 @@
       "kind": "state",
       "europe_scope": false,
       "institute_id": "sg-aisi",
-      "summary": "The Digital Trust Centre at NTU is designated as Singapore's AISI, with IMDA.",
       "next_check": {
         "date": "2027-04-16",
         "reason": "Routine full re-check of an institute record, every six months."
@@ -9113,7 +9112,6 @@
       "kind": "state",
       "europe_scope": false,
       "institute_id": "au-aisi",
-      "summary": "The Australian AI Safety Institute sits inside the Department of Industry, Science and Resources. It was announced in Nov 2025 and has operated since 2026.",
       "next_check": {
         "date": "2027-04-16",
         "reason": "Routine full re-check of an institute record, every six months."
@@ -9131,7 +9129,13 @@
             "scope": "Attempted preservation of cited source copies and checked saved-copy hashes; failures remain in source access notes. This source-evidence work is not a full factual recheck of the record."
           }
         ],
-        "last_checked_basis": "historical_upper_bound"
+        "last_checked_basis": "historical_upper_bound",
+        "log": [
+          {
+            "date": "2026-10-17",
+            "text": "Searched for a dated founding act for the Australian AI Safety Institute."
+          }
+        ]
       },
       "source_ids": [
         "au-minister",
@@ -9205,7 +9209,7 @@
           "date": "2026",
           "event": "designated",
           "instrument": "administrative",
-          "description": "The industry department describes the institute as part of the department, with a remit to analyse and test new AI models; no dated founding act found.",
+          "description": "The assistant minister says Australia has established the AI Safety Institute.",
           "source_ids": [
             "au-industry",
             "depth-au-forum"
@@ -38635,7 +38639,7 @@
           "confidence": "high",
           "commitment": "adopted",
           "funding_source": "national_government",
-          "notes": "The source dates the establishment of the Digital Trust Centre to June 2022 and states initial funding of SGD 50m. NTU's page on the centre states that the SGD 50m grant from IMDA and the National Research Foundation started on 1 October 2022 and that they invested it over the next five years; the annual figure is the mean over five years counted from that start, and the founding year is not treated as a spending period. DTC itself was later designated Singapore AISI. The earlier allocation covered trust technologies, including AI testing and privacy-enhancing technologies; the source does not state an AI-safety allocation. This broader pre-designation funding remains related funding.",
+          "notes": "IMDA says Singapore first set up the Digital Trust Centre in June 2022 to lead Singapore's research and development efforts for trust technologies.",
           "id": "funding-aa4eb9dd0f8e5c199d30dbd5b4354075",
           "coverage": "not_institute_specific",
           "years": 5,
@@ -38732,7 +38736,18 @@
             "certification",
             "sandbox"
           ]
-        }
+        },
+        "log": [
+          {
+            "date": "2026-10-19",
+            "text": "Searched in English for cooperation between the Cyber Security Agency of Singapore and the Singapore AISI; read CSA's Cybersecurity Act and AI-security guidance pages and the institute's home and About pages, and tried CSA's About page.",
+            "row": "national_partners"
+          },
+          {
+            "date": "2026-11-07",
+            "text": "Searched for access events, legal powers or agreements providing access to or evaluation of frontier developers' models."
+          }
+        ]
       },
       "source_ids": [
         "sg-imda",
@@ -38973,8 +38988,7 @@
         ]
       },
       "national_partners": {
-        "state": "not_published",
-        "notes": "Cyber agency searched: Cyber Security Agency of Singapore (CSA), 2026-10-19 (en); none found. Fetched: csa.gov.sg Cybersecurity Act page (200; no AISI mention), CSA about-us guess (404), CSA \"Guidelines and Companion Guide on Securing AI Systems\" page (200; no AISI/IMDA mention in the extract), sgaisi.sg home and about-us (no CSA named). No document naming cooperation between CSA and the Singapore AISI. The only body the sources name as a partner is the body the institute reports to, which is not an entry."
+        "state": "not_published"
       },
       "testing_capacity": {
         "modes": [
@@ -38985,7 +38999,7 @@
             ]
           }
         ],
-        "notes": "Joint network testing reported, 2025-06-26 (multilingual exercise) and 2025-07-17 (agentic exercise), and the bilateral agent data-leakage evaluation with Korea (2026). The testing is done by the Digital Trust Centre at NTU as the designated institute; IMDA is the policy partner.",
+        "notes": "The joint report presents SG AISI and KR AISI's findings on data leakage risks of AI agents in ordinary workflows and non-adversarial settings.",
         "source_ids": [
           "network-multilingual-2025",
           "catalogue-agentic-report",
@@ -38995,7 +39009,7 @@
         ]
       },
       "model_access": {
-        "notes": "No access event, legal power or agreement providing for access to, or evaluation of, the models of a developer that has a model in Epoch AI's frontier set was found. The network pilot on Llama 3.1-405B (October to November 2024) used an open-weight model, which is public access, and the bilateral report with Korea used models available through public APIs. The IMDA-Microsoft MOU (12 June 2026) only explores a framework for structuring access to frontier models and is not an agreement with the institute. No legal power. In a written parliamentary answer of 6 October 2026, the ministry said it seeks access to frontier models where appropriate but does not make it a requirement.",
+        "notes": "The Ministry of Digital Development and Information says it engages frontier AI developers to obtain information and access to their models where appropriate, but does not currently make this a requirement.",
         "source_ids": [
           "sg-pilot-2024",
           "sg-kr-agent-2026",
@@ -39147,7 +39161,7 @@
       "jurisdiction_id": "AU",
       "host": "Department of Industry, Science and Resources",
       "legal_form": "unit_in_existing_body",
-      "mandate": "Analyses and tests new AI models and applications; part of the Department of Industry, Science and Resources.",
+      "mandate": "Evaluates emerging AI capabilities.",
       "website": "https://www.industry.gov.au/science-technology-and-innovation/technology/artificial-intelligence/ai-safety-institute",
       "funding": [
         {
@@ -39165,7 +39179,7 @@
           ],
           "confidence": "high",
           "funding_source": "national_government",
-          "notes": "MYEFO states AUD 29.8m over four years; its rounded yearly rows sum to AUD 29.9m. The ministerial announcement also states AUD 29.9m. The current annual figure uses the published MYEFO row, not a mean. The payment profile is on printed page 266 (PDF page 98).",
+          "notes": "MYEFO states AUD 29.8 million over four years from 2025-26. Its payment table lists AUD 3.6 million for 2025-26, AUD 10.5 million for 2026-27, AUD 7.8 million for 2027-28 and AUD 8.0 million for 2028-29.",
           "annual_basis_code": "allocation_current_year",
           "annual_profile": [
             {
@@ -39320,7 +39334,29 @@
             "certification",
             "sandbox"
           ]
-        }
+        },
+        "log": [
+          {
+            "date": "2026-10-17",
+            "text": "Read the MYEFO payment profile on printed page 266 (PDF page 98)."
+          },
+          {
+            "date": "2026-10-18",
+            "text": "Read the rendered and direct copies of the department's scalable-oversight article for its publication date and CSIRO commissioning."
+          },
+          {
+            "date": "2026-10-19",
+            "text": "Searched in English for the Australian Cyber Security Centre and its relation to the institute; read archived copies of the department's institute page, ASD's About page and the ACSC's About page dated 15 October, 15 September and 26 September 2026 respectively."
+          },
+          {
+            "date": "2026-11-14",
+            "text": "Searched for a published evaluation by the Australian AI Safety Institute."
+          },
+          {
+            "date": "2026-11-09",
+            "text": "Searched for model access given to the institute and for completion of the separate evaluation agreement with Anthropic."
+          }
+        ]
       },
       "source_ids": [
         "au-minister",
@@ -39522,7 +39558,6 @@
           }
         }
       ],
-      "notes": "The 8 October 2026 publication date and AISI commissioning of CSIRO were reverified in the retained rendered copy of the department article. The retained direct article response did not independently yield those passages.",
       "head": {
         "state": "stated",
         "person_id": "people-7dbf99b9dc455d868390dd815eecc114",
@@ -39640,8 +39675,7 @@
               "rows-what-au-dfat"
             ]
           }
-        ],
-        "notes": "Cyber agency searched: Australian Cyber Security Centre (ACSC), within ASD, 2026-10-19 (en); found. In that check the live pages of the department and of the ACSC could not be retrieved, so the department's institute page, ASD's about page and the ACSC's about page were read in archived copies of 15 October, 15 September and 26 September 2026. Cooperation is stated with ASD (the host of ACSC), not with ACSC by name. On 10 November 2026 the government said it would propose a new targeted regulator for AI safety that would work with the institute to provide technical expertise and oversight; the regulator is not yet named or established, so it is not an entry. The National Cyber Security Coordinator is a role supported by the National Office of Cyber Security."
+        ]
       },
       "testing_capacity": {
         "modes": [
@@ -39654,7 +39688,7 @@
             "named_as": "AISI"
           }
         ],
-        "notes": "The minister's speech, marked check against delivery, says the institute is already testing frontier AI models 'with technical partners'; this does not make a partner the tester, so testing by other bodies is not recorded. No published evaluation was found. On 18 September 2026 the institute's General Manager said at a parliamentary committee hearing (uncorrected proof Hansard) 'I don't have a number to hand of exactly how many models we've tested' and referred to 'some of our early testing' on the capabilities of a newly released model, Astra. Joint network testing before the institute existed is credited to Australia, not the institute: testing reported, 2025-06-26 (multilingual exercise: 'Australia and Japan also ran independent tests in Mandarin Chinese and Japanese') and 2025-07-17 (agentic exercise: 'UK AISI, EU AI Office and Australia ran evaluations on two open-source models').",
+        "notes": "The assistant minister says AISI was already testing frontier AI models with technical partners.",
         "source_ids": [
           "depth-au-forum",
           "network-multilingual-2025",
@@ -39676,7 +39710,7 @@
             "named_as": "Australia’s AI Safety Institute"
           }
         ],
-        "notes": "No access event is recorded: no source names a model to which the institute was given access or states that access was given. The MOU is 'a statement of intent and is not intended to have legal effect' and contains no access term; Anthropic's announcement commits it to joint safety and security evaluations with the institute. On 6 October 2026 Anthropic said it was 'finalizing an agreement with the AI Safety Institute to enable it to run its own independent evaluations of our models'; no report of its conclusion was found. On 18 September 2026 a deputy secretary of the department told a parliamentary committee that colleagues in the National Intelligence Community were working with the companies and the US government 'to make sure we secure the access that we need to do the testing and evaluation that we need'. No legal power: Australia has no AI act.",
+        "notes": "Forbes Australia reports that Anthropic says it is finalising a deal for Australia's AI Safety Institute to evaluate its frontier models.",
         "source_ids": [
           "au-anthropic-mou-2026",
           "au-anthropic-news-2026",
@@ -39852,6 +39886,14 @@
           "text": "The Department of Industry, Science and Resources says the institute supports \"government and regulators’ understanding of emerging AI capabilities, risks and mitigation approaches\".",
           "source_ids": [
             "au-industry"
+          ]
+        },
+        {
+          "id": "claims-b0028d4d43bf42d8880a880f504aa841",
+          "kind": "fact",
+          "text": "The industry minister says the government will propose that a new targeted regulator for AI safety enforce these protections and work with the Australian AI Safety Institute to provide technical expertise and oversight.",
+          "source_ids": [
+            "au-ai-regulator-2026"
           ]
         }
       ]
@@ -46196,13 +46238,6 @@
               {
                 "id": "SG"
               },
-              "summary"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "SG"
-              },
               "timeline",
               {
                 "id": "sg-2024-05-22-designated"
@@ -46249,17 +46284,6 @@
                 "id": "funding-aa4eb9dd0f8e5c199d30dbd5b4354075"
               },
               "amount"
-            ],
-            [
-              "institutes",
-              {
-                "id": "sg-aisi"
-              },
-              "funding",
-              {
-                "id": "funding-aa4eb9dd0f8e5c199d30dbd5b4354075"
-              },
-              "notes"
             ]
           ]
         },
@@ -46289,17 +46313,6 @@
                 "id": "funding-aa4eb9dd0f8e5c199d30dbd5b4354075"
               },
               "coverage"
-            ],
-            [
-              "institutes",
-              {
-                "id": "sg-aisi"
-              },
-              "funding",
-              {
-                "id": "funding-aa4eb9dd0f8e5c199d30dbd5b4354075"
-              },
-              "notes"
             ]
           ]
         },
@@ -46344,17 +46357,6 @@
                 "id": "funding-aa4eb9dd0f8e5c199d30dbd5b4354075"
               },
               "coverage"
-            ],
-            [
-              "institutes",
-              {
-                "id": "sg-aisi"
-              },
-              "funding",
-              {
-                "id": "funding-aa4eb9dd0f8e5c199d30dbd5b4354075"
-              },
-              "notes"
             ]
           ],
           "accessed": "2026-10-19"
@@ -46503,13 +46505,6 @@
                 "id": "sg-2024-05-22-designated"
               },
               "event"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "SG"
-              },
-              "summary"
             ]
           ],
           "accessed": "2026-10-17"
@@ -46523,13 +46518,6 @@
                 "id": "sg-aisi"
               },
               "host"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "SG"
-              },
-              "summary"
             ],
             [
               "institutes",
@@ -47022,6 +47010,13 @@
                 "id": "au-2025-11-25-commitment"
               },
               "event"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "mandate"
             ]
           ],
           "accessed": "2026-10-17"
@@ -47635,13 +47630,6 @@
                 "id": "au-aisi"
               },
               "host"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "AU"
-              },
-              "summary"
             ]
           ],
           "accessed": "2026-10-17"
@@ -55000,6 +54988,14 @@
                 "code": "in_house"
               },
               "code"
+            ],
+            [
+              "institutes",
+              {
+                "id": "sg-aisi"
+              },
+              "testing_capacity",
+              "notes"
             ]
           ],
           "accessed": "2026-10-21"
@@ -64694,6 +64690,14 @@
                 "id": "agreements-71c44af8b5b659c9b667334ac51b3b75"
               },
               "counterparty"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "model_access",
+              "notes"
             ]
           ],
           "accessed": "2026-10-17"
@@ -67104,6 +67108,28 @@
                 "id": "funding-a7c0488859f35293a4b593ba44e40d12"
               },
               "years"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-a7c0488859f35293a4b593ba44e40d12"
+              },
+              "description"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-a7c0488859f35293a4b593ba44e40d12"
+              },
+              "notes"
             ]
           ],
           "accessed": "2026-10-17"
@@ -67143,6 +67169,17 @@
                 "id": "funding-0d5ffdbe6b0c59dabb6edfc221aa4956"
               },
               "period"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-0d5ffdbe6b0c59dabb6edfc221aa4956"
+              },
+              "description"
             ]
           ],
           "accessed": "2026-10-17"
@@ -67209,6 +67246,17 @@
                 "id": "annual_profile-c6e0882f51055532a5bb7bd11c997e42"
               },
               "amount"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-a7c0488859f35293a4b593ba44e40d12"
+              },
+              "notes"
             ]
           ],
           "accessed": "2026-10-17"
@@ -69197,6 +69245,14 @@
                 "code": "in_house"
               },
               "code"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "testing_capacity",
+              "notes"
             ]
           ],
           "accessed": "2026-10-21"
@@ -108384,14 +108440,6 @@
                 "id": "staff-9d4a6c2e1b8f4a37a5e0c7d3b2f61e48"
               },
               "description"
-            ],
-            [
-              "institutes",
-              {
-                "id": "au-aisi"
-              },
-              "testing_capacity",
-              "notes"
             ]
           ],
           "accessed": "2026-10-21"
@@ -108410,56 +108458,6 @@
                 "code": "in_house"
               },
               "code"
-            ],
-            [
-              "institutes",
-              {
-                "id": "au-aisi"
-              },
-              "testing_capacity",
-              "notes"
-            ]
-          ],
-          "accessed": "2026-10-21"
-        },
-        {
-          "text": "A model like Astra that just got released—some of our early testing on its capabilities will give you a sense",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "au-aisi"
-              },
-              "testing_capacity",
-              "notes"
-            ]
-          ],
-          "accessed": "2026-10-21"
-        },
-        {
-          "text": "WILSON, Mrs Helen, Deputy Secretary, Science and Technology Group, Department of Industry, Science and Resources",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "au-aisi"
-              },
-              "model_access",
-              "notes"
-            ]
-          ],
-          "accessed": "2026-10-21"
-        },
-        {
-          "text": "Our colleagues in the National Intelligence Community are working with the companies and with the US government to make sure we secure the access that we need to do the testing and evaluation that we need.",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "au-aisi"
-              },
-              "model_access",
-              "notes"
             ]
           ],
           "accessed": "2026-10-21"
@@ -117758,17 +117756,6 @@
               {
                 "id": "funding-aa4eb9dd0f8e5c199d30dbd5b4354075"
               },
-              "notes"
-            ],
-            [
-              "institutes",
-              {
-                "id": "sg-aisi"
-              },
-              "funding",
-              {
-                "id": "funding-aa4eb9dd0f8e5c199d30dbd5b4354075"
-              },
               "annual_basis"
             ]
           ],
@@ -117830,35 +117817,7 @@
               {
                 "id": "funding-aa4eb9dd0f8e5c199d30dbd5b4354075"
               },
-              "notes"
-            ],
-            [
-              "institutes",
-              {
-                "id": "sg-aisi"
-              },
-              "funding",
-              {
-                "id": "funding-aa4eb9dd0f8e5c199d30dbd5b4354075"
-              },
               "description"
-            ]
-          ],
-          "accessed": "2026-11-08"
-        },
-        {
-          "text": "The objectives of the DTC, which also houses the Singapore AI Safety Institute,",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "sg-aisi"
-              },
-              "funding",
-              {
-                "id": "funding-aa4eb9dd0f8e5c199d30dbd5b4354075"
-              },
-              "notes"
             ]
           ],
           "accessed": "2026-11-08"
@@ -120525,8 +120484,11 @@
               {
                 "id": "au-aisi"
               },
-              "national_partners",
-              "notes"
+              "claims",
+              {
+                "id": "claims-b0028d4d43bf42d8880a880f504aa841"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-11-10",
@@ -120602,14 +120564,6 @@
                 "id": "np-au-ncsc"
               },
               "what"
-            ],
-            [
-              "institutes",
-              {
-                "id": "au-aisi"
-              },
-              "national_partners",
-              "notes"
             ]
           ],
           "accessed": "2026-11-10"
