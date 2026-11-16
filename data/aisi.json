@@ -439,7 +439,7 @@
         "policy_advice": {
           "label": "Policy advice",
           "short": "policy advice",
-          "definition": "It advises government or parliament on AI policy or legislation, or a text tasks it to: advice, recommendations, options or policy research addressed to them, published or not; general reporting on capabilities and risks is risk monitoring, and support for rules already in force is regulator support.",
+          "definition": "It advises government or parliament on AI policy or legislation, or a text tasks it to: advice, recommendations, options or policy research addressed to them, published or not; general reporting on capabilities and risks is risk monitoring, and support for rules already in force is regulator support; the addressee may be implied when a government text tasks a government body.",
           "group": "Informing government"
         },
         "incident_response": {
@@ -469,7 +469,7 @@
         "talent": {
           "label": "Talent",
           "short": "training",
-          "definition": "It trains or funds people outside its own staff.",
+          "definition": "It trains, educates or funds people outside its own staff, or a text tasks it with nurturing talent; education or training confined to its own staff does not count.",
           "group": "Ecosystem"
         },
         "adoption": {
