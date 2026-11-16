@@ -4077,6 +4077,17 @@
           "source_ids": [
             "pl-nask"
           ]
+        },
+        {
+          "id": "claims-1e75bf0fbfcd4b829a0294ed13f131bb",
+          "kind": "function",
+          "code": "research",
+          "basis": "mandate",
+          "body_id": "related_bodies-8e2bf69316145732aea04a2f9bbd82eb",
+          "text": "NASK says the centre will lead its cooperation with OpenAI and \"will research the safety of increasingly advanced AI systems\" with it.",
+          "source_ids": [
+            "pl-nask-openai-2026"
+          ]
         }
       ]
     },
@@ -42011,6 +42022,17 @@
                 "id": "de-aisi"
               },
               "host"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "DE"
+              },
+              "timeline",
+              {
+                "id": "de-2"
+              },
+              "description"
             ]
           ]
         },
@@ -42199,6 +42221,14 @@
                 "id": "de-aisi"
               },
               "mandate"
+            ],
+            [
+              "institutes",
+              {
+                "id": "de-aisi"
+              },
+              "staffing_model",
+              "notes"
             ]
           ],
           "accessed": "2026-10-24",
@@ -42270,6 +42300,42 @@
               "gloss": "German AI Safety Institute “AISI Deutschland” starts work"
             }
           ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Sie setzen damit einen Beschluss des Nationalen Sicherheitsrates vom Juni 2026 um.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "DE"
+              },
+              "timeline",
+              {
+                "id": "de-2"
+              },
+              "description"
+            ]
+          ],
+          "gloss": "In doing so they implement a decision of the National Security Council of June 2026.",
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Das Bundesamt für Sicherheit in der Informationstechnik (BSI) und die Bundesnetzagentur (BNetzA) bilden in einer ersten Phase den \"virtuellen\" Nukleus des KI-Sicherheitsinstituts",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "DE"
+              },
+              "timeline",
+              {
+                "id": "de-2"
+              },
+              "description"
+            ]
+          ],
+          "gloss": "In a first phase the Federal Office for Information Security (BSI) and the Federal Network Agency (BNetzA) form the \"virtual\" nucleus of the AI safety institute",
           "accessed": "2026-10-17"
         }
       ],
@@ -42461,6 +42527,17 @@
                 "id": "es-isia"
               },
               "mandate_short"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "ES"
+              },
+              "timeline",
+              {
+                "id": "es-1"
+              },
+              "description"
             ]
           ]
         },
@@ -47597,6 +47674,40 @@
                 "id": "claims-f33e1edf3c2a4a14993353dfb4ed98ab"
               },
               "text"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "it has been confirmed today that the Frontier AI Taskforce will now evolve to become the AI Safety Institute",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "GB"
+              },
+              "timeline",
+              {
+                "id": "gb-2"
+              },
+              "description"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "The Institute will carefully test new types of frontier AI before and after they are released",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "GB"
+              },
+              "timeline",
+              {
+                "id": "gb-2"
+              },
+              "description"
             ]
           ],
           "accessed": "2026-10-17"
@@ -64969,6 +65080,23 @@
                 "id": "gb-1"
               },
               "event"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "And it will carefully examine, evaluate, and test new types of AI",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "GB"
+              },
+              "timeline",
+              {
+                "id": "gb-1"
+              },
+              "description"
             ]
           ],
           "accessed": "2026-10-17"
@@ -93282,6 +93410,17 @@
                 "id": "funding-9efb56f77c7a5a6c8ca9eee9f9db9191"
               },
               "years"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-2da3817e81915eca86fd0a0799453a97"
+              },
+              "description"
             ]
           ]
         },
@@ -93357,6 +93496,17 @@
                 "id": "funding-2da3817e81915eca86fd0a0799453a97"
               },
               "currency"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-2da3817e81915eca86fd0a0799453a97"
+              },
+              "description"
             ]
           ]
         }
@@ -93525,6 +93675,24 @@
           ],
           "accessed": "2026-10-19",
           "gloss": "This programme is run by Inria as part of its remit as the digital programme agency."
+        },
+        {
+          "text": "Financé par France 2030 à hauteur de 13,5 millions d'euros, ce programme est porté par Inria",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "fr-inesia"
+              },
+              "funding",
+              {
+                "id": "funding-ff6f1638b2625427bba577f6303e0621"
+              },
+              "description"
+            ]
+          ],
+          "gloss": "Funded by France 2030 with EUR 13.5 million, this programme is run by Inria",
+          "accessed": "2026-10-18"
         }
       ],
       "snapshot": {
@@ -110428,6 +110596,23 @@
             ]
           ],
           "accessed": "2026-10-24"
+        },
+        {
+          "text": "breakdown of R&D expenditure - spending plans this year compared to the original allocations this year and final outturn last year",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-5c0e8a9f3d7b4e21a6f19c2d8b7e4a31"
+              },
+              "description"
+            ]
+          ],
+          "accessed": "2026-10-24"
         }
       ],
       "snapshot": {
@@ -111617,6 +111802,23 @@
               },
               "currency"
             ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-618ed3226ee75def870a5fb0f9501479"
+              },
+              "description"
+            ]
+          ],
+          "accessed": "2026-10-24"
+        },
+        {
+          "text": "is set to make AI a part of his Budget.",
+          "supports": [
             [
               "institutes",
               {
@@ -120233,7 +120435,26 @@
       "accessed": "2026-11-10",
       "language": "pl",
       "origin": "PL",
-      "excerpts": [],
+      "excerpts": [
+        {
+          "text": "Po stronie NASK współpracę poprowadzi Ośrodek Badań nad Bezpieczeństwem Sztucznej Inteligencji, który pełni funkcję polskiego Instytutu Bezpieczeństwa Sztucznej Inteligencji (AISI). Wspólnie z OpenAI będzie badać bezpieczeństwo coraz bardziej zaawansowanych systemów AI.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "PL"
+              },
+              "claims",
+              {
+                "id": "claims-1e75bf0fbfcd4b829a0294ed13f131bb"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "On NASK's side the cooperation will be led by the AI Safety Research Centre, which serves as the Polish Artificial Intelligence Safety Institute (AISI). Together with OpenAI it will research the safety of increasingly advanced AI systems.",
+          "accessed": "2026-11-10"
+        }
+      ],
       "snapshot": {
         "retrieved": "2026-11-10T19:46:15Z",
         "sha256": "856b38746e1695ea8418ba71484aafcf5d9d40f33c9f09151ac8d2e2309cd5ed",
