@@ -4067,17 +4067,6 @@
           ]
         },
         {
-          "id": "claims-92a9d8cf0bc04767bcadc2912651649c",
-          "kind": "function",
-          "code": "convening",
-          "basis": "mandate",
-          "body_id": "related_bodies-8e2bf69316145732aea04a2f9bbd82eb",
-          "text": "The government's AI policy plans to build around the centre an organisation bringing together representatives of companies and research institutions to promote cooperation on AI safety research and development.",
-          "source_ids": [
-            "pl-r8-resolution130"
-          ]
-        },
-        {
           "id": "claims-1bf9b314ae6a4e4d8bf782ce4dfa908c",
           "kind": "function",
           "code": "evaluation_methods",
@@ -7987,17 +7976,6 @@
           "source_ids": [
             "lv-likumi-ai-centre"
           ]
-        },
-        {
-          "id": "claims-31758bb33306492196575fa8f611bbca",
-          "kind": "function",
-          "code": "risk_monitoring",
-          "basis": "mandate",
-          "body_id": "related_bodies-dfe423ca3f655331836f4c5ef5c43a20",
-          "text": "The Artificial Intelligence Centre Law tasks it with identifying security risks associated with AI solutions in the public and private sectors.",
-          "source_ids": [
-            "lv-likumi-ai-centre"
-          ]
         }
       ]
     },
@@ -10132,27 +10110,16 @@
       },
       "claims": [
         {
-          "id": "claims-902a232dc418490b839c677a220c640b",
-          "kind": "function",
-          "code": "policy_advice",
-          "basis": "activity",
-          "body_id": "related_bodies-aad469c6d98155afafe04c3684084aa5",
-          "lead": true,
-          "text": "KORIKA's AISII page states: \"Supports ministries with evidence-based decision tools\".",
-          "source_ids": [
-            "id-aisii"
-          ]
-        },
-        {
           "id": "claims-298cfb8bb8374dd983fb6948920a75d1",
           "kind": "function",
           "code": "talent",
           "basis": "mandate",
           "body_id": "related_bodies-aad469c6d98155afafe04c3684084aa5",
-          "text": "KORIKA's page lists an AISII Academy for talent development and AI safety among the five main pillars of RKAP 2026.",
+          "text": "KORIKA's page lists among the five main pillars of RKAP 2026 an \"AI Safety Institute Indonesia (AISII) Academy: talent development and AI safety\".",
           "source_ids": [
             "id-korika-rua-2026"
-          ]
+          ],
+          "lead": true
         }
       ]
     },
@@ -35593,16 +35560,6 @@
           "source_ids": [
             "us-nist-caisi-overview-2026"
           ]
-        },
-        {
-          "id": "claims-e80d801892cd4e35a8543c6b89364fa0",
-          "kind": "function",
-          "code": "risk_monitoring",
-          "basis": "mandate",
-          "text": "The Commerce Secretary's statement assigns the then CAISI the task of leading evaluations and assessments of the capabilities of US and adversary AI systems, the adoption of foreign AI systems and the state of international AI competition.",
-          "source_ids": [
-            "us-commerce-2025"
-          ]
         }
       ]
     },
@@ -40131,16 +40088,6 @@
           ]
         },
         {
-          "id": "claims-41d4578f3e434d30a44b608ca6ea3135",
-          "kind": "function",
-          "code": "international_cooperation",
-          "basis": "activity",
-          "text": "The National AI Office's overview lists shared methods, joint research and capacity building with AI safety institutes in other countries as part of MY-AISafe's work.",
-          "source_ids": [
-            "my-aisafe-overview"
-          ]
-        },
-        {
           "id": "claims-90f0a690e6a244b2a1831dee395313c6",
           "kind": "function",
           "code": "model_testing",
@@ -40510,16 +40457,6 @@
           "code": "adoption",
           "basis": "mandate",
           "text": "The ministry's release says it is responsible for promoting the safe, secure, inclusive and trustworthy development, deployment and adoption of AI in India.",
-          "source_ids": [
-            "in-pib-2026-07-27"
-          ]
-        },
-        {
-          "id": "claims-acf385fe714a420fad33a84ae8137950",
-          "kind": "function",
-          "code": "convening",
-          "basis": "activity",
-          "text": "The ministry's release says the institute engages academia, startups, industry and government bodies \"through a hub-and-spoke model\".",
           "source_ids": [
             "in-pib-2026-07-27"
           ]
@@ -44972,30 +44909,6 @@
               },
               "text"
             ]
-          ],
-          "accessed": "2026-10-17",
-          "url": "https://content.govdelivery.com/accounts/USDOC/bulletins/3e381fb"
-        },
-        {
-          "text": "Lead evaluations and assessments of capabilities of U.S. and adversary AI systems, the adoption of foreign AI systems, and the state of international AI competition.",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "us-caissi"
-              },
-              "claims",
-              {
-                "id": "claims-e80d801892cd4e35a8543c6b89364fa0"
-              },
-              "text"
-            ]
-          ],
-          "anchors": [
-            {
-              "text": "To that end, CAISI will:",
-              "kind": "heading"
-            }
           ],
           "accessed": "2026-10-17",
           "url": "https://content.govdelivery.com/accounts/USDOC/bulletins/3e381fb"
@@ -50746,29 +50659,6 @@
             ]
           ],
           "accessed": "2026-10-18"
-        },
-        {
-          "text": "Supports ministries with evidence-based decision tools",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "ID"
-              },
-              "claims",
-              {
-                "id": "claims-902a232dc418490b839c677a220c640b"
-              },
-              "text"
-            ]
-          ],
-          "anchors": [
-            {
-              "text": "AISII Differentiation",
-              "kind": "heading"
-            }
-          ],
-          "accessed": "2026-10-17"
         }
       ],
       "origin": "ID",
@@ -56479,36 +56369,6 @@
               "text": "nodibinājuma \"Mākslīgā intelekta centrs\" (turpmāk — centrs)",
               "kind": "definition",
               "gloss": "the foundation \"Artificial Intelligence Centre\" (the centre)"
-            }
-          ],
-          "accessed": "2026-10-17"
-        },
-        {
-          "text": "apzināt ar mākslīgā intelekta risinājumiem saistītos drošības riskus publiskajā un privātajā sektorā",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "LV"
-              },
-              "claims",
-              {
-                "id": "claims-31758bb33306492196575fa8f611bbca"
-              },
-              "text"
-            ]
-          ],
-          "gloss": "to identify the security risks associated with artificial intelligence solutions in the public and private sectors",
-          "anchors": [
-            {
-              "text": "4. pants. Centra uzdevumi",
-              "kind": "provision",
-              "gloss": "Section 4. Tasks of the Centre"
-            },
-            {
-              "text": "nodibinājuma \"Mākslīgā intelekta centrs\" (turpmāk — centrs)",
-              "kind": "definition",
-              "gloss": "of the foundation “Artificial Intelligence Centre” (hereinafter, the Centre)"
             }
           ],
           "accessed": "2026-10-17"
@@ -97396,17 +97256,6 @@
               {
                 "id": "PL"
               },
-              "claims",
-              {
-                "id": "claims-92a9d8cf0bc04767bcadc2912651649c"
-              },
-              "text"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "PL"
-              },
               "closest_body",
               "gap"
             ]
@@ -101591,29 +101440,6 @@
               },
               "text"
             ]
-          ],
-          "accessed": "2026-10-19"
-        },
-        {
-          "text": "International partners: Shared methods, joint research and capacity building with AI safety institutes in other countries.",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "my-aisafe"
-              },
-              "claims",
-              {
-                "id": "claims-41d4578f3e434d30a44b608ca6ea3135"
-              },
-              "text"
-            ]
-          ],
-          "anchors": [
-            {
-              "text": "MY-AISafe's work is designed to be useful to the people building, deploying, evaluating and overseeing AI.",
-              "kind": "heading"
-            }
           ],
           "accessed": "2026-10-19"
         }
@@ -107972,17 +107798,6 @@
               },
               "staffing_model",
               "code"
-            ],
-            [
-              "institutes",
-              {
-                "id": "in-aisi"
-              },
-              "claims",
-              {
-                "id": "claims-acf385fe714a420fad33a84ae8137950"
-              },
-              "text"
             ]
           ],
           "accessed": "2026-10-21"
