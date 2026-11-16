@@ -9569,6 +9569,12 @@ def claim_quote_fixture(data: dict) -> tuple[dict, list[str]]:
         return claim
 
     add(status, "fact", "A synthetic fact is recorded.")
+    # The fixture replaces this record's claims, so the data's own excerpts that bound them would bind the fixture's
+    # claims at the same positions; they are dropped first.
+    old = f"/jurisdictions/{fixture['jurisdictions'].index(migrated)}/claims/"
+    for each in fixture["sources"]:
+        for excerpt in each.get("excerpts", []):
+            excerpt["supports"] = [pointer for pointer in excerpt["supports"] if not pointer.startswith(old)]
     migrated["claims"] = []
     lead = add(migrated, "function", 'It says it "tests models".', body_id="fixture-closest", lead=True, expired=True, reread=state)
     add(migrated, "function", "It publishes research.", body_id="fixture-closest")

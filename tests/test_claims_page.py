@@ -220,6 +220,22 @@ def test_browser_fixture_covers_every_role_and_development_binding():
         assert named["title"] and named["language"] != owner["language"]
 
 
+def test_browser_fixture_drops_the_data_bindings_of_the_claims_it_replaces():
+    # A migrated record with claims of its own: their excerpts pointed at positions the fixture's claims take over,
+    # so a fixture claim had two bindings and the shown-quote job failed on CI (16 November 2026).
+    data = {"jurisdictions": [{"id": "AA", "status": "planned"},
+                              {"id": "BB", "status": "none_identified", "europe_scope": True,
+                               "claims": [{"id": "real-0", "kind": "function", "text": "A."}, {"id": "real-1", "kind": "function", "text": "B."}]}],
+            "institutes": [], "sources": [{"id": "real-source", "excerpts": [
+                {"text": "Real.", "supports": ["/jurisdictions/1/claims/1/text", "/jurisdictions/0/status"]}]}]}
+    fixture, _ = check_page.claim_quote_fixture(data)
+    shown = check_page.card_claims(fixture["jurisdictions"][1], {})
+    assert [len(check_page.claim_bindings(fixture, c["id"])) for c in shown] == [1, 1, 1, 1, 1, 2]
+    real = next(s for s in fixture["sources"] if s["id"] == "real-source")["excerpts"][0]
+    assert real["supports"] == ["/jurisdictions/0/status"]
+    assert data["sources"][0]["excerpts"][0]["supports"][0] == "/jurisdictions/1/claims/1/text"  # the input is untouched
+
+
 @pytest.mark.parametrize("translated", [False, True])
 def test_shown_quote_gate_is_an_independent_job_with_valid_fixture(translated):
     from scripts import build, claim_checks
