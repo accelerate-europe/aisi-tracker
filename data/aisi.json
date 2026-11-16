@@ -20230,6 +20230,10 @@
           {
             "date": "2026-10-24",
             "text": "Attempted to read the additional SDAIA page directly and through text extraction."
+          },
+          {
+            "date": "2026-11-16",
+            "text": "Read SDAIA's organisational arrangements and the executive summary of its AI risk management framework."
           }
         ]
       },
@@ -20237,7 +20241,17 @@
         "sa-gowling-2026",
         "sa-sdaia-ai-page"
       ],
-      "related_bodies": [],
+      "related_bodies": [
+        {
+          "id": "related_bodies-d98ac9de98a05d15b2c4055b353a72d7",
+          "name": "SDAIA",
+          "kind": "other",
+          "counts_as_aisi": false,
+          "source_ids": [
+            "sa-sdaia-organisational-arrangements"
+          ]
+        }
+      ],
       "region": {
         "id": "142",
         "name": "Asia",
@@ -20263,7 +20277,41 @@
         "un-m49",
         "wikidata-jurisdiction-identifiers"
       ],
-      "claims": []
+      "claims": [
+        {
+          "id": "claims-fe4a1581109c476e9a473143e791b170",
+          "kind": "function",
+          "code": "regulatory_enforcement",
+          "basis": "mandate",
+          "body_id": "related_bodies-d98ac9de98a05d15b2c4055b353a72d7",
+          "text": "SDAIA's organisational arrangements task it with regulating the data and AI sectors by setting policies, standards and controls for them and how they are handled, circulating these to the relevant governmental and non-governmental entities and monitoring compliance, in accordance with the relevant legal provisions.",
+          "source_ids": [
+            "sa-sdaia-organisational-arrangements"
+          ]
+        },
+        {
+          "id": "claims-15de53c9b6274d6e85da62770bc82ef9",
+          "kind": "function",
+          "code": "talent",
+          "basis": "mandate",
+          "body_id": "related_bodies-d98ac9de98a05d15b2c4055b353a72d7",
+          "text": "SDAIA's organisational arrangements task it with building specialised national expertise and capabilities in the data and AI sectors and developing and implementing educational and training programmes in those fields, in coordination with the ministry.",
+          "source_ids": [
+            "sa-sdaia-organisational-arrangements"
+          ]
+        },
+        {
+          "id": "claims-51cbf95a39fa4dc0902e54a034f00704",
+          "kind": "function",
+          "code": "adoption",
+          "basis": "mandate",
+          "body_id": "related_bodies-d98ac9de98a05d15b2c4055b353a72d7",
+          "text": "SDAIA's organisational arrangements task it with stimulating growth in the data and AI sectors, encouraging innovation and investment in them, and coordinating with the ministry on this matter.",
+          "source_ids": [
+            "sa-sdaia-organisational-arrangements"
+          ]
+        }
+      ]
     },
     {
       "id": "IL",
@@ -124718,6 +124766,115 @@
         "text_sha256": "751f89d8680d576d10fe7035e5c9026fd89e4326c36331227de356fdfbdc8358",
         "text_scheme": 1
       }
+    },
+    {
+      "id": "sa-sdaia-organisational-arrangements",
+      "url": "https://sdaia.gov.sa/ar/SDAIA/about/Documents/organizationalArrangementsAr.pdf",
+      "title": "الترتيبات التنظيمية للهيئة السعودية للبيانات والذكاء الاصطناعي",
+      "title_en": "Organisational arrangements of the Saudi Data and Artificial Intelligence Authority",
+      "publisher": "Saudi Data and Artificial Intelligence Authority (SDAIA)",
+      "type": "primary",
+      "accessed": "2026-11-16",
+      "language": "ar",
+      "origin": "SA",
+      "snapshot": {
+        "retrieved": "2026-11-16T17:48:11Z",
+        "sha256": "b901a554eb75534e35eac6d7c1fd0e4d9b54bdfc3125c6125900e5b036f16779",
+        "text_sha256": "7c112b47c3a1566090947d6f6544a8a8e45421dba90da4f008573a8aa1d7a727",
+        "text_scheme": 1
+      },
+      "excerpts": [
+        {
+          "text": "تنظيم قطاعات البيانات والذكاء الاصطناعي من خلال وضع سياسات ومعايير وضوابط خاصة بها وكيفية التعامل معها، وتعميمها على الجهات ذات العلاقة الحكومية وغير الحكومية، ومتابعة الالتزام بها؛ وفقاً للأحكام النظامية ذات الصلة.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "SA"
+              },
+              "claims",
+              {
+                "id": "claims-fe4a1581109c476e9a473143e791b170"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "Regulate the data and AI sectors by setting policies, standards and controls for them and how they are handled, circulating these to the relevant governmental and non-governmental entities, and monitoring compliance with them, in accordance with the relevant legal provisions.",
+          "anchors": [
+            {
+              "kind": "definition",
+              "text": "الهيئة: الهيئة السعودية للبيانات والذكاء الاصطناعي.",
+              "gloss": "The Authority: the Saudi Data and Artificial Intelligence Authority."
+            },
+            {
+              "kind": "heading",
+              "text": "وللهيئة على وجه خاص ما يأتي:",
+              "gloss": "The Authority has, in particular, the following:"
+            }
+          ],
+          "accessed": "2026-11-16"
+        },
+        {
+          "text": "بناء الخبرات والقدرات الوطنية المتخصصة في قطاعات البيانات والذكاء الاصطناعي، واعتماد المعايير المهنية، وبناء المقاييس والاختبارات المهنية والبرامج التعليمية والتدريبية في تلك المجالات، وتنفيذها، والتنسيق مع الوزارة في هذا الشأن.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "SA"
+              },
+              "claims",
+              {
+                "id": "claims-15de53c9b6274d6e85da62770bc82ef9"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "Build specialised national expertise and capabilities in the data and AI sectors, approve professional standards, develop and implement professional measures and tests and educational and training programmes in those fields, and coordinate with the ministry on this matter.",
+          "anchors": [
+            {
+              "kind": "definition",
+              "text": "الهيئة: الهيئة السعودية للبيانات والذكاء الاصطناعي.",
+              "gloss": "The Authority: the Saudi Data and Artificial Intelligence Authority."
+            },
+            {
+              "kind": "heading",
+              "text": "وللهيئة على وجه خاص ما يأتي:",
+              "gloss": "The Authority has, in particular, the following:"
+            }
+          ],
+          "accessed": "2026-11-16"
+        },
+        {
+          "text": "تحفيز نمو قطاعات البيانات والذكاء الاصطناعي، وتشجيع الابتكار والاستثمار فيها، والتنسيق مع الوزارة بهذا الشأن",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "SA"
+              },
+              "claims",
+              {
+                "id": "claims-51cbf95a39fa4dc0902e54a034f00704"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "Stimulate growth in the data and AI sectors, encourage innovation and investment in them, and coordinate with the ministry on this matter.",
+          "anchors": [
+            {
+              "kind": "definition",
+              "text": "الهيئة: الهيئة السعودية للبيانات والذكاء الاصطناعي.",
+              "gloss": "The Authority: the Saudi Data and Artificial Intelligence Authority."
+            },
+            {
+              "kind": "heading",
+              "text": "وللهيئة على وجه خاص ما يأتي:",
+              "gloss": "The Authority has, in particular, the following:"
+            }
+          ],
+          "accessed": "2026-11-16"
+        }
+      ]
     }
   ],
   "changelog": [
