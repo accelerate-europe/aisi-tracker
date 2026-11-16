@@ -3769,13 +3769,13 @@ def check_hit_targets(page) -> list[str]:
 
 
 @reports
-def check_typography(page) -> list[str]:
+def check_typography(page, scope: str = "body") -> list[str]:
     """Resolve responsive font tokens, then inspect actual visible text parents."""
     return page.evaluate(
-        "() => {"
+        "scope => {"
         + BROWSER_GEOMETRY
         + """
-      const errors = [], roles = ['title', 'label', 'body', 'meta', 'figure'];
+      const errors = [], roles = ['title', 'label', 'body', 'meta', 'figure', 'fn-group'];
       const probe = document.createElement('span');
       probe.style.cssText = 'position:fixed;visibility:hidden;pointer-events:none';
       document.body.appendChild(probe);
@@ -3785,8 +3785,8 @@ def check_typography(page) -> list[str]:
         return [style.fontSize, style.fontWeight, style.fontFamily];
       });
       probe.remove();
-      if (new Set(pairs.map(p => p.join('/'))).size !== roles.length) errors.push('typography roles do not resolve to five distinct size/weight/family roles');
-      const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+      if (new Set(pairs.map(p => p.join('/'))).size !== roles.length) errors.push('typography roles do not resolve to distinct size/weight/family roles');
+      const walker = document.createTreeWalker(document.querySelector(scope), NodeFilter.SHOW_TEXT);
       const checked = new Set();
       while (walker.nextNode()) {
         const text = walker.currentNode, parent = text.parentElement;
@@ -3809,7 +3809,7 @@ def check_typography(page) -> list[str]:
         }
       }
       return errors;
-    }"""
+    }""", scope
     )
 
 
@@ -4026,7 +4026,7 @@ def check_citations(page) -> list[str]:
 def check_style_source(html: str) -> list[str]:
     """Static token contracts that can run without a browser."""
     errors = []
-    for role in ("title", "label", "body", "meta", "figure"):
+    for role in ("title", "label", "body", "meta", "figure", "fn-group"):
         if not re.search(rf"--type-{role}:\s*[^;]*/var\(--leading-{role}\)", html):
             errors.append(f"{role} line height does not use its role token")
     anchor_rule = re.search(r"(?:^|\n)a\s*\{([^}]+)\}", html)
@@ -10732,6 +10732,22 @@ def function_rows(data: dict) -> list[dict]:
                                                    states[i["jurisdiction_id"]]["name"], i["id"]))
 
 
+def function_columns(data: dict) -> list[dict]:
+    """All current codes, in first-occurring group order then vocabulary order, independent of carriers."""
+    vocab = {c: v for c, v in data["dataset"]["vocabularies"]["function"].items() if not v.get("deprecated")}
+    return [{"name": group, "codes": [c for c, v in vocab.items() if v["group"] == group]}
+            for group in dict.fromkeys(v["group"] for v in vocab.values())]
+
+
+def function_values(institutes: list[dict], codes) -> dict:
+    """A missing row is not yet coded, never an implicit not-found result."""
+    result = {}
+    for institute in institutes:
+        rows = {row["code"]: row for row in institute.get("functions", [])}
+        result[institute["id"]] = {code: rows.get(code, {"code": code, "value": "not_coded", "claim_ids": []}) for code in codes}
+    return result
+
+
 def function_quotes(data: dict) -> dict:
     """Bind by the original claim position, independently of the page projection."""
     pointers = defaultdict(list)
@@ -10765,12 +10781,11 @@ def functions_structure(html: str, data: dict) -> list[str]:
     institutes = function_rows(data)
     states = {j["id"]: j for j in data["jurisdictions"]}
     vocab = {c: v for c, v in data["dataset"]["vocabularies"]["function"].items() if not v.get("deprecated")}
-    lookup = {i["id"]: {r["code"]: r for r in i["functions"]} for i in institutes}
+    lookup = function_values(institutes, vocab)
     counts = {code: sum(lookup[i["id"]][code]["value"] in ("mandate", "activity", "both") for i in institutes) for code in vocab}
-    def is_folded(code):  # every institute coded against it, none with a mark; a not-yet-coded function stays a column
-        return all(lookup[i["id"]][code]["value"] == "not_found" for i in institutes)
-    groups = [g for g in dict.fromkeys(v["group"] for v in vocab.values()) if any(not is_folded(c) and v["group"] == g for c, v in vocab.items())]
-    columns = [code for group_name in groups for code, v in vocab.items() if not is_folded(code) and v["group"] == group_name]
+    grouped = function_columns(data)
+    groups = [group["name"] for group in grouped]
+    columns = [code for group in grouped for code in group["codes"]]
     group = section.parent
     need(group.select_one(":scope > section") == section, "Functions is not first in Compare")
     nav = group.select_one('.group-nav a')
@@ -10843,13 +10858,10 @@ def functions_structure(html: str, data: dict) -> list[str]:
     need([(td.get("data-code"), td.get_text()) for td in totals] == [(c, str(counts[c])) for c in columns], "Functions prevalence counts/order differ")
     prevalence = section.select_one('.fn-table tfoot th[scope="row"]')
     need(prevalence and prevalence.get_text() == "Institutes with it", "Functions prevalence label differs")
+    need(not section.select('.fn-empty'), "Functions obsolete .fn-empty element is present")
+    need("No public text found at any institute yet for" not in " ".join(section.get_text(" ", strip=True).split()),
+         "Functions obsolete folded-functions sentence is present")
     # Independent data-derived sentence oracle; the implementation lives only in JavaScript.
-    def joined(codes):
-        names = [vocab[c]["short"] for c in codes]
-        return " and ".join(names) if len(names) < 3 else ", ".join(names[:-1]) + " and " + names[-1]
-    empty = [c for c in vocab if is_folded(c)]
-    folded = section.select_one('.fn-empty')
-    need(bool(folded) == bool(empty) and (not empty or folded is not None and folded.get_text() == f"No public text found at any institute yet for: {joined(empty)}."), "Functions folded empty codes differ")
     summary = section.select_one('.fn-summary')
     marked = [c for c in columns if counts[c]]
     need(bool(summary) == bool(marked), "Functions summary presence differs")
@@ -11059,18 +11071,13 @@ def function_phone_model(data: dict) -> dict:
     institutes = function_rows(data)
     states = {j["id"]: j for j in data["jurisdictions"]}
     vocab = {code: value for code, value in data["dataset"]["vocabularies"]["function"].items() if not value.get("deprecated")}
-    lookup = {i["id"]: {row["code"]: row for row in i.get("functions", [])} for i in institutes}
-    def value(i, code):
-        return lookup[i["id"]].get(code, {"value": "not_coded", "claim_ids": []})
-    visible = [code for code in vocab if not all(value(i, code)["value"] == "not_found" for i in institutes)]
-    groups = [{"name": group, "codes": [code for code in visible if vocab[code]["group"] == group]}
-              for group in dict.fromkeys(vocab[code]["group"] for code in vocab)]
-    groups = [group for group in groups if group["codes"]]
+    lookup = function_values(institutes, vocab)
+    groups = function_columns(data)
     columns = [code for group in groups for code in group["codes"]]
     return {"groups": groups, "rows": [
         {"id": i["id"], "country": states[i["jurisdiction_id"]]["name"], "name": function_display_name(i),
          "block": "Established" if states[i["jurisdiction_id"]]["status"] == "established" else "Not yet established",
-         "functions": [{"code": code, "label": vocab[code]["label"], "group": vocab[code]["group"], **value(i, code)} for code in columns]}
+         "functions": [{"code": code, "label": vocab[code]["label"], "group": vocab[code]["group"], **lookup[i["id"]][code]} for code in columns]}
         for i in institutes]}
 
 
@@ -11282,15 +11289,17 @@ FN_PHONE_BOUNDS_JS = """
 """
 
 
-def check_functions_phone(browser, base_url: str, data: dict) -> list[str]:
+def check_functions_phone(browser, base_url: str, data: dict, *, inject: bool = False, widths=(320, 360, 390, 640)) -> list[str]:
     """Phone words, gutters, alignment, values, evidence and focus; real keyboard and touch."""
     page = browser.new_page(viewport={"width": 360, "height": 1000})
     errors = []
     page.on("pageerror", lambda error: errors.append("Functions phone JavaScript: " + str(error)))
+    if inject:
+        page.route(PAGE_DATA, lambda route: route.fulfill(json=data))
     hydrated(page, base_url)
     page.evaluate("document.fonts.ready")
     payload = {"data": data, "quotes": function_quotes(data), "names": FN_NAMES, "model": function_phone_model(data)}
-    for width in (320, 360, 390, 640):
+    for width in widths:
         page.set_viewport_size({"width": width, "height": 1000})
         page.wait_for_selector('.fn-phone')
         for theme in (("light",) if width == 320 else ("light", "dark")):
@@ -11526,6 +11535,8 @@ def check_functions_phone(browser, base_url: str, data: dict) -> list[str]:
     page.close()
     context = browser.new_context(viewport={"width": 390, "height": 900}, has_touch=True, is_mobile=True)
     touch = context.new_page()
+    if inject:
+        touch.route(PAGE_DATA, lambda route: route.fulfill(json=data))
     hydrated(touch, base_url)
     touch.evaluate("document.fonts.ready")
     row = touch.locator('.fn-phone-row').first
@@ -11572,12 +11583,14 @@ def check_functions_phone(browser, base_url: str, data: dict) -> list[str]:
     return errors
 
 
-def check_functions_layout(browser, base_url: str) -> list[str]:
+def check_functions_layout(browser, base_url: str, *, fixture: dict | None = None, widths=(360, 390, 640, 1000, 1280, 1440)) -> list[str]:
     page = browser.new_page(viewport={"width": 1440, "height": 1000})
+    if fixture is not None:
+        page.route(PAGE_DATA, lambda route: route.fulfill(json=fixture))
     hydrated(page, base_url)
     page.evaluate("document.fonts.ready")
     errors = []
-    for width in (360, 390, 640, 1000, 1280, 1440):
+    for width in widths:
         page.set_viewport_size({"width": width, "height": 1000})
         page.wait_for_selector('.fn-phone' if width <= 640 else '.fn-scroll')
         for scale in (("100%", "110%") if width <= 640 else ("100%",)):
@@ -11589,6 +11602,7 @@ def check_functions_layout(browser, base_url: str) -> list[str]:
                 page.locator('#functions').evaluate("n => n.closest('section').scrollIntoView({block:'start'})")
                 page.evaluate("() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))")
                 prefix = f"{width}px {theme} {scale}: "
+                errors += [prefix + e for e in check_typography(page, '#functions-table')]
                 errors += [prefix + e for e in page.evaluate(FN_GEOMETRY)]
                 errors += [prefix + e for e in page.evaluate(r"""() => {
                   const errors=[], box=document.querySelector('#functions-table'), scroll=box.querySelector('.fn-scroll'), table=box.querySelector('.fn-table');
@@ -11661,8 +11675,9 @@ def check_functions_layout(browser, base_url: str) -> list[str]:
                     if(lengths.length!==4 || lengths[0]<=0 || lengths[0]>parseFloat(style.borderBottomWidth) || lengths[1] || lengths[2] || lengths[3]) errors.push('column hairline is not a thin painted left edge: '+(cell.closest('tr').dataset.institute || cell.closest('tr').className || 'totals')+'/'+cell.dataset.code+' (shadow '+style.boxShadow+'; bottom '+style.borderBottomWidth+')');
                   }
                   const wider=table.getBoundingClientRect().width>scroll.clientWidth+1;
-                  if(widths.length && [1280,1440].includes(innerWidth) && (wider || !scroll.classList.contains('fits'))) errors.push('desktop table does not fit/stick');
-                  if(innerWidth===1000 && (!wider || scroll.classList.contains('fits'))) errors.push('1000px table should scroll without fits');
+                  if(scroll.classList.contains('fits') !== !wider) errors.push('fits class disagrees with measured table/container widths');
+                  if(wider && !['auto','scroll'].includes(getComputedStyle(scroll).overflowX)) errors.push('wide table lacks a sideways scroll box');
+                  if(!wider && getComputedStyle(scroll).overflowX !== 'visible') errors.push('fitting table clips its sticky heads');
                   scroll.scrollLeft=scroll.scrollWidth;
                   if(wider && scroll.scrollLeft<=0) errors.push('wide table cannot scroll');
                   const rowHead=table.querySelector('tbody th[scope="row"]');
@@ -11687,36 +11702,44 @@ def check_functions_layout(browser, base_url: str) -> list[str]:
     page.set_viewport_size({"width": 360, "height": 1000})
     for scale in ("100%", "110%"):
         page.evaluate("scale => document.documentElement.style.fontSize = scale", scale)
+        page.evaluate("document.fonts.ready")
+        page.evaluate("() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))")
         measures = page.evaluate("""() => [...document.querySelectorAll('.group-nav')].map(row => {
           const links = [...row.querySelectorAll('a')], label = row.querySelector('.group-label');
           // Only what is drawn: phones hide the group label, whose empty rect would read as a second line.
-          const rects = [label, ...links].filter(n => n.getClientRects().length).map(n => { const range = document.createRange(); range.selectNodeContents(n); return range.getBoundingClientRect(); });
-          return {name: label.textContent, lines: new Set(rects.map(r => Math.round(r.top))).size,
-            room: Math.floor(row.getBoundingClientRect().right - Math.max(...rects.map(r => r.right))),
+          const rects = [label, ...links].filter(n => n.getClientRects().length).flatMap(n => { const range = document.createRange(); range.selectNodeContents(n); return [...range.getClientRects()].filter(r => r.width && r.height); });
+          const bounds = row.getBoundingClientRect();
+          // Text on one line shares vertical space; fractional font metrics need not have identical rounded tops.
+          return {name: label.textContent, oneLine: rects.length > 0 && Math.max(...rects.map(r => r.top)) < Math.min(...rects.map(r => r.bottom)),
+            room: bounds.right - Math.max(...rects.map(r => r.right)), left: Math.min(...rects.map(r => r.left)) - bounds.left,
             dots: [...row.querySelectorAll('.group-sep')].some(n => getComputedStyle(n).display !== 'none')};
         })""")
         for row in measures:
-            if row["lines"] != 1 or row["room"] < 0 or row["dots"]:
+            if not row["oneLine"] or min(row["room"], row["left"]) < -.5 or row["dots"]:
                 errors.append(f"360px at {scale} text: {row['name']} group row wraps, overflows or retains separator dots ({row})")
             if row["name"] == "Compare":
-                errors.append(report_line(f"360px at {scale} text: Compare group row has {row['room']}px left"))
+                errors.append(report_line(f"360px at {scale} text: Compare group row has {row['room']:.1f}px left"))
     page.close()
     return errors
 
 
-def check_functions_sticky(browser, base_url: str) -> list[str]:
+def check_functions_sticky(browser, base_url: str, *, fixture: dict | None = None, widths=(1280, 1440, 1000)) -> list[str]:
     page = browser.new_page(viewport={"width": 1280, "height": 1000})
+    if fixture is not None:
+        page.route(PAGE_DATA, lambda route: route.fulfill(json=fixture))
     hydrated(page, base_url)
     page.evaluate("document.fonts.ready")
     errors = []
-    for width in (1280, 1440, 1000):
+    for width in widths:
         page.set_viewport_size({"width": width, "height": 1000})
         page.locator('.fn-table tbody tr[data-institute]').last.evaluate("n => window.scrollBy(0, n.getBoundingClientRect().bottom - innerHeight + 80)")
         page.evaluate("() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))")
         errors += [f"{width}px: {error}" for error in page.evaluate("""() => {
           const errors=[], scroll=document.querySelector('.fn-scroll'), table=scroll.querySelector('table');
           const heads=[...table.querySelectorAll('.fn-head')], fits=scroll.classList.contains('fits');
-          if(innerWidth===1000) {
+          const wider=table.getBoundingClientRect().width>scroll.clientWidth+1;
+          if(fits !== !wider) errors.push('fits class disagrees with measured table/container widths');
+          if(wider) {
             if(fits || getComputedStyle(table.tHead).position==='sticky') errors.push('scrolling table has sticky heads');
             return errors;
           }
@@ -11741,6 +11764,47 @@ def check_functions_sticky(browser, base_url: str) -> list[str]:
         }""")]
     page.close()
     return errors
+
+
+def check_functions_zero_carrier(browser, base_url: str, data: dict) -> list[str]:
+    """One all-not-found column must keep both projections and every existing layout contract."""
+    groups = function_columns(data)
+    if not groups:
+        return ["zero-carrier fixture needs a non-deprecated function"]
+    code = groups[-1]["codes"][-1]  # explicit sample: last function of the last vocabulary group
+    fixture = copy.deepcopy(data)
+    for institute in fixture["institutes"]:
+        values = {row["code"]: row for row in institute.get("functions", [])}
+        values[code] = {"code": code, "value": "not_found", "claim_ids": []}
+        institute["functions"] = list(values.values())
+    errors = []
+    page = browser.new_page(viewport={"width": 1280, "height": 1000})
+    page.on("pageerror", lambda error: errors.append("JavaScript: " + str(error)))
+    # Replace only the browser response, never the authored or built dataset. Keep claim indices intact.
+    response_data = fixture
+    page.route(PAGE_DATA, lambda route: route.fulfill(json=response_data))
+    hydrated(page, base_url)
+    page.evaluate("document.fonts.ready")
+    for width in (1280, 1000, 390):
+        page.set_viewport_size({"width": width, "height": 1000})
+        page.wait_for_selector('.fn-phone' if width <= 640 else '.fn-scroll')
+        html = page.content()
+        # Includes the zero head/definition tip, group spans, blank body cells, total 0, summary and pip positions.
+        errors += [f"{width}px: " + e for check in (functions_forms_structure, functions_structure, functions_phone_structure) for e in check(html, fixture)]
+        errors += [f"{width}px: " + e for e in page.evaluate(FN_FORM_VISIBILITY)]
+    # The same renderer must omit the summary when every count is zero, before it ever takes a maximum.
+    response_data = copy.deepcopy(fixture)
+    for institute in response_data["institutes"]:
+        institute["functions"] = [{"code": c, "value": "not_found", "claim_ids": []} for g in groups for c in g["codes"]]
+    hydrated(page, base_url)
+    errors += ["all-zero: " + e for check in (functions_structure, functions_phone_structure) for e in check(page.content(), response_data)]
+    page.close()
+    # Each helper routes the single-code variant before hydration, including touch.
+    errors += check_functions_layout(browser, base_url, fixture=fixture, widths=(390, 1000, 1280))
+    errors += check_functions_sticky(browser, base_url, fixture=fixture, widths=(1280, 1000))
+    # Checks every opened detail's labels, not-found pips and lack of controls, plus gutters and unbroken words.
+    errors += check_functions_phone(browser, base_url, fixture, inject=True, widths=(390,))
+    return [f"zero-carrier {code}: " + error for error in errors]
 
 
 def check_functions_tint(browser, base_url: str) -> list[str]:
@@ -11887,7 +11951,7 @@ def check_functions_tint(browser, base_url: str) -> list[str]:
                 page.mouse.move(1, 1)
                 errors += [prefix + "pointer out: " + e for e in inspect(cell, False)]
                 marked = cells.filter(has=page.locator('.fn-cell'))
-                if not marked.count():  # a wholly uncoded column has no keyboard control
+                if not marked.count():  # not-found and uncoded cells have no keyboard control
                     continue
                 cell = marked.first
                 button = cell.locator('.fn-cell')
@@ -11922,7 +11986,8 @@ def check_functions_tint(browser, base_url: str) -> list[str]:
         page.set_viewport_size({"width": width, "height": 1000})
         for theme in ("light", "dark"):
             set_theme(page, theme)
-            cell = page.locator('.fn-table tbody tr[data-institute] td.fn-group-start .fn-cell').first
+            # Hover also works on blank cells: group starts need not have a carrier.
+            cell = page.locator('.fn-table tbody tr[data-institute] td.fn-group-start').first
             page.locator('.fn-table').evaluate("t => window.scrollTo(0, t.getBoundingClientRect().top + scrollY - 200)")  # head unpinned
             cell.hover()
             errors += [f"{width}px {theme} unpinned joint: {e}" for e in page.evaluate("""() => {
@@ -11990,6 +12055,7 @@ def browser_jobs(dist: Path, data: dict, screenshots: Path | None) -> list[tuple
         ("interactions", check_functions_layout, ()),
         ("interactions", check_functions_phone, (data,)),
         ("interactions", check_functions_sticky, ()),
+        ("interactions", check_functions_zero_carrier, (data,)),
         ("interactions", check_functions_tint, ()),
         ("interactions", check_funding_edges, (data,)),
         ("interactions", check_funding_large_text, ()),
