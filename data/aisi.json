@@ -31519,7 +31519,6 @@
       "funding": [
         {
           "kind": "none_disclosed",
-          "description": "The SGDSN lists coordinating public expertise and pooling resources among the four principles of INESIA's action.",
           "source_ids": [
             "fr-dge",
             "fr-sgdsn-aisi"
@@ -32075,7 +32074,6 @@
       "funding": [
         {
           "kind": "none_disclosed",
-          "description": "No institute-specific budget amount disclosed",
           "source_ids": [
             "de-bmds",
             "de-bt-8727-2026"
@@ -32085,7 +32083,7 @@
           "funding_source": "unknown",
           "id": "funding-ec218d998f89595bba604d03e1c3f308",
           "coverage": "whole_institute",
-          "notes": "The absence of a published budget concerns the institute as a whole. The government's answer of 19 October 2026 gives no amounts for 2026 to 2029: answer 10 refers to answers 8 and 9 on continuing internal discussions and the use of existing BSI and BNetzA resources."
+          "notes": "The government's answer of 19 October 2026 refers the question on the institute's 2026 budget funds to its answers to questions 8 and 9. The answer says that budget questions, among others, are the subject of continuing discussions within government."
         },
         {
           "kind": "not_institute_specific",
@@ -55405,24 +55403,6 @@
           ],
           "accessed": "2026-10-21",
           "gloss": "INESIA brings together an ecosystem of researchers and engineers from the National Agency for the Security of Information Systems (ANSSI), the National Institute for Research in Digital Science and Technology (Inria), the National Laboratory of Metrology and Testing (LNE)"
-        },
-        {
-          "text": "L’action de l’INESIA repose sur quatre principes fondamentaux : construire une démarche scientifique et stratégique, structurer une capacité souveraine d’évaluation, coordonner les expertises publiques et mutualiser les moyens",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "fr-inesia"
-              },
-              "funding",
-              {
-                "id": "funding-5900b7d819c0501a83196d3281da8527"
-              },
-              "description"
-            ]
-          ],
-          "gloss": "INESIA's action rests on four fundamental principles: building a scientific and strategic approach, structuring a sovereign evaluation capacity, coordinating public expertise and pooling resources",
-          "accessed": "2026-10-18"
         },
         {
           "text": "Enfin, des méthodes d'évaluation adaptées à la cybersécurité des systèmes et des produits intégrant de l'IA seront développées (Projet n°4.).",
@@ -114356,17 +114336,6 @@
               },
               "funding",
               {
-                "id": "funding-ec218d998f89595bba604d03e1c3f308"
-              },
-              "notes"
-            ],
-            [
-              "institutes",
-              {
-                "id": "de-aisi"
-              },
-              "funding",
-              {
                 "id": "funding-4d2b8e6f1a3c47d9b5e0c8a2f6d1b937"
               },
               "notes"
@@ -114511,17 +114480,6 @@
               {
                 "id": "de-aisi"
               },
-              "funding",
-              {
-                "id": "funding-ec218d998f89595bba604d03e1c3f308"
-              },
-              "notes"
-            ],
-            [
-              "institutes",
-              {
-                "id": "de-aisi"
-              },
               "testing_capacity",
               "notes"
             ]
@@ -114541,7 +114499,7 @@
               {
                 "id": "funding-ec218d998f89595bba604d03e1c3f308"
               },
-              "description"
+              "notes"
             ]
           ],
           "accessed": "2026-11-02"
@@ -114571,17 +114529,6 @@
                 "id": "funding-4d2b8e6f1a3c47d9b5e0c8a2f6d1b937"
               },
               "notes"
-            ],
-            [
-              "institutes",
-              {
-                "id": "de-aisi"
-              },
-              "funding",
-              {
-                "id": "funding-ec218d998f89595bba604d03e1c3f308"
-              },
-              "description"
             ]
           ],
           "accessed": "2026-11-02"

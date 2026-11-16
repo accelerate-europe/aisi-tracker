@@ -253,6 +253,13 @@ def authored_schema(download_schema, *, strict=False):
     for record, key in ((jurisdictions, "summary"), (jprops["related_bodies"]["items"], "role"), (jprops["closest_body"], "note")):
         record["required"] = [k for k in record.get("required", []) if k != key]
     funding = schema["$defs"]["funding"]
+    # Only none_disclosed may omit description; generate_texts requires it on legacy records and generates it
+    # on migrated ones. The cross-record migration check stays there, as it does for role and closest-body note.
+    funding["required"] = [key for key in funding["required"] if key != "description"]
+    funding.setdefault("allOf", []).append({
+        "if": {"properties": {"kind": {"not": {"const": "none_disclosed"}}}, "required": ["kind"]},
+        "then": {"required": ["description"]},
+    })
     computed_funding = (
         ({"required": ["sum_of"]}, ("amount", "annual_amount")),
         ({"properties": {"annual_basis_code": {"const": "period_mean"}}, "required": ["annual_basis_code"]}, ("annual_amount",)),

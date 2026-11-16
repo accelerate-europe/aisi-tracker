@@ -645,6 +645,54 @@ def tree_text(node):
     return node["text"] + "".join(tree_text(child) for child in node["children"] if child["className"] != "cites")
 
 
+@pytest.mark.parametrize("bound", [False, True])
+def test_undisclosed_funding_has_no_source_statement_and_keeps_evidence(bound):
+    record = {
+        "id": "undisclosed", "kind": "none_disclosed", "confidence": "high",
+        "description": "No budget published for the institute as a whole.",
+        "notes": "The answer refers to existing resources.",
+        "display": {"native_value": "Not published", "native_qualifiers": [], "generated_description": True},
+        "citations": {"description": ["evidence"] if bound else [], "notes": ["answer"]},
+    }
+    tree = funding_record_tree(record)
+    assert all("source-statement" not in child["className"] for child in tree["children"])
+    native = next(child for child in tree["children"] if child["className"] == "funding-native")
+    assert tree_text(native).strip() == "Not published"
+    assert native["children"][-1]["children"][-1]["text"] == ("evidence" if bound else "")
+    metadata = next(child for child in tree["children"] if child["className"] == "funding-metadata")
+    assert record["notes"] in tree_text(metadata)
+    assert metadata["children"][-1]["text"] == "answer"
+
+
+def test_legacy_undisclosed_funding_keeps_its_authored_source_statement():
+    # Only the generated line is hidden: a legacy record's authored description (the EU AI Office's) still shows.
+    record = {
+        "id": "legacy", "kind": "none_disclosed", "confidence": "high",
+        "description": "The decision assigns staff costs to programme appropriations.",
+        "display": {"native_value": "Not published", "native_qualifiers": []},
+        "citations": {"description": ["decision"]},
+    }
+    tree = funding_record_tree(record)
+    statement = [child for child in tree["children"] if "source-statement" in child["className"]]
+    assert len(statement) == 1 and record["description"] in tree_text(statement[0])
+
+
+def test_funding_gate_rejects_a_source_statement_for_undisclosed_funding():
+    from scripts.check_page import check_source_alignment
+
+    record = {"id": "budget", "kind": "none_disclosed", "description": "No budget published for the institute as a whole.",
+              "display": {"generated_description": True}}
+    data = {"sources": [], "jurisdictions": [{"id": "XX", "kind": "state", "status": "established", "source_ids": []}],
+            "institutes": [{"id": "institute", "jurisdiction_id": "XX", "funding": [record], "staff": []}]}
+    listing = '<div class="srcs"><ol></ol></div>'
+    statement = '<details class="source-statement"><summary>Source statement</summary><p>Generated negative.</p></details>'
+    html = source_alignment_card(listing) + f'<article class="fund-item" data-j="XX">{listing}<div data-record="funding" data-record-id="budget"><p>Not published</p>{statement}</div></article>'
+    assert check_source_alignment(html.replace(statement, ""), data) == []
+    assert check_source_alignment(html, data) == ["XX: a generated undisclosed-funding line is shown as a source statement"]
+    record["display"] = {}  # a legacy record's authored description may show as a statement
+    assert check_source_alignment(html, data) == []
+
+
 def test_all_real_funding_disclosures_separate_native_figures_from_source_statements():
     from scripts.published import publish
     from scripts.check_page import expected_shown_funding_value, rate_sources

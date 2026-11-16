@@ -3184,7 +3184,8 @@
             }
           },
         "description": {
-          "type": "string"
+          "type": "string",
+          "description": "In a migrated record, a none_disclosed entry's description is generated."
         },
         "source_ids": {
           "$ref": "#/$defs/source_ids_required"
@@ -3358,6 +3359,10 @@
             "per_person": {
               "type": "string",
               "description": "Compared record only: the annual figure per person at two significant figures from unrounded inputs, with the amount's qualifier, for example \"up to ~EUR 0.026 per person\"; absent without a population."
+            },
+            "generated_description": {
+              "type": "boolean",
+              "description": "True when the description is the generated line of undisclosed funding in a migrated record, which the page does not show as a source statement; absent otherwise."
             }
           },
           "description": "Generated value, qualifiers and evidence for rendering the shared Budget selection."
