@@ -939,6 +939,8 @@ def markdown(report: dict, sources: dict[str, dict], cites: dict[str, list[str]]
         "",
         f"Live page not compared: {len(report.get('not_compared', []))} sources (see below; neither a loss nor a pass).",
         "",
+        f"Queued searches: {len(report['discovery'])} (recorded queries to rerun, not findings).",
+        "",
     ]
 
     def quote_lines(src: dict, qids) -> list[str]:
@@ -1046,10 +1048,10 @@ def markdown(report: dict, sources: dict[str, dict], cites: dict[str, list[str]]
     q = report["discovery"]
     out += [
         "",
-        "## Discovery queue",
+        f"## Queued searches ({len(q)})",
         "",
-        f"{len(q)} states without an institute; oldest recorded search first. "
-        "Rerun their queries by hand or with a search tool; this script does not search.",
+        f"{len(q)} queued searches: the recorded queries of the states without an institute, oldest search first. "
+        "They are a queue to rerun by hand or with a search tool, not findings; this script does not search.",
         "",
     ]
     for r in q[:10]:
@@ -1180,6 +1182,30 @@ def build_report(args, data: dict, start: dict, rows: list[dict], seconds: float
     }
 
 
+def response_index(rows: list[dict], checks: Path, cache_root: Path, direct_cache: Path | None = None) -> dict:
+    """Source ID -> where its copies are: the checked copy the row's response names (under the check log's
+    responses, or the cited copy) and each route's cache entry of this run (any invocation, so a resumed run too;
+    the direct route's entry in direct_cache when --cache sets it)."""
+    index = {}
+    for row in sorted(rows, key=lambda r: r["source_id"]):
+        routes = {}
+        for route in ("direct", "headless", "jina"):
+            url = ("https://r.jina.ai/" if route == "jina" else "") + row["url"]
+            key = hashlib.sha256(url.encode()).hexdigest()
+            found = sorted(str(p) for p in (cache_root / route).glob(f"*/{key}") if p.is_dir())
+            if route == "direct" and direct_cache is not None and (direct_cache / key).is_dir():
+                found.append(str(direct_cache / key))
+            if found:
+                routes[route] = found[-1]
+        response = row.get("response")
+        index[row["source_id"]] = {
+            "class": row["class"], "route": row["route"],
+            "response": None if response is None else "cited copy" if response == "cited" else str(checks / response),
+            "cache": routes,
+        }
+    return index
+
+
 def digest_summary(report: dict, path: Path) -> dict:
     def entries(predicate):
         return [{k: r[k] for k in ("source_id", "reason", "route")} for r in report["sources"] if predicate(r)]
@@ -1258,7 +1284,7 @@ def run_monitor(args) -> int:
     if args.cache:
         caches["direct"] = args.cache
     destinations = [*log_paths(args.checks), args.checks / "runs" / f"{run_id}.lock",
-                    args.report, args.report / "monitor.json", args.report / "monitor.md",
+                    args.report, args.report / "monitor.json", args.report / "monitor.md", args.report / "responses.json",
                     cache_root, *(cache_root / route for route in ROUTES), *caches.values(),
                     caches["headless"] / "urls.txt"]
     for source in selected:
@@ -1316,6 +1342,8 @@ def run_monitor(args) -> int:
             try:
                 args.report.mkdir(parents=True, exist_ok=True)
                 (args.report / "monitor.json").write_text(json.dumps(report, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+                (args.report / "responses.json").write_text(json.dumps(
+                    response_index(rows, args.checks, cache_root, args.cache), ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
                 report_path.write_text(markdown(report, sources, citing_records(data)), encoding="utf-8")
                 log.event(run_id, "report_written", report=str(report_path))
             except (Exception, KeyboardInterrupt) as exc:
@@ -1395,7 +1423,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--workers", type=int, default=6)
     parser.add_argument("--delay", type=float, default=2.0, help="seconds between requests per host")
     parser.add_argument("--timeout", type=float, default=25)
-    parser.add_argument("--only", nargs="*", help="source IDs")
+    parser.add_argument("--only", nargs="+", action="extend", help="source IDs (a list, or the option repeated)")
     parser.add_argument("--checks", type=Path, help="default: checks beside the snapshot directory")
     parser.add_argument("--resume", metavar="RUN_ID")
     parser.add_argument("--browser-wait", type=float, default=5400, help="whole-run browser lock wait budget in seconds")

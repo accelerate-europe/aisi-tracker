@@ -371,8 +371,8 @@ class FakePage:
         return self.response
 
     def get(self, url, **kwargs):
-        assert kwargs == {"timeout": 30000}
-        self.downloaded = True
+        assert set(kwargs) == {"timeout"}
+        self.downloaded = kwargs["timeout"]
         return self.response
 
     def wait_for_load_state(self, state, timeout):
@@ -426,7 +426,8 @@ def test_response_metadata(fake_playwright, tmp_path, kind, status):
         assert metadata["content_type"] == page.response.headers["content-type"]
     if kind in {"pdf", "rendered_pdf"}:
         assert body == b"%PDF-1.7 fixture" and not page.settled
-    assert page.downloaded == (kind == "pdf")
+    # A download waits longer than a page load (a slow server sending a large attachment).
+    assert page.downloaded == (monitor_browser.DOWNLOAD_TIMEOUT * 1000 if kind == "pdf" else False)
 
 
 @pytest.mark.parametrize("content", [

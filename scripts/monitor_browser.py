@@ -30,11 +30,15 @@ NOT_RUN = 3
 USER_AGENT = "AISI-tracker-evidence/1.0 (headless Chromium)"
 
 
-def fetch_page(page, url: str, timeout: float) -> tuple[bytes, dict]:
+DOWNLOAD_TIMEOUT = 120  # seconds for a file served as an attachment: a slow server sends a large PDF for longer
+
+
+def fetch_page(page, url: str, timeout: float, download_timeout: float = DOWNLOAD_TIMEOUT) -> tuple[bytes, dict]:
     """One navigation through Chromium's own network stack, so the site sees the browser it is checking for.
 
     A PDF response supplies its bytes directly. A file Chromium downloads instead of rendering is fetched once
     more through the page's request context, with the same User-Agent and cookies; only that request leaves Chromium's network stack.
+    That download has its own, longer timeout (at least the page timeout).
     """
     from playwright.sync_api import Error, TimeoutError as PlaywrightTimeout
 
@@ -68,7 +72,7 @@ def fetch_page(page, url: str, timeout: float) -> tuple[bytes, dict]:
             metadata.update(status="unreachable", error=str(exc))
         else:
             try:
-                response = page.request.get(url, timeout=timeout * 1000)
+                response = page.request.get(url, timeout=max(timeout, download_timeout) * 1000)
                 body = response.body()
             except PlaywrightTimeout as again:
                 metadata.update(status="timeout", error=str(again))
@@ -112,10 +116,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--delay", type=float, default=2.0)
     parser.add_argument("--timeout", type=float, default=30)
+    parser.add_argument("--download-timeout", type=float, default=DOWNLOAD_TIMEOUT,
+                        help="seconds for a file served as an attachment (default %(default)s)")
     parser.add_argument("--user-agent", default=USER_AGENT)
     args = parser.parse_args(argv)
-    if not math.isfinite(args.delay) or args.delay < 0 or not 0 < args.timeout < math.inf:
-        parser.error("--delay must be finite and non-negative; --timeout must be finite and above zero")
+    if not math.isfinite(args.delay) or args.delay < 0 or not 0 < args.timeout < math.inf or not 0 < args.download_timeout < math.inf:
+        parser.error("--delay must be finite and non-negative; --timeout and --download-timeout must be finite and above zero")
     from playwright.sync_api import Error, sync_playwright
 
     try:
@@ -139,7 +145,7 @@ def main(argv: list[str] | None = None) -> int:
                     last_host[host] = time.monotonic()
                     page = browser.new_page(user_agent=args.user_agent)
                     try:
-                        body, metadata = fetch_page(page, url, args.timeout)
+                        body, metadata = fetch_page(page, url, args.timeout, args.download_timeout)
                         write_result(args.out, body, metadata)
                     finally:
                         page.close()

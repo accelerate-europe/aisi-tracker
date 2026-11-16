@@ -893,6 +893,22 @@ def test_mixed_kept_lost_and_not_compared_quotes(tmp_path, monkeypatch):
     assert last not in losses and last in rest
 
 
+def test_report_indexes_each_sources_responses(run):
+    """responses.json in the report folder: per source, the checked copy and each route's cache entry of the run."""
+    run.responses.update(headless=OLD.replace(b"founded in 2024", b"founded in 2025"), jina=OLD)
+    assert run.run() == 0
+    row, = run.rows()
+    index = json.loads((run.report / "responses.json").read_text())
+    entry = index["src0"]
+    assert (entry["class"], entry["route"]) == (row["class"], row["route"])
+    assert set(entry["cache"]) == {"direct", "headless", "jina"}
+    for folder in entry["cache"].values():
+        assert (Path(folder) / "metadata.json").is_file()
+    assert entry["response"] in {"cited copy", str(run.checks / row["response"])}
+    text = (run.report / "monitor.md").read_text()
+    assert "## Queued searches (0)" in text and "Queued searches: 0 (recorded queries to rerun, not findings)." in text
+
+
 def test_an_archive_through_a_fallback_route_does_not_clear_not_compared(tmp_path, monkeypatch):
     """jina ending at a capture that holds the quotation is no live comparison: the alert stays."""
     run = Run(tmp_path, monkeypatch)
@@ -901,3 +917,20 @@ def test_an_archive_through_a_fallback_route_does_not_clear_not_compared(tmp_pat
     assert run.run() == 0
     row, = run.rows()
     assert len(row["live_not_compared"]) == 2
+
+
+@pytest.mark.parametrize("extra", [["--only", "src0", "src2"], ["--only", "src0", "--only", "src2"]])
+def test_only_accepts_a_list_or_the_option_repeated(tmp_path, monkeypatch, extra):
+    run = Run(tmp_path, monkeypatch, count=3)
+    run.responses["direct"] = OLD
+    assert run.run(*extra) == 0
+    assert sorted(r["source_id"] for r in run.rows()) == ["src0", "src2"]
+
+
+def test_response_index_follows_the_direct_cache_override_and_resume(run):
+    run.responses["direct"] = OLD
+    cache = run.root / "own-cache"
+    assert run.run("--cache", str(cache)) == 0
+    assert run.resume("--cache", str(cache)) == 0
+    entry = json.loads((run.report / "responses.json").read_text())["src0"]
+    assert entry["cache"]["direct"] == str(cache / hashlib.sha256(URL.encode()).hexdigest())
