@@ -6,8 +6,10 @@ import json
 import re
 
 if __package__:
+    from .row_checks import ROWS
     from .shared_claims import resolve
 else:
+    from row_checks import ROWS
     from shared_claims import resolve
 
 
@@ -252,6 +254,12 @@ def authored_schema(download_schema, *, strict=False):
     jprops = jurisdictions["properties"]
     for record, key in ((jurisdictions, "summary"), (jprops["related_bodies"]["items"], "role"), (jprops["closest_body"], "note")):
         record["required"] = [k for k in record.get("required", []) if k != key]
+    # Published row notes are generated for migrated jurisdictions. Authored input may omit them here;
+    # row_checks requires legacy notes and forbids authored search-log notes in migrated records.
+    for field in ROWS:
+        for rule in institutes["properties"][field]["allOf"]:
+            if "required" in rule.get("then", {}):
+                rule["then"]["required"] = [key for key in rule["then"]["required"] if key != "notes"]
     funding = schema["$defs"]["funding"]
     computed_funding = (
         ({"required": ["sum_of"]}, ("amount", "annual_amount")),

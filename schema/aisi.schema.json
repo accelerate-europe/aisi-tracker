@@ -2299,7 +2299,7 @@
               "notes": {
                 "type": "string",
                 "minLength": 1,
-                "description": "Required for not_published: what was searched, in which languages, on what date."
+                "description": "Required for not_published: what was searched, in which languages, on what date. In a migrated record it is generated from the check.log entries naming this row."
               },
               "citations": {
                 "$ref": "#/$defs/citations"
@@ -2376,7 +2376,7 @@
               "notes": {
                 "type": "string",
                 "minLength": 1,
-                "description": "Required for not_published: what was searched, in which languages, on what date."
+                "description": "Required for not_published: what was searched, in which languages, on what date. In a migrated record it is generated from the check.log entries naming this row."
               },
               "citations": {
                 "$ref": "#/$defs/citations"
@@ -2449,7 +2449,7 @@
               "notes": {
                 "type": "string",
                 "minLength": 1,
-                "description": "Required for not_published, and for stated when no entry has cyber_agency: names the cyber agency searched, the date and the languages."
+                "description": "Required for not_published, and for stated when no entry has cyber_agency: names the cyber agency searched, the date and the languages. In a migrated record it is generated from the check.log entries naming this row."
               },
               "citations": {
                 "$ref": "#/$defs/citations"
@@ -3028,10 +3028,18 @@
               "text": {
                 "type": "string",
                 "minLength": 1
+              },
+              "row": {
+                "enum": [
+                  "head",
+                  "reports_to",
+                  "national_partners"
+                ],
+                "description": "The row whose required search log this entry is."
               }
             }
           },
-          "description": "Our search and reading notes, dated (\"Searched in Slovenian and English.\"). The home of search-log notes for the 1.2.0 row checks; it states nothing about the world. Not shown on the page for a record without an authored summary."
+          "description": "Our search and reading notes, dated (\"Searched in Slovenian and English.\"). The row key identifies the row whose required search log an entry is; it states nothing about the world. Not shown on the page for a record without an authored summary."
         },
         "functions": {
           "type": "object",

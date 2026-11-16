@@ -279,7 +279,7 @@ def not_published(d, field="head"):
         ),
         (
             lambda d: d["institutes"][0].update(head={"state": "not_published"}),
-            "'notes' is a required property",
+            "head.notes must say what was searched and when",
         ),
         (
             lambda d: d["institutes"][0].update(
@@ -389,6 +389,76 @@ def test_other_states_pass_with_their_required_fields(rows):
         "notes": note,
     }
     assert problems(prune(rows)) == []
+
+
+@pytest.fixture
+def migrated_rows(rows):
+    record = rows["jurisdictions"][0]
+    record.pop("summary")
+    record.pop("related_bodies")
+    return prune(rows)
+
+
+@pytest.mark.parametrize("field, no_cyber", [
+    ("head", False), ("reports_to", False), ("national_partners", False), ("national_partners", True),
+])
+def test_migrated_rows_require_matching_check_log(migrated_rows, field, no_cyber):
+    institute = migrated_rows["institutes"][0]
+    if no_cyber:
+        for partner in institute[field]["entries"]:
+            partner.pop("cyber_agency", None)
+        message = "gb-test: no partner entry has cyber_agency, so check.log needs an entry with row national_partners naming the cyber agency searched"
+    else:
+        institute[field] = {"state": "not_published"}
+        message = f"gb-test: {field} is not published, so check.log needs an entry with row {field} saying what was searched and when"
+    # The entry's date carries the date; no year is needed in its text.
+    institute["check"]["log"] = [{"date": "2026-10-17", "row": field, "text": "Searched the institute and cyber agency pages in English."}]
+    assert problems(prune(migrated_rows)) == []
+    published = build.export_dataset(migrated_rows)
+    Draft202012Validator(build.json.loads(build.SCHEMA.read_text())).validate(published)
+    assert published["institutes"][0]["check"]["log"] == institute["check"]["log"]
+    assert published["institutes"][0][field]["notes"] == "Searched the institute and cyber agency pages in English."
+    if not no_cyber:
+        published["institutes"][0][field].pop("notes")
+        assert any("'notes' is a required property" in e.message
+                   for e in Draft202012Validator(build.json.loads(build.SCHEMA.read_text())).iter_errors(published))
+    institute["check"]["log"][0].pop("row")
+    assert message in problems(migrated_rows)
+    institute["check"]["log"] = []
+    assert message in problems(migrated_rows)
+
+
+@pytest.mark.parametrize("field", ["head", "reports_to", "national_partners"])
+def test_migrated_rows_reject_old_search_notes(migrated_rows, field):
+    institute = migrated_rows["institutes"][0]
+    institute[field] = {"state": "not_published"}
+    institute["check"]["log"] = [{"date": "2026-10-17", "row": field, "text": "Searched the institute pages in English."}]
+    assert problems(prune(migrated_rows)) == []
+    institute[field]["notes"] = "Searched the institute pages in 2026."
+    assert f"gb-test: {field}.notes in a migrated record: the search log goes in check.log with row {field}" in problems(migrated_rows)
+
+
+def test_migrated_rows_reject_stale_log_key(migrated_rows):
+    assert problems(migrated_rows) == []
+    migrated_rows["institutes"][0]["check"]["log"] = [
+        {"date": "2026-10-17", "row": "reports_to", "text": "Searched the ministry pages."}]
+    assert "gb-test: check.log has an entry with row reports_to, but that row does not require a search log" in problems(migrated_rows)
+
+
+def test_search_log_row_schema_rejects_unknown_key(rows):
+    rows["institutes"][0]["check"]["log"] = [
+        {"date": "2026-10-17", "row": "staff", "text": "Searched the institute pages."}]
+    assert any("is not one of" in e for e in problems(rows))
+
+
+def test_legacy_log_entry_does_not_replace_dated_row_note(rows):
+    not_published(rows)
+    rows["institutes"][0]["check"]["log"] = [
+        {"date": "2026-10-17", "row": "head", "text": "Searched the leadership page."}]
+    assert problems(rows) == []
+    assert build.export_dataset(rows)["institutes"][0]["head"]["notes"] == rows["institutes"][0]["head"]["notes"]
+    rows["institutes"][0]["head"].pop("notes")
+    assert "gb-test: head.notes must say what was searched and when (a dated search log)" in problems(rows)
 
 
 @pytest.mark.parametrize("field", ("head", "reports_to", "national_partners"))

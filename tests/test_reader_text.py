@@ -2,7 +2,8 @@
 
 import pytest
 
-from scripts import build
+from scripts import build, method_checks
+from scripts.published import materialise_facts
 from scripts.reader_text import check_reader_text, reader_text
 
 
@@ -212,6 +213,57 @@ def test_changelog_fallback_is_page_facing():
 )
 def test_reader_text_rejects_round_labels_and_check_dates(note):
     errors = check_reader_text({"jurisdictions": [{"notes": note}]})
+    assert any("working round or check date" in e for e in errors)
+
+
+@pytest.fixture
+def recorded_full_check(dataset):
+    record = dataset["jurisdictions"][0]
+    record.pop("summary")
+    record.pop("related_bodies")
+    record["check"].update(last_checked_basis="recorded_full_check", searches=[
+        {"date": "2026-10-17", "query": "Synthetic search", "language": language,
+         "national_or_official": language == "ha", "source_ids": ["gb-source"]}
+        for language in ("ha", "en")
+    ])
+    for source in dataset["sources"]:
+        for excerpt in source.get("excerpts", []):
+            excerpt["supports"] = [p for p in excerpt["supports"]
+                                   if p != "/jurisdictions/0/summary" and not p.startswith("/jurisdictions/0/related_bodies/")]
+    return dataset, materialise_facts(dataset)
+
+
+def test_migrated_recorded_full_check_date_passes(recorded_full_check):
+    authored, generated = recorded_full_check
+    assert generated["jurisdictions"][0]["notes"] == "Checked in full on 17 October 2026, searching in Hausa and English."
+    assert method_checks.check_method_rules(generated, authored=authored) == []
+
+
+def test_legacy_authored_notes_still_reject_full_check_date(dataset):
+    dataset["jurisdictions"][0]["notes"] = "Checked in full on 17 October 2026, searching in Hausa and English."
+    assert any("working round or check date" in e for e in method_checks.check_method_rules(dataset))
+
+
+@pytest.mark.parametrize("suffix, message", [
+    (" Text \u2014 text.", "U+2014"),
+    (" Two  spaces.", "double spaces"),
+    (" See check.last_checked.", "field-path jargon"),
+    (" The values each supports.", "distributive 'each'"),
+    (" Tests models (active).", "parenthesised status"),
+])
+def test_generated_notes_keep_other_copy_guards(recorded_full_check, suffix, message):
+    authored, generated = recorded_full_check
+    generated["jurisdictions"][0]["notes"] += suffix
+    errors = check_reader_text(generated, method_checks.migrated_ids(authored))
+    assert any(message in e for e in errors)
+    assert not any("working round or check date" in e for e in errors)
+
+
+@pytest.mark.parametrize("leaf", ["summary", "closest_body", "related_bodies"])
+def test_other_generated_leaves_keep_process_label_guard(leaf):
+    text = "Checked in full on 17 October 2026."
+    value = {"summary": text, "closest_body": {"note": text}, "related_bodies": [{"role": text}]}[leaf]
+    errors = check_reader_text({"jurisdictions": [{"id": "XX", leaf: value}]}, {"XX"})
     assert any("working round or check date" in e for e in errors)
 
 

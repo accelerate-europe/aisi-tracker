@@ -31662,6 +31662,11 @@
         "last_checked_basis": "historical_upper_bound",
         "log": [
           {
+            "date": "2026-10-19",
+            "text": "Searched the DGE founding announcement, the current roadmap announcement and French and English leadership queries on 19 October 2026 for a named top executive. The SGDSN roadmap PDF and its one alternative copy were blocked.",
+            "row": "head"
+          },
+          {
             "date": "2026-11-14",
             "text": "Searched for a budget amount or staff count for INESIA itself: Senate and National Assembly reports on the 2026 and 2027 finance bills for programmes 129 and 134, parliamentary written questions, SGDSN, DGE and economy ministry press releases, the SGDSN roadmap and a parliamentary mission report to the Prime Minister, in French and English. The only figure found is the EUR 13.5m Inria programme already recorded as not specific to the institute; no staff count was found."
           },
@@ -31836,8 +31841,7 @@
         }
       ],
       "head": {
-        "state": "not_published",
-        "notes": "Searched the DGE founding announcement, the current roadmap announcement and French and English leadership queries on 19 October 2026 for a named top executive. The SGDSN roadmap PDF and its one alternative copy were blocked."
+        "state": "not_published"
       },
       "reports_to": {
         "state": "stated",
@@ -32229,6 +32233,11 @@
         "last_checked_basis": "historical_upper_bound",
         "log": [
           {
+            "date": "2026-10-19",
+            "text": "Searched BSI’s current AISI page, the BMDS founding release, the June 2026 National Security Council decision and German and English leadership queries on 19 October 2026 for a named top executive of the institute.",
+            "row": "head"
+          },
+          {
             "date": "2026-11-14",
             "text": "Searched for a budget amount or staff count for AISI Deutschland itself: the government's answers in Bundestag papers 21/8727 and 21/8470, budget section 24 of the 2027 draft and the budget committee's November papers, BSI and federal government pages and ministry press, in German and English. No figure for the institute was found; the amounts found were demands by industry associations."
           },
@@ -32328,8 +32337,7 @@
       ],
       "outputs": [],
       "head": {
-        "state": "not_published",
-        "notes": "Searched BSI’s current AISI page, the BMDS founding release, the June 2026 National Security Council decision and German and English leadership queries on 19 October 2026 for a named top executive of the institute."
+        "state": "not_published"
       },
       "reports_to": {
         "state": "stated",
@@ -32656,6 +32664,11 @@
         "last_checked_basis": "historical_upper_bound",
         "log": [
           {
+            "date": "2026-10-19",
+            "text": "Searched the IA360 plan, AESIA's organisational and institutional pages, and Spanish and English appointment queries on 19 October 2026 for a named head of the institute.",
+            "row": "head"
+          },
+          {
             "date": "2026-11-14",
             "text": "Searched for a budget amount or staff count for the Instituto de Seguridad de la Inteligencia Artificial itself: the IA360 plan, AESIA's own plan and pages, Finance Ministry and Council of Ministers spending notes, written questions and answers in the Congress, and the press, in Spanish and English. The figures found concern AESIA, not the institute."
           },
@@ -32719,8 +32732,7 @@
       "agreements": [],
       "outputs": [],
       "head": {
-        "state": "not_published",
-        "notes": "Searched the IA360 plan, AESIA's organisational and institutional pages, and Spanish and English appointment queries on 19 October 2026 for a named head of the planned institute."
+        "state": "not_published"
       },
       "reports_to": {
         "state": "stated",
@@ -33110,6 +33122,11 @@
         },
         "log": [
           {
+            "date": "2026-10-19",
+            "text": "Cyber agency searched on 19 October 2026 in Norwegian and English: NSM (including NCSC Norway); six documents were read, including the institute's current pages, its host's report and NSM's own pages.",
+            "row": "national_partners"
+          },
+          {
             "date": "2026-10-21",
             "text": "Testing: the budget release of 7 October 2026 was read for testing by the institute, and the membership list of the international network was checked for Norway."
           },
@@ -33195,8 +33212,7 @@
         ]
       },
       "national_partners": {
-        "state": "not_published",
-        "notes": "Cyber agency searched on 19 October 2026 in Norwegian and English: NSM (including NCSC Norway); six documents were read, including the institute's current pages, its host's report and NSM's own pages."
+        "state": "not_published"
       },
       "testing_capacity": {
         "state": "not_published",

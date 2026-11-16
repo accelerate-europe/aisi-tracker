@@ -276,6 +276,14 @@ def stale(text: str, as_of: str) -> str | None:
     return None
 
 
+def generated_leaf(path: tuple, migrated: bool) -> bool:
+    """Whether this leaf is generated from claims or check fields in a migrated jurisdiction."""
+    return migrated and path[0] == "jurisdictions" and (
+        path[2:] in {("summary",), ("notes",), ("closest_body", "note")}
+        or (len(path) == 5 and path[2] == "related_bodies" and path[4] == "role")
+    )
+
+
 def _lint_leaves(data: dict, migrated: set[str]):
     """(record id, migrated?, path, text, kind) for the reader text of jurisdictions and institutes: authored prose
     (claim texts with their quoted spans masked) and check.log. In a migrated record the summary, notes, roles and
@@ -285,19 +293,18 @@ def _lint_leaves(data: dict, migrated: set[str]):
         if path[0] not in {"jurisdictions", "institutes"} or not page_facing(path, data):
             continue
         record = data[path[0]][path[1]]
-        jid = record["id"] if path[0] == "jurisdictions" else owner.get(record["id"], record["id"])
+        jid = record["id"] if path[0] == "jurisdictions" else record.get("jurisdiction_id", owner.get(record["id"], record["id"]))
         is_migrated = jid in migrated
-        generated = path[0] == "jurisdictions" and (
-            path[2:] in {("summary",), ("notes",), ("closest_body", "note")}
-            or (len(path) == 5 and path[2] == "related_bodies" and path[4] == "role")
-        )
-        if is_migrated and generated:
+        if generated_leaf(path, is_migrated):
             continue
         kind = "claim" if len(path) == 5 and path[2] == "claims" else "prose"
         yield jid, is_migrated, path, value, kind
+    for collection in ("jurisdictions", "institutes"):
+        for index, record in enumerate(data.get(collection, [])):
+            jid = record["id"] if collection == "jurisdictions" else record.get("jurisdiction_id", owner.get(record["id"], record["id"]))
+            for k, entry in enumerate((record.get("check") or {}).get("log", [])):
+                yield jid, jid in migrated, (collection, index, "check", "log", k, "text"), entry["text"], "log"
     for index, j in enumerate(data.get("jurisdictions", [])):
-        for k, entry in enumerate((j.get("check") or {}).get("log", [])):
-            yield j["id"], j["id"] in migrated, ("jurisdictions", index, "check", "log", k, "text"), entry["text"], "log"
         for k, entry in enumerate((j.get("check") or {}).get("passes", [])):
             for n, place in enumerate(entry["places"]):
                 yield j["id"], j["id"] in migrated, ("jurisdictions", index, "check", "passes", k, "places", n), place, "prose"
@@ -387,8 +394,9 @@ def lint_report(data: dict, migrated: set[str]) -> str:
     return "\n".join(lines)
 
 
-def check_reader_text(data: dict) -> list[str]:
-    """Reject copy defects in authored prose, never in verbatim evidence."""
+def check_reader_text(data: dict, migrated: set[str] | None = None) -> list[str]:
+    """Reject copy defects, never in verbatim evidence; migrated ids come from the authored input."""
+    migrated = migrated or set()
     errors = []
     keys = (
         set(field_names(data))
@@ -444,6 +452,9 @@ def check_reader_text(data: dict) -> list[str]:
             and path[:2] != ("dataset", "other_overviews")
             and path[-1] not in DATED_OBSERVATIONS
             and page_facing(path, data)
+            # Generated notes take their check dates from check, so those dates cannot drift from it.
+            and not (path[-1] == "notes" and generated_leaf(
+                path, path[0] == "jurisdictions" and data[path[0]][path[1]].get("id") in migrated))
             and (label := PROCESS_LABEL.search(prose))
         ):
             errors.append(

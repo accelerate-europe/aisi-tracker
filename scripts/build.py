@@ -34,7 +34,7 @@ if __package__:
     from .published import INTERVAL_KEYS, NO_ECB_RATE, budget_ratios, comparable_funding, annual_eur_estimate as annual_eur_estimate, known_activity as known_activity, output_activity_kind as output_activity_kind, publish, prepared_facts, timeline_status as timeline_status, eur_per_unit as eur_per_unit, significant as significant
     from .shared_claims import check_shared_claims, shared_claim_coverage  # type: ignore[import-not-found]
     from .method_copy import METHOD_TITLE, full_method_page
-    from .method_checks import check_method_rules, UNQUOTED_REPORT, primary_source_warnings, unquoted_claims, unquoted_report, unquoted_warnings, search_log_notes, reader_text_warnings, reader_text_report  # type: ignore[import-not-found]
+    from .method_checks import check_method_rules, UNQUOTED_REPORT, primary_source_warnings, unquoted_claims, unquoted_report, unquoted_warnings, reader_text_warnings, reader_text_report  # type: ignore[import-not-found]
     from .reader_text import READER_TEXT_REPORT  # type: ignore[import-not-found]
     from .source_origins import source_origin_report, write_source_origin_report
     from . import rereads
@@ -46,7 +46,7 @@ else:  # Direct script execution.
     from published import INTERVAL_KEYS, NO_ECB_RATE, budget_ratios, comparable_funding, annual_eur_estimate as annual_eur_estimate, known_activity as known_activity, output_activity_kind as output_activity_kind, publish, prepared_facts, timeline_status as timeline_status, eur_per_unit as eur_per_unit, significant as significant
     from shared_claims import check_shared_claims, shared_claim_coverage
     from method_copy import METHOD_TITLE, full_method_page
-    from method_checks import check_method_rules, UNQUOTED_REPORT, primary_source_warnings, unquoted_claims, unquoted_report, unquoted_warnings, search_log_notes, reader_text_warnings, reader_text_report
+    from method_checks import check_method_rules, UNQUOTED_REPORT, primary_source_warnings, unquoted_claims, unquoted_report, unquoted_warnings, reader_text_warnings, reader_text_report
     from reader_text import READER_TEXT_REPORT  # type: ignore[import-not-found, no-redef]
     from source_origins import source_origin_report, write_source_origin_report
     import rereads  # type: ignore[no-redef]
@@ -1168,7 +1168,6 @@ def main() -> None:
     warnings += [f"re-read: {line}" for line in rereads.alerts(published, rereads.load(), published["dataset"]["as_of"])]
     warnings += [f"closest body: {line}" for line in fact_pipeline.closest_body_warnings(d, published)]
     warnings += fact_pipeline.next_check_warnings(d, published)
-    warnings += search_log_notes(d)
     for warning in warnings:
         print(f"warning: {warning}", file=sys.stderr)
     if args.report_dir:

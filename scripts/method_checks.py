@@ -9,7 +9,7 @@ if __package__:
     from .references import materialise_references
     from .published import IMPLIES, announcement, credit_date, first_designation, prepared_facts, status_basis
     from .reader_text import check_reader_text, lint_errors, lint_report, lint_warnings  # type: ignore[import-not-found]
-    from .row_checks import check_rows, required_row_pointers, search_log_rows
+    from .row_checks import check_rows, required_row_pointers
     from .flag_checks import check_flags, required_flag_pointers
     from .claim_checks import check_claims, required_claim_pointers
 else:
@@ -17,7 +17,7 @@ else:
     from references import materialise_references
     from published import IMPLIES, announcement, credit_date, first_designation, prepared_facts, status_basis
     from reader_text import check_reader_text, lint_errors, lint_report, lint_warnings  # type: ignore[import-not-found, no-redef]
-    from row_checks import check_rows, required_row_pointers, search_log_rows  # type: ignore[import-not-found, no-redef]
+    from row_checks import check_rows, required_row_pointers  # type: ignore[import-not-found, no-redef]
     from flag_checks import check_flags, required_flag_pointers  # type: ignore[import-not-found, no-redef]
     from claim_checks import check_claims, required_claim_pointers  # type: ignore[import-not-found, no-redef]
 
@@ -423,20 +423,8 @@ def unquoted_items(d: dict) -> list[tuple[str, str, str]]:
         free_text(shown, f"/jurisdictions/{n}", "jurisdictions[]", record["id"], jid)
     for n, record in enumerate(d["institutes"]):
         shown = {key: value for key, value in record.items() if key != "check"}
-        if record["jurisdiction_id"] in migrated:
-            # A row note that row_checks requires as a dated search log cannot carry a quote (hub default, spec
-            # section 5); it is listed by search_log_notes instead, and review checks it states nothing about the world.
-            for field in search_log_rows(record):
-                shown[field] = {key: value for key, value in shown[field].items() if key != "notes"}
         free_text(shown, f"/institutes/{n}", "institutes[]", record["id"], record["jurisdiction_id"])
     return items
-
-
-def search_log_notes(d: dict) -> list[str]:
-    """The row notes of migrated records left out of the quote rule as required search logs, for the release warnings."""
-    migrated = migrated_ids(d)
-    return [f"search-log note, no quote required: {i['id']} {field}.notes ({reason}): {i[field].get('notes', '')}"
-            for i in d["institutes"] if i["jurisdiction_id"] in migrated for field, reason in search_log_rows(i).items()]
 
 
 UNQUOTED_REPORT = "unquoted-claims.md"
@@ -481,6 +469,7 @@ def unquoted_report(found: dict[str, list[str]]) -> str:
 def check_method_rules(d: dict, *, authored: dict | None = None) -> list[str]:
     """Validate declared evidence metadata; judgement and quotations need review."""
     authored = d if authored is None else authored
+    migrated = migrated_ids(authored)
     status_evidence = primary_source_errors(d)
     if any("status" not in j for j in d["jurisdictions"]):
         try:
@@ -488,13 +477,13 @@ def check_method_rules(d: dict, *, authored: dict | None = None) -> list[str]:
         except (ValueError, KeyError, IndexError, TypeError, ArithmeticError) as exc:
             return [f"authored facts or references: {exc}"]
     d = materialise_references(d)
-    errors = check_method_copy(d["dataset"]) + check_reader_text(d) + check_naming(d) + check_body_names(d)
+    errors = check_method_copy(d["dataset"]) + check_reader_text(d, migrated) + check_naming(d) + check_body_names(d)
     errors += status_evidence
-    errors += check_rows(d)
+    errors += check_rows(d, migrated)
     errors += check_flags(d)
     errors += check_claims(d)
     errors += migrated_unquoted_errors(authored)
-    errors += lint_errors(d, migrated_ids(authored))  # mechanical reader-text classes; elsewhere counted by reader_text_warnings
+    errors += lint_errors(d, migrated)  # mechanical reader-text classes; elsewhere counted by reader_text_warnings
     # Owner's decision of 14 Nov 2026: a related body cites a source. An error for Europe-scope records, whose
     # bodies were all sourced in 1.0.10; elsewhere still a release warning (unquoted_claims) until a later pass.
     errors += [

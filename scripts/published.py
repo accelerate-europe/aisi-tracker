@@ -14,10 +14,12 @@ if __package__:
     from . import summaries
     from .claim_checks import function_rows
     from .flag_checks import access_summary
+    from .row_checks import search_log_rows
 else:
     import summaries  # type: ignore[import-not-found, no-redef]
     from claim_checks import function_rows  # type: ignore[import-not-found, no-redef]
     from flag_checks import access_summary  # type: ignore[import-not-found, no-redef]
+    from row_checks import search_log_rows  # type: ignore[import-not-found, no-redef]
 
 AUTHORING_STRICT = True  # Production accepts primary facts and stable bindings only.
 
@@ -502,6 +504,12 @@ def publish(data: dict, *, strict: bool | None = None, rereads: dict | None = No
     for jurisdiction in facts.get("jurisdictions", []):
         if jurisdiction["id"] in migrated:
             word_record(jurisdiction, institutes, facts["dataset"].get("vocabularies", {}), facts["dataset"]["as_of"])
+    for institute in institutes.values():
+        if institute["jurisdiction_id"] in migrated:
+            # Keep the download's row notes; dates ascend, with ties in authored log order.
+            log = sorted(institute.get("check", {}).get("log", []), key=lambda entry: entry["date"])
+            for field in search_log_rows(institute):
+                institute[field]["notes"] = " ".join(entry["text"] for entry in log if entry.get("row") == field)
     return derive_display(facts)
 
 

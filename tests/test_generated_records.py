@@ -23,7 +23,7 @@ def test_todays_data_publishes_its_authored_texts():
     authored = json.loads(DATA.read_text(encoding="utf-8"))
     migrated = method_checks.migrated_ids(authored)
     assert {j["id"] for j in authored["jurisdictions"]} - migrated, "a record is left to compare"
-    # Institutes with check.log lines and fact claims: an institute's log never reaches its notes.
+    # Institutes with check.log lines and fact claims: row logs generate row notes, never the institute's own notes.
     logged = {i["jurisdiction_id"] for i in authored["institutes"] if i.get("check", {}).get("log")}
     assert {"FR", "DE", "ES"} <= logged
     assert any(c["kind"] == "fact" for i in authored["institutes"] for c in i.get("claims", []))
@@ -46,6 +46,42 @@ def test_todays_data_publishes_its_authored_texts():
             assert roles[(before["id"], body.get("id", ""))] == body["role"]
         if "closest_body" in before:
             assert after["closest_body"]["note"] == before["closest_body"]["note"] == closest[before["id"]]["note"]
+
+
+@pytest.mark.parametrize("migrate", [False, True])
+def test_row_notes_are_generated_only_for_migrated_records(dataset, migrate):
+    jurisdiction = dataset["jurisdictions"][0]
+    if migrate:
+        jurisdiction.pop("summary")
+        jurisdiction.pop("related_bodies")
+        for source in dataset["sources"]:
+            for excerpt in source.get("excerpts", []):
+                excerpt["supports"] = [p for p in excerpt["supports"]
+                                       if p != "/jurisdictions/0/summary" and not p.startswith("/jurisdictions/0/related_bodies/")]
+    institute = dataset["institutes"][0]
+    texts = {"head": "Read the leadership page.", "reports_to": "Read the ministry page.",
+             "national_partners": "Searched the cyber agency page."}
+    for field in texts:
+        institute[field] = {"state": "not_published"}
+        if not migrate:
+            institute[field]["notes"] = "Searched the official pages on 17 October 2026."
+    institute["check"]["log"] = [
+        {"date": "2026-10-17", "row": field, "text": text} for field, text in texts.items()
+    ] + [
+        {"date": "2026-10-15", "row": "head", "text": "Read the founding text."},
+        {"date": "2026-10-15", "row": "head", "text": "Searched the leadership directory."},
+        {"date": "2026-10-14", "text": "Read the budget."},
+    ]
+    before = copy.deepcopy(dataset)
+    assert schema_errors(dataset) == []
+    published = build.export_dataset(dataset)
+    assert located_errors(published, SCHEMA) == []
+    assert dataset == before  # Generating download text must not change authored input.
+    notes = {field: published["institutes"][0][field]["notes"] for field in texts}
+    if migrate:
+        assert notes == {**texts, "head": "Read the founding text. Searched the leadership directory. Read the leadership page."}
+    else:
+        assert notes == dict.fromkeys(texts, "Searched the official pages on 17 October 2026.")
 
 
 @pytest.fixture
@@ -301,35 +337,6 @@ def test_unbound_free_text_is_an_error_only_in_a_migrated_record(dataset, migrat
     d["sources"][0]["excerpts"].append({"text": "Synthetic note.", "supports": ["/institutes/0/funding/0/notes"]})
     assert not any(item in e for e in method_checks.migrated_unquoted_errors(d))
     assert item not in method_checks.unquoted_claims(d)["free text with no excerpt"]
-
-
-def test_required_search_log_notes_need_no_quote_in_a_migrated_record(dataset):
-    """Hub default (spec section 5): a row note that row_checks requires as a dated search log (a row not published,
-    or partners stated with no cyber agency) is left out of the quote rule in a migrated record and listed instead;
-    any other row note is still an error."""
-    d = copy.deepcopy(dataset)
-    d["jurisdictions"][0].pop("summary")
-    institute = d["institutes"][0]
-    institute["head"] = {"state": "not_published", "notes": "Searched the founding text on 2026-10-19."}
-    institute["national_partners"] = {"state": "stated", "notes": "Cyber agency searched: none, 2026-10-19.",
-                                      "entries": [{"id": "np-x", "name": "Partner", "relation": "works_with", "how": "Works with it.",
-                                                   "source_ids": [d["sources"][0]["id"]]}]}
-    institute["reports_to"] = {"state": "not_applicable", "notes": "Synthetic note on a row with no required log."}
-
-    def errors_for(field):
-        return [e for e in method_checks.migrated_unquoted_errors(d) if f"institutes[].{field}.notes" in e]
-
-    assert errors_for("head") == [] and errors_for("national_partners") == []
-    assert len(errors_for("reports_to")) == 1
-    assert method_checks.search_log_notes(d) == [
-        "search-log note, no quote required: gb-test head.notes (not_published): Searched the founding text on 2026-10-19.",
-        "search-log note, no quote required: gb-test national_partners.notes (no_cyber_agency): Cyber agency searched: none, 2026-10-19."]
-    institute["national_partners"]["entries"][0]["cyber_agency"] = True
-    institute["head"]["state"] = "not_applicable"
-    assert len(errors_for("head")) == 1 and len(errors_for("national_partners")) == 1
-    assert method_checks.search_log_notes(d) == []
-    d["jurisdictions"][0]["summary"] = "Synthetic."  # not migrated: nothing listed, warnings as before
-    assert method_checks.search_log_notes(d) == []
 
 
 def test_generated_first_output_description_is_not_unquoted():

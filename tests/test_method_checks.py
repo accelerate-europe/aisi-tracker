@@ -29,6 +29,41 @@ def strict_dataset(dataset):
     return d
 
 
+@pytest.mark.parametrize("field, state", [
+    ("head", "not_published"), ("reports_to", "not_published"),
+    ("national_partners", "not_published"), ("national_partners", "stated"),
+])
+def test_required_row_notes_are_no_longer_exempt_from_quotes(dataset, field, state):
+    dataset["jurisdictions"][0].pop("summary")
+    institute = dataset["institutes"][0]
+    note = "Searched the institute and cyber agency pages on 17 October 2026."
+    institute[field] = {"state": state, "notes": note}
+    if state == "stated":
+        institute[field]["entries"] = [{"id": "np-x", "name": "Partner", "relation": "works_with",
+                                        "how": "Works with it.", "source_ids": ["gb-source"]}]
+    item = f"institutes[].{field}.notes: gb-test"
+    assert any(item in e for e in method_checks.migrated_unquoted_errors(dataset))
+    institute[field].pop("notes")
+    institute["check"]["log"] = [{"date": "2026-10-17", "row": field, "text": note}]
+    assert not any(item in e for e in method_checks.migrated_unquoted_errors(dataset))
+    assert not any("check.log" in e for e in method_checks.migrated_unquoted_errors(dataset))
+
+
+@pytest.mark.parametrize("collection", ["jurisdictions", "institutes"])
+@pytest.mark.parametrize("migrate", [False, True])
+def test_check_logs_share_reader_lint_and_jurisdiction_owner(dataset, collection, migrate):
+    if migrate:
+        dataset["jurisdictions"][0].pop("summary")
+    dataset[collection][0]["check"]["log"] = [{"date": "2026-10-17", "text": "Read PDF pages on 17 Oct 2026."}]
+    errors = check_method_rules(dataset)
+    pointer = f"/{collection}/0/check/log/0/text"
+    assert any(pointer in e and "short month" in e for e in errors) == migrate
+    warnings = method_checks.reader_text_warnings(dataset)
+    assert any(pointer in e and "short month" in e for e in warnings) == (not migrate)
+    assert not any(pointer in e and "workshop words" in e for e in errors + warnings)
+    assert f"- GB `{pointer}`" in method_checks.reader_text_report(dataset) or migrate
+
+
 @pytest.mark.parametrize(
     ("mutation", "message"),
     [

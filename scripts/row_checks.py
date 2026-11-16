@@ -27,7 +27,7 @@ DATED_NOTE = re.compile(r"\b(?:19|20)\d\d\b")
 
 
 def search_log_rows(institute: dict) -> dict[str, str]:
-    """The rows whose notes must be a dated search log, with the reason: a row not published, or national partners
+    """The rows that require a dated search log, with the reason: a row not published, or national partners
     stated with no cyber_agency entry (the cyber agency searched). The only home of these two conditions."""
     rows = {field: "not_published" for field in ROWS if (institute.get(field) or {}).get("state") == "not_published"}
     partners = institute.get("national_partners") or {}
@@ -92,8 +92,9 @@ def required_row_pointers(d: dict) -> set[str]:
     return required
 
 
-def check_rows(d: dict) -> list[str]:
+def check_rows(d: dict, migrated: set[str] | None = None) -> list[str]:
     """Cross-field checks JSON Schema cannot express; shape and states are the schema's."""
+    migrated = migrated or set()
     errors: list[str] = []
     vocabularies = d["dataset"].get("vocabularies", {})
     institutes = d["institutes"]
@@ -149,7 +150,22 @@ def check_rows(d: dict) -> list[str]:
                 errors.append(
                     f"{iid}: {field}: not_applicable requires no established institute"
                 )
-        for field, reason in search_log_rows(institute).items():
+        required_logs = search_log_rows(institute)
+        is_migrated = institute["jurisdiction_id"] in migrated
+        logged_rows = {entry["row"] for entry in (institute.get("check") or {}).get("log", []) if "row" in entry}
+        if is_migrated:
+            for field in sorted(logged_rows - required_logs.keys()):
+                errors.append(f"{iid}: check.log has an entry with row {field}, but that row does not require a search log")
+        for field, reason in required_logs.items():
+            if is_migrated:
+                if "notes" in institute[field]:
+                    errors.append(f"{iid}: {field}.notes in a migrated record: the search log goes in check.log with row {field}")
+                if field not in logged_rows:
+                    if reason == "not_published":
+                        errors.append(f"{iid}: {field} is not published, so check.log needs an entry with row {field} saying what was searched and when")
+                    else:
+                        errors.append(f"{iid}: no partner entry has cyber_agency, so check.log needs an entry with row national_partners naming the cyber agency searched")
+                continue
             if DATED_NOTE.search(institute[field].get("notes", "")):
                 continue
             if reason == "not_published":
