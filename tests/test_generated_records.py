@@ -277,6 +277,127 @@ def test_summary_stays_required_in_the_download():
     assert "summary" in SCHEMA["properties"]["jurisdictions"]["items"]["required"]
 
 
+@pytest.fixture
+def undisclosed_funding():
+    authored = json.loads(DATA.read_text(encoding="utf-8"))
+    institute = next(i for i in authored["institutes"] if i["id"] == "fr-inesia")
+    funding = next(f for f in institute["funding"] if f["id"] == "funding-5900b7d819c0501a83196d3281da8527")
+    assert "description" not in funding
+    return authored, funding
+
+
+@pytest.mark.parametrize("coverage, expected", [
+    ("whole_institute", "No budget published for the institute as a whole."),
+    ("component", "No budget published for this part of the institute."),
+    ("not_institute_specific", "No budget published for this wider funding."),
+])
+def test_undisclosed_funding_description_is_generated_by_coverage(undisclosed_funding, coverage, expected):
+    authored, funding = undisclosed_funding
+    funding["coverage"] = coverage
+    published = build.export_dataset(authored)
+    institute = next(i for i in published["institutes"] if i["id"] == "fr-inesia")
+    assert next(f for f in institute["funding"] if f["id"] == funding["id"])["description"] == expected
+    assert "description" not in funding  # publication never writes into the authored input
+
+
+def test_real_undisclosed_funding_migration_and_legacy_descriptions(undisclosed_funding):
+    authored, _ = undisclosed_funding
+    migrated = method_checks.migrated_ids(authored)
+    published = build.export_dataset(authored)
+    descriptions = {f["id"]: f["description"] for i in published["institutes"] for f in i.get("funding", [])}
+    flagged = {f["id"] for i in published["institutes"] for f in i.get("funding", []) if f["display"].get("generated_description")}
+    assert flagged == {f["id"] for i in authored["institutes"] if i["jurisdiction_id"] in migrated
+                       for f in i.get("funding", []) if f["kind"] == "none_disclosed"}  # the page hides exactly these statements
+    generated = set()
+    legacy = set()
+    for institute in authored["institutes"]:
+        for funding in institute.get("funding", []):
+            if institute["jurisdiction_id"] in migrated and funding["kind"] == "none_disclosed":
+                generated.add(institute["id"])
+                assert "description" not in funding
+                assert descriptions[funding["id"]] == "No budget published for the institute as a whole."
+            else:
+                assert descriptions[funding["id"]] == funding["description"]
+                if funding["kind"] == "none_disclosed":
+                    legacy.add(institute["id"])
+    assert generated == {"fr-inesia", "de-aisi"}
+    assert legacy == {"eu-ai-office", "my-aisafe", "in-aisi"}
+    assert schema_errors(authored, authored_schema(SCHEMA, strict=True)) == []
+    assert located_errors(published, SCHEMA) == []
+
+
+@pytest.mark.parametrize("description", ["Authored negative.", "No budget published for the institute as a whole."])
+def test_migrated_undisclosed_funding_refuses_an_authored_description(undisclosed_funding, description):
+    authored, funding = undisclosed_funding
+    funding["description"] = description
+    with pytest.raises(ValueError, match="generated in a migrated record; must not be authored"):
+        build.export_dataset(authored)
+
+
+@pytest.mark.parametrize("strict", [False, True])
+def test_only_undisclosed_funding_can_omit_description_in_authored_schema(undisclosed_funding, strict):
+    from jsonschema import Draft202012Validator
+
+    _, funding = undisclosed_funding
+    for schema, missing_allowed in ((authored_schema(SCHEMA, strict=strict), True), (SCHEMA, False)):
+        validator = Draft202012Validator({"$ref": "#/$defs/funding", "$defs": schema["$defs"]})
+        assert validator.is_valid(funding) is missing_allowed
+        for kind in ("annual", "multi_year", "one_off", "not_institute_specific"):
+            errors = list(validator.iter_errors({**funding, "kind": kind}))
+            assert any(error.message == "'description' is a required property" for error in errors)
+
+
+def test_legacy_undisclosed_funding_still_requires_description(undisclosed_funding):
+    authored, _ = undisclosed_funding
+    institute = next(i for i in authored["institutes"] if i["id"] == "my-aisafe")
+    funding = next(f for f in institute["funding"] if f["kind"] == "none_disclosed")
+    del funding["description"]
+    with pytest.raises(ValueError, match="description is required while the record authors its summary"):
+        build.export_dataset(authored)
+
+
+def test_legacy_undisclosed_funding_may_not_repeat_a_generated_line(undisclosed_funding):
+    # The generated lines are what marks a description as generated (display.generated_description), so a legacy
+    # record that authored one word for word would lose its source statement on the page.
+    authored, _ = undisclosed_funding
+    institute = next(i for i in authored["institutes"] if i["id"] == "my-aisafe")
+    funding = next(f for f in institute["funding"] if f["kind"] == "none_disclosed")
+    funding["description"] = "No budget published for the institute as a whole."
+    with pytest.raises(ValueError, match="may not repeat a generated line"):
+        build.export_dataset(authored)
+
+
+@pytest.mark.parametrize("bound", [False, True])
+def test_generated_funding_description_needs_no_quote_but_allows_evidence(undisclosed_funding, bound):
+    authored, funding = undisclosed_funding
+    source = next(s for s in authored["sources"] if s["id"] == "fr-sgdsn-aisi")
+    if bound:
+        source["excerpts"].append({"text": "Synthetic non-disclosure evidence.", "supports": [
+            ["institutes", {"id": "fr-inesia"}, "funding", {"id": funding["id"]}, "description"],
+        ]})
+    published = build.export_dataset(authored)
+    institute = next(i for i in published["institutes"] if i["id"] == "fr-inesia")
+    result = next(f for f in institute["funding"] if f["id"] == funding["id"])
+    assert result["description"] == "No budget published for the institute as a whole."
+    assert result["citations"].get("description", []) == ([source["id"]] if bound else [])
+    items = method_checks.unquoted_items(authored)
+    assert not any("institutes[].funding[].description: fr-inesia" in item for _, _, item in items)
+    funding["notes"] = "An unquoted funding fact."
+    assert any("institutes[].funding[].notes: fr-inesia" in item for _, _, item in method_checks.unquoted_items(authored))
+
+
+def test_legacy_undisclosed_funding_description_still_needs_a_quote(undisclosed_funding):
+    authored, _ = undisclosed_funding
+    institute = next(i for i in authored["institutes"] if i["id"] == "my-aisafe")
+    funding = next(f for f in institute["funding"] if f["kind"] == "none_disclosed")
+    selector = ["institutes", {"id": institute["id"]}, "funding", {"id": funding["id"]}, "description"]
+    for source in authored["sources"]:
+        for excerpt in source.get("excerpts", []):
+            excerpt["supports"] = [p for p in excerpt["supports"] if p != selector]
+        source["excerpts"] = [e for e in source.get("excerpts", []) if e["supports"]]
+    assert any("institutes[].funding[].description: my-aisafe" in item for _, _, item in method_checks.unquoted_items(authored))
+
+
 def test_migrated_closest_body_needs_gap_excerpt_and_body_id(migrated):
     d = copy.deepcopy(migrated)
     for source in d["sources"]:

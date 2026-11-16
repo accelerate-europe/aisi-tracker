@@ -260,6 +260,13 @@ def authored_schema(download_schema, *, strict=False):
             if rule.get("if", {}).get("properties", {}).get("state") == {"const": "not_published"} and "notes" in rule.get("then", {}).get("required", []):
                 rule["then"]["required"] = [key for key in rule["then"]["required"] if key != "notes"]
     funding = schema["$defs"]["funding"]
+    # Only none_disclosed may omit description; generate_texts requires it on legacy records and generates it
+    # on migrated ones. The cross-record migration check stays there, as it does for role and closest-body note.
+    funding["required"] = [key for key in funding["required"] if key != "description"]
+    funding.setdefault("allOf", []).append({
+        "if": {"properties": {"kind": {"not": {"const": "none_disclosed"}}}, "required": ["kind"]},
+        "then": {"required": ["description"]},
+    })
     computed_funding = (
         ({"required": ["sum_of"]}, ("amount", "annual_amount")),
         ({"properties": {"annual_basis_code": {"const": "period_mean"}}, "required": ["annual_basis_code"]}, ("annual_amount",)),
