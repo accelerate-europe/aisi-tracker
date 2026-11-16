@@ -203,7 +203,10 @@ def test_migrated_record_is_generated(migrated):
     assert state["notes"] == "Checked in full on or before 17 October 2026."
     assert state["closest_body"]["note"] == claims[ROLE]  # the lead is in the summary, not said twice
     roles = {b["id"]: b["role"] for b in state["related_bodies"]}
-    assert roles == {"test-regulator": f"{claims[ROLE]} {claims[LEAD]}", "test-authority": ""}
+    # The two claims cite one source and open "It says": the second takes "also" (summaries.join_role_claims).
+    assert claims[LEAD].startswith("It says ")
+    also = claims[LEAD].replace("It says ", "It also says ", 1)
+    assert roles == {"test-regulator": f"{claims[ROLE]} {also}", "test-authority": ""}
     tables = build.tables(published)
     assert tables["jurisdictions"][0]["summary"] == state["summary"]
     assert tables["closest_bodies"][0]["note"] == state["closest_body"]["note"]
