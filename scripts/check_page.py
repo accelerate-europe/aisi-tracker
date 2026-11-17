@@ -9734,7 +9734,7 @@ EXPECTED_FUNDING_IDS = {
 }
 EXPECTED_BUDGET_IDS = {
     "gb-aisi": EXPECTED_FUNDING_IDS["GB"], "fr-inesia": None,
-    "de-aisi": None, "es-isia": None, "no-ki-norge": "funding-0475119a71cc5e2099e293d3a48356b0",
+    "de-aisi": None, "es-isia": None, "no-ki-norge": "funding-07dc8b2c007b4b80a356aef8e5afa53c",
     "eu-ai-office": None, "us-caissi": EXPECTED_FUNDING_IDS["US"],
     "ca-caisi": EXPECTED_FUNDING_IDS["CA"],
     "jp-aisi": "funding-7d0b36a48cc65315865a6d6ec83ddeb6",

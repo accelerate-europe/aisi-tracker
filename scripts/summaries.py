@@ -38,9 +38,12 @@ CHECK_TOPICS = {
     "testing_capacity": "testing capacity", "outputs": "published work", "closest_body": "closest body",
     "related_bodies": "AI Act authorities and related bodies",
 }
-# Pattern 2: the stage prefix, where the body does not exist yet.
-STAGE_PREFIX = {"exists": "Closest body", "planned": "Planned closest body", "proposed": "Proposed closest body",
-                "under_study": "Closest body under study"}
+# Pattern 2: the body's stage after its name, where it does not exist yet. The stage is the body's, not our choice of
+# it, so no stage word stands before "closest body" (owner, 17 November: "Proposed closest body" read as our proposal).
+STAGE_TAIL = {"exists": "", "planned": ", planned and not yet set up", "proposed": ", proposed and not yet set up",
+              "under_study": ", under study and not yet set up"}
+# Counts inside a sentence: words for one to nine, figures from 10 (owner, 17 November).
+COUNT_WORDS = ("zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine")
 # Pattern 4: AI Act roles in the order the line names them.
 ROLE_WORDS = {"single_point_of_contact": "single point of contact",
               "market_surveillance": "market-surveillance authority", "notifying": "notifying authority"}
@@ -83,6 +86,11 @@ def month_of(day: str) -> str:
 def words(items: list[str]) -> str:
     """'a', 'a and b', 'a, b and c'."""
     return items[0] if len(items) == 1 else ", ".join(items[:-1]) + " and " + items[-1]
+
+
+def count(n: int) -> str:
+    """A count inside a sentence: a word for one to nine, a figure from 10."""
+    return COUNT_WORDS[n] if 0 < n < 10 else str(n)
 
 
 def sentence(text: str) -> str:
@@ -215,7 +223,7 @@ def pattern_2(record: dict) -> str | None:
     closest = record.get("closest_body")
     if closest is None:
         return None
-    line = f"{STAGE_PREFIX[closest['stage']]}: {sentence(closest['name'])}"
+    line = f"Closest body: {sentence(closest['name'] + STAGE_TAIL[closest['stage']])}"
     if kept := kept_lead(record):
         return f"{line} {marked(kept)}"
     lead = [c for c in role_claims(record, closest.get("body_id")) if c.get("lead")]
@@ -261,9 +269,9 @@ def pattern_4(record: dict) -> str | None:
         line = f"{body_name(body)} is listed as its AI Act {roles}, but no national designation is confirmed"
     others = len(authorities) - 1
     if others == 1:
-        line += "; 1 other AI Act body is listed below"
+        line += "; one other AI Act body is listed below"
     elif others > 1:
-        line += f"; {others} other AI Act bodies are listed below"
+        line += f"; {count(others)} other AI Act bodies are listed below"
     return line + "."
 
 

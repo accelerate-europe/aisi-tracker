@@ -391,7 +391,7 @@
         "model_testing": {
           "label": "Model testing",
           "short": "model testing",
-          "definition": "It ran or commissioned tests of AI models that a text reports in enough detail to show real tests (how many, of what kind of model or test, or by what method), or a text assigns it testing AI models or systems.",
+          "definition": "It ran or commissioned tests (evaluations) of AI models that a text reports in enough detail to show real tests (how many, of what kind of model or test, or by what method), or a text assigns it testing AI models or systems.",
           "group": "Testing and science"
         },
         "evaluation_methods": {
@@ -427,7 +427,7 @@
         "risk_monitoring": {
           "label": "Capability and risk monitoring",
           "short": "risk monitoring",
-          "definition": "It reports regularly on what AI can do or what risks emerge (a periodic or numbered series, or a monitoring mandate); one paper does not count.",
+          "definition": "It reports regularly on what AI can do or what risks emerge (a periodic, numbered or continuing series, or a monitoring mandate), or a text describes it as monitoring or tracking AI capabilities or risks on an ongoing basis; one paper does not count.",
           "group": "Informing government"
         },
         "foresight": {
@@ -1887,7 +1887,7 @@
       {
         "id": "source-titles",
         "title": "Source titles",
-        "summary": "Non-English source titles are kept in the original, with our English translation beside them. The translation adds no facts of its own and is not an official title.",
+        "summary": "Non-English source titles are shown in our own English translation; the original title appears on hover, focus and tap.",
         "rules": {
           "source-titles": "7a10ec4f15516162dd2a33f8c75b2c87f8711fa2e6551de5b379e4848dbfd8ea"
         }
@@ -8270,6 +8270,18 @@
           "text": "The Presidency says the Strategy was drawn up by the National AI Taskforce, which a Council of Ministers decision set up.",
           "source_ids": [
             "cy-r6-presidency-strategy-consultation"
+          ]
+        },
+        {
+          "id": "claims-00e8d91af61746299c229d1be6d71239",
+          "kind": "function",
+          "code": "certification",
+          "basis": "mandate",
+          "body_id": "related_bodies-22ce43cad11a5215b57cf4f76c7cd5bc",
+          "lead": true,
+          "text": "The draft national AI strategy lists a \"European AI Certification Lab and sandbox capability enabling precertification of high-risk and foundation models in Cyprus\".",
+          "source_ids": [
+            "cy-r4-draft-ai-strategy-2032"
           ]
         }
       ]
@@ -26749,8 +26761,45 @@
         "source_ids": [
           "mz-enia-draft-2026",
           "mz-enia-consultation-2026"
-        ]
-      }
+        ],
+        "body_id": "related_bodies-84162d316796517fba955b0230dfdc57"
+      },
+      "claims": [
+        {
+          "id": "claims-8b142edc7be642dc9de6da2f2777f853",
+          "kind": "function",
+          "code": "model_testing",
+          "basis": "mandate",
+          "body_id": "related_bodies-84162d316796517fba955b0230dfdc57",
+          "lead": true,
+          "text": "The draft national AI strategy lists the \"National Artificial Intelligence Regulatory Sandbox: technical unit responsible for testing, evaluation, validation, auditing and regulatory learning for AI systems\".",
+          "source_ids": [
+            "mz-enia-draft-2026"
+          ]
+        },
+        {
+          "id": "claims-1ffb1050bbc54b1bb6be1fb1ba5b2951",
+          "kind": "function",
+          "code": "certification",
+          "basis": "mandate",
+          "body_id": "related_bodies-84162d316796517fba955b0230dfdc57",
+          "text": "The draft national AI strategy assigns the national testing centre and regulatory sandbox supervised testing, model evaluation and certification before public or institutional adoption.",
+          "source_ids": [
+            "mz-enia-draft-2026"
+          ]
+        },
+        {
+          "id": "claims-075cf05821d844e0b6ec735252786ab8",
+          "kind": "function",
+          "code": "sandbox",
+          "basis": "mandate",
+          "body_id": "related_bodies-84162d316796517fba955b0230dfdc57",
+          "text": "The draft national AI strategy assigns the national regulatory sandbox supervised testing and regulatory learning before public or institutional adoption.",
+          "source_ids": [
+            "mz-enia-draft-2026"
+          ]
+        }
+      ]
     },
     {
       "id": "NA",
@@ -32925,6 +32974,32 @@
       "funding": [
         {
           "kind": "annual",
+          "amount": 45100000,
+          "currency": "NOK",
+          "period": "2027 budget proposal",
+          "description": "NOK 45.1m proposed for KI Norge (budget post 28) in 2027, including the NOK 30m for model evaluation",
+          "source_ids": [
+            "no-prop1s-2026-27-dfd",
+            "no-budget",
+            "r11-no-fiscal-year"
+          ],
+          "confidence": "high",
+          "commitment": "proposed",
+          "funding_source": "national_government",
+          "annual_amount": 45100000,
+          "annual_basis": "Proposed 2027 appropriation for KI Norge's budget post as a whole; not enacted funding or expenditure.",
+          "decision_date": "2026-10-07",
+          "annual_basis_code": "other",
+          "annual_period": {
+            "start": "2027-01-01",
+            "end": "2027-12-31"
+          },
+          "coverage": "whole_institute",
+          "id": "funding-07dc8b2c007b4b80a356aef8e5afa53c",
+          "notes": "The appropriation covers the development and running of KI Norge as a whole, not only its AI safety work."
+        },
+        {
+          "kind": "annual",
           "amount": 30000000,
           "currency": "NOK",
           "period": "2027 budget proposal",
@@ -32945,7 +33020,7 @@
             "start": "2027-01-01",
             "end": "2027-12-31"
           },
-          "coverage": "whole_institute",
+          "coverage": "component",
           "id": "funding-0475119a71cc5e2099e293d3a48356b0",
           "notes": "The 2027 budget proposal puts the whole KI Norge budget post (post 28) at NOK 45.1m, which includes this NOK 30m. The ministry recommended Prop. 1 S and the Council of State approved it on 25 September 2026; it was published on 7 October 2026, the decision date recorded."
         },
@@ -34039,6 +34114,26 @@
           "text": "The Commission says it has already started to use its enforcement powers under the AI Act, with requests for information sent to several companies to make sure they comply with their obligations.",
           "source_ids": [
             "eu-midday-briefing-2026-09-11"
+          ]
+        },
+        {
+          "id": "claims-0f0da73dd52c4c79a3925f891e0bef16",
+          "kind": "function",
+          "code": "risk_monitoring",
+          "basis": "activity",
+          "text": "The Commission says the AI Office monitors model capabilities.",
+          "source_ids": [
+            "eu-pq-p001672-2026"
+          ]
+        },
+        {
+          "id": "claims-6f57b267641a47deb8fc7f26ee48d638",
+          "kind": "function",
+          "code": "sandbox",
+          "basis": "mandate",
+          "text": "The AI Act empowers the AI Office to establish a Union-level AI regulatory sandbox for systems covered by Article 75(1).",
+          "source_ids": [
+            "r5-eu-ai-act-article74"
           ]
         }
       ],
@@ -38457,6 +38552,26 @@
           "source_ids": [
             "kr-ai-basic-act-decree"
           ]
+        },
+        {
+          "id": "claims-996bc09881864855ac1c7352412c401c",
+          "kind": "function",
+          "code": "evaluation_methods",
+          "basis": "mandate",
+          "text": "The ministry's briefing lists among the institute's planned core functions developing \"AI safety evaluation methodology\".",
+          "source_ids": [
+            "kr-policy-briefing-2024-10-18"
+          ]
+        },
+        {
+          "id": "claims-a952757998a94133acbf71e1142b757a",
+          "kind": "function",
+          "code": "risk_monitoring",
+          "basis": "mandate",
+          "text": "The ministry's briefing lists among the institute's planned core functions collecting and analysing information on major domestic and international AI risks.",
+          "source_ids": [
+            "kr-policy-briefing-2024-10-18"
+          ]
         }
       ]
     },
@@ -39716,6 +39831,16 @@
           "source_ids": [
             "au-industry"
           ]
+        },
+        {
+          "id": "claims-970fb146e1704424b8a8c6a8fcc210f5",
+          "kind": "function",
+          "code": "risk_monitoring",
+          "basis": "activity",
+          "text": "The assistant minister says AISI combines \"ongoing systems testing with active monitoring of risks and harms\".",
+          "source_ids": [
+            "depth-au-forum"
+          ]
         }
       ]
     },
@@ -40098,6 +40223,16 @@
           "text": "The ministry says the institute will work through strategic collaborations for talent development, expertise sharing and technology transfer at national and international levels.",
           "source_ids": [
             "my-digital-2026-07"
+          ]
+        },
+        {
+          "id": "claims-2d1df4ccb30245b0baccfdb710a5d324",
+          "kind": "function",
+          "code": "risk_monitoring",
+          "basis": "activity",
+          "text": "AI Malaysia says MY-AISafe tests systems before release, then manages incidents and tracks emerging threats during use.",
+          "source_ids": [
+            "my-aisafe-overview"
           ]
         }
       ]
@@ -40817,6 +40952,46 @@
           "text": "The international network's joint testing report says that, with the UK, the EU AI Office, Australia, Canada and Korea, it contributed to the analysis phase of the project.",
           "source_ids": [
             "catalogue-agentic-report"
+          ]
+        },
+        {
+          "id": "claims-faf2ed8308584823a2c5a391b1911e79",
+          "kind": "function",
+          "code": "model_testing",
+          "basis": "mandate",
+          "text": "The draft policy says the Kenya AI Safety Institute is to be established as the national technical institution responsible for AI safety testing, evaluation and red-teaming.",
+          "source_ids": [
+            "ke-draft-policy-2026"
+          ]
+        },
+        {
+          "id": "claims-d38857cf4bde4164841919a81b93c441",
+          "kind": "function",
+          "code": "regulatory_support",
+          "basis": "mandate",
+          "text": "The draft policy says the Kenya AI Safety Institute shall provide technical evidence, testing capacity, research support, evaluation tools, benchmarks and advisory inputs to support regulators and public institutions.",
+          "source_ids": [
+            "ke-draft-policy-2026"
+          ]
+        },
+        {
+          "id": "claims-d16e9d49e3684e9e83a3669398693d59",
+          "kind": "function",
+          "code": "international_cooperation",
+          "basis": "mandate",
+          "text": "The draft policy lists \"international AI safety cooperation\" among the Kenya AI Safety Institute's roles.",
+          "source_ids": [
+            "ke-draft-policy-2026"
+          ]
+        },
+        {
+          "id": "claims-84ebfc6d1e71423fb23e7908d36d2c10",
+          "kind": "function",
+          "code": "policy_advice",
+          "basis": "mandate",
+          "text": "The draft policy says the Kenya AI Safety Institute and the other listed public bodies shall provide technical expertise, evidence and policy positions to inform Kenya's international engagements.",
+          "source_ids": [
+            "ke-draft-policy-2026"
           ]
         }
       ]
@@ -43414,6 +43589,17 @@
               },
               "staffing_model",
               "notes"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "funding",
+              {
+                "id": "funding-07dc8b2c007b4b80a356aef8e5afa53c"
+              },
+              "decision_date"
             ]
           ],
           "gloss": "7 October 2026",
@@ -54452,6 +54638,74 @@
             ]
           ],
           "accessed": "2026-10-24"
+        },
+        {
+          "text": "Establish the Kenya AI Safety Institute as the national technical institution responsible for AI safety research, testing, evaluation, benchmarking, red -teaming, incident analysis, and technical cooperation.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "ke-ai-safety-institute"
+              },
+              "claims",
+              {
+                "id": "claims-faf2ed8308584823a2c5a391b1911e79"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "the Kenya AI Safety Institute shall not displace the statutory mandates of regulators but shall provide technical evidence, testing capacity, research support, evaluation tools, benchmarks, and advisory inputs to support regulators, public institutions",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "ke-ai-safety-institute"
+              },
+              "claims",
+              {
+                "id": "claims-d38857cf4bde4164841919a81b93c441"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Kenya AI Safety Institute AI testing; benchmarking; red-teaming; incident analysis; assurance research; technical advisory support; international AI safety cooperation.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "ke-ai-safety-institute"
+              },
+              "claims",
+              {
+                "id": "claims-d16e9d49e3684e9e83a3669398693d59"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "the Kenya AI Safety Institute, and relevant ministries, departments, agencies, regulators, and county governments shall provide the technical expertise, evidence, an d policy positions required to inform Kenya's international engagements.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "ke-ai-safety-institute"
+              },
+              "claims",
+              {
+                "id": "claims-84ebfc6d1e71423fb23e7908d36d2c10"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "KE",
@@ -54704,6 +54958,53 @@
           ],
           "accessed": "2026-10-18",
           "gloss": "Develop national capacity to evaluate imported, open, proprietary, adapted and domestically developed models in Mozambique."
+        },
+        {
+          "text": "Sandbox Regulatório Nacional de Inteligência Artificial Unidade técnica responsável por testes, avaliação, validação, auditoria e aprendizagem regulatória de sistemas de IA",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "MZ"
+              },
+              "claims",
+              {
+                "id": "claims-8b142edc7be642dc9de6da2f2777f853"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "National Artificial Intelligence Regulatory Sandbox: technical unit responsible for testing, evaluation, validation, auditing and regulatory learning for AI systems.",
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Centro Nacional de Testes, Avaliação e Auditoria de IA / Sandbox Regulatório Nacional de IA P6.P5, P6.P6, P6.P11 Teste supervisionado, validação, aprendizagem regulatória, avaliação de modelos e certificação antes da adopção pública ou institucional.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "MZ"
+              },
+              "claims",
+              {
+                "id": "claims-1ffb1050bbc54b1bb6be1fb1ba5b2951"
+              },
+              "text"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "MZ"
+              },
+              "claims",
+              {
+                "id": "claims-075cf05821d844e0b6ec735252786ab8"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "National AI Testing, Evaluation and Audit Centre / National AI Regulatory Sandbox P6.P5, P6.P6, P6.P11 Supervised testing, validation, regulatory learning, model evaluation and certification before public or institutional adoption.",
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "MZ",
@@ -69905,6 +70206,24 @@
             ]
           ],
           "accessed": "2026-10-21"
+        },
+        {
+          "text": "One of AISI's key roles is to be a central expert capability that identifies those risks and builds a shared understanding of them across government so that policymakers and regulators can act with insight and evidence. This combines ongoing systems testing with active monitoring of risks and harms.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-970fb146e1704424b8a8c6a8fcc210f5"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17",
+          "url": "https://r.jina.ai/https://www.minister.industry.gov.au/charlton/media/ai-safety-forum"
         }
       ],
       "origin": "AU",
@@ -93783,6 +94102,23 @@
             ]
           ],
           "accessed": "2026-11-14"
+        },
+        {
+          "text": "European AI Certification Lab and sandbox capability enabling precertification of high-risk and foundation models in Cyprus.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "CY"
+              },
+              "claims",
+              {
+                "id": "claims-00e8d91af61746299c229d1be6d71239"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ]
     },
@@ -96261,6 +96597,30 @@
             }
           ],
           "accessed": "2026-10-17"
+        },
+        {
+          "text": "The AI Office may establish an AI regulatory sandbox at Union level for AI systems covered by Article 75(1).",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "claims",
+              {
+                "id": "claims-6f57b267641a47deb8fc7f26ee48d638"
+              },
+              "text"
+            ]
+          ],
+          "anchors": [
+            {
+              "kind": "provision",
+              "text": "Article 57 AI regulatory sandboxes"
+            }
+          ],
+          "accessed": "2026-10-17",
+          "url": "https://r.jina.ai/https://eur-lex.europa.eu/legal-content/EN/AUTO/?uri=CELEX:02024R1689-20260727"
         }
       ],
       "legal_text": true,
@@ -102736,6 +103096,23 @@
               "claims",
               {
                 "id": "claims-90f0a690e6a244b2a1831dee395313c6"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-19"
+        },
+        {
+          "text": "MY-AISafe tests systems before release, then manages incidents and tracks emerging threats once they are in use.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "my-aisafe"
+              },
+              "claims",
+              {
+                "id": "claims-2d1df4ccb30245b0baccfdb710a5d324"
               },
               "text"
             ]
@@ -109886,6 +110263,24 @@
             ]
           ],
           "accessed": "2026-10-21"
+        },
+        {
+          "text": "The AI Office also monitors model capabilities.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "claims",
+              {
+                "id": "claims-0f0da73dd52c4c79a3925f891e0bef16"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-21",
+          "url": "https://r.jina.ai/https://www.europarl.europa.eu/doceo/document/P-10-2026-001672-ASW_EN.html"
         }
       ],
       "snapshot": {
@@ -109957,6 +110352,66 @@
           ],
           "accessed": "2026-10-21",
           "gloss": "Korea too intends to set up an AI Safety Institute to spread safe AI development and use and to strengthen international solidarity for securing AI safety."
+        },
+        {
+          "text": "국가 차원에서 관리해야 할 주요 AI 위험을 정의하고 AI 안전 평가방법론 개발과 위험 완화 방안을 마련하겠습니다.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-996bc09881864855ac1c7352412c401c"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "We will define the main AI risks that need to be managed at national level and develop AI safety evaluation methodology and risk-mitigation measures.",
+          "anchors": [
+            {
+              "kind": "definition",
+              "text": "정부는 지난 5월에 개최한 'AI 서울정상회의'의 핵심 후속 조치로 AI 안전을 평가·연구하고, 주요국의 AI안전연구소와 협력을 전담하는 'AI안전연구소'를 설립·운영할 계획입니다.",
+              "gloss": "As a key follow-up to the AI Seoul Summit held last May, the government plans to establish and operate an AI Safety Institute dedicated to evaluating and researching AI safety and cooperating with the AI safety institutes of major countries."
+            },
+            {
+              "kind": "heading",
+              "text": "연구소는 네 가지 핵심 기능을 수행할 계획입니다.",
+              "gloss": "The institute plans to perform four core functions."
+            }
+          ],
+          "accessed": "2026-10-21"
+        },
+        {
+          "text": "주요국, 국제기구의 AI 규범·거버넌스를 연구하고, 국내외 주요 AI 위험 정보를 수집·분석하여 AI 안전정책을 고도화해 나갈 예정입니다.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-a952757998a94133acbf71e1142b757a"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "It will study AI norms and governance in major countries and international organisations, and collect and analyse information on major AI risks at home and abroad to improve AI safety policy.",
+          "anchors": [
+            {
+              "kind": "definition",
+              "text": "정부는 지난 5월에 개최한 'AI 서울정상회의'의 핵심 후속 조치로 AI 안전을 평가·연구하고, 주요국의 AI안전연구소와 협력을 전담하는 'AI안전연구소'를 설립·운영할 계획입니다.",
+              "gloss": "As a key follow-up to the AI Seoul Summit held last May, the government plans to establish and operate an AI Safety Institute dedicated to evaluating and researching AI safety and cooperating with the AI safety institutes of major countries."
+            },
+            {
+              "kind": "heading",
+              "text": "연구소는 네 가지 핵심 기능을 수행할 계획입니다.",
+              "gloss": "The institute plans to perform four core functions."
+            }
+          ],
+          "accessed": "2026-10-21"
         }
       ],
       "snapshot": {
@@ -112864,6 +113319,17 @@
                 "id": "funding-e47a2c9b1d5f4086b3c8a1e6d9f2b705"
               },
               "notes"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "funding",
+              {
+                "id": "funding-07dc8b2c007b4b80a356aef8e5afa53c"
+              },
+              "amount"
             ]
           ],
           "accessed": "2026-10-24"
@@ -112944,6 +113410,17 @@
                 "id": "funding-e47a2c9b1d5f4086b3c8a1e6d9f2b705"
               },
               "description"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "funding",
+              {
+                "id": "funding-07dc8b2c007b4b80a356aef8e5afa53c"
+              },
+              "amount"
             ]
           ],
           "accessed": "2026-10-24"
@@ -112984,6 +113461,28 @@
                 "id": "funding-0475119a71cc5e2099e293d3a48356b0"
               },
               "notes"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "funding",
+              {
+                "id": "funding-07dc8b2c007b4b80a356aef8e5afa53c"
+              },
+              "coverage"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "funding",
+              {
+                "id": "funding-07dc8b2c007b4b80a356aef8e5afa53c"
+              },
+              "notes"
             ]
           ],
           "accessed": "2026-10-24"
@@ -113002,6 +113501,17 @@
                 "id": "funding-0475119a71cc5e2099e293d3a48356b0"
               },
               "notes"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "funding",
+              {
+                "id": "funding-0475119a71cc5e2099e293d3a48356b0"
+              },
+              "coverage"
             ]
           ],
           "accessed": "2026-10-24"
@@ -113020,6 +113530,39 @@
                 "id": "funding-0475119a71cc5e2099e293d3a48356b0"
               },
               "notes"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "funding",
+              {
+                "id": "funding-07dc8b2c007b4b80a356aef8e5afa53c"
+              },
+              "amount"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "funding",
+              {
+                "id": "funding-07dc8b2c007b4b80a356aef8e5afa53c"
+              },
+              "annual_amount"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "funding",
+              {
+                "id": "funding-07dc8b2c007b4b80a356aef8e5afa53c"
+              },
+              "description"
             ]
           ],
           "accessed": "2026-10-24"
@@ -113153,6 +113696,17 @@
                 "id": "funding-0475119a71cc5e2099e293d3a48356b0"
               },
               "description"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "funding",
+              {
+                "id": "funding-07dc8b2c007b4b80a356aef8e5afa53c"
+              },
+              "description"
             ]
           ],
           "gloss": "From 2027, an increase of NOK 30 million is proposed to strengthen KI Norge's capacity to evaluate AI models and obtain knowledge about the consequences and risks of advanced artificial intelligence.",
@@ -113193,6 +113747,17 @@
                 "id": "funding-e47a2c9b1d5f4086b3c8a1e6d9f2b705"
               },
               "notes"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "funding",
+              {
+                "id": "funding-07dc8b2c007b4b80a356aef8e5afa53c"
+              },
+              "period"
             ]
           ],
           "gloss": "Accounts 2025; adopted budget 2026; proposal 2027.",
