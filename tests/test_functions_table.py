@@ -44,6 +44,9 @@ def functions():
     <div class="group"><nav class="group-nav"><a href="#functions">Functions</a></nav>
     <section aria-labelledby="functions"><h2 id="functions">Functions</h2><div id="functions-table">
     <p class="fn-blank"><strong>A blank cell means we found no public text for it, not that the institute does not do it.</strong></p>
+    <details class="more quiet prose-panel fn-how"><summary>How this is coded</summary><p class="small">We record quoted public texts.</p>
+    <p class="small fn-order">Rows: by the year the institute's current status began, oldest first.</p>
+    <p class="small fn-provisional">The list of functions is provisional.</p></details>
     <p class="fn-summary">Most common: testing (2 of 2 institutes), advice (1) and research (1).</p>
     <span id="hint" class="vh">Scrolls sideways</span>
     <div class="fn-scroll" role="region" tabindex="0" aria-labelledby="functions" aria-describedby="hint">
@@ -72,8 +75,6 @@ def functions():
     <td data-code="incidents" data-value="not_found"><span class="vh">not found</span></td><td class="fn-pad" aria-hidden="true"></td></tr>
     </tbody></table></div>
     <ul class="fn-legend fn-desktop-only" role="list"><li data-value="activity">Active</li><li data-value="mandate">Assigned</li><li data-value="not_found">Blank: not found</li><li data-value="not_coded">not yet coded</li></ul>
-    <p class="fn-order">Rows: by the year the institute's current status began, oldest first.</p>
-    <p class="fn-provisional">The list of functions is provisional.</p>
     </div></section></div>'''
     return data, html
 
@@ -140,6 +141,8 @@ def test_function_rows_order_by_year_then_name_then_id(functions):
     ('<span class="vh">not found</span>', '<span>not found</span>', "absent value"),
     ('<p class="fn-blank"><strong>', '<p class="missing-blank"><strong>', "blank explanation"),
     ('The list of functions is provisional.', '', "provisional line"),
+    ('class="more quiet prose-panel fn-how"', 'class="more quiet prose-panel"', "coding fold missing"),
+    ('<details class="more quiet prose-panel fn-how">', '<details open class="more quiet prose-panel fn-how">', "coding fold missing or open"),
     ('<tbody>', '<tbody><tr class="fn-detail-row"><td>We tested model X.</td></tr>', "quote was pre-rendered"),
     ('aria-describedby="hint"', '', "scroll region"),
 ])
@@ -147,6 +150,16 @@ def test_functions_structure_rejects_mutations(functions, old, new, finding):
     data, html = functions
     assert old in html
     assert any(finding in e for e in check_page.functions_structure(html.replace(old, new), data))
+
+
+@pytest.mark.parametrize("selector", ['.fn-order', '.fn-provisional'])
+def test_functions_explanatory_lines_stay_inside_coding_fold(functions, selector):
+    from bs4 import BeautifulSoup
+
+    data, html = functions
+    soup = BeautifulSoup(html, "html.parser")
+    soup.select_one('#functions-table').append(soup.select_one(selector).extract())
+    assert "Functions row order and provisional lines must end the coding fold" in check_page.functions_structure(str(soup), data)
 
 
 @pytest.mark.parametrize("suffix", ["planned", "proposed", "exploring", "announced", "PLANNED"])

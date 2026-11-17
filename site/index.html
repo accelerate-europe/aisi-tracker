@@ -28,6 +28,7 @@
 <style>
 /* Design principles
  * Functions table: institute rows in established and not-yet-established blocks, function columns in vocabulary groups, equal widths and rotated short heads. Active and both use a dot, assigned a ring; not found is blank, a search result rather than absence. The jurisdiction column stays visible during sideways scrolling. Hover and focus tint the row and one continuous column through the block bands, with a slanted band behind its head; group gutters stay clear. Each group has a leaning boundary and an underline at its label, meeting the upright body rules at the head rule; the shared head height follows the head type, leaving at least --sp-1 above every head tip. No upright rule crosses the head zone, and labels paint above the hover flag and boundaries. Quotes and sources open on demand below the selected institute (check_page check_functions_table, check_functions_detail, check_functions_layout, check_functions_tint, check_function_group_tabs).
+ * Functions legend: marks and their names share one line directly under the desktop table; whole items wrap on phones, retaining their pips. Row order and the provisional list belong at the end of How this is coded (check_page check_functions_table, check_functions_layout).
  * Method: owner-owned reader summaries link to the full editorial rules on a separate page; rule anchors stay stable.
  * Type: title, label, body, meta, figure, plus fn-group for functions group labels on narrow phones; label, body and meta fixed up to 1200px and growing to their wide-screen sizes at 1440px, so the table and cards keep their 1100px fit; figure and title grow from phone width; shared size, weight, family and role-specific line height. The headline is the figure role with only its numbers at figure weight, its words at body weight.
  * Content grid: each section body has two left-aligned widths: its full width for tables, card grids, charts and row lists, and --prose for running text. Internal row tracks keep their alignment. The full-width first section is the only exception: the geographic map may bleed, and its stacked map/tools/side retain --map-stack-width, with --region-list keeping state and institute names together (check_page check_content_grid).
@@ -710,8 +711,8 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
 .fn-mandate { border: var(--rule-strong) solid currentColor; }
 .fn-not_coded, .fn-table td[data-value="not_coded"]::before { height: .12rem; border-radius: 0; background: var(--muted); }
 .fn-table td[data-value="not_coded"]::before { content: ""; display: inline-block; vertical-align: middle; width: .8rem; }
-.fn-legend { list-style: none; padding: 0; font: var(--type-meta); color: var(--muted); display: grid; gap: var(--sp-1); } /* lines never touch, whatever the mark size */
-.fn-legend li { display: flex; align-items: baseline; gap: var(--sp-2); }
+.fn-legend { list-style: none; padding: 0; max-width: none; font: var(--type-meta); color: var(--muted); display: flex; flex-direction: row; flex-wrap: wrap; gap: var(--sp-1) var(--sp-4); } /* one line under the desktop table; whole items wrap on phones */
+.fn-legend li { display: flex; align-items: baseline; gap: var(--sp-2); white-space: nowrap; }
 .fn-legend .fn-mark { align-self: center; }
 .fn-table .fn-detail-row > td { padding: 0; text-align: left; }
 .fn-detail { position: sticky; left: 0; width: 100cqi; max-width: 100cqi; padding: var(--sp-4); box-sizing: border-box; white-space: normal; overflow-wrap: anywhere; background: var(--paper); font: var(--type-body); }
@@ -751,11 +752,11 @@ button.fn-function-label { width: 100%; background: transparent; border: 0; text
   .fn-scroll, .fn-desktop-only { display: none; }
   .fn-phone { display: grid; }
   .fn-phone-only { display: block; }
-  .fn-legend.fn-phone-only { display: grid; } /* the legend keeps its spaced lines */
+  .fn-legend.fn-phone-only { display: flex; }
   /* Without the page script the pip rows cannot open, so phones keep the readable table. */
   :root:not([data-js]) .fn-phone, :root:not([data-js]) .fn-phone-only { display: none; }
   :root:not([data-js]) .fn-scroll, :root:not([data-js]) .fn-intro.fn-desktop-only { display: block; }
-  :root:not([data-js]) .fn-legend.fn-desktop-only { display: grid; }
+  :root:not([data-js]) .fn-legend.fn-desktop-only { display: flex; }
 }
 @media (width <= 390px) {
   .fn-phone-head { font: var(--type-fn-group); }
@@ -3166,7 +3167,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         box.appendChild(el("p", "small fn-intro fn-desktop-only", FN_COPY.intro.replace("{count}", codes.length)));
         box.appendChild(el("p", "small fn-intro fn-phone-only", FN_COPY.intro_phone.replace("{count}", codes.length)));
         var blank = el("p", "fn-blank"); blank.appendChild(el("strong", null, FN_COPY.blank)); box.appendChild(blank);
-        var how = el("details", "more quiet prose-panel"), body = el("p", "small"); how.appendChild(el("summary", null, FN_COPY.how_title));
+        var how = el("details", "more quiet prose-panel fn-how"), body = el("p", "small"); how.appendChild(el("summary", null, FN_COPY.how_title));
         var dates = institutes.map(function (i) { return i.check && i.check.functions && i.check.functions.date; }).filter(Boolean).sort();
         var latest = dates.length ? dates[dates.length - 1] : ""; // ISO dates in ascending order; latest coding date
         FN_COPY.how.replace("{assigned}", ACTIVITY_WORDS.assigned).replace("{active}", ACTIVITY_WORDS.active).split(/(\{date\}|\{data\})/).forEach(function (part) {
@@ -3174,7 +3175,10 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
           else if (part === "{data}") { var a = el("a", null, FN_COPY.data); a.href = "#data"; body.appendChild(a); }
           else body.appendChild(document.createTextNode(part));
         });
-        how.appendChild(body); box.appendChild(how);
+        how.appendChild(body);
+        how.appendChild(el("p", "small fn-order", order.label));
+        how.appendChild(el("p", "small fn-provisional", FN_COPY.provisional));
+        box.appendChild(how);
         var summary = fnSummary(); if (summary) box.appendChild(el("p", "fn-summary", summary));
         buildForm(false); buildForm(true);
         var legendValues = ["activity", "mandate", "not_found"];
@@ -3186,8 +3190,6 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
           }); box.appendChild(legend);
         });
         box.appendChild(el("p", "small fn-pip-note fn-phone-only", FN_COPY.pips));
-        box.appendChild(el("p", "small fn-order", order.label));
-        box.appendChild(el("p", "small fn-provisional", FN_COPY.provisional));
         updateFits();
       }
       function buildForm(isPhone) {

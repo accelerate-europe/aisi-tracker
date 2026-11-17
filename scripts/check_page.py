@@ -11595,6 +11595,13 @@ def functions_structure(html: str, data: dict) -> list[str]:
     need(order and order.get_text() == "Rows: by the year the institute's current status began, oldest first.", "Functions row order explanation missing")
     provisional = section.select_one('.fn-provisional')
     need(provisional and provisional.get_text() == "The list of functions is provisional.", "Functions provisional line missing")
+    how = section.select_one('details.fn-how')
+    need(how and not how.has_attr("open") and how.select_one('summary') and how.summary.get_text() == "How this is coded",
+         "Functions coding fold missing or open by default")
+    need(how and order and provisional and how.find_all(recursive=False)[-2:] == [order, provisional]
+         and order.parent is how and provisional.parent is how
+         and len(section.select('.fn-order, .fn-provisional')) == 2,
+         "Functions row order and provisional lines must end the coding fold")
     need(section.get_text().lower().count("provisional") == 1, "Functions provisional caveat repeated")
     need(not status_parentheses(section.get_text(" ")), "Functions status word alone in parentheses")
     need(not FN_STATUS_WORD.search(section.get_text(" ")), "Functions labels contain a status word")
@@ -12444,6 +12451,24 @@ def check_functions_layout(browser, base_url: str, *, fixture: dict | None = Non
                   const errors=[], box=document.querySelector('#functions-table'), scroll=box.querySelector('.fn-scroll'), table=box.querySelector('.fn-table');
                   /* FUNCTION_POLYGON */
                   if(document.documentElement.scrollWidth > innerWidth+1) errors.push('Functions causes sideways page scroll');
+                  const phone=innerWidth<=640, legend=box.querySelector('.fn-legend.fn-'+(phone?'phone':'desktop')+'-only');
+                  if(!legend || !legend.getClientRects().length) errors.push('Functions legend is missing');
+                  else {
+                    const rects=[...legend.children].flatMap(item=> {
+                      const range=document.createRange(); range.selectNodeContents(item);
+                      return [...range.getClientRects()].filter(r=>r.width && r.height);
+                    });
+                    // All marks and text share a line box on desktop; phones may wrap whole items.
+                    if([1280,1440].includes(innerWidth) && (!rects.length || Math.max(...rects.map(r=>r.top))>=Math.min(...rects.map(r=>r.bottom))))
+                      errors.push('Functions legend is not on one line');
+                    const bounds=legend.getBoundingClientRect();
+                    if(rects.some(r=>r.left<bounds.left-.5 || r.right>bounds.right+.5)) errors.push('Functions legend overflows');
+                    let previous=legend.previousElementSibling;
+                    while(previous && !previous.getClientRects().length) previous=previous.previousElementSibling;
+                    const form=phone?box.querySelector('.fn-phone'):scroll;
+                    if(!form || previous!==form || Math.abs(bounds.top-form.getBoundingClientRect().bottom-parseFloat(getComputedStyle(box).rowGap))>1)
+                      errors.push('Functions legend is not directly under its table or phone list');
+                  }
                   if(!scroll || !scroll.getClientRects().length) {
                     for(const node of box.querySelectorAll('.fn-phone, .fn-phone *')) if(node.clientWidth && getComputedStyle(node).display !== 'inline' &&
                         !node.closest('.vh') && node.scrollWidth > node.clientWidth+1) errors.push('phone box overflows: '+node.className);
