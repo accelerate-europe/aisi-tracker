@@ -12939,6 +12939,167 @@ def check_selection_boxes(browser, base_url: str) -> list[str]:
     return errors
 
 
+TINT_INSETS_JS = """({selector, token, spread=0, content=null}) => {
+  const host=document.querySelector(selector), errors=[];
+  if(!host || !host.getClientRects().length) return ['missing marked row: '+selector];
+  const probe=document.createElement('span'); probe.style.width='var('+token+')'; probe.style.position='absolute'; probe.style.display='block'; host.appendChild(probe);
+  const inset=probe.getBoundingClientRect().width; probe.remove();
+  const rect=host.getBoundingClientRect(), style=getComputedStyle(host), bounds={left:rect.left-spread*inset,right:rect.right+spread*inset};
+  if(style.backgroundColor==='rgba(0, 0, 0, 0)' && !host.matches('.fn-phone-row, .fn-function-label')) errors.push('row has no marking background');
+  if(spread && (style.boxShadow==='none' || !style.boxShadow.includes(inset+'px'))) errors.push('arrival tint lacks its inline spread');
+  const root=content?document.querySelector(content):host, walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
+  const rects=[];
+  while(walker.nextNode()) {
+    const node=walker.currentNode, parent=node.parentElement;
+    if(!node.textContent.trim() || parent.closest('.vh, summary:not(:first-child)') || getComputedStyle(parent).visibility!=='visible') continue;
+    const range=document.createRange(); range.selectNodeContents(node);
+    for(const r of range.getClientRects()) {
+      if(!r.width || !r.height) continue;
+      let left=r.left, right=r.right;
+      for(let ancestor=parent; ancestor && ancestor!==host; ancestor=ancestor.parentElement) {
+        if(['hidden','clip'].includes(getComputedStyle(ancestor).overflowX)) {
+          const clip=ancestor.getBoundingClientRect(); left=Math.max(left,clip.left); right=Math.min(right,clip.right);
+        }
+      }
+      if(right>left) rects.push({left,right});
+    }
+  }
+  if(!rects.length) errors.push('no visible text measured');
+  // Keep the audited token minimum and honour any larger inline padding; include ellipsised names.
+  const leftInset=Math.max(inset,parseFloat(style.paddingLeft)), rightInset=Math.max(inset,parseFloat(style.paddingRight));
+  for(const r of rects) if(r.left<bounds.left+leftInset-1 || r.right>bounds.right-rightInset+1)
+    errors.push('text lacks '+token+' clearance from its marking background');
+  return [...new Set(errors)];
+}"""
+
+
+FN_PANEL_EDGE_JS = """() => {
+  const button=document.querySelector('.fn-table .fn-cell[aria-expanded="true"]'), panel=document.querySelector('.fn-scroll .fn-detail');
+  if(!button || !panel) return ['missing open functions panel'];
+  const th=button.closest('tr').querySelector('th'), range=document.createRange(); range.selectNodeContents(th);
+  const text=range.getBoundingClientRect();
+  return !text.width || Math.abs(panel.getBoundingClientRect().left-text.left)>1?['functions panel does not align with the row label text edge']:[];
+}"""
+
+
+def check_tinted_rows(browser, base_url: str, screenshots: Path | None = None) -> list[str]:
+    """N6 across function, world and States rows, arrivals, search, palette and downloads."""
+    errors = []
+    # Class audit: functions (desktop/phone), world, States, arrived card, search, palette, downloads.
+    for width in (1440, 1280, 390):
+        page = browser.new_page(viewport={"width": width, "height": 1000})
+        try:
+            hydrated(page, base_url)
+            layout_settled(page)
+            for theme in ("light", "dark"):
+                set_theme(page, theme)
+
+                def inspect(selector, token, **extra):
+                    errors.extend(f"{width}px {theme} {selector}: {e}" for e in page.evaluate(TINT_INSETS_JS, {"selector": selector, "token": token, **extra}))
+
+                if width > 640:
+                    page.locator('.fn-scroll').evaluate("n => n.scrollLeft=0")
+                    cell = page.locator('.fn-table .fn-cell').first  # document order samples a real coded row
+                    for focus in (False, True):
+                        if focus:
+                            page.mouse.move(1, 1)
+                            cell.focus()
+                        else:
+                            cell.hover()
+                        layout_settled(page)
+                        errors.extend(f"{width}px {theme} functions: {e}" for e in page.evaluate("""() => {
+                          const row=document.querySelector('.fn-row-lit'), errors=[];
+                          if(!row) return ['no tinted function row'];
+                          const th=row.querySelector('th'), pad=row.querySelector('.fn-pad'), scroll=row.closest('.fn-scroll');
+                          if(!scroll.classList.contains('fits') || getComputedStyle(scroll).overflowX!=='visible' ||
+                              scroll.querySelector('table').getBoundingClientRect().width>scroll.clientWidth+1)
+                            return ['functions table does not fit with visible overflow'];
+                          const probe=document.createElement('span'); probe.style.cssText='position:absolute;display:block;width:var(--sp-2)'; th.appendChild(probe);
+                          const inset=probe.getBoundingClientRect().width; probe.remove();
+                          const r=th.getBoundingClientRect(), p=pad.getBoundingClientRect(), before=getComputedStyle(th,'::before'), after=getComputedStyle(pad,'::after');
+                          for(const [pseudo,side,host] of [[before,'left',th],[after,'right',pad]]) {
+                            const offset=parseFloat(pseudo[side]), width=parseFloat(pseudo.width);
+                            if(inset<=0 || ['none','normal'].includes(pseudo.content) || !Number.isFinite(offset) ||
+                                !Number.isFinite(width) || Math.abs(offset+inset)>1 || Math.abs(width-inset)>1 ||
+                                pseudo.backgroundColor!==getComputedStyle(host).backgroundColor ||
+                                parseFloat(pseudo.top)!==0 || parseFloat(pseudo.bottom)!==0)
+                              errors.push('row tint lacks its --sp-2 extension on the '+side);
+                          }
+                          const left=r.left+parseFloat(before.left), right=p.right-parseFloat(after.right);
+                          const walker=document.createTreeWalker(row,NodeFilter.SHOW_TEXT);
+                          while(walker.nextNode()) {
+                            const node=walker.currentNode;
+                            if(!node.textContent.trim() || node.parentElement.closest('.vh')) continue;
+                            const range=document.createRange(); range.selectNodeContents(node);
+                            for(const text of range.getClientRects()) if(text.width && text.height &&
+                                (text.left<left+inset-1 || text.right>right-inset+1))
+                              errors.push('function text lacks --sp-2 clearance from the row tint');
+                          }
+                          const range=document.createRange(); range.selectNodeContents(th);
+                          if(Math.abs(range.getBoundingClientRect().left-row.closest('.section-body').getBoundingClientRect().left)>1)
+                            errors.push('row label left the content grid');
+                          return [...new Set(errors)];
+                        }"""))
+                    cell.click()
+                    errors.extend(f"{width}px {theme}: {e}" for e in page.evaluate(FN_PANEL_EDGE_JS))
+                else:
+                    row = page.locator('.fn-phone-row').first
+                    row.click()
+                    inspect('.fn-phone-row[aria-expanded="true"]', '--sp-1', content='.fn-phone-row[aria-expanded="true"] + .fn-phone-country')
+                    function = page.locator('button.fn-function-label').first
+                    function.click()
+                    inspect('button.fn-function-label[aria-expanded="true"]', '--sp-1')
+                if screenshots:
+                    screenshots.mkdir(parents=True, exist_ok=True)
+                    page.screenshot(path=str(screenshots / f'tint-functions-{width}-{theme}.png'))
+                page.locator('.fn-detail .close-control').click()
+                page.mouse.move(1, 1)
+                page.evaluate("document.activeElement.blur()")
+                if width == 1280:
+                    continue  # Other row classes are covered at desktop and phone widths.
+                # World cells already have padding, including at the scrolled table's outer edges.
+                page.locator('#world-rows tr').first.hover()
+                errors.extend(f"{width}px {theme} world: {e}" for e in page.evaluate("""() => {
+                  const row=document.querySelector('#world-rows tr:hover');
+                  if(!row) return ['no hovered world row'];
+                  if(getComputedStyle(row).backgroundColor==='rgba(0, 0, 0, 0)') return ['world row has no tint'];
+                  return [...row.cells].filter(td=>td.getClientRects().length).flatMap(td=>{
+                    const s=getComputedStyle(td), r=td.getBoundingClientRect(), left=parseFloat(s.paddingLeft), right=parseFloat(s.paddingRight), walker=document.createTreeWalker(td,NodeFilter.SHOW_TEXT), rects=[];
+                    while(walker.nextNode()) {
+                      const n=walker.currentNode; if(!n.textContent.trim() || n.parentElement.closest('.vh')) continue;
+                      const range=document.createRange(); range.selectNodeContents(n); rects.push(...[...range.getClientRects()].filter(r=>r.width && r.height));
+                    }
+                    return left<=0 || right<=0 || rects.some(text=>text.left-r.left<left-1 || r.right-text.right<right-1)?['cell text touches tint edge: '+td.dataset.col]:[];
+                  });
+                }"""))
+                page.locator('.region.open').first.scroll_into_view_if_needed()  # inspect() reads the first open region too
+                inspect('.region.open', '--sp-3')
+                page.evaluate("location.hash='c-fr'")
+                page.wait_for_selector('#c-fr.arrived')
+                inspect('#c-fr.arrived', '--sp-2', spread=1)
+                page.evaluate("location.hash='map'")
+                search = page.locator('#map-search')
+                search.fill('den')
+                search.press('ArrowDown')
+                inspect('#map-search-list li[aria-selected="true"]', '--sp-3')
+                search.press('Escape')
+                search.fill('')
+                search.blur()
+                page.keyboard.press('Control+k')
+                page.locator('#palette-q').fill('den')
+                inspect('.palette-option[aria-selected="true"]', '--sp-3')
+                page.locator('#palette-q').press('Escape')
+                page.locator('.dlist a').first.hover()
+                inspect('.dlist a:hover', '--sp-2')
+                page.locator('.download-menu > summary').click()
+                page.locator('.download-menu .popover > :is(a, button)').first.hover()
+                inspect('.download-menu .popover > :hover', '--sp-2')
+                page.locator('.download-menu > summary').click()
+        finally:
+            page.close()
+    return errors
+
+
 def check_members(browser, base_url: str, data: dict, screenshots: Path | None = None) -> list[str]:
     """Members stay in Form; full-record arrival opens the same fold and leaving closes it."""
     errors = []
@@ -13237,6 +13398,7 @@ def browser_jobs(dist: Path, data: dict, screenshots: Path | None) -> list[tuple
         ("interactions", check_functions_zero_carrier, (data,)),
         ("interactions", check_functions_tint, ()),
         ("interactions", check_selection_boxes, ()),
+        ("interactions", check_tinted_rows, (screenshots,)),
         ("interactions", check_members, (data, screenshots)),
         ("interactions", check_funding_edges, (data,)),
         ("interactions", check_funding_large_text, ()),
