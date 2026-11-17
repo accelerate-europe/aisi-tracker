@@ -4059,7 +4059,7 @@ def check_citations(page) -> list[str]:
 
 
 # K. These are logical boundaries, shared by CSS, matchMedia and the early-map attribute.
-# Range syntax gives complementary <=/> sides without a one-pixel gap.
+# Range syntax gives complementary <=/> or </>= sides without a one-pixel gap.
 VIEWPORT_BOUNDARIES = {
     "390px": "phone function-group labels",
     "400px": "small-phone group navigation",
@@ -4068,7 +4068,8 @@ VIEWPORT_BOUNDARIES = {
     "560px": "navigation gaps and keyboard hints",
     "640px": "phone forms and single-column cards",
     "700px": "short navigation title",
-    "1100px": "stacked map/sections and two-column cards",
+    "1100px": "stacked map and two-column cards",
+    "1280px": "section heading above content below this width; sticky column from here",
 }
 CONTAINER_BOUNDARIES = {"funding": "36.5rem"}  # sum of the three funding tracks and gaps
 WIDTH_GEOMETRY = {
@@ -4180,7 +4181,7 @@ def check_css_tokens(html: str) -> list[str]:
     for kind, query in queries:
         rest = " ".join(query.lower().split())
         if kind == "media":
-            rest = re.sub(r"\(\s*width\s*(?:<=|>)\s*(\d+(?:\.\d+)?px)\s*\)", lambda m: "" if m[1] in VIEWPORT_BOUNDARIES else m[0], rest)
+            rest = re.sub(r"\(\s*width\s*[<>]=?\s*(\d+(?:\.\d+)?px)\s*\)", lambda m: "" if m[1] in VIEWPORT_BOUNDARIES else m[0], rest)
         else:
             name = rest.split("(", 1)[0].strip()
             rest = re.sub(r"\(\s*width\s*<\s*(\d+(?:\.\d+)?rem)\s*\)", lambda m: "" if m[1] == CONTAINER_BOUNDARIES.get(name) else m[0], rest)
@@ -4818,7 +4819,7 @@ def check_rules_render(page) -> list[str]:
     )
 
 
-WIDE_WIDTHS = (1100, 1101, 1120, 1200, 1440)
+WIDE_WIDTHS = (1100, 1101, 1120, 1200, 1279, 1280, 1440)
 
 
 TEXT_MEASURE_JS = """() => {
@@ -4967,9 +4968,9 @@ CONTENT_GRID_JS = r"""() => {
 
 
 def check_content_grid(browser, base_url: str) -> list[str]:
-    """R6/R1: section axes at both desktop extremes, with every fold and earlier News row exposed."""
+    """R6/R1: section axes and heading placement across 1280px, with every fold and earlier News row exposed."""
     errors = []
-    for width in (1000, 1280, 1920):
+    for width in (1000, 1100, 1101, 1120, 1200, 1279, 1280, 1920):
         page = browser.new_page(viewport={"width": width, "height": 1000})
         try:
             hydrated(page, base_url)
@@ -4980,6 +4981,22 @@ def check_content_grid(browser, base_url: str) -> list[str]:
               document.querySelectorAll('details').forEach(n => n.open = true);
             }""")
             page.evaluate("async () => { await document.fonts.ready; await new Promise(requestAnimationFrame); }")
+            headings = page.evaluate("""() => {
+              const errors = [];
+              for (const section of document.querySelectorAll('main section')) {
+                const label = section.querySelector(':scope > .section-label'), body = section.querySelector(':scope > .section-body');
+                if (!label || !body || !label.getClientRects().length) continue;
+                const name = section.getAttribute('aria-labelledby'), l = label.getBoundingClientRect(), b = body.getBoundingClientRect();
+                if (innerWidth < 1280) {
+                  if (getComputedStyle(label).position !== 'static' || l.bottom > b.top + 1 || Math.abs(l.left - b.left) > 1)
+                    errors.push(name + ': section heading is not static above its body');
+                } else if (getComputedStyle(label).position !== 'sticky' || l.right > b.left + 1 || l.top < b.top - 1 || l.top > b.bottom) { // a pinned heading sits below its body's top once the page scrolls
+                  errors.push(name + ': section heading is not a sticky column beside its body');
+                }
+              }
+              return errors;
+            }""")
+            errors.extend(f"{width}px: {e}" for e in headings)
             if width == 1000:
                 found = page.evaluate("""() => {
                   const scroll = document.querySelector('.fn-scroll'), table = scroll?.querySelector('table');
@@ -5609,7 +5626,7 @@ def check_card_heads(browser, base_url: str) -> list[str]:
 
 
 def check_wide_layout(browser, base_url: str) -> list[str]:
-    """At 1100px and wider, with default settings, only the Functions matrix may need sideways scroll and the worldwide
+    """At 1100px and wider, with default settings, nothing needs sideways scroll and the worldwide
     table header sticks below the section navigation and the stuck States row; a phone scrolls the table without a sticky header."""
     errors = []
     for width in WIDE_WIDTHS + (390,):
@@ -5617,11 +5634,12 @@ def check_wide_layout(browser, base_url: str) -> list[str]:
             page = themed_page(browser, theme, viewport={"width": width, "height": 900})
             try:
                 hydrated(page, base_url)
+                page.add_style_tag(content=".offscreen, .card-row { content-visibility: visible !important; }")
                 page.wait_for_selector("#world-rows tr")
                 page.evaluate("document.fonts.ready")
                 result = page.evaluate(
                     """() => new Promise(done => requestAnimationFrame(() => requestAnimationFrame(() => {
-                  const scrolling = [...document.querySelectorAll('body *')].filter(n => !n.matches('#functions-table > .fn-scroll') && n.getClientRects().length && /auto|scroll/.test(getComputedStyle(n).overflowX) && n.scrollWidth > n.clientWidth + 1)
+                  const scrolling = [...document.querySelectorAll('body *')].filter(n => n.getClientRects().length && /auto|scroll/.test(getComputedStyle(n).overflowX) && n.scrollWidth > n.clientWidth + 1)
                     .map(n => n.id || n.getAttribute('class') || n.tagName.toLowerCase());
                   const page = document.documentElement.scrollWidth > innerWidth + 1;
                   const table = document.querySelector('#world-rows').getBoundingClientRect();
@@ -12460,7 +12478,7 @@ def check_functions_phone(browser, base_url: str, data: dict, *, inject: bool = 
     return errors
 
 
-def check_functions_layout(browser, base_url: str, *, fixture: dict | None = None, widths=(360, 390, 640, 1000, 1280, 1440, 1920)) -> list[str]:
+def check_functions_layout(browser, base_url: str, *, fixture: dict | None = None, widths=(360, 390, 640, 1000, 1080, 1100, 1120, 1200, 1279, 1280, 1440, 1920)) -> list[str]:
     page = browser.new_page(viewport={"width": 1440, "height": 1000})
     if fixture is not None:
         page.route(PAGE_DATA, lambda route: route.fulfill(json=fixture))
@@ -12493,7 +12511,7 @@ def check_functions_layout(browser, base_url: str, *, fixture: dict | None = Non
                       return [...range.getClientRects()].filter(r=>r.width && r.height);
                     });
                     // All marks and text share a line box on desktop; phones may wrap whole items.
-                    if([1280,1440].includes(innerWidth) && (!rects.length || Math.max(...rects.map(r=>r.top))>=Math.min(...rects.map(r=>r.bottom))))
+                    if([1120,1200,1280,1440].includes(innerWidth) && (!rects.length || Math.max(...rects.map(r=>r.top))>=Math.min(...rects.map(r=>r.bottom))))
                       errors.push('Functions legend is not on one line');
                     const bounds=legend.getBoundingClientRect();
                     if(rects.some(r=>r.left<bounds.left-.5 || r.right>bounds.right+.5)) errors.push('Functions legend overflows');
@@ -12584,6 +12602,8 @@ def check_functions_layout(browser, base_url: str, *, fixture: dict | None = Non
                   }
                   const wider=table.getBoundingClientRect().width>scroll.clientWidth+1;
                   if(scroll.classList.contains('fits') !== !wider) errors.push('fits class disagrees with measured table/container widths');
+                  if(innerWidth>=1080 && document.documentElement.style.fontSize==='100%' && (wider || !scroll.classList.contains('fits')))
+                    errors.push('functions table must fit from 1080px with default text');
                   if(wider && !['auto','scroll'].includes(getComputedStyle(scroll).overflowX)) errors.push('wide table lacks a sideways scroll box');
                   if(!wider && getComputedStyle(scroll).overflowX !== 'visible') errors.push('fitting table clips its sticky heads');
                   scroll.scrollLeft=scroll.scrollWidth;
@@ -12631,7 +12651,7 @@ def check_functions_layout(browser, base_url: str, *, fixture: dict | None = Non
     return errors
 
 
-def check_functions_sticky(browser, base_url: str, *, fixture: dict | None = None, widths=(1280, 1440, 1000)) -> list[str]:
+def check_functions_sticky(browser, base_url: str, *, fixture: dict | None = None, widths=(1000, 1080, 1100, 1101, 1120, 1200, 1279, 1280, 1440)) -> list[str]:
     page = browser.new_page(viewport={"width": 1280, "height": 1000})
     if fixture is not None:
         page.route(PAGE_DATA, lambda route: route.fulfill(json=fixture))
@@ -12647,6 +12667,7 @@ def check_functions_sticky(browser, base_url: str, *, fixture: dict | None = Non
           const heads=[...table.querySelectorAll('.fn-head')], fits=scroll.classList.contains('fits');
           const wider=table.getBoundingClientRect().width>scroll.clientWidth+1;
           if(fits !== !wider) errors.push('fits class disagrees with measured table/container widths');
+          if(innerWidth>=1080 && (wider || !fits)) errors.push('functions table must fit from 1080px with default text');
           if(wider) {
             if(fits || getComputedStyle(table.tHead).position==='sticky') errors.push('scrolling table has sticky heads');
             return errors;
