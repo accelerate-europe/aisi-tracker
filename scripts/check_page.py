@@ -5008,21 +5008,20 @@ DISCLOSURE_LEVELS_JS = r"""() => {
     const s = getComputedStyle(probe); return type.map(k => s[k]).join('|');
   };
   const quietType = expected(true), listType = expected(false);
-  probe.style.cssText = 'width:var(--sp-2);height:var(--hit);margin-top:var(--control);border-right:var(--rule) solid var(--muted)';
+  probe.style.cssText = 'width:var(--sp-2);height:var(--hit);border-right:var(--rule) solid var(--muted)';
   const ps = getComputedStyle(probe), arrowWidth = ps.width, rule = ps.borderRightWidth, colour = ps.borderRightColor;
-  const hit = parseFloat(ps.height), control = parseFloat(ps.marginTop); probe.remove();
+  const hit = parseFloat(ps.height); probe.remove();
   const scope = '.card, .record, .fn-detail, .fund-detail, .prose-panel';
-  const controls = [...document.querySelectorAll('summary, .list-more, .record-close, .fn-detail > .btn')];
-  let quietCount = 0, listCount = 0, closeCount = 0;
+  const controls = [...document.querySelectorAll('summary, .list-more')];
+  let quietCount = 0, listCount = 0;
   for (const n of controls.filter(visible)) {
-    const close = n.matches('.record-close, .fn-detail > .btn');
-    const quiet = close || !!n.closest(scope) || n.matches('.more.quiet > summary, .quote > summary, .srcs > summary');
+    const quiet = !!n.closest(scope) || n.matches('.more.quiet > summary, .quote > summary, .srcs > summary');
     if (!quiet && !n.matches('.more > summary, .list-more')) continue; // toolbar menus use the field/control level
     quiet ? quietCount++ : listCount++;
     const name = (n.closest('section')?.getAttribute('aria-labelledby') || 'panel') + ': ' + n.textContent.trim().slice(0, 60);
     const s = getComputedStyle(n), after = getComputedStyle(n, '::after');
     if (type.map(k => s[k]).join('|') !== (quiet ? quietType : listType)) errors.push(name + ': disclosure type/colour differs from its level');
-    const expanded = close || n.parentElement.open || n.getAttribute('aria-expanded') === 'true';
+    const expanded = n.parentElement.open || n.getAttribute('aria-expanded') === 'true';
     const matrix = new DOMMatrix(after.transform), angle = Math.atan2(matrix.b, matrix.a) * 180 / Math.PI;
     if (after.content !== '""' || after.width !== arrowWidth || after.height !== arrowWidth ||
         after.borderRightWidth !== rule || after.borderBottomWidth !== rule ||
@@ -5032,22 +5031,8 @@ DISCLOSURE_LEVELS_JS = r"""() => {
     if (n.getBoundingClientRect().height < hit - 1) errors.push(name + ': disclosure hit height is too small');
     const count = n.querySelector('.source-count');
     if (count && !['none', 'normal'].includes(getComputedStyle(count, '::after').content)) errors.push(name + ': duplicate source-count chevron');
-    if (close) {
-      closeCount++;
-      if (s.backgroundColor !== 'rgba(0, 0, 0, 0)' || parseFloat(s.borderTopWidth) || parseFloat(s.borderRadius))
-        errors.push(name + ': Close is still boxed');
-      const r = n.getBoundingClientRect();
-      if (r.height < control - 1 || r.width < control - 1) errors.push(name + ': Close lost its hit area');
-      const symbol = n.textContent.trim() === '×'; // the site's close symbol keeps its own centred box
-      if (!symbol && (s.display !== 'inline-flex' || s.justifyContent !== 'flex-start')) errors.push(name + ': Close is not an intrinsic quiet text control');
-      if (n.matches('.fn-detail > .btn')) {
-        const parent = n.parentElement, p = getComputedStyle(parent);
-        const left = parent.getBoundingClientRect().left + parseFloat(p.paddingLeft) + parseFloat(p.borderLeftWidth);
-        if (Math.abs(r.left - left) > 1) errors.push(name + ': Close is not on the panel content edge');
-      }
-    }
   }
-  if (!quietCount || !listCount || !closeCount) errors.push('missing quiet, list-level or Close controls to compare');
+  if (!quietCount || !listCount) errors.push('missing quiet or list-level controls to compare');
   return errors;
 }"""
 
@@ -5068,7 +5053,7 @@ def check_disclosure_levels(browser, base_url: str) -> list[str]:
                 document.querySelector('.fn-phone-detail button.fn-function-label')?.click();
               } else document.querySelector('.fn-cell')?.click();
               return [!!document.querySelector('.record:not([hidden]) .record-close'),
-                !!document.querySelector('.fn-detail > .btn')];
+                !!document.querySelector('.fn-detail .close-control')];
             }""")
             if not all(opened):
                 errors.append(f"{width}px: map/function Close sample missing ({opened})")
@@ -5082,13 +5067,149 @@ def check_disclosure_levels(browser, base_url: str) -> list[str]:
                     }""", expanded)
                     page.evaluate("async () => { await document.fonts.ready; await new Promise(requestAnimationFrame); }")
                     errors.extend(f"{width}px {theme} {'open' if expanded else 'closed'}: {e}" for e in page.evaluate(DISCLOSURE_LEVELS_JS))
-                for close in page.locator(".record-close:visible, .fn-detail > .btn:visible").all():
-                    close.focus()
-                    if not close.evaluate("n => { const s = getComputedStyle(n); return s.outlineStyle !== 'none' && parseFloat(s.outlineWidth) >= 1; }"):
-                        errors.append(f"{width}px {theme}: Close has no keyboard focus ring")
-                    close.evaluate("n => n.blur()")
         finally:
             page.close()
+    return errors
+
+
+CLOSE_CONTROLS_JS = r"""checkFocus => {
+  const errors = [], visible = n => n.getClientRects().length && getComputedStyle(n).visibility !== 'hidden';
+  const name = n => {
+    const ids = n.getAttribute('aria-labelledby');
+    return (ids ? ids.split(/\s+/).map(id => document.getElementById(id)?.textContent || '').join(' ') :
+      n.getAttribute('aria-label') || n.textContent || n.getAttribute('value') || n.title || '').trim();
+  };
+  // Discover unconverted controls too. Native disclosures and Escape/backdrop dismissal are not Close buttons.
+  const controls = [...document.querySelectorAll('button, [role="button"], input[type="button"], input[type="submit"], a[href]')]
+    .filter(n => n.matches('.close-control, .record-close') || /^(close|dismiss)\b/i.test(name(n)) ||
+      /^[×✕✖]$/.test(n.textContent.trim()) || /(?:^|[\s_-])(close|dismiss)(?:$|[\s_-])/.test(n.id + ' ' + n.className))
+    .filter(visible);
+  if (!controls.length) return errors;
+  const probe = document.createElement('span');
+  probe.style.cssText = 'position:absolute;width:var(--control);height:var(--hit);font:var(--type-meta);outline:var(--rule-strong) solid var(--focus);outline-offset:var(--sp-1)';
+  document.body.appendChild(probe);
+  const ps = getComputedStyle(probe), hit = parseFloat(ps.height), size = Math.max(parseFloat(ps.width), hit);
+  const type = ['fontFamily', 'fontSize', 'fontWeight', 'fontStyle', 'lineHeight'], font = type.map(k => ps[k]).join('|');
+  const ring = ['outlineStyle', 'outlineWidth', 'outlineColor', 'outlineOffset'], focus = ring.map(k => ps[k]).join('|');
+  probe.remove();
+  if (!Number.isFinite(size) || !Number.isFinite(hit)) errors.push('Close lacks the shared --control/--hit tokens');
+  for (const n of controls) {
+    const label = n.closest('.fn-phone-detail') ? 'phone function' : n.closest('.fn-detail') ? 'desktop function' : n.closest('#record') ? 'map record' : name(n);
+    const fail = text => errors.push(label + ': ' + text), s = getComputedStyle(n), r = n.getBoundingClientRect();
+    const symbol = n.firstElementChild;
+    if (!n.matches('button.close-control[type="button"]') || name(n) !== 'Close' || n.getAttribute('aria-label') !== 'Close' ||
+        n.hasAttribute('aria-labelledby') || n.hasAttribute('role')) fail('Close must be a shared button named Close');
+    if (n.childNodes.length !== 1 || !symbol?.matches('span[aria-hidden="true"]') || symbol.textContent !== '×') fail('Close must contain only the hidden × symbol');
+    if (Math.abs(r.width - size) > .5 || Math.abs(r.height - size) > .5 ||
+        Math.abs(parseFloat(s.width) - size) > .5 || Math.abs(parseFloat(s.height) - size) > .5 ||
+        parseFloat(s.minWidth) < hit || parseFloat(s.minHeight) < hit) fail('Close size/hit area differs from --control/--hit');
+    if (type.map(k => s[k]).join('|') !== font || symbol && type.map(k => getComputedStyle(symbol)[k]).join('|') !== font)
+      fail('Close symbol type differs from the shared control');
+    if (!['flex', 'inline-flex'].includes(s.display) || s.alignItems !== 'center' || s.justifyContent !== 'center' ||
+        s.backgroundColor !== 'rgba(0, 0, 0, 0)' || parseFloat(s.borderWidth) || parseFloat(s.padding) || parseFloat(s.borderRadius)) fail('Close must be a bare centred symbol');
+    for (const pseudo of ['::before', '::after']) if (!['none', 'normal'].includes(getComputedStyle(n, pseudo).content)) fail('Close has an extra pseudo-element');
+    const panel = n.closest('.fn-detail');
+    if (panel) {
+      const heading = panel.querySelector('.fn-detail-head'), top = panel.querySelector('.fn-detail-top');
+      if (!heading || !top || n.parentElement !== top || heading.parentElement !== top || panel.firstElementChild !== top) {
+        fail('Close must share the first row with the heading');
+      } else {
+        const p = getComputedStyle(panel), pr = panel.getBoundingClientRect(), h = getComputedStyle(heading), hr = heading.getBoundingClientRect();
+        const right = pr.right - parseFloat(p.borderRightWidth) - parseFloat(p.paddingRight);
+        const firstTop = hr.top + parseFloat(h.borderTopWidth) + parseFloat(h.paddingTop);
+        const firstBottom = firstTop + parseFloat(h.lineHeight);
+        if (Math.abs(r.right - right) > 2 || Math.abs(r.top - (pr.top + parseFloat(p.borderTopWidth) + parseFloat(p.paddingTop))) > 2 ||
+            Math.abs(r.top - firstTop) > 2 || r.bottom > firstBottom + 2 || hr.right > r.left + 2)
+          fail('Close is not at the top right within the heading first line (±2px)');
+      }
+    }
+    if (checkFocus) {
+      n.focus({preventScroll:true});
+      if (!n.matches(':focus-visible') || ring.map(k => getComputedStyle(n)[k]).join('|') !== focus) fail('Close focus ring differs');
+      n.blur();
+    }
+  }
+  return errors;
+}"""
+
+
+def check_close_controls(browser, base_url: str, data: dict) -> list[str]:
+    """N1: every authored Close shares the record control; function headings contain it on their first line.
+
+    Palette: native dialog Escape/backdrop. Tooltips: Escape/pointer exit. Menus, records' folds and
+    list disclosures: their open/collapse triggers. Method and API pages have no dismiss controls.
+    """
+    errors = []
+    for width in (1440, 1000, 390, 360):
+        page = browser.new_page(viewport={"width": width, "height": 1000})
+        try:
+            hydrated(page, base_url)
+            page.add_style_tag(content=".offscreen, .card-row { content-visibility: visible !important; }")
+            page.locator('.regions .pick').first.evaluate('n => n.click()')
+            for scale in (("100%", "110%") if width <= 640 else ("100%",)):
+                page.evaluate("scale => document.documentElement.style.fontSize = scale", scale)
+                for theme in ("light", "dark"):
+                    set_theme(page, theme)
+                    page.evaluate("async () => { await document.fonts.ready; await new Promise(requestAnimationFrame); }")
+                    # Every heading in the visible form, including wrapped institute/function names.
+                    findings = page.evaluate(r"""() => {
+                      const inspect = /* CLOSE_CONTROL_CHECK */, errors = [];
+                      const buttons = [...document.querySelectorAll('.fn-cell, .fn-phone-row')].filter(n => n.getClientRects().length);
+                      if (!buttons.length) errors.push('no function openers to check');
+                      for (const button of buttons) {
+                        button.click();
+                        const panel = document.querySelector('.fn-detail:not(.fn-phone-detail)') || document.querySelector('.fn-phone-detail');
+                        if (!panel || !panel.querySelector('.close-control')) errors.push('function Close missing');
+                        errors.push(...inspect(false));
+                        // A dismissible surface has exactly one ×; a fold inside it never offers Close or ×.
+                        if (panel && panel.querySelectorAll('.close-control').length !== 1) errors.push('dismissible panel needs exactly one ×');
+                        if (panel) for (const f of panel.querySelectorAll('summary')) if (/\bClose\b|×/.test(f.textContent)) errors.push('a fold shows Close or ×');
+                        if (panel?.querySelector('.close-control')) panel.querySelector('.close-control').click();
+                        else button.click();
+                      }
+                      // Folds turn a chevron with their own label; none on the page says Close or carries ×.
+                      for (const f of document.querySelectorAll('summary, .list-more')) if (/\bClose\b|×/.test(f.textContent)) errors.push('a fold shows Close or ×: ' + f.textContent.trim().slice(0, 40));
+                      // No control renders both × and a chevron.
+                      for (const c of document.querySelectorAll('.close-control')) for (const p of ['::before', '::after']) if (!['none', 'normal'].includes(getComputedStyle(c, p).content)) errors.push('a close control also renders a chevron');
+                      // The palette is a dismissible overlay too: one ×, named Close, focus back to its opener.
+                      const opener = document.getElementById('palette-open'), pal = document.getElementById('palette');
+                      if (opener && pal) {
+                        opener.focus(); opener.click();
+                        if (!pal.open) errors.push('palette did not open');
+                        else {
+                          const closes = pal.querySelectorAll('.close-control');
+                          if (closes.length !== 1) errors.push('palette needs exactly one ×');
+                          else { errors.push(...inspect(false).filter(e => !/heading/.test(e))); closes[0].click(); if (pal.open) errors.push('palette × did not close it'); else if (opener.getClientRects().length && document.activeElement !== opener) errors.push('palette × did not return focus to its opener'); }
+                        }
+                      }
+                      const map = document.querySelector('.record .close-control, .side .close-control');
+                      if (map && map.closest('.record, .side').querySelectorAll('.close-control').length !== 1) errors.push('map record needs exactly one ×');
+                      return [...new Set(errors)];
+                    }""".replace('/* CLOSE_CONTROL_CHECK */', CLOSE_CONTROLS_JS))
+                    errors.extend(f"Close {width}px {scale} {theme}: {e}" for e in findings)
+                    # First visible opener in document order: one real keyboard/pointer sample per form.
+                    button = page.locator('.fn-cell:visible, .fn-phone-row:visible').first
+                    if button.count():
+                        button.click()
+                        if page.get_by_role('button', name='Close', exact=True).count() != 2:
+                            errors.append(f"Close {width}px {scale} {theme}: expected map and function buttons named Close")
+                        page.keyboard.press('Tab')  # establish keyboard focus before checking the shared ring
+                        errors.extend(f"Close {width}px {scale} {theme}: {e}" for e in page.evaluate(CLOSE_CONTROLS_JS, True))
+                        panel = page.locator('.fn-detail:visible')
+                        if panel.locator('.close-control').count():
+                            panel.get_by_role('button', name='Close', exact=True).click()
+                            if page.locator('.fn-detail:visible').count() or not button.evaluate('n => document.activeElement === n'):
+                                errors.append(f"Close {width}px {scale} {theme}: function Close does not return focus")
+        finally:
+            page.close()
+    page = browser.new_page()
+    try:
+        major = data['dataset']['version'].split('.')[0]
+        for path in ('method.html', f'api/v{major}/index.html'):
+            page.goto(urljoin(base_url, path))
+            errors.extend(f"Close {path}: {e}" for e in page.evaluate(CLOSE_CONTROLS_JS, False))
+    finally:
+        page.close()
     return errors
 
 
@@ -5188,8 +5309,8 @@ PANEL_MEASURE_JS = r"""panel => {
   const right=r.right-parseFloat(style.borderRightWidth)-parseFloat(style.paddingRight);
   const blocks=[...panel.querySelectorAll('*')].filter(n => {
     const s=getComputedStyle(n);
-    // R6: Method lists are structural full-width containers; their narrative items keep the prose cap.
-    if (n.matches('.two > .prose-panel > ul')) return false;
+    // Structural rows and Close may span the panel; their narrative children keep the prose cap.
+    if (n.matches('.two > .prose-panel > ul, .fn-detail-top') || n.closest('.close-control')) return false;
     return n.getClientRects().length && s.visibility!=='hidden' && !n.closest('.vh') && n.textContent.trim() &&
       (s.display!=='inline' || n.matches('.quote-text')) && s.display!=='none';
   }).map(n => {
@@ -11600,7 +11721,7 @@ def check_functions_detail(browser, base_url: str, data: dict) -> list[str]:
       const [first, second] = buttons; // explicit interaction samples; the exhaustive checks above cover every button
       if (first) {
         first.click(); first.click(); need(!box.querySelector('.fn-detail-row') && document.activeElement === first, 'same cell does not close/return focus');
-        first.click(); box.querySelector('.fn-detail > button').click(); need(!box.querySelector('.fn-detail-row') && document.activeElement === first, 'Close does not return focus');
+        first.click(); box.querySelector('.fn-detail .close-control').click(); need(!box.querySelector('.fn-detail-row') && document.activeElement === first, 'Close does not return focus');
         first.click();
         const handled = new KeyboardEvent('keydown', {key: 'Escape', bubbles: true, cancelable: true}); handled.preventDefault(); first.dispatchEvent(handled);
         need(!!box.querySelector('.fn-detail-row'), 'handled Escape closes the detail'); first.click();
@@ -12158,7 +12279,7 @@ def check_functions_phone(browser, base_url: str, data: dict, *, inject: bool = 
                       need(!item.querySelector('.fn-phone-claims') && label.getAttribute('aria-expanded') === 'false', labelKey + ': same function does not close claims');
                     }
                     need(!/\b(planned|proposed|exploring|announced)\b/i.test([...detail.querySelectorAll('.fn-detail-head, h4, .fn-function-label')].map(n => n.textContent).join(' ')), key + ': status word in phone detail labels');
-                    const escapeTarget = detail.querySelector('button.fn-function-label') || detail.querySelector(':scope > button');
+                    const escapeTarget = detail.querySelector('button.fn-function-label') || detail.querySelector('.close-control');
                     escapeTarget.focus({preventScroll: true});
                     escapeTarget.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape', bubbles: true}));
                     need(!phone.querySelector('.fn-phone-detail') && button.getAttribute('aria-expanded') === 'false' && document.activeElement === button, key + ': phone Escape/focus differs');
@@ -12166,7 +12287,7 @@ def check_functions_phone(browser, base_url: str, data: dict, *, inject: bool = 
                   const [first, second] = buttons; // explicit interaction samples; every row/function is checked above
                   if (first) {
                     first.click(); first.click(); need(!phone.querySelector('.fn-phone-detail') && document.activeElement === first, 'same phone row does not close/return focus');
-                    first.click(); phone.querySelector('.fn-phone-detail > button').click();
+                    first.click(); phone.querySelector('.fn-phone-detail .close-control').click();
                     need(!phone.querySelector('.fn-phone-detail') && document.activeElement === first, 'phone Close does not return focus');
                     first.click();
                     const handled = new KeyboardEvent('keydown', {key: 'Escape', bubbles: true, cancelable: true}); handled.preventDefault(); first.dispatchEvent(handled);
@@ -12224,7 +12345,7 @@ def check_functions_phone(browser, base_url: str, data: dict, *, inject: bool = 
             desktop_detail = page.locator('.fn-scroll .fn-detail').element_handle()
             if not page.evaluate("() => { const ids=[...document.querySelector('#functions-table').querySelectorAll('[id]')].map(n=>n.id); return new Set(ids).size===ids.length; }"):
                 errors.append('Functions: open forms have duplicate detail IDs')
-            page.locator('.fn-scroll .fn-detail > button').focus()
+            page.locator('.fn-scroll .fn-detail .close-control').focus()
         desktop_owner = desktop_detail and cell.evaluate("n => n.closest('tr[data-institute]').dataset.institute")
         cross_breakpoint(640)  # pageerror listener also catches exceptions with focus inside the now-hidden form
         # Focus moves to the same institute in the visible form at once, before anything else touches it.
@@ -12246,7 +12367,7 @@ def check_functions_phone(browser, base_url: str, data: dict, *, inject: bool = 
         if desktop_detail:
             if not desktop_detail.evaluate("n => n.isConnected && !!n.getClientRects().length") or cell.get_attribute('aria-expanded') != 'true':
                 errors.append('Functions desktop: returning to desktop width lost its open detail')
-            page.locator('.fn-scroll .fn-detail > button').click()
+            page.locator('.fn-scroll .fn-detail .close-control').click()
             if page.locator('.fn-scroll .fn-detail').count() or not cell.evaluate('n => document.activeElement === n'):
                 errors.append('Functions desktop: Close after crossing the breakpoint does not close/return focus')
         cross_breakpoint(640)
@@ -12269,7 +12390,7 @@ def check_functions_phone(browser, base_url: str, data: dict, *, inject: bool = 
                 function.tap()
                 if function.get_attribute('aria-expanded') != 'true' or touch.locator('.fn-phone-claims').count() != 1:
                     errors.append('Functions phone: touch function does not open claims')
-            touch.locator('.fn-phone-detail > button').tap()
+            touch.locator('.fn-phone-detail .close-control').tap()
             if touch.locator('.fn-phone-detail').count() or not row.evaluate('n => document.activeElement === n'):
                 errors.append('Functions phone: touch Close does not close/return focus')
     for item in touch.locator('.fn-phone-block > ul > li').all():
@@ -12425,7 +12546,7 @@ def check_functions_layout(browser, base_url: str, *, fixture: dict | None = Non
                     button.click();
                     const detail=table.querySelector('.fn-detail'),r=detail.getBoundingClientRect(),s=scroll.getBoundingClientRect();
                     if(getComputedStyle(detail).position!=='sticky' || r.left<s.left-1 || r.right>s.right+1 || detail.scrollWidth>detail.clientWidth+1) errors.push('detail exceeds visible container');
-                    detail.querySelector(':scope > button').click();
+                    detail.querySelector('.close-control').click();
                   }
                   scroll.scrollLeft=0;
                   return errors;
@@ -12801,6 +12922,7 @@ def browser_jobs(dist: Path, data: dict, screenshots: Path | None) -> list[tuple
         ("interactions", check_wide_layout, ()),
         ("interactions", check_content_grid, ()),
         ("interactions", check_disclosure_levels, ()),
+        ("interactions", check_close_controls, (data,)),
         ("interactions", check_secondary_tone, ()),
         ("interactions", partial(prefixed, "measure: ", check_text_measure), ()),
         ("interactions", check_panel_measure, ()),

@@ -49,7 +49,7 @@
  * Supporting text: use an (i) only for an answer of at most two sentences that says what the thing is first; link with words when the answer is a full text elsewhere. Set-up and Funding scope notes are plain sentences. An (i) is a muted ring with an italic i, hit height --hit, never alone on a line: it shares its line with the last word of the heading or text before it (check_page check_info_lines); without scripting, where no tooltip can open, the note shows as a muted line in its place (check_page check_access_fixes); the definition lives once, at the top of Method.
  * Anchors: each section a reader would link to has one anchor named by what the reader sees (#map, #testing, #set-up, #funding, #news, #europe, #world, #data, #method, #definition; state cards #c-<id>); the names used before 1.0.2 stay as aliases in the page script (check_page check_anchor_aliases).
  * Region tabs: one text tab per view on one hairline, World first and selected by default, then the region list's regions; the selected tab in ink with an accent underline, the others muted; a tab only moves to its view; the row sits over the map column with its text on the column edge, and the search fills the list column exactly, so the first screen keeps two column axes; where the list stacks under the map, the tabs (hairline under them only) and the search share the map's column, the search ending on the map's right edge or dropping below at full width; they wrap on phones and are hidden without scripting.
- * Controls: buttons and fields are soft fills (--field-fill) without a drawn edge; a field shows focus on its own edge. Disclosures within records and panels, and their Close buttons, share quiet meta text and one chevron; Close has no box and keeps its hit area and focus ring. List-level disclosures share the label-sized .more style (check_page check_disclosure_levels).
+ * Controls: buttons and fields are soft fills (--field-fill) without a drawn edge; a field shows focus on its own edge. Disclosures within records and panels share quiet meta text and one chevron. Every Close uses the shared closeButton builder and .close-control: a bare ×, a square --control size with at least the --hit area, the focus ring and the accessible name Close; function panels place it at the top right beside the heading's first line (check_page check_close_controls). List-level disclosures share the label-sized .more style (check_page check_disclosure_levels).
  * Region list: beside the map (below it and the map legend at 1100px and narrower, so the legend stays directly under the map (check_page check_legend_place), then at most --region-list wide, so a row's state and institute never drift apart), map and list tops aligned; an accordion whose open region (light tint, thin accent rule, turned chevron) lists its institutes with status marks (institute names right-aligned, like the counts above them), the others their heading, "established of all states" count and one line of names, both in ink; a divider between Europe and the other regions; the EU AI Office under Europe.
  * Record: a map, list or search pick opens the record beside the map (over the list on wide screens, which it hides while open, under the map on narrow ones) and focuses its heading, in view below the section bar, its values cited and qualified as on the card (status date: advisory recommendation, confidence), never more; "Full record ↓" goes to the card (Arrival), whose "↑ Back to map" returns to the same view with the record open; a state without a card links to its table row. Search uses the page's own suggestion list (floating surface, status mark and region per row, keyboard).
  * Naming: one display name per body everywhere (no status suffix; the country in brackets where two bodies share a name); tight places such as table cells use the recorded short form (data field short_name, never a bare generic acronym such as AISI) with the full name on hover; check_page check_institute_names. An institute has one display name and one short form everywhere; former names are marked as former ('then', 'former' or 'formerly', or 'now' with the current short form), source titles excepted (check_page check_former_names). Text with an English form shows that form, with the original available on hover, focus and tap through tipText (aria-description on a focusable element), without a second line, brackets or marker; otherwise the original shows as it is, with lang where known. This covers body names, source titles, Reports to (the producer supplies the original separately) and the Institute name (name_local when it differs); check_page check_source_alignment, check_nonidentified_folds, check_leadership_rows, check_institute_names. A related body's original omits a closing abbreviation repeated in English. A translated link's tap opens its tip with a link to the destination. Downloads keep both forms.
@@ -328,6 +328,8 @@ footer .measure { font: var(--type-meta); padding-block: var(--sp-4) var(--sp-7)
 .field, .btn { font: var(--type-label); height: var(--control); min-height: var(--control); border: var(--control-border); border-radius: var(--r-sm); background: var(--field-fill); color: var(--ink); padding: calc((var(--control) - var(--size-label) * var(--leading-label)) / 2 - var(--rule)) var(--sp-3); }
 .btn { display: inline-flex; align-items: first baseline; justify-content: center; gap: var(--sp-2); cursor: pointer; text-decoration-line: none; white-space: nowrap; }
 .btn:hover { background: var(--selected-fill); }
+.close-control { display: inline-flex; flex: none; align-items: center; justify-content: center; width: var(--control); height: var(--control); min-width: var(--hit); min-height: var(--hit); padding: 0; border: 0; border-radius: 0; background: none; color: var(--muted); font: var(--type-meta); cursor: pointer; }
+.close-control:is(:hover, :focus-visible) { color: var(--ink); }
 .field:focus-visible { outline: var(--rule-strong) solid transparent; outline-offset: calc(-1 * var(--rule-strong)); box-shadow: inset 0 0 0 var(--rule-strong) var(--focus); } /* a field shows focus on its own edge, not an offset ring; the transparent outline paints in forced colours, where shadows are dropped */
 .linkbtn { position: relative; font: inherit; color: var(--ink); background: none; border: 0; padding: 0; cursor: pointer; }
 .linkbtn::before { content: ""; position: absolute; inset-inline: 0; top: 50%; height: 100%; min-height: var(--hit); transform: translateY(-50%); }
@@ -341,8 +343,8 @@ footer .measure { font: var(--type-meta); padding-block: var(--sp-4) var(--sp-7)
 summary { cursor: pointer; list-style: none; }
 summary::-webkit-details-marker { display: none; }
 .more > summary { font: var(--type-label); display: flex; align-items: first baseline; gap: var(--sp-2); width: fit-content; min-height: var(--control); color: var(--ink); }
-.list-more::after, .more > summary::after, .quote > summary::after, .srcs > summary::after, .mini > summary::after, .record-close::after, .fn-detail > .btn::after, .download-menu > summary::after, .selectwrap::after { content: ""; flex: none; width: var(--sp-2); height: var(--sp-2); border-right: var(--rule) solid var(--muted); border-bottom: var(--rule) solid var(--muted); transform: rotate(45deg) translateY(calc(-1 * var(--sp-1) / 2)); margin-left: var(--sp-1); margin-right: var(--sp-1); } /* the rotated square reaches past its box; the margin keeps it inside its control */
-details[open] > summary::after, .list-more[aria-expanded="true"]::after, .record-close::after, .fn-detail > .btn::after { transform: rotate(-135deg); }
+.list-more::after, .more > summary::after, .quote > summary::after, .srcs > summary::after, .mini > summary::after, .download-menu > summary::after, .selectwrap::after { content: ""; flex: none; width: var(--sp-2); height: var(--sp-2); border-right: var(--rule) solid var(--muted); border-bottom: var(--rule) solid var(--muted); transform: rotate(45deg) translateY(calc(-1 * var(--sp-1) / 2)); margin-left: var(--sp-1); margin-right: var(--sp-1); } /* the rotated square reaches past its box; the margin keeps it inside its control */
+details[open] > summary::after, .list-more[aria-expanded="true"]::after { transform: rotate(-135deg); }
 .list-more { font: var(--type-label); color: var(--ink); display: flex; align-items: first baseline; gap: var(--sp-2); width: fit-content; min-height: var(--control); margin-top: var(--gap-row); padding: 0; background: none; border: 0; cursor: pointer; }
 .more[open] > summary { margin-bottom: var(--sp-4); }
 #changes-latest { flex: 1; min-width: 0; } /* the collapsed row is version and date only */
@@ -440,7 +442,8 @@ main section.first { display: flex; flex-direction: column; gap: var(--sp-5); bo
 .palette { width: min(var(--palette-width), calc(100vw - 2 * var(--sp-4))); max-width: none; max-height: min(34rem, calc(100dvh - 2 * var(--sp-4))); margin: min(12vh, 8rem) auto auto; padding: 0; border: var(--rule) solid var(--line); border-radius: var(--r-sm); background: var(--paper); color: var(--ink); box-shadow: var(--shadow-pop); overflow: hidden; }
 .palette[open] { display: flex; flex-direction: column; }
 .palette::backdrop { background: var(--shadow-ink, rgb(0 0 0 / .18)); }
-.palette-field { flex: none; padding: var(--sp-2); border-bottom: var(--rule) solid var(--line); }
+.palette-field { flex: none; display: flex; align-items: center; gap: var(--sp-2); padding: var(--sp-2); border-bottom: var(--rule) solid var(--line); }
+.palette-field > .search { flex: 1; min-width: 0; }
 .palette-list { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 0 0 var(--sp-1); }
 .palette-group { font: var(--type-meta); color: var(--muted); padding: var(--sp-3) var(--sp-3) var(--sp-1); }
 .palette-option { font: var(--type-body); }
@@ -508,7 +511,6 @@ main section.first { display: flex; flex-direction: column; gap: var(--sp-5); bo
 .record-top h3 { font: var(--type-label); }
 #record-name:focus { outline: none; } /* focus lands here when the record covers the list row that opened it; the heading is not a control */
 :is(h2, h3, p)[tabindex="-1"]:focus, main[tabindex="-1"]:focus { outline: none; } /* focused by script for screen readers, not a control: no ring; a heading takes the Focus tint below */
-.record-close { flex: none; min-width: var(--control); height: var(--control); padding: 0; cursor: pointer; }
 .record-rows { display: grid; grid-template-columns: var(--card-key) minmax(0, 1fr); gap: var(--sp-2) var(--sp-3); align-items: first baseline; margin: 0; }
 .record-rows dt { font: var(--type-meta); color: var(--muted); }
 .record-rows dd { margin: 0; min-width: 0; overflow-wrap: break-word; font-variant-numeric: tabular-nums; }
@@ -714,14 +716,14 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
 .fn-legend .fn-mark { align-self: center; }
 .fn-table .fn-detail-row > td { padding: 0; text-align: left; }
 .fn-detail { position: sticky; left: 0; width: 100cqi; max-width: 100cqi; padding: var(--sp-4); box-sizing: border-box; white-space: normal; overflow-wrap: anywhere; background: var(--paper); font: var(--type-body); }
-.fn-detail-head { font: var(--type-label); margin-bottom: var(--sp-3); }
+.fn-detail-top { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--sp-3); max-width: none; margin-bottom: var(--sp-3); }
+.fn-detail-head { flex: 1; min-width: 0; font: var(--type-label); line-height: max(var(--control), var(--hit)); margin: 0; }
 .fn-claim + .fn-claim { margin-top: var(--sp-4); }
 .fn-basis, .fn-sources { font: var(--type-meta); color: var(--muted); }
 .fn-detail .quote-body { margin: var(--sp-2) 0; }
 .fn-detail .quote-body .reread { display: block; font: var(--type-meta); color: var(--muted); }
 .fn-sources { list-style: none; padding: 0; margin-top: var(--sp-2); }
 .fn-sources .reread { display: none; } /* the quote block above already carries the quotation's re-read line (principle: Re-read line) */
-.fn-detail > button { margin-top: var(--sp-4); }
 /* Both forms are saved; CSS selects one. Subgrids share content-sized tracks through the list wrappers. */
 .fn-phone, .fn-phone-only { display: none; }
 .fn-phone { grid-template-columns: minmax(min-content, 1fr) repeat(var(--fn-groups), minmax(min-content, auto)); column-gap: var(--sp-1); }
@@ -845,12 +847,10 @@ html[data-prerendered] .fn-scroll.fits thead { position: static; }
 /* One quiet control level, independent of the record/panel builder. Source counts put their chevron
    on the summary itself, like every other fold. Mini summaries keep their explicit name/finding roles. */
 .more.quiet > summary, .quote > summary, .srcs > summary,
-:is(.card, .record, .fn-detail, .fund-detail) summary, .record-close, .fn-detail > .btn {
+:is(.card, .record, .fn-detail, .fund-detail) summary {
   font: var(--type-meta); color: var(--muted); display: flex; align-items: first baseline; gap: var(--sp-2);
 }
 .more.quiet > summary { min-height: var(--control); }
-.record-close, .fn-detail > .btn { display: inline-flex; width: fit-content; justify-content: flex-start; background: none; border: 0; border-radius: 0; min-width: var(--control); min-height: var(--control); }
-.record-close:is(:hover, :focus-visible), .fn-detail > .btn:is(:hover, :focus-visible) { background: none; color: var(--muted); text-decoration: underline; text-underline-offset: var(--underline-offset); }
 
 /* Funding rows collapse where their three tracks (10rem + 12.5rem + 11rem, the staff track fitting "as of 12 Oct 2026" and its citation, and two 1.5rem gaps) no longer fit the section, measured in rem, so enlarged text collapses them earlier. */
 .section-body:has(> #fund-rows) { container: funding / inline-size; }
@@ -1143,6 +1143,11 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   var SAVED_MAP = null, mapFailed = false, mapArrived = null; // the saved map drawing kept while the map loads (hydrate, drawMap)
   function pristineBody() { var b = document.body.cloneNode(true); [].forEach.call(b.querySelectorAll("script"), function (s) { s.remove(); }); return b.innerHTML; }
   function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  function closeButton(onClose) {
+    var button = el("button", "close-control"), symbol = el("span", null, "×");
+    button.type = "button"; button.setAttribute("aria-label", "Close"); symbol.setAttribute("aria-hidden", "true");
+    button.appendChild(symbol); button.addEventListener("click", onClose); return button;
+  }
   var MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   function fmtDate(s) {
     if (!s) return "";
@@ -2663,7 +2668,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       var inst = j.institute_id ? I[j.institute_id] : null;
       var order = (SOURCE_ORDERS[j.id] || recordSources(j).concat(recordSources(inst)).filter(function (id, n, ids) { return S[id] && ids.indexOf(id) === n; })).slice(), cite = citations(S, order, {});
       var top = el("div", "record-top"), name = el("h3", null, j.name); name.id = "record-name"; name.tabIndex = -1;
-      var x = el("button", "record-close", "×"); x.type = "button"; x.setAttribute("aria-label", "Close"); x.addEventListener("click", function () { pick(null); });
+      var x = closeButton(function () { pick(null); }); x.classList.add("record-close");
       top.appendChild(name); top.appendChild(x); box.appendChild(top);
       var line = el("p", "record-status"); line.appendChild(explainNone(statusMark(j.status), j.status));
       if (j.status !== "none_identified" && j.status_since) {
@@ -2785,6 +2790,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     (function () {
       var box = $("palette"), q = $("palette-q"), list = $("palette-list"), empty = $("palette-empty");
       if (!box || typeof box.showModal !== "function") return;
+      box.querySelector(".palette-field").appendChild(closeButton(function () { box.close(); })); // the one close control; the dialog returns focus to its opener
       var MAC = ROOT.hasAttribute("data-mac"), rows = [], opts = [], act = -1, opener = null, restore = true, copied = false, pointer = null;
       var said = el("span", "vh"); said.setAttribute("role", "status"); box.appendChild(said);
       // The anchors of the principle Anchors; the meta is the section bar's group, the note the section's own heading where it says more.
@@ -3103,7 +3109,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         how: "We read each institute's founding, legal and plan texts and its own published work, and recorded a function only where a quote meets that function's test. {active}: a public text reports the institute doing it. {assigned}: a government text gives it the function. Most recent coding: {date}. Each institute's values are in functions.csv and claims.csv under {data}.",
         data: "Data", caption: "Functions by institute", institute: "Institute", scroll_hint: "Scrolls sideways",
         established: "Established", not_found: "not found", blank_legend: "Blank: not found", not_coded: "not yet coded",
-        provisional: "The list of functions is provisional.", close: "Close",
+        provisional: "The list of functions is provisional.",
         pips: "One pip per function, in the order of the groups above; tap a row for the names.",
         show: "{country}, {institute}: show functions", phone_not_found: "No public text found"
       };
@@ -3194,8 +3200,9 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
           var previous = opened; previous.setAttribute("aria-expanded", "false"); detailRow.remove(); opened = null; detailRow = null;
           if (focus) previous.focus({ preventScroll: true });
         }
-        function closeButton(detail) {
-          var close = el("button", "btn", FN_COPY.close); close.type = "button"; close.addEventListener("click", function () { closeDetail(true); }); detail.appendChild(close);
+        function detailHeading(detail, title) {
+          var top = el("div", "fn-detail-top"); top.appendChild(title);
+          top.appendChild(closeButton(function () { closeDetail(true); })); detail.appendChild(top);
         }
         function escapeDetail(event) { if (event.key === "Escape" && opened && !event.defaultPrevented) { event.preventDefault(); closeDetail(true); } }
         if (isPhone) {
@@ -3230,7 +3237,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
             if (button === opened) { closeDetail(true); return; }
             closeDetail(false);
             var i = I[button.parentNode.dataset.institute], detail = el("div", "fn-detail fn-phone-detail"), title = el("p", "fn-detail-head", displayName(i));
-            detail.id = button.getAttribute("aria-controls"); title.id = detail.id + "-head"; detail.setAttribute("role", "region"); detail.setAttribute("aria-labelledby", title.id); detail.appendChild(title);
+            detail.id = button.getAttribute("aria-controls"); title.id = detail.id + "-head"; detail.setAttribute("role", "region"); detail.setAttribute("aria-labelledby", title.id); detailHeading(detail, title);
             groups.forEach(function (group) {
               var heading = el("h4", null, group), functions = el("ul", "fn-phone-functions");
               columns.filter(function (code) { return vocab[code].group === group; }).forEach(function (code) {
@@ -3240,7 +3247,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
                 if (coded(row.value)) { li.dataset.code = code; label.type = "button"; label.setAttribute("aria-expanded", "false"); label.setAttribute("aria-controls", detail.id + "-" + code); }
                 li.appendChild(label); functions.appendChild(li);
               }); detail.appendChild(heading); detail.appendChild(functions);
-            }); closeButton(detail); button.parentNode.appendChild(detail); opened = button; detailRow = detail; button.setAttribute("aria-expanded", "true");
+            }); button.parentNode.appendChild(detail); opened = button; detailRow = detail; button.setAttribute("aria-expanded", "true");
           });
           list.addEventListener("keydown", escapeDetail); box.appendChild(list);
         } else {
@@ -3298,8 +3305,8 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
           var row = button.closest("tr"), code = button.parentNode.dataset.code, i = I[row.dataset.institute];
           var detail = el("div", "fn-detail"), title = el("p", "fn-detail-head", displayName(i) + " · " + vocab[code].label);
           title.id = "fn-detail-head"; detail.setAttribute("role", "region"); detail.setAttribute("aria-labelledby", title.id);
-          detail.appendChild(title); // each claim names its own basis, so a cell with both shows both
-          appendClaims(detail, i, code); closeButton(detail);
+          detailHeading(detail, title); // each claim names its own basis, so a cell with both shows both
+          appendClaims(detail, i, code);
           detailRow = el("tr", "fn-detail-row"); detailRow.id = button.getAttribute("aria-controls"); detailRow.dataset.owner = row.dataset.institute; var td = el("td"); td.colSpan = columns.length + 2;
           td.appendChild(detail); detailRow.appendChild(td); row.after(detailRow); opened = button; button.setAttribute("aria-expanded", "true"); externalLinks(detail);
         });
