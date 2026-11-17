@@ -448,7 +448,11 @@ def news_kind(origin, record):
     return next((rule["kind"] for rule in NEWS_KINDS if rule["origin"] == origin and news_matches(rule, record)), "")
 
 
-def recent_developments(jurisdictions, union, institutes=(), shared_claims=(), *, limit=10):
+NEWS_ROWS = 10  # the page's News entries
+NEWS_RULE = "docs/research-passes.md#news-lines"
+
+
+def recent_developments(jurisdictions, union, institutes=(), shared_claims=(), *, limit=NEWS_ROWS):
     """Per-state groups covering limit page entries, plus their pair counterparts.
 
     limit=None exposes the full selection for audits. The feed keeps both sides.
@@ -626,6 +630,22 @@ def check_news_lines(data):
                     errors.append(f"{identity}: generated News line repeats state or institute name {name!r}")
     return errors
 
+
+
+def check_news_required(data):
+    """Every item the page's News list shows (its NEWS_ROWS entries and their pair mirrors in the feed) carries an
+    authored news line; the generated template stays only for older items in the events download and feed. That the
+    line is bound to a quote is method_checks' required excerpt pointer."""
+    jurisdictions, institutes = data.get("jurisdictions", []), data.get("institutes", [])
+    owners = {"timeline": {j["id"]: j for j in jurisdictions}, "funding": {i["id"]: i for i in institutes}, "agreements": {i["id"]: i for i in institutes}}
+    errors = []
+    for group in recent_developments(jurisdictions, lambda *groups: [], institutes, data.get("dataset", {}).get("shared_claims", [])):
+        for identity in group["items"]:
+            origin, owner, record_id = identity.split(":", 2)
+            record = next(r for r in owners[origin][owner].get(origin, []) if r["id"] == record_id)
+            if "news" not in record:
+                errors.append(f"{identity}: shown in News without an authored news line bound to a quote; write one ({NEWS_RULE})")
+    return errors
 
 MONTH_DAYS = Decimal("30.4375")  # average Gregorian month
 ANNOUNCEMENT_WORD = {"commitment": "announced", "proposed": "proposed"}

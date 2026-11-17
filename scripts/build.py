@@ -29,7 +29,7 @@ sys.dont_write_bytecode = True
 from jsonschema import Draft202012Validator  # noqa: E402
 
 if __package__:
-    from .display import check_news_lines, news_kind
+    from .display import check_news_lines, check_news_required, news_kind
     from . import published as fact_pipeline
     from .references import authored_schema, excerpt_identity, materialise_references, pointer_ancestors
     from .published import INTERVAL_KEYS, NO_ECB_RATE, budget_ratios, comparable_funding, annual_eur_estimate as annual_eur_estimate, known_activity as known_activity, output_activity_kind as output_activity_kind, publish, prepared_facts, timeline_status as timeline_status, eur_per_unit as eur_per_unit, significant as significant
@@ -43,7 +43,7 @@ if __package__:
     from .agent_files import LICENSES, doi_url, api_files, api_landing_html, api_root, citation_cff, zenodo_json, head_links, share_tags, image_alt_text, json_ld_script, llms_txt, robots_txt, sitemap_xml, feed_xml, FEED_PATH, orientation_html, definition_markdown, public_url_errors
     from .release_checks import check_metadata, check_readme_licence, check_readme_doi, check_markdown, generated_block, generated_citation, generated_counts, check_launch_wording, write_citation, check_instrument_status_dates, instrument_status_warnings, dates_after_as_of, check_changelog_entry, write_release_citation
 else:  # Direct script execution.
-    from display import check_news_lines, news_kind
+    from display import check_news_lines, check_news_required, news_kind
     import published as fact_pipeline
     from references import authored_schema, excerpt_identity, materialise_references, pointer_ancestors
     from published import INTERVAL_KEYS, NO_ECB_RATE, budget_ratios, comparable_funding, annual_eur_estimate as annual_eur_estimate, known_activity as known_activity, output_activity_kind as output_activity_kind, publish, prepared_facts, timeline_status as timeline_status, eur_per_unit as eur_per_unit, significant as significant
@@ -545,6 +545,7 @@ def check_consistency(d: dict, require_roster: bool = False, complete: bool = Fa
     errors.extend(check_method_rules(d, authored=authored))
     errors.extend(check_shared_claims(materialise_references(authored) if legacy else d))
     errors.extend(check_news_lines(d))
+    errors.extend(check_news_required(d))
     if legacy and not materialised:
         # Transitional snapshots are validated before removing stored copies.
         # This adapter disappears from production when fact_pipeline.AUTHORING_STRICT is true.

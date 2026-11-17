@@ -4343,7 +4343,7 @@
     "news": {
       "type": "string",
       "minLength": 1,
-      "description": "The News line for this act, one sentence, bound to a quote; when absent, News generates one."
+      "description": "The News line for this act, one sentence, bound to a quote. Required while the act is among the items the page's News list shows; older acts without one get a generated line in the events download and feed."
     },
     "event_short": {
       "type": "string",

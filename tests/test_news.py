@@ -3,6 +3,7 @@
 import copy
 import csv
 import json
+import re
 from pathlib import Path
 import subprocess
 
@@ -706,3 +707,40 @@ def test_news_layout_findings_block_the_gate():
 
     findings = check_page.check_news_layout(Page(), {"dataset": {"glossary": {}}})
     assert check_page.blocking(findings) == findings
+
+
+def test_news_required_for_shown_items_only():
+    """Every item the page's News list shows needs an authored line; older items keep the template."""
+    data = sample()
+    data["jurisdictions"][0]["timeline"] = [event(str(n), f"2026-10-{n:02d}", news="The institute is designated.") for n in range(1, 12)]
+    data["institutes"][0]["agreements"] = [agreement(date="2026-09-01")]
+    assert display.check_news_required(data) == []  # the agreement is the twelfth item, past the ten rows
+    data["jurisdictions"][0]["timeline"][5].pop("news")
+    assert display.check_news_required(data) == [
+        f"timeline:GB:6: shown in News without an authored news line bound to a quote; write one ({display.NEWS_RULE})"]
+    data["jurisdictions"][0]["timeline"][5]["news"] = "The institute is designated."
+    data["institutes"][0]["agreements"][0]["date"] = "2026-10-20"
+    assert display.check_news_required(data) == [
+        f"agreements:gb-test:agreement: shown in News without an authored news line bound to a quote; write one ({display.NEWS_RULE})"]
+
+
+def test_news_required_holds_for_the_dataset():
+    data = json.loads((ROOT / "data/aisi.json").read_text())
+    assert display.check_news_required(data) == []
+    doc = (ROOT / display.NEWS_RULE.split("#")[0]).read_text()
+    assert doc.count("\n## News lines\n") == 1
+    # The worked examples quote current lines; a reworded line updates its example.
+    examples = re.findall(r'^- [^:\n]+: "(.+?)" Quotes?: ', doc, re.M)
+    records = {(collection, owner["id"], origin, r["id"]): r for collection in ("jurisdictions", "institutes")
+               for owner in data[collection] for origin in ("timeline", "funding", "agreements") for r in owner.get(origin, [])}
+    bound = {}  # each authored line and the excerpts bound to it
+    for source in data["sources"]:
+        for excerpt in source.get("excerpts", []):
+            for pointer in excerpt.get("supports", []):
+                if pointer[-1] == "news" and len(pointer) == 5:
+                    line = records[(pointer[0], pointer[1]["id"], pointer[2], pointer[3]["id"])]["news"]
+                    bound.setdefault(line, []).append(excerpt["text"])
+    assert len(examples) == 4 and set(examples) <= set(bound)
+    for item in re.findall(r'^- [^:\n]+: (".+)$', doc.split("## News lines")[1], re.M):
+        line, *quotes = re.findall(r'"([^"]+)"', item)
+        assert quotes and [q for q in quotes if not any(q in text for text in bound[line])] == [], line
