@@ -11719,7 +11719,7 @@ def check_functions_detail(browser, base_url: str, data: dict) -> list[str]:
              detail.id === button.getAttribute('aria-controls') && button.getAttribute('aria-expanded') === 'true' &&
              detail.cells[0].colSpan === row.cells.length, key + ': detail placement/state differs');
         const panel = detail.querySelector('.fn-detail');
-        checkHeading(panel, cell, data.jurisdictions.find(j => j.id === institute.jurisdiction_id).name, displayNames[institute.id], code, key);
+        checkHeading(panel, cell, data.jurisdictions.find(j => j.id === institute.jurisdiction_id).name, institute.short_name, code, key);
         // Exact evidence can itself say 'announced'; status labels may not. Never rewrite quotes or source titles.
         need(!/\b(planned|proposed|exploring|announced)\b/i.test(detail.querySelector('.fn-detail-head').textContent), key + ': status word in heading');
         await checkClaims(detail, cell, key);
@@ -11765,7 +11765,9 @@ FN_CLAIMS_CHECK_JS = r"""
 const checkHeading = (detail, cell, country, institute, code, key) => {
   const heading = detail.querySelector('.fn-detail-head, .fn-function-head'), context = detail.querySelector(':scope > .fn-detail-context');
   need(heading?.matches('h4, h5') && heading.textContent === data.dataset.vocabularies.function[code].label, key + ': function heading differs');
-  need(context?.textContent === country + ' · ' + institute + ' · ' + names[cell.value].toLowerCase(), key + ': country/institute/cell state differs');
+  // institute: the short form on desktop; null inside the phone detail, whose heading already names the institute
+  need(context?.textContent === (institute ? institute + ' · ' : '') + names[cell.value].toLowerCase(), key + ': institute short form/cell state differs');
+  need(!context || !context.textContent.split(' · ').includes(country), key + ': the label line repeats the country its row names');
   need(context && (heading?.closest('.fn-detail-top') || heading)?.nextElementSibling === context &&
        context.nextElementSibling?.matches('.fn-claim'), key + ': heading/context/claim order differs');
   const probe = document.createElement('span'); probe.style.cssText = 'font:var(--type-label);color:var(--muted)'; detail.appendChild(probe);
@@ -12306,7 +12308,7 @@ def check_functions_phone(browser, base_url: str, data: dict, *, inject: bool = 
                       const claims = item.querySelector(':scope > .fn-phone-claims');
                       need(claims && label.nextElementSibling === claims && claims.id === label.getAttribute('aria-controls') && label.getAttribute('aria-expanded') === 'true', labelKey + ': function claims placement/state differs');
                       if (claims) {
-                        checkHeading(claims, f, expected.country, expected.name, f.code, labelKey);
+                        checkHeading(claims, f, expected.country, null, f.code, labelKey);
                         await checkClaims(claims, f, labelKey);
                       }
                       overflow(labelKey);

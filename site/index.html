@@ -36,7 +36,7 @@
  * Measure: running text, including News text and Method list items, stops at --prose; structural lists and panels span the content width (check_page check_text_measure, check_content_grid).
  * Secondary tone: --muted is for source apparatus (citations, sources, re-read lines, translation markers and source dates), method notes and field labels. Facts, body roles and qualifiers needed to read values use --ink; type sizes do not decide their colour (check_page check_secondary_tone).
  * Panel measure: claims, quotations, context, re-read lines and sources share --prose from the panel's left content edge, including phone details, definitions and record folds; inline quotations stay inline (check_page check_panel_measure).
- * Function detail: the full function label heads the panel; country, institute and the cell's state follow on one muted label line. Only in a cell whose claims have both bases does each claim name its own basis above its sentence. Each claim uses the record item form: cited sentence, closed Quote fold, then source, on desktop and inside the opened phone function (check_page check_functions_detail, check_functions_phone).
+ * Function detail: the full function label heads the panel; the institute's short form and the cell's state follow on one muted label line, without the country, which the row above already names; inside the phone detail, whose heading names the institute, the line carries the state alone. Only in a cell whose claims have both bases does each claim name its own basis above its sentence. Each claim uses the record item form: cited sentence, closed Quote fold, then source, on desktop and inside the opened phone function (check_page check_functions_detail, check_functions_phone).
  * Inline emphasis: inherit the paragraph's size and family, at most medium weight; no run-in heading role.
  * Sources: a collapsed card ends with the counted sources control alone (muted meta, no top rule, inline hit height); a card reached from the map also ends with "Back to map" before its Sources control; the check date and correction follow the expanded list.
  * Separators: each item of a dot-separated line is one unbreakable box, so lines break only between items (an item wraps inside only when it alone is wider than its container); middle dots stay with the preceding item's final word and are hidden where a line breaks.
@@ -3167,9 +3167,9 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         }
         return FN_COPY.summary.replace("{functions}", text);
       }
-      function appendClaims(detail, i, code) {
-        var context = el("p", "fn-detail-context"), cite = citations(S, (SOURCE_ORDERS[i.jurisdiction_id] || []).slice(), {});
-        context.appendChild(separated([J[i.jurisdiction_id].name, displayName(i), names[rows[i.id][code].value].toLowerCase()])); detail.appendChild(context);
+      function appendClaims(detail, i, code, named) { // named: an enclosing heading already names the institute (the phone detail)
+        var context = el("p", "fn-detail-context"), cite = citations(S, (SOURCE_ORDERS[i.jurisdiction_id] || []).slice(), {}), state = names[rows[i.id][code].value].toLowerCase();
+        context.appendChild(named ? document.createTextNode(state) : separated([instShort(i), state])); detail.appendChild(context); // the row above names the country; the label line takes the short form (principle: Naming)
         var ids = rows[i.id][code].claim_ids, mixed = ids.some(function (id) { return CLAIM_INDEX[id].claim.basis !== CLAIM_INDEX[ids[0]].claim.basis; });
         ids.forEach(function (id) {
           var claim = CLAIM_INDEX[id].claim, item = claimBlock(claim, cite); item.classList.add("fn-claim"); item.dataset.claim = id;
@@ -3248,7 +3248,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
               if (isOpen) { existing.remove(); button.setAttribute("aria-expanded", "false"); return; }
               var claims = el("div", "fn-phone-claims"); claims.id = button.getAttribute("aria-controls");
               claims.appendChild(el("h5", "fn-function-head", vocab[button.parentNode.dataset.code].label));
-              appendClaims(claims, I[button.closest("li[data-institute]").dataset.institute], button.parentNode.dataset.code);
+              appendClaims(claims, I[button.closest("li[data-institute]").dataset.institute], button.parentNode.dataset.code, true);
               button.after(claims); button.setAttribute("aria-expanded", "true"); return;
             }
             if (button === opened) { closeDetail(true); return; }
