@@ -18,31 +18,31 @@ from scripts.published import publish
 ROOT = Path(__file__).resolve().parents[1]
 STATUS_KINDS = ("commitment", "proposed", "designated", "launched", "first_output", "exploration_started", "withdrawn", "closed")
 SEPTEMBER = [
-    ("2026-11-12", "United Kingdom", "The two governments sign a text on cooperation naming their institutes."),
-    ("2026-11-12", "Norway", "The two governments sign a text on cooperation naming their institutes."),
-    ("2026-10-24", "United Kingdom", "GBP 120m for the institute announced."),
-    ("2026-10-13", "Canada", "The two governments announce a text on cooperation naming their institutes."),
-    ("2026-10-13", "United Kingdom", "The two governments announce a text on cooperation naming their institutes."),
-    ("2026-10-09", "United Kingdom", "The two governments announce a text on cooperation naming their institutes."),
-    ("2026-10-09", "Japan", "The two governments announce a text on cooperation naming their institutes."),
-    ("2026-10-07", "Norway", "Budget proposes NOK 45.1m and an AI safety mandate for KI Norge."),
-    ("2026-10-06", "Australia", "Agreement announced with Anthropic."),
-    ("2026-09-30", "United States", "Renamed Center for Advancing Innovation and Standards for Super Intelligence (CAISSI)."),
-    ("2026-09-28", "South Korea", "Agreement signed with Kakao."),
-    ("2026-09-25", "Netherlands", "Cabinet says AI safety institute exploration under way; report due year end."),
-    ("2026-09-21", "Spain", "Government AI plan commits to an AI Security Institute within AESIA."),
+    ("2026-11-12", "United Kingdom", "The two governments sign a non-binding statement of intent to explore cooperation, including between their institutes on AI security testing and evaluation."),
+    ("2026-11-12", "Norway", "The two governments sign a non-binding statement of intent to explore cooperation, including between their institutes on AI security testing and evaluation."),
+    ("2026-10-24", "United Kingdom", "The Budget announces an additional GBP 120m for the institute over 2026-27 to 2029-30."),
+    ("2026-10-13", "Canada", "The two governments renew their AI security partnership, recommitting their institutes to cooperate on frontier AI risks and evaluation."),
+    ("2026-10-13", "United Kingdom", "The two governments renew their AI security partnership, recommitting their institutes to cooperate on frontier AI risks and evaluation."),
+    ("2026-10-09", "United Kingdom", "A joint statement of the two governments' science committee says they will deepen cooperation between their institutes on AI model evaluation and information sharing."),
+    ("2026-10-09", "Japan", "A joint statement of the two governments' science committee says they will deepen cooperation between their institutes on AI model evaluation and information sharing."),
+    ("2026-10-07", "Norway", "The 2027 budget proposal would extend the institute's mandate to AI safety and proposes NOK 45.1m for it, including a NOK 30m increase for model evaluation."),
+    ("2026-10-06", "Australia", "The AI developer Anthropic says it is finalising an agreement for the institute to run independent evaluations of its models."),
+    ("2026-09-30", "United States", "The Center for AI Standards and Innovation is renamed the Center for Advancing Innovation and Standards for Super Intelligence (CAISSI), following the Executive Order of 29 September."),
+    ("2026-09-28", "South Korea", "The institute signs a memorandum of understanding with Kakao, which provides its AI models and agents for joint safety evaluation."),
+    ("2026-09-25", "Netherlands", "The cabinet tells parliament that an AI safety institute is being explored, with an advisory report due by the end of 2026."),
+    ("2026-09-21", "Spain", "The Prime Minister presents an AI plan that commits to an AI Security Institute within AESIA to evaluate the most advanced models."),
 ]
 PAGE_SEPTEMBER = [
-    ("12 Nov 2026", "United Kingdom and Norway", "The two governments sign a text on cooperation naming their institutes."),
-    ("24 Oct 2026", "United Kingdom", "GBP 120m for the institute announced."),
-    ("13 Oct 2026", "United Kingdom and Canada", "The two governments announce a text on cooperation naming their institutes."),
-    ("9 Oct 2026", "United Kingdom and Japan", "The two governments announce a text on cooperation naming their institutes."),
-    ("7 Oct 2026", "Norway", "Budget proposes NOK 45.1m and an AI safety mandate for KI Norge."),
-    ("6 Oct 2026", "Australia", "Agreement announced with Anthropic."),
-    ("30 Sep 2026", "United States", "Renamed Center for Advancing Innovation and Standards for Super Intelligence (CAISSI)."),
-    ("28 Sep 2026", "South Korea", "Agreement signed with Kakao."),
-    ("25 Sep 2026", "Netherlands", "Cabinet says AI safety institute exploration under way; report due year end."),
-    ("21 Sep 2026", "Spain", "Government AI plan commits to an AI Security Institute within AESIA."),
+    ("12 Nov 2026", "United Kingdom and Norway", "The two governments sign a non-binding statement of intent to explore cooperation, including between their institutes on AI security testing and evaluation."),
+    ("24 Oct 2026", "United Kingdom", "The Budget announces an additional GBP 120m for the institute over 2026-27 to 2029-30."),
+    ("13 Oct 2026", "United Kingdom and Canada", "The two governments renew their AI security partnership, recommitting their institutes to cooperate on frontier AI risks and evaluation."),
+    ("9 Oct 2026", "United Kingdom and Japan", "A joint statement of the two governments' science committee says they will deepen cooperation between their institutes on AI model evaluation and information sharing."),
+    ("7 Oct 2026", "Norway", "The 2027 budget proposal would extend the institute's mandate to AI safety and proposes NOK 45.1m for it, including a NOK 30m increase for model evaluation."),
+    ("6 Oct 2026", "Australia", "The AI developer Anthropic says it is finalising an agreement for the institute to run independent evaluations of its models."),
+    ("30 Sep 2026", "United States", "The Center for AI Standards and Innovation is renamed the Center for Advancing Innovation and Standards for Super Intelligence (CAISSI), following the Executive Order of 29 September."),
+    ("28 Sep 2026", "South Korea", "The institute signs a memorandum of understanding with Kakao, which provides its AI models and agents for joint safety evaluation."),
+    ("25 Sep 2026", "Netherlands", "The cabinet tells parliament that an AI safety institute is being explored, with an advisory report due by the end of 2026."),
+    ("21 Sep 2026", "Spain", "The Prime Minister presents an AI plan that commits to an AI Security Institute within AESIA to evaluate the most advanced models."),
 ]
 # Hand-checked against the old eight-kind rule on next 04e90fc. These are historical
 # identities, even when the ten-item window now pushes them out of the page/feed.
@@ -372,7 +372,7 @@ def test_news_gate_independent_oracle(next_data, monkeypatch):
         broken = copy.deepcopy(next_data)
         broken["dataset"]["display"]["developments"][0][field] = value
         assert any("published identities" in e for e in check(broken))
-    for old, new in (('data-j="GB"', 'data-j="US"'), ('data-date="2026-11-12"', 'data-date="2026-11-11"'), ("The two governments sign a text", "The two governments pledge a text"), ('class="development-row earlier"', 'class="development-row"')):
+    for old, new in (('data-j="GB"', 'data-j="US"'), ('data-date="2026-11-12"', 'data-date="2026-11-11"'), ("The two governments sign a non-binding", "The two governments pledge a non-binding"), ('class="development-row earlier"', 'class="development-row"')):
         assert check(next_data, news_html(next_data).replace(old, new, 1))
     broken = copy.deepcopy(next_data)
     monkeypatch.setattr(display, "news_matches", lambda rule, record: False)

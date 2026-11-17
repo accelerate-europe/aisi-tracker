@@ -2872,7 +2872,8 @@
             "es-plan",
             "es-moncloa"
           ],
-          "short": "Government AI plan commits to an AI Security Institute within AESIA."
+          "short": "Government AI plan commits to an AI Security Institute within AESIA.",
+          "news": "The Prime Minister presents an AI plan that commits to an AI Security Institute within AESIA to evaluate the most advanced models."
         }
       ],
       "iso3": "ESP",
@@ -2987,7 +2988,8 @@
             "no-budget",
             "no-prop1s-2026-27-dfd"
           ],
-          "short": "Budget proposes NOK 45.1m and an AI safety mandate for KI Norge."
+          "short": "Budget proposes NOK 45.1m and an AI safety mandate for KI Norge.",
+          "news": "The 2027 budget proposal would extend the institute's mandate to AI safety and proposes NOK 45.1m for it, including a NOK 30m increase for model evaluation."
         }
       ],
       "iso3": "NOR",
@@ -3212,7 +3214,8 @@
             "nl-kamerbrief-2026-09",
             "nl-bb"
           ],
-          "short": "Cabinet says AI safety institute exploration under way; report due year end."
+          "short": "Cabinet says AI safety institute exploration under way; report due year end.",
+          "news": "The cabinet tells parliament that an AI safety institute is being explored, with an advisory report due by the end of 2026."
         }
       ],
       "iso3": "NLD",
@@ -8750,9 +8753,11 @@
             "us-caissi-archive-2026-10-03",
             "depth-us-incident-release",
             "us-caissi",
-            "us-si-page"
+            "us-si-page",
+            "us-commerce-2025"
           ],
-          "short": "Renamed Center for Advancing Innovation and Standards for Super Intelligence (CAISSI)."
+          "short": "Renamed Center for Advancing Innovation and Standards for Super Intelligence (CAISSI).",
+          "news": "The Center for AI Standards and Innovation is renamed the Center for Advancing Innovation and Standards for Super Intelligence (CAISSI), following the Executive Order of 29 September."
         }
       ],
       "iso3": "USA",
@@ -29265,7 +29270,8 @@
           "annual_period": {
             "start": "2026-04-01",
             "end": "2030-03-31"
-          }
+          },
+          "news": "The Budget announces an additional GBP 120m for the institute over 2026-27 to 2029-30."
         }
       ],
       "staff": [
@@ -29814,7 +29820,8 @@
           ],
           "participation": "named_implementer",
           "domestic_interagency": false,
-          "id": "agreements-70aac9854e0256138af30a11ab9aff1c"
+          "id": "agreements-70aac9854e0256138af30a11ab9aff1c",
+          "news": "The two governments renew their AI security partnership, recommitting their institutes to cooperate on frontier AI risks and evaluation."
         },
         {
           "counterparty_type": "government",
@@ -29882,7 +29889,8 @@
           ],
           "participation": "named_implementer",
           "domestic_interagency": false,
-          "id": "agreements-45971d777b924729a9fe2aeec368c70e"
+          "id": "agreements-45971d777b924729a9fe2aeec368c70e",
+          "news": "A joint statement of the two governments' science committee says they will deepen cooperation between their institutes on AI model evaluation and information sharing."
         },
         {
           "counterparty_type": "government",
@@ -29908,7 +29916,8 @@
           ],
           "participation": "named_implementer",
           "domestic_interagency": false,
-          "id": "agreements-e09480eea9104ef097cf911f435cd343"
+          "id": "agreements-e09480eea9104ef097cf911f435cd343",
+          "news": "The two governments sign a non-binding statement of intent to explore cooperation, including between their institutes on AI security testing and evaluation."
         }
       ],
       "wikidata": "Q126284597",
@@ -33275,7 +33284,8 @@
           ],
           "participation": "named_implementer",
           "domestic_interagency": false,
-          "id": "agreements-558e5548aaf54f04a8a17b3f5939783b"
+          "id": "agreements-558e5548aaf54f04a8a17b3f5939783b",
+          "news": "The two governments sign a non-binding statement of intent to explore cooperation, including between their institutes on AI security testing and evaluation."
         }
       ],
       "outputs": [],
@@ -36070,7 +36080,8 @@
           ],
           "participation": "named_implementer",
           "domestic_interagency": false,
-          "id": "agreements-8b43e005f085573a92243e7ef94a1427"
+          "id": "agreements-8b43e005f085573a92243e7ef94a1427",
+          "news": "The two governments renew their AI security partnership, recommitting their institutes to cooperate on frontier AI risks and evaluation."
         },
         {
           "counterparty_type": "institute",
@@ -36865,7 +36876,8 @@
           ],
           "participation": "named_implementer",
           "domestic_interagency": false,
-          "id": "agreements-0de799faa70640d78c37d2c4d5f0f6fe"
+          "id": "agreements-0de799faa70640d78c37d2c4d5f0f6fe",
+          "news": "A joint statement of the two governments' science committee says they will deepen cooperation between their institutes on AI model evaluation and information sharing."
         },
         {
           "counterparty_type": "government",
@@ -38170,7 +38182,8 @@
           ],
           "participation": "institute_party",
           "domestic_interagency": false,
-          "id": "agreements-93e9c4f6e55753fdbdd9d4610b1bd951"
+          "id": "agreements-93e9c4f6e55753fdbdd9d4610b1bd951",
+          "news": "The institute signs a memorandum of understanding with Kakao, which provides its AI models and agents for joint safety evaluation."
         },
         {
           "counterparty_type": "institute",
@@ -39470,7 +39483,8 @@
           "counterparty": "Anthropic",
           "participation": "institute_party",
           "domestic_interagency": false,
-          "id": "agreements-71c44af8b5b659c9b667334ac51b3b75"
+          "id": "agreements-71c44af8b5b659c9b667334ac51b3b75",
+          "news": "The AI developer Anthropic says it is finalising an agreement for the institute to run independent evaluations of its models."
         },
         {
           "counterparty_type": "government",
@@ -42941,6 +42955,17 @@
               },
               "staffing_model",
               "code"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "ES"
+              },
+              "timeline",
+              {
+                "id": "es-1"
+              },
+              "news"
             ]
           ]
         },
@@ -42967,6 +42992,17 @@
                 "id": "es-1"
               },
               "description"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "ES"
+              },
+              "timeline",
+              {
+                "id": "es-1"
+              },
+              "news"
             ]
           ]
         },
@@ -42988,6 +43024,17 @@
               },
               "staffing_model",
               "code"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "ES"
+              },
+              "timeline",
+              {
+                "id": "es-1"
+              },
+              "news"
             ]
           ],
           "gloss": "The Institute will be born within AESIA, which will take on its leadership and contribute its status as a supervisory authority",
@@ -43594,6 +43641,17 @@
                 "id": "es-1"
               },
               "description"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "ES"
+              },
+              "timeline",
+              {
+                "id": "es-1"
+              },
+              "news"
             ]
           ],
           "accessed": "2026-10-17"
@@ -43872,6 +43930,17 @@
                 "id": "people-2d72b937814c5e4885e71e2f8af219e3"
               },
               "notes"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "NO"
+              },
+              "timeline",
+              {
+                "id": "no-1"
+              },
+              "news"
             ]
           ],
           "accessed": "2026-10-17"
@@ -45471,6 +45540,17 @@
                 "id": "us-2025-06-03-mandate-changed"
               },
               "description"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "US"
+              },
+              "timeline",
+              {
+                "id": "us-2026-10-03-named"
+              },
+              "news"
             ]
           ],
           "url": "https://content.govdelivery.com/accounts/USDOC/bulletins/3e381fb",
@@ -65639,6 +65719,17 @@
                 "id": "agreements-71c44af8b5b659c9b667334ac51b3b75"
               },
               "participation"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-71c44af8b5b659c9b667334ac51b3b75"
+              },
+              "news"
             ]
           ],
           "accessed": "2026-10-17"
@@ -65673,6 +65764,17 @@
                 "id": "agreements-71c44af8b5b659c9b667334ac51b3b75"
               },
               "counterparty"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-71c44af8b5b659c9b667334ac51b3b75"
+              },
+              "news"
             ]
           ],
           "accessed": "2026-10-17"
@@ -66801,6 +66903,17 @@
                 "id": "nl-2"
               },
               "event"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "NL"
+              },
+              "timeline",
+              {
+                "id": "nl-2"
+              },
+              "news"
             ]
           ],
           "gloss": "An exploration of establishing an AI safety institute is under way.",
@@ -66820,6 +66933,17 @@
                 "id": "nl-2"
               },
               "description"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "NL"
+              },
+              "timeline",
+              {
+                "id": "nl-2"
+              },
+              "news"
             ]
           ],
           "gloss": "The advisory report will be shared with parliament at the end of this year.",
@@ -85335,6 +85459,28 @@
                 "id": "agreements-8b43e005f085573a92243e7ef94a1427"
               },
               "participation"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-70aac9854e0256138af30a11ab9aff1c"
+              },
+              "news"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-8b43e005f085573a92243e7ef94a1427"
+              },
+              "news"
             ]
           ],
           "accessed": "2026-10-17"
@@ -85392,6 +85538,28 @@
                 "id": "agreements-8b43e005f085573a92243e7ef94a1427"
               },
               "scope"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-70aac9854e0256138af30a11ab9aff1c"
+              },
+              "news"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-8b43e005f085573a92243e7ef94a1427"
+              },
+              "news"
             ]
           ]
         },
@@ -85419,6 +85587,28 @@
                 "id": "agreements-8b43e005f085573a92243e7ef94a1427"
               },
               "counterparty"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-70aac9854e0256138af30a11ab9aff1c"
+              },
+              "news"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-8b43e005f085573a92243e7ef94a1427"
+              },
+              "news"
             ]
           ],
           "accessed": "2026-10-17"
@@ -109745,6 +109935,17 @@
                 "id": "agreements-93e9c4f6e55753fdbdd9d4610b1bd951"
               },
               "participation"
+            ],
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-93e9c4f6e55753fdbdd9d4610b1bd951"
+              },
+              "news"
             ]
           ],
           "accessed": "2026-10-24",
@@ -109763,6 +109964,17 @@
                 "id": "agreements-93e9c4f6e55753fdbdd9d4610b1bd951"
               },
               "scope"
+            ],
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-93e9c4f6e55753fdbdd9d4610b1bd951"
+              },
+              "news"
             ]
           ],
           "accessed": "2026-10-24",
@@ -113648,6 +113860,17 @@
                 "id": "no-1"
               },
               "description"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "NO"
+              },
+              "timeline",
+              {
+                "id": "no-1"
+              },
+              "news"
             ]
           ],
           "accessed": "2026-10-24"
@@ -113803,6 +114026,17 @@
                 "id": "no-1"
               },
               "description"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "NO"
+              },
+              "timeline",
+              {
+                "id": "no-1"
+              },
+              "news"
             ]
           ],
           "gloss": "From 2027, an increase of NOK 30 million is proposed to strengthen KI Norge's capacity to evaluate AI models and obtain knowledge about the consequences and risks of advanced artificial intelligence.",
@@ -114130,6 +114364,17 @@
                 "id": "funding-618ed3226ee75def870a5fb0f9501479"
               },
               "description"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-618ed3226ee75def870a5fb0f9501479"
+              },
+              "news"
             ]
           ],
           "accessed": "2026-10-24"
@@ -115458,6 +115703,28 @@
                 "id": "agreements-0de799faa70640d78c37d2c4d5f0f6fe"
               },
               "participation"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-45971d777b924729a9fe2aeec368c70e"
+              },
+              "news"
+            ],
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-0de799faa70640d78c37d2c4d5f0f6fe"
+              },
+              "news"
             ]
           ],
           "accessed": "2026-10-24"
@@ -121452,6 +121719,17 @@
                 "id": "funding-618ed3226ee75def870a5fb0f9501479"
               },
               "notes"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-618ed3226ee75def870a5fb0f9501479"
+              },
+              "news"
             ]
           ]
         }
@@ -124488,6 +124766,28 @@
                 "id": "agreements-558e5548aaf54f04a8a17b3f5939783b"
               },
               "scope"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-e09480eea9104ef097cf911f435cd343"
+              },
+              "news"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "agreements",
+              {
+                "id": "agreements-558e5548aaf54f04a8a17b3f5939783b"
+              },
+              "news"
             ]
           ],
           "accessed": "2026-11-13"
@@ -124560,6 +124860,28 @@
                 "id": "agreements-558e5548aaf54f04a8a17b3f5939783b"
               },
               "scope"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-e09480eea9104ef097cf911f435cd343"
+              },
+              "news"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "agreements",
+              {
+                "id": "agreements-558e5548aaf54f04a8a17b3f5939783b"
+              },
+              "news"
             ]
           ],
           "accessed": "2026-11-13"
@@ -124616,6 +124938,28 @@
                 "id": "agreements-558e5548aaf54f04a8a17b3f5939783b"
               },
               "scope"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-e09480eea9104ef097cf911f435cd343"
+              },
+              "news"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "agreements",
+              {
+                "id": "agreements-558e5548aaf54f04a8a17b3f5939783b"
+              },
+              "news"
             ]
           ],
           "accessed": "2026-11-13"
@@ -124666,6 +125010,28 @@
                 "id": "agreements-558e5548aaf54f04a8a17b3f5939783b"
               },
               "date"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-e09480eea9104ef097cf911f435cd343"
+              },
+              "news"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "agreements",
+              {
+                "id": "agreements-558e5548aaf54f04a8a17b3f5939783b"
+              },
+              "news"
             ]
           ],
           "accessed": "2026-11-13"
@@ -124683,6 +125049,28 @@
                 "id": "agreements-558e5548aaf54f04a8a17b3f5939783b"
               },
               "counterparty"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-e09480eea9104ef097cf911f435cd343"
+              },
+              "news"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "agreements",
+              {
+                "id": "agreements-558e5548aaf54f04a8a17b3f5939783b"
+              },
+              "news"
             ]
           ],
           "accessed": "2026-11-13"
@@ -124700,6 +125088,28 @@
                 "id": "agreements-e09480eea9104ef097cf911f435cd343"
               },
               "counterparty"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-e09480eea9104ef097cf911f435cd343"
+              },
+              "news"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "agreements",
+              {
+                "id": "agreements-558e5548aaf54f04a8a17b3f5939783b"
+              },
+              "news"
             ]
           ],
           "accessed": "2026-11-13"
@@ -125098,6 +125508,17 @@
                 "id": "us-caissi"
               },
               "notes"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "US"
+              },
+              "timeline",
+              {
+                "id": "us-2026-10-03-named"
+              },
+              "news"
             ]
           ],
           "accessed": "2026-11-14"
@@ -125115,6 +125536,17 @@
                 "id": "us-2026-10-03-named"
               },
               "description"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "US"
+              },
+              "timeline",
+              {
+                "id": "us-2026-10-03-named"
+              },
+              "news"
             ]
           ],
           "accessed": "2026-11-14"
