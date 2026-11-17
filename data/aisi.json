@@ -427,7 +427,7 @@
         "risk_monitoring": {
           "label": "Capability and risk monitoring",
           "short": "risk monitoring",
-          "definition": "It reports regularly on what AI can do or what risks emerge (a periodic or numbered series, or a monitoring mandate); one paper does not count.",
+          "definition": "It reports regularly on what AI can do or what risks emerge (a periodic, numbered or continuing series, or a monitoring mandate), or a text describes it as monitoring or tracking AI capabilities or risks on an ongoing basis; one paper does not count.",
           "group": "Informing government"
         },
         "foresight": {
