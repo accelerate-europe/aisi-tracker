@@ -26772,7 +26772,7 @@
           "basis": "mandate",
           "body_id": "related_bodies-84162d316796517fba955b0230dfdc57",
           "lead": true,
-          "text": "The draft national AI strategy describes the National AI Regulatory Sandbox as a \"Technical unit responsible for testing, evaluation, validation, auditing and regulatory learning for AI systems\".",
+          "text": "The draft national AI strategy lists the \"National Artificial Intelligence Regulatory Sandbox: technical unit responsible for testing, evaluation, validation, auditing and regulatory learning for AI systems\".",
           "source_ids": [
             "mz-enia-draft-2026"
           ]
@@ -54974,7 +54974,7 @@
               "text"
             ]
           ],
-          "gloss": "National Artificial Intelligence Regulatory Sandbox Technical unit responsible for testing, evaluation, validation, auditing and regulatory learning for AI systems.",
+          "gloss": "National Artificial Intelligence Regulatory Sandbox: technical unit responsible for testing, evaluation, validation, auditing and regulatory learning for AI systems.",
           "accessed": "2026-10-17"
         },
         {
