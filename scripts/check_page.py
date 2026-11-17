@@ -1174,7 +1174,7 @@ def check_origins(browser, base_url: str, dist: Path) -> list[str]:
 
 
 # Structural card field identities, independent of reader-facing labels.
-CARD_TRACKS = {"Institute": "2", "Status": "3", "Form": "4", "Members": "5", "Head": "6", "Reports to": "7", "Partners": "8", "Mandate": "9", "Budget": "10", "Staff": "11", "Known activity": "12", "Related funding": "13", "Facts": "14"}
+CARD_TRACKS = {"Institute": "2", "Status": "3", "Form": "4", "Head": "5", "Reports to": "6", "Partners": "7", "Mandate": "8", "Budget": "9", "Staff": "10", "Known activity": "11", "Related funding": "12", "Facts": "13"}
 # Displayed values with no supporting quotation yet, by (table column or card label, jurisdiction id).
 KNOWN_UNCITED = {}
 CITED_COLUMNS = ("inst", "since", "op", "budget", "staff", "net")  # Region and status: reference data and derived status
@@ -1635,16 +1635,16 @@ def check_citation_ends(soup) -> list[str]:
         host = group.find_parent(
             lambda n: (
                 n.name in ("td", "p")  # a funding record's parts are separate paragraphs
-                or ("pname" in n.get("class", []) and n.find_parent("details", class_="partner-how"))
-                or (n.name == "li" and n.find_parent("details", class_="partner-how"))
+                or ("pname" in n.get("class", []) and n.find_parent(class_="partner-how"))
+                or (n.name == "li" and (n.find_parent(class_="partner-how") or n.find_parent(class_="member-list")))
+                or "member-names" in n.get("class", [])
                 or n.has_attr("data-record")
                 or bool(set(n.get("class", [])) & {"v", "fund-value", "fund-context", "activity-clause", "activity-since", "claim-text"})  # a claim's sentence is its own value; its Quote fold follows it
             )
         )
         if host:
             # A collapsed fold-out after the value (the partners' "How they work together") is not part of the value's text.
-            inside_partner_fold = host.find_parent("details", class_="partner-how") is not None
-            text = [node for node in host.find_all(string=True) if inside_partner_fold or node.find_parent("details", class_="partner-how") is None]
+            text = [node for node in host.find_all(string=True) if not any(parent is not host and parent in node.parents for parent in host.select('.members, .partner-how, .member-details'))]
             citation_text = {id(n) for n in group.find_all(string=True)}
             last = max(
                 (index for index, node in enumerate(text) if id(node) in citation_text),
@@ -4362,11 +4362,11 @@ def check_card_grid(page) -> list[str]:
         + """
       // Three card shapes; structurally absent fields are omitted. Each field owns a fixed track so shapes stay aligned.
       const SHAPES = {
-        established: ['2', '3', '4', '9', '10', '11', '12'],  // Members, Head, Reports to and Partners are optional here: check_leadership_rows holds them to the data
-        record: ['2', '3', '4', '9', '10', '11'],
-        none: ['3', '9'],
+        established: ['2', '3', '4', '8', '9', '10', '11'],  // Head, Reports to and Partners are optional here: check_leadership_rows holds them to the data
+        record: ['2', '3', '4', '8', '9', '10'],
+        none: ['3', '8'],
       };
-      const OPTIONAL = ['5', '6', '7', '8', '13', '14'];
+      const OPTIONAL = ['5', '6', '7', '12', '13'];
       const errors = [];
       document.querySelectorAll('.cards:not(.minis)').forEach(grid => {
         const cards = [...grid.querySelectorAll('.card')], rows = [...grid.children];
@@ -4389,6 +4389,7 @@ def check_card_grid(page) -> list[str]:
             const fieldRows = [...card.querySelectorAll(':scope > .row')];
             const tracks = fieldRows.map(n => n.dataset.track);
             if (fieldRows.some(n => !n.querySelector('.k')?.textContent.trim())) errors.push(`card field label missing or empty: ${card.id}`);
+            if (fieldRows.some(n => n.querySelector('.k')?.textContent.trim() && !n.querySelector('.v')?.textContent.trim())) errors.push(`card label without a value: ${card.id}`);
             const shape = tracks[0] !== '2' ? 'none' : (card.querySelector('.top .sw.st-established') || card.closest('.statusgroup[data-status="established"]') || (card.closest('.eu-level') && card.querySelector(':scope > .top > .vh')?.textContent === ', Established')) ? 'established' : 'record';  // the EU entry says its status in its accessible name only
             if (JSON.stringify(tracks.filter(track => !OPTIONAL.includes(track))) !== JSON.stringify(SHAPES[shape])) errors.push(`missing or misplaced card fields: ${card.id} (${tracks.join(', ')})`);
             card.querySelectorAll(':scope > .row > .k').forEach(k => { if (visible(k) && k.getBoundingClientRect().height > parseFloat(getComputedStyle(k).lineHeight) * 1.5) errors.push(REPORT + `card label wraps: ${k.textContent}`); });
@@ -4399,7 +4400,7 @@ def check_card_grid(page) -> list[str]:
             if (innerWidth <= 640 && getComputedStyle(card).display !== 'flex') errors.push(REPORT + 'phone card lost its flex stack');
             if (innerWidth > 640) {
               if (!getComputedStyle(card).gridTemplateRows.startsWith('subgrid')) errors.push(REPORT + 'card does not use row subgrid');
-              const placed = [[card.querySelector(':scope > .top'), 1, 'top'], [card.querySelector(':scope > .foot'), 15, 'footer']]
+              const placed = [[card.querySelector(':scope > .top'), 1, 'top'], [card.querySelector(':scope > .foot'), 14, 'footer']]
                 .concat(fieldRows.map((n, k) => [n, tracks[k], tracks[k]]));
               placed.forEach(([n, track, label]) => {
                 if (!n || getComputedStyle(n).gridRowStart !== String(track)) errors.push(REPORT + `${label} is not in its fixed track ${track}: ${card.id}`);
@@ -4407,8 +4408,8 @@ def check_card_grid(page) -> list[str]:
             }
           });
           if (innerWidth <= 640 || siblings.length < 2) return;
-          // Compare per track among the cards that fill it; Mandate and Finding share track 9.
-          for (const track of [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 'footer']) {
+          // Compare per track among the cards that fill it; Mandate and Finding share track 8.
+          for (const track of [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 'footer']) {
             for (const side of track === 'footer' ? ['.source-footer-line'] : ['.k', '.v']) {
               const ys = siblings.map(card => {
                 const row = track === 'footer' ? card.querySelector('.foot') : card.querySelector(`:scope > .row[data-track="${track}"]`);
@@ -8069,7 +8070,7 @@ def check_institute_names(html, data: dict) -> list[str]:
     return errors
 
 
-LEADERSHIP_ROWS = ("Members", "Head", "Reports to", "Partners")  # card labels, in card order, directly after Form
+LEADERSHIP_ROWS = ("Head", "Reports to", "Partners")  # card labels, in card order, directly after Form
 PARTNER_RELATIONS = ("member", "works_with", "planned")  # card order after the cyber agency
 CARD_PARTNERS = 6  # the card shows at most this many; the oracle's own copy of the cap
 MISSING_TEXT = "Not published"  # dataset.method/missing-values, leadership and reporting-line.
@@ -8289,6 +8290,9 @@ def check_leadership_rows(html, data: dict) -> list[str]:
     soup = BeautifulSoup(html, "html.parser")
     expected = expected_leadership(data)
     errors = []
+    for row in soup.select('.card .row'):
+        if row.select_one('.k') and row.select_one('.k').get_text(strip=True) and not (row.select_one('.v') and row.select_one('.v').get_text(strip=True)):
+            errors.append("card label without a value")
     any_rows = any(rows for rows in expected.values())
     by_id = Keyed(soup, "[id]", "id")
     for institute in data["institutes"]:
@@ -8309,23 +8313,42 @@ def check_leadership_rows(html, data: dict) -> list[str]:
             continue
         if want and ("4" not in tracks or tracks[tracks.index("4") + 1 : tracks.index("4") + 1 + len(want)] != wanted_tracks):
             errors.append(report_line(f"{jid}: Members, Head, Reports to and Partners must follow Form directly, in that order when present: {tracks}"))
-        for label in want:
+        members = card.select('.members')
+        if len(members) != int("Members" in rows) or any(node.find_parent(class_="row") != card.select_one('.row[data-track="4"]') for node in members):
+            errors.append(f"{jid}: members must be in Form, with no separate Members row")
+        for label in (["Members"] if "Members" in rows else []) + want:
             text, items, cites, hows = rows[label]
-            row = card.select_one(f':scope > .row[data-track="{CARD_TRACKS[label]}"]')
+            row = card.select_one(f':scope > .row[data-track="{CARD_TRACKS["Form" if label == "Members" else label]}"]')
             heading = row.select_one(".k")
             if not heading or not heading.get_text(strip=True):
                 errors.append(f"{jid}: {label} row label is missing or empty")
             value = row.select_one(".v")
+            if value is None:
+                continue
+            if label == "Members":
+                value = value.select_one('.members')
+                if value is None:
+                    errors.append(f"{jid}: members must be in Form")
+                    continue
+                names = copy.copy(value.select_one('.member-names'))
+                if names:
+                    for mark in names.select('.cites, .meta-dot'):
+                        mark.decompose()
+                if not names or names.get_text(" ", strip=True) != " ".join(name for name, _, _ in hows):
+                    errors.append(f"{jid} Members: short names differ")
             reports = institute.get("reports_to") or {}
             if label == "Reports to" and reports.get("state") == "stated" and reports.get("name_en"):
                 if not original_tip_matches(value.select_one(".original-text"), reports["name_en"], reports["name"]):
                     errors.append(f"{jid} Reports to: the English name must carry the original in a focusable tooltip")
             if label in ("Members", "Partners") and not text:
                 # The page keeps a citation with its last word by cloning the enclosing spans, so compare the line's text, not its elements.
-                clone = copy.copy(value)
-                for mark in clone.select(".cites, .meta-dot, details.partner-how"):
+                clone = copy.copy(value.select_one('.member-list') if label == "Members" else value)
+                if clone is None:
+                    errors.append(f"{jid} {label}: itemised list missing")
+                    continue
+                for mark in clone.select(".cites, .meta-dot, .partner-how"):
                     mark.decompose()
-                got = " ".join(clone.get_text().split())  # the line only: a how sentence on it would differ from the expected texts
+                got = " ".join(" ".join(li.get_text().split()) for li in clone.select('li')) if label == "Members" else " ".join(clone.get_text().split())
                 if got != " ".join(items):
                     errors.append(f"{jid} {label}: shows {got!r}, expected {' '.join(items)!r}")
                 tail = " ".join("".join(n.get_text() for n in value.select(".partners-none")).split())
@@ -8333,13 +8356,20 @@ def check_leadership_rows(html, data: dict) -> list[str]:
                 want_tail = data["dataset"]["vocabularies"]["partner_cyber_none_published"] if label == "Partners" and not has_cyber else ""
                 if tail != want_tail:
                     errors.append(f"{jid} {label}: the muted tail reads {tail!r}, expected {want_tail or 'none'!r}")
-                ids = sorted({a.get("data-source-id") for a in value.select(".cn") if a.find_parent("details", class_="partner-how") is None})
+                ids = sorted({a.get("data-source-id") for a in value.select('.member-names .cn' if label == "Members" else '.cn') if a.find_parent(class_="partner-how") is None})
                 if ids != cites:
                     errors.append(f"{jid} {label}: citations {ids}, expected {cites}")
+                if label == "Members":
+                    entries = sorted(enumerate(partners_entries(data, institute)), key=lambda pair: (not pair[1].get('cyber_agency'), PARTNER_RELATIONS.index(pair[1]['relation'])))
+                    members = [(index, entry) for index, entry in entries if entry['relation'] == 'member']
+                    wanted = [row_sources(data, data['institutes'].index(institute), [f'national_partners/entries/{index}/{field}' for field in ('name', 'what')]) for index, _ in members]
+                    actual = [sorted({a.get('data-source-id') for a in li.select('.cn')}) for li in value.select('.member-list > li')]
+                    if actual != wanted:
+                        errors.append(f"{jid} Members: gloss citations {actual}, expected {wanted}")
                 # Groups and names follow first occurrence in priority order; every name keeps its own sources.
                 folded = []
                 fold_cites = []
-                for li in value.select("details.partner-how li"):
+                for li in value.select(".partner-how li"):
                     names = []
                     # Citation glue is nested inside the name, so remove only citation text.
                     clone = copy.copy(li)
@@ -8369,10 +8399,21 @@ def check_leadership_rows(html, data: dict) -> list[str]:
                     errors.append(f"{jid} {label}: fold-out shows {folded}, expected {want_fold}")
                 if fold_cites != want_cites:
                     errors.append(f"{jid} {label}: fold-out citations {fold_cites}, expected {want_cites}")
-                if len(value.select("details.partner-how")) != int(bool(hows)):
+                fold_selector = '.member-details' if label == "Members" else 'details.partner-how'
+                if len(value.select(fold_selector)) != int(bool(hows)):
                     errors.append(f"{jid} {label}: expected {'one fold-out' if hows else 'no fold-out'}")
-                fold = value.select_one("details.partner-how")
+                fold = value.select_one(fold_selector)
                 if fold is not None:
+                    if label == "Members":
+                        full = "arrived" in card.get("class", [])
+                        if fold.name != ('div' if full else 'details') or (not full and not fold.select_one(':scope > summary')):
+                            errors.append(f"{jid} Members: card needs one fold; full record must be open without a fold")
+                        if full and fold.select('summary'):
+                            errors.append(f"{jid} Members: full record retains a fold control")
+                        if fold.select('details'):
+                            errors.append(f"{jid} Members: nested fold")
+                        if value.select_one('.member-list').parent != fold or value.select_one('.partner-how') is None or value.select_one('.partner-how').parent != fold:
+                            errors.append(f"{jid} Members: list and how must share one fold")
                     if any(a.find_parent("li") is None for a in fold.select(".cn")):
                         errors.append(f"{jid} {label}: fold-out citation outside a partner item")
                     if fold.has_attr("open"):
@@ -12898,6 +12939,49 @@ def check_selection_boxes(browser, base_url: str) -> list[str]:
     return errors
 
 
+def check_members(browser, base_url: str, data: dict, screenshots: Path | None = None) -> list[str]:
+    """Members stay in Form, with one card fold and no fold on full-record arrival."""
+    errors = []
+    for width in (1440, 1000, 390):
+        page = browser.new_page(viewport={"width": width, "height": 1000})
+        try:
+            hydrated(page, base_url)
+            page.evaluate("document.fonts.ready")
+            for theme in ("light", "dark"):
+                set_theme(page, theme)
+                errors.extend(f"{width}px {theme}: {e}" for e in check_leadership_rows(page.content(), data))
+                errors.extend(f"{width}px {theme}: {e}" for e in check_card_grid(page))
+                cards = page.locator('.card:has(.members)').evaluate_all("nodes => nodes.map(n => n.id)")
+                if not cards:
+                    errors.append("no network card to check")
+                for identity in cards:
+                    card = page.locator('#' + identity)
+                    detail = card.locator('.member-details')
+                    if detail.evaluate("n => Boolean(n.tagName !== 'DETAILS' || n.open || n.querySelector('details') || !n.querySelector('summary')?.textContent.trim())"):
+                        errors.append(f"{identity}: members do not start behind one named closed fold")
+                        continue
+                    card.scroll_into_view_if_needed()
+                    detail.locator('summary').click()
+                    if not detail.locator('.member-list').is_visible() or not detail.locator('.partner-how').is_visible():
+                        errors.append(f"{identity}: the single fold does not reveal both lists")
+                    detail.locator('summary').click()
+                    if screenshots:
+                        screenshots.mkdir(parents=True, exist_ok=True)
+                        card.screenshot(path=str(screenshots / f'members-{identity}-{width}-{theme}-card.png'))
+                    page.evaluate("id => { location.hash = id; }", identity)
+                    page.wait_for_selector('#' + identity + '.arrived')
+                    if detail.evaluate("n => Boolean(n.tagName !== 'DIV' || n.querySelector('summary, details'))") or not detail.locator('.member-list').is_visible():
+                        errors.append(f"{identity}: full record retains a fold or hides its members")
+                    errors.extend(f"{width}px {theme} full: {e}" for e in check_leadership_rows(page.content(), data))
+                    if screenshots:
+                        card.screenshot(path=str(screenshots / f'members-{identity}-{width}-{theme}-full.png'))
+                    page.evaluate("location.hash = 'europe'")
+                    page.wait_for_function("id => !document.getElementById(id).classList.contains('arrived')", arg=identity)
+        finally:
+            page.close()
+    return errors
+
+
 def check_functions_tint(browser, base_url: str) -> list[str]:
     """Every column's painted band, gutter boundaries and slanted flag, by hover and keyboard focus."""
     page = browser.new_page(viewport={"width": 1280, "height": 1000})
@@ -13149,6 +13233,7 @@ def browser_jobs(dist: Path, data: dict, screenshots: Path | None) -> list[tuple
         ("interactions", check_functions_zero_carrier, (data,)),
         ("interactions", check_functions_tint, ()),
         ("interactions", check_selection_boxes, ()),
+        ("interactions", check_members, (data, screenshots)),
         ("interactions", check_funding_edges, (data,)),
         ("interactions", check_funding_large_text, ()),
         ("interactions", check_published_amount_fallback, (data,)),

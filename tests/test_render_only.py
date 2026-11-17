@@ -12,7 +12,7 @@ from scripts.check_page import GENERIC_PARTNER_HOW, PLURAL_PARTNER_HOW, expected
 PAGE = Path(__file__).resolve().parents[1] / "site/index.html"
 
 
-def partner_fold(items, label="Partners"):
+def partner_fold(items, label="Partners", unfolded=False):
     source = PAGE.read_text()
     helper = source[
         source.index("  function partnersFold(") : source.index("  function recordSources(")
@@ -25,9 +25,11 @@ function el(tag, className, text) {
 const document = {createTextNode: text => el("text", "", text)};
 const cite = (ids, label) => ({className: "cites", ids, label});
 """
-    script = stub + helper + "\nconst label = " + json.dumps(label) + ";\nconst p = " + json.dumps(data) + """;
-const fold = partnersFold(p, cite, label);
+    script = stub + helper + "\nconst label = " + json.dumps(label) + ";\nconst unfolded = " + json.dumps(unfolded) + ";\nconst p = " + json.dumps(data) + """;
+const fold = partnersFold(p, cite, label, unfolded);
 const assert = require("node:assert/strict");
+assert.equal(fold.tag, unfolded ? "div" : "details");
+assert.equal(fold.children[0].tag, unfolded ? "p" : "summary");
 assert.equal(partnersFold({state: "stated"}, cite, label), null);
 assert.equal(partnersFold({state: "stated", fold_items: []}, cite, label), null);
 for (const state of ["not_published", "not_applicable"]) {
@@ -53,13 +55,14 @@ console.log(JSON.stringify(items.map(item => ({
 
 
 @pytest.mark.parametrize("label", ["Members", "Partners"])
-def test_partner_fold_renders_every_item_with_its_citations(label):
+@pytest.mark.parametrize("unfolded", [False, True])
+def test_partner_fold_renders_every_item_with_its_citations(label, unfolded):
     # Hand-worked eight-item order: the first six also appear on the card.
     items = [
         {"name": f"Body {n}", "how": f"Does task {n}.", "cited": [f"source-{n}"]}
         for n in range(8)
     ]
-    assert partner_fold(items, label) == [
+    assert partner_fold(items, label, unfolded) == [
         {"names": [{"name": f"Body {n}", "cited": [f"source-{n}"]}], "how": f"does task {n}."}
         for n in range(8)
     ]
@@ -603,6 +606,7 @@ function operatingText(){return '';}
 function intervalQualifier(text){return document.createTextNode(text);}
 function relatedFunding(){return el('span','','Related');}
 function factClaims(){return [];} // the Facts row has its own content check (tests/content/test_claims.py)
+function citeTarget(box){return box;} // citation placement has its own checks; this stub captures the IDs.
 const cite=()=>el("span");
 const rows=[];
 function capture(j,inst,view,label,value,ids){
@@ -646,10 +650,10 @@ console.log(JSON.stringify(rows));
     assert result.returncode == 0, result.stderr
     rows = json.loads(result.stdout)
     fields = {row["field"] for row in rows}
-    # Members, Head, Reports to and Partners follow their presence rules (tests/test_rows.py).
+    # Members belong to Form; Head, Reports to and Partners follow their presence rules (tests/test_rows.py).
     # Cards label the row "Status"; the table's column is "Status since".
     assert {"Institute", "Status", "Status since", "Form", "Mandate", "Finding", "Budget", "Staff"} <= fields <= {
-        "Institute", "Status", "Status since", "Form", "Mandate", "Finding", "Budget", "Staff", "Members", "Head", "Reports to", "Partners",
+        "Institute", "Status", "Status since", "Form", "Mandate", "Finding", "Budget", "Staff", "Head", "Reports to", "Partners",
     }
     sources = {item["id"] for item in data["sources"]}
     return [

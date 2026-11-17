@@ -176,7 +176,7 @@ def test_all_non_established_states_are_inapplicable_even_with_outputs(status):
     # A dash in Budget for a state that has an institute, or a missing card row, fails.
     dashed = html.replace('<td data-col="budget">Not published</td>', f'<td data-col="budget">{NA}</td>')
     assert any("must be a structural absence exactly when" in e for e in check_operating_output(dashed, data))
-    assert any("card has no Staff row" in e for e in check_operating_output(html.replace('data-track="11"', 'data-track="99"'), data))
+    assert any("card has no Staff row" in e for e in check_operating_output(html.replace('data-track="10"', 'data-track="99"'), data))
     # A state without an institute shows the dash everywhere.
     html, data = display(status, institute=False)
     rows = [{"id": "GB", "operational": "Not applicable", "budget": "Not applicable", "staff": "Not applicable"}]
@@ -415,7 +415,7 @@ def test_oracle_rejects_extra_text_anywhere_in_the_value():
     assert check_operating_output(html, data) == []
     extra = "<span>Confirmed operational since 2020</span>"
     for broken in (
-        html.replace("</div></div><div class=\"row\" data-track=\"10\"><div class=\"k\">Budget", extra + "</div></div><div class=\"row\" data-track=\"10\"><div class=\"k\">Budget"),
+        html.replace("</div></div><div class=\"row\" data-track=\"9\"><div class=\"k\">Budget", extra + "</div></div><div class=\"row\" data-track=\"9\"><div class=\"k\">Budget"),
         html.replace("</span></span></span></span></td>", "</span></span></span></span>" + extra + "</td>", 1),
         html.replace("since 2025</span></span></span>", "since 2025</span></span></span>" + extra, 1),
     ):

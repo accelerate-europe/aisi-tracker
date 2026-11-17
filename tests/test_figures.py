@@ -74,7 +74,7 @@ def budget_cards(data):
         display = institute["display"]
         record = display["funding_records"].get(display["budget"])
         value = record["display"]["value"] if record else "Not published"
-        cards.append(f'<article class="card" data-j="{jid}"><div class="row" data-track="10"><div class="v">{value}</div></div></article>')
+        cards.append(f'<article class="card" data-j="{jid}"><div class="row" data-track="9"><div class="v">{value}</div></div></article>')
     return "".join(cards)
 
 

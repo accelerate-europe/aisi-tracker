@@ -383,7 +383,7 @@ def test_budget_oracle_rejects_wrong_id_and_missing_value_structure():
     data = {"jurisdictions": [{"id": "JP", "status": "established"}], "institutes": [{"id": "jp-aisi", "jurisdiction_id": "JP", "funding": []}]}
     identity = "funding-7d0b36a48cc65315865a6d6ec83ddeb6"
     value = f'<span class="budget-value" data-funding-id="{identity}"><span class="budget-amount">~EUR 52m (JPY 8.8bn)</span><span class="budget-qualifiers">one-off · FY2025 supplementary · adopted</span></span>'
-    html = f'<article class="card" data-j="JP"><div class="row" data-track="10"><div class="k">Budget</div><div class="v">{value}</div></div></article><table><tbody id="world-rows"><tr data-j="JP"><td data-col="budget">{value}</td></tr></tbody></table>'
+    html = f'<article class="card" data-j="JP"><div class="row" data-track="9"><div class="k">Budget</div><div class="v">{value}</div></div></article><table><tbody id="world-rows"><tr data-j="JP"><td data-col="budget">{value}</td></tr></tbody></table>'
     assert check_page.check_budget_output(html, data) == []
     assert any("wrong funding ID" in error for error in check_page.check_budget_output(html.replace(identity, "older-record"), data))
     assert any("separate amount and qualifiers" in error for error in check_page.check_budget_output(html.replace("budget-qualifiers", "removed"), data))
@@ -396,7 +396,7 @@ def test_budget_oracle_covers_institutes_before_establishment():
     identity = check_page.EXPECTED_BUDGET_IDS["no-ki-norge"]
     data = {"jurisdictions": [{"id": "NO", "status": "proposed"}], "institutes": [{"id": "no-ki-norge", "jurisdiction_id": "NO", "funding": []}]}
     value = f'<span class="budget-value" data-funding-id="{identity}"><span class="budget-amount">~NOK 45m</span><span class="budget-qualifiers">a year · 2027 budget proposal</span></span>'
-    html = f'<article class="card" data-j="NO"><div class="row" data-track="10"><div class="k">Budget</div><div class="v">{value}</div></div></article><table><tbody id="world-rows"><tr data-j="NO"><td data-col="budget">{value}</td></tr></tbody></table>'
+    html = f'<article class="card" data-j="NO"><div class="row" data-track="9"><div class="k">Budget</div><div class="v">{value}</div></div></article><table><tbody id="world-rows"><tr data-j="NO"><td data-col="budget">{value}</td></tr></tbody></table>'
     assert check_page.check_budget_output(html, data) == []
     missing = html.replace(value, '<span class="missing">Not published</span>')
     assert any("wrong funding ID" in error for error in check_page.check_budget_output(missing, data))
@@ -439,7 +439,7 @@ def test_uncited_values_need_a_citation_link_except_absence_and_known_gaps(monke
       <tr data-j="US"><td data-col="net">Member</td><td data-col="op">None found yet</td></tr>
       <tr data-j="FR"><td data-col="op"><span class="activity-kind">Joint testing<span class="cites"><a class="cn" href="#">1</a></span></span><span class="activity-kind">Published work</span></td></tr>
     </tbody></table>
-    <article class="card" data-j="KR"><div class="row" data-track="13"><div class="k">Related funding</div><div class="v"><span class="related-funding-item" data-funding-id="f1">KRW 20.1bn<span class="cites"></span></span></div></div></article>"""
+    <article class="card" data-j="KR"><div class="row" data-track="12"><div class="k">Related funding</div><div class="v"><span class="related-funding-item" data-funding-id="f1">KRW 20.1bn<span class="cites"></span></span></div></div></article>"""
     found = check_page.uncited_values(BeautifulSoup(html, "html.parser"))
     assert found == ["card KR: Related funding", "related funding f1", "table FR: op"]
     monkeypatch.setattr(check_page, "KNOWN_UNCITED", {("net", "US"): "", ("net", "GB"): ""})
@@ -1033,7 +1033,7 @@ def interval_html(status="Announced on 26 Oct 2023, 7 days earlier", activity="P
         '<article class="card" data-j="GB">'
         f'<div class="row" data-track="3"><div class="k">Status</div><div class="v"><span class="qualified"><span class="value-line">Established since 2 Nov 2023</span>'
         f'<span class="small qualifiers">{gap}<span class="cites">{links}</span>{"</span>" if status else ""}</span></span></div></div>'
-        f'<div class="row" data-track="12"><div class="k">Known activity</div><div class="v"><span class="smark value activity" title="{activity_caveat}"><span class="activity-kinds">'
+        f'<div class="row" data-track="11"><div class="k">Known activity</div><div class="v"><span class="smark value activity" title="{activity_caveat}"><span class="activity-kinds">'
         '<span class="qualified activity-kind"><span class="value-line activity-clause" data-kind="published_work">Published work</span>'
         f'<span class="small qualifiers activity-since">since 9 Feb 2024</span>{line}</span></span></span></div></div></article>'
         f'<table><tbody id="world-rows"><tr data-j="GB"><td>{table}</td></tr></tbody></table>'
@@ -1167,7 +1167,7 @@ def test_source_alignment_allows_source_free_records_and_eu_without_table(alignm
 @pytest.mark.parametrize("selector, message", [
     ('article.card', 'article.card:not(.mini)[data-j="GB"]'),
     ('.row[data-track="3"]', 'GB .row[data-track="3"]'),
-    ('.row[data-track="12"]', 'GB .row[data-track="12"]'),
+    ('.row[data-track="11"]', 'GB .row[data-track="11"]'),
 ])
 def test_interval_output_requires_card_and_rows_even_without_intervals(selector, message):
     data = interval_case(kind='none')
@@ -1202,9 +1202,9 @@ def figures_case():
     ('#figures > .figure', '#figures > .figure'),
     ('#figures > .figure b', '#figures > .figure:nth-child(1) b'),
     ('#figures > .figure > span', '#figures > .figure:nth-child(1) span'),
-    ('.card', '.card[data-j="A"] .row[data-track="10"] .v'),
-    ('.row', '.card[data-j="A"] .row[data-track="10"] .v'),
-    ('.v', '.card[data-j="A"] .row[data-track="10"] .v'),
+    ('.card', '.card[data-j="A"] .row[data-track="9"] .v'),
+    ('.row', '.card[data-j="A"] .row[data-track="9"] .v'),
+    ('.v', '.card[data-j="A"] .row[data-track="9"] .v'),
 ])
 def test_figures_row_rejects_empty_selections(figures_case, selector, message):
     soup, data = figures_case
