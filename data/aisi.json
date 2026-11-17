@@ -1042,6 +1042,74 @@
         ]
       },
       {
+        "id": "agreement-gb-jp-joint-committee-2026",
+        "kind": "agreement",
+        "subject": "gb-aisi + jp-aisi",
+        "metric": "date and state of one instrument",
+        "unit": "ISO8601 and agreement_state",
+        "period": "instrument date, not announcement source date",
+        "scope": "gb-jp-joint-committee-2026",
+        "source_ids": [
+          "gb-jp-joint-committee-2026"
+        ],
+        "targets": [
+          [
+            "institutes",
+            {
+              "id": "gb-aisi"
+            },
+            "agreements",
+            {
+              "id": "agreements-45971d777b924729a9fe2aeec368c70e"
+            }
+          ],
+          [
+            "institutes",
+            {
+              "id": "jp-aisi"
+            },
+            "agreements",
+            {
+              "id": "agreements-0de799faa70640d78c37d2c4d5f0f6fe"
+            }
+          ]
+        ]
+      },
+      {
+        "id": "agreement-gb-no-statement-2026",
+        "kind": "agreement",
+        "subject": "gb-aisi + no-ki-norge",
+        "metric": "date and state of one instrument",
+        "unit": "ISO8601 and agreement_state",
+        "period": "instrument date, not announcement source date",
+        "scope": "gb-no-ai-statement-2026",
+        "source_ids": [
+          "gb-no-ai-statement-2026"
+        ],
+        "targets": [
+          [
+            "institutes",
+            {
+              "id": "gb-aisi"
+            },
+            "agreements",
+            {
+              "id": "agreements-e09480eea9104ef097cf911f435cd343"
+            }
+          ],
+          [
+            "institutes",
+            {
+              "id": "no-ki-norge"
+            },
+            "agreements",
+            {
+              "id": "agreements-558e5548aaf54f04a8a17b3f5939783b"
+            }
+          ]
+        ]
+      },
+      {
         "id": "agreement-sg-uk-moc-2024",
         "kind": "agreement",
         "subject": "gb-aisi + sg-aisi",
