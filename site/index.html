@@ -30,7 +30,9 @@
  * Functions table: institute rows in established and not-yet-established blocks, function columns in vocabulary groups, equal widths and rotated short heads. Active and both use a dot, assigned a ring; not found is blank, a search result rather than absence. The jurisdiction column stays visible during sideways scrolling. Hover and focus tint the row and one continuous column through the block bands and totals, with a slanted band behind its head; group gutters stay clear. Each group has a leaning boundary and an underline at its label, meeting the upright body rules at the head rule; the shared head height follows the head type, leaving at least --sp-1 above every head tip. No upright rule crosses the head zone, and labels paint above the hover flag and boundaries. Quotes and sources open on demand below the selected institute (check_page check_functions_table, check_functions_detail, check_functions_layout, check_functions_tint, check_function_group_tabs).
  * Method: owner-owned reader summaries link to the full editorial rules on a separate page; rule anchors stay stable.
  * Type: title, label, body, meta, figure, plus fn-group for functions group labels on narrow phones; label, body and meta fixed up to 1200px and growing to their wide-screen sizes at 1440px, so the table and cards keep their 1100px fit; figure and title grow from phone width; shared size, weight, family and role-specific line height. The headline is the figure role with only its numbers at figure weight, its words at body weight.
- * Measure: running text (p, ul, ol) stops at one prose measure, so stacked siblings wrap at the same width; chart furniture and footer meta lines run full width as a whole (check_page check_text_measure).
+ * Content grid: each section body has two left-aligned widths: its full width for tables, card grids, charts and row lists, and --prose for running text. Internal row tracks keep their alignment. The full-width first section is the only exception: the geographic map may bleed, and its stacked map/tools/side retain --map-stack-width, with --region-list keeping state and institute names together (check_page check_content_grid).
+ * Measure: running text, including News text and Method list items, stops at --prose; structural lists and panels span the content width (check_page check_text_measure, check_content_grid).
+ * Secondary tone: --muted is for source apparatus (citations, sources, re-read lines, translation markers and source dates), method notes and field labels. Facts, body roles and qualifiers needed to read values use --ink; type sizes do not decide their colour (check_page check_secondary_tone).
  * Panel measure: claims, quotations, context, re-read lines and sources share --prose from the panel's left content edge, including phone details, definitions and record folds; inline quotations stay inline (check_page check_panel_measure).
  * Inline emphasis: inherit the paragraph's size and family, at most medium weight; no run-in heading role.
  * Sources: a collapsed card ends with the counted sources control alone (muted meta, no top rule, inline hit height); a card reached from the map also ends with "Back to map" before its Sources control; the check date and correction follow the expanded list.
@@ -40,20 +42,20 @@
  * Card grids: alphabetical rows share field tracks through subgrid; every field keeps a fixed shared track (Mandate and Finding share the descriptive-text track); a structurally absent field leaves its track empty; where a row has three tracks, a group's only card spans two (check_page check_card_grid), while a single trailing card in a fuller group's last row keeps the usual card width; phones keep one column.
  * Card heads: country, status and download stick below the site bars within their own card in Compare and States, including phones; the one-line name keeps its full accessible text and tooltip, with ellipsis when needed. CSS sizes the shared title track and focus clearance from the label line, hit height, rules and padding, without copies or measurement; the institute stays in its field and print keeps static heads (check_page check_card_heads, check_saved_card_heads, hydration_paint).
  * Alignment: every text row shares its first baseline, including wrapped text, smaller labels, icons and format tags; within a card every field's value starts at one x.
- * Funding rows: the state name leads with its status swatch; only a status other than established is named, in brackets in muted ink ("Norway (proposed)"); established stays in the accessible name. The row's three tracks stack where they no longer fit the section (a container query in rem, so enlarged text stacks them earlier); stacked, the Sources control closes the row after Staff.
+ * Funding rows: the state name leads with its status swatch; only a status other than established is named, in brackets in ink ("Norway (proposed)"); established stays in the accessible name. The row's three tracks stack where they no longer fit the section (a container query in rem, so enlarged text stacks them earlier); stacked, the Sources control closes the row after Staff.
  * Status: square swatch plus name; the AE fill ladder, never black and never colour alone: established solid fill, planned an edge, a page-colour ring inside it and a solid centre of the mark's own shape (square on swatches, round on map dots), proposed hatch, exploring an empty ring, none identified a thin grey outline on the page colour, the square swatch with a short grey dash across its centre so it never reads as an empty checkbox (map dots keep the plain outline); every mark's edge is at least 3:1 on the ground and its text at least 4.5:1 on what is behind it, in both themes (check_page check_status_contrast); each map legend name carries its short definition as a tooltip (hover, focus or tap); a status square's tooltip takes the map dot's form, the state's name, then its status on a muted line; a card under a status group heading shows no status in its title row, which keeps it in the accessible name (as the funding rows do); the EU entry shows none either: its dated Status row says it, as on every other card (owner, 5 Nov 2026; check_page check_label_ladder); Known activity shows no swatch (squares are for status), only each kind found on its own line in date order ("Joint testing", with its own citations) and its muted "since <earliest date of that kind>" beneath; its tooltip defines "since"; with nothing found it says "None found yet" on one line; no line breaks mid-phrase.
  * Headline: full width above the map and the region list, following the selected region, World by default: "N of M [European] states have an AI Security Institute. K more are planning, proposing or exploring one." ("European" defines the 32-state scope on hover, focus or tap); worded from the data, never activist; each sentence wraps as a unit and a number never ends a line; room for its longest form, so a region switch moves nothing below (check_page check_headline, check_first_screen).
  * Map: one geographic map re-centred per region (the World view by default, cropped to the inhabited latitudes and the institutes' longitudes so it fills the shared frame (on phones, where the list sits below the map, the World view has its own shorter frame); Europe is the UN region, its 32-state scope counted and the other European states listed apart under their own subheading, uncounted; the region list's World view row shows only while another region is selected and moves to World), one dot per state near its country's centre, with the Status ladder as round marks drawn by one function; a hover, focus or selection highlight is the same mark, larger, with an ink ring around it, never a changed mark (check_page check_status_states); selecting the EU outlines the members' merged outer border; in region views each state's name sits beside its own dot, clearly nearer it than any other dot, edge to edge (every other dot at least 1.5 times as far), or takes its short name (NL) where the full name has no such place; a thin leader line to a name set further out is allowed only where that name still meets the same rule, since readers match a name to the nearest dot; no name covers another state's dot or name (check_page check_map_labels); vendored d3 and topology (site/assets), no third-party scripts; one drawing for wide screens and one for phones, both saved in the pre-rendered page, so nothing flashes.
  * Supporting text: use an (i) only for an answer of at most two sentences that says what the thing is first; link with words when the answer is a full text elsewhere. Set-up and Funding scope notes are plain sentences. An (i) is a muted ring with an italic i, hit height --hit, never alone on a line: it shares its line with the last word of the heading or text before it (check_page check_info_lines); without scripting, where no tooltip can open, the note shows as a muted line in its place (check_page check_access_fixes); the definition lives once, at the top of Method.
  * Anchors: each section a reader would link to has one anchor named by what the reader sees (#map, #testing, #set-up, #funding, #news, #europe, #world, #data, #method, #definition; state cards #c-<id>); the names used before 1.0.2 stay as aliases in the page script (check_page check_anchor_aliases).
  * Region tabs: one text tab per view on one hairline, World first and selected by default, then the region list's regions; the selected tab in ink with an accent underline, the others muted; a tab only moves to its view; the row sits over the map column with its text on the column edge, and the search fills the list column exactly, so the first screen keeps two column axes; where the list stacks under the map, the tabs (hairline under them only) and the search share the map's column, the search ending on the map's right edge or dropping below at full width; they wrap on phones and are hidden without scripting.
- * Controls: buttons and fields are soft fills (--field-fill) without a drawn edge; a field shows focus on its own edge.
+ * Controls: buttons and fields are soft fills (--field-fill) without a drawn edge; a field shows focus on its own edge. Disclosures within records and panels, and their Close buttons, share quiet meta text and one chevron; Close has no box and keeps its hit area and focus ring. List-level disclosures share the label-sized .more style (check_page check_disclosure_levels).
  * Region list: beside the map (below it and the map legend at 1100px and narrower, so the legend stays directly under the map (check_page check_legend_place), then at most --region-list wide, so a row's state and institute never drift apart), map and list tops aligned; an accordion whose open region (light tint, thin accent rule, turned chevron) lists its institutes with status marks (institute names right-aligned, like the counts above them), the others their heading, "established of all states" count and one line of names, both in ink; a divider between Europe and the other regions; the EU AI Office under Europe.
  * Record: a map, list or search pick opens the record beside the map (over the list on wide screens, which it hides while open, under the map on narrow ones) and focuses its heading, in view below the section bar, its values cited and qualified as on the card (status date: advisory recommendation, confidence), never more; "Full record ↓" goes to the card (Arrival), whose "↑ Back to map" returns to the same view with the record open; a state without a card links to its table row. Search uses the page's own suggestion list (floating surface, status mark and region per row, keyboard).
  * Naming: one display name per body everywhere (no status suffix; the country in brackets where two bodies share a name); tight places such as table cells use the recorded short form (data field short_name, never a bare generic acronym such as AISI) with the full name on hover; check_page check_institute_names. An institute has one display name and one short form everywhere; former names are marked as former ('then', 'former' or 'formerly', or 'now' with the current short form), source titles excepted (check_page check_former_names). Text with an English form shows that form, with the original available on hover, focus and tap through tipText (aria-description on a focusable element), without a second line, brackets or marker; otherwise the original shows as it is, with lang where known. This covers body names, source titles, Reports to (the producer supplies the original separately) and the Institute name (name_local when it differs); check_page check_source_alignment, check_nonidentified_folds, check_leadership_rows, check_institute_names. A related body's original omits a closing abbreviation repeated in English. A translated link's tap opens its tip with a link to the destination. Downloads keep both forms.
- * None-identified entries: three groups, Closest body, AI Act authorities and Other bodies; the closest body's text in body type, its stage only where it does not exist yet and never a reason it is not counted (Method says what qualifies); the AI Act authorities one line per body (name, roles in the summary's words from dataset.display.authority_roles, basis), single point of contact first, folded after three when two or more would be hidden; other bodies' roles muted, citations inline (owner, 15 Nov 2026); migrated bodies' role claims are separate cited sentences, starting --sp-2 below the name; the closest body's lead stays in the finding, its group shows its other role claims (expired ones marked) or just its name and stage, and is omitted when it has no role claim and the finding already names and cites it (hub default); a migrated record's muted How we checked block is generated from its full-check date, search languages, later search passes and next-check date, and names no document read; on phones the name sits above a full-width summary; wording every entry shares lives in Method (check_page check_nonidentified_folds, check_nonidentified_style).
+ * None-identified entries: three groups, Closest body, AI Act authorities and Other bodies; the closest body's text in body type, its stage only where it does not exist yet and never a reason it is not counted (Method says what qualifies); the AI Act authorities one line per body (name, roles in the summary's words from dataset.display.authority_roles, basis), single point of contact first, folded after three when two or more would be hidden; other bodies' roles in ink, citations inline (owner, 15 Nov 2026); migrated bodies' role claims are separate cited sentences, starting --sp-2 below the name; the closest body's lead stays in the finding, its group shows its other role claims (expired ones marked) or just its name and stage, and is omitted when it has no role claim and the finding already names and cites it (hub default); a migrated record's muted How we checked block is generated from its full-check date, search languages, later search passes and next-check date, and names no document read; on phones the name sits above a full-width summary; wording every entry shares lives in Method (check_page check_nonidentified_folds, check_nonidentified_style).
  * Claims: current facts, body-role sentences and developments, their citations and closed Quote disclosures are in the saved page; bound excerpts, anchors and source re-read lines are built from page.json only on open. Translated quotes follow Naming, including the saved closest-body lead; only the Quote fold shows a muted marker straight after each full translated quote and anchor (owner, 15 Nov 2026).
- * Activity line: a muted qualifier after the closest body's name and stage, only for live activity claims for that body; institute cards and legacy records show none; words come from ACTIVITY_WORDS and the vocabulary's short.
+ * Activity line: an ink qualifier after the closest body's name and stage, only for live activity claims for that body; institute cards and legacy records show none; words come from ACTIVITY_WORDS and the vocabulary's short.
  * Sources: entry source lists hold sources that support the entry; population and region sources (display.generic_sources) are named once in Method and stay in the downloads; check_page check_generic_sources.
  * Archived copies: wherever a source list or Method names a source that has an archive URL, "(archived copy)" follows its link as a quiet link in muted ink with a muted underline, no arrow, never broken across lines; superscript citations never carry one (check_page check_archive_links).
  * Re-read line: every source list item whose source has a quotation with a re-read state ends with one line of its own in the list's muted ink, from its quotations' states (docs/design/claims-1.1.md section 4): "Source last re-read {date}." while none is missing; else the worst state (the earliest start, then offline before not found, then the earliest last found): "Not found in the source on {date}; last found {date}; under review." (with ": N of M quotes" after the first date when some quotations are still found), "Source offline since {date}; last found {date}.", "Source could not be re-read since {date}; last found {date}."; a quotation or claim shown on its own shows its own state, never its source's; the page never says "verified" (check_page check_reread_lines).
@@ -64,14 +66,14 @@
  * Navigation: muted text, full-ink active item with an accent line the width of its label; hover darkens, never underlines; keyboard focus as Focus says.
  * Section bar: the title (not up to 460px; its short form up to 700px), then Map, Compare (Testing and access, Institutional set-up, Funding and staff), News, States (Europe, state by state; The world), Data (Data, Method; the group row says Downloads for Data), one row at every width with no sideways scroll or visible scrollbar from 360px, also with text 10% larger; an item is current while any of its sections is, the section whose top passed last deciding; above the first section of each multi-section group, a quiet group row names the group as in the bar (phones: links only) and links its sections; it sticks under the bar while the group is read, its current section's link marked like the bar's, and leaves with the group, so headings land below both rows (check_page check_section_bar, check_access_fixes, check_group_rows).
  * Figures row: below the map, in the counts row's figure type: median budget and median staff, each with its n and the highest, then the established institutes whose budget is not published; counts count established state institutes only, which an (i) at the end of the row says with their number (check_page check_figures_row).
- * Groups: a grouped list (Testing and access; Institutional set-up, by form with the host as note; the heading alone names the form, with no description on the page) shows a heading, one status square per member in list order, then each member's name linking to its card with a muted note; both share one layout: short groups stack in one column beside a long group (No privileged access found; the largest form) that spans two with its list in halves; a thin ink rule opens each group and hairlines separate members, none after the last; phones keep one column, each note under its state at one left edge (check_page check_access_groups, check_setup_groups, check_access_layout). Institutional set-up orders squares and list alike by status on the ladder, then name; Testing and access orders squares and list alike (testing: in house, in house and other bodies, other bodies, planned, not published; then status; then name), cites every counterpart from its own source list, so flag-only sources stay off the cards, and explains developers (latest event), provisions and MOU in tooltips (check_page check_access_tips).
+ * Groups: a grouped list (Testing and access; Institutional set-up, by form with the host as note; the heading alone names the form, with no description on the page) shows a heading, one status square per member in list order, then each member's name linking to its card with its note in ink; every group and list spans the section body in one column; a thin ink rule opens each group and hairlines separate members, none after the last; phones keep one column, each note under its state at one left edge (check_page check_access_groups, check_setup_groups, check_access_layout). Institutional set-up orders squares and list alike by status on the ladder, then name; Testing and access orders squares and list alike (testing: in house, in house and other bodies, other bodies, planned, not published; then status; then name), cites every counterpart from its own source list, so flag-only sources stay off the cards, and explains developers (latest event), provisions and MOU in tooltips (check_page check_access_tips).
  * Tooltip cues: the dotted underline marks abbreviations and glossary terms only (abbr.g, the legend names, "Privileged", "European", MOU, institute short names); a value with a tooltip ("Medium confidence", "28 days", "~EUR 1.0 per person", a median ceiling, a developer, a provision; "Not published") keeps its tooltip and focus with no underline (owner, 5 Nov 2026; check_page check_tooltip_cues). In a card (its summary row and its body each), or the record panel, a term is marked once, at its first use there, and not at all where that use spells it out (check_page check_terms_once).
  * Missing: absence found by research is written out ("Not published" for unknown values with a tooltip, never zero; "None found yet"); absence by category (no institute yet) is structural: cards omit the row, the table shows a muted dash and hides a column that is inapplicable to every visible row. Each term explains itself in its tooltip, alike in cards and table (Not published, None found yet, None identified, and the dash once in the table's column headers); a complete list is no research gap, so the Network column says "Not a member" with its own tooltip and sorts it after members; no legend lines (check_page check_absence_wording).
  * Scope: each comparison section states which states it covers, and a state outside it shows a dash in every section, never Not published. Testing and access, Institutional set-up, and Funding and staff cover every institute whatever its status, stated in the Testing explanation and in plain sentences for Set-up and Funding. So Budget and Staff show on every institute's card, record and table row, Not published where nothing is found, and the table's dash means the state has no institute; Known activity stays with established institutes (check_page check_supporting_text, check_operating_output).
  * Figures: ISO currency + amount; ~ estimates to 3 significant figures, + lower bound, "up to" upper bound; technical counts labelled.
- * Values and qualifiers: in cards, table and funding alike, a field's value leads on its own line and its qualifiers (as-of date, scope, basis, confidence: 'as of Apr 2026', 'FY2024 supplementary') sit on one small muted line beneath; the unit named by the label is not repeated; a staff total is labelled "Latest total" only where a technical figure sits beside it; a funding row's amount without a bar ends its qualifier line with "not charted"; where funding rows stack, Budget and Staff each take a label above the value, with labels, values and qualifiers on one left edge (check_page check_funding_key).
- * Intervals: cards only, and only an exact interval (equal bounds; a range from a month-only or year-only date stays in the downloads): a muted qualifier under Status ("Established since 21 Feb 2024") giving the announcement or proposal date and the interval to it ("Announced on 24 Jan 2024, 28 days earlier"; the date alone when the interval is a range, nothing when the date is not exact), and its own muted line under the first qualifying Known activity item, counted from establishment ("Joint testing began about 17 months after it was established"); producer wording (display.intervals), the kind label and "began" added by the page, each with a tooltip saying it is not a measure of speed or quality.
- * Funding: the amount leads, with muted period, kind and commitment below; full descriptions stay in Source statement disclosures, except a migrated record's generated line for undisclosed funding, which shows none (display.generated_description), with notes and confidence visible; wider money has a separate Related funding line. The chart is headed with its reference year; adopted bars are solid, announced hatched, and proposals never make a bar; period means are labelled. Own funding without a bar follows the chart as one muted line of Budget values, each with its qualifiers and citations. A charted state budget adds its per-person figure as its last qualifier, never broken across lines, its caveat in that figure's tooltip; a key of two bar swatches (adopted, announced) sits over the bars, with no axis labels (each bar prints its value and the full-width tracks share one scale); the minimum-width caveat is the bars' tooltip; no notes under the chart (check_page check_per_person, check_funding_key).
+ * Values and qualifiers: in cards, table and funding alike, a field's value leads on its own line and its qualifiers (as-of date, scope, basis, confidence: 'as of Apr 2026', 'FY2024 supplementary') sit on one small ink line beneath; the unit named by the label is not repeated; a staff total is labelled "Latest total" only where a technical figure sits beside it; a funding row's amount without a bar ends its qualifier line with "not charted"; where funding rows stack, Budget and Staff each take a label above the value, with labels, values and qualifiers on one left edge (check_page check_funding_key).
+ * Intervals: cards only, and only an exact interval (equal bounds; a range from a month-only or year-only date stays in the downloads): an ink qualifier under Status ("Established since 21 Feb 2024") giving the announcement or proposal date and the interval to it ("Announced on 24 Jan 2024, 28 days earlier"; the date alone when the interval is a range, nothing when the date is not exact), and its own ink line under the first qualifying Known activity item, counted from establishment ("Joint testing began about 17 months after it was established"); producer wording (display.intervals), the kind label and "began" added by the page, each with a tooltip saying it is not a measure of speed or quality.
+ * Funding: the amount leads, with period, kind and commitment in ink below; full descriptions stay in Source statement disclosures, except a migrated record's generated line for undisclosed funding, which shows none (display.generated_description), with notes and confidence visible; wider money has a separate Related funding line. The chart is headed with its reference year; adopted bars are solid, announced hatched, and proposals never make a bar; period means are labelled. Own funding without a bar follows the chart as one ink line of Budget values, each with its qualifiers and citations. A charted state budget adds its per-person figure as its last qualifier, never broken across lines, its caveat in that figure's tooltip; a key of two bar swatches (adopted, announced) sits over the bars, with no axis labels (each bar prints its value and the full-width tracks share one scale); the minimum-width caveat is the bars' tooltip; no notes under the chart (check_page check_per_person, check_funding_key).
  * Periods: annual units appear once; retain fiscal/date context without repeating the unit.
  * Dates: day Mon year, Mon year or year, preserving source precision; tabular numerals for dates and figures; a date never breaks across lines.
  * Rhythm: tighter meta leading; line gap < row gap < header gap < card gap < section gap; folds follow content at the row gap; a repeated component keeps the same spacing in every section (an inline mark's or chip strip's outer margin belongs to the context that places it).
@@ -173,7 +175,8 @@
   --highlight-fill: #F3E6DA; /* the current item in a list or menu (principle: Highlight); the guarded blocks below derive it */
   --control-border: var(--rule) solid transparent; /* controls are soft fills without a drawn edge; the border keeps their size */
   --control: 2.5rem; --hit: 1.75rem; --nav-offset: 6rem;
-  --secnav-default: calc(2 * var(--sp-3) + max(var(--hit), 2 * var(--sp-1) + var(--size-label) * var(--leading-label)) + var(--rule)); --groupnav-default: calc(2 * var(--sp-1) + max(var(--hit), var(--size-label) * var(--leading-label))); /* the one-line bar and group row, until the script measures them */
+  --secnav-height: calc(2 * var(--sp-3) + max(var(--hit), 2 * var(--sp-1) + var(--size-label) * var(--leading-label)) + var(--rule)); /* the section bar never wraps; one CSS source before and after hydration */
+  --groupnav-height: round(nearest, calc(2 * var(--sp-1) + max(var(--hit), var(--size-label) * var(--leading-label))), 1px); /* one line; the wrapping group rows are measured with the same rounding */
   --shadow-pop: 0 var(--rule-strong) var(--sp-2) var(--shadow-ink);
 }
 /* Custom properties accept unsupported functions, so guard the modern palette. */
@@ -235,7 +238,7 @@ a.ico::before { position: static; transform: none; min-height: 0; }
 :focus-visible { outline: var(--rule-strong) solid var(--focus); outline-offset: var(--sp-1); }
 .loading { color: var(--muted); }
 .small { font: var(--type-meta); color: var(--muted); }
-/* A value leads; its qualifiers stay on a muted second line (principle: Values and qualifiers). */
+/* A value leads; its qualifiers stay on an ink second line (principle: Values and qualifiers). */
 .budget-amount, .value-line, .qualifiers, .related-funding-item, .record-notes { display: block; }
 .funding-record > .source-statement { margin-block: var(--gap-row); }
 .label { font: var(--type-meta); color: var(--muted); } /* one label style: muted meta, no colon */
@@ -291,8 +294,8 @@ a.ico::before { position: static; transform: none; min-height: 0; }
    each group is one box, so its row sticks under the bar while the group is read and leaves with the group's end.
    Its ground reaches past its box: up to the bar, so a rounded bar height leaves no strip of text between them, and
    sideways by the arrival tint's spread, so a card reached by a link shows no tint beside the row (check_page check_group_row_cover). */
-.group { display: flex; flex-direction: column; gap: var(--gap-section); --nav-offset: calc(6rem + var(--groupnav-height, var(--groupnav-default))); --groupnav-offset: var(--groupnav-height, var(--groupnav-default)); }
-.group-nav { --row-cover: 0 calc(-1 * var(--sp-2)) 0 var(--sp-2) var(--ground); /* one rectangle: the row grown by the tint's spread on every side and moved up by it, so it covers above and beside, corners included, and nothing below */ font: var(--type-label); display: flex; flex-wrap: wrap; align-items: first baseline; gap: 0 var(--sp-4); padding-block: var(--sp-1); color: var(--muted); position: sticky; top: var(--secnav-height, var(--secnav-default)); z-index: 4; background: var(--ground); box-shadow: var(--row-cover); }
+.group { display: flex; flex-direction: column; gap: var(--gap-section); --nav-offset: calc(6rem + var(--groupnav-height)); --groupnav-offset: var(--groupnav-height); }
+.group-nav { --row-cover: 0 calc(-1 * var(--sp-2)) 0 var(--sp-2) var(--ground); /* one rectangle: the row grown by the tint's spread on every side and moved up by it, so it covers above and beside, corners included, and nothing below */ font: var(--type-label); display: flex; flex-wrap: wrap; align-items: first baseline; gap: 0 var(--sp-4); padding-block: var(--sp-1); color: var(--muted); position: sticky; top: var(--secnav-height); z-index: 4; background: var(--ground); box-shadow: var(--row-cover); }
 .group-nav.stuck { box-shadow: inset 0 calc(-1 * var(--rule)) 0 var(--line), var(--row-cover); } /* a rule inside its box, so sticking moves no layout */
 .group-nav + section { margin-top: calc(var(--sp-2) - var(--gap-section)); } /* the gap on the section, not the row: a sticky row's margin would carry it past its group's end */
 .group-label { color: var(--ink); padding-right: var(--sp-4); border-right: var(--rule) solid var(--line); }
@@ -304,10 +307,10 @@ a.ico::before { position: static; transform: none; min-height: 0; }
 
 /* Developments share the page's text roles and row rhythm. */
 .development-list { list-style: none; margin: 0; padding: 0; max-width: none; display: flex; flex-direction: column; gap: var(--gap-row); }
-.development-row { display: grid; grid-template-columns: 7rem 9rem minmax(0, 1fr); gap: var(--sp-1) var(--sp-4); align-items: first baseline; }
-.development-date { font: var(--type-meta); color: var(--muted); font-variant-numeric: tabular-nums; }
+.development-row { display: grid; grid-template-columns: 7rem 9rem minmax(0, 1fr); gap: var(--sp-1) var(--sp-4); align-items: first baseline; width: 100%; }
+.development-date { font: var(--type-meta); color: var(--ink); font-variant-numeric: tabular-nums; } /* an event date is a fact, not apparatus (R2) */
 .development-name { font: var(--type-label); }
-.development-text { font: var(--type-body); min-width: 0; }
+.development-text { font: var(--type-body); min-width: 0; max-width: var(--prose); }
 
 /* Section structure */
 main .measure { padding-block: var(--sp-8) var(--sp-11); display: flex; flex-direction: column; gap: var(--gap-section); }
@@ -315,11 +318,10 @@ main section { display: grid; grid-template-columns: var(--section-label) minmax
 section, h2, .card, details.more, .development-list > li, .list-more, #worldmap, .region-head, .pick, #record-name { scroll-margin-top: var(--nav-offset); } /* also a development revealed by "Show N earlier", the control after collapsing and the map brought back on a region switch */
 .section-label { align-self: start; position: sticky; top: var(--nav-offset); display: flex; flex-direction: column; gap: var(--sp-4); }
 .section-body { min-width: 0; display: flex; flex-direction: column; gap: var(--gap-row); }
-.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-7); align-items: first baseline; }
+.two { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--sp-7); align-items: first baseline; }
 .two > div { display: flex; flex-direction: column; gap: var(--gap-row); min-width: 0; }
 footer { border-top: var(--rule) solid var(--line); }
 footer .measure { font: var(--type-meta); padding-block: var(--sp-4) var(--sp-7); color: var(--muted); }
-footer p { max-width: none; } /* footer meta lines read full width, together */
 .cite { font: var(--type-body); border-left: var(--rule-strong) solid var(--accent); padding-left: var(--sp-4); user-select: all; }
 
 /* Controls and disclosures */
@@ -339,10 +341,9 @@ footer p { max-width: none; } /* footer meta lines read full width, together */
 summary { cursor: pointer; list-style: none; }
 summary::-webkit-details-marker { display: none; }
 .more > summary { font: var(--type-label); display: flex; align-items: first baseline; gap: var(--sp-2); width: fit-content; min-height: var(--control); color: var(--ink); }
-summary .source-count::after, .list-more::after, .more > summary::after, .quote > summary::after, .mini > summary::after, .download-menu > summary::after, .selectwrap::after { content: ""; flex: none; width: var(--sp-2); height: var(--sp-2); border-right: var(--rule) solid var(--muted); border-bottom: var(--rule) solid var(--muted); transform: rotate(45deg) translateY(calc(-1 * var(--sp-1) / 2)); margin-left: var(--sp-1); }
-details[open] > summary::after, .srcs[open] .source-count::after, .list-more[aria-expanded="true"]::after { transform: rotate(-135deg); }
-.list-more { font: var(--type-meta); color: var(--muted); display: flex; align-items: first baseline; gap: var(--sp-2); width: fit-content; min-height: var(--control); margin-top: var(--gap-row); padding: 0; background: none; border: 0; cursor: pointer; }
-.source-count::after { margin-right: var(--sp-1); } /* the rotated square overhangs its box; keep it inside the summary */
+.list-more::after, .more > summary::after, .quote > summary::after, .srcs > summary::after, .mini > summary::after, .record-close::after, .fn-detail > .btn::after, .download-menu > summary::after, .selectwrap::after { content: ""; flex: none; width: var(--sp-2); height: var(--sp-2); border-right: var(--rule) solid var(--muted); border-bottom: var(--rule) solid var(--muted); transform: rotate(45deg) translateY(calc(-1 * var(--sp-1) / 2)); margin-left: var(--sp-1); margin-right: var(--sp-1); } /* the rotated square reaches past its box; the margin keeps it inside its control */
+details[open] > summary::after, .list-more[aria-expanded="true"]::after, .record-close::after, .fn-detail > .btn::after { transform: rotate(-135deg); }
+.list-more { font: var(--type-label); color: var(--ink); display: flex; align-items: first baseline; gap: var(--sp-2); width: fit-content; min-height: var(--control); margin-top: var(--gap-row); padding: 0; background: none; border: 0; cursor: pointer; }
 .more[open] > summary { margin-bottom: var(--sp-4); }
 #changes-latest { flex: 1; min-width: 0; } /* the collapsed row is version and date only */
 #changes > summary { width: 100%; max-width: var(--prose); } /* so the one-line summary truncates instead of widening the page */
@@ -351,11 +352,11 @@ details[open] > summary::after, .srcs[open] .source-count::after, .list-more[ari
 #changelog { gap: var(--sp-4); }
 #changelog > li > p { margin: var(--sp-1) 0 0; }
 .summary-label { flex: none; white-space: nowrap; } /* a disclosure's label stays one line beside long meta text */
-/* Secondary disclosures (a figure's sources) and list extensions sit one level below their heading: the quiet source-control style. Section folds keep the label style. */
-.more.quiet > summary { font: var(--type-meta); color: var(--muted); min-height: var(--control); }
+/* Record and panel controls share the quiet style below; section/list folds keep the label style. */
 .more.quiet[open] > summary { margin-bottom: var(--sp-2); }
 .missing.na { color: var(--muted); }
-.conf { font: var(--type-meta); color: var(--muted); }
+.conf { font: var(--type-meta); color: var(--ink); }
+.qualifiers { color: var(--ink); }
 .cite-glue, .cites { white-space: nowrap; }
 .cites { margin-inline-start: .12em; display: inline; font-family: var(--body); font-weight: var(--weight-meta); font-size: min(.75em, var(--size-meta)); line-height: 0; position: relative; top: -.4em; } /* relative to the text it annotates, never above meta size (beside a big figure) */
 .cn { font: inherit; line-height: 0; display: inline-block; position: relative; color: var(--link); text-decoration-line: none; margin-inline: 0; }
@@ -507,8 +508,7 @@ main section.first { display: flex; flex-direction: column; gap: var(--sp-5); bo
 .record-top h3 { font: var(--type-label); }
 #record-name:focus { outline: none; } /* focus lands here when the record covers the list row that opened it; the heading is not a control */
 :is(h2, h3, p)[tabindex="-1"]:focus, main[tabindex="-1"]:focus { outline: none; } /* focused by script for screen readers, not a control: no ring; a heading takes the Focus tint below */
-.record-close { font: var(--type-label); flex: none; width: var(--control); height: var(--control); border: var(--control-border); border-radius: var(--r-sm); background: var(--field-fill); color: var(--ink); cursor: pointer; }
-.record-close:hover { background: var(--selected-fill); }
+.record-close { flex: none; min-width: var(--control); height: var(--control); padding: 0; cursor: pointer; }
 .record-rows { display: grid; grid-template-columns: var(--card-key) minmax(0, 1fr); gap: var(--sp-2) var(--sp-3); align-items: first baseline; margin: 0; }
 .record-rows dt { font: var(--type-meta); color: var(--muted); }
 .record-rows dd { margin: 0; min-width: 0; overflow-wrap: break-word; font-variant-numeric: tabular-nums; }
@@ -532,14 +532,14 @@ main section.first { display: flex; flex-direction: column; gap: var(--sp-5); bo
 .card { display: flex; flex-direction: column; min-width: 0; }
 .card .top { display: flex; flex-wrap: nowrap; flex-shrink: 0; justify-content: flex-start; align-items: first baseline; gap: var(--sp-1) var(--sp-3); border-top: var(--rule-strong) solid var(--ink); padding-top: var(--sp-3); margin-bottom: var(--gap-header); }
 /* D. The head travels within the whole card, including cards sharing field tracks. */
-.cards:not(.minis) .card { --card-bars: calc(var(--secnav-height, var(--secnav-default)) + var(--groupnav-offset, 0px)); scroll-margin-top: var(--card-bars); }
+.cards:not(.minis) .card { --card-bars: calc(var(--secnav-height) + var(--groupnav-offset, 0px)); scroll-margin-top: var(--card-bars); }
 .cards .card > .top { min-width: 0; height: var(--card-head-height); border-bottom: var(--rule) solid var(--line); position: sticky; top: var(--card-bars); z-index: 3; background: var(--ground); }
 .card .top > .name { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .card .top > :is(.smark, .state-dl) { flex-shrink: 0; }
 .cards:not(.minis) .card :is(a, button, summary, [tabindex], input, select, textarea) { scroll-margin-top: calc(var(--card-bars) + var(--card-head-height) + var(--sp-2)); }
 .cards .card > .top :is(a, button, [tabindex]) { scroll-margin-top: calc(var(--card-bars) + var(--sp-2)); }
 @media (width > 640px) {
-  .card-row { grid-template-rows: calc(var(--card-head-height) + var(--gap-header)) repeat(13, auto); }
+  .card-row { grid-template-rows: none; grid-auto-rows: calc(var(--card-head-height) + var(--gap-header)) auto auto auto auto auto auto auto auto auto auto auto auto auto; } /* 14 tracks repeat when a saved three-card wrapper flows into two columns: head, 12 fields, footer */
   .card-row > .card > * { grid-column: 1; }
   .card-row > .card > .top { align-self: start; grid-row: 1 / -1; } /* a single-track grid area would stop the sticky head at the end of track 1 */
 }
@@ -552,8 +552,8 @@ main section.first { display: flex; flex-direction: column; gap: var(--sp-5); bo
 .nonmember { white-space: nowrap; } /* a two-word value stays on one line, like Member */
 .partner-how { margin-top: var(--gap-row); }
 .partner-how ul { list-style: none; margin: 0; padding: 0; display: grid; row-gap: var(--sp-2); } /* one explanation per group of partners */
-.partner-how li { font: var(--type-meta); color: var(--muted); } .partner-how .pname { color: var(--ink); } /* separators between grouped names take the item's type, not the body's */
-.partners-none { color: var(--muted); } /* the cyber search found no published agency: a quiet tail on the Partners line */
+.partner-how li { font: var(--type-meta); color: var(--ink); } .partner-how .pname { color: var(--ink); } /* separators between grouped names take the item's type, not the body's */
+.partners-none { color: var(--ink); } /* the cyber search finding qualifies the Partners line */
 .card .foot { font: var(--type-meta); color: var(--muted); }
 .source-footer-line { font: var(--type-meta); color: var(--muted); display: block; min-height: var(--hit); width: fit-content; max-width: 100%; }
 .source-count { display: inline-flex; align-items: first baseline; gap: var(--sp-2); white-space: nowrap; }
@@ -566,6 +566,7 @@ main section.first { display: flex; flex-direction: column; gap: var(--sp-5); bo
 .srcs li { overflow-wrap: anywhere; }
 .srcs .role { font-style: italic; }
 .srcs .reread { display: block; } /* principle: Re-read line */
+.claim, .record-notes { max-width: var(--prose); }
 .claim + .claim { margin-top: var(--sp-2); }
 .quote > summary { font: var(--type-meta); color: var(--muted); min-height: var(--hit); width: fit-content; display: flex; align-items: first baseline; gap: var(--sp-2); }
 .quote-body { margin-block: var(--sp-2); }
@@ -576,26 +577,29 @@ main section.first { display: flex; flex-direction: column; gap: var(--sp-5); bo
 .prose-panel, .quote-body, .srcs,
 :is(.prose-panel, .fn-detail, .quote-body, .srcs) :where(*) { max-width: var(--prose); }
 .srcs ol { padding-left: 0; list-style-position: inside; } /* markers stay inside the panel; wrapped source text shares its left edge */
+.two > .prose-panel, .two > .prose-panel > ul { max-width: none; } /* Method panels and lists span the body; their text items retain --prose. */
+.two > .prose-panel > ul { padding-left: 0; list-style-position: inside; } /* narrative items start on the shared text axis, including their markers */
 .correction { color: var(--muted); }
 .cards.minis { --columns: 1; gap: 0; }
 .card.mini { gap: var(--sp-2); border-bottom: var(--rule) solid var(--line); }
 .card.mini > summary { display: flex; align-items: first baseline; min-height: var(--hit); gap: var(--sp-3); padding-block: var(--sp-2); }
-.card.mini > summary .name { font: var(--type-label); flex: 0 0 8.5rem; }
+.card.mini > summary .name { font: var(--type-label); color: var(--ink); flex: 0 0 8.5rem; }
 .card.mini:hover > summary .name { color: var(--link); }
-.card.mini > summary .find { font: var(--type-meta); flex: 1; min-width: 0; color: var(--muted); }
+.card.mini > summary .find { font: var(--type-meta); flex: 1; min-width: 0; max-width: var(--prose); color: var(--ink); }
 .card.mini[open] > summary .find-whole { display: none; }
 .card.mini p { font: var(--type-body); }
 .card.mini > p + p { margin-top: var(--sp-2); }
 .card.mini > p:has(+ .foot) { margin-bottom: var(--sp-2); } /* the shared footer keeps one spacing everywhere */
-.related { font: var(--type-meta); color: var(--muted); }
+.related { font: var(--type-meta); color: var(--ink); }
 .card.mini .body-group > .gl, .card.mini .how > .gl { font: var(--type-label); }
 .card.mini .body-group { display: flex; flex-direction: column; gap: var(--sp-1); }
 .card.mini .body-group ul, .card.mini .how { display: flex; flex-direction: column; gap: var(--sp-2); margin: 0; padding: 0; list-style: none; }
 .card.mini .body-group li { display: flex; flex-direction: column; font: var(--type-body); }
 .card.mini .body-group li > .claim:not(.claim + .claim) { margin-top: var(--sp-2); }
-.card.mini .body-group .det, .card.mini .how { font: var(--type-meta); color: var(--muted); }
-.card.mini .body-group.closest .det { font: var(--type-body); color: var(--ink); } /* the closest body's text is read like the summary; other bodies' roles stay muted */
-.card.mini .body-roles { color: var(--muted); } /* an AI Act authority's roles and basis after its name, on its line */
+.card.mini .body-group .det { font: var(--type-meta); color: var(--ink); }
+.card.mini .how { font: var(--type-meta); color: var(--muted); }
+.card.mini .body-group.closest .det { font: var(--type-body); color: var(--ink); } /* the closest body's text is read like the summary */
+.card.mini .body-roles { color: var(--ink); } /* an AI Act authority's roles and basis after its name, on its line */
 .card.mini .body-group > details.more { margin-top: calc(var(--gap-row) - var(--sp-1)); }
 .card.mini .body-group > details.more > summary { font: var(--type-meta); color: var(--muted); } /* "N more AI Act bodies": a quiet control inside the group, not a heading */
 .card.mini .body-group > details.more > ul { margin-top: var(--sp-2); }
@@ -615,7 +619,7 @@ table.world [data-col="inst"] { min-width: var(--world-institute-min); }
 .scroll-hint { font: var(--type-meta); color: var(--muted); }
 table { font: var(--type-body); border-collapse: separate; border-spacing: 0; width: 100%; } /* separate borders travel with a sticky header cell */
 .scroll.fits { overflow-x: visible; } /* no sideways scroll needed, so the header can stick to the page */
-.scroll.fits thead th { position: sticky; top: calc(var(--secnav-height, var(--secnav-default)) + var(--groupnav-offset, 0px)); z-index: 2; background: var(--ground); }
+.scroll.fits thead th { position: sticky; top: calc(var(--secnav-height) + var(--groupnav-offset, 0px)); z-index: 2; background: var(--ground); }
 th, td { text-align: left; vertical-align: baseline; border-bottom: var(--rule) solid var(--line); }
 td { padding: var(--sp-3); }
 th { font: var(--type-label); color: var(--ink); padding: 0; }
@@ -666,10 +670,10 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
 .fn { --fn-hairline: color-mix(in srgb, var(--line) 65%, var(--ground)); --fn-tint: color-mix(in srgb, var(--highlight-fill) 55%, var(--ground)); min-width: 0; display: flex; flex-direction: column; gap: var(--gap-row); }
 .fn-scroll { position: relative; max-width: 100%; overflow-x: auto; container-type: inline-size; } /* positioned, so the cells' visually hidden text is clipped here and does not widen the page */
 .fn-scroll.fits { overflow: visible; container-type: normal; }
-.fn-scroll.fits thead { position: sticky; top: calc(var(--secnav-height, var(--secnav-default)) + var(--groupnav-offset, 0px)); z-index: 3; background: var(--ground); } /* the whole head sticks as one layer: cells stay transparent, so no cell paints over its neighbour's rotated label */
+.fn-scroll.fits thead { position: sticky; top: calc(var(--secnav-height) + var(--groupnav-offset, 0px)); z-index: 3; background: var(--ground); } /* the whole head sticks as one layer: cells stay transparent, so no cell paints over its neighbour's rotated label */
 .fn-scroll.fits .fn-detail { width: 100%; max-width: 100%; }
-.fn-table { --fn-head-h: calc(10.25 * var(--size-meta) + 2 * var(--sp-1)); --fn-lean: calc(var(--fn-head-h) * .57735); --fn-group-gap: 1.75rem; border-collapse: separate; border-spacing: 0; width: max-content; font: var(--type-meta); } /* 10.25 head ems cover the longest rotated label, its line box and rounding; spacing clears the lower inset and group underline, including on the saved page. */
-.fn-table .fn-pad { width: max(var(--fn-pad-min), var(--fn-lean)); min-width: max(var(--fn-pad-min), var(--fn-lean)); padding: 0; } /* room for the shifted last group and head tips; the detail row reaches the scroll edge */
+.fn-table { --fn-head-h: calc(10.25 * var(--size-meta) + 2 * var(--sp-1)); --fn-lean: calc(var(--fn-head-h) * .57735); --fn-group-gap: 1.75rem; border-collapse: separate; border-spacing: 0; width: 100%; font: var(--type-meta); } /* 10.25 head ems cover the longest rotated label, its line box and rounding; spacing clears the lower inset and group underline, including on the saved page. */
+.fn-table .fn-pad { width: 100%; min-width: max(var(--fn-pad-min), var(--fn-lean)); padding: 0; } /* a percentage column takes all spare width in auto table layout, so function tracks never stretch; its minimum still clears the shifted last head and keeps narrow tables scrolling */
 .fn-table tr > :is(th, td) { position: relative; box-sizing: border-box; padding: var(--sp-2) 0; border-bottom: var(--rule) solid var(--line); text-align: center; vertical-align: middle; } /* keep the last row of each block and the totals ruled, overriding the shared table's last-row reset */
 .fn-table thead th { vertical-align: bottom; overflow-wrap: normal; hyphens: none; font: var(--type-meta); }
 .fn-table .fn-corner, .fn-table th[scope="row"] { width: var(--fn-state-width); min-width: var(--fn-state-width); padding-right: var(--sp-2); position: sticky; left: 0; z-index: 2; background: var(--ground); text-align: left; overflow-wrap: normal; }
@@ -690,7 +694,7 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
 .fn-table :is(tbody, tfoot) .fn-column:not(.fn-group-start, .fn-group-first) { box-shadow: inset var(--rule) 0 var(--fn-hairline); }
 .fn-table thead > tr:first-child > * { border-bottom: 0; }
 .fn-table .fn-group th { padding-top: var(--sp-4); text-align: left; font: var(--type-label); width: var(--fn-state-width); min-width: var(--fn-state-width); position: sticky; left: 0; z-index: 2; background: var(--ground); }
-.fn-group span { white-space: nowrap; }
+.fn-group span { white-space: normal; } /* a block label may wrap inside the state column rather than widen it (R6: only the spacer grows) */
 .fn-table tr.fn-row-lit > :is(th, td), .fn-table :is(tbody, tfoot) .fn-col-lit { background-color: var(--fn-tint); }
 .fn-table :is(tbody, tfoot) .fn-column { background-clip: padding-box; } /* tint and inset rules start after the transparent group gutter */
 .fn-table :is(tbody, tfoot) .fn-column.fn-col-lit { box-shadow: none; }
@@ -764,20 +768,20 @@ html[data-prerendered] .fn-scroll.fits thead { position: static; }
 .key-item { display: inline-flex; align-items: baseline; gap: var(--sp-2); white-space: nowrap; }
 .key-swatch { display: inline-block; flex: none; width: var(--sp-6); height: var(--sp-3); align-self: center; } /* a piece of each bar style, solid and hatched */
 .fund-list { display: flex; flex-direction: column; }
-.fund-nobar .fund-budget .fund-value > .budget-value { font: var(--type-body); color: var(--muted); } /* a lighter figure per cell; staff keeps its full weight */
+.fund-nobar .fund-budget .fund-value > .budget-value { font: var(--type-body); color: var(--ink); } /* a body-sized figure per cell; staff keeps its full weight */
 .fund-nobar .fund-bar { background: transparent; } /* an empty track: space, no rule */
 .fund-none { display: flex; flex-wrap: wrap; align-items: first baseline; gap: var(--sp-1) var(--sp-4); padding-block: var(--sp-6); }
 .fund-none > ul { display: flex; flex-direction: row; flex-wrap: wrap; gap: var(--sp-1) var(--sp-2); margin: 0; padding: 0; list-style: none; max-width: none; }
 .fund-none > ul > li:not(:last-child)::after { content: ","; } /* "Budget not published France, Germany": the label names the subject (labels carry no colon), commas separate the names */
 .fund-item { display: grid; grid-template-columns: minmax(10rem, 1fr) minmax(12.5rem, 1.5fr) 11rem; gap: var(--sp-3) var(--sp-6); padding-block: var(--sp-6); border-bottom: var(--rule) solid var(--line); align-items: first baseline; }
 .fund-identity h3 { margin-bottom: var(--sp-1); display: flex; flex-wrap: wrap; align-items: first baseline; column-gap: var(--sp-2); }
-.fund-identity h3 .fund-status { font: var(--type-body); color: var(--muted); white-space: nowrap; }
+.fund-identity h3 .fund-status { font: var(--type-body); color: var(--ink); white-space: nowrap; }
 .fund-identity > span:not(.smark) { font: var(--type-body); display: block; }
 .fund-identity > .smark { margin-bottom: var(--sp-2); }
 .fund-value { font: var(--type-body); }
 .fund-value strong { font: var(--type-figure); font-variant-numeric: tabular-nums; letter-spacing: -.035em; }
-.fund-context { font: var(--type-meta); color: var(--muted); margin-top: var(--sp-1); }
-.period-mean { font: var(--type-meta); color: var(--muted); }
+.fund-context { font: var(--type-meta); color: var(--ink); margin-top: var(--sp-1); }
+.period-mean { font: var(--type-meta); color: var(--ink); }
 .fund-bar { position: relative; display: block; width: 100%; height: var(--sp-3); margin-block: var(--sp-2); background: var(--line); }
 .bar-value, .key-swatch { background: var(--ink); }
 .bar-value { display: block; height: 100%; min-width: min(var(--bar-min), 100%); max-width: 100%; background: var(--ink); }
@@ -802,17 +806,17 @@ html[data-prerendered] .fn-scroll.fits thead { position: static; }
 .figure b { font: var(--type-figure); font-variant-numeric: tabular-nums; letter-spacing: -.04em; }
 .figure span { font: var(--type-body); color: var(--muted); }
 .figure em { font-style: normal; color: var(--ink); white-space: nowrap; }
-/* Grouped lists (principle: Groups): heading, a row of status marks, then the names with a muted note. */
+/* Grouped lists (principle: Groups): heading, a row of status marks, then the names and facts in full-width rows. */
 .group-block { display: flex; flex-direction: column; gap: var(--sp-2); min-width: 0; border-top: var(--rule) solid var(--ink); padding-top: var(--sp-3); } /* a thin rule opens each group (owner, 5 Nov 2026) */
 .marks { display: flex; flex-wrap: wrap; gap: var(--sp-1); }
 .group-list { list-style: none; margin: 0; padding: 0; display: block; max-width: none; }
 .group-list > li { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: first baseline; gap: 0 var(--sp-4); padding-block: var(--sp-1); border-bottom: var(--rule) solid var(--line); break-inside: avoid; }
-.group-note { font: var(--type-meta); color: var(--muted); }
+.group-note { font: var(--type-meta); color: var(--ink); max-width: var(--prose); }
 .group-list > li:last-child { border-bottom: 0; } /* hairlines only between members: the group's spacing closes it (rule 15) */
 @media (width <= 640px) { .group-list > li { flex-direction: column; align-items: flex-start; justify-content: flex-start; } } /* phones: every note starts at one left edge, under its state (rule 6) */
-.access, .setup { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: var(--gap-header) var(--sp-7); align-items: start; } /* one layout for both grouped lists: short groups stacked, the long group spanning two tracks */
+.access, .setup { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--gap-header); align-items: start; } /* every group and its row list shares the full section-body width */
 .groups-short, .groups-long { display: flex; flex-direction: column; gap: var(--gap-header); min-width: 0; }
-.groups-long .group-list { columns: 2; column-gap: var(--sp-7); }
+.groups-long .group-list { columns: 1; }
 :is(.access, .setup) > .foot { grid-column: 1 / -1; font: var(--type-meta); color: var(--muted); }
 .per-person { white-space: nowrap; } /* a figure and its unit stay on one line */
 .group-list.stacked > li { flex-direction: column; align-items: flex-start; justify-content: flex-start; }
@@ -827,7 +831,7 @@ html[data-prerendered] .fn-scroll.fits thead { position: static; }
 .downloads { display: flex; flex-direction: column; gap: var(--gap-header); }
 .dlgroup { display: flex; flex-direction: column; gap: var(--sp-1); }
 .dlgroup h4 { font: var(--type-label); color: var(--ink); display: flex; gap: var(--sp-2); align-items: first baseline; }
-.dlist { list-style: none; padding: 0; gap: 0; border-top: var(--rule) solid var(--line); }
+.dlist { list-style: none; padding: 0; gap: 0; max-width: none; border-top: var(--rule) solid var(--line); }
 .dlist li { border-bottom: var(--rule) solid var(--line); }
 .dlist a { display: grid; grid-template-columns: var(--sp-3) 14rem 13rem minmax(0, 1fr); gap: var(--sp-1) var(--sp-3); align-items: first baseline; padding: var(--sp-2); color: var(--ink); text-decoration-line: none; } /* the same tracks in every group, so names, files and descriptions align */
 .dlist .dl-title { font: var(--type-body); white-space: nowrap; }
@@ -837,6 +841,16 @@ html[data-prerendered] .fn-scroll.fits thead { position: static; }
 .dlist a:is(:hover, :focus-visible) { text-decoration-line: none; }
 .dlist a:is(:hover, :focus-visible) .dl-title { color: var(--link); }
 .dlist a.ico::before { color: var(--muted); align-self: first baseline; }
+
+/* One quiet control level, independent of the record/panel builder. Source counts put their chevron
+   on the summary itself, like every other fold. Mini summaries keep their explicit name/finding roles. */
+.more.quiet > summary, .quote > summary, .srcs > summary,
+:is(.card, .record, .fn-detail, .fund-detail) summary, .record-close, .fn-detail > .btn {
+  font: var(--type-meta); color: var(--muted); display: flex; align-items: first baseline; gap: var(--sp-2);
+}
+.more.quiet > summary { min-height: var(--control); }
+.record-close, .fn-detail > .btn { display: inline-flex; width: fit-content; justify-content: flex-start; background: none; border: 0; border-radius: 0; min-width: var(--control); min-height: var(--control); }
+.record-close:is(:hover, :focus-visible), .fn-detail > .btn:is(:hover, :focus-visible) { background: none; color: var(--muted); text-decoration: underline; text-underline-offset: var(--underline-offset); }
 
 /* Funding rows collapse where their three tracks (10rem + 12.5rem + 11rem, the staff track fitting "as of 12 Oct 2026" and its citation, and two 1.5rem gaps) no longer fit the section, measured in rem, so enlarged text collapses them earlier. */
 .section-body:has(> #fund-rows) { container: funding / inline-size; }
@@ -1608,7 +1622,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   }
   // Staff counts arrive as text from the producer (two significant figures, qualifier included).
   function staffText(st) { return st.display.total != null ? st.display.total + (st.display.technical != null ? " (" + st.display.technical + " technical)" : "") : st.display.technical != null ? st.display.technical + " technical" : st.description || ""; }
-  // Value first, then its qualifiers on one muted line; citations follow the qualifiers.
+  // Value first, then its qualifiers on one ink line; citations follow the qualifiers.
   function qualified(value, qualifiers) {
     var box = el("span", "qualified"), line = el("span", "value-line");
     line.appendChild(typeof value === "string" ? document.createTextNode(value) : value); box.appendChild(line);
@@ -3397,7 +3411,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       infoAfterHeading($("testing"), info(ACCESS_SCOPE, "test-scope"));
       if (order.length) box.appendChild(groupSources(order, S));
     })();
-    // Institutional set-up: every institute grouped by form (principle: Scope), the host as the note; laid out as Testing and access (principle: Groups): the largest group spans two tracks, the others stack beside it.
+    // Institutional set-up: every institute grouped by form (principle: Scope), the host as the note; laid out as Testing and access (principle: Groups): every group spans the full content width.
     (function () {
       var order = [], cite = citations(S, order, {}), groups = {};
       d.institutes.forEach(function (i) { var f = LEGAL_FORM[i.legal_form] ? i.legal_form : "unknown"; (groups[f] = groups[f] || []).push(i); });
@@ -3822,15 +3836,8 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     glueCitations($("top"));
     glueCitations(document.querySelector("main"));
     arrangeCards();
-    // Separators that end a line are re-marked whenever the layout may have moved a line break (not while saving the pre-rendered page).
-    if (!PRERENDERING) {
-      var dotFrame = 0, scheduleDots = function () { if (!dotFrame) dotFrame = requestAnimationFrame(function () { dotFrame = 0; hideLineEndDots(document); }); };
-      new ResizeObserver(scheduleDots).observe(document.body); document.fonts.addEventListener("loadingdone", scheduleDots);
-      document.addEventListener("contentvisibilityautostatechange", function (e) { if (!e.skipped) hideLineEndDots(e.target); }, true); // an off-screen row or section as it is drawn
-    }
+    if (!PRERENDERING) scheduleDots(); // the fresh content needs marks before its first paint too
     new ResizeObserver(scheduleSpy).observe(document.querySelector("main"));
-    // A sticky table header sits below the section navigation (and its group row: --groupnav-height), whatever their heights.
-    new ResizeObserver(function () { document.documentElement.style.setProperty("--secnav-height", nav.offsetHeight + "px"); }).observe(nav);
     // A control reached by keyboard under the sticky rows comes out from under them (scroll-margin covers only some elements).
     document.addEventListener("focusin", function (e) {
       var t = e.target; if (!t.matches || !t.matches(":focus-visible") || t.closest(".secnav, .group-nav")) return;
@@ -3840,8 +3847,9 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         if (r.top < b && r.bottom > 0) window.scrollBy(0, r.top - b - 8);
       });
     });
-    // Headings in a group land below its row too, whatever its height.
-    var rowsHeight = new ResizeObserver(function () { document.documentElement.style.setProperty("--groupnav-height", Math.max.apply(null, groupRows.map(function (g) { return g.row.offsetHeight; })) + "px"); });
+    // Group links can wrap with narrow widths, enlarged text or longer labels. Keep their measurement;
+    // Math.round matches the saved page's round(nearest, ..., 1px) single-line formula.
+    var rowsHeight = new ResizeObserver(function () { document.documentElement.style.setProperty("--groupnav-height", Math.round(Math.max.apply(null, groupRows.map(function (g) { return g.row.getBoundingClientRect().height; }))) + "px"); });
     groupRows.forEach(function (g) { rowsHeight.observe(g.row); });
     requestAnimationFrame(spy);
     // Off-screen sections (principle: Off-screen sections): settled once the fonts are in and frames have drawn every
@@ -3889,7 +3897,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       var template = document.createElement("template"); template.id = "page-template"; template.innerHTML = PRISTINE;
       document.body.insertBefore(template, SCRIPT);
       ROOT.setAttribute("data-prerendered", ""); ROOT.removeAttribute("data-js"); // the saved page shows no toggle until a script marks it again
-      ROOT.style.removeProperty("--secnav-height"); ROOT.style.removeProperty("--groupnav-height"); // measured rows: the saved page uses the rem defaults, which follow the reader's text size
+      ROOT.style.removeProperty("--groupnav-height"); // keep the saved single-line formula responsive to the reader's text size; live wrapped rows still need measurement
     }
   }
 
@@ -3947,6 +3955,14 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   var dataMeta = document.querySelector('meta[name="aisi-page-data"]'), MAP_WAIT = 10000;
   var PKG = fetch(dataMeta ? dataMeta.getAttribute("data-package") : "data/datapackage.json").then(json);
   if (PRERENDERED) arrangeCards(); // regroup the saved card rows for this window's width before the data arrives
+  // Mark the saved page at this window's width before the data arrives, so takeover does not make line-end separators disappear.
+  // Start early, then re-mark after fonts and layout changes; skip the build so the saved HTML has no width-specific marks.
+  if (!PRERENDERING) {
+    var dotFrame = 0, scheduleDots = function () { if (!dotFrame) dotFrame = requestAnimationFrame(function () { dotFrame = 0; hideLineEndDots(document); }); };
+    hideLineEndDots(document); document.fonts.ready.then(scheduleDots);
+    new ResizeObserver(scheduleDots).observe(document.body); document.fonts.addEventListener("loadingdone", scheduleDots);
+    document.addEventListener("contentvisibilityautostatechange", function (e) { if (!e.skipped) hideLineEndDots(e.target); }, true); // an off-screen row or section as it is drawn
+  }
   if (PRERENDERED) { loadSavedMap(); window.addEventListener("resize", loadSavedMap); }
   // The saved map drawings live in their own files (the build moves them out of the page, which stays under the 2 MB that
   // search engines read): fill the one this window shows into its empty <svg>, which keeps the page's styles on it. A

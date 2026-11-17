@@ -3494,7 +3494,7 @@ def figures_note_layout_errors(m: dict | None) -> list[str]:
 
 
 def one_column_errors(name: str, m: dict, width: int) -> list[str]:
-    """Phones: the short groups and the long group share one left edge, the long group below them, its list in one
+    """The short groups and the long group share one left edge, the long group below them, its list in one
     column. Overlap blocks; the edge and the column count are report lines."""
     errors = []
     if m["columns"] != 1:
@@ -3514,7 +3514,7 @@ def one_column_errors(name: str, m: dict, width: int) -> list[str]:
 
 
 def check_access_layout(page, width: int) -> list[str]:
-    """Testing and access and Institutional set-up share one layout (principle: Groups): short groups stack on the left; the long group spans two columns with its list in halves; phones keep one column."""
+    """Testing and access and Set-up stack full-width groups and row lists at every width."""
     errors = []
     for name, sel in (("access", "#access"), ("set-up", "#setup")):
         m = page.evaluate(ACCESS_LAYOUT_JS, sel)
@@ -3524,13 +3524,7 @@ def check_access_layout(page, width: int) -> list[str]:
             errors.append(report_line(f"{name} groups: expected a thin top rule and no hairline after the last member, got {m['rules']}"))
         if width <= 640 and m["noteOffsets"] != [0]:
             errors.append(report_line(f"{name} groups on a phone: notes do not start at their state's left edge (offsets {m['noteOffsets']})"))
-        if width > 640:
-            if m["longLeft"] < m["shortRight"] or m["longWidth"] < 1.8 * m["shortWidth"]:
-                errors.append(report_line(f"long {name} group is not the right column spanning two: {m}"))
-            if m["columns"] != 2 or max(m["per"]) - min(m["per"]) > 1:
-                errors.append(report_line(f"long {name} list is not in halves: {m['per']}"))
-        else:
-            errors += one_column_errors(name, m, width)
+        errors += one_column_errors(name, m, width)
     errors += check_funding_key(page)
     errors += figures_note_layout_errors(page.evaluate(FIGURES_NOTE_JS))
     if width == 390:  # the phone layout's upper edge
@@ -4092,6 +4086,7 @@ WIDTH_GEOMETRY = {
         (".fn-phone-row", "width"), (".fn-phone-detail", "width"), (".fn-phone-detail", "max-width"),
         ("button.fn-function-label", "width"), (".fund-bar", "width"),
         (".bar-value", "max-width"), (".region-chips", "max-width"),
+        (".development-row", "width"), (".fn-table", "width"), (".fn-table .fn-pad", "width"),  # R6: full content width; the spacer takes the slack
     )},
 }
 # Match every dimension and percentage, including exponent notation. Restricting
@@ -4926,6 +4921,205 @@ def check_none_identified_tips(browser, base_url: str, data: dict) -> list[str]:
     return errors
 
 
+CONTENT_GRID_JS = r"""() => {
+  const errors = [], visible = n => n.getClientRects().length && getComputedStyle(n).visibility !== 'hidden';
+  const probe = document.createElement('div'); probe.style.width = 'var(--prose)'; document.body.appendChild(probe);
+  const measure = probe.getBoundingClientRect().width; probe.remove();
+  const label = n => n.id || n.className || n.tagName.toLowerCase();
+  const full = 'table, .cards, .card-row, .access, .setup, .group-list, .fund-list, .fund-item, .development-list, .development-row, .downloads, .dlist, .two, .two > .prose-panel, .two > .prose-panel > ul';
+  const bodies = [...document.querySelectorAll('main section > .section-body')];
+  if (!bodies.length) return ['no section bodies to measure'];
+  for (const body of bodies) {
+    if (body.closest('section.first')) continue; // the sole exception, including its stacked map/list caps
+    const b = body.getBoundingClientRect(), section = body.closest('section').getAttribute('aria-labelledby');
+    const edge = (n, right) => {
+      const r = n.getBoundingClientRect();
+      if (Math.abs(r.left - b.left) > 1 || Math.abs(r.right - right) > 1)
+        errors.push(section + ': ' + label(n) + ' edges ' + r.left.toFixed(1) + '–' + r.right.toFixed(1) +
+          ', expected ' + b.left.toFixed(1) + '–' + right.toFixed(1));
+    };
+    const children = [...body.children].filter(visible), widest = Math.max(...children.map(n => n.getBoundingClientRect().width));
+    if (!children.length) errors.push(section + ': no main content block');
+    // All ties count, so a second wide block cannot hide an offset first one.
+    for (const child of children.filter(n => Math.abs(n.getBoundingClientRect().width - widest) <= 1)) {
+      edge(child, child.matches('p, ul, ol, .prose-panel') && !child.matches(full) ? b.left + Math.min(measure, b.width) : b.right);
+    }
+    for (const n of body.querySelectorAll(full)) if (visible(n)) edge(n, b.right);
+    for (const p of body.querySelectorAll(':scope > p, .fn > p, .two > .prose-panel > p, .two > .prose-panel > ul > li')) {
+      if (visible(p)) edge(p, b.left + Math.min(measure, b.width));
+    }
+  }
+  // Inside rows/cards the text starts on its own track; it still cannot exceed the shared measure.
+  for (const n of document.querySelectorAll('p, .claim, .record-notes, .development-text, .card.mini > summary .find, .group-note')) {
+    if (!visible(n) || n.closest('section.first')) continue;
+    if (n.getBoundingClientRect().width > measure + 1) errors.push(label(n) + ': running text exceeds --prose');
+  }
+  return errors;
+}"""
+
+
+def check_content_grid(browser, base_url: str) -> list[str]:
+    """R6/R1: section axes at both desktop extremes, with every fold and earlier News row exposed."""
+    errors = []
+    for width in (1000, 1280, 1920):
+        page = browser.new_page(viewport={"width": width, "height": 1000})
+        try:
+            hydrated(page, base_url)
+            page.add_style_tag(content=".offscreen, .card-row { content-visibility: visible !important; }")
+            page.evaluate("""() => {
+              const more = document.getElementById('developments-more');
+              if (more && !more.hidden && more.getAttribute('aria-expanded') === 'false') more.click();
+              document.querySelectorAll('details').forEach(n => n.open = true);
+            }""")
+            page.evaluate("async () => { await document.fonts.ready; await new Promise(requestAnimationFrame); }")
+            if width == 1000:
+                found = page.evaluate("""() => {
+                  const scroll = document.querySelector('.fn-scroll'), table = scroll?.querySelector('table');
+                  if (!table) return ['missing functions table'];
+                  const body = scroll.closest('.section-body').getBoundingClientRect(), r = scroll.getBoundingClientRect();
+                  const errors = [];
+                  if (Math.abs(r.left - body.left) > 1 || Math.abs(r.right - body.right) > 1) errors.push('functions scroller is not full content width');
+                  if (table.getBoundingClientRect().width <= r.width + 1 || scroll.classList.contains('fits') ||
+                      !['auto', 'scroll'].includes(getComputedStyle(scroll).overflowX)) errors.push('functions table no longer scrolls inside its body at 1000px');
+                  return errors;
+                }""")
+            else:
+                found = page.evaluate(CONTENT_GRID_JS)
+            errors.extend(f"{width}px: {e}" for e in found)
+        finally:
+            page.close()
+    return errors
+
+
+DISCLOSURE_LEVELS_JS = r"""() => {
+  const errors = [], visible = n => n.getClientRects().length && getComputedStyle(n).visibility !== 'hidden';
+  const probe = document.createElement('span'); document.body.appendChild(probe);
+  const type = ['fontFamily', 'fontSize', 'fontWeight', 'fontStyle', 'lineHeight', 'color'];
+  const expected = quiet => {
+    probe.style.cssText = 'font:var(--type-' + (quiet ? 'meta' : 'label') + ');color:var(--' + (quiet ? 'muted' : 'ink') + ')';
+    const s = getComputedStyle(probe); return type.map(k => s[k]).join('|');
+  };
+  const quietType = expected(true), listType = expected(false);
+  probe.style.cssText = 'width:var(--sp-2);height:var(--hit);margin-top:var(--control);border-right:var(--rule) solid var(--muted)';
+  const ps = getComputedStyle(probe), arrowWidth = ps.width, rule = ps.borderRightWidth, colour = ps.borderRightColor;
+  const hit = parseFloat(ps.height), control = parseFloat(ps.marginTop); probe.remove();
+  const scope = '.card, .record, .fn-detail, .fund-detail, .prose-panel';
+  const controls = [...document.querySelectorAll('summary, .list-more, .record-close, .fn-detail > .btn')];
+  let quietCount = 0, listCount = 0, closeCount = 0;
+  for (const n of controls.filter(visible)) {
+    const close = n.matches('.record-close, .fn-detail > .btn');
+    const quiet = close || !!n.closest(scope) || n.matches('.more.quiet > summary, .quote > summary, .srcs > summary');
+    if (!quiet && !n.matches('.more > summary, .list-more')) continue; // toolbar menus use the field/control level
+    quiet ? quietCount++ : listCount++;
+    const name = (n.closest('section')?.getAttribute('aria-labelledby') || 'panel') + ': ' + n.textContent.trim().slice(0, 60);
+    const s = getComputedStyle(n), after = getComputedStyle(n, '::after');
+    if (type.map(k => s[k]).join('|') !== (quiet ? quietType : listType)) errors.push(name + ': disclosure type/colour differs from its level');
+    const expanded = close || n.parentElement.open || n.getAttribute('aria-expanded') === 'true';
+    const matrix = new DOMMatrix(after.transform), angle = Math.atan2(matrix.b, matrix.a) * 180 / Math.PI;
+    if (after.content !== '""' || after.width !== arrowWidth || after.height !== arrowWidth ||
+        after.borderRightWidth !== rule || after.borderBottomWidth !== rule ||
+        after.borderRightStyle !== 'solid' || after.borderBottomStyle !== 'solid' ||
+        after.borderRightColor !== colour || after.borderBottomColor !== colour ||
+        Math.abs(angle - (expanded ? -135 : 45)) > 1) errors.push(name + ': disclosure chevron differs');
+    if (n.getBoundingClientRect().height < hit - 1) errors.push(name + ': disclosure hit height is too small');
+    const count = n.querySelector('.source-count');
+    if (count && !['none', 'normal'].includes(getComputedStyle(count, '::after').content)) errors.push(name + ': duplicate source-count chevron');
+    if (close) {
+      closeCount++;
+      if (s.backgroundColor !== 'rgba(0, 0, 0, 0)' || parseFloat(s.borderTopWidth) || parseFloat(s.borderRadius))
+        errors.push(name + ': Close is still boxed');
+      const r = n.getBoundingClientRect();
+      if (r.height < control - 1 || r.width < control - 1) errors.push(name + ': Close lost its hit area');
+      const symbol = n.textContent.trim() === '×'; // the site's close symbol keeps its own centred box
+      if (!symbol && (s.display !== 'inline-flex' || s.justifyContent !== 'flex-start')) errors.push(name + ': Close is not an intrinsic quiet text control');
+      if (n.matches('.fn-detail > .btn')) {
+        const parent = n.parentElement, p = getComputedStyle(parent);
+        const left = parent.getBoundingClientRect().left + parseFloat(p.paddingLeft) + parseFloat(p.borderLeftWidth);
+        if (Math.abs(r.left - left) > 1) errors.push(name + ': Close is not on the panel content edge');
+      }
+    }
+  }
+  if (!quietCount || !listCount || !closeCount) errors.push('missing quiet, list-level or Close controls to compare');
+  return errors;
+}"""
+
+
+def check_disclosure_levels(browser, base_url: str) -> list[str]:
+    """R4: both control levels in both themes/forms, including lazy record and function panels."""
+    errors = []
+    for width in (1280, 390):
+        page = browser.new_page(viewport={"width": width, "height": 1000})
+        try:
+            hydrated(page, base_url)
+            page.add_style_tag(content=".offscreen, .card-row { content-visibility: visible !important; }")
+            opened = page.evaluate("""() => {
+              // First available row/mark in document order is sufficient for the shared control builder.
+              document.querySelector('.regions .pick')?.click();
+              if (innerWidth <= 640) {
+                document.querySelector('.fn-phone-row')?.click();
+                document.querySelector('.fn-phone-detail button.fn-function-label')?.click();
+              } else document.querySelector('.fn-cell')?.click();
+              return [!!document.querySelector('.record:not([hidden]) .record-close'),
+                !!document.querySelector('.fn-detail > .btn')];
+            }""")
+            if not all(opened):
+                errors.append(f"{width}px: map/function Close sample missing ({opened})")
+            for theme in ("light", "dark"):
+                set_theme(page, theme)
+                for expanded in (False, True):
+                    page.evaluate("""expanded => {
+                      document.querySelectorAll('details').forEach(n => n.open = expanded);
+                      const more = document.getElementById('developments-more');
+                      if (more && !more.hidden && (more.getAttribute('aria-expanded') === 'true') !== expanded) more.click();
+                    }""", expanded)
+                    page.evaluate("async () => { await document.fonts.ready; await new Promise(requestAnimationFrame); }")
+                    errors.extend(f"{width}px {theme} {'open' if expanded else 'closed'}: {e}" for e in page.evaluate(DISCLOSURE_LEVELS_JS))
+                for close in page.locator(".record-close:visible, .fn-detail > .btn:visible").all():
+                    close.focus()
+                    if not close.evaluate("n => { const s = getComputedStyle(n); return s.outlineStyle !== 'none' && parseFloat(s.outlineWidth) >= 1; }"):
+                        errors.append(f"{width}px {theme}: Close has no keyboard focus ring")
+                    close.evaluate("n => n.blur()")
+        finally:
+            page.close()
+    return errors
+
+
+def check_secondary_tone(browser, base_url: str) -> list[str]:
+    """R2: the audited content stays ink while labels, sources and method notes keep muted meta."""
+    errors = []
+    page = browser.new_page(viewport={"width": 1280, "height": 1000})
+    try:
+        hydrated(page, base_url)
+        page.add_style_tag(content=".offscreen, .card-row { content-visibility: visible !important; }")
+        for theme in ("light", "dark"):
+            set_theme(page, theme)
+            for expanded in (False, True):
+                page.locator("details").evaluate_all("nodes => nodes.forEach(n => n.open = " + str(expanded).lower() + ")")
+                page.evaluate("() => new Promise(requestAnimationFrame)")
+                found = page.evaluate("""() => {
+                  const errors = [], probe = document.createElement('span'); document.body.appendChild(probe);
+                  const roles = {
+                    ink: '.development-date, .group-note, .fund-context, .period-mean, .fund-status, .fund-nobar .fund-budget .fund-value > .budget-value, .qualifiers, .conf, .partner-how li, .partners-none, .card.mini > summary .find, .related, .card.mini .body-group .det, .card.mini .body-roles',
+                    muted: '.card .k, .record-rows dt, .label, .srcs ol, .source-after, .quote-anchor, .quote .reread, .claim > .reread, .card.mini .how p:not(.gl)'
+                  };
+                  for (const [role, selectors] of Object.entries(roles)) {
+                    probe.style.color = 'var(--' + role + ')'; const colour = getComputedStyle(probe).color;
+                    let measured = 0;
+                    for (const n of document.querySelectorAll(selectors)) {
+                      if (!n.getClientRects().length) continue;
+                      measured++;
+                      if (getComputedStyle(n).color !== colour) errors.push(n.className + ': expected ' + role);
+                    }
+                    if (!measured) errors.push('no ' + role + ' elements measured');
+                  }
+                  probe.remove(); return errors;
+                }""")
+                errors.extend(f"{theme} {'open' if expanded else 'closed'}: {e}" for e in found)
+    finally:
+        page.close()
+    return errors
+
+
 def check_text_measure(browser, base_url: str) -> list[str]:
     """Principle Measure: stacked sibling text blocks in one container wrap at one width, so no paragraph,
     list or note breaks early beside a sibling whose lines run further (bare text included). Measured from
@@ -4986,6 +5180,8 @@ PANEL_MEASURE_JS = r"""panel => {
   const right=r.right-parseFloat(style.borderRightWidth)-parseFloat(style.paddingRight);
   const blocks=[...panel.querySelectorAll('*')].filter(n => {
     const s=getComputedStyle(n);
+    // R6: Method lists are structural full-width containers; their narrative items keep the prose cap.
+    if (n.matches('.two > .prose-panel > ul')) return false;
     return n.getClientRects().length && s.visibility!=='hidden' && !n.closest('.vh') && n.textContent.trim() &&
       (s.display!=='inline' || n.matches('.quote-text')) && s.display!=='none';
   }).map(n => {
@@ -5040,7 +5236,7 @@ def check_panel_measure(browser, base_url: str) -> list[str]:
                 if not nodes.count():
                     errors.append(f"{width}px {label}: panel missing")
                     continue
-                # The first rendered sample in document order; definitions has two independent columns.
+                # The first rendered sample in document order; inspect both stacked Method panels.
                 for panel in (nodes.all() if label == "definitions" else [nodes.first]):
                     measured = panel.evaluate(PANEL_MEASURE_JS)
                     errors.extend(f"{width}px {label}: {e}" for e in panel_measure_errors(measured))
@@ -5135,19 +5331,28 @@ def check_clipped_card_name(page, card, *, interactive: bool) -> list[str]:
 def check_saved_card_heads(browser, base_url: str) -> list[str]:
     """Saved one-line heads reserve their track without JS or while hydration waits."""
     errors = []
+
+    def settled(page):
+        """With page scripts off, timers and frames never fire, so wait for the fonts and a short pause instead."""
+        if scripting:
+            layout_settled(page)
+        else:
+            page.evaluate("document.fonts.ready")
+            page.wait_for_timeout(150)
     for scripting in (False, True):
         page = browser.new_page(viewport={"width": 1280, "height": 900}, java_script_enabled=scripting)
         mode = "before hydration" if scripting else "no JS"
         try:
             held = Held(page, PAGE_DATA) if scripting else None
             page.goto(base_url, wait_until="load")
-            page.evaluate("document.fonts.ready")
+            settled(page)
             if held:
                 held.wait()
             card = page.locator('#c-fr')
             # Check real names before stressing the one-line track with a synthetic long title.
             for width in (1280, 1440):
                 page.set_viewport_size({"width": width, "height": 900})
+                settled(page)
                 for name in page.locator('.cards .card > .top .name').all():
                     if name.evaluate("n => n.scrollWidth > n.clientWidth + 1"):
                         errors.append(f"saved cards {mode}, {width}px: country name cut: {name.text_content()}")
@@ -5155,19 +5360,26 @@ def check_saved_card_heads(browser, base_url: str) -> list[str]:
                         errors.append(f"saved cards {mode}: full country name missing from tooltip")
             for width in (641, 1000, 1280, 1440, 1600, 390):
                 page.set_viewport_size({"width": width, "height": 900})
+                settled(page)
                 for scale in (100, 150):
                     prefix = f"saved cards {mode}, {width}px, text {scale}%: "
                     page.evaluate("scale => document.documentElement.style.fontSize=scale+'%'", scale)
+                    settled(page)
                     # Keep the head in natural flow for measurement, below the sticky bars even on phone.
                     card.evaluate("c => scrollTo(0,scrollY+c.getBoundingClientRect().top-innerHeight/2)")
+                    settled(page)
                     if not page.evaluate("document.documentElement.hasAttribute('data-prerendered')"):
                         errors.append(prefix + "saved-page fixture hydrated before measurement")
                     errors.extend(prefix + e for e in check_clipped_card_name(page, card, interactive=False))
                     # Every peer's fields must clear the fixed head track, including enlarged text.
                     for peer in card.locator('..').locator(':scope > .card').all():
                         peer.evaluate("c => scrollTo(0,scrollY+c.getBoundingClientRect().top-innerHeight/2)")
+                        settled(page)
                         m = peer.evaluate(CARD_HEAD_SPACE_JS)
                         errors.extend(prefix + m["id"] + ': ' + e for e in card_head_space_errors(m))
+            failed_faces = page.evaluate("""() => [...document.fonts].filter(f => f.status === 'error')
+              .map(f => [f.family, f.style, f.weight, f.unicodeRange])""")
+            errors.extend(f"saved cards {mode}: the font face {face} failed to load" for face in failed_faces)
         finally:
             page.close()
     return errors
@@ -7490,13 +7702,13 @@ def check_wrapped_rows(page) -> list[str]:
 
 def check_value_qualifiers(page) -> list[str]:
     """One rule in cards, table and funding: the value leads on its own line; qualifiers sit on one small
-    muted line beneath; no qualifier (confidence, as-of date, scope) is written inline after the value."""
+    ink line beneath; no qualifier (confidence, as-of date, scope) is written inline after the value."""
     return page.evaluate("() => {" + REPORT_JS + r"""
       // Folded records (funding disclosures) count too: open them, measure, restore.
       const folds = [...document.querySelectorAll('details:not([open])')]; folds.forEach(d => d.open = true);
       const errors = [], probe = document.createElement('span');
       let tracked = 0;  // card and table fields that carry qualifiers: none found means the check saw nothing
-      probe.style.cssText = 'font: var(--type-meta); color: var(--muted)'; document.body.appendChild(probe);
+      probe.style.cssText = 'font: var(--type-meta); color: var(--ink)'; document.body.appendChild(probe);
       const meta = getComputedStyle(probe), want = { fontSize: meta.fontSize, color: meta.color }; probe.remove();
       const fields = [...document.querySelectorAll('.card .row .v, #world-rows td, .fund-value, .funding-native, .fund-context, p[data-record]')].filter(n => n.getClientRects().length);
       const name = n => (n.closest('[data-j]') || {}).dataset?.j + ' ' + (n.closest('.row')?.querySelector('.k')?.textContent || n.closest('td')?.dataset.col || n.className);
@@ -7504,7 +7716,7 @@ def check_value_qualifiers(page) -> list[str]:
         for (const q of field.querySelectorAll('.qualifiers')) {
           if (!q.getClientRects().length) continue;
           const s = getComputedStyle(q);
-          if (s.display !== 'block' || s.fontSize !== want.fontSize || s.color !== want.color) errors.push(REPORT + `qualifiers are not a small muted block: ${name(field)}`);
+          if (s.display !== 'block' || s.fontSize !== want.fontSize || s.color !== want.color) errors.push(REPORT + `qualifiers are not a small ink block: ${name(field)}`);
           // The qualifier line starts below the value's first line.
           const walker = document.createTreeWalker(field, NodeFilter.SHOW_TEXT);
           let text = null; while (walker.nextNode()) if (walker.currentNode.nodeValue.trim() && !walker.currentNode.parentElement.closest('.qualifiers, .vh')) { text = walker.currentNode; break; }
@@ -12121,6 +12333,19 @@ def check_functions_layout(browser, base_url: str, *, fixture: dict | None = Non
                   }
                   const widths=heads.map(h=>track(h).width);
                   if(widths.length && Math.max(...widths)-Math.min(...widths)>1) errors.push('function tracks have unequal widths');
+                  // R6: only the spacer grows. Neither the state track nor any function track moves or stretches.
+                  const trackProbe=document.createElement('div'); document.body.appendChild(trackProbe);
+                  trackProbe.style.width='var(--fn-column-width)'; const functionWidth=trackProbe.getBoundingClientRect().width;
+                  trackProbe.style.width='var(--fn-state-width)'; const stateWidth=trackProbe.getBoundingClientRect().width;
+                  trackProbe.remove();
+                  let next=table.getBoundingClientRect().left+stateWidth;
+                  for(const head of heads) {
+                    const h=track(head); next+=h.gutter;
+                    if(Math.abs(h.width-functionWidth)>1 || Math.abs(h.left-next)>1) errors.push('function track moved or stretched: '+head.dataset.code);
+                    next+=functionWidth;
+                  }
+                  const pad=table.querySelector('thead > tr:last-child > .fn-pad').getBoundingClientRect();
+                  if(Math.abs(pad.left-next)>1 || Math.abs(pad.right-table.getBoundingClientRect().right)>1) errors.push('spacer does not absorb the remaining table width');
                   for(const group of groups) {
                     const range=document.createRange(); range.selectNodeContents(group);
                     if(new Set([...range.getClientRects()].map(r=>Math.round(r.top))).size!==1) errors.push('group label wraps: '+group.textContent);
@@ -12554,6 +12779,9 @@ def browser_jobs(dist: Path, data: dict, screenshots: Path | None) -> list[tuple
         ("interactions", partial(prefixed, "touch tips: ", check_touch_tips), ()),
         ("interactions", check_theme_default, (dist,)),
         ("interactions", check_wide_layout, ()),
+        ("interactions", check_content_grid, ()),
+        ("interactions", check_disclosure_levels, ()),
+        ("interactions", check_secondary_tone, ()),
         ("interactions", partial(prefixed, "measure: ", check_text_measure), ()),
         ("interactions", check_panel_measure, ()),
         ("interactions", check_none_identified_tips, (data,)),
