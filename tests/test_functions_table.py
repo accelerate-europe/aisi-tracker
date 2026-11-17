@@ -70,7 +70,7 @@ def functions():
     <td data-code="advice" data-value="not_coded" class="fn-group-start"><span class="vh">not yet coded</span></td>
     <td data-code="foresight" data-value="not_found"><span class="vh">not found</span></td>
     <td data-code="incidents" data-value="not_found"><span class="vh">not found</span></td><td class="fn-pad" aria-hidden="true"></td></tr>
-    </tbody><tfoot><tr><th scope="row">Institutes with it</th><td data-code="testing">2</td><td data-code="research">1</td><td data-code="advice">1</td><td data-code="foresight">0</td><td data-code="incidents">0</td><td class="fn-pad" aria-hidden="true"></td></tr></tfoot></table></div>
+    </tbody></table></div>
     <ul class="fn-legend fn-desktop-only" role="list"><li data-value="activity">Active</li><li data-value="mandate">Assigned</li><li data-value="not_found">Blank: not found</li><li data-value="not_coded">not yet coded</li></ul>
     <p class="fn-order">Rows: by the year the institute's current status began, oldest first.</p>
     <p class="fn-provisional">The list of functions is provisional.</p>
@@ -117,7 +117,7 @@ def test_function_rows_order_by_year_then_name_then_id(functions):
 
 @pytest.mark.parametrize(("old", "new", "finding"), [
     ('data-value="activity"', 'data-value="mandate"', "value counts"),
-    ('<td data-code="incidents">0</td><td class="fn-pad" aria-hidden="true"></td>', '<td data-code="incidents">0</td><td class="fn-pad"></td>', "spacer column"),
+    ('<td class="fn-pad" aria-hidden="true"></td>', '<td class="fn-pad"></td>', "spacer column"),
     ('<colgroup span="2"></colgroup>', '<colgroup span="3"></colgroup>', "column groups"),
     ('aria-label="Zulu, Testing: Active"', 'aria-label="ZI, Testing: Active"', "coded control/name"),
     ('aria-label="Alpha, Testing: Assigned and active"', 'aria-label="Alpha, Testing: Active"', "coded control/name"),
@@ -133,8 +133,6 @@ def test_function_rows_order_by_year_then_name_then_id(functions):
     ('Not yet established</th>', 'proposed</th>', "status word"),
     ('<li data-value="not_coded">not yet coded</li>', '', "legend differs"),
     ('<tr data-institute="z">', '<tr data-institute="a">', "rows/order"),
-    ('<td data-code="testing">2</td>', '<td data-code="testing">3</td>', "prevalence counts"),
-    ('<td data-code="testing">2</td>', '<td data-code="foresight">2</td>', "prevalence counts"),
     ('class="fn-group-start"', 'class="missing-gap"', "group gap"),
     ('fn-mark fn-activity', 'fn-mark fn-both', "mark differs"),
     ('Most common: testing (2 of 2 institutes),', 'Most common: Zulu Institute (2 of 2 institutes),', "summary facts"),

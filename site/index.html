@@ -27,7 +27,7 @@
 <!-- build:head -->
 <style>
 /* Design principles
- * Functions table: institute rows in established and not-yet-established blocks, function columns in vocabulary groups, equal widths and rotated short heads. Active and both use a dot, assigned a ring; not found is blank, a search result rather than absence. The jurisdiction column stays visible during sideways scrolling. Hover and focus tint the row and one continuous column through the block bands and totals, with a slanted band behind its head; group gutters stay clear. Each group has a leaning boundary and an underline at its label, meeting the upright body rules at the head rule; the shared head height follows the head type, leaving at least --sp-1 above every head tip. No upright rule crosses the head zone, and labels paint above the hover flag and boundaries. Quotes and sources open on demand below the selected institute (check_page check_functions_table, check_functions_detail, check_functions_layout, check_functions_tint, check_function_group_tabs).
+ * Functions table: institute rows in established and not-yet-established blocks, function columns in vocabulary groups, equal widths and rotated short heads. Active and both use a dot, assigned a ring; not found is blank, a search result rather than absence. The jurisdiction column stays visible during sideways scrolling. Hover and focus tint the row and one continuous column through the block bands, with a slanted band behind its head; group gutters stay clear. Each group has a leaning boundary and an underline at its label, meeting the upright body rules at the head rule; the shared head height follows the head type, leaving at least --sp-1 above every head tip. No upright rule crosses the head zone, and labels paint above the hover flag and boundaries. Quotes and sources open on demand below the selected institute (check_page check_functions_table, check_functions_detail, check_functions_layout, check_functions_tint, check_function_group_tabs).
  * Method: owner-owned reader summaries link to the full editorial rules on a separate page; rule anchors stay stable.
  * Type: title, label, body, meta, figure, plus fn-group for functions group labels on narrow phones; label, body and meta fixed up to 1200px and growing to their wide-screen sizes at 1440px, so the table and cards keep their 1100px fit; figure and title grow from phone width; shared size, weight, family and role-specific line height. The headline is the figure role with only its numbers at figure weight, its words at body weight.
  * Content grid: each section body has two left-aligned widths: its full width for tables, card grids, charts and row lists, and --prose for running text. Internal row tracks keep their alignment. The full-width first section is the only exception: the geographic map may bleed, and its stacked map/tools/side retain --map-stack-width, with --region-list keeping state and institute names together (check_page check_content_grid).
@@ -676,7 +676,7 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
 .fn-scroll.fits .fn-detail { width: 100%; max-width: 100%; }
 .fn-table { --fn-head-h: calc(10.25 * var(--size-meta) + 2 * var(--sp-1)); --fn-lean: calc(var(--fn-head-h) * .57735); --fn-group-gap: 1.75rem; border-collapse: separate; border-spacing: 0; width: 100%; font: var(--type-meta); } /* 10.25 head ems cover the longest rotated label, its line box and rounding; spacing clears the lower inset and group underline, including on the saved page. */
 .fn-table .fn-pad { width: 100%; min-width: max(var(--fn-pad-min), var(--fn-lean)); padding: 0; } /* a percentage column takes all spare width in auto table layout, so function tracks never stretch; its minimum still clears the shifted last head and keeps narrow tables scrolling */
-.fn-table tr > :is(th, td) { position: relative; box-sizing: border-box; padding: var(--sp-2) 0; border-bottom: var(--rule) solid var(--line); text-align: center; vertical-align: middle; } /* keep the last row of each block and the totals ruled, overriding the shared table's last-row reset */
+.fn-table tr > :is(th, td) { position: relative; box-sizing: border-box; padding: var(--sp-2) 0; border-bottom: var(--rule) solid var(--line); text-align: center; vertical-align: middle; } /* keep the last row of each block ruled, overriding the shared table's last-row reset */
 .fn-table thead th { vertical-align: bottom; overflow-wrap: normal; hyphens: none; font: var(--type-meta); }
 .fn-table .fn-corner, .fn-table th[scope="row"] { width: var(--fn-state-width); min-width: var(--fn-state-width); padding-right: var(--sp-2); position: sticky; left: 0; z-index: 2; background: var(--ground); text-align: left; overflow-wrap: normal; }
 .fn-table th[scope="row"] { font: var(--type-body); } /* an assigned role (principle: Type), like the state names in Compare's lists */
@@ -692,19 +692,18 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
 .fn-table thead > tr:last-child > .fn-pad::before { bottom: 0; }
 .fn-column-group::after { content: ""; position: absolute; left: var(--fn-lean); top: 100%; width: calc(100% + var(--fn-group-gap)); height: var(--rule); background: var(--line); pointer-events: none; }
 .fn-column-group:nth-last-child(2)::after { width: 100%; } /* no gutter before the final spacer */
-.fn-table :is(tbody, tfoot) :is(.fn-group-start, .fn-group-first, .fn-pad) { box-shadow: inset var(--rule) 0 var(--line); }
-.fn-table :is(tbody, tfoot) .fn-column:not(.fn-group-start, .fn-group-first) { box-shadow: inset var(--rule) 0 var(--fn-hairline); }
+.fn-table tbody :is(.fn-group-start, .fn-group-first, .fn-pad) { box-shadow: inset var(--rule) 0 var(--line); }
+.fn-table tbody .fn-column:not(.fn-group-start, .fn-group-first) { box-shadow: inset var(--rule) 0 var(--fn-hairline); }
 .fn-table thead > tr:first-child > * { border-bottom: 0; }
 .fn-table .fn-group th { padding-top: var(--sp-4); text-align: left; font: var(--type-label); width: var(--fn-state-width); min-width: var(--fn-state-width); position: sticky; left: 0; z-index: 2; background: var(--ground); }
 .fn-group span { white-space: normal; } /* a block label may wrap inside the state column rather than widen it (R6: only the spacer grows) */
-.fn-table tr.fn-row-lit > :is(th, td), .fn-table :is(tbody, tfoot) .fn-col-lit { background-color: var(--fn-tint); }
-.fn-table :is(tbody, tfoot) .fn-column { background-clip: padding-box; } /* tint and inset rules start after the transparent group gutter */
-.fn-table :is(tbody, tfoot) .fn-column.fn-col-lit { box-shadow: none; }
+.fn-table tr.fn-row-lit > :is(th, td), .fn-table tbody .fn-col-lit { background-color: var(--fn-tint); }
+.fn-table tbody .fn-column { background-clip: padding-box; } /* tint and inset rules start after the transparent group gutter */
+.fn-table tbody .fn-column.fn-col-lit { box-shadow: none; }
 .fn-table .fn-column.fn-col-lit::after { content: ""; position: absolute; left: 0; right: 0; bottom: calc(-1 * var(--rule)); height: var(--rule); background: var(--fn-tint); pointer-events: none; } /* bridge the bottom rule only across the padding box, avoiding a coloured border join in the group gutter */
 .fn-head.fn-col-lit::before { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: var(--fn-head-h); transform: skewX(-30deg); transform-origin: left bottom; background-color: var(--fn-tint); pointer-events: none; }
 .fn-table tr.fn-row-lit > :is(th, td) { background-clip: border-box; } /* the row band runs unbroken across the group gutters; a column's own tint stays in its padding box */
 .fn-scroll:focus:not(:focus-visible) { outline: none; } /* the box's ring is for keyboard focus only */
-.fn-table tfoot th, .fn-table tfoot td { color: var(--muted); font-variant-numeric: tabular-nums; }
 .fn-cell { display: inline-flex; align-items: center; justify-content: center; width: 100%; min-height: var(--hit); padding: 0; border: 0; background: transparent; color: var(--ink); cursor: pointer; }
 .fn-mark { display: inline-block; flex: 0 0 auto; width: .8rem; height: .8rem; vertical-align: middle; border-radius: 50%; color: var(--st-est-edge); }
 .fn-activity { background: currentColor; }
@@ -3102,7 +3101,6 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         intro: "Which of {count} functions each institute is active in or has been assigned. Select a mark to see the quote and source.",
         intro_phone: "Which of {count} functions each institute is active in or has been assigned. Tap a country to see its functions, then a function for its quote and source.",
         blank: "A blank cell means we found no public text for it, not that the institute does not do it.",
-        prevalence: "Institutes with it",
         rows: "Rows: by the year the institute's current status began, oldest first.",
         summary: "Most common: {functions}.", summary_first: "{function} ({count} of {total} institutes)", summary_next: "{function} ({count})", summary_tied: "{functions} ({count} of {total} institutes each)",
         how_title: "How this is coded",
@@ -3291,9 +3289,6 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
             });
             table.appendChild(tbody);
           });
-          var foot = el("tfoot"), total = el("tr"), label = el("th", null, FN_COPY.prevalence); label.scope = "row"; total.appendChild(label);
-          columns.forEach(function (code) { var td = el("td", columnClass(code), String(counts[code])); td.dataset.code = code; total.appendChild(td); }); total.appendChild(pad());
-          foot.appendChild(total); table.appendChild(foot);
           scroll.appendChild(table); box.appendChild(scroll);
           bindTint(table);
         }

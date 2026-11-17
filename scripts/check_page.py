@@ -11537,11 +11537,11 @@ def functions_structure(html: str, data: dict) -> list[str]:
                  (n > 0 and vocab[code]["group"] != vocab[columns[n - 1]]["group"]), f"{code}: block band group gap differs")
     colgroups = section.select('.fn-table > colgroup')
     need([cg.get("span", "1") for cg in colgroups] == ["1"] + [str(sum(vocab[c]["group"] == g for c in columns)) for g in groups] + ["1"], "Functions column groups do not match the group heads")
-    for tr in section.select('.fn-table thead tr, .fn-table tbody tr, .fn-table tfoot tr'):
+    for tr in section.select('.fn-table thead tr, .fn-table tbody tr'):
         pads = tr.select(":scope > .fn-pad")
         last = tr.find_all(["td", "th"], recursive=False)[-1:]
         need(len(pads) == 1 and last == pads and pads[0].name == "td" and pads[0].get("aria-hidden") == "true" and not pads[0].get_text(strip=True) and not pads[0].find(True),
-             "Functions spacer column: each head, institute and total row ends with one empty aria-hidden td.fn-pad")
+             "Functions spacer column: each head and body row ends with one empty aria-hidden td.fn-pad")
     rows = section.select('.fn-table tbody tr[data-institute]')
     need([r.get("data-institute") for r in rows] == [i["id"] for i in institutes], "Functions rows/order differ")
     wanted_counts = Counter(lookup[i["id"]][c]["value"] for i in institutes for c in columns)
@@ -11575,10 +11575,6 @@ def functions_structure(html: str, data: dict) -> list[str]:
             else:
                 need(not td.select('.fn-mark'), key + ": absent cell has a visible mark element")
             need(not td.select("[data-tip], [data-tip-sub], [data-tip-ext], [data-exp]"), key + ": evidence/tooltip attributes on a cell")
-    totals = section.select('.fn-table tfoot td:not(.fn-pad)')
-    need([(td.get("data-code"), td.get_text()) for td in totals] == [(c, str(counts[c])) for c in columns], "Functions prevalence counts/order differ")
-    prevalence = section.select_one('.fn-table tfoot th[scope="row"]')
-    need(prevalence and prevalence.get_text() == "Institutes with it", "Functions prevalence label differs")
     need(not section.select('.fn-empty'), "Functions obsolete .fn-empty element is present")
     need("No public text found at any institute yet for" not in " ".join(section.get_text(" ", strip=True).split()),
          "Functions obsolete folded-functions sentence is present")
@@ -12466,7 +12462,7 @@ def check_functions_layout(browser, base_url: str, *, fixture: dict | None = Non
                     if(head.classList.contains('fn-group-start') && h.gutter<12) errors.push('group gutter too narrow');
                     for(const cell of table.querySelectorAll('td[data-code="'+head.dataset.code+'"]')) {
                       const c=track(cell), style=getComputedStyle(cell);
-                      if(Math.abs(c.left-h.left)>1 || Math.abs(c.width-h.width)>1) errors.push('head/body/totals column alignment differs: '+head.dataset.code);
+                      if(Math.abs(c.left-h.left)>1 || Math.abs(c.width-h.width)>1) errors.push('head/body column alignment differs: '+head.dataset.code);
                       const start=n===0 || head.classList.contains('fn-group-start');
                       if(!start && (style.boxShadow==='none' || !style.boxShadow.includes('inset'))) errors.push('missing column hairline: '+head.dataset.code);
                       if(head.classList.contains('fn-group-start') && style.boxShadow==='none') errors.push('missing group rule: '+head.dataset.code);
@@ -12521,11 +12517,11 @@ def check_functions_layout(browser, base_url: str, *, fixture: dict | None = Non
                   const ground=rgb(getComputedStyle(probe).color); probe.remove();
                   const distance=color=>Math.hypot(...rgb(color).map((v,n)=>v-ground[n]));
                   const shadowColor=shadow=>shadow.match(/(?:rgba?|color)\([^)]+\)/)?.[0];
-                  for(const cell of table.querySelectorAll('tbody td.fn-column:not(.fn-group-start, .fn-group-first), tfoot td.fn-column:not(.fn-group-start, .fn-group-first)')) {
+                  for(const cell of table.querySelectorAll('tbody td.fn-column:not(.fn-group-start, .fn-group-first)')) {
                     const style=getComputedStyle(cell), colour=shadowColor(style.boxShadow);
                     if(!colour || distance(colour)>=distance(style.borderBottomColor)) errors.push('column hairline is not lighter than row/group rule');
                     const lengths=style.boxShadow.replace(/(?:rgba?|color)\([^)]+\)/g,'').match(/-?[\d.]+px/g)?.map(parseFloat) || [];
-                    if(lengths.length!==4 || lengths[0]<=0 || lengths[0]>parseFloat(style.borderBottomWidth) || lengths[1] || lengths[2] || lengths[3]) errors.push('column hairline is not a thin painted left edge: '+(cell.closest('tr').dataset.institute || cell.closest('tr').className || 'totals')+'/'+cell.dataset.code+' (shadow '+style.boxShadow+'; bottom '+style.borderBottomWidth+')');
+                    if(lengths.length!==4 || lengths[0]<=0 || lengths[0]>parseFloat(style.borderBottomWidth) || lengths[1] || lengths[2] || lengths[3]) errors.push('column hairline is not a thin painted left edge: '+(cell.closest('tr').dataset.institute || cell.closest('tr').className)+'/'+cell.dataset.code+' (shadow '+style.boxShadow+'; bottom '+style.borderBottomWidth+')');
                   }
                   const wider=table.getBoundingClientRect().width>scroll.clientWidth+1;
                   if(scroll.classList.contains('fits') !== !wider) errors.push('fits class disagrees with measured table/container widths');
@@ -12714,10 +12710,10 @@ def check_functions_tint(browser, base_url: str) -> list[str]:
           if(active ? litRows.length!==1 || litRows[0]!==row : litRows.length) errors.push('wrong row tinted');
           const bands=[...table.querySelectorAll('tbody > tr.fn-group')];
           if(bands.length!==2) errors.push('missing block bands');
-          const allRows=[...table.querySelectorAll('tbody > tr, tfoot > tr')];
+          const allRows=[...table.querySelectorAll('tbody > tr')];
           let previousBottom=table.tHead.getBoundingClientRect().bottom, previousFromHead=true;
           for(const r of allRows) {
-            const key=r.dataset.institute || (r.classList.contains('fn-group') ? r.textContent.trim() : 'totals');
+            const key=r.dataset.institute || r.textContent.trim();
             const segments=[...r.querySelectorAll(':scope > td[data-code]')];
             if(segments.filter(n=>n.dataset.code===code).length!==1) errors.push(key+': missing column segment');
             for(const segment of segments) {
@@ -12873,7 +12869,7 @@ def check_functions_tint(browser, base_url: str) -> list[str]:
             }""".replace("/* FUNCTION_POLYGON */", FN_POLYGON_JS))]
             page.mouse.move(1, 1)
             scroll = page.locator('.fn-scroll')
-            page.locator('.fn-table tfoot th').click()  # a plain label inside the box: the click focuses the scroll box itself
+            page.locator('.fn-table .fn-group th').first.click()  # the first block's plain label focuses the scroll box itself
             if scroll.evaluate("n => document.activeElement !== n"):
                 errors.append(f"{width}px {theme}: a click inside the table did not focus the scroll box (ring check would be vacuous)")
             elif scroll.evaluate("n => getComputedStyle(n).outlineStyle !== 'none'"):
