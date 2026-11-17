@@ -4,7 +4,7 @@ Run from the repo root: uv run --locked scripts/build.py [--out DIR]
 Exits non-zero on any schema or consistency error, so a broken dataset never ships.
 Outputs are written to a temporary folder beside the output directory first and only replace it
 when everything succeeded. No mode writes a tracked file except --update-readme, which sets the version and date in dataset.citation from
-dataset.version and as_of and regenerates the README citation, current-count and definition blocks, CITATION.cff and
+the last release on development versions, otherwise dataset.version and as_of, and regenerates the README citation, current-count and definition blocks, CITATION.cff and
 .zenodo.json; --check writes nothing at all unless --report-dir is given.
 """
 
@@ -38,6 +38,7 @@ if __package__:
     from .reader_text import READER_TEXT_REPORT  # type: ignore[import-not-found]
     from .source_origins import source_origin_report, write_source_origin_report
     from . import rereads
+    from .versioning import dated_data, effective_date, parse_version, require_release
     from .agent_files import LICENSES, doi_url, api_files, api_landing_html, api_root, citation_cff, zenodo_json, head_links, share_tags, image_alt_text, json_ld_script, llms_txt, robots_txt, sitemap_xml, feed_xml, FEED_PATH, orientation_html, definition_markdown, public_url_errors
     from .release_checks import check_metadata, check_readme_licence, check_readme_doi, check_markdown, generated_block, generated_citation, generated_counts, check_launch_wording, write_citation, check_instrument_status_dates, instrument_status_warnings, dates_after_as_of, check_changelog_entry, write_release_citation
 else:  # Direct script execution.
@@ -50,6 +51,7 @@ else:  # Direct script execution.
     from reader_text import READER_TEXT_REPORT  # type: ignore[import-not-found, no-redef]
     from source_origins import source_origin_report, write_source_origin_report
     import rereads  # type: ignore[no-redef]
+    from versioning import dated_data, effective_date, parse_version, require_release
     from agent_files import LICENSES, doi_url, api_files, api_landing_html, api_root, citation_cff, zenodo_json, head_links, share_tags, image_alt_text, json_ld_script, llms_txt, robots_txt, sitemap_xml, feed_xml, FEED_PATH, orientation_html, definition_markdown, public_url_errors
     from release_checks import check_metadata, check_readme_licence, check_readme_doi, check_markdown, generated_block, generated_citation, generated_counts, check_launch_wording, write_citation, check_instrument_status_dates, instrument_status_warnings, dates_after_as_of, check_changelog_entry, write_release_citation
 
@@ -96,9 +98,9 @@ def fail(errors: list[str]) -> None:
     sys.exit(1)
 
 
-def export_dataset(data: dict, *, strict: bool | None = None) -> dict:
+def export_dataset(data: dict, *, strict: bool | None = None, as_of: str | None = None, rereads: dict | None = None) -> dict:
     """Materialise all facts, reference positions and display decisions once."""
-    return publish(data, strict=strict)
+    return publish(data, strict=strict, as_of=as_of, rereads=rereads)
 
 
 def walk_dates(obj, path: str = ""):
@@ -307,12 +309,19 @@ def check_budget_ratio_inputs(d: dict) -> list[str]:
     return errors
 
 
-def check_consistency(d: dict, require_roster: bool = False, complete: bool = False, *, strict: bool | None = None, materialised: bool = False, authored: dict | None = None) -> list[str]:
+def check_consistency(d: dict, require_roster: bool = False, complete: bool = False, *, strict: bool | None = None, materialised: bool = False, authored: dict | None = None, as_of: str | None = None) -> list[str]:
     """Checks JSON Schema cannot express: unique ids, references, links in both directions, scope."""
+    metadata_input = authored if authored is not None else d
+    try:
+        if as_of is None:
+            as_of = effective_date(metadata_input, rereads.load(DATA.with_name("rereads.json")))
+        d = dated_data(d, as_of)
+    except (ValueError, KeyError, TypeError) as exc:
+        return [str(exc)]
     errors = check_exchange_rates(d)
     if strict is None:
         strict = fact_pipeline.AUTHORING_STRICT
-    authored = d if authored is None else authored
+    authored = d if authored is None else dated_data(authored, as_of)
     legacy = not strict and all("status" in j for j in authored["jurisdictions"])
     try:
         if not materialised:
@@ -520,9 +529,9 @@ def check_consistency(d: dict, require_roster: bool = False, complete: bool = Fa
     unused = sorted(known - used)
     if unused:
         errors.append(f"sources never cited: {unused}")
-    errors.extend(check_metadata(d))
+    errors.extend(check_metadata(metadata_input))
     errors.extend(check_instrument_status_dates(d))
-    if d["changelog"] and d["changelog"][-1]["version"] != d["dataset"]["version"]:
+    if not parse_version(d["dataset"]["version"]).development and d["changelog"] and d["changelog"][-1]["version"] != d["dataset"]["version"]:
         errors.append(f"latest changelog version {d['changelog'][-1]['version']} differs from dataset.version {d['dataset']['version']}")
     errors.extend(check_funding_totals(d, complete or require_roster))
     errors.extend(check_figure_sources(d))
@@ -1085,36 +1094,45 @@ def main() -> None:
     ap.add_argument("--report-dir", type=Path, help="write the informational source-origin report to this directory (default: no report file)")
     ap.add_argument("--out", type=Path, default=DIST, help="output directory for the built site (default: dist/)")
     ap.add_argument("--check", action="store_true", help="validate only; write nothing")
-    ap.add_argument("--update-readme", action="store_true", help="set the version and date in dataset.citation from dataset.version and as_of, regenerate README citation, current-count and definition blocks, CITATION.cff and .zenodo.json, then validate as --check does; the only mode that writes tracked files")
+    ap.add_argument("--update-readme", action="store_true", help="set the released version and date in dataset.citation (the last release on -dev), regenerate README citation, current-count and definition blocks, CITATION.cff and .zenodo.json, then validate as --check does; the only mode that writes tracked files")
     ap.add_argument("--require-complete", action="store_true", help="require timeline and status confidence for jurisdictions, placement and short mandate for institutes, and legal basis for established institutes")
     ap.add_argument("--require-roster", action="store_true", help="require exactly the jurisdictions in data/reference/roster.csv")
     ap.add_argument("--release", action="store_true", help="also reject draft wording in release prose, and work dated after as_of")
     ap.add_argument("--release-wording", action="store_true", help="the release's wording checks (draft and process wording, the "
-                    "changelog entry of dataset.version, the public address) without --release's rule on work dated after as_of, which "
+                    "changelog entry of the release, the public address) without --release's rule on work dated after as_of, which "
                     "only a release commit meets; CI runs it on every run that does not publish")
     args = ap.parse_args()
     canonical = args.data.resolve() == DATA.resolve()
     if not canonical and (args.update_readme or not args.check):
         fail(["the site and the README are only generated from data/aisi.json; use --check for other files"])
+    d = json.loads(args.data.read_text(encoding="utf-8"))
+    raw_rereads = rereads.load(args.data.with_name("rereads.json"))
+    try:
+        as_of = effective_date(d, raw_rereads)
+        if args.release:
+            require_release(d["dataset"]["version"])
+    except (ValueError, KeyError, TypeError) as exc:
+        fail([str(exc)])
     if args.update_readme:
         try:
             if citation := write_release_citation(args.data):
                 print(f"dataset.citation now reads: {citation}")
         except (ValueError, KeyError, TypeError) as exc:
             fail([f"dataset.citation: {exc}"])
-    d = json.loads(args.data.read_text(encoding="utf-8"))
+        d = json.loads(args.data.read_text(encoding="utf-8"))
     schema = json.loads(SCHEMA.read_text(encoding="utf-8"))
     validator = Draft202012Validator(authored_schema(schema, strict=fact_pipeline.AUTHORING_STRICT), format_checker=Draft202012Validator.FORMAT_CHECKER)
     errors = [f"{'/'.join(map(str, e.absolute_path)) or '(root)'}: {e.message}" for e in validator.iter_errors(d)]
-    errors += check_consistency(d, args.require_roster, args.require_complete or args.require_roster, strict=fact_pipeline.AUTHORING_STRICT) if not errors else []
+    errors += check_consistency(d, args.require_roster, args.require_complete or args.require_roster, strict=fact_pipeline.AUTHORING_STRICT, as_of=as_of) if not errors else []
     if not errors:
         try:
-            published = export_dataset(d, strict=fact_pipeline.AUTHORING_STRICT)
+            published = export_dataset(d, strict=fact_pipeline.AUTHORING_STRICT, as_of=as_of, rereads=raw_rereads)
             errors += [f"published {'/'.join(map(str, e.absolute_path))}: {e.message}" for e in Draft202012Validator(schema, format_checker=Draft202012Validator.FORMAT_CHECKER).iter_errors(published)]
         except (ValueError, KeyError, IndexError, TypeError, ArithmeticError) as exc:
             errors.append(f"materialisation: {exc}")
     if errors:
         fail(errors)
+    d = dated_data(d, as_of)
     readme = ROOT / "README.md"
     citation_bytes = None
     if canonical:
@@ -1165,7 +1183,7 @@ def main() -> None:
             print(f"updated {path.relative_to(ROOT)}", file=sys.stderr)
     unquoted = unquoted_claims(d)
     warnings = instrument_status_warnings(d, release=args.release) + late + primary_source_warnings(d) + unquoted_warnings(unquoted) + reader_text_warnings(d)
-    warnings += [f"re-read: {line}" for line in rereads.alerts(published, rereads.load(), published["dataset"]["as_of"])]
+    warnings += [f"re-read: {line}" for line in rereads.alerts(published, raw_rereads, published["dataset"]["as_of"])]
     warnings += [f"closest body: {line}" for line in fact_pipeline.closest_body_warnings(d, published)]
     warnings += fact_pipeline.next_check_warnings(d, published)
     warnings += search_log_notes(d)

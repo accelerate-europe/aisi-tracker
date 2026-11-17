@@ -1,6 +1,6 @@
 # Pass $pass_id: stale-fact re-check of a few states
 
-You run one research pass for the AI Security Institutes tracker (https://aisi.accelerate-europe.org). The data you check is release $version (as of $as_of). For each state below, re-read its record against its cited sources and search for what has changed, then record screened findings. You do not edit the dataset: a separate session turns findings into data changes after an independent check.
+You run one research pass for the AI Security Institutes tracker (https://aisi.accelerate-europe.org). The data you check is version $version (as of $as_of). For each state below, re-read its record against its cited sources and search for what has changed, then record screened findings. You do not edit the dataset: a separate session turns findings into data changes after an independent check.
 
 $states
 

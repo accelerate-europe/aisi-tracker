@@ -22,6 +22,13 @@ from datetime import date, timedelta
 from pathlib import Path
 from urllib.request import Request, urlopen
 
+if __package__:
+    from . import rereads
+    from .versioning import dated_data, effective_date
+else:
+    import rereads
+    from versioning import dated_data, effective_date
+
 ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "data" / "aisi.json"
 UA = {"User-Agent": "aisi-tracker/1.0 (contact@accelerate-europe.org)"}
@@ -237,6 +244,7 @@ def main(argv=None) -> int:
         print(f"internal files were not found at {', '.join(missing)}; set AISI_INTERNAL to their directory", file=sys.stderr)
         return 3
     data = json.loads(DATA.read_text(encoding="utf-8"))
+    data = dated_data(data, effective_date(data, rereads.load(DATA.with_name("rereads.json"))))
     doors = json.loads(internal_path("doors.json").read_text(encoding="utf-8"))
     log = json.loads(internal_path("field_searches.json").read_text(encoding="utf-8"))
     as_of = args.as_of or date.fromisoformat(data["dataset"]["as_of"])

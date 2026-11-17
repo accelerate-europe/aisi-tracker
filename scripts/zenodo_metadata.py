@@ -39,6 +39,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import subprocess
 import sys
 import time
 import urllib.error
@@ -49,8 +50,10 @@ from typing import Callable
 
 try:
     from .agent_files import zenodo_rdm_metadata
+    from .versioning import require_release
 except ImportError:
     from agent_files import zenodo_rdm_metadata
+    from versioning import require_release
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data" / "aisi.json"
@@ -220,13 +223,24 @@ def apply(request: Request, record: dict, desired: dict, log: Callable[[str], No
         waited += LAG_POLL
 
 
-def main(argv: list[str] | None = None, request: Request | None = None, data_path: Path = DATA) -> int:
+def main(argv: list[str] | None = None, request: Request | None = None, data_path: Path | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--version", help="release version, e.g. 1.0.1 (default: dataset.version)")
     ap.add_argument("--apply", action="store_true", help="edit and publish the record (needs ZENODO_TOKEN); never touches files")
     args = ap.parse_args(argv)
-    dataset = json.loads(data_path.read_text(encoding="utf-8"))["dataset"]
+    # Run at the pinned release commit, as release_tag.py does; working-tree edits cannot change the metadata.
+    raw = data_path.read_text(encoding="utf-8") if data_path is not None else subprocess.run(
+        ["git", "-C", str(DATA.parent.parent), "show", "HEAD:data/aisi.json"],
+        capture_output=True, text=True, check=True,
+    ).stdout
+    dataset = json.loads(raw)["dataset"]
     version = (args.version or dataset["version"]).removeprefix("v")
+    try:
+        require_release(dataset["version"])
+        require_release(version)
+    except ValueError as exc:
+        print(f"refused: {exc}", file=sys.stderr)
+        return 2
     token = os.environ.get("ZENODO_TOKEN") or None
     if args.apply and not token and request is None:
         print("--apply needs ZENODO_TOKEN in the environment (a Zenodo personal access token)", file=sys.stderr)

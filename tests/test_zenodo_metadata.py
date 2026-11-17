@@ -72,6 +72,8 @@ def test_desired_metadata_shape():
 
 def test_related_identifiers_match_zenodo_json():
     dataset = json.loads((ROOT / "data" / "aisi.json").read_text(encoding="utf-8"))["dataset"]
+    # Compare metadata formats for a stable release, independent of the checkout's version.
+    dataset["version"] = DATASET["version"]
     legacy = json.loads(agent_files.zenodo_json({"dataset": dataset}))["related_identifiers"]
     rdm = agent_files.zenodo_rdm_metadata(dataset, dataset["version"])["related_identifiers"]
     assert [(r["relation_type"]["id"], r["identifier"], r["resource_type"]["id"]) for r in rdm] == [

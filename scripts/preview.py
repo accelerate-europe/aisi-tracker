@@ -23,8 +23,6 @@ from zoneinfo import ZoneInfo
 
 # Each preview text says what it stands in for and what happens to it at release (owner, 17 Nov 2026).
 NOTICE = "This build is unpublished. Do not cite it."
-# Beside the page's version and date wherever it shows them: they are the last release's until this one is released.
-RELEASE_NOTE = "Version and date still show the last release. They change when this is released."
 # Page elements the preview replaces as a whole (by id), with the text it puts there. check_preview excludes exactly
 # these from the comparison with the build, and nothing the preview merely marks.
 REPLACED = {"cite": NOTICE}
@@ -132,10 +130,6 @@ BANNER_CSS = """
 .preview-banner .pv-details[hidden] { display: none; }
 /* Preview chrome inside the page: what the preview adds or replaces, in the band's look, so page and preview stay
    distinguishable. */
-.pv-note { display: inline-block; padding: 0 .4em; border: 1px solid color-mix(in srgb, var(--accent, #BE773D) 45%, var(--ground, Canvas));
-  border-radius: 2px; background: color-mix(in srgb, var(--accent, #BE773D) 12%, var(--ground, Canvas)); color: var(--ink, inherit);
-  font: var(--type-meta, .875rem/1.5 "Segoe UI", Arial, sans-serif); }
-.pv-note-line { margin: var(--sp-2, .5rem) 0 0; }
 .cite.pv-chrome { background: color-mix(in srgb, var(--accent, #BE773D) 12%, var(--ground, Canvas)); padding-block: var(--sp-2, .5rem); user-select: auto; }
 /* The marker: once the band has scrolled away, one short fixed line in the corner keeps the build identifiable on
    screen and in screenshots. Nothing else on the page is fixed there (the theme switch is in the header). */
@@ -266,17 +260,6 @@ def mark_html(text: str, logical: str, meta: dict, mail: str, data_urls: tuple[s
     # The page shows its own text; what the preview adds or replaces carries the preview-chrome class (band look).
     # CSS selectors follow browser template boundaries; find_all also visits the inert template tree, which
     # hydration puts in place of the saved body.
-    def note() -> object:
-        return BeautifulSoup(f'<span class="pv-chrome pv-note">{RELEASE_NOTE}</span>', "html.parser").span
-    for line in soup.find_all(id="updated"):
-        holder = soup.new_tag("p", attrs={"class": "pv-chrome pv-note-line"})
-        holder.append(note())
-        line.insert_after(holder)
-    released = f"version {meta['version']}, data as of"
-    for para in soup.find_all("p"):
-        if released in para.get_text() and para.find_parent(class_="pv-chrome") is None and para.get("id") != "cite":
-            para.append(" ")
-            para.append(note())
     for cite in soup.find_all(id="cite"):
         cite.clear()
         cite.append(NOTICE)
@@ -414,16 +397,12 @@ def transform(dist: Path, out: Path, *, branch: str, sha: str, run_url: str, bui
             path.write_text(mark_html(path.read_text(encoding="utf-8"), path.relative_to(target).as_posix(), extra, mail, urls), encoding="utf-8")
         llms = target / "llms.txt"
         llms.write_text(llms.read_text(encoding="utf-8").replace(dataset["citation"], NOTICE).replace(LIVE_URL, frozen), encoding="utf-8")
-        # Where the build states its version as the state of what the reader sees: the API page keeps its sentence
-        # with the release note beside it (mark_html); llms.txt, plain text, says so in the sentence. A changed
-        # sentence upstream fails here instead of passing unmarked.
+        # Plain text identifies the preview in its version sentence.
         released = f"version {dataset['version']}, data as of"
-        if RELEASE_NOTE not in (target / "api/v1/index.html").read_text(encoding="utf-8"):
-            raise ValueError(f"api/v1/index.html: expected {released!r} to carry the release note")
         text = llms.read_text(encoding="utf-8")
         if released not in text:
             raise ValueError(f"llms.txt: expected {released!r} to mark as a preview")
-        llms.write_text(text.replace(released, "unpublished preview build; version and date still show the last release: " + released), encoding="utf-8")
+        llms.write_text(text.replace(released, "unpublished preview build; " + released), encoding="utf-8")
         feed = target / "feed.xml"
         feed.write_text(mark_feed(feed.read_text(encoding="utf-8"), frozen, dataset["citation"]), encoding="utf-8")
         (target / "robots.txt").write_text(ROBOTS, encoding="utf-8")
