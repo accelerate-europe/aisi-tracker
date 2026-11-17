@@ -12513,6 +12513,16 @@ def check_functions_layout(browser, base_url: str, *, fixture: dict | None = Non
                     // All marks and text share a line box on desktop; phones may wrap whole items.
                     if([1120,1200,1280,1440].includes(innerWidth) && (!rects.length || Math.max(...rects.map(r=>r.top))>=Math.min(...rects.map(r=>r.bottom))))
                       errors.push('Functions legend is not on one line');
+                    if(!phone) {
+                      // Measure visible content, not li boxes: an invisible blank mark must not reserve extra space.
+                      const items=[...legend.children].map(item=> {
+                        const text=item.querySelector('span:not(.fn-mark)'), range=document.createRange(); range.selectNodeContents(text);
+                        const label=range.getBoundingClientRect(), mark=item.querySelector('.fn-mark:not(.fn-not_found)');
+                        return {left:mark?mark.getBoundingClientRect().left:label.left,right:label.right};
+                      });
+                      const gaps=items.slice(1).map((item,n)=>item.left-items[n].right);
+                      if(gaps.length && Math.max(...gaps)-Math.min(...gaps)>1) errors.push('Functions legend gaps differ by more than 1px');
+                    }
                     const bounds=legend.getBoundingClientRect();
                     if(rects.some(r=>r.left<bounds.left-.5 || r.right>bounds.right+.5)) errors.push('Functions legend overflows');
                     let previous=legend.previousElementSibling;
