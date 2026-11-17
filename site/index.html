@@ -41,7 +41,7 @@
  * Sources: a collapsed card ends with the counted sources control alone (muted meta, no top rule, inline hit height); a card reached from the map also ends with "Back to map" before its Sources control; the check date and correction follow the expanded list.
  * Separators: each item of a dot-separated line is one unbreakable box, so lines break only between items (an item wraps inside only when it alone is wider than its container); middle dots stay with the preceding item's final word and are hidden where a line breaks.
  * Citations: every displayed value a quotation can support carries one (absence and an institute name linking to its own site need none); superscript at value end, three quarters of the text it annotates and never larger than meta (so a big figure keeps small numerals); comma-tight groups; card-local Sources order; hit area one text line high, never covering adjacent lines or preceding text.
- * Members and Partners: a network of existing bodies lists its member bodies in a Members row under Form; Partners holds the other bodies and disappears when none are left unless the cyber search tail remains. Members are uncapped; Partners shows at most six. Each closed fold-out groups bodies sharing an explanation, with explicit plural wording and a citation on every name. Groups follow the first body's priority order; names within a group keep that order. Generic explanations that only repeat the partner relation are omitted.
+ * Members and Partners: a network of existing bodies lists its member bodies in a Members row under Form; Partners holds the other bodies and disappears when none are left unless the cyber search tail remains. Members are uncapped; Partners shows at most six. Each closed fold-out groups bodies sharing an explanation, with explicit plural wording and a citation on every name. Groups follow the first body's priority order; names within a group keep that order. Generic explanations that only repeat the partner relation are omitted. Partner glosses omit the generic works-with relation; planned relations stay explicit. Downloads keep every relation.
  * Card grids: alphabetical rows share field tracks through subgrid; every field keeps a fixed shared track (Mandate and Finding share the descriptive-text track); a structurally absent field leaves its track empty; where a row has three tracks, a group's only card spans two (check_page check_card_grid), while a single trailing card in a fuller group's last row keeps the usual card width; phones keep one column.
  * Card heads: country, status and download stick below the site bars within their own card in Compare and States, including phones; the one-line name keeps its full accessible text and tooltip, with ellipsis when needed. CSS sizes the shared title track and focus clearance from the label line, hit height, rules and padding, without copies or measurement; the institute stays in its field and print keeps static heads (check_page check_card_heads, check_saved_card_heads, hydration_paint).
  * Alignment: every text row shares its first baseline, including wrapped text, smaller labels, icons and format tags; within a card every field's value starts at one x.
@@ -1429,9 +1429,10 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   var NOT_MEMBER_TIP = "Not a member of the International Network for Advanced AI Measurement, Evaluation and Science, whose member list is complete.";
   function notMember() { var value = el("span", "nonmember", "Not a member"); value.title = NOT_MEMBER_TIP; value.tabIndex = 0; return value; }
   function rowValue(r) { return r.state === "stated" && r.text ? (r.original ? withOriginal(el("span", null, r.text), r.original) : r.text) : missing(r.state === "not_applicable"); }
-  function partnersValue(p) {
+  function partnersValue(p, worksWith) {
     if (p.state !== "stated" || (!p.items.length && !p.tail)) return missing(p.state === "not_applicable");
-    var parts = p.items.map(function (item) { return item.text; }); // strings: each item is one box, so a line wraps between items; a single item wider than the line wraps inside
+    var suffix = ", " + worksWith + ")";
+    var parts = p.items.map(function (item) { return item.text.endsWith(suffix) ? item.text.slice(0, -suffix.length) + ")" : item.text; }); // omit the generic relation on the page; keep the published text intact
     if (p.tail) parts.push(el("span", "partners-none", p.tail)); // the producer words it, from the vocabulary
     var line = el("span", "partners"); line.appendChild(separated(parts)); return line;
   }
@@ -1973,7 +1974,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     }
     function bodiesRow(label, bodies) {
       if (!bodies) return;
-      var value = row(label, partnersValue(bodies), bodies.state === "stated" ? bodies.cited : []), fold = partnersFold(bodies, cite, label);
+      var value = row(label, partnersValue(bodies, m.vocabularies.partner_relation.works_with.label), bodies.state === "stated" ? bodies.cited : []), fold = partnersFold(bodies, cite, label);
       if (fold) value.appendChild(fold);
     }
     if (inst) {

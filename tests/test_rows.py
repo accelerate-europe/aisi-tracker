@@ -793,7 +793,7 @@ def good_rows():
         f'<div class="row" data-track="6"><div class="k">Head</div><div class="v">Synthetic lead, Director{cite()}</div></div>'
         f'<div class="row" data-track="7"><div class="k">Reports to</div><div class="v">Test ministry{cite()}</div></div>'
         '<div class="row" data-track="8"><div class="k">Partners</div><div class="v">'
-        '<span class="partners"><span class="partner">SCA (synthetic public body, works with)</span> '
+        '<span class="partners"><span class="partner">SCA (synthetic public body)</span> '
         f'<span class="partner">LAB (synthetic public body, planned)</span>{cite()}</span>'
         + fold(("SCA", HOW_SCA), ("LAB", HOW_LAB))
         + "</div></div>"
@@ -862,7 +862,7 @@ def test_page_oracle_keeps_each_fold_with_its_own_bodies(rows):
     ]
     partner_row = (
         '<div class="row" data-track="8"><div class="k">Partners</div><div class="v">'
-        f'<span class="partners"><span class="partner">OTHER (synthetic public body, works with)</span>{cite()}</span>'
+        f'<span class="partners"><span class="partner">OTHER (synthetic public body)</span>{cite()}</span>'
         + fold(("OTHER", "works with the institute on synthetic evaluation task other."))
         + '</div></div>'
     )
@@ -956,18 +956,19 @@ def test_page_row_labels_allow_rewording_but_require_text(rows, label):
     [
         ("Synthetic lead, Director", "Synthetic lead", "Head: shows"),
         ("Test ministry", "Other ministry", "Reports to: shows"),
+        ("SCA (synthetic public body)", "SCA (synthetic public body, works with)", "Partners: shows"),
         (
-            "SCA (synthetic public body, works with)",
+            "SCA (synthetic public body)",
             "SCA (synthetic public body, member)",
             "Partners: shows",
         ),
         (
-            "SCA (synthetic public body, works with)",
+            "SCA (synthetic public body)",
             "SCA (works with)",
             "Partners: shows",
         ),
         (
-            '<span class="partner">SCA (synthetic public body, works with)',
+            '<span class="partner">SCA (synthetic public body)',
             '<span class="partner">LAB (synthetic public body, planned)',
             "Partners: shows",
         ),
@@ -979,8 +980,8 @@ def test_page_row_labels_allow_rewording_but_require_text(rows, label):
         ),
         # the how sentence belongs in the fold-out, not on the line
         (
-            "SCA (synthetic public body, works with)",
-            "SCA (synthetic public body, works with) " + HOW_SCA,
+            "SCA (synthetic public body)",
+            "SCA (synthetic public body) " + HOW_SCA,
             "Partners: shows",
         ),
         (HOW_LAB, "Another sentence.", "fold-out shows"),
@@ -1066,13 +1067,13 @@ def test_page_oracle_card_cap_is_six(rows):
     ]
     names = ["SCA", "X0", "X1", "X2", "X3", "X4", "X5", "LAB"]
     line = "".join(
-        f'<span class="partner">{n} (synthetic public body, {"planned" if n == "LAB" else "works with"})</span> '
+        f'<span class="partner">{n} (synthetic public body{", planned" if n == "LAB" else ""})</span> '
         for n in names
     )
     html = card(
         good_rows()
         .replace(
-            '<span class="partner">SCA (synthetic public body, works with)</span> '
+            '<span class="partner">SCA (synthetic public body)</span> '
             '<span class="partner">LAB (synthetic public body, planned)</span>',
             line,
         )
@@ -1094,13 +1095,13 @@ def test_page_oracle_card_cap_is_six(rows):
     )  # eight on the line: two too many
     kept = names[:6]
     line = "".join(
-        f'<span class="partner">{n} (synthetic public body, works with)</span> '
+        f'<span class="partner">{n} (synthetic public body)</span> '
         for n in kept
     )
     ok = card(
         good_rows()
         .replace(
-            '<span class="partner">SCA (synthetic public body, works with)</span> '
+            '<span class="partner">SCA (synthetic public body)</span> '
             '<span class="partner">LAB (synthetic public body, planned)</span>',
             line,
         )
@@ -1149,7 +1150,7 @@ def test_page_oracle_tail_and_dash(rows):
     html = card(
         good_rows()
         .replace(
-            '<span class="partner">SCA (synthetic public body, works with)</span> ', ""
+            '<span class="partner">SCA (synthetic public body)</span> ', ""
         )
         .replace(fold(("SCA", HOW_SCA), ("LAB", HOW_LAB)), fold(("LAB", HOW_LAB)))
     )

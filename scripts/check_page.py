@@ -8141,7 +8141,7 @@ def expected_leadership(data: dict) -> dict[str, dict[str, tuple[str, list[str],
                     for _, e in shown:
                         name = e.get("acronym") or e.get("name_en") or e["name"]
                         description = e["what"]
-                        if label == "Partners":
+                        if label == "Partners" and e["relation"] != "works_with":
                             description += ", " + vocabularies["partner_relation"][e["relation"]]["label"]
                         texts.append(f"{name} ({description})")
                     hows = [
