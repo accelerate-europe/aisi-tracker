@@ -64,9 +64,17 @@ def authored():
 @pytest.fixture(scope="session", autouse=True)
 def current_build(saved_soup, published, authored):
     differences = []
+    # The build publishes the effective date: the authored as_of on a stable version, the latest recorded work on -dev.
+    # Only -dev needs the shared calculation (and the scripts it lives in); the step's own files suffice otherwise.
+    expect = {"version": authored["dataset"]["version"], "as_of": authored["dataset"]["as_of"]}
+    if expect["version"].endswith("-dev"):
+        from scripts import rereads
+        from scripts.versioning import effective_date
+
+        expect["as_of"] = effective_date(authored, rereads.load(ROOT / "data/rereads.json"))
     for field in ("version", "as_of"):
         actual = published.get("dataset", {}).get(field)
-        expected = authored["dataset"][field]
+        expected = expect[field]
         if actual != expected:
             differences.append(f"dataset.{field}: built {actual!r}, authored {expected!r}")
     if saved_soup.select_one("html[data-prerendered]") is None:
