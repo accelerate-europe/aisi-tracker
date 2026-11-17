@@ -21,7 +21,22 @@ from urllib.parse import quote, urlencode, urljoin, urlsplit
 from xml.etree import ElementTree as ET
 from zoneinfo import ZoneInfo
 
-NOTICE = "unpublished preview, do not cite"
+# Each preview text says what it stands in for and what happens to it at release (owner, 17 Nov 2026).
+NOTICE = "This build is unpublished. Do not cite it."
+# Beside the page's version and date wherever it shows them: they are the last release's until this one is released.
+RELEASE_NOTE = "Version and date still show the last release. They change when this is released."
+# Page elements the preview replaces as a whole (by id), with the text it puts there. check_preview excludes exactly
+# these from the comparison with the build, and nothing the preview merely marks.
+REPLACED = {"cite": NOTICE}
+
+
+def replaced_selector(ids: list[str]) -> str:
+    """The build-side exclusion for the preview's replaced elements; refuses any id not listed in REPLACED, so the
+    preview cannot exempt its own changes by marking page content as chrome."""
+    unknown = sorted(set(ids) - set(REPLACED))
+    if unknown:
+        raise ValueError(f"preview chrome replaces page elements not listed in REPLACED: {unknown}")
+    return "".join(f", #{name}" for name in sorted(set(ids)))
 PREVIEW_URL = "https://accelerate-europe.github.io/aisi-tracker-preview/"
 SOURCE_REPO = "https://github.com/accelerate-europe/aisi-tracker"
 PREVIEW_REPO = "git@github.com:accelerate-europe/aisi-tracker-preview.git"
@@ -51,7 +66,8 @@ def timestamp(value: str) -> dt.datetime:
 
 
 def vienna(value: str) -> str:
-    return timestamp(value).astimezone(ZoneInfo("Europe/Vienna")).strftime("%-d %b %Y, %H:%M")
+    """Vienna time with its zone, so no separate line has to say which: "17 Nov 2026, 01:08 CET" (CEST in summer)."""
+    return timestamp(value).astimezone(ZoneInfo("Europe/Vienna")).strftime("%-d %b %Y, %H:%M %Z")
 
 
 def data_date(value: str) -> str:
@@ -87,22 +103,54 @@ def frozen_url(page_url: str, logical: str, sha: str) -> str:
     return urljoin(site, parent + f"b/{commit_id(sha)}/{logical}") + ("#" + urlsplit(page_url).fragment if urlsplit(page_url).fragment else "")
 
 
+# One quiet band in the page's own tokens (ground, accent, ink, link, meta type), with fallbacks for the pages that
+# have their own small stylesheet (API landing page, preview root). Its content sits in the column of the header
+# below: the site's .gutter/.measure on the tracker and method pages, the page's main column elsewhere (--pv-measure,
+# --pv-gutter). One line; below 40rem of column (phones; the API page's column is 42rem) the identity moves to a second line under
+# the label and actions. A long branch name is cut with an ellipsis (full name in the text and its title), never wrapped.
 BANNER_CSS = """
-.preview-banner { --preview-bg: #fff2b3; --preview-ink: #231c00; --preview-stripe: #292100;
-  box-sizing: border-box; margin: 0; padding: 1rem; border: 0; border-top: .65rem solid;
-  border-image: repeating-linear-gradient(135deg, #f3c600 0 12px, var(--preview-stripe) 12px 24px) 10;
-  background: var(--preview-bg); color: var(--preview-ink); font: 16px/1.5 system-ui, sans-serif;
-  display: flex; flex-wrap: wrap; align-items: baseline; gap: .35rem 1rem; overflow-wrap: anywhere;
-  position: relative; width: 100%; text-align: left; }
-.preview-banner > * { min-width: 0; max-width: 100%; }
-.preview-banner a { color: inherit; text-decoration: underline; }
-.preview-banner a:focus-visible { outline: 3px solid currentColor; outline-offset: 3px; }
-.preview-banner small { font-size: .85em; }
-@media (prefers-color-scheme: dark) {
-  .preview-banner { --preview-bg: #3c3100; --preview-ink: #fff2b3; }
+.preview-banner { box-sizing: border-box; margin: 0; color: var(--ink, inherit);
+  background: color-mix(in srgb, var(--accent, #BE773D) 12%, var(--ground, Canvas));
+  border-bottom: 1px solid color-mix(in srgb, var(--accent, #BE773D) 45%, var(--ground, Canvas));
+  font: var(--type-meta, .875rem/1.5 "Segoe UI", Arial, sans-serif); text-align: left; }
+.preview-banner .pv-col { box-sizing: border-box; max-width: var(--pv-measure); margin-inline: auto; padding-inline: var(--pv-gutter); }
+.preview-banner .measure, .preview-banner .pv-col { container: pv / inline-size; }
+.preview-banner .pv-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "title id actions";
+  column-gap: var(--sp-4, 1rem); align-items: baseline; padding-block: var(--sp-2, .5rem); }
+.preview-banner .pv-title { grid-area: title; font-weight: 600; white-space: nowrap; }
+.preview-banner .pv-id { grid-area: id; color: var(--muted, inherit); display: flex; min-width: 0; white-space: nowrap; }
+.preview-banner .pv-branch { overflow: hidden; text-overflow: ellipsis; min-width: 2ch; flex: 0 1 auto; }
+.preview-banner .pv-build { flex: none; }
+.preview-banner .pv-actions { grid-area: actions; display: flex; gap: var(--sp-4, 1rem); align-items: baseline; white-space: nowrap; }
+.preview-banner .pv-toggle { font: inherit; color: var(--link, LinkText); background: none; border: 0; padding: 0; margin: 0; cursor: pointer;
+  text-decoration: underline; text-decoration-thickness: var(--underline-width, auto); text-underline-offset: var(--underline-offset, .2em);
+  text-decoration-color: var(--underline-colour, currentColor); }
+.preview-banner .pv-toggle::after { content: " +"; }
+.preview-banner .pv-toggle[aria-expanded="true"]::after { content: " \\2212"; }
+.preview-banner .pv-toggle:focus-visible { outline: 2px solid var(--focus, var(--link, currentColor)); outline-offset: 2px; }
+.preview-banner .pv-details { list-style: none; margin: 0; padding: 0 0 var(--sp-2, .5rem); }
+.preview-banner .pv-details[hidden] { display: none; }
+/* Preview chrome inside the page: what the preview adds or replaces, in the band's look, so page and preview stay
+   distinguishable. */
+.pv-note { display: inline-block; padding: 0 .4em; border: 1px solid color-mix(in srgb, var(--accent, #BE773D) 45%, var(--ground, Canvas));
+  border-radius: 2px; background: color-mix(in srgb, var(--accent, #BE773D) 12%, var(--ground, Canvas)); color: var(--ink, inherit);
+  font: var(--type-meta, .875rem/1.5 "Segoe UI", Arial, sans-serif); }
+.pv-note-line { margin: var(--sp-2, .5rem) 0 0; }
+.cite.pv-chrome { background: color-mix(in srgb, var(--accent, #BE773D) 12%, var(--ground, Canvas)); padding-block: var(--sp-2, .5rem); user-select: auto; }
+/* The marker: once the band has scrolled away, one short fixed line in the corner keeps the build identifiable on
+   screen and in screenshots. Nothing else on the page is fixed there (the theme switch is in the header). */
+.preview-banner .pv-marker { position: fixed; right: max(var(--sp-4, 1rem), env(safe-area-inset-right)); bottom: max(var(--sp-4, 1rem), env(safe-area-inset-bottom));
+  z-index: 40; display: inline-flex; align-items: baseline; max-width: min(60vw, 20rem); box-sizing: border-box; margin: 0;
+  padding: .125rem var(--sp-3, .75rem); border: 1px solid color-mix(in srgb, var(--accent, #BE773D) 45%, var(--ground, Canvas)); border-radius: 999px;
+  background: color-mix(in srgb, var(--accent, #BE773D) 12%, var(--ground, Canvas)); color: var(--ink, CanvasText);
+  font: var(--type-meta, .875rem/1.5 "Segoe UI", Arial, sans-serif); white-space: nowrap; cursor: pointer; }
+.preview-banner .pv-marker[hidden], .preview-banner .pv-marker.pv-away { display: none; }
+.preview-banner .pv-marker:focus-visible { outline: 2px solid var(--focus, var(--link, currentColor)); outline-offset: 2px; }
+@media print { .preview-banner .pv-marker { display: none; } }
+@container pv (max-width: 40rem) {
+  .preview-banner .pv-row { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "title actions" "id id"; }
+  .preview-banner .pv-actions { justify-self: end; }
 }
-html[data-theme="dark"] .preview-banner { --preview-bg: #3c3100; --preview-ink: #fff2b3; }
-html[data-theme="light"] .preview-banner { --preview-bg: #fff2b3; --preview-ink: #231c00; }
 """
 
 # The frozen address is set on load, on every hash change and just before any use of the link (click, middle click,
@@ -128,24 +176,75 @@ BANNER_JS = """
   });
   document.addEventListener('DOMContentLoaded', all);
   window.addEventListener('hashchange', all);
+  // Details: a button with aria-expanded; delegated, since hydration replaces the band.
+  document.addEventListener('click', function (event) {
+    const toggle = event.target.closest && event.target.closest('.preview-banner .pv-toggle');
+    if (!toggle) return;
+    const open = toggle.getAttribute('aria-expanded') !== 'true';
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.closest('.preview-banner').querySelector('.pv-details').hidden = !open;
+  });
+  // The marker shows only while the band is out of view; it brings the band back with Details open. It stays hidden
+  // without this script, and steps aside while the focused element sits under it.
+  function band() { return document.querySelector('body > .preview-banner'); }
+  function place() {
+    const b = band(), marker = b && b.querySelector('.pv-marker');
+    if (!marker) return;
+    marker.hidden = b.getBoundingClientRect().bottom > 0;
+    marker.classList.remove('pv-away');
+    const focused = document.activeElement;
+    if (marker.hidden || !focused || focused === document.body || marker.contains(focused)) return;
+    const m = marker.getBoundingClientRect(), f = focused.getBoundingClientRect();
+    if (f.right > m.left && f.left < m.right && f.bottom > m.top && f.top < m.bottom) marker.classList.add('pv-away');
+  }
+  let frame = 0;
+  function soon() { if (!frame) frame = requestAnimationFrame(function () { frame = 0; place(); }); }
+  window.addEventListener('scroll', soon, { passive: true });
+  window.addEventListener('resize', soon);
+  document.addEventListener('DOMContentLoaded', function () {
+    place();
+    new MutationObserver(soon).observe(document.body, { childList: true }); // hydration replaces the band
+  });
+  document.addEventListener('click', function (event) {
+    const marker = event.target.closest && event.target.closest('.preview-banner .pv-marker');
+    if (!marker) return;
+    const b = marker.closest('.preview-banner'), toggle = b.querySelector('.pv-toggle');
+    toggle.setAttribute('aria-expanded', 'true');
+    b.querySelector('.pv-details').hidden = false;
+    window.scrollTo(0, 0);
+    b.scrollIntoView({ block: 'start' });
+    toggle.focus({ preventScroll: true });
+    place();
+  });
+  document.addEventListener('focusin', place);
+  document.addEventListener('focusout', soon);
 })();
 """
 
+# The column of a page without the site's .gutter/.measure: its main box (max-width 42rem plus 1.5rem padding on
+# each side, content-box) in border-box terms. check_preview compares the left edges.
+OWN_COLUMN = "--pv-measure: 45rem; --pv-gutter: 1.5rem"
 
-def banner(meta: dict, logical: str, mail: str) -> str:
+
+def banner(meta: dict, logical: str, mail: str, site_column: bool = True) -> str:
     short = commit_id(meta["commit"])
     subject = urlencode({"subject": f"AISI preview {meta['branch']} {short}"}, quote_via=quote)
     esc = html.escape
-    return (f'<aside class="preview-banner" aria-label="Build preview">'
-            f'<strong>Preview, not published</strong><span>{esc(meta["branch"])}</span>'
-            f'<a href="{SOURCE_REPO}/commit/{meta["commit"]}">{short}</a>'
-            f'<span>Built {vienna(meta["built"])} Europe/Vienna</span>'
-            f'<span>Data as of {data_date(meta["as_of"])}</span>'
-            f'<a href="{esc(meta["run_url"], quote=True)}">CI run</a>'
-            f'<a href="#" data-preview-frozen="{short}" data-preview-path="{esc(logical)}">Link to this exact build</a>'
-            '<small>Frozen builds are removed after a while unless kept.</small>'
-            f'<a href="mailto:{quote(mail, safe="@.+")}?{esc(subject)}">Send feedback</a>'
-            f'<a href="{LIVE_URL}" data-preview-published>Published site</a></aside>')
+    outer, inner = ("preview-banner pv-chrome gutter", "measure") if site_column else ("preview-banner pv-chrome", "pv-col")
+    style = "" if site_column else f' style="{OWN_COLUMN}"'
+    return (f'<aside class="{outer}" aria-label="Preview build"{style}><div class="{inner}">'
+            '<div class="pv-row"><span class="pv-title">Preview, not published</span>'
+            f'<span class="pv-id"><span class="pv-branch" title="{esc(meta["branch"], quote=True)}">{esc(meta["branch"])}</span>'
+            f'<span class="pv-build">&nbsp;· {short} · {vienna(meta["built"])}</span></span>'
+            f'<span class="pv-actions"><a href="mailto:{quote(mail, safe="@.+")}?{esc(subject)}">Feedback</a>'
+            '<button type="button" class="pv-toggle" aria-expanded="false" aria-controls="preview-details">Details</button></span></div>'
+            '<ul class="pv-details" id="preview-details" hidden>'
+            f'<li>Data as of {data_date(meta["as_of"])}</li>'
+            f'<li><a href="{esc(meta["run_url"], quote=True)}">CI run for this build</a></li>'
+            f'<li><a href="#" data-preview-frozen="{short}" data-preview-path="{esc(logical)}">Link to this exact build</a></li>'
+            f'<li><a href="{LIVE_URL}" data-preview-published>Published site</a></li></ul></div>'
+            f'<button type="button" class="pv-marker" hidden aria-label="Preview · {esc(meta["branch"], quote=True)} · {short}: show the build details">'
+            f'Preview ·&nbsp;<span class="pv-branch">{esc(meta["branch"])}</span>&nbsp;· {short}</button></aside>')
 
 
 def mark_html(text: str, logical: str, meta: dict, mail: str, data_urls: tuple[str, str, str]) -> str:
@@ -164,16 +263,32 @@ def mark_html(text: str, logical: str, meta: dict, mail: str, data_urls: tuple[s
     script = soup.new_tag("script")
     script.string = BANNER_JS
     soup.head.append(script)
-    # CSS selectors follow browser template boundaries; find_all also visits the inert template tree.
+    # The page shows its own text; what the preview adds or replaces carries the preview-chrome class (band look).
+    # CSS selectors follow browser template boundaries; find_all also visits the inert template tree, which
+    # hydration puts in place of the saved body.
+    def note() -> object:
+        return BeautifulSoup(f'<span class="pv-chrome pv-note">{RELEASE_NOTE}</span>', "html.parser").span
+    for line in soup.find_all(id="updated"):
+        holder = soup.new_tag("p", attrs={"class": "pv-chrome pv-note-line"})
+        holder.append(note())
+        line.insert_after(holder)
+    released = f"version {meta['version']}, data as of"
+    for para in soup.find_all("p"):
+        if released in para.get_text() and para.find_parent(class_="pv-chrome") is None and para.get("id") != "cite":
+            para.append(" ")
+            para.append(note())
     for cite in soup.find_all(id="cite"):
         cite.clear()
         cite.append(NOTICE)
+        cite["class"] = [*cite.get("class", []), "pv-chrome"]
     for node in soup.select('meta[name="aisi-page-data"]'):
         node["content"], node["data-package"], node["data-build"] = data_urls
-    # The saved body is replaced during hydration. Both copies need the same first element.
-    soup.body.insert(0, BeautifulSoup(banner(meta, logical, mail), "html.parser").aside)
+    # The saved body is replaced during hydration. Both copies need the same first element. Pages with the site's
+    # header use its column classes; the others get their main column.
+    site_column = soup.find(class_="masthead") is not None
+    soup.body.insert(0, BeautifulSoup(banner(meta, logical, mail, site_column), "html.parser").aside)
     for template in soup.select('template[id="page-template"]'):
-        template.insert(0, BeautifulSoup(banner(meta, logical, mail), "html.parser").aside)
+        template.insert(0, BeautifulSoup(banner(meta, logical, mail, site_column), "html.parser").aside)
     if logical == "404.html":
         for node in soup.select('[href="/favicon.svg"], [href="/"]'):
             node["href"] = "favicon.svg" if node["href"].endswith("favicon.svg") else "./"
@@ -194,7 +309,7 @@ def mark_json(value, meta: dict, citation: str, allow_preview: bool = True):
         if allow_preview:
             dataset["preview"] = meta
         elif "description" in dataset:
-            dataset["description"] = f"{NOTICE}. {dataset['description']}"
+            dataset["description"] = f"{NOTICE} {dataset['description']}"
     return result
 
 
@@ -208,7 +323,7 @@ def mark_feed(text: str, frozen: str, citation: str) -> str:
             node.text = frozen + "feed.xml#" + quote(old.split(":", 2)[-1], safe="")
     title = root.find(ns + "title")
     if title is not None:
-        title.text = f"{title.text}: {NOTICE}"
+        title.text = f"{title.text} (unpublished preview build)"
     return '<?xml version="1.0" encoding="utf-8"?>\n' + ET.tostring(root, encoding="unicode") + "\n"
 
 
@@ -264,7 +379,7 @@ def transform(dist: Path, out: Path, *, branch: str, sha: str, run_url: str, bui
     dataset = source["dataset"]
     meta = {"notice": NOTICE, "branch": branch, "commit": sha, "built": built}
     timestamp(built)
-    extra = {**meta, "as_of": dataset["as_of"], "run_url": run_url, "preview_url": preview_url}
+    extra = {**meta, "as_of": dataset["as_of"], "version": dataset["version"], "run_url": run_url, "preview_url": preview_url}
     if as_of and as_of != dataset["as_of"]:
         raise ValueError("--as-of disagrees with the built dataset")
     mail = feedback_mail or dataset.get("contact")
@@ -299,6 +414,16 @@ def transform(dist: Path, out: Path, *, branch: str, sha: str, run_url: str, bui
             path.write_text(mark_html(path.read_text(encoding="utf-8"), path.relative_to(target).as_posix(), extra, mail, urls), encoding="utf-8")
         llms = target / "llms.txt"
         llms.write_text(llms.read_text(encoding="utf-8").replace(dataset["citation"], NOTICE).replace(LIVE_URL, frozen), encoding="utf-8")
+        # Where the build states its version as the state of what the reader sees: the API page keeps its sentence
+        # with the release note beside it (mark_html); llms.txt, plain text, says so in the sentence. A changed
+        # sentence upstream fails here instead of passing unmarked.
+        released = f"version {dataset['version']}, data as of"
+        if RELEASE_NOTE not in (target / "api/v1/index.html").read_text(encoding="utf-8"):
+            raise ValueError(f"api/v1/index.html: expected {released!r} to carry the release note")
+        text = llms.read_text(encoding="utf-8")
+        if released not in text:
+            raise ValueError(f"llms.txt: expected {released!r} to mark as a preview")
+        llms.write_text(text.replace(released, "unpublished preview build; version and date still show the last release: " + released), encoding="utf-8")
         feed = target / "feed.xml"
         feed.write_text(mark_feed(feed.read_text(encoding="utf-8"), frozen, dataset["citation"]), encoding="utf-8")
         (target / "robots.txt").write_text(ROBOTS, encoding="utf-8")
@@ -356,14 +481,27 @@ def retention(manifest: dict, kept: set[str], branches: set[str], now: dt.dateti
     return result, removed
 
 
+# The preview root's pages (index, 404): the tracker's palette and the same band as the previews, over one column.
+ROOT_CSS = """
+:root { color-scheme: light; --ground: #FAF7F2; --ink: #1A1A1A; --muted: #6E6760; --link: #8F5A23; --accent: #BE773D; --line: #E8E3DD; }
+@media (prefers-color-scheme: dark) { :root { color-scheme: dark; --ground: #17191A; --ink: #F3F0EB; --muted: #B0ADA7; --link: #E9AA79; --accent: #E9AA79; --line: #2A2D2F; } }
+body { margin: 0; background: var(--ground); color: var(--ink); font: 1rem/1.5 "Segoe UI", Arial, sans-serif; }
+main { box-sizing: border-box; max-width: var(--pv-measure); margin-inline: auto; padding: 1.5rem var(--pv-gutter) 3rem; overflow-wrap: anywhere; }
+a { color: var(--link); text-underline-offset: .2em; }
+td, th { text-align: left; vertical-align: top; padding: .5rem .5rem .5rem 0; border-bottom: 1px solid var(--line); }
+table { width: 100%; table-layout: fixed; border-collapse: collapse; }
+"""
+ROOT_COLUMN = "--pv-measure: 75rem; --pv-gutter: 1.5rem"
+
+
 def root_page(title: str, body: str, script: str = "") -> str:
+    band = ('<header class="preview-banner"><div class="pv-col"><div class="pv-row"><span class="pv-title">Preview, not published</span>'
+            '<span class="pv-id">Previews of the AISI tracker</span></div></div></header>')
     return ('<!doctype html><html lang="en"><head><meta charset="utf-8">'
             '<meta name="viewport" content="width=device-width, initial-scale=1">'
             '<meta name="robots" content="noindex, nofollow">'
-            f'<title>{html.escape(title)}</title><style>'
-            ':root { color-scheme: light dark; } body { font: 1rem/1.5 system-ui,sans-serif; margin: 2rem auto; padding: 0 1rem; max-width: 75rem; }'
-            'td, th { text-align: left; padding: .5rem; overflow-wrap: anywhere; } table { width: 100%; table-layout: fixed; } a { color: LinkText; }'
-            '</style></head><body>' + body + (f'<script>{script}</script>' if script else '') + '</body></html>\n')
+            f'<title>{html.escape(title)}</title><style>' + ROOT_CSS + BANNER_CSS + '</style></head>'
+            f'<body style="{ROOT_COLUMN}">' + band + '<main>' + body + '</main>' + (f'<script>{script}</script>' if script else '') + '</body></html>\n')
 
 
 def index_html(manifest: dict, kept: set[str]) -> str:
@@ -379,11 +517,11 @@ def index_html(manifest: dict, kept: set[str]) -> str:
     frozen = []
     for sha, entry in sorted(manifest["frozen"].items(), key=lambda item: (item[1]["built"], item[0]), reverse=True):
         expiry = (timestamp(entry["built"]) + dt.timedelta(days=FROZEN_DAYS)).date().isoformat()
-        life = "kept" if sha in kept else f"Until {expiry} at most; sooner once {FROZEN_COUNT} newer frozen builds that are neither kept nor a branch's current build exist, or space runs out"
+        life = "Kept" if sha in kept else f"Until {expiry} at most, sooner by the rule above"
         if sha not in kept and any(e.get("current", {}).get("commit", "")[:10] == sha for e in manifest["folders"].values()):
-            life = f"Current live build; protected while current ({FROZEN_DAYS}-day date: {expiry})"
+            life = "Stays while it is a branch's current build"
         frozen.append(f'<tr><td><a href="b/{sha}/">{sha}</a></td><td>{esc(entry["branch"])}<br>{vienna(entry["built"])}<br>'
-                      f'<a href="{esc(entry["run_url"])}">First publish: run {entry["run_id"]}, attempt {entry["run_attempt"]}</a></td><td>{life}</td></tr>')
+                      f'<a href="{esc(entry["run_url"])}">CI run</a></td><td>{life}</td></tr>')
     script = """
 document.querySelectorAll('[data-run]').forEach(async function (link) {
   try {
@@ -394,13 +532,13 @@ document.querySelectorAll('[data-run]').forEach(async function (link) {
   } catch (_) { /* The run link remains usable when the public API is unavailable. */ }
 });
 """
-    return root_page("AISI tracker previews", '<h1>Preview, not published</h1><p>Times are Europe/Vienna.</p>'
+    return root_page("AISI tracker previews", '<h1>Branch previews</h1>'
                      '<table><thead><tr><th>Branch</th><th>Current build</th><th>Last attempt</th></tr></thead><tbody>' + ''.join(rows) + '</tbody></table>'
-                     '<h2>Frozen builds</h2><p>An exact build is the first published build of that commit. '
+                     '<h2>Frozen builds</h2><p>'
                      f'The {FROZEN_COUNT} newest unkept frozen builds stay, each for {FROZEN_DAYS} days at most, and fewer if space runs out; '
                      'kept builds and the current build of each branch stay and do not count. '
                      'To keep one, add its ten-character commit to <a href="https://github.com/accelerate-europe/aisi-tracker-preview/edit/gh-pages/keep.txt">keep.txt in the preview repository</a>.</p>'
-                     '<table><thead><tr><th>Commit</th><th>Provenance</th><th>Retention</th></tr></thead><tbody>' + ''.join(frozen) + '</tbody></table>', script)
+                     '<table><thead><tr><th>Commit</th><th>Built from</th><th>Retention</th></tr></thead><tbody>' + ''.join(frozen) + '</tbody></table>', script)
 
 
 def not_found_html(preview_url: str = PREVIEW_URL) -> str:
