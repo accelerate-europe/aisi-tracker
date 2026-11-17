@@ -20,6 +20,11 @@ import json
 import re
 from urllib.parse import urlsplit
 
+if __package__:
+    from .versioning import release_metadata
+else:
+    from versioning import release_metadata
+
 # Every absolute site URL the build writes derives from this address, ending in "/".
 PUBLIC_URL = "https://aisi.accelerate-europe.org/"
 SITE_NAME = "AI Security Institutes tracker"
@@ -204,7 +209,7 @@ def orientation(published: dict) -> list[tuple[str, str]]:
          "Not every amount is the AISI's own adopted budget. A figure can be another body's or a wider programme's money (`coverage`: not_institute_specific), "
          "only part of the budget (`coverage`: component) or proposed rather than adopted (`commitment`: proposed)."),
         ("Leadership and national partners",
-         "An AISI's head (`head`), the ministry-level body it reports to (`reports_to`) and the national bodies it works with (`national_partners`) each have a state: stated, not published or not applicable (`state`). "
+         "An AISI's head (`head`), the ministry-level body it reports to (`reports_to`) and the national bodies it is made up of or works with (`national_partners`) each have a state: stated, not published or not applicable (`state`). "
          "The head's name and title are in the AISI's list of named leaders, such as directors and their deputies (`people`, linked by `head.person_id`). "
          "Each partner's relation is member (a constituent of a federated AISI), works with, or planned (`relation`). "
          "Only the national cyber security agency, marked `cyber_agency`, is searched for at every AISI, so a missing partner of another kind does not mean there is none."),
@@ -460,7 +465,7 @@ def citation_cff(published: dict) -> str:
     author and each maintainer as a person, the canonical citation verbatim."""
     import yaml  # build.py's dependency; other scripts import this module without it
 
-    dataset = published["dataset"]
+    dataset = release_metadata(published)
     people = []
     for maintainer in dataset["maintainers"]:
         given, family = split_name(maintainer["name"])
@@ -476,8 +481,7 @@ def citation_cff(published: dict) -> str:
         "version": dataset["version"],
         # The concept DOI, which always resolves to the latest version (Zenodo mints a version DOI per release).
         **({"doi": dataset["doi"], "identifiers": [{"type": "doi", "value": dataset["doi"], "description": "Concept DOI; resolves to the latest version"}]} if dataset.get("doi") else {}),
-        # The current version's changelog date: build.py checks the last entry is this version, and
-        # check_metadata that its date equals as_of, which release day sets to the release date.
+        # The last release's date, including on development versions; validation checks the authored baseline.
         "date-released": published["changelog"][-1]["date"],
         "authors": [{"name": dataset["publisher"]}, *people],
         **({"contact": [{"name": dataset["publisher"], "email": dataset["contact"]}]} if dataset.get("contact") else {}),
@@ -507,7 +511,7 @@ def zenodo_json(published: dict) -> str:
     Creators are persons only (Zenodo's loader treats every creator as a person); the publisher is
     the imprint, and scripts/zenodo_metadata.py adds it as the first creator after release
     (zenodo_rdm_metadata). No publication_date: Zenodo takes the release date."""
-    dataset = published["dataset"]
+    dataset = release_metadata(published)
     creators = []
     for maintainer in dataset["maintainers"]:
         given, family = split_name(maintainer["name"])

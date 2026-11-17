@@ -355,6 +355,75 @@ def test_member_passes_for_a_federation(rows):
     assert problems(rows) == []
 
 
+def test_member_error_names_the_institute_and_entry(rows):
+    partners(rows)["entries"][1]["relation"] = "member"
+    assert check_rows(rows) == [
+        "gb-test: partner np-test-sca: member is reserved for an institute whose legal_form is federation_of_existing_bodies"
+    ]
+
+
+def test_non_federation_keeps_partners_without_members(rows):
+    shown = publish(rows)["institutes"][0]["display"]["rows"]
+    assert "members" not in shown
+    assert [item["text"] for item in shown["partners"]["items"]] == [
+        "SCA (synthetic public body, works with)",
+        "LAB (synthetic public body, planned)",
+    ]
+
+
+def test_federation_splits_members_and_works_with_partners(rows):
+    rows["institutes"][0]["legal_form"] = "federation_of_existing_bodies"
+    partners(rows)["entries"][0]["relation"] = "works_with"
+    partners(rows)["entries"][1]["relation"] = "member"
+    detail_source(rows, "what", index=1)
+    published = publish(rows)
+    shown = published["institutes"][0]["display"]["rows"]
+    assert [item["text"] for item in shown["members"]["items"]] == ["SCA (synthetic public body)"]
+    assert [item["text"] for item in shown["partners"]["items"]] == ["LAB (synthetic public body, works with)"]
+    for key, name in (("members", "SCA"), ("partners", "LAB")):
+        assert [item["name"] for item in shown[key]["fold_items"]] == [name]
+        assert shown[key]["fold_items"] == shown[key]["items"]
+        assert shown[key]["tail"] is None  # the member supplies the cyber agency
+    assert shown["members"]["cited"] == ["gb-source", "detail-source"]
+    assert shown["partners"]["cited"] == ["gb-source"]
+    tables = build.tables(published)
+    assert {item["relation"] for item in tables["national_partners"]} == {"member", "works_with"}
+
+
+def test_members_are_uncapped_and_members_only_omit_partners(rows):
+    rows["institutes"][0]["legal_form"] = "federation_of_existing_bodies"
+    for body in partners(rows)["entries"]:
+        body["relation"] = "member"
+    partners(rows)["entries"] += [entry(f"x{k}", "member") for k in range(6)]
+    rows["sources"][0]["excerpts"][0]["supports"] += [
+        f"{BASE}/national_partners/entries/{k}/{field}"
+        for k in range(2, 8)
+        for field in ("name", "relation", "how", "what")
+    ]
+    detail_source(rows, "how", index=7)
+    shown = publish(rows)["institutes"][0]["display"]["rows"]
+    assert "partners" not in shown
+    members = shown["members"]
+    assert [item["name"] for item in members["items"]] == ["SCA", "LAB", "X0", "X1", "X2", "X3", "X4", "X5"]
+    assert members["fold_items"] == members["items"]
+    assert all(item["text"] == f"{item['name']} (synthetic public body)" for item in members["items"])
+    assert members["cited"] == ["gb-source", "detail-source"]
+    assert members["fold_items"][-1]["cited"] == ["gb-source", "detail-source"]
+
+
+def test_members_only_without_cyber_keep_a_tail_only_partners_row(rows):
+    rows["institutes"][0]["legal_form"] = "federation_of_existing_bodies"
+    for body in partners(rows)["entries"]:
+        body["relation"] = "member"
+        body.pop("cyber_agency", None)
+    partners(rows)["notes"] = "Cyber agency searched on 20 October 2026 (en)."
+    shown = publish(prune(rows))["institutes"][0]["display"]["rows"]
+    assert shown["members"]["tail"] is None
+    assert shown["partners"] == {
+        "state": "stated", "items": [], "fold_items": [], "tail": "cyber agency not published", "cited": []
+    }
+
+
 def test_more_than_six_partners_stay_in_the_data(rows):
     partners(rows)["entries"] += [entry(f"x{k}") for k in range(8)]
     rows["sources"][0]["excerpts"][0]["supports"] += [
@@ -462,11 +531,11 @@ def test_display_rows_order_words_and_tail(rows):
         [i["text"] for i in shown["partners"]["items"]]
         == [
             "SCA (synthetic public body, works with)",  # cyber agency first, whatever its relation
-            "REG (synthetic public body, member)",
             "LAB (synthetic public body, planned)",  # authored order breaks the tie between the two planned
             "PLA (synthetic public body, planned)",
         ]
     )
+    assert [i["text"] for i in shown["members"]["items"]] == ["REG (synthetic public body)"]
     assert shown["partners"]["items"][0]["how"].startswith("Works with the institute")
     assert shown["partners"]["tail"] is None
     partners(rows)["entries"] = [
@@ -696,7 +765,7 @@ def test_orientation_names_the_new_rows(rows):
 
 def card(rows_html):
     return f"""<article class="card" data-j="GB" id="c-gb"><div class="row" data-track="4"><div class="k">Form</div><div class="v">Unit</div></div>{rows_html}
-    <div class="row" data-track="8"><div class="k">Mandate</div><div class="v">Evaluate</div></div></article>"""
+    <div class="row" data-track="9"><div class="k">Mandate</div><div class="v">Evaluate</div></div></article>"""
 
 
 def cite(n="gb-source", *more):
@@ -721,14 +790,29 @@ def fold(*pairs):
 
 def good_rows():
     return (
-        f'<div class="row" data-track="5"><div class="k">Head</div><div class="v">Synthetic lead, Director{cite()}</div></div>'
-        f'<div class="row" data-track="6"><div class="k">Reports to</div><div class="v">Test ministry{cite()}</div></div>'
-        '<div class="row" data-track="7"><div class="k">Partners</div><div class="v">'
+        f'<div class="row" data-track="6"><div class="k">Head</div><div class="v">Synthetic lead, Director{cite()}</div></div>'
+        f'<div class="row" data-track="7"><div class="k">Reports to</div><div class="v">Test ministry{cite()}</div></div>'
+        '<div class="row" data-track="8"><div class="k">Partners</div><div class="v">'
         '<span class="partners"><span class="partner">SCA (synthetic public body, works with)</span> '
         f'<span class="partner">LAB (synthetic public body, planned)</span>{cite()}</span>'
         + fold(("SCA", HOW_SCA), ("LAB", HOW_LAB))
         + "</div></div>"
     )
+
+
+def members_card(rows, html=None):
+    """Turn the hand-worked SCA/LAB Partners fixture into an uncapped Members row under Form."""
+    rows["institutes"][0]["legal_form"] = "federation_of_existing_bodies"
+    for body in partners(rows)["entries"]:
+        body["relation"] = "member"
+    soup = BeautifulSoup(card(good_rows()) if html is None else html, "html.parser")
+    members = soup.select_one('.row[data-track="8"]').extract()
+    members["data-track"] = "5"
+    members.select_one(".k").string = "Members"
+    for item in members.select(".partner"):
+        item.string = item.get_text().replace(", works with)", ")").replace(", planned)", ")")
+    soup.select_one('.row[data-track="4"]').insert_after(members)
+    return str(soup)
 
 
 def oracle_data(rows):
@@ -743,6 +827,103 @@ def page_errors(rows, html):
 
 def test_page_oracle_accepts_the_expected_card(rows):
     assert page_errors(rows, card(good_rows())) == []
+
+
+def test_page_oracle_accepts_members_only_and_rejects_an_extra_partners_row(rows):
+    html = members_card(rows)
+    assert page_errors(rows, html) == []
+    extra = BeautifulSoup(card(good_rows()), "html.parser").select_one('.row[data-track="8"]')
+    assert any("card rows" in e for e in page_errors(rows, html.replace("</article>", str(extra) + "</article>")))
+
+
+def test_page_oracle_members_are_uncapped(rows):
+    html = BeautifulSoup(members_card(rows), "html.parser")
+    partners(rows)["entries"] += [entry(f"x{k}", "member") for k in range(6)]
+    rows["sources"][0]["excerpts"][0]["supports"] += [
+        f"{BASE}/national_partners/entries/{k}/{field}"
+        for k in range(2, 8)
+        for field in ("name", "relation", "how", "what")
+    ]
+    names = ["SCA", "LAB", "X0", "X1", "X2", "X3", "X4", "X5"]  # cyber first, then authored order
+    line = '<span class="partners">' + " ".join(f'<span class="partner">{name} (synthetic public body)</span>' for name in names) + cite() + '</span>'
+    html.select_one(".partners").replace_with(BeautifulSoup(line, "html.parser"))
+    hows = fold(*[(name, f"Works with the institute on synthetic evaluation task {name.lower()}.") for name in names])
+    html.select_one("details.partner-how").replace_with(BeautifulSoup(hows, "html.parser"))
+    assert page_errors(rows, str(html)) == []
+    html.select_one(".partners").select(".partner")[-1].decompose()
+    assert any("Members: shows" in e for e in page_errors(rows, str(html)))
+
+
+def test_page_oracle_keeps_each_fold_with_its_own_bodies(rows):
+    html = BeautifulSoup(members_card(rows), "html.parser")
+    partners(rows)["entries"].append(entry("other"))
+    rows["sources"][0]["excerpts"][0]["supports"] += [
+        f"{BASE}/national_partners/entries/2/{field}" for field in ("name", "relation", "how", "what")
+    ]
+    partner_row = (
+        '<div class="row" data-track="8"><div class="k">Partners</div><div class="v">'
+        f'<span class="partners"><span class="partner">OTHER (synthetic public body, works with)</span>{cite()}</span>'
+        + fold(("OTHER", "works with the institute on synthetic evaluation task other."))
+        + '</div></div>'
+    )
+    html.select_one('.row[data-track="7"]').insert_after(BeautifulSoup(partner_row, "html.parser"))
+    assert page_errors(rows, str(html)) == []
+    member_fold, partner_fold = html.select("details.partner-how")
+    partner_fold.replace_with(copy.copy(member_fold))
+    assert any("Partners: fold-out shows" in e for e in page_errors(rows, str(html)))
+
+
+@pytest.mark.parametrize(
+    ("old", "new", "message"),
+    [
+        ("SCA (synthetic public body)", "SCA (synthetic public body, member)", "Members: shows"),
+        ("SCA (synthetic public body)", "LAB (synthetic public body)", "Members: shows"),
+        (HOW_SCA, "a different task.", "Members: fold-out shows"),
+        ('class="more quiet partner-how"', 'class="more quiet partner-how" open', "must start closed"),
+    ],
+)
+def test_page_oracle_members_mutations(rows, old, new, message):
+    html = members_card(rows)
+    assert old in html
+    assert any(message in e for e in page_errors(rows, html.replace(old, new, 1)))
+
+
+def test_page_oracle_members_require_row_and_fold_citations(rows):
+    html = BeautifulSoup(members_card(rows), "html.parser")
+    html.select_one(".partners .cites").decompose()
+    assert any("Members: citations []" in e for e in page_errors(rows, str(html)))
+    html = BeautifulSoup(members_card(rows), "html.parser")
+    html.select_one(".pname .cites").decompose()
+    assert any("Members: fold-out citations" in e for e in page_errors(rows, str(html)))
+
+
+def test_page_oracle_members_must_follow_form(rows):
+    html = BeautifulSoup(members_card(rows), "html.parser")
+    member_row = html.select_one('.row[data-track="5"]').extract()
+    html.select_one('.row[data-track="6"]').insert_after(member_row)
+    assert any("card rows" in e for e in page_errors(rows, str(html)))
+
+
+def test_page_oracle_members_only_tail_is_on_partners(rows):
+    html = BeautifulSoup(members_card(rows), "html.parser")
+    partners(rows)["entries"][1].pop("cyber_agency")
+    partners(rows)["notes"] = "Cyber agency searched on 20 October 2026 (en)."
+    prune(rows)
+    # No cyber priority now: the authored LAB precedes SCA, on the line and in the fold.
+    members = html.select_one('.row[data-track="5"]')
+    line = members.select_one(".partners")
+    line.insert(0, line.select(".partner")[1].extract())
+    line.insert(1, " ")
+    ul = members.select_one("ul")
+    ul.insert(0, ul.select("li")[1].extract())
+    tail_row = '<div class="row" data-track="8"><div class="k">Partners</div><div class="v"><span class="partners"><span class="partners-none">cyber agency not published</span></span></div></div>'
+    html.select_one('.row[data-track="7"]').insert_after(BeautifulSoup(tail_row, "html.parser"))
+    assert page_errors(rows, str(html)) == []
+    tail = html.select_one(".partners-none").extract()
+    line.append(tail)
+    errors = page_errors(rows, str(html))
+    assert any("Members: the muted tail" in e for e in errors)
+    assert any("Partners: the muted tail" in e for e in errors)
 
 
 def test_reports_to_original_must_be_on_the_complete_focusable_name(rows):
@@ -760,10 +941,10 @@ def test_reports_to_original_must_be_on_the_complete_focusable_name(rows):
         assert any('Reports to: the English name must carry the original' in e for e in page_errors(rows, broken))
 
 
-@pytest.mark.parametrize("label", ["Head", "Reports to", "Partners"])
+@pytest.mark.parametrize("label", ["Members", "Head", "Reports to", "Partners"])
 def test_page_row_labels_allow_rewording_but_require_text(rows, label):
     original = f'<div class="k">{label}</div>'
-    html = card(good_rows())
+    html = members_card(rows) if label == "Members" else card(good_rows())
     assert page_errors(rows, html.replace(original, '<div class="k">Reworded label</div>')) == []
     for replacement in ("", '<div class="k"> \n </div>'):
         errors = check_page.blocking(page_errors(rows, html.replace(original, replacement)))
@@ -837,7 +1018,8 @@ def test_page_oracle_fold_out_follows_card_order(rows):
         ("Is named as a technical partner that the institute works with.", ""),
     ],
 )
-def test_page_oracle_groups_shared_how_with_cited_names(rows, singular, plural):
+@pytest.mark.parametrize("label", ["Members", "Partners"])
+def test_page_oracle_groups_shared_how_with_cited_names(rows, singular, plural, label):
     for partner in partners(rows)["entries"]:
         partner["how"] = singular
     grouped = (
@@ -847,6 +1029,8 @@ def test_page_oracle_groups_shared_how_with_cited_names(rows, singular, plural):
         + "</li></ul></details>"
     )
     html = card(good_rows().replace(fold(("SCA", HOW_SCA), ("LAB", HOW_LAB)), grouped))
+    if label == "Members":
+        html = members_card(rows, html)
     assert page_errors(rows, html) == []
     assert check_page.check_citation_ends(BeautifulSoup(html, "html.parser")) == []
     # A citation for the group cannot substitute for the second name's own citation.
@@ -855,8 +1039,9 @@ def test_page_oracle_groups_shared_how_with_cited_names(rows, singular, plural):
     if plural:
         bad_agreement = html.replace(plural, singular[:1].lower() + singular[1:])
         assert any("fold-out shows" in e for e in page_errors(rows, bad_agreement))
-    repeated = html.replace(grouped, fold(("SCA", singular), ("LAB", singular)))
-    assert any("fold-out shows" in e for e in page_errors(rows, repeated))
+    repeated = BeautifulSoup(html, "html.parser")
+    repeated.select_one("details.partner-how").replace_with(BeautifulSoup(fold(("SCA", singular), ("LAB", singular)), "html.parser"))
+    assert any("fold-out shows" in e for e in page_errors(rows, str(repeated)))
 
 
 def test_page_oracle_rejects_unreviewed_plural_wording(rows):

@@ -1231,7 +1231,7 @@ def test_cli_decisive_selection_source_filter_and_all_excerpts(tmp_path, monkeyp
     cache = tmp_path / "cache"
     cached(verify.Fetcher(cache, offline=True), url, b"<html>Decisive quotation</html>")
     data = {
-        "dataset": {"as_of": "2026-10-18"},
+        "dataset": {"version": "1.0.0", "as_of": "2026-10-18"},
         "jurisdictions": [{"id": "GB", "summary": "Fixture.", "status": "established", "timeline": [
             {"id": "act", "event": "designated", "date": "2024", "source_ids": []}
         ]}],

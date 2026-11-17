@@ -34,10 +34,13 @@ from string import Template
 from typing import Any
 
 try:
-    from . import research_pass, verify_excerpts
+    from . import research_pass, verify_excerpts, rereads
+    from .versioning import dated_data, effective_date
 except ImportError:
     import research_pass  # type: ignore[no-redef]  # Direct script entry point.
     import verify_excerpts  # type: ignore[no-redef]
+    import rereads
+    from versioning import dated_data, effective_date
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data" / "aisi.json"
@@ -312,6 +315,7 @@ def main(argv: list[str] | None = None) -> int:
         print("NOT RUN: no pass store; set AISI_PASSES or AISI_SNAPSHOTS, or pass --store", file=sys.stderr)
         return NOT_RUN
     data = json.loads(args.data.read_text(encoding="utf-8"))
+    data = dated_data(data, effective_date(data, rereads.load(args.data.with_name("rereads.json"))))
     if args.command == "state":
         snapshots = Path(os.environ.get("AISI_SNAPSHOTS", store.parent / "sources")).expanduser()
         folder = prepare_state(store, snapshots, data, args.pass_id, args.who,

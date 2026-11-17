@@ -854,6 +854,7 @@ def test_instrument_status_is_exported_and_warnings_reach_the_report_without_fai
     rows = {r["id"]: r for r in build.tables(build.export_dataset(dataset))["sources"]}
     assert rows["gb-source"]["instrument_status_checked"] == "2026-01-02"
     write_json(build.DATA, dataset)
+    write_json(build.DATA.with_name("rereads.json"), {"checked_to": "2026-10-17", "sources": {}})
     report = tmp_path_factory.mktemp("report")
     monkeypatch.setattr(sys, "argv", ["build.py", "--check", "--report-dir", str(report)])
     build.main()  # a warning never fails validation
@@ -1030,7 +1031,7 @@ def test_changelog_entry_handworked(summary, changes, expected):
 
 @pytest.mark.parametrize(("version", "summary"), [(version, summary) for version, summary, _ in RELEASED_SUMMARIES])
 def test_released_summaries_pass_at_their_own_version(version, summary):
-    """A deploy without a version, or --release before the version moves, must not fail a released entry."""
+    """Checking a released entry keeps the wording rules that applied to its version."""
     data = {"dataset": {"version": version}, "changelog": [{"version": version, "summary": summary, "changes": ["One."]}]}
     assert release_checks.check_changelog_entry(data) == []
 
@@ -1062,7 +1063,8 @@ def test_release_cli_refuses_a_draft_changelog_summary(dataset, build_env, monke
 
 def test_update_readme_leaves_the_citation_when_the_version_is_malformed(dataset, build_env, monkeypatch, capsys):
     dataset["dataset"]["version"] = "1.0.0 "
-    write_json(build.DATA, dataset)
+    build.DATA.parent.mkdir(parents=True, exist_ok=True)
+    build.DATA.write_text(json.dumps(dataset))  # Malformed input must not first pass through metadata generation.
     before = build.DATA.read_bytes()
     monkeypatch.setattr(sys, "argv", ["build.py", "--update-readme"])
     with pytest.raises(SystemExit):

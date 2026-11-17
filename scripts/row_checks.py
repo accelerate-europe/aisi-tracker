@@ -62,7 +62,9 @@ def partner_name(entry: dict) -> str:
 
 
 def partner_text(entry: dict, vocabularies: dict) -> str:
-    """'ANSSI (national cyber security agency, member)': the relation word comes from the vocabulary only."""
+    """Members need only their descriptor; other relation words come from the vocabulary."""
+    if entry["relation"] == "member":
+        return f"{partner_name(entry)} ({entry['what']})"
     relation = vocabularies["partner_relation"][entry["relation"]]["label"]
     return f"{partner_name(entry)} ({entry['what']}, {relation})"
 
@@ -269,34 +271,38 @@ def row_display(institute: dict, vocabularies: dict) -> dict | None:
     partners = institute.get("national_partners")
     if partners:
         entries = partner_order(partners.get("entries", []))
-        shown = entries[:CARD_PARTNERS]
-        items = [
-            {
-                "id": e["id"],
-                "text": partner_text(e, vocabularies),
-                "name": partner_name(e),
-                "how": e["how"],
-                "cited": ids(e, "name", "how"),
+        members = [e for e in entries if e["relation"] == "member"]
+        others = [e for e in entries if e["relation"] != "member"]
+        # The cyber search covers all bodies, including members; wording has one home in the vocabulary.
+        tail = (
+            vocabularies["partner_cyber_none_published"]
+            if partners["state"] == "stated" and not any(e.get("cyber_agency") for e in entries)
+            else None
+        )
+
+        def body_row(bodies, cap=None, tail=None):
+            items = [
+                {
+                    "id": e["id"],
+                    "text": partner_text(e, vocabularies),
+                    "name": partner_name(e),
+                    "how": e["how"],
+                    "cited": ids(e, "name", "how"),
+                }
+                for e in bodies
+            ]
+            # One citation group ends each row and covers its shown bodies in card order.
+            cited_ids = [sid for e in bodies[:cap] for sid in ids(e, *PARTNER_BOUND_FIELDS)]
+            return {
+                "state": partners["state"],
+                "items": items[:cap],
+                "fold_items": items,
+                "tail": tail,
+                "cited": list(dict.fromkeys(cited_ids)) if partners["state"] == "stated" else [],
             }
-            for e in entries
-        ]
-        # One citation group ends the line, as on every card row; it lists the sources of the shown entries in card order.
-        cited_ids = [
-            sid
-            for e in shown
-            for sid in ids(e, *PARTNER_BOUND_FIELDS)
-        ]
-        out["partners"] = {
-            "state": partners["state"],
-            "items": items[:CARD_PARTNERS],
-            "fold_items": items,
-            # Wording lives in the vocabulary, so renaming it renames the tail.
-            "tail": vocabularies["partner_cyber_none_published"]
-            if partners["state"] == "stated"
-            and not any(e.get("cyber_agency") for e in entries)
-            else None,
-            "cited": list(dict.fromkeys(cited_ids))
-            if partners["state"] == "stated"
-            else [],
-        }
+
+        if members:
+            out["members"] = body_row(members)
+        if not members or others or tail:
+            out["partners"] = body_row(others, CARD_PARTNERS, tail)
     return out

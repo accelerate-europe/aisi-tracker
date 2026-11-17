@@ -14,10 +14,12 @@ if __package__:
     from . import summaries
     from .claim_checks import function_rows
     from .flag_checks import access_summary
+    from .versioning import dated_data, effective_date
 else:
     import summaries  # type: ignore[import-not-found, no-redef]
     from claim_checks import function_rows  # type: ignore[import-not-found, no-redef]
     from flag_checks import access_summary  # type: ignore[import-not-found, no-redef]
+    from versioning import dated_data, effective_date
 
 AUTHORING_STRICT = True  # Production accepts primary facts and stable bindings only.
 
@@ -483,10 +485,11 @@ def prepared_facts(data: dict, *, strict: bool | None = None) -> dict:
     return result
 
 
-def publish(data: dict, *, strict: bool | None = None, rereads: dict | None = None) -> dict:
+def publish(data: dict, *, strict: bool | None = None, rereads: dict | None = None, as_of: str | None = None) -> dict:
     """The sole authored-to-download boundary, shared by every consumer.
 
     rereads: the monitor's re-read states (scripts/rereads.py); by default the tracked data/rereads.json.
+    as_of: the effective date when the caller has already computed it before validation.
     """
     if __package__:
         from .display import derive_display
@@ -494,7 +497,9 @@ def publish(data: dict, *, strict: bool | None = None, rereads: dict | None = No
     else:
         from display import derive_display
         import rereads as reread_states  # type: ignore[no-redef]
-    facts = reread_states.join(prepared_facts(data, strict=strict), reread_states.load() if rereads is None else rereads)
+    rereads = reread_states.load() if rereads is None else rereads
+    data = dated_data(data, effective_date(data, rereads) if as_of is None else as_of)
+    facts = reread_states.join(prepared_facts(data, strict=strict), rereads)
     # The join marks expired claims after prepared_facts has worded the migrated records, so they are worded again
     # without them (docs/design/claims-1.1.md, section 4: an expired claim leaves the summary).
     institutes = {i["id"]: i for i in facts.get("institutes", [])}
