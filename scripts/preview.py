@@ -87,22 +87,56 @@ def frozen_url(page_url: str, logical: str, sha: str) -> str:
     return urljoin(site, parent + f"b/{commit_id(sha)}/{logical}") + ("#" + urlsplit(page_url).fragment if urlsplit(page_url).fragment else "")
 
 
+# One quiet band in the page's own tokens (ground, accent, ink, link, meta type), with fallbacks for the pages that
+# have their own small stylesheet (API landing page, preview root). Its content sits in the column of the header
+# below: the site's .gutter/.measure on the tracker and method pages, the page's main column elsewhere (--pv-measure,
+# --pv-gutter). One line; below 40rem of column (phones; the API page's column is 42rem) the identity moves to a second line under
+# the label and actions. A long branch name is cut with an ellipsis (full name in the text and its title), never wrapped.
 BANNER_CSS = """
-.preview-banner { --preview-bg: #fff2b3; --preview-ink: #231c00; --preview-stripe: #292100;
-  box-sizing: border-box; margin: 0; padding: 1rem; border: 0; border-top: .65rem solid;
-  border-image: repeating-linear-gradient(135deg, #f3c600 0 12px, var(--preview-stripe) 12px 24px) 10;
-  background: var(--preview-bg); color: var(--preview-ink); font: 16px/1.5 system-ui, sans-serif;
-  display: flex; flex-wrap: wrap; align-items: baseline; gap: .35rem 1rem; overflow-wrap: anywhere;
-  position: relative; width: 100%; text-align: left; }
-.preview-banner > * { min-width: 0; max-width: 100%; }
-.preview-banner a { color: inherit; text-decoration: underline; }
-.preview-banner a:focus-visible { outline: 3px solid currentColor; outline-offset: 3px; }
-.preview-banner small { font-size: .85em; }
-@media (prefers-color-scheme: dark) {
-  .preview-banner { --preview-bg: #3c3100; --preview-ink: #fff2b3; }
+.preview-banner { box-sizing: border-box; margin: 0; color: var(--ink, inherit);
+  background: color-mix(in srgb, var(--accent, #BE773D) 12%, var(--ground, Canvas));
+  border-bottom: 1px solid color-mix(in srgb, var(--accent, #BE773D) 45%, var(--ground, Canvas));
+  font: var(--type-meta, .875rem/1.5 "Segoe UI", Arial, sans-serif); text-align: left; }
+.preview-banner .pv-col { box-sizing: border-box; max-width: var(--pv-measure); margin-inline: auto; padding-inline: var(--pv-gutter); }
+.preview-banner .measure, .preview-banner .pv-col { container: pv / inline-size; }
+.preview-banner .pv-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "title id actions";
+  column-gap: var(--sp-4, 1rem); align-items: baseline; padding-block: var(--sp-2, .5rem); }
+.preview-banner .pv-title { grid-area: title; font-weight: 600; white-space: nowrap; }
+.preview-banner .pv-id { grid-area: id; color: var(--muted, inherit); display: flex; min-width: 0; white-space: nowrap; }
+.preview-banner .pv-branch { overflow: hidden; text-overflow: ellipsis; min-width: 2ch; flex: 0 1 auto; }
+.preview-banner .pv-build { flex: none; }
+.preview-banner .pv-actions { grid-area: actions; display: flex; gap: var(--sp-4, 1rem); align-items: baseline; white-space: nowrap; }
+.preview-banner .pv-toggle { font: inherit; color: var(--link, LinkText); background: none; border: 0; padding: 0; margin: 0; cursor: pointer;
+  text-decoration: underline; text-decoration-thickness: var(--underline-width, auto); text-underline-offset: var(--underline-offset, .2em);
+  text-decoration-color: var(--underline-colour, currentColor); }
+.preview-banner .pv-toggle::after { content: " +"; }
+.preview-banner .pv-toggle[aria-expanded="true"]::after { content: " \\2212"; }
+.preview-banner .pv-toggle:focus-visible { outline: 2px solid var(--focus, var(--link, currentColor)); outline-offset: 2px; }
+.preview-banner .pv-details { list-style: none; margin: 0; padding: 0 0 var(--sp-2, .5rem); }
+.preview-banner .pv-details[hidden] { display: none; }
+@container pv (max-width: 40rem) {
+  .preview-banner .pv-row { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "title actions" "id id"; }
+  .preview-banner .pv-actions { justify-self: end; }
 }
-html[data-theme="dark"] .preview-banner { --preview-bg: #3c3100; --preview-ink: #fff2b3; }
-html[data-theme="light"] .preview-banner { --preview-bg: #fff2b3; --preview-ink: #231c00; }
+"""
+
+# The page's line under the title ("Updated <date> · v<version>") would present unreleased changes as the last
+# release. Its preview form is in the saved page; this keeps it after the page script fills the line again.
+UPDATED_JS = """
+(function () {
+  function fix() {
+    const line = document.getElementById('updated');
+    const band = document.querySelector('.preview-banner[data-preview-version]');
+    if (!line || !band || line.textContent.indexOf('Unreleased changes since') === 0) return;
+    line.innerHTML = band.dataset.previewUpdated;
+  }
+  new MutationObserver(fix).observe(document.documentElement, { childList: true, subtree: true });
+  document.addEventListener('click', function (event) {
+    const link = event.target.closest && event.target.closest('#updated a[href="#changes"]');
+    const changes = link && document.getElementById('changes');
+    if (changes) changes.open = true;
+  });
+})();
 """
 
 # The frozen address is set on load, on every hash change and just before any use of the link (click, middle click,
@@ -128,24 +162,56 @@ BANNER_JS = """
   });
   document.addEventListener('DOMContentLoaded', all);
   window.addEventListener('hashchange', all);
+  // Details: a button with aria-expanded; delegated, since hydration replaces the band.
+  document.addEventListener('click', function (event) {
+    const toggle = event.target.closest && event.target.closest('.preview-banner .pv-toggle');
+    if (!toggle) return;
+    const open = toggle.getAttribute('aria-expanded') !== 'true';
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.closest('.preview-banner').querySelector('.pv-details').hidden = !open;
+  });
 })();
 """
 
+# The column of a page without the site's .gutter/.measure: its main box (max-width 42rem plus 1.5rem padding on
+# each side, content-box) in border-box terms. check_preview compares the left edges.
+OWN_COLUMN = "--pv-measure: 45rem; --pv-gutter: 1.5rem"
 
-def banner(meta: dict, logical: str, mail: str) -> str:
+
+def zone(value: str) -> str:
+    """The Vienna zone abbreviation at that time (CET or CEST)."""
+    return timestamp(value).astimezone(ZoneInfo("Europe/Vienna")).strftime("%Z")
+
+
+def updated_line(version: str, as_of: str) -> str:
+    """The preview form of the page's line under the title, in the page's own meta classes."""
+    return ('<span class="meta-item"><span class="meta-tail"><span>Unreleased changes since '
+            f'<a class="meta-link" href="#changes">v{html.escape(version)}</a></span>'
+            '<span class="meta-dot" aria-hidden="true"> ·</span></span></span> '
+            f'<span class="meta-item"><span>data as of <span class="date-text">{data_date(as_of)}</span></span></span>')
+
+
+def banner(meta: dict, logical: str, mail: str, site_column: bool = True) -> str:
     short = commit_id(meta["commit"])
     subject = urlencode({"subject": f"AISI preview {meta['branch']} {short}"}, quote_via=quote)
     esc = html.escape
-    return (f'<aside class="preview-banner" aria-label="Build preview">'
-            f'<strong>Preview, not published</strong><span>{esc(meta["branch"])}</span>'
-            f'<a href="{SOURCE_REPO}/commit/{meta["commit"]}">{short}</a>'
-            f'<span>Built {vienna(meta["built"])} Europe/Vienna</span>'
-            f'<span>Data as of {data_date(meta["as_of"])}</span>'
-            f'<a href="{esc(meta["run_url"], quote=True)}">CI run</a>'
-            f'<a href="#" data-preview-frozen="{short}" data-preview-path="{esc(logical)}">Link to this exact build</a>'
-            '<small>Frozen builds are removed after a while unless kept.</small>'
-            f'<a href="mailto:{quote(mail, safe="@.+")}?{esc(subject)}">Send feedback</a>'
-            f'<a href="{LIVE_URL}" data-preview-published>Published site</a></aside>')
+    outer, inner = ("preview-banner gutter", "measure") if site_column else ("preview-banner", "pv-col")
+    style = "" if site_column else f' style="{OWN_COLUMN}"'
+    updated = esc(updated_line(meta["version"], meta["as_of"]), quote=True) if meta.get("version") else ""
+    data = f' data-preview-version="{esc(meta["version"])}" data-preview-updated="{updated}"' if updated else ""
+    return (f'<aside class="{outer}" aria-label="Preview build"{style}{data}><div class="{inner}">'
+            '<div class="pv-row"><span class="pv-title">Preview, not published</span>'
+            f'<span class="pv-id"><span class="pv-branch" title="{esc(meta["branch"], quote=True)}">{esc(meta["branch"])}</span>'
+            f'<span class="pv-build">&nbsp;· {short} · {vienna(meta["built"])}</span></span>'
+            f'<span class="pv-actions"><a href="mailto:{quote(mail, safe="@.+")}?{esc(subject)}">Feedback</a>'
+            '<button type="button" class="pv-toggle" aria-expanded="false" aria-controls="preview-details">Details</button></span></div>'
+            '<ul class="pv-details" id="preview-details" hidden>'
+            f'<li>Data as of {data_date(meta["as_of"])}</li>'
+            f'<li>Build time in Vienna time ({zone(meta["built"])})</li>'
+            f'<li><a href="{esc(meta["run_url"], quote=True)}">CI run for this build</a></li>'
+            f'<li><a href="#" data-preview-frozen="{short}" data-preview-path="{esc(logical)}">Link to this exact build</a></li>'
+            '<li>Frozen builds are removed after a while unless kept.</li>'
+            f'<li><a href="{LIVE_URL}" data-preview-published>Published site</a></li></ul></div></aside>')
 
 
 def mark_html(text: str, logical: str, meta: dict, mail: str, data_urls: tuple[str, str, str]) -> str:
@@ -162,18 +228,25 @@ def mark_html(text: str, logical: str, meta: dict, mail: str, data_urls: tuple[s
     style.string = BANNER_CSS
     soup.head.append(style)
     script = soup.new_tag("script")
-    script.string = BANNER_JS
+    script.string = BANNER_JS + (UPDATED_JS if soup.find(id="updated") else "")
     soup.head.append(script)
+    # The saved line under the title in its preview form (the template's copy is empty; the script fills it).
+    for line in soup.body.find_all(id="updated", recursive=True):
+        if line.find_parent("template") is None and line.get_text(strip=True):
+            line.clear()
+            line.append(BeautifulSoup(updated_line(meta["version"], meta["as_of"]), "html.parser"))
     # CSS selectors follow browser template boundaries; find_all also visits the inert template tree.
     for cite in soup.find_all(id="cite"):
         cite.clear()
         cite.append(NOTICE)
     for node in soup.select('meta[name="aisi-page-data"]'):
         node["content"], node["data-package"], node["data-build"] = data_urls
-    # The saved body is replaced during hydration. Both copies need the same first element.
-    soup.body.insert(0, BeautifulSoup(banner(meta, logical, mail), "html.parser").aside)
+    # The saved body is replaced during hydration. Both copies need the same first element. Pages with the site's
+    # header use its column classes; the others get their main column.
+    site_column = soup.find(class_="masthead") is not None
+    soup.body.insert(0, BeautifulSoup(banner(meta, logical, mail, site_column), "html.parser").aside)
     for template in soup.select('template[id="page-template"]'):
-        template.insert(0, BeautifulSoup(banner(meta, logical, mail), "html.parser").aside)
+        template.insert(0, BeautifulSoup(banner(meta, logical, mail, site_column), "html.parser").aside)
     if logical == "404.html":
         for node in soup.select('[href="/favicon.svg"], [href="/"]'):
             node["href"] = "favicon.svg" if node["href"].endswith("favicon.svg") else "./"
@@ -264,7 +337,7 @@ def transform(dist: Path, out: Path, *, branch: str, sha: str, run_url: str, bui
     dataset = source["dataset"]
     meta = {"notice": NOTICE, "branch": branch, "commit": sha, "built": built}
     timestamp(built)
-    extra = {**meta, "as_of": dataset["as_of"], "run_url": run_url, "preview_url": preview_url}
+    extra = {**meta, "as_of": dataset["as_of"], "version": dataset["version"], "run_url": run_url, "preview_url": preview_url}
     if as_of and as_of != dataset["as_of"]:
         raise ValueError("--as-of disagrees with the built dataset")
     mail = feedback_mail or dataset.get("contact")
@@ -299,6 +372,15 @@ def transform(dist: Path, out: Path, *, branch: str, sha: str, run_url: str, bui
             path.write_text(mark_html(path.read_text(encoding="utf-8"), path.relative_to(target).as_posix(), extra, mail, urls), encoding="utf-8")
         llms = target / "llms.txt"
         llms.write_text(llms.read_text(encoding="utf-8").replace(dataset["citation"], NOTICE).replace(LIVE_URL, frozen), encoding="utf-8")
+        # Where the build states its version as the state of what the reader sees, say the changes are unreleased.
+        # A changed sentence upstream fails here instead of passing unmarked.
+        released = f"version {dataset['version']}, data as of"
+        for name in ("llms.txt", "api/v1/index.html"):
+            path = target / name
+            text = path.read_text(encoding="utf-8")
+            if released not in text:
+                raise ValueError(f"{name}: expected {released!r} to mark as unreleased")
+            path.write_text(text.replace(released, "unreleased changes since " + released), encoding="utf-8")
         feed = target / "feed.xml"
         feed.write_text(mark_feed(feed.read_text(encoding="utf-8"), frozen, dataset["citation"]), encoding="utf-8")
         (target / "robots.txt").write_text(ROBOTS, encoding="utf-8")
@@ -356,14 +438,27 @@ def retention(manifest: dict, kept: set[str], branches: set[str], now: dt.dateti
     return result, removed
 
 
+# The preview root's pages (index, 404): the tracker's palette and the same band as the previews, over one column.
+ROOT_CSS = """
+:root { color-scheme: light; --ground: #FAF7F2; --ink: #1A1A1A; --muted: #6E6760; --link: #8F5A23; --accent: #BE773D; --line: #E8E3DD; }
+@media (prefers-color-scheme: dark) { :root { color-scheme: dark; --ground: #17191A; --ink: #F3F0EB; --muted: #B0ADA7; --link: #E9AA79; --accent: #E9AA79; --line: #2A2D2F; } }
+body { margin: 0; background: var(--ground); color: var(--ink); font: 1rem/1.5 "Segoe UI", Arial, sans-serif; }
+main { box-sizing: border-box; max-width: var(--pv-measure); margin-inline: auto; padding: 1.5rem var(--pv-gutter) 3rem; overflow-wrap: anywhere; }
+a { color: var(--link); text-underline-offset: .2em; }
+td, th { text-align: left; vertical-align: top; padding: .5rem .5rem .5rem 0; border-bottom: 1px solid var(--line); }
+table { width: 100%; table-layout: fixed; border-collapse: collapse; }
+"""
+ROOT_COLUMN = "--pv-measure: 75rem; --pv-gutter: 1.5rem"
+
+
 def root_page(title: str, body: str, script: str = "") -> str:
+    band = ('<header class="preview-banner"><div class="pv-col"><div class="pv-row"><span class="pv-title">Preview, not published</span>'
+            '<span class="pv-id">Previews of the AISI tracker</span></div></div></header>')
     return ('<!doctype html><html lang="en"><head><meta charset="utf-8">'
             '<meta name="viewport" content="width=device-width, initial-scale=1">'
             '<meta name="robots" content="noindex, nofollow">'
-            f'<title>{html.escape(title)}</title><style>'
-            ':root { color-scheme: light dark; } body { font: 1rem/1.5 system-ui,sans-serif; margin: 2rem auto; padding: 0 1rem; max-width: 75rem; }'
-            'td, th { text-align: left; padding: .5rem; overflow-wrap: anywhere; } table { width: 100%; table-layout: fixed; } a { color: LinkText; }'
-            '</style></head><body>' + body + (f'<script>{script}</script>' if script else '') + '</body></html>\n')
+            f'<title>{html.escape(title)}</title><style>' + ROOT_CSS + BANNER_CSS + '</style></head>'
+            f'<body style="{ROOT_COLUMN}">' + band + '<main>' + body + '</main>' + (f'<script>{script}</script>' if script else '') + '</body></html>\n')
 
 
 def index_html(manifest: dict, kept: set[str]) -> str:
@@ -394,7 +489,7 @@ document.querySelectorAll('[data-run]').forEach(async function (link) {
   } catch (_) { /* The run link remains usable when the public API is unavailable. */ }
 });
 """
-    return root_page("AISI tracker previews", '<h1>Preview, not published</h1><p>Times are Europe/Vienna.</p>'
+    return root_page("AISI tracker previews", '<h1>Branch previews</h1><p>Times are Vienna time.</p>'
                      '<table><thead><tr><th>Branch</th><th>Current build</th><th>Last attempt</th></tr></thead><tbody>' + ''.join(rows) + '</tbody></table>'
                      '<h2>Frozen builds</h2><p>An exact build is the first published build of that commit. '
                      f'The {FROZEN_COUNT} newest unkept frozen builds stay, each for {FROZEN_DAYS} days at most, and fewer if space runs out; '
