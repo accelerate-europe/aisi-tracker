@@ -22,6 +22,7 @@ import re
 import subprocess
 import sys
 import tempfile
+from html import unescape
 from html.parser import HTMLParser
 import threading
 import time
@@ -4055,6 +4056,136 @@ def check_citations(page) -> list[str]:
     )
 
 
+# K. These are logical boundaries, shared by CSS, matchMedia and the early-map attribute.
+# Range syntax gives complementary <=/> sides without a one-pixel gap.
+VIEWPORT_BOUNDARIES = {
+    "390px": "phone function-group labels",
+    "400px": "small-phone group navigation",
+    "430px": "theme toggle and group label",
+    "460px": "scrolled navigation title",
+    "560px": "navigation gaps and keyboard hints",
+    "640px": "phone forms and single-column cards",
+    "700px": "short navigation title",
+    "1100px": "stacked map/sections and two-column cards",
+}
+CONTAINER_BOUNDARIES = {"funding": "36.5rem"}  # sum of the three funding tracks and gaps
+WIDTH_GEOMETRY = {
+    (".vh", "width", "1px"): "clipped accessible text must retain a nonzero box",
+    (".ext-tail::after", "width", ".65em"): "external-link arrow scales with its text, paired with its height",
+    (".fn-mark", "width", ".8rem"): "circular function glyph, paired with its height",
+    ('.fn-table td[data-value="not_coded"]::before', "width", ".8rem"): "dash matches the function glyph width",
+    (".fn-pip", "width", "8px"): "phone pip geometry, paired with its height",
+    ("#tip", "max-width", "min(var(--tooltip-width), calc(100vw - var(--sp-7)))"): "tooltip stays within the viewport with its token gutter",
+    (".palette", "width", "min(var(--palette-width), calc(100vw - 2 * var(--sp-4)))"): "palette stays within the viewport with its token gutters",
+    (".fn-column-group::after", "width", "calc(100% + var(--fn-group-gap))"): "group rule spans its track and the following group gap",
+    (".bar-value", "min-width", "min(var(--bar-min), 100%)"): "minimum visible bar never exceeds its track",
+    **{(selector, prop, "100cqi"): "detail follows the scroll container's visible inline size" for selector, prop in (
+        (".fn-detail", "width"), (".fn-detail", "max-width"),
+    )},
+    **{(selector, prop, "100%"): "fill or cap at the containing track, without an independent measure" for selector, prop in (
+        ("#changes > summary", "width"), (".suggest", "width"), (".worldmap svg", "width"),
+        (".region-head", "width"), (".source-footer-line", "max-width"), (".meta-item", "max-width"),
+        ("table", "width"), ("th button", "width"), (".field", "max-width"),
+        (".search .field", "width"), (".selectwrap .field", "width"), (".fn-scroll", "max-width"),
+        (".fn-scroll.fits .fn-detail", "width"), (".fn-scroll.fits .fn-detail", "max-width"),
+        (".fn-column-group:nth-last-child(2)::after", "width"), (".fn-cell", "width"),
+        (".fn-phone-row", "width"), (".fn-phone-detail", "width"), (".fn-phone-detail", "max-width"),
+        ("button.fn-function-label", "width"), (".fund-bar", "width"),
+        (".bar-value", "max-width"), (".region-chips", "max-width"),
+    )},
+}
+# Match every dimension and percentage, including exponent notation. Restricting
+# this to a unit list would let a new font, viewport or container unit bypass it.
+CSS_LENGTH = re.compile(r"(?<![\w.-])[+-]?(?:\d*\.)?\d+(?:e[+-]?\d+)?(?:[a-z]+\b|%)", re.I)
+CSS_COLOUR_KEYWORDS = {
+    "inherit", "initial", "unset", "revert", "revert-layer", "currentcolor", "transparent",
+    "canvas", "canvastext", "linktext", "graytext",
+}
+TEXT_COLOUR_PROPERTIES = {
+    "color", "text-decoration-color", "text-emphasis-color",
+    "-webkit-text-fill-color", "-webkit-text-stroke-color", "-webkit-text-emphasis-color",
+}
+TEXT_COLOUR_SHORTHANDS = {
+    "text-decoration": {"none", "underline", "overline", "line-through", "blink", "solid", "double", "dotted", "dashed", "wavy", "auto", "from-font"},
+    "text-emphasis": {"none", "filled", "open", "dot", "circle", "double-circle", "triangle", "sesame"},
+    "-webkit-text-stroke": {"thin", "medium", "thick"},
+}
+TEXT_COLOUR_SHORTHANDS["-webkit-text-emphasis"] = TEXT_COLOUR_SHORTHANDS["text-emphasis"]
+
+
+def has_raw_text_colour(prop: str, value: str) -> bool:
+    # Keep var() fallbacks: a literal fallback is still a raw colour.
+    remaining = re.sub(r"var\(\s*--[\w-]+\s*\)", "", value)
+    remaining = re.sub(r"!\s*important\b", "", remaining, flags=re.I).strip().lower()
+    if prop in TEXT_COLOUR_SHORTHANDS:
+        # These shorthands also carry line styles, thicknesses or an emphasis
+        # glyph. Strip only those parts; colour names/functions remain findings.
+        if prop in {"text-emphasis", "-webkit-text-emphasis"}:
+            remaining = re.sub(r"\"(?:\\.|[^\"\\])*\"|'(?:\\.|[^'\\])*'", "", remaining)
+        else:
+            remaining = CSS_LENGTH.sub("", remaining)
+            remaining = re.sub(r"(?<![\w.#-])0(?![\w.])", "", remaining)
+        return bool(set(remaining.split()) - CSS_COLOUR_KEYWORDS - TEXT_COLOUR_SHORTHANDS[prop])
+    return remaining not in CSS_COLOUR_KEYWORDS | {""}
+
+
+def check_css_tokens(html: str) -> list[str]:
+    """Blocking source guard for new width, breakpoint and text-colour literals.
+
+    Inspect declarations in every style block, including nested media/container rules;
+    custom-property definitions are the home for literals. Exceptions bind the exact
+    selector, property and value, so a glyph's width cannot excuse a content width.
+    """
+    errors = []
+    styles = re.findall(r"<style\b[^>]*>(.*?)</style\s*>", html, re.S | re.I)
+    if not styles:
+        return ["CSS tokens: no stylesheet found"]
+    styles.extend("inline { " + unescape(m[2]) + " }" for m in re.finditer(r'''\bstyle\s*=\s*(["'])(.*?)\1''', html, re.S | re.I))
+    queries = []
+    for style in styles:
+        css = re.sub(r"/\*.*?\*/", "", style, flags=re.S)
+        queries.extend((kind.lower(), query.strip()) for kind, query in re.findall(r"@(media|container)\b\s*([^{}]+)\{", css, re.I))
+        # Leaf rules also cover nested groups; braces in quoted URLs are not CSS blocks.
+        css = re.sub(r'''url\(\s*(?:"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|[^)]*)\s*\)''', "url()", css, flags=re.I)
+        for rule in re.finditer(r"([^{}]+)\{([^{}]*)\}", css):
+            selector = " ".join(rule[1].split())
+            if ";" in selector:
+                # Declarations before a nested rule (CSS nesting) would hide from this scan; the page does not nest.
+                errors.append(f"CSS tokens: nested rule after declarations is not supported: {selector[:80]}")
+                continue
+            for declaration in rule[2].split(";"):
+                if ":" not in declaration:
+                    continue
+                prop, value = declaration.split(":", 1)
+                prop, value = prop.strip().lower(), " ".join(value.split())
+                if prop.startswith("--"):
+                    continue
+                if prop in {"width", "min-width", "max-width"} and CSS_LENGTH.search(value):
+                    # The page authors no style attributes; an inline width in plain percent is a script-set data proportion (a funding bar's fill).
+                    if selector == "inline" and prop == "width" and re.fullmatch(r"\d+(?:\.\d+)?%", value):
+                        continue
+                    if (selector, prop, value) not in WIDTH_GEOMETRY:
+                        errors.append(f"CSS tokens: raw width in {selector}: {prop}: {value}")
+                if prop in TEXT_COLOUR_PROPERTIES or prop in TEXT_COLOUR_SHORTHANDS:
+                    if has_raw_text_colour(prop, value):
+                        errors.append(f"CSS tokens: raw text colour in {selector}: {prop}: {value}")
+    # Literal JS queries and the saved map's declarative query follow the same boundaries.
+    queries.extend(("media", m[2]) for m in re.finditer(r'''\bmatchMedia\s*\(\s*(["'])(.*?)\1\s*\)''', html))
+    queries.extend(("media", unescape(m[2])) for m in re.finditer(r'''\bdata-[\w-]*media\s*=\s*(["'])(.*?)\1''', html))
+    # Allow-list, not a parser: remove every listed size clause; any size feature left over (any operand order, case,
+    # nesting such as calc()/min()/var(), or legacy min-/max- form) is an unlisted breakpoint.
+    for kind, query in queries:
+        rest = " ".join(query.lower().split())
+        if kind == "media":
+            rest = re.sub(r"\(\s*width\s*(?:<=|>)\s*(\d+(?:\.\d+)?px)\s*\)", lambda m: "" if m[1] in VIEWPORT_BOUNDARIES else m[0], rest)
+        else:
+            name = rest.split("(", 1)[0].strip()
+            rest = re.sub(r"\(\s*width\s*<\s*(\d+(?:\.\d+)?rem)\s*\)", lambda m: "" if m[1] == CONTAINER_BOUNDARIES.get(name) else m[0], rest)
+        if re.search(r"(?:width|height|inline-size|block-size|aspect-ratio|resolution)", rest):
+            errors.append(f"CSS tokens: unlisted breakpoint: {kind} {query}")
+    return list(dict.fromkeys(errors))
+
+
 @reports
 def check_style_source(html: str) -> list[str]:
     """Static token contracts that can run without a browser."""
@@ -4969,8 +5100,40 @@ def card_head_errors(m: dict) -> list[str]:
     return errors
 
 
+def check_clipped_card_name(page, card, *, interactive: bool) -> list[str]:
+    """Exercise ellipsis without losing the heading's spoken name or full tooltip."""
+    errors = []
+    full_name = "Synthetic country heading with deliberately long text to exercise ellipsis at every card width"
+    name = card.locator(':scope > .top .name')
+    # Preserve the page's tooltip wiring; only lengthen text it already supplies.
+    # Do not manufacture a missing tooltip attribute and make a broken page pass.
+    name.evaluate("""(n, text) => {
+      n.textContent = text;
+      for (const attr of ['title', 'aria-description', 'data-tip']) {
+        if (n.hasAttribute(attr)) n.setAttribute(attr, text);
+      }
+    }""", full_name)
+    clipped = name.evaluate("n => { const s=getComputedStyle(n); return s.whiteSpace==='nowrap' && s.overflowX==='hidden' && s.textOverflow==='ellipsis' && n.scrollWidth>n.clientWidth && n.getBoundingClientRect().height<=parseFloat(s.lineHeight)+1; }")
+    if not clipped:
+        errors.append("long heading is not clipped to one line with ellipsis")
+    if card.get_by_role("heading", name=full_name, exact=True).count() != 1:
+        errors.append("clipped heading lost its full accessible name")
+    if interactive:
+        # Real hover exercises TIPSEL/tipText/showTip, not just an attribute.
+        page.mouse.move(0, 0)
+        card.evaluate("c => c.scrollIntoView({block: 'center'})")  # its own head in place, not under another card's sticky head
+        name.hover()
+        tip = page.locator('#tip')
+        if not tip.is_visible() or tip.inner_text() != full_name:
+            errors.append("clipped heading does not display its full name in the page tooltip")
+        page.keyboard.press("Escape")
+    elif not name.evaluate("(n, text) => (n.dataset.tip || n.getAttribute('aria-description') || n.title) === text", full_name):
+        errors.append("saved clipped heading lost its full tooltip text")
+    return errors
+
+
 def check_saved_card_heads(browser, base_url: str) -> list[str]:
-    """Saved wrapped heads must leave every field below them, without JS or while hydration waits."""
+    """Saved one-line heads reserve their track without JS or while hydration waits."""
     errors = []
     for scripting in (False, True):
         page = browser.new_page(viewport={"width": 1280, "height": 900}, java_script_enabled=scripting)
@@ -4982,11 +5145,15 @@ def check_saved_card_heads(browser, base_url: str) -> list[str]:
             if held:
                 held.wait()
             card = page.locator('#c-fr')
-            # Mutate both copies of the authored heading, as the renderer does, retaining their real shared sizing CSS.
-            card.locator(':scope > :is(.top, .card-head-space) .name').evaluate_all("nodes => nodes.forEach(n => n.textContent='Synthetic country heading with deliberately long text to wrap across several lines at every card width')")
-            if not card.locator(':scope > .card-head-space').evaluate("n => n.inert && n.getAttribute('aria-hidden')==='true' && !n.querySelector('[id]')"):
-                errors.append("saved card sizing copy is not inert, hidden from accessibility or free of IDs")
-            for width in (641, 1000, 1280, 1600, 390):
+            # Check real names before stressing the one-line track with a synthetic long title.
+            for width in (1280, 1440):
+                page.set_viewport_size({"width": width, "height": 900})
+                for name in page.locator('.cards .card > .top .name').all():
+                    if name.evaluate("n => n.scrollWidth > n.clientWidth + 1"):
+                        errors.append(f"saved cards {mode}, {width}px: country name cut: {name.text_content()}")
+                    if not name.evaluate("n => (n.title || n.getAttribute('aria-description')) === n.textContent"):
+                        errors.append(f"saved cards {mode}: full country name missing from tooltip")
+            for width in (641, 1000, 1280, 1440, 1600, 390):
                 page.set_viewport_size({"width": width, "height": 900})
                 for scale in (100, 150):
                     prefix = f"saved cards {mode}, {width}px, text {scale}%: "
@@ -4995,18 +5162,12 @@ def check_saved_card_heads(browser, base_url: str) -> list[str]:
                     card.evaluate("c => scrollTo(0,scrollY+c.getBoundingClientRect().top-innerHeight/2)")
                     if not page.evaluate("document.documentElement.hasAttribute('data-prerendered')"):
                         errors.append(prefix + "saved-page fixture hydrated before measurement")
-                    wrapped = card.locator(':scope > .top .name').evaluate("n => n.getBoundingClientRect().height>parseFloat(getComputedStyle(n).lineHeight)*1.5")
-                    if not wrapped:
-                        errors.append(prefix + "heading fixture did not wrap")
-                    # All peers must keep clear of their own head when one head enlarges the shared track.
+                    errors.extend(prefix + e for e in check_clipped_card_name(page, card, interactive=False))
+                    # Every peer's fields must clear the fixed head track, including enlarged text.
                     for peer in card.locator('..').locator(':scope > .card').all():
                         peer.evaluate("c => scrollTo(0,scrollY+c.getBoundingClientRect().top-innerHeight/2)")
                         m = peer.evaluate(CARD_HEAD_SPACE_JS)
                         errors.extend(prefix + m["id"] + ': ' + e for e in card_head_space_errors(m))
-                        if width > 640:
-                            equal = peer.evaluate("c => { const h=c.querySelector(':scope > .top'), s=c.querySelector(':scope > .card-head-space'); return getComputedStyle(s).visibility==='hidden' && Math.abs(h.getBoundingClientRect().height-s.getBoundingClientRect().height)<.01; }")
-                            if not equal:
-                                errors.append(prefix + m["id"] + ': sizing copy differs from the head height or is visible')
         finally:
             page.close()
     return errors
@@ -5090,6 +5251,9 @@ def check_card_heads(browser, base_url: str) -> list[str]:
                 }""")
                 if not landed:
                     errors.append(prefix + "card anchor hides the head or first field")
+                # After hydration the clipped heading must also show the page's
+                # visible tooltip, in both themes and on desktop and phone.
+                errors.extend(prefix + e for e in check_clipped_card_name(page, page.locator('#c-fr'), interactive=True))
                 page.emulate_media(media="print")
                 if not page.locator('.cards .card > .top').evaluate_all("heads => heads.every(h=>getComputedStyle(h).position==='static')"):
                     errors.append(prefix + "card head stays sticky in print")
@@ -12718,7 +12882,11 @@ def job_ids(text: str) -> list[str]:
 
 
 def browser_seeds(dist: Path) -> dict:
-    return {"interactions": lambda: check_style_source((dist / "index.html").read_text())}
+    def style_checks():
+        html = (dist / "index.html").read_text()
+        return check_style_source(html) + check_css_tokens(html)
+
+    return {"interactions": style_checks}
 
 
 # Sharding: CI splits the browser jobs over several machines (--shard K/N) and one job reads the results back

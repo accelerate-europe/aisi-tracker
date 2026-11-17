@@ -11,7 +11,7 @@
 <meta name="twitter:description" content="Tracks which countries have set up or plan an AI safety or security institute (AISI). Covers all 193 UN member states, Taiwan and the EU, with sources and open data.">
 <link rel="preload" href="assets/fonts/inter-v20-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/source-sans-3-v20-latin.woff2" as="font" type="font/woff2" crossorigin>
-<script id="saved-map-early" data-narrow-media="(max-width: 640px)">
+<script id="saved-map-early" data-narrow-media="(width <= 640px)">
 // The saved map drawing this window shows starts downloading here, before the long page body is parsed; loadSavedMap
 // takes the response. prerender.py sets data-wide and data-narrow to the drawings' versioned URLs (the shells' data-src),
 // and data-narrow-media is the query under which the page shows the narrow drawing. Not a <link rel="preload">: Safari
@@ -38,7 +38,7 @@
  * Citations: every displayed value a quotation can support carries one (absence and an institute name linking to its own site need none); superscript at value end, three quarters of the text it annotates and never larger than meta (so a big figure keeps small numerals); comma-tight groups; card-local Sources order; hit area one text line high, never covering adjacent lines or preceding text.
  * Partners: the card line shows at most six; the closed fold-out groups partners sharing an explanation, with explicit plural wording and a citation on every name. Groups follow the first member's priority order; names within a group keep that order. Generic explanations that only repeat the partner relation are omitted.
  * Card grids: alphabetical rows share field tracks through subgrid; every field keeps a fixed shared track (Mandate and Finding share the descriptive-text track); a structurally absent field leaves its track empty; where a row has three tracks, a group's only card spans two (check_page check_card_grid), while a single trailing card in a fuller group's last row keeps the usual card width; phones keep one column.
- * Card heads: country, status and download stick below the site bars within their own card in Compare and States, including phones; an inert copy sizes the desktop title track naturally in both saved and live pages, the institute stays in its field, measurement only sets keyboard scroll clearance, and print keeps static heads (check_page check_card_heads, check_saved_card_heads, hydration_paint).
+ * Card heads: country, status and download stick below the site bars within their own card in Compare and States, including phones; the one-line name keeps its full accessible text and tooltip, with ellipsis when needed. CSS sizes the shared title track and focus clearance from the label line, hit height, rules and padding, without copies or measurement; the institute stays in its field and print keeps static heads (check_page check_card_heads, check_saved_card_heads, hydration_paint).
  * Alignment: every text row shares its first baseline, including wrapped text, smaller labels, icons and format tags; within a card every field's value starts at one x.
  * Funding rows: the state name leads with its status swatch; only a status other than established is named, in brackets in muted ink ("Norway (proposed)"); established stays in the accessible name. The row's three tracks stack where they no longer fit the section (a container query in rem, so enlarged text stacks them earlier); stacked, the Sources control closes the row after Staff.
  * Status: square swatch plus name; the AE fill ladder, never black and never colour alone: established solid fill, planned an edge, a page-colour ring inside it and a solid centre of the mark's own shape (square on swatches, round on map dots), proposed hatch, exploring an empty ring, none identified a thin grey outline on the page colour, the square swatch with a short grey dash across its centre so it never reads as an empty checkbox (map dots keep the plain outline); every mark's edge is at least 3:1 on the ground and its text at least 4.5:1 on what is behind it, in both themes (check_page check_status_contrast); each map legend name carries its short definition as a tooltip (hover, focus or tap); a status square's tooltip takes the map dot's form, the state's name, then its status on a muted line; a card under a status group heading shows no status in its title row, which keeps it in the accessible name (as the funding rows do); the EU entry shows none either: its dated Status row says it, as on every other card (owner, 5 Nov 2026; check_page check_label_ladder); Known activity shows no swatch (squares are for status), only each kind found on its own line in date order ("Joint testing", with its own citations) and its muted "since <earliest date of that kind>" beneath; its tooltip defines "since"; with nothing found it says "None found yet" on one line; no line breaks mid-phrase.
@@ -128,6 +128,9 @@
 @font-face { font-family: "Source Sans 3"; font-style: normal; font-weight: 600; font-display: swap; src: url(assets/fonts/source-sans-3-v20-greek.woff2) format("woff2"); unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF; }
 @font-face { font-family: "Source Sans 3"; font-style: normal; font-weight: 600; font-display: swap; src: url(assets/fonts/source-sans-3-v20-latin-ext.woff2) format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
 @font-face { font-family: "Source Sans 3"; font-style: normal; font-weight: 600; font-display: swap; src: url(assets/fonts/source-sans-3-v20-latin.woff2) format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+/* Logical viewport boundaries, in px: 390 function labels; 400 group gaps; 430 theme/group labels;
+   460 scrolled title; 560 navigation/hints; 640 phone forms; 700 short title; 1100 stacked layout.
+   CSS and JS use <=/> at these same numbers. Funding alone uses container width < 36.5rem. */
 :root {
   color-scheme: light;
   --ground: #FAF7F2; --paper: #FCFAF6;
@@ -161,9 +164,11 @@
   --underline-width: .06em; --underline-offset: .15em; --underline-colour: var(--accent);
   --bar-min: 2rem;
   --r-sm: .25rem; --rule: 1px; --rule-strong: 2px;
+  --motion-short: .15s; --motion-arrival: 1.5s; --motion-focus: 2.5s;
   --measure: 80rem; --prose: 49rem; --section-label: 10.75rem; --card-key: 7.5rem; /* fits the longest card label, 'Related funding', on one line */
   --region-list: 30rem; /* the region list under the map: about its width beside the map on wide screens */
-  --field-light: #FFFFFF;
+  --tooltip-width: 18rem; --palette-width: 40rem; --map-stack-width: 52rem;
+  --fn-state-width: 10rem; --fn-column-width: 2.4rem; --fn-pad-min: 6rem; --world-institute-min: 11rem;
   --field-fill: var(--paper); --selected-fill: var(--paper);
   --highlight-fill: #F3E6DA; /* the current item in a list or menu (principle: Highlight); the guarded blocks below derive it */
   --control-border: var(--rule) solid transparent; /* controls are soft fills without a drawn edge; the border keeps their size */
@@ -254,8 +259,8 @@ a.ico::before { position: static; transform: none; min-height: 0; }
 .btn.ico.theme-toggle:is(:hover, :focus-visible) { background: color-mix(in srgb, var(--ground) 92%, var(--ink)); }
 /* One toggle: at the right end of the sticky section bar, in the header on phones (up to 430px), where the bar holds only the five tabs; the page script moves the one element, and these rules keep it hidden in the other place until it does. */
 .secnav .btn.theme-toggle { margin-left: auto; align-self: center; height: max(var(--hit), 2 * var(--sp-1) + var(--size-label) * var(--leading-label)); min-height: 0; } /* as tall as a bar link, so the bar keeps its height */
-@media (max-width: 430px) { :root[data-js] .secnav .btn.theme-toggle { display: none; } }
-@media (min-width: 431px) { :root[data-js] .topbar .btn.theme-toggle { display: none; } }
+@media (width <= 430px) { :root[data-js] .secnav .btn.theme-toggle { display: none; } }
+@media (width > 430px) { :root[data-js] .topbar .btn.theme-toggle { display: none; } }
 .panel .measure { padding-block: var(--sp-7) 0; display: flex; flex-direction: column; gap: var(--sp-6); }
 .wordmark { font: var(--type-label); display: inline-flex; align-items: first baseline; min-height: var(--hit); color: var(--link); align-self: flex-start; }
 .wordmark sup { font: var(--type-meta); position: relative; top: -.3em; color: var(--link); }
@@ -275,13 +280,13 @@ a.ico::before { position: static; transform: none; min-height: 0; }
 .secnav .navtitle { font: var(--type-label); display: none; color: var(--ink); padding-right: var(--sp-4); border-right: var(--rule) solid var(--line); }
 .secnav.scrolled .navtitle { display: inline-flex; }
 .navtitle .short { display: none; }
-@media (max-width: 560px) { .secnav .measure { gap: var(--sp-3); } } /* the tighter gap: the five tabs fit at 360px, and from 431px the title and the theme toggle fit beside them */
-@media (max-width: 430px) { .group-label { display: none; } } /* phones: the group rows' links alone (the bar marks the group), each one row at 360px with enlarged text */
-@media (max-width: 460px) { .secnav.scrolled .navtitle { display: none; } } /* up to 460px the bar holds the five items alone, then also the theme toggle, one row with enlarged text */
-@media (max-width: 700px) { .navtitle .long { display: none; } .navtitle .short { display: inline; } }
+@media (width <= 560px) { .secnav .measure { gap: var(--sp-3); } } /* the tighter gap: the five tabs fit at 360px, and from 431px the title and the theme toggle fit beside them */
+@media (width <= 430px) { .group-label { display: none; } } /* phones: the group rows' links alone (the bar marks the group), each one row at 360px with enlarged text */
+@media (width <= 460px) { .secnav.scrolled .navtitle { display: none; } } /* up to 460px the bar holds the five items alone, then also the theme toggle, one row with enlarged text */
+@media (width <= 700px) { .navtitle .long { display: none; } .navtitle .short { display: inline; } }
 /* Method page: the same section bar, holding only the title, which links back to the tracker, and the theme toggle, at every width. */
 .full-method .secnav .navtitle { display: inline-flex; border-right: 0; } /* nothing follows it but the toggle */
-@media (max-width: 430px) { :root[data-js] .full-method .secnav .btn.theme-toggle { display: inline-flex; } } /* the short title beside the theme toggle, so the row fits with enlarged text */
+@media (width <= 430px) { :root[data-js] .full-method .secnav .btn.theme-toggle { display: inline-flex; } } /* the short title beside the theme toggle, so the row fits with enlarged text */
 /* Group rows: above the first section of a group in the bar, the group's name and links to its sections, quiet like the bar;
    each group is one box, so its row sticks under the bar while the group is read and leaves with the group's end.
    Its ground reaches past its box: up to the bar, so a rounded bar height leaves no strip of text between them, and
@@ -292,7 +297,7 @@ a.ico::before { position: static; transform: none; min-height: 0; }
 .group-nav + section { margin-top: calc(var(--sp-2) - var(--gap-section)); } /* the gap on the section, not the row: a sticky row's margin would carry it past its group's end */
 .group-label { color: var(--ink); padding-right: var(--sp-4); border-right: var(--rule) solid var(--line); }
 .group-links { display: inline-flex; flex-wrap: wrap; align-items: first baseline; gap: 0 var(--sp-2); }
-@media (max-width: 400px) { .group-nav, .group-links { column-gap: .75em; } .group-sep { display: none; } }
+@media (width <= 400px) { .group-nav, .group-links { column-gap: var(--sp-3); } .group-sep { display: none; } }
 .group-nav a { display: inline-flex; align-items: first baseline; min-height: var(--hit); color: var(--muted); text-decoration-line: none; }
 .group-nav a:is(:hover, :focus-visible), .group-nav a.active { color: var(--ink); text-decoration-line: none; }
 .group-nav a.active::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: var(--rule-strong); background: var(--accent); }
@@ -363,8 +368,8 @@ details[open] > summary::after, .srcs[open] .source-count::after, .list-more[ari
 abbr.g { display: inline; text-decoration: underline dotted var(--muted); text-underline-offset: .2em; cursor: help; }
 abbr.g.val { text-decoration: none; } /* a value with a tooltip (confidence, interval, per person, a median ceiling, a developer, a provision): tooltip and focus, no dotted mark; the mark is for abbreviations and terms (owner, 5 Nov 2026) */
 
-#tip .tip-sub { display: block; margin-top: var(--sp-1); opacity: .75; }
-#tip { font: var(--type-meta); position: fixed; z-index: 50; max-width: min(18rem, calc(100vw - var(--sp-7))); max-height: calc(100vh - 2rem); overflow: auto; background: var(--paper); color: var(--ink); border: var(--rule) solid var(--line); padding: var(--sp-1) var(--sp-2); border-radius: var(--r-sm); box-shadow: var(--shadow-pop); }
+#tip .tip-sub { display: block; margin-top: var(--sp-1); color: var(--muted); }
+#tip { font: var(--type-meta); position: fixed; z-index: 50; max-width: min(var(--tooltip-width), calc(100vw - var(--sp-7))); max-height: calc(100vh - var(--sp-7)); overflow: auto; background: var(--paper); color: var(--ink); border: var(--rule) solid var(--line); padding: var(--sp-1) var(--sp-2); border-radius: var(--r-sm); box-shadow: var(--shadow-pop); }
 
 /* Status symbols and map */
 .sw { width: var(--sp-3); height: var(--sp-3); border-radius: var(--rule-strong); display: inline-block; flex: none; }
@@ -380,7 +385,7 @@ abbr.g.val { text-decoration: none; } /* a value with a tooltip (confidence, int
 .smark.activity { display: inline-block; white-space: normal; } /* the stacked kinds */
 .activity-kinds { display: flex; flex-direction: column; gap: var(--sp-1); min-width: 0; }
 .activity-clause, .activity-since { white-space: nowrap; } /* a kind ("Published work") and its since date never break mid-phrase; an interval line may wrap in narrow cards */
-.top > .smark, .card-head-space > .smark, .fund-identity > .smark { font: var(--type-label); }
+.top > .smark, .fund-identity > .smark { font: var(--type-label); }
 input[type="checkbox"] { appearance: none; position: relative; width: var(--sp-5); height: var(--sp-5); margin: 0; flex: none; border: var(--rule) solid var(--check-edge); border-radius: var(--r-sm); background: var(--field-fill); cursor: pointer; }
 input[type="checkbox"]::before { content: ""; position: absolute; left: 50%; top: 50%; width: var(--control); height: var(--control); transform: translate(-50%, -50%); }
 input[type="checkbox"]:checked { background: var(--selected-fill); }
@@ -430,8 +435,8 @@ main section.first { display: flex; flex-direction: column; gap: var(--sp-5); bo
 .palette-hint kbd, .palette-keys kbd { font: var(--type-meta); color: var(--muted); background: var(--paper); border: var(--rule) solid var(--line); border-radius: var(--r-sm); padding: 0 var(--sp-1); }
 .palette-hint:is(:hover, :focus-visible) kbd { color: var(--ink); }
 :root:not([data-mac]) .k-mac, :root[data-mac] .k-other { display: none; } /* the head script names the platform before first paint */
-@media (hover: hover) and (min-width: 561px) { .map-search .field { padding-right: var(--sp-11); } } /* typed text stops short of the hint */
-.palette { width: min(40rem, calc(100vw - 2 * var(--sp-4))); max-width: none; max-height: min(34rem, calc(100dvh - 2 * var(--sp-4))); margin: min(12vh, 8rem) auto auto; padding: 0; border: var(--rule) solid var(--line); border-radius: var(--r-sm); background: var(--paper); color: var(--ink); box-shadow: var(--shadow-pop); overflow: hidden; }
+@media (hover: hover) and (width > 560px) { .map-search .field { padding-right: var(--sp-11); } } /* typed text stops short of the hint */
+.palette { width: min(var(--palette-width), calc(100vw - 2 * var(--sp-4))); max-width: none; max-height: min(34rem, calc(100dvh - 2 * var(--sp-4))); margin: min(12vh, 8rem) auto auto; padding: 0; border: var(--rule) solid var(--line); border-radius: var(--r-sm); background: var(--paper); color: var(--ink); box-shadow: var(--shadow-pop); overflow: hidden; }
 .palette[open] { display: flex; flex-direction: column; }
 .palette::backdrop { background: var(--shadow-ink, rgb(0 0 0 / .18)); }
 .palette-field { flex: none; padding: var(--sp-2); border-bottom: var(--rule) solid var(--line); }
@@ -442,9 +447,9 @@ main section.first { display: flex; flex-direction: column; gap: var(--sp-5); bo
 .palette-option .small .sw { margin-right: var(--sp-1); }
 .palette-empty { font: var(--type-meta); color: var(--muted); padding: var(--sp-3); margin: 0; }
 .palette-keys { flex: none; display: flex; flex-wrap: wrap; gap: var(--sp-1) var(--sp-4); max-width: none; margin: 0; padding: var(--sp-2) var(--sp-3); border-top: var(--rule) solid var(--line); font: var(--type-meta); color: var(--muted); }
-@media (hover: none), (max-width: 560px) { .palette-hint, .palette-keys { display: none; } .palette { margin-top: var(--sp-4); } } /* no keyboard hints on touch screens and phones */
+@media (hover: none), (width <= 560px) { .palette-hint, .palette-keys { display: none; } .palette { margin-top: var(--sp-4); } } /* no keyboard hints on touch screens and phones */
 @keyframes palette-in { from { opacity: 0; } }
-@media (prefers-reduced-motion: no-preference) { .palette[open], .palette[open]::backdrop { animation: palette-in .12s ease-out; } } /* motion only fades */
+@media (prefers-reduced-motion: no-preference) { .palette[open], .palette[open]::backdrop { animation: palette-in var(--motion-short) ease-out; } } /* motion only fades */
 .explore { display: grid; grid-template-columns: minmax(0, 2fr) minmax(16rem, 1fr); gap: var(--sp-7); align-items: stretch; }
 .map-col { display: flex; flex-direction: column; gap: var(--sp-5); min-width: 0; }
 .map-aside { display: flex; flex-direction: column; gap: var(--sp-3); }
@@ -516,29 +521,29 @@ main section.first { display: flex; flex-direction: column; gap: var(--sp-5); bo
 .eu-head { display: flex; align-items: first baseline; gap: var(--sp-2); } /* the heading, then its (i) beside it, outside the heading */
 .statusgroup, .eu-level { display: flex; flex-direction: column; gap: var(--sp-5); }
 .statusgroup > h3, .eu-head > h3 { font: var(--type-label); display: flex; align-items: first baseline; gap: var(--sp-2); color: var(--ink); } /* a group heading is never weaker than the cards under it */
-.cards { --columns: 3; display: grid; grid-template-columns: repeat(var(--columns), minmax(0, 1fr)); column-gap: var(--sp-8); row-gap: var(--gap-card); align-items: start; }
+.cards { --columns: 3; --card-head-height: calc(var(--rule-strong) + var(--sp-3) + max(var(--hit), var(--size-label) * var(--leading-label)) + var(--rule)); display: grid; grid-template-columns: repeat(var(--columns), minmax(0, 1fr)); column-gap: var(--sp-8); row-gap: var(--gap-card); align-items: start; }
 .card-row { display: grid; grid-template-columns: repeat(var(--columns), minmax(0, 1fr)); column-gap: inherit; grid-column: 1 / -1; row-gap: 0; align-items: stretch; } /* the parent's equal tracks, not subgrid: a row skipped off-screen (Off-screen sections) is its own grid */
 .card-row > .card { display: grid; grid-template-rows: subgrid; grid-row: span 14; row-gap: 0; align-items: first baseline; }
-@media (min-width: 1101px) { .cards:not(.minis) > .card-row:only-child > .card:only-child { grid-column: span 2; } } /* a group's only card spans two of the three tracks, so its values do not wrap in a third of the row (principle: Card grids) */
+@media (width > 1100px) { .cards:not(.minis) > .card-row:only-child > .card:only-child { grid-column: span 2; } } /* a group's only card spans two of the three tracks, so its values do not wrap in a third of the row (principle: Card grids) */
 /* Fixed tracks: top 1, Institute 2, Status 3, Form 4, Head 5, Reports to 6, Partners 7, Mandate or Finding 8, Budget 9, Staff 10, Known activity 11, Related funding 12, Facts 13, footer 14. An omitted field leaves its track empty instead of pulling later fields up. */
 .card-row > .card > .top { grid-row: 1; }
 .card-row > .card > .row[data-track="2"] { grid-row: 2; } .card-row > .card > .row[data-track="3"] { grid-row: 3; } .card-row > .card > .row[data-track="4"] { grid-row: 4; } .card-row > .card > .row[data-track="5"] { grid-row: 5; } .card-row > .card > .row[data-track="6"] { grid-row: 6; } .card-row > .card > .row[data-track="7"] { grid-row: 7; }
 .card-row > .card > .row[data-track="8"] { grid-row: 8; } .card-row > .card > .row[data-track="9"] { grid-row: 9; } .card-row > .card > .row[data-track="10"] { grid-row: 10; } .card-row > .card > .row[data-track="11"] { grid-row: 11; } .card-row > .card > .row[data-track="12"] { grid-row: 12; } .card-row > .card > .row[data-track="13"] { grid-row: 13; } .card-row > .card > .foot { grid-row: 14; }
 .card { display: flex; flex-direction: column; min-width: 0; }
-.card :is(.top, .card-head-space) { display: flex; flex-wrap: wrap; justify-content: flex-start; align-items: first baseline; gap: var(--sp-1) var(--sp-3); border-top: var(--rule-strong) solid var(--ink); padding-top: var(--sp-3); margin-bottom: var(--gap-header); }
+.card .top { display: flex; flex-wrap: nowrap; flex-shrink: 0; justify-content: flex-start; align-items: first baseline; gap: var(--sp-1) var(--sp-3); border-top: var(--rule-strong) solid var(--ink); padding-top: var(--sp-3); margin-bottom: var(--gap-header); }
 /* D. The head travels within the whole card, including cards sharing field tracks. */
-.cards:not(.minis) .card { --card-bars: calc(var(--secnav-height, var(--secnav-default)) + var(--groupnav-offset, 0px)); --card-head-min: calc(var(--rule-strong) + var(--sp-3) + max(var(--hit), var(--size-label) * var(--leading-label)) + var(--rule)); --card-head-height: var(--card-head-min); scroll-margin-top: var(--card-bars); }
-.cards .card > :is(.top, .card-head-space) { min-height: var(--card-head-min); border-bottom: var(--rule) solid var(--line); }
-.cards .card > .top { position: sticky; top: var(--card-bars); z-index: 3; background: var(--ground); }
-.card > .card-head-space { display: none; }
+.cards:not(.minis) .card { --card-bars: calc(var(--secnav-height, var(--secnav-default)) + var(--groupnav-offset, 0px)); scroll-margin-top: var(--card-bars); }
+.cards .card > .top { min-width: 0; height: var(--card-head-height); border-bottom: var(--rule) solid var(--line); position: sticky; top: var(--card-bars); z-index: 3; background: var(--ground); }
+.card .top > .name { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.card .top > :is(.smark, .state-dl) { flex-shrink: 0; }
 .cards:not(.minis) .card :is(a, button, summary, [tabindex], input, select, textarea) { scroll-margin-top: calc(var(--card-bars) + var(--card-head-height) + var(--sp-2)); }
 .cards .card > .top :is(a, button, [tabindex]) { scroll-margin-top: calc(var(--card-bars) + var(--sp-2)); }
-@media (min-width: 641px) {
+@media (width > 640px) {
+  .card-row { grid-template-rows: calc(var(--card-head-height) + var(--gap-header)) repeat(13, auto); }
   .card-row > .card > * { grid-column: 1; }
   .card-row > .card > .top { align-self: start; grid-row: 1 / -1; } /* a single-track grid area would stop the sticky head at the end of track 1 */
-  .card-row > .card > .card-head-space { display: flex; grid-row: 1; align-self: start; visibility: hidden; pointer-events: none; } /* the same head content and box model size track 1, including wraps and the gap, without a measured reserve */
 }
-@media print { .cards .card > .top { position: static; grid-row: 1; } .card-row > .card > .card-head-space { display: none; } }
+@media print { .cards .card > .top { position: static; grid-row: 1; } }
 .card .name { font: var(--type-label); margin: 0; } /* h4 below the status group h3 */
 .card .row { font: var(--type-body); display: grid; align-items: first baseline; grid-template-columns: var(--card-key) minmax(0, 1fr); gap: var(--sp-3); margin-bottom: var(--gap-row); }
 .card .k { font: var(--type-meta); color: var(--muted); }
@@ -603,7 +608,7 @@ main section.first { display: flex; flex-direction: column; gap: var(--sp-5); bo
 
 /* Worldwide table */
 .scroll { overflow-x: auto; position: relative; } /* positioned, so absolutely placed content inside (visually hidden text) scrolls with it instead of widening the page */
-table.world [data-col="inst"] { min-width: 11rem; }
+table.world [data-col="inst"] { min-width: var(--world-institute-min); }
 .table-scroll { position: relative; min-width: 0; }
 .table-scroll::after { content: ""; position: absolute; inset: 0 0 0 auto; width: var(--sp-7); background: linear-gradient(to right, transparent, var(--ground)); pointer-events: none; opacity: 0; }
 .table-scroll.has-right::after { opacity: 1; }
@@ -627,7 +632,7 @@ table.world tbody tr:hover { background: var(--highlight-fill); }
 table.world.hide-region [data-col="region"], table.world.hide-since [data-col="since"], table.world.hide-op [data-col="op"], table.world.hide-budget [data-col="budget"], table.world.hide-staff [data-col="staff"], table.world.hide-net [data-col="net"],
 table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="since"], table.world.empty-op [data-col="op"], table.world.empty-budget [data-col="budget"], table.world.empty-staff [data-col="staff"] { display: none; }
 /* A pre-rendered page is saved at desktop width; until the script takes over, phones get the phone column defaults and a scrolling table. */
-@media (max-width: 640px) {
+@media (width <= 640px) {
   html[data-prerendered] table.world [data-col="since"], html[data-prerendered] table.world [data-col="op"], html[data-prerendered] table.world [data-col="budget"] { display: none; }
   html[data-prerendered] .scroll.fits { overflow-x: auto; }
   html[data-prerendered] .scroll.fits thead th { position: static; }
@@ -664,12 +669,12 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
 .fn-scroll.fits thead { position: sticky; top: calc(var(--secnav-height, var(--secnav-default)) + var(--groupnav-offset, 0px)); z-index: 3; background: var(--ground); } /* the whole head sticks as one layer: cells stay transparent, so no cell paints over its neighbour's rotated label */
 .fn-scroll.fits .fn-detail { width: 100%; max-width: 100%; }
 .fn-table { --fn-head-h: calc(10.25 * var(--size-meta) + 2 * var(--sp-1)); --fn-lean: calc(var(--fn-head-h) * .57735); --fn-group-gap: 1.75rem; border-collapse: separate; border-spacing: 0; width: max-content; font: var(--type-meta); } /* 10.25 head ems cover the longest rotated label, its line box and rounding; spacing clears the lower inset and group underline, including on the saved page. */
-.fn-table .fn-pad { width: max(6rem, var(--fn-lean)); min-width: max(6rem, var(--fn-lean)); padding: 0; } /* room for the shifted last group and head tips; the detail row reaches the scroll edge */
+.fn-table .fn-pad { width: max(var(--fn-pad-min), var(--fn-lean)); min-width: max(var(--fn-pad-min), var(--fn-lean)); padding: 0; } /* room for the shifted last group and head tips; the detail row reaches the scroll edge */
 .fn-table tr > :is(th, td) { position: relative; box-sizing: border-box; padding: var(--sp-2) 0; border-bottom: var(--rule) solid var(--line); text-align: center; vertical-align: middle; } /* keep the last row of each block and the totals ruled, overriding the shared table's last-row reset */
 .fn-table thead th { vertical-align: bottom; overflow-wrap: normal; hyphens: none; font: var(--type-meta); }
-.fn-table .fn-corner, .fn-table th[scope="row"] { width: 10rem; min-width: 10rem; padding-right: var(--sp-2); position: sticky; left: 0; z-index: 2; background: var(--ground); text-align: left; overflow-wrap: normal; }
+.fn-table .fn-corner, .fn-table th[scope="row"] { width: var(--fn-state-width); min-width: var(--fn-state-width); padding-right: var(--sp-2); position: sticky; left: 0; z-index: 2; background: var(--ground); text-align: left; overflow-wrap: normal; }
 .fn-table th[scope="row"] { font: var(--type-body); } /* an assigned role (principle: Type), like the state names in Compare's lists */
-.fn-table .fn-column { box-sizing: content-box; width: 2.4rem; min-width: 2.4rem; max-width: 2.4rem; } /* equal function tracks; the group gutter is outside this width */
+.fn-table .fn-column { box-sizing: content-box; width: var(--fn-column-width); min-width: var(--fn-column-width); max-width: var(--fn-column-width); } /* equal function tracks; the group gutter is outside this width */
 .fn-table .fn-head { height: var(--fn-head-h); padding-block: 0; } /* content-box tracks: the padding-box head zone is exactly --fn-head-h, excluding the bottom rule */
 .fn-head .g { position: absolute; z-index: 1; left: calc(50% + .433013lh); bottom: -.25lh; padding-left: calc(.288675lh + var(--sp-1)); white-space: nowrap; transform: rotate(-60deg); transform-origin: left bottom; color: var(--muted); } /* centre the line on the band: right by cos(30deg)/2 line heights, down by 1/4; the added inset keeps text above the rule */
 .fn-table .fn-column-group { text-align: left; height: 1.75rem; padding: 0; }
@@ -684,7 +689,7 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
 .fn-table :is(tbody, tfoot) :is(.fn-group-start, .fn-group-first, .fn-pad) { box-shadow: inset var(--rule) 0 var(--line); }
 .fn-table :is(tbody, tfoot) .fn-column:not(.fn-group-start, .fn-group-first) { box-shadow: inset var(--rule) 0 var(--fn-hairline); }
 .fn-table thead > tr:first-child > * { border-bottom: 0; }
-.fn-table .fn-group th { padding-top: var(--sp-4); text-align: left; font: var(--type-label); width: 10rem; min-width: 10rem; position: sticky; left: 0; z-index: 2; background: var(--ground); }
+.fn-table .fn-group th { padding-top: var(--sp-4); text-align: left; font: var(--type-label); width: var(--fn-state-width); min-width: var(--fn-state-width); position: sticky; left: 0; z-index: 2; background: var(--ground); }
 .fn-group span { white-space: nowrap; }
 .fn-table tr.fn-row-lit > :is(th, td), .fn-table :is(tbody, tfoot) .fn-col-lit { background-color: var(--fn-tint); }
 .fn-table :is(tbody, tfoot) .fn-column { background-clip: padding-box; } /* tint and inset rules start after the transparent group gutter */
@@ -697,7 +702,7 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
 .fn-cell { display: inline-flex; align-items: center; justify-content: center; width: 100%; min-height: var(--hit); padding: 0; border: 0; background: transparent; color: var(--ink); cursor: pointer; }
 .fn-mark { display: inline-block; flex: 0 0 auto; width: .8rem; height: .8rem; vertical-align: middle; border-radius: 50%; color: var(--st-est-edge); }
 .fn-activity { background: currentColor; }
-.fn-mandate { border: 2px solid currentColor; }
+.fn-mandate { border: var(--rule-strong) solid currentColor; }
 .fn-not_coded, .fn-table td[data-value="not_coded"]::before { height: .12rem; border-radius: 0; background: var(--muted); }
 .fn-table td[data-value="not_coded"]::before { content: ""; display: inline-block; vertical-align: middle; width: .8rem; }
 .fn-legend { list-style: none; padding: 0; font: var(--type-meta); color: var(--muted); display: grid; gap: var(--sp-1); } /* lines never touch, whatever the mark size */
@@ -729,7 +734,7 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
 .fn-pips { display: flex; justify-content: center; gap: 2px; min-width: max-content; } /* .fn-mark keeps every pip from shrinking */
 .fn-pip { width: 8px; height: 8px; box-sizing: border-box; }
 .fn-pip.fn-mandate { border-width: 1.5px; }
-.fn-pip.fn-not_found { border: 1px solid color-mix(in srgb, var(--muted) 55%, var(--ground)); }
+.fn-pip.fn-not_found { border: var(--rule) solid color-mix(in srgb, var(--muted) 55%, var(--ground)); }
 .fn-pip.fn-not_coded { height: 2px; align-self: center; }
 .fn-phone-detail { grid-column: 1 / -1; grid-row: 2; position: static; min-width: 0; width: 100%; max-width: 100%; }
 .fn-phone-functions { list-style: none; padding: 0; margin: 0; }
@@ -737,7 +742,7 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
 .fn-function-label { display: flex; align-items: center; gap: var(--sp-2); min-height: var(--hit); padding: var(--sp-2) 0; font: var(--type-body); color: var(--ink); }
 button.fn-function-label { width: 100%; background: transparent; border: 0; text-align: left; cursor: pointer; }
 .fn-phone-claims { margin-block: var(--sp-2) var(--sp-4); }
-@media (max-width: 640px) {
+@media (width <= 640px) {
   .fn-scroll, .fn-desktop-only { display: none; }
   .fn-phone { display: grid; }
   .fn-phone-only { display: block; }
@@ -747,7 +752,7 @@ button.fn-function-label { width: 100%; background: transparent; border: 0; text
   :root:not([data-js]) .fn-scroll, :root:not([data-js]) .fn-intro.fn-desktop-only { display: block; }
   :root:not([data-js]) .fn-legend.fn-desktop-only { display: grid; }
 }
-@media (max-width: 390px) {
+@media (width <= 390px) {
   .fn-phone-head { font: var(--type-fn-group); }
 }
 /* The saved page was rendered at 1440 px, where the table fits: until the script measures again, every width keeps the scroll box and a static head. */
@@ -757,7 +762,7 @@ html[data-prerendered] .fn-scroll.fits thead { position: static; }
 .fund-axis { font: var(--type-meta); display: grid; grid-template-columns: minmax(10rem, 1fr) minmax(12.5rem, 1.5fr) 11rem; gap: var(--sp-1) var(--sp-6); align-items: first baseline; color: var(--muted); border-bottom: var(--rule) solid var(--line); padding-bottom: var(--sp-3); } /* the funding rows' tracks, so the scale sits over the bars */
 .fund-key { display: flex; flex-wrap: wrap; gap: var(--sp-1) var(--sp-4); align-items: first baseline; }
 .key-item { display: inline-flex; align-items: baseline; gap: var(--sp-2); white-space: nowrap; }
-.key-swatch { display: inline-block; flex: none; width: 1.5rem; height: var(--sp-3); align-self: center; } /* a piece of each bar style, solid and hatched */
+.key-swatch { display: inline-block; flex: none; width: var(--sp-6); height: var(--sp-3); align-self: center; } /* a piece of each bar style, solid and hatched */
 .fund-list { display: flex; flex-direction: column; }
 .fund-nobar .fund-budget .fund-value > .budget-value { font: var(--type-body); color: var(--muted); } /* a lighter figure per cell; staff keeps its full weight */
 .fund-nobar .fund-bar { background: transparent; } /* an empty track: space, no rule */
@@ -804,18 +809,18 @@ html[data-prerendered] .fn-scroll.fits thead { position: static; }
 .group-list > li { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: first baseline; gap: 0 var(--sp-4); padding-block: var(--sp-1); border-bottom: var(--rule) solid var(--line); break-inside: avoid; }
 .group-note { font: var(--type-meta); color: var(--muted); }
 .group-list > li:last-child { border-bottom: 0; } /* hairlines only between members: the group's spacing closes it (rule 15) */
-@media (max-width: 640px) { .group-list > li { flex-direction: column; align-items: flex-start; justify-content: flex-start; } } /* phones: every note starts at one left edge, under its state (rule 6) */
+@media (width <= 640px) { .group-list > li { flex-direction: column; align-items: flex-start; justify-content: flex-start; } } /* phones: every note starts at one left edge, under its state (rule 6) */
 .access, .setup { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: var(--gap-header) var(--sp-7); align-items: start; } /* one layout for both grouped lists: short groups stacked, the long group spanning two tracks */
 .groups-short, .groups-long { display: flex; flex-direction: column; gap: var(--gap-header); min-width: 0; }
 .groups-long .group-list { columns: 2; column-gap: var(--sp-7); }
 :is(.access, .setup) > .foot { grid-column: 1 / -1; font: var(--type-meta); color: var(--muted); }
 .per-person { white-space: nowrap; } /* a figure and its unit stay on one line */
 .group-list.stacked > li { flex-direction: column; align-items: flex-start; justify-content: flex-start; }
-.card :is(.top, .card-head-space) > .smark { margin-left: auto; }
+.card .top > .smark { margin-left: auto; }
 .card.mini > .foot { display: flex; align-items: flex-start; } /* the footer keeps the shared spacing; the icon takes its own margin */
 .card.mini > .foot > .state-dl { margin-left: var(--sp-3); }
 .card.mini > .foot > :not(.state-dl) { flex: 1 1 auto; min-width: 0; }
-.card :is(.top, .card-head-space, .foot) > .state-dl { display: inline-flex; align-items: center; justify-content: center; width: var(--hit); height: var(--hit); margin-block: calc((var(--size-label) * var(--leading-label) - var(--hit)) / 2); color: var(--muted); text-decoration-line: none; }
+.card :is(.top, .foot) > .state-dl { display: inline-flex; align-items: center; justify-content: center; width: var(--hit); height: var(--hit); margin-block: calc((var(--size-label) * var(--leading-label) - var(--hit)) / 2); color: var(--muted); text-decoration-line: none; }
 .card :is(.top, .foot) > .state-dl:is(:hover, :focus-visible) { color: var(--ink); }
 
 /* Downloads */
@@ -845,13 +850,13 @@ html[data-prerendered] .fn-scroll.fits thead { position: static; }
   .fund-staff { display: flex; flex-direction: column; gap: var(--sp-1); }
   .fund-staff > .fund-context { margin-top: 0; }
 }
-@media (max-width: 1100px) {
+@media (width <= 1100px) {
   .explore { display: flex; flex-direction: column; gap: var(--sp-6); }
   .map-col { display: contents; } /* map, then its legend, then record and list */
-  .worldmap { max-width: 52rem; }
-  .side { order: 1; display: flex; flex-direction: column; gap: var(--sp-4); max-width: 52rem; }
+  .worldmap { max-width: var(--map-stack-width); }
+  .side { order: 1; display: flex; flex-direction: column; gap: var(--sp-4); max-width: var(--map-stack-width); }
   #regions { max-width: var(--region-list); }
-  .maptools { display: flex; flex-wrap: wrap; align-items: end; max-width: 52rem; } /* the map's column: tabs, then the search filling the rest of the row up to the map's right edge, or below at full width */
+  .maptools { display: flex; flex-wrap: wrap; align-items: end; max-width: var(--map-stack-width); } /* the map's column: tabs, then the search filling the rest of the row up to the map's right edge, or below at full width */
   .region-chips { flex: none; max-width: 100%; }
   .map-search { flex: 1 1 16rem; }
   .map-aside { order: 0; } /* the legend stays directly under the map */
@@ -861,7 +866,7 @@ html[data-prerendered] .fn-scroll.fits thead { position: static; }
   .section-label { position: static; }
   .cards { --columns: 2; }
 }
-@media (max-width: 640px) {
+@media (width <= 640px) {
   .panel .measure { padding-top: var(--sp-6); }
   .worldmap .map-wide { display: none; }
   .worldmap .map-narrow { display: block; }
@@ -898,8 +903,8 @@ html[data-prerendered] .fn-scroll.fits thead { position: static; }
 [data-prerendered] .cards .card:target > .top, .cards .card.arrived > .top { background-color: var(--highlight-fill); } /* the sticky head keeps its card's tint */
 @keyframes arrive { from { background-color: color-mix(in srgb, var(--accent) 22%, var(--highlight-fill)); } to { background-color: var(--highlight-fill); } }
 @media (prefers-reduced-motion: no-preference) {
-  .region-head .chev { transition: transform .15s ease; }
-  [data-prerendered] .card:target, .card.arrived { animation: arrive 1.5s ease-out; }
+  .region-head .chev { transition: transform var(--motion-short) ease; }
+  [data-prerendered] .card:target, .card.arrived { animation: arrive var(--motion-arrival) ease-out; }
 }
 /* Focus (principle: Focus): one style. Text controls (links, tabs, text buttons, disclosures, tooltip terms) take the highlight tint behind them and a 2px underline in the focus colour,
    which carries the 3:1 the tint alone lacks; boxed controls (.btn, .field) keep their own edge; a heading a jump focuses takes the tint alone, fading after about 1.5s. */
@@ -912,7 +917,7 @@ html .region-chips button[aria-pressed]:not(.btn):focus-visible { text-decoratio
 html .region-chips button[aria-pressed="true"]:not(.btn):focus-visible { box-shadow: inset 0 calc(-1 * var(--rule-strong)) var(--accent), 0 0 0 var(--sp-1) var(--highlight-fill); }
 html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fill); box-shadow: 0 0 0 var(--sp-1) var(--highlight-fill); border-radius: var(--r-sm); -webkit-box-decoration-break: clone; box-decoration-break: clone; } /* a wrapped heading: one tint per line */
 @keyframes focus-fade { 0%, 60% { background-color: var(--highlight-fill); box-shadow: 0 0 0 var(--sp-1) var(--highlight-fill); } 100% { background-color: transparent; box-shadow: 0 0 0 var(--sp-1) transparent; } }
-@media (prefers-reduced-motion: no-preference) { html :is(h2, h3, p)[tabindex="-1"]:focus { animation: focus-fade 2.5s ease-out forwards; } } /* held, then gone by about 2.5s; without motion the tint stays while focused */
+@media (prefers-reduced-motion: no-preference) { html :is(h2, h3, p)[tabindex="-1"]:focus { animation: focus-fade var(--motion-focus) ease-out forwards; } } /* held, then gone by about 2.5s; without motion the tint stays while focused */
 /* Forced colours drop the tint and the shadow: a system outline instead, on a jumped-to heading too; !important beats the more specific text-control rule above. */
 @media (forced-colors: active) { [data-prerendered] .card:target, .card.arrived { outline: var(--rule-strong) solid CanvasText !important; } } /* forced colours drop the tint: the arrived card keeps a system outline */
 @media (forced-colors: active) { :is(a, summary, abbr.g, button, [tabindex="0"]):focus-visible, :is(h2, h3, p)[tabindex="-1"]:focus { outline: var(--rule-strong) solid CanvasText !important; } }
@@ -1101,7 +1106,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   var THEME_NEXT = { system: "light", light: "dark", dark: "system" }, THEME_NAME = { system: "follows system", light: "light", dark: "dark" };
   function themeNow() { var t = document.documentElement.getAttribute("data-theme"); return t === "light" || t === "dark" ? t : "system"; }
   // The one toggle's place (principle: Theme): the section bar, or the header on phones; checked whenever the theme is synced and on a width change.
-  var PHONE_BAR = matchMedia("(max-width: 430px)");
+  var PHONE_BAR = matchMedia("(width <= 430px)");
   function placeToggle() { var b = $("theme-toggle"), home = document.querySelector(PHONE_BAR.matches ? ".topbar .measure" : ".secnav .measure"); if (b && home && b.parentNode !== home) { var focused = document.activeElement === b; home.appendChild(b); if (focused) b.focus({ preventScroll: true }); } }
   if (PHONE_BAR.addEventListener) PHONE_BAR.addEventListener("change", placeToggle);
   function syncTheme() { placeToggle(); var b = $("theme-toggle"); if (!b) return; var t = themeNow(); b.setAttribute("aria-label", "Theme: " + THEME_NAME[t]); b.setAttribute("data-tip", "Theme: " + THEME_NAME[t]); b.setAttribute("data-tip-sub", "Click for " + THEME_NEXT[t]); }
@@ -1918,16 +1923,10 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   function instituteCard(j, inst, S, m, grouped) {
     var card = el("article", "card"); card.id = "c-" + j.id.toLowerCase(); card.dataset.j = j.id;
     var top = el("div", "top"), name = el("h4", "name", j.name); name.id = card.id + "-name"; card.setAttribute("aria-labelledby", name.id); // a focused card announces its state
-    top.appendChild(name);
+    name.title = j.name; top.appendChild(name); // full text remains accessible when the one-line name is cut
     if (grouped) { var said = el("span", "vh", ", " + LABEL[j.status]); said.id = card.id + "-status"; top.appendChild(said); card.setAttribute("aria-labelledby", name.id + " " + said.id); }
     else top.appendChild(statusMark(j.status));
     top.appendChild(stateDownload(j, m)); card.appendChild(top);
-    // D. Keep track 1 content-sized even when the visible head spans the card. The copy shares all sizing CSS,
-    // but has no IDs or accessibility/focus presence; it is saved too, so hydration never changes the layout.
-    var headSpace = top.cloneNode(true); headSpace.className = "card-head-space";
-    headSpace.setAttribute("aria-hidden", "true"); headSpace.setAttribute("inert", "");
-    headSpace.querySelectorAll("[id]").forEach(function (n) { n.removeAttribute("id"); });
-    card.appendChild(headSpace);
     var order = SOURCE_ORDERS[j.id] = [], roles = {};
     var cite = citations(S, order, roles);
     function row(label, value, ids) {
@@ -2236,7 +2235,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       view.region = r; view.sel = null;
       drawFirst();
       // Narrow screens hold the list under the map: bring the moved map into view, its top first (below the section bar) when it is taller than the window.
-      if (matchMedia("(max-width: 1100px)").matches) {
+      if (matchMedia("(width <= 1100px)").matches) {
         var mapBox = $("worldmap"), mr = mapBox.getBoundingClientRect();
         if (mr.top < barsBottom() || mr.bottom > innerHeight) mapBox.scrollIntoView({ block: "start" });
       }
@@ -2612,7 +2611,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     mapArrived = function (w) {
       if (!w) { drawMap(); return; }
       pendingWorld = w;
-      var phone = matchMedia("(max-width: 640px)").matches, order = phone ? [1, 0] : [0, 1], shown = LAYOUTS[order[0]].cls;
+      var phone = matchMedia("(width <= 640px)").matches, order = phone ? [1, 0] : [0, 1], shown = LAYOUTS[order[0]].cls;
       if (view.region !== DEFAULT_REGION || !document.querySelector("#worldmap svg." + shown + '[data-saved="done"]')) { drawMap(); return; } // nothing stands in: at once
       var run = ++stageRun, maps = [];
       (function next(k) { idle(function () {
@@ -2687,7 +2686,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       }
     }
     // On wide screens the record covers the list: the list is inert until it closes.
-    var wide = matchMedia("(min-width: 1101px)");
+    var wide = matchMedia("(width > 1100px)");
     function coverList() { $("regions").inert = wide.matches && !!view.sel; }
     wide.addEventListener("change", coverList);
     // Escape closes the record only where it is read: on the first screen, outside the search box.
@@ -3294,7 +3293,6 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         var scroll = box.querySelector(".fn-scroll"), table = box.querySelector(".fn-table"); if (!scroll || !table) return;
         var fits = scroll.clientWidth > 0 && table.getBoundingClientRect().width <= scroll.clientWidth + 1;
         scroll.classList.toggle("fits", fits); $("fn-scroll-hint").hidden = fits;
-        scroll.style.setProperty("--fn-group-height", table.tHead.rows[0].getBoundingClientRect().height + "px");
       }
       function bindTint(table) {
         var pointer = null, focus = null;
@@ -3314,7 +3312,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       }
       build();
       // Both forms stay in the page; when a resize hides the focused control, focus moves to the same institute in the visible form.
-      var phoneWidth = window.matchMedia("(max-width: 640px)");
+      var phoneWidth = window.matchMedia("(width <= 640px)");
       phoneWidth.addEventListener("change", function () {
         var focused = document.activeElement;
         if (!box.contains(focused) || focused.getClientRects().length) return;
@@ -3584,7 +3582,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     });
     $("world-filter").addEventListener("input", draw); wr.addEventListener("change", draw);
     var COLS = [["region", "Region"], ["since", "Status since"], ["op", "Known activity"], ["budget", "Budget"], ["staff", "Staff"], ["net", "Network"]];
-    var phone = window.matchMedia("(max-width: 640px)"), colPrefs = {};
+    var phone = window.matchMedia("(width <= 640px)"), colPrefs = {};
     // The previous key stored automatic defaults too. Only explicit choices persist now.
     try { colPrefs = JSON.parse(localStorage.getItem("aisi-cols-v2") || "{}"); if (!colPrefs || typeof colPrefs !== "object") colPrefs = {}; } catch (e) {}
     var colChecks = {};
@@ -3824,14 +3822,6 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     glueCitations($("top"));
     glueCitations(document.querySelector("main"));
     arrangeCards();
-    // D. Measurement only sets keyboard scroll clearance; CSS sizes the title track before and after hydration.
-    var cardHeadSizes = new ResizeObserver(function (entries) {
-      entries.forEach(function (entry) {
-        var height = entry.target.getBoundingClientRect().height, card = entry.target.parentElement;
-        if (Number.isFinite(height) && height > 0) card.style.setProperty("--card-head-height", height + "px");
-      });
-    });
-    document.querySelectorAll(".cards .card > .top").forEach(function (head) { cardHeadSizes.observe(head); });
     // Separators that end a line are re-marked whenever the layout may have moved a line break (not while saving the pre-rendered page).
     if (!PRERENDERING) {
       var dotFrame = 0, scheduleDots = function () { if (!dotFrame) dotFrame = requestAnimationFrame(function () { dotFrame = 0; hideLineEndDots(document); }); };
@@ -3900,8 +3890,6 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       document.body.insertBefore(template, SCRIPT);
       ROOT.setAttribute("data-prerendered", ""); ROOT.removeAttribute("data-js"); // the saved page shows no toggle until a script marks it again
       ROOT.style.removeProperty("--secnav-height"); ROOT.style.removeProperty("--groupnav-height"); // measured rows: the saved page uses the rem defaults, which follow the reader's text size
-      cardHeadSizes.disconnect();
-      document.querySelectorAll(".cards .card").forEach(function (card) { card.style.removeProperty("--card-head-height"); }); // D: only scroll clearance uses the measurement; the saved title track sizes itself
     }
   }
 

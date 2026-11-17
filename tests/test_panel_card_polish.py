@@ -83,7 +83,7 @@ def test_card_head_allows_extra_space_from_a_taller_peer(card_head):
     assert check_page.card_head_errors(card_head) == []
 
 
-def test_wrapped_saved_head_needs_its_full_height_before_any_field():
+def test_enlarged_saved_head_needs_its_full_height_before_any_field():
     assert check_page.card_head_space_errors({"height": 80, "reserved": 96}) == []
     assert check_page.card_head_space_errors({"height": 80, "reserved": 43}) == ["reserved head track overlaps a field"]
 
