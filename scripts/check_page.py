@@ -5317,7 +5317,7 @@ PANEL_MEASURE_JS = r"""panel => {
     const s=getComputedStyle(n), b=n.getBoundingClientRect(), range=document.createRange(); range.selectNodeContents(n);
     const lines=[...range.getClientRects()].filter(r=>r.width && r.height);
     return {name:n.className || n.tagName, max_width:Number.isFinite(parseFloat(s.maxWidth))?parseFloat(s.maxWidth):null,
-      aligned:n.matches('.fn-basis, .fn-claim-text, .fn-detail-head, .quote-body, .quote-excerpt, .quote-anchor, .reread, .fn-sources, .srcs ol'),
+      aligned:n.matches('.fn-detail-context, .claim-text, .fn-detail-head, .fn-function-head, .quote-body, .quote-excerpt, .quote-anchor, .reread, .fn-sources, .srcs ol'),
       left:b.left, right:b.right, text_right:Math.max(b.left,...lines.map(r=>r.right))};
   });
   return {measure,left,right,blocks};
@@ -5331,18 +5331,23 @@ def check_panel_measure(browser, base_url: str) -> list[str]:
         try:
             hydrated(page, base_url)
             # Explicit samples: the first function carrying an anchor, then one fold of each builder/context.
-            opened = page.evaluate("""() => {
+            opened = page.evaluate("""async () => {
               const box=document.querySelector('#functions-table');
+              const openQuotes = async () => {
+                await Promise.all([...box.querySelectorAll('.fn-claim > details.quote:not([open])')].map(fold => new Promise(resolve => {
+                  fold.addEventListener('toggle', resolve, {once:true}); fold.querySelector('summary').click();
+                })));
+              };
               if(innerWidth<=640) {
                 for(const row of box.querySelectorAll('.fn-phone-row')) {
                   row.click();
                   for(const fn of box.querySelectorAll('.fn-phone-detail button.fn-function-label')) {
-                    fn.click(); if(box.querySelector('.fn-phone-detail .quote-anchor')) return true; fn.click();
+                    fn.click(); await openQuotes(); if(box.querySelector('.fn-phone-detail .quote-anchor')) return true; fn.click();
                   }
                   row.click();
                 }
               } else for(const cell of box.querySelectorAll('.fn-cell')) {
-                cell.click(); if(box.querySelector('.fn-detail .quote-anchor')) return true; cell.click();
+                cell.click(); await openQuotes(); if(box.querySelector('.fn-detail .quote-anchor')) return true; cell.click();
               }
               return false;
             }""")
@@ -11697,7 +11702,7 @@ def check_functions_detail(browser, base_url: str, data: dict) -> list[str]:
     page.on("pageerror", lambda error: errors.append("Functions JavaScript: " + str(error)))
     hydrated(page, base_url)
     # Every coded cell in one evaluation: no navigation or per-cell Playwright round trips.
-    errors += page.evaluate(r"""({data, quotes, names, displayNames}) => {
+    errors += page.evaluate(r"""async ({data, quotes, names, displayNames}) => {
       const errors = [], box = document.querySelector('#functions-table'), table = box.querySelector('table');
       const institutes = Object.fromEntries(data.institutes.map(i => [i.id, i]));
       const buttons = [...table.querySelectorAll('.fn-cell')];
@@ -11713,11 +11718,11 @@ def check_functions_detail(browser, base_url: str, data: dict) -> list[str]:
         need(box.querySelectorAll('.fn-detail-row').length === 1 && row.nextElementSibling === detail &&
              detail.id === button.getAttribute('aria-controls') && button.getAttribute('aria-expanded') === 'true' &&
              detail.cells[0].colSpan === row.cells.length, key + ': detail placement/state differs');
-        need(detail.querySelector('.fn-detail-head')?.textContent === displayNames[institute.id] + ' · ' + data.dataset.vocabularies.function[code].label, key + ': institute/function heading differs');
-        need(!detail.querySelector('.fn-detail-value'), key + ': detail repeats the cell value; each claim names its basis');
+        const panel = detail.querySelector('.fn-detail');
+        checkHeading(panel, cell, data.jurisdictions.find(j => j.id === institute.jurisdiction_id).name, displayNames[institute.id], code, key);
         // Exact evidence can itself say 'announced'; status labels may not. Never rewrite quotes or source titles.
         need(!/\b(planned|proposed|exploring|announced)\b/i.test(detail.querySelector('.fn-detail-head').textContent), key + ': status word in heading');
-        checkClaims(detail, cell, key);
+        await checkClaims(detail, cell, key);
         button.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape', bubbles: true}));
         need(!box.querySelector('.fn-detail-row') && button.getAttribute('aria-expanded') === 'false' && document.activeElement === button, key + ': Escape/focus differs');
       }
@@ -11757,14 +11762,38 @@ def check_functions_detail(browser, base_url: str, data: dict) -> list[str]:
 
 
 FN_CLAIMS_CHECK_JS = r"""
-const checkClaims = (detail, cell, key) => {
+const checkHeading = (detail, cell, country, institute, code, key) => {
+  const heading = detail.querySelector('.fn-detail-head, .fn-function-head'), context = detail.querySelector(':scope > .fn-detail-context');
+  need(heading?.matches('h4, h5') && heading.textContent === data.dataset.vocabularies.function[code].label, key + ': function heading differs');
+  need(context?.textContent === country + ' · ' + institute + ' · ' + names[cell.value].toLowerCase(), key + ': country/institute/cell state differs');
+  need(context && (heading?.closest('.fn-detail-top') || heading)?.nextElementSibling === context &&
+       context.nextElementSibling?.matches('.fn-claim'), key + ': heading/context/claim order differs');
+  const probe = document.createElement('span'); probe.style.cssText = 'font:var(--type-label);color:var(--muted)'; detail.appendChild(probe);
+  if (context) need(['fontFamily', 'fontSize', 'fontWeight', 'lineHeight', 'color'].every(k => getComputedStyle(context)[k] === getComputedStyle(probe)[k]), key + ': context is not muted list-level type');
+  probe.remove();
+};
+const checkClaims = async (detail, cell, key) => {
   const items = [...detail.querySelectorAll('.fn-claim')];
   need(JSON.stringify(items.map(n => n.dataset.claim)) === JSON.stringify(cell.claim_ids), key + ': claim order differs');
   for (const id of cell.claim_ids) {
     const item = items.find(n => n.dataset.claim === id), q = quotes[id];
     if (!item || !q) { errors.push(key + ': claim missing ' + id); continue; }
-    need(item.querySelector('.fn-claim-text')?.textContent === q.claim.text, key + ': claim text differs');
-    need(item.querySelector('.fn-basis')?.textContent === names[q.claim.basis].toLowerCase(), key + ': basis differs');
+    const sentence = item.querySelector(':scope > .claim-text'), plain = sentence?.cloneNode(true);
+    plain?.querySelectorAll('.cites').forEach(n => n.remove());
+    need(plain?.textContent.replace(/\u00a0/g, ' ') === q.claim.text, key + ': claim text differs');
+    const mixed = new Set(cell.claim_ids.map(c => quotes[c]?.claim.basis)).size > 1, basis = item.querySelector('.fn-basis');
+    need(mixed ? basis === item.firstElementChild && basis.nextElementSibling === sentence && basis.textContent === names[q.claim.basis].toLowerCase() : !basis,
+         key + (mixed ? ': a claim in a cell with both bases does not name its basis' : ': claim repeats the cell state'));
+    const citations = [...(sentence?.querySelectorAll('.cites > a.cn') || [])];
+    need(JSON.stringify(citations.map(a => a.dataset.sourceId).sort()) === JSON.stringify([...q.claim.source_ids].sort()) &&
+         citations.every(a => a.href === data.sources.find(s => s.id === a.dataset.sourceId).url && a.target === '_blank'), key + ': claim citation differs');
+    const fold = item.querySelector(':scope > details.quote'), sources = item.querySelector(':scope > .fn-sources');
+    need(fold && !fold.open && !fold.querySelector('.quote-body') && fold.dataset.quoteClaim === id &&
+         fold.querySelector('summary')?.textContent === 'Quote', key + ': Quote is not closed and lazy by default');
+    need(sentence?.nextElementSibling === fold && fold?.nextElementSibling === sources && sources === item.lastElementChild, key + ': sentence/Quote/source order differs');
+    if (!fold) continue;
+    await new Promise(resolve => { fold.addEventListener('toggle', resolve, {once:true}); fold.querySelector('summary').click(); });
+    need(fold.open && fold.querySelector('.quote-body')?.getClientRects().length, key + ': Quote does not open to visible evidence');
     const block = item.querySelector('.quote-body > .quote-excerpt');
     need(item.querySelectorAll('.quote-excerpt').length === 1 && block?.dataset.sourceId === q.source.id, key + ': shared quote block differs');
     const shown = block?.querySelector(':scope > .quotation > .quote-text'), marker = block?.querySelector(':scope > .quotation > .translation');
@@ -11779,7 +11808,7 @@ const checkClaims = (detail, cell, key) => {
     });
     need(!!block?.querySelector('.reread') === !!q.excerpt.reread, key + ': per-quote re-read line differs');
     const reread = block?.querySelector('.reread');
-    if (reread) need(getComputedStyle(reread).display === 'block' && getComputedStyle(reread).color === getComputedStyle(item.querySelector('.fn-basis')).color, key + ': per-quote re-read line is not separate/muted');
+    if (reread) need(getComputedStyle(reread).display === 'block' && getComputedStyle(reread).color === getComputedStyle(sources).color, key + ': per-quote re-read line is not separate/muted');
     const links = [...item.querySelectorAll('.fn-sources > li > a.standalone')];
     need(JSON.stringify(links.map(a => a.href)) === JSON.stringify(q.claim.source_ids.map(sid => data.sources.find(s => s.id === sid).url)) && links.every(a => a.target === '_blank'), key + ': claim sources/order differ');
   }
@@ -12153,7 +12182,7 @@ def check_functions_phone(browser, base_url: str, data: dict, *, inject: bool = 
                 prefix = f"phone {width}px {theme} {scale}: "
                 errors += [prefix + error for error in page.evaluate(FN_FORM_VISIBILITY)]
                 errors += [prefix + error for error in functions_phone_structure(page.content(), data)]
-                errors += [prefix + error for error in page.evaluate(r"""({data, quotes, names, model}) => {
+                errors += [prefix + error for error in page.evaluate(r"""async ({data, quotes, names, model}) => {
                   const errors = [], box = document.querySelector('#functions-table'), phone = box.querySelector('.fn-phone');
                   const need = (ok, label) => { if (!ok) errors.push(label); };
                   if (!phone) return ['phone form is missing'];
@@ -12276,7 +12305,10 @@ def check_functions_phone(browser, base_url: str, data: dict, *, inject: bool = 
                       label.click();
                       const claims = item.querySelector(':scope > .fn-phone-claims');
                       need(claims && label.nextElementSibling === claims && claims.id === label.getAttribute('aria-controls') && label.getAttribute('aria-expanded') === 'true', labelKey + ': function claims placement/state differs');
-                      if (claims) checkClaims(claims, f, labelKey);
+                      if (claims) {
+                        checkHeading(claims, f, expected.country, expected.name, f.code, labelKey);
+                        await checkClaims(claims, f, labelKey);
+                      }
                       overflow(labelKey);
                       label.click();
                       need(!item.querySelector('.fn-phone-claims') && label.getAttribute('aria-expanded') === 'false', labelKey + ': same function does not close claims');

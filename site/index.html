@@ -35,6 +35,7 @@
  * Measure: running text, including News text and Method list items, stops at --prose; structural lists and panels span the content width (check_page check_text_measure, check_content_grid).
  * Secondary tone: --muted is for source apparatus (citations, sources, re-read lines, translation markers and source dates), method notes and field labels. Facts, body roles and qualifiers needed to read values use --ink; type sizes do not decide their colour (check_page check_secondary_tone).
  * Panel measure: claims, quotations, context, re-read lines and sources share --prose from the panel's left content edge, including phone details, definitions and record folds; inline quotations stay inline (check_page check_panel_measure).
+ * Function detail: the full function label heads the panel; country, institute and the cell's state follow on one muted label line. Only in a cell whose claims have both bases does each claim name its own basis above its sentence. Each claim uses the record item form: cited sentence, closed Quote fold, then source, on desktop and inside the opened phone function (check_page check_functions_detail, check_functions_phone).
  * Inline emphasis: inherit the paragraph's size and family, at most medium weight; no run-in heading role.
  * Sources: a collapsed card ends with the counted sources control alone (muted meta, no top rule, inline hit height); a card reached from the map also ends with "Back to map" before its Sources control; the check date and correction follow the expanded list.
  * Separators: each item of a dot-separated line is one unbreakable box, so lines break only between items (an item wraps inside only when it alone is wider than its container); middle dots stay with the preceding item's final word and are hidden where a line breaks.
@@ -718,6 +719,8 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
 .fn-detail { position: sticky; left: 0; width: 100cqi; max-width: 100cqi; padding: var(--sp-4); box-sizing: border-box; white-space: normal; overflow-wrap: anywhere; background: var(--paper); font: var(--type-body); }
 .fn-detail-top { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--sp-3); max-width: none; margin-bottom: var(--sp-3); }
 .fn-detail-head { flex: 1; min-width: 0; font: var(--type-label); line-height: max(var(--control), var(--hit)); margin: 0; }
+.fn-function-head { font: var(--type-label); margin: 0; }
+.fn-detail-context { font: var(--type-label); color: var(--muted); margin: 0 0 var(--sp-3); }
 .fn-claim + .fn-claim { margin-top: var(--sp-4); }
 .fn-basis, .fn-sources { font: var(--type-meta); color: var(--muted); }
 .fn-detail .quote-body { margin: var(--sp-2) 0; }
@@ -3155,12 +3158,15 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         return FN_COPY.summary.replace("{functions}", text);
       }
       function appendClaims(detail, i, code) {
-        rows[i.id][code].claim_ids.forEach(function (id) {
-          var claim = CLAIM_INDEX[id].claim, item = el("div", "fn-claim"); item.dataset.claim = id;
-          item.appendChild(el("p", "fn-basis", names[claim.basis].toLowerCase())); item.appendChild(el("p", "fn-claim-text", claim.text));
-          item.appendChild(claimQuoteBody(claim.id)); item.appendChild(fnSources(fieldCitations(claim, ["text"]))); detail.appendChild(item);
+        var context = el("p", "fn-detail-context"), cite = citations(S, (SOURCE_ORDERS[i.jurisdiction_id] || []).slice(), {});
+        context.appendChild(separated([J[i.jurisdiction_id].name, displayName(i), names[rows[i.id][code].value].toLowerCase()])); detail.appendChild(context);
+        var ids = rows[i.id][code].claim_ids, mixed = ids.some(function (id) { return CLAIM_INDEX[id].claim.basis !== CLAIM_INDEX[ids[0]].claim.basis; });
+        ids.forEach(function (id) {
+          var claim = CLAIM_INDEX[id].claim, item = claimBlock(claim, cite); item.classList.add("fn-claim"); item.dataset.claim = id;
+          if (mixed) item.prepend(el("p", "fn-basis", names[claim.basis].toLowerCase())); // a cell with both bases says which claim is which; otherwise the context line carries the state
+          item.appendChild(fnSources(fieldCitations(claim, ["text"]))); detail.appendChild(item);
         });
-        externalLinks(detail);
+        glueCitations(detail); externalLinks(detail);
       }
       function build() {
         box.replaceChildren(); // build both forms once; CSS chooses the visible form without moving the saved page
@@ -3231,6 +3237,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
               var existing = button.nextElementSibling, isOpen = button.getAttribute("aria-expanded") === "true";
               if (isOpen) { existing.remove(); button.setAttribute("aria-expanded", "false"); return; }
               var claims = el("div", "fn-phone-claims"); claims.id = button.getAttribute("aria-controls");
+              claims.appendChild(el("h5", "fn-function-head", vocab[button.parentNode.dataset.code].label));
               appendClaims(claims, I[button.closest("li[data-institute]").dataset.institute], button.parentNode.dataset.code);
               button.after(claims); button.setAttribute("aria-expanded", "true"); return;
             }
@@ -3300,9 +3307,9 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
           if (button === opened) { closeDetail(true); return; }
           closeDetail(false);
           var row = button.closest("tr"), code = button.parentNode.dataset.code, i = I[row.dataset.institute];
-          var detail = el("div", "fn-detail"), title = el("p", "fn-detail-head", displayName(i) + " · " + vocab[code].label);
+          var detail = el("div", "fn-detail"), title = el("h4", "fn-detail-head", vocab[code].label);
           title.id = "fn-detail-head"; detail.setAttribute("role", "region"); detail.setAttribute("aria-labelledby", title.id);
-          detailHeading(detail, title); // each claim names its own basis, so a cell with both shows both
+          detailHeading(detail, title);
           appendClaims(detail, i, code);
           detailRow = el("tr", "fn-detail-row"); detailRow.id = button.getAttribute("aria-controls"); detailRow.dataset.owner = row.dataset.institute; var td = el("td"); td.colSpan = columns.length + 2;
           td.appendChild(detail); detailRow.appendChild(td); row.after(detailRow); opened = button; button.setAttribute("aria-expanded", "true"); externalLinks(detail);
