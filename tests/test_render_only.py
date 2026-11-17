@@ -432,6 +432,7 @@ def test_recent_development_sample_is_independent_and_order_sensitive():
         "es-plan",
         "es-moncloa",
     ]
+    event.pop("news", None)  # this sample tests the card-line (short) path; an authored News line has its own sources
     fixture = copy.deepcopy(data)
     fixture["jurisdictions"] = [jurisdiction]
     jurisdiction["timeline"] = [event]
