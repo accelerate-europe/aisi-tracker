@@ -124,6 +124,7 @@ class Context:
     commits: list[str] = field(default_factory=list)
     ref_names: list[str] = field(default_factory=list)  # with commits: the refs being pushed
     release_wording: bool = False  # validate with build.py --release-wording (CI on every run that does not publish)
+    version_ref: str | None = None  # CI's ref, checked against tags in the full checkout
 
 
 # Which steps a change needs (--changed): the first rule whose path or directory prefix matches a changed path wins,
@@ -401,6 +402,21 @@ def make_snapshot(repo: Path, dest: Path, revision: str | None = None) -> str:
 
 
 def step_validate(ctx: Context) -> Result:
+    if ctx.version_ref is not None:
+        if __package__:
+            from .versioning import check_released_version
+        else:
+            from versioning import check_released_version
+        data = json.loads((ctx.snapshot / "data/aisi.json").read_text(encoding="utf-8"))
+        version = data["dataset"]["version"]
+        head = git(ctx.repo, "rev-parse", "HEAD").strip()
+        tag = git(ctx.repo, "rev-parse", "--verify", "--quiet", f"refs/tags/v{version}^{{commit}}", check=False).strip() or None
+        try:
+            errors = check_released_version(version, ctx.version_ref, tag, head)
+        except ValueError as exc:
+            errors = [str(exc)]
+        if errors:
+            return Result("validate", "FAIL", detail="\n".join(errors))
     cmd = ["uv", "run", "--locked", "-q", "scripts/build.py", "--check", "--require-roster",
            "--report-dir", str(ctx.report / "source-origins")]
     result = command_step(ctx, "validate", cmd + (["--release"] if ctx.release else ["--release-wording"] if ctx.release_wording else []))
@@ -1128,6 +1144,7 @@ def main() -> int:
     ap.add_argument("--only", help=f"comma-separated steps from {','.join(STEPS)}, or fast (default: all)")
     ap.add_argument("--commits", nargs="+", metavar="REV", help="export step: scan commits selected by these rev-list arguments")
     ap.add_argument("--ref-names", nargs="+", default=[], metavar="REF", help="with --commits: also scan the names of the refs being pushed")
+    ap.add_argument("--version-ref", help="CI ref: refuse a stable version already tagged on another commit, except on main")
     ap.add_argument("--changed", action="store_true", help="run only the steps the files changed against the base need "
                     "(see CHANGE_RULES; a path it does not name runs every step); excludes --only")
     ap.add_argument("--out", type=Path, help="build into this directory instead of a temporary one (CI publishes it)")
@@ -1228,7 +1245,7 @@ def main() -> int:
         env[RUN_DATE_ENV] = env.get(RUN_DATE_ENV) or dt.datetime.now(ZoneInfo(RUN_ZONE)).date().isoformat()
         ctx = Context(ROOT, work / "snapshot", work, report, base, args.release, dist, args.cache.resolve(), env, serve_url=args.serve_url,
                       snapshots=args.snapshots, gate_args=gate_arguments(args), test_workers=args.test_workers, built=bool(args.gate_dist),
-                      commits=args.commits or [], ref_names=args.ref_names, release_wording=args.release_wording)
+                      commits=args.commits or [], ref_names=args.ref_names, release_wording=args.release_wording, version_ref=args.version_ref)
         if selected:
             ctx.sections["changed"] = selected
         results, stopped = [], None

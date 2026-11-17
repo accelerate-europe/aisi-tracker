@@ -2927,7 +2927,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     var last = m.display.latest_change;
     var up = $("updated"); up.textContent = "";
     var wc = el("a", "meta-link", "v" + m.version); wc.href = "#changes"; // no tooltip: the link text says where it goes (owner, 4 Nov 2026)
-    wc.addEventListener("click", function () { $("changes").open = true; }); var updated = el("span", null, "Updated "); updated.appendChild(dated(last ? last.date : m.as_of));
+    wc.addEventListener("click", function () { $("changes").open = true; }); var updated = el("span", null, "Updated "); updated.appendChild(dated(m.version.endsWith("-dev") ? m.as_of : last ? last.date : m.as_of));
     up.appendChild(separated([updated, wc])); // the feed is linked from News and the head
     // Spy on section edges; sticky headings do not represent document positions.
     var navLinks = [].slice.call(document.querySelectorAll(".secnav a:not(.navtitle)"));

@@ -40,7 +40,7 @@ def dist(tmp_path):
     schema = {"type": "object", "properties": {"dataset": {"type": "object", "additionalProperties": False,
               "required": ["version", "citation", "description"],
               "properties": {key: {"type": "string"} for key in dataset}}}}
-    schema["properties"]["dataset"]["properties"]["version"]["pattern"] = r"^\d+\.\d+\.\d+$"
+    schema["properties"]["dataset"]["properties"]["version"]["pattern"] = r"^\d+\.\d+\.\d+(-dev)?$"
     schema["description"] = "A DOI link starts with https://doi.org/; Zenodo uses 10.5281/."
     for path, value in {"data/aisi.json": source, "data/aisi.schema.json": schema,
                         "data/page.json": {**source, "build_mark": "old-mark"},
@@ -476,29 +476,30 @@ def test_count_limit_with_age_and_size_rules():
     assert set(result["frozen"]) == {f"{i:010x}" for i in range(5, 13)}
 
 
-def test_page_text_kept_and_preview_changes_marked(dist, tmp_path):
-    """The page keeps its own version line; the preview's note beside it and the replaced citation carry the
-    preview-chrome class; llms.txt says "preview" in its sentence; the downloads keep their fields."""
+@pytest.mark.parametrize("version", ["1.2.3", "1.2.4-dev"])
+def test_preview_no_version_note(dist, tmp_path, version):
+    """Development and stable candidates keep their version line and API sentence, with an unpublished citation."""
+    for path in dist.rglob("*"):
+        if path.is_file() and path.suffix in {".json", ".html", ".txt"}:
+            path.write_text(path.read_text().replace("1.2.3", version))
     out = tmp_path / "marked"
     transform(dist, out)
     for name in ("index.html", "method.html"):
         soup = BeautifulSoup((out / name).read_text(), "html.parser")
         lines = soup.find_all(id="updated")
         saved = [p for p in lines if p.find_parent("template") is None][0]
-        assert " ".join(saved.get_text().split()) == "Updated 15 Nov 2026 v1.2.3"  # the build's own text
-        for line in lines:  # saved page and hydration template alike
-            beside = line.find_next_sibling()
-            # get_text() skips text inside <template>; the span's string does not.
-            assert beside["class"] == ["pv-chrome", "pv-note-line"] and beside.span.string == preview.RELEASE_NOTE
+        assert " ".join(saved.get_text().split()) == f"Updated 15 Nov 2026 v{version}"
+        assert not soup.select(".pv-note, .pv-note-line")
         for cite in soup.find_all(id="cite"):
             assert "pv-chrome" in cite["class"] and cite.string == preview.NOTICE
         assert "MutationObserver(soon)" in str(soup.head) and "Unreleased changes" not in str(soup)
     api = BeautifulSoup((out / "api/v1/index.html").read_text(), "html.parser")
-    sentence = [p for p in api.find_all("p") if "version 1.2.3, data as of" in p.get_text()][0]
-    assert sentence.get_text().startswith("Static JSON files, version 1.2.3, data as of 2026-11-16.")
-    assert sentence.select_one(".pv-chrome.pv-note").get_text() == preview.RELEASE_NOTE
-    assert "; unpublished preview build; version and date still show the last release: version 1.2.3, data as of 16 November 2026." in (out / "llms.txt").read_text()
-    assert preview.read_json(out / "data/aisi.json")["dataset"]["version"] == "1.2.3"
+    sentence = [p for p in api.find_all("p") if f"version {version}, data as of" in p.get_text()][0]
+    assert sentence.get_text() == f"Static JSON files, version {version}, data as of 2026-11-16."
+    assert not api.select(".pv-note, .pv-note-line")
+    assert f"; unpublished preview build; version {version}, data as of 16 November 2026." in (out / "llms.txt").read_text()
+    assert "still show the last release" not in "\n".join(path.read_text() for path in out.rglob("*") if path.is_file() and path.suffix in {".html", ".txt", ".json"})
+    assert preview.read_json(out / "data/aisi.json")["dataset"]["version"] == version
 
 
 def test_version_sentence_missing_fails_loudly(dist, tmp_path):

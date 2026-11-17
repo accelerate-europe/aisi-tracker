@@ -26,7 +26,7 @@ from playwright.sync_api import sync_playwright
 
 from browser_lock import browser_slot
 from check_page import LOCALE, NOT_RUN, browser_env, chrome_problem, find_chrome
-from preview import NOTICE, RELEASE_NOTE, REPLACED, replaced_selector, SOURCE_REPO, data_date, frozen_url, index_html, not_found_html, read_json, vienna
+from preview import NOTICE, REPLACED, replaced_selector, SOURCE_REPO, data_date, frozen_url, index_html, not_found_html, read_json, vienna
 
 PREFIX = "/aisi-tracker-preview/"
 PAGES = ("index.html", "method.html", "api/v1/index.html")
@@ -125,7 +125,7 @@ def check_marker(page, width: int) -> None:
     box = marker.bounding_box()
     assert 22 <= box["height"] <= 30, f"marker is {box['height']:.0f}px high at {width}px"
     assert box["width"] <= min(0.6 * width, 320) + 1, f"marker is {box['width']:.0f}px wide at {width}px"
-    assert box["x"] + box["width"] <= width and box["y"] + box["height"] <= page.viewport_size["height"], "marker leaves the window"
+    assert 0 <= box["x"] and 0 <= box["y"] and box["x"] + box["width"] <= width and box["y"] + box["height"] <= page.viewport_size["height"], "marker leaves the window"
     others = page.evaluate("""() => [...document.querySelectorAll('body *')].filter(e => !e.closest('.pv-marker') && e.getClientRects().length
         && (getComputedStyle(e).position === 'fixed' || e.matches('.theme-toggle'))).map(e => { const r = e.getBoundingClientRect(); return [e.id || e.className, r.left, r.top, r.right, r.bottom]; })""")
     for name, left, top, right, bottom in others:
@@ -159,9 +159,7 @@ def check_banner(page, meta: dict, logical: str, expected_frozen: str) -> None:
     assert re.search(r", \d\d:\d\d CES?T$", identity), f"build time without its zone: {identity!r}"
     assert banner.locator('a', has_text="CI run").get_attribute("href") == meta["run_url"]
     assert banner.locator(".pv-id a").count() == 0, "the commit is plain text"
-    if page.locator("#updated").count():
-        note = page.locator("#updated + .pv-chrome .pv-note")
-        assert note.is_visible() and note.inner_text() == RELEASE_NOTE, "the release note is missing beside the version line"
+    assert page.locator(".pv-note, .pv-note-line").count() == 0, "the preview adds a version note"
     mail = banner.locator('a[href^="mailto:"]').get_attribute("href")
     from urllib.parse import parse_qs
     assert parse_qs(urlsplit(mail).query)["subject"] == [f"AISI preview {meta['branch']} {meta['commit'][:10]}"]

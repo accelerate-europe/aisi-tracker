@@ -44,6 +44,14 @@ from host_checks import INSTALL_CHROME, chrome_problem as missing_chrome, defaul
 from display import GENERIC_FIELDS, record_sources as entry_sources  # noqa: E402
 from method_copy import rule_label  # noqa: E402
 from release_checks import today  # noqa: E402
+from versioning import parse_version  # noqa: E402
+
+def updated_date(data: dict) -> str:
+    """The page's update line: recorded work on development builds, otherwise the last release."""
+    if parse_version(data["dataset"]["version"]).development or not data.get("changelog"):
+        return data["dataset"]["as_of"]
+    return data["changelog"][-1]["date"]
+
 
 PROCESS_START = time.monotonic()  # --job-deadline counts from here: after the imports above, before everything else
 DEADLINE_LOWERED = "job deadline: watchdog lowered to"  # stderr marker the flake detector reads
@@ -3614,7 +3622,7 @@ def check_summary_data(html: str, data: dict) -> list[str]:
     errors.extend(check_download_groups(soup, set()))
     updated = soup.select_one("#updated")
     version = soup.select_one('#updated a[href="#changes"]')
-    expected_date = date.fromisoformat(data["changelog"][-1]["date"]).strftime(
+    expected_date = date.fromisoformat(updated_date(data)).strftime(
         "%-d %b %Y"
     )
     if (

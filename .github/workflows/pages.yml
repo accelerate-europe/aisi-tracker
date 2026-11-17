@@ -155,7 +155,7 @@ jobs:
             set -- "$SHA"
           fi
           set -- --ref-names "$REF" --commits "$@"
-          uv run --locked scripts/check.py --only fast --test-workers 2 --report-dir "$RUNNER_TEMP/check" ${{ env.PUBLISH == 'true' && '--release' || '--release-wording' }} "$@"
+          uv run --locked scripts/check.py --only fast --test-workers 2 --report-dir "$RUNNER_TEMP/check" --version-ref "$REF" ${{ env.PUBLISH == 'true' && '--release' || '--release-wording' }} "$@"
       - if: always()
         run: cat "$RUNNER_TEMP/check/report.md" || true
       # Backstop: no step may change or add a file outside the ignored outputs.

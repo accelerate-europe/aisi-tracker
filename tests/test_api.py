@@ -570,7 +570,7 @@ def test_repository_zenodo_json_is_current():
     tracked = json.loads((build.ROOT / ".zenodo.json").read_text(encoding="utf-8"))
     assert tracked["creators"][0]["orcid"] == "0000-0003-4773-9059"
     assert tracked["license"] == "CC-BY-4.0"
-    assert tracked["related_identifiers"][1]["identifier"].endswith("/tree/v" + data["dataset"]["version"])
+    assert tracked["related_identifiers"][1]["identifier"].endswith("/tree/v" + data["changelog"][-1]["version"])
 
 
 def test_feed_has_one_entry_per_release_with_stable_ids(dataset, site):

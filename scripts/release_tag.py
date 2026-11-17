@@ -15,8 +15,10 @@ from pathlib import Path
 
 try:
     from .release_checks import check_release_tag, release_tag
+    from .versioning import require_release
 except ImportError:
     from release_checks import check_release_tag, release_tag
+    from versioning import require_release
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -45,6 +47,11 @@ def main(argv: list[str] | None = None, root: Path = ROOT) -> None:
     ap.add_argument("--remote", default="origin", help="remote the release is created on (default: origin)")
     args = ap.parse_args(argv)
     data = json.loads(git(root, "show", "HEAD:data/aisi.json").stdout)
+    try:
+        require_release(data["dataset"]["version"])
+    except ValueError as exc:
+        print(str(exc), file=sys.stderr)
+        sys.exit(1)
     zenodo = git(root, "show", "HEAD:.zenodo.json").stdout
     tag = release_tag(data)
     head = git(root, "rev-parse", "HEAD").stdout.strip()

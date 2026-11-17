@@ -13,9 +13,11 @@ from zoneinfo import ZoneInfo
 try:
     from .agent_files import doi_url
     from .reader_text import reader_text
+    from .versioning import parse_version, release_metadata, require_release, utc_date
 except ImportError:
     from agent_files import doi_url
     from reader_text import reader_text
+    from versioning import parse_version, release_metadata, require_release, utc_date
 
 
 CITATION_START = b"<!-- citation:start -->"
@@ -70,6 +72,11 @@ def check_metadata(data: dict) -> list[str]:
         errors.append("dataset.citation must end with the DOI link https://doi.org/ followed by dataset.doi")
     if not data.get("changelog") or data["changelog"][-1]["date"] != metadata["as_of"]:
         errors.append("dataset.as_of must equal the last changelog date")
+    for entry in data.get("changelog", []):
+        try:
+            require_release(entry["version"])
+        except ValueError as exc:
+            errors.append(f"changelog: {exc}")
     try:
         as_of = dt.date.fromisoformat(metadata["as_of"])
     except ValueError:
@@ -77,7 +84,8 @@ def check_metadata(data: dict) -> list[str]:
     if as_of > today():
         errors.append(f"dataset.as_of {as_of.isoformat()} is after today ({today().isoformat()})")
     try:
-        if citation_for_release(metadata["citation"], metadata["version"], metadata["as_of"]) != metadata["citation"]:
+        released = release_metadata(data)
+        if citation_for_release(metadata["citation"], released["version"], released["as_of"]) != metadata["citation"]:
             errors.append("dataset.citation does not name the current version and as_of date; run "
                           "uv run --locked scripts/build.py --update-readme, which writes them")
     except ValueError as exc:
@@ -85,7 +93,7 @@ def check_metadata(data: dict) -> list[str]:
     return errors
 
 
-# The release part of dataset.citation, which build.py --update-readme derives from dataset.version and as_of.
+# The release part of dataset.citation, anchored to the last release on development builds.
 CITATION_RELEASE = re.compile(r"(?<!\w)version [0-9][0-9A-Za-z.+-]*, data as of [0-9]{1,2} [A-Z][a-z]+ [0-9]{4}(?!\w)")
 
 
@@ -112,17 +120,6 @@ def check_instrument_status_dates(data: dict) -> list[str]:
 
 
 FLAG_FIELDS = ("model_access", "testing_capacity", "staffing_model")
-
-
-def utc_date(timestamp: str) -> str:
-    """The UTC calendar date of an RFC 3339 timestamp (T, Z in either case); the schema check reports a malformed one."""
-    try:
-        moment = dt.datetime.fromisoformat(re.sub(r"[Zz]$", "+00:00", timestamp).upper())
-    except ValueError:
-        return timestamp[:10]  # still compared, so a malformed timestamp cannot hide a late date
-    if moment.tzinfo is None:
-        return moment.date().isoformat()
-    return moment.astimezone(dt.timezone.utc).date().isoformat()
 
 
 def dates_after_as_of(data: dict) -> list[str]:
@@ -257,6 +254,10 @@ def release_tag(data: dict) -> str:
 
 def check_release_tag(data: dict, zenodo: str, head_tags: list[str], tag_commit: str | None, head: str) -> list[str]:
     """The tag about to be created must match the data version, the committed .zenodo.json and HEAD."""
+    try:
+        require_release(data["dataset"]["version"])
+    except ValueError as exc:
+        return [str(exc)]
     tag = release_tag(data)
     errors = []
     zenodo_version = json.loads(zenodo).get("version")
@@ -271,7 +272,7 @@ def check_release_tag(data: dict, zenodo: str, head_tags: list[str], tag_commit:
 # The summary is the release's headline on the page, in feed.xml and in the GitHub and Zenodo release
 # notes; the detail belongs in `changes`. The schema asks for one or two sentences. The word bound is per
 # sentence, so a summary cannot pack a list of changes into one long sentence. Released entries keep their wording:
-# the bound applies from 1.0.9, so a deploy without a version at 1.0.8 still passes.
+# the bound applies from 1.0.9, so an earlier release still passes.
 CHANGELOG_SUMMARY_MAX_SENTENCES = 2
 CHANGELOG_SUMMARY_MAX_SENTENCE_WORDS = 25
 CHANGELOG_SENTENCE_BOUND_FROM = (1, 0, 9)
@@ -293,6 +294,11 @@ def sentences(text: str) -> list[str]:
 def check_changelog_entry(data: dict) -> list[str]:
     """The release version needs a finished changelog entry: one exists, it lists changes and its summary is short."""
     version = data["dataset"]["version"]
+    try:
+        if parse_version(version).development:
+            version = release_metadata(data)["version"]
+    except ValueError as exc:
+        return [str(exc)]
     entries = [entry for entry in data.get("changelog", []) if entry.get("version") == version]
     if not entries:
         return [f"changelog: no entry for dataset.version {version}"]
@@ -308,7 +314,7 @@ def check_changelog_entry(data: dict) -> list[str]:
         errors.append(f"{where}: no changes listed")
     parts = sentences(summary)
     lengths = [len(part.split()) for part in parts]
-    bounded = tuple(int(n) for n in version.split(".")) >= CHANGELOG_SENTENCE_BOUND_FROM
+    bounded = parse_version(version).number >= CHANGELOG_SENTENCE_BOUND_FROM
     if len(parts) > CHANGELOG_SUMMARY_MAX_SENTENCES or (bounded and max(lengths, default=0) > CHANGELOG_SUMMARY_MAX_SENTENCE_WORDS):
         errors.append(
             f"{where}: the summary has {len(parts)} sentence{'' if len(parts) == 1 else 's'} of "
@@ -333,14 +339,14 @@ def write_citation(path: Path, content: bytes) -> None:
 
 
 def write_release_citation(path: Path) -> str | None:
-    """Set the version and as_of part of dataset.citation in the authored file from dataset.version and as_of, changing
+    """Set the version and as_of part of dataset.citation from the release metadata, changing
     only that string's bytes; return the new citation, or None when it was already current. ValueError when the
     citation lacks that part or its JSON text is not found exactly once."""
     raw = path.read_bytes()
-    metadata = json.loads(raw)["dataset"]
-    if not re.fullmatch(r"\d+\.\d+\.\d+", str(metadata.get("version"))):
-        raise ValueError(f"dataset.version {metadata.get('version')!r} is not MAJOR.MINOR.PATCH; dataset.citation left as it is")
-    citation = citation_for_release(metadata["citation"], metadata["version"], metadata["as_of"])
+    data = json.loads(raw)
+    metadata = data["dataset"]
+    released = release_metadata(data)
+    citation = citation_for_release(metadata["citation"], released["version"], released["as_of"])
     if citation == metadata["citation"]:
         return None
     old, new = (json.dumps(text, ensure_ascii=False).encode("utf-8") for text in (metadata["citation"], citation))

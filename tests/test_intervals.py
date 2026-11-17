@@ -62,7 +62,10 @@ CARD = {
 
 @pytest.fixture(scope="module")
 def published():
-    return publish(json.loads(DATA.read_text(encoding="utf-8")))
+    data = json.loads(DATA.read_text(encoding="utf-8"))
+    # Clip partial dates at the authored release baseline so recorded work on -dev
+    # cannot move the hand-worked expectations between releases.
+    return publish(data, as_of=data["dataset"]["as_of"])
 
 
 def as_pairs(record):

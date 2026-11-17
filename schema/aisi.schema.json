@@ -56,12 +56,12 @@
         },
         "version": {
           "type": "string",
-          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "pattern": "^\\d+\\.\\d+\\.\\d+(-dev)?$",
           "description": "Semantic version of the data: major = breaking schema change, minor = new records, status changes or additive schema fields, patch = corrections."
         },
         "as_of": {
           "$ref": "#/$defs/date",
-          "description": "Date the dataset as a whole was last reviewed."
+          "description": "For a release, the release date. For a development build, the latest date of recorded checking or source work, never earlier than the last release."
         },
         "license": {
           "enum": [
