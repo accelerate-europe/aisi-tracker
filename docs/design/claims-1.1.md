@@ -143,7 +143,7 @@ The link is recorded as an anchor, with the `source_id` of the copy it is found 
 
 | Slug | Label | Test |
 | --- | --- | --- |
-| `model_testing` | Model testing | It ran or commissioned tests of AI models that a text reports in enough detail to show real tests (how many, of what kind of model or test, or by what method), or a text assigns it testing AI models or systems. |
+| `model_testing` | Model testing | It ran or commissioned tests (evaluations) of AI models that a text reports in enough detail to show real tests (how many, of what kind of model or test, or by what method), or a text assigns it testing AI models or systems. |
 | `evaluation_methods` | Evaluation methods and tools | It develops or publishes test methods, benchmarks, protocols or software; running existing benchmarks is model testing. |
 | `research` | Research | It conducts or funds research on a named AI-risk topic or programme that meets no other test. |
 | `standards_guidance` | Standards and guidelines | It publishes, or is tasked to develop, standards, codes or guidance addressed to AI developers, providers or deployers; no addressee or facilitating others' text does not count. |

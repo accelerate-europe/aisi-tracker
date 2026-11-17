@@ -395,7 +395,7 @@
         "model_testing": {
           "label": "Model testing",
           "short": "model testing",
-          "definition": "It ran or commissioned tests of AI models that a text reports in enough detail to show real tests (how many, of what kind of model or test, or by what method), or a text assigns it testing AI models or systems.",
+          "definition": "It ran or commissioned tests (evaluations) of AI models that a text reports in enough detail to show real tests (how many, of what kind of model or test, or by what method), or a text assigns it testing AI models or systems.",
           "group": "Testing and science"
         },
         "evaluation_methods": {
@@ -26851,7 +26851,7 @@
           "basis": "mandate",
           "body_id": "related_bodies-84162d316796517fba955b0230dfdc57",
           "lead": true,
-          "text": "The draft national AI strategy describes the National AI Regulatory Sandbox as a \"Technical unit responsible for testing, evaluation, validation, auditing and regulatory learning for AI systems\".",
+          "text": "The draft national AI strategy lists the \"National Artificial Intelligence Regulatory Sandbox: technical unit responsible for testing, evaluation, validation, auditing and regulatory learning for AI systems\".",
           "source_ids": [
             "mz-enia-draft-2026"
           ]
@@ -55128,7 +55128,7 @@
               "text"
             ]
           ],
-          "gloss": "National Artificial Intelligence Regulatory Sandbox Technical unit responsible for testing, evaluation, validation, auditing and regulatory learning for AI systems.",
+          "gloss": "National Artificial Intelligence Regulatory Sandbox: technical unit responsible for testing, evaluation, validation, auditing and regulatory learning for AI systems.",
           "accessed": "2026-10-17"
         },
         {
