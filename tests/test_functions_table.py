@@ -203,7 +203,7 @@ def test_function_summary_keeps_vocabulary_order_and_whole_ties(values, expected
 def test_function_jobs_are_registered_for_shards(functions):
     jobs = check_page.browser_jobs(Path("dist"), functions[0], None)
     names = [check_page.job_id(*job) for job in jobs]
-    for name in ("check_functions_table", "check_functions_detail", "check_functions_layout", "check_functions_phone", "check_functions_sticky", "check_functions_tint", "check_functions_zero_carrier"):
+    for name in ("check_functions_table", "check_functions_detail", "check_functions_layout", "check_functions_phone", "check_functions_sticky", "check_functions_tint", "check_functions_zero_carrier", "check_function_group_tabs"):
         assert names.count("interactions/" + name) == 1
 
 
@@ -227,6 +227,47 @@ def slanted_function_flag():
 
 def test_function_flag_geometry_accepts_slanted_track_after_gutter(slanted_function_flag):
     assert check_page.function_flag_geometry_errors(slanted_function_flag) == []
+
+
+# B. Hand-worked group endpoints: a 60px lean over 60*sqrt(3) height, with a 1px head rule.
+@pytest.fixture
+def leaning_group_tab():
+    return {"boundary": 100, "next_boundary": 260, "lean": 60, "label_y": 20,
+            "rule_top": 123.923048454, "rule_bottom": 124.923048454,
+            "top": [160, 20], "bottom": [100, 123.923048454], "label_left": 160,
+            "underline": [[160, 20], [320, 20]], "upright": [100, 124.923048454],
+            "painted": True, "underline_painted": True, "upright_painted": True, "same_rule": True}
+
+
+def test_function_group_tabs_include_first_and_final_boundaries(leaning_group_tab):
+    assert check_page.function_group_tab_errors(leaning_group_tab) == []
+    leaning_group_tab.update(next_boundary=None, underline=None, label_left=None)
+    assert check_page.function_group_tab_errors(leaning_group_tab) == []
+
+
+@pytest.mark.parametrize(("field", "value", "finding"), [
+    ("bottom", [72, 123.923048454], "foot"),  # cell border edge instead of padding edge after the gutter
+    ("top", [100, 20], "60 degrees"),  # an upright line in the head zone
+    ("top", [160, 16], "label line"),
+    ("underline", [[160, 20], [292, 20]], "adjacent boundary"),  # missed next group's gutter
+    ("label_left", 164, "label"),
+    ("upright", [101, 124.923048454], "continue"),
+    ("upright", [100, 126], "continue"),
+    ("same_rule", False, "colour/width"),
+    ("painted", False, "missing"),
+    ("underline_painted", False, "underline is missing"),
+    ("upright_painted", False, "continue"),
+    ("underline", None, "underline is missing"),
+])
+def test_function_group_tabs_reject_disconnected_or_wrong_rules(leaning_group_tab, field, value, finding):
+    leaning_group_tab[field] = value
+    assert any(finding in e for e in check_page.function_group_tab_errors(leaning_group_tab))
+
+
+@pytest.mark.parametrize(("delta", "accepted"), [(.49, True), (.51, False)])
+def test_function_group_tab_foot_uses_half_pixel_tolerance(leaning_group_tab, delta, accepted):
+    leaning_group_tab["bottom"][0] += delta
+    assert (check_page.function_group_tab_errors(leaning_group_tab) == []) is accepted
 
 
 @pytest.mark.parametrize(("field", "value", "finding"), [

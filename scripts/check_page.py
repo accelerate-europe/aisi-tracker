@@ -868,12 +868,21 @@ def hydration_paint(browser, base_url: str) -> list[str]:
                     page.evaluate(f"window.scrollTo(0, document.querySelector('{place}').getBoundingClientRect().top + window.scrollY)")
                 page.wait_for_timeout(300)
                 before = page.screenshot(mask=[page.locator(".secnav, .group-nav")])
+                saved_cards = page.locator('#world-cards .card').evaluate_all(
+                    "cards => cards.filter(c => { const r=c.getBoundingClientRect(); return r.top<innerHeight && r.bottom>0; }).map(" + CARD_HEAD_SPACE_JS + ")"
+                ) if place == "#world-cards" else []
                 held.release()
                 wait_hydrated(page)
                 page.wait_for_timeout(300)
                 if page.evaluate("getComputedStyle(document.body).backgroundColor") != GROUNDS[theme]:
                     errors.append(f"hydration {width}px {theme}: the page does not show the {theme} theme")
                 after = page.screenshot(mask=[page.locator(".secnav, .group-nav")])
+                if place == "#world-cards":
+                    live_cards = page.locator('#world-cards .card').evaluate_all(
+                        "(cards, ids) => cards.filter(c => ids.includes(c.id)).map(" + CARD_HEAD_SPACE_JS + ")",
+                        [m["id"] for m in saved_cards],
+                    )
+                    errors.extend(f"hydration {width}px {theme}: {e}" for e in card_hydration_errors(saved_cards, live_cards))
                 changed = changed_pixels(page, before, after)
                 if changed > FLASH_PIXELS:
                     errors.append(f"hydration {width}px {theme} at {place}: {changed} pixels change when the script takes over (visible flash)")
@@ -4392,7 +4401,7 @@ def check_card_grid_edges(browser, base_url: str, data: dict) -> list[str]:
 
 
 def check_source_footers(page) -> list[str]:
-    """The source summary holds only the count; the check date and correction follow the list and open with it."""
+    """Only a map return may precede Sources; the check date and correction open with the list."""
     return page.evaluate(
         "() => {"
         + BROWSER_GEOMETRY
@@ -4413,12 +4422,20 @@ def check_source_footers(page) -> list[str]:
       const folds = [...document.querySelectorAll('.card details.srcs')];
       if (!folds.length) errors.push('source footers missing');
       if (!document.querySelector('.card details.srcs > .source-after .correction')) errors.push('no correction link after a source list');
+      const isMapReturn = (n, control) => n.matches('a.back-map[href="#map"]') && n.textContent.trim() === '↑ Back to map'
+        && n.closest('.card').matches('.arrived[data-from-panel="1"]') && n.parentElement === control.parentElement
+        && n === n.parentElement.firstElementChild && n.nextElementSibling === control;
+      document.querySelectorAll('.card .back-map').forEach(a => {
+        const card = a.closest('.card'), control = card.querySelector('.foot > details.srcs, .foot > .source-footer-line');
+        if (!control || !isMapReturn(a, control) || card.querySelectorAll('.back-map').length !== 1) errors.push('Back to map is not the single return link before Sources');
+      });
       folds.forEach(fold => {
         const summary = fold.querySelector(':scope > summary'), foot = fold.closest('.foot');
         const count = summary?.querySelector('.source-count'), list = fold.querySelector(':scope > ol');
         if (!foot || !summary || !list || !count || count.textContent !== `${list.children.length} ${list.children.length === 1 ? 'source' : 'sources'}`) {
           errors.push('source footer lost its count or list'); return;
         }
+        if (!foot.closest('.card').matches('.mini') && [...foot.children].some(n => n !== fold && !isMapReturn(n, fold))) errors.push('collapsed source footer holds more than Sources and its map return');
         if (getComputedStyle(foot).borderTopWidth !== '0px') errors.push(REPORT + 'source footer has a top rule');
         if (!isMeta(summary)) errors.push(REPORT + 'source summary is not muted meta');
         if (!visible(summary)) return; // A mini card may itself be closed.
@@ -4807,6 +4824,277 @@ def check_text_measure(browser, base_url: str) -> list[str]:
         if not beside:
             errors.append(f"{width}px: no wrapped re-read line beside a wrapped source title among {lines} re-read lines; the re-read measure is not seeing a long line")
         page.close()
+    return errors
+
+
+# A. Panel measures: inspect actual text blocks, including lazy quotation content.
+def panel_measure_errors(panel: dict) -> list[str]:
+    errors = []
+    measure, left, right = panel["measure"], panel["left"], panel["right"]
+    if len(panel["blocks"]) < 2:
+        errors.append("fewer than two text blocks measured")
+    for block in panel["blocks"]:
+        width = block["max_width"]
+        if width is None or not min(measure, right - left) - 1 <= width <= measure + 1:
+            errors.append(block["name"] + ": computed max-width differs from the prose measure")
+        if block["right"] > min(right, left + measure) + 1 or block["text_right"] > min(right, left + measure) + 1:
+            errors.append(block["name"] + ": text/block runs past the panel measure")
+        if block["left"] < left - 1:
+            errors.append(block["name"] + ": block starts outside the panel")
+        if block["aligned"] and abs(block["left"] - left) > 1:
+            errors.append(block["name"] + ": text stack does not share the panel's left edge")
+    return errors
+
+
+PANEL_MEASURE_JS = r"""panel => {
+  panel.scrollIntoView({block:'center'});
+  const style=getComputedStyle(panel), r=panel.getBoundingClientRect();
+  const probe=document.createElement('div'); probe.style.width='var(--prose)'; panel.appendChild(probe);
+  const measure=probe.getBoundingClientRect().width; probe.remove();
+  const left=r.left+parseFloat(style.borderLeftWidth)+parseFloat(style.paddingLeft);
+  const right=r.right-parseFloat(style.borderRightWidth)-parseFloat(style.paddingRight);
+  const blocks=[...panel.querySelectorAll('*')].filter(n => {
+    const s=getComputedStyle(n);
+    return n.getClientRects().length && s.visibility!=='hidden' && !n.closest('.vh') && n.textContent.trim() &&
+      (s.display!=='inline' || n.matches('.quote-text')) && s.display!=='none';
+  }).map(n => {
+    const s=getComputedStyle(n), b=n.getBoundingClientRect(), range=document.createRange(); range.selectNodeContents(n);
+    const lines=[...range.getClientRects()].filter(r=>r.width && r.height);
+    return {name:n.className || n.tagName, max_width:Number.isFinite(parseFloat(s.maxWidth))?parseFloat(s.maxWidth):null,
+      aligned:n.matches('.fn-basis, .fn-claim-text, .fn-detail-head, .quote-body, .quote-excerpt, .quote-anchor, .reread, .fn-sources, .srcs ol'),
+      left:b.left, right:b.right, text_right:Math.max(b.left,...lines.map(r=>r.right))};
+  });
+  return {measure,left,right,blocks};
+}"""
+
+
+def check_panel_measure(browser, base_url: str) -> list[str]:
+    errors = []
+    for width in (1280, 1440, 390):
+        page = browser.new_page(viewport={"width": width, "height": 1000})
+        try:
+            hydrated(page, base_url)
+            # Explicit samples: the first function carrying an anchor, then one fold of each builder/context.
+            opened = page.evaluate("""() => {
+              const box=document.querySelector('#functions-table');
+              if(innerWidth<=640) {
+                for(const row of box.querySelectorAll('.fn-phone-row')) {
+                  row.click();
+                  for(const fn of box.querySelectorAll('.fn-phone-detail button.fn-function-label')) {
+                    fn.click(); if(box.querySelector('.fn-phone-detail .quote-anchor')) return true; fn.click();
+                  }
+                  row.click();
+                }
+              } else for(const cell of box.querySelectorAll('.fn-cell')) {
+                cell.click(); if(box.querySelector('.fn-detail .quote-anchor')) return true; cell.click();
+              }
+              return false;
+            }""")
+            if not opened:
+                errors.append(f"{width}px: no function panel with a context line to measure")
+            page.locator('details.more, details.quote, details.srcs, details.card.mini').evaluate_all("nodes => nodes.forEach(n => n.open=true)")
+            page.evaluate("async () => { await document.fonts.ready; await new Promise(requestAnimationFrame); }")
+            samples = {
+                "function-phone" if width == 390 else "function-desktop": '.fn-phone-detail' if width == 390 else '.fn-detail-row .fn-detail',
+                "function-definitions": '#functions-table > details.more',
+                "definitions": '#method-details .two > div',
+                "record-quote": '.card:not(.mini) details.quote .quote-body',
+                "closest-body-quote": '.card.mini details.quote .quote-body',
+                "card-sources": '.card .srcs',
+                "group-sources": '#access .foot .srcs, #setup .foot .srcs',
+                "funding-sources": '.fund-detail-body .srcs',
+            }
+            for label, selector in samples.items():
+                nodes = page.locator(selector)
+                if not nodes.count():
+                    errors.append(f"{width}px {label}: panel missing")
+                    continue
+                # The first rendered sample in document order; definitions has two independent columns.
+                for panel in (nodes.all() if label == "definitions" else [nodes.first]):
+                    measured = panel.evaluate(PANEL_MEASURE_JS)
+                    errors.extend(f"{width}px {label}: {e}" for e in panel_measure_errors(measured))
+        finally:
+            page.close()
+    return errors
+
+
+# D. Measure the first occupied field track and head offset; hydration must preserve both even at a scrolled position.
+CARD_HEAD_SPACE_JS = """c => {
+  const h=c.querySelector(':scope > .top').getBoundingClientRect();
+  const fields=[...c.querySelectorAll(':scope > .row')];
+  return {id:c.id,height:h.height,head_top:h.top-c.getBoundingClientRect().top,
+    reserved:fields.length?Math.min(...fields.map(n=>n.getBoundingClientRect().top))-h.top:null};
+}"""
+
+
+def card_hydration_errors(before: list[dict], after: list[dict]) -> list[str]:
+    """Catch both a changed title track and a head that only starts sticking after hydration."""
+    if not before:
+        return ["no visible saved cards measured"]
+    live = {m["id"]: m for m in after}
+    errors = []
+    for saved in before:
+        current = live.get(saved["id"])
+        if current is None:
+            errors.append(f"{saved['id']}: card missing after hydration")
+            continue
+        for key in ("height", "head_top", "reserved"):
+            a, b = saved[key], current[key]
+            if a is None or b is None or not math.isfinite(a) or not math.isfinite(b):
+                errors.append(f"{saved['id']}: {key} is not finite across hydration")
+            elif abs(a - b) > 1 / 64 + 1e-6:  # one layout unit (1/64 CSS px) can come from the page-wide bar heights being measured after hydration; hydration_paint judges visible shifts
+                errors.append(f"{saved['id']}: {key} changes across hydration ({a} to {b})")
+    return errors
+
+
+def card_head_space_errors(m: dict) -> list[str]:
+    if any(m[key] is None or not math.isfinite(m[key]) for key in ("reserved", "height")):
+        return ["reserved head track or head height is not finite"]
+    if m["reserved"] < m["height"] - 1:
+        return ["reserved head track overlaps a field"]
+    return []
+
+
+# Sticky cards: geometry and focus are measured after real page scrolling and Tab presses.
+def card_head_errors(m: dict) -> list[str]:
+    errors = card_head_space_errors(m)
+    if m["position"] != "sticky" or abs(m["top"] - m["bars"]) > 1:
+        errors.append("head does not stick directly below the bars")
+    if m["left"] < m["card_left"] - 1 or m["right"] > m["card_right"] + 1:
+        errors.append("head escapes its card column")
+    if m["transparent"] or not m["rule"] or not 0 < m["z"] < m["bars_z"]:
+        errors.append("head lacks its opaque ground, rule or stacking below the bars")
+    if m["phone"] and m["height"] is not None and m["height"] > 48:
+        errors.append("phone sticky head exceeds 48px")
+    return errors
+
+
+def check_saved_card_heads(browser, base_url: str) -> list[str]:
+    """Saved wrapped heads must leave every field below them, without JS or while hydration waits."""
+    errors = []
+    for scripting in (False, True):
+        page = browser.new_page(viewport={"width": 1280, "height": 900}, java_script_enabled=scripting)
+        mode = "before hydration" if scripting else "no JS"
+        try:
+            held = Held(page, PAGE_DATA) if scripting else None
+            page.goto(base_url, wait_until="load")
+            page.evaluate("document.fonts.ready")
+            if held:
+                held.wait()
+            card = page.locator('#c-fr')
+            # Mutate both copies of the authored heading, as the renderer does, retaining their real shared sizing CSS.
+            card.locator(':scope > :is(.top, .card-head-space) .name').evaluate_all("nodes => nodes.forEach(n => n.textContent='Synthetic country heading with deliberately long text to wrap across several lines at every card width')")
+            if not card.locator(':scope > .card-head-space').evaluate("n => n.inert && n.getAttribute('aria-hidden')==='true' && !n.querySelector('[id]')"):
+                errors.append("saved card sizing copy is not inert, hidden from accessibility or free of IDs")
+            for width in (641, 1000, 1280, 1600, 390):
+                page.set_viewport_size({"width": width, "height": 900})
+                for scale in (100, 150):
+                    prefix = f"saved cards {mode}, {width}px, text {scale}%: "
+                    page.evaluate("scale => document.documentElement.style.fontSize=scale+'%'", scale)
+                    # Keep the head in natural flow for measurement, below the sticky bars even on phone.
+                    card.evaluate("c => scrollTo(0,scrollY+c.getBoundingClientRect().top-innerHeight/2)")
+                    if not page.evaluate("document.documentElement.hasAttribute('data-prerendered')"):
+                        errors.append(prefix + "saved-page fixture hydrated before measurement")
+                    wrapped = card.locator(':scope > .top .name').evaluate("n => n.getBoundingClientRect().height>parseFloat(getComputedStyle(n).lineHeight)*1.5")
+                    if not wrapped:
+                        errors.append(prefix + "heading fixture did not wrap")
+                    # All peers must keep clear of their own head when one head enlarges the shared track.
+                    for peer in card.locator('..').locator(':scope > .card').all():
+                        peer.evaluate("c => scrollTo(0,scrollY+c.getBoundingClientRect().top-innerHeight/2)")
+                        m = peer.evaluate(CARD_HEAD_SPACE_JS)
+                        errors.extend(prefix + m["id"] + ': ' + e for e in card_head_space_errors(m))
+                        if width > 640:
+                            equal = peer.evaluate("c => { const h=c.querySelector(':scope > .top'), s=c.querySelector(':scope > .card-head-space'); return getComputedStyle(s).visibility==='hidden' && Math.abs(h.getBoundingClientRect().height-s.getBoundingClientRect().height)<.01; }")
+                            if not equal:
+                                errors.append(prefix + m["id"] + ': sizing copy differs from the head height or is visible')
+        finally:
+            page.close()
+    return errors
+
+
+def check_card_heads(browser, base_url: str) -> list[str]:
+    errors = []
+    settle = "() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))"
+    for width in (1280, 1600, 390):
+        for theme in ("light", "dark"):
+            page = themed_page(browser, theme, viewport={"width": width, "height": 900})
+            prefix = f"{width}px {theme}: "
+            try:
+                hydrated(page, base_url)
+                page.evaluate("document.fonts.ready")
+                # Alphabetically first sufficiently long shared row (one card on phone), then all its heads.
+                ids = page.evaluate("""() => {
+                  const rows=[...document.querySelectorAll('.card-row')].filter(r=>
+                    r.children.length>=(innerWidth>640?2:1) && r.getBoundingClientRect().height>400);
+                  rows.sort((a,b)=>a.querySelector('.card').id.localeCompare(b.querySelector('.card').id));
+                  return rows.length?[...rows[0].children].map(c=>c.id):[];
+                }""")
+                if not ids:
+                    errors.append(prefix + "no long card row to exercise")
+                    continue
+                card = page.locator('#' + ids[0])
+                card.evaluate("c => scrollTo(0,scrollY+c.getBoundingClientRect().top-innerHeight/2)")
+                page.evaluate(settle)
+                spaces = {id: page.locator('#' + id).evaluate(CARD_HEAD_SPACE_JS) for id in ids}
+                card.evaluate("c => { c.scrollIntoView(); window.scrollBy(0,200); }")
+                page.evaluate(settle)
+                measured = page.evaluate("""ids => ids.map(id => {
+                  const c=document.getElementById(id), h=c.querySelector(':scope > .top'), r=h.getBoundingClientRect(), cr=c.getBoundingClientRect();
+                  const s=getComputedStyle(h), nav=c.closest('.group').querySelector('.group-nav'), n=nav.getBoundingClientRect();
+                  return {id,top:r.top,left:r.left,right:r.right,height:r.height,card_left:cr.left,card_right:cr.right,
+                    bars:n.bottom,bars_z:Number(getComputedStyle(nav).zIndex),z:Number(s.zIndex),position:s.position,
+                    transparent:s.backgroundColor==='rgba(0, 0, 0, 0)',rule:parseFloat(s.borderBottomWidth)>0,phone:innerWidth<=640};
+                })""", ids)
+                for m in measured:
+                    m["reserved"] = spaces[m["id"]]["reserved"]
+                    errors.extend(prefix + m["id"] + ': ' + e for e in card_head_errors(m))
+                    if width == 390:
+                        errors.append(report_line(prefix + f"{m['id']} sticky head measured {m['height']:.2f}px"))
+                # Past the row, no old head may remain below the navigation over the next content.
+                card.evaluate("c => window.scrollBy(0,c.getBoundingClientRect().bottom-c.closest('.group').querySelector('.group-nav').getBoundingClientRect().bottom+2)")
+                page.evaluate(settle)
+                released = page.evaluate("""ids => ids.every(id => {
+                  const c=document.getElementById(id), h=c.querySelector('.top').getBoundingClientRect();
+                  return h.bottom<=c.closest('.group').querySelector('.group-nav').getBoundingClientRect().bottom+1;
+                })""", ids)
+                if not released:
+                    errors.append(prefix + "a card head remains over content after its card ends")
+                # Traverse an expanded card, including its source links and translated quotation controls.
+                card.evaluate("c => { c.querySelectorAll('details').forEach(d=>d.open=true); c.tabIndex=-1; c.scrollIntoView(); }")
+                page.keyboard.press("Tab")  # establish keyboard modality before focusing the start sentinel
+                card.evaluate("c => c.focus({preventScroll:true})")
+                checked = 0
+                for _ in range(card.locator('a,button,summary,[tabindex]').count() + 2):
+                    page.keyboard.press("Tab")
+                    page.evaluate(settle)
+                    focused = card.evaluate("""c => {
+                      const t=document.activeElement; if(!c.contains(t)) return null;
+                      const h=c.querySelector('.top'), r=t.getBoundingClientRect(), hr=h.getBoundingClientRect();
+                      const bars=c.closest('.group').querySelector('.group-nav').getBoundingClientRect().bottom;
+                      return {name:t.textContent.trim() || t.getAttribute('aria-label'), covered:r.top<(h.contains(t)?bars:Math.max(bars,hr.bottom))-1,
+                        margin:parseFloat(getComputedStyle(t).scrollMarginTop),needed:bars+(h.contains(t)?0:hr.height)};
+                    }""")
+                    if focused is None:
+                        break
+                    checked += 1
+                    if focused["covered"] or focused["margin"] < focused["needed"] - 1:
+                        errors.append(prefix + "card focus covered or missing scroll clearance: " + str(focused["name"]))
+                if checked < 2:
+                    errors.append(prefix + "fewer than two card controls reached by Tab")
+                page.evaluate("location.hash='#c-fr'")
+                page.evaluate(settle)
+                landed = page.locator('#c-fr').evaluate("""c => {
+                  const h=c.querySelector('.top').getBoundingClientRect(), row=c.querySelector('.row').getBoundingClientRect();
+                  const bars=c.closest('.group').querySelector('.group-nav').getBoundingClientRect().bottom;
+                  return h.top>=bars-1 && h.bottom<innerHeight && row.top>=h.bottom-1 && row.top<innerHeight;
+                }""")
+                if not landed:
+                    errors.append(prefix + "card anchor hides the head or first field")
+                page.emulate_media(media="print")
+                if not page.locator('.cards .card > .top').evaluate_all("heads => heads.every(h=>getComputedStyle(h).position==='static')"):
+                    errors.append(prefix + "card head stays sticky in print")
+            finally:
+                page.close()
     return errors
 
 
@@ -5938,6 +6226,7 @@ def check_arrival(browser, base_url: str) -> list[str]:
                 expect(full, "record link")
                 if page.locator(f"#{full} .back-map").count() != 1 or page.locator(".back-map").count() != 1:
                     errors.append(f"{label}: #{full} reached from the record lacks its one Back to map link")
+                errors.extend(f"{label}: map arrival: {e}" for e in check_source_footers(page))
                 page.keyboard.press("Escape")  # reading the card: Escape must not close the record waiting above
                 if page.locator("#record").get_attribute("data-j") != full_id or page.evaluate("document.getElementById('record').hidden"):
                     errors.append(f"{label}: Escape on the card closes the record that Back to map returns to")
@@ -5978,6 +6267,7 @@ def check_arrival(browser, base_url: str) -> list[str]:
                             errors.append(f"{label}: Back to map after a reload does not reopen the record with focus on its link ({got})")
                 open_record(mini_id, "map")
                 expect(mini, "none-identified record link")
+                errors.extend(f"{label}: mini map arrival: {e}" for e in check_source_footers(page))
                 if page.evaluate("id => document.getElementById(id).matches('.arrived, :target')", full) or page.evaluate(state, full)["tinted"] or page.evaluate(state, full)["ring"]:
                     errors.append(report_line(f"{label}: #{full} keeps its arrival tint after another card is the target"))
                 # Section navigation changes the address without a hashchange; the arrival ends there too.
@@ -11064,6 +11354,111 @@ def functions_phone_structure(html: str, data: dict) -> list[str]:
     return errors
 
 
+# B. Group-tab endpoints are checked against the columns, not against the CSS tokens being tested.
+def function_group_tab_errors(tab: dict) -> list[str]:
+    errors = []
+    top, bottom = tab["top"], tab["bottom"]
+    if not tab["painted"]:
+        errors.append("leaning group boundary is missing")
+    if abs(bottom[0] - tab["boundary"]) > .5 or abs(bottom[1] - tab["rule_top"]) > .5:
+        errors.append("boundary foot does not meet the column at the head rule")
+    if abs(top[0] - tab["boundary"] - tab["lean"]) > 1 or abs(top[1] - tab["label_y"]) > 1:
+        errors.append("boundary top does not meet the shifted label line")
+    angle = math.degrees(math.atan2(bottom[1] - top[1], top[0] - bottom[0]))
+    if abs(angle - 60) > .5:
+        errors.append("group boundary is not at 60 degrees")
+    if abs(tab["upright"][0] - bottom[0]) > .5 or abs(tab["upright"][1] - tab["rule_bottom"]) > .5 or not tab["upright_painted"]:
+        errors.append("upright group rule does not continue the boundary")
+    if not tab["same_rule"]:
+        errors.append("group tab colour/width differs from the upright rule")
+    if tab["underline"] is not None:
+        start, end = tab["underline"]
+        if (abs(start[0] - top[0]) > 1 or abs(start[1] - top[1]) > 1
+                or abs(end[0] - tab["next_boundary"] - tab["lean"]) > 1 or abs(end[1] - top[1]) > 1
+                or abs(tab["label_left"] - top[0]) > 1):
+            errors.append("group underline does not join adjacent boundary tops and its label")
+        if not tab["underline_painted"]:
+            errors.append("group underline is missing")
+    elif tab["next_boundary"] is not None:
+        errors.append("group underline is missing")
+    return errors
+
+
+# Read the actual pseudo boxes and their transforms, including the transparent table gutters.
+FN_TAB_MEASURE_JS = r"""
+  const groupTabs = table => {
+    const padding = n => {
+      const r=n.getBoundingClientRect(), s=getComputedStyle(n);
+      return {left:r.left+parseFloat(s.borderLeftWidth),right:r.right-parseFloat(s.borderRightWidth),
+        top:r.top+parseFloat(s.borderTopWidth),bottom:r.bottom-parseFloat(s.borderBottomWidth)};
+    };
+    const pseudo = (node, which) => {
+      const s=getComputedStyle(node,which), p=padding(node), m=new DOMMatrix(s.transform);
+      const length=(v,total)=>v.endsWith('%')?parseFloat(v)*total/100:parseFloat(v)||0;
+      const w=length(s.width,p.right-p.left), h=length(s.height,p.bottom-p.top);
+      const x=p.left+length(s.left,p.right-p.left);
+      const y=s.top==='auto'?p.bottom-length(s.bottom,p.bottom-p.top)-h:p.top+length(s.top,p.bottom-p.top);
+      const [ox,oy]=s.transformOrigin.split(' ').map(parseFloat);
+      const points=[[0,0],[w,0],[w,h],[0,h]].map(([a,b])=>[
+        x+m.a*(a-ox)+m.c*(b-oy)+ox+m.e,y+m.b*(a-ox)+m.d*(b-oy)+oy+m.f]);
+      return {points,width:w,height:h,colour:s.backgroundColor,
+        painted:!['none','normal'].includes(s.content) && s.display!=='none' && s.visibility!=='hidden' && s.backgroundColor!=='rgba(0, 0, 0, 0)'};
+    };
+    const groups=[...table.querySelectorAll('.fn-column-group')], heads=[...table.querySelectorAll('.fn-head')];
+    if(!heads.length) return [];
+    let first=0;
+    const starts=groups.map(g=>{const head=heads[first]; first+=g.colSpan; return head;});
+    const end=table.querySelector('thead > tr:last-child > .fn-pad');
+    const nodes=[...groups,end], tracks=[...starts,end];
+    return nodes.map((node,n)=>{
+      const track=tracks[n], p=padding(track), line=pseudo(node,'::before');
+      const body=n<groups.length?table.querySelector('tbody td[data-code="'+track.dataset.code+'"]'):table.querySelector('tbody .fn-pad');
+      const b=padding(body), s=getComputedStyle(body), shadow=s.boxShadow;
+      const colour=shadow.match(/(?:rgba?|color)\([^)]+\)/)?.[0];
+      const lengths=shadow.replace(/(?:rgba?|color)\([^)]+\)/g,'').match(/-?[\d.]+px/g)?.map(parseFloat) || [];
+      const underline=n<groups.length?pseudo(node,'::after'):null;
+      const same=paint=>paint.colour===colour && Math.abs((paint===line?paint.width:paint.height)-(lengths[0]||0))<.01;
+      return {name:n<groups.length?node.textContent:'after last group',top:line.points[0],bottom:line.points[3],polygon:line.points,
+        boundary:p.left,rule_top:p.bottom,rule_bottom:track.getBoundingClientRect().bottom,label_y:p.top,
+        lean:(p.bottom-p.top)*Math.tan(Math.PI/6),painted:line.painted,
+        upright:[b.left,b.top],upright_painted:shadow.includes('inset') && lengths[0]>0,
+        same_rule:same(line) && (!underline || same(underline)),
+        next_boundary:n<groups.length?padding(tracks[n+1]).left:null,
+        label_left:n<groups.length?node.querySelector('span').getBoundingClientRect().left:null,
+        underline:underline?[underline.points[0],underline.points[1]]:null,
+        underline_polygon:underline?.points,underline_painted:underline?.painted};
+    });
+  };
+"""
+
+
+def check_function_group_tabs(browser, base_url: str) -> list[str]:
+    errors = []
+    for width in (1280, 1000):
+        for theme in ("light", "dark"):
+            page = themed_page(browser, theme, viewport={"width": width, "height": 1000})
+            try:
+                hydrated(page, base_url)
+                page.evaluate("document.fonts.ready")
+                page.locator('#functions').evaluate("n => n.closest('section').scrollIntoView({block:'start'})")
+                page.evaluate("() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))")
+                tabs = page.evaluate("() => {" + FN_TAB_MEASURE_JS + "return groupTabs(document.querySelector('.fn-table')); }")
+                expected = page.locator('.fn-column-group').count() + 1
+                if len(tabs) != expected or expected < 2:
+                    errors.append(f"{width}px {theme}: group boundary count differs (including first and last)")
+                for tab in tabs:
+                    errors.extend(f"{width}px {theme} {tab['name']}: {e}" for e in function_group_tab_errors(tab))
+                # At the scrolling width the endpoints stay attached after a horizontal scroll as well.
+                if width == 1000:
+                    page.locator('.fn-scroll').evaluate("n => n.scrollLeft=n.scrollWidth")
+                    tabs = page.evaluate("() => {" + FN_TAB_MEASURE_JS + "return groupTabs(document.querySelector('.fn-table')); }")
+                    for tab in tabs:
+                        errors.extend(f"{width}px {theme} scrolled {tab['name']}: {e}" for e in function_group_tab_errors(tab))
+            finally:
+                page.close()
+    return errors
+
+
 def function_flag_geometry_errors(measured: dict) -> list[str]:
     """Check the painted pseudo-element's measured corners, independently of its CSS declarations."""
     errors = []
@@ -11125,6 +11520,7 @@ FN_GEOMETRY = r"""() => {
   const box = document.querySelector('#functions-table'), errors = [], labels = [], rules = [], seen = new Set();
   const rect = r => [{x:r.left,y:r.top}, {x:r.right,y:r.top}, {x:r.right,y:r.bottom}, {x:r.left,y:r.bottom}];
   /* FUNCTION_POLYGON */
+  /* FUNCTION_TABS */
   const intersects = (a,b) => {
     for (const poly of [a,b]) for (let n=0;n<poly.length;n++) {
       const p=poly[n], q=poly[(n+1)%poly.length], length=Math.hypot(q.x-p.x,q.y-p.y);
@@ -11167,6 +11563,13 @@ FN_GEOMETRY = r"""() => {
       }
     }
   }
+  const probe=document.createElement('span'); probe.style.cssText='position:absolute;width:var(--sp-1)'; box.appendChild(probe);
+  const clearance=parseFloat(getComputedStyle(probe).width); probe.remove();
+  const table=box.querySelector('.fn-table');
+  if(table?.getClientRects().length) for(const tab of groupTabs(table)) {
+    if(tab.painted) rules.push({name:'leaning group boundary '+tab.name,p:tab.polygon.map(([x,y])=>({x,y}))});
+    if(tab.underline_painted) rules.push({name:'group underline '+tab.name,p:tab.underline_polygon.map(([x,y])=>({x,y})),headClearance:true});
+  }
   for (let n=0;n<labels.length;n++) {
     const label=labels[n];
     for (let k=n+1;k<labels.length;k++) {
@@ -11174,10 +11577,19 @@ FN_GEOMETRY = r"""() => {
       if(label.node===other.node || label.node.contains(other.node) || other.node.contains(label.node)) continue;
       if(label.parts.some(a=>other.parts.some(b=>intersects(a,b)))) errors.push('text/mark collision: '+label.name+' / '+other.name);
     }
-    for(const rule of rules) if(label.parts.some(p=>intersects(p,rule.p))) errors.push('text/mark crosses '+rule.name+': '+label.name);
+    for(const rule of rules) {
+      if(label.parts.some(p=>intersects(p,rule.p))) errors.push('text/mark crosses '+rule.name+': '+label.name);
+      // A tip can miss the hairline yet still touch it. Check the rotated text's
+      // highest corner against the painted underline's lower edge, not the cell box.
+      if(rule.headClearance && label.node.matches('.fn-head .g') && label.parts.some(p=>
+          Math.max(...p.map(v=>v.x))>=Math.min(...rule.p.map(v=>v.x)) &&
+          Math.min(...p.map(v=>v.x))<=Math.max(...rule.p.map(v=>v.x)) &&
+          Math.min(...p.map(v=>v.y))-Math.max(...rule.p.map(v=>v.y))<clearance-.5))
+        errors.push('head tip has less than --sp-1 clearance below '+rule.name+': '+label.name);
+    }
   }
   return errors;
-}""".replace("/* FUNCTION_POLYGON */", FN_POLYGON_JS)
+}""".replace("/* FUNCTION_POLYGON */", FN_POLYGON_JS).replace("/* FUNCTION_TABS */", FN_TAB_MEASURE_JS)
 
 
 FN_PHONE_BOUNDS_JS = """
@@ -11494,7 +11906,7 @@ def check_functions_phone(browser, base_url: str, data: dict, *, inject: bool = 
     return errors
 
 
-def check_functions_layout(browser, base_url: str, *, fixture: dict | None = None, widths=(360, 390, 640, 1000, 1280, 1440)) -> list[str]:
+def check_functions_layout(browser, base_url: str, *, fixture: dict | None = None, widths=(360, 390, 640, 1000, 1280, 1440, 1920)) -> list[str]:
     page = browser.new_page(viewport={"width": 1440, "height": 1000})
     if fixture is not None:
         page.route(PAGE_DATA, lambda route: route.fulfill(json=fixture))
@@ -11504,7 +11916,7 @@ def check_functions_layout(browser, base_url: str, *, fixture: dict | None = Non
     for width in widths:
         page.set_viewport_size({"width": width, "height": 1000})
         page.wait_for_selector('.fn-phone' if width <= 640 else '.fn-scroll')
-        for scale in (("100%", "110%") if width <= 640 else ("100%",)):
+        for scale in ("100%", "110%"):
             page.evaluate("scale => document.documentElement.style.fontSize = scale", scale)
             for theme in ("light", "dark"):
                 set_theme(page, theme)
@@ -11822,7 +12234,7 @@ def check_functions_tint(browser, base_url: str) -> list[str]:
             let first=0;
             const group=[...table.querySelectorAll('.fn-column-group')].find(g=>{const owns=index>=first && index<first+g.colSpan; first+=g.colSpan; return owns;});
             if(!group) { errors.push('head has no column group: '+head.dataset.code); continue; }
-            // No underline is drawn: the shifted group's span is its label anchor plus its padding-box width.
+            // Every flag stays within its group's shifted padding-box span (the underline also spans the next gutter).
             const g=paddingBox(group), left=group.querySelector('span').getBoundingClientRect().left;
             const corners=polygon(label), centre={x:corners.reduce((sum,p)=>sum+p.x,0)/4,y:corners.reduce((sum,p)=>sum+p.y,0)/4};
             const hit=document.elementFromPoint(centre.x,centre.y);
@@ -11963,6 +12375,7 @@ def browser_jobs(dist: Path, data: dict, screenshots: Path | None) -> list[tuple
         ("interactions", check_functions_table, (dist, data)),
         ("interactions", check_functions_detail, (data,)),
         ("interactions", check_functions_layout, ()),
+        ("interactions", check_function_group_tabs, ()),
         ("interactions", check_functions_phone, (data,)),
         ("interactions", check_functions_sticky, ()),
         ("interactions", check_functions_zero_carrier, (data,)),
@@ -11978,6 +12391,7 @@ def browser_jobs(dist: Path, data: dict, screenshots: Path | None) -> list[tuple
         ("interactions", check_theme_default, (dist,)),
         ("interactions", check_wide_layout, ()),
         ("interactions", partial(prefixed, "measure: ", check_text_measure), ()),
+        ("interactions", check_panel_measure, ()),
         ("interactions", check_none_identified_tips, (data,)),
         ("interactions", check_theme_parity, ()),
         ("interactions", check_highlight_fill, ()),
@@ -11990,6 +12404,8 @@ def browser_jobs(dist: Path, data: dict, screenshots: Path | None) -> list[tuple
         ("interactions", check_operating_edges, (data,)),
         ("interactions", table_sorting, (data,)),
         ("interactions", check_card_grid_edges, (data,)),
+        ("interactions", check_card_heads, ()),
+        ("interactions", check_saved_card_heads, ()),
     ]
 
 
