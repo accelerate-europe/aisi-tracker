@@ -392,10 +392,10 @@ def test_budget_oracle_rejects_wrong_id_and_missing_value_structure():
 
 
 def test_budget_oracle_covers_institutes_before_establishment():
-    """Norway's proposed institute shows its selected NOK 30m record; Not published there is an error."""
+    """Norway's proposed institute shows its selected ~NOK 45m record; Not published there is an error."""
     identity = check_page.EXPECTED_BUDGET_IDS["no-ki-norge"]
     data = {"jurisdictions": [{"id": "NO", "status": "proposed"}], "institutes": [{"id": "no-ki-norge", "jurisdiction_id": "NO", "funding": []}]}
-    value = f'<span class="budget-value" data-funding-id="{identity}"><span class="budget-amount">NOK 30m</span><span class="budget-qualifiers">a year · 2027 budget proposal</span></span>'
+    value = f'<span class="budget-value" data-funding-id="{identity}"><span class="budget-amount">~NOK 45m</span><span class="budget-qualifiers">a year · 2027 budget proposal</span></span>'
     html = f'<article class="card" data-j="NO"><div class="row" data-track="10"><div class="k">Budget</div><div class="v">{value}</div></div></article><table><tbody id="world-rows"><tr data-j="NO"><td data-col="budget">{value}</td></tr></tbody></table>'
     assert check_page.check_budget_output(html, data) == []
     missing = html.replace(value, '<span class="missing">Not published</span>')
