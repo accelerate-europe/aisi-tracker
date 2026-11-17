@@ -415,7 +415,7 @@ jobs:
       - if: steps.enabled.outputs.publish == 'true' && steps.transform.outputs.ready == 'true'
         run: uv run --locked -q scripts/check_page.py --install-chrome
       - if: steps.enabled.outputs.publish == 'true' && steps.transform.outputs.ready == 'true'
-        run: uv run --locked scripts/check_preview.py --dist "$RUNNER_TEMP/preview-marked" --shots "$RUNNER_TEMP/preview-shots"
+        run: uv run --locked scripts/check_preview.py --dist "$RUNNER_TEMP/preview-marked" --main "$RUNNER_TEMP/preview-input" --shots "$RUNNER_TEMP/preview-shots"
       - if: ${{ !cancelled() && steps.enabled.outputs.publish == 'true' && steps.transform.outputs.ready == 'true' }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
