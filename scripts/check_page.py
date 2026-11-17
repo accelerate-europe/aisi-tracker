@@ -1888,7 +1888,7 @@ ACTIVITY_CREDIT_SOURCES, FIRST_OUTPUT_CREDIT_SOURCES = load_credit_sources()
 
 
 DEVELOPMENT_CREDIT_SOURCES = {
-    ("NO", "no-1"): ["no-budget"],
+    ("NO", "no-1"): ["no-budget", "no-prop1s-2026-27-dfd"],
     ("NL", "nl-2"): ["nl-kamerbrief-2026-09"],
     ("ES", "es-1"): ["es-plan", "es-moncloa"],
     ("DE", "de-2"): ["de-bmds"],

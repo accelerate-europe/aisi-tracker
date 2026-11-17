@@ -2872,7 +2872,7 @@
             "es-plan",
             "es-moncloa"
           ],
-          "short": "IA360 plan commits to an AI Security Institute within AESIA."
+          "short": "Government AI plan commits to an AI Security Institute within AESIA."
         }
       ],
       "iso3": "ESP",
@@ -2982,11 +2982,12 @@
           "date": "2026-10-07",
           "event": "proposed",
           "instrument": "budget_proposal",
-          "description": "The 2027 budget proposes extending KI Norge's mandate to AI safety and NOK 30m to strengthen this work, with model evaluation alongside research institutions. It separately names KI Norge as the contact point for international safety communities, including AI Safety Institutes.",
+          "description": "The 2027 budget proposes extending KI Norge's mandate to AI safety and NOK 45.1m for KI Norge, including a NOK 30m increase to strengthen this work, with model evaluation alongside research institutions. It separately names KI Norge as the contact point for international safety communities, including AI Safety Institutes.",
           "source_ids": [
-            "no-budget"
+            "no-budget",
+            "no-prop1s-2026-27-dfd"
           ],
-          "short": "Budget proposes NOK 30m and an AI safety mandate for KI Norge."
+          "short": "Budget proposes NOK 45.1m and an AI safety mandate for KI Norge."
         }
       ],
       "iso3": "NOR",
@@ -8751,7 +8752,7 @@
             "us-caissi",
             "us-si-page"
           ],
-          "short": "Earliest archived NIST page found uses the new name CAISSI."
+          "short": "Renamed Center for Advancing Innovation and Standards for Super Intelligence (CAISSI)."
         }
       ],
       "iso3": "USA",
@@ -113636,6 +113637,17 @@
                 "id": "funding-07dc8b2c007b4b80a356aef8e5afa53c"
               },
               "description"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "NO"
+              },
+              "timeline",
+              {
+                "id": "no-1"
+              },
+              "description"
             ]
           ],
           "accessed": "2026-10-24"
@@ -113778,6 +113790,17 @@
               "funding",
               {
                 "id": "funding-07dc8b2c007b4b80a356aef8e5afa53c"
+              },
+              "description"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "NO"
+              },
+              "timeline",
+              {
+                "id": "no-1"
               },
               "description"
             ]

@@ -24,24 +24,24 @@ SEPTEMBER = [
     ("2026-10-13", "United Kingdom", "Agreement announced between UK AISI and CAISI."),
     ("2026-10-09", "United Kingdom", "Agreement announced between UK AISI and J-AISI."),
     ("2026-10-09", "Japan", "Agreement announced between UK AISI and J-AISI."),
-    ("2026-10-07", "Norway", "Budget proposes NOK 30m and an AI safety mandate for KI Norge."),
+    ("2026-10-07", "Norway", "Budget proposes NOK 45.1m and an AI safety mandate for KI Norge."),
     ("2026-10-06", "Australia", "Agreement announced with Anthropic."),
-    ("2026-09-30", "United States", "Earliest archived NIST page found uses the new name CAISSI."),
+    ("2026-09-30", "United States", "Renamed Center for Advancing Innovation and Standards for Super Intelligence (CAISSI)."),
     ("2026-09-28", "South Korea", "Agreement signed with Kakao."),
     ("2026-09-25", "Netherlands", "Cabinet says AI safety institute exploration under way; report due year end."),
-    ("2026-09-21", "Spain", "IA360 plan commits to an AI Security Institute within AESIA."),
+    ("2026-09-21", "Spain", "Government AI plan commits to an AI Security Institute within AESIA."),
 ]
 PAGE_SEPTEMBER = [
     ("12 Nov 2026", "United Kingdom and Norway", "Agreement signed between UK AISI and KI Norge."),
     ("24 Oct 2026", "United Kingdom", "GBP 120m for UK AISI announced."),
     ("13 Oct 2026", "United Kingdom and Canada", "Agreement announced between UK AISI and CAISI."),
     ("9 Oct 2026", "United Kingdom and Japan", "Agreement announced between UK AISI and J-AISI."),
-    ("7 Oct 2026", "Norway", "Budget proposes NOK 30m and an AI safety mandate for KI Norge."),
+    ("7 Oct 2026", "Norway", "Budget proposes NOK 45.1m and an AI safety mandate for KI Norge."),
     ("6 Oct 2026", "Australia", "Agreement announced with Anthropic."),
-    ("30 Sep 2026", "United States", "Earliest archived NIST page found uses the new name CAISSI."),
+    ("30 Sep 2026", "United States", "Renamed Center for Advancing Innovation and Standards for Super Intelligence (CAISSI)."),
     ("28 Sep 2026", "South Korea", "Agreement signed with Kakao."),
     ("25 Sep 2026", "Netherlands", "Cabinet says AI safety institute exploration under way; report due year end."),
-    ("21 Sep 2026", "Spain", "IA360 plan commits to an AI Security Institute within AESIA."),
+    ("21 Sep 2026", "Spain", "Government AI plan commits to an AI Security Institute within AESIA."),
 ]
 # Hand-checked against the old eight-kind rule on next 04e90fc. These are historical
 # identities, even when the ten-item window now pushes them out of the page/feed.
