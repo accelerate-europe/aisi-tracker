@@ -3403,9 +3403,12 @@ def check_funding_key(page) -> list[str]:
 
 
 def check_per_person(soup, data: dict) -> list[str]:
-    """Funding rows: a charted state budget carries its per-person figure (independent oracle) as a qualifier, its caveat
+    """Funding rows: a charted state budget carries its per-resident figure and population year as a qualifier, its caveat
     in the figure's own tooltip."""
     errors, jurisdictions = [], {j["id"]: j for j in data["jurisdictions"]}
+    for node in soup.select('.fund-item, .fund-item *'):
+        if any("per person" in str(value).lower() for value in [*node.attrs.values(), *node.find_all(string=True, recursive=False)]):
+            errors.append("funding view retains per person in text or an accessible name/tooltip")
     for node in soup.select(".per-person"):
         if node.name != "abbr" or "g" not in node.get("class", []) or tip_of(node) != PER_PERSON_TIP or node.get("tabindex") != "0":
             errors.append(f"per-person figure {node.get_text()!r} lacks the focusable caveat tooltip {PER_PERSON_TIP!r}")
@@ -3417,8 +3420,10 @@ def check_per_person(soup, data: dict) -> list[str]:
         row = fund_items.one(jurisdiction["id"], ".fund-value")
         node = row.select_one(".qualifiers .per-person") if row else None
         want = expected_budget_ratios(record, jurisdiction, data)[2] if record and jurisdiction["kind"] == "state" and record.get("eur_per_year_est") is not None else None
+        if want:
+            want = want.removesuffix("per person") + f"per resident ({jurisdiction['population']['year']})"
         if (node.get_text() if node else None) != want:
-            errors.append(f"{jurisdiction['id']}: per person {node.get_text() if node else None!r}, expected {want!r}")
+            errors.append(f"{jurisdiction['id']}: per resident {node.get_text() if node else None!r}, expected {want!r}")
         shown += want is not None
     if not shown:
         errors.append("no per-person figure shown")
