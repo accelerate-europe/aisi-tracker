@@ -531,12 +531,13 @@ def test_news_draft_note(monkeypatch):
             '<template id="page-template"><ol id="development-list"></ol></template></body></html>')
     meta = {"notice": preview.NOTICE, "branch": "next", "commit": SHA, "built": BUILT, "run_url": RUN, "as_of": "2026-11-16"}
     urls = ("data/aisi.json", "data/package.json", "data/build.json")
+    monkeypatch.setattr(preview, "NEWS_DRAFT_NOTE", "Draft wording.")
     soup = BeautifulSoup(preview.mark_html(page, "index.html", meta, "feedback@example.org", urls), "html.parser")
     lists = soup.find_all(id="development-list")
     assert len(lists) == 2
     for ol in lists:
         note = ol.find_previous_sibling()
-        assert note.name == "p" and {"pv-draft-note", "pv-chrome"} <= set(note["class"]) and note.string == preview.NEWS_DRAFT_NOTE
+        assert note.name == "p" and {"pv-draft-note", "pv-chrome"} <= set(note["class"]) and note.string == "Draft wording."
     monkeypatch.setattr(preview, "NEWS_DRAFT_NOTE", "")
     soup = BeautifulSoup(preview.mark_html(page, "index.html", meta, "feedback@example.org", urls), "html.parser")
     assert not soup.select(".pv-draft-note")

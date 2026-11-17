@@ -26,8 +26,8 @@ NOTICE = "This build is unpublished. Do not cite it."
 # Page elements the preview replaces as a whole (by id), with the text it puts there. check_preview excludes exactly
 # these from the comparison with the build, and nothing the preview merely marks.
 REPLACED = {"cite": NOTICE}
-# While News lines are drafts for the owner, the preview says so above the list; empty once they are approved.
-NEWS_DRAFT_NOTE = "Draft wording: every News line below is a draft for review and may change before release."
+# Set, the preview says above the News list that its lines are drafts; empty, News shows as production would.
+NEWS_DRAFT_NOTE = ""
 
 
 def replaced_selector(ids: list[str]) -> str:
