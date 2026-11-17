@@ -87,6 +87,10 @@
         "text": "Intervals between milestones are computed from recorded dates, never entered by hand. They are counted in signed whole days: from announcement to establishment, from establishment to the first qualifying activity, and from announcement to the first qualifying activity. Announcement is read from the commitment and proposal events in the timeline, establishment from the designations that have not been withdrawn. A designation is never read as an announcement, so a state designated without an earlier recorded commitment or proposal has no announcement interval. The first qualifying activity is the earliest institute-credit date of any output that qualifies as Known activity, including work credited to documented predecessors. It dates the first documented qualifying credit, which can be later than the work itself; participants in one joint exercise share that date when their credit begins with the same public version. It is not the generated first output, which also counts guidance and other outputs that do not qualify. The activity intervals are given only while the institute is established, even where qualifying work is credited to a planned or proposed body. A month-only or year-only date is read as every day of that month or year up to the dataset date, never as a midpoint, so the interval is a range from its shortest to its longest reading. Where several records could mark a milestone, it runs from the earliest day any of them can mean to the earliest day by which one of them certainly happened. A negative interval means the later milestone came first; a range from a negative to a positive value means the order is not known. An interval is empty when either date is not recorded. The intervals do not measure speed or quality. The announcing act and the kind of body differ between states, for example a rename of an existing body, a federation of existing bodies, a new agency, or one legal act with separate adoption and entry-into-force dates."
       },
       {
+        "id": "news",
+        "text": "News lists material developments: changes of status, changes of mandate or name, budget decisions for the institute itself, and agreements. A budget decision appears only where its date is known. Individual publications and changes of head are not listed."
+      },
+      {
         "id": "agreements",
         "text": "Agreements: the institute must be a named party to the agreement, or a government agreement must name it as an implementing body. A signed agreement requires a signatory; an announced agreement must identify the intended institute party or implementing role. A pledge records a company commitment announced by the government for the institute or its documented predecessor, with no signed agreement established; a recipient is the beneficiary of that commitment. Only pledges record recipients. States describe the recorded act, not proof that its original terms remain in force. Where an agreement names possible collaboration, the recorded scope keeps that condition. Purely domestic inter-agency memorandums do not count. The counterparty type institute is used only for peer AI Security Institutes and the EU AI Office; other research organisations get the type other."
       },
@@ -2018,6 +2022,7 @@
       }
     ],
     "method_no_reader_summary": [
+      "news",
       "state-checks",
       "consistency-checks",
       "quotation-checks",
