@@ -1277,6 +1277,9 @@
                 "short": {
                   "$ref": "#/$defs/event_short"
                 },
+                "news": {
+                  "$ref": "#/$defs/news"
+                },
                 "output_lineage": {
                   "type": "string",
                   "minLength": 1,
@@ -1868,6 +1871,9 @@
                     "pledged"
                   ],
                   "description": "The recorded act: announced agreement, signed agreement or government-announced company pledge. Not proof that original terms remain in force."
+                },
+                "news": {
+                  "$ref": "#/$defs/news"
                 },
                 "date": {
                   "$ref": "#/$defs/date_or_partial"
@@ -3146,6 +3152,9 @@
       ],
       "additionalProperties": false,
       "properties": {
+        "news": {
+          "$ref": "#/$defs/news"
+        },
         "kind": {
           "enum": [
             "annual",
@@ -4277,6 +4286,10 @@
           "enum": ["", "status", "mandate_or_name", "budget", "agreement"],
           "description": "News selection: status for a status milestone, mandate_or_name for mandate_changed or named, budget for dated announced or adopted whole-institute or component funding, agreement for a dated agreement; empty otherwise. Marks every eligible row, including those outside the newest ten page entries."
         },
+        "news": {
+          "type": "string",
+          "description": "Authored News line for the canonical timeline, agreement or funding record; empty when absent. News then uses the timeline short or first description sentence, or generates an agreement or budget line."
+        },
         "date": {
           "type": "string",
           "description": "Original unpadded ISO date, year-month or year; overlapping partial dates do not imply a known sequence."
@@ -4326,6 +4339,11 @@
           "description": "Stable event row identity, combining origin kind and scoped origin ID."
         }
       }
+    },
+    "news": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The News line for this act, one sentence, bound to a quote; when absent, News generates one."
     },
     "event_short": {
       "type": "string",

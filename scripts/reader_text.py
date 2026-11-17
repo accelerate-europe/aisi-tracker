@@ -37,6 +37,7 @@ PROSE_FIELDS = {
     "gloss",
     "reason",
     "short",
+    "news",
     "method",
     "changes",
     "citation",

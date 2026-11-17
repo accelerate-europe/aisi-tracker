@@ -10,20 +10,21 @@ import pytest
 from bs4 import BeautifulSoup
 from jsonschema import Draft202012Validator
 
-from scripts import agent_files, build, check_page, display
+from scripts import agent_files, build, check_page, display, method_checks, reader_text, shared_claims
+from scripts.references import authored_schema
 from scripts.published import publish
 
 
 ROOT = Path(__file__).resolve().parents[1]
 STATUS_KINDS = ("commitment", "proposed", "designated", "launched", "first_output", "exploration_started", "withdrawn", "closed")
 SEPTEMBER = [
-    ("2026-11-12", "United Kingdom", "Agreement signed between UK AISI and KI Norge."),
-    ("2026-11-12", "Norway", "Agreement signed between UK AISI and KI Norge."),
-    ("2026-10-24", "United Kingdom", "GBP 120m for UK AISI announced."),
-    ("2026-10-13", "Canada", "Agreement announced between UK AISI and CAISI."),
-    ("2026-10-13", "United Kingdom", "Agreement announced between UK AISI and CAISI."),
-    ("2026-10-09", "United Kingdom", "Agreement announced between UK AISI and J-AISI."),
-    ("2026-10-09", "Japan", "Agreement announced between UK AISI and J-AISI."),
+    ("2026-11-12", "United Kingdom", "The two governments sign a text on cooperation naming their institutes."),
+    ("2026-11-12", "Norway", "The two governments sign a text on cooperation naming their institutes."),
+    ("2026-10-24", "United Kingdom", "GBP 120m for the institute announced."),
+    ("2026-10-13", "Canada", "The two governments announce a text on cooperation naming their institutes."),
+    ("2026-10-13", "United Kingdom", "The two governments announce a text on cooperation naming their institutes."),
+    ("2026-10-09", "United Kingdom", "The two governments announce a text on cooperation naming their institutes."),
+    ("2026-10-09", "Japan", "The two governments announce a text on cooperation naming their institutes."),
     ("2026-10-07", "Norway", "Budget proposes NOK 45.1m and an AI safety mandate for KI Norge."),
     ("2026-10-06", "Australia", "Agreement announced with Anthropic."),
     ("2026-09-30", "United States", "Renamed Center for Advancing Innovation and Standards for Super Intelligence (CAISSI)."),
@@ -32,10 +33,10 @@ SEPTEMBER = [
     ("2026-09-21", "Spain", "Government AI plan commits to an AI Security Institute within AESIA."),
 ]
 PAGE_SEPTEMBER = [
-    ("12 Nov 2026", "United Kingdom and Norway", "Agreement signed between UK AISI and KI Norge."),
-    ("24 Oct 2026", "United Kingdom", "GBP 120m for UK AISI announced."),
-    ("13 Oct 2026", "United Kingdom and Canada", "Agreement announced between UK AISI and CAISI."),
-    ("9 Oct 2026", "United Kingdom and Japan", "Agreement announced between UK AISI and J-AISI."),
+    ("12 Nov 2026", "United Kingdom and Norway", "The two governments sign a text on cooperation naming their institutes."),
+    ("24 Oct 2026", "United Kingdom", "GBP 120m for the institute announced."),
+    ("13 Oct 2026", "United Kingdom and Canada", "The two governments announce a text on cooperation naming their institutes."),
+    ("9 Oct 2026", "United Kingdom and Japan", "The two governments announce a text on cooperation naming their institutes."),
     ("7 Oct 2026", "Norway", "Budget proposes NOK 45.1m and an AI safety mandate for KI Norge."),
     ("6 Oct 2026", "Australia", "Agreement announced with Anthropic."),
     ("30 Sep 2026", "United States", "Renamed Center for Advancing Innovation and Standards for Super Intelligence (CAISSI)."),
@@ -87,7 +88,7 @@ def budget(identity="budget", **extra):
 
 
 def agreement(identity="agreement", **extra):
-    return {"id": identity, "date": "2026-10-01", "state": "signed", "counterparty": "Developer", "source_ids": [], **extra}
+    return {"id": identity, "date": "2026-10-01", "state": "signed", "participation": "institute_party", "counterparty": "Developer", "source_ids": [], **extra}
 
 
 def test_news_status_milestones_unchanged(next_data):
@@ -124,7 +125,7 @@ def test_news_budget_rule(commitment, coverage, day):
     selected = day and commitment in {"announced", "adopted"} and coverage in {"whole_institute", "component"}
     assert len(groups) == (1 if selected else 0)
     if selected:
-        assert groups[0]["texts"] == [f"GBP 120m for UK Test {commitment}."]
+        assert groups[0]["texts"] == [f"GBP 120m for the institute {commitment}."]
         assert groups[0]["events"] == []
     # Missing date and a null date both exclude the budget.
     del data["institutes"][0]["funding"][0]["decision_date"]
@@ -134,23 +135,34 @@ def test_news_budget_rule(commitment, coverage, day):
 def test_news_budget_keeps_card_amount_qualifiers_and_native_currency():
     data = sample()
     data["institutes"][0]["funding"] = [budget(amount_qualifier="at_least")]
-    assert collect(data)[0]["texts"] == ["at least GBP 120m for UK Test announced."]
+    assert collect(data)[0]["texts"] == ["at least GBP 120m for the institute announced."]
     data["institutes"][0]["funding"][0].update(amount=125_000_000, amount_qualifier="about")
-    assert collect(data)[0]["texts"] == ["about GBP 130m for UK Test announced."]
+    assert collect(data)[0]["texts"] == ["about GBP 130m for the institute announced."]
 
 
 @pytest.mark.parametrize("state", ["signed", "announced", "pledged"])
 def test_news_agreement_rule(state):
     data = sample()
-    data["institutes"][0]["agreements"] = [agreement(state=state, counterparty="Full Canadian counterparty")]
-    data["jurisdictions"].append({"id": "CA", "name": "Canada", "timeline": []})
-    data["institutes"].append({"id": "ca-test", "jurisdiction_id": "CA", "name": "Canadian full name", "short_name": "CA Test", "agreements": [agreement("mirror", state=state, counterparty="Full British counterparty")]})
-    assert [g["texts"] for g in collect(data)] == [[f"Agreement {state} with Full British counterparty."], [f"Agreement {state} with Full Canadian counterparty."]]
-    data["dataset"]["shared_claims"] = [{"id": "uk-canada", "kind": "agreement", "targets": [["institutes", {"id": "gb-test"}, "agreements", {"id": "agreement"}], ["institutes", {"id": "ca-test"}, "agreements", {"id": "mirror"}]]}]
-    assert [g["texts"] for g in collect(data)] == [[f"Agreement {state} between UK Test and CA Test."]] * 2
+    data["institutes"][0]["agreements"] = [agreement(state=state, participation="recipient" if state == "pledged" else "institute_party")]
+    expected = "Pledge announced by Developer." if state == "pledged" else f"Agreement {state} with Developer."
+    assert collect(data)[0]["texts"] == [expected]
+    data["institutes"][0]["agreements"][0].pop("date")
+    assert collect(data) == []
+
+
+@pytest.mark.parametrize("state", ["signed", "announced"])
+def test_news_named_implementer_single_and_pair(state):
+    data = paired_sample()
+    for institute in data["institutes"]:
+        institute["agreements"][0]["state"] = state
+    verb = {"signed": "sign", "announced": "announce"}[state]
+    expected = f"The two governments {verb} a text on cooperation naming their institutes."
+    assert [g["texts"] for g in collect(data)] == [[expected]] * 2
     # Institute array order does not change registered party order or row order.
     data["institutes"].reverse()
-    assert [g["texts"] for g in collect(data)] == [[f"Agreement {state} between UK Test and CA Test."]] * 2
+    assert [g["texts"] for g in collect(data)] == [[expected]] * 2
+    data["dataset"]["shared_claims"] = []
+    assert [g["texts"] for g in collect(data)] == [[f"Governments {verb} a text on cooperation naming the institute."]] * 2
     for institute in data["institutes"]:
         institute["agreements"][0].pop("date")
     assert collect(data) == []
@@ -166,7 +178,7 @@ def test_news_grouping_and_ids():
     assert group["order"] == "z-status"
     assert agent_files.feed_news_id(group) == agent_files.feed_news_id(before)
     assert group["events"] == ["z-status"]
-    assert group["texts"] == ["Institute designated.", "GBP 120m for UK Test announced.", "Agreement signed with Developer."]
+    assert group["texts"] == ["Institute designated.", "GBP 120m for the institute announced.", "Agreement signed with Developer."]
     assert group["items"] == ["timeline:GB:z-status", "funding:gb-test:a-budget", "agreements:gb-test:b-agreement"]
     for day in ("2026-10", "2026"):
         data["jurisdictions"][0]["timeline"][0]["date"] = day
@@ -360,7 +372,7 @@ def test_news_gate_independent_oracle(next_data, monkeypatch):
         broken = copy.deepcopy(next_data)
         broken["dataset"]["display"]["developments"][0][field] = value
         assert any("published identities" in e for e in check(broken))
-    for old, new in (('data-j="GB"', 'data-j="US"'), ('data-date="2026-11-12"', 'data-date="2026-11-11"'), ("Agreement signed", "Agreement pledged"), ('class="development-row earlier"', 'class="development-row"')):
+    for old, new in (('data-j="GB"', 'data-j="US"'), ('data-date="2026-11-12"', 'data-date="2026-11-11"'), ("The two governments sign a text", "The two governments pledge a text"), ('class="development-row earlier"', 'class="development-row"')):
         assert check(next_data, news_html(next_data).replace(old, new, 1))
     broken = copy.deepcopy(next_data)
     monkeypatch.setattr(display, "news_matches", lambda rule, record: False)
@@ -371,8 +383,8 @@ def test_news_gate_independent_oracle(next_data, monkeypatch):
 def paired_sample():
     data = sample()
     data["jurisdictions"].append({"id": "CA", "name": "Canada", "timeline": []})
-    data["institutes"][0]["agreements"] = [agreement(counterparty="Canadian counterparty")]
-    data["institutes"].append({"id": "ca-test", "jurisdiction_id": "CA", "short_name": "CA Test", "agreements": [agreement("mirror", counterparty="British counterparty")]})
+    data["institutes"][0]["agreements"] = [agreement(counterparty="Canadian counterparty", participation="named_implementer")]
+    data["institutes"].append({"id": "ca-test", "jurisdiction_id": "CA", "short_name": "CA Test", "agreements": [agreement("mirror", counterparty="British counterparty", participation="named_implementer")]})
     data["dataset"]["shared_claims"] = [{"id": "uk-canada", "kind": "agreement", "targets": [
         ["institutes", {"id": "gb-test"}, "agreements", {"id": "agreement"}],
         ["institutes", {"id": "ca-test"}, "agreements", {"id": "mirror"}],
@@ -390,12 +402,12 @@ def test_page_pair_once_both_states_in_registration_order():
     groups = data["dataset"]["display"]["developments"]
     assert [g["jurisdiction"] for g in groups] == ["CA", "GB"]
     assert [g["pairs"] for g in groups] == [[{"id": "uk-canada", "states": ["GB", "CA"], "names": ["United Kingdom", "Canada"]}]] * 2
-    assert page_entries(data) == [("1 Oct 2026", "United Kingdom and Canada", "Agreement signed between UK Test and CA Test.")]
+    assert page_entries(data) == [("1 Oct 2026", "United Kingdom and Canada", "The two governments sign a text on cooperation naming their institutes.")]
     assert check_page.check_news(BeautifulSoup(news_html(data), "html.parser"), data) == []
     # Registration order, not institute, jurisdiction or alphabetical order.
     data["dataset"]["shared_claims"][0]["targets"].reverse()
     data["institutes"].reverse()
-    assert page_entries(with_news(data)) == [("1 Oct 2026", "Canada and United Kingdom", "Agreement signed between CA Test and UK Test.")]
+    assert page_entries(with_news(data)) == [("1 Oct 2026", "Canada and United Kingdom", "The two governments sign a text on cooperation naming their institutes.")]
 
 
 def test_page_pair_counts_as_one_of_ten_and_keeps_cutoff_mirror():
@@ -409,12 +421,12 @@ def test_page_pair_counts_as_one_of_ten_and_keeps_cutoff_mirror():
     assert [g["jurisdiction"] for g in groups[-2:]] == ["CA", "GB"]
     entries = page_entries(data)
     assert len(entries) == 10
-    assert entries[-1] == ("1 Oct 2026", "United Kingdom and Canada", "Agreement signed between UK Test and CA Test.")
+    assert entries[-1] == ("1 Oct 2026", "United Kingdom and Canada", "The two governments sign a text on cooperation naming their institutes.")
     assert all("Germany" not in states for _, states, _ in entries)
     assert check_page.check_news(BeautifulSoup(news_html(data), "html.parser"), data) == []
     feed = [e for e in agent_files.feed_entries(data) if e["kind"] == "news"]
     assert len(feed) == 11
-    assert {e["id"].rsplit("news/", 1)[-1] for e in feed if "between" in e["summary"]} == {"CA/2026-10-01", "GB/2026-10-01"}
+    assert {e["id"].rsplit("news/", 1)[-1] for e in feed if "naming their institutes" in e["summary"]} == {"CA/2026-10-01", "GB/2026-10-01"}
     # The page also caps an unlimited audit collection, independently of the producer.
     assert page_entries(with_news(data, limit=None)) == entries
 
@@ -430,7 +442,7 @@ def test_page_skips_only_duplicate_line_and_keeps_other_news_in_its_item():
         institute["agreements"][0].update(source_ids=[sid], citations={"state": [sid]})
     with_news(data)
     assert page_entries(data) == [
-        ("1 Oct 2026", "United Kingdom and Canada", "Agreement signed between UK Test and CA Test."),
+        ("1 Oct 2026", "United Kingdom and Canada", "The two governments sign a text on cooperation naming their institutes."),
         ("1 Oct 2026", "United Kingdom", "Institute designated."),
     ]
     soup = BeautifulSoup(news_html(data), "html.parser")
@@ -469,8 +481,8 @@ def test_page_unregistered_mirror_stays_under_each_state():
     data["dataset"]["shared_claims"] = []
     with_news(data)
     assert page_entries(data) == [
-        ("1 Oct 2026", "Canada", "Agreement signed with British counterparty."),
-        ("1 Oct 2026", "United Kingdom", "Agreement signed with Canadian counterparty."),
+        ("1 Oct 2026", "Canada", "Governments sign a text on cooperation naming the institute."),
+        ("1 Oct 2026", "United Kingdom", "Governments sign a text on cooperation naming the institute."),
     ]
     assert [g["pairs"] for g in collect(data)] == [[None], [None]]
     assert check_page.check_news(BeautifulSoup(news_html(data), "html.parser"), data) == []
@@ -487,7 +499,7 @@ def test_news_kinds_follow_method_weight_before_record_ids():
     data["institutes"][0]["agreements"] = [agreement("a-agreement")]
     group, = collect(data)
     assert group["order"] == "z-status"
-    assert group["texts"] == ["Institute designated.", "New name adopted.", "GBP 120m for UK Test announced.", "Agreement signed with Developer."]
+    assert group["texts"] == ["Institute designated.", "New name adopted.", "GBP 120m for the institute announced.", "Agreement signed with Developer."]
     assert group["pairs"] == [None] * 4
     assert [rule["kind"] for rule in display.NEWS_KINDS] == ["status", "mandate_or_name", "budget", "agreement"]
     # Owner IDs sort as IDs, not as prefixes of a concatenated events-row ID.
@@ -528,3 +540,169 @@ def test_page_empty_news_and_gate():
     data = with_news(sample())
     assert page_entries(data) == []
     assert check_page.check_news(BeautifulSoup(news_html(data), "html.parser"), data) == []
+
+
+@pytest.mark.parametrize("origin", ["timeline", "agreements", "funding"])
+def test_authored_news_overrides_fallback_with_its_own_citations(origin):
+    data = sample()
+    data["jurisdictions"][0]["institute_id"] = "gb-test"
+    owner = data["jurisdictions"][0] if origin == "timeline" else data["institutes"][0]
+    record = {"timeline": event, "agreements": agreement, "funding": budget}[origin]()
+    record["display"] = {"native_value": "GBP 120m"}
+    owner[origin] = [record]
+    before, = collect(data)
+    text = "The government announces additional support for the institute to evaluate advanced models over the next four years."
+    record.update(news=text, citations={"news": ["news-source"], "description": ["old-source"]})
+    data["sources"] = [{"id": sid, "url": f"https://example.org/{sid}", "title": sid, "publisher": "Test"} for sid in ("news-source", "old-source")]
+    with_news(data)
+    after, = collect(data)
+    assert after["texts"] == [text]
+    assert after["line_source_ids"] == [["news-source"]]
+    assert after["items"] == before["items"]
+    assert agent_files.feed_news_id(after) == agent_files.feed_news_id(before)
+    assert agent_files.feed_entries(data)[0]["summary"] == text
+    assert check_page.check_news(BeautifulSoup(news_html(data), "html.parser"), data) == []
+    assert display.check_news_lines(data) == []  # no 12-word cap on news
+
+
+@pytest.mark.parametrize("origin", ["timeline", "agreements", "funding"])
+def test_news_requires_exact_excerpt_and_is_authored_reader_text(dataset, origin):
+    data = copy.deepcopy(dataset)
+    collection = "jurisdictions" if origin == "timeline" else "institutes"
+    record = data[collection][0][origin][0]
+    record["news"] = "The institute receives additional support."
+    pointer = f"/{collection}/0/{origin}/0/news"
+    errors = method_checks.check_method_rules(data)
+    assert f"required claim has no excerpt: {pointer}" in errors
+    data["sources"][0]["excerpts"][0]["supports"].append(pointer)
+    assert method_checks.check_method_rules(data) == []
+    schema = authored_schema(json.loads((ROOT / "schema/aisi.schema.json").read_text()))
+    props = schema["properties"][collection]["items"]["properties"]
+    node = props[origin]["items"]
+    Draft202012Validator(schema).evolve(schema=node).validate(record)
+    assert "bound to a quote" in schema["$defs"]["news"]["description"]
+    record["news"] = "The institute receives support\u2014and evaluates models."
+    assert any(pointer in error and "U+2014" in error for error in reader_text.check_reader_text(data))
+    record["news"] = "The institute  receives support."
+    assert any(pointer in error and "double spaces" in error for error in reader_text.check_reader_text(data))
+
+
+@pytest.mark.parametrize("left,right,invalid", [(None, None, False), ("The governments cooperate.", None, True), (None, "The governments cooperate.", True), ("The governments cooperate.", "The governments sign a statement.", True), ("The governments cooperate.", "The governments cooperate.", False)])
+def test_paired_news_both_or_neither_and_identical(left, right, invalid):
+    data = paired_sample()
+    for institute, text in zip(data["institutes"], (left, right), strict=True):
+        if text is not None:
+            institute["agreements"][0]["news"] = text
+    errors = shared_claims.check_shared_claims(data)
+    assert any("news must be present on both sides" in error for error in errors) == invalid
+    if left is not None and not invalid:
+        with_news(data)
+        assert page_entries(data) == [("1 Oct 2026", "United Kingdom and Canada", left)]
+        assert check_page.check_news(BeautifulSoup(news_html(data), "html.parser"), data) == []
+
+
+@pytest.mark.parametrize("name", ["United Kingdom", "UK Test"])
+def test_generated_news_rejects_its_state_or_institute_name(name):
+    data = sample()
+    data["institutes"][0]["agreements"] = [agreement(counterparty=name)]
+    assert any("generated News line repeats" in error and name in error for error in display.check_news_lines(data))
+    data["institutes"][0]["agreements"][0]["news"] = f"The institute adopts the name {name}."
+    assert display.check_news_lines(data) == []  # an authored rename is a review point
+
+
+@pytest.mark.parametrize("kind", ["budget", "agreement"])
+def test_generated_name_check_catches_template_regressions(monkeypatch, kind):
+    data = paired_sample()
+    data["institutes"][0]["funding"] = [budget()]
+    name = "Canada" if kind == "agreement" else "UK Test"
+    rules = tuple({**rule, "text": lambda *args: f"Support for {name}."} if rule["kind"] == kind else rule for rule in display.NEWS_KINDS)
+    monkeypatch.setattr(display, "NEWS_KINDS", rules)
+    errors = display.check_news_lines(data)
+    assert any("gb-test" in error and "generated News line repeats" in error for error in errors)
+
+
+@pytest.mark.parametrize("text,glossary,valid", [
+    ("An XYZ initiative begins.", {}, False),
+    ("Unrelated words (XYZ) begin an initiative.", {}, False),
+    ("The ABC-based programme begins.", {"ABC": "Advanced Benchmarking Centre"}, False),
+    ("EuroHPC begins work.", {"HPC": "High Performance Computing"}, False),
+    ("Department for Science, Innovation and Technology (DSIT) announces support.", {}, True),
+    ("Artificial-Intelligence Safety Institute (AISI) begins work.", {}, True),
+    ("Center for Advancing Innovation and Standards for Super Intelligence (CAISSI) is the new name.", {}, True),
+    ("AI Safety Institute (AISI) begins work.", {}, True),
+    ("The institute joins the ABC programme.", {"ABC": "Advanced Benchmarking Centre"}, True),
+    ("The institute joins the ABC programme.", {"ABC": {"GB": "Advanced Benchmarking Centre"}}, True),
+    ("The institute joins the ABC programme.", {"ABC": {"CA": "Advanced Benchmarking Centre"}}, False),
+    ("Xylophone Yearly Zone (XYZ) joins an XYZ programme.", {}, False),
+    ("The institute receives GBP 120m.", {}, True),
+    ("The institute receives ZZZ 120m.", {}, False),
+    ("The institute joins KRiBSI.", {"KRiBSI": "Korea Research institute for Better Software Institutions"}, True),
+    ("The institute joins KRiBSIx.", {"KRiBSI": "Korea Research institute for Better Software Institutions"}, False),
+])
+def test_news_abbreviation_rule(text, glossary, valid):
+    data = sample()
+    data["dataset"].update(glossary=glossary, exchange_rates=[{"currency": "GBP"}])
+    data["jurisdictions"][0]["timeline"] = [event(news=text)]
+    assert (display.check_news_lines(data) == []) == valid
+
+
+def test_news_checks_historical_lines_and_timeline_fallback():
+    data = sample()
+    data["jurisdictions"][0]["timeline"] = [event(str(n), f"2026-10-{n:02d}") for n in range(1, 13)]
+    data["jurisdictions"][0]["timeline"][0]["short"] = "IA360 begins."
+    assert len(collect(data)) == 10
+    assert display.check_news_lines(data) == ["timeline:GB:1: unexplained News abbreviation 'IA360'"]
+
+
+@pytest.mark.parametrize("text", ["", " Leading space.", "Two sentences. Another sentence.", "Two\nlines."])
+def test_news_is_one_sentence(text):
+    data = sample()
+    data["jurisdictions"][0]["timeline"] = [event(news=text)]
+    assert any("one nonblank sentence" in error for error in display.check_news_lines(data))
+
+
+def test_events_news_column_and_api_records(dataset, tmp_path):
+    data = copy.deepcopy(dataset)
+    for origin in ("timeline", "agreements", "funding"):
+        owner = data["jurisdictions"][0] if origin == "timeline" else data["institutes"][0]
+        owner[origin][0]["news"] = f"The institute reports a {origin} change."
+    data["institutes"][0]["funding"][0]["decision_date"] = "2026-10-01"
+    published = publish(data, strict=False, rereads={})
+    columns, rows = events_csv(published, tmp_path)
+    assert "news" in columns
+    assert {row["origin_kind"]: row["news"] for row in rows if row["news"]} == {
+        origin: f"The institute reports a {origin} change." for origin in ("timeline", "agreements", "funding")}
+    assert all(row["news"] == "" for row in rows if row["origin_kind"] not in ("timeline", "agreements", "funding"))
+    fields = build.table_schema(rows, build.table_descriptions(json.loads((ROOT / "schema/aisi.schema.json").read_text()), "events"))["fields"]
+    field = next(field for field in fields if field["name"] == "news")
+    assert field["type"] == "string" and "empty when absent" in field["description"]
+    api = agent_files.api_files(published)
+    root = agent_files.api_root(published)
+    assert api[f"{root}/jurisdictions/GB.json"]["record"]["timeline"][0]["news"] == data["jurisdictions"][0]["timeline"][0]["news"]
+    for origin in ("agreements", "funding"):
+        assert api[f"{root}/institutes/gb-test.json"]["record"][origin][0]["news"] == data["institutes"][0][origin][0]["news"]
+
+
+def test_news_label_and_footer_structure(next_data):
+    soup = BeautifulSoup(news_html(next_data), "html.parser")
+    for row in soup.select(".development-row"):
+        label = row.select_one(".development-label")
+        assert label.get_text() == row.select_one(".development-date").get_text() + " · " + row.select_one(".development-name").get_text()
+        assert label.find_next_sibling()["class"] == ["development-text"]
+        assert row.get("data-j")
+    source = BeautifulSoup((ROOT / "site/index.html").read_text(), "html.parser")
+    footer = source.select_one("#developments .news-links")
+    assert footer.find_previous_sibling()["id"] == "developments-more"
+    assert [a["id"] for a in footer.select("a")] == ["events-download", "news-feed"]
+
+
+def test_news_layout_findings_block_the_gate():
+    """The News form, glossary marks and link placement are gate rules: findings are errors, never report lines."""
+    assert not hasattr(check_page.check_news_layout, "__wrapped__")
+
+    class Page:
+        def evaluate(self, script, glossary):
+            return ["News glossary marks differ from definitions for state GB"]
+
+    findings = check_page.check_news_layout(Page(), {"dataset": {"glossary": {}}})
+    assert check_page.blocking(findings) == findings

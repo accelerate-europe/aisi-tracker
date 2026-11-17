@@ -522,3 +522,21 @@ def test_only_listed_elements_may_be_replaced():
     assert preview.replaced_selector([]) == ""
     with pytest.raises(ValueError, match="not listed in REPLACED"):
         preview.replaced_selector(["cite", "headline"])
+
+
+def test_news_draft_note(monkeypatch):
+    """While NEWS_DRAFT_NOTE is set, the preview marks the News list as draft wording, in the saved body and in the
+    hydration template, as chrome before the list the page script refills; empty, it adds nothing."""
+    page = ('<!doctype html><html><head></head><body><header class="masthead"></header><ol id="development-list"></ol>'
+            '<template id="page-template"><ol id="development-list"></ol></template></body></html>')
+    meta = {"notice": preview.NOTICE, "branch": "next", "commit": SHA, "built": BUILT, "run_url": RUN, "as_of": "2026-11-16"}
+    urls = ("data/aisi.json", "data/package.json", "data/build.json")
+    soup = BeautifulSoup(preview.mark_html(page, "index.html", meta, "feedback@example.org", urls), "html.parser")
+    lists = soup.find_all(id="development-list")
+    assert len(lists) == 2
+    for ol in lists:
+        note = ol.find_previous_sibling()
+        assert note.name == "p" and {"pv-draft-note", "pv-chrome"} <= set(note["class"]) and note.string == preview.NEWS_DRAFT_NOTE
+    monkeypatch.setattr(preview, "NEWS_DRAFT_NOTE", "")
+    soup = BeautifulSoup(preview.mark_html(page, "index.html", meta, "feedback@example.org", urls), "html.parser")
+    assert not soup.select(".pv-draft-note")
