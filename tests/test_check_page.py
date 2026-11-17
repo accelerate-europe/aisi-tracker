@@ -702,7 +702,7 @@ def test_closest_body_note_and_stage_line(stage, note, dets, ok):
 
 def _closest_fold_fixture(*, named=True, stage="planned", claims=(), finding_sources=("s1",), body_sources=("s1",), migrated=True):
     name = "Fixture lab"
-    summary = f"Planned closest body: {name}." if named else "An AI Act authority is listed."
+    summary = f"Closest body: {name}, planned and not yet set up." if named else "An AI Act authority is listed."
     body = {"name": name, "body_id": "lab", "stage": stage, "source_ids": list(body_sources),
             "display": {"source_links": list(body_sources)}}
     record = {"id": "XX", "status": "none_identified", "europe_scope": True, "summary": summary, "closest_body": body,

@@ -50,11 +50,26 @@ def test_pattern_1_alone_and_month():
         "No qualifying institute identified as of January 2027.")
 
 
-@pytest.mark.parametrize("stage, prefix", [("exists", "Closest body"), ("planned", "Planned closest body"),
-                                           ("proposed", "Proposed closest body"), ("under_study", "Closest body under study")])
-def test_pattern_2_stage_prefix(stage, prefix):
+@pytest.mark.parametrize("stage, line", [("exists", "Closest body: Centre."),
+                                         ("planned", "Closest body: Centre, planned and not yet set up."),
+                                         ("proposed", "Closest body: Centre, proposed and not yet set up."),
+                                         ("under_study", "Closest body: Centre, under study and not yet set up.")])
+def test_pattern_2_stage_follows_the_body(stage, line):
+    """The stage is the body's, so it follows its name; no stage word stands before "closest body" (owner, 17 Nov)."""
     record = none_identified(closest_body={"name": "Centre", "stage": stage, "body_id": "b"})
-    assert summaries.pattern_2(record) == f"{prefix}: Centre."
+    assert summaries.pattern_2(record) == line
+    assert not re.search(r"\b(planned|proposed|under study) closest body", line, re.I)
+
+
+def test_pattern_2_covers_every_stage_value():
+    schema = json.loads((ROOT / "schema" / "aisi.schema.json").read_text(encoding="utf-8"))
+    stage = schema["properties"]["jurisdictions"]["items"]["properties"]["closest_body"]["properties"]["stage"]
+    assert set(stage["enum"]) == set(summaries.STAGE_TAIL)
+
+
+@pytest.mark.parametrize("n, word", [(1, "one"), (5, "five"), (9, "nine"), (10, "10"), (11, "11")])
+def test_counts_in_sentences_are_words_to_nine(n, word):
+    assert summaries.count(n) == word
 
 
 def test_pattern_2_skips_expired_lead_and_other_bodies_claims():
@@ -87,7 +102,7 @@ def test_pattern_4_most_roles_without_contact_point_and_roleless_entries():
     bodies = [authority("Alpha", ["notifying"]), authority("Zeta", ["market_surveillance", "notifying"]),
               {"id": "x", "name": "Accreditation", "kind": "ai_act_authority"}]
     assert summaries.pattern_4(none_identified(related_bodies=bodies)) == (
-        "Zeta is its AI Act market-surveillance authority and notifying authority; 2 other AI Act bodies are listed below.")
+        "Zeta is its AI Act market-surveillance authority and notifying authority; two other AI Act bodies are listed below.")
     roleless = [{"id": "x", "name": "Accreditation", "kind": "ai_act_authority", "authority_roles": []}]
     assert summaries.pattern_4(none_identified(related_bodies=roleless)) is None
 
@@ -96,10 +111,10 @@ def test_pattern_4_lead_authority_and_counts():
     bodies = [authority("Zeta", ["market_surveillance", "notifying"]), authority("Alpha", ["notifying"]),
               authority("Beta", ["single_point_of_contact"])]
     assert summaries.pattern_4(none_identified(related_bodies=bodies)) == (
-        "Beta is its AI Act single point of contact; 2 other AI Act bodies are listed below.")
+        "Beta is its AI Act single point of contact; two other AI Act bodies are listed below.")
     bodies = [authority("Zeta", ["market_surveillance"]), authority("Alpha", ["notifying"])]
     assert summaries.pattern_4(none_identified(related_bodies=bodies)) == (
-        "Alpha is its AI Act notifying authority; 1 other AI Act body is listed below.")
+        "Alpha is its AI Act notifying authority; one other AI Act body is listed below.")
 
 
 def test_pattern_4_proposed_step_and_unconfirmed():
