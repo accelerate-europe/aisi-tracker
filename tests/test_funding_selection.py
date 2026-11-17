@@ -264,7 +264,7 @@ EXPECTED_BUDGET_IDS = {
     "fr-inesia": None,
     "de-aisi": None,
     "es-isia": None,
-    "no-ki-norge": "funding-0475119a71cc5e2099e293d3a48356b0",
+    "no-ki-norge": "funding-07dc8b2c007b4b80a356aef8e5afa53c",
     "eu-ai-office": None,
     "us-caissi": "funding-443aa6a31d205192966af69e21022fb1",
     "ca-caisi": "funding-360a59a37fde5cc8ba0a03ce3a00ea5f",
