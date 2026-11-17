@@ -1887,7 +1887,7 @@
       {
         "id": "source-titles",
         "title": "Source titles",
-        "summary": "Non-English source titles are kept in the original, with our English translation beside them. The translation adds no facts of its own and is not an official title.",
+        "summary": "Non-English source titles are shown in our own English translation; the original title appears on hover, focus and tap.",
         "rules": {
           "source-titles": "7a10ec4f15516162dd2a33f8c75b2c87f8711fa2e6551de5b379e4848dbfd8ea"
         }
