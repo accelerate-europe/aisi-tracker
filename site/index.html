@@ -3124,7 +3124,6 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         data: "Data", caption: "Functions by institute", institute: "Institute", scroll_hint: "Scrolls sideways",
         established: "Established", not_found: "not found", blank_legend: "Blank: not found", not_coded: "not yet coded",
         provisional: "The list of functions is provisional.",
-        pips: "One pip per function, in the order of the groups above; tap a row for the names.",
         show: "{country}, {institute}: show functions", phone_not_found: "No public text found"
       };
       var names = { activity: ACTIVITY_WORDS.active, mandate: ACTIVITY_WORDS.assigned, both: ACTIVITY_WORDS.both, not_found: FN_COPY.not_found, not_coded: FN_COPY.not_coded };
@@ -3207,7 +3206,6 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
             var li = el("li"); li.dataset.value = value; if (isPhone || value !== "not_found") li.appendChild(mark(value, isPhone)); li.appendChild(el("span", null, value === "not_found" ? (isPhone ? FN_COPY.phone_not_found : FN_COPY.blank_legend) : names[value])); legend.appendChild(li);
           }); box.appendChild(legend);
         });
-        box.appendChild(el("p", "small fn-pip-note fn-phone-only", FN_COPY.pips));
         updateFits();
       }
       function buildForm(isPhone) {

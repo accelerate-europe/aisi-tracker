@@ -416,7 +416,6 @@ def functions_phone(functions):
     <button type="button" class="fn-phone-row" aria-label="Alpha, Alpha Institute: show functions" aria-expanded="false" aria-controls="fn-phone-detail-a"></button><span class="fn-phone-country" aria-hidden="true">Alpha</span><span class="fn-pips" aria-hidden="true"><span class="fn-mark fn-activity fn-pip" aria-hidden="true"></span><span class="fn-mark fn-activity fn-pip" aria-hidden="true"></span></span><span class="fn-pips" aria-hidden="true"><span class="fn-mark fn-not_coded fn-pip" aria-hidden="true"></span><span class="fn-mark fn-not_found fn-pip" aria-hidden="true"></span><span class="fn-mark fn-not_found fn-pip" aria-hidden="true"></span></span>
     </li></ul></div></div>
     <ul class="fn-legend fn-phone-only" role="list"><li data-value="activity"><span class="fn-mark fn-activity fn-pip" aria-hidden="true"></span>Active</li><li data-value="mandate"><span class="fn-mark fn-mandate fn-pip" aria-hidden="true"></span>Assigned</li><li data-value="not_found"><span class="fn-mark fn-not_found fn-pip" aria-hidden="true"></span>No public text found</li><li data-value="not_coded"><span class="fn-mark fn-not_coded fn-pip" aria-hidden="true"></span>not yet coded</li></ul>
-    <p class="fn-pip-note fn-phone-only">One pip per function, in the order of the groups above; tap a row for the names.</p>
     </div></section>'''
     return data, html
 
@@ -450,7 +449,8 @@ def test_functions_phone_structure_accepts_groups_values_and_row_order(functions
     ('class="fn-mark fn-activity fn-pip"', 'class="fn-mark fn-activity fn-mandate fn-pip"', "pip mark differs"),
     ('class="fn-pips" aria-hidden="true"', 'class="fn-pips" aria-hidden="false"', "decorative phone pip group"),
     ('No public text found</li>', 'Blank: not found</li>', "legend label/mark"),
-    ('<p class="fn-pip-note fn-phone-only">', '<p>', "pip note"),
+    ('<div class="fn-phone">', '<p class="fn-pip-note"></p><div class="fn-phone">', "obsolete phone pip note"),
+    ('<div class="fn-phone">', '<p>One pip per function, in the order of the groups above; tap a row for the names.</p><div class="fn-phone">', "obsolete phone pip note"),
     ('<div class="fn-phone">', '<div class="fn-phone"><div class="fn-phone-detail"></div>', "detail is present"),
     ('<p class="fn-blank"><strong>', '<p><strong>', "blank caveat"),
 ])
@@ -512,7 +512,7 @@ def functions_both(functions, functions_phone):
     soup = BeautifulSoup(html, "html.parser")
     phone = BeautifulSoup(functions_phone[1], "html.parser")
     box = soup.select_one('#functions-table')
-    for selector in ('.fn-phone', '.fn-legend', '.fn-pip-note'):
+    for selector in ('.fn-phone', '.fn-legend'):
         box.append(phone.select_one(selector).extract())
     intros = BeautifulSoup('''<p class="fn-intro fn-desktop-only">Which of 5 functions each institute is active in or has been assigned. Select a mark to see the quote and source.</p><p class="fn-intro fn-phone-only">Which of 5 functions each institute is active in or has been assigned. Tap a country to see its functions, then a function for its quote and source.</p>''', "html.parser")
     for intro in list(intros.children):
@@ -548,7 +548,6 @@ def test_functions_structure_rejects_obsolete_empty_paragraph(functions_both, se
     ('class="fn-phone"', 'class="missing-phone"', "exactly one saved .fn-phone"),
     ('class="fn-scroll"', 'class="missing-scroll"', "exactly one saved .fn-scroll"),
     ('class="fn-legend fn-phone-only"', 'class="fn-legend"', "exactly one saved .fn-legend.fn-phone-only"),
-    ('class="fn-pip-note fn-phone-only"', 'class="fn-pip-note"', "exactly one saved .fn-pip-note.fn-phone-only"),
     ('class="fn-intro fn-phone-only"', 'class="fn-intro fn-desktop-only"', "phone intro differs"),
     ('Tap a country to see its functions, then a function for its quote and source.', 'Select a mark to see the quote and source.', "phone intro differs"),
     ('Which of 5 functions', 'Which of 4 functions', "intro differs"),

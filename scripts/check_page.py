@@ -11643,7 +11643,7 @@ def functions_forms_structure(html: str, data: dict) -> list[str]:
     if box is None:
         return ["Functions section is missing"]
     errors = []
-    for selector in ('.fn-scroll', '.fn-scroll > .fn-table', '.fn-phone', '.fn-legend.fn-desktop-only', '.fn-legend.fn-phone-only', '.fn-pip-note.fn-phone-only'):
+    for selector in ('.fn-scroll', '.fn-scroll > .fn-table', '.fn-phone', '.fn-legend.fn-desktop-only', '.fn-legend.fn-phone-only'):
         if len(box.select(selector)) != 1:
             errors.append(f"Functions needs exactly one saved {selector}")
     count = sum(not v.get("deprecated") for v in data["dataset"]["vocabularies"]["function"].values())
@@ -11675,7 +11675,7 @@ FN_FORM_VISIBILITY = """() => {
   for(const kind of ['.fn-intro', '.fn-legend']) {
     check(kind+'.fn-desktop-only', !narrow); check(kind+'.fn-phone-only', narrow);
   }
-  check('.fn-pip-note', narrow);
+  if(box.querySelector('.fn-pip-note')) errors.push('obsolete phone pip note is present');
   const hint=box.querySelector('#fn-scroll-hint');
   if(narrow && (!hint || getComputedStyle(hint).display!=='none')) errors.push('phone exposes desktop scroll hint');
   const hidden=box.querySelector(narrow?'.fn-scroll':'.fn-phone');
@@ -11917,8 +11917,7 @@ def functions_phone_structure(html: str, data: dict) -> list[str]:
     for item, value in zip(legend, wanted_values):
         label = "No public text found" if value == "not_found" else FN_NAMES[value]
         need(item.get_text() == label and item.select_one('.fn-pip.fn-' + value), "Functions phone legend label/mark differs")
-    note = box.select_one('.fn-pip-note')
-    need(note and note.get_text() == "One pip per function, in the order of the groups above; tap a row for the names.", "Functions phone pip note differs")
+    need(not box.select('.fn-pip-note') and "One pip per function" not in box.get_text(), "Functions obsolete phone pip note is present")
     need(len(box.select('.fn-blank')) == 1 and box.select_one('.fn-blank > strong'), "Functions phone blank caveat missing or repeated")
     return errors
 
