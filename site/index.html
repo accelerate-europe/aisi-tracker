@@ -41,7 +41,7 @@
  * Sources: a collapsed card ends with the counted sources control alone (muted meta, no top rule, inline hit height); a card reached from the map also ends with "Back to map" before its Sources control; the check date and correction follow the expanded list.
  * Separators: each item of a dot-separated line is one unbreakable box, so lines break only between items (an item wraps inside only when it alone is wider than its container); middle dots stay with the preceding item's final word and are hidden where a line breaks.
  * Citations: every displayed value a quotation can support carries one (absence and an institute name linking to its own site need none); superscript at value end, three quarters of the text it annotates and never larger than meta (so a big figure keeps small numerals); comma-tight groups; card-local Sources order; hit area one text line high, never covering adjacent lines or preceding text.
- * Members and Partners: a network of existing bodies names its members in Form on a dot-separated short-name line, with the itemised glosses and How they work together behind one quiet fold. Full-record arrival opens that content without a fold; Partners holds the other bodies and disappears when none are left unless the cyber search tail remains. Members are uncapped; Partners shows at most six. Each closed fold-out groups bodies sharing an explanation, with explicit plural wording and a citation on every name. Groups follow the first body's priority order; names within a group keep that order. Generic explanations that only repeat the partner relation are omitted. Partner glosses omit the generic works-with relation; planned relations stay explicit. Downloads keep every relation.
+ * Members and Partners: a network of existing bodies names its members in Form on a dot-separated short-name line, with the itemised glosses and How they work together behind one quiet fold. Full-record arrival opens the same fold, preserving its control and the reader's focus; Partners holds the other bodies and disappears when none are left unless the cyber search tail remains. Members are uncapped; Partners shows at most six. Each closed fold-out groups bodies sharing an explanation, with explicit plural wording and a citation on every name. Groups follow the first body's priority order; names within a group keep that order. Generic explanations that only repeat the partner relation are omitted. Partner glosses omit the generic works-with relation; planned relations stay explicit. Downloads keep every relation.
  * Card grids: alphabetical rows share field tracks through subgrid; every field keeps a fixed shared track (Mandate and Finding share the descriptive-text track); a structurally absent field leaves its track empty, without a label; where a row has three tracks, a group's only card spans two (check_page check_card_grid), while a single trailing card in a fuller group's last row keeps the usual card width; phones keep one column.
  * Card heads: country, status and download stick below the site bars within their own card in Compare and States, including phones; the one-line name keeps its full accessible text and tooltip, with ellipsis when needed. CSS sizes the shared title track and focus clearance from the label line, hit height, rules and padding, without copies or measurement; the institute stays in its field and print keeps static heads (check_page check_card_heads, check_saved_card_heads, hydration_paint).
  * Alignment: every text row shares its first baseline, including wrapped text, smaller labels, icons and format tags; within a card every field's value starts at one x.
@@ -558,7 +558,7 @@ main section.first { display: flex; flex-direction: column; gap: var(--sp-5); bo
 .partner-how { margin-top: var(--gap-row); }
 .members { margin-top: var(--sp-2); }
 .member-names { display: block; }
-.member-details { margin-top: var(--sp-2); }
+.member-details { margin-top: var(--gap-row); }
 .member-list { list-style: none; padding: 0; margin: var(--sp-2) 0; display: grid; gap: var(--sp-2); }
 .member-list li { font: var(--type-meta); color: var(--ink); }
 .partner-how ul { list-style: none; margin: 0; padding: 0; display: grid; row-gap: var(--sp-2); } /* one explanation per group of partners */
@@ -1493,14 +1493,10 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     var how = partnersFold(p, cite, "Members", true); if (how) detail.appendChild(how);
     box.appendChild(detail); return box;
   }
-  // Full-record arrival uses the same content, open and without a disclosure control.
+  // Keep the disclosure and its summary so hydration can restore the reader's focused control.
   function membersFullRecord(card, full) {
-    var previous = card.querySelector(".member-details");
-    if (!previous || (previous.tagName === "DIV") === full) return;
-    var next = el(full ? "div" : "details", full ? "member-details" : "more quiet member-details");
-    if (!full) next.appendChild(el("summary", null, MEMBER_DETAILS));
-    Array.from(previous.children).forEach(function (child) { if (child.tagName !== "SUMMARY") next.appendChild(child); });
-    previous.replaceWith(next);
+    var detail = card.querySelector("details.member-details");
+    if (detail) detail.open = full;
   }
   function recordSources(record) { return record ? record.display.source_links : []; }
   // A source with an archive URL: "(archived copy)" follows its link (principle: Archived copies).

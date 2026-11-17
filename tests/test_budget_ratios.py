@@ -69,7 +69,7 @@ def test_page_ratio_uses_resident_and_the_population_year(year):
     data["dataset"]["exchange_rates"] = []
     data["jurisdictions"][0]["population"]["year"] = year
     data["institutes"][0]["display"] = {"comparison_funding": "compared", "funding_records": {"compared": record(eur_per_year_est=10_000_000)}}
-    html = f'<article class="fund-item" data-j="XX"><div class="fund-value"><span class="qualifiers"><abbr class="g per-person val" tabindex="0" title="{check_page.PER_PERSON_TIP}">EUR 1.0 per resident ({year})</abbr></span></div></article>'
+    html = f'<article class="fund-item" data-j="XX"><div class="fund-value"><span class="qualifiers"><abbr class="g per-person val" tabindex="0" aria-description="{check_page.PER_PERSON_TIP}">EUR 1.0 per resident ({year})</abbr></span></div></article>'
     def check(text):
         return check_page.check_per_person(BeautifulSoup(text, "html.parser"), data)
 
@@ -77,6 +77,8 @@ def test_page_ratio_uses_resident_and_the_population_year(year):
     assert check(html.replace(f"resident ({year})", "person"))
     assert check(html.replace(f"resident ({year})", "resident (2023)"))
     assert check(html.replace('tabindex="0"', 'tabindex="0" aria-label="EUR 1 per person"'))
+    assert check(html.replace(f'aria-description="{check_page.PER_PERSON_TIP}"', ""))
+    assert check(html.replace('tabindex="0"', ""))
 
 
 def test_same_currency_share_never_uses_the_exchange_rate():

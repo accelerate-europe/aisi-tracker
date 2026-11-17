@@ -12,6 +12,44 @@ from conftest import ROOT, SOURCE_URL
 from scripts import check_page
 
 
+@pytest.mark.parametrize("budget_size, budget_colour, staff_size, staff_weight, expected", [
+    (16, "ink", 32, 500, []),  # the unbarred figure is smaller; it keeps the ink colour of a fact
+    (16, "muted", 32, 500, []),  # colour is check_secondary_tone's concern, not this check's
+    (32, "muted", 32, 500, ["Budget without a bar is not lighter than a charted figure"]),  # a colour change alone does not make it lighter
+    (36, "muted", 32, 500, ["Budget without a bar is not lighter than a charted figure"]),
+    (32, "ink", 32, 500, ["Budget without a bar is not lighter than a charted figure"]),
+    (36, "ink", 32, 500, ["Budget without a bar is not lighter than a charted figure"]),
+    (16, "ink", 16, 500, ["Staff figure is not at full weight"]),
+    (16, "ink", 32, 400, ["Staff figure is not at full weight"]),
+])
+def test_funding_weights_need_a_smaller_unbarred_budget_and_keep_staff_weight(budget_size, budget_colour, staff_size, staff_weight, expected):
+    class Page:
+        def evaluate(self, expression):
+            # Run the gate's own JS on independently supplied computed styles.
+            script = """
+const figure = {fontSize: '32px', color: 'ink', fontWeight: '500'};
+const [budgetSize, budgetColour, staffSize, staffWeight] = JSON.parse(process.argv[1]);
+const budget = {fontSize: budgetSize + 'px', color: budgetColour};
+const staff = {fontSize: staffSize + 'px', color: 'ink', fontWeight: String(staffWeight)};
+const row = {dataset: {j: 'XX'}, querySelector: selector => ({
+  '.fund-budget .fund-value > .budget-value': budget,
+  '.fund-staff .fund-value > strong': staff,
+})[selector] || null};
+const document = {
+  querySelector: selector => ({
+    '#fund-rows > .fund-item:not(.fund-nobar) .fund-budget .fund-value > strong': figure,
+    '#fund-rows > .fund-item:not(.fund-nobar) .fund-staff .fund-value > strong': figure,
+  })[selector] || null,
+  querySelectorAll: selector => selector === '#fund-rows > .fund-nobar' ? [row] : [],
+};
+const getComputedStyle = node => node;
+""" + "console.log(JSON.stringify((" + expression + ")()));"
+            result = subprocess.run(["node", "-e", script, json.dumps([budget_size, budget_colour, staff_size, staff_weight])], check=True, capture_output=True, text=True)
+            return json.loads(result.stdout)
+
+    assert check_page.check_funding_weights(Page()) == [check_page.report_line("XX: " + error) for error in expected]
+
+
 def test_definition_link_allows_rewording_but_requires_one_reachable_target():
     data = {"dataset": {"definition": "Example.", "status_definitions": {}}}
     html = '<div id="headline"></div><p id="definition-link"><a href="#definition">Read the definition</a></p><section id="method-sec"><div class="section-body"><p id="definition">Example. <a href="method.html#qualifying-body">What counts</a></p></div></section>'

@@ -955,16 +955,24 @@ def test_page_oracle_members_have_only_one_fold(rows):
     assert any("fold" in e for e in page_errors(rows, str(html)))
 
 
-def test_page_oracle_full_record_members_are_open_without_a_fold(rows):
+def test_page_oracle_full_record_members_keep_their_fold_open(rows):
     html = BeautifulSoup(members_card(rows), "html.parser")
     html.select_one(".card")["class"].append("arrived")
     assert any("full record must be open" in e for e in page_errors(rows, str(html)))
     detail = html.select_one(".member-details")
+    detail["open"] = ""
+    assert page_errors(rows, str(html)) == []
+    summary = detail.select_one("summary").extract()
+    assert any("card needs one fold" in e for e in page_errors(rows, str(html)))
+    detail.insert(0, summary)
+    html.select_one(".card")["class"].remove("arrived")
+    assert any("fold-out must start closed" in e for e in page_errors(rows, str(html)))
+    del detail["open"]
+    assert page_errors(rows, str(html)) == []
+    html.select_one(".card")["class"].append("arrived")
     detail.name = "div"
     detail["class"] = ["member-details"]
     detail.select_one("summary").decompose()
-    assert page_errors(rows, str(html)) == []
-    html.select_one(".card")["class"].remove("arrived")
     assert any("card needs one fold" in e for e in page_errors(rows, str(html)))
 
 

@@ -8404,19 +8404,19 @@ def check_leadership_rows(html, data: dict) -> list[str]:
                     errors.append(f"{jid} {label}: expected {'one fold-out' if hows else 'no fold-out'}")
                 fold = value.select_one(fold_selector)
                 if fold is not None:
+                    full = label == "Members" and "arrived" in card.get("class", [])
                     if label == "Members":
-                        full = "arrived" in card.get("class", [])
-                        if fold.name != ('div' if full else 'details') or (not full and not fold.select_one(':scope > summary')):
-                            errors.append(f"{jid} Members: card needs one fold; full record must be open without a fold")
-                        if full and fold.select('summary'):
-                            errors.append(f"{jid} Members: full record retains a fold control")
+                        if fold.name != 'details' or not fold.select_one(':scope > summary'):
+                            errors.append(f"{jid} Members: card needs one fold with a summary")
+                        if full and not fold.has_attr("open"):
+                            errors.append(f"{jid} Members: full record must be open")
                         if fold.select('details'):
                             errors.append(f"{jid} Members: nested fold")
                         if value.select_one('.member-list').parent != fold or value.select_one('.partner-how') is None or value.select_one('.partner-how').parent != fold:
                             errors.append(f"{jid} Members: list and how must share one fold")
                     if any(a.find_parent("li") is None for a in fold.select(".cn")):
                         errors.append(f"{jid} {label}: fold-out citation outside a partner item")
-                    if fold.has_attr("open"):
+                    if fold.has_attr("open") and not full:
                         errors.append(f"{jid} {label}: the fold-out must start closed")
                 continue
             clone = copy.copy(value)
@@ -9982,7 +9982,7 @@ def check_label_ladder(page) -> list[str]:
 
 @reports
 def check_funding_weights(page) -> list[str]:
-    """Weight is per cell: a Budget figure without a bar is lighter than a charted one; staff figures keep full weight."""
+    """Weight is per cell: an unbarred Budget figure is smaller than a charted one (its colour stays --ink, principle: Secondary tone, checked by check_secondary_tone); staff figures keep full weight."""
     return page.evaluate("""() => {
       const errors = [], size = n => parseFloat(getComputedStyle(n).fontSize), weight = n => parseFloat(getComputedStyle(n).fontWeight);
       let compared = 0;
@@ -9991,7 +9991,7 @@ def check_funding_weights(page) -> list[str]:
       for (const row of document.querySelectorAll('#fund-rows > .fund-nobar')) {
         const cell = row.querySelector('.fund-budget .fund-value > .budget-value');
         if (cell) compared++;
-        if (cell && (size(cell) >= size(figure) || getComputedStyle(cell).color === getComputedStyle(figure).color)) errors.push(`${row.dataset.j}: Budget without a bar is not lighter than a charted figure`);
+        if (cell && size(cell) >= size(figure)) errors.push(`${row.dataset.j}: Budget without a bar is not lighter than a charted figure`);
         const staff = row.querySelector('.fund-staff .fund-value > strong'), charted = document.querySelector('#fund-rows > .fund-item:not(.fund-nobar) .fund-staff .fund-value > strong');
         if (staff && charted && (size(staff) !== size(charted) || weight(staff) !== weight(charted))) errors.push(`${row.dataset.j}: Staff figure is not at full weight`);
       }
@@ -12940,7 +12940,7 @@ def check_selection_boxes(browser, base_url: str) -> list[str]:
 
 
 def check_members(browser, base_url: str, data: dict, screenshots: Path | None = None) -> list[str]:
-    """Members stay in Form, with one card fold and no fold on full-record arrival."""
+    """Members stay in Form; full-record arrival opens the same fold and leaving closes it."""
     errors = []
     for width in (1440, 1000, 390):
         page = browser.new_page(viewport={"width": width, "height": 1000})
@@ -12960,6 +12960,7 @@ def check_members(browser, base_url: str, data: dict, screenshots: Path | None =
                     if detail.evaluate("n => Boolean(n.tagName !== 'DETAILS' || n.open || n.querySelector('details') || !n.querySelector('summary')?.textContent.trim())"):
                         errors.append(f"{identity}: members do not start behind one named closed fold")
                         continue
+                    original = detail.evaluate_handle("n => ({detail: n, summary: n.querySelector(':scope > summary')})")
                     card.scroll_into_view_if_needed()
                     detail.locator('summary').click()
                     if not detail.locator('.member-list').is_visible() or not detail.locator('.partner-how').is_visible():
@@ -12970,13 +12971,16 @@ def check_members(browser, base_url: str, data: dict, screenshots: Path | None =
                         card.screenshot(path=str(screenshots / f'members-{identity}-{width}-{theme}-card.png'))
                     page.evaluate("id => { location.hash = id; }", identity)
                     page.wait_for_selector('#' + identity + '.arrived')
-                    if detail.evaluate("n => Boolean(n.tagName !== 'DIV' || n.querySelector('summary, details'))") or not detail.locator('.member-list').is_visible():
-                        errors.append(f"{identity}: full record retains a fold or hides its members")
+                    if detail.evaluate("(n, original) => n !== original.detail || n.querySelector(':scope > summary') !== original.summary || !n.open || Boolean(n.querySelector('details'))", original) or not detail.locator('.member-list').is_visible() or not detail.locator('.partner-how').is_visible():
+                        errors.append(f"{identity}: full record replaces its members fold or does not open both lists")
                     errors.extend(f"{width}px {theme} full: {e}" for e in check_leadership_rows(page.content(), data))
                     if screenshots:
                         card.screenshot(path=str(screenshots / f'members-{identity}-{width}-{theme}-full.png'))
                     page.evaluate("location.hash = 'europe'")
                     page.wait_for_function("id => !document.getElementById(id).classList.contains('arrived')", arg=identity)
+                    if detail.evaluate("(n, original) => n !== original.detail || n.querySelector(':scope > summary') !== original.summary || n.open", original):
+                        errors.append(f"{identity}: leaving the full record does not close the same members fold")
+                    original.dispose()
         finally:
             page.close()
     return errors
