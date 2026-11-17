@@ -68,6 +68,7 @@ def document():
                 "id": "institute",
                 "jurisdiction_id": "GB",
                 "name": "Institute",
+                "short_name": "Institute",
                 "legal_form": "new_body",
                 "host": {"name": "Ministry"},
                 "mandate": "Tests models.",
@@ -492,6 +493,7 @@ def test_recent_developments_group_full_days_only_and_limit_ten():
     assert len(result) == 10
     assert result[0]["events"] == ["event-11", "same-day"]
     assert result[0]["source_ids"] == ["event", "text"]
+    assert result[0]["line_source_ids"] == [["event"], ["text"]]
     data["jurisdictions"][0]["timeline"] = data["jurisdictions"][0]["timeline"][-2:]
     data["sources"] = []
     assert len(derive_display(data)["dataset"]["display"]["developments"]) == 2

@@ -3421,16 +3421,34 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         : " The budgets of " + list + " are " + (same ? REASON[left[0].reason][1] : "not compared") + ", so they count neither in the budget median nor among those with no budget.");
       infoAfterText(box.lastChild.querySelector("span"), info(note, "figures-scope"));
     })();
-    m.display.developments.forEach(function (group, index) {
+    var newsPairs = new Set(), newsCount = 0;
+    m.display.developments.forEach(function (group) {
+      if (newsCount >= 10) return;
+      var texts = [], sourceIds = [], pairIds = [], states = [], names = [];
+      group.texts.forEach(function (line, n) {
+        var pair = (group.pairs || [])[n];
+        if (pair && newsPairs.has(pair.id)) return;
+        texts.push(line);
+        if (group.line_source_ids) sourceIds = sourceIds.concat(group.line_source_ids[n]);
+        if (pair) {
+          newsPairs.add(pair.id); pairIds.push(pair.id);
+          pair.states.forEach(function (state, k) {
+            if (states.indexOf(state) < 0) { states.push(state); names.push(pair.names[k]); }
+          });
+        }
+      });
+      if (!texts.length) return;
+      if (states.indexOf(group.jurisdiction) < 0) names.push(group.name);
       var j = J[group.jurisdiction];
       var order = SOURCE_ORDERS[j.id] || recordSources(j).filter(function (id, n, ids) { return S[id] && ids.indexOf(id) === n; });
-      var row = el("li", "development-row"); row.dataset.j = j.id; row.dataset.events = group.events.join(" ");
+      var row = el("li", "development-row"); row.dataset.j = j.id; row.dataset.events = group.events.join(" "); row.dataset.pairs = pairIds.join(" ");
       var date = el(group.date.length > 4 ? "time" : "span", "development-date", fmtDate(group.date)); date.dataset.date = group.date; if (date.tagName === "TIME") date.setAttribute("datetime", group.date); row.appendChild(date);
-      row.appendChild(el("span", "development-name", group.name));
-      var text = el("p", "development-text"); text.appendChild(separated(group.texts));
-      text.appendChild(citations(S, order)(fieldCitations(group, ["display"]))); row.appendChild(text);
-      if (index >= 3) { row.classList.add("earlier"); row.hidden = true; }
+      row.appendChild(el("span", "development-name", andJoin(names)));
+      var text = el("p", "development-text"); text.appendChild(separated(texts));
+      text.appendChild(citations(S, order)(group.line_source_ids ? sourceIds : fieldCitations(group, ["display"]))); row.appendChild(text);
+      if (newsCount >= 3) { row.classList.add("earlier"); row.hidden = true; }
       $("development-list").appendChild(row);
+      newsCount += 1;
     });
     $("developments").hidden = !$("development-list").childNodes.length;
     // The control extends the list in place and stays after its last item.

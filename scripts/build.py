@@ -29,6 +29,7 @@ sys.dont_write_bytecode = True
 from jsonschema import Draft202012Validator  # noqa: E402
 
 if __package__:
+    from .display import news_kind
     from . import published as fact_pipeline
     from .references import authored_schema, excerpt_identity, materialise_references, pointer_ancestors
     from .published import INTERVAL_KEYS, NO_ECB_RATE, budget_ratios, comparable_funding, annual_eur_estimate as annual_eur_estimate, known_activity as known_activity, output_activity_kind as output_activity_kind, publish, prepared_facts, timeline_status as timeline_status, eur_per_unit as eur_per_unit, significant as significant
@@ -42,6 +43,7 @@ if __package__:
     from .agent_files import LICENSES, doi_url, api_files, api_landing_html, api_root, citation_cff, zenodo_json, head_links, share_tags, image_alt_text, json_ld_script, llms_txt, robots_txt, sitemap_xml, feed_xml, FEED_PATH, orientation_html, definition_markdown, public_url_errors
     from .release_checks import check_metadata, check_readme_licence, check_readme_doi, check_markdown, generated_block, generated_citation, generated_counts, check_launch_wording, write_citation, check_instrument_status_dates, instrument_status_warnings, dates_after_as_of, check_changelog_entry, write_release_citation
 else:  # Direct script execution.
+    from display import news_kind
     import published as fact_pipeline
     from references import authored_schema, excerpt_identity, materialise_references, pointer_ancestors
     from published import INTERVAL_KEYS, NO_ECB_RATE, budget_ratios, comparable_funding, annual_eur_estimate as annual_eur_estimate, known_activity as known_activity, output_activity_kind as output_activity_kind, publish, prepared_facts, timeline_status as timeline_status, eur_per_unit as eur_per_unit, significant as significant
@@ -623,7 +625,7 @@ def event_rows(d: dict) -> list[dict]:
         rows.append({
             "id": f"{origin}:{identity}", "jurisdiction_id": jid, "jurisdiction": jurisdictions.get(jid, {}).get("name", ""),
             "institute_id": iid, "institute": institutes.get(iid, {}).get("name", ""),
-            "type": kind, "date": date, "description": description, "short": record.get("short", "") if origin in ("timeline", "network_milestones") else "",
+            "type": kind, "news_kind": news_kind(origin, record), "date": date, "description": description, "short": record.get("short", "") if origin in ("timeline", "network_milestones") else "",
             "origin_kind": origin, "origin_id": identity, "source_pointer": pointer,
             "withdraws": f"{jid}:{record['withdraws']}" if origin == "timeline" and record.get("withdraws") else "",
             "scheduled": date > d["dataset"]["as_of"][:len(date)],
@@ -983,7 +985,7 @@ EMPTY_COLUMNS = {
     "functions": ["id", "institute_id", "code", "value", "claim_ids"],
     "claims": ["id", "jurisdiction_id", "institute_id", "kind", "code", "basis", "body_id", "lead", "text", "act", "date", "source_ids", "source_urls", "reread_state", "last_found"],
     "agreements": ["id", "institute_id", "counterparty", "counterparty_type", "state", "participation", "date", "scope", "source_ids", "source_urls"],
-    "events": ["id", "jurisdiction_id", "jurisdiction", "institute_id", "institute", "type", "date", "description", "short", "origin_kind", "origin_id", "source_pointer", "withdraws", "scheduled", "source_ids", "source_urls"],
+    "events": ["id", "jurisdiction_id", "jurisdiction", "institute_id", "institute", "type", "news_kind", "date", "description", "short", "origin_kind", "origin_id", "source_pointer", "withdraws", "scheduled", "source_ids", "source_urls"],
     "outputs": ["id", "institute_id", "date", "credited_from", "credit_institute_id", "credit_date", "type", "title", "lineage", "attribution", "qualifies_as", "qualification_note", "source_ids", "source_urls"],
     "known_activity": ["id", "institute_id", "kind", "date", "lineage", "source_ids", "source_urls"],
     "network_milestones": ["id", "body", "type", "date", "description", "short", "source_ids", "source_urls"],

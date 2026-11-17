@@ -390,8 +390,9 @@ def feed_entry_id(version: str) -> str:
 
 def feed_news_id(development: dict) -> str:
     """A News item's permanent Atom id, from the key that groups it (scripts/display.py recent_developments): the state
-    and a full date, or for a month or year date the state, the date and its permanent event id. A later event on the
-    same day joins the item and keeps its id; a corrected date makes a new item."""
+    and a full date, or for a month or year date the state, the date and its permanent record id. Timeline records
+    retain their event id; other records use their scoped events-download id. A later event on the same day joins
+    the item and keeps its id; a corrected date makes a new item."""
     tail = development["date"] if len(development["date"]) == 10 else f"{development['date']}/{development['order']}"
     return f"tag:aisi.accelerate-europe.org,2026:news/{development['jurisdiction']}/{tail}"
 
