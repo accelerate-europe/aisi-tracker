@@ -214,7 +214,7 @@ def test_function_summary_keeps_vocabulary_order_and_whole_ties(values, expected
 def test_function_jobs_are_registered_for_shards(functions):
     jobs = check_page.browser_jobs(Path("dist"), functions[0], None)
     names = [check_page.job_id(*job) for job in jobs]
-    for name in ("check_functions_table", "check_functions_detail", "check_functions_layout", "check_functions_phone", "check_functions_sticky", "check_functions_tint", "check_functions_zero_carrier", "check_function_group_tabs"):
+    for name in ("check_functions_table", "check_functions_detail", "check_functions_layout", "check_functions_phone", "check_functions_sticky", "check_functions_tint", "check_functions_zero_carrier", "check_function_group_tabs", "check_selection_boxes"):
         assert names.count("interactions/" + name) == 1
 
 

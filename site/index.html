@@ -28,6 +28,7 @@
 <style>
 /* Design principles
  * Functions table: institute rows in established and not-yet-established blocks, function columns in vocabulary groups, equal widths and rotated short heads. Active and both use a dot, assigned a ring; not found is blank, a search result rather than absence. The jurisdiction column stays visible during sideways scrolling. Hover and focus tint the row and one continuous column through the block bands, with a slanted band behind its head; group gutters stay clear. Each group has a leaning boundary and an underline at its label, meeting the upright body rules at the head rule; the shared head height follows the head type, leaving at least --sp-1 above every head tip. No upright rule crosses the head zone, and labels paint above the hover flag and boundaries. Quotes and sources open on demand below the selected institute (check_page check_functions_table, check_functions_detail, check_functions_layout, check_functions_tint, check_function_group_tabs).
+ * Selection box: an open function cell, phone row or phone function, and a selected search or palette row, has one even box on all four sides, inset within its padding box and above tints and rules (check_page check_selection_boxes).
  * Functions legend: marks and their names share one line directly under the desktop table; whole items wrap on phones, retaining their pips. Row order and the provisional list belong at the end of How this is coded (check_page check_functions_table, check_functions_layout).
  * Method: owner-owned reader summaries link to the full editorial rules on a separate page; rule anchors stay stable.
  * Type: title, label, body, meta, figure, plus fn-group for functions group labels on narrow phones; label, body and meta fixed up to 1200px and growing to their wide-screen sizes at 1440px, so the table and cards keep their 1100px fit; figure and title grow from phone width; shared size, weight, family and role-specific line height. The headline is the figure role with only its numbers at figure weight, its words at body weight.
@@ -707,6 +708,14 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
 .fn-table tr.fn-row-lit > :is(th, td) { background-clip: border-box; } /* the row band runs unbroken across the group gutters; a column's own tint stays in its padding box */
 .fn-scroll:focus:not(:focus-visible) { outline: none; } /* the box's ring is for keyboard focus only */
 .fn-cell { display: inline-flex; align-items: center; justify-content: center; width: 100%; min-height: var(--hit); padding: 0; border: 0; background: transparent; color: var(--ink); cursor: pointer; }
+/* The cell button stays static: its overlay uses the td's padding box, after the transparent gutter.
+   The td's own ::after remains free to bridge the bottom rule with the column tint. */
+.fn-phone-row, button.fn-function-label, .suggest li, .palette-option { position: relative; }
+.fn-cell[aria-expanded="true"]::after, .fn-phone-row[aria-expanded="true"]::after, button.fn-function-label[aria-expanded="true"]::after,
+.suggest li[aria-selected="true"]::after, .palette-option[aria-selected="true"]::after {
+  content: ""; position: absolute; inset: var(--rule-strong); border: var(--rule-strong) solid var(--focus); z-index: 2; pointer-events: none;
+}
+.fn-phone-row[aria-expanded="true"]::after, button.fn-function-label[aria-expanded="true"]::after { inset: 0; } /* phone content needs only --sp-1 clearance at each edge */
 .fn-mark { display: inline-block; flex: 0 0 auto; width: .8rem; height: .8rem; vertical-align: middle; border-radius: 50%; color: var(--st-est-edge); }
 .fn-activity { background: currentColor; }
 .fn-mandate { border: var(--rule-strong) solid currentColor; }
@@ -729,8 +738,8 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
 .fn-sources .reread { display: none; } /* the quote block above already carries the quotation's re-read line (principle: Re-read line) */
 /* Both forms are saved; CSS selects one. Subgrids share content-sized tracks through the list wrappers. */
 .fn-phone, .fn-phone-only { display: none; }
-.fn-phone { grid-template-columns: minmax(min-content, 1fr) repeat(var(--fn-groups), minmax(min-content, auto)); column-gap: var(--sp-1); }
-.fn-phone-head, .fn-phone-block, .fn-phone-block > ul, .fn-phone-block > ul > li { display: grid; grid-column: 1 / -1; grid-template-columns: subgrid; column-gap: var(--sp-1); }
+.fn-phone { grid-template-columns: minmax(min-content, 1fr) repeat(var(--fn-groups), minmax(min-content, auto)); column-gap: calc(var(--sp-1) - 2 * var(--sp-1) / var(--fn-groups)); } /* pay for the two edge paddings from the existing gaps, keeping the same total width */
+.fn-phone-head, .fn-phone-block, .fn-phone-block > ul, .fn-phone-block > ul > li { display: grid; grid-column: 1 / -1; grid-template-columns: subgrid; column-gap: inherit; }
 .fn-phone-head { font: var(--type-meta); color: var(--muted); align-items: end; padding-bottom: var(--sp-3); border-bottom: var(--rule) solid var(--line); }
 .fn-phone-head > span, .fn-phone-country { overflow-wrap: normal; word-break: normal; hyphens: manual; }
 .fn-phone-head > span { text-align: center; }
@@ -739,7 +748,8 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
 .fn-phone-row { display: block; grid-column: 1 / -1; grid-row: 1; width: 100%; min-height: var(--hit); padding: var(--sp-3) 0; border: 0; border-bottom: var(--rule) solid var(--line); background: transparent; color: var(--ink); font: var(--type-body); text-align: left; cursor: pointer; }
 /* The empty button is the full-row hit area; its visual siblings share the list item's tracks. */
 .fn-phone-country, .fn-phone-block > ul > li > .fn-pips { grid-row: 1; align-self: center; position: relative; z-index: 1; pointer-events: none; }
-.fn-phone-country { grid-column: 1; padding-block: var(--sp-3); font: var(--type-body); }
+.fn-phone-country { grid-column: 1; padding-block: var(--sp-3); padding-inline-start: var(--sp-1); font: var(--type-body); }
+.fn-phone-head > span:last-child, .fn-phone-block > ul > li > .fn-pips:last-of-type { padding-inline-end: var(--sp-1); } /* the last pip and its head share clearance from the selected row's edge */
 .fn-pips { display: flex; justify-content: center; gap: 2px; min-width: max-content; } /* .fn-mark keeps every pip from shrinking */
 .fn-pip { width: 8px; height: 8px; box-sizing: border-box; }
 .fn-pip.fn-mandate { border-width: 1.5px; }
@@ -748,7 +758,7 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
 .fn-phone-detail { grid-column: 1 / -1; grid-row: 2; position: static; min-width: 0; width: 100%; max-width: 100%; }
 .fn-phone-functions { list-style: none; padding: 0; margin: 0; }
 .fn-phone-detail h4 { margin-top: var(--sp-4); }
-.fn-function-label { display: flex; align-items: center; gap: var(--sp-2); min-height: var(--hit); padding: var(--sp-2) 0; font: var(--type-body); color: var(--ink); }
+.fn-function-label { display: flex; align-items: center; gap: var(--sp-2); min-height: var(--hit); padding: var(--sp-2) var(--sp-1); font: var(--type-body); color: var(--ink); }
 button.fn-function-label { width: 100%; background: transparent; border: 0; text-align: left; cursor: pointer; }
 .fn-phone-claims { margin-block: var(--sp-2) var(--sp-4); }
 @media (width <= 640px) {

@@ -12713,6 +12713,154 @@ def check_functions_zero_carrier(browser, base_url: str, data: dict) -> list[str
     return [f"zero-carrier {code}: " + error for error in errors]
 
 
+def selected_box_pixels(page, control, hover: bool) -> list[str]:
+    """Sample the actual four painted midpoints, excluding a table cell's transparent gutter."""
+    import base64
+
+    # Move off the table before scrolling, so a heading passing under the pointer cannot open a tooltip.
+    page.mouse.move(1, 1)
+    control.evaluate("n => { if(n.matches('button')) n.blur(); n.scrollIntoView({block:'center', inline:'center'}); }")
+    layout_settled(page)
+    page.locator('#tip').wait_for(state='hidden')
+    if hover:
+        control.hover()
+    measured = control.evaluate("""n => {
+      const host=n.matches('.fn-cell')?n.closest('td'):n, r=host.getBoundingClientRect(), s=getComputedStyle(host);
+      const p={left:r.left+parseFloat(s.borderLeftWidth), right:r.right-parseFloat(s.borderRightWidth),
+        top:r.top+parseFloat(s.borderTopWidth), bottom:r.bottom-parseFloat(s.borderBottomWidth)};
+      const probe=document.createElement('span'); probe.style.cssText='position:absolute;pointer-events:none;border:var(--rule-strong) solid var(--focus)'; host.appendChild(probe);
+      const token=getComputedStyle(probe), width=parseFloat(token.borderTopWidth), colour=token.borderTopColor;
+      probe.remove();
+      const overlay=getComputedStyle(n,'::after'), errors=[];
+      if(['none','normal'].includes(overlay.content) || overlay.pointerEvents!=='none') errors.push('selection overlay missing or intercepts input');
+      for(const side of ['Top','Right','Bottom','Left']) {
+        if(parseFloat(overlay['border'+side+'Width'])!==width || overlay['border'+side+'Color']!==colour || overlay['border'+side+'Style']!=='solid')
+          errors.push(side+': selection width/colour differs');
+      }
+      if(n.matches('.fn-cell')) {
+        const lit=host.classList.contains('fn-col-lit') && host.parentElement.classList.contains('fn-row-lit');
+        if(lit!==n.matches(':hover')) errors.push('hover tint state differs');
+      }
+      return {box:p,width,colour,inset:n.matches('.fn-phone-row,button.fn-function-label')?0:width,errors};
+    }""")
+    box = measured["box"]
+    clip = {"x": math.floor(box["left"]), "y": math.floor(box["top"]),
+            "width": math.ceil(box["right"]) - math.floor(box["left"]),
+            "height": math.ceil(box["bottom"]) - math.floor(box["top"])}
+    png = base64.b64encode(page.screenshot(clip=clip, scale="css", animations="disabled")).decode()
+    return measured["errors"] + page.evaluate("""async ({png, measured, clip}) => {
+      const img=new Image(); img.src='data:image/png;base64,'+png; await img.decode();
+      const canvas=new OffscreenCanvas(img.width,img.height), ctx=canvas.getContext('2d'); ctx.drawImage(img,0,0);
+      const data=ctx.getImageData(0,0,img.width,img.height).data;
+      const rgb=colour=>{ctx.clearRect(0,0,1,1);ctx.fillStyle=colour;ctx.fillRect(0,0,1,1);return [...ctx.getImageData(0,0,1,1).data].slice(0,3);};
+      const expected=rgb(measured.colour), b=measured.box, w=measured.width;
+      const pixel=(x,y)=>{
+        x=Math.floor(x-clip.x); y=Math.floor(y-clip.y);
+        if(x<0 || y<0 || x>=img.width || y>=img.height) return null;
+        return [...data.slice((y*img.width+x)*4,(y*img.width+x)*4+3)];
+      };
+      // Phone boxes sit at the padding edge; other boxes are one rule-width inside it.
+      // The background beside a side edge is sampled a quarter down, clear of a mark or label centred on the midline.
+      const midX=(b.left+b.right)/2, midY=(b.top+b.bottom)/2, quarterY=b.top+(b.bottom-b.top)/4, stroke=measured.inset+w/2, inside=measured.inset+w+3;
+      const sides={top:[[midX,b.top+stroke],[midX,b.top+inside]], right:[[b.right-stroke,midY],[b.right-inside,quarterY]],
+        bottom:[[midX,b.bottom-stroke],[midX,b.bottom-inside]], left:[[b.left+stroke,midY],[b.left+inside,quarterY]]};
+      const errors=[];
+      for(const [side,[edge,background]] of Object.entries(sides)) {
+        const paint=pixel(...edge), ground=pixel(...background);
+        if(!paint || !ground) { errors.push(side+': sample outside screenshot'); continue; }
+        if(paint.some((v,k)=>Math.abs(v-expected[k])>8)) errors.push(side+': midpoint is not painted in the selection colour ('+paint+')');
+        if(Math.max(...paint.map((v,k)=>Math.abs(v-ground[k])))<20) errors.push(side+': selection does not stand out from its adjacent background');
+      }
+      return errors;
+    }""", {"png": png, "measured": measured, "clip": clip})
+
+
+def check_selection_boxes(browser, base_url: str) -> list[str]:
+    """N5: boundary/interior cells, block ends, phone rows/functions and other selected rows."""
+    errors = []
+    for width in (1280, 1440, 390):
+        page = browser.new_page(viewport={"width": width, "height": 1000})
+        try:
+            hydrated(page, base_url)
+            page.evaluate("document.fonts.ready")
+            for theme in ("light", "dark"):
+                set_theme(page, theme)
+
+                def inspect(control, label):
+                    for hover in (False, True):
+                        errors.extend(f"{width}px {theme} {label} {'hover' if hover else 'no hover'}: {e}"
+                                      for e in selected_box_pixels(page, control, hover))
+                    # The box stays after focus leaves, so keyboard focus on an open control must still look different (WCAG 2.4.7).
+                    if control.evaluate("n => n.matches('button')"):
+                        page.keyboard.press("Shift")  # keyboard modality, so focus() counts as :focus-visible
+                        look = "n => { const s = getComputedStyle(n); return [s.outlineStyle, s.outlineWidth, s.outlineColor, s.backgroundColor, s.boxShadow, s.textDecorationLine].join('|'); }"
+                        focused = control.evaluate("n => { n.focus({preventScroll: true}); return n.matches(':focus-visible'); }")
+                        seen = control.evaluate(look)
+                        control.evaluate("n => n.blur()")
+                        if not focused or seen == control.evaluate(look):
+                            errors.append(f"{width}px {theme} {label}: keyboard focus on the open control looks the same as no focus")
+
+                if width > 640:
+                    # One marked cell in each column, plus one on each block's first/last row.
+                    # Document order breaks ties. This includes both sides of every group gutter and interiors.
+                    samples = page.evaluate("""() => {
+                      const table=document.querySelector('.fn-table'), cells=new Set();
+                      for(const head of table.querySelectorAll('.fn-head')) {
+                        const button=table.querySelector('tbody td[data-code="'+head.dataset.code+'"] > .fn-cell');
+                        if(button) cells.add(button);
+                      }
+                      for(const block of table.querySelectorAll('tr.fn-group')) {
+                        const rows=[];
+                        for(let row=block.nextElementSibling; row && !row.classList.contains('fn-group'); row=row.nextElementSibling)
+                          if(row.dataset.institute) rows.push(row);
+                        for(const row of [rows[0], rows.at(-1)]) {
+                          const button=row?.querySelector('.fn-cell'); if(button) cells.add(button);
+                        }
+                      }
+                      return [...cells].map(b=>({institute:b.closest('tr').dataset.institute,code:b.parentElement.dataset.code,
+                        boundary:b.parentElement.matches('.fn-group-start,.fn-group-first')}));
+                    }""")
+                    if not any(s["boundary"] for s in samples) or not any(not s["boundary"] for s in samples):
+                        errors.append(f"{width}px {theme}: selection samples lack a boundary or interior cell")
+                    for sample in samples:
+                        control = page.locator(f'.fn-table tr[data-institute="{sample["institute"]}"] td[data-code="{sample["code"]}"] > .fn-cell')
+                        control.click()
+                        inspect(control, sample["institute"] + '/' + sample["code"])
+                        control.click()
+                else:
+                    # First/last rows of both blocks and their first/last coded functions in document order.
+                    # Leave both functions open together so each keeps its own box.
+                    for row in page.locator('.fn-phone-block > ul > li:is(:first-child, :last-child) > .fn-phone-row').all():
+                        row.click()
+                        inspect(row, row.get_attribute('aria-controls'))
+                        functions = page.locator('.fn-phone-detail button.fn-function-label').all()
+                        samples = functions[:1] + (functions[-1:] if len(functions) > 1 else [])
+                        for function in samples:
+                            function.click()
+                            inspect(function, function.get_attribute('aria-controls'))
+                        row.click()
+                # The page's other selected rows are the search and command-palette options.
+                search = page.locator('#map-search')
+                search.fill('den')
+                search.press('ArrowDown')
+                option = page.locator('#map-search-list li[aria-selected="true"]')
+                option.wait_for(state='visible')
+                inspect(option, 'search row')
+                search.press('Escape')
+                search.fill('')
+                search.blur()
+                page.keyboard.press('Control+k')
+                palette = page.locator('#palette-q')
+                palette.fill('den')
+                option = page.locator('.palette-option[aria-selected="true"]')
+                option.wait_for(state='visible')
+                inspect(option, 'palette row')
+                palette.press('Escape')
+        finally:
+            page.close()
+    return errors
+
+
 def check_functions_tint(browser, base_url: str) -> list[str]:
     """Every column's painted band, gutter boundaries and slanted flag, by hover and keyboard focus."""
     page = browser.new_page(viewport={"width": 1280, "height": 1000})
@@ -12963,6 +13111,7 @@ def browser_jobs(dist: Path, data: dict, screenshots: Path | None) -> list[tuple
         ("interactions", check_functions_sticky, ()),
         ("interactions", check_functions_zero_carrier, (data,)),
         ("interactions", check_functions_tint, ()),
+        ("interactions", check_selection_boxes, ()),
         ("interactions", check_funding_edges, (data,)),
         ("interactions", check_funding_large_text, ()),
         ("interactions", check_published_amount_fallback, (data,)),
