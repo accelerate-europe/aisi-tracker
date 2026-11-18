@@ -110,6 +110,20 @@ def test_claim_spacing_rejects_reported_uneven_gaps():
     assert any("[0, 15, 7]" in e for e in check_page.claim_spacing_errors(metrics))
 
 
+def test_function_panel_width_checks_border_and_every_text_line():
+    metrics = {"left": 40, "width": 800, "panel": {"left": 40, "right": 840, "width": 800},
+               "lines": [{"left": 56, "right": 810}, {"left": 56, "right": 700}], "pixels": True, "sticky": True}
+    assert check_page.function_panel_width_errors(metrics) == []
+    for box in ('panel', 'line'):
+        for edge, value in (('left', 38), ('right', 890)):
+            broken = copy.deepcopy(metrics)
+            (broken['panel'] if box == 'panel' else broken['lines'][-1])[edge] = value
+            assert any('outside' in e for e in check_page.function_panel_width_errors(broken))
+    assert any('pixels' in e for e in check_page.function_panel_width_errors(dict(metrics, pixels=False)))
+    assert any('sticky' in e for e in check_page.function_panel_width_errors(dict(metrics, sticky=False)))
+    assert check_page.function_panel_width_errors(None) == ["Functions panel or text lines missing"]
+
+
 def test_functions_structure_rejects_a_missing_vocabulary_column(functions):
     from bs4 import BeautifulSoup
 

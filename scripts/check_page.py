@@ -4087,15 +4087,11 @@ WIDTH_GEOMETRY = {
     (".palette", "width", "min(var(--palette-width), calc(100vw - 2 * var(--sp-4)))"): "palette stays within the viewport with its token gutters",
     (".fn-column-group::after", "width", "calc(100% + var(--fn-group-gap))"): "group rule spans its track and the following group gap",
     (".bar-value", "min-width", "min(var(--bar-min), 100%)"): "minimum visible bar never exceeds its track",
-    **{(selector, prop, "100cqi"): "detail follows the scroll container's visible inline size" for selector, prop in (
-        (".fn-detail", "width"), (".fn-detail", "max-width"),
-    )},
     **{(selector, prop, "100%"): "fill or cap at the containing track, without an independent measure" for selector, prop in (
         ("#changes > summary", "width"), (".suggest", "width"), (".worldmap svg", "width"),
         (".region-head", "width"), (".source-footer-line", "max-width"), (".meta-item", "max-width"),
         ("table", "width"), ("th button", "width"), (".field", "max-width"),
         (".search .field", "width"), (".selectwrap .field", "width"), (".fn-scroll", "max-width"),
-        (".fn-scroll.fits .fn-detail", "width"), (".fn-scroll.fits .fn-detail", "max-width"),
         ('.fn-legend.fn-phone-only li[data-value="not_found"]', "max-width"),
         (".fn-column-group:nth-last-child(2)::after", "width"), (".fn-cell", "width"),
         (".fn-phone-row", "width"), (".fn-phone-detail", "width"), (".fn-phone-detail", "max-width"),
@@ -11876,6 +11872,60 @@ def check_claim_spacing(browser, base_url: str) -> list[str]:
     return errors
 
 
+FN_PANEL_WIDTH_JS = r"""() => {
+  /* TEXT_RECTS */
+  const scroll = document.querySelector('.fn-scroll'), panel = scroll.querySelector('.fn-detail');
+  if (!panel) return null;
+  const box = scroll.getBoundingClientRect(), rect = panel.getBoundingClientRect(), style = getComputedStyle(panel);
+  return {left: box.left + scroll.clientLeft, width: scroll.clientWidth,
+    panel: {left: rect.left, right: rect.right, width: rect.width},
+    lines: textRects(panel).map(r => ({left: r.left, right: r.right})),
+    pixels: panel.style.width.endsWith('px'), sticky: style.position === 'sticky' && style.left === '0px'};
+}""".replace("/* TEXT_RECTS */", TEXT_RECTS_JS)
+
+
+def function_panel_width_errors(metrics: dict | None) -> list[str]:
+    if not metrics or not metrics["lines"]:
+        return ["Functions panel or text lines missing"]
+    errors = []
+    left, width = metrics["left"], metrics["width"]
+    if not metrics["pixels"] or abs(metrics["panel"]["width"] - width) > 1:
+        errors.append("Functions panel must use the scroll box's clientWidth in pixels")
+    if not metrics["sticky"]:
+        errors.append("Functions panel lost sticky left positioning")
+    if any(rect["left"] < left - 1 or rect["right"] > left + width + 1 for rect in [metrics["panel"], *metrics["lines"]]):
+        errors.append("Functions panel or text line runs outside the visible scroll box")
+    return errors
+
+
+def check_function_panel_width(page) -> list[str]:
+    errors = []
+    page.evaluate("document.fonts.ready")
+    button = page.locator('.fn-table tr[data-institute="no-ki-norge"] td[data-code="standards_guidance"] > button')
+    for width in (1000, 1440, 1280):
+        page.set_viewport_size({"width": width, "height": 1000})
+        for scale in ('100%', '110%'):
+            page.evaluate('s => document.documentElement.style.fontSize = s', scale)
+            for theme in ('light', 'dark'):
+                set_theme(page, theme)
+                if button.get_attribute('aria-expanded') != 'true':
+                    button.click()
+                panel = page.locator('.fn-scroll .fn-detail')
+                panel.locator('details.quote').evaluate_all('folds => folds.forEach(fold => fold.open = true)')
+                panel.locator('.quote-body').first.wait_for(state='attached')
+                panel.scroll_into_view_if_needed()
+                scroll = page.locator('.fn-scroll')
+                # Change only the container too: this must work without a window resize or reopening the cell.
+                for container_width in ('', '85%', ''):
+                    scroll.evaluate('(n, width) => n.style.width = width', container_width)
+                    page.evaluate('() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)))')
+                    for end in (False, True):
+                        scroll.evaluate('(n, end) => n.scrollLeft = end ? n.scrollWidth : 0', end)
+                        errors += [f'{width}px {theme} {scale} container {container_width or "auto"} {"right" if end else "left"}: ' + e
+                                   for e in function_panel_width_errors(page.evaluate(FN_PANEL_WIDTH_JS))]
+    return errors
+
+
 def check_functions_detail(browser, base_url: str, data: dict) -> list[str]:
     page = browser.new_page(viewport={"width": 1440, "height": 1000})
     errors = []
@@ -11937,6 +11987,7 @@ def check_functions_detail(browser, base_url: str, data: dict) -> list[str]:
         if page.locator('.fn-detail-row').count() != 1:
             errors.append("Functions: Escape outside the table closes the detail")
         cell.click()
+    errors += check_function_panel_width(page)
     page.close()
     return errors
 

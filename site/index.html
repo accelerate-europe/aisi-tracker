@@ -37,7 +37,7 @@
  * Measure: running text, including News text and Method list items, stops at --prose; structural lists and panels span the content width (check_page check_text_measure, check_content_grid).
  * Secondary tone: --muted is for source apparatus (citations, sources, re-read lines, translation markers and source dates), method notes and field labels. Facts, body roles and qualifiers needed to read values use --ink; type sizes do not decide their colour (check_page check_secondary_tone).
  * Panel measure: claims, quotations, context, re-read lines and sources share --prose from the panel's left content edge, including phone details, definitions and record folds; inline quotations stay inline (check_page check_panel_measure).
- * Function detail: the full function label heads the panel; the institute's short form and the cell's state follow on one muted label line, without the country, which the row above already names; inside the phone detail, whose heading names the institute, the line carries the state alone. Only in a cell whose claims have both bases does each claim name its own basis above its sentence. Each claim uses the record item form: cited sentence, closed Quote fold, then source, on desktop and inside the opened phone function (check_page check_functions_detail, check_functions_phone).
+ * Function detail: the full function label heads the panel; the institute's short form and the cell's state follow on one muted label line, without the country, which the row above already names; inside the phone detail, whose heading names the institute, the line carries the state alone. Only in a cell whose claims have both bases does each claim name its own basis above its sentence. Each claim uses the record item form: cited sentence, closed Quote fold, then source, on desktop and inside the opened phone function. The desktop panel stays sticky at the left of its scroll box; its border-box width follows that box's clientWidth in pixels, on opening and resizing, so all text fits the visible width without table-cell container units (check_page check_functions_detail, check_functions_phone).
  * Inline emphasis: inherit the paragraph's size and family, at most medium weight; no run-in heading role.
  * Sources: a collapsed card ends with the counted sources control alone (muted meta, no top rule, inline hit height); a card reached from the map also ends with "Back to map" before its Sources control; the check date and correction follow the expanded list.
  * Separators: each item of a dot-separated line is one unbreakable box, so lines break only between items (an item wraps inside only when it alone is wider than its container); middle dots stay with the preceding item's final word and are hidden where a line breaks.
@@ -683,10 +683,9 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
 /* Functions table (Compare) */
 :root { --size-fn-group: 11px; --leading-fn-group: var(--leading-meta); --type-fn-group: var(--weight-meta) var(--size-fn-group)/var(--leading-fn-group) var(--body); }
 .fn { --fn-hairline: color-mix(in srgb, var(--line) 65%, var(--ground)); --fn-tint: color-mix(in srgb, var(--highlight-fill) 55%, var(--ground)); min-width: 0; display: flex; flex-direction: column; gap: var(--gap-row); }
-.fn-scroll { position: relative; max-width: 100%; overflow-x: auto; container-type: inline-size; } /* positioned, so the cells' visually hidden text is clipped here and does not widen the page */
-.fn-scroll.fits { overflow: visible; container-type: normal; }
+.fn-scroll { position: relative; max-width: 100%; overflow-x: auto; } /* positioned, so the cells' visually hidden text is clipped here and does not widen the page */
+.fn-scroll.fits { overflow: visible; }
 .fn-scroll.fits thead { position: sticky; top: calc(var(--secnav-height) + var(--groupnav-offset, 0px)); z-index: 3; background: var(--ground); } /* the whole head sticks as one layer: cells stay transparent, so no cell paints over its neighbour's rotated label */
-.fn-scroll.fits .fn-detail { width: 100%; max-width: 100%; }
 .fn-table { --fn-head-h: calc(10.25 * var(--size-meta) + 2 * var(--sp-1)); --fn-lean: calc(var(--fn-head-h) * .57735); --fn-group-gap: 1.75rem; border-collapse: separate; border-spacing: 0; width: 100%; font: var(--type-meta); } /* 10.25 head ems cover the longest rotated label, its line box and rounding; spacing clears the lower inset and group underline, including on the saved page. */
 .fn-table .fn-pad { width: 100%; min-width: max(var(--fn-pad-min), var(--fn-lean)); padding: 0; } /* a percentage column takes all spare width in auto table layout, so function tracks never stretch; its minimum still clears the shifted last head and keeps narrow tables scrolling */
 .fn-table tr > :is(th, td) { position: relative; box-sizing: border-box; padding: var(--sp-2) 0; border-bottom: var(--rule) solid var(--line); text-align: center; vertical-align: middle; } /* keep the last row of each block ruled, overriding the shared table's last-row reset */
@@ -739,7 +738,7 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
 .fn-legend .fn-mark { align-self: center; }
 .fn-legend.fn-phone-only li[data-value="not_found"] { white-space: normal; max-width: 100%; }
 .fn-table .fn-detail-row > td { padding: 0; text-align: left; }
-.fn-detail { position: sticky; left: 0; width: 100cqi; max-width: 100cqi; padding: var(--sp-4); box-sizing: border-box; white-space: normal; overflow-wrap: anywhere; background: var(--paper); font: var(--type-body); }
+.fn-detail { position: sticky; left: 0; max-width: none; padding: var(--sp-4); box-sizing: border-box; white-space: normal; overflow-wrap: anywhere; background: var(--paper); font: var(--type-body); }
 .fn-detail-top { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--sp-3); max-width: none; margin-bottom: var(--sp-3); }
 .fn-detail-head { flex: 1; min-width: 0; font: var(--type-label); line-height: max(var(--control), var(--hit)); margin: 0; }
 .fn-function-head { font: var(--type-label); margin: 0; }
@@ -788,7 +787,7 @@ button.fn-function-label { width: 100%; background: transparent; border: 0; text
   .fn-phone-head { font: var(--type-fn-group); }
 }
 /* The saved page was rendered at 1440 px, where the table fits: until the script measures again, every width keeps the scroll box and a static head. */
-html[data-prerendered] .fn-scroll.fits { overflow-x: auto; container-type: inline-size; }
+html[data-prerendered] .fn-scroll.fits { overflow-x: auto; }
 html[data-prerendered] .fn-scroll.fits thead { position: static; }
 /* Funding: common zero-based scale, with the full records in folds */
 .fund-axis { font: var(--type-meta); display: grid; grid-template-columns: minmax(10rem, 1fr) minmax(12.5rem, 1.5fr) 11rem; gap: var(--sp-1) var(--sp-6); align-items: first baseline; color: var(--muted); border-bottom: var(--rule) solid var(--line); padding-bottom: var(--sp-3); } /* the funding rows' tracks, so the scale sits over the bars */
@@ -3353,6 +3352,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
           closeDetail(false);
           var row = button.closest("tr"), code = button.parentNode.dataset.code, i = I[row.dataset.institute];
           var detail = el("div", "fn-detail"), title = el("h4", "fn-detail-head", vocab[code].label);
+          detail.style.width = scroll.clientWidth + "px"; // set before insertion: the spanning table cell never sizes the panel
           title.id = "fn-detail-head"; detail.setAttribute("role", "region"); detail.setAttribute("aria-labelledby", title.id);
           detailHeading(detail, title);
           appendClaims(detail, i, code);
@@ -3364,6 +3364,8 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       }
       function updateFits() {
         var scroll = box.querySelector(".fn-scroll"), table = box.querySelector(".fn-table"); if (!scroll || !table) return;
+        var detail = scroll.querySelector(".fn-detail");
+        if (detail && scroll.clientWidth) detail.style.width = scroll.clientWidth + "px";
         var fits = scroll.clientWidth > 0 && table.getBoundingClientRect().width <= scroll.clientWidth + 1;
         scroll.classList.toggle("fits", fits); $("fn-scroll-hint").hidden = fits;
       }
@@ -3395,7 +3397,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
           : box.querySelector('.fn-scroll tr[data-institute="' + id + '"] .fn-cell') || box.querySelector('.fn-scroll tr[data-institute="' + id + '"] th[scope="row"] [tabindex]');
         if (target) target.focus({ preventScroll: true });
       });
-      var fitWatch = new ResizeObserver(updateFits); fitWatch.observe(box);
+      var fitWatch = new ResizeObserver(updateFits); fitWatch.observe(box.querySelector(".fn-scroll"));
       window.addEventListener("resize", updateFits, { passive: true });
       document.fonts.ready.then(updateFits); requestAnimationFrame(updateFits);
     })();
