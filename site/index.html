@@ -3299,6 +3299,8 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       // Vocabulary order within each group; new codes may have been appended to the vocabulary.
       // Keep every non-deprecated function, including columns with no public text found anywhere.
       var columns = []; groups.forEach(function (group) { codes.forEach(function (code) { if (vocab[code].group === group) columns.push(code); }); });
+      // A group name prints "and" as "&" so a short group's label fits its tracks; the data keeps the name as recorded (owner, 18 Nov 2026).
+      function groupName(group) { return String(group).replace(/ and /g, " & "); }
       function columnClass(code) { var n = columns.indexOf(code); return "fn-column" + (n === 0 ? " fn-group-first" : vocab[columns[n - 1]].group !== vocab[code].group ? " fn-group-start" : ""); }
       function mark(value, pip) { var span = el("span", "fn-mark fn-" + (value === "both" ? "activity" : value) + (pip ? " fn-pip" : "")); span.setAttribute("aria-hidden", "true"); return span; }
       function pad() { var c = el("td", "fn-pad"); c.setAttribute("aria-hidden", "true"); return c; }
@@ -3395,7 +3397,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
           var list = el("div", "fn-phone"), labels = el("div", "fn-phone-head");
           list.style.setProperty("--fn-groups", groups.length);
           labels.appendChild(el("span"));
-          groups.forEach(function (group) { labels.appendChild(el("span", null, group)); }); list.appendChild(labels);
+          groups.forEach(function (group) { labels.appendChild(el("span", null, groupName(group))); }); list.appendChild(labels);
           [false, true].forEach(function (notYet) {
             var block = el("div", "fn-phone-block"), heading = el("h3", null, notYet ? capital(ACTIVITY_WORDS.notYet) : FN_COPY.established), ul = el("ul"); ul.setAttribute("role", "list");
             block.appendChild(heading); block.appendChild(ul);
@@ -3426,7 +3428,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
             var i = I[button.parentNode.dataset.institute], detail = el("div", "fn-detail fn-phone-detail"), title = el("p", "fn-detail-head", displayName(i));
             detail.id = button.getAttribute("aria-controls"); title.id = detail.id + "-head"; detail.setAttribute("role", "region"); detail.setAttribute("aria-labelledby", title.id); detailHeading(detail, title);
             groups.forEach(function (group) {
-              var heading = el("h4", null, group), functions = el("ul", "fn-phone-functions");
+              var heading = el("h4", null, groupName(group)), functions = el("ul", "fn-phone-functions");
               columns.filter(function (code) { return vocab[code].group === group; }).forEach(function (code) {
                 var row = rows[i.id][code], li = el("li"), label = el(coded(row.value) ? "button" : "span", "fn-function-label");
                 var pip = mark(row.value, true); pip.removeAttribute("aria-hidden"); pip.setAttribute("role", "img"); pip.setAttribute("aria-label", names[row.value]);
@@ -3450,7 +3452,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
           groups.forEach(function (group, n) {
             var th = el("th", "fn-column-group" + (n ? " fn-group-start" : "")); th.scope = "colgroup";
             th.colSpan = columns.filter(function (code) { return vocab[code].group === group; }).length;
-            th.appendChild(el("span", null, group)); groupHeads.appendChild(th);
+            th.appendChild(el("span", null, groupName(group))); groupHeads.appendChild(th);
           });
           columns.forEach(function (code) {
             var th = el("th", "fn-head " + columnClass(code)); th.scope = "col"; th.dataset.code = code;

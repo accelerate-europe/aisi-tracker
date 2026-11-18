@@ -11756,6 +11756,11 @@ def function_rows(data: dict) -> list[dict]:
                                                    states[i["jurisdiction_id"]]["name"], i["id"]))
 
 
+
+def fn_group_name(group: str) -> str:
+    """How the page prints a function group's name: "and" as "&" (owner, 18 Nov 2026); the data keeps the name as recorded."""
+    return group.replace(" and ", " & ")
+
 def function_columns(data: dict) -> list[dict]:
     """All current codes, in first-occurring group order then vocabulary order, independent of carriers."""
     vocab = {c: v for c, v in data["dataset"]["vocabularies"]["function"].items() if not v.get("deprecated")}
@@ -11824,7 +11829,7 @@ def functions_structure(html: str, data: dict) -> list[str]:
         need(heading and heading.get_text() == v["short"][:1].upper() + v["short"][1:] and tip_of(heading) == f"{v['label']}: {v['definition']}", f"{code}: function label/test differs")
         need(("fn-group-start" in header.get("class", [])) == (n > 0 and v["group"] != vocab[columns[n - 1]]["group"]), f"{code}: head group gap differs")
     group_heads = section.select('.fn-table th[scope="colgroup"]')
-    need([h.get_text() for h in group_heads] == groups, "Functions vocabulary groups/order differ")
+    need([h.get_text() for h in group_heads] == [fn_group_name(g) for g in groups], "Functions vocabulary groups/order differ")
     for header, group_name in zip(group_heads, groups):
         need(header.get("colspan") == str(sum(vocab[c]["group"] == group_name for c in columns)), f"{group_name}: column group span differs")
     group_rows = section.select('.fn-group th')
@@ -12718,7 +12723,7 @@ def functions_phone_structure(html: str, data: dict) -> list[str]:
         return errors
     phone = lists[0]
     heads = phone.select('.fn-phone-head > span')
-    need([head.get_text() for head in heads] == ["", *(g["name"] for g in groups)], "Functions phone group heads/order differ")
+    need([head.get_text() for head in heads] == ["", *(fn_group_name(g["name"]) for g in groups)], "Functions phone group heads/order differ")
     blocks = phone.select(':scope > .fn-phone-block')
     need([block.select_one(':scope > h3').get_text() if block.select_one(':scope > h3') else None for block in blocks] == ["Established", "Not yet established"], "Functions phone blocks/order differ")
     rows = phone.select('.fn-phone-block > ul > li')
@@ -13152,7 +13157,7 @@ def check_functions_phone(browser, base_url: str, data: dict, *, inject: bool = 
                          key + ': phone detail placement/state differs');
                     need(detail.querySelector('.fn-detail-head')?.textContent === expected.name, key + ': phone detail institute name differs');
                     const headings = [...detail.querySelectorAll(':scope > h4')], lists = [...detail.querySelectorAll(':scope > .fn-phone-functions')];
-                    need(same(headings.map(h => h.textContent), model.groups.map(g => g.name)) && lists.length === model.groups.length, key + ': phone detail groups/order differ');
+                    need(same(headings.map(h => h.textContent), model.groups.map(g => g.name.replace(/ and /g, ' & '))) && lists.length === model.groups.length, key + ': phone detail groups/order differ');
                     for (const [g, group] of model.groups.entries()) {
                       const list = lists[g], heading = headings[g];
                       need(list && heading && heading.nextElementSibling === list, key + ': phone detail group heading placement differs');
