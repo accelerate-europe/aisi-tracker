@@ -60,7 +60,7 @@
  * None-identified entries: three groups, Closest body, AI Act authorities and Other bodies; the closest body's text in body type, its stage only where it does not exist yet and never a reason it is not counted (Method says what qualifies); the AI Act authorities one line per body (name, roles in the summary's words from dataset.display.authority_roles, basis), single point of contact first, folded after three when two or more would be hidden; other bodies' roles in ink, citations inline (owner, 15 Nov 2026); migrated bodies' role claims are separate cited sentences, starting --sp-2 below the name; the closest body's lead stays in the finding, its group shows its other role claims (expired ones marked) or just its name and stage, and is omitted when it has no role claim and the finding already names and cites it (hub default); a migrated record's muted How we checked block is generated from its full-check date, search languages, later search passes and next-check date, and names no document read; on phones the name sits above a full-width summary; wording every entry shares lives in Method (check_page check_nonidentified_folds, check_nonidentified_style).
  * Claims: current facts, body-role sentences and developments, their citations and closed Quote disclosures are in the saved page; bound excerpts, anchors and source re-read lines are built from page.json only on open. In cards and full records the sentence, Quote label and opened evidence, and in a function's panel the sentence, its source line, the quote label and the opened evidence (owner, 18 Nov 2026), have one --sp-2 gap between text lines; the label keeps its hit height without adding that height to the visible gap (check_page check_claim_spacing). Translated quotes follow Naming, including the saved closest-body lead; the Quote fold's label names the translation once, "Quote, translated from Norwegian", for every language its quotes and anchors come from, and no marker follows a quote (owner, 18 Nov 2026). Languages print by their plain name, never a variant or script (Bokmål and Nynorsk read Norwegian); exact codes stay in the data and downloads (tests/test_language_names.py).
  * Activity line: an ink qualifier after the closest body's name and stage, only for live activity claims for that body; institute cards and legacy records show none; words come from ACTIVITY_WORDS and the vocabulary's short.
- * Sources: entry source lists hold sources that support the entry; population and region sources (display.generic_sources) are named once in Method and stay in the downloads; check_page check_generic_sources. A source line reads title, publisher, date: the publisher is not printed again where the source's own title (original or English) already contains it, and a citation's tip drops it the same way (owner, 18 Nov 2026).
+ * Sources: entry source lists hold sources that support the entry; population and region sources (display.generic_sources) are named once in Method and stay in the downloads; check_page check_generic_sources. A source line reads title, publisher, date. Running lines (a function panel's source line, a citation's hover, Method's inline links) abbreviate with one rule: the publisher without its bracketed parts or a "hosted by", "published by" or "reproducing" tail, a title over 80 characters cut at a word boundary with "…"; a record's source list and the hover (and the link's accessible name) keep the full form (owner, 18 Nov 2026; tests/test_running_source.py). The publisher is not printed again where the source's own title (original or English) already contains it, and a citation's tip drops it the same way (owner, 18 Nov 2026).
  * Archived copies (owner, 18 Nov 2026, "only when needed"): a source that could not be re-read ends its source line with " · archived copy" after its caveat, wherever it is named; a record's source list (the counted sources, a full record's Sources, a group's sources) also ends every other source that has an archive URL with it; a claim's own source line and Method's inline links give no other archived copy. Quiet link in muted ink with a muted underline, no arrow, never broken across lines; superscript citations never carry one (check_page check_archive_links).
  * Re-read line: a source list item whose source has a quotation with a re-read state shows that state once, from its quotations' states (docs/design/claims-1.1.md section 4). A source that could not be re-read (worst state offline, unreadable or quote not found; the earliest start, then offline before not found, then the earliest last found) ends its source line with " · last read {date}" (" · quote last found {date}" for a quote not found, as the source was read), then " · archived copy" where a copy exists; the full sentence is its tip and what a screen reader reads: "Source offline since {date}; last read {date}.", "Source could not be re-read since {date}; last read {date}.", "Not found in the source on {date}; last found {date}; under review." (with ": N of M quotes" after the first date when some quotations are still found) (owner, 18 Nov 2026). In a record's source list (the counted sources, a full record, a group's or a funding row's sources) any other source ends with one line of its own in the list's muted ink: "Source last re-read {date}."; nowhere else (owner, 18 Nov 2026, "source lists only"). A quotation or claim shown on its own shows only a failed state, its own, never its source's, as the full sentence with its archived copy; in a function's panel the claim's source line, just above its quote, carries it instead; the page never says "verified" (check_page check_reread_lines).
  * Sorting: every table column sorts values by meaning, then values without a comparable figure, research gaps, structural absence; gaps stay last in both directions; ties by state name.
@@ -1709,10 +1709,12 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     var ol = el("ol", "prose-panel");
     order.forEach(function (id) {
       var src = S[id], li = el("li"); li.dataset.sourceId = id;
-      var a = el("a", "standalone", src.title_en || src.title); a.href = src.url; li.appendChild(a);
+      var full = src.title_en || src.title, shown = record ? full : shortTitle(full), publisher = record ? src.publisher : shortPublisher(src.publisher);
+      var a = el("a", "standalone", shown); a.href = src.url; li.appendChild(a);
+      if (shown !== full) { a.setAttribute("aria-label", full); a.dataset.tip = full + (src.title_en ? " (" + src.title + ")" : ""); } // a cut title keeps its full form as name and hover
       if (src.title_en) withOriginal(a, src.title);
       else if (src.language && src.language !== "en") a.lang = src.language; // the page is lang="en"
-      if (src.publisher && !publisherInTitle(src)) li.appendChild(document.createTextNode(", " + src.publisher));
+      if (publisher && !publisherInTitle(src, publisher)) li.appendChild(document.createTextNode(", " + publisher));
       if (src.published) { li.appendChild(document.createTextNode(", ")); li.appendChild(dated(src.published)); }
       if (roles && roles[id] && roles[id].length) li.appendChild(el("span", "role", ", supports " + roles[id].join(", ").toLowerCase()));
       if (rereadTail(li, src)) archiveCopy(li, src);
@@ -1928,7 +1930,8 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         var id = pair[0], n = pair[1];
         var a = el("a", "cn", String(n + 1)); a.href = S[id].url; a.dataset.sourceId = id;
         var src = S[id], shown = src.title_en || src.title;
-        a.dataset.tip = shown + (publisherInTitle(src) ? "" : " (" + src.publisher + ")");
+        var runningPublisher = shortPublisher(src.publisher); // a citation's hover is a running line
+        a.dataset.tip = shortTitle(shown) + (!runningPublisher || publisherInTitle(src, runningPublisher) ? "" : " (" + runningPublisher + ")");
         a.dataset.tipSub = (src.title_en ? src.title + " \u00b7 " : "") + hostOf(src.url); a.dataset.tipExt = "";
         a.setAttribute("aria-label", "Source " + (n + 1) + ": " + shown);
         if (span.childNodes.length) span.appendChild(document.createTextNode(","));
@@ -1938,7 +1941,11 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     };
   }
   // The publisher is not printed again where the source's own title already names it (principle: Sources).
-  function publisherInTitle(src) { var p = (src.publisher || "").toLowerCase(); return !!p && [src.title, src.title_en].some(function (t) { return t && t.toLowerCase().indexOf(p) >= 0; }); }
+  function publisherInTitle(src, publisher) { var p = (publisher == null ? src.publisher || "" : publisher).toLowerCase(); return !!p && [src.title, src.title_en].some(function (t) { return t && t.toLowerCase().indexOf(p) >= 0; }); }
+  // Running lines (a function panel's source line, citation hovers, Method's inline links) abbreviate; a record's source list and
+  // the hover keep the full form (owner, 18 Nov 2026; principle: Sources). One rule for both, tests/test_running_source.py.
+  function shortPublisher(p) { return String(p || "").replace(/,?\s*\(?\s*(?:(?:copy|file)\s+)?(?:hosted by|published by|reproducing)\b.*$/i, "").replace(/\s*\([^()]*\)/g, "").replace(/[\s,;:]+$/, "").trim(); }
+  function shortTitle(t) { t = String(t || ""); return t.length <= 80 ? t : t.slice(0, 81).replace(/\s+\S*$/, "").replace(/[\s,;:\u2013-]+$/, "") + "\u2026"; }
   // None-identified entries (principle: None-identified entries): the closest body; the AI Act authorities in one group, one line per body with its roles and basis; other bodies.
   var ROLE_ORDER = ["single_point_of_contact", "market_surveillance", "notifying"];
   var BASIS_NAME = { law: "law", decree: "decree", government_decision: "government decision", cabinet_decision: "cabinet decision", ministerial_act: "ministerial act", administrative: "administrative act" };
@@ -2207,8 +2214,9 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       var s = S[id]; if (!s) return;
       if (i) span.appendChild(document.createTextNode(", "));
       var dup = pubs.indexOf(s.publisher) !== pubs.lastIndexOf(s.publisher);
-      var t = s.title.length > 48 ? s.title.slice(0, 46).replace(/\s+\S*$/, "") + "…" : s.title;
-      var a = el("a", null, s.publisher + (dup ? ": " + t : "")); a.href = s.url; a.rel = "noopener"; a.title = s.title;
+      var shown = shortPublisher(s.publisher) + (dup ? ": " + shortTitle(s.title) : ""), full = s.publisher + (dup ? ": " + s.title : "");
+      var a = el("a", null, shown); a.href = s.url; a.rel = "noopener"; a.title = s.title;
+      if (shown !== full) a.setAttribute("aria-label", full); // an abbreviated running line keeps its full form as the accessible name
       span.appendChild(a); if (rereadTail(span, s)) archiveCopy(span, s); // Method names a source inline: its archived copy only beside its caveat
     });
     return span;

@@ -1008,6 +1008,7 @@ def test_bilingual_names_and_titles_render_through_the_same_tooltip_route():
     helpers += source[source.index('  function withOriginal('):source.index('  function instShort(')]
     helpers += next(line for line in source.splitlines() if line.startswith('  function rowValue('))
     helpers += '\n' + next(line for line in source.splitlines() if line.startswith('  function publisherInTitle('))
+    helpers += '\n' + '\n'.join(next(line for line in source.splitlines() if line.startswith(f'  function {name}(')) for name in ('shortPublisher', 'shortTitle'))
     helpers += source[source.index('  function citations('):source.index('  // None-identified entries (principle:')]
     helpers += source[source.index('  function originalName('):source.index('  function bodyGroup(')]
     helpers += next(line for line in source.splitlines() if line.startswith('  function tipText('))
