@@ -5109,8 +5109,10 @@ def check_content_grid(browser, base_url: str) -> list[str]:
                   const body = scroll.closest('.section-body').getBoundingClientRect(), r = scroll.getBoundingClientRect();
                   const errors = [];
                   if (Math.abs(r.left - body.left) > 1 || Math.abs(r.right - body.right) > 1) errors.push('functions scroller is not full content width');
-                  if (table.getBoundingClientRect().width <= r.width + 1 || scroll.classList.contains('fits') ||
-                      !['auto', 'scroll'].includes(getComputedStyle(scroll).overflowX)) errors.push('functions table no longer scrolls inside its body at 1000px');
+                  // Without group gutters (owner, 18 Nov 2026) the table may fit at 1000px; it either fits, marked so, or scrolls inside its body.
+                  const fits = table.getBoundingClientRect().width <= r.width + 1;
+                  if (fits ? !scroll.classList.contains('fits') : (scroll.classList.contains('fits') || !['auto', 'scroll'].includes(getComputedStyle(scroll).overflowX)))
+                    errors.push('functions table neither fits nor scrolls inside its body at 1000px');
                   return errors;
                 }""")
             else:
@@ -13221,6 +13223,8 @@ def check_functions_phone(browser, base_url: str, data: dict, *, inject: bool = 
         phone_detail = page.locator('.fn-phone-detail').element_handle()
         def cross_breakpoint(width):
             page.set_viewport_size({"width": width, "height": 1000})
+            # A media query's change event fires at the next rendering step, not with the resize: let two frames pass before reading focus.
+            page.evaluate("() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)))")
             page.wait_for_selector('.fn-phone' if width <= 640 else '.fn-scroll')
             errors.extend(f"breakpoint {width}px: " + error for error in page.evaluate(FN_FORM_VISIBILITY))
             if not page.evaluate("window.__fnNodes.every(n => document.querySelector('#functions-table').contains(n))"):
