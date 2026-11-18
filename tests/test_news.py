@@ -246,6 +246,84 @@ def events_csv(data, tmp_path):
         return reader.fieldnames, list(reader)
 
 
+NEWS_COLUMNS = ["date", "jurisdiction", "institute", "news_kind", "headline", "source_urls", "id"]
+
+
+def test_news_table_matches_published_items_and_feed(next_data):
+    tables = build.tables(next_data)
+    rows = tables["news"]
+    groups = next_data["dataset"]["display"]["developments"]
+    events = {row["id"]: row for row in tables["events"]}
+    feed = [entry for entry in agent_files.feed_entries(next_data) if entry["kind"] == "news"]
+    by_feed_id = {entry["id"]: entry for entry in feed}
+    sources = {source["id"]: source["url"] for source in next_data["sources"]}
+    schema = json.loads((ROOT / "schema/aisi.schema.json").read_text())["$defs"]["news_export"]
+    validator = Draft202012Validator(schema)
+
+    assert rows and [row["id"] for row in rows] == [identity for group in groups for identity in group["items"]]
+    assert {agent_files.feed_news_id(group) for group in groups} == set(by_feed_id)
+    offset = 0
+    for group in groups:
+        group_rows = rows[offset:offset + len(group["items"])]
+        offset += len(group_rows)
+        entry = by_feed_id[agent_files.feed_news_id(group)]
+        assert " ".join(row["headline"] for row in group_rows) == entry["summary"]
+        assert [row["source_urls"] for row in group_rows] == [
+            "; ".join(sources[sid] for sid in ids) for ids in group["line_source_ids"]
+        ]
+    # The feed reverses same-date state ties; the CSV keeps the published collector order.
+    assert [agent_files.feed_day(group["date"]) for group in groups] == [entry["updated"] for entry in feed]
+    for row in rows:
+        assert list(row) == NEWS_COLUMNS
+        validator.validate(row)
+        event = events[row["id"]]
+        assert all(row[field] == event[field] for field in ("date", "jurisdiction", "institute", "news_kind"))
+
+
+@pytest.mark.parametrize("authored", [False, True])
+def test_news_table_pair_has_one_row_per_state(authored):
+    data = paired_sample()
+    for institute in data["institutes"]:
+        if institute["id"] == "ca-test":
+            institute["name"] = "Canadian institute"
+        if authored:
+            institute["agreements"][0]["news"] = "The governments agree to cooperate."
+    with_news(data)
+    rows = build.news_rows(data, build.event_rows(data))
+    expected = "The governments agree to cooperate." if authored else "The two governments sign a text on cooperation naming their institutes."
+    assert [(row["jurisdiction"], row["institute"], row["id"], row["headline"]) for row in rows] == [
+        ("Canada", "Canadian institute", "agreements:ca-test:mirror", expected),
+        ("United Kingdom", "Full institute name", "agreements:gb-test:agreement", expected),
+    ]
+
+
+def test_news_table_same_day_items_keep_their_lines_and_sources():
+    data = sample()
+    data["sources"] = [{"id": sid, "url": f"https://example.org/{sid}"} for sid in ("a", "b", "c")]
+    data["jurisdictions"][0].update(institute_id="gb-test", timeline=[
+        event("z-status", news="The government designates the institute.", source_ids=["a"], citations={"news": ["a"]}),
+    ])
+    data["institutes"][0]["funding"] = [budget("a-budget", source_ids=["c", "b"], citations={"amount": ["c", "b"]})]
+    with_news(data)
+    assert len(data["dataset"]["display"]["developments"]) == 1
+    rows = build.news_rows(data, build.event_rows(data))
+    assert [(row["id"], row["headline"], row["source_urls"]) for row in rows] == [
+        ("timeline:GB:z-status", "The government designates the institute.", "https://example.org/a"),
+        ("funding:gb-test:a-budget", "GBP 120m for the institute announced.", "https://example.org/c; https://example.org/b"),
+    ]
+    assert [row["institute"] for row in rows] == ["Full institute name"] * 2
+
+
+@pytest.mark.parametrize("day", ["2026", "2026-10", "2026-10-01"])
+def test_news_table_keeps_date_precision_and_empty_institute(day):
+    data = sample()
+    data["institutes"] = []
+    data["jurisdictions"][0]["timeline"] = [event(day=day)]
+    with_news(data)
+    row, = build.news_rows(data, build.event_rows(data))
+    assert row == dict(zip(NEWS_COLUMNS, [day, "United Kingdom", "", "status", "Institute designated.", "", "timeline:GB:status"], strict=True))
+
+
 def test_news_items_field(next_data, tmp_path):
     _, rows = events_csv(next_data, tmp_path)
     by_id = {r["id"]: r for r in rows}

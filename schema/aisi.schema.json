@@ -4340,6 +4340,46 @@
         }
       }
     },
+    "news_export": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id"
+      ],
+      "description": "One row per News item, carrying the same items as the Atom feed; events.csv is the full file. Groups follow published dataset.display.developments order, then item order within each group. A shared agreement has one row per state.",
+      "properties": {
+        "date": {
+          "type": "string",
+          "description": "The group's original unpadded ISO date, year-month or year."
+        },
+        "jurisdiction": {
+          "type": "string",
+          "description": "Name of the state whose News item this row carries."
+        },
+        "institute": {
+          "type": "string",
+          "description": "Institute name from the item's events.csv row: the owner for an agreement or funding decision, or the state's institute for a timeline event; empty when there is none."
+        },
+        "news_kind": {
+          "type": "string",
+          "enum": ["status", "mandate_or_name", "budget", "agreement"],
+          "description": "The item's news_kind from events.csv: status, mandate_or_name, budget or agreement."
+        },
+        "headline": {
+          "type": "string",
+          "description": "The line shown for this item: the authored news line where the record has one, otherwise the generated line."
+        },
+        "source_urls": {
+          "type": "string",
+          "description": "URLs of the sources for this item's line, in published line_source_ids order, separated by semicolon and space."
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The item's events.csv ID: timeline:<state>:<record>, agreements:<institute>:<record> or funding:<institute>:<record>."
+        }
+      }
+    },
     "news": {
       "type": "string",
       "minLength": 1,

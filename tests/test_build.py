@@ -436,7 +436,7 @@ def test_csv_datapackage_columns_and_descriptions(dataset, monkeypatch):
     tables = build.tables(build.export_dataset(dataset))
     assert set(tables) == {
         "jurisdictions", "institutes", "funding", "staff", "people", "known_activity",
-        "timeline", "agreements", "national_partners", "sources", "outputs", "network_milestones", "source_excerpts", "related_bodies", "closest_bodies", "events", "exchange_rates",
+        "timeline", "agreements", "national_partners", "sources", "outputs", "network_milestones", "source_excerpts", "related_bodies", "closest_bodies", "events", "news", "exchange_rates",
         "functions", "claims",
     }
     resources = {r["name"]: r for r in package["resources"] if r["format"] == "csv"}
@@ -453,7 +453,9 @@ def test_csv_datapackage_columns_and_descriptions(dataset, monkeypatch):
         for key in build.TABLE_NODES[name]:
             node = node[key]
         for field in fields:
-            expected = build.FIELD_DOCS.get(field["name"]) or node["properties"].get(field["name"], {}).get("description")
+            expected = node["properties"].get(field["name"], {}).get("description")
+            if name != "news":
+                expected = build.FIELD_DOCS.get(field["name"]) or expected
             assert field.get("description") == expected
         assert resource["schema"]["missingValues"] == [""]
     assert {"status_confidence", "status_since"} <= set(tables["jurisdictions"][0])
@@ -469,6 +471,15 @@ def test_csv_datapackage_columns_and_descriptions(dataset, monkeypatch):
     activity = published["institutes"][0]["operating"][0]
     assert (activity["kind"], activity["date"], activity["lineage"]) == ("published_work", "2024-10", "evaluation-report")
     assert activity["citations"]["display"] == []  # Legacy association is not credit evidence.
+
+    names = [r["name"] for r in package["resources"]]
+    assert names.index("news") == names.index("events") + 1
+    news = resources["news"]
+    assert news["path"] == "news.csv"
+    assert (news["title"], news["description"]) == build.FILES["news"]
+    assert {f["name"]: f["description"] for f in news["schema"]["fields"]} == {
+        name: field["description"] for name, field in schema["$defs"]["news_export"]["properties"].items()
+    }
 
 
 def test_table_schema_types_and_description_precedence():
