@@ -4096,6 +4096,7 @@ WIDTH_GEOMETRY = {
         ("table", "width"), ("th button", "width"), (".field", "max-width"),
         (".search .field", "width"), (".selectwrap .field", "width"), (".fn-scroll", "max-width"),
         (".fn-scroll.fits .fn-detail", "width"), (".fn-scroll.fits .fn-detail", "max-width"),
+        ('.fn-legend.fn-phone-only li[data-value="not_found"]', "max-width"),
         (".fn-column-group:nth-last-child(2)::after", "width"), (".fn-cell", "width"),
         (".fn-phone-row", "width"), (".fn-phone-detail", "width"), (".fn-phone-detail", "max-width"),
         ("button.fn-function-label", "width"), (".fund-bar", "width"),
@@ -11656,10 +11657,8 @@ def functions_structure(html: str, data: dict) -> list[str]:
         need(not any(i["name"] in summary.get_text() for i in institutes), "Functions summary names an institute")
     legend = section.select_one('ul.fn-legend.fn-desktop-only[role="list"]')
     legend_values = ["activity", "mandate", "not_found"] + (["not_coded"] if wanted_counts["not_coded"] else [])
-    need(legend and [(li.get("data-value"), li.get_text()) for li in legend.select("li[data-value]")] == [(v, "Blank: not found" if v == "not_found" else FN_NAMES[v]) for v in legend_values], "Functions legend differs from its two marks and absent values")
-    blank_text = "A blank cell means we found no public text for it, not that the institute does not do it."
-    need([n.get_text() for n in section.select('.fn-blank')] == [blank_text] and section.select_one('.fn-blank strong'), "Functions blank explanation missing or repeated")
-    need(section.get_text().count("not that the institute does not do it") == 1, "Functions blank caveat repeated")
+    need(legend and [(li.get("data-value"), li.get_text()) for li in legend.select("li[data-value]")] == [(v, "Blank: no public text found; it may still be done" if v == "not_found" else FN_NAMES[v]) for v in legend_values], "Functions legend differs from its two marks and absent values")
+    need(not section.select('.fn-intro, .fn-blank'), "Functions obsolete lede or blank sentence is present")
     order = section.select_one('.fn-order')
     need(order and order.get_text() == "Rows: by the year the institute's current status began, oldest first.", "Functions row order explanation missing")
     provisional = section.select_one('.fn-provisional')
@@ -11667,6 +11666,9 @@ def functions_structure(html: str, data: dict) -> list[str]:
     how = section.select_one('details.fn-how')
     need(how and not how.has_attr("open") and how.select_one('summary') and how.summary.get_text() == "How this is coded",
          "Functions coding fold missing or open by default")
+    box = section.select_one('#functions-table')
+    need(box and how and how is box.find_all(recursive=False)[-1], "Functions coding fold must follow the table and legends")
+    need(not summary or box and summary is box.find(recursive=False), "Functions head must start with the most-common line")
     need(how and order and provisional and how.find_all(recursive=False)[-2:] == [order, provisional]
          and order.parent is how and provisional.parent is how
          and len(section.select('.fn-order, .fn-provisional')) == 2,
@@ -11693,12 +11695,15 @@ def functions_forms_structure(html: str, data: dict) -> list[str]:
         if len(box.select(selector)) != 1:
             errors.append(f"Functions needs exactly one saved {selector}")
     count = sum(not v.get("deprecated") for v in data["dataset"]["vocabularies"]["function"].values())
-    lead = f"Which of {count} functions each institute is active in or has been assigned. "
+    how = box.select_one('.fn-how')
+    what = how.select_one('.fn-what') if how else None
+    if not what or what.get_text() != f"The table shows which of {count} functions each institute is active in or has been assigned.":
+        errors.append("Functions table explanation missing from coding fold")
     for form, tail in (("desktop", "Select a mark to see the quote and source."),
-                       ("phone", "Tap a country to see its functions, then a function for its quote and source.")):
-        intros = box.select('.fn-intro.fn-' + form + '-only')
-        if len(intros) != 1 or intros[0].get_text() != lead + tail:
-            errors.append(f"Functions {form} intro differs")
+                       ("phone", "Select a country to see its functions, then a function for its quote and source.")):
+        instructions = box.select('.fn-use.fn-' + form + '-only')
+        if len(instructions) != 1 or instructions[0].parent is not how or instructions[0].get_text() != tail:
+            errors.append(f"Functions {form} instructions missing from coding fold")
     desktop_controls = {n.get('aria-controls') for n in box.select('.fn-scroll .fn-cell')}
     phone_controls = {n.get('aria-controls') for n in box.select('.fn-phone .fn-phone-row')}
     if desktop_controls & phone_controls:
@@ -11718,7 +11723,7 @@ FN_FORM_VISIBILITY = """() => {
     if(shown ? display==='none' || !node.getClientRects().length : display!=='none') errors.push(selector+' must be '+(shown?'displayed':'display: none'));
   };
   check('.fn-scroll', !narrow); check('.fn-phone', narrow);
-  for(const kind of ['.fn-intro', '.fn-legend']) {
+  for(const kind of ['.fn-legend']) {
     check(kind+'.fn-desktop-only', !narrow); check(kind+'.fn-phone-only', narrow);
   }
   if(box.querySelector('.fn-pip-note')) errors.push('obsolete phone pip note is present');
@@ -11730,9 +11735,20 @@ FN_FORM_VISIBILITY = """() => {
 }"""
 
 
+def explanation_order(html: str) -> list[str]:
+    """The chart's method follows all of its results, including uncharted budgets."""
+    soup = BeautifulSoup(html, "html.parser")
+    how = soup.select_one('#fund-how')
+    if how is None or not all(node and node.parent is how.parent and how in node.find_next_siblings()
+                              for node in (soup.select_one(s) for s in ('.fund-axis', '#fund-rows', '#fund-none'))):
+        return ["Funding explanation must follow the chart and budget list"]
+    return []
+
+
 def check_functions_table(browser, base_url: str, dist: Path, data: dict) -> list[str]:
     html = (dist / "index.html").read_text()
     errors = ["saved: " + e for check in (functions_forms_structure, functions_structure, functions_phone_structure) for e in check(html, data)]
+    errors += explanation_order(html)
     page = browser.new_page(viewport={"width": 1440, "height": 1000})
     hydrated(page, base_url)
     html = page.content()
@@ -11961,10 +11977,10 @@ def functions_phone_structure(html: str, data: dict) -> list[str]:
         wanted_values.append("not_coded")
     need([li.get("data-value") for li in legend] == wanted_values, "Functions phone legend values/order differ")
     for item, value in zip(legend, wanted_values):
-        label = "No public text found" if value == "not_found" else FN_NAMES[value]
+        label = "No public text found; it may still be done" if value == "not_found" else FN_NAMES[value]
         need(item.get_text() == label and item.select_one('.fn-pip.fn-' + value), "Functions phone legend label/mark differs")
     need(not box.select('.fn-pip-note') and "One pip per function" not in box.get_text(), "Functions obsolete phone pip note is present")
-    need(len(box.select('.fn-blank')) == 1 and box.select_one('.fn-blank > strong'), "Functions phone blank caveat missing or repeated")
+    need(not box.select('.fn-blank'), "Functions obsolete blank sentence is present")
     return errors
 
 
@@ -12784,7 +12800,7 @@ def check_functions_zero_carrier(browser, base_url: str, data: dict) -> list[str
     errors += ["all-zero: " + e for check in (functions_structure, functions_phone_structure) for e in check(page.content(), response_data)]
     page.close()
     # Each helper routes the single-code variant before hydration, including touch.
-    errors += check_functions_layout(browser, base_url, fixture=fixture, widths=(390, 1000, 1280))
+    errors += check_functions_layout(browser, base_url, fixture=fixture, widths=(390, 1000, 1120, 1280, 1440))
     errors += check_functions_sticky(browser, base_url, fixture=fixture, widths=(1280, 1000))
     # Checks every opened detail's labels, not-found pips and lack of controls, plus gutters and unbroken words.
     errors += check_functions_phone(browser, base_url, fixture, inject=True, widths=(390,))

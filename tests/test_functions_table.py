@@ -43,10 +43,6 @@ def functions():
     html = '''<nav class="secnav"><a href="#functions" data-sections="functions testing set-up funding">Compare</a></nav>
     <div class="group"><nav class="group-nav"><a href="#functions">Functions</a></nav>
     <section aria-labelledby="functions"><h2 id="functions">Functions</h2><div id="functions-table">
-    <p class="fn-blank"><strong>A blank cell means we found no public text for it, not that the institute does not do it.</strong></p>
-    <details class="more quiet prose-panel fn-how"><summary>How this is coded</summary><p class="small">We record quoted public texts.</p>
-    <p class="small fn-order">Rows: by the year the institute's current status began, oldest first.</p>
-    <p class="small fn-provisional">The list of functions is provisional.</p></details>
     <p class="fn-summary">Most common: testing (2 of 2 institutes), advice (1) and research (1).</p>
     <span id="hint" class="vh">Scrolls sideways</span>
     <div class="fn-scroll" role="region" tabindex="0" aria-labelledby="functions" aria-describedby="hint">
@@ -74,7 +70,14 @@ def functions():
     <td data-code="foresight" data-value="not_found"><span class="vh">not found</span></td>
     <td data-code="incidents" data-value="not_found"><span class="vh">not found</span></td><td class="fn-pad" aria-hidden="true"></td></tr>
     </tbody></table></div>
-    <ul class="fn-legend fn-desktop-only" role="list"><li data-value="activity">Active</li><li data-value="mandate">Assigned</li><li data-value="not_found">Blank: not found</li><li data-value="not_coded">not yet coded</li></ul>
+    <ul class="fn-legend fn-desktop-only" role="list"><li data-value="activity">Active</li><li data-value="mandate">Assigned</li><li data-value="not_found">Blank: no public text found; it may still be done</li><li data-value="not_coded">not yet coded</li></ul>
+    <details class="more quiet prose-panel fn-how"><summary>How this is coded</summary>
+    <p class="small fn-what">The table shows which of 5 functions each institute is active in or has been assigned.</p>
+    <p class="small fn-use fn-desktop-only">Select a mark to see the quote and source.</p>
+    <p class="small fn-use fn-phone-only">Select a country to see its functions, then a function for its quote and source.</p>
+    <p class="small">We record quoted public texts.</p>
+    <p class="small fn-order">Rows: by the year the institute's current status began, oldest first.</p>
+    <p class="small fn-provisional">The list of functions is provisional.</p></details>
     </div></section></div>'''
     return data, html
 
@@ -139,7 +142,9 @@ def test_function_rows_order_by_year_then_name_then_id(functions):
     ('Most common: testing (2 of 2 institutes),', 'Most common: Zulu Institute (2 of 2 institutes),', "summary facts"),
     ('<div id="functions-table">', '<div id="functions-table"><p>It does this (active).</p>', "status word alone in parentheses"),
     ('<span class="vh">not found</span>', '<span>not found</span>', "absent value"),
-    ('<p class="fn-blank"><strong>', '<p class="missing-blank"><strong>', "blank explanation"),
+    ('<div id="functions-table">', '<div id="functions-table"><p class="fn-blank">Old caveat.</p>', "obsolete lede or blank"),
+    ('Blank: no public text found; it may still be done', 'Blank: no public text found', "legend differs"),
+    ('Blank: no public text found; it may still be done', 'Blank: it may still be done', "legend differs"),
     ('The list of functions is provisional.', '', "provisional line"),
     ('class="more quiet prose-panel fn-how"', 'class="more quiet prose-panel"', "coding fold missing"),
     ('<details class="more quiet prose-panel fn-how">', '<details open class="more quiet prose-panel fn-how">', "coding fold missing or open"),
@@ -407,7 +412,6 @@ def functions_phone(functions):
     """Hand-written phone projection: all five values, two unanimous not-found codes and two status blocks."""
     data, _ = functions
     html = '''<section aria-labelledby="functions"><h2 id="functions">Functions</h2><div id="functions-table">
-    <p class="fn-blank"><strong>A blank cell means we found no public text for it, not that the institute does not do it.</strong></p>
     <div class="fn-phone"><div class="fn-phone-head"><span></span><span>Science</span><span>Policy</span></div>
     <div class="fn-phone-block"><h3>Established</h3><ul role="list"><li data-institute="z">
     <button type="button" class="fn-phone-row" aria-label="Zulu, Zulu Institute: show functions" aria-expanded="false" aria-controls="fn-phone-detail-z"></button><span class="fn-phone-country" aria-hidden="true">Zulu</span><span class="fn-pips" aria-hidden="true"><span class="fn-mark fn-activity fn-pip" aria-hidden="true"></span><span class="fn-mark fn-not_found fn-pip" aria-hidden="true"></span></span><span class="fn-pips" aria-hidden="true"><span class="fn-mark fn-mandate fn-pip" aria-hidden="true"></span><span class="fn-mark fn-not_found fn-pip" aria-hidden="true"></span><span class="fn-mark fn-not_found fn-pip" aria-hidden="true"></span></span>
@@ -415,7 +419,7 @@ def functions_phone(functions):
     <div class="fn-phone-block"><h3>Not yet established</h3><ul role="list"><li data-institute="a">
     <button type="button" class="fn-phone-row" aria-label="Alpha, Alpha Institute: show functions" aria-expanded="false" aria-controls="fn-phone-detail-a"></button><span class="fn-phone-country" aria-hidden="true">Alpha</span><span class="fn-pips" aria-hidden="true"><span class="fn-mark fn-activity fn-pip" aria-hidden="true"></span><span class="fn-mark fn-activity fn-pip" aria-hidden="true"></span></span><span class="fn-pips" aria-hidden="true"><span class="fn-mark fn-not_coded fn-pip" aria-hidden="true"></span><span class="fn-mark fn-not_found fn-pip" aria-hidden="true"></span><span class="fn-mark fn-not_found fn-pip" aria-hidden="true"></span></span>
     </li></ul></div></div>
-    <ul class="fn-legend fn-phone-only" role="list"><li data-value="activity"><span class="fn-mark fn-activity fn-pip" aria-hidden="true"></span>Active</li><li data-value="mandate"><span class="fn-mark fn-mandate fn-pip" aria-hidden="true"></span>Assigned</li><li data-value="not_found"><span class="fn-mark fn-not_found fn-pip" aria-hidden="true"></span>No public text found</li><li data-value="not_coded"><span class="fn-mark fn-not_coded fn-pip" aria-hidden="true"></span>not yet coded</li></ul>
+    <ul class="fn-legend fn-phone-only" role="list"><li data-value="activity"><span class="fn-mark fn-activity fn-pip" aria-hidden="true"></span>Active</li><li data-value="mandate"><span class="fn-mark fn-mandate fn-pip" aria-hidden="true"></span>Assigned</li><li data-value="not_found"><span class="fn-mark fn-not_found fn-pip" aria-hidden="true"></span>No public text found; it may still be done</li><li data-value="not_coded"><span class="fn-mark fn-not_coded fn-pip" aria-hidden="true"></span>not yet coded</li></ul>
     </div></section>'''
     return data, html
 
@@ -448,11 +452,12 @@ def test_functions_phone_structure_accepts_groups_values_and_row_order(functions
     ('class="fn-mark fn-activity fn-pip"', 'class="fn-mark fn-both fn-pip"', "pip mark differs"),
     ('class="fn-mark fn-activity fn-pip"', 'class="fn-mark fn-activity fn-mandate fn-pip"', "pip mark differs"),
     ('class="fn-pips" aria-hidden="true"', 'class="fn-pips" aria-hidden="false"', "decorative phone pip group"),
-    ('No public text found</li>', 'Blank: not found</li>', "legend label/mark"),
+    ('No public text found; it may still be done</li>', 'No public text found</li>', "legend label/mark"),
+    ('No public text found; it may still be done</li>', 'It may still be done</li>', "legend label/mark"),
     ('<div class="fn-phone">', '<p class="fn-pip-note"></p><div class="fn-phone">', "obsolete phone pip note"),
     ('<div class="fn-phone">', '<p>One pip per function, in the order of the groups above; tap a row for the names.</p><div class="fn-phone">', "obsolete phone pip note"),
     ('<div class="fn-phone">', '<div class="fn-phone"><div class="fn-phone-detail"></div>', "detail is present"),
-    ('<p class="fn-blank"><strong>', '<p><strong>', "blank caveat"),
+    ('<div id="functions-table">', '<div id="functions-table"><p class="fn-blank">Old caveat.</p>', "obsolete blank"),
 ])
 def test_functions_phone_structure_rejects_mutations(functions_phone, old, new, finding):
     data, html = functions_phone
@@ -513,10 +518,7 @@ def functions_both(functions, functions_phone):
     phone = BeautifulSoup(functions_phone[1], "html.parser")
     box = soup.select_one('#functions-table')
     for selector in ('.fn-phone', '.fn-legend'):
-        box.append(phone.select_one(selector).extract())
-    intros = BeautifulSoup('''<p class="fn-intro fn-desktop-only">Which of 5 functions each institute is active in or has been assigned. Select a mark to see the quote and source.</p><p class="fn-intro fn-phone-only">Which of 5 functions each institute is active in or has been assigned. Tap a country to see its functions, then a function for its quote and source.</p>''', "html.parser")
-    for intro in list(intros.children):
-        box.append(intro.extract())
+        box.select_one('.fn-how').insert_before(phone.select_one(selector).extract())
     return data, str(soup)
 
 
@@ -524,6 +526,31 @@ def test_functions_saved_forms_accept_both_and_scope_legends(functions_both):
     data, html = functions_both
     for check in (check_page.functions_forms_structure, check_page.functions_structure, check_page.functions_phone_structure):
         assert check(html, data) == []
+
+
+def test_explanation_folds_follow_their_content(functions_both):
+    from bs4 import BeautifulSoup
+
+    data, html = functions_both
+    soup = BeautifulSoup(html, "html.parser")
+    box = soup.select_one('#functions-table')
+    box.insert(0, box.select_one('.fn-how').extract())
+    assert "Functions coding fold must follow the table and legends" in check_page.functions_structure(str(soup), data)
+    page = Path('site/index.html').read_text()
+    assert check_page.explanation_order(page) == []
+    soup = BeautifulSoup(page, "html.parser")
+    soup.select_one('#fund-rows').insert_before(soup.select_one('#fund-how').extract())
+    assert check_page.explanation_order(str(soup)) == ["Funding explanation must follow the chart and budget list"]
+
+
+@pytest.mark.parametrize("selector", ['.fn-use.fn-desktop-only', '.fn-use.fn-phone-only', '.fn-what'])
+def test_function_instructions_stay_in_coding_fold(functions_both, selector):
+    from bs4 import BeautifulSoup
+
+    data, html = functions_both
+    soup = BeautifulSoup(html, "html.parser")
+    soup.select_one('#functions-table').append(soup.select_one(selector).extract())
+    assert any("missing from coding fold" in e for e in check_page.functions_forms_structure(str(soup), data))
 
 
 @pytest.mark.parametrize("selector", ['section[aria-labelledby="functions"]', '.fn-scroll', '.fn-phone'])
@@ -548,9 +575,9 @@ def test_functions_structure_rejects_obsolete_empty_paragraph(functions_both, se
     ('class="fn-phone"', 'class="missing-phone"', "exactly one saved .fn-phone"),
     ('class="fn-scroll"', 'class="missing-scroll"', "exactly one saved .fn-scroll"),
     ('class="fn-legend fn-phone-only"', 'class="fn-legend"', "exactly one saved .fn-legend.fn-phone-only"),
-    ('class="fn-intro fn-phone-only"', 'class="fn-intro fn-desktop-only"', "phone intro differs"),
-    ('Tap a country to see its functions, then a function for its quote and source.', 'Select a mark to see the quote and source.', "phone intro differs"),
-    ('Which of 5 functions', 'Which of 4 functions', "intro differs"),
+    ('fn-use fn-phone-only', 'fn-use fn-desktop-only', "phone instructions missing"),
+    ('Select a country to see its functions, then a function for its quote and source.', 'Select a mark to see the quote and source.', "phone instructions missing"),
+    ('which of 5 functions', 'which of 4 functions', "table explanation missing"),
     ('aria-controls="fn-phone-detail-z"', 'aria-controls="detail-z"', "forms share detail controls"),
     ('<div class="fn-phone">', '<div class="fn-phone"><div class="fn-phone-detail"></div>', "detail was saved"),
 ])
