@@ -892,7 +892,7 @@ def test_quote_translation_rejects_sentence_markers_or_unreachable_original(plac
 def test_quote_translation_is_named_once_in_the_fold_label():
     _, _, quote, marker, _ = _translated_lead_fixture()
     html = (f'<details class="quote" open><summary>Quote, translated from German</summary><div class="quote-excerpt">{quote}'
-            f'<span class="quote-anchor">Heading: {quote}</span></div></details>')
+            f'<span class="quote-anchor">Under the heading {quote}</span></div></details>')
     assert check_page.check_quote_translations(BeautifulSoup(html, "html.parser")) == []
     for broken in (html.replace(", translated from German", ""), html.replace(quote + "<span", quote + marker + "<span", 1),
                    html.replace(' tabindex="0"', "", 1)):
