@@ -12378,7 +12378,12 @@ const checkHeading = (detail, cell, country, institute, code, key) => {
   const heading = detail.querySelector('.fn-detail-head, .fn-function-head'), context = detail.querySelector(':scope > .fn-detail-context');
   need(heading?.matches('h4, h5') && heading.textContent === data.dataset.vocabularies.function[code].label, key + ': function heading differs');
   // institute: the short form on desktop; null inside the phone detail, whose heading already names the institute
-  need(context?.textContent === (institute ? institute + ' · ' : '') + names[cell.value].toLowerCase(), key + ': institute short form/cell state differs');
+  // a sentence naming the state (owner, 18 Nov 2026): the institute's short form on desktop, none inside the phone detail
+  const said = context?.textContent || '', named = [...(context?.children || [])], assigned = /\bassigned\b/i.test(said), active = /\bactive\b/i.test(said);
+  const states = {mandate: assigned && !active, activity: active && !assigned, both: active && assigned};
+  need((institute ? named.length === 1 && named[0].textContent === institute && said.split(institute).length === 2 : !named.length && !said.includes(country))
+       && (!(cell.value in states) || states[cell.value]) && !(institute ? said.split(institute).join('') : said).includes(country),
+       key + ': the panel sentence does not name the institute (desktop only) and the cell state, or names the country');
   need(!context || !context.textContent.split(' · ').includes(country), key + ': the label line repeats the country its row names');
   need(context && (heading?.closest('.fn-detail-top') || heading)?.nextElementSibling === context &&
        context.nextElementSibling?.matches('.fn-claim'), key + ': heading/context/claim order differs');

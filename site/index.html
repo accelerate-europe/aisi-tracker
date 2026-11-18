@@ -37,7 +37,7 @@
  * Measure: running text, including News text and Method list items, stops at --prose; structural lists and panels span the content width (check_page check_text_measure, check_content_grid).
  * Secondary tone: --muted is for source apparatus (citations, sources, re-read lines, translation markers and source dates), method notes and field labels. Facts, body roles and qualifiers needed to read values use --ink; type sizes do not decide their colour (check_page check_secondary_tone).
  * Panel measure: claims, quotations, context, re-read lines and sources share --prose from the panel's left content edge, including phone details, definitions and record folds; inline quotations stay inline (check_page check_panel_measure).
- * Function detail: the full function label heads the panel; the institute's short form and the cell's state follow on one muted label line, without the country, which the row above already names; inside the phone detail, whose heading names the institute, the line carries the state alone. Only in a cell whose claims have both bases does each claim name its own basis above its sentence. Each claim uses the record item form: cited sentence, closed Quote fold, then source, on desktop and inside the opened phone function. The desktop panel stays sticky at the left of its scroll box; its border-box width follows that box's clientWidth in pixels, on opening and resizing, so all text fits the visible width without table-cell container units (check_page check_functions_detail, check_functions_phone).
+ * Function detail: the full function label heads the panel; one muted line under it says the cell's state as a sentence with the institute's short form: "Assigned to KI Norge", "KI Norge is active in this", "KI Norge is active in this and has it assigned" (owner, 18 Nov 2026), without the country, which the row above already names; inside the phone detail, whose heading names the institute, the sentence leaves the institute out ("Assigned", "Active in this", "Active in this and assigned"). Only in a cell whose claims have both bases does each claim name its own basis above its sentence. Each claim uses the record item form: cited sentence, closed Quote fold, then source, on desktop and inside the opened phone function. The desktop panel stays sticky at the left of its scroll box; its border-box width follows that box's clientWidth in pixels, on opening and resizing, so all text fits the visible width without table-cell container units (check_page check_functions_detail, check_functions_phone).
  * Inline emphasis: inherit the paragraph's size and family, at most medium weight; no run-in heading role.
  * Sources: a collapsed card ends with the counted sources control alone (muted meta, no top rule, inline hit height); a card reached from the map also ends with "Back to map" before its Sources control; the check date and correction follow the expanded list.
  * Separators: each item of a dot-separated line is one unbreakable box, so lines break only between items (an item wraps inside only when it alone is wider than its container); middle dots stay with the preceding item's final word and are hidden where a line breaks.
@@ -3198,7 +3198,10 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         data: "Data", caption: "Functions by institute", institute: "Institute", scroll_hint: "Scrolls sideways",
         established: "Established", not_found: "not found", blank_legend: "Blank: no public text found; it may still be done", not_coded: "not yet coded",
         provisional: "The list of functions is provisional.",
-        show: "{country}, {institute}: show functions", phone_not_found: "No public text found; it may still be done"
+        show: "{country}, {institute}: show functions", phone_not_found: "No public text found; it may still be done",
+        // The panel's second line, a sentence under the function's name (owner, 18 Nov 2026); on phones the heading above names the institute.
+        state: { mandate: "Assigned to {institute}", activity: "{institute} is active in this", both: "{institute} is active in this and has it assigned" },
+        state_phone: { mandate: "Assigned", activity: "Active in this", both: "Active in this and assigned" }
       };
       var names = { activity: ACTIVITY_WORDS.active, mandate: ACTIVITY_WORDS.assigned, both: ACTIVITY_WORDS.both, not_found: FN_COPY.not_found, not_coded: FN_COPY.not_coded };
       var box = $("functions-table"), vocab = m.vocabularies.function || {};
@@ -3248,8 +3251,10 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         return FN_COPY.summary.replace("{functions}", text);
       }
       function appendClaims(detail, i, code, named) { // named: an enclosing heading already names the institute (the phone detail)
-        var context = el("p", "fn-detail-context"), cite = citations(S, (SOURCE_ORDERS[i.jurisdiction_id] || []).slice(), {}), state = names[rows[i.id][code].value].toLowerCase();
-        context.appendChild(named ? document.createTextNode(state) : separated([instShort(i), state])); detail.appendChild(context); // the row above names the country; the label line takes the short form (principle: Naming)
+        var context = el("p", "fn-detail-context"), cite = citations(S, (SOURCE_ORDERS[i.jurisdiction_id] || []).slice(), {}), value = rows[i.id][code].value;
+        var sentence = (named ? FN_COPY.state_phone : FN_COPY.state)[value] || (named ? "" : "{institute} \u00b7 ") + names[value].toLowerCase();
+        sentence.split(/(\{institute\})/).forEach(function (part) { if (part === "{institute}") context.appendChild(instShort(i)); else if (part) context.appendChild(document.createTextNode(part)); });
+        detail.appendChild(context); // the row above names the country; the sentence takes the institute's short form (principle: Naming)
         var ids = rows[i.id][code].claim_ids, mixed = ids.some(function (id) { return CLAIM_INDEX[id].claim.basis !== CLAIM_INDEX[ids[0]].claim.basis; });
         ids.forEach(function (id) {
           var claim = CLAIM_INDEX[id].claim, item = claimBlock(claim, cite); item.classList.add("fn-claim"); item.dataset.claim = id;
