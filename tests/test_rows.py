@@ -390,7 +390,7 @@ def test_federation_splits_members_and_works_with_partners(rows):
     assert {item["relation"] for item in tables["national_partners"]} == {"member", "works_with"}
 
 
-def test_members_are_uncapped_and_members_only_omit_partners(rows):
+def test_members_show_three_then_a_count_and_members_only_omit_partners(rows):
     rows["institutes"][0]["legal_form"] = "federation_of_existing_bodies"
     for body in partners(rows)["entries"]:
         body["relation"] = "member"
@@ -404,10 +404,11 @@ def test_members_are_uncapped_and_members_only_omit_partners(rows):
     shown = publish(rows)["institutes"][0]["display"]["rows"]
     assert "partners" not in shown
     members = shown["members"]
-    assert [item["name"] for item in members["items"]] == ["SCA", "LAB", "X0", "X1", "X2", "X3", "X4", "X5"]
-    assert members["fold_items"] == members["items"]
-    assert all(item["text"] == f"{item['name']} (synthetic public body)" for item in members["items"])
-    assert members["cited"] == ["gb-source", "detail-source"]
+    # The line shows three, then "and 5 more" (page principle: Folds); the fold and the data keep every member.
+    assert [item["name"] for item in members["items"]] == ["SCA", "LAB", "X0"]
+    assert [item["name"] for item in members["fold_items"]] == ["SCA", "LAB", "X0", "X1", "X2", "X3", "X4", "X5"]
+    assert all(item["text"] == f"{item['name']} (synthetic public body)" for item in members["fold_items"])
+    assert members["cited"] == ["gb-source"]
     assert members["fold_items"][-1]["cited"] == ["gb-source", "detail-source"]
 
 
@@ -424,7 +425,7 @@ def test_members_only_without_cyber_keep_a_tail_only_partners_row(rows):
     }
 
 
-def test_more_than_six_partners_stay_in_the_data(rows):
+def test_more_partners_than_the_line_shows_stay_in_the_data(rows):
     partners(rows)["entries"] += [entry(f"x{k}") for k in range(8)]
     rows["sources"][0]["excerpts"][0]["supports"] += [
         f"{BASE}/national_partners/entries/{k}/{f}"
@@ -437,9 +438,9 @@ def test_more_than_six_partners_stay_in_the_data(rows):
     published = publish(rows)
     assert len(published["institutes"][0]["national_partners"]["entries"]) == 10
     shown = published["institutes"][0]["display"]["rows"]["partners"]["items"]
-    assert len(shown) == 6
+    assert len(shown) == 3  # three, then "and 7 more" on the page
     # cyber agency, then the works_with entries in authored order; planned LAB falls beyond the cap
-    assert [i["name"] for i in shown] == ["SCA", "X0", "X1", "X2", "X3", "X4"]
+    assert [i["name"] for i in shown] == ["SCA", "X0", "X1"]
     folded = published["institutes"][0]["display"]["rows"]["partners"]["fold_items"]
     assert [i["name"] for i in folded] == [
         "SCA", "X0", "X1", "X2", "X3", "X4", "X5", "X6", "X7", "LAB"
@@ -863,7 +864,7 @@ def test_page_oracle_accepts_members_only_and_rejects_an_extra_partners_row(rows
     assert any("card rows" in e for e in page_errors(rows, html.replace("</article>", str(extra) + "</article>")))
 
 
-def test_page_oracle_members_are_uncapped(rows):
+def test_page_oracle_members_line_shows_three_then_a_count(rows):
     html = BeautifulSoup(members_card(rows), "html.parser")
     partners(rows)["entries"] += [entry(f"x{k}", "member") for k in range(6)]
     rows["sources"][0]["excerpts"][0]["supports"] += [
@@ -872,7 +873,8 @@ def test_page_oracle_members_are_uncapped(rows):
         for field in ("name", "relation", "how", "what")
     ]
     names = ["SCA", "LAB", "X0", "X1", "X2", "X3", "X4", "X5"]  # cyber first, then authored order
-    line = '<span class="member-names">' + '<span class="meta-dot" aria-hidden="true"> · </span>'.join(f'<span class="member-name">{name}</span>' for name in names) + cite() + '</span>'
+    line = ('<span class="member-names">' + '<span class="meta-dot" aria-hidden="true"> · </span>'.join(f'<span class="member-name">{name}</span>' for name in names[:3])
+            + '<span class="meta-dot" aria-hidden="true"> · </span><span class="more-count">and 5 more</span>' + cite() + '</span>')
     html.select_one(".member-names").replace_with(BeautifulSoup(line, "html.parser"))
     items = '<ul class="member-list">' + "".join(f'<li>{name} (synthetic public body){cite()}</li>' for name in names) + '</ul>'
     html.select_one(".member-list").replace_with(BeautifulSoup(items, "html.parser"))
@@ -1142,7 +1144,7 @@ def test_page_oracle_requires_the_order_after_form(rows):
     assert any("must follow Form directly" in e for e in page_errors(rows, html))
 
 
-def test_page_oracle_card_cap_is_six(rows):
+def test_page_oracle_card_line_shows_three_then_a_count(rows):
     partners(rows)["entries"] += [entry(f"x{k}") for k in range(6)]
     rows["sources"][0]["excerpts"][0]["supports"] += [
         f"{BASE}/national_partners/entries/{k}/{f}"
@@ -1176,12 +1178,12 @@ def test_page_oracle_card_cap_is_six(rows):
     )
     assert any(
         "Partners: shows" in e for e in page_errors(rows, html)
-    )  # eight on the line: two too many
-    kept = names[:6]
+    )  # eight on the line: five too many, and no count
+    kept = names[:3]
     line = "".join(
         f'<span class="partner">{n} (synthetic public body)</span> '
         for n in kept
-    )
+    ) + '<span class="more-count">and 5 more</span> '
     ok = card(
         good_rows()
         .replace(

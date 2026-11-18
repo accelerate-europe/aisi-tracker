@@ -8171,7 +8171,7 @@ def check_institute_names(html, data: dict) -> list[str]:
 
 LEADERSHIP_ROWS = ("Head", "Reports to", "Partners")  # card labels, in card order, directly after Form
 PARTNER_RELATIONS = ("member", "works_with", "planned")  # card order after the cyber agency
-CARD_PARTNERS = 6  # the card shows at most this many; the oracle's own copy of the cap
+CARD_PARTNERS = 3  # the card line shows three, then "and N more", when two or more would be hidden; the oracle's own copy
 MISSING_TEXT = "Not published"  # dataset.method/missing-values, leadership and reporting-line.
 
 
@@ -8236,9 +8236,9 @@ def expected_leadership(data: dict) -> dict[str, dict[str, tuple[str, list[str],
                 for label, bodies in (("Members", members), ("Partners", others)):
                     if (label == "Members" and not members) or (label == "Partners" and members and not others and has_cyber):
                         continue
-                    shown = bodies if label == "Members" else bodies[:CARD_PARTNERS]
+                    shown = bodies[:CARD_PARTNERS] if len(bodies) > CARD_PARTNERS + 1 else bodies
                     texts = []
-                    for _, e in shown:
+                    for _, e in (bodies if label == "Members" else shown):  # the members fold lists every member; the line shows three
                         name = e.get("acronym") or e.get("name_en") or e["name"]
                         description = e["what"]
                         if label == "Partners" and e["relation"] != "works_with":
@@ -8250,9 +8250,11 @@ def expected_leadership(data: dict) -> dict[str, dict[str, tuple[str, list[str],
                         for k, e in bodies
                     ]
                     cites = row_sources(data, n, [f"national_partners/entries/{k}/{field}" for k, _ in shown for field in ("name", "relation", "how", "cyber_agency", "what")])
+                    if label == "Partners" and len(shown) < len(bodies):
+                        texts.append(f"and {len(bodies) - len(shown)} more")  # nothing cut without a count
                     if label == "Partners" and not has_cyber:
                         texts.append(vocabularies["partner_cyber_none_published"])  # the tail is worded in the vocabulary only
-                    rows[label] = ("", texts, cites, hows)
+                    rows[label] = ("", texts, cites, hows, len(bodies) - len(shown))
             else:
                 rows["Partners"] = ("NA" if partners["state"] == "not_applicable" else MISSING_TEXT, [], [], [])
         expected[institute["id"]] = rows
@@ -8416,7 +8418,7 @@ def check_leadership_rows(html, data: dict) -> list[str]:
         if len(members) != int("Members" in rows) or any(node.find_parent(class_="row") != card.select_one('.row[data-track="4"]') for node in members):
             errors.append(f"{jid}: members must be in Form, with no separate Members row")
         for label in (["Members"] if "Members" in rows else []) + want:
-            text, items, cites, hows = rows[label]
+            text, items, cites, hows, *cut = rows[label]
             row = card.select_one(f':scope > .row[data-track="{CARD_TRACKS["Form" if label == "Members" else label]}"]')
             heading = row.select_one(".k")
             if not heading or not heading.get_text(strip=True):
@@ -8433,7 +8435,9 @@ def check_leadership_rows(html, data: dict) -> list[str]:
                 if names:
                     for mark in names.select('.cites, .meta-dot'):
                         mark.decompose()
-                if not names or names.get_text(" ", strip=True) != " ".join(name for name, _, _ in hows):
+                hidden = cut[0] if cut else 0  # the line shows three, then "and N more" (principle: Folds)
+                line_names = [name for name, _, _ in hows][:len(hows) - hidden] + ([f"and {hidden} more"] if hidden else [])
+                if not names or names.get_text(" ", strip=True) != " ".join(line_names):
                     errors.append(f"{jid} Members: short names differ")
             reports = institute.get("reports_to") or {}
             if label == "Reports to" and reports.get("state") == "stated" and reports.get("name_en"):

@@ -42,7 +42,7 @@
  * Sources: a collapsed card ends with the counted sources control alone (muted meta, no top rule, inline hit height); a card reached from the map also ends with "Back to map" before its Sources control; the check date and correction follow the expanded list.
  * Separators: each item of a dot-separated line is one unbreakable box, so lines break only between items (an item wraps inside only when it alone is wider than its container); middle dots stay with the preceding item's final word and are hidden where a line breaks.
  * Citations: every displayed value a quotation can support carries one (absence and an institute name linking to its own site need none); superscript at value end, three quarters of the text it annotates and never larger than meta (so a big figure keeps small numerals); comma-tight groups; card-local Sources order; hit area one text line high, never covering adjacent lines or preceding text.
- * Members and Partners: a network of existing bodies names its members in Form on a dot-separated short-name line, with the itemised glosses and How they work together behind one quiet fold. Full-record arrival opens the same fold, preserving its control and the reader's focus; Partners holds the other bodies and disappears when none are left unless the cyber search tail remains. Members are uncapped; Partners shows at most six. Each closed fold-out groups bodies sharing an explanation, with explicit plural wording and a citation on every name. Groups follow the first body's priority order; names within a group keep that order. Generic explanations that only repeat the partner relation are omitted. Partner glosses omit the generic works-with relation; planned relations stay explicit. Downloads keep every relation.
+ * Members and Partners: a network of existing bodies names its members in Form on a dot-separated short-name line, with the itemised glosses and How they work together behind one quiet fold. Full-record arrival opens the same fold, preserving its control and the reader's focus; Partners holds the other bodies and disappears when none are left unless the cyber search tail remains. The Members and Partners lines show three names, then "and N more" when two or more would be hidden, and the fold lists every body under a counted label (Folds, part 3). Each closed fold-out groups bodies sharing an explanation, with explicit plural wording and a citation on every name. Groups follow the first body's priority order; names within a group keep that order. Generic explanations that only repeat the partner relation are omitted. Partner glosses omit the generic works-with relation; planned relations stay explicit. Downloads keep every relation.
  * Card grids: alphabetical rows share field tracks through subgrid; every field keeps a fixed shared track (Mandate and Finding share the descriptive-text track); a structurally absent field leaves its track empty, without a label; where a row has three tracks, a group's only card spans two (check_page check_card_grid), while a single trailing card in a fuller group's last row keeps the usual card width; phones keep one column.
  * Card heads: country, status and download stick below the site bars within their own card in Compare and States, including phones; the one-line name keeps its full accessible text and tooltip, with ellipsis when needed. CSS sizes the shared title track and focus clearance from the label line, hit height, rules and padding, without copies or measurement; the institute stays in its field and print keeps static heads (check_page check_card_heads, check_saved_card_heads, hydration_paint).
  * Alignment: every text row shares its first baseline, including wrapped text, smaller labels, icons and format tags; within a card every field's value starts at one x.
@@ -1143,7 +1143,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     notDesignated: "Not designated.", // a closest body's activity line opens with the designation state
     activeIn: "Active in", more: function (n) { return "and " + n + " more"; }
   };
-  var HOW_WORDS = { title: "How we checked", earlier: function (n) { return n + " earlier searches"; } };
+  var HOW_WORDS = { title: "How we checked", earlier: function (n) { return n + (n === 1 ? " earlier search" : " earlier searches"); } };
   var HOW_SHOWN = 3; // Generated notes order: full check, next check when shown, searches newest first (authored order for ties); only earlier searches fold. The gate holds this limit.
   // Status definitions, short: the map legend shows each once, the full text is in Method.
   var SHORT = { established: "Created or designated by government.", planned: "Adopted by government, not yet created.", proposed: "Formally proposed, approval pending.", exploring: "Being studied or drafted, or recommended by an advisory commission.", none_identified: "No decision, plan, proposal or study found." };
@@ -1468,6 +1468,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     if (p.state !== "stated" || (!p.items.length && !p.tail)) return missing(p.state === "not_applicable");
     var suffix = ", " + worksWith + ")";
     var parts = p.items.map(function (item) { return item.text.endsWith(suffix) ? item.text.slice(0, -suffix.length) + ")" : item.text; }); // omit the generic relation on the page; keep the published text intact
+    if ((p.fold_items || p.items).length > p.items.length) parts.push(moreCount(p)); // nothing cut without a count (principle: Folds)
     if (p.tail) parts.push(el("span", "partners-none", p.tail)); // the producer words it, from the vocabulary
     var line = el("span", "partners"); line.appendChild(separated(parts)); return line;
   }
@@ -1486,7 +1487,8 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     };
     if (p.state !== "stated" || !(p.fold_items || []).length) return null;
     var det = el(unfolded ? "div" : "details", unfolded ? "partner-how" : "more quiet partner-how"), ul = el("ul");
-    det.appendChild(el(unfolded ? "p" : "summary", unfolded ? "small" : null, "How they work together"));
+    var n = p.fold_items.length; // a fold that hides a list carries its count (principle: Folds)
+    det.appendChild(el(unfolded ? "p" : "summary", unfolded ? "small" : null, unfolded || n < 2 ? "How they work together" : "How the " + n + " partners work together"));
     // First occurrence orders groups; members keep producer order (cyber first, relation, authored tie-break).
     var groups = [];
     p.fold_items.forEach(function (item) {
@@ -1508,14 +1510,15 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     });
     det.appendChild(ul); return det;
   }
-  var MEMBER_DETAILS = "Members and how they work together";
+  var MEMBER_DETAILS = "members and how they work together"; // after their count (principle: Folds)
+  function moreCount(p) { return el("span", "more-count", "and " + ((p.fold_items || p.items).length - p.items.length) + " more"); }
   function membersValue(p, cite, institute) {
     var box = el("div", "members"), names = el("span", "member-names");
-    names.appendChild(separated(p.items.map(function (item) { return item.name; })));
+    names.appendChild(separated(p.items.map(function (item) { return item.name; }).concat((p.fold_items || p.items).length > p.items.length ? [moreCount(p)] : [])));
     citeTarget(names).appendChild(cite(p.cited, "Members")); box.appendChild(names);
     var detail = el("details", "more quiet member-details"), list = el("ul", "member-list");
-    detail.appendChild(el("summary", null, MEMBER_DETAILS));
-    p.items.forEach(function (item) {
+    detail.appendChild(el("summary", null, (p.fold_items || p.items).length + " " + MEMBER_DETAILS));
+    (p.fold_items || p.items).forEach(function (item) {
       var entry = institute.national_partners.entries.find(function (body) { return body.id === item.id; });
       var li = el("li", null, item.text); li.appendChild(cite(fieldCitations(entry, ["name", "what"]), "Members")); list.appendChild(li);
     });
@@ -1943,7 +1946,10 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   var ROLE_ORDER = ["single_point_of_contact", "market_surveillance", "notifying"];
   var BASIS_NAME = { law: "law", decree: "decree", government_decision: "government decision", cabinet_decision: "cabinet decision", ministerial_act: "ministerial act", administrative: "administrative act" };
   var STAGE_LINE = { planned: "Planned.", proposed: "Proposed.", under_study: "Under study." }; // an existing body has no stage line, and no body a reason (owner, 15 Nov 2026)
-  var AI_ACT_SHOWN = 3; // more AI Act bodies than this fold behind "N more AI Act bodies" (owner, 15 Nov 2026)
+  // Folds, part 3 (owner, 18 Nov 2026): a list of like items shows three, then folds the rest behind a counted control when two or more
+  // would be hidden; a fold for one item would hide no more than its own line. Nothing is cut without a count.
+  var LIST_SHOWN = 3;
+  function shownAndHidden(items) { var hidden = items.length > LIST_SHOWN + 1 ? items.slice(LIST_SHOWN) : []; return [items.slice(0, items.length - hidden.length), hidden]; }
   // The original name's tooltip omits a closing abbreviation the English name already ends with.
   function originalName(b) { if (!b.name_en) return ""; var m = /\s*(\([^()]+\))$/.exec(b.name); return m && b.name_en.slice(-m[1].length) === m[1] ? b.name.slice(0, m.index) : b.name; }
   // A body: its name with the original as its tooltip (principle: Naming), followed by roles outside the tooltip.
@@ -2010,11 +2016,14 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       return item(b.name_en || b.name, originalName(b), [b.role], b.display.source_links, b.id, authorityLine(b, words));
     });
     if (acts.length) {
-      var hidden = acts.length > AI_ACT_SHOWN + 1 ? acts.slice(AI_ACT_SHOWN) : []; // a fold for one body would hide no more than its own line
-      groups.push(bodyGroup("AI Act authorities", acts.slice(0, acts.length - hidden.length), hidden, hidden.length + " more AI Act bodies"));
+      var actParts = shownAndHidden(acts);
+      groups.push(bodyGroup("AI Act authorities", actParts[0], actParts[1], actParts[1].length + " more AI Act bodies"));
     }
     var rest = others.filter(function (b) { return b.kind !== "ai_act_authority"; });
-    if (rest.length) groups.push(bodyGroup("Other bodies", rest.map(function (b) { return item(b.name_en || b.name, originalName(b), [b.role], b.display.source_links, b.id); })));
+    if (rest.length) {
+      var restParts = shownAndHidden(rest.map(function (b) { return item(b.name_en || b.name, originalName(b), [b.role], b.display.source_links, b.id); }));
+      groups.push(bodyGroup("Other bodies", restParts[0], restParts[1], restParts[1].length + " more other bodies"));
+    }
     return groups;
   }
   // Research notes in one muted block. The legacy path keeps its search and Commission wording; migrated notes arrive as generated paragraphs.
@@ -3994,6 +4003,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     var latest = m.display.latest_change;
     // The collapsed row: version and date only; the notes are in the open list.
     $("changes-latest").textContent = ""; $("changes-latest").appendChild(separated([el("span", null, latest.version), dated(latest.date)]));
+    var versions = m.display.changelog.length; $("changes").querySelector(".summary-label").textContent = "Version history (" + versions + ")"; // a fold that hides a list carries its count (principle: Folds)
 
     var pub = el("a", null, m.publisher); pub.href = "https://accelerate-europe.org/"; $("foot").textContent = "";
     var methodLink = el("a", null, "Full method"); methodLink.href = "method.html";

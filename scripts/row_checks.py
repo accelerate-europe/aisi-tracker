@@ -12,7 +12,7 @@ import re
 # Stable codes the checks and the card depend on. Labels never live here.
 # Relation order on the card, strongest first; the codes are the schema enum.
 RELATIONS = ("member", "works_with", "planned")
-CARD_PARTNERS = 6  # the card shows at most this many; the data and downloads keep all
+CARD_PARTNERS = 3  # the card line shows three, then "and N more", when two or more would be hidden (page principle: Folds); the fold, data and downloads keep all
 MAX_HOW_WORDS = 25
 # Require exact excerpt bindings for every what descriptor and present cyber flag,
 # and at most one flagged entry per institute. False is for legacy fixtures only.
@@ -280,7 +280,8 @@ def row_display(institute: dict, vocabularies: dict) -> dict | None:
             else None
         )
 
-        def body_row(bodies, cap=None, tail=None):
+        def body_row(bodies, tail=None):
+            cap = CARD_PARTNERS if len(bodies) > CARD_PARTNERS + 1 else None  # a cut for one body would hide no more than its own name
             items = [
                 {
                     "id": e["id"],
@@ -304,5 +305,5 @@ def row_display(institute: dict, vocabularies: dict) -> dict | None:
         if members:
             out["members"] = body_row(members)
         if not members or others or tail:
-            out["partners"] = body_row(others, CARD_PARTNERS, tail)
+            out["partners"] = body_row(others, tail)
     return out
