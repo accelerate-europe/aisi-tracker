@@ -12825,6 +12825,13 @@ def check_functions_views(browser, base_url: str, data: dict) -> list[str]:
     cell = next(f for f in institute["functions"] if f["code"] == "model_testing")
     if not cell["claim_ids"]:
         return ["Functions grouped desktop sample gb-aisi/model_testing has no claims"]
+    for width in (641, 700):  # between the phone layout and the full desktop: labels wrap, nothing scrolls sideways
+        page = browser.new_page(viewport={"width": width, "height": 1000})
+        hydrated(page, base_url, fn_view="default")
+        over = page.evaluate("() => { const p = document.querySelector('.fn-phone'); return [p.scrollWidth - p.clientWidth, document.documentElement.scrollWidth - innerWidth]; }")
+        if max(over) > 1:
+            errors.append(f"{width}px: the grouped view scrolls sideways ({over})")
+        page.close()
     for width in (1440, 1000, 390):
         page = browser.new_page(viewport={"width": width, "height": 1000})
         hydrated(page, base_url, fn_view="default")
@@ -12833,8 +12840,15 @@ def check_functions_views(browser, base_url: str, data: dict) -> list[str]:
         v = page.evaluate(FN_VIEWS_JS)
         if v["view"] != "grouped" or not v["grouped"] or v["grid"]:
             errors.append(f"{width}px: Functions does not open on the grouped view: {v}")
-        if width > 640 and v["phoneWidth"] > v["prose"] + 1:
-            errors.append(f"{width}px: the grouped view stretches past the reading measure ({v['phoneWidth']:.0f}px)")
+        if width >= 1000:  # fills the content column as the grid does, and no institute's name wraps (hub, 18 Nov 2026)
+            fill = page.evaluate("""() => { const phone = document.querySelector('.fn-phone'), box = document.getElementById('functions-table');
+              const wrapped = [...phone.querySelectorAll('.fn-phone-country')].filter(n => { const r = document.createRange(); r.selectNodeContents(n);
+                return new Set([...r.getClientRects()].filter(x => x.width > .5).map(x => Math.round(x.top))).size > 1; }).map(n => n.textContent);
+              return {phone: phone.getBoundingClientRect().width, box: box.clientWidth, wrapped}; }""")
+            if abs(fill["phone"] - fill["box"]) > 1:
+                errors.append(f"{width}px: the grouped view does not fill the content column ({fill['phone']:.0f} of {fill['box']}px)")
+            if fill["wrapped"]:
+                errors.append(f"{width}px: institute names wrap in the grouped view's first column: {fill['wrapped']}")
         switch = page.locator('#functions-table > .fn-view-switch')
         grouped = switch.locator('button[data-view="grouped"]')
         grid = switch.locator('button[data-view="grid"]')
