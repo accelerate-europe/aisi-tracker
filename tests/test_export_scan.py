@@ -59,6 +59,38 @@ def test_scan_skips_git_but_reads_every_other_file(tmp_path):
     assert export_scan.scan(root, [TERM]) == [f"img.png:1: home path {HOME!r}", f"deep/x.py:1: private term {TERM!r}"]
 
 
+def test_repeated_lines_keep_every_location_and_match(tmp_path, monkeypatch):
+    line = f"{HOME} {TERM.upper()} {TERM}"
+    root = tree(tmp_path, {"a.txt": f"{line}\nPublic\n{line}\n", "b.txt": f"Public\n{line}\n"})
+    calls = []
+    pattern = export_scan.HOME_PATH
+
+    class CountedPattern:
+        def finditer(self, text):
+            calls.append(text)
+            return pattern.finditer(text)
+
+    monkeypatch.setattr(export_scan, "HOME_PATH", CountedPattern())
+    assert export_scan.scan(root, [TERM]) == [
+        f"{path}:{number}: {kind} {match!r}"
+        for path, number in [("a.txt", 1), ("a.txt", 3), ("b.txt", 2)]
+        for kind, match in [("home path", HOME), ("private term", TERM.upper()), ("private term", TERM)]
+    ]
+    assert calls == [line, "Public"]
+
+
+def test_line_matches_do_not_cross_scan_rules_or_terms(tmp_path):
+    line = f"2026-11-08 {COMMIT} {TERM}"
+    root = tree(tmp_path, {"a.txt": line, "b.bin": b"\0\n" + line.encode()})
+    assert export_scan.scan(root, [TERM]) == [
+        f"a.txt:1: dated note citing a commit ID {COMMIT!r}",
+        f"a.txt:1: private term {TERM!r}",
+        f"b.bin:2: private term {TERM!r}",
+    ]
+    assert export_scan.scan(root, [], dated_notes=False) == []
+    assert export_scan.scan(root, []) == [f"a.txt:1: dated note citing a commit ID {COMMIT!r}"]
+
+
 def test_terms_file_comments_and_blanks(tmp_path):
     terms = tmp_path / "terms.txt"
     terms.write_text(f"# private names\n\n  {TERM}  \n")

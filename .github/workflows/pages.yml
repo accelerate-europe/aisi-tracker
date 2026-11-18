@@ -129,6 +129,7 @@ jobs:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           BEFORE: ${{ github.event.before }}
+          INPUT_BASE: ${{ inputs.base }}
           SHA: ${{ github.sha }}
           REF: ${{ github.ref }}
         run: |
@@ -140,15 +141,24 @@ jobs:
             export AISI_EXPORT_TERMS="$RUNNER_TEMP/export-terms.txt"
           fi
           unset TERMS
-          # The commits this event publishes. Without a usable before (a new branch, a force push whose old
-          # commit is gone, a manual run): everything not on main, which moves only with the owner's Go after its
-          # commits were checked on next. Another branch is no baseline: nothing proves it was checked. A push to
-          # main itself without a usable before (a force push, which needs the owner's Go) scans the whole history,
-          # which fails on the 1.x commits' session trailers: deliberately closed. Never an empty range by mistake.
+          # The commits this run would add to its target. A pull request and a push name them. A run by hand on a
+          # work branch with base origin/next scans what next does not have yet: every commit enters next through a
+          # push, whose run scans exactly what that push added, so next's own commits are not scanned again. A work
+          # branch is no target: nothing enters it through a gate, so any other base is ignored here. Without a
+          # usable before or base (a new branch, a force push whose old commit is gone, a run by hand on next):
+          # everything not on main, which moves only with the owner's Go after its commits were checked on next. A
+          # push to main itself without a usable before (a force push, which needs the owner's Go) scans the whole
+          # history, which fails on the 1.x commits' session trailers: deliberately closed. Never an empty range by
+          # mistake: a branch with nothing that next lacks falls back to everything not on main.
           if [ "$EVENT" = pull_request ]; then
             set -- "$BASE_SHA..$HEAD_SHA"
           elif [ "$EVENT" = push ] && git cat-file -e "$BEFORE^{commit}" 2>/dev/null; then
             set -- "$BEFORE..$SHA"
+          elif [ "$EVENT" = workflow_dispatch ] && [ "$INPUT_BASE" = origin/next ] && [ "$REF" != refs/heads/main ] \
+              && [ "$REF" != refs/heads/next ] && [ "${REF#refs/heads/}" != "$REF" ] && git rev-parse --verify -q origin/main >/dev/null \
+              && next=$(git rev-parse --verify -q "origin/next^{commit}") \
+              && [ "$(git rev-list --count "$SHA" "^$next" "^$(git rev-parse origin/main)")" -gt 0 ]; then
+            set -- "$SHA" "^$next" "^$(git rev-parse origin/main)"
           elif [ "$REF" != refs/heads/main ] && git rev-parse --verify -q origin/main >/dev/null; then
             set -- "$SHA" "^$(git rev-parse origin/main)"
           else
