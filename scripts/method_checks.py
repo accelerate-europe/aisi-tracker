@@ -56,6 +56,8 @@ def required_excerpt_pointers(d: dict, *, authored: dict | None = None) -> set[s
                 required.update(f"{prefix}/timeline/{designation}/{key}" for key in ("date", "event"))
         authored_events = {e["id"]: e for e in authored_jurisdictions[record["id"]].get("timeline", [])}
         for k, event in enumerate(record.get("timeline", [])):
+            if "news" in event:
+                required.add(f"{prefix}/timeline/{k}/news")
             if event["event"] == "first_output" and event["id"] in authored_events:
                 required.update(f"{prefix}/timeline/{k}/{key}" for key in ("date", "description"))
     for n, record in enumerate(d["institutes"]):
@@ -75,6 +77,8 @@ def required_excerpt_pointers(d: dict, *, authored: dict | None = None) -> set[s
             ("agreements", ("counterparty", "state", "date", "scope", "participation")),
         ):
             for k, item in enumerate(record.get(collection, [])):
+                if collection in {"funding", "agreements"} and "news" in item:
+                    required.add(f"{prefix}/{collection}/{k}/news")
                 item_keys = keys
                 if (
                     collection == "funding"

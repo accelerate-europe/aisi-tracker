@@ -1301,9 +1301,9 @@ def check_feed(soup, dist: Path) -> list[str]:
     atoms = [str(a.get("href") or "") for a in soup.select('head link[rel="alternate"][type="application/atom+xml"]')]
     if atoms != ["feed.xml"]:
         return [f"head: expected one Atom alternate link to feed.xml, got {atoms}"]
-    link = soup.select_one("#news ~ a#news-feed")  # the saved page; its template copy repeats it
+    link = soup.select_one("#developments .news-links a#news-feed")  # the saved page; its template copy repeats it
     if not link or link.get("href") != "feed.xml":
-        errors.append("News: no Atom feed link beside its heading")
+        errors.append("News: no Atom feed link after its list")
     try:
         root = ElementTree.parse(dist / "feed.xml").getroot()
     except (OSError, ElementTree.ParseError) as exc:
@@ -1898,7 +1898,7 @@ ACTIVITY_CREDIT_SOURCES, FIRST_OUTPUT_CREDIT_SOURCES = load_credit_sources()
 
 
 DEVELOPMENT_CREDIT_SOURCES = {
-    ("NO", "no-1"): ["no-budget"],
+    ("NO", "no-1"): ["no-budget", "no-prop1s-2026-27-dfd"],
     ("NL", "nl-2"): ["nl-kamerbrief-2026-09"],
     ("ES", "es-1"): ["es-plan", "es-moncloa"],
     ("DE", "de-2"): ["de-bmds"],
@@ -3598,6 +3598,169 @@ def check_cite(soup, dataset: dict) -> list[str]:
     return []
 
 
+def expected_news_groups(data: dict) -> list[dict]:
+    """Independent News oracle: canonical records, never the collector or events.news_kind.
+
+    Budget amounts use the card's native label, independently of the News sentence.
+    Registry target order supplies the order of the two state names.
+    """
+    jurisdictions = {j["id"]: j for j in data["jurisdictions"]}
+    institutes = {i["id"]: i for i in data.get("institutes", [])}
+    clauses = []
+    for jid, jurisdiction in jurisdictions.items():
+        for event in sorted(jurisdiction.get("timeline", []), key=lambda e: e["id"]):
+            if event["event"] not in {
+                "commitment", "proposed", "designated", "launched", "first_output",
+                "exploration_started", "withdrawn", "closed", "named", "mandate_changed",
+            }:
+                continue
+            text = event["news"] if "news" in event else (event.get("short") or "").strip()
+            if not text:
+                description = event.get("description", "").strip()
+                text = description
+                for end in re.finditer(r"[.!?][\"')\]]*(?=\s|$)", description):
+                    candidate = description[:end.end()]
+                    token = candidate.split()[-1].rstrip("\"')]").lower()
+                    if token in {"mr.", "mrs.", "ms.", "dr.", "prof.", "st.", "e.g.", "i.e."} or re.fullmatch(r"(?:[a-z]\.)+", token):
+                        continue
+                    text = candidate
+                    break
+            sources = citation_fields(event, ["news"]) if "news" in event else expected_event_sources(data, jurisdiction, event)
+            clauses.append((jid, event["date"], event["id"], f"timeline:{jid}:{event['id']}", text, event, sources, None))
+    registered = {}
+    for claim in data["dataset"].get("shared_claims", []):
+        if claim["kind"] != "agreement":
+            continue
+        # A pair counts only when both parties and their states are in the data (a pruned fixture may hold one).
+        if not all(target[1]["id"] in institutes and institutes[target[1]["id"]]["jurisdiction_id"] in jurisdictions for target in claim["targets"]):
+            continue
+        states = [institutes[target[1]["id"]]["jurisdiction_id"] for target in claim["targets"]]
+        pair = {"id": claim["id"], "states": states, "names": [jurisdictions[jid]["name"] for jid in states]}
+        for target in claim["targets"]:
+            registered[(target[1]["id"], target[3]["id"])] = pair
+    for iid, institute in sorted(institutes.items()):
+        jid = institute["jurisdiction_id"]
+        if jid not in jurisdictions:  # an institute whose state is not in the data (a pruned fixture) has no News row
+            continue
+        for budget in sorted(institute.get("funding", []), key=lambda b: b["id"]):
+            if not budget.get("decision_date") or budget.get("commitment") not in ("announced", "adopted") or budget.get("coverage") not in ("whole_institute", "component"):
+                continue
+            text = budget["news"] if "news" in budget else f"{budget['display']['native_value']} for the institute {budget['commitment']}."
+            sources = citation_fields(budget, ["news"] if "news" in budget else ["amount", "currency", "amount_qualifier", "commitment", "coverage", "decision_date"])
+            clauses.append((jid, budget["decision_date"], budget["id"], f"funding:{iid}:{budget['id']}", text, None, sources, None))
+        for agreement in sorted(institute.get("agreements", []), key=lambda a: a["id"]):
+            if not agreement.get("date"):
+                continue
+            pair = registered.get((iid, agreement["id"]))
+            if "news" in agreement:
+                text = agreement["news"]
+            elif agreement["state"] == "pledged":
+                text = f"Pledge announced by {agreement['counterparty']}."
+            elif agreement.get("participation") == "named_implementer":
+                verb = "sign" if agreement["state"] == "signed" else "announce"
+                text = (f"The two governments {verb} a text on cooperation naming their institutes." if pair
+                        else f"Governments {verb} a text on cooperation naming the institute.")
+            else:
+                text = f"Agreement {agreement['state']} with {agreement['counterparty']}."
+            sources = citation_fields(agreement, ["news"] if "news" in agreement else ["state", "counterparty", "date", "participation"])
+            clauses.append((jid, agreement["date"], agreement["id"], f"agreements:{iid}:{agreement['id']}", text, None, sources, pair))
+    # Independently enforce the method's weight order, then owner and record ID.
+    def weight(clause):
+        event = clause[5]
+        return (1 if event["event"] in {"mandate_changed", "named"} else 0) if event else (2 if clause[3].startswith("funding:") else 3)
+
+    clauses.sort(key=lambda c: (weight(c), c[3].split(":")[1], c[2]))
+    groups = {}
+    for jid, day, identity, item, text, event, sources, pair in clauses:
+        key = (jid, day, item if len(day) < 10 else "")
+        group = groups.setdefault(key, {"jurisdiction": jid, "name": jurisdictions[jid]["name"], "date": day, "order": identity if event is not None else item, "events": [], "items": [], "texts": [], "pairs": [], "line_source_ids": [], "source_ids": [], "timeline": []})
+        group["items"].append(item)
+        group["texts"].append(text)
+        group["pairs"].append(pair)
+        group["line_source_ids"].append(list(dict.fromkeys(sources)))
+        group["source_ids"] = list(dict.fromkeys(group["source_ids"] + sources))
+        if event is not None:
+            group["events"].append(identity)
+            group["timeline"].append(event)
+    ordered = sorted(groups.values(), key=lambda g: (g["jurisdiction"], g["items"][0].split(":", 2)[2], g["items"]))
+    return sorted(ordered, key=lambda g: g["date"], reverse=True)
+
+
+def expected_news_page(groups: list[dict]) -> list[dict]:
+    """Project canonical groups using each pair's first position, not page metadata."""
+    first = {}
+    for pos, group in enumerate(groups):
+        for n, pair in enumerate(group["pairs"]):
+            if pair:
+                first.setdefault(pair["id"], (pos, n))
+    entries = []
+    for pos, group in enumerate(groups):
+        keep = [n for n, pair in enumerate(group["pairs"]) if pair is None or first[pair["id"]] == (pos, n)]
+        if not keep:
+            continue
+        pairs = [group["pairs"][n] for n in keep if group["pairs"][n]]
+        names = {}
+        for pair in pairs:
+            for state, name in zip(pair["states"], pair["names"], strict=True):
+                names.setdefault(state, name)
+        names.setdefault(group["jurisdiction"], group["name"])
+        labels = list(names.values())
+        label = ", ".join(labels[:-1]) + " and " + labels[-1] if len(labels) > 1 else labels[0]
+        sources = list(dict.fromkeys(sid for n in keep for sid in group["line_source_ids"][n]))
+        entries.append({**group, "position": pos, "name": label, "texts": [group["texts"][n] for n in keep], "source_ids": sources, "pair_ids": [p["id"] for p in pairs]})
+    return entries[:10]
+
+
+def check_news(soup, data: dict) -> list[str]:
+    """Check published identities and page rows against the independent News selection."""
+    errors = first_output_data_errors(data)
+    all_groups = expected_news_groups(data)
+    page = expected_news_page(all_groups)
+    cutoff = page[-1]["position"] + 1 if page else 0
+    shown_pairs = {identity for g in page for identity in g["pair_ids"]}
+    ordered = all_groups[:cutoff] + [g for g in all_groups[cutoff:] if any(p and p["id"] in shown_pairs for p in g["pairs"])]
+    published = data["dataset"].get("display", {}).get("developments", [])
+    fields = ("jurisdiction", "name", "date", "order", "events", "items", "texts", "pairs", "line_source_ids")
+    if [{key: g.get(key) for key in fields} for g in published] != [{key: g[key] for key in fields} for g in ordered]:
+        errors.append("News published identities, items or lines differ from canonical records")
+    rows = soup.select("#development-list > .development-row")
+    pair_counts = Counter(identity for row in rows for identity in row.get("data-pairs", "").split())
+    if pair_counts != Counter({identity: 1 for identity in shown_pairs}):
+        errors.append("News registered pairs must appear exactly once on the page")
+    orders = card_source_orders(soup, data)
+    if len(soup.select("#development-list > li:not(.earlier)")) != min(3, len(page)) or len(soup.select("#development-list > li.earlier")) != max(0, len(page) - 3):
+        errors.append("developments do not use the three plus seven split")
+    if len(rows) != len(page):
+        errors.append("News must show ten entries after pair merging, or all if fewer")
+    for row, group in zip(rows, page):
+        clock = row.select_one(".development-date")
+        name = row.select_one(".development-name")
+        text = row.select_one(".development-text")
+        if row.get("data-pairs", "").split() != group["pair_ids"]:
+            errors.append("News pair entry differs from the registered agreement")
+        # The DOM has no separate News ID; these attributes identify its published group.
+        if row.get("data-j") != group["jurisdiction"] or row.get("data-events", "").split() != group["events"] or not clock or clock.get("data-date") != group["date"] or not name or name.get_text() != group["name"]:
+            errors.append("development ordering, grouping, date or jurisdiction differs from data")
+        if group["pair_ids"] and (not name or name.get_text() != group["name"]):
+            errors.append("News pair entry must name both states in registration order")
+        if [a.get("data-source-id") for a in row.select(".cn")] != in_numeral_order(group["source_ids"], orders.get(group["jurisdiction"], [])):
+            errors.append("development citations differ from retained News line sources")
+        if text:
+            for cites in text.select(".cites"):
+                cites.decompose()
+            parts = text.get_text().split(" · ")
+            fallback_events = [(part, event) for part, event in zip(parts, group["timeline"]) if "news" not in event]
+            errors += first_output_part_errors([part for part, _ in fallback_events], [event for _, event in fallback_events])
+            if parts != group["texts"]:
+                errors.append("development summary differs from canonical News lines")
+        else:
+            errors.append("development text missing")
+    link = soup.select_one('#events-download[download="events.csv"]')
+    if not link or link.get("href") != "data/events.csv":
+        errors.append("developments lack the events download")
+    return errors
+
+
 def check_summary_data(html: str, data: dict) -> list[str]:
     """Compare the hero, legend and developments with their source records."""
     soup = BeautifulSoup(html, "html.parser")
@@ -3655,76 +3818,7 @@ def check_summary_data(html: str, data: dict) -> list[str]:
         errors.append(report_line("changelog is not next to Cite as in Data"))
     errors += check_cite(soup, dataset)
 
-    errors += first_output_data_errors(data)
-    kinds = {
-        "commitment",
-        "proposed",
-        "designated",
-        "launched",
-        "first_output",
-        "exploration_started",
-        "withdrawn",
-        "closed",
-    }
-    groups: dict[tuple[str, str, str | None], list[dict]] = {}
-    jurisdictions = {j["id"]: j for j in data["jurisdictions"]}
-    for j in data["jurisdictions"]:
-        for event in sorted(j.get("timeline", []), key=lambda event: event["id"]):
-            if event["event"] not in kinds:
-                continue
-            key = (j["id"], event["date"], None if len(event["date"]) == 10 else event["id"])
-            groups.setdefault(key, []).append(event)
-    # Stable two-pass sort: newest date, jurisdiction ID, stable event identity.
-    ordered = sorted(groups.items(), key=lambda item: (item[0][0], item[0][2] or ""))
-    ordered.sort(key=lambda item: item[0][1], reverse=True)
-    ordered = ordered[:10]
-    rows = soup.select(".development-row")
-    orders = card_source_orders(soup, data)
-    if len(soup.select("#development-list > li:not(.earlier)")) != min(3, len(ordered)) or len(
-        soup.select("#development-list > li.earlier")
-    ) != max(0, len(ordered) - 3):
-        errors.append("developments do not use the three plus seven split")
-    if len(rows) != len(ordered):
-        errors.append("developments row count differs from merged data")
-    for row, ((jid, day, _), events) in zip(rows, ordered):
-        clock = row.select_one(".development-date")
-        name = row.select_one(".development-name")
-        text = row.select_one(".development-text")
-        if (
-            row.get("data-j") != jid
-            or row.get("data-events", "").split() != [e["id"] for e in events]
-            or not clock
-            or clock.get("data-date") != day
-            or not name
-            or name.get_text() != jurisdictions[jid]["name"]
-        ):
-            errors.append(
-                "development ordering, grouping, date or jurisdiction differs from data"
-            )
-        ids = list(
-            dict.fromkeys(sid for event in events for sid in expected_event_sources(data, jurisdictions[jid], event))
-        )
-        if [a.get("data-source-id") for a in row.select(".cn")] != in_numeral_order(ids, orders.get(jid, [])):
-            errors.append("development citations differ from grouped event sources")
-        if text:
-            for cites in text.select(".cites"):
-                cites.decompose()
-            parts = text.get_text().split(" · ")
-            errors += first_output_part_errors(parts, events)
-            if len(parts) != len(events) or any(
-                (event.get("short") or "").strip() != part
-                if (event.get("short") or "").strip()
-                else not part or not event["description"].strip().startswith(part)
-                for part, event in zip(parts, events)
-            ):
-                errors.append(
-                    "development summary differs from short text or description"
-                )
-        else:
-            errors.append("development text missing")
-    link = soup.select_one('#events-download[download="events.csv"]')
-    if not link or link.get("href") != "data/events.csv":
-        errors.append("developments lack the events download")
+    errors += check_news(soup, data)
     return errors
 
 
@@ -3899,7 +3993,7 @@ def check_baselines_and_rhythm(page) -> list[str]:
         ['table.world tr', ':scope > th, :scope > td'],
         ['.secnav .measure', ':scope > a'], ['.region-chips', ':scope > button'],
         ['.legend-entry', ':scope > .legend-copy'],
-        ['.development-row', innerWidth <= 640 ? ':scope > .development-date, :scope > .development-name' : ':scope > .development-date, :scope > .development-name, :scope > .development-text'],
+        ['.development-label', ':scope > .development-date, :scope > .development-name'],
       ];
       if (innerWidth > 640) rowTypes.push(['.fund-item', ':scope > div']);  // the chart key alone sits over the bars, no axis labels
       for (const [selector, items] of rowTypes) {
@@ -8701,7 +8795,7 @@ def check_method_pages(html: str, data: dict, dist: Path) -> list[str]:
 @reports
 def check_name_roles(page) -> list[str]:
     """One style per role for state names in lists: names in linked lists (Testing and access, Institutional set-up,
-    Budget not published) take the accent link style; News and None identified names take the card title's type.
+    Budget not published) take the accent link style; None identified names take the card title's type.
     On phones a None identified row stacks its name above a full-width summary."""
     return page.evaluate("""() => {
       const errors = [], look = n => { const c = getComputedStyle(n); return [c.fontFamily, c.fontWeight, c.fontSize, c.color].join('|'); };
@@ -8709,7 +8803,7 @@ def check_name_roles(page) -> list[str]:
       if (!title || !link) return ['name roles: no card title or linked list name to compare'];
       const linkLook = look(link), titleType = look(title).split('|').slice(0, 3).join('|');
       document.querySelectorAll('#setup .group-list a.standalone, #fund-none li > a').forEach(a => { if (look(a) !== linkLook) errors.push('linked list name not in the accent link style: ' + a.textContent); });
-      document.querySelectorAll('.development-name, .card.mini > summary .name').forEach(n => { if (look(n).split('|').slice(0, 3).join('|') !== titleType) errors.push('list name not in the card title type: ' + n.textContent); });
+      document.querySelectorAll('.card.mini > summary .name').forEach(n => { if (look(n).split('|').slice(0, 3).join('|') !== titleType) errors.push('list name not in the card title type: ' + n.textContent); });
       if (innerWidth <= 640) document.querySelectorAll('.card.mini > summary').forEach(s => {
         const name = s.querySelector('.name').getBoundingClientRect(), find = s.querySelector('.find');
         if (!find || !find.getClientRects().length) return;
@@ -10258,6 +10352,56 @@ def check_access_edges(browser, base_url: str, data: dict) -> list[str]:
     return errors
 
 
+def check_news_layout(page, data) -> list[str]:
+    """D, E and H: stacked quiet labels, contextual glossary marks and footer links. Blocking, not a report: a
+    wrapped label, a missing or wrong expansion and misplaced links are the owner's News rules, not cosmetic drift."""
+    return page.evaluate(r"""G => {
+      const errors = [], rows = [...document.querySelectorAll('#development-list > li')];
+      if (!rows.length) return errors;
+      const hidden = rows.map(row => row.hidden);
+      rows.forEach(row => row.hidden = false);
+      const css = node => getComputedStyle(node), rect = node => node.getBoundingClientRect();
+      const body = css(document.body), tokens = Object.keys(G || {}).sort((a, b) => b.length - a.length);
+      const pattern = tokens.length ? new RegExp('(^|[^A-Za-z0-9-])(' + tokens.map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')(?![A-Za-z0-9-])', 'g') : null;
+      for (const row of rows) {
+        const label = row.querySelector('.development-label'), text = row.querySelector('.development-text');
+        if (!label || !text) { errors.push('News entry needs a label and sentence'); continue; }
+        const l = rect(label), t = rect(text), ls = css(label), ts = css(text);
+        const date = label.querySelector('.development-date'), name = label.querySelector('.development-name');
+        if (!date || !name || label.textContent !== date.textContent + ' · ' + name.textContent) errors.push('News label is not date · states');
+        const range = document.createRange(); range.selectNodeContents(label);
+        const boxes = [...range.getClientRects()];
+        if (ls.whiteSpace !== 'nowrap' || Math.abs(l.height - parseFloat(ls.lineHeight)) > 1 || boxes.some(b => Math.abs(b.top - boxes[0].top) > 1)) errors.push('News label wraps or is taller than one line');
+        if (parseFloat(ls.fontSize) >= parseFloat(ts.fontSize) || Number(ls.fontWeight) > Number(ts.fontWeight) || Number(ls.fontWeight) !== 400 || ls.color === ts.color) errors.push('News label is not small, muted and normal weight');
+        if (name && (css(name).fontSize !== ls.fontSize || css(name).fontWeight !== ls.fontWeight || css(name).color !== ls.color)) errors.push('News state name differs from its quiet label');
+        if (Math.abs(l.left - t.left) > 1 || t.top < l.bottom - 1) errors.push('News sentence is not below its label on the same left edge');
+        if (ts.fontSize !== body.fontSize || ts.color !== body.color) errors.push('News sentence is not body size and colour');
+        if (pattern) {
+          const copy = text.cloneNode(true); copy.querySelectorAll('.cites').forEach(n => n.remove());
+          const line = copy.textContent, expected = [], seen = new Set(); let match; pattern.lastIndex = 0;
+          while ((match = pattern.exec(line))) {
+            const key = match[2], definition = typeof G[key] === 'object' ? G[key][row.dataset.j] : G[key];
+            if (!definition || seen.has(key)) continue;
+            seen.add(key);
+            const prefix = line.slice(0, match.index + match[1].length).toLowerCase();
+            if (prefix.endsWith(definition.split(/[;(]|\.(?=\s|$)/)[0].trim().toLowerCase() + ' (')) continue;
+            expected.push([key, definition]);
+          }
+          const actual = [...text.querySelectorAll('abbr.g[data-gl]')].map(a => [a.textContent, a.getAttribute('aria-description')]);
+          if (JSON.stringify(actual) !== JSON.stringify(expected)) errors.push('News glossary marks differ from definitions for state ' + row.dataset.j);
+        }
+      }
+      const links = [...document.querySelectorAll('#developments .news-links a')], more = document.getElementById('developments-more');
+      if (links.length !== 2 || links[0].id !== 'events-download' || links[1].id !== 'news-feed') errors.push('News footer needs the events and Atom links');
+      else {
+        if (Math.abs(rect(links[0]).top - rect(links[1]).top) > 1 || links.some(a => a.getClientRects().length !== 1)) errors.push('News links do not share one line');
+        if (links.some(a => !(rows.at(-1).compareDocumentPosition(a) & Node.DOCUMENT_POSITION_FOLLOWING) || !more || !(more.compareDocumentPosition(a) & Node.DOCUMENT_POSITION_FOLLOWING) || rect(a).top < rect(rows.at(-1)).bottom - 1 || (!more.hidden && rect(a).top < rect(more).bottom - 1))) errors.push('News links must follow the entries and control');
+      }
+      rows.forEach((row, n) => row.hidden = hidden[n]);
+      return [...new Set(errors)];
+    }""", data["dataset"].get("glossary", {}))
+
+
 def check_development_edges(browser, base_url: str, data: dict) -> list[str]:
     """Exercise short text and closure events without a current institute card."""
     fixture = copy.deepcopy(data)
@@ -10266,10 +10410,11 @@ def check_development_edges(browser, base_url: str, data: dict) -> list[str]:
         for j in fixture["jurisdictions"]
         if j["status"] == "none_identified" and not j.get("institute_id")
     )
+    fixture["dataset"].setdefault("glossary", {})["NEWS"] = {jurisdiction["id"]: "National Evaluation Working Service"}
     common = {
         "date": fixture["dataset"]["as_of"],
         "source_ids": jurisdiction["source_ids"][:1],
-        "citations": {field: jurisdiction["source_ids"][:1] for field in ("date", "event", "description", "short")},
+        "citations": {field: jurisdiction["source_ids"][:1] for field in ("date", "event", "description", "short", "news")},
     }
     jurisdiction["timeline"] = [
         {
@@ -10277,6 +10422,7 @@ def check_development_edges(browser, base_url: str, data: dict) -> list[str]:
             "id": "fixture-closed",
             "event": "closed",
             "short": "Fixture short summary.",
+            "news": "The NEWS programme reports the closure.",
             "description": jurisdiction["summary"],
         },
         {
@@ -10288,7 +10434,7 @@ def check_development_edges(browser, base_url: str, data: dict) -> list[str]:
     ]
     errors = []
     for width in (390, 1440):
-        page = browser.new_page(viewport={"width": width, "height": 1000})
+        page = themed_page(browser, "light", viewport={"width": width, "height": 1000})
         page_errors: list[str] = []
         page.on("pageerror", lambda e, errs=page_errors: errs.append(str(e)))
         refresh_fixture_selections(fixture)
@@ -10302,6 +10448,7 @@ def check_development_edges(browser, base_url: str, data: dict) -> list[str]:
         ):
             errors.append("development edge fixture was not rendered")
         errors.extend(check_summary_data(page.content(), fixture))
+        errors.extend(check_news_layout(page, fixture))
         errors.extend(check_source_alignment(page.content(), fixture))
         errors.extend(check_wrapped_rows(page))
         errors.extend(page_errors)
@@ -10846,6 +10993,8 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
         "version link does not open the Data changelog",
     )
     page.locator("#changes").evaluate("n => n.open = false")
+    if width in (390, 1440) and theme == "light":
+        errors.extend(check_news_layout(page, data))
     if page.locator("#development-list > li.earlier").count():
         more = page.locator("#developments-more")
         n = page.locator("#development-list > li.earlier").count()

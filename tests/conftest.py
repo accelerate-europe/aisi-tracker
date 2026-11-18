@@ -183,7 +183,8 @@ def dataset(build_env):
             "source_ids": ["gb-source"],
             "memberships": [{"body": "test-network", "since": "2024-11", "source_ids": ["gb-source"]}],
             "related_bodies": [{"id": "test-regulator", "name": "Synthetic regulator", "kind": "other", "role": "Consumer protection", "counts_as_aisi": False, "source_ids": ["gb-source"]}],
-            "timeline": [event("commitment", "2023", "plan"), event("designated"),
+            # Every item the News list shows carries a written line (display.check_news_required); first_output is generated.
+            "timeline": [event("commitment", "2023", "plan", news="The government commits to an institute."), event("designated", news="The government designates the institute."),
                          event("first_output", "2024-10", "first-report", instrument="publication", output_lineage="evaluation-report")],
         }],
         "institutes": [{
@@ -202,7 +203,7 @@ def dataset(build_env):
             "people": [{"id": "test-lead", "name": "Synthetic lead", "role": "Director", "title_status": "published", "since": "2024-02", "source_ids": ["gb-source"]}],
             "names": [{"id": "test-old-name", "name": "Synthetic predecessor", "event": "plan", "from": "2023", "source_ids": ["gb-source"]}, {"id": "test-name", "name": "Synthetic institute", "event": "act", "from": "2024", "source_ids": ["gb-source"]}],
             "outputs": [{"lineage": "evaluation-report", "attribution": "institutional_author", "qualifies_as": "published_work", "qualification_note": "Synthetic evaluation result credited to the institute.", "date": "2024-10", "type": "report", "title": "Synthetic evaluation report", "source_ids": ["gb-source"]}],
-            "agreements": [{"id": "test-agreement", "participation": "institute_party", "domestic_interagency": False, "counterparty": "Synthetic developer", "counterparty_type": "developer", "date": "2024-09", "state": "signed", "source_ids": ["gb-source"]}],
+            "agreements": [{"id": "test-agreement", "participation": "institute_party", "domestic_interagency": False, "counterparty": "Synthetic developer", "counterparty_type": "developer", "date": "2024-09", "state": "signed", "news": "The institute signs an agreement with a developer.", "source_ids": ["gb-source"]}],
             "testing_capacity": {"state": "not_published", "searches": [FLAG_SEARCH]},
             "model_access": {"searches": [FLAG_SEARCH], "value": "none_found"},
             "staffing_model": {"code": "not_published", "searches": [FLAG_SEARCH]},
@@ -220,6 +221,8 @@ def dataset(build_env):
                          "/institutes/0/funding/0/amount", "/institutes/0/staff/0/total",
                          "/institutes/0/agreements/0/counterparty", "/institutes/0/agreements/0/state",
                          "/institutes/0/agreements/0/date", "/institutes/0/agreements/0/participation",
+                         "/jurisdictions/0/timeline/0/news", "/jurisdictions/0/timeline/1/news",
+                         "/institutes/0/agreements/0/news",
                      ]}]}],
         "changelog": [{"date": "2026-10-17", "version": "1.0.0", "summary": "Synthetic test release.", "changes": ["Synthetic fixture."]}],
     }

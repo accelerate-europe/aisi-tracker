@@ -115,3 +115,25 @@ Two places check the trailers:
 - The `passes` step of `check.py` checks every commit in `--base..HEAD`: each named pass must be in the store, valid and closed. A commit with `none` is listed in the report with its reason. Without a pass store the step is NOT RUN when a commit names a pass; a missing trailer fails either way.
 
 `uv run --locked scripts/research_pass.py commits --base <rev>` runs the same check directly.
+
+## News lines
+
+A timeline event, agreement or funding record that enters the page's News list carries a `news` line, written in the data commit that adds it. Validation fails while any item the list shows has none (`check_news_required` in `scripts/display.py`), and the line needs an excerpt whose `supports` pointer ends in `news`. Older items in the events download and feed may keep the generated line, and so does a first output, whose timeline event the build generates from the output list.
+
+A line:
+
+- says in one sentence what happened. The label above it already gives the date and the states.
+- names the parties as the source names them. When the governments sign and their institutes are named in the text, the governments are the parties.
+- says no more than its quotes. A statement of intent, a joint statement, a proposal or an agreement still being finalised does not read as a concluded agreement or an adopted budget.
+- calls the tracked body "the institute" (for a pair, "their institutes"), unless the name is the news, as in a rename.
+- uses only abbreviations that are glossary terms or currency codes, or spells the name out before the abbreviation in parentheses (`check_news_lines`).
+- is the same on both records of a registered pair (`scripts/shared_claims.py`).
+
+Examples, with the quotes each rests on:
+
+- United Kingdom and Norway, a text between governments: "The two governments sign a non-binding statement of intent to explore cooperation, including between their institutes on AI security testing and evaluation." Quotes: "This Statement expresses the intentions of the Participants and does not create rights or obligations under international or domestic law."; "Strengthening cooperation between UK AISI and AI Norway through the sharing of best practices on AI security, testing, and evaluation"; "For the Government of the Kingdom of Norway".
+- Australia, announced and not concluded: "The AI developer Anthropic says it is finalising an agreement for the institute to run independent evaluations of its models." Quote: "finalizing an agreement with the AI Safety Institute to enable it to run its own independent evaluations of our models".
+- Norway, a budget proposal: "The 2027 budget proposal would extend the institute's mandate to AI safety and proposes NOK 45.1m for it, including a NOK 30m increase for model evaluation." Quotes: "Regjeringa vil utvide mandatet til KI Norge så det inkluderer arbeid med KI-sikkerheit"; "Samla blir det foreslått å løyve 45,1 mill. kroner."; "Frå 2027 blir det foreslått å auke løyvinga med 30 mill. kroner til å styrkje KI Noreg med kapasitet til å evaluere KI-modellar".
+- United States, a rename: "The institute, formerly the Center for AI Standards and Innovation, is renamed the Center for Advancing Innovation and Standards for Super Intelligence (CAISSI), following the Executive Order of 29 September." Quotes: "NIST does this work through the laboratory programs and the Center for Advancing Innovation and Standards for Super Intelligence (CAISSI)"; "Per the Sept. 29, 2026, Executive Order on Inaugurating the Era of Super Intelligence, NIST is working to update its communications to incorporate the term"; "Center for AI Standards and Innovation (CAISI)".
+
+The examples follow the lines in `data/aisi.json`; when a line changes, its example changes with it. Whether a line says more than its quotes is checked at review, not by the build.

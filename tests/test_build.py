@@ -2,6 +2,7 @@ import copy
 import csv
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -241,10 +242,14 @@ def test_withdrawal_requires_earlier_non_withdrawal(dataset, target):
 
 
 def bind_timeline(dataset):
-    """Bind every timeline event's date and act to the fixture's primary excerpt (rule status-evidence)."""
+    """Bind every timeline event's date and act to the fixture's primary excerpt (rule status-evidence), and give each
+    authored event a News line bound to it (display.check_news_required; first_output is generated)."""
     supports = dataset["sources"][0]["excerpts"][0]["supports"]
-    for k in range(len(dataset["jurisdictions"][0]["timeline"])):
+    for k, record in enumerate(dataset["jurisdictions"][0]["timeline"]):
         supports += [p for p in (f"/jurisdictions/0/timeline/{k}/date", f"/jurisdictions/0/timeline/{k}/event") if p not in supports]
+        if record["event"] != "first_output":
+            record.setdefault("news", "The government acts.")
+            supports += [p for p in (f"/jurisdictions/0/timeline/{k}/news",) if p not in supports]
 
 
 def test_status_since_reaffirmation_and_new_run(dataset):
@@ -264,7 +269,7 @@ def test_status_since_reaffirmation_and_new_run(dataset):
 def test_announced_uses_first_proposal_not_later_commitment(dataset):
     dataset["jurisdictions"][0]["timeline"].insert(0, event("proposed", "2022-06", "proposal"))
     excerpt = dataset["sources"][0]["excerpts"][0]
-    excerpt["supports"] = [p.replace("/timeline/2/", "/timeline/3/") for p in excerpt["supports"]]
+    excerpt["supports"] = [re.sub(r"/timeline/(\d+)/", lambda m: f"/timeline/{int(m[1]) + 1}/", p) for p in excerpt["supports"]]
     errors = build.check_consistency(dataset)
     assert any("announced: stored '2023' disagrees with derived '2022-06'" in e for e in errors)
     dataset["institutes"][0].pop("announced")
@@ -552,6 +557,7 @@ def test_new_milestone_does_not_change_status(dataset):
 
     timeline = dataset["jurisdictions"][0]["timeline"]
     timeline.append(event("mandate_changed", "2025", "mandate"))
+    bind_timeline(dataset)
     Draft202012Validator(json.loads(build.SCHEMA.read_text())).validate(dataset)
     assert build.timeline_status(timeline) == ("established", "2024")
     assert build.check_consistency(dataset) == []

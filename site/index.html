@@ -64,7 +64,7 @@
  * Archived copies: wherever a source list or Method names a source that has an archive URL, "(archived copy)" follows its link as a quiet link in muted ink with a muted underline, no arrow, never broken across lines; superscript citations never carry one (check_page check_archive_links).
  * Re-read line: every source list item whose source has a quotation with a re-read state ends with one line of its own in the list's muted ink, from its quotations' states (docs/design/claims-1.1.md section 4): "Source last re-read {date}." while none is missing; else the worst state (the earliest start, then offline before not found, then the earliest last found): "Not found in the source on {date}; last found {date}; under review." (with ": N of M quotes" after the first date when some quotations are still found), "Source offline since {date}; last found {date}.", "Source could not be re-read since {date}; last found {date}."; a quotation or claim shown on its own shows its own state, never its source's; the page never says "verified" (check_page check_reread_lines).
  * Sorting: every table column sorts values by meaning, then values without a comparable figure, research gaps, structural absence; gaps stay last in both directions; ties by state name.
- * Links: inline text uses a thin muted-accent underline and accent ink; standalone links use position, icon or colour, with hover/focus underline or ink change. State names in linked lists (Testing and access, Institutional set-up, Budget not published) take the accent link style; News and None identified names take the card title's type (check_page check_name_roles).
+ * Links: inline text uses a thin muted-accent underline and accent ink; standalone links use position, icon or colour, with hover/focus underline or ink change. State names in linked lists (Testing and access, Institutional set-up, Budget not published) take the accent link style; None identified names take the card title's type (check_page check_name_roles). News names share the quiet date label.
  * External markers: marked links end in a compact SVG arrow with body-weight stroke and retain accessible new-tab text in every theme.
  * Citation links: accent ink only at rest, underline on hover/focus; no negative horizontal margins.
  * Navigation: muted text, full-ink active item with an accent line the width of its label; hover darkens, never underlines; keyboard focus as Focus says.
@@ -94,7 +94,7 @@
  * Worldwide table: at 1100px and wider its default columns fit (Budget wraps), and while it fits its header sticks below the section navigation; phones scroll it sideways without a sticky header.
  * Phone: Region keeps its visible label; only Columns, Download (the cards' download icon, with its label beside it on wider screens) and the theme toggle may be icon-only; the theme toggle sits in the header, not in the section bar (check_page check_toggle_place).
  * Filters: the table's Status select defaults to Has or considers one (every status except none identified); the count line reads "N of M states", or "N of M states and territories" while a territory is tracked; All includes every tracked state and territory.
- * Hero: title and quiet update date with the linked version ("Updated 4 Nov 2026 · v1.0.2"); the Atom feed of news and new versions (feed.xml) is a head alternate link and linked from News; no lede line; the first screen follows: Headline (only the counts bold, with their "of" and "more": "11 of 193", "5 more", as the owner's mock) with one Definition link under it to the definition at the top of Method, Region chips beside the search, then Map and Region list (legend names only, their short definitions on hover, focus or tap, one (i) saying what the World view shows); one map view, no population view; the definition is dataset.definition, never a page string (check_page check_supporting_text); recent developments are a section of their own, with earlier events behind a control at the list's end.
+ * Hero: title and quiet update date with the linked version ("Updated 4 Nov 2026 · v1.0.2"); the Atom feed of news and new versions (feed.xml) is a head alternate link and linked from News; no lede line; the first screen follows: Headline (only the counts bold, with their "of" and "more": "11 of 193", "5 more", as the owner's mock) with one Definition link under it to the definition at the top of Method, Region chips beside the search, then Map and Region list (legend names only, their short definitions on hover, focus or tap, one (i) saying what the World view shows); one map view, no population view; the definition is dataset.definition, never a page string (check_page check_supporting_text); News entries at every width have a small, muted, normal-weight, single-line "date · states" label, then the sentence at body size and colour on the same left edge. Ten entries, three open; earlier entries behind the control at the list's end, followed by All events (CSV) and Atom feed on one line (check_page check_news_layout).
  * Card download: a full card's title row, and a none-identified card's fold after its sources, end with an icon-only link to the state's API file, labelled "JSON, for scripts and research" (check_page check_state_download_buttons).
  * Focus: one style, the --highlight-fill tint: keyboard focus on a text control (link, text button, disclosure, tooltip term or value; table headers keep their label underline and ring) shows the tint behind it and a 2px underline in --focus (the tint alone is under 3:1 on the ground; the underline is at least 3:1 in both themes); a region tab shows the tint alone, as its underline means selected (owner, 5 Nov 2026); boxed controls (buttons, fields) keep their own edge; a heading or other non-control target that a section bar, group row, anchor or palette jump focuses (the Definition paragraph too) shows no ring, only the tint, fading after about 1.5s where motion is allowed; forced colours keep a system outline (check_page shared_links).
  * Arrival: a card reached by a link (the record beside the map, table row or shared link) takes the --highlight-fill tint, as a jumped-to heading does, and no outline; the tint lasts while it is the target, also after the page script takes over, and the card takes keyboard focus; motion only adds a brief accent flash settling into the tint (owner, 5 Nov 2026; check_page check_arrival).
@@ -311,10 +311,11 @@ a.ico::before { position: static; transform: none; min-height: 0; }
 
 /* Developments share the page's text roles and row rhythm. */
 .development-list { list-style: none; margin: 0; padding: 0; max-width: none; display: flex; flex-direction: column; gap: var(--gap-row); }
-.development-row { display: grid; grid-template-columns: 7rem 9rem minmax(0, 1fr); gap: var(--sp-1) var(--sp-4); align-items: first baseline; width: 100%; }
-.development-date { font: var(--type-meta); color: var(--ink); font-variant-numeric: tabular-nums; } /* an event date is a fact, not apparatus (R2) */
-.development-name { font: var(--type-label); }
-.development-text { font: var(--type-body); min-width: 0; max-width: var(--prose); }
+.development-row { display: flex; flex-direction: column; gap: var(--sp-1); }
+.development-label { font: var(--type-meta); color: var(--muted); white-space: nowrap; }
+.development-date { color: var(--ink); font-variant-numeric: tabular-nums; } /* an event date is a fact, not apparatus (R2) */
+.development-text { font: var(--type-body); color: var(--ink); min-width: 0; }
+.news-links { display: flex; gap: var(--sp-4); white-space: nowrap; margin-top: var(--sp-4); }
 
 /* Section structure */
 main .measure { padding-block: var(--sp-8) var(--sp-11); display: flex; flex-direction: column; gap: var(--gap-section); }
@@ -914,8 +915,6 @@ html[data-prerendered] .fn-scroll.fits thead { position: static; }
   .panel .measure { padding-top: var(--sp-6); }
   .worldmap .map-wide { display: none; }
   .worldmap .map-narrow { display: block; }
-  .development-row { grid-template-columns: 7rem minmax(0, 1fr); }
-  .development-text { grid-column: 1 / -1; }
   .two, .fund-detail-body { grid-template-columns: minmax(0, 1fr); }
   .cards { --columns: 1; }
   .card-row > .card { display: flex; grid-row: auto; align-items: stretch; }
@@ -1035,9 +1034,10 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   </div>
 
   <section aria-labelledby="news" id="developments" hidden><div class="section-label">
-    <h2 id="news">News</h2><a class="standalone small" id="events-download" href="data/events.csv" download="events.csv">All events (CSV)</a><a class="standalone small" id="news-feed" href="feed.xml">Atom feed</a></div><div class="section-body">
+    <h2 id="news">News</h2></div><div class="section-body">
     <ol class="development-list" id="development-list"></ol>
     <button type="button" class="list-more" id="developments-more" aria-controls="development-list" aria-expanded="false" hidden></button>
+    <div class="news-links"><a class="standalone small" id="events-download" href="data/events.csv" download="events.csv">All events (CSV)</a><a class="standalone small" id="news-feed" href="feed.xml">Atom feed</a></div>
   </div></section>
 
   <div class="group">
@@ -1222,7 +1222,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     var nodes = []; while (walker.nextNode()) nodes.push(walker.currentNode);
     // Once per card or record panel (principle: Tooltip cues): a term is marked at its first use there, or not at all where that use spells it out. A folded card's summary row is its own view: its copy of the finding is hidden while the card is open.
     // Text nodes come in document order; a mark another function made (term(), no data-gl) counts only where it comes before the text.
-    var SCOPE = ".card > summary, .card, #record", seenIn = new Map();
+    var SCOPE = ".card > summary, .card, #record, .development-row", seenIn = new Map();
     var markedBefore = function (box, term, node) { return [].some.call(box.querySelectorAll("abbr.g:not(.val)"), function (a) { return a.textContent.trim() === term && a.parentNode.closest(SCOPE) === box && (a.compareDocumentPosition(node) & Node.DOCUMENT_POSITION_FOLLOWING); }); };
     nodes.forEach(function (n) {
       var t = n.nodeValue, last = 0, m, frag = null, box = n.parentNode.closest(SCOPE), seen = null; re.lastIndex = 0;
@@ -3526,16 +3526,36 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         : " The budgets of " + list + " are " + (same ? REASON[left[0].reason][1] : "not compared") + ", so they count neither in the budget median nor among those with no budget.");
       infoAfterText(box.lastChild.querySelector("span"), info(note, "figures-scope"));
     })();
-    m.display.developments.forEach(function (group, index) {
+    var newsPairs = new Set(), newsCount = 0;
+    m.display.developments.forEach(function (group) {
+      if (newsCount >= 10) return;
+      var texts = [], sourceIds = [], pairIds = [], states = [], names = [];
+      group.texts.forEach(function (line, n) {
+        var pair = (group.pairs || [])[n];
+        if (pair && newsPairs.has(pair.id)) return;
+        texts.push(line);
+        if (group.line_source_ids) sourceIds = sourceIds.concat(group.line_source_ids[n]);
+        if (pair) {
+          newsPairs.add(pair.id); pairIds.push(pair.id);
+          pair.states.forEach(function (state, k) {
+            if (states.indexOf(state) < 0) { states.push(state); names.push(pair.names[k]); }
+          });
+        }
+      });
+      if (!texts.length) return;
+      if (states.indexOf(group.jurisdiction) < 0) names.push(group.name);
       var j = J[group.jurisdiction];
       var order = SOURCE_ORDERS[j.id] || recordSources(j).filter(function (id, n, ids) { return S[id] && ids.indexOf(id) === n; });
-      var row = el("li", "development-row"); row.dataset.j = j.id; row.dataset.events = group.events.join(" ");
-      var date = el(group.date.length > 4 ? "time" : "span", "development-date", fmtDate(group.date)); date.dataset.date = group.date; if (date.tagName === "TIME") date.setAttribute("datetime", group.date); row.appendChild(date);
-      row.appendChild(el("span", "development-name", group.name));
-      var text = el("p", "development-text"); text.appendChild(separated(group.texts));
-      text.appendChild(citations(S, order)(fieldCitations(group, ["display"]))); row.appendChild(text);
-      if (index >= 3) { row.classList.add("earlier"); row.hidden = true; }
+      var row = el("li", "development-row"); row.dataset.j = j.id; row.dataset.events = group.events.join(" "); row.dataset.pairs = pairIds.join(" ");
+      var label = el("div", "development-label");
+      var date = el(group.date.length > 4 ? "time" : "span", "development-date", fmtDate(group.date)); date.dataset.date = group.date; if (date.tagName === "TIME") date.setAttribute("datetime", group.date); label.appendChild(date);
+      label.appendChild(document.createTextNode(" · "));
+      label.appendChild(el("span", "development-name", andJoin(names))); row.appendChild(label);
+      var text = el("p", "development-text"); text.appendChild(separated(texts));
+      text.appendChild(citations(S, order)(group.line_source_ids ? sourceIds : fieldCitations(group, ["display"]))); row.appendChild(text);
+      if (newsCount >= 3) { row.classList.add("earlier"); row.hidden = true; }
       $("development-list").appendChild(row);
+      newsCount += 1;
     });
     $("developments").hidden = !$("development-list").childNodes.length;
     // The control extends the list in place and stays after its last item.

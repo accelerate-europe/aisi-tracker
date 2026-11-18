@@ -611,6 +611,7 @@
           "additionalProperties": false,
           "properties": {
             "developments": {
+              "description": "Per-state News groups covering the newest ten page entries after registered pairs are merged, including each displayed pair's counterpart groups for the feed. One group per jurisdiction and full day; partial dates remain separate records. Lines follow kind order (status, mandate or name, budget, agreements), then owner ID and record ID. Groups sort by descending date, jurisdiction ID and record ID, with events-download IDs breaking any remaining tie.",
               "type": "array",
               "items": {
                 "type": "object",
@@ -637,6 +638,14 @@
                   },
                   "events": {
                     "type": "array",
+                    "description": "Timeline event IDs only, in the order of their lines; budget and agreement lines do not add an event ID.",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "items": {
+                    "type": "array",
+                    "description": "Events-download row IDs in the same order as texts, including timeline, funding and agreement rows.",
                     "items": {
                       "type": "string"
                     }
@@ -647,12 +656,38 @@
                       "type": "string"
                     }
                   },
+                  "pairs": {
+                    "type": "array",
+                    "description": "Parallel to texts: null for an unpaired line, otherwise the shared agreement claim and state IDs and names in its targets' registration order. The page shows each pair once and names both states; downloads and feed retain per-state groups.",
+                    "items": {
+                      "oneOf": [
+                        {"type": "null"},
+                        {
+                          "type": "object",
+                          "required": ["id", "states", "names"],
+                          "additionalProperties": false,
+                          "properties": {
+                            "id": {"type": "string"},
+                            "states": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "string"}},
+                            "names": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "string"}}
+                          }
+                        }
+                      ]
+                    }
+                  },
                   "source_ids": {
                     "$ref": "#/$defs/source_ids"
                   },
+                  "line_source_ids": {
+                    "type": "array",
+                    "description": "Source IDs for each line, parallel to texts. The page cites only retained lines after pair merging; source_ids and citations retain all sources for downloads and the feed.",
+                    "items": {
+                      "$ref": "#/$defs/source_ids"
+                    }
+                  },
                   "order": {
                     "type": "string",
-                    "description": "Stable event ID used as the final tie-break for equally dated groups."
+                    "description": "Stable ID of the first line, used to identify a partial-date News item: the event ID for timeline lines, the scoped events-download ID for funding and agreement lines. Equally dated group ties still use the first line's bare record ID. Existing timeline groups retain their event ID when funding or agreement lines join."
                   },
                   "citations": {
                     "$ref": "#/$defs/citations"
@@ -1241,6 +1276,9 @@
                 },
                 "short": {
                   "$ref": "#/$defs/event_short"
+                },
+                "news": {
+                  "$ref": "#/$defs/news"
                 },
                 "output_lineage": {
                   "type": "string",
@@ -1833,6 +1871,9 @@
                     "pledged"
                   ],
                   "description": "The recorded act: announced agreement, signed agreement or government-announced company pledge. Not proof that original terms remain in force."
+                },
+                "news": {
+                  "$ref": "#/$defs/news"
                 },
                 "date": {
                   "$ref": "#/$defs/date_or_partial"
@@ -3111,6 +3152,9 @@
       ],
       "additionalProperties": false,
       "properties": {
+        "news": {
+          "$ref": "#/$defs/news"
+        },
         "kind": {
           "enum": [
             "annual",
@@ -4237,6 +4281,15 @@
           "type": "string",
           "description": "Timeline event code, appointment, membership, agreement, funding_decision, or network_ followed by milestone type. Name changes appear only as the timeline event each name links to."
         },
+        "news_kind": {
+          "type": "string",
+          "enum": ["", "status", "mandate_or_name", "budget", "agreement"],
+          "description": "News selection: status for a status milestone, mandate_or_name for mandate_changed or named, budget for dated announced or adopted whole-institute or component funding, agreement for a dated agreement; empty otherwise. Marks every eligible row, including those outside the newest ten page entries."
+        },
+        "news": {
+          "type": "string",
+          "description": "Authored News line for the canonical timeline, agreement or funding record; empty when absent. News then uses the timeline short or first description sentence, or generates an agreement or budget line."
+        },
         "date": {
           "type": "string",
           "description": "Original unpadded ISO date, year-month or year; overlapping partial dates do not imply a known sequence."
@@ -4286,6 +4339,11 @@
           "description": "Stable event row identity, combining origin kind and scoped origin ID."
         }
       }
+    },
+    "news": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The News line for this act, one sentence, bound to a quote. Required while the act is among the items the page's News list shows; older acts without one get a generated line in the events download and feed."
     },
     "event_short": {
       "type": "string",

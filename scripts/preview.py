@@ -26,6 +26,8 @@ NOTICE = "This build is unpublished. Do not cite it."
 # Page elements the preview replaces as a whole (by id), with the text it puts there. check_preview excludes exactly
 # these from the comparison with the build, and nothing the preview merely marks.
 REPLACED = {"cite": NOTICE}
+# Set, the preview says above the News list that its lines are drafts; empty, News shows as production would.
+NEWS_DRAFT_NOTE = ""
 
 
 def replaced_selector(ids: list[str]) -> str:
@@ -130,7 +132,7 @@ BANNER_CSS = """
 .preview-banner .pv-details[hidden] { display: none; }
 /* Preview chrome inside the page: what the preview adds or replaces, in the band's look, so page and preview stay
    distinguishable. */
-.cite.pv-chrome { background: color-mix(in srgb, var(--accent, #BE773D) 12%, var(--ground, Canvas)); padding-block: var(--sp-2, .5rem); user-select: auto; }
+.cite.pv-chrome, .pv-draft-note.pv-chrome { background: color-mix(in srgb, var(--accent, #BE773D) 12%, var(--ground, Canvas)); padding-block: var(--sp-2, .5rem); user-select: auto; }
 /* The marker: once the band has scrolled away, one short fixed line in the corner keeps the build identifiable on
    screen and in screenshots. Nothing else on the page is fixed there (the theme switch is in the header). */
 .preview-banner .pv-marker { position: fixed; right: max(var(--sp-4, 1rem), env(safe-area-inset-right)); bottom: max(var(--sp-4, 1rem), env(safe-area-inset-bottom));
@@ -264,6 +266,11 @@ def mark_html(text: str, logical: str, meta: dict, mail: str, data_urls: tuple[s
         cite.clear()
         cite.append(NOTICE)
         cite["class"] = [*cite.get("class", []), "pv-chrome"]
+    # The note sits before the list, which the page script refills; the note itself is static in both copies.
+    for news in soup.find_all(id="development-list") if NEWS_DRAFT_NOTE else []:
+        note = soup.new_tag("p", attrs={"class": "pv-draft-note pv-chrome small"})
+        note.string = NEWS_DRAFT_NOTE
+        news.insert_before(note)
     for node in soup.select('meta[name="aisi-page-data"]'):
         node["content"], node["data-package"], node["data-build"] = data_urls
     # The saved body is replaced during hydration. Both copies need the same first element. Pages with the site's

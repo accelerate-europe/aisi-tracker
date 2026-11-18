@@ -38,7 +38,7 @@ The staged `check.py` command and shared pre-commit/CI steps run the automated c
 
 | Change | Edit | Also |
 | --- | --- | --- |
-| A fact | the record in `data/aisi.json`, its `sources` entry and an excerpt whose `supports` points at the claim | name the research pass in a `Research-pass:` trailer ([research passes](docs/research-passes.md)); when you open a source, record every fact it carries for the record before filling a field, and list leftovers in the handback; advance `check.last_checked` only after a full re-check; version, `as_of` and changelog per the [release runbook](docs/release.md#2-the-release-commit) |
+| A fact | the record in `data/aisi.json`, its `sources` entry and an excerpt whose `supports` points at the claim | name the research pass in a `Research-pass:` trailer ([research passes](docs/research-passes.md)); an act that enters News gets a written `news` line ([News lines](docs/research-passes.md#news-lines)); when you open a source, record every fact it carries for the record before filling a field, and list leftovers in the handback; advance `check.last_checked` only after a full re-check; version, `as_of` and changelog per the [release runbook](docs/release.md#2-the-release-commit) |
 | A status | the jurisdiction `timeline` event; the build derives status and dates ([timeline rules](docs/design/schema-1.0.md#timeline-and-status)) | excerpt on the event |
 | Funding amount or exchange rates | primary amounts or ECB rate inputs in `data/aisi.json`; EUR results are generated | |
 | A field | schema, `build.py` export and tables, tests | from public 1.0.0: minor for additive fields, major for breaking changes, except fields and vocabularies listed in `dataset.provisional` |

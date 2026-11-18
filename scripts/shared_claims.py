@@ -207,7 +207,7 @@ def check_shared_claims(data):
                     errors.append(f"{cid}: {pointer} is not an agreement")
                     continue
                 # Missing dates stay None; absence on only one mirrored record is a conflict.
-                values.append((value.get("date"), value.get("state")))
+                values.append((value.get("date"), value.get("state"), value.get("news")))
             elif claim["kind"] == "number":
                 try:
                     identity = _number_identity(data, pointer)
@@ -229,7 +229,8 @@ def check_shared_claims(data):
             else:
                 errors.append(f"{cid}: unknown claim kind")
         if values and any(v != values[0] for v in values[1:]):
-            errors.append(f"{cid}: repeated {claim['kind']} disagrees: {values}")
+            detail = " (date, state, news; news must be present on both sides or neither and identical)" if claim["kind"] == "agreement" else ""
+            errors.append(f"{cid}: repeated {claim['kind']} disagrees{detail}: {values}")
     return errors
 
 

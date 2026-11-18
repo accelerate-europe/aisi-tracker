@@ -26,16 +26,6 @@ else:
     import summaries  # type: ignore[no-redef]
 
 
-DEVELOPMENT_EVENTS = {
-    "commitment",
-    "proposed",
-    "designated",
-    "launched",
-    "first_output",
-    "exploration_started",
-    "withdrawn",
-    "closed",
-}
 # Population and region sources apply to every entry: Method names them once, entries do not list them.
 GENERIC_FIELDS = ("population", "region")
 # Off the card source lists: the downloads and the API carry them; the page shows model access only in Testing and access, with its own source list.
@@ -415,52 +405,248 @@ def first_sentence(text):
     return text
 
 
-def recent_developments(jurisdictions, union):
+def news_timeline_text(record, owner, parties):
+    return (record.get("short") or "").strip() or first_sentence(record.get("description"))
+
+
+def news_agreement_text(record, owner, pair):
+    if record["state"] == "pledged":
+        return f"Pledge announced by {record['counterparty']}."
+    if record.get("participation") == "named_implementer":
+        # The governments are the parties and the institutes are named; no field records the kind of text (a joint
+        # statement, a statement of intent), so a neutral noun, never "agreement".
+        verb = {"signed": "sign", "announced": "announce"}[record["state"]]
+        return f"The two governments {verb} a text on cooperation naming their institutes." if pair else f"Governments {verb} a text on cooperation naming the institute."
+    return f"Agreement {record['state']} with {record['counterparty']}."
+
+
+# One row per kind, in method order. Selection, wording and citations are shared
+# by the News collector and the events download's news_kind classification.
+NEWS_KINDS = (
+    {"kind": "status", "owners": "jurisdictions", "origin": "timeline", "date": "date",
+     "where": {"event": {"commitment", "proposed", "designated", "launched", "first_output", "exploration_started", "withdrawn", "closed"}},
+     "text": news_timeline_text, "fields": ("description", "short", "date", "event"), "owner_fields": ()},
+    {"kind": "mandate_or_name", "owners": "jurisdictions", "origin": "timeline", "date": "date",
+     "where": {"event": {"mandate_changed", "named"}},
+     "text": news_timeline_text, "fields": ("description", "short", "date", "event"), "owner_fields": ()},
+    {"kind": "budget", "owners": "institutes", "origin": "funding", "date": "decision_date",
+     "where": {"commitment": {"announced", "adopted"}, "coverage": {"whole_institute", "component"}},
+     "text": lambda r, i, p: f"{funding_label(r, annual=False, context=False)[0]} for the institute {r['commitment']}.",
+     "fields": ("amount", "currency", "amount_qualifier", "commitment", "coverage", "decision_date"), "owner_fields": ()},
+    {"kind": "agreement", "owners": "institutes", "origin": "agreements", "date": "date", "where": {},
+     "text": news_agreement_text,
+     "fields": ("state", "counterparty", "date", "participation"), "owner_fields": ()},
+)
+
+
+def news_matches(rule, record):
+    return bool(record.get(rule["date"])) and all(record.get(field) in values for field, values in rule["where"].items())
+
+
+def news_kind(origin, record):
+    """News eligibility for every dated events-download row."""
+    return next((rule["kind"] for rule in NEWS_KINDS if rule["origin"] == origin and news_matches(rule, record)), "")
+
+
+NEWS_ROWS = 10  # the page's News entries
+NEWS_RULE = "docs/research-passes.md#news-lines"
+
+
+def recent_developments(jurisdictions, union, institutes=(), shared_claims=(), *, limit=NEWS_ROWS):
+    """Per-state groups covering limit page entries, plus their pair counterparts.
+
+    limit=None exposes the full selection for audits. The feed keeps both sides.
+    """
     groups = {}
-    for jurisdiction in jurisdictions:
-        for event in sorted(
-            jurisdiction.get("timeline", []), key=lambda event: event["id"]
-        ):
-            if event["event"] not in DEVELOPMENT_EVENTS:
+
+    def add(jurisdiction, record, day, item_id, text, source_ids, pair, *, timeline=False):
+        # Partial dates identify individual records, never an inferred shared day.
+        key = (jurisdiction["id"], day, None if len(day) == 10 else item_id)
+        if key not in groups:
+            groups[key] = {
+                "jurisdiction": jurisdiction["id"],
+                "name": jurisdiction.get("name", jurisdiction["id"]),
+                "date": day,
+                "events": [],
+                "items": [],
+                "texts": [],
+                "pairs": [],
+                "line_source_ids": [],
+                "source_ids": [],
+                "order": record["id"] if timeline else item_id,
+            }
+        group = groups[key]
+        if timeline:
+            group["events"].append(record["id"])
+        group["items"].append(item_id)
+        group["texts"].append(text)
+        group["pairs"].append(pair)
+        group["line_source_ids"].append(source_ids)
+        group["source_ids"] = union(group["source_ids"], source_ids)
+
+    def cited(record, *fields):
+        return union(*(record.get("citations", {}).get(field, []) for field in fields))
+
+    by_institute = {i["id"]: i for i in institutes}
+    by_jurisdiction = {j["id"]: j for j in jurisdictions}
+    pairs = {}
+    for claim in shared_claims:
+        if claim["kind"] == "agreement":
+            # Registry target order is the authored order of the states in the label.
+            parties = [(target[1]["id"], target[3]["id"]) for target in claim["targets"]]
+            # A pair counts only when both parties and their states are in the data (a pruned fixture may hold one).
+            if not all(iid in by_institute and by_institute[iid]["jurisdiction_id"] in by_jurisdiction for iid, _ in parties):
                 continue
-            key = (
-                jurisdiction["id"],
-                event["date"],
-                None
-                if re.fullmatch(r"\d{4}-\d{2}-\d{2}", event["date"])
-                else event["id"],
-            )
-            if key not in groups:
-                groups[key] = {
-                    "jurisdiction": jurisdiction["id"],
-                    "name": jurisdiction.get("name", jurisdiction["id"]),
-                    "date": event["date"],
-                    "events": [],
-                    "texts": [],
-                    "source_ids": [],
-                    "order": event["id"],
-                }
-            group = groups[key]
-            group["events"].append(event["id"])
-            group["texts"].append(
-                (event.get("short") or "").strip()
-                or first_sentence(event.get("description"))
-            )
-            citations = event.get("citations", {})
-            group["source_ids"] = union(
-                group["source_ids"],
-                *(
-                    citations.get(k, [])
-                    for k in ("description", "short", "date", "event")
-                ),
-            )
-    # Same-day clauses and partial-date ties use stable event IDs.
-    ordered = sorted(groups.values(), key=lambda g: (g["jurisdiction"], g["order"]))
+            states = [by_institute[iid]["jurisdiction_id"] for iid, _ in parties]
+            pair = {"id": claim["id"], "states": states, "names": [by_jurisdiction[jid]["name"] for jid in states]}
+            for party in parties:
+                pairs[party] = pair
+    owners = {"jurisdictions": jurisdictions, "institutes": institutes}
+    for rule in NEWS_KINDS:
+        origin = rule["origin"]
+        for owner in sorted(owners[rule["owners"]], key=lambda r: r["id"]):
+            if rule["owners"] == "institutes" and owner["jurisdiction_id"] not in by_jurisdiction:
+                continue  # an institute whose state is not in the data (a pruned fixture) has no News row
+            jurisdiction = owner if rule["owners"] == "jurisdictions" else by_jurisdiction[owner["jurisdiction_id"]]
+            for record in sorted(owner.get(origin, []), key=lambda r: r["id"]):
+                if not news_matches(rule, record):
+                    continue
+                pair = pairs.get((owner["id"], record["id"])) if origin == "agreements" else None
+                source_ids = cited(record, "news") if "news" in record else union(cited(record, *rule["fields"]), cited(owner, *rule["owner_fields"]))
+                text = record["news"] if "news" in record else rule["text"](record, owner, pair)
+                add(jurisdiction, record, record[rule["date"]], f"{origin}:{owner['id']}:{record['id']}",
+                    text, source_ids, pair, timeline=origin == "timeline")
+    # The first line follows kind, owner and record order above. Keep its bare
+    # record ID as the tie-break even when the partial-date feed ID is scoped.
+    ordered = sorted(groups.values(), key=lambda g: (g["jurisdiction"], g["items"][0].split(":", 2)[2], g["items"]))
     ordered.sort(key=lambda g: g["date"], reverse=True)
     for group in ordered:
         group["citations"] = {"display": list(group["source_ids"])}
-    return ordered[:10]
+    if limit is None:
+        return ordered
+    selected, seen_pairs, count = [], set(), 0
+    for group in ordered:
+        ids = {p["id"] for p in group["pairs"] if p}
+        if count < limit:
+            selected.append(group)
+            if any(p is None for p in group["pairs"]) or ids - seen_pairs:
+                count += 1
+            seen_pairs.update(ids)
+        elif ids & seen_pairs:
+            # A pair in the tenth row still has a per-state feed item for its mirror.
+            selected.append(group)
+    return selected
 
+
+NEWS_TOKEN = re.compile(r"[A-Z][A-Z0-9-]{2,}")
+
+
+def news_token_expanded(text, match):
+    """An initialism in parentheses immediately after its expansion in this line."""
+    if not text[:match.start()].endswith(" (") or text[match.end():match.end() + 1] != ")":
+        return False
+    phrase = re.search(r"[A-Za-z0-9', -]+$", text[:match.start() - 2])
+    words = re.findall(r"[A-Za-z0-9]+(?:'[A-Za-z0-9]+)*", phrase.group()) if phrase else []
+    token = match.group().replace("-", "")
+    linking = {"and", "for", "of", "the", "to", "in", "on"}
+    # The expansion may be a suffix of the preceding clause. Uppercase words
+    # contribute all their letters, as in AI Safety Institute (AISI).
+    for start in range(len(words) - 1):
+        expansion = words[start:]
+        for significant in (expansion, [word for word in expansion if word.lower() not in linking]):
+            initials = "".join(word if word.isupper() else word[0].upper() for word in significant)
+            if initials.replace("-", "") == token:
+                return True
+    return False
+
+
+def news_abbreviation_errors(text, glossary, currencies, jurisdiction):
+    errors = []
+    # Whole glossary terms the page marks (glossify's boundaries; mixed-case keys such as KRiBSI included) explain
+    # every token inside them; a key embedded in a longer word is not a whole term.
+    covered = []
+    for key, value in glossary.items():
+        if (value.get(jurisdiction) if isinstance(value, dict) else value):
+            covered += [m.span(1) for m in re.finditer(r"(?<![A-Za-z0-9-])(" + re.escape(key) + r")(?![A-Za-z0-9-])", text)]
+    for match in NEWS_TOKEN.finditer(text):
+        token = match.group()
+        if any(start <= match.start() and match.end() <= end for start, end in covered):
+            continue
+        expansion = glossary.get(token)
+        if isinstance(expansion, dict):
+            expansion = expansion.get(jurisdiction)
+        # A glossary key embedded in another word cannot be marked by glossify.
+        if re.search(r"[A-Za-z0-9-]$", text[:match.start()]) or re.match(r"[A-Za-z0-9-]", text[match.end():]):
+            expansion = None
+        if token not in currencies and not expansion and not news_token_expanded(text, match):
+            errors.append(f"unexplained News abbreviation {token!r}")
+    return errors
+
+
+def check_news_lines(data):
+    """Check every eligible line, including those outside the current page/feed window."""
+    jurisdictions, institutes = data.get("jurisdictions", []), data.get("institutes", [])
+    records = {f"{origin}:{owner['id']}:{record['id']}": record
+               for owners, origins in ((jurisdictions, ("timeline",)), (institutes, ("funding", "agreements")))
+               for owner in owners for origin in origins for record in owner.get(origin, [])}
+    # All recorded currency codes, including EUR when it occurs only in the rates.
+    def currencies_in(value):
+        if isinstance(value, dict):
+            for key, child in value.items():
+                if key == "currency" and isinstance(child, str):
+                    yield child
+                else:
+                    yield from currencies_in(child)
+        elif isinstance(value, list):
+            for child in value:
+                yield from currencies_in(child)
+
+    currencies = set(currencies_in(data))
+    glossary = data.get("dataset", {}).get("glossary", {})
+    by_institute = {i["id"]: i for i in institutes}
+    pair_institutes = {claim["id"]: [target[1]["id"] for target in claim["targets"]]
+                       for claim in data.get("dataset", {}).get("shared_claims", []) if claim["kind"] == "agreement"}
+    errors = []
+    for identity, record in records.items():
+        if "news" in record:
+            text = record["news"]
+            if not isinstance(text, str) or not text.strip() or text != text.strip() or len(text.splitlines()) != 1 or first_sentence(text) != text:
+                errors.append(f"{identity}: news must be one nonblank sentence on one line")
+    groups = recent_developments(jurisdictions, lambda *groups: [], institutes, data.get("dataset", {}).get("shared_claims", []), limit=None)
+    for group in groups:
+        for identity, text, pair in zip(group["items"], group["texts"], group["pairs"], strict=True):
+            if not isinstance(text, str):
+                continue  # the schema and sentence check name malformed authored news
+            errors.extend(f"{identity}: {error}" for error in news_abbreviation_errors(text, glossary, currencies, group["jurisdiction"]))
+            # Timeline short/description is authored copy too; only budget and
+            # agreement templates generate prose that must never repeat names.
+            if "news" in records[identity] or identity.startswith("timeline:"):
+                continue
+            names = set(pair["names"] if pair else [group["name"]])
+            owners = pair_institutes[pair["id"]] if pair else [identity.split(":", 2)[1]]
+            names.update(by_institute[iid]["short_name"] for iid in owners if by_institute[iid].get("short_name"))
+            for name in sorted(names):
+                if re.search(r"(?<!\w)" + re.escape(name) + r"(?!\w)", text, re.I):
+                    errors.append(f"{identity}: generated News line repeats state or institute name {name!r}")
+    return errors
+
+
+
+def check_news_required(data):
+    """Every item the page's News list shows (its NEWS_ROWS entries and their pair mirrors in the feed) carries an
+    authored news line; the generated template stays only for older items in the events download and feed, and for
+    first_output events, which the build generates from the output catalogue and which have no authored record to carry
+    a line. That the line is bound to a quote is method_checks' required excerpt pointer."""
+    jurisdictions, institutes = data.get("jurisdictions", []), data.get("institutes", [])
+    owners = {"timeline": {j["id"]: j for j in jurisdictions}, "funding": {i["id"]: i for i in institutes}, "agreements": {i["id"]: i for i in institutes}}
+    errors = []
+    for group in recent_developments(jurisdictions, lambda *groups: [], institutes, data.get("dataset", {}).get("shared_claims", [])):
+        for identity in group["items"]:
+            origin, owner, record_id = identity.split(":", 2)
+            record = next(r for r in owners[origin][owner].get(origin, []) if r["id"] == record_id)
+            if "news" not in record and not (origin == "timeline" and record["event"] == "first_output"):
+                errors.append(f"{identity}: shown in News without an authored news line bound to a quote; write one ({NEWS_RULE})")
+    return errors
 
 MONTH_DAYS = Decimal("30.4375")  # average Gregorian month
 ANNOUNCEMENT_WORD = {"commitment": "announced", "proposed": "proposed"}
@@ -917,7 +1103,7 @@ def derive_display(published_data):
         reverse=True,
     )
     metadata["display"] = {
-        "developments": recent_developments(data.get("jurisdictions", []), union),
+        "developments": recent_developments(data.get("jurisdictions", []), union, data.get("institutes", []), metadata.get("shared_claims", [])),
         "maintainers": sorted(
             metadata.get("maintainers", []),
             key=lambda person: (person["name"], person.get("affiliation", "")),
