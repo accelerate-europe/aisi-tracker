@@ -11757,9 +11757,12 @@ def function_rows(data: dict) -> list[dict]:
 
 
 
+FN_GROUP_LABELS = {"Testing and science": "Testing and science", "Rules": "Rules and standards", "Informing government": "Informing government", "Ecosystem": "Ecosystem and adoption"}
+
+
 def fn_group_name(group: str) -> str:
-    """How the page prints a function group's name: "and" as "&" (owner, 18 Nov 2026); the data keeps the name as recorded."""
-    return group.replace(" and ", " & ")
+    """Short page labels (owner, 18 Nov 2026); unknown groups keep their recorded names."""
+    return FN_GROUP_LABELS.get(group, group)
 
 def function_columns(data: dict) -> list[dict]:
     """All current codes, in first-occurring group order then vocabulary order, independent of carriers."""
@@ -13043,7 +13046,7 @@ def check_functions_phone(browser, base_url: str, data: dict, *, inject: bool = 
         page.route(PAGE_DATA, lambda route: route.fulfill(json=data))
     hydrated(page, base_url)
     page.evaluate("document.fonts.ready")
-    payload = {"data": data, "quotes": function_quotes(data), "names": FN_NAMES, "model": function_phone_model(data)}
+    payload = {"data": data, "quotes": function_quotes(data), "names": FN_NAMES, "model": function_phone_model(data), "groupLabels": FN_GROUP_LABELS}
     for width in widths:
         page.set_viewport_size({"width": width, "height": 1000})
         page.wait_for_selector('.fn-phone')
@@ -13055,7 +13058,7 @@ def check_functions_phone(browser, base_url: str, data: dict, *, inject: bool = 
                 prefix = f"phone {width}px {theme} {scale}: "
                 errors += [prefix + error for error in page.evaluate(FN_FORM_VISIBILITY)]
                 errors += [prefix + error for error in functions_phone_structure(page.content(), data)]
-                errors += [prefix + error for error in page.evaluate(r"""async ({data, quotes, names, model}) => {
+                errors += [prefix + error for error in page.evaluate(r"""async ({data, quotes, names, model, groupLabels}) => {
                   const errors = [], box = document.querySelector('#functions-table'), phone = box.querySelector('.fn-phone');
                   const need = (ok, label) => { if (!ok) errors.push(label); };
                   if (!phone) return ['phone form is missing'];
@@ -13157,7 +13160,7 @@ def check_functions_phone(browser, base_url: str, data: dict, *, inject: bool = 
                          key + ': phone detail placement/state differs');
                     need(detail.querySelector('.fn-detail-head')?.textContent === expected.name, key + ': phone detail institute name differs');
                     const headings = [...detail.querySelectorAll(':scope > h4')], lists = [...detail.querySelectorAll(':scope > .fn-phone-functions')];
-                    need(same(headings.map(h => h.textContent), model.groups.map(g => g.name.replace(/ and /g, ' & '))) && lists.length === model.groups.length, key + ': phone detail groups/order differ');
+                    need(same(headings.map(h => h.textContent), model.groups.map(g => Object.prototype.hasOwnProperty.call(groupLabels, g.name) ? groupLabels[g.name] : g.name)) && lists.length === model.groups.length, key + ': phone detail groups/order differ');
                     for (const [g, group] of model.groups.entries()) {
                       const list = lists[g], heading = headings[g];
                       need(list && heading && heading.nextElementSibling === list, key + ': phone detail group heading placement differs');
@@ -13172,12 +13175,17 @@ def check_functions_phone(browser, base_url: str, data: dict, *, inject: bool = 
                       const label = item.querySelector(':scope > .fn-function-label');
                       const marked = ['activity', 'mandate', 'both'].includes(f.value), labelKey = key + '/' + f.code;
                       need(label && label.textContent === f.label && (label.tagName === 'BUTTON') === marked, labelKey + ': function label/control differs');
+                      const status = item.querySelector(':scope > .fn-function-status'), definition = item.querySelector(':scope > .fn-function-definition');
+                      need(status && status.textContent === ' · ' + names[f.value].toLowerCase(), labelKey + ': function status word differs');
+                      need(definition && definition.textContent === data.dataset.vocabularies.function[f.code].definition, labelKey + ': function definition differs');
+                      need(label && label.nextElementSibling === status && status?.nextElementSibling === definition &&
+                           !label.querySelector('.fn-function-status, .fn-function-definition'), labelKey + ': function status/definition must follow the label outside its control');
                       pip(label?.querySelector('.fn-pip'), f.value, labelKey, true);
                       if (!marked || !label) continue;
                       need(label.getAttribute('aria-expanded') === 'false' && label.getAttribute('type') === 'button', labelKey + ': unopened function control differs');
                       label.click();
                       const claims = item.querySelector(':scope > .fn-phone-claims');
-                      need(claims && label.nextElementSibling === claims && claims.id === label.getAttribute('aria-controls') && label.getAttribute('aria-expanded') === 'true', labelKey + ': function claims placement/state differs');
+                      need(claims && definition?.nextElementSibling === claims && claims.id === label.getAttribute('aria-controls') && label.getAttribute('aria-expanded') === 'true', labelKey + ': function claims placement/state differs');
                       if (claims) {
                         checkHeading(claims, f, expected.country, null, f.code, labelKey);
                         await checkClaims(claims, f, labelKey);

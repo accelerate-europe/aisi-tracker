@@ -518,6 +518,139 @@ def test_functions_phone_structure_accepts_groups_values_and_row_order(functions
     assert check_page.functions_phone_structure(html, data) == []
 
 
+def test_function_group_labels_keep_unknown_names():
+    import json
+    import subprocess
+
+    expected = {"Testing and science": "Testing and science", "Rules": "Rules and standards", "Informing government": "Informing government", "Ecosystem": "Ecosystem and adoption",
+                "Other and new": "Other and new", "constructor": "constructor", "__proto__": "__proto__"}
+    source = (Path(__file__).resolve().parents[1] / "site/index.html").read_text()
+    helpers = source[source.index("      var GROUP_LABELS ="):source.index("      function columnClass(")]
+    result = subprocess.run(["node", "-e", helpers + "console.log(JSON.stringify(" + json.dumps(list(expected)) + ".map(groupName)));"],
+                            capture_output=True, text=True, check=True)
+    assert json.loads(result.stdout) == list(expected.values())
+    assert [check_page.fn_group_name(group) for group in expected] == list(expected.values())
+
+
+@pytest.mark.parametrize("first, second, first_label, second_label", [
+    ("Testing and science", "Rules", "Testing and science", "Rules and standards"),
+    ("Informing government", "Ecosystem", "Informing government", "Ecosystem and adoption"),
+])
+def test_function_group_labels_in_desktop_and_phone_heads(functions, functions_phone, first, second, first_label, second_label):
+    for (data, html), check in ((functions, check_page.functions_structure), (functions_phone, check_page.functions_phone_structure)):
+        data = copy.deepcopy(data)
+        for entry in data["dataset"]["vocabularies"]["function"].values():
+            entry["group"] = {"Science": first, "Policy": second}.get(entry["group"], entry["group"])
+        html = html.replace(">Science<", ">" + first_label + "<").replace(">Policy<", ">" + second_label + "<")
+        assert check(html, data) == []
+        assert any("groups/order" in error or "group heads/order" in error for error in check(html.replace(">" + first_label + "<", ">Wrong group<"), data))
+
+
+def test_phone_function_definitions_statuses_and_claim_toggle():
+    """Run the phone renderer and item checks on all real codes with every status, without Chromium."""
+    import inspect
+    import json
+    import subprocess
+
+    root = Path(__file__).resolve().parents[1]
+    source = (root / "site/index.html").read_text()
+    vocab = json.loads((root / "data/aisi.json").read_text())["dataset"]["vocabularies"]["function"]
+    vocab = {code: entry for code, entry in vocab.items() if not entry.get("deprecated")}
+    helpers = source[source.index("      var GROUP_LABELS ="):source.index("      function columnClass(")]
+    helpers += next(line for line in source.splitlines() if "function mark(value, pip)" in line)
+    helpers += next(line for line in source.splitlines() if "function coded(value)" in line)
+    start = source.rindex("groups.forEach(function (group) {", 0, source.index('var heading = el("h4", null, groupName(group))'))
+    rendering = source[start:source.index(" button.parentNode.appendChild(detail);", start)]
+    start = source.index("              var existing = button.parentNode.querySelector")
+    toggle = source[start:source.index("\n            }", start)]
+    gate = inspect.getsource(check_page.check_functions_phone)
+    start = gate.index("const label = item.querySelector(':scope > .fn-function-label');")
+    item_check = gate[start:gate.index("pip(label?.querySelector", start)]
+    script = r'''
+const assert = require('node:assert/strict');
+function el(tag, className = '', text = '') {
+  return {tagName: tag.toUpperCase(), className, text, children: [], attrs: {}, dataset: {},
+    get textContent() { return this.text + this.children.map(n => n.textContent).join(''); },
+    get nextElementSibling() { return this.parentNode?.children[this.parentNode.children.indexOf(this) + 1] || null; },
+    setAttribute(k, v) { this.attrs[k] = v; }, getAttribute(k) { return this.attrs[k] ?? null; },
+    removeAttribute(k) { delete this.attrs[k]; },
+    appendChild(n) { n.parentNode = this; this.children.push(n); return n; },
+    remove() { this.parentNode.children.splice(this.parentNode.children.indexOf(this), 1); },
+    querySelector(selector) {
+      for (const part of selector.split(', ')) {
+        const direct = part.startsWith(':scope > '), cls = part.replace(':scope > ', '').slice(1);
+        for (const n of this.children) {
+          if ((n.className || '').split(' ').includes(cls)) return n;
+          const found = !direct && n.querySelector(part); if (found) return found;
+        }
+      }
+      return null;
+    },
+    closest() { return {dataset: {institute: 'sample'}}; }
+  };
+}
+const vocab = VOCAB;
+const names = {activity: 'Active', mandate: 'Assigned', both: 'Assigned and active', not_found: 'not found', not_coded: 'not yet coded'};
+const groups = [...new Set(Object.values(vocab).map(v => v.group))];
+const columns = groups.flatMap(g => Object.keys(vocab).filter(c => vocab[c].group === g));
+const i = {id: 'sample'}, I = {sample: i}, rows = {sample: {}};
+const appendClaims = claims => claims.appendChild(el('p', 'fn-claim', 'Evidence.'));
+HELPERS
+function toggle(button) { TOGGLE }
+function checkItem(item, f) {
+  const errors = [], key = 'sample', data = {dataset: {vocabularies: {function: vocab}}};
+  const need = (ok, message) => { if (!ok) errors.push(message); };
+  ITEM_CHECK
+  return errors;
+}
+for (const value of Object.keys(names)) {
+  for (const code of columns) rows.sample[code] = {value};
+  const detail = el('div'); detail.id = 'detail';
+  RENDERING
+  assert.deepEqual(detail.children.filter(n => n.tagName === 'H4').map(n => n.textContent), ['Testing and science', 'Rules and standards', 'Informing government', 'Ecosystem and adoption']);
+  const items = detail.children.filter(n => n.tagName === 'UL').flatMap(n => n.children);
+  assert.equal(items.length, 18);
+  items.forEach((item, n) => {
+    const code = columns[n], f = {...vocab[code], code, value};
+    const [label, status, definition] = item.children;
+    assert.equal(label.textContent, f.label);
+    assert.equal(label.children[0].getAttribute('aria-label'), names[value]);
+    assert.equal(status.textContent, ' · ' + names[value].toLowerCase());
+    assert.equal(definition.textContent, f.definition);
+    assert.deepEqual(checkItem(item, f), []);
+    for (const node of [status, definition]) {
+      const text = node.text; node.text = 'Wrong';
+      assert.ok(checkItem(item, f).length); node.text = text;
+      node.remove(); label.appendChild(node);
+      assert.ok(checkItem(item, f).some(e => e.includes('outside its control')));
+      node.remove(); item.children = [label, status, definition]; node.parentNode = item;
+    }
+    if (['activity', 'mandate', 'both'].includes(value)) {
+      assert.equal(label.tagName, 'BUTTON');
+      for (let repeat = 0; repeat < 2; repeat++) {
+        toggle(label);
+        const claims = item.querySelector(':scope > .fn-phone-claims');
+        assert.equal(label.getAttribute('aria-expanded'), 'true');
+        assert.equal(claims.id, label.getAttribute('aria-controls'));
+        assert.equal(definition.nextElementSibling, claims);
+        assert.deepEqual(checkItem(item, f), []);
+        toggle(label);
+        assert.equal(label.getAttribute('aria-expanded'), 'false');
+        assert.deepEqual(item.children, [label, status, definition]);
+      }
+    } else {
+      assert.equal(label.tagName, 'SPAN');
+      assert.equal(label.getAttribute('aria-controls'), null);
+    }
+  });
+}
+'''
+    for marker, value in {"VOCAB": json.dumps(vocab), "HELPERS": helpers, "TOGGLE": toggle, "ITEM_CHECK": item_check, "RENDERING": rendering}.items():
+        script = script.replace(marker, value)
+    result = subprocess.run(["node", "-e", script], capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
+
+
 @pytest.mark.parametrize(("old", "new", "finding"), [
     ('<div class="fn-phone">', '<div class="fn-phone"></div><div class="fn-phone">', "exactly one phone list"),
     ('<span>Science</span>', '<span>Policy</span>', "group heads/order"),

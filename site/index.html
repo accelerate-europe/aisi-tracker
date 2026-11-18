@@ -27,7 +27,7 @@
 <!-- build:head -->
 <style>
 /* Design principles
- * Functions table: institute rows in established and not-yet-established blocks, function columns in vocabulary groups, equal widths and rotated short heads. Active and both use a dot, assigned a ring; not found is blank, a search result rather than absence. The jurisdiction column stays visible during sideways scrolling. Hover and focus tint the row and one continuous column through the block bands, with a slanted band behind its head. Columns are evenly spaced with no gutter between groups; a slightly stronger vertical line marks where a group starts, quieter than the selected outline in both themes, and row lines and the row and column tint run through unbroken; a group label longer than its own tracks takes a second line (owner, 18 Nov 2026). Each group has a leaning boundary and an underline at its label, meeting the upright body rules at the head rule; the shared head height follows the head type, leaving at least --sp-1 above every head tip. No upright rule crosses the head zone, and labels paint above the hover flag and boundaries. Quotes and sources open on demand below the selected institute (check_page check_functions_table, check_functions_detail, check_functions_layout, check_functions_tint, check_function_group_tabs).
+ * Functions table: institute rows in established and not-yet-established blocks, function columns in vocabulary groups, equal widths and rotated short heads. The page prints each group's label from one constant per group (Testing and science, Rules and standards, Informing government, Ecosystem and adoption; owner, 18 Nov 2026), so a word can be changed in one place; the data keeps the recorded group names (Rules, Ecosystem). Active and both use a dot, assigned a ring; not found is blank, a search result rather than absence. The jurisdiction column stays visible during sideways scrolling. Hover and focus tint the row and one continuous column through the block bands, with a slanted band behind its head. Columns are evenly spaced with no gutter between groups; a slightly stronger vertical line marks where a group starts, quieter than the selected outline in both themes, and row lines and the row and column tint run through unbroken; a group label longer than its own tracks takes a second line (owner, 18 Nov 2026). Each group has a leaning boundary and an underline at its label, meeting the upright body rules at the head rule; the shared head height follows the head type, leaving at least --sp-1 above every head tip. No upright rule crosses the head zone, and labels paint above the hover flag and boundaries. Quotes and sources open on demand below the selected institute (check_page check_functions_table, check_functions_detail, check_functions_layout, check_functions_tint, check_function_group_tabs).
  * Selection box: an open function cell, phone row or phone function, and a selected search or palette row, has one even box on all four sides, inset within its padding box and above tints and rules (check_page check_selection_boxes).
  * Tinted rows: while the functions table fits, the lit row's tint extends --sp-2 past both ends through pseudo-elements, keeping its text inside the tint and its row label on the content grid edge. During sideways scrolling the scroll box clips the tint, leaving the label on the clipped edge; this is a known limitation. The panel stays in place with its left edge aligned to the row text's left edge. Every other tinted, hovered or selected row (world rows, States lists, the arrived card, search, palette and download rows) keeps its text at least its inline padding inside the background (check_page check_tinted_rows).
  * Functions legend: marks and their names share one line directly under the desktop table, with equal gaps between visible items and no space reserved for the blank mark. The blank entry says no public text was found and this is not proof of absence. Whole items wrap on phones, retaining their pips; the caveat can wrap within its item. The head holds only the most-common line. What the table shows and how to open evidence belong in How this is coded, with row order and the provisional list at its end (check_page check_functions_table, check_functions_layout).
@@ -787,10 +787,13 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
 .fn-pip.fn-not_coded { height: 2px; align-self: center; }
 .fn-phone-detail { grid-column: 1 / -1; grid-row: 2; position: static; min-width: 0; width: 100%; max-width: 100%; }
 .fn-phone-functions { list-style: none; padding: 0; margin: 0; }
+.fn-phone-functions > li { display: grid; grid-template-columns: minmax(0, auto) minmax(min-content, 1fr); align-items: center; }
 .fn-phone-detail h4 { margin-top: var(--sp-4); }
 .fn-function-label { display: flex; align-items: center; gap: var(--sp-2); min-height: var(--hit); padding: var(--sp-2) var(--sp-1); font: var(--type-body); color: var(--ink); }
 button.fn-function-label { width: 100%; background: transparent; border: 0; text-align: left; cursor: pointer; }
-.fn-phone-claims { margin-block: var(--sp-2) var(--sp-4); }
+.fn-function-status { font: var(--type-meta); color: var(--muted); }
+.fn-function-definition { grid-column: 1 / -1; margin: 0; padding-left: calc(var(--sp-1) + 2 * var(--sp-2)); font: var(--type-meta); color: var(--muted); }
+.fn-phone-claims { grid-column: 1 / -1; margin-block: var(--sp-2) var(--sp-4); }
 @media (width <= 640px) {
   .fn-scroll, .fn-desktop-only { display: none; }
   .fn-phone { display: grid; }
@@ -3299,8 +3302,9 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       // Vocabulary order within each group; new codes may have been appended to the vocabulary.
       // Keep every non-deprecated function, including columns with no public text found anywhere.
       var columns = []; groups.forEach(function (group) { codes.forEach(function (code) { if (vocab[code].group === group) columns.push(code); }); });
-      // A group name prints "and" as "&" so a short group's label fits its tracks; the data keeps the name as recorded (owner, 18 Nov 2026).
-      function groupName(group) { return String(group).replace(/ and /g, " & "); }
+      // Short page labels have one home; unknown groups keep their recorded names (owner, 18 Nov 2026).
+      var GROUP_LABELS = { "Testing and science": "Testing and science", "Rules": "Rules and standards", "Informing government": "Informing government", "Ecosystem": "Ecosystem and adoption" };
+      function groupName(group) { return Object.prototype.hasOwnProperty.call(GROUP_LABELS, group) ? GROUP_LABELS[group] : group; }
       function columnClass(code) { var n = columns.indexOf(code); return "fn-column" + (n === 0 ? " fn-group-first" : vocab[columns[n - 1]].group !== vocab[code].group ? " fn-group-start" : ""); }
       function mark(value, pip) { var span = el("span", "fn-mark fn-" + (value === "both" ? "activity" : value) + (pip ? " fn-pip" : "")); span.setAttribute("aria-hidden", "true"); return span; }
       function pad() { var c = el("td", "fn-pad"); c.setAttribute("aria-hidden", "true"); return c; }
@@ -3416,12 +3420,12 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
           list.addEventListener("click", function (event) {
             var button = event.target.closest(".fn-phone-row, button.fn-function-label"); if (!button) return;
             if (button.classList.contains("fn-function-label")) {
-              var existing = button.nextElementSibling, isOpen = button.getAttribute("aria-expanded") === "true";
+              var existing = button.parentNode.querySelector(":scope > .fn-phone-claims"), isOpen = button.getAttribute("aria-expanded") === "true";
               if (isOpen) { existing.remove(); button.setAttribute("aria-expanded", "false"); return; }
               var claims = el("div", "fn-phone-claims"); claims.id = button.getAttribute("aria-controls");
               claims.appendChild(el("h5", "fn-function-head", vocab[button.parentNode.dataset.code].label));
               appendClaims(claims, I[button.closest("li[data-institute]").dataset.institute], button.parentNode.dataset.code, true);
-              button.after(claims); button.setAttribute("aria-expanded", "true"); return;
+              button.parentNode.appendChild(claims); button.setAttribute("aria-expanded", "true"); return;
             }
             if (button === opened) { closeDetail(true); return; }
             closeDetail(false);
@@ -3434,7 +3438,8 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
                 var pip = mark(row.value, true); pip.removeAttribute("aria-hidden"); pip.setAttribute("role", "img"); pip.setAttribute("aria-label", names[row.value]);
                 label.appendChild(pip); label.appendChild(el("span", null, vocab[code].label));
                 if (coded(row.value)) { li.dataset.code = code; label.type = "button"; label.setAttribute("aria-expanded", "false"); label.setAttribute("aria-controls", detail.id + "-" + code); }
-                li.appendChild(label); functions.appendChild(li);
+                li.appendChild(label); li.appendChild(el("span", "fn-function-status", " · " + names[row.value].toLowerCase()));
+                li.appendChild(el("p", "fn-function-definition", vocab[code].definition)); functions.appendChild(li);
               }); detail.appendChild(heading); detail.appendChild(functions);
             }); button.parentNode.appendChild(detail); detailRow = detail; selected(button);
           });
