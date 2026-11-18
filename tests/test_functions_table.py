@@ -172,9 +172,115 @@ def test_function_geometry_scripts_parse_without_browser():
     import subprocess
 
     scripts = [check_page.TEXT_RECTS_JS, check_page.CLAIM_SPACING_JS, check_page.FN_PANEL_WIDTH_JS,
-               check_page.FN_POINTER_JS, check_page.FN_OPEN_CONTROLS_JS, check_page.CLICK_WIDTH_JS]
+               check_page.FN_POINTER_JS, check_page.FN_OPEN_CONTROLS_JS, check_page.CLICK_WIDTH_JS, check_page.FN_VIEWS_JS]
     subprocess.run(['node', '-'], input='for (const source of ' + json.dumps(scripts) + ') new Function(source);',
                    text=True, capture_output=True, check=True)
+
+
+@pytest.fixture(params=['grouped', 'grid'])
+def function_view(request):
+    view = request.param
+    caption = {'size': 14, 'colour': 'rgb(90, 90, 90)', 'weight': '400', 'decoration': 'none'}
+    return {'view': view, 'grouped': view == 'grouped', 'grid': view == 'grid', 'meta': caption, 'bodySize': 16,
+            'surface': {'top': 100, 'right': 900}, 'head': {'top': 100}, 'summary': {'bottom': 40},
+            'control': {**caption, 'shown': True, 'role': 'group', 'name': 'Functions view', 'separator': '·',
+                        'top': 60, 'bottom': 88, 'right': 900, 'items': [
+                            {**caption, 'view': key, 'text': label, 'pressed': str(key == view).lower(), 'shown': True,
+                             'type': 'button', 'controls': 'functions-table', 'marked': key == view, 'right': edge}
+                            for key, label, edge in [('grouped', 'By group', 770), ('grid', 'All 5 functions', 900)]]}}
+
+
+def test_functions_view_switch_accepts_both_states_and_one_pixel_alignment(function_view):
+    assert check_page.function_view_errors(function_view, 5) == []
+    function_view['control']['right'] -= 1
+    function_view['control']['items'][-1]['right'] -= 1
+    assert check_page.function_view_errors(function_view, 5) == []
+
+
+@pytest.mark.parametrize('part, key, value, finding', [
+    ('control', 'shown', False, 'hidden'),
+    ('control', 'role', 'tablist', 'named group'),
+    ('control', 'name', '', 'named group'),
+    ('control', 'separator', '', 'separator'),
+    ('button', 'text', 'Show grouped by institute', 'named buttons'),
+    ('button', 'shown', False, 'named buttons'),
+    ('button', 'type', 'submit', 'named buttons'),
+    ('button', 'pressed', None, 'pressed state'),
+    ('control', 'size', 16, 'caption size'),
+    ('button', 'size', 13, 'caption size'),
+    ('button', 'colour', 'rgb(0, 0, 0)', 'muted ink'),
+    ('button', 'weight', '600', 'caption weight'),
+    ('control', 'bottom', 102, 'own line'),
+    ('control', 'top', 38, 'own line'),
+    ('control', 'right', 902, 'right edge'),
+    ('last', 'right', 898, 'right edge'),
+])
+def test_functions_view_switch_rejects_regressions(function_view, part, key, value, finding):
+    target = function_view['control']
+    if part != 'control':
+        target = target['items'][-1 if part == 'last' else 0]
+    target[key] = value
+    assert any(finding in error for error in check_page.function_view_errors(function_view, 5))
+
+
+def test_functions_view_switch_rejects_wrong_selection_and_underlined_current(function_view):
+    current = next(b for b in function_view['control']['items'] if b['pressed'] == 'true')
+    current['decoration'] = 'underline'
+    current['marked'] = False
+    for b in function_view['control']['items']:
+        b['pressed'] = 'true'
+    function_view['grid'] = function_view['grouped'] = True
+    errors = check_page.function_view_errors(function_view, 5)
+    assert any('pressed state' in e for e in errors)
+    assert any('mark only' in e for e in errors)
+    assert any('no text underline' in e for e in errors)
+
+
+@pytest.mark.parametrize('initial', [None, 'grouped', 'grid'])
+def test_functions_view_buttons_initialise_switch_and_keep_focus(initial):
+    """Exercise the real controls, including saved view state and clicks that do not move focus."""
+    import json
+    import subprocess
+
+    source = (Path(__file__).resolve().parents[1] / 'site/index.html').read_text()
+    control = source[source.index('        var viewSwitch ='):source.index('        buildForm(false);')]
+    setter = source[source.index('      var viewButtons ='):source.index('      build();', source.index('      var viewButtons ='))]
+    copy_source = source[source.index('      var FN_COPY ='):source.index('      var names =', source.index('      var FN_COPY ='))]
+    script = r'''
+const assert = require('node:assert/strict');
+let focused = null, updates = 0;
+const el = (tag, cls, text) => ({tag, className: cls, textContent: text, dataset: {}, attrs: {}, children: [],
+  setAttribute(k, v) { this.attrs[k] = v; }, appendChild(n) { this.children.push(n); },
+  addEventListener(k, fn) { this[k] = fn; }, focus() { focused = this; }});
+const box = el('div'), columns = Array(5);
+box.id = 'functions-table'; box.dataset.view = INITIAL;
+const updateFits = () => updates++;
+COPY
+SETTER
+CONTROL
+assert.equal(viewSwitch.attrs.role, 'group');
+assert.equal(viewSwitch.attrs['aria-label'], 'Functions view');
+assert.deepEqual(viewButtons.map(b => b.textContent), ['By group', 'All 5 functions']);
+assert.deepEqual(viewButtons.map(b => b.attrs['aria-pressed']), box.dataset.view === 'grid' ? ['false', 'true'] : ['true', 'false']);
+for (const view of ['grid', 'grouped']) {
+  focused = {hiddenView: true};
+  const button = viewButtons.find(b => b.dataset.view === view);
+  button.click();
+  assert.equal(box.dataset.view, view);
+  assert.equal(focused, button);
+  assert.equal(viewButtons.filter(b => b.attrs['aria-pressed'] === 'true').length, 1);
+  assert.equal(button.attrs['aria-pressed'], 'true');
+  const before = updates;
+  button.click();
+  assert.equal(updates, before, 'current view is a no-op');
+}
+const before = focused;
+setView('grid');
+assert.equal(focused, before, 'programmatic arrival must not move focus');
+'''
+    for marker, value in {'INITIAL': json.dumps(initial), 'COPY': copy_source, 'SETTER': setter, 'CONTROL': control}.items():
+        script = script.replace(marker, value)
+    subprocess.run(['node', '-'], input=script, text=True, capture_output=True, check=True)
 
 
 def test_functions_structure_rejects_a_missing_vocabulary_column(functions):

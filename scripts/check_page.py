@@ -12613,17 +12613,64 @@ def check_selection_single(browser, base_url: str) -> list[str]:
 
 
 FN_VIEWS_JS = r"""() => {
-  const box = document.getElementById('functions-table'), toggle = box.querySelector(':scope > .fn-view-toggle');
-  const shown = sel => { const n = box.querySelector(sel); return !!n && !!n.getClientRects().length; };
-  return {view: box.dataset.view, grouped: shown('.fn-phone'), grid: shown('.fn-scroll'), toggle: toggle ? toggle.textContent : null,
-    toggleShown: !!toggle && !!toggle.getClientRects().length, before: !!toggle && !!(toggle.compareDocumentPosition(box.querySelector('.fn-phone')) & Node.DOCUMENT_POSITION_FOLLOWING),
-    phoneWidth: box.querySelector('.fn-phone').getBoundingClientRect().width, prose: (() => { const p = document.createElement('div'); p.style.width = 'var(--prose)'; box.appendChild(p); const w = p.getBoundingClientRect().width; p.remove(); return w; })()};
+  const box = document.getElementById('functions-table'), control = box.querySelector(':scope > .fn-view-switch');
+  const shown = n => !!n?.getClientRects().length && getComputedStyle(n).visibility === 'visible';
+  const rect = n => { const r = n.getBoundingClientRect(); return {top: r.top, bottom: r.bottom, right: r.right}; };
+  const type = n => { const s = getComputedStyle(n); return {size: parseFloat(s.fontSize), colour: s.color, weight: s.fontWeight, decoration: s.textDecorationLine}; };
+  const probe = document.createElement('div'); probe.style.cssText = 'position:absolute;width:var(--prose);font:var(--type-meta);color:var(--muted)';
+  box.appendChild(probe); const meta = type(probe), prose = probe.getBoundingClientRect().width; probe.remove();
+  const phone = box.querySelector('.fn-phone'), grid = box.querySelector('.fn-scroll');
+  const surface = shown(phone) ? phone : grid, head = surface.querySelector('.fn-phone-head, thead');
+  const summary = box.querySelector('.fn-summary');
+  return {view: box.dataset.view, grouped: shown(phone), grid: shown(grid), phoneWidth: phone.getBoundingClientRect().width, prose,
+    surface: rect(surface), head: rect(head), summary: summary ? rect(summary) : null, meta, bodySize: type(document.body).size,
+    control: control ? {shown: shown(control), role: control.getAttribute('role'), name: control.getAttribute('aria-label'),
+      ...rect(control), ...type(control), separator: control.querySelector('[aria-hidden="true"]')?.textContent.trim(),
+      items: [...control.querySelectorAll('button')].map(button => {
+        const marker = getComputedStyle(button, '::after');
+        return {view: button.dataset.view, text: button.textContent, pressed: button.getAttribute('aria-pressed'), shown: shown(button),
+          type: button.type, controls: button.getAttribute('aria-controls'), ...rect(button), ...type(button),
+          marked: marker.content !== 'none' && marker.content !== 'normal' && parseFloat(marker.height) > 0};
+      })} : null};
 }"""
+
+
+def function_view_errors(state: dict, count: int) -> list[str]:
+    """The switch's resting appearance and geometry, measured against the visible table viewport."""
+    errors = []
+    control = state['control']
+    if not control or not control['shown']:
+        return ['Functions view switch is missing or hidden']
+    items = control['items']
+    if control['role'] != 'group' or control['name'] != 'Functions view' or control['separator'] != '·':
+        errors.append('Functions view switch needs its named group and hidden dot separator')
+    if [(b['view'], b['text']) for b in items] != [('grouped', 'By group'), ('grid', f'All {count} functions')] or not all(
+            b['shown'] and b['type'] == 'button' and b['controls'] == 'functions-table' for b in items):
+        errors.append('Functions view switch must show both named buttons')
+    view = state['view']
+    if view not in ('grouped', 'grid') or state['grouped'] != (view == 'grouped') or state['grid'] != (view == 'grid') or sum(
+            b['pressed'] == 'true' for b in items) != 1 or any(b['pressed'] != str(b['view'] == view).lower() for b in items):
+        errors.append('Functions view switch pressed state differs from the shown view')
+    if any(b['marked'] != (b['view'] == view) for b in items):
+        errors.append('Functions view switch must mark only the current item')
+    for item in [control, *items]:
+        if abs(item['size'] - state['meta']['size']) > .01 or item['size'] >= state['bodySize']:
+            errors.append('Functions view switch must use caption size, smaller than body')
+        if item['colour'] != state['meta']['colour'] or item['weight'] != state['meta']['weight'] or int(item['weight']) >= 600:
+            errors.append('Functions view switch must use muted ink and normal caption weight')
+    if any(b['pressed'] == 'true' and b['decoration'] != 'none' for b in items):
+        errors.append('Functions view switch current item must have no text underline')
+    if control['bottom'] > min(state['surface']['top'], state['head']['top']) + 1 or (
+            state['summary'] and control['top'] < state['summary']['bottom'] - 1):
+        errors.append('Functions view switch must have its own line above the table head')
+    if not items or abs(control['right'] - state['surface']['right']) > 1 or abs(items[-1]['right'] - state['surface']['right']) > 1:
+        errors.append('Functions view switch must align with the visible table right edge within 1px')
+    return errors
 
 
 def check_functions_views(browser, base_url: str, data: dict) -> list[str]:
     """Functions views (owner, 18 Nov 2026): the grouped view by default at 1440, 1000 and 390, the full grid one click away and
-    back, the control a word naming what it shows, a link to a target in the hidden view bringing that view, and an expanded
+    back through a quiet two-button switch above the table, a link to a target in the hidden view bringing that view, and an expanded
     grouped row listing every function with its status and reader's sentence, with claims opening inline on desktop too."""
     errors = []
     vocab = data["dataset"]["vocabularies"]["function"]
@@ -12637,37 +12684,69 @@ def check_functions_views(browser, base_url: str, data: dict) -> list[str]:
     for width in (1440, 1000, 390):
         page = browser.new_page(viewport={"width": width, "height": 1000})
         hydrated(page, base_url, fn_view="default")
+        page.locator('#functions-table').scroll_into_view_if_needed()
+        page.evaluate('document.fonts.ready')
         v = page.evaluate(FN_VIEWS_JS)
         if v["view"] != "grouped" or not v["grouped"] or v["grid"]:
             errors.append(f"{width}px: Functions does not open on the grouped view: {v}")
-        if not v["toggleShown"] or not v["before"] or str(count) not in (v["toggle"] or "") or "grid" not in (v["toggle"] or ""):
-            errors.append(f"{width}px: the view control is missing, after the table, or does not name the grid of all {count} functions: {v['toggle']!r}")
         if width > 640 and v["phoneWidth"] > v["prose"] + 1:
             errors.append(f"{width}px: the grouped view stretches past the reading measure ({v['phoneWidth']:.0f}px)")
-        toggle = page.locator("#functions-table > .fn-view-toggle")
-        # A click that does not move focus (Safari's buttons) from inside the grouped view still leaves focus on the control.
-        page.locator(".fn-phone li[data-institute] > .fn-phone-row").first.focus()
-        toggle.evaluate("n => n.click()")
-        if not toggle.evaluate("n => n === document.activeElement"):
-            errors.append(f"{width}px: a click that does not move focus leaves focus in the hidden view")
-        toggle.evaluate("n => n.click()")
-        toggle.click()
-        g = page.evaluate(FN_VIEWS_JS)
-        if g["view"] != "grid" or not g["grid"] or g["grouped"] or "grouped" not in (g["toggle"] or "").lower():
-            errors.append(f"{width}px: the control does not open the full grid, or does not offer the way back: {g}")
-        if not toggle.evaluate("n => n === document.activeElement"):
-            errors.append(f"{width}px: focus leaves the view control when it switches")
-        toggle.click()
-        if page.evaluate(FN_VIEWS_JS)["view"] != "grouped":
-            errors.append(f"{width}px: the control does not return to the grouped view")
+        switch = page.locator('#functions-table > .fn-view-switch')
+        grouped = switch.locator('button[data-view="grouped"]')
+        grid = switch.locator('button[data-view="grid"]')
+
+        def expect_view(view):
+            state = page.evaluate(FN_VIEWS_JS)
+            if state['view'] != view or not state[view] or state['grid' if view == 'grouped' else 'grouped']:
+                errors.append(f'{width}px: activating {view} did not show that view')
+            if not all(b['pressed'] == str(b['view'] == view).lower() for b in state['control']['items']):
+                errors.append(f'{width}px: pressed buttons do not follow {view}')
+
+        for theme in ('light', 'dark'):
+            set_theme(page, theme)
+            for view, button in (('grid', grid), ('grouped', grouped)):
+                # Both directions, starting inside the view being hidden; DOM clicks do not move focus (as in Safari).
+                page.locator('.fn-phone-row' if view == 'grid' else '.fn-cell').first.focus()
+                button.evaluate('n => n.click()')
+                expect_view(view)
+                if not button.evaluate('n => n === document.activeElement'):
+                    errors.append(f'{width}px {theme}: Safari-style {view} activation loses focus')
+                button.click()  # activating the current item must leave the view as it is
+                expect_view(view)
+                # Measure resting ink, without hover/focus changing the colour; include the actual last text button's edge.
+                button.evaluate('n => n.blur()')
+                page.mouse.move(1, 1)
+                switch.scroll_into_view_if_needed()
+                errors += [f'{width}px {theme} {view}: ' + e for e in function_view_errors(page.evaluate(FN_VIEWS_JS), count)]
+        grouped.focus()
+        page.keyboard.press('Tab')
+        if not grid.evaluate('n => n === document.activeElement'):
+            errors.append(f'{width}px: Tab does not reach the second view button')
+        page.keyboard.press('Enter')
+        expect_view('grid')
+        if not grid.evaluate('n => n === document.activeElement && getComputedStyle(n).textDecorationLine === "none"'):
+            errors.append(f'{width}px: keyboard activation loses focus or underlines the current view')
+        page.keyboard.press('Shift+Tab')
+        page.keyboard.press('Space')
+        expect_view('grouped')
+        if not grouped.evaluate('n => n === document.activeElement && getComputedStyle(n).textDecorationLine === "none"'):
+            errors.append(f'{width}px: Space does not keep focus on the current group view')
         # Arrival: a target inside the hidden view brings that view.
         page.evaluate("() => { const c = document.querySelector('.fn-scroll .fn-table th[scope=\"row\"]'); c.id = 'fn-arrival-probe'; }")
         page.evaluate("() => { location.hash = 'fn-arrival-probe'; }")
         page.wait_for_function("() => document.getElementById('functions-table').dataset.view === 'grid'", timeout=5000)
+        expect_view('grid')
         page.evaluate("() => { const r = document.querySelector('.fn-phone .fn-phone-row'); r.id = 'fn-arrival-probe-2'; location.hash = 'fn-arrival-probe-2'; }")
         page.wait_for_function("() => document.getElementById('functions-table').dataset.view === 'grouped'", timeout=5000)
+        expect_view('grouped')
         # An expanded grouped row lists every function with its status and reader's sentence.
         page.locator('.fn-phone li[data-institute="gb-aisi"] > .fn-phone-row').click()
+        unchanged = grouped.evaluate('''button => { const row = document.querySelector('.fn-phone-detail');
+          const observer = new MutationObserver(() => {}); observer.observe(document.getElementById('functions-table'), {subtree:true, attributes:true, childList:true});
+          button.click(); const changes = observer.takeRecords(); observer.disconnect();
+          return row === document.querySelector('.fn-phone-detail') && !changes.length && document.activeElement === button; }''')
+        if not unchanged:
+            errors.append(f'{width}px: activating the current view changes its open row or switch state')
         listed = page.evaluate("""() => [...document.querySelectorAll('.fn-phone-detail .fn-phone-functions > li')].map(li => ({
           shown: !!li.getClientRects().length, status: (li.querySelector('.fn-function-status')?.textContent || '').trim(),
           label: li.querySelector('.fn-function-label')?.textContent,
@@ -12723,13 +12802,18 @@ def check_functions_views(browser, base_url: str, data: dict) -> list[str]:
                     or not button.evaluate('n => n === document.activeElement')):
                 errors.append('1440px grouped gb-aisi/model_testing: selecting the function again does not close claims and keep focus on its button')
         page.close()
+        saved = browser.new_page(viewport={"width": width, "height": 1000}, java_script_enabled=False)
+        saved.goto(base_url)
+        if not saved.locator('.fn-scroll').is_visible() or saved.locator('.fn-phone').is_visible() or saved.locator('.fn-view-switch').is_visible():
+            errors.append(f'{width}px: without scripting the grid must show and the switch must be hidden')
+        saved.close()
     # The view is the section's state: a resize across 640px keeps the chosen view, an open panel or row, and focus.
     page = browser.new_page(viewport={"width": 1440, "height": 1000})
     hydrated(page, base_url, fn_view="default")
     for view, opener, holder in (("grid", '.fn-scroll .fn-cell', '.fn-scroll .fn-detail'), ("grouped", '.fn-phone li[data-institute] > .fn-phone-row', '.fn-phone .fn-phone-detail')):
         page.set_viewport_size({"width": 1440, "height": 1000})
         if page.evaluate(FN_VIEWS_JS)["view"] != view:
-            page.locator("#functions-table > .fn-view-toggle").click()
+            page.locator(f'#functions-table > .fn-view-switch button[data-view="{view}"]').click()
         page.locator(opener).first.click()
         page.locator(holder + " .close-control").first.focus()
         for width in (390, 1000, 1440):

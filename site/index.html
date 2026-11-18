@@ -27,7 +27,8 @@
 <!-- build:head -->
 <style>
 /* Design principles
- * Functions views (owner, 18 Nov 2026, "grouped default, grid one click away"): at every width the section opens on the grouped view, one row per institute with a strip of marks per group; a row expands to list every function with its status and, in muted meta, its short reader's sentence. The coding rule stays on hover in the grid and in How this is coded. A control above the view, in words, opens the full grid of all functions ("Show all 18 functions as a grid") and returns ("Show grouped by institute"); the view is the section's state, not the width's, and a link to a target inside the hidden view brings that view. On wider screens the grouped view keeps to the reading measure with room between groups and rows. Without the page script the grid shows, as the rows cannot open (check_page check_functions_views).
+ * View switch: alternative presentations of the same content use two visible, dot-separated text buttons in muted meta type, following the section sub-navigation with an accent marker on the current item, no bold or current text underline, and hover/focus feedback; the switch sits on its own line above the content, aligned to its visible right edge at every width; a named group holds exactly one aria-pressed button, activation keeps focus on that button even when a click does not move focus, and activating the current item leaves the view unchanged.
+ * Functions views (owner, 18 Nov 2026, "grouped default, grid one click away"): at every width the section opens on the grouped view, one row per institute with a strip of marks per group; a row expands to list every function with its status and, in muted meta, its short reader's sentence. The coding rule stays on hover in the grid and in How this is coded. The caption-sized view switch above the table reads "By group · All 18 functions", with the count from the vocabulary and the current view marked; the view is the section's state, not the width's, and a link to a target inside the hidden view brings that view. On wider screens the grouped view keeps to the reading measure with room between groups and rows. Without the page script the grid shows and the switch is hidden, as the rows cannot open (check_page check_functions_views).
  * Functions table: institute rows in established and not-yet-established blocks, function columns in vocabulary groups, equal widths and rotated short heads. The page prints each group's label from one constant per group (Testing and science, Rules and standards, Informing government, Ecosystem and adoption; owner, 18 Nov 2026), so a word can be changed in one place; the data keeps the recorded group names (Rules, Ecosystem). Active and both use a dot, assigned a ring; not found is blank, a search result rather than absence. The jurisdiction column stays visible during sideways scrolling. Hover and focus tint the row and one continuous column through the block bands, with a slanted band behind its head. Columns are evenly spaced with no gutter between groups; a slightly stronger vertical line marks where a group starts, quieter than the selected outline in both themes, and row lines and the row and column tint run through unbroken; a group label longer than its own tracks takes a second line (owner, 18 Nov 2026). Each group has a leaning boundary and an underline at its label, meeting the upright body rules at the head rule; the shared head height follows the head type, leaving at least --sp-1 above every head tip. No upright rule crosses the head zone, and labels paint above the hover flag and boundaries. Quotes and sources open on demand below the selected institute (check_page check_functions_table, check_functions_detail, check_functions_layout, check_functions_tint, check_function_group_tabs).
  * Selection box: an open function cell, phone row or phone function, and a selected search or palette row, has one even box on all four sides, inset within its padding box and above tints and rules (check_page check_selection_boxes).
  * Tinted rows: while the functions table fits, the lit row's tint extends --sp-2 past both ends through pseudo-elements, keeping its text inside the tint and its row label on the content grid edge. During sideways scrolling the scroll box clips the tint, leaving the label on the clipped edge; this is a known limitation. The panel stays in place with its left edge aligned to the row text's left edge. Every other tinted, hovered or selected row (world rows, States lists, the arrived card, search, palette and download rows) keeps its text at least its inline padding inside the background (check_page check_tinted_rows).
@@ -311,11 +312,13 @@ a.ico::before { position: static; transform: none; min-height: 0; }
 .group-nav.stuck { box-shadow: inset 0 calc(-1 * var(--rule)) 0 var(--line), var(--row-cover); } /* a rule inside its box, so sticking moves no layout */
 .group-nav + section { margin-top: calc(var(--sp-2) - var(--gap-section)); } /* the gap on the section, not the row: a sticky row's margin would carry it past its group's end */
 .group-label { color: var(--ink); padding-right: var(--sp-4); border-right: var(--rule) solid var(--line); }
-.group-links { display: inline-flex; flex-wrap: wrap; align-items: first baseline; gap: 0 var(--sp-2); }
+.group-links, .view-switch { display: inline-flex; flex-wrap: wrap; align-items: first baseline; gap: 0 var(--sp-2); }
 @media (width <= 400px) { .group-nav, .group-links { column-gap: var(--sp-3); } .group-sep { display: none; } }
-.group-nav a { display: inline-flex; align-items: first baseline; min-height: var(--hit); color: var(--muted); text-decoration-line: none; }
-.group-nav a:is(:hover, :focus-visible), .group-nav a.active { color: var(--ink); text-decoration-line: none; }
-.group-nav a.active::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: var(--rule-strong); background: var(--accent); }
+.group-nav a, .view-switch button { display: inline-flex; align-items: first baseline; min-height: var(--hit); color: var(--muted); text-decoration-line: none; }
+.group-nav a:is(:hover, :focus-visible), .group-nav a.active, .view-switch button[aria-pressed="false"]:is(:hover, :focus-visible) { color: var(--ink); text-decoration-line: none; }
+.group-nav a.active::after, .view-switch button[aria-pressed="true"]::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: var(--rule-strong); background: var(--accent); }
+.view-switch { font: var(--type-meta); color: var(--muted); }
+.view-switch button { position: relative; padding: 0; border: 0; border-radius: 0; background: none; font: inherit; cursor: pointer; white-space: nowrap; }
 
 /* Developments share the page's text roles and row rhythm. */
 .development-list { list-style: none; margin: 0; padding: 0; max-width: none; display: flex; flex-direction: column; gap: var(--gap-row); }
@@ -801,15 +804,15 @@ button.fn-function-label { width: 100%; background: transparent; border: 0; text
 .fn[data-view="grouped"] .fn-phone { display: grid; }
 .fn[data-view="grouped"] .fn-phone-only { display: block; }
 .fn[data-view="grouped"] .fn-legend.fn-phone-only { display: flex; }
-:root:not([data-js]) .fn .fn-phone, :root:not([data-js]) .fn .fn-phone-only, :root:not([data-js]) .fn-view-toggle { display: none; }
+:root:not([data-js]) .fn .fn-phone, :root:not([data-js]) .fn .fn-phone-only, :root:not([data-js]) .fn-view-switch { display: none; }
 :root:not([data-js]) .fn .fn-scroll, :root:not([data-js]) .fn .fn-use.fn-desktop-only { display: block; }
 :root:not([data-js]) .fn .fn-legend.fn-desktop-only { display: flex; }
-.fn-view-toggle { align-self: flex-start; display: inline-flex; align-items: center; min-height: var(--hit); padding: 0; border: 0; background: transparent; font: var(--type-label); color: var(--link); cursor: pointer; text-decoration-line: underline; text-decoration-thickness: var(--underline-width); text-underline-offset: var(--underline-offset); }
-.fn-view-toggle:is(:hover, :focus-visible) { color: var(--ink); }
+.fn-view-switch { align-self: stretch; justify-content: flex-end; } /* its own line above either head, including on phones */
 @media (width > 640px) { .fn-phone-head .fn-group-label > br { display: none; } } /* one line each in the grouped view's head on wider screens; two alike elsewhere, a line still wrapping where its tracks are narrower */
 /* Wider screens: the grouped view keeps its strips beside the names, with room between the groups and rows. */
 @media (width > 640px) {
   .fn-phone { max-width: var(--prose); column-gap: var(--sp-6); }
+  .fn[data-view="grouped"] .fn-view-switch { max-width: var(--prose); }
   .fn-pips { gap: var(--sp-1); }
   .fn-pip { width: var(--sp-3); height: var(--sp-3); }
   .fn-pip.fn-not_coded { height: var(--rule-strong); }
@@ -990,13 +993,14 @@ html[data-prerendered] .fn-scroll.fits thead { position: static; }
 }
 /* Focus (principle: Focus): one style. Text controls (links, tabs, text buttons, disclosures, tooltip terms) take the highlight tint behind them and a 2px underline in the focus colour,
    which carries the 3:1 the tint alone lacks; boxed controls (.btn, .field) keep their own edge; a heading a jump focuses takes the tint alone, fading after about 1.5s. */
-html :is(a, summary, abbr.g, button.info, .linkbtn, .list-more, .popover button, .region-chips button, .region-head, .pick, .smark[tabindex], .missing[tabindex], .budget-amount[tabindex], [data-tip][tabindex="0"], [aria-description][tabindex="0"]):not(.btn, .field):focus-visible {
+html :is(a, summary, abbr.g, button.info, .linkbtn, .list-more, .popover button, .region-chips button, .view-switch button, .region-head, .pick, .smark[tabindex], .missing[tabindex], .budget-amount[tabindex], [data-tip][tabindex="0"], [aria-description][tabindex="0"]):not(.btn, .field):focus-visible {
   outline: none; background-color: var(--highlight-fill); box-shadow: 0 0 0 var(--sp-1) var(--highlight-fill); border-radius: var(--r-sm);
   text-decoration: underline var(--rule-strong) var(--focus); text-underline-offset: var(--underline-offset);
 }
 html .cn:focus-visible::before { outline: none; }
 html .region-chips button[aria-pressed]:not(.btn):focus-visible { text-decoration: none; } /* a region tab: the tint alone; the underline marks the selected tab only (owner, 5 Nov 2026) */
 html .region-chips button[aria-pressed="true"]:not(.btn):focus-visible { box-shadow: inset 0 calc(-1 * var(--rule-strong)) var(--accent), 0 0 0 var(--sp-1) var(--highlight-fill); }
+html .view-switch button[aria-pressed="true"]:not(.btn):focus-visible { text-decoration: none; } /* the current marker stays below the focus tint */
 html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fill); box-shadow: 0 0 0 var(--sp-1) var(--highlight-fill); border-radius: var(--r-sm); -webkit-box-decoration-break: clone; box-decoration-break: clone; } /* a wrapped heading: one tint per line */
 @keyframes focus-fade { 0%, 60% { background-color: var(--highlight-fill); box-shadow: 0 0 0 var(--sp-1) var(--highlight-fill); } 100% { background-color: transparent; box-shadow: 0 0 0 var(--sp-1) transparent; } }
 @media (prefers-reduced-motion: no-preference) { html :is(h2, h3, p)[tabindex="-1"]:focus { animation: focus-fade var(--motion-focus) ease-out forwards; } } /* held, then gone by about 2.5s; without motion the tint stays while focused */
@@ -3285,7 +3289,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         data: "Data", caption: "Functions by institute", institute: "Institute", scroll_hint: "Scrolls sideways",
         established: "Established", not_found: "not found", blank_legend: "Blank: no public text found; it may still be done", not_coded: "not yet coded",
         provisional: "The list of functions is provisional.",
-        view_grid: "Show all {count} functions as a grid", view_grouped: "Show grouped by institute",
+        view_grid: "All {count} functions", view_grouped: "By group",
         show: "{country}, {institute}: show functions", phone_not_found: "No public text found; it may still be done",
         // The panel's second line, a sentence under the function's name (owner, 18 Nov 2026); on phones the heading above names the institute.
         state: { mandate: "Assigned to {institute}", activity: "{institute} is active, without an assignment", both: "Assigned to {institute}, and active" },
@@ -3390,10 +3394,17 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         how.appendChild(el("p", "small fn-order", order.label));
         how.appendChild(el("p", "small fn-provisional", FN_COPY.provisional));
         var summary = fnSummary(); if (summary) box.appendChild(el("p", "fn-summary", summary));
-        // The grouped view by default; the full grid one click away, and back (owner, 18 Nov 2026).
-        viewToggle = el("button", "fn-view-toggle"); viewToggle.type = "button"; viewToggle.setAttribute("aria-controls", box.id);
-        viewToggle.addEventListener("click", function () { setView(box.dataset.view === "grid" ? "grouped" : "grid"); viewToggle.focus({ preventScroll: true }); }); // focus never stays in the view it hides
-        box.appendChild(viewToggle); setView(box.dataset.view === "grid" ? "grid" : "grouped");
+        // Both choices stay above the table; the grouped view is the default at every width.
+        var viewSwitch = el("div", "view-switch fn-view-switch"), initialView = box.dataset.view === "grid" ? "grid" : "grouped";
+        viewSwitch.setAttribute("role", "group"); viewSwitch.setAttribute("aria-label", "Functions view");
+        viewButtons = ["grouped", "grid"].map(function (view, n) {
+          if (n) { var sep = el("span", "view-switch-sep", " · "); sep.setAttribute("aria-hidden", "true"); viewSwitch.appendChild(sep); }
+          var button = el("button", null, FN_COPY["view_" + view].replace("{count}", columns.length)); button.type = "button"; button.dataset.view = view;
+          button.setAttribute("aria-controls", box.id); button.setAttribute("aria-pressed", String(view === initialView));
+          button.addEventListener("click", function () { setView(view); button.focus({ preventScroll: true }); }); // Safari clicks must also leave focus outside the hidden view
+          viewSwitch.appendChild(button); return button;
+        });
+        box.appendChild(viewSwitch); setView(initialView);
         buildForm(false); buildForm(true);
         var legendValues = ["activity", "mandate", "not_found"];
         if (institutes.some(function (i) { return columns.some(function (code) { return rows[i.id][code].value === "not_coded"; }); })) legendValues.push("not_coded");
@@ -3556,10 +3567,11 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         ["pointerover", "pointerout", "focusin", "focusout"].forEach(function (type) { table.addEventListener(type, tint); });
         return paint;
       }
-      var viewToggle = null;
+      var viewButtons = [];
       function setView(view) {
+        if (box.dataset.view === view) return;
         box.dataset.view = view;
-        if (viewToggle) viewToggle.textContent = view === "grid" ? FN_COPY.view_grouped : FN_COPY.view_grid.replace("{count}", columns.length);
+        viewButtons.forEach(function (button) { button.setAttribute("aria-pressed", String(button.dataset.view === view)); });
         updateFits();
       }
       build();
