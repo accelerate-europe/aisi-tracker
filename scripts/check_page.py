@@ -5150,7 +5150,12 @@ DISCLOSURE_LEVELS_JS = r"""() => {
         after.borderRightStyle !== 'solid' || after.borderBottomStyle !== 'solid' ||
         after.borderRightColor !== colour || after.borderBottomColor !== colour ||
         Math.abs(angle - (expanded ? -135 : 45)) > 1) errors.push(name + ': disclosure chevron differs');
-    if (n.getBoundingClientRect().height < hit - 1) errors.push(name + ': disclosure hit height is too small');
+    // The Quote label's hit layer counts only when it is drawn and takes clicks: generated, absolutely positioned, displayed, visible
+    // and not pointer-events: none. (Many labels sit off-screen here, so it is not hit-tested; check_functions_pointer clicks real points.)
+    const layer = getComputedStyle(n, '::before'), box = n.getBoundingClientRect();
+    const live = layer.content !== 'none' && layer.position === 'absolute' && layer.display !== 'none' && layer.pointerEvents !== 'none' && layer.visibility === 'visible';
+    const layerHeight = live ? parseFloat(layer.height) || 0 : 0;
+    if (Math.max(n.getBoundingClientRect().height, layerHeight) < hit - 1) errors.push(name + ': disclosure hit height is too small');
     const count = n.querySelector('.source-count');
     if (count && !['none', 'normal'].includes(getComputedStyle(count, '::after').content)) errors.push(name + ': duplicate source-count chevron');
   }
