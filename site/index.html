@@ -62,10 +62,10 @@
  * Activity line: an ink qualifier after the closest body's name and stage, only for live activity claims for that body; institute cards and legacy records show none; words come from ACTIVITY_WORDS and the vocabulary's short.
  * Sources: entry source lists hold sources that support the entry; population and region sources (display.generic_sources) are named once in Method and stay in the downloads; check_page check_generic_sources. A source line reads title, publisher, date: the publisher is not printed again where the source's own title (original or English) already contains it, and a citation's tip drops it the same way (owner, 18 Nov 2026).
  * Archived copies (owner, 18 Nov 2026, "only when needed"): a source that could not be re-read ends its source line with " · archived copy" after its caveat, wherever it is named; a record's source list (the counted sources, a full record's Sources, a group's sources) also ends every other source that has an archive URL with it; a claim's own source line and Method's inline links give no other archived copy. Quiet link in muted ink with a muted underline, no arrow, never broken across lines; superscript citations never carry one (check_page check_archive_links).
- * Re-read line: a source list item whose source has a quotation with a re-read state shows that state once, from its quotations' states (docs/design/claims-1.1.md section 4). A source that could not be re-read (worst state offline, unreadable or quote not found; the earliest start, then offline before not found, then the earliest last found) ends its source line with " · last read {date}" (" · quote last found {date}" for a quote not found, as the source was read), then " · archived copy" where a copy exists; the full sentence is its tip and what a screen reader reads: "Source offline since {date}; last read {date}.", "Source could not be re-read since {date}; last read {date}.", "Not found in the source on {date}; last found {date}; under review." (with ": N of M quotes" after the first date when some quotations are still found) (owner, 18 Nov 2026). Any other source ends with one line of its own in the list's muted ink: "Source last re-read {date}.". A quotation or claim shown on its own shows its own state, never its source's, as the full sentence with its archived copy; in a function's panel the source line just below carries a failed state instead; the page never says "verified" (check_page check_reread_lines).
+ * Re-read line: a source list item whose source has a quotation with a re-read state shows that state once, from its quotations' states (docs/design/claims-1.1.md section 4). A source that could not be re-read (worst state offline, unreadable or quote not found; the earliest start, then offline before not found, then the earliest last found) ends its source line with " · last read {date}" (" · quote last found {date}" for a quote not found, as the source was read), then " · archived copy" where a copy exists; the full sentence is its tip and what a screen reader reads: "Source offline since {date}; last read {date}.", "Source could not be re-read since {date}; last read {date}.", "Not found in the source on {date}; last found {date}; under review." (with ": N of M quotes" after the first date when some quotations are still found) (owner, 18 Nov 2026). In a record's source list (the counted sources, a full record, a group's or a funding row's sources) any other source ends with one line of its own in the list's muted ink: "Source last re-read {date}."; nowhere else (owner, 18 Nov 2026, "source lists only"). A quotation or claim shown on its own shows only a failed state, its own, never its source's, as the full sentence with its archived copy; in a function's panel the source line just below carries it instead; the page never says "verified" (check_page check_reread_lines).
  * Sorting: every table column sorts values by meaning, then values without a comparable figure, research gaps, structural absence; gaps stay last in both directions; ties by state name.
  * Links: inline text uses a thin muted-accent underline and accent ink; standalone links use position, icon or colour, with hover/focus underline or ink change. State names in linked lists (Testing and access, Institutional set-up, Budget not published) take the accent link style; None identified names take the card title's type (check_page check_name_roles). News names share the quiet date label.
- * Symbols (owner, 18 Nov 2026, "no key, one rule"): a symbol stands alone only if it is the close ×, a fold chevron, the external-link arrow or the download symbol, and then names itself on hover and for screen readers; any other symbol carries its word (the feed symbol with "Feed" or "Follow updates", Columns with its label at every width). Data marks (function cells, map dots) keep their legend. There is no symbols key. The theme switch is held icon-only pending the owner (check_page check_symbols).
+ * Symbols (owner, 18 Nov 2026, "no key, one rule"): a symbol stands alone only if it is the close ×, a fold chevron, the external-link arrow or the download symbol, and then names itself on hover and for screen readers; any other symbol carries its word (the feed symbol with "Feed" or "Follow updates", Columns with its label at every width). Data marks (function cells, map dots) keep their legend. There is no symbols key. Two named exceptions stay icon-only, each named on hover and for screen readers: the theme switch and the (i) notes (owner, 18 Nov 2026) (check_page check_symbols).
  * Downloads (owner, 18 Nov 2026): every section that shows a table or list (Functions, Testing and access, Institutional set-up, Funding and staff, News, The world) ends with one foot row: its explanation or sources fold, if any, at the left and its download alone at the right end, the download symbol named on hover, focus and for screen readers with what it holds and its format. One format per icon; where several exist (The world) the icon opens its menu, which opens upward over the table. News adds the feed symbol with "Feed" left of its icon; the footer ends with the feed symbol and "Follow updates"; Data lists the files, then "For programs and agents" (API index, llms.txt, feed), each a row with a one-line description. A state's record keeps its icon-only JSON in its card head (check_page check_controls, check_news_layout, check_agent_files, check_symbols).
  * External markers: marked links end in a compact SVG arrow with body-weight stroke and retain accessible new-tab text in every theme.
  * Citation links: accent ink only at rest, underline on hover/focus; no negative horizontal margins.
@@ -760,7 +760,6 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
 .fn-basis, .fn-sources { font: var(--type-meta); color: var(--muted); }
 .fn-detail .quote-body .reread { display: block; font: var(--type-meta); color: var(--muted); }
 .fn-sources { list-style: none; padding: 0; margin-top: var(--sp-2); }
-.fn-sources .reread { display: none; } /* the quote block above already carries the quotation's re-read line (principle: Re-read line) */
 .fn-detail .quote-body .reread.failed { display: none; } /* a source that could not be re-read says so at the end of its source line just below */
 /* Both forms are saved; CSS selects one. Subgrids share content-sized tracks through the list wrappers. */
 .fn-phone, .fn-phone-only { display: none; }
@@ -1635,8 +1634,9 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         }
         block.appendChild(line);
       });
-      var reread = rereadLine({ excerpts: [e] }); // the quotation's own state, never its source's (principle: Re-read line)
-      if (reread) { if (/\bfailed\b/.test(reread.className)) archiveCopy(reread, s); block.appendChild(reread); }
+      // Only a failed state shows under a quote, the quotation's own, never its source's; a confirmed re-read is said in the record's source list (principle: Re-read line).
+      var reread = rereadLine({ excerpts: [e] });
+      if (reread && /\bfailed\b/.test(reread.className)) { archiveCopy(reread, s); block.appendChild(reread); }
       body.appendChild(block);
     });
     return body;
@@ -1715,8 +1715,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       if (roles && roles[id] && roles[id].length) li.appendChild(el("span", "role", ", supports " + roles[id].join(", ").toLowerCase()));
       if (rereadTail(li, src)) archiveCopy(li, src);
       else {
-        if (record) archiveCopy(li, src);
-        var reread = rereadLine(src); if (reread) li.appendChild(reread);
+        if (record) { archiveCopy(li, src); var reread = rereadLine(src); if (reread) li.appendChild(reread); } // "Source last re-read": record source lists only
       }
       if (li.childNodes.length === 1) li.classList.add("title-only");
       ol.appendChild(li);
@@ -3561,7 +3560,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       });
       box.appendChild(left); box.appendChild(right);
       infoAfterHeading($("testing"), info(ACCESS_SCOPE, "test-scope"));
-      box.appendChild(sectionFoot(order.length ? groupSources(order, S) : null, "institutes.csv", "institutes (CSV)", "Institutes (CSV): testing capacity and model access are columns, with every other field"));
+      box.appendChild(sectionFoot(order.length ? groupSources(order, S) : null, "institutes.csv", "institutes (CSV)", "Institutes (CSV): the file with every institute field, testing capacity and model access among them"));
     })();
     // Institutional set-up: every institute grouped by form (principle: Scope), the host as the note; laid out as Testing and access (principle: Groups): every group spans the full content width.
     (function () {
@@ -3588,7 +3587,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         var note = el("p", "small scope-note", SETUP_SCOPE); note.id = pair[1];
         $(pair[0]).closest("section").querySelector(".section-body").prepend(note);
       });
-      box.appendChild(sectionFoot(order.length ? groupSources(order, S) : null, "institutes.csv", "institutes (CSV)", "Institutes (CSV): legal form, host and reporting line are columns, with every other field"));
+      box.appendChild(sectionFoot(order.length ? groupSources(order, S) : null, "institutes.csv", "institutes (CSV)", "Institutes (CSV): the file with every institute field, legal form, host and reporting line among them"));
     })();
     // Figures below the map: the producer's medians (dataset.display.counts) and the institutes with no budget. Counts count established state institutes only; the note says so with their number.
     (function () {

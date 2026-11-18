@@ -25,7 +25,7 @@ function el(tag, cls, text) {
 }
 var window = {}, document = {createTextNode: text => ({text}), addEventListener() {}};
 function nonbreakingDates(s) { return s; }
-function rereadLine(s) { return el('span', 'reread', s.id || ('R' + (s.excerpts || []).length)); } // a source, or one quotation's own state
+function rereadLine(s) { var st = (s.excerpts || [])[0] && s.excerpts[0].reread; return el('span', st && ['blocked_or_failed', 'source_gone', 'quote_gone'].indexOf(st.state) >= 0 ? 'reread failed' : 'reread', s.id || ('R' + (s.excerpts || []).length)); } // a source, or one quotation's own state
 function archiveCopy(parent, s) {}
 function andJoin(xs) { return xs.length < 2 ? xs.join('') : xs.slice(0, -1).join(', ') + ' and ' + xs[xs.length - 1]; }
 """
@@ -87,7 +87,10 @@ def test_bindings_use_required_leaves_and_deduplicate_a_shared_act_and_date_exce
     assert [i for _, i, _ in check_page.claim_bindings(data, "development")] == [1, 2]
     body = page_call(f"(CLAIM_INDEX = claimIndex({json.dumps(data)}), claimQuoteBody('fact'))")
     assert len(body["children"]) == 1
-    assert texts(body) == '"A fact"Heading: "Title"R1'  # the quotation's own state (R1), never its source's
+    assert texts(body) == '"A fact"Heading: "Title"'  # a confirmed or unchecked quote shows no re-read line (source lists only)
+    data["sources"][0]["excerpts"][0]["reread"] = {"state": "source_gone", "since": "2026-11-10", "last_found": "2026-10-17"}
+    failed = page_call(f"(CLAIM_INDEX = claimIndex({json.dumps(data)}), claimQuoteBody('fact'))")
+    assert texts(failed) == '"A fact"Heading: "Title"R1'  # a failed state shows, the quotation's own (R1), never its source's
     assert body["children"][0]["dataset"] == {"sourceId": "s", "excerptIndex": 0}
 
 

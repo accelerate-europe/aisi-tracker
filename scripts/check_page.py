@@ -9046,6 +9046,8 @@ def check_reread_lines(html, data: dict) -> list[str]:
                 errors.append(f"source {sid}: the caveat's tip or screen reader sentence differs from {expected!r}")
             continue
         text = [" ".join(line.get_text().split()) for line in lines]
+        if "fn-sources" in (li.parent.get("class") or []):
+            expected = None  # "Source last re-read" belongs to a record's source list only
         if tails or text != ([expected] if expected else []):
             errors.append(f"source {sid}: re-read line {text or 'missing'}, expected {expected or 'none'}")
         elif lines and (lines[0].parent is not li or any(
@@ -10765,8 +10767,9 @@ def check_claim_quotes(browser, base_url: str, data: dict) -> list[str]:
                             shown = block.locator(".quote-text").all_text_contents()
                             if shown != ['"' + (span.get("gloss") or span["text"]) + '"' for span in spans]:
                                 errors.append(f"{identity}: quote or anchor text differs")
-                            if block.locator(".quote-anchor").count() != len(spans) - 1 or not block.locator(".reread").count():
-                                errors.append(f"{identity}: missing anchors or source re-read line")
+                            failed = (excerpt.get("reread") or {}).get("state") in {"blocked_or_failed", "source_gone", "quote_gone"}
+                            if block.locator(".quote-anchor").count() != len(spans) - 1 or bool(block.locator(".reread").count()) != failed:
+                                errors.append(f"{identity}: missing anchors, or a quote's re-read line where it has no failed state (or none where it has)")
                             if not block.locator(".quote-anchor").evaluate_all("nodes => nodes.every(n => n.firstChild.nodeType === Node.TEXT_NODE && n.firstChild.textContent.trim())"):
                                 errors.append(f"{identity}: anchor kind label is missing")
                             for line, anchor in zip(block.locator(".quote-anchor").all(), excerpt.get("anchors", [])):
@@ -12367,8 +12370,8 @@ def clickable_width_errors(controls: list[dict]) -> list[str]:
 SYMBOL_ALONE = {
     '.close-control': 'the close ×',
     '.ico.i-dl': 'download',
-    '#theme-toggle': 'theme switch: held icon-only pending the owner (18 Nov 2026 report)',
-    'button.info': 'the (i) note: held pending the owner (18 Nov 2026 report)',
+    '#theme-toggle': 'the theme switch: a named exception (owner, 18 Nov 2026)',
+    'button.info': 'the (i) notes: a named exception (owner, 18 Nov 2026)',
 }
 SYMBOL_DATA_MARKS = '.fn-cell, .fn-phone-row, #worldmap, #worldmap *'  # a phone row shows its institute's marks, named by its label
 
@@ -12577,7 +12580,7 @@ const checkClaims = async (detail, cell, key) => {
       const quote = anchors[n]?.querySelector('.quote-text');
       need(quote?.textContent === '"' + (anchor.gloss || anchor.text) + '"' && (!anchor.gloss || quote?.getAttribute('aria-description') === anchor.text), key + ': anchor quote differs');
     });
-    need(!!block?.querySelector('.reread') === !!q.excerpt.reread, key + ': per-quote re-read line differs');
+    need(!!block?.querySelector('.reread') === ['blocked_or_failed', 'source_gone', 'quote_gone'].includes(q.excerpt.reread?.state), key + ': a quote shows a re-read line only for a failed state');
     const reread = block?.querySelector('.reread');
     if (reread && reread.classList.contains('failed')) need(getComputedStyle(reread).display === 'none' && sources.querySelector(`li[data-source-id="${q.source.id}"] > .reread-tail`)?.getClientRects().length, key + ': a source that could not be re-read does not say so at the end of its source line');
     else if (reread) need(getComputedStyle(reread).display === 'block' && getComputedStyle(reread).color === getComputedStyle(sources).color, key + ': per-quote re-read line is not separate/muted');
