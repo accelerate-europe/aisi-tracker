@@ -580,11 +580,13 @@ main section.first { display: flex; flex-direction: column; gap: var(--sp-5); bo
 .srcs .reread { display: block; } /* principle: Re-read line */
 .claim, .record-notes { max-width: var(--prose); }
 .claim + .claim { margin-top: var(--sp-2); }
-.claim-text { display: block; }
+.claim > .claim-text { display: block; } /* the item form only; a mini card's summary keeps its own inline text */
 .claim > .quote { margin-top: var(--sp-2); }
 .quote > summary { font: var(--type-meta); color: var(--muted); min-height: var(--hit); width: fit-content; display: flex; align-items: first baseline; gap: var(--sp-2); }
-/* The hit area extends into the gap below; only the label's line height occupies flow. */
-.quote > summary { margin-bottom: min(0px, calc(1lh - var(--hit))); }
+/* The hit area extends into the gap below; only the label's line height occupies flow. Only where something follows
+   inside the item (the open quote, or a source list): a closed fold that ends its block keeps its full height, so the
+   next block is not pulled up. */
+.quote[open] > summary, .claim > .quote:not(:last-child) > summary { margin-bottom: min(0px, calc(1lh - var(--hit))); }
 .quote-body { margin: var(--sp-2) 0 0; }
 .quote-excerpt + .quote-excerpt { margin-top: var(--sp-3); }
 .quote-anchor, .quote .reread, .claim > .reread { display: block; font: var(--type-meta); color: var(--muted); }

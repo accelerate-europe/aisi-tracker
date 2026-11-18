@@ -13697,8 +13697,10 @@ def check_functions_tint(browser, base_url: str) -> list[str]:
                 errors.append(f"{width}px {theme}: a click inside the table did not focus the scroll box (ring check would be vacuous)")
             elif scroll.evaluate("n => getComputedStyle(n).outlineStyle !== 'none'"):
                 errors.append(f"{width}px {theme}: scroll box shows a focus ring after a mouse click")
-            page.locator('#functions-table details > summary').focus()  # the focus target just before the scroll box
+            # A temporary focus stop just before the scroll box, so the check does not depend on what precedes it.
+            page.evaluate("() => { const p = document.createElement('span'); p.id = 'tab-probe'; p.tabIndex = 0; document.querySelector('.fn-scroll').before(p); p.focus(); }")
             page.keyboard.press("Tab")
+            page.evaluate("() => document.getElementById('tab-probe')?.remove()")
             if not scroll.evaluate("n => document.activeElement === n && getComputedStyle(n).outlineStyle !== 'none'"):
                 errors.append(f"{width}px {theme}: scroll box has no focus ring for keyboard focus")
             page.evaluate("() => document.activeElement && document.activeElement.blur()")
