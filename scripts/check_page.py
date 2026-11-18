@@ -5447,7 +5447,7 @@ PANEL_MEASURE_JS = r"""panel => {
     const lines=[...range.getClientRects()].filter(r=>r.width && r.height);
     return {name:n.className || n.tagName, max_width:Number.isFinite(parseFloat(s.maxWidth))?parseFloat(s.maxWidth):null,
       // A function panel's quote sits indented under its source line (owner, 18 Nov 2026), so its content keeps its own edge.
-      aligned:n.matches('.fn-detail-context, .claim-text, .fn-detail-head, .fn-function-head, .quote-body, .quote-excerpt, .quote-anchor, .reread, .fn-sources, .srcs ol') && !n.closest('.fn-claim > .quote'),
+      aligned:n.matches('.fn-detail-context, .claim-text, .fn-detail-head, .fn-function-head, .quote-body, .quote-excerpt, .quote-anchor, .reread, .fn-sources, .srcs ol') && !n.closest('.fn-claim .quote'),
       left:b.left, right:b.right, text_right:Math.max(b.left,...lines.map(r=>r.right))};
   });
   return {measure,left,right,blocks};
@@ -5464,7 +5464,7 @@ def check_panel_measure(browser, base_url: str) -> list[str]:
             opened = page.evaluate("""async () => {
               const box=document.querySelector('#functions-table');
               const openQuotes = async () => {
-                await Promise.all([...box.querySelectorAll('.fn-claim > details.quote:not([open])')].map(fold => new Promise(resolve => {
+                await Promise.all([...box.querySelectorAll('.fn-claim details.quote:not([open])')].map(fold => new Promise(resolve => {
                   fold.addEventListener('toggle', resolve, {once:true}); fold.querySelector('summary').click();
                 })));
               };
@@ -12040,13 +12040,16 @@ CLAIM_SPACING_JS = r"""item => {
     const r = node.getBoundingClientRect();
     return {top: r.top, bottom: r.bottom};  // a label followed by something in its item takes only its lines in flow
   };
-  const fold = item.querySelector(':scope > .quote'), label = fold?.querySelector('summary');
+  const fold = item.querySelector(':scope > .quote, :scope > .fn-sources details.quote'), label = fold?.querySelector('summary');
   const probe = document.createElement('span'); probe.style.height = 'var(--sp-2)'; probe.style.display = 'block';
   item.appendChild(probe); const gap = probe.getBoundingClientRect().height;
   probe.style.height = 'var(--hit)'; const minHit = probe.getBoundingClientRect().height; probe.remove();
-  return {claim: bounds(item.querySelector(':scope > .claim-text')), label: bounds(label),
+  // In a function's panel the quote control ends the source line: the source line runs to the control, the quote opens beneath.
+  const inline = !!label?.closest('.fn-sources'), sources = item.querySelector(':scope > .fn-sources');
+  const source = inline ? {top: sources.getBoundingClientRect().top, bottom: label.getBoundingClientRect().bottom} : bounds(sources);
+  return {claim: bounds(item.querySelector(':scope > .claim-text')), label: inline ? null : bounds(label), inline,
     quote: fold?.open ? bounds(fold.querySelector('.quote-body')) : null,
-    source: bounds(item.querySelector(':scope > .fn-sources')), open: !!fold?.open, gap,
+    source, open: !!fold?.open, gap,
     hit: label ? Math.max(label.getBoundingClientRect().height, parseFloat(getComputedStyle(label, '::before').height) || 0) : null, minHit};
 }""".replace("/* TEXT_RECTS */", TEXT_RECTS_JS)
 
@@ -12054,7 +12057,7 @@ CLAIM_SPACING_JS = r"""item => {
 def claim_spacing_errors(metrics: dict) -> list[str]:
     """Measure text edges, never the disclosure's larger hit box. A function panel reads sentence, source line, quote label,
     quote (owner, 18 Nov 2026); cards have no per-item source list: sentence, label, quote."""
-    sequence = [metrics.get("claim")] + ([metrics["source"]] if metrics.get("source") else []) + [metrics.get("label")]
+    sequence = [metrics.get("claim")] + ([metrics["source"]] if metrics.get("source") else []) + ([] if metrics.get("inline") else [metrics.get("label")])
     if metrics.get("open"):
         sequence.append(metrics.get("quote"))
     if any(part is None for part in sequence):
@@ -12092,7 +12095,7 @@ def check_claim_spacing(browser, base_url: str) -> list[str]:
             card.evaluate("n => { if (n.matches('details')) n.open = true; n.querySelectorAll('details.more').forEach(d => d.open = true); }")
             def measure(name, item):
                 item.scroll_into_view_if_needed()
-                fold = item.locator(':scope > details.quote')
+                fold = item.locator('details.quote').first  # in a function's panel it ends the source line
                 for opened in (False, True, False):
                     if fold.evaluate('n => n.open') != opened:
                         fold.locator('summary').click()
@@ -12372,6 +12375,7 @@ def clickable_width_errors(controls: list[dict]) -> list[str]:
 SYMBOL_ALONE = {
     '.close-control': 'the close ×',
     '.ico.i-dl': 'download',
+    '.fn-sources details.quote > summary': 'the quotation mark that opens a claim\'s quote at the end of its source line (owner, 18 Nov 2026)',
     '#theme-toggle': 'the theme switch: a named exception (owner, 18 Nov 2026)',
     'button.info': 'the (i) notes: a named exception (owner, 18 Nov 2026)',
 }
@@ -12642,19 +12646,22 @@ const checkClaims = async (detail, cell, key) => {
     const label = item.previousElementSibling?.matches('.fn-basis') ? item.previousElementSibling : null;
     need(mixed ? (first ? !!label && /^(assignment|activity)$/i.test(label.textContent) && (q.claim.basis === 'mandate') === /assignment/i.test(label.textContent) : !label) : !detail.querySelector('.fn-basis'),
          key + (mixed ? ': a block in a cell with both bases lacks its Assignment or Activity label' : ': a claim repeats the cell state'));
-    const citations = [...(sentence?.querySelectorAll('.cites > a.cn') || [])];
-    need(JSON.stringify(citations.map(a => a.dataset.sourceId).sort()) === JSON.stringify([...q.claim.source_ids].sort()) &&
-         citations.every(a => a.href === data.sources.find(s => s.id === a.dataset.sourceId).url && a.target === '_blank'), key + ': claim citation differs');
-    const fold = item.querySelector(':scope > details.quote'), sources = item.querySelector(':scope > .fn-sources');
-    need(fold && !fold.open && !fold.querySelector('.quote-body') && fold.dataset.quoteClaim === id &&
-         /^Quote from this source(, translated from \S.*)?$/.test(fold.querySelector('summary')?.textContent || ''), key + ': the quote fold is not closed, lazy and labelled as from its source');
-    const glossed = [q.excerpt, ...(q.excerpt.anchors || [])].some(span => span.gloss), foldLabel = fold?.querySelector('summary')?.textContent || '';
-    need(glossed ? foldLabel.startsWith('Quote from this source, translated from ') && !/Bokmål|Nynorsk/.test(foldLabel) : foldLabel === 'Quote from this source', key + ': the quote label does not name the translation once, in a plain language name');
-    need(sentence?.nextElementSibling === sources && sources?.nextElementSibling === fold && fold === item.lastElementChild, key + ': sentence, source line, quote order differs');
-    need(fold && sources && fold.getBoundingClientRect().left > sources.getBoundingClientRect().left + 4, key + ': the quote fold is not indented under its source line');
+    // Its source is written out just below, so the sentence carries no number (owner, 18 Nov 2026; principle: Citations).
+    need(!sentence?.querySelector('.cites, a.cn'), key + ': a claim whose source is written out below still carries a citation number');
+    // The quote control ends the claim's source line: a quotation mark named "Quote" (", translated from X") on hover and for screen readers.
+    const sources = item.querySelector(':scope > .fn-sources'), fold = sources?.querySelector('li > details.quote'), li = fold?.parentElement;
+    const summary = fold?.querySelector(':scope > summary'), name = summary?.getAttribute('aria-label') || '';
+    need(fold && !fold.open && !fold.querySelector('.quote-body') && fold.dataset.quoteClaim === id && fold === li.lastElementChild && summary.textContent.trim().length === 1 && summary.dataset.tip === name,
+         key + ': the quote control is not a closed, lazy quotation mark ending the source line, named on hover');
+    const glossed = [q.excerpt, ...(q.excerpt.anchors || [])].some(span => span.gloss);
+    need(glossed ? name.startsWith('Quote, translated from ') && !/Bokmål|Nynorsk/.test(name) : name === 'Quote', key + ': the quote control is not named "Quote", with the translation once, in a plain language name');
+    need(sentence?.nextElementSibling === sources && sources === item.lastElementChild, key + ': sentence, then source line with its quote control, order differs');
     if (!fold) continue;
     await new Promise(resolve => { fold.addEventListener('toggle', resolve, {once:true}); fold.querySelector('summary').click(); });
     need(fold.open && fold.querySelector('.quote-body')?.getClientRects().length, key + ': Quote does not open to visible evidence');
+    const body = fold.querySelector('.quote-body');
+    need(body && body.getBoundingClientRect().left > li.getBoundingClientRect().left + 4 && body.getBoundingClientRect().top >= summary.getBoundingClientRect().bottom - 1, key + ': the quote does not open beneath its source line, indented');
+    need(glossed ? /^Translated from \S/.test(body?.querySelector(':scope > .quote-translation')?.textContent || '') : !body?.querySelector('.quote-translation'), key + ': an opened translated quote does not say what it was translated from');
     const block = item.querySelector('.quote-body > .quote-excerpt');
     need(item.querySelectorAll('.quote-excerpt').length === 1 && block?.dataset.sourceId === q.source.id, key + ': shared quote block differs');
     const shown = block?.querySelector(':scope > .quotation > .quote-text');
