@@ -66,6 +66,7 @@
  * Sorting: every table column sorts values by meaning, then values without a comparable figure, research gaps, structural absence; gaps stay last in both directions; ties by state name.
  * Links: inline text uses a thin muted-accent underline and accent ink; standalone links use position, icon or colour, with hover/focus underline or ink change. State names in linked lists (Testing and access, Institutional set-up, Budget not published) take the accent link style; None identified names take the card title's type (check_page check_name_roles). News names share the quiet date label.
  * Symbols (owner, 18 Nov 2026, "no key, one rule"): a symbol stands alone only if it is the close ×, a fold chevron, the external-link arrow or the download symbol, and then names itself on hover and for screen readers; any other symbol carries its word (the feed symbol with "Feed" or "Follow updates", Columns with its label at every width). Data marks (function cells, map dots) keep their legend. There is no symbols key. The theme switch is held icon-only pending the owner (check_page check_symbols).
+ * Downloads (owner, 18 Nov 2026): every section that shows a table or list (Functions, Testing and access, Institutional set-up, Funding and staff, News, The world) ends with one foot row: its explanation or sources fold, if any, at the left and its download alone at the right end, the download symbol named on hover, focus and for screen readers with what it holds and its format. One format per icon; where several exist (The world) the icon opens its menu, which opens upward over the table. News adds the feed symbol with "Feed" left of its icon; the footer ends with the feed symbol and "Follow updates"; Data lists the files, then "For programs and agents" (API index, llms.txt, feed), each a row with a one-line description. A state's record keeps its icon-only JSON in its card head (check_page check_controls, check_news_layout, check_agent_files, check_symbols).
  * External markers: marked links end in a compact SVG arrow with body-weight stroke and retain accessible new-tab text in every theme.
  * Citation links: accent ink only at rest, underline on hover/focus; no negative horizontal margins.
  * Navigation: muted text, full-ink active item with an accent line the width of its label; hover darkens, never underlines; keyboard focus as Focus says.
@@ -90,12 +91,12 @@
  * Table header: label-role text aligned with the cell padding, one strong rule under the header, muted sort arrows with the active one in full ink; underline on hover/focus; still buttons.
  * Floating surfaces: tooltips and menus share paper fill, hairline border, small radius and pop shadow; offset from their trigger by the smallest gap; a tooltip stays while the pointer crosses to it or rests on it and scrolls within the window's height (check_page check_access_fixes); a value mark's tooltip opens below the whole value, never over its later lines.
  * Inline controls: inherit the line's type role; extend hit areas invisibly without adding visual gaps.
- * Toolbar: full-width search, one action row, one scrolling status row; one Download disclosure for view/full data.
+ * Toolbar: full-width search, one action row, one scrolling status row; the table's Download disclosure (this view or the full data) sits in its foot row (Downloads).
  * Wide screens: at 1100px and wider, with default settings, nothing needs sideways scroll; phones may scroll the table and the status row sideways.
  * Worldwide table: at 1100px and wider its default columns fit (Budget wraps), and while it fits its header sticks below the section navigation; phones scroll it sideways without a sticky header.
  * Phone: Region and Columns keep their visible labels; icon-only controls follow Symbols at every width; the theme toggle sits in the header, not in the section bar (check_page check_toggle_place).
  * Filters: the table's Status select defaults to Has or considers one (every status except none identified); the count line reads "N of M states", or "N of M states and territories" while a territory is tracked; All includes every tracked state and territory.
- * Hero: title and quiet update date with the linked version ("Updated 4 Nov 2026 · v1.0.2"); the Atom feed of news and new versions (feed.xml) is a head alternate link and linked from News; no lede line; the first screen follows: Headline (only the counts bold, with their "of" and "more": "11 of 193", "5 more", as the owner's mock) with one Definition link under it to the definition at the top of Method, Region chips beside the search, then Map and Region list (legend names only, their short definitions on hover, focus or tap, one (i) saying what the World view shows); one map view, no population view; the definition is dataset.definition, never a page string (check_page check_supporting_text); News entries at every width have a small, muted, normal-weight, single-line "date · states" label, then the sentence at body size and colour on the same left edge. Ten entries, three open; earlier entries behind the control at the list's end, followed by All events (CSV) and Atom feed on one line (check_page check_news_layout).
+ * Hero: title and quiet update date with the linked version ("Updated 4 Nov 2026 · v1.0.2"); the Atom feed of news and new versions (feed.xml) is a head alternate link and linked from News, the footer and Data; no lede line; the first screen follows: Headline (only the counts bold, with their "of" and "more": "11 of 193", "5 more", as the owner's mock) with one Definition link under it to the definition at the top of Method, Region chips beside the search, then Map and Region list (legend names only, their short definitions on hover, focus or tap, one (i) saying what the World view shows); one map view, no population view; the definition is dataset.definition, never a page string (check_page check_supporting_text); News entries at every width have a small, muted, normal-weight, single-line "date · states" label, then the sentence at body size and colour on the same left edge. Ten entries, three open; earlier entries behind the control at the list's end, followed by the foot row: the feed symbol with "Feed", then the download icon at the right end (Downloads; check_page check_news_layout).
  * Card download: a full card's title row, and a none-identified card's fold after its sources, end with an icon-only link to the state's API file, labelled "JSON, for scripts and research" (check_page check_state_download_buttons).
  * Focus: one style, the --highlight-fill tint: keyboard focus on a text control (link, text button, disclosure, tooltip term or value; table headers keep their label underline and ring) shows the tint behind it and a 2px underline in --focus (the tint alone is under 3:1 on the ground; the underline is at least 3:1 in both themes); a region tab shows the tint alone, as its underline means selected (owner, 5 Nov 2026); boxed controls (buttons, fields) keep their own edge; a heading or other non-control target that a section bar, group row, anchor or palette jump focuses (the Definition paragraph too) shows no ring, only the tint, fading after about 1.5s where motion is allowed; forced colours keep a system outline (check_page shared_links).
  * Arrival: a card reached by a link (the record beside the map, table row or shared link) takes the --highlight-fill tint, as a jumped-to heading does, and no outline; the tint lasts while it is the target, also after the page script takes over, and the card takes keyboard focus; motion only adds a brief accent flash settling into the tint (owner, 5 Nov 2026; check_page check_arrival).
@@ -251,6 +252,7 @@ a.ico::before { position: static; transform: none; min-height: 0; }
 .skip { position: absolute; left: var(--sp-4); top: calc(-1 * var(--sp-11)); z-index: 100; background: var(--paper); padding: var(--sp-3); }
 .skip:focus-visible { top: var(--sp-4); }
 .ico::before { content: ""; display: inline-block; flex: none; width: var(--sp-3); height: var(--sp-3); background: currentColor; -webkit-mask: var(--icon) center/contain no-repeat; mask: var(--icon) center/contain no-repeat; }
+.i-feed { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Ccircle cx='1.8' cy='8.2' r='1.2'/%3E%3Cpath d='M0.6 4.6a4.8 4.8 0 0 1 4.8 4.8M0.6 0.9a8.5 8.5 0 0 1 8.5 8.5' fill='none' stroke='black' stroke-width='1.3'/%3E%3C/svg%3E"); }
 .i-dl { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M5 0v6.5M2 4l3 3 3-3M0.5 9.5h9' fill='none' stroke='black' stroke-width='1.3'/%3E%3C/svg%3E"); }
 .i-cols { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M.6 .6h8.8v8.8H.6zM3.6 .6v8.8M6.4 .6v8.8' fill='none' stroke='black' stroke-width='1.2'/%3E%3C/svg%3E"); }
 .i-region { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Ccircle cx='6' cy='6' r='5' fill='none' stroke='black'/%3E%3Cpath d='M1 6h10M6 1c-4 4-4 6 0 10M6 1c4 4 4 6 0 10' fill='none' stroke='black'/%3E%3C/svg%3E"); }
@@ -317,7 +319,7 @@ a.ico::before { position: static; transform: none; min-height: 0; }
 .development-label { font: var(--type-meta); color: var(--muted); white-space: nowrap; }
 .development-date { color: var(--ink); font-variant-numeric: tabular-nums; } /* an event date is a fact, not apparatus (R2) */
 .development-text { font: var(--type-body); color: var(--ink); min-width: 0; }
-.news-links { display: flex; gap: var(--sp-4); white-space: nowrap; margin-top: var(--sp-4); }
+.news-links { margin-top: var(--sp-4); }
 
 /* Section structure */
 main .measure { padding-block: var(--sp-8) var(--sp-11); display: flex; flex-direction: column; gap: var(--gap-section); }
@@ -351,7 +353,7 @@ footer .measure { font: var(--type-meta); padding-block: var(--sp-4) var(--sp-7)
 summary { cursor: pointer; list-style: none; }
 summary::-webkit-details-marker { display: none; }
 .more > summary { font: var(--type-label); display: flex; align-items: first baseline; gap: var(--sp-2); width: fit-content; min-height: var(--control); color: var(--ink); }
-.list-more::after, .more > summary::after, .quote > summary::after, .srcs > summary::after, .mini > summary::after, .download-menu > summary::after, .selectwrap::after { content: ""; flex: none; width: var(--sp-2); height: var(--sp-2); border-right: var(--rule) solid var(--muted); border-bottom: var(--rule) solid var(--muted); transform: rotate(45deg) translateY(calc(-1 * var(--sp-1) / 2)); margin-left: var(--sp-1); margin-right: var(--sp-1); } /* the rotated square reaches past its box; the margin keeps it inside its control */
+.list-more::after, .more > summary::after, .quote > summary::after, .srcs > summary::after, .mini > summary::after, .selectwrap::after { content: ""; flex: none; width: var(--sp-2); height: var(--sp-2); border-right: var(--rule) solid var(--muted); border-bottom: var(--rule) solid var(--muted); transform: rotate(45deg) translateY(calc(-1 * var(--sp-1) / 2)); margin-left: var(--sp-1); margin-right: var(--sp-1); } /* the rotated square reaches past its box; the margin keeps it inside its control */
 details[open] > summary::after, .list-more[aria-expanded="true"]::after { transform: rotate(-135deg); }
 .list-more { font: var(--type-label); color: var(--ink); display: flex; align-items: first baseline; gap: var(--sp-2); width: fit-content; min-height: var(--control); margin-top: var(--gap-row); padding: 0; background: none; border: 0; cursor: pointer; }
 .more[open] > summary { margin-bottom: var(--sp-4); }
@@ -851,7 +853,8 @@ html[data-prerendered] .fn-scroll.fits thead { position: static; }
 .access, .setup { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--gap-header); align-items: start; } /* every group and its row list shares the full section-body width */
 .groups-short, .groups-long { display: flex; flex-direction: column; gap: var(--gap-header); min-width: 0; }
 .groups-long .group-list { columns: 1; }
-:is(.access, .setup) > .foot { grid-column: 1 / -1; font: var(--type-meta); color: var(--muted); }
+:is(.access, .setup) > .section-foot { grid-column: 1 / -1; }
+:is(.access, .setup) > .section-foot > .foot { font: var(--type-meta); color: var(--muted); }
 .per-person { white-space: nowrap; } /* a figure and its unit stay on one line */
 .group-list.stacked > li { flex-direction: column; align-items: flex-start; justify-content: flex-start; }
 .card .top > .smark { margin-left: auto; }
@@ -860,6 +863,16 @@ html[data-prerendered] .fn-scroll.fits thead { position: static; }
 .card.mini > .foot > :not(.state-dl) { flex: 1 1 auto; min-width: 0; }
 .card :is(.top, .foot) > .state-dl { display: inline-flex; align-items: center; justify-content: center; width: var(--hit); height: var(--hit); margin-block: calc((var(--size-label) * var(--leading-label) - var(--hit)) / 2); color: var(--muted); text-decoration-line: none; }
 .card :is(.top, .foot) > .state-dl:is(:hover, :focus-visible) { color: var(--ink); }
+/* Section foot row (principle: Downloads): after a section's table or list, its explanation fold at the left, its download alone at the right end. */
+.section-foot { display: flex; align-items: flex-start; gap: var(--sp-3); }
+.section-foot > :not(.section-foot-actions) { flex: 1 1 auto; min-width: 0; }
+.section-foot-actions { margin-left: auto; display: inline-flex; align-items: center; gap: var(--sp-4); flex: none; min-height: var(--hit); }
+.section-dl { display: inline-flex; align-items: center; justify-content: center; width: var(--hit); height: var(--hit); padding: 0; color: var(--muted); text-decoration-line: none; cursor: pointer; }
+.section-dl:is(:hover, :focus-visible), details[open] > .section-dl { color: var(--ink); }
+.feed-link { display: inline-flex; align-items: center; gap: var(--sp-2); font: var(--type-meta); min-height: var(--hit); }
+.section-foot .popover { top: auto; bottom: calc(100% + var(--sp-1)); } /* a foot row's menu opens upward, over the table it downloads */
+.feed-link.ico::before, .foot-feed.ico::before { color: var(--muted); }
+.foot-feed { display: inline-flex; align-items: center; gap: var(--sp-2); min-height: var(--hit); margin-block: calc((1lh - var(--hit)) / 2); } /* the hit height without a taller line */
 
 /* Downloads */
 .downloads { display: flex; flex-direction: column; gap: var(--gap-header); }
@@ -867,6 +880,8 @@ html[data-prerendered] .fn-scroll.fits thead { position: static; }
 .dlgroup h4 { font: var(--type-label); color: var(--ink); display: flex; gap: var(--sp-2); align-items: first baseline; }
 .dlist { list-style: none; padding: 0; gap: 0; max-width: none; border-top: var(--rule) solid var(--line); }
 .dlist li { border-bottom: var(--rule) solid var(--line); }
+.ico.i-none::before { background: none; } /* a row without a symbol keeps the icon column (For programs and agents) */
+#using-data { margin-top: var(--gap-header); }
 .dlist a { display: grid; grid-template-columns: var(--sp-3) 14rem 13rem minmax(0, 1fr); gap: var(--sp-1) var(--sp-3); align-items: first baseline; padding: var(--sp-2); color: var(--ink); text-decoration-line: none; } /* the same tracks in every group, so names, files and descriptions align */
 .dlist .dl-title { font: var(--type-body); white-space: nowrap; }
 .dlist .dl-file, .dlist .d { font: var(--type-meta); color: var(--muted); min-width: 0; }
@@ -924,7 +939,6 @@ html[data-prerendered] .fn-scroll.fits thead { position: static; }
   .navtitle .long { display: none; }
   .navtitle .short { display: inline; }
   .hl { align-items: first baseline; }
-  .download-menu .control-label { width: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; } /* phones: Download icon-only, like the cards' download; Columns keeps its word (principle: Symbols) */
   .download-menu .btn { gap: 0; }
   .toolbar-actions { flex-wrap: wrap; }
   .status-control, .region-control { flex: 1 1 100%; }
@@ -1031,7 +1045,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     <div class="fund-axis"><span class="fund-key"><span class="key-item"><i class="key-swatch" aria-hidden="true"></i>adopted</span><span class="key-item"><i class="key-swatch pending" aria-hidden="true"></i>announced</span></span></div>
     <div class="fund-list" id="fund-rows"></div>
     <div class="fund-none" id="fund-none" hidden><span class="label">Budget not published</span><ul role="list"></ul></div>
-    <details class="more quiet" id="fund-how"><summary>How this is chosen</summary>    <p class="small">The chart shows every institute worldwide on one scale. Bars show adopted or announced funding for the whole institute in a funding year that overlaps <span id="ref-year"></span>, the calendar year of the data date. Where several years qualify, the one containing the data date is used, if there is one. Proposals, one-off amounts and other years get no bar; institutes with only such funding are listed below the bars with their Budget value. Components are excluded. Period means are labelled. EUR figures are rough conversions at the ECB's <span id="fx-year"></span> annual-average rates and do not compare like with like.</p></details>
+    <div class="section-foot"><details class="more quiet" id="fund-how"><summary>How this is chosen</summary>    <p class="small">The chart shows every institute worldwide on one scale. Bars show adopted or announced funding for the whole institute in a funding year that overlaps <span id="ref-year"></span>, the calendar year of the data date. Where several years qualify, the one containing the data date is used, if there is one. Proposals, one-off amounts and other years get no bar; institutes with only such funding are listed below the bars with their Budget value. Components are excluded. Period means are labelled. EUR figures are rough conversions at the ECB's <span id="fx-year"></span> annual-average rates and do not compare like with like.</p></details><span class="section-foot-actions"><a class="standalone section-dl ico i-dl" id="funding-download" href="data/funding.csv" download="funding.csv" data-tip="Funding (CSV); staff figures are in staff.csv under Data"><span class="vh">Download funding (CSV)</span></a></span></div>
   </div></section>
   </div>
 
@@ -1039,7 +1053,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     <h2 id="news">News</h2></div><div class="section-body">
     <ol class="development-list" id="development-list"></ol>
     <button type="button" class="list-more" id="developments-more" aria-controls="development-list" aria-expanded="false" hidden></button>
-    <div class="news-links"><a class="standalone small" id="events-download" href="data/events.csv" download="events.csv">All events (CSV)</a><a class="standalone small" id="news-feed" href="feed.xml">Atom feed</a></div>
+    <div class="section-foot news-links"><span class="section-foot-actions"><a class="standalone feed-link ico i-feed" id="news-feed" href="feed.xml" data-tip="Atom feed of News and releases, for a feed reader">Feed</a><a class="standalone section-dl ico i-dl" id="events-download" href="data/events.csv" download="events.csv" data-tip="News events (CSV): the same file as All events under Data, with every field"><span class="vh">Download News events (CSV)</span></a></span></div>
   </div></section>
 
   <div class="group">
@@ -1059,7 +1073,6 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         <span class="selectwrap status-control"><select class="field" id="world-status" aria-label="Status"></select></span>
         <span class="selectwrap region-control ico i-region"><select class="field" id="world-region" aria-label="Region"></select></span>
         <details class="cols"><summary class="btn ico i-cols" aria-label="Columns"><span class="control-label">Columns</span></summary><div class="popover" id="col-opts"></div></details>
-        <details class="download-menu" id="world-download"><summary class="btn ico i-dl" aria-label="Download"><span class="control-label">Download</span></summary><div class="popover"><button type="button" id="world-csv">This view (CSV)</button><a href="#data">Full dataset…</a></div></details>
       </div>
     </div>
     <p class="small" id="world-count" role="status"></p>
@@ -1068,6 +1081,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       <thead><tr><th data-k="name" aria-sort="ascending"><button type="button"><span class="sort-label">State</span></button></th><th data-k="region" data-col="region"><button type="button"><span class="sort-label">Region (UN)</span></button></th><th data-k="status"><button type="button"><span class="sort-label">Status</span></button></th><th data-k="inst" data-col="inst"><button type="button" title="A dash means there is no institute yet."><span class="sort-label">Institute</span></button></th><th data-k="since" data-col="since"><button type="button" title="A dash means there is no institute yet."><span class="sort-label">Status since</span></button></th><th data-k="op" data-col="op"><button type="button" title="Published work or joint testing found, with the date of the first known item. None found yet means none found in the sources we searched. A dash means there is no established institute."><span class="sort-label">Known activity</span></button></th><th data-k="eur" data-col="budget"><button type="button" title="A dash means there is no institute yet."><span class="sort-label">Budget</span></button></th><th data-k="staff" data-col="staff"><button type="button" title="A dash means there is no institute yet."><span class="sort-label">Staff</span></button></th><th data-k="net" data-col="net"><button type="button"><span class="sort-label">Network</span></button></th></tr></thead>
       <tbody id="world-rows"></tbody>
     </table></div></div>
+    <div class="section-foot"><span class="section-foot-actions"><details class="download-menu" id="world-download"><summary class="section-dl ico i-dl" aria-label="Download" data-tip="Download: this view as CSV, or the full dataset"><span class="control-label vh">Download</span></summary><div class="popover"><button type="button" id="world-csv">This view (CSV)</button><a href="#data">Full dataset…</a></div></details></span></div>
   </div></section>
   </div>
 
@@ -2139,6 +2153,14 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     group.appendChild(heading); return group;
   }
   function anchor(id) { return "#c-" + id.toLowerCase(); }
+  // A section's foot row (principle: Downloads): its explanation fold (or none) at the left, its download alone at the right end,
+  // what and which format on hover and focus. One format per icon.
+  function sectionFoot(fold, file, name, tip) {
+    var foot = el("div", "section-foot"), actions = el("span", "section-foot-actions"), dl = el("a", "standalone section-dl ico i-dl");
+    dl.href = "data/" + file; dl.setAttribute("download", file); dl.dataset.tip = tip; dl.appendChild(el("span", "vh", "Download " + name));
+    if (fold) foot.appendChild(fold);
+    actions.appendChild(dl); foot.appendChild(actions); return foot;
+  }
   // The state's full record with its institute, for scripts (the static API file); icon-only, its name visually hidden text.
   function stateDownload(j, m) {
     var dl = el("a", "standalone state-dl ico i-dl"); dl.href = "api/v" + m.version.split(".")[0] + "/jurisdictions/" + j.id + ".json"; dl.setAttribute("download", j.id + ".json");
@@ -3289,7 +3311,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
             var li = el("li"); li.dataset.value = value; if (isPhone || value !== "not_found") li.appendChild(mark(value, isPhone)); li.appendChild(el("span", null, value === "not_found" ? (isPhone ? FN_COPY.phone_not_found : FN_COPY.blank_legend) : names[value])); legend.appendChild(li);
           }); box.appendChild(legend);
         });
-        box.appendChild(how);
+        box.appendChild(sectionFoot(how, "functions.csv", "functions (CSV)", "Functions (CSV): each institute's value for every function, with its claim ids"));
         updateFits();
       }
       function buildForm(isPhone) {
@@ -3520,7 +3542,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       });
       box.appendChild(left); box.appendChild(right);
       infoAfterHeading($("testing"), info(ACCESS_SCOPE, "test-scope"));
-      if (order.length) box.appendChild(groupSources(order, S));
+      box.appendChild(sectionFoot(order.length ? groupSources(order, S) : null, "institutes.csv", "institutes (CSV)", "Institutes (CSV): testing capacity and model access are columns, with every other field"));
     })();
     // Institutional set-up: every institute grouped by form (principle: Scope), the host as the note; laid out as Testing and access (principle: Groups): every group spans the full content width.
     (function () {
@@ -3547,7 +3569,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         var note = el("p", "small scope-note", SETUP_SCOPE); note.id = pair[1];
         $(pair[0]).closest("section").querySelector(".section-body").prepend(note);
       });
-      if (order.length) box.appendChild(groupSources(order, S));
+      box.appendChild(sectionFoot(order.length ? groupSources(order, S) : null, "institutes.csv", "institutes (CSV)", "Institutes (CSV): legal form, host and reporting line are columns, with every other field"));
     })();
     // Figures below the map: the producer's medians (dataset.display.counts) and the institutes with no budget. Counts count established state institutes only; the note says so with their number.
     (function () {
@@ -3761,7 +3783,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     var scrollWatch = new ResizeObserver(updateScrollHint); scrollWatch.observe($("world-scroll")); scrollWatch.observe(document.querySelector("table.world"));
     draw(); applyCols();
 
-    var menus = [].slice.call(document.querySelectorAll(".toolbar-actions details"));
+    var menus = [].slice.call(document.querySelectorAll(".toolbar-actions details, #world-download")); // the table's menus: Columns in its toolbar, Download in its foot row
     menus.forEach(function (menu) {
       menu.addEventListener("toggle", function () { if (menu.open) menus.forEach(function (other) { if (other !== menu) other.open = false; }); });
       // Pressing inside the menu can move focus to <main> (tabindex -1 for the skip link); only focus moving to another
@@ -3963,7 +3985,8 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
 
     var pub = el("a", null, m.publisher); pub.href = "https://accelerate-europe.org/"; $("foot").textContent = "";
     var methodLink = el("a", null, "Full method"); methodLink.href = "method.html";
-    var line = el("p"); line.appendChild(separated([pub, "compiled by " + andJoin(maintainers), "Code: MIT; data, page text and documentation: " + m.license, methodLink])); $("foot").appendChild(line);
+    var feed = el("a", "foot-feed ico i-feed", "Follow updates"); feed.href = "feed.xml"; feed.dataset.tip = "Atom feed of News and releases, for a feed reader"; // the feed symbol carries its word (principle: Symbols)
+    var line = el("p"); line.appendChild(separated([pub, "compiled by " + andJoin(maintainers), "Code: MIT; data, page text and documentation: " + m.license, methodLink, feed])); $("foot").appendChild(line);
     $("foot").appendChild(el("p", null, m.license_note));
     glueCitations($("top"));
     glueCitations(document.querySelector("main"));

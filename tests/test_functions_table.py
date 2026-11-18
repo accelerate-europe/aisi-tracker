@@ -71,13 +71,13 @@ def functions():
     <td data-code="incidents" data-value="not_found"><span class="vh">not found</span></td><td class="fn-pad" aria-hidden="true"></td></tr>
     </tbody></table></div>
     <ul class="fn-legend fn-desktop-only" role="list"><li data-value="activity">Active</li><li data-value="mandate">Assigned</li><li data-value="not_found">Blank: no public text found; it may still be done</li><li data-value="not_coded">not yet coded</li></ul>
-    <details class="more quiet prose-panel fn-how"><summary>How this is coded</summary>
+    <div class="section-foot"><details class="more quiet prose-panel fn-how"><summary>How this is coded</summary>
     <p class="small fn-what">The table shows which of 5 functions each institute is active in or has been assigned.</p>
     <p class="small fn-use fn-desktop-only">Select a mark to see the quote and source.</p>
     <p class="small fn-use fn-phone-only">Select a country to see its functions, then a function for its quote and source.</p>
     <p class="small">We record quoted public texts.</p>
     <p class="small fn-order">Rows: by the year the institute's current status began, oldest first.</p>
-    <p class="small fn-provisional">The list of functions is provisional.</p></details>
+    <p class="small fn-provisional">The list of functions is provisional.</p></details><span class="section-foot-actions"><a class="standalone section-dl ico i-dl" href="data/functions.csv" download="functions.csv"><span class="vh">Download functions (CSV)</span></a></span></div>
     </div></section></div>'''
     return data, html
 
@@ -606,7 +606,7 @@ def functions_both(functions, functions_phone):
     phone = BeautifulSoup(functions_phone[1], "html.parser")
     box = soup.select_one('#functions-table')
     for selector in ('.fn-phone', '.fn-legend'):
-        box.select_one('.fn-how').insert_before(phone.select_one(selector).extract())
+        box.select_one('.section-foot').insert_before(phone.select_one(selector).extract())
     return data, str(soup)
 
 
@@ -622,8 +622,8 @@ def test_explanation_folds_follow_their_content(functions_both):
     data, html = functions_both
     soup = BeautifulSoup(html, "html.parser")
     box = soup.select_one('#functions-table')
-    box.insert(0, box.select_one('.fn-how').extract())
-    assert "Functions coding fold must follow the table and legends" in check_page.functions_structure(str(soup), data)
+    box.insert(0, box.select_one('.section-foot').extract())
+    assert any(e.startswith("Functions coding fold must follow the table and legends") for e in check_page.functions_structure(str(soup), data))
     page = Path('site/index.html').read_text()
     assert check_page.explanation_order(page) == []
     soup = BeautifulSoup(page, "html.parser")

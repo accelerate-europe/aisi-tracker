@@ -234,11 +234,23 @@ def definition_markdown(dataset: dict) -> str:
     return f"{dataset['definition']} [What counts]({PUBLIC_URL}method.html#qualifying-body)"
 
 
+# The Data section's "For programs and agents" rows: link, title, file shown, one-line description, symbol (or none).
+AGENT_ROWS = (
+    ("{api}/index.json", "API index", "{api}/index.json", "every state and institute as its own JSON record, and how to read them", "i-none"),
+    ("llms.txt", "llms.txt", "llms.txt", "what the data holds and how to read it, in plain text for AI agents", "i-none"),
+    ("feed.xml", "Feed", "feed.xml", "News and releases as an Atom feed, for a feed reader", "i-feed"),
+)
+
+
 def orientation_html(published: dict) -> str:
-    """The page's "Using the data": one muted line after the downloads linking llms.txt and the API index (the full text is in llms.txt and the API index)."""
-    api = api_root(published)
-    return ('<p class="small" id="using-data">Scripts and AI agents: <a href="llms.txt">llms.txt</a> '
-            f'and the <a href="{html.escape(api)}/index.json">API index</a></p>')
+    """The page's "For programs and agents": rows like the downloads above it, each with a one-line description
+    (the full text is in llms.txt and the API index)."""
+    api = html.escape(api_root(published))
+    rows = "".join(f'<li><a class="ico {icon}" href="{href.format(api=api)}"><span class="dl-title">{title}</span>'
+                   f'<span class="dl-file">{shown.format(api=api)}</span><span class="d">{d}</span></a></li>'
+                   for href, title, shown, d, icon in AGENT_ROWS)
+    return (f'<div class="dlgroup" id="using-data"><h4>For programs and agents</h4>'
+            f'<ul class="dlist" data-group="For programs and agents">{rows}</ul></div>')
 
 
 def llms_txt(published: dict) -> str:

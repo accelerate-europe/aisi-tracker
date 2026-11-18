@@ -393,8 +393,8 @@ def check_dom(html: str, data: dict, dist: Path, base_url: str) -> list[str]:
         for p in (dist / "data").rglob("*")
         if p.is_file() and p.suffix in (".csv", ".json") and p.name != PAGE_ONLY_DATA
     }
-    entries = soup.select(".dlist > li")
-    links = soup.select(".dlist a")
+    entries = soup.select("#downloads .dlist > li")  # the data files; For programs and agents (#using-data) links the API, llms.txt and the feed
+    links = soup.select("#downloads .dlist a")
     downloads = Counter(urljoin(base_url, str(a.get("href") or "")) for a in links)
     expected_downloads = Counter({urljoin(base_url, name): 1 for name in files})
     if not files or len(entries) != len(files) or downloads != expected_downloads:
@@ -532,7 +532,7 @@ def check_download_layout(page) -> list[str]:
     return ["no download rows"] if found is None else [report_line(e) for e in found]
 
 
-USING_THE_DATA = "Using the data"
+USING_THE_DATA = "For programs and agents"
 
 
 PAGE_BYTES_BUDGET = 2_000_000  # search engines read only the first 2 MB of a page, so everything a reader should find must sit within it
@@ -760,7 +760,7 @@ def check_static_page(dist: Path, data: dict) -> list[str]:
         errors.append(f"static page: {len(uncited)} displayed values without a citation: {uncited[:10]}")
     files = sorted(p.relative_to(dist).as_posix() for p in (dist / "data").rglob("*") if p.suffix in (".csv", ".json") and p.name != PAGE_ONLY_DATA)
     errors.extend(check_download_groups(soup, set(files)))
-    links = sorted(str(a.get("href")) for a in soup.select(".dlist a"))
+    links = sorted(str(a.get("href")) for a in soup.select("#downloads .dlist a"))
     if links != files:
         errors.append(f"static page: expected one download link per data file ({len(files)}), got {len(links)}")
     return errors
@@ -1261,10 +1261,12 @@ def check_agent_files(dist: Path) -> list[str]:
     if len(indexes) != 1 or not (dist / indexes[0]).is_file():
         return errors
     orientation = json.loads((dist / indexes[0]).read_text(encoding="utf-8")).get("orientation") or []
-    block = soup.select_one("p#using-data")
+    block = soup.select_one("#using-data")
     api = f"api/v{json.loads((dist / 'data/aisi.json').read_text(encoding='utf-8'))['dataset']['version'].split('.')[0]}/index.json"
-    if not block or [a.get("href") for a in block.select("a")] != ["llms.txt", api] or any(not a.get_text(strip=True) for a in block.select("a")) or not block.find_parent("section", attrs={"aria-labelledby": "data"}):
-        errors.append(f"Data section: '{USING_THE_DATA}' is not one line in the Data section linking llms.txt and {api}")
+    rows = block.select(".dlist > li > a") if block else []
+    if (not block or sorted(a.get("href") for a in rows) != sorted([api, "llms.txt", "feed.xml"]) or not block.find_parent("section", attrs={"aria-labelledby": "data"})
+            or any(not a.select_one(".dl-title") or not a.select_one(".d") or not a.select_one(".d").get_text(strip=True) for a in rows)):
+        errors.append(f"Data section: '{USING_THE_DATA}' is not a group of rows in the Data section for {api}, llms.txt and the feed, each with a description")
     elif not orientation:
         errors.append(f"{indexes[0]} carries no orientation text")
     llms = dist / "llms.txt"
@@ -9332,7 +9334,7 @@ def check_controls(page) -> list[str]:
       const toolbar = document.querySelector('.tbar'), search = document.querySelector('#world-filter');
       const tr = toolbar.getBoundingClientRect(), sr = search.getBoundingClientRect();
       if (Math.abs(sr.width-tr.width) > 1 || Math.abs(sr.left-tr.left) > 1) errors.push(REPORT + 'search does not fill toolbar width');
-      const actions = [...document.querySelector('.toolbar-actions').children].filter(n => innerWidth > 640 || n.matches('.cols, .download-menu')).map(n => n.getBoundingClientRect());
+      const actions = [...document.querySelector('.toolbar-actions').children].filter(n => innerWidth > 640 || n.matches('.cols')).map(n => n.getBoundingClientRect());
       if (!actions.length || actions.some(r => Math.abs(r.top-actions[0].top) > 1 || r.top < sr.bottom)) errors.push(REPORT + 'toolbar actions do not share one row below search');
       const region = document.querySelector('#world-region');
       if (!(region.getAttribute('aria-label') || '').trim()) errors.push('region filter lacks an accessible name');
@@ -9342,10 +9344,11 @@ def check_controls(page) -> list[str]:
         if (s.color === 'rgba(0, 0, 0, 0)' || r.width-parseFloat(s.paddingLeft)-parseFloat(s.paddingRight)-2 < ctx.measureText(region.selectedOptions[0]?.textContent || '').width) errors.push('phone region filter has no room for a visible label');
         const statusBox = document.querySelector('#world-status').getBoundingClientRect();
         if (statusBox.left < tr.left-1 || statusBox.right > tr.right+1 || statusBox.height < 40) errors.push('phone status select does not fit the toolbar or is too short to tap');
-        if (!(document.querySelector('#world-download > summary').getAttribute('aria-label') || '').trim() || document.querySelector('#world-download .control-label').getBoundingClientRect().width > 1) errors.push('phone Download is not icon-only with its accessible name');
-      } else if (!document.querySelector('#world-download > summary.ico.i-dl') || !visible(document.querySelector('#world-download .control-label'))) {
-        errors.push('Download lacks its download icon and visible label');
       }
+      // Downloads (principle): the table's Download is its foot row's icon alone, after the table, with its name on hover and for screen readers.
+      const menu = document.querySelector('#world-download'), summary = menu?.querySelector(':scope > summary.ico.i-dl');
+      if (!summary || menu.closest('.tbar') || !menu.closest('.section-foot') || !(menu.closest('.section-foot').compareDocumentPosition(document.querySelector('#world-scroll')) & Node.DOCUMENT_POSITION_PRECEDING)
+          || !(summary.getAttribute('aria-label') || '').trim() || !(summary.dataset.tip || '').trim() || document.querySelector('#world-download .control-label').getBoundingClientRect().width > 1) errors.push('Download is not the icon alone in the foot row after the table, named on hover and for screen readers');
       if (innerWidth <= 640) {
         if ([...document.querySelector('.toolbar-actions').children].some(n => { const r = n.getBoundingClientRect(); return r.left < tr.left-1 || r.right > tr.right+1; })) errors.push('phone toolbar actions overflow');
       }
@@ -10444,9 +10447,9 @@ def check_news_layout(page, data) -> list[str]:
         }
       }
       const links = [...document.querySelectorAll('#developments .news-links a')], more = document.getElementById('developments-more');
-      if (links.length !== 2 || links[0].id !== 'events-download' || links[1].id !== 'news-feed') errors.push('News footer needs the events and Atom links');
+      if (links.length !== 2 || links[0].id !== 'news-feed' || links[1].id !== 'events-download') errors.push('News foot row needs the feed, then the download at its right end');
       else {
-        if (Math.abs(rect(links[0]).top - rect(links[1]).top) > 1 || links.some(a => a.getClientRects().length !== 1)) errors.push('News links do not share one line');
+        if (Math.abs((rect(links[0]).top + rect(links[0]).bottom) - (rect(links[1]).top + rect(links[1]).bottom)) > 4 || links.some(a => a.getClientRects().length !== 1)) errors.push('News links do not share one line');
         if (links.some(a => !(rows.at(-1).compareDocumentPosition(a) & Node.DOCUMENT_POSITION_FOLLOWING) || !more || !(more.compareDocumentPosition(a) & Node.DOCUMENT_POSITION_FOLLOWING) || rect(a).top < rect(rows.at(-1)).bottom - 1 || (!more.hidden && rect(a).top < rect(more).bottom - 1))) errors.push('News links must follow the entries and control');
       }
       rows.forEach((row, n) => row.hidden = hidden[n]);
@@ -11879,7 +11882,9 @@ def functions_structure(html: str, data: dict) -> list[str]:
     need(how and not how.has_attr("open") and how.select_one('summary') and how.summary.get_text() == "How this is coded",
          "Functions coding fold missing or open by default")
     box = section.select_one('#functions-table')
-    need(box and how and how is box.find_all(recursive=False)[-1], "Functions coding fold must follow the table and legends")
+    foot = box.find_all(recursive=False)[-1] if box else None  # Downloads: the fold sits in the section's foot row, the last block
+    need(box and how and foot is how.parent and "section-foot" in (foot.get("class") or []) and foot.select_one(":scope > .section-foot-actions > a.section-dl[download]"),
+         "Functions coding fold must follow the table and legends, in the foot row with the download")
     need(not summary or box and summary is box.find(recursive=False), "Functions head must start with the most-common line")
     need(how and order and provisional and how.find_all(recursive=False)[-2:] == [order, provisional]
          and order.parent is how and provisional.parent is how
@@ -11951,7 +11956,8 @@ def explanation_order(html: str) -> list[str]:
     """The chart's method follows all of its results, including uncharted budgets."""
     soup = BeautifulSoup(html, "html.parser")
     how = soup.select_one('#fund-how')
-    if how is None or not all(node and node.parent is how.parent and how in node.find_next_siblings()
+    foot = how.parent if how is not None else None  # Downloads: the fold sits in the section's foot row
+    if how is None or "section-foot" not in (foot.get("class") or []) or not all(node and node.parent is foot.parent and foot in node.find_next_siblings()
                               for node in (soup.select_one(s) for s in ('.fund-axis', '#fund-rows', '#fund-none'))):
         return ["Funding explanation must follow the chart and budget list"]
     return []

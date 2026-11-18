@@ -702,7 +702,7 @@ def test_news_label_and_footer_structure(next_data):
     source = BeautifulSoup((ROOT / "site/index.html").read_text(), "html.parser")
     footer = source.select_one("#developments .news-links")
     assert footer.find_previous_sibling()["id"] == "developments-more"
-    assert [a["id"] for a in footer.select("a")] == ["events-download", "news-feed"]
+    assert [a["id"] for a in footer.select("a")] == ["news-feed", "events-download"]
 
 
 def test_news_layout_findings_block_the_gate():

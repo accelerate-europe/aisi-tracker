@@ -242,9 +242,9 @@ def test_orientation_is_one_text_in_three_places(site):
     major = load(site / "data/aisi.json")["dataset"]["version"].split(".")[0]
     sections = [(s["heading"], s["text"]) for s in load(site / f"api/v{major}/index.json")["orientation"]]
     assert len(sections) >= 5
-    block = BeautifulSoup((site / "index.html").read_text(encoding="utf-8"), "html.parser").select_one("p#using-data")
-    assert [a["href"] for a in block.select("a")] == ["llms.txt", f"api/v{major}/index.json"]
-    assert " ".join(block.get_text().split()) == "Scripts and AI agents: llms.txt and the API index"
+    block = BeautifulSoup((site / "index.html").read_text(encoding="utf-8"), "html.parser").select_one("#using-data")
+    assert [a["href"] for a in block.select(".dlist a")] == [f"api/v{major}/index.json", "llms.txt", "feed.xml"]
+    assert block.select_one("h4").get_text(strip=True) == "For programs and agents" and all(a.select_one(".d").get_text(strip=True) for a in block.select(".dlist a"))
     llms = (site / "llms.txt").read_text(encoding="utf-8")
     for heading, text in sections:
         assert text in llms
