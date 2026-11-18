@@ -11992,6 +11992,171 @@ def check_functions_detail(browser, base_url: str, data: dict) -> list[str]:
     return errors
 
 
+FN_POINTER_POINT_JS = r"""(panel, point) => {
+  const hit = document.elementFromPoint(point.x, point.y);
+  const control = hit?.closest('a, button, summary, [tabindex], input, label, abbr.g');
+  // The scroll region itself has tabindex, but is outside the panel and does not make its prose a control.
+  return {x: point.x, y: point.y, inside: !!hit && panel.contains(hit),
+    interactive: !!control && panel.contains(control), cursor: hit ? getComputedStyle(hit).cursor : null};
+}"""
+
+FN_POINTER_JS = r"""panel => {
+  const sample = /* POINT */;
+  const rect = panel.getBoundingClientRect(), samples = [];
+  const navBottom = Math.max(0, ...[...document.querySelectorAll('.secnav, .group-nav')]
+    .map(n => n.getBoundingClientRect()).filter(r => r.top <= 100).map(r => r.bottom));
+  const left = Math.max(rect.left, 0), right = Math.min(rect.right, innerWidth);
+  const top = Math.max(rect.top, navBottom), bottom = Math.min(rect.bottom, innerHeight);
+  // Sample the visible interior, including whitespace between lines and controls.
+  for (let row = 0; row < 9; row++) for (let col = 0; col < 13; col++) {
+    const x = left + (col + .5) * (right - left) / 13, y = top + (row + .5) * (bottom - top) / 9;
+    samples.push(sample(panel, {x, y}));
+  }
+  return samples;
+}""".replace("/* POINT */", FN_POINTER_POINT_JS)
+
+FN_OPEN_CONTROLS_JS = """() => [...document.querySelectorAll('#functions-table button[aria-expanded="true"]')]
+  .map(n => n.getAttribute('aria-controls')).sort()"""
+
+
+def function_pointer_errors(samples: list[dict]) -> list[str]:
+    errors = []
+    if not samples or not any(s["inside"] and not s["interactive"] for s in samples):
+        errors.append("Functions pointer grid found no plain panel points")
+    if any(not s["inside"] for s in samples):
+        errors.append("Functions panel hit reaches an element outside the panel")
+    if any(s["inside"] and not s["interactive"] and s["cursor"] == "pointer" for s in samples):
+        errors.append("Functions plain panel area has a pointer cursor")
+    return errors
+
+
+def check_functions_pointer(browser, base_url: str) -> list[str]:
+    page = browser.new_page(viewport={"width": 1440, "height": 1000})
+    hydrated(page, base_url)
+    page.evaluate("document.fonts.ready")
+    errors = []
+    for width in (1440, 1920, 390):
+        page.set_viewport_size({"width": width, "height": 1000})
+        for theme in ('light', 'dark'):
+            set_theme(page, theme)
+            if width <= 640:
+                row = page.locator('.fn-phone li[data-institute="no-ki-norge"] > .fn-phone-row')
+                if row.get_attribute('aria-expanded') != 'true':
+                    row.click()
+                button = page.locator('.fn-phone-detail li[data-code="standards_guidance"] > button')
+                panel = page.locator('.fn-phone-claims')
+            else:
+                button = page.locator('.fn-table tr[data-institute="no-ki-norge"] td[data-code="standards_guidance"] > button')
+                panel = page.locator('.fn-scroll .fn-detail')
+            if button.get_attribute('aria-expanded') != 'true':
+                button.click()
+            for opened in (False, True):
+                folds = panel.locator('details.quote')
+                folds.evaluate_all('(nodes, open) => nodes.forEach(n => n.open = open)', opened)
+                if opened:
+                    panel.locator('.quote-body').first.wait_for(state='visible')
+                panel.evaluate('n => n.scrollIntoView({block: "center"})')
+                page.mouse.move(1, 1)
+                samples = panel.evaluate(FN_POINTER_JS)
+                prefix = f'{width}px {theme} Quote {"open" if opened else "closed"}: '
+                errors += [prefix + e for e in function_pointer_errors(samples)]
+                hovered = []
+                for point in samples:
+                    if point['inside'] and not point['interactive']:
+                        page.mouse.move(point['x'], point['y'])
+                        hovered.append(panel.evaluate(FN_POINTER_POINT_JS, point))
+                errors += [prefix + 'hover: ' + e for e in function_pointer_errors(hovered)]
+                before = page.evaluate(FN_OPEN_CONTROLS_JS)
+                plain = [s for s in hovered if s['inside'] and not s['interactive']]
+                # First, middle and last plain points in the row-major grid, not synthetic DOM clicks.
+                for index in sorted({0, len(plain) // 2, len(plain) - 1}) if plain else []:
+                    point = plain[index]
+                    page.mouse.click(point['x'], point['y'])
+                    if button.get_attribute('aria-expanded') != 'true' or page.evaluate(FN_OPEN_CONTROLS_JS) != before:
+                        errors.append(prefix + 'plain click changed the open cell/function controls')
+                        break
+    page.close()
+    return errors
+
+
+# These controls deliberately span more than their text. Keep the exceptions narrow and explained.
+CLICK_WIDTH_ALLOW = {
+    '.card.mini > summary': 'Europe mini cards use the whole finding row as their disclosure control.',
+    'th[data-k] > button': 'Sortable table headers use the full cell as their target.',
+    '#changes > summary': 'Version history fills the row so its label and latest version can truncate.',
+    '.dlist a': 'Each Data download is one row link covering the file name and its description.',
+}
+
+CLICK_WIDTH_JS = r"""allowed => {
+  /* TEXT_RECTS */
+  const probe = document.createElement('span'); probe.style.cssText = 'display:block;height:var(--hit)';
+  document.body.appendChild(probe); const minHit = probe.getBoundingClientRect().height; probe.remove();
+  return [...document.querySelectorAll('a, button, summary')].filter(n => n.getClientRects().length &&
+    getComputedStyle(n).visibility === 'visible' && !n.closest('.vh, [hidden]')).map(n => {
+    const rects = textRects(n);
+    // A graphic is content too. Empty icon controls still have their box tested against the 60px limit.
+    for (const graphic of n.querySelectorAll('svg, img, .fn-mark')) if (graphic.getClientRects().length) rects.push(graphic.getBoundingClientRect());
+    // Padding is part of a control, and an icon or chevron drawn by ::before/::after is content: measure the content box,
+    // and let a drawn pseudo-element extend the content to that edge.
+    const rect = n.getBoundingClientRect(), style = getComputedStyle(n);
+    const box = {left: rect.left + parseFloat(style.borderLeftWidth) + parseFloat(style.paddingLeft), right: rect.right - parseFloat(style.borderRightWidth) - parseFloat(style.paddingRight)};
+    const drawn = pseudo => { const s = getComputedStyle(n, pseudo); return s.content !== 'none' && s.content !== 'normal' && s.display !== 'none' && !/absolute|fixed/.test(s.position) && parseFloat(s.width) > 0; }; // in-flow icons only, not hit-area layers
+    // A drawn pseudo-element adds only its own width, margins and the gap beside the text, never the rest of the box,
+    // so a stretched link with an icon right after its text still shows its empty width.
+    let left = rects.length ? Math.min(...rects.map(r => r.left)) : null, right = rects.length ? Math.max(...rects.map(r => r.right)) : null;
+    const gapX = parseFloat(style.columnGap) || 0, span = pseudo => { const s = getComputedStyle(n, pseudo); return parseFloat(s.width) + (parseFloat(s.marginLeft) || 0) + (parseFloat(s.marginRight) || 0); };
+    if (drawn('::before')) { const w = span('::before'); if (left === null) { left = box.left; right = box.left + w; } else left -= gapX + w; }
+    if (drawn('::after')) { const w = span('::after'); if (right === null) { right = box.right; left = box.right - w; } else right += gapX + w; }
+    const content = left === null ? 0 : right - left;
+    return {name: (n.id || n.className || n.tagName) + ': ' + (n.textContent.trim() || n.getAttribute('aria-label') || '').slice(0, 80),
+      width: box.right - box.left, content, allowed: allowed.find(selector => n.matches(selector)) || null,
+      correction: n.matches('a.correction'), height: rect.height, minHit};
+  });
+}""".replace("/* TEXT_RECTS */", TEXT_RECTS_JS)
+
+
+def clickable_width_errors(controls: list[dict]) -> list[str]:
+    errors = []
+    for control in controls:
+        if control['width'] - control['content'] > 60 and control.get('allowed') not in CLICK_WIDTH_ALLOW:
+            errors.append(f"Clickable box exceeds its content by {control['width'] - control['content']:.1f}px: {control['name']}")
+        if control.get('correction') and control['height'] < control['minHit'] - .5:
+            errors.append('Correction link lost its hit height: ' + control['name'])
+    return errors
+
+
+def check_clickable_widths(browser, base_url: str) -> list[str]:
+    """Audit every section at the desktop widths of the pointer report, including expanded records and sources."""
+    page = browser.new_page(viewport={"width": 1440, "height": 1000})
+    hydrated(page, base_url)
+    page.evaluate("document.fonts.ready")
+    page.add_style_tag(content='.offscreen, .card-row, .fund-item { content-visibility: visible !important; }')
+    errors = []
+    for width in (1000, 1440, 1920):
+        page.set_viewport_size({"width": width, "height": 1000})
+        for theme in ('light', 'dark'):
+            set_theme(page, theme)
+            for opened in (False, True):
+                page.locator('main details:not(.cols, .download-menu)').evaluate_all('(nodes, open) => nodes.forEach(n => n.open = open)', opened)
+                page.evaluate('() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)))')
+                if not opened and theme == 'light':
+                    # The audit must still see a stretched link whose icon sits right after its text.
+                    probe = page.evaluate('''() => { const s = document.createElement('style'); s.id = 'width-probe-style';
+                      s.textContent = '#width-probe::after { content: ""; display: inline-block; width: 8px; height: 8px; margin-left: 4px; }';
+                      const a = document.createElement('a'); a.id = 'width-probe'; a.href = '#'; a.textContent = 'Probe'; a.style.cssText = 'display:block;width:400px;cursor:pointer';
+                      document.head.appendChild(s); document.querySelector('main').prepend(a); return true; }''')
+                    flagged = any(e.startswith('Clickable box exceeds') and 'width-probe' in e for e in clickable_width_errors(page.evaluate(CLICK_WIDTH_JS, list(CLICK_WIDTH_ALLOW))))
+                    page.evaluate("() => { document.getElementById('width-probe')?.remove(); document.getElementById('width-probe-style')?.remove(); }")
+                    if probe and not flagged:
+                        errors.append(f'{width}px: the width audit missed a stretched link with an icon after its text')
+                controls = page.evaluate(CLICK_WIDTH_JS, list(CLICK_WIDTH_ALLOW))
+                if opened and not any(c['correction'] for c in controls):
+                    errors.append('Clickable width audit did not reach correction links')
+                errors += [f'{width}px {theme} {"expanded" if opened else "collapsed"}: ' + e for e in clickable_width_errors(controls)]
+    page.close()
+    return errors
+
+
 FN_CLAIMS_CHECK_JS = r"""
 const checkHeading = (detail, cell, country, institute, code, key) => {
   const heading = detail.querySelector('.fn-detail-head, .fn-function-head'), context = detail.querySelector(':scope > .fn-detail-context');
@@ -13559,6 +13724,8 @@ def browser_jobs(dist: Path, data: dict, screenshots: Path | None) -> list[tuple
         ("interactions", check_functions_table, (dist, data)),
         ("interactions", check_functions_detail, (data,)),
         ("interactions", check_claim_spacing, ()),
+        ("interactions", check_functions_pointer, ()),
+        ("interactions", check_clickable_widths, ()),
         ("interactions", check_functions_layout, ()),
         ("interactions", check_function_group_tabs, ()),
         ("interactions", check_functions_phone, (data,)),

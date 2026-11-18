@@ -124,6 +124,58 @@ def test_function_panel_width_checks_border_and_every_text_line():
     assert check_page.function_panel_width_errors(None) == ["Functions panel or text lines missing"]
 
 
+def test_function_pointer_grid_rejects_plain_pointers_and_hits_below_panel():
+    plain = {'inside': True, 'interactive': False, 'cursor': 'auto'}
+    assert check_page.function_pointer_errors([plain, dict(plain, interactive=True, cursor='pointer')]) == []
+    assert check_page.function_pointer_errors([dict(plain, cursor='help')]) == []
+    assert check_page.function_pointer_errors([dict(plain, cursor='pointer')]) == ['Functions plain panel area has a pointer cursor']
+    # An underlying grid control is a leak even though that control itself is interactive.
+    assert 'outside the panel' in check_page.function_pointer_errors([plain, dict(plain, inside=False, interactive=True)])[0]
+    assert check_page.function_pointer_errors([]) == ['Functions pointer grid found no plain panel points']
+
+
+def test_function_pointer_does_not_treat_scroll_tabindex_as_panel_control():
+    import subprocess
+
+    script = """
+const scroll = {}, control = {}, panel = {contains: n => n === hit || n === control};
+let nearest = scroll;
+const hit = {closest: () => nearest};
+const document = {elementFromPoint: () => hit}, getComputedStyle = () => ({cursor: 'auto'});
+const sample = SAMPLE;
+if (sample(panel, {x: 1, y: 1}).interactive) throw Error('scroll tabindex masks plain text');
+nearest = control;
+if (!sample(panel, {x: 1, y: 1}).interactive) throw Error('panel control not recognised');
+""".replace('SAMPLE', check_page.FN_POINTER_POINT_JS)
+    result = subprocess.run(['node', '-'], input=script, text=True, capture_output=True)
+    assert result.returncode == 0, result.stderr
+
+
+def test_clickable_width_threshold_and_only_documented_exceptions():
+    control = {'name': 'Suggest a correction', 'width': 511, 'content': 153, 'allowed': None}
+    assert '358.0px' in check_page.clickable_width_errors([control])[0]
+    assert check_page.clickable_width_errors([dict(control, width=213)]) == []
+    assert check_page.clickable_width_errors([dict(control, width=214)])
+    assert check_page.clickable_width_errors([dict(control, width=153)]) == []
+    for selector in ('.card.mini > summary', 'th[data-k] > button', '#changes > summary'):
+        assert check_page.CLICK_WIDTH_ALLOW[selector]
+        assert check_page.clickable_width_errors([dict(control, allowed=selector)]) == []
+    assert check_page.clickable_width_errors([dict(control, allowed='.correction')])
+    # Empty icon buttons are still measured, so a mistakenly stretched one cannot evade the gate.
+    assert check_page.clickable_width_errors([dict(control, content=0)])
+    assert check_page.clickable_width_errors([dict(control, width=153, correction=True, height=20, minHit=28)])
+
+
+def test_function_geometry_scripts_parse_without_browser():
+    import json
+    import subprocess
+
+    scripts = [check_page.TEXT_RECTS_JS, check_page.CLAIM_SPACING_JS, check_page.FN_PANEL_WIDTH_JS,
+               check_page.FN_POINTER_JS, check_page.FN_OPEN_CONTROLS_JS, check_page.CLICK_WIDTH_JS]
+    subprocess.run(['node', '-'], input='for (const source of ' + json.dumps(scripts) + ') new Function(source);',
+                   text=True, capture_output=True, check=True)
+
+
 def test_functions_structure_rejects_a_missing_vocabulary_column(functions):
     from bs4 import BeautifulSoup
 
