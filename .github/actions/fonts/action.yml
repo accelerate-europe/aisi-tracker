@@ -1,16 +1,49 @@
-# Fonts for every script in the data, for each job that renders the page in Chromium (pre-render, gate, sweep).
-# The page bundles Inter for Latin, Cyrillic and Greek only; the runner has no fonts for Japanese, Korean, Thai,
-# Arabic and the other scripts of source titles and names, which would show as empty boxes and wrap unlike a
-# reader's browser. Noto core and CJK cover them; the fonts per script are counted, and a script without one fails the step.
+# Noto fonts for every job that renders the page in Chromium.
+# Bundled Inter covers Latin, Cyrillic and Greek. Noto covers the other scripts in source titles and names.
+# Cache the Ubuntu packages to avoid slow mirrors. Check every script before saving the cache.
 name: fonts
 description: Install Noto fonts for every script in the data
 runs:
   using: composite
   steps:
-    - shell: bash
+    - name: Set font cache key
+      id: fonts
+      shell: bash
       run: |
-        sudo apt-get -o Acquire::Retries=3 update -q
-        sudo apt-get -o Acquire::Retries=3 install -y -q --no-install-recommends fonts-noto-core fonts-noto-cjk
+        # Include mono even if the runner already has this dependency installed.
+        packages=(fonts-noto-core fonts-noto-cjk fonts-noto-mono)
+        package_hash=$(printf '%s\n' "${packages[@]}" | sha256sum | cut -d ' ' -f 1)
+        # Separate Ubuntu releases, architectures and package lists. Bump v1 to refresh package versions.
+        echo "key=noto-ubuntu-$(lsb_release -rs)-$(dpkg --print-architecture)-$package_hash-v1" >> "$GITHUB_OUTPUT"
+        echo "packages=${packages[*]}" >> "$GITHUB_OUTPUT"
+        mkdir -p "$RUNNER_TEMP/noto-debs"
+    - name: Restore font packages
+      id: cache
+      uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: ${{ runner.temp }}/noto-debs/*.deb
+        key: ${{ steps.fonts.outputs.key }}
+    - name: Download font packages
+      if: steps.cache.outputs.cache-hit != 'true'
+      shell: bash
+      env:
+        FONT_PACKAGES: ${{ steps.fonts.outputs.packages }}
+      run: |
+        read -r -a packages <<< "$FONT_PACKAGES"
+        # Bound update and download together to four minutes, then allow ten seconds to stop.
+        # If the mirror times out or fails, rerun the job.
+        sudo timeout --kill-after=10s 4m bash -euo pipefail -c '
+          apt_options=(-o Acquire::Retries=3 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30)
+          apt-get "${apt_options[@]}" update -q
+          # Download dependencies too. Reinstall ensures preinstalled fonts enter the cache.
+          apt-get "${apt_options[@]}" -o "Dir::Cache::archives=$1" install -y -q \
+            --no-install-recommends --download-only --reinstall "${@:2}"
+        ' bash "$RUNNER_TEMP/noto-debs" "${packages[@]}"
+    - name: Install and check fonts
+      shell: bash
+      run: |
+        # dpkg uses only the cached packages, with no mirror access.
+        sudo dpkg -i "$RUNNER_TEMP/noto-debs/"*.deb
         missing=
         for lang in ja ko zh th ar he hi bn ta si my km lo bo dv am ka hy el ru; do
           count=$(fc-list ":lang=$lang" family | wc -l)
@@ -18,3 +51,9 @@ runs:
           [ "$count" -gt 0 ] || missing="$missing $lang"
         done
         [ -z "$missing" ] || { echo "No font for:$missing" >&2; exit 1; }
+    - name: Save checked font packages
+      if: success() && steps.cache.outputs.cache-hit != 'true'
+      uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: ${{ runner.temp }}/noto-debs/*.deb
+        key: ${{ steps.fonts.outputs.key }}
