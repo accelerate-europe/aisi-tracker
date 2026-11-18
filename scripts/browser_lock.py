@@ -17,6 +17,8 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Iterator
 
+CLEANUP_GRACE = 10  # seconds of SIGTERM before SIGKILL; tests shorten it
+
 
 def lock_path() -> Path:
     """The configured host lock, with its parent directory ready for use."""
@@ -147,7 +149,7 @@ def _finish_children(process: subprocess.Popen | None, before: set[int]) -> bool
     platforms retain group-only cleanup. No unrelated child may be launched during
     run_in_slot; existing children and their trees are excluded by the initial scan.
     """
-    until = time.monotonic() + 10
+    until = time.monotonic() + CLEANUP_GRACE
     killed, group_signal, sent = False, None, {}
     while True:
         owned = _owned_descendants(process, before)

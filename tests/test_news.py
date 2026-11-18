@@ -24,26 +24,26 @@ SEPTEMBER = [
     ("2026-10-24", "United Kingdom", "The Budget announces an additional GBP 120m for the institute over 2026-27 to 2029-30."),
     ("2026-10-13", "Canada", "The two governments renew their AI security partnership, recommitting their institutes to cooperate on frontier AI risks and evaluation."),
     ("2026-10-13", "United Kingdom", "The two governments renew their AI security partnership, recommitting their institutes to cooperate on frontier AI risks and evaluation."),
-    ("2026-10-09", "United Kingdom", "A joint statement of the two governments' science committee says they will deepen cooperation between their institutes on AI model evaluation and information sharing."),
-    ("2026-10-09", "Japan", "A joint statement of the two governments' science committee says they will deepen cooperation between their institutes on AI model evaluation and information sharing."),
-    ("2026-10-07", "Norway", "The 2027 budget proposal would extend the institute's mandate to AI safety and proposes NOK 45.1m for it, including a NOK 30m increase for model evaluation."),
-    ("2026-10-06", "Australia", "The AI developer Anthropic says it is finalising an agreement for the institute to run independent evaluations of its models."),
-    ("2026-09-30", "United States", "The institute, formerly the Center for AI Standards and Innovation, is renamed the Center for Advancing Innovation and Standards for Super Intelligence (CAISSI), following the Executive Order of 29 September."),
-    ("2026-09-28", "South Korea", "The institute signs a memorandum of understanding with Kakao, which provides its AI models and agents for joint safety evaluation."),
-    ("2026-09-25", "Netherlands", "The cabinet tells parliament that an AI safety institute is being explored, with an advisory report due by the end of 2026."),
-    ("2026-09-21", "Spain", "The Prime Minister presents an AI plan that commits to an AI Security Institute within AESIA to evaluate the most advanced models."),
+    ("2026-10-09", "United Kingdom", "The two governments say in a joint statement that they will deepen cooperation between their institutes on evaluating AI models, the safe development and use of AI, and information sharing."),
+    ("2026-10-09", "Japan", "The two governments say in a joint statement that they will deepen cooperation between their institutes on evaluating AI models, the safe development and use of AI, and information sharing."),
+    ("2026-10-07", "Norway", "The government proposes extending the institute's mandate to AI safety and giving it NOK 45.1m in total for 2027, including a NOK 30m increase for evaluating AI models and studying the risks of advanced AI."),
+    ("2026-10-06", "Australia", "The AI developer Anthropic says it is finalising an agreement for the institute to run independent evaluations of Anthropic's models."),
+    ("2026-09-30", "United States", "The institute at NIST, the national standards body, takes a new name: Center for Advancing Innovation and Standards for Super Intelligence (CAISSI), formerly the Center for AI Standards and Innovation."),
+    ("2026-09-28", "South Korea", "The institute and the AI developer Kakao sign a memorandum of understanding on jointly evaluating the safety of Kakao's AI models and agents and building an evaluation framework."),
+    ("2026-09-25", "Netherlands", "The cabinet tells parliament that an exploration of whether to set up an AI safety institute is under way, and says parliament will receive an advisory report by the end of 2026."),
+    ("2026-09-21", "Spain", "Prime Minister Pedro Sánchez presents a government AI plan that commits to setting up an AI security institute within AESIA, the national AI supervisory agency, to evaluate the most advanced AI models before and after deployment."),
 ]
 PAGE_SEPTEMBER = [
     ("12 Nov 2026", "United Kingdom and Norway", "The two governments sign a non-binding statement of intent to explore cooperation, including between their institutes on AI security testing and evaluation."),
     ("24 Oct 2026", "United Kingdom", "The Budget announces an additional GBP 120m for the institute over 2026-27 to 2029-30."),
     ("13 Oct 2026", "United Kingdom and Canada", "The two governments renew their AI security partnership, recommitting their institutes to cooperate on frontier AI risks and evaluation."),
-    ("9 Oct 2026", "United Kingdom and Japan", "A joint statement of the two governments' science committee says they will deepen cooperation between their institutes on AI model evaluation and information sharing."),
-    ("7 Oct 2026", "Norway", "The 2027 budget proposal would extend the institute's mandate to AI safety and proposes NOK 45.1m for it, including a NOK 30m increase for model evaluation."),
-    ("6 Oct 2026", "Australia", "The AI developer Anthropic says it is finalising an agreement for the institute to run independent evaluations of its models."),
-    ("30 Sep 2026", "United States", "The institute, formerly the Center for AI Standards and Innovation, is renamed the Center for Advancing Innovation and Standards for Super Intelligence (CAISSI), following the Executive Order of 29 September."),
-    ("28 Sep 2026", "South Korea", "The institute signs a memorandum of understanding with Kakao, which provides its AI models and agents for joint safety evaluation."),
-    ("25 Sep 2026", "Netherlands", "The cabinet tells parliament that an AI safety institute is being explored, with an advisory report due by the end of 2026."),
-    ("21 Sep 2026", "Spain", "The Prime Minister presents an AI plan that commits to an AI Security Institute within AESIA to evaluate the most advanced models."),
+    ("9 Oct 2026", "United Kingdom and Japan", "The two governments say in a joint statement that they will deepen cooperation between their institutes on evaluating AI models, the safe development and use of AI, and information sharing."),
+    ("7 Oct 2026", "Norway", "The government proposes extending the institute's mandate to AI safety and giving it NOK 45.1m in total for 2027, including a NOK 30m increase for evaluating AI models and studying the risks of advanced AI."),
+    ("6 Oct 2026", "Australia", "The AI developer Anthropic says it is finalising an agreement for the institute to run independent evaluations of Anthropic's models."),
+    ("30 Sep 2026", "United States", "The institute at NIST, the national standards body, takes a new name: Center for Advancing Innovation and Standards for Super Intelligence (CAISSI), formerly the Center for AI Standards and Innovation."),
+    ("28 Sep 2026", "South Korea", "The institute and the AI developer Kakao sign a memorandum of understanding on jointly evaluating the safety of Kakao's AI models and agents and building an evaluation framework."),
+    ("25 Sep 2026", "Netherlands", "The cabinet tells parliament that an exploration of whether to set up an AI safety institute is under way, and says parliament will receive an advisory report by the end of 2026."),
+    ("21 Sep 2026", "Spain", "Prime Minister Pedro Sánchez presents a government AI plan that commits to setting up an AI security institute within AESIA, the national AI supervisory agency, to evaluate the most advanced AI models before and after deployment."),
 ]
 # Hand-checked against the old eight-kind rule on next 04e90fc. These are historical
 # identities, even when the ten-item window now pushes them out of the page/feed.
@@ -244,6 +244,84 @@ def events_csv(data, tmp_path):
     with path.open(newline="") as stream:
         reader = csv.DictReader(stream)
         return reader.fieldnames, list(reader)
+
+
+NEWS_COLUMNS = ["date", "jurisdiction", "institute", "news_kind", "headline", "source_urls", "id"]
+
+
+def test_news_table_matches_published_items_and_feed(next_data):
+    tables = build.tables(next_data)
+    rows = tables["news"]
+    groups = next_data["dataset"]["display"]["developments"]
+    events = {row["id"]: row for row in tables["events"]}
+    feed = [entry for entry in agent_files.feed_entries(next_data) if entry["kind"] == "news"]
+    by_feed_id = {entry["id"]: entry for entry in feed}
+    sources = {source["id"]: source["url"] for source in next_data["sources"]}
+    schema = json.loads((ROOT / "schema/aisi.schema.json").read_text())["$defs"]["news_export"]
+    validator = Draft202012Validator(schema)
+
+    assert rows and [row["id"] for row in rows] == [identity for group in groups for identity in group["items"]]
+    assert {agent_files.feed_news_id(group) for group in groups} == set(by_feed_id)
+    offset = 0
+    for group in groups:
+        group_rows = rows[offset:offset + len(group["items"])]
+        offset += len(group_rows)
+        entry = by_feed_id[agent_files.feed_news_id(group)]
+        assert " ".join(row["headline"] for row in group_rows) == entry["summary"]
+        assert [row["source_urls"] for row in group_rows] == [
+            "; ".join(sources[sid] for sid in ids) for ids in group["line_source_ids"]
+        ]
+    # The feed reverses same-date state ties; the CSV keeps the published collector order.
+    assert [agent_files.feed_day(group["date"]) for group in groups] == [entry["updated"] for entry in feed]
+    for row in rows:
+        assert list(row) == NEWS_COLUMNS
+        validator.validate(row)
+        event = events[row["id"]]
+        assert all(row[field] == event[field] for field in ("date", "jurisdiction", "institute", "news_kind"))
+
+
+@pytest.mark.parametrize("authored", [False, True])
+def test_news_table_pair_has_one_row_per_state(authored):
+    data = paired_sample()
+    for institute in data["institutes"]:
+        if institute["id"] == "ca-test":
+            institute["name"] = "Canadian institute"
+        if authored:
+            institute["agreements"][0]["news"] = "The governments agree to cooperate."
+    with_news(data)
+    rows = build.news_rows(data, build.event_rows(data))
+    expected = "The governments agree to cooperate." if authored else "The two governments sign a text on cooperation naming their institutes."
+    assert [(row["jurisdiction"], row["institute"], row["id"], row["headline"]) for row in rows] == [
+        ("Canada", "Canadian institute", "agreements:ca-test:mirror", expected),
+        ("United Kingdom", "Full institute name", "agreements:gb-test:agreement", expected),
+    ]
+
+
+def test_news_table_same_day_items_keep_their_lines_and_sources():
+    data = sample()
+    data["sources"] = [{"id": sid, "url": f"https://example.org/{sid}"} for sid in ("a", "b", "c")]
+    data["jurisdictions"][0].update(institute_id="gb-test", timeline=[
+        event("z-status", news="The government designates the institute.", source_ids=["a"], citations={"news": ["a"]}),
+    ])
+    data["institutes"][0]["funding"] = [budget("a-budget", source_ids=["c", "b"], citations={"amount": ["c", "b"]})]
+    with_news(data)
+    assert len(data["dataset"]["display"]["developments"]) == 1
+    rows = build.news_rows(data, build.event_rows(data))
+    assert [(row["id"], row["headline"], row["source_urls"]) for row in rows] == [
+        ("timeline:GB:z-status", "The government designates the institute.", "https://example.org/a"),
+        ("funding:gb-test:a-budget", "GBP 120m for the institute announced.", "https://example.org/c; https://example.org/b"),
+    ]
+    assert [row["institute"] for row in rows] == ["Full institute name"] * 2
+
+
+@pytest.mark.parametrize("day", ["2026", "2026-10", "2026-10-01"])
+def test_news_table_keeps_date_precision_and_empty_institute(day):
+    data = sample()
+    data["institutes"] = []
+    data["jurisdictions"][0]["timeline"] = [event(day=day)]
+    with_news(data)
+    row, = build.news_rows(data, build.event_rows(data))
+    assert row == dict(zip(NEWS_COLUMNS, [day, "United Kingdom", "", "status", "Institute designated.", "", "timeline:GB:status"], strict=True))
 
 
 def test_news_items_field(next_data, tmp_path):
@@ -751,6 +829,11 @@ def test_news_required_holds_for_the_dataset():
                     line = records[(pointer[0], pointer[1]["id"], pointer[2], pointer[3]["id"])]["news"]
                     bound.setdefault(line, []).append(excerpt["text"])
     assert len(examples) == 4 and set(examples) <= set(bound)
-    for item in re.findall(r'^- [^:\n]+: (".+)$', doc.split("## News lines")[1], re.M):
+    section = doc.split("## News lines")[1]
+    worked, pairs = section.split("Examples, with")[1].split("Before and after:")
+    for item in re.findall(r'^- [^:\n]+: (".+)$', worked, re.M):
         line, *quotes = re.findall(r'"([^"]+)"', item)
         assert quotes and [q for q in quotes if not any(q in text for text in bound[line])] == [], line
+    # Each before-and-after pair ends on a current line; its before line is no longer used.
+    afters = re.findall(r'^- [^\n]*Before: "([^"]+)"[^\n]*After: "([^"]+)"$', pairs, re.M)
+    assert len(afters) == 2 and all(after in bound and before not in bound for before, after in afters)

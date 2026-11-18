@@ -120,20 +120,35 @@ Two places check the trailers:
 
 A timeline event, agreement or funding record that enters the page's News list carries a `news` line, written in the data commit that adds it. Validation fails while any item the list shows has none (`check_news_required` in `scripts/display.py`), and the line needs an excerpt whose `supports` pointer ends in `news`. Older items in the events download and feed may keep the generated line, and so does a first output, whose timeline event the build generates from the output list.
 
-A line:
+The reader follows policy news but has not seen the source, does not know national agencies or companies, and reads the line once. The label above it already gives the date and the states.
 
-- says in one sentence what happened. The label above it already gives the date and the states.
-- names the parties as the source names them. When the governments sign and their institutes are named in the text, the governments are the parties.
-- says no more than its quotes. A statement of intent, a joint statement, a proposal or an agreement still being finalised does not read as a concluded agreement or an adopted budget.
-- calls the tracked body "the institute" (for a pair, "their institutes"), unless the name is the news, as in a rename.
-- uses only abbreviations that are glossary terms or currency codes, or spells the name out before the abbreviation in parentheses (`check_news_lines`).
-- is the same on both records of a registered pair (`scripts/shared_claims.py`).
+How a line is written:
+
+- The writer works from the record's fields: the parties, the kind of act, how firm it is (announced, proposed, signed, adopted), and each amount with what it counts and its period. The writer has not read the source. In practice a fresh agent or Codex run drafts the line from the fields, the bound quotes and this section, and nothing else.
+- The quotes are for checking, not for wording: the line says no more than they do, and does not copy their phrasing.
+
+What a line says:
+
+- One sentence, in this order: who acts, what they do, about what. Active voice, present tense.
+- The parties as the source names them. When the governments sign and their institutes are named in the text, the governments are the parties.
+- How firm the act is. A statement of intent, a joint statement, a proposal or an agreement still being finalised does not read as a concluded agreement or an adopted budget.
+- A company, agency or body a general reader may not know gets a few words saying what it is, as in "the AI developer Anthropic".
+- Every number says what it counts and for which period. When one figure is part of another, the line says so plainly.
+- No "which" clause, and no pronoun whose owner could be mistaken.
+- The tracked body is "the institute" (for a pair, "their institutes"), unless the name is the news, as in a rename. The line does not repeat the state's or the institute's name from the label.
+- Only abbreviations that are glossary terms or currency codes, or a name spelt out before its abbreviation in parentheses (`check_news_lines`).
+- The same line on both records of a registered pair (`scripts/shared_claims.py`).
 
 Examples, with the quotes each rests on:
 
 - United Kingdom and Norway, a text between governments: "The two governments sign a non-binding statement of intent to explore cooperation, including between their institutes on AI security testing and evaluation." Quotes: "This Statement expresses the intentions of the Participants and does not create rights or obligations under international or domestic law."; "Strengthening cooperation between UK AISI and AI Norway through the sharing of best practices on AI security, testing, and evaluation"; "For the Government of the Kingdom of Norway".
-- Australia, announced and not concluded: "The AI developer Anthropic says it is finalising an agreement for the institute to run independent evaluations of its models." Quote: "finalizing an agreement with the AI Safety Institute to enable it to run its own independent evaluations of our models".
-- Norway, a budget proposal: "The 2027 budget proposal would extend the institute's mandate to AI safety and proposes NOK 45.1m for it, including a NOK 30m increase for model evaluation." Quotes: "Regjeringa vil utvide mandatet til KI Norge så det inkluderer arbeid med KI-sikkerheit"; "Samla blir det foreslått å løyve 45,1 mill. kroner."; "Frå 2027 blir det foreslått å auke løyvinga med 30 mill. kroner til å styrkje KI Noreg med kapasitet til å evaluere KI-modellar".
-- United States, a rename: "The institute, formerly the Center for AI Standards and Innovation, is renamed the Center for Advancing Innovation and Standards for Super Intelligence (CAISSI), following the Executive Order of 29 September." Quotes: "NIST does this work through the laboratory programs and the Center for Advancing Innovation and Standards for Super Intelligence (CAISSI)"; "Per the Sept. 29, 2026, Executive Order on Inaugurating the Era of Super Intelligence, NIST is working to update its communications to incorporate the term"; "Center for AI Standards and Innovation (CAISI)".
+- Australia, announced and not concluded: "The AI developer Anthropic says it is finalising an agreement for the institute to run independent evaluations of Anthropic's models." Quote: "finalizing an agreement with the AI Safety Institute to enable it to run its own independent evaluations of our models".
+- Norway, a budget proposal with a figure inside another: "The government proposes extending the institute's mandate to AI safety and giving it NOK 45.1m in total for 2027, including a NOK 30m increase for evaluating AI models and studying the risks of advanced AI." Quotes: "Regjeringa vil utvide mandatet til KI Norge så det inkluderer arbeid med KI-sikkerheit"; "Samla blir det foreslått å løyve 45,1 mill. kroner."; "Rekneskap 2025 Saldert budsjett 2026 Forslag 2027"; "Frå 2027 blir det foreslått å auke løyvinga med 30 mill. kroner til å styrkje KI Noreg med kapasitet til å evaluere KI-modellar, samt skaffe kunnskap om konsekvensar og risiko knytt til avansert kunstig intelligens".
+- United States, a rename: "The institute at NIST, the national standards body, takes a new name: Center for Advancing Innovation and Standards for Super Intelligence (CAISSI), formerly the Center for AI Standards and Innovation." Quotes: "NIST does this work through the laboratory programs and the Center for Advancing Innovation and Standards for Super Intelligence (CAISSI)"; "Center for AI Standards and Innovation (CAISI)".
+
+Before and after:
+
+- South Korea. Before: "The institute signs a memorandum of understanding with Kakao, which provides its AI models and agents for joint safety evaluation." A reader does not know Kakao, and "which" and "its" leave open whose models are evaluated and by whom. After: "The institute and the AI developer Kakao sign a memorandum of understanding on jointly evaluating the safety of Kakao's AI models and agents and building an evaluation framework."
+- United Kingdom and Japan. Before: "A joint statement of the two governments' science committee says they will deepen cooperation between their institutes on AI model evaluation and information sharing." The line starts with a committee the reader does not know, and "they" could mean the committee or the governments. After: "The two governments say in a joint statement that they will deepen cooperation between their institutes on evaluating AI models, the safe development and use of AI, and information sharing."
 
 The examples follow the lines in `data/aisi.json`; when a line changes, its example changes with it. Whether a line says more than its quotes is checked at review, not by the build.

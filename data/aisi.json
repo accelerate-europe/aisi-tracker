@@ -2873,7 +2873,7 @@
             "es-moncloa"
           ],
           "short": "Government AI plan commits to an AI Security Institute within AESIA.",
-          "news": "The Prime Minister presents an AI plan that commits to an AI Security Institute within AESIA to evaluate the most advanced models."
+          "news": "Prime Minister Pedro Sánchez presents a government AI plan that commits to setting up an AI security institute within AESIA, the national AI supervisory agency, to evaluate the most advanced AI models before and after deployment."
         }
       ],
       "iso3": "ESP",
@@ -2989,7 +2989,7 @@
             "no-prop1s-2026-27-dfd"
           ],
           "short": "Budget proposes NOK 45.1m and an AI safety mandate for KI Norge.",
-          "news": "The 2027 budget proposal would extend the institute's mandate to AI safety and proposes NOK 45.1m for it, including a NOK 30m increase for model evaluation."
+          "news": "The government proposes extending the institute's mandate to AI safety and giving it NOK 45.1m in total for 2027, including a NOK 30m increase for evaluating AI models and studying the risks of advanced AI."
         }
       ],
       "iso3": "NOR",
@@ -3215,7 +3215,7 @@
             "nl-bb"
           ],
           "short": "Cabinet says AI safety institute exploration under way; report due year end.",
-          "news": "The cabinet tells parliament that an AI safety institute is being explored, with an advisory report due by the end of 2026."
+          "news": "The cabinet tells parliament that an exploration of whether to set up an AI safety institute is under way, and says parliament will receive an advisory report by the end of 2026."
         }
       ],
       "iso3": "NLD",
@@ -8757,7 +8757,7 @@
             "us-commerce-2025"
           ],
           "short": "Renamed Center for Advancing Innovation and Standards for Super Intelligence (CAISSI).",
-          "news": "The institute, formerly the Center for AI Standards and Innovation, is renamed the Center for Advancing Innovation and Standards for Super Intelligence (CAISSI), following the Executive Order of 29 September."
+          "news": "The institute at NIST, the national standards body, takes a new name: Center for Advancing Innovation and Standards for Super Intelligence (CAISSI), formerly the Center for AI Standards and Innovation."
         }
       ],
       "iso3": "USA",
@@ -29890,7 +29890,7 @@
           "participation": "named_implementer",
           "domestic_interagency": false,
           "id": "agreements-45971d777b924729a9fe2aeec368c70e",
-          "news": "A joint statement of the two governments' science committee says they will deepen cooperation between their institutes on AI model evaluation and information sharing."
+          "news": "The two governments say in a joint statement that they will deepen cooperation between their institutes on evaluating AI models, the safe development and use of AI, and information sharing."
         },
         {
           "counterparty_type": "government",
@@ -36877,7 +36877,7 @@
           "participation": "named_implementer",
           "domestic_interagency": false,
           "id": "agreements-0de799faa70640d78c37d2c4d5f0f6fe",
-          "news": "A joint statement of the two governments' science committee says they will deepen cooperation between their institutes on AI model evaluation and information sharing."
+          "news": "The two governments say in a joint statement that they will deepen cooperation between their institutes on evaluating AI models, the safe development and use of AI, and information sharing."
         },
         {
           "counterparty_type": "government",
@@ -38183,7 +38183,7 @@
           "participation": "institute_party",
           "domestic_interagency": false,
           "id": "agreements-93e9c4f6e55753fdbdd9d4610b1bd951",
-          "news": "The institute signs a memorandum of understanding with Kakao, which provides its AI models and agents for joint safety evaluation."
+          "news": "The institute and the AI developer Kakao sign a memorandum of understanding on jointly evaluating the safety of Kakao's AI models and agents and building an evaluation framework."
         },
         {
           "counterparty_type": "institute",
@@ -39484,7 +39484,7 @@
           "participation": "institute_party",
           "domestic_interagency": false,
           "id": "agreements-71c44af8b5b659c9b667334ac51b3b75",
-          "news": "The AI developer Anthropic says it is finalising an agreement for the institute to run independent evaluations of its models."
+          "news": "The AI developer Anthropic says it is finalising an agreement for the institute to run independent evaluations of Anthropic's models."
         },
         {
           "counterparty_type": "government",
@@ -113616,6 +113616,17 @@
                 "id": "funding-07dc8b2c007b4b80a356aef8e5afa53c"
               },
               "amount"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "NO"
+              },
+              "timeline",
+              {
+                "id": "no-1"
+              },
+              "news"
             ]
           ],
           "accessed": "2026-10-24"
@@ -113707,6 +113718,17 @@
                 "id": "funding-07dc8b2c007b4b80a356aef8e5afa53c"
               },
               "amount"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "NO"
+              },
+              "timeline",
+              {
+                "id": "no-1"
+              },
+              "news"
             ]
           ],
           "accessed": "2026-10-24"
@@ -113769,6 +113791,17 @@
                 "id": "funding-07dc8b2c007b4b80a356aef8e5afa53c"
               },
               "notes"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "NO"
+              },
+              "timeline",
+              {
+                "id": "no-1"
+              },
+              "news"
             ]
           ],
           "accessed": "2026-10-24"
@@ -114088,6 +114121,17 @@
                 "id": "funding-07dc8b2c007b4b80a356aef8e5afa53c"
               },
               "period"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "NO"
+              },
+              "timeline",
+              {
+                "id": "no-1"
+              },
+              "news"
             ]
           ],
           "gloss": "Accounts 2025; adopted budget 2026; proposal 2027.",

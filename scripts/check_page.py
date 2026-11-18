@@ -393,8 +393,8 @@ def check_dom(html: str, data: dict, dist: Path, base_url: str) -> list[str]:
         for p in (dist / "data").rglob("*")
         if p.is_file() and p.suffix in (".csv", ".json") and p.name != PAGE_ONLY_DATA
     }
-    entries = soup.select("#downloads .dlist > li")  # the data files; For programs and agents (#using-data) links the API, llms.txt and the feed
-    links = soup.select("#downloads .dlist a")
+    entries = [n for n in soup.select(".dlist > li") if not n.find_parent(id="using-data")]  # the data files; For programs and agents links the API, llms.txt and the feed
+    links = [n for n in soup.select(".dlist a") if not n.find_parent(id="using-data")]
     downloads = Counter(urljoin(base_url, str(a.get("href") or "")) for a in links)
     expected_downloads = Counter({urljoin(base_url, name): 1 for name in files})
     if not files or len(entries) != len(files) or downloads != expected_downloads:
@@ -405,7 +405,7 @@ def check_dom(html: str, data: dict, dist: Path, base_url: str) -> list[str]:
 
 
 DOWNLOAD_GROUPS = [
-    ("CSV", ["jurisdictions.csv", "institutes.csv", "events.csv"]),
+    ("CSV", ["jurisdictions.csv", "institutes.csv", "events.csv", "news.csv"]),
     ("CSV", ["staff.csv", "funding.csv", "people.csv", "outputs.csv", "agreements.csv", "national_partners.csv", "known_activity.csv", "functions.csv"]),
     ("CSV", ["timeline.csv", "closest_bodies.csv", "related_bodies.csv", "network_milestones.csv"]),
     ("CSV", ["sources.csv", "source_excerpts.csv", "claims.csv", "exchange_rates.csv"]),
@@ -760,7 +760,7 @@ def check_static_page(dist: Path, data: dict) -> list[str]:
         errors.append(f"static page: {len(uncited)} displayed values without a citation: {uncited[:10]}")
     files = sorted(p.relative_to(dist).as_posix() for p in (dist / "data").rglob("*") if p.suffix in (".csv", ".json") and p.name != PAGE_ONLY_DATA)
     errors.extend(check_download_groups(soup, set(files)))
-    links = sorted(str(a.get("href")) for a in soup.select("#downloads .dlist a"))
+    links = sorted(str(a.get("href")) for a in soup.select(".dlist a") if not a.find_parent(id="using-data"))
     if links != files:
         errors.append(f"static page: expected one download link per data file ({len(files)}), got {len(links)}")
     return errors

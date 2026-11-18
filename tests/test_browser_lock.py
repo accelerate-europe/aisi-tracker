@@ -180,7 +180,15 @@ def wait_file(path):
 )])
 @pytest.mark.parametrize("detached", [False, pytest.param(True, marks=pytest.mark.skipif(sys.platform != "linux", reason="Linux subreaper containment"))])
 def test_group_is_gone_before_next_holder(tmp_path, ending, detached):
-    """A grandchild ignoring SIGTERM, even in its own session, is gone before the next holder."""
+    """A grandchild ignoring SIGTERM, even in its own session, is gone before the next holder.
+
+    One case waits out the production cleanup grace; the others shorten it. cleanup_sigterm's sibling
+    signals for two seconds, so its short grace outlasts them and the signals still meet the kill loop.
+    """
+    if (detached, ending) == (True, "cleanup_sigterm"):
+        grace = browser_lock.CLEANUP_GRACE
+    else:
+        grace = 3 if ending == "cleanup_sigterm" else 0.5
     ready = tmp_path / "child.json"
     grandchild = f"""
 import json, os, signal, time
@@ -204,7 +212,9 @@ while not Path({str(ready)!r}).exists():
     monitor = f"""
 import json, signal, subprocess, time
 from pathlib import Path
+from scripts import browser_lock
 from scripts.browser_lock import run_in_slot
+browser_lock.CLEANUP_GRACE = {grace!r}
 ending = {ending!r}
 original_wait = subprocess.Popen.wait
 def ready():
@@ -221,6 +231,15 @@ if ending in ('exception', 'interrupt'):
     subprocess.Popen.wait = interrupted
 if ending == 'cleanup_sigterm':
     import os, threading
+    sent = threading.Event()
+    finish = browser_lock._finish_children
+    def finish_after_signals(*args):
+        try:
+            return finish(*args)
+        finally:
+            # Every SIGTERM lands before the handlers are restored, however late the sibling runs.
+            sent.wait(30)
+    browser_lock._finish_children = finish_after_signals
     def signalled(self, *args, **kwargs):
         subprocess.Popen.wait = original_wait
         ready()
@@ -229,6 +248,7 @@ if ending == 'cleanup_sigterm':
             for _ in range(10):
                 os.kill(os.getpid(), signal.SIGTERM)
                 time.sleep(0.2)
+            sent.set()
         threading.Thread(target=sibling, daemon=True).start()
         raise RuntimeError('cleanup under signals')
     subprocess.Popen.wait = signalled

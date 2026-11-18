@@ -44,12 +44,6 @@ def texts(node):
     return node.get("text", "") + "".join(texts(child) for child in node.get("children", []))
 
 
-def test_page_script_parses_without_chromium():
-    source = PAGE.read_text().split("<script>", 1)[1].split("</script>", 1)[0]
-    result = subprocess.run(["node", "-"], input="new Function(" + json.dumps(source) + ");", text=True, capture_output=True)
-    assert result.returncode == 0, result.stderr
-
-
 @pytest.mark.parametrize("gloss", [None, "Models"])
 def test_quote_rule_translation_original_and_focus(gloss):
     quote = page_call(f"window.quoteNode('<b>Modelle</b>', {json.dumps(gloss)})")

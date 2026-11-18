@@ -65,7 +65,8 @@ SITE = ROOT / "site" / "index.html"
 FILES = {
     "jurisdictions": ("States and territories", "status, dates and region of every state and territory, and the EU"),
     "institutes": ("Institutes", "host, form, mandate and website of each institute"),
-    "events": ("All events", "every dated government act, agreement, output and milestone in one table"),
+    "events": ("All events", "the full events file: every dated government act, agreement, output and milestone, with every field"),
+    "news": ("News", "the items in News and the feed: date, state, institute, kind, the line shown and its sources"),
     "timeline": ("Status timeline", "the dated government acts that set each status"),
     "funding": ("Funding", "published budgets, their period and a rough EUR figure a year"),
     "exchange_rates": ("Exchange rates", "the ECB rates used for the EUR figures"),
@@ -657,6 +658,18 @@ def event_rows(d: dict) -> list[dict]:
     return sorted(rows, key=lambda row: (row["date"], row["origin_kind"], row["id"]))
 
 
+def news_rows(d: dict, events: list[dict]) -> list[dict]:
+    """One row per published News item, in the collector's group and item order."""
+    by_id = {event["id"]: event for event in events}
+    urls = {source["id"]: source["url"] for source in d["sources"]}
+    return [{
+        "date": group["date"], "jurisdiction": group["name"],
+        "institute": by_id[identity]["institute"], "news_kind": by_id[identity]["news_kind"],
+        "headline": text, "source_urls": join(urls[sid] for sid in source_ids), "id": identity,
+    } for group in d["dataset"].get("display", {}).get("developments", [])
+        for identity, text, source_ids in zip(group["items"], group["texts"], group["line_source_ids"], strict=True)]
+
+
 def ratio_columns(f: dict, j: dict) -> dict:
     """funding.csv budget ratios with the year and sources of the denominator behind each; empty off the compared record."""
     used = f.get("ratio_denominators", {})
@@ -817,7 +830,8 @@ def tables(d: dict) -> dict[str, list[dict]]:
         "source_ids": join(r["source_ids"]), "source_urls": links(r["source_ids"]),
         "source_accessed": join(accessed[i] for i in r["source_ids"]),
     } for r in d["dataset"].get("exchange_rates", [])]
-    result = {"jurisdictions": jur, "institutes": inst, "funding": fund, "exchange_rates": rates, "staff": staff, "people": people, "known_activity": evidence, "national_partners": partners, "functions": functions, "claims": claims, "timeline": timeline, "agreements": agreements, "sources": src, "outputs": outputs, "network_milestones": milestones, "source_excerpts": excerpts, "related_bodies": bodies, "closest_bodies": closest, "events": event_rows(d)}
+    events = event_rows(d)
+    result = {"jurisdictions": jur, "institutes": inst, "funding": fund, "exchange_rates": rates, "staff": staff, "people": people, "known_activity": evidence, "national_partners": partners, "functions": functions, "claims": claims, "timeline": timeline, "agreements": agreements, "sources": src, "outputs": outputs, "network_milestones": milestones, "source_excerpts": excerpts, "related_bodies": bodies, "closest_bodies": closest, "events": events, "news": news_rows(d, events)}
     check_table_identities(result)
     return result
 
@@ -936,7 +950,7 @@ FIELD_DOCS = {
 }
 
 
-def table_schema(rows: list[dict], schema_doc: dict, columns=None) -> dict:
+def table_schema(rows: list[dict], schema_doc: dict, columns=None, *, schema_first=False) -> dict:
     def ftype(values):
         vs = [v for v in values if v != ""]
         if vs and all(isinstance(v, bool) for v in vs):
@@ -949,7 +963,7 @@ def table_schema(rows: list[dict], schema_doc: dict, columns=None) -> dict:
 
     fields = []
     for col in columns if columns is not None else rows[0]:
-        desc = FIELD_DOCS.get(col) or schema_doc.get(col, "")
+        desc = (schema_doc.get(col) or FIELD_DOCS.get(col, "")) if schema_first else (FIELD_DOCS.get(col) or schema_doc.get(col, ""))
         kind = "boolean" if col in {"scheduled", "counts_as_aisi", "cyber_agency", "legal_text"} else ftype([r[col] for r in rows])
         fields.append({"name": col, "type": kind, **({"description": desc} if desc else {})})
     return {"fields": fields, "missingValues": [""]}
@@ -975,6 +989,7 @@ TABLE_NODES = {
     "related_bodies": ("properties", "jurisdictions", "items", "properties", "related_bodies", "items"),
     "closest_bodies": ("properties", "jurisdictions", "items", "properties", "closest_body"),
     "events": ("$defs", "event_export"),
+    "news": ("$defs", "news_export"),
 }
 
 # New optional catalogues retain a downloadable header and dictionary before research fills them.
@@ -989,6 +1004,7 @@ EMPTY_COLUMNS = {
     "claims": ["id", "jurisdiction_id", "institute_id", "kind", "code", "basis", "body_id", "lead", "text", "act", "date", "source_ids", "source_urls", "reread_state", "last_found"],
     "agreements": ["id", "institute_id", "counterparty", "counterparty_type", "state", "participation", "date", "scope", "source_ids", "source_urls"],
     "events": ["id", "jurisdiction_id", "jurisdiction", "institute_id", "institute", "type", "news_kind", "date", "description", "short", "news", "origin_kind", "origin_id", "source_pointer", "withdraws", "scheduled", "source_ids", "source_urls"],
+    "news": ["date", "jurisdiction", "institute", "news_kind", "headline", "source_urls", "id"],
     "outputs": ["id", "institute_id", "date", "credited_from", "credit_institute_id", "credit_date", "type", "title", "lineage", "attribution", "qualifies_as", "qualification_note", "source_ids", "source_urls"],
     "known_activity": ["id", "institute_id", "kind", "date", "lineage", "source_ids", "source_urls"],
     "network_milestones": ["id", "body", "type", "date", "description", "short", "source_ids", "source_urls"],
@@ -1248,7 +1264,7 @@ def main() -> None:
                 w = csv.DictWriter(f, fieldnames=columns)
                 w.writeheader()
                 w.writerows(rows)
-            resources.append({"name": name, "path": f"{name}.csv", "format": "csv", "mediatype": "text/csv", "encoding": "utf-8", "schema": table_schema(rows, table_descriptions(schema, name), columns)})
+            resources.append({"name": name, "path": f"{name}.csv", "format": "csv", "mediatype": "text/csv", "encoding": "utf-8", "schema": table_schema(rows, table_descriptions(schema, name), columns, schema_first=name == "news")})
         coverage = shared_claim_coverage(d)
         (out / "shared-claim-coverage.json").write_text(json.dumps(coverage, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
         resources.append({"name": "shared-claim-coverage", "path": "shared-claim-coverage.json", "format": "json", "mediatype": "application/json"})
