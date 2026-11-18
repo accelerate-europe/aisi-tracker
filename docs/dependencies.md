@@ -35,4 +35,6 @@ Locks change when there is a reason (a fix, a security advisory, a feature the s
 
 ## Browser
 
+CI installs Ubuntu's Noto fonts through [the fonts action](../.github/actions/fonts/action.yml), which pins `actions/cache` by commit and caches the downloaded `.deb` files. Its cache key controls when package versions are refreshed.
+
 The only browser the build, the browser gate, the contact sheet and the source monitor use is the Chromium that the locked Playwright installs: no system Chromium, and no `executable_path` other than the locked Playwright's own. `check.py --preflight` and every browser step (the gate, the build's pre-render, the contact sheet's capture and the source monitor) check for the Chromium build the locked Playwright expects and, when it is missing, report NOT RUN naming that build, the builds that are installed and the install command (`scripts/host_checks.py`). A second preflight row and the gate's start refuse more parallel browser jobs than the host's memory holds at 4 GiB each, with the `AISI_GATE_JOBS` value that fits.

@@ -120,7 +120,7 @@ jobs:
           tar -xzf "$RUNNER_TEMP/gitleaks.tar.gz" -C "$RUNNER_TEMP/gitleaks" gitleaks
           echo "$RUNNER_TEMP/gitleaks" >> "$GITHUB_PATH"
       # Fast steps plus names and secrets in the pushed commits and messages. Forks have no terms secret;
-      # check.py reports that names scan for a maintainer. Two pytest workers fit the runner's two cores.
+      # check.py reports that names scan for a maintainer. Four pytest workers fit the runner's four cores.
       # Every run rejects draft and process wording (--release-wording); the publishing path also rejects work dated
       # after as_of (--release). Only the validate step reads either.
       - env:
@@ -155,7 +155,7 @@ jobs:
             set -- "$SHA"
           fi
           set -- --ref-names "$REF" --commits "$@"
-          uv run --locked scripts/check.py --only fast --test-workers 2 --report-dir "$RUNNER_TEMP/check" --version-ref "$REF" ${{ env.PUBLISH == 'true' && '--release' || '--release-wording' }} "$@"
+          uv run --locked scripts/check.py --only fast --test-workers 4 --report-dir "$RUNNER_TEMP/check" --version-ref "$REF" ${{ env.PUBLISH == 'true' && '--release' || '--release-wording' }} "$@"
       - if: always()
         run: cat "$RUNNER_TEMP/check/report.md" || true
       # Backstop: no step may change or add a file outside the ignored outputs.
