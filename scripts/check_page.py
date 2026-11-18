@@ -1539,11 +1539,34 @@ def settle(page, state: str, arg=None, timeout_ms: int = 5_000) -> None:
         pass
 
 
-def hydrated(page, url: str, map_drawn: bool = False) -> None:
+FN_VIEW_BY_WIDTH_JS = """w => { const box = document.getElementById('functions-table'), view = w <= 640 ? 'grouped' : 'grid';
+  if (box && box.fnView && box.dataset.view !== view) box.fnView(view); }  // the section's own setter: no click, focus untouched"""
+
+
+def fn_view_by_width(page) -> None:
+    """Most Functions checks test the full grid at desktop widths and the grouped view at phone widths. Since 18 Nov 2026 the
+    grouped view is the default at every width and the grid one click away (check_functions_views tests that), so this
+    sets the section's view through its own setter on every resize to keep that pairing for them, without touching focus."""
+    if getattr(page, "_fn_view_by_width", False) or not hasattr(page, "set_viewport_size"):  # a test's stand-in page has no viewport
+        return
+    resize = page.set_viewport_size
+
+    def sized(size):
+        resize(size)
+        page.evaluate(FN_VIEW_BY_WIDTH_JS, size["width"])
+    page.set_viewport_size = sized
+    page._fn_view_by_width = True
+    page.evaluate(FN_VIEW_BY_WIDTH_JS, page.viewport_size["width"])
+
+
+def hydrated(page, url: str, map_drawn: bool = False, fn_view: str = "by-width") -> None:
     """Open the page and wait until its script has taken over the pre-rendered page, and with `map_drawn` also until
-    the map is drawn and the layout has settled. A page from themed_page must show its theme's ground."""
+    the map is drawn and the layout has settled. A page from themed_page must show its theme's ground. `fn_view`
+    "by-width" pairs the Functions view with the width (fn_view_by_width); "default" leaves the page's own default."""
     page.goto(url)
     wait_hydrated(page)
+    if fn_view == "by-width":
+        fn_view_by_width(page)
     if map_drawn:
         map_ready(page)
         layout_settled(page)
@@ -12336,6 +12359,7 @@ CLICK_WIDTH_ALLOW = {
     'th[data-k] > button': 'Sortable table headers use the full cell as their target.',
     '#changes > summary': 'Version history fills the row so its label and latest version can truncate.',
     '.dlist a': 'Each Data download is one row link covering the file name and its description.',
+    '.fn-phone-row': 'A grouped Functions row is one full-width control over its name and strips.',
 }
 
 CLICK_WIDTH_JS = r"""allowed => {
@@ -12584,6 +12608,91 @@ def check_selection_single(browser, base_url: str) -> list[str]:
     page.keyboard.press("Escape")
     if page.locator("#palette").evaluate("n => n.open"):
         errors.append("Escape does not close the command palette")
+    page.close()
+    return errors
+
+
+FN_VIEWS_JS = r"""() => {
+  const box = document.getElementById('functions-table'), toggle = box.querySelector(':scope > .fn-view-toggle');
+  const shown = sel => { const n = box.querySelector(sel); return !!n && !!n.getClientRects().length; };
+  return {view: box.dataset.view, grouped: shown('.fn-phone'), grid: shown('.fn-scroll'), toggle: toggle ? toggle.textContent : null,
+    toggleShown: !!toggle && !!toggle.getClientRects().length, before: !!toggle && !!(toggle.compareDocumentPosition(box.querySelector('.fn-phone')) & Node.DOCUMENT_POSITION_FOLLOWING),
+    phoneWidth: box.querySelector('.fn-phone').getBoundingClientRect().width, prose: (() => { const p = document.createElement('div'); p.style.width = 'var(--prose)'; box.appendChild(p); const w = p.getBoundingClientRect().width; p.remove(); return w; })()};
+}"""
+
+
+def check_functions_views(browser, base_url: str, data: dict) -> list[str]:
+    """Functions views (owner, 18 Nov 2026): the grouped view by default at 1440, 1000 and 390, the full grid one click away and
+    back, the control a word naming what it shows, a link to a target in the hidden view bringing that view, and an expanded
+    grouped row listing every function with its status and definition."""
+    errors = []
+    count = len([c for c, v in data["dataset"]["vocabularies"]["function"].items() if not v.get("deprecated")])
+    for width in (1440, 1000, 390):
+        page = browser.new_page(viewport={"width": width, "height": 1000})
+        hydrated(page, base_url, fn_view="default")
+        v = page.evaluate(FN_VIEWS_JS)
+        if v["view"] != "grouped" or not v["grouped"] or v["grid"]:
+            errors.append(f"{width}px: Functions does not open on the grouped view: {v}")
+        if not v["toggleShown"] or not v["before"] or str(count) not in (v["toggle"] or "") or "grid" not in (v["toggle"] or ""):
+            errors.append(f"{width}px: the view control is missing, after the table, or does not name the grid of all {count} functions: {v['toggle']!r}")
+        if width > 640 and v["phoneWidth"] > v["prose"] + 1:
+            errors.append(f"{width}px: the grouped view stretches past the reading measure ({v['phoneWidth']:.0f}px)")
+        toggle = page.locator("#functions-table > .fn-view-toggle")
+        # A click that does not move focus (Safari's buttons) from inside the grouped view still leaves focus on the control.
+        page.locator(".fn-phone li[data-institute] > .fn-phone-row").first.focus()
+        toggle.evaluate("n => n.click()")
+        if not toggle.evaluate("n => n === document.activeElement"):
+            errors.append(f"{width}px: a click that does not move focus leaves focus in the hidden view")
+        toggle.evaluate("n => n.click()")
+        toggle.click()
+        g = page.evaluate(FN_VIEWS_JS)
+        if g["view"] != "grid" or not g["grid"] or g["grouped"] or "grouped" not in (g["toggle"] or "").lower():
+            errors.append(f"{width}px: the control does not open the full grid, or does not offer the way back: {g}")
+        if not toggle.evaluate("n => n === document.activeElement"):
+            errors.append(f"{width}px: focus leaves the view control when it switches")
+        toggle.click()
+        if page.evaluate(FN_VIEWS_JS)["view"] != "grouped":
+            errors.append(f"{width}px: the control does not return to the grouped view")
+        # Arrival: a target inside the hidden view brings that view.
+        page.evaluate("() => { const c = document.querySelector('.fn-scroll .fn-table th[scope=\"row\"]'); c.id = 'fn-arrival-probe'; }")
+        page.evaluate("() => { location.hash = 'fn-arrival-probe'; }")
+        page.wait_for_function("() => document.getElementById('functions-table').dataset.view === 'grid'", timeout=5000)
+        page.evaluate("() => { const r = document.querySelector('.fn-phone .fn-phone-row'); r.id = 'fn-arrival-probe-2'; location.hash = 'fn-arrival-probe-2'; }")
+        page.wait_for_function("() => document.getElementById('functions-table').dataset.view === 'grouped'", timeout=5000)
+        # An expanded grouped row lists every function with its status and definition.
+        page.locator(".fn-phone li[data-institute] > .fn-phone-row").first.click()
+        listed = page.evaluate("""() => [...document.querySelectorAll('.fn-phone-detail .fn-phone-functions > li')].map(li => ({
+          shown: !!li.getClientRects().length, status: (li.querySelector('.fn-function-status')?.textContent || '').trim(),
+          definition: (li.querySelector('.fn-function-definition')?.textContent || '').trim()}))""")
+        if len(listed) != count or not all(item["shown"] and item["status"] and item["definition"] for item in listed):
+            errors.append(f"{width}px: an expanded row does not list all {count} functions, each with its status and definition")
+        # The rendered status and definition, not just their text: drawn, inside the grouped box, nothing running sideways.
+        drawn = page.evaluate("""() => { const box = document.querySelector('.fn-phone'), r = box.getBoundingClientRect(), bad = [];
+          for (const n of document.querySelectorAll('.fn-phone-detail :is(.fn-function-status, .fn-function-definition)')) {
+            const b = n.getBoundingClientRect(), s = getComputedStyle(n);
+            if (!b.width || !b.height || s.visibility !== 'visible' || b.right > r.right + 1 || b.left < r.left - 1) bad.push(n.textContent.slice(0, 30)); }
+          if (box.scrollWidth > box.clientWidth + 1) bad.push('the grouped box scrolls sideways');
+          return bad; }""")
+        if drawn:
+            errors.append(f"{width}px: expanded row parts are not drawn inside the grouped view: {drawn[:3]}")
+        page.close()
+    # The view is the section's state: a resize across 640px keeps the chosen view, an open panel or row, and focus.
+    page = browser.new_page(viewport={"width": 1440, "height": 1000})
+    hydrated(page, base_url, fn_view="default")
+    for view, opener, holder in (("grid", '.fn-scroll .fn-cell', '.fn-scroll .fn-detail'), ("grouped", '.fn-phone li[data-institute] > .fn-phone-row', '.fn-phone .fn-phone-detail')):
+        page.set_viewport_size({"width": 1440, "height": 1000})
+        if page.evaluate(FN_VIEWS_JS)["view"] != view:
+            page.locator("#functions-table > .fn-view-toggle").click()
+        page.locator(opener).first.click()
+        page.locator(holder + " .close-control").first.focus()
+        for width in (390, 1000, 1440):
+            page.set_viewport_size({"width": width, "height": 1000})
+            page.evaluate("() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)))")
+            state = page.evaluate("""([sel]) => ({view: document.getElementById('functions-table').dataset.view, open: !!document.querySelector(sel)?.getClientRects().length,
+              focus: !!document.activeElement?.closest(sel)})""", [holder])
+            if state != {"view": view, "open": True, "focus": True}:
+                errors.append(f"{view} view, resized to {width}px: the view, its open part or focus did not survive: {state}")
+        page.locator(holder + " .close-control").first.click()
     page.close()
     return errors
 
@@ -13264,11 +13373,9 @@ def check_functions_phone(browser, base_url: str, data: dict, *, inject: bool = 
             if not page.evaluate("() => { const ids=[...document.querySelector('#functions-table').querySelectorAll('[id]')].map(n=>n.id); return new Set(ids).size===ids.length; }"):
                 errors.append('Functions: open forms have duplicate detail IDs')
             page.locator('.fn-scroll .fn-detail .close-control').focus()
-        desktop_owner = desktop_detail and cell.evaluate("n => n.closest('tr[data-institute]').dataset.institute")
         cross_breakpoint(640)  # pageerror listener also catches exceptions with focus inside the now-hidden form
-        # Focus moves to the same institute in the visible form at once, before anything else touches it.
-        if desktop_owner and page.evaluate("id => { const a=document.activeElement; return !!a && a.matches('.fn-phone-row') && a.closest('li[data-institute]').dataset.institute === id; }", desktop_owner) is not True:
-            errors.append('Functions phone: focus inside the desktop detail does not move to that institute in the phone form')
+        # Since 18 Nov 2026 the view, not the width, chooses the form, so a resize never hides the focused control on the real page;
+        # the old focus hand-over between forms is gone (this check pairs view and width itself, through fn_view_by_width).
         if not phone_detail or not phone_detail.evaluate("n => n.isConnected && !!n.getClientRects().length") or row.get_attribute('aria-expanded') != 'true':
             errors.append('Functions phone: returning to phone width lost its open detail')
         if desktop_detail and not desktop_detail.evaluate("n => n.isConnected && !n.getClientRects().length"):
@@ -13278,10 +13385,7 @@ def check_functions_phone(browser, base_url: str, data: dict, *, inject: bool = 
             errors.append('Functions phone: Escape after crossing the breakpoint does not close/return focus')
         if desktop_detail and not desktop_detail.evaluate("n => n.isConnected"):
             errors.append('Functions phone: Escape closed the hidden desktop detail')
-        phone_owner = row.evaluate("n => n.closest('li[data-institute]').dataset.institute")
-        cross_breakpoint(641)
-        if page.evaluate("id => { const a=document.activeElement; return !!a && a.getClientRects().length > 0 && !!a.closest('.fn-scroll tr[data-institute=\"' + id + '\"]'); }", phone_owner) is not True:
-            errors.append('Functions desktop: focus on a phone row does not move to that institute in the table')
+        cross_breakpoint(641)  # the real page keeps its view on a resize (18 Nov 2026), so there is no focus hand-over to test
         if desktop_detail:
             if not desktop_detail.evaluate("n => n.isConnected && !!n.getClientRects().length") or cell.get_attribute('aria-expanded') != 'true':
                 errors.append('Functions desktop: returning to desktop width lost its open detail')
@@ -14219,6 +14323,7 @@ def browser_jobs(dist: Path, data: dict, screenshots: Path | None) -> list[tuple
         ("interactions", check_symbols, ()),
         ("interactions", check_folds, ()),
         ("interactions", check_selection_single, ()),
+        ("interactions", check_functions_views, (data,)),
         ("interactions", check_functions_layout, ()),
         ("interactions", check_function_group_tabs, ()),
         ("interactions", check_functions_phone, (data,)),

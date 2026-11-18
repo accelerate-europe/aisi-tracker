@@ -27,6 +27,7 @@
 <!-- build:head -->
 <style>
 /* Design principles
+ * Functions views (owner, 18 Nov 2026, "grouped default, grid one click away"): at every width the section opens on the grouped view, one row per institute with a strip of marks per group; a row expands to list every function with its status and, in muted meta, its one-line definition. A control above the view, in words, opens the full grid of all functions ("Show all 18 functions as a grid") and returns ("Show grouped by institute"); the view is the section's state, not the width's, and a link to a target inside the hidden view brings that view. On wider screens the grouped view keeps to the reading measure with room between groups and rows. Without the page script the grid shows, as the rows cannot open (check_page check_functions_views).
  * Functions table: institute rows in established and not-yet-established blocks, function columns in vocabulary groups, equal widths and rotated short heads. The page prints each group's label from one constant per group (Testing and science, Rules and standards, Informing government, Ecosystem and adoption; owner, 18 Nov 2026), so a word can be changed in one place; the data keeps the recorded group names (Rules, Ecosystem). Active and both use a dot, assigned a ring; not found is blank, a search result rather than absence. The jurisdiction column stays visible during sideways scrolling. Hover and focus tint the row and one continuous column through the block bands, with a slanted band behind its head. Columns are evenly spaced with no gutter between groups; a slightly stronger vertical line marks where a group starts, quieter than the selected outline in both themes, and row lines and the row and column tint run through unbroken; a group label longer than its own tracks takes a second line (owner, 18 Nov 2026). Each group has a leaning boundary and an underline at its label, meeting the upright body rules at the head rule; the shared head height follows the head type, leaving at least --sp-1 above every head tip. No upright rule crosses the head zone, and labels paint above the hover flag and boundaries. Quotes and sources open on demand below the selected institute (check_page check_functions_table, check_functions_detail, check_functions_layout, check_functions_tint, check_function_group_tabs).
  * Selection box: an open function cell, phone row or phone function, and a selected search or palette row, has one even box on all four sides, inset within its padding box and above tints and rules (check_page check_selection_boxes).
  * Tinted rows: while the functions table fits, the lit row's tint extends --sp-2 past both ends through pseudo-elements, keeping its text inside the tint and its row label on the content grid edge. During sideways scrolling the scroll box clips the tint, leaving the label on the clipped edge; this is a known limitation. The panel stays in place with its left edge aligned to the row text's left edge. Every other tinted, hovered or selected row (world rows, States lists, the arrived card, search, palette and download rows) keeps its text at least its inline padding inside the background (check_page check_tinted_rows).
@@ -785,7 +786,7 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
 .fn-pip.fn-mandate { border-width: 1.5px; }
 .fn-pip.fn-not_found { border: var(--rule) solid color-mix(in srgb, var(--muted) 55%, var(--ground)); }
 .fn-pip.fn-not_coded { height: 2px; align-self: center; }
-.fn-phone-detail { grid-column: 1 / -1; grid-row: 2; position: static; min-width: 0; width: 100%; max-width: 100%; }
+.fn-phone-detail { grid-column: 1 / -1; grid-row: 2; position: static; min-width: 0; width: 100%; max-width: 100%; contain: inline-size; } /* its long definitions never widen the strips' tracks */
 .fn-phone-functions { list-style: none; padding: 0; margin: 0; }
 .fn-phone-functions > li { display: grid; grid-template-columns: minmax(0, auto) minmax(min-content, 1fr); align-items: center; }
 .fn-phone-detail h4 { margin-top: var(--sp-4); }
@@ -794,15 +795,25 @@ button.fn-function-label { width: 100%; background: transparent; border: 0; text
 .fn-function-status { font: var(--type-meta); color: var(--muted); }
 .fn-function-definition { grid-column: 1 / -1; margin: 0; padding-left: calc(var(--sp-1) + 2 * var(--sp-2)); font: var(--type-meta); color: var(--muted); }
 .fn-phone-claims { grid-column: 1 / -1; margin-block: var(--sp-2) var(--sp-4); }
-@media (width <= 640px) {
-  .fn-scroll, .fn-desktop-only { display: none; }
-  .fn-phone { display: grid; }
-  .fn-phone-only { display: block; }
-  .fn-legend.fn-phone-only { display: flex; }
-  /* Without the page script the pip rows cannot open, so phones keep the readable table. */
-  :root:not([data-js]) .fn-phone, :root:not([data-js]) .fn-phone-only { display: none; }
-  :root:not([data-js]) .fn-scroll, :root:not([data-js]) .fn-use.fn-desktop-only { display: block; }
-  :root:not([data-js]) .fn-legend.fn-desktop-only { display: flex; }
+/* The grouped view is the default at every width; the full grid is one click away (owner, 18 Nov 2026). The view is the
+   section's state, not the width's. Without the page script the rows cannot open, so the readable grid shows. */
+.fn[data-view="grouped"] :is(.fn-scroll, .fn-desktop-only) { display: none; }
+.fn[data-view="grouped"] .fn-phone { display: grid; }
+.fn[data-view="grouped"] .fn-phone-only { display: block; }
+.fn[data-view="grouped"] .fn-legend.fn-phone-only { display: flex; }
+:root:not([data-js]) .fn .fn-phone, :root:not([data-js]) .fn .fn-phone-only, :root:not([data-js]) .fn-view-toggle { display: none; }
+:root:not([data-js]) .fn .fn-scroll, :root:not([data-js]) .fn .fn-use.fn-desktop-only { display: block; }
+:root:not([data-js]) .fn .fn-legend.fn-desktop-only { display: flex; }
+.fn-view-toggle { align-self: flex-start; display: inline-flex; align-items: center; min-height: var(--hit); padding: 0; border: 0; background: transparent; font: var(--type-label); color: var(--link); cursor: pointer; text-decoration-line: underline; text-decoration-thickness: var(--underline-width); text-underline-offset: var(--underline-offset); }
+.fn-view-toggle:is(:hover, :focus-visible) { color: var(--ink); }
+@media (width > 640px) { .fn-phone-head .fn-group-label > br { display: none; } } /* one line each in the grouped view's head on wider screens; two alike elsewhere, a line still wrapping where its tracks are narrower */
+/* Wider screens: the grouped view keeps its strips beside the names, with room between the groups and rows. */
+@media (width > 640px) {
+  .fn-phone { max-width: var(--prose); column-gap: var(--sp-6); }
+  .fn-pips { gap: var(--sp-1); }
+  .fn-pip { width: var(--sp-3); height: var(--sp-3); }
+  .fn-pip.fn-not_coded { height: var(--rule-strong); }
+  .fn-phone-row { min-height: calc(var(--hit) + var(--sp-2)); }
 }
 @media (width <= 390px) {
   .fn-phone-head { font: var(--type-fn-group); }
@@ -3113,7 +3124,10 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     }
     // Folds, part 4 (owner, 18 Nov 2026): every fold starts closed; a link opens the fold that holds its target (the target itself when it
     // is one, and every fold around it) and no other; a fold the reader opened stays open.
-    function openFoldsTo(t) { for (var n = t; n; n = n.parentElement) if (n.tagName === "DETAILS") n.open = true; }
+    function openFoldsTo(t) {
+      var fnBox = t.closest && t.closest("#functions-table"); if (fnBox && fnBox.fnReveal) fnBox.fnReveal(t); // the Functions view that holds it
+      for (var n = t; n; n = n.parentElement) if (n.tagName === "DETAILS") n.open = true;
+    }
     function openTarget(keepScroll) {
       var t = hashTarget();
       if (aliasedHash) { keepScroll = false; aliasedHash = false; } // an old anchor: the browser found nothing to scroll to, so scroll here
@@ -3271,6 +3285,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         data: "Data", caption: "Functions by institute", institute: "Institute", scroll_hint: "Scrolls sideways",
         established: "Established", not_found: "not found", blank_legend: "Blank: no public text found; it may still be done", not_coded: "not yet coded",
         provisional: "The list of functions is provisional.",
+        view_grid: "Show all {count} functions as a grid", view_grouped: "Show grouped by institute",
         show: "{country}, {institute}: show functions", phone_not_found: "No public text found; it may still be done",
         // The panel's second line, a sentence under the function's name (owner, 18 Nov 2026); on phones the heading above names the institute.
         state: { mandate: "Assigned to {institute}", activity: "{institute} is active, without an assignment", both: "Assigned to {institute}, and active" },
@@ -3305,6 +3320,14 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       // Short page labels have one home; unknown groups keep their recorded names (owner, 18 Nov 2026).
       var GROUP_LABELS = { "Testing and science": "Testing and science", "Rules": "Rules and standards", "Informing government": "Informing government", "Ecosystem": "Ecosystem and adoption" };
       function groupName(group) { return Object.prototype.hasOwnProperty.call(GROUP_LABELS, group) ? GROUP_LABELS[group] : group; }
+      // A column head's label in two lines broken at its last space, so all four wrap alike where columns are narrow (the grid's
+      // head, the phone head); the grouped view's head on wider screens shows each on one line (owner, 18 Nov 2026).
+      function groupHead(group) {
+        var label = groupName(group), at = label.lastIndexOf(" "), box = el("span", "fn-group-label");
+        if (at < 0) { box.textContent = label; return box; }
+        box.appendChild(document.createTextNode(label.slice(0, at) + " ")); box.appendChild(el("br")); box.appendChild(document.createTextNode(label.slice(at + 1)));
+        return box;
+      }
       function columnClass(code) { var n = columns.indexOf(code); return "fn-column" + (n === 0 ? " fn-group-first" : vocab[columns[n - 1]].group !== vocab[code].group ? " fn-group-start" : ""); }
       function mark(value, pip) { var span = el("span", "fn-mark fn-" + (value === "both" ? "activity" : value) + (pip ? " fn-pip" : "")); span.setAttribute("aria-hidden", "true"); return span; }
       function pad() { var c = el("td", "fn-pad"); c.setAttribute("aria-hidden", "true"); return c; }
@@ -3367,6 +3390,10 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         how.appendChild(el("p", "small fn-order", order.label));
         how.appendChild(el("p", "small fn-provisional", FN_COPY.provisional));
         var summary = fnSummary(); if (summary) box.appendChild(el("p", "fn-summary", summary));
+        // The grouped view by default; the full grid one click away, and back (owner, 18 Nov 2026).
+        viewToggle = el("button", "fn-view-toggle"); viewToggle.type = "button"; viewToggle.setAttribute("aria-controls", box.id);
+        viewToggle.addEventListener("click", function () { setView(box.dataset.view === "grid" ? "grouped" : "grid"); viewToggle.focus({ preventScroll: true }); }); // focus never stays in the view it hides
+        box.appendChild(viewToggle); setView(box.dataset.view === "grid" ? "grid" : "grouped");
         buildForm(false); buildForm(true);
         var legendValues = ["activity", "mandate", "not_found"];
         if (institutes.some(function (i) { return columns.some(function (code) { return rows[i.id][code].value === "not_coded"; }); })) legendValues.push("not_coded");
@@ -3401,7 +3428,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
           var list = el("div", "fn-phone"), labels = el("div", "fn-phone-head");
           list.style.setProperty("--fn-groups", groups.length);
           labels.appendChild(el("span"));
-          groups.forEach(function (group) { labels.appendChild(el("span", null, groupName(group))); }); list.appendChild(labels);
+          groups.forEach(function (group) { var head = el("span"); head.appendChild(groupHead(group)); labels.appendChild(head); }); list.appendChild(labels);
           [false, true].forEach(function (notYet) {
             var block = el("div", "fn-phone-block"), heading = el("h3", null, notYet ? capital(ACTIVITY_WORDS.notYet) : FN_COPY.established), ul = el("ul"); ul.setAttribute("role", "list");
             block.appendChild(heading); block.appendChild(ul);
@@ -3457,7 +3484,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
           groups.forEach(function (group, n) {
             var th = el("th", "fn-column-group" + (n ? " fn-group-start" : "")); th.scope = "colgroup";
             th.colSpan = columns.filter(function (code) { return vocab[code].group === group; }).length;
-            th.appendChild(el("span", null, groupName(group))); groupHeads.appendChild(th);
+            var head = el("span"); head.appendChild(groupHead(group)); th.appendChild(head); groupHeads.appendChild(th);
           });
           columns.forEach(function (code) {
             var th = el("th", "fn-head " + columnClass(code)); th.scope = "col"; th.dataset.code = code;
@@ -3529,18 +3556,16 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         ["pointerover", "pointerout", "focusin", "focusout"].forEach(function (type) { table.addEventListener(type, tint); });
         return paint;
       }
+      var viewToggle = null;
+      function setView(view) {
+        box.dataset.view = view;
+        if (viewToggle) viewToggle.textContent = view === "grid" ? FN_COPY.view_grouped : FN_COPY.view_grid.replace("{count}", columns.length);
+        updateFits();
+      }
       build();
-      // Both forms stay in the page; when a resize hides the focused control, focus moves to the same institute in the visible form.
-      var phoneWidth = window.matchMedia("(width <= 640px)");
-      phoneWidth.addEventListener("change", function () {
-        var focused = document.activeElement;
-        if (!box.contains(focused) || focused.getClientRects().length) return;
-        var holder = focused.closest("[data-institute], [data-owner]"); if (!holder) return;
-        var id = holder.dataset.institute || holder.dataset.owner;
-        var target = phoneWidth.matches ? box.querySelector('.fn-phone li[data-institute="' + id + '"] .fn-phone-row')
-          : box.querySelector('.fn-scroll tr[data-institute="' + id + '"] .fn-cell') || box.querySelector('.fn-scroll tr[data-institute="' + id + '"] th[scope="row"] [tabindex]');
-        if (target) target.focus({ preventScroll: true });
-      });
+      // The view, not the width, chooses the form (owner, 18 Nov 2026): a target inside the hidden view brings its view (principle: Functions table).
+      box.fnView = setView; // the view by name, without moving focus (used by arrival and by the gate)
+      box.fnReveal = function (target) { if (target.closest(".fn-scroll")) setView("grid"); else if (target.closest(".fn-phone")) setView("grouped"); };
       var fitWatch = new ResizeObserver(updateFits); fitWatch.observe(box.querySelector(".fn-scroll"));
       window.addEventListener("resize", updateFits, { passive: true });
       document.fonts.ready.then(updateFits); requestAnimationFrame(updateFits);
