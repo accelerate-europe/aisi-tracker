@@ -47,11 +47,15 @@ def fake_site(tmp_path, monkeypatch):
         path = tmp_path / name
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(content, encoding="utf-8")
-    requests, transient = [], {}
+    requests, transient, threads = [], {}, []
 
     class Handler(SimpleHTTPRequestHandler):
         def log_message(self, *args):
             pass
+
+        def handle(self):
+            threads.append(threading.current_thread())
+            super().handle()
 
         def do_GET(self):
             requests.append(self.path)
@@ -87,8 +91,12 @@ def fake_site(tmp_path, monkeypatch):
 
     monkeypatch.setattr(smoke_site, "urlopen", local_only)
     monkeypatch.setattr(smoke_site, "RETRY_DELAY", 0)
-    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    # The default half-second poll makes each shutdown wait about that long.
+    thread = threading.Thread(
+        target=server.serve_forever, kwargs={"poll_interval": 0.01}, daemon=True
+    )
     thread.start()
+    threads.append(thread)
     try:
         yield SimpleNamespace(
             root=tmp_path, url=url, requests=requests, transient=transient
@@ -96,7 +104,10 @@ def fake_site(tmp_path, monkeypatch):
     finally:
         server.shutdown()
         server.server_close()
-        thread.join()
+        for each in threads:
+            each.join(timeout=5)
+        # Neither the server thread nor a request thread outlives the test.
+        assert not [each for each in threads if each.is_alive()]
 
 
 def run_site(site):
