@@ -441,7 +441,7 @@ def step_lint(ctx: Context) -> Result:
 
 def step_tests(ctx: Context) -> Result:
     # Four pytest-xdist workers by default: 50 s to 18 s on an M3 Max, where more are not faster (session fixtures
-    # dominate); CI's two-core runner is fastest with two (--test-workers 2).
+    # dominate); CI's four-core runner uses four as well (--test-workers 4).
     return command_step(ctx, "tests", ["uv", "run", "--locked", "-q", "pytest", "-q", "-p", "no:cacheprovider", "-n", str(ctx.test_workers)])
 
 
