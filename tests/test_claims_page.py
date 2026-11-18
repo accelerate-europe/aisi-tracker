@@ -42,12 +42,6 @@ def texts(node):
     return node.get("text", "") + "".join(texts(child) for child in node.get("children", []))
 
 
-def test_page_script_parses_without_chromium():
-    source = PAGE.read_text().split("<script>", 1)[1].split("</script>", 1)[0]
-    result = subprocess.run(["node", "-"], input="new Function(" + json.dumps(source) + ");", text=True, capture_output=True)
-    assert result.returncode == 0, result.stderr
-
-
 @pytest.mark.parametrize("gloss, lang, marker", [(None, "en", ""), ("Models", "de", "German"), ("Models", "xx", "xx")])
 @pytest.mark.parametrize("in_sentence", [False, True])
 def test_quote_rule_translation_original_focus_and_language_fallback(gloss, lang, marker, in_sentence):

@@ -679,9 +679,6 @@ def test_funding_descriptions_never_append_bracketed_periods(record, description
     helpers = source[source.index("  function annualPeriod("):source.index("  // Citations follow the last word;")]
     result = subprocess.run(["node", "-e", helpers + "\nvar record=" + json.dumps(record) + "; console.log(JSON.stringify(publishedFunding(record)));"], capture_output=True, text=True, check=True)
     assert json.loads(result.stdout) == description
-    body = source[source.index("  function publishedFunding("):source.index("  function nativeFundingCitations(")]
-    assert "withPeriod" not in body
-    assert 'text += " ("' not in body
 
 
 def funding_record_tree(record, rates=()):

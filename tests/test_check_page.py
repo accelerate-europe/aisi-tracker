@@ -369,13 +369,45 @@ def test_render_reads_the_hydrated_page_and_reports_browser_errors(tmp_path, mon
     assert RuntimeError in check_page.CAUGHT
 
 
-def test_every_browser_starts_without_a_session_bus(monkeypatch):
-    """Chromium with a session bus moves its browser process into a systemd scope of its own, out of a job's memory cap."""
+def test_every_browser_starts_without_a_session_bus(monkeypatch, tmp_path):
+    """Chromium with a session bus moves its browser process into a systemd scope of its own, out of a job's memory cap.
+
+    Each entry point that starts Chromium (the gate's session, the contact-sheet capture and the pre-render)
+    runs against a fake Playwright that records the environment the browser would receive."""
+    import os
+    import types
+    from contextlib import contextmanager
+
+    from scripts import prerender
+
+    class Launched(Exception):
+        pass
+
+    environments = []
+
+    def launch(*args, **kwargs):
+        environments.append(kwargs.get("env"))  # without env, Playwright passes the caller's environment on
+        raise Launched
+
+    @contextmanager
+    def sync_playwright():
+        yield types.SimpleNamespace(chromium=types.SimpleNamespace(launch=launch, launch_persistent_context=launch))
+
+    module = types.ModuleType("playwright.sync_api")
+    module.sync_playwright = sync_playwright
+    monkeypatch.setitem(sys.modules, "playwright", types.ModuleType("playwright"))
+    monkeypatch.setitem(sys.modules, "playwright.sync_api", module)
     monkeypatch.setenv("DBUS_SESSION_BUS_ADDRESS", "unix:path=/run/user/1000/bus")
-    assert check_page.browser_env()["DBUS_SESSION_BUS_ADDRESS"] == "disabled:"
-    source = (ROOT / "scripts/check_page.py").read_text(encoding="utf-8") + (ROOT / "scripts/prerender.py").read_text(encoding="utf-8")
-    launches = re.findall(r"chromium\.launch(?:_persistent_context)?\((?:[^()]|\([^()]*\))*\)", source, flags=re.S)
-    assert len(launches) == 3 and all("env=browser_env()" in call for call in launches), launches
+    with pytest.raises(Launched), check_page.chrome_session("chrome", tmp_path):
+        pass
+    with pytest.raises(Launched):
+        check_page.capture_states("chrome", tmp_path, tmp_path / "states")
+    with pytest.raises(Launched):
+        prerender.prerender(tmp_path, "chrome")
+    assert len(environments) == 3
+    for env in environments:
+        assert env is not None and env["DBUS_SESSION_BUS_ADDRESS"] == "disabled:"
+        assert env["PATH"] == os.environ["PATH"]  # the rest of the environment is kept
 
 
 

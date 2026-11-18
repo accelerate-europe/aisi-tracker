@@ -429,20 +429,18 @@ def test_csv_datapackage_columns_and_descriptions(dataset, monkeypatch):
     package = json.loads((out / "datapackage.json").read_text())
     schema = json.loads(build.SCHEMA.read_text())
     tables = build.tables(build.export_dataset(dataset))
-    assert set(tables) == {
-        "jurisdictions", "institutes", "funding", "staff", "people", "known_activity",
-        "timeline", "agreements", "national_partners", "sources", "outputs", "network_milestones", "source_excerpts", "related_bodies", "closest_bodies", "events", "exchange_rates",
-        "functions", "claims",
-    }
+    # The download contract, written down rather than regenerated: a column dropped, renamed or moved
+    # in build.py fails here, also in tables the fixture leaves empty. A new column is a contract
+    # change (a minor release) and joins the list in the same commit.
+    contract = json.loads((ROOT / "tests/fixtures/csv_columns.json").read_text())
     resources = {r["name"]: r for r in package["resources"] if r["format"] == "csv"}
-    assert resources.keys() == tables.keys()
+    assert resources.keys() == tables.keys() == contract.keys()
     for name, resource in resources.items():
         with (out / resource["path"]).open(newline="", encoding="utf-8") as stream:
             reader = csv.DictReader(stream)
             rows = list(reader)
             fields = resource["schema"]["fields"]
-            columns = list(tables[name][0]) if tables[name] else build.EMPTY_COLUMNS[name]
-            assert reader.fieldnames == [f["name"] for f in fields] == columns
+            assert reader.fieldnames == [f["name"] for f in fields] == contract[name], name
         assert len(rows) == len(tables[name])
         node = schema
         for key in build.TABLE_NODES[name]:
