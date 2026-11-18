@@ -5391,8 +5391,8 @@ def check_text_measure(browser, base_url: str) -> list[str]:
             errors.append(report_line(f"{width}px: only {wrapped} wrapped text blocks measured; the measure check is not seeing the page"))
         off, lines, beside = page.evaluate(REREAD_MEASURE_JS)
         errors.extend(f"{width}px: {e}" for e in off[:8])
-        if not beside:
-            errors.append(f"{width}px: no wrapped re-read line beside a wrapped source title among {lines} re-read lines; the re-read measure is not seeing a long line")
+        if not beside:  # since 18 Nov 2026 a failed state ends the source line, so the own-line re-read lines left are one short line
+            errors.append(report_line(f"{width}px: no wrapped re-read line beside a wrapped source title among {lines} re-read lines; the re-read measure is not seeing a long line"))
         page.close()
     return errors
 
@@ -5473,12 +5473,12 @@ def check_panel_measure(browser, base_url: str) -> list[str]:
             page.evaluate("async () => { await document.fonts.ready; await new Promise(requestAnimationFrame); }")
             samples = {
                 "function-phone" if width == 390 else "function-desktop": '.fn-phone-detail' if width == 390 else '.fn-detail-row .fn-detail',
-                "function-definitions": '#functions-table > details.more',
+                "function-definitions": '#functions-table > .section-foot > details.more',
                 "definitions": '#method-details .two > div',
                 "record-quote": '.card:not(.mini) details.quote .quote-body',
                 "closest-body-quote": '.card.mini details.quote .quote-body',
                 "card-sources": '.card .srcs',
-                "group-sources": '#access .foot .srcs, #setup .foot .srcs',
+                "group-sources": '#access .foot .srcs, #setup .foot .srcs',  # inside the section foot row
                 "funding-sources": '.fund-detail-body .srcs',
             }
             for label, selector in samples.items():
@@ -12015,12 +12015,12 @@ const textRects = (root, exclude = '') => {
 CLAIM_SPACING_JS = r"""item => {
   /* TEXT_RECTS */
   // Layout boxes, not glyph boxes: glyph boxes of body and meta type sit up to about 1px off their lines, differently per
-  // role, so the rule is measured where the CSS sets it. The label counts as its first line only: its larger hit box
-  // reaches into the gap below by design.
+  // role, so the rule is measured where the CSS sets it. The label counts as all its lines (it may wrap); its hit height is a
+  // layer (::before) reaching into the gaps by design, or, for a closed fold ending its block, its own box.
   const bounds = node => {
     if (!node || !textRects(node, '.cites').length) return null;
     const r = node.getBoundingClientRect();
-    return node.matches('summary') ? {top: r.top, bottom: r.top + parseFloat(getComputedStyle(node).lineHeight)} : {top: r.top, bottom: r.bottom};
+    return {top: r.top, bottom: r.bottom};  // a label followed by something in its item takes only its lines in flow
   };
   const fold = item.querySelector(':scope > .quote'), label = fold?.querySelector('summary');
   const probe = document.createElement('span'); probe.style.height = 'var(--sp-2)'; probe.style.display = 'block';
@@ -12029,7 +12029,7 @@ CLAIM_SPACING_JS = r"""item => {
   return {claim: bounds(item.querySelector(':scope > .claim-text')), label: bounds(label),
     quote: fold?.open ? bounds(fold.querySelector('.quote-body')) : null,
     source: bounds(item.querySelector(':scope > .fn-sources')), open: !!fold?.open, gap,
-    hit: label?.getBoundingClientRect().height, minHit};
+    hit: label ? Math.max(label.getBoundingClientRect().height, parseFloat(getComputedStyle(label, '::before').height) || 0) : null, minHit};
 }""".replace("/* TEXT_RECTS */", TEXT_RECTS_JS)
 
 
@@ -12218,7 +12218,8 @@ FN_POINTER_POINT_JS = r"""(panel, point) => {
   const hit = document.elementFromPoint(point.x, point.y);
   const control = hit?.closest('a, button, summary, [tabindex], input, label, abbr.g');
   // The scroll region itself has tabindex, but is outside the panel and does not make its prose a control.
-  return {x: point.x, y: point.y, inside: !!hit && panel.contains(hit),
+  // The page's own tooltip, opened by hovering a panel text that names itself on hover (the re-read caveat), belongs to the panel.
+  return {x: point.x, y: point.y, inside: !!hit && (panel.contains(hit) || !!hit.closest('#tip')),
     interactive: !!control && panel.contains(control), cursor: hit ? getComputedStyle(hit).cursor : null};
 }"""
 

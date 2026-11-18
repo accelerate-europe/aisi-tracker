@@ -237,7 +237,9 @@ a, abbr.g, .smark[tabindex], .missing[tabindex], .budget-amount[tabindex], .quot
 a::before, abbr.g::before, .smark[tabindex]::before, .missing[tabindex]::before, .budget-amount[tabindex]::before, .quote-text[tabindex]::before, .original-text[tabindex]::before { content: ""; position: absolute; inset-inline: 0; top: 50%; min-height: var(--hit); height: 100%; transform: translateY(-50%); }
 /* Inline source links use their text boxes, so tight meta lines cannot steal clicks; the correction link has its own line (.source-after, one hit tall), so it keeps the full hit box. */
 :is(.srcs, .inline-links) a:not(.cn, .correction)::before { content: none; }
-:is(.srcs, .inline-links) li.title-only > a.standalone::before { content: ""; } /* a line that is only its title (its publisher in the title, no date) keeps the hit height */
+:is(.srcs, .inline-links) li.title-only > a.standalone::before { content: ""; }
+li:has(> .reread-tail), .inline-links:has(> .reread-tail) { position: relative; }
+.reread-tail > .vh { left: 0; top: 0; white-space: normal; } /* the screen-reader sentence sits at the item's start, so its one clipped line never runs past the measure */ /* a line that is only its title (its publisher in the title, no date) keeps the hit height */
 .archive-copy { white-space: nowrap; } /* principle: Archived copies */
 a.archive { color: var(--muted); text-decoration-color: currentColor; }
 a.archive:is(:hover, :focus-visible) { color: var(--ink); }
@@ -587,11 +589,13 @@ main section.first { display: flex; flex-direction: column; gap: var(--sp-5); bo
 .claim + .claim { margin-top: var(--sp-2); }
 .claim > .claim-text { display: block; } /* the item form only; a mini card's summary keeps its own inline text */
 .claim > .quote { margin-top: var(--sp-2); }
-.quote > summary { font: var(--type-meta); color: var(--muted); min-height: var(--hit); width: fit-content; display: flex; align-items: first baseline; gap: var(--sp-2); }
-/* The hit area extends into the gap below; only the label's line height occupies flow. Only where something follows
-   inside the item (the open quote, or a source list): a closed fold that ends its block keeps its full height, so the
-   next block is not pulled up. */
-.quote[open] > summary, .claim > .quote:not(:last-child) > summary { margin-bottom: min(0px, calc(1lh - var(--hit))); }
+.quote > summary { font: var(--type-meta); color: var(--muted); width: fit-content; display: flex; align-items: first baseline; gap: var(--sp-2); position: relative; }
+/* The label occupies only its lines in flow, one or two ("Quote, translated from Norwegian" wraps in a narrow column); its hit
+   height is a layer centred on it, reaching into the gaps, under the text before and after it. A closed fold that ends its
+   block keeps the full height in flow, so the next block is not pulled up. */
+.quote > summary::before { content: ""; position: absolute; inset-inline: 0; top: 50%; min-height: var(--hit); height: 100%; transform: translateY(-50%); }
+.claim > .quote:last-child:not([open]) > summary { min-height: var(--hit); }
+.claim > .claim-text, .quote-body, .claim > .fn-sources { position: relative; z-index: 1; } /* above the label's hit layer, so their links keep their clicks */
 .quote-body { margin: var(--sp-2) 0 0; }
 .quote-excerpt + .quote-excerpt { margin-top: var(--sp-3); }
 .quote-anchor, .quote .reread, .claim > .reread { display: block; font: var(--type-meta); color: var(--muted); }
@@ -1571,9 +1575,10 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   // exists; the full sentence is the tip and what a screen reader reads (principle: Re-read line).
   function rereadTail(parent, src) {
     var state = rereadState(src); if (!state || !state.failed) return false;
-    var tail = el("span", "reread-tail"), shown = el("span", null, " · " + (state.worst.state === "quote_gone" ? "quote last found " : "last read ")), full = rereadLine(src);
+    var sentence = rereadLine(src).textContent, tail = el("span", "reread-tail"), shown = el("span", null, " · " + (state.worst.state === "quote_gone" ? "quote last found " : "last read "));
     shown.setAttribute("aria-hidden", "true"); shown.appendChild(dated(state.worst.last_found));
-    tail.dataset.tip = full.textContent; full.className = "vh"; // the tip for the pointer; screen readers read the sentence itself, once full.insertBefore(document.createTextNode(" "), full.firstChild);
+    var full = el("span", "vh", " " + sentence); // plain text: screen readers read the sentence itself, once
+    tail.dataset.tip = sentence; // the tip for the pointer
     tail.appendChild(shown); tail.appendChild(full); parent.appendChild(tail);
     return true;
   }
