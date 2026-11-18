@@ -42,7 +42,7 @@
  * Sources: a collapsed card ends with the counted sources control alone (muted meta, no top rule, inline hit height); a card reached from the map also ends with "Back to map" before its Sources control; the check date and correction follow the expanded list.
  * Separators: each item of a dot-separated line is one unbreakable box, so lines break only between items (an item wraps inside only when it alone is wider than its container); middle dots stay with the preceding item's final word and are hidden where a line breaks.
  * Citations: every displayed value a quotation can support carries one (absence and an institute name linking to its own site need none); superscript at value end, three quarters of the text it annotates and never larger than meta (so a big figure keeps small numerals); comma-tight groups; card-local Sources order; hit area one text line high, never covering adjacent lines or preceding text.
- * Members and Partners: a network of existing bodies names its members in Form on a dot-separated short-name line, with the itemised glosses and How they work together behind one quiet fold. Full-record arrival opens the same fold, preserving its control and the reader's focus; Partners holds the other bodies and disappears when none are left unless the cyber search tail remains. The Members and Partners lines show three names, then "and N more" when two or more would be hidden, and the fold lists every body under a counted label (Folds, part 3). Each closed fold-out groups bodies sharing an explanation, with explicit plural wording and a citation on every name. Groups follow the first body's priority order; names within a group keep that order. Generic explanations that only repeat the partner relation are omitted. Partner glosses omit the generic works-with relation; planned relations stay explicit. Downloads keep every relation.
+ * Members and Partners: a network of existing bodies names its members in Form on a dot-separated short-name line, with the itemised glosses and How they work together behind one quiet fold. Arrival at the card leaves that fold as the reader left it (Folds, part 4); Partners holds the other bodies and disappears when none are left unless the cyber search tail remains. The Members and Partners lines show three names, then "and N more" when two or more would be hidden, and the fold lists every body under a counted label (Folds, part 3). Each closed fold-out groups bodies sharing an explanation, with explicit plural wording and a citation on every name. Groups follow the first body's priority order; names within a group keep that order. Generic explanations that only repeat the partner relation are omitted. Partner glosses omit the generic works-with relation; planned relations stay explicit. Downloads keep every relation.
  * Card grids: alphabetical rows share field tracks through subgrid; every field keeps a fixed shared track (Mandate and Finding share the descriptive-text track); a structurally absent field leaves its track empty, without a label; where a row has three tracks, a group's only card spans two (check_page check_card_grid), while a single trailing card in a fuller group's last row keeps the usual card width; phones keep one column.
  * Card heads: country, status and download stick below the site bars within their own card in Compare and States, including phones; the one-line name keeps its full accessible text and tooltip, with ellipsis when needed. CSS sizes the shared title track and focus clearance from the label line, hit height, rules and padding, without copies or measurement; the institute stays in its field and print keeps static heads (check_page check_card_heads, check_saved_card_heads, hydration_paint).
  * Alignment: every text row shares its first baseline, including wrapped text, smaller labels, icons and format tags; within a card every field's value starts at one x.
@@ -99,8 +99,9 @@
  * Hero: title and quiet update date with the linked version ("Updated 4 Nov 2026 · v1.0.2"); the Atom feed of news and new versions (feed.xml) is a head alternate link and linked from News, the footer and Data; no lede line; the first screen follows: Headline (only the counts bold, with their "of" and "more": "11 of 193", "5 more", as the owner's mock) with one Definition link under it to the definition at the top of Method, Region chips beside the search, then Map and Region list (legend names only, their short definitions on hover, focus or tap, one (i) saying what the World view shows); one map view, no population view; the definition is dataset.definition, never a page string (check_page check_supporting_text); News entries at every width have a small, muted, normal-weight, single-line "date · states" label, then the sentence at body size and colour on the same left edge. Ten entries, three open; earlier entries behind the control at the list's end, followed by the foot row: the feed symbol with "Feed", then the download icon at the right end (Downloads; check_page check_news_layout).
  * Card download: a full card's title row, and a none-identified card's fold after its sources, end with an icon-only link to the state's API file, labelled "JSON, for scripts and research" (check_page check_state_download_buttons).
  * Focus: one style, the --highlight-fill tint: keyboard focus on a text control (link, text button, disclosure, tooltip term or value; table headers keep their label underline and ring) shows the tint behind it and a 2px underline in --focus (the tint alone is under 3:1 on the ground; the underline is at least 3:1 in both themes); a region tab shows the tint alone, as its underline means selected (owner, 5 Nov 2026); boxed controls (buttons, fields) keep their own edge; a heading or other non-control target that a section bar, group row, anchor or palette jump focuses (the Definition paragraph too) shows no ring, only the tint, fading after about 1.5s where motion is allowed; forced colours keep a system outline (check_page shared_links).
- * Arrival: a card reached by a link (the record beside the map, table row or shared link) takes the --highlight-fill tint, as a jumped-to heading does, and no outline; the tint lasts while it is the target, also after the page script takes over, and the card takes keyboard focus; motion only adds a brief accent flash settling into the tint (owner, 5 Nov 2026; check_page check_arrival).
- * Disclosures: a control that extends a list with more of the same items sits after the list and keeps its place there ("Show N earlier" / "Show fewer"); a control that reveals different content (sources, method) comes first.
+ * Arrival: a card reached by a link (the record beside the map, table row or shared link) takes the --highlight-fill tint, as a jumped-to heading does, and no outline; the tint lasts while it is the target, also after the page script takes over, and the card takes keyboard focus; arrival opens only the fold that holds the target (Folds, part 4); motion only adds a brief accent flash settling into the tint (owner, 5 Nov 2026; check_page check_arrival).
+ * Disclosures: a control that extends a list with more of the same items sits after the list and keeps its place there ("Show N earlier" / "Show fewer"); a control that reveals different content (sources, records, method) sits after what it explains, at the end of its block: a card's counted Sources control, a section's foot row, the funding records under the bar (owner, 18 Nov 2026; the text now says what is built).
+ * Folds (owner, 18 Nov 2026, "one rule, all four"): (1) a source list of more than three sits behind a counted fold, "N sources", and lists only the sources cited in the part it belongs to (a funding row's records number their own sources); three or fewer may stay open. (2) A fold's label names what is inside and carries a count whenever it hides a list ("Funding and staff records", "How the 13 partners work together", "4 members and how they work together", "Version history (14)"). (3) A list of like items shows three, then a counted control or "and N more" when two or more would be hidden (AI Act authorities, Other bodies, the Members and Partners lines); How we checked shows its first three paragraphs and folds every later search, even one, behind "N earlier searches"; nothing is cut without a count. (4) Every fold starts closed; a link opens the fold that holds its target, and the folds around it, and no other; a fold the reader opened stays open while they are on the page (check_page check_folds).
  * Command palette: Cmd+K on a Mac, Ctrl+K elsewhere, and "/" outside a text field open one modal dialog over the page, without moving it (a floating surface, wider than a menu, fading in only): the page's search field, then rows grouped under small muted labels, States and territories (status mark and region, as the map search), Sections (the Anchors), Regions (as the tabs) and Actions (the two theme states other than the current one, each its own row, the full JSON and states CSV downloads, copy the citation); a row's search words name only where it goes, so a typed "light" never offers a row that leads elsewhere; an empty field lists Sections and Regions first; the matcher ignores case and accents and ranks a name's start, a word's start, an institute's name, short form or former name (marked formerly), then text inside, one ranking shared by both searches; unmodified arrows, Home, End and Enter (never during input-method composition) work it without the mouse, the hovered or current row takes --highlight-fill, focus stays in the field and Esc returns it to where it was; a quiet ⌘K (or Ctrl K) hint at the map search's right end, none on touch screens and phones; without scripting nothing shows (check_page check_command_palette).
  */
 /* Fonts: Inter and Source Sans 3, vendored under assets/fonts (SIL OFL 1.1, assets/LICENSES.txt) in the subsets and weights Google Fonts serves, so the page loads nothing from another origin. */
@@ -1525,11 +1526,6 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     detail.appendChild(list);
     var how = partnersFold(p, cite, "Members", true); if (how) detail.appendChild(how);
     box.appendChild(detail); return box;
-  }
-  // Keep the disclosure and its summary so hydration can restore the reader's focused control.
-  function membersFullRecord(card, full) {
-    var detail = card.querySelector("details.member-details");
-    if (detail) detail.open = full;
   }
   function recordSources(record) { return record ? record.display.source_links : []; }
   // A source with an archive URL ends its line with "· archived copy" (principle: Archived copies).
@@ -3061,14 +3057,14 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     // keeps where it was reached from while it is the target (a repeated arrival, such as once the fonts load), and the
     // history entry keeps it, so the browser's Back to the card brings the link back.
     function markArrival(card) {
-      [].forEach.call(document.querySelectorAll(".card.arrived"), function (c) { if (c !== card) { c.classList.remove("arrived"); membersFullRecord(c, false); delete c.dataset.fromPanel; } });
+      [].forEach.call(document.querySelectorAll(".card.arrived"), function (c) { if (c !== card) { c.classList.remove("arrived"); delete c.dataset.fromPanel; } });
       var state = null; try { state = history.state; } catch (err) {}
       var back = !!card && (fromPanel === card.dataset.j || (card.dataset.fromPanel === "1" && card.classList.contains("arrived")) || !!(state && state.fromPanel === card.dataset.j)); fromPanel = null;
       if (back) { card.dataset.fromPanel = "1"; try { if (!(state && state.fromPanel === card.dataset.j)) history.replaceState({ fromPanel: card.dataset.j }, ""); } catch (err) {} }
       [].forEach.call(document.querySelectorAll(".back-map"), function (a) { if (!back || !card.contains(a)) a.remove(); });
       if (!card) return;
       if (card.classList.contains("arrived")) { card.classList.remove("arrived"); void card.offsetWidth; }
-      card.classList.add("arrived"); membersFullRecord(card, true); card.tabIndex = -1;
+      card.classList.add("arrived"); card.tabIndex = -1;
       if (back && !card.querySelector(".back-map")) {
         var a = el("a", "back-map", "\u2191 Back to map"); a.href = "#map"; a.addEventListener("click", backToMap);
         var foot = card.querySelector(".foot"); foot.insertBefore(a, foot.firstChild); // the return link precedes Sources and stays out of the sticky country head
@@ -3083,13 +3079,16 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       if (!t && ANCHOR_ALIASES.hasOwnProperty(id)) { history.replaceState(history.state, "", "#" + ANCHOR_ALIASES[id]); t = document.getElementById(ANCHOR_ALIASES[id]); aliasedHash = true; } // a link shared before 1.0.2 lands on the renamed anchor
       return t;
     }
+    // Folds, part 4 (owner, 18 Nov 2026): every fold starts closed; a link opens the fold that holds its target (the target itself when it
+    // is one, and every fold around it) and no other; a fold the reader opened stays open.
+    function openFoldsTo(t) { for (var n = t; n; n = n.parentElement) if (n.tagName === "DETAILS") n.open = true; }
     function openTarget(keepScroll) {
       var t = hashTarget();
       if (aliasedHash) { keepScroll = false; aliasedHash = false; } // an old anchor: the browser found nothing to scroll to, so scroll here
       var card = t && t.classList.contains("card") ? t : null;
       markArrival(card);
       if (!t) return;
-      if (t.tagName === "DETAILS") t.open = true;
+      openFoldsTo(t);
       if (keepScroll) { // a saved page was already scrolled to its target, and the reader may have moved on: focus only if nothing else has it
         if (card && (!document.activeElement || document.activeElement === document.body)) card.focus({ preventScroll: true });
         return;
@@ -3106,7 +3105,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     document.fonts.ready.then(function () { var t = hashTarget(); if (!(t && t.classList.contains("card") && t.classList.contains("arrived"))) openTarget(PRERENDERED); });
     document.addEventListener("click", function (e) {
       var a = e.target.closest && e.target.closest('a[href^="#c-"]'); if (!a) return;
-      var t = document.getElementById(a.getAttribute("href").slice(1)); if (t && t.tagName === "DETAILS") t.open = true;
+      var t = document.getElementById(a.getAttribute("href").slice(1)); if (t) openFoldsTo(t);
     });
 
     var last = m.display.latest_change;

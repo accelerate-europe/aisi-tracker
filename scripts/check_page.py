@@ -8507,19 +8507,16 @@ def check_leadership_rows(html, data: dict) -> list[str]:
                     errors.append(f"{jid} {label}: expected {'one fold-out' if hows else 'no fold-out'}")
                 fold = value.select_one(fold_selector)
                 if fold is not None:
-                    full = label == "Members" and "arrived" in card.get("class", [])
                     if label == "Members":
                         if fold.name != 'details' or not fold.select_one(':scope > summary'):
                             errors.append(f"{jid} Members: card needs one fold with a summary")
-                        if full and not fold.has_attr("open"):
-                            errors.append(f"{jid} Members: full record must be open")
                         if fold.select('details'):
                             errors.append(f"{jid} Members: nested fold")
                         if value.select_one('.member-list').parent != fold or value.select_one('.partner-how') is None or value.select_one('.partner-how').parent != fold:
                             errors.append(f"{jid} Members: list and how must share one fold")
                     if any(a.find_parent("li") is None for a in fold.select(".cn")):
                         errors.append(f"{jid} {label}: fold-out citation outside a partner item")
-                    if fold.has_attr("open") and not full:
+                    if fold.has_attr("open"):  # arrival opens only the fold that holds its target (Folds, part 4)
                         errors.append(f"{jid} {label}: the fold-out must start closed")
                 continue
             clone = copy.copy(value)
@@ -12422,6 +12419,73 @@ def check_symbols(browser, base_url: str) -> list[str]:
     return errors
 
 
+# Folds (principle): counted source folds over three, counted labels on folds that hide a list, nothing cut without a
+# count, every fold closed at first and a link opening only the fold that holds its target.
+FOLD_LABEL_ALLOW = {
+    '.card.mini': 'a None identified card is a record, not a list fold; its summary is the finding',
+    '#method-details': 'method prose with short lists of rules, not a list of like items',
+}
+
+FOLDS_JS = r"""allowed => {
+  const errors = [];
+  // The label's own words: metadata beside it in the summary (a version and date, a muted note) is not its count.
+  const label = d => { const s = d.querySelector(':scope > summary')?.cloneNode(true); if (!s) return '';
+    s.querySelectorAll('.small, .date-text, #changes-latest').forEach(n => n.remove()); return s.textContent.replace(/\s+/g, ' ').trim(); };
+  const opened = [...document.querySelectorAll('details[open]')].filter(d => !d.closest('.palette, .cols, .download-menu'));
+  if (opened.length) errors.push('folds open before any action: ' + opened.slice(0, 5).map(label).join(' | '));
+  for (const list of document.querySelectorAll('ol, ul')) {
+    const sources = list.querySelectorAll(':scope > li[data-source-id]').length;
+    if (sources > 3 && !/\d/.test(label(list.closest('details') || document.createElement('details'))))
+      errors.push(`an open source list of ${sources} items, or one behind a fold without its count: ${(list.closest('[data-j], section')?.dataset.j || list.closest('section')?.getAttribute('aria-labelledby') || '')}`);
+  }
+  for (const d of document.querySelectorAll('details')) {
+    if (allowed.some(sel => d.matches(sel))) continue;
+    const lists = [...d.querySelectorAll(':scope > ul, :scope > ol, :scope > div > ul, :scope > div > ol')].filter(l => l.closest('details') === d);
+    const items = Math.max(0, ...lists.map(l => l.querySelectorAll(':scope > li').length));
+    if (items >= 2 && !/\d/.test(label(d))) errors.push(`a fold hides a list of ${items} without a count in its label: ${label(d).slice(0, 60)}`);
+  }
+  return errors;
+}"""
+
+ARRIVAL_PROBE_JS = """() => {
+  const fold = document.querySelector('.card .foot details.srcs'); if (!fold) return null;
+  const li = fold.querySelector('li[data-source-id]'); li.id = 'fold-probe';
+  return fold.closest('.card').id;
+}"""
+
+
+def check_folds(browser, base_url: str) -> list[str]:
+    """Folds (principle) at 1440 and 390: the saved and hydrated page, then arrival at a card and at a target inside a closed fold."""
+    errors = []
+    for width in (1440, 390):
+        page = browser.new_page(viewport={"width": width, "height": 1000})
+        hydrated(page, base_url)
+        errors += [f'{width}px: ' + e for e in page.evaluate(FOLDS_JS, list(FOLD_LABEL_ALLOW))]
+        # The count check must not take a version or date beside the label for a count.
+        page.evaluate("""() => { const d = document.createElement('details'); d.id = 'fold-count-probe';
+          d.innerHTML = '<summary><span class="summary-label">Version history</span> <span class="small">1.0.2 · <span class="date-text">4 Nov 2026</span></span></summary><ul><li>a</li><li>b</li></ul>';
+          document.querySelector('main').appendChild(d); }""")
+        if not any('Version history' in e for e in page.evaluate(FOLDS_JS, list(FOLD_LABEL_ALLOW))):
+            errors.append(f'{width}px: the fold count check takes a version or date for a count')
+        page.evaluate("document.getElementById('fold-count-probe').remove()")
+        if width == 1440:
+            card = page.evaluate(ARRIVAL_PROBE_JS)
+            if not card:
+                errors.append('Folds: no card source fold to test arrival with')
+            else:
+                page.evaluate("id => { location.hash = id; }", card)
+                page.wait_for_selector('#' + card + '.arrived')
+                if page.evaluate("() => document.querySelectorAll('main details[open]').length"):
+                    errors.append(f'arrival at {card} opened a fold that does not hold the target')
+                page.evaluate("() => { location.hash = 'fold-probe'; }")
+                page.wait_for_function("() => document.getElementById('fold-probe').closest('details').open")
+                stray = page.evaluate("() => [...document.querySelectorAll('main details[open]')].filter(d => !d.contains(document.getElementById('fold-probe'))).length")
+                if stray:
+                    errors.append(f'arrival inside a fold opened {stray} other folds')
+        page.close()
+    return errors
+
+
 def check_clickable_widths(browser, base_url: str) -> list[str]:
     """Audit every section at the desktop widths of the pointer report, including expanded records and sources."""
     page = browser.new_page(viewport={"width": 1440, "height": 1000})
@@ -13738,7 +13802,7 @@ def check_tinted_rows(browser, base_url: str, screenshots: Path | None = None) -
 
 
 def check_members(browser, base_url: str, data: dict, screenshots: Path | None = None) -> list[str]:
-    """Members stay in Form; full-record arrival opens the same fold and leaving closes it."""
+    """Members stay in Form; arrival at the card leaves the members fold as the reader left it (Folds: a link opens only the fold that holds its target)."""
     errors = []
     for width in (1440, 1000, 390):
         page = browser.new_page(viewport={"width": width, "height": 1000})
@@ -13769,15 +13833,15 @@ def check_members(browser, base_url: str, data: dict, screenshots: Path | None =
                         card.screenshot(path=str(screenshots / f'members-{identity}-{width}-{theme}-card.png'))
                     page.evaluate("id => { location.hash = id; }", identity)
                     page.wait_for_selector('#' + identity + '.arrived')
-                    if detail.evaluate("(n, original) => n !== original.detail || n.querySelector(':scope > summary') !== original.summary || !n.open || Boolean(n.querySelector('details'))", original) or not detail.locator('.member-list').is_visible() or not detail.locator('.partner-how').is_visible():
-                        errors.append(f"{identity}: full record replaces its members fold or does not open both lists")
+                    if detail.evaluate("(n, original) => n !== original.detail || n.querySelector(':scope > summary') !== original.summary || n.open || Boolean(n.querySelector('details'))", original):
+                        errors.append(f"{identity}: arrival replaces its members fold or opens it, which does not hold the target")
                     errors.extend(f"{width}px {theme} full: {e}" for e in check_leadership_rows(page.content(), data))
                     if screenshots:
                         card.screenshot(path=str(screenshots / f'members-{identity}-{width}-{theme}-full.png'))
                     page.evaluate("location.hash = 'europe'")
                     page.wait_for_function("id => !document.getElementById(id).classList.contains('arrived')", arg=identity)
                     if detail.evaluate("(n, original) => n !== original.detail || n.querySelector(':scope > summary') !== original.summary || n.open", original):
-                        errors.append(f"{identity}: leaving the full record does not close the same members fold")
+                        errors.append(f"{identity}: leaving the card changes its members fold")
                     original.dispose()
         finally:
             page.close()
@@ -14034,6 +14098,7 @@ def browser_jobs(dist: Path, data: dict, screenshots: Path | None) -> list[tuple
         ("interactions", check_functions_pointer, ()),
         ("interactions", check_clickable_widths, ()),
         ("interactions", check_symbols, ()),
+        ("interactions", check_folds, ()),
         ("interactions", check_functions_layout, ()),
         ("interactions", check_function_group_tabs, ()),
         ("interactions", check_functions_phone, (data,)),
