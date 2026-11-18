@@ -129,7 +129,8 @@ How a line is written:
 
 What a line says:
 
-- One sentence, in this order: who acts, what they do, about what. Active voice, present tense.
+- One sentence, normally under 30 words and never over 40, counted as the page shows the line (`check_news_required`). In this order: who acts, what they do, about what. Active voice, present tense.
+- The one who acts is a person or body (the government, the Chancellor, the ministry); a document such as a budget, statement, report, strategy or law sets out, provides or contains, and does not announce, say or tell.
 - The parties as the source names them. When the governments sign and their institutes are named in the text, the governments are the parties.
 - How firm the act is. A statement of intent, a joint statement, a proposal or an agreement still being finalised does not read as a concluded agreement or an adopted budget.
 - A company, agency or body a general reader may not know gets a few words saying what it is, as in "the AI developer Anthropic".
@@ -148,7 +149,8 @@ Examples, with the quotes each rests on:
 
 Before and after:
 
-- South Korea. Before: "The institute signs a memorandum of understanding with Kakao, which provides its AI models and agents for joint safety evaluation." A reader does not know Kakao, and "which" and "its" leave open whose models are evaluated and by whom. After: "The institute and the AI developer Kakao sign a memorandum of understanding on jointly evaluating the safety of Kakao's AI models and agents and building an evaluation framework."
+- South Korea. Before: "The institute signs a memorandum of understanding with Kakao, which provides its AI models and agents for joint safety evaluation." A reader does not know Kakao, and "which" and "its" leave open whose models are evaluated and by whom. After: "The institute and the Korean technology company Kakao sign a memorandum of understanding on jointly evaluating the safety of Kakao's AI models and agents and building an evaluation framework."
 - United Kingdom and Japan. Before: "A joint statement of the two governments' science committee says they will deepen cooperation between their institutes on AI model evaluation and information sharing." The line starts with a committee the reader does not know, and "they" could mean the committee or the governments. After: "The two governments say in a joint statement that they will deepen cooperation between their institutes on evaluating AI models, the safe development and use of AI, and information sharing."
+- United Kingdom, a budget. Before: "The Budget announces an additional GBP 120m for the institute over 2026-27 to 2029-30." A budget is a document and cannot announce; the Chancellor does. After: "The Chancellor announces an additional GBP 120m for the institute over 2026-27 to 2029-30 as part of the Budget."
 
 The examples follow the lines in `data/aisi.json`; when a line changes, its example changes with it. Whether a line says more than its quotes is checked at review, not by the build.

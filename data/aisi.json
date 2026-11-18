@@ -3215,7 +3215,7 @@
             "nl-bb"
           ],
           "short": "Cabinet says AI safety institute exploration under way; report due year end.",
-          "news": "The cabinet tells parliament that an exploration of whether to set up an AI safety institute is under way, and says parliament will receive an advisory report by the end of 2026."
+          "news": "The cabinet tells parliament it is exploring whether to set up an AI safety institute, and that an advisory report will follow by the end of 2026."
         }
       ],
       "iso3": "NLD",
@@ -29271,7 +29271,7 @@
             "start": "2026-04-01",
             "end": "2030-03-31"
           },
-          "news": "The Budget announces an additional GBP 120m for the institute over 2026-27 to 2029-30."
+          "news": "The Chancellor announces an additional GBP 120m for the institute over 2026-27 to 2029-30 as part of the Budget."
         }
       ],
       "staff": [
@@ -38183,7 +38183,7 @@
           "participation": "institute_party",
           "domestic_interagency": false,
           "id": "agreements-93e9c4f6e55753fdbdd9d4610b1bd951",
-          "news": "The institute and the AI developer Kakao sign a memorandum of understanding on jointly evaluating the safety of Kakao's AI models and agents and building an evaluation framework."
+          "news": "The institute and the Korean technology company Kakao sign a memorandum of understanding on jointly evaluating the safety of Kakao's AI models and agents and building an evaluation framework."
         },
         {
           "counterparty_type": "institute",
@@ -66947,6 +66947,25 @@
             ]
           ],
           "gloss": "The advisory report will be shared with parliament at the end of this year.",
+          "url": "https://gegevensmagazijn.tweedekamer.nl/OData/v4/2.0/Document(bd406d2b-fb9d-4c05-8269-e58bbff04b4f)/resource",
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Daarbij kijken we of een AI-veiligheidsinstituut potentieel invulling kan bieden aan de behoeften voor inzicht en advies op de impact van AI voor de maatschappij en overheid.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "NL"
+              },
+              "timeline",
+              {
+                "id": "nl-2"
+              },
+              "news"
+            ]
+          ],
+          "gloss": "In doing so we are looking at whether an AI safety institute could meet the need for insight and advice on the impact of AI on society and government.",
           "url": "https://gegevensmagazijn.tweedekamer.nl/OData/v4/2.0/Document(bd406d2b-fb9d-4c05-8269-e58bbff04b4f)/resource",
           "accessed": "2026-10-17"
         }
@@ -109997,6 +110016,42 @@
           ],
           "accessed": "2026-10-24",
           "gloss": "the AI Safety Institute is responsible for carrying out the evaluations and refining the methodology, and both parties jointly review the results and agree the scope of disclosure"
+        },
+        {
+          "text": "특히, 국내 AI 안전성 전문 연구기관과의 협력을 통해 글로벌 수준의 AI 안전성 확보와 신뢰할 수 있는 AI 생태계 조성에도 기여할 것으로 기대된다.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-93e9c4f6e55753fdbdd9d4610b1bd951"
+              },
+              "news"
+            ]
+          ],
+          "gloss": "In particular, through cooperation with a domestic research institution specialising in AI safety, it is expected to contribute to securing AI safety at a global level and building a trustworthy AI ecosystem.",
+          "accessed": "2026-10-24"
+        },
+        {
+          "text": "카카오는 지난해 인공지능안전연구소와 함께 자체 언어모델 'Kanana-1.5-9.8B'를 대상으로 공동 안전성 평가를 진행했으며, 유사 규모의 해외 모델과 비교해 높은 수준의 안전성을 확인한 바 있다.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-93e9c4f6e55753fdbdd9d4610b1bd951"
+              },
+              "news"
+            ]
+          ],
+          "gloss": "Last year Kakao carried out a joint safety evaluation with the AI Safety Institute of its own language model, 'Kanana-1.5-9.8B', and found a high level of safety compared with overseas models of similar size.",
+          "accessed": "2026-10-24"
         }
       ]
     },
@@ -114436,6 +114491,34 @@
                 "id": "funding-618ed3226ee75def870a5fb0f9501479"
               },
               "description"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-618ed3226ee75def870a5fb0f9501479"
+              },
+              "news"
+            ]
+          ],
+          "accessed": "2026-10-24"
+        },
+        {
+          "text": "Major package to unlock the opportunities of AI in every postcode, scale up home grown AI firms, and keep UK safe from threats announced by the Chancellor.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "funding",
+              {
+                "id": "funding-618ed3226ee75def870a5fb0f9501479"
+              },
+              "news"
             ]
           ],
           "accessed": "2026-10-24"

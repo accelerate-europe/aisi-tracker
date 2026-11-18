@@ -450,6 +450,7 @@ def news_kind(origin, record):
 
 NEWS_ROWS = 10  # the page's News entries
 NEWS_RULE = "docs/research-passes.md#news-lines"
+NEWS_MAX_WORDS = 40  # a shown line's hard limit, counted on the text the page shows
 
 
 def recent_developments(jurisdictions, union, institutes=(), shared_claims=(), *, limit=NEWS_ROWS):
@@ -636,16 +637,19 @@ def check_news_required(data):
     """Every item the page's News list shows (its NEWS_ROWS entries and their pair mirrors in the feed) carries an
     authored news line; the generated template stays only for older items in the events download and feed, and for
     first_output events, which the build generates from the output catalogue and which have no authored record to carry
-    a line. That the line is bound to a quote is method_checks' required excerpt pointer."""
+    a line. A shown line stays within NEWS_MAX_WORDS words of the text the page shows. That the line is bound to a quote
+    is method_checks' required excerpt pointer."""
     jurisdictions, institutes = data.get("jurisdictions", []), data.get("institutes", [])
     owners = {"timeline": {j["id"]: j for j in jurisdictions}, "funding": {i["id"]: i for i in institutes}, "agreements": {i["id"]: i for i in institutes}}
     errors = []
     for group in recent_developments(jurisdictions, lambda *groups: [], institutes, data.get("dataset", {}).get("shared_claims", [])):
-        for identity in group["items"]:
+        for identity, text in zip(group["items"], group["texts"], strict=True):
             origin, owner, record_id = identity.split(":", 2)
             record = next(r for r in owners[origin][owner].get(origin, []) if r["id"] == record_id)
             if "news" not in record and not (origin == "timeline" and record["event"] == "first_output"):
                 errors.append(f"{identity}: shown in News without an authored news line bound to a quote; write one ({NEWS_RULE})")
+            if len(words := text.split()) > NEWS_MAX_WORDS:
+                errors.append(f"{identity}: News line has {len(words)} words, over the limit of {NEWS_MAX_WORDS}; shorten it ({NEWS_RULE})")
     return errors
 
 MONTH_DAYS = Decimal("30.4375")  # average Gregorian month
