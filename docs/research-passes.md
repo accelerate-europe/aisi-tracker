@@ -118,7 +118,7 @@ Two places check the trailers:
 
 ## News lines
 
-A timeline event, agreement or funding record that enters the page's News list carries a `news` line, written in the data commit that adds it. Validation fails while any item the list shows has none (`check_news_required` in `scripts/display.py`), and the line needs an excerpt whose `supports` pointer ends in `news`. Older items in the events download and feed may keep the generated line.
+A timeline event, agreement or funding record that enters the page's News list carries a `news` line, written in the data commit that adds it. Validation fails while any item the list shows has none (`check_news_required` in `scripts/display.py`), and the line needs an excerpt whose `supports` pointer ends in `news`. Older items in the events download and feed may keep the generated line, and so does a first output, whose timeline event the build generates from the output list.
 
 A line:
 

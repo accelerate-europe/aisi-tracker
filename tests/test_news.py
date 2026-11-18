@@ -573,6 +573,8 @@ def test_news_requires_exact_excerpt_and_is_authored_reader_text(dataset, origin
     record = data[collection][0][origin][0]
     record["news"] = "The institute receives additional support."
     pointer = f"/{collection}/0/{origin}/0/news"
+    supports = data["sources"][0]["excerpts"][0]["supports"]
+    supports[:] = [p for p in supports if p != pointer]  # the shared fixture binds its own News lines
     errors = method_checks.check_method_rules(data)
     assert f"required claim has no excerpt: {pointer}" in errors
     data["sources"][0]["excerpts"][0]["supports"].append(pointer)
@@ -664,6 +666,12 @@ def test_news_is_one_sentence(text):
 
 def test_events_news_column_and_api_records(dataset, tmp_path):
     data = copy.deepcopy(dataset)
+    for owner in data["jurisdictions"] + data["institutes"]:
+        for origin in ("timeline", "agreements", "funding"):
+            for record in owner.get(origin, []):
+                record.pop("news", None)  # only the lines this test sets
+    supports = data["sources"][0]["excerpts"][0]["supports"]
+    supports[:] = [p for p in supports if not p.endswith("/news")]
     for origin in ("timeline", "agreements", "funding"):
         owner = data["jurisdictions"][0] if origin == "timeline" else data["institutes"][0]
         owner[origin][0]["news"] = f"The institute reports a {origin} change."
@@ -715,6 +723,8 @@ def test_news_required_for_shown_items_only():
     data["jurisdictions"][0]["timeline"] = [event(str(n), f"2026-10-{n:02d}", news="The institute is designated.") for n in range(1, 12)]
     data["institutes"][0]["agreements"] = [agreement(date="2026-09-01")]
     assert display.check_news_required(data) == []  # the agreement is the twelfth item, past the ten rows
+    data["jurisdictions"][0]["timeline"][10] = event("11", "2026-10-11", "first_output")
+    assert display.check_news_required(data) == []  # generated from the output list, so no authored line
     data["jurisdictions"][0]["timeline"][5].pop("news")
     assert display.check_news_required(data) == [
         f"timeline:GB:6: shown in News without an authored news line bound to a quote; write one ({display.NEWS_RULE})"]

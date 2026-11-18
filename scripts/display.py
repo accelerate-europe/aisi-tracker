@@ -634,8 +634,9 @@ def check_news_lines(data):
 
 def check_news_required(data):
     """Every item the page's News list shows (its NEWS_ROWS entries and their pair mirrors in the feed) carries an
-    authored news line; the generated template stays only for older items in the events download and feed. That the
-    line is bound to a quote is method_checks' required excerpt pointer."""
+    authored news line; the generated template stays only for older items in the events download and feed, and for
+    first_output events, which the build generates from the output catalogue and which have no authored record to carry
+    a line. That the line is bound to a quote is method_checks' required excerpt pointer."""
     jurisdictions, institutes = data.get("jurisdictions", []), data.get("institutes", [])
     owners = {"timeline": {j["id"]: j for j in jurisdictions}, "funding": {i["id"]: i for i in institutes}, "agreements": {i["id"]: i for i in institutes}}
     errors = []
@@ -643,7 +644,7 @@ def check_news_required(data):
         for identity in group["items"]:
             origin, owner, record_id = identity.split(":", 2)
             record = next(r for r in owners[origin][owner].get(origin, []) if r["id"] == record_id)
-            if "news" not in record:
+            if "news" not in record and not (origin == "timeline" and record["event"] == "first_output"):
                 errors.append(f"{identity}: shown in News without an authored news line bound to a quote; write one ({NEWS_RULE})")
     return errors
 
