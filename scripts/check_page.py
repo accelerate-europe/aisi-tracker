@@ -5444,7 +5444,8 @@ PANEL_MEASURE_JS = r"""panel => {
     const s=getComputedStyle(n), b=n.getBoundingClientRect(), range=document.createRange(); range.selectNodeContents(n);
     const lines=[...range.getClientRects()].filter(r=>r.width && r.height);
     return {name:n.className || n.tagName, max_width:Number.isFinite(parseFloat(s.maxWidth))?parseFloat(s.maxWidth):null,
-      aligned:n.matches('.fn-detail-context, .claim-text, .fn-detail-head, .fn-function-head, .quote-body, .quote-excerpt, .quote-anchor, .reread, .fn-sources, .srcs ol'),
+      // A function panel's quote sits indented under its source line (owner, 18 Nov 2026), so its content keeps its own edge.
+      aligned:n.matches('.fn-detail-context, .claim-text, .fn-detail-head, .fn-function-head, .quote-body, .quote-excerpt, .quote-anchor, .reread, .fn-sources, .srcs ol') && !n.closest('.fn-claim > .quote'),
       left:b.left, right:b.right, text_right:Math.max(b.left,...lines.map(r=>r.right))};
   });
   return {measure,left,right,blocks};
@@ -12049,12 +12050,11 @@ CLAIM_SPACING_JS = r"""item => {
 
 
 def claim_spacing_errors(metrics: dict) -> list[str]:
-    """Measure text edges, never the disclosure's larger hit box; cards have no per-item source list."""
-    sequence = [metrics.get("claim"), metrics.get("label")]
+    """Measure text edges, never the disclosure's larger hit box. A function panel reads sentence, source line, quote label,
+    quote (owner, 18 Nov 2026); cards have no per-item source list: sentence, label, quote."""
+    sequence = [metrics.get("claim")] + ([metrics["source"]] if metrics.get("source") else []) + [metrics.get("label")]
     if metrics.get("open"):
         sequence.append(metrics.get("quote"))
-    if metrics.get("source"):
-        sequence.append(metrics["source"])
     if any(part is None for part in sequence):
         return ["Claim spacing: missing visible claim, label or open quote"]
     gaps = [after["top"] - before["bottom"] for before, after in zip(sequence, sequence[1:])]
@@ -12539,32 +12539,37 @@ const checkHeading = (detail, cell, country, institute, code, key) => {
        key + ': the panel sentence does not name the institute (desktop only) and the cell state, or names the country');
   need(!context || !context.textContent.split(' · ').includes(country), key + ': the label line repeats the country its row names');
   need(context && (heading?.closest('.fn-detail-top') || heading)?.nextElementSibling === context &&
-       context.nextElementSibling?.matches('.fn-claim'), key + ': heading/context/claim order differs');
+       context.nextElementSibling?.matches('.fn-claim, .fn-basis'), key + ': heading/context/claim order differs');
   const probe = document.createElement('span'); probe.style.cssText = 'font:var(--type-label);color:var(--muted)'; detail.appendChild(probe);
   if (context) need(['fontFamily', 'fontSize', 'fontWeight', 'lineHeight', 'color'].every(k => getComputedStyle(context)[k] === getComputedStyle(probe)[k]), key + ': context is not muted list-level type');
   probe.remove();
 };
 const checkClaims = async (detail, cell, key) => {
   const items = [...detail.querySelectorAll('.fn-claim')];
-  need(JSON.stringify(items.map(n => n.dataset.claim)) === JSON.stringify(cell.claim_ids), key + ': claim order differs');
+  // Assignment first, then activity, otherwise in recorded order (owner, 18 Nov 2026).
+  const order = [...cell.claim_ids].sort((a, b) => (quotes[a]?.claim.basis === 'mandate' ? 0 : 1) - (quotes[b]?.claim.basis === 'mandate' ? 0 : 1));
+  need(JSON.stringify(items.map(n => n.dataset.claim)) === JSON.stringify(order), key + ': claim order differs (assignment first)');
   for (const id of cell.claim_ids) {
     const item = items.find(n => n.dataset.claim === id), q = quotes[id];
     if (!item || !q) { errors.push(key + ': claim missing ' + id); continue; }
     const sentence = item.querySelector(':scope > .claim-text'), plain = sentence?.cloneNode(true);
     plain?.querySelectorAll('.cites').forEach(n => n.remove());
     need(plain?.textContent.replace(/\u00a0/g, ' ') === q.claim.text, key + ': claim text differs');
-    const mixed = new Set(cell.claim_ids.map(c => quotes[c]?.claim.basis)).size > 1, basis = item.querySelector('.fn-basis');
-    need(mixed ? basis === item.firstElementChild && basis.nextElementSibling === sentence && basis.textContent === names[q.claim.basis].toLowerCase() : !basis,
-         key + (mixed ? ': a claim in a cell with both bases does not name its basis' : ': claim repeats the cell state'));
+    // A cell with both bases heads each block with a label before its first claim; a single basis has none (the status line says it).
+    const mixed = new Set(cell.claim_ids.map(c => quotes[c]?.claim.basis)).size > 1, first = order.find(c => quotes[c]?.claim.basis === q.claim.basis) === id;
+    const label = item.previousElementSibling?.matches('.fn-basis') ? item.previousElementSibling : null;
+    need(mixed ? (first ? !!label && /^(assignment|activity)$/i.test(label.textContent) && (q.claim.basis === 'mandate') === /assignment/i.test(label.textContent) : !label) : !detail.querySelector('.fn-basis'),
+         key + (mixed ? ': a block in a cell with both bases lacks its Assignment or Activity label' : ': a claim repeats the cell state'));
     const citations = [...(sentence?.querySelectorAll('.cites > a.cn') || [])];
     need(JSON.stringify(citations.map(a => a.dataset.sourceId).sort()) === JSON.stringify([...q.claim.source_ids].sort()) &&
          citations.every(a => a.href === data.sources.find(s => s.id === a.dataset.sourceId).url && a.target === '_blank'), key + ': claim citation differs');
     const fold = item.querySelector(':scope > details.quote'), sources = item.querySelector(':scope > .fn-sources');
     need(fold && !fold.open && !fold.querySelector('.quote-body') && fold.dataset.quoteClaim === id &&
-         /^Quote(, translated from \S.*)?$/.test(fold.querySelector('summary')?.textContent || ''), key + ': Quote is not closed and lazy by default');
-    const glossed = [q.excerpt, ...(q.excerpt.anchors || [])].some(span => span.gloss), label = fold?.querySelector('summary')?.textContent || '';
-    need(glossed ? label.startsWith('Quote, translated from ') && !/Bokmål|Nynorsk/.test(label) : label === 'Quote', key + ': Quote label does not name the translation once, in a plain language name');
-    need(sentence?.nextElementSibling === fold && fold?.nextElementSibling === sources && sources === item.lastElementChild, key + ': sentence/Quote/source order differs');
+         /^Quote from this source(, translated from \S.*)?$/.test(fold.querySelector('summary')?.textContent || ''), key + ': the quote fold is not closed, lazy and labelled as from its source');
+    const glossed = [q.excerpt, ...(q.excerpt.anchors || [])].some(span => span.gloss), foldLabel = fold?.querySelector('summary')?.textContent || '';
+    need(glossed ? foldLabel.startsWith('Quote from this source, translated from ') && !/Bokmål|Nynorsk/.test(foldLabel) : foldLabel === 'Quote from this source', key + ': the quote label does not name the translation once, in a plain language name');
+    need(sentence?.nextElementSibling === sources && sources?.nextElementSibling === fold && fold === item.lastElementChild, key + ': sentence, source line, quote order differs');
+    need(fold && sources && fold.getBoundingClientRect().left > sources.getBoundingClientRect().left + 4, key + ': the quote fold is not indented under its source line');
     if (!fold) continue;
     await new Promise(resolve => { fold.addEventListener('toggle', resolve, {once:true}); fold.querySelector('summary').click(); });
     need(fold.open && fold.querySelector('.quote-body')?.getClientRects().length, key + ': Quote does not open to visible evidence');

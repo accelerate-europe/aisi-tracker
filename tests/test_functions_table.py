@@ -90,9 +90,11 @@ def test_functions_structure_keeps_unanimous_not_found_columns(functions):
 
 @pytest.mark.parametrize("opened, source", [(False, False), (True, False), (False, True), (True, True)])
 def test_claim_spacing_uses_text_edges_and_keeps_hit_height(opened, source):
-    metrics = {"claim": {"top": 0, "bottom": 20}, "label": {"top": 28, "bottom": 48},
-               "quote": {"top": 56, "bottom": 96} if opened else None,
-               "source": {"top": 104 if opened else 56, "bottom": 124 if opened else 76} if source else None,
+    """A card reads sentence, Quote label, quote; a function panel reads sentence, source line, label, quote (owner, 18 Nov 2026)."""
+    shift = 28 if source else 0  # the source line sits between the sentence and the label
+    metrics = {"claim": {"top": 0, "bottom": 20}, "source": {"top": 28, "bottom": 48} if source else None,
+               "label": {"top": 28 + shift, "bottom": 48 + shift},
+               "quote": {"top": 56 + shift, "bottom": 96 + shift} if opened else None,
                "open": opened, "gap": 8, "hit": 28, "minHit": 28}
     assert check_page.claim_spacing_errors(metrics) == []
     broken = copy.deepcopy(metrics)
@@ -104,9 +106,8 @@ def test_claim_spacing_uses_text_edges_and_keeps_hit_height(opened, source):
 
 
 def test_claim_spacing_rejects_reported_uneven_gaps():
-    metrics = {"claim": {"top": 0, "bottom": 20}, "label": {"top": 20, "bottom": 40},
-               "quote": {"top": 55, "bottom": 95}, "source": {"top": 102, "bottom": 122},
-               "open": True, "gap": 8, "hit": 28, "minHit": 28}
+    metrics = {"claim": {"top": 0, "bottom": 20}, "source": {"top": 20, "bottom": 40}, "label": {"top": 55, "bottom": 75},
+               "quote": {"top": 82, "bottom": 122}, "open": True, "gap": 8, "hit": 28, "minHit": 28}
     assert any("[0, 15, 7]" in e for e in check_page.claim_spacing_errors(metrics))
 
 
