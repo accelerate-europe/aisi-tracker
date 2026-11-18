@@ -4191,6 +4191,7 @@ def check_citations(page) -> list[str]:
 # K. These are logical boundaries, shared by CSS, matchMedia and the early-map attribute.
 # Range syntax gives complementary <=/> or </>= sides without a one-pixel gap.
 VIEWPORT_BOUNDARIES = {
+    "360px": "narrowest phones: Functions head size, gap and marks",
     "390px": "phone function-group labels",
     "400px": "small-phone group navigation",
     "430px": "theme toggle and group label",
@@ -4208,6 +4209,7 @@ WIDTH_GEOMETRY = {
     (".fn-mark", "width", ".8rem"): "circular function glyph, paired with its height",
     ('.fn-table td[data-value="not_coded"]::before', "width", ".8rem"): "dash matches the function glyph width",
     (".fn-pip", "width", "8px"): "phone pip geometry, paired with its height",
+    (".fn-phone .fn-pip", "width", "7px"): "narrowest phones' pip geometry, paired with its height",
     ("#tip", "max-width", "min(var(--tooltip-width), calc(100vw - var(--sp-7)))"): "tooltip stays within the viewport with its token gutter",
     (".palette", "width", "min(var(--palette-width), calc(100vw - 2 * var(--sp-4)))"): "palette stays within the viewport with its token gutters",
     (".fn-column-group::after", "width", "100%"): "group rule spans its tracks; there is no gutter between groups",
@@ -11783,6 +11785,11 @@ def function_rows(data: dict) -> list[dict]:
 FN_GROUP_LABELS = {"Testing and science": "Testing and science", "Rules": "Rules and standards", "Informing government": "Informing government", "Ecosystem": "Ecosystem and adoption"}
 
 
+def fn_group_short_name(group: str) -> str:
+    """The phone head's form of a group label: "&" for "and", nothing else (owner, 18 Nov 2026)."""
+    return fn_group_name(group).replace(" and ", "\u00a0& ", 1)  # a no-break space keeps "Testing &" on one line
+
+
 def fn_group_name(group: str) -> str:
     """Short page labels (owner, 18 Nov 2026); unknown groups keep their recorded names."""
     return FN_GROUP_LABELS.get(group, group)
@@ -12635,6 +12642,143 @@ FN_VIEWS_JS = r"""() => {
 }"""
 
 
+HEAD_LABEL_GAP = 6  # px: the least room between two column-head labels on one line (owner, 18 Nov 2026)
+HEAD_LABELS_JS = r"""({container, gap}) => {
+  // Every label in a head row: the elements that carry their own visible text. Two labels on one line keep `gap` between their
+  // inked text; none overlaps another. Measured from the text's own boxes, not from the cells, which may be wider.
+  const out = [];
+  for (const head of document.querySelectorAll(container)) {
+    if (!head.getClientRects().length) continue;
+    const labels = [];
+    for (const n of [head, ...head.querySelectorAll('*')]) {
+      if (!n.getClientRects().length || getComputedStyle(n).visibility !== 'visible') continue;
+      const rects = [];
+      for (const t of n.childNodes) if (t.nodeType === 3 && t.textContent.trim()) {
+        const r = document.createRange(); r.selectNodeContents(t); rects.push(...[...r.getClientRects()].filter(x => x.width > .5));
+      }
+      if (rects.length) labels.push({text: n.textContent.trim().replace(/\s+/g, ' '), rects});
+    }
+    let least = null;
+    for (let a = 0; a < labels.length; a++) for (let b = a + 1; b < labels.length; b++) {
+      for (const x of labels[a].rects) for (const y of labels[b].rects) {
+        if (Math.min(x.bottom, y.bottom) - Math.max(x.top, y.top) <= 1) continue;  // not on one line
+        const room = Math.max(y.left - x.right, x.left - y.right);
+        if (least === null || room < least.room) least = {room: +room.toFixed(1), a: labels[a].text, b: labels[b].text};
+      }
+    }
+    out.push({container, labels: labels.length, least});
+  }
+  return out;
+}"""
+HEAD_LABEL_ROWS = {  # each table's column heads: the grouped view's head, the grid's group row, the Funding axis
+    "grouped head": ".fn-phone-head",
+    "grid group head": ".fn-table thead > tr:first-child",
+    "Funding axis": ".fund-axis",
+}
+HEAD_LABEL_COUNTS = {"grouped head": 4, "grid group head": 4, "Funding axis": 2}  # the four groups; the Funding key's two states
+# the grid's leaning function heads are held apart by check_functions_tint's flag test; Testing and Set-up have no column heads
+
+
+def check_head_labels(browser, base_url: str) -> list[str]:
+    """Column-head labels, as a class (owner, 18 Nov 2026): in every table's head, no two labels on one line closer than
+    HEAD_LABEL_GAP and none overlapping, at 320, 360, 390, 430, 1000 and 1440, at 100% and 110% text, in both themes; the
+    grouped view's head and the full grid's are measured in their own view. The 110% pass enlarges the root size, as a
+    browser's text-size setting does; the Functions head is set in px and keeps its size there by design, and browser zoom,
+    which enlarges it, equals a narrower layout width and is covered by the 320 and 360 passes."""
+    errors = []
+    for width in (320, 360, 390, 430, 1000, 1440):
+        for scale in ("100%", "110%"):
+            page = browser.new_page(viewport={"width": width, "height": 1000})
+            hydrated(page, base_url, fn_view="default")
+            page.evaluate("s => { document.documentElement.style.fontSize = s; }", scale)
+            for theme in ("light", "dark"):
+                set_theme(page, theme)
+                for view in ("grouped", "grid"):
+                    page.evaluate("v => document.getElementById('functions-table').fnView(v)", view)
+                    page.evaluate("() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)))")
+                    for name, container in HEAD_LABEL_ROWS.items():
+                        if (name == "grouped head") != (view == "grouped") and name != "Funding axis":
+                            continue
+                        if name == "Funding axis" and view == "grid":
+                            continue
+                        rows = page.evaluate(HEAD_LABELS_JS, {"container": container, "gap": HEAD_LABEL_GAP})
+                        want = HEAD_LABEL_COUNTS[name]
+                        if not rows or any(row["labels"] < want for row in rows):
+                            errors.append(f"{width}px {scale} {theme}, {name}: head missing or showing fewer than {want} labels: {[row['labels'] for row in rows]}")
+                        for row in rows:
+                            least = row["least"]
+                            if least and least["room"] < HEAD_LABEL_GAP:
+                                kind = "overlap" if least["room"] < 0 else "too close"
+                                errors.append(f"{width}px {scale} {theme}, {name}: '{least['a']}' and '{least['b']}' {kind} ({least['room']}px, least {HEAD_LABEL_GAP}px)")
+            page.close()
+    return errors
+
+
+FN_GROUP_LINES_JS = r"""() => {
+  const errors = [], need = (ok, m) => { if (!ok) errors.push(m); };
+  const phone = document.querySelector('.fn-phone'), groups = +getComputedStyle(phone).getPropertyValue('--fn-groups');
+  const probe = document.createElement('span'); phone.appendChild(probe); probe.style.color = 'var(--fn-group-line)';
+  const line = getComputedStyle(probe).color; probe.style.color = 'var(--focus)'; const focus = getComputedStyle(probe).color; probe.remove();
+  const heads = [...phone.querySelectorAll(':scope > .fn-phone-head > span')].slice(1);
+  need(heads.length === groups, 'head cells differ from the groups');
+  const detail = phone.querySelector('.fn-phone-detail'), box = detail?.getBoundingClientRect();
+  for (let g = 0; g < groups; g++) {
+    const column = g + 2;
+    const cells = [heads[g], ...phone.querySelectorAll(':scope > .fn-phone-block > .fn-phone-band'), ...phone.querySelectorAll('.fn-phone-block > ul > li > .fn-pips')]
+      .filter(n => n === heads[g] || +n.style.gridColumn === column || getComputedStyle(n).gridColumnStart === String(column));
+    const rects = cells.map(n => n.getBoundingClientRect()).sort((a, b) => a.top - b.top);
+    for (const n of cells) {
+      // One inset shadow in the group colour, offset rightwards by the rule width, unblurred and unspread: a line on the left edge.
+      const shadow = getComputedStyle(n).boxShadow, m = shadow.match(/^(.+\)) (-?[\d.]+)px (-?[\d.]+)px (-?[\d.]+)px (-?[\d.]+)px inset$/);
+      need(m && m[1] === line && +m[2] >= .5 && +m[2] <= 2 && +m[3] === 0 && +m[4] === 0 && +m[5] === 0,
+           'group ' + (g + 1) + ': a cell lacks the left-edge group line in the grid\'s colour: ' + n.className + ' ' + shadow);
+    }
+    need(rects.every(r => Math.abs(r.left - rects[0].left) <= .5), 'group ' + (g + 1) + ': the line does not run straight');
+    for (let k = 1; k < rects.length; k++) {
+      const between = rects[k].top - rects[k - 1].bottom;
+      const covered = box && rects[k - 1].bottom <= box.top + 1 && rects[k].top >= box.bottom - 1;
+      need(between <= 1 || covered, 'group ' + (g + 1) + ': the line breaks between ' + Math.round(rects[k - 1].bottom) + ' and ' + Math.round(rects[k].top));
+    }
+    if (box) need(!rects.some(r => r.bottom > box.top + 1 && r.top < box.bottom - 1), 'group ' + (g + 1) + ': the line crosses the expanded row\'s box');
+  }
+  need(line !== focus, 'the group line has the selected outline\'s colour');
+  const row = phone.querySelector('.fn-phone-row[aria-expanded="true"]'), pips = phone.querySelector('.fn-phone-block > ul > li > .fn-pips');
+  const z = n => parseInt(n, 10) || 0;
+  if (row) need(z(getComputedStyle(row, '::after').zIndex) > z(getComputedStyle(pips).zIndex), 'the selected outline is not above the group lines');
+  const focused = document.activeElement?.matches('.fn-phone-row:focus-visible') ? document.activeElement : null;
+  if (focused) need(z(getComputedStyle(focused).zIndex) > z(getComputedStyle(pips).zIndex), 'the focus ring is not above the group lines');
+  return errors;
+}"""
+
+
+def check_functions_group_lines(browser, base_url: str) -> list[str]:
+    """Grouped view's group-start lines (owner, 18 Nov 2026, "as in the grid"): at 1440 and 390, in both themes, every group's
+    cells in the head, the band rows and the rows carry the grid's group line at their start, straight and unbroken; an
+    expanded row's box interrupts it and is not crossed; the selected outline and the focus ring paint above it. The line
+    stays quieter than the selected outline through check_selection_single, which holds the same token."""
+    errors = []
+    for width in (1440, 390):
+        page = browser.new_page(viewport={"width": width, "height": 1000})
+        hydrated(page, base_url, fn_view="default")
+        for theme in ("light", "dark"):
+            set_theme(page, theme)
+            errors += [f"{width}px {theme}, closed: {e}" for e in page.evaluate(FN_GROUP_LINES_JS)]
+            row = page.locator('.fn-phone li[data-institute="gb-aisi"] > .fn-phone-row')
+            row.focus()
+            page.keyboard.press("Enter")
+            page.wait_for_function("() => document.querySelector('.fn-phone-detail')")
+            errors += [f"{width}px {theme}, expanded: {e}" for e in page.evaluate(FN_GROUP_LINES_JS)]
+            page.keyboard.press("Enter")
+            page.wait_for_function("() => !document.querySelector('.fn-phone-detail')")
+            page.keyboard.press("Tab")
+            page.keyboard.press("Shift+Tab")
+            if not page.evaluate("() => document.activeElement?.matches('.fn-phone-row:focus-visible')"):
+                errors.append(f"{width}px {theme}: keyboard focus did not return to the row, so the ring was not checked")
+            errors += [f"{width}px {theme}, focused: {e}" for e in page.evaluate(FN_GROUP_LINES_JS)]
+        page.close()
+    return errors
+
+
 def function_view_errors(state: dict, count: int) -> list[str]:
     """The switch's resting appearance and geometry, measured against the visible table viewport."""
     errors = []
@@ -12966,7 +13110,11 @@ def functions_phone_structure(html: str, data: dict) -> list[str]:
         return errors
     phone = lists[0]
     heads = phone.select('.fn-phone-head > span')
-    need([head.get_text() for head in heads] == ["", *(fn_group_name(g["name"]) for g in groups)], "Functions phone group heads/order differ")
+    need([head.get_text() for head in heads[:1]] == [""], "Functions phone head must start with the empty country head")
+    need([(h.select_one('.fn-label-full').get_text() if h.select_one('.fn-label-full') else None) for h in heads[1:]] == [fn_group_name(g["name"]) for g in groups],
+         "Functions phone group heads/order differ")
+    need([(h.select_one('.fn-label-short').get_text() if h.select_one('.fn-label-short') else None) for h in heads[1:]] == [fn_group_short_name(g["name"]) for g in groups],
+         "Functions phone head short labels differ ('&' for 'and', no other change)")
     blocks = phone.select(':scope > .fn-phone-block')
     need([block.select_one(':scope > h3').get_text() if block.select_one(':scope > h3') else None for block in blocks] == ["Established", "Not yet established"], "Functions phone blocks/order differ")
     rows = phone.select('.fn-phone-block > ul > li')
@@ -13328,6 +13476,7 @@ def check_functions_phone(browser, base_url: str, data: dict, *, inject: bool = 
                       const walker = document.createTreeWalker(label, NodeFilter.SHOW_TEXT);
                       while (walker.nextNode()) {
                         const text = walker.currentNode;
+                        if (!text.parentElement.getClientRects().length) continue;  // the head's other label form, hidden at this width
                         for (const word of text.textContent.matchAll(/\S+/gu)) {
                           const range = document.createRange(); range.setStart(text, word.index); range.setEnd(text, word.index + word[0].length);
                           need(range.getClientRects().length === 1, name + ': word breaks across lines: ' + word[0]);
@@ -13339,8 +13488,8 @@ def check_functions_phone(browser, base_url: str, data: dict, *, inject: bool = 
                       const groups = [...row.querySelectorAll(':scope > .fn-pips')];
                       for (const [g, pips] of groups.entries()) {
                         const head = phoneBounds(heads[g]), run = phoneBounds(pips);
-                        need(head && run && Math.abs((head.left + head.right - run.left - run.right) / 2) <= 1,
-                             name + ': visible pip/head centres differ: ' + g);
+                        need(head && run && Math.abs(head.left - run.left) <= 1,  // both start just after the group line (owner, 18 Nov 2026)
+                             name + ': visible pip run and head label do not start together: ' + g);
                       }
                       const last = groups[groups.length - 1]?.querySelector(':scope > .fn-pip:last-child');
                       need(last && document.documentElement.clientWidth - last.getBoundingClientRect().right >= Math.max(left, gutter) - .5,
@@ -13370,8 +13519,8 @@ def check_functions_phone(browser, base_url: str, data: dict, *, inject: bool = 
                     need(buttonStyle.gridRowStart === '1' && Math.abs(hit.left - bounds.left) <= 1 && Math.abs(hit.right - bounds.right) <= 1 &&
                          hit.height >= parseFloat(buttonStyle.minHeight), expected.id + ': phone button does not cover the row');
                     for (const node of row.querySelectorAll(':scope > .fn-phone-country, :scope > .fn-pips')) {
-                      const style = getComputedStyle(node);
-                      need(style.gridRowStart === '1' && style.alignSelf === 'center' && style.position === 'relative' && Number(style.zIndex) > 0 &&
+                      const style = getComputedStyle(node), align = node.matches('.fn-pips') ? 'stretch' : 'center';  // a strip spans its row to carry the group line
+                      need(style.gridRowStart === '1' && style.alignSelf === align && style.position === 'relative' && Number(style.zIndex) > 0 &&
                            style.pointerEvents === 'none', expected.id + ': phone visual does not sit above/pass taps to the button');
                     }
                     need(groups.length === model.groups.length, expected.id + ': phone pip groups/order differ');
@@ -14455,6 +14604,8 @@ def browser_jobs(dist: Path, data: dict, screenshots: Path | None) -> list[tuple
         ("interactions", check_folds, ()),
         ("interactions", check_selection_single, ()),
         ("interactions", check_functions_views, (data,)),
+        ("interactions", check_functions_group_lines, ()),
+        ("interactions", check_head_labels, ()),
         ("interactions", check_functions_layout, ()),
         ("interactions", check_function_group_tabs, ()),
         ("interactions", check_functions_phone, (data,)),

@@ -28,7 +28,8 @@
 <style>
 /* Design principles
  * View switch: alternative presentations of the same content use two visible, dot-separated text buttons in muted meta type, following the section sub-navigation with an accent marker on the current item, no bold or current text underline, and hover/focus feedback; the switch sits on its own line above the content, aligned to its visible right edge at every width; a named group holds exactly one aria-pressed button, activation keeps focus on that button even when a click does not move focus, and activating the current item leaves the view unchanged.
- * Functions views (owner, 18 Nov 2026, "grouped default, grid one click away"): at every width the section opens on the grouped view, one row per institute with a strip of marks per group; a row expands to list every function with its status and, in muted meta, its short reader's sentence. The coding rule stays on hover in the grid and in How this is coded. The caption-sized view switch above the table reads "By group · All 18 functions", with the count from the vocabulary and the current view marked; the view is the section's state, not the width's, and a link to a target inside the hidden view brings that view. On wider screens the grouped view keeps to the reading measure with room between groups and rows. Without the page script the grid shows and the switch is hidden, as the rows cannot open (check_page check_functions_views).
+ * Functions views (owner, 18 Nov 2026, "grouped default, grid one click away"): at every width the section opens on the grouped view, one row per institute with a strip of marks per group; a row expands to list every function with its status and, in muted meta, its short reader's sentence. The coding rule stays on hover in the grid and in How this is coded. The caption-sized view switch above the table reads "By group · All 18 functions", with the count from the vocabulary and the current view marked; the view is the section's state, not the width's, and a link to a target inside the hidden view brings that view. On wider screens the grouped view keeps to the reading measure with room between groups and rows. As in the grid, a group line runs where each group starts, through the head, the band rows and every row; each label and strip sits left-aligned just after it with the same padding, so a label wraps inside its own column, and the padding reserves a fixed least gap between labels. An expanded row's box interrupts the lines; the selected outline and the focus ring paint above them. On phones the head, in its px caption size, prints "&" for "and", keeps the first part together and breaks after it, so the labels take two lines alike down to 320; at 360 px and below the head is 1px smaller and the gap and marks a little tighter, as the country names leave no slack (owner, 18 Nov 2026). Without the page script the grid shows and the switch is hidden, as the rows cannot open (check_page check_functions_views, check_functions_group_lines).
+ * Column-head labels: in every table's head, no two labels on one line sit closer than HEAD_LABEL_GAP (6 px) and none overlaps, at phone and desktop widths, at 110% text and in both themes; the grid's leaning function heads are held apart by their own flag test (check_page check_head_labels, check_functions_tint).
  * Functions table: institute rows in established and not-yet-established blocks, function columns in vocabulary groups, equal widths and rotated short heads. The page prints each group's label from one constant per group (Testing and science, Rules and standards, Informing government, Ecosystem and adoption; owner, 18 Nov 2026), so a word can be changed in one place; the data keeps the recorded group names (Rules, Ecosystem). Active and both use a dot, assigned a ring; not found is blank, a search result rather than absence. The jurisdiction column stays visible during sideways scrolling. Hover and focus tint the row and one continuous column through the block bands, with a slanted band behind its head. Columns are evenly spaced with no gutter between groups; a slightly stronger vertical line marks where a group starts, quieter than the selected outline in both themes, and row lines and the row and column tint run through unbroken; a group label longer than its own tracks takes a second line (owner, 18 Nov 2026). Each group has a leaning boundary and an underline at its label, meeting the upright body rules at the head rule; the shared head height follows the head type, leaving at least --sp-1 above every head tip. No upright rule crosses the head zone, and labels paint above the hover flag and boundaries. Quotes and sources open on demand below the selected institute (check_page check_functions_table, check_functions_detail, check_functions_layout, check_functions_tint, check_function_group_tabs).
  * Selection box: an open function cell, phone row or phone function, and a selected search or palette row, has one even box on all four sides, inset within its padding box and above tints and rules (check_page check_selection_boxes).
  * Tinted rows: while the functions table fits, the lit row's tint extends --sp-2 past both ends through pseudo-elements, keeping its text inside the tint and its row label on the content grid edge. During sideways scrolling the scroll box clips the tint, leaving the label on the clipped edge; this is a known limitation. The panel stays in place with its left edge aligned to the row text's left edge. Every other tinted, hovered or selected row (world rows, States lists, the arrived card, search, palette and download rows) keeps its text at least its inline padding inside the background (check_page check_tinted_rows).
@@ -772,19 +773,26 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
 .fn-detail .quote-body .reread.failed { display: none; } /* a source that could not be re-read says so at the end of its source line just below */
 /* Both forms are saved; CSS selects one. Subgrids share content-sized tracks through the list wrappers. */
 .fn-phone, .fn-phone-only { display: none; }
-.fn-phone { grid-template-columns: minmax(min-content, 1fr) repeat(var(--fn-groups), minmax(min-content, auto)); column-gap: calc(var(--sp-1) - 2 * var(--sp-1) / var(--fn-groups)); } /* pay for the two edge paddings from the existing gaps, keeping the same total width */
+.fn-phone { --fn-group-pad: 8px; --fn-group-end: 4px; grid-template-columns: minmax(min-content, 1fr) repeat(var(--fn-groups), minmax(min-content, auto)); column-gap: 0; } /* the columns are spaced by their own padding, so a group's line sits where its column starts */
 .fn-phone-head, .fn-phone-block, .fn-phone-block > ul, .fn-phone-block > ul > li { display: grid; grid-column: 1 / -1; grid-template-columns: subgrid; column-gap: inherit; }
-.fn-phone-head { font: var(--type-meta); color: var(--muted); align-items: end; padding-bottom: var(--sp-3); border-bottom: var(--rule) solid var(--line); }
+.fn-phone-head { font: var(--type-meta); color: var(--muted); border-bottom: var(--rule) solid var(--line); }
+.fn-phone-head > span { display: flex; align-items: flex-end; padding-bottom: var(--sp-3); } /* the head's cells reach the head rule, so the group lines run through */
 .fn-phone-head > span, .fn-phone-country { overflow-wrap: normal; word-break: normal; hyphens: manual; }
-.fn-phone-head > span { text-align: center; }
-.fn-phone-block > h3 { grid-column: 1 / -1; font: var(--type-label); padding-block: var(--sp-4) var(--sp-2); }
-.fn-phone-block > ul { list-style: none; padding: 0; margin: 0; max-width: none; }
+.fn-phone-block > h3 { grid-column: 1 / -1; grid-row: 1; position: relative; z-index: 1; font: var(--type-label); padding-block: var(--sp-4) var(--sp-2); pointer-events: none; }
+.fn-phone-band-label { background: var(--ground); padding-inline-end: var(--sp-1); } /* a band label wider than the first column passes over the group line, which runs on beside it */
+/* Group-start lines (owner, 18 Nov 2026, "as in the grid"): each group's cells in the head, the band rows and every row carry
+   the grid's group line at their start, and its label and strip sit left-aligned just after it, with the same padding, so a
+   label wraps inside its own column. The line is under the selected outline and the focus ring; an expanded row's box covers it. */
+.fn-phone-head > span:not(:first-child), .fn-phone-band, .fn-phone-block > ul > li > .fn-pips { box-shadow: inset var(--rule) 0 var(--fn-group-line); padding-inline: var(--fn-group-pad) var(--fn-group-end); }
+.fn-phone-band { grid-row: 1; }
+.fn-phone-block > ul { list-style: none; padding: 0; margin: 0; max-width: none; row-gap: 0; } /* rows meet, so the group lines run unbroken; the room moved into each row's country cell, which sets its height */
 .fn-phone-row { display: block; grid-column: 1 / -1; grid-row: 1; width: 100%; min-height: var(--hit); padding: var(--sp-3) 0; border: 0; border-bottom: var(--rule) solid var(--line); background: transparent; color: var(--ink); font: var(--type-body); text-align: left; cursor: pointer; }
 /* The empty button is the full-row hit area; its visual siblings share the list item's tracks. */
 .fn-phone-country, .fn-phone-block > ul > li > .fn-pips { grid-row: 1; align-self: center; position: relative; z-index: 1; pointer-events: none; }
-.fn-phone-country { grid-column: 1; padding-block: var(--sp-3); padding-inline-start: var(--sp-1); font: var(--type-body); }
-.fn-phone-head > span:last-child, .fn-phone-block > ul > li > .fn-pips:last-of-type { padding-inline-end: var(--sp-1); } /* the last pip and its head share clearance from the selected row's edge */
-.fn-pips { display: flex; justify-content: center; gap: 2px; min-width: max-content; } /* .fn-mark keeps every pip from shrinking */
+.fn-phone-country { grid-column: 1; padding-block: calc(var(--sp-3) + var(--sp-1)); padding-inline-start: var(--sp-1); font: var(--type-body); }
+.fn-pips { display: flex; justify-content: flex-start; align-items: center; gap: 2px; min-width: max-content; } /* .fn-mark keeps every pip from shrinking */
+.fn-phone-block > ul > li > .fn-pips { align-self: stretch; } /* full row height, so the group line is unbroken */
+.fn-phone-row:focus-visible { z-index: 2; } /* the ring paints above the group lines; the button is transparent, so the lines still show */
 .fn-pip { width: 8px; height: 8px; box-sizing: border-box; }
 .fn-pip.fn-mandate { border-width: 1.5px; }
 .fn-pip.fn-not_found { border: var(--rule) solid color-mix(in srgb, var(--muted) 55%, var(--ground)); }
@@ -808,18 +816,29 @@ button.fn-function-label { width: 100%; background: transparent; border: 0; text
 :root:not([data-js]) .fn .fn-scroll, :root:not([data-js]) .fn .fn-use.fn-desktop-only { display: block; }
 :root:not([data-js]) .fn .fn-legend.fn-desktop-only { display: flex; }
 .fn-view-switch { align-self: stretch; justify-content: flex-end; } /* its own line above either head, including on phones */
-@media (width > 640px) { .fn-phone-head .fn-group-label > br { display: none; } } /* one line each in the grouped view's head on wider screens; two alike elsewhere, a line still wrapping where its tracks are narrower */
+/* The grouped view's head prints each label on one line on wider screens; on phones it prints "&" for "and" and breaks after the
+   first part, so all four take two lines alike (owner, 18 Nov 2026). Both forms are saved; CSS shows one. */
+.fn-phone-head .fn-label-short { display: none; }
+@media (width <= 640px) { .fn-phone-head .fn-label-short { display: inline; } .fn-phone-head .fn-label-full { display: none; } }
 /* Wider screens: the grouped view keeps its strips beside the names, with room between the groups and rows. */
 @media (width > 640px) {
-  .fn-phone { max-width: var(--prose); column-gap: var(--sp-6); }
+  .fn-phone { max-width: var(--prose); --fn-group-pad: var(--sp-3); --fn-group-end: var(--sp-3); }
   .fn[data-view="grouped"] .fn-view-switch { max-width: var(--prose); }
   .fn-pips { gap: var(--sp-1); }
   .fn-pip { width: var(--sp-3); height: var(--sp-3); }
   .fn-pip.fn-not_coded { height: var(--rule-strong); }
   .fn-phone-row { min-height: calc(var(--hit) + var(--sp-2)); }
 }
-@media (width <= 390px) {
-  .fn-phone-head { font: var(--type-fn-group); }
+@media (width <= 640px) {
+  .fn-phone-head { font: var(--type-fn-group); } /* the phone head's caption size, in px: larger text widens the rows, not the head */
+}
+/* The narrowest phones: a slightly smaller head and a closer, still fixed, gap keep all four labels on two lines without a
+   sideways scroll (owner, 18 Nov 2026: a smaller head size only if 320 fails otherwise; it does). */
+@media (width <= 360px) {
+  .fn-phone { --fn-group-pad: 4px; --fn-group-end: 2px; } /* in px on phones: larger text widens the labels, not the gap */
+  .fn-phone-head { font: var(--type-fn-group); font-size: calc(var(--size-fn-group) - 1px); }
+  .fn-phone .fn-pip { width: 7px; height: 7px; } /* the country names leave no slack; slightly smaller marks keep the strips clear of the labels */
+  .fn-phone .fn-pip.fn-not_coded { height: 2px; }
 }
 /* The saved page was rendered at 1440 px, where the table fits: until the script measures again, every width keeps the scroll box and a static head. */
 html[data-prerendered] .fn-scroll.fits { overflow-x: auto; }
@@ -3326,8 +3345,10 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       function groupName(group) { return Object.prototype.hasOwnProperty.call(GROUP_LABELS, group) ? GROUP_LABELS[group] : group; }
       // A column head's label in two lines broken at its last space, so all four wrap alike where columns are narrow (the grid's
       // head, the phone head); the grouped view's head on wider screens shows each on one line (owner, 18 Nov 2026).
-      function groupHead(group) {
-        var label = groupName(group), at = label.lastIndexOf(" "), box = el("span", "fn-group-label");
+      // The phone head's short form: "&" for "and", from the same constant (owner, 18 Nov 2026; no abbreviations).
+      function shortGroupName(group) { return groupName(group).replace(" and ", "\u00a0& "); } // "Testing &" stays together, so the label takes two lines
+      function groupHead(group, label) {
+        label = label || groupName(group); var at = label.lastIndexOf(" "), box = el("span", "fn-group-label");
         if (at < 0) { box.textContent = label; return box; }
         box.appendChild(document.createTextNode(label.slice(0, at) + " ")); box.appendChild(el("br")); box.appendChild(document.createTextNode(label.slice(at + 1)));
         return box;
@@ -3439,10 +3460,15 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
           var list = el("div", "fn-phone"), labels = el("div", "fn-phone-head");
           list.style.setProperty("--fn-groups", groups.length);
           labels.appendChild(el("span"));
-          groups.forEach(function (group) { var head = el("span"); head.appendChild(groupHead(group)); labels.appendChild(head); }); list.appendChild(labels);
+          groups.forEach(function (group) {
+            var head = el("span"), full = el("span", "fn-group-label fn-label-full", groupName(group)), short = groupHead(group, shortGroupName(group));
+            short.classList.add("fn-label-short"); head.appendChild(full); head.appendChild(short); labels.appendChild(head);
+          }); list.appendChild(labels);
           [false, true].forEach(function (notYet) {
-            var block = el("div", "fn-phone-block"), heading = el("h3", null, notYet ? capital(ACTIVITY_WORDS.notYet) : FN_COPY.established), ul = el("ul"); ul.setAttribute("role", "list");
-            block.appendChild(heading); block.appendChild(ul);
+            var block = el("div", "fn-phone-block"), heading = el("h3"), ul = el("ul"); ul.setAttribute("role", "list");
+            heading.appendChild(el("span", "fn-phone-band-label", notYet ? capital(ACTIVITY_WORDS.notYet) : FN_COPY.established)); block.appendChild(heading);
+            groups.forEach(function (group, n) { var band = el("span", "fn-phone-band"); band.setAttribute("aria-hidden", "true"); band.style.gridColumn = n + 2; block.appendChild(band); });
+            block.appendChild(ul);
             institutes.filter(function (i) { return pending(i) === notYet; }).forEach(function (i) {
               var li = el("li"), button = el("button", "fn-phone-row"), place = J[i.jurisdiction_id].name;
               li.dataset.institute = i.id; button.type = "button"; li.appendChild(button);

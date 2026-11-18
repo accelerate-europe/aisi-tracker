@@ -607,7 +607,7 @@ def functions_phone(functions):
     """Hand-written phone projection: all five values, two unanimous not-found codes and two status blocks."""
     data, _ = functions
     html = '''<section aria-labelledby="functions"><h2 id="functions">Functions</h2><div id="functions-table">
-    <div class="fn-phone"><div class="fn-phone-head"><span></span><span>Science</span><span>Policy</span></div>
+    <div class="fn-phone"><div class="fn-phone-head"><span></span><span><span class="fn-group-label fn-label-full">Science</span><span class="fn-group-label fn-label-short">Science</span></span><span><span class="fn-group-label fn-label-full">Policy</span><span class="fn-group-label fn-label-short">Policy</span></span></div>
     <div class="fn-phone-block"><h3>Established</h3><ul role="list"><li data-institute="z">
     <button type="button" class="fn-phone-row" aria-label="Zulu, Zulu Institute: show functions" aria-expanded="false" aria-controls="fn-phone-detail-z"></button><span class="fn-phone-country" aria-hidden="true">Zulu</span><span class="fn-pips" aria-hidden="true"><span class="fn-mark fn-activity fn-pip" aria-hidden="true"></span><span class="fn-mark fn-not_found fn-pip" aria-hidden="true"></span></span><span class="fn-pips" aria-hidden="true"><span class="fn-mark fn-mandate fn-pip" aria-hidden="true"></span><span class="fn-mark fn-not_found fn-pip" aria-hidden="true"></span><span class="fn-mark fn-not_found fn-pip" aria-hidden="true"></span></span>
     </li></ul></div>
@@ -648,6 +648,8 @@ def test_function_group_labels_in_desktop_and_phone_heads(functions, functions_p
         for entry in data["dataset"]["vocabularies"]["function"].values():
             entry["group"] = {"Science": first, "Policy": second}.get(entry["group"], entry["group"])
         html = html.replace(">Science<", ">" + first_label + "<").replace(">Policy<", ">" + second_label + "<")
+        for label in (first_label, second_label):  # the phone head's short form prints "&" for "and"
+            html = html.replace('fn-label-short">' + label + "<", 'fn-label-short">' + label.replace(" and ", "\u00a0& ") + "<")
         assert check(html, data) == []
         assert any("groups/order" in error or "group heads/order" in error for error in check(html.replace(">" + first_label + "<", ">Wrong group<"), data))
 
@@ -759,7 +761,7 @@ for (const value of Object.keys(names)) {
 
 @pytest.mark.parametrize(("old", "new", "finding"), [
     ('<div class="fn-phone">', '<div class="fn-phone"></div><div class="fn-phone">', "exactly one phone list"),
-    ('<span>Science</span>', '<span>Policy</span>', "group heads/order"),
+    ('fn-label-full">Science<', 'fn-label-full">Policy<', "group heads/order"),
     ('<h3>Not yet established</h3>', '<h3>proposed</h3>', "blocks/order"),
     ('data-institute="z"', 'data-institute="a"', "rows/order"),
     ('Zulu, Zulu Institute: show functions', 'Zulu: 2 functions with a public text', "row control/name"),
