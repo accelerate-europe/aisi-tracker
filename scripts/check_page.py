@@ -12494,6 +12494,86 @@ def check_folds(browser, base_url: str) -> list[str]:
     return errors
 
 
+SELECTION_STATE_JS = r"""() => {
+  const table = document.querySelector('.fn-scroll .fn-table');
+  const open = [...table.querySelectorAll('.fn-cell[aria-expanded="true"]')];
+  const rows = new Set([...table.querySelectorAll('tr.fn-row-lit')].filter(r => r.dataset.institute).map(r => r.dataset.institute));
+  const cols = new Set([...table.querySelectorAll('tbody td.fn-col-lit')].map(n => n.dataset.code));
+  const rings = [...table.querySelectorAll('.fn-cell')].filter(n => n.matches(':focus-visible'));
+  const active = document.activeElement;
+  return {open: open.map(n => n.closest('tr').dataset.institute + '/' + n.parentNode.dataset.code), rows: [...rows], cols: [...cols],
+    rings: rings.length, activeCell: active && active.matches('.fn-cell') ? active.closest('tr').dataset.institute + '/' + active.parentNode.dataset.code : null,
+    panels: document.querySelectorAll('.fn-scroll .fn-detail').length};
+}"""
+
+LINE_CONTRAST_JS = r"""() => {
+  // Computed colours come as rgb() (0 to 255) or, for color-mix(), as color(srgb r g b) (0 to 1).
+  const lum = c => { const unit = c.startsWith('color('), m = c.match(/[\d.]+/g).slice(0, 3).map(Number).map(v => { v = unit ? v : v / 255; return v <= .03928 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4; }); return .2126 * m[0] + .7152 * m[1] + .0722 * m[2]; };
+  const ratio = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y) + .05) / (Math.min(x, y) + .05); };
+  const probe = document.createElement('span'); document.querySelector('.fn').appendChild(probe);
+  const colour = v => { probe.style.color = v; return getComputedStyle(probe).color; };
+  const ground = colour('var(--ground)'), group = colour('var(--fn-group-line)'), hair = colour('var(--fn-hairline)'), focus = colour('var(--focus)');
+  probe.remove();
+  return {group: ratio(group, ground), hair: ratio(hair, ground), focus: ratio(focus, ground)};
+}"""
+
+
+def check_selection_single(browser, base_url: str) -> list[str]:
+    """After Escape, Close or selecting another cell, at most one function cell is selected, focused and tinted, with its row and
+    column; a click that does not move focus (Safari's buttons) included. The group line sits between the hairline and the
+    selected outline in contrast, in both themes. The world's Download menu and the command palette close on Escape."""
+    errors = []
+    page = browser.new_page(viewport={"width": 1440, "height": 1000})
+    hydrated(page, base_url)
+    cells = page.locator('.fn-scroll tr[data-institute] .fn-cell')
+    a, b = cells.nth(0), cells.nth(1)
+    key = lambda n: n.evaluate("n => n.closest('tr').dataset.institute + '/' + n.parentNode.dataset.code")  # noqa: E731
+
+    def expect(step, want):
+        s = page.evaluate(SELECTION_STATE_JS)
+        if s["open"] != ([want] if want else []):
+            errors.append(f"{step}: open cells {s['open']}, expected {[want] if want else 'none'}")
+        if s["panels"] > 1 or len(s["rows"]) > 1 or len(s["cols"]) > 1:  # the ring is held by the active cell below
+            errors.append(f"{step}: more than one cell carries the selection, tint or ring: {s}")
+        lit = [s["rows"][0] + "/" + s["cols"][0]] if s["rows"] and s["cols"] else []
+        if want and (lit != [want] or s["activeCell"] != want):
+            errors.append(f"{step}: the tint and focus are not on the selected cell {want}: {s}")
+
+    steps = [
+        ("Enter", lambda: (a.focus(), page.keyboard.press("Enter")), key(a)),
+        ("Escape", lambda: page.keyboard.press("Escape"), None),
+        ("Escape, then another cell", lambda: b.evaluate("n => n.click()"), key(b)),  # a click that does not move focus, as Safari's
+        ("Close", lambda: page.locator('.fn-scroll .fn-detail .close-control').click(), None),
+        ("another cell", lambda: a.click(), key(a)),
+        ("a third selection", lambda: b.click(), key(b)),
+        ("Escape again", lambda: page.keyboard.press("Escape"), None),
+    ]
+    for step, act, want in steps:
+        act()
+        expect(step, want)
+    for theme in ("light", "dark"):
+        set_theme(page, theme)
+        c = page.evaluate(LINE_CONTRAST_JS)
+        if not c["hair"] < c["group"] < c["focus"]:
+            errors.append(f"{theme}: the group line must be stronger than the hairline and quieter than the selected outline: {c}")
+    menu = page.locator("#world-download")
+    menu.locator("summary").focus()
+    page.keyboard.press("Enter")
+    if menu.get_attribute("open") is None:
+        errors.append("the world's Download menu does not open by keyboard, so its Escape cannot be checked")
+    page.keyboard.press("Escape")
+    if menu.get_attribute("open") is not None:
+        errors.append("Escape does not close the world's Download menu")
+    page.keyboard.press("Control+k")
+    if not page.locator("#palette").evaluate("n => n.open"):
+        errors.append("the command palette does not open, so its Escape cannot be checked")
+    page.keyboard.press("Escape")
+    if page.locator("#palette").evaluate("n => n.open"):
+        errors.append("Escape does not close the command palette")
+    page.close()
+    return errors
+
+
 def check_clickable_widths(browser, base_url: str) -> list[str]:
     """Audit every section at the desktop widths of the pointer report, including expanded records and sources."""
     page = browser.new_page(viewport={"width": 1440, "height": 1000})
@@ -14114,6 +14194,7 @@ def browser_jobs(dist: Path, data: dict, screenshots: Path | None) -> list[tuple
         ("interactions", check_clickable_widths, ()),
         ("interactions", check_symbols, ()),
         ("interactions", check_folds, ()),
+        ("interactions", check_selection_single, ()),
         ("interactions", check_functions_layout, ()),
         ("interactions", check_function_group_tabs, ()),
         ("interactions", check_functions_phone, (data,)),

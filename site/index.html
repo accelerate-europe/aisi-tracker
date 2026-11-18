@@ -3349,7 +3349,12 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
           if (!opened) return;
           var previous = opened; previous.setAttribute("aria-expanded", "false"); detailRow.remove(); opened = null; detailRow = null;
           if (focus) previous.focus({ preventScroll: true });
+          if (repaint) repaint();
         }
+        // One selection path for click, Escape and Close: the opened cell takes focus, so no browser leaves the previous cell's ring
+        // and tint behind (Safari does not focus a clicked button).
+        function selected(button) { opened = button; button.setAttribute("aria-expanded", "true"); button.focus({ preventScroll: true }); if (repaint) repaint(); }
+        var repaint = null;
         function detailHeading(detail, title) {
           var top = el("div", "fn-detail-top"); top.appendChild(title);
           top.appendChild(closeButton(function () { closeDetail(true); })); detail.appendChild(top);
@@ -3398,7 +3403,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
                 if (coded(row.value)) { li.dataset.code = code; label.type = "button"; label.setAttribute("aria-expanded", "false"); label.setAttribute("aria-controls", detail.id + "-" + code); }
                 li.appendChild(label); functions.appendChild(li);
               }); detail.appendChild(heading); detail.appendChild(functions);
-            }); button.parentNode.appendChild(detail); opened = button; detailRow = detail; button.setAttribute("aria-expanded", "true");
+            }); button.parentNode.appendChild(detail); detailRow = detail; selected(button);
           });
           list.addEventListener("keydown", escapeDetail); box.appendChild(list);
         } else {
@@ -3443,7 +3448,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
             table.appendChild(tbody);
           });
           scroll.appendChild(table); box.appendChild(scroll);
-          bindTint(table);
+          repaint = bindTint(table);
         }
         if (!table) return;
         table.addEventListener("click", function (event) {
@@ -3457,7 +3462,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
           detailHeading(detail, title);
           appendClaims(detail, i, code);
           detailRow = el("tr", "fn-detail-row"); detailRow.id = button.getAttribute("aria-controls"); detailRow.dataset.owner = row.dataset.institute; var td = el("td"); td.colSpan = columns.length + 2;
-          td.appendChild(detail); detailRow.appendChild(td); row.after(detailRow); opened = button; button.setAttribute("aria-expanded", "true"); externalLinks(detail);
+          td.appendChild(detail); detailRow.appendChild(td); row.after(detailRow); selected(button); externalLinks(detail);
         });
         // Escape closes the detail only while focus is in the table, and only when no nested control has handled it.
         table.addEventListener("keydown", escapeDetail);
@@ -3484,6 +3489,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
           paint();
         }
         ["pointerover", "pointerout", "focusin", "focusout"].forEach(function (type) { table.addEventListener(type, tint); });
+        return paint;
       }
       build();
       // Both forms stay in the page; when a resize hides the focused control, focus moves to the same institute in the visible form.
