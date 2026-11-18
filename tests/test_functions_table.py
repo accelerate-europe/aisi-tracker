@@ -88,6 +88,28 @@ def test_functions_structure_keeps_unanimous_not_found_columns(functions):
     assert [i["id"] for i in check_page.function_rows(data)] == ["z", "a"]
 
 
+@pytest.mark.parametrize("opened, source", [(False, False), (True, False), (False, True), (True, True)])
+def test_claim_spacing_uses_text_edges_and_keeps_hit_height(opened, source):
+    metrics = {"claim": {"top": 0, "bottom": 20}, "label": {"top": 28, "bottom": 48},
+               "quote": {"top": 56, "bottom": 96} if opened else None,
+               "source": {"top": 104 if opened else 56, "bottom": 124 if opened else 76} if source else None,
+               "open": opened, "gap": 8, "hit": 28, "minHit": 28}
+    assert check_page.claim_spacing_errors(metrics) == []
+    broken = copy.deepcopy(metrics)
+    broken["label"]["top"] -= 8
+    assert any("text gaps" in e for e in check_page.claim_spacing_errors(broken))
+    assert check_page.claim_spacing_errors(dict(metrics, hit=20)) == ["Quote label lost its hit height"]
+    if opened:
+        assert "missing visible" in check_page.claim_spacing_errors(dict(metrics, quote=None))[0]
+
+
+def test_claim_spacing_rejects_reported_uneven_gaps():
+    metrics = {"claim": {"top": 0, "bottom": 20}, "label": {"top": 20, "bottom": 40},
+               "quote": {"top": 55, "bottom": 95}, "source": {"top": 102, "bottom": 122},
+               "open": True, "gap": 8, "hit": 28, "minHit": 28}
+    assert any("[0, 15, 7]" in e for e in check_page.claim_spacing_errors(metrics))
+
+
 def test_functions_structure_rejects_a_missing_vocabulary_column(functions):
     from bs4 import BeautifulSoup
 

@@ -11776,6 +11776,106 @@ def check_functions_table(browser, base_url: str, dist: Path, data: dict) -> lis
     return errors
 
 
+TEXT_RECTS_JS = r"""
+// Range rectangles for actual text, excluding hidden text and citation superscripts when requested.
+const textRects = (root, exclude = '') => {
+  if (!root) return [];
+  const rects = [], walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  for (let node; (node = walker.nextNode());) {
+    const parent = node.parentElement;
+    if (!node.textContent.trim() || !parent.getClientRects().length ||
+        parent.closest('.vh, [hidden]') || (exclude && parent.closest(exclude)) ||
+        getComputedStyle(parent).visibility !== 'visible') continue;
+    const range = document.createRange(); range.selectNodeContents(node);
+    rects.push(...[...range.getClientRects()].filter(r => r.width && r.height));
+  }
+  return rects;
+};
+"""
+
+
+CLAIM_SPACING_JS = r"""item => {
+  /* TEXT_RECTS */
+  // Layout boxes, not glyph boxes: glyph boxes of body and meta type sit up to about 1px off their lines, differently per
+  // role, so the rule is measured where the CSS sets it. The label counts as its first line only: its larger hit box
+  // reaches into the gap below by design.
+  const bounds = node => {
+    if (!node || !textRects(node, '.cites').length) return null;
+    const r = node.getBoundingClientRect();
+    return node.matches('summary') ? {top: r.top, bottom: r.top + parseFloat(getComputedStyle(node).lineHeight)} : {top: r.top, bottom: r.bottom};
+  };
+  const fold = item.querySelector(':scope > .quote'), label = fold?.querySelector('summary');
+  const probe = document.createElement('span'); probe.style.height = 'var(--sp-2)'; probe.style.display = 'block';
+  item.appendChild(probe); const gap = probe.getBoundingClientRect().height;
+  probe.style.height = 'var(--hit)'; const minHit = probe.getBoundingClientRect().height; probe.remove();
+  return {claim: bounds(item.querySelector(':scope > .claim-text')), label: bounds(label),
+    quote: fold?.open ? bounds(fold.querySelector('.quote-body')) : null,
+    source: bounds(item.querySelector(':scope > .fn-sources')), open: !!fold?.open, gap,
+    hit: label?.getBoundingClientRect().height, minHit};
+}""".replace("/* TEXT_RECTS */", TEXT_RECTS_JS)
+
+
+def claim_spacing_errors(metrics: dict) -> list[str]:
+    """Measure text edges, never the disclosure's larger hit box; cards have no per-item source list."""
+    sequence = [metrics.get("claim"), metrics.get("label")]
+    if metrics.get("open"):
+        sequence.append(metrics.get("quote"))
+    if metrics.get("source"):
+        sequence.append(metrics["source"])
+    if any(part is None for part in sequence):
+        return ["Claim spacing: missing visible claim, label or open quote"]
+    gaps = [after["top"] - before["bottom"] for before, after in zip(sequence, sequence[1:])]
+    errors = []
+    if any(abs(gap - metrics["gap"]) > 1 for gap in gaps) or max(gaps) - min(gaps) > 1:
+        errors.append(f"Claim text gaps must equal --sp-2 ({metrics['gap']:.2f}px), got {gaps}")
+    if metrics["hit"] < metrics["minHit"] - .5:
+        errors.append("Quote label lost its hit height")
+    return errors
+
+
+def check_claim_spacing(browser, base_url: str) -> list[str]:
+    """The reported Norway function and a card's shared item form, before and after opening Quote."""
+    page = browser.new_page(viewport={"width": 1440, "height": 1000})
+    hydrated(page, base_url)
+    page.evaluate("document.fonts.ready")
+    errors = []
+    for width in (1440, 1000, 390):
+        page.set_viewport_size({"width": width, "height": 1000})
+        for theme in ("light", "dark"):
+            set_theme(page, theme)
+            if width <= 640:
+                row = page.locator('.fn-phone li[data-institute="no-ki-norge"] > .fn-phone-row')
+                if row.get_attribute('aria-expanded') != 'true':
+                    row.click()
+                button = page.locator('.fn-phone-detail li[data-code="standards_guidance"] > button')
+            else:
+                button = page.locator('.fn-table tr[data-institute="no-ki-norge"] td[data-code="standards_guidance"] > button')
+            if button.get_attribute('aria-expanded') != 'true':
+                button.click()
+            form = '.fn-phone-claims' if width <= 640 else '.fn-scroll .fn-detail'
+            card = page.locator('#c-no')
+            card.evaluate("n => { if (n.matches('details')) n.open = true; n.querySelectorAll('details.more').forEach(d => d.open = true); }")
+            def measure(name, item):
+                item.scroll_into_view_if_needed()
+                fold = item.locator(':scope > details.quote')
+                for opened in (False, True, False):
+                    if fold.evaluate('n => n.open') != opened:
+                        fold.locator('summary').click()
+                    if opened:
+                        fold.locator('.quote-body').wait_for(state='visible')
+                    return_errors = claim_spacing_errors(item.evaluate(CLAIM_SPACING_JS))
+                    errors.extend(f'{width}px {theme} {name} {"open" if opened else "closed"}: ' + e for e in return_errors)
+            measure("function", page.locator(form + ' .claim').first)
+            measure("card", card.locator('.claim').first)
+            # The full record: the same card reached from a shared link, in its arrived state (the map's record panel holds no claims).
+            page.evaluate("location.hash = 'c-no'")
+            page.wait_for_selector('#c-no.arrived')
+            measure("full record", card.locator('.claim').first)
+            page.evaluate("history.replaceState(null, '', location.pathname)")
+    page.close()
+    return errors
+
+
 def check_functions_detail(browser, base_url: str, data: dict) -> list[str]:
     page = browser.new_page(viewport={"width": 1440, "height": 1000})
     errors = []
@@ -13407,6 +13507,7 @@ def browser_jobs(dist: Path, data: dict, screenshots: Path | None) -> list[tuple
         ("interactions", check_access_edges, (data,)),
         ("interactions", check_functions_table, (dist, data)),
         ("interactions", check_functions_detail, (data,)),
+        ("interactions", check_claim_spacing, ()),
         ("interactions", check_functions_layout, ()),
         ("interactions", check_function_group_tabs, ()),
         ("interactions", check_functions_phone, (data,)),
