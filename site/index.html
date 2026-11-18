@@ -58,11 +58,11 @@
  * Record: a map, list or search pick opens the record beside the map (over the list on wide screens, which it hides while open, under the map on narrow ones) and focuses its heading, in view below the section bar, its values cited and qualified as on the card (status date: advisory recommendation, confidence), never more; "Full record ↓" goes to the card (Arrival), whose "↑ Back to map" returns to the same view with the record open; a state without a card links to its table row. Search uses the page's own suggestion list (floating surface, status mark and region per row, keyboard).
  * Naming: one display name per body everywhere (no status suffix; the country in brackets where two bodies share a name); tight places such as table cells use the recorded short form (data field short_name, never a bare generic acronym such as AISI) with the full name on hover; check_page check_institute_names. An institute has one display name and one short form everywhere; former names are marked as former ('then', 'former' or 'formerly', or 'now' with the current short form), source titles excepted (check_page check_former_names). Text with an English form shows that form, with the original available on hover, focus and tap through tipText (aria-description on a focusable element), without a second line, brackets or marker; otherwise the original shows as it is, with lang where known. This covers body names, source titles, Reports to (the producer supplies the original separately) and the Institute name (name_local when it differs); check_page check_source_alignment, check_nonidentified_folds, check_leadership_rows, check_institute_names. A related body's original omits a closing abbreviation repeated in English. A translated link's tap opens its tip with a link to the destination. Downloads keep both forms.
  * None-identified entries: three groups, Closest body, AI Act authorities and Other bodies; the closest body's text in body type, its stage only where it does not exist yet and never a reason it is not counted (Method says what qualifies); the AI Act authorities one line per body (name, roles in the summary's words from dataset.display.authority_roles, basis), single point of contact first, folded after three when two or more would be hidden; other bodies' roles in ink, citations inline (owner, 15 Nov 2026); migrated bodies' role claims are separate cited sentences, starting --sp-2 below the name; the closest body's lead stays in the finding, its group shows its other role claims (expired ones marked) or just its name and stage, and is omitted when it has no role claim and the finding already names and cites it (hub default); a migrated record's muted How we checked block is generated from its full-check date, search languages, later search passes and next-check date, and names no document read; on phones the name sits above a full-width summary; wording every entry shares lives in Method (check_page check_nonidentified_folds, check_nonidentified_style).
- * Claims: current facts, body-role sentences and developments, their citations and closed Quote disclosures are in the saved page; bound excerpts, anchors and source re-read lines are built from page.json only on open. The sentence, Quote label, opened evidence and any following source have one --sp-2 gap between text lines, in function details, cards and full records; the label keeps its hit height without adding that height to the visible gap (check_page check_claim_spacing). Translated quotes follow Naming, including the saved closest-body lead; only the Quote fold shows a muted marker straight after each full translated quote and anchor (owner, 15 Nov 2026).
+ * Claims: current facts, body-role sentences and developments, their citations and closed Quote disclosures are in the saved page; bound excerpts, anchors and source re-read lines are built from page.json only on open. The sentence, Quote label, opened evidence and any following source have one --sp-2 gap between text lines, in function details, cards and full records; the label keeps its hit height without adding that height to the visible gap (check_page check_claim_spacing). Translated quotes follow Naming, including the saved closest-body lead; the Quote fold's label names the translation once, "Quote, translated from Norwegian", for every language its quotes and anchors come from, and no marker follows a quote (owner, 18 Nov 2026). Languages print by their plain name, never a variant or script (Bokmål and Nynorsk read Norwegian); exact codes stay in the data and downloads (tests/test_language_names.py).
  * Activity line: an ink qualifier after the closest body's name and stage, only for live activity claims for that body; institute cards and legacy records show none; words come from ACTIVITY_WORDS and the vocabulary's short.
- * Sources: entry source lists hold sources that support the entry; population and region sources (display.generic_sources) are named once in Method and stay in the downloads; check_page check_generic_sources.
- * Archived copies: wherever a source list or Method names a source that has an archive URL, "(archived copy)" follows its link as a quiet link in muted ink with a muted underline, no arrow, never broken across lines; superscript citations never carry one (check_page check_archive_links).
- * Re-read line: every source list item whose source has a quotation with a re-read state ends with one line of its own in the list's muted ink, from its quotations' states (docs/design/claims-1.1.md section 4): "Source last re-read {date}." while none is missing; else the worst state (the earliest start, then offline before not found, then the earliest last found): "Not found in the source on {date}; last found {date}; under review." (with ": N of M quotes" after the first date when some quotations are still found), "Source offline since {date}; last found {date}.", "Source could not be re-read since {date}; last found {date}."; a quotation or claim shown on its own shows its own state, never its source's; the page never says "verified" (check_page check_reread_lines).
+ * Sources: entry source lists hold sources that support the entry; population and region sources (display.generic_sources) are named once in Method and stay in the downloads; check_page check_generic_sources. A source line reads title, publisher, date: the publisher is not printed again where the source's own title (original or English) already contains it, and a citation's tip drops it the same way (owner, 18 Nov 2026).
+ * Archived copies (owner, 18 Nov 2026, "only when needed"): a source that could not be re-read ends its source line with " · archived copy" after its caveat, wherever it is named; a record's source list (the counted sources, a full record's Sources, a group's sources) also ends every other source that has an archive URL with it; a claim's own source line and Method's inline links give no other archived copy. Quiet link in muted ink with a muted underline, no arrow, never broken across lines; superscript citations never carry one (check_page check_archive_links).
+ * Re-read line: a source list item whose source has a quotation with a re-read state shows that state once, from its quotations' states (docs/design/claims-1.1.md section 4). A source that could not be re-read (worst state offline, unreadable or quote not found; the earliest start, then offline before not found, then the earliest last found) ends its source line with " · last read {date}" (" · quote last found {date}" for a quote not found, as the source was read), then " · archived copy" where a copy exists; the full sentence is its tip and what a screen reader reads: "Source offline since {date}; last read {date}.", "Source could not be re-read since {date}; last read {date}.", "Not found in the source on {date}; last found {date}; under review." (with ": N of M quotes" after the first date when some quotations are still found) (owner, 18 Nov 2026). Any other source ends with one line of its own in the list's muted ink: "Source last re-read {date}.". A quotation or claim shown on its own shows its own state, never its source's, as the full sentence with its archived copy; in a function's panel the source line just below carries a failed state instead; the page never says "verified" (check_page check_reread_lines).
  * Sorting: every table column sorts values by meaning, then values without a comparable figure, research gaps, structural absence; gaps stay last in both directions; ties by state name.
  * Links: inline text uses a thin muted-accent underline and accent ink; standalone links use position, icon or colour, with hover/focus underline or ink change. State names in linked lists (Testing and access, Institutional set-up, Budget not published) take the accent link style; None identified names take the card title's type (check_page check_name_roles). News names share the quiet date label.
  * External markers: marked links end in a compact SVG arrow with body-weight stroke and retain accessible new-tab text in every theme.
@@ -235,6 +235,7 @@ a, abbr.g, .smark[tabindex], .missing[tabindex], .budget-amount[tabindex], .quot
 a::before, abbr.g::before, .smark[tabindex]::before, .missing[tabindex]::before, .budget-amount[tabindex]::before, .quote-text[tabindex]::before, .original-text[tabindex]::before { content: ""; position: absolute; inset-inline: 0; top: 50%; min-height: var(--hit); height: 100%; transform: translateY(-50%); }
 /* Inline source links use their text boxes, so tight meta lines cannot steal clicks; the correction link has its own line (.source-after, one hit tall), so it keeps the full hit box. */
 :is(.srcs, .inline-links) a:not(.cn, .correction)::before { content: none; }
+:is(.srcs, .inline-links) li.title-only > a.standalone::before { content: ""; } /* a line that is only its title (its publisher in the title, no date) keeps the hit height */
 .archive-copy { white-space: nowrap; } /* principle: Archived copies */
 a.archive { color: var(--muted); text-decoration-color: currentColor; }
 a.archive:is(:hover, :focus-visible) { color: var(--ink); }
@@ -752,6 +753,7 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
 .fn-detail .quote-body .reread { display: block; font: var(--type-meta); color: var(--muted); }
 .fn-sources { list-style: none; padding: 0; margin-top: var(--sp-2); }
 .fn-sources .reread { display: none; } /* the quote block above already carries the quotation's re-read line (principle: Re-read line) */
+.fn-detail .quote-body .reread.failed { display: none; } /* a source that could not be re-read says so at the end of its source line just below */
 /* Both forms are saved; CSS selects one. Subgrids share content-sized tracks through the list wrappers. */
 .fn-phone, .fn-phone-only { display: none; }
 .fn-phone { grid-template-columns: minmax(min-content, 1fr) repeat(var(--fn-groups), minmax(min-content, auto)); column-gap: calc(var(--sp-1) - 2 * var(--sp-1) / var(--fn-groups)); } /* pay for the two edge paddings from the existing gaps, keeping the same total width */
@@ -1370,7 +1372,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     if (tail) tail.appendChild(separated(after));
     if (order.length) {
       var det = el("details", "srcs"), summary = el("summary", "source-footer-line");
-      summary.appendChild(count); det.appendChild(summary); det.appendChild(sourceList(order, S, roles));
+      summary.appendChild(count); det.appendChild(summary); det.appendChild(sourceList(order, S, roles, true));
       if (tail) det.appendChild(tail);
       foot.appendChild(det);
     } else {
@@ -1509,17 +1511,16 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     if (detail) detail.open = full;
   }
   function recordSources(record) { return record ? record.display.source_links : []; }
-  // A source with an archive URL: "(archived copy)" follows its link (principle: Archived copies).
+  // A source with an archive URL ends its line with "· archived copy" (principle: Archived copies).
   function archiveCopy(parent, src) {
     if (!src.archive_url) return;
-    var a = el("a", "archive", "archived copy"), copy = el("span", "archive-copy", "("); a.href = src.archive_url;
-    copy.appendChild(a); copy.appendChild(document.createTextNode(")"));
-    parent.appendChild(document.createTextNode(" ")); parent.appendChild(copy);
+    var a = el("a", "archive", "archived copy"), copy = el("span", "archive-copy", " · "); a.href = src.archive_url;
+    copy.appendChild(a); parent.appendChild(copy);
   }
   // A grouped section's sources (Testing and access, Institutional set-up): one counted, closed list under the groups.
   function groupSources(order, S) {
     var foot = el("div", "foot"), det = el("details", "srcs"), sum = el("summary", "source-footer-line");
-    sum.appendChild(el("span", "source-count", order.length + (order.length === 1 ? " source" : " sources"))); det.appendChild(sum); det.appendChild(sourceList(order, S)); foot.appendChild(det);
+    sum.appendChild(el("span", "source-count", order.length + (order.length === 1 ? " source" : " sources"))); det.appendChild(sum); det.appendChild(sourceList(order, S, null, true)); foot.appendChild(det);
     return foot;
   }
   // A source's re-read line, from its quotations' own states (principle: Re-read line). Confirmed and not yet re-attempted
@@ -1534,29 +1535,45 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     if (r.state !== w.state) return REREAD_TIE[r.state] < REREAD_TIE[w.state];
     return r.last_found < w.last_found;
   }
-  function rereadLine(src) {
+  function rereadState(src) {
     var states = (src.excerpts || []).map(function (e) { return e.reread; }).filter(Boolean);
     if (!states.length) return null;
     var worst = states.reduce(function (w, r) { return rereadWorse(r, w) ? r : w; });
     var parts, gone = states.filter(function (r) { return r.state === "quote_gone"; }).length;
     var found = states.some(function (r) { return !REREAD_RANK[r.state]; });
-    if (worst.state === "quote_gone") parts = ["Not found in the source on ", dated(worst.since), found ? ": " + gone + " of " + states.length + " quotes" : "", "; last found ", dated(worst.last_found), "; under review."];
-    else if (worst.state === "source_gone") parts = ["Source offline since ", dated(worst.since), "; last found ", dated(worst.last_found), "."];
-    else if (worst.state === "blocked_or_failed") parts = ["Source could not be re-read since ", dated(worst.since), "; last found ", dated(worst.last_found), "."];
+    if (worst.state === "quote_gone") parts = ["Not found in the source on ", dated(worst.since), found ? ": " + gone + " of " + states.length + " quotes" : "", "; last found ", dated(worst.last_found), "; under review."]; // the source was read; the quote was not in it
+    else if (worst.state === "source_gone") parts = ["Source offline since ", dated(worst.since), "; last read ", dated(worst.last_found), "."];
+    else if (worst.state === "blocked_or_failed") parts = ["Source could not be re-read since ", dated(worst.since), "; last read ", dated(worst.last_found), "."];
     else parts = ["Source last re-read ", dated(worst.last_found), "."];
-    var line = el("span", "reread");
-    parts.forEach(function (p) { if (p) line.appendChild(typeof p === "string" ? document.createTextNode(p) : p); });
+    return { worst: worst, parts: parts, failed: REREAD_RANK[worst.state] > 0 };
+  }
+  function rereadLine(src) {
+    var state = rereadState(src); if (!state) return null;
+    var line = el("span", state.failed ? "reread failed" : "reread");
+    state.parts.forEach(function (p) { if (p) line.appendChild(typeof p === "string" ? document.createTextNode(p) : p); });
     return line;
+  }
+  // A source that could not be re-read ends its source line with "· last read {date}", then "· archived copy" where a copy
+  // exists; the full sentence is the tip and what a screen reader reads (principle: Re-read line).
+  function rereadTail(parent, src) {
+    var state = rereadState(src); if (!state || !state.failed) return false;
+    var tail = el("span", "reread-tail"), shown = el("span", null, " · " + (state.worst.state === "quote_gone" ? "quote last found " : "last read ")), full = rereadLine(src);
+    shown.setAttribute("aria-hidden", "true"); shown.appendChild(dated(state.worst.last_found));
+    tail.dataset.tip = full.textContent; full.className = "vh"; // the tip for the pointer; screen readers read the sentence itself, once full.insertBefore(document.createTextNode(" "), full.firstChild);
+    tail.appendChild(shown); tail.appendChild(full); parent.appendChild(tail);
+    return true;
   }
   // Claims: one display rule, also exported for the functions table. Text is assigned as text, never HTML.
   var FACTS_LABEL = "Facts", QUOTE_LABEL = "Quote", TRANSLATED = "translated from {language}";
-  var QUOTE_LANGUAGES = { ar: "Arabic", bg: "Bulgarian", cs: "Czech", da: "Danish", de: "German", el: "Greek", en: "English", es: "Spanish", et: "Estonian", fi: "Finnish", fr: "French", hr: "Croatian", hu: "Hungarian", id: "Indonesian", is: "Icelandic", it: "Italian", ja: "Japanese", ko: "Korean", lt: "Lithuanian", lv: "Latvian", nb: "Norwegian Bokmål", nl: "Dutch", nn: "Norwegian Nynorsk", no: "Norwegian", pl: "Polish", pt: "Portuguese", ro: "Romanian", ru: "Russian", sk: "Slovak", sl: "Slovenian", sv: "Swedish", th: "Thai", tr: "Turkish", uk: "Ukrainian", zh: "Chinese" };
+  // Languages print by their plain name, never a variant or script (principle: Naming): Bokmål and Nynorsk read "Norwegian";
+  // exact codes stay in the data and downloads. The same names as scripts/summaries.py LANGUAGE_NAMES (tests/test_language_names.py).
+  var QUOTE_LANGUAGES = { am: "Amharic", ar: "Arabic", az: "Azerbaijani", bg: "Bulgarian", bm: "Bambara", bn: "Bengali", bs: "Bosnian", ca: "Catalan", cnr: "Montenegrin", cs: "Czech", da: "Danish", de: "German", dv: "Dhivehi", dz: "Dzongkha", el: "Greek", en: "English", es: "Spanish", et: "Estonian", fa: "Persian", fi: "Finnish", fr: "French", ha: "Hausa", he: "Hebrew", hr: "Croatian", ht: "Haitian Creole", hu: "Hungarian", hy: "Armenian", id: "Indonesian", is: "Icelandic", it: "Italian", ja: "Japanese", ka: "Georgian", kk: "Kazakh", km: "Khmer", ko: "Korean", ky: "Kyrgyz", lo: "Lao", lt: "Lithuanian", lv: "Latvian", mk: "Macedonian", mn: "Mongolian", mos: "Mossi", ms: "Malay", my: "Burmese", nb: "Norwegian", ne: "Nepali", nl: "Dutch", nn: "Norwegian", no: "Norwegian", pl: "Polish", ps: "Pashto", pt: "Portuguese", rn: "Kirundi", ro: "Romanian", ru: "Russian", si: "Sinhala", sk: "Slovak", sl: "Slovenian", sq: "Albanian", sr: "Serbian", sv: "Swedish", sw: "Swahili", ta: "Tamil", tg: "Tajik", th: "Thai", ti: "Tigrinya", tk: "Turkmen", tr: "Turkish", uk: "Ukrainian", ur: "Urdu", uz: "Uzbek", vi: "Vietnamese", zh: "Chinese" };
+  function languageName(code) { return QUOTE_LANGUAGES[code] || code || "an unknown language"; }
   var ANCHOR_LABELS = { heading: "Heading:", definition: "Defined as:", provision: "Provision:", membership: "Part of:" };
-  function quoteNode(text, gloss, lang, inSentence) {
+  function quoteNode(text, gloss) {
     var box = el("span", "quotation"), quote = el("span", "quote-text", '"' + (gloss || text) + '"');
     if (gloss) { quote.setAttribute("aria-description", text); quote.tabIndex = 0; }
     box.appendChild(quote);
-    if (gloss && !inSentence) box.appendChild(el("span", "small translation", " " + TRANSLATED.replace("{language}", QUOTE_LANGUAGES[lang] || lang || "unknown language")));
     return box;
   }
   window.quoteNode = quoteNode;
@@ -1583,10 +1600,10 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     if (!entry) return body;
     entry.excerpts.forEach(function (bound) {
       var s = bound.source, e = bound.excerpt, block = el("div", "quote-excerpt"); block.dataset.sourceId = s.id; block.dataset.excerptIndex = bound.index;
-      block.appendChild(quoteNode(e.text, e.gloss, s.language));
+      block.appendChild(quoteNode(e.text, e.gloss));
       (e.anchors || []).forEach(function (a) {
         var named = a.source_id && entry.sources[a.source_id], line = el("span", "quote-anchor", ANCHOR_LABELS[a.kind] + " ");
-        line.appendChild(quoteNode(a.text, a.gloss, (named || s).language));
+        line.appendChild(quoteNode(a.text, a.gloss));
         if (named) { // the other copy's title follows Naming: English shown, the original as its tip
           var title = el("span", null, named.title_en || named.title);
           if (named.title_en) withOriginal(title, named.title); else if (named.language && named.language !== "en") title.lang = named.language; // the page is lang="en"
@@ -1594,7 +1611,8 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         }
         block.appendChild(line);
       });
-      var reread = rereadLine({ excerpts: [e] }); if (reread) block.appendChild(reread); // the quotation's own state, never its source's (principle: Re-read line)
+      var reread = rereadLine({ excerpts: [e] }); // the quotation's own state, never its source's (principle: Re-read line)
+      if (reread) { if (/\bfailed\b/.test(reread.className)) archiveCopy(reread, s); block.appendChild(reread); }
       body.appendChild(block);
     });
     return body;
@@ -1603,7 +1621,18 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     if (fold.open && !fold.querySelector(".quote-body") && CLAIM_INDEX[fold.dataset.quoteClaim]) fold.appendChild(claimQuoteBody(fold.dataset.quoteClaim));
   }
   document.addEventListener("toggle", function (e) { if (e.target.matches("details.quote")) loadClaimQuote(e.target); }, true);
-  function quoteDisclosure(c) { var fold = el("details", "quote"); fold.dataset.quoteClaim = c.id; fold.appendChild(el("summary", null, QUOTE_LABEL)); return fold; }
+  // The fold's label names the languages its translated quotes come from (principle: Claims): "Quote, translated from Norwegian".
+  function quoteLabel(id) {
+    var entry = CLAIM_INDEX[id], langs = [];
+    (entry ? entry.excerpts : []).forEach(function (bound) {
+      [bound.excerpt].concat(bound.excerpt.anchors || []).forEach(function (span) {
+        var named = span.source_id && entry.sources[span.source_id], name = span.gloss && languageName((named || bound.source).language);
+        if (name && langs.indexOf(name) < 0) langs.push(name);
+      });
+    });
+    return langs.length ? QUOTE_LABEL + ", " + TRANSLATED.replace("{language}", andJoin(langs)) : QUOTE_LABEL;
+  }
+  function quoteDisclosure(c) { var fold = el("details", "quote"); fold.dataset.quoteClaim = c.id; fold.appendChild(el("summary", null, quoteLabel(c.id))); return fold; }
   function shownLead(j) {
     // Schema checks uniqueness; authored order is retained, including an offline or unreadable expired lead.
     return (j.claims || []).find(function (c) { return c.kind === "function" && c.lead && j.closest_body && c.body_id === j.closest_body.body_id && (!c.expired || ["source_gone", "blocked_or_failed"].indexOf((c.reread || {}).state) >= 0); });
@@ -1622,7 +1651,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     var quoted = c.lead && /["“]([^"”]+)["”]/.exec(text);
     if (!quoted || !bound) { line.textContent = nonbreakingDates(text); return line; }
     line.appendChild(document.createTextNode(text.slice(0, quoted.index)));
-    line.appendChild(quoteNode(bound.excerpt.gloss ? bound.excerpt.text : quoted[1], bound.excerpt.gloss ? quoted[1] : null, bound.source.language, true));
+    line.appendChild(quoteNode(bound.excerpt.gloss ? bound.excerpt.text : quoted[1], bound.excerpt.gloss ? quoted[1] : null));
     line.appendChild(document.createTextNode(text.slice(quoted.index + quoted[0].length)));
     return line;
   }
@@ -1648,18 +1677,24 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     if (development) card.appendChild(claimBlock(development, cite, developmentSentence(development)));
   }
   function developmentSentence(c) { return "On " + fmtDate(c.date) + " " + c.act + ", which " + c.text.replace(/\.$/, "") + "."; } // summary pattern 3
-  function sourceList(order, S, roles) {
+  // A source line: title, publisher, date, roles; a source that could not be re-read ends with its caveat and archived
+  // copy. A record's source list (record: true) also gives every other archived copy; a claim's own sources do not.
+  function sourceList(order, S, roles, record) {
     var ol = el("ol", "prose-panel");
     order.forEach(function (id) {
       var src = S[id], li = el("li"); li.dataset.sourceId = id;
       var a = el("a", "standalone", src.title_en || src.title); a.href = src.url; li.appendChild(a);
       if (src.title_en) withOriginal(a, src.title);
       else if (src.language && src.language !== "en") a.lang = src.language; // the page is lang="en"
-      archiveCopy(li, src);
-      li.appendChild(document.createTextNode(", " + src.publisher + (src.published ? ", " : "")));
-      if (src.published) li.appendChild(dated(src.published));
+      if (src.publisher && !publisherInTitle(src)) li.appendChild(document.createTextNode(", " + src.publisher));
+      if (src.published) { li.appendChild(document.createTextNode(", ")); li.appendChild(dated(src.published)); }
       if (roles && roles[id] && roles[id].length) li.appendChild(el("span", "role", ", supports " + roles[id].join(", ").toLowerCase()));
-      var reread = rereadLine(src); if (reread) li.appendChild(reread);
+      if (rereadTail(li, src)) archiveCopy(li, src);
+      else {
+        if (record) archiveCopy(li, src);
+        var reread = rereadLine(src); if (reread) li.appendChild(reread);
+      }
+      if (li.childNodes.length === 1) li.classList.add("title-only");
       ol.appendChild(li);
     });
     return ol;
@@ -1868,7 +1903,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         var id = pair[0], n = pair[1];
         var a = el("a", "cn", String(n + 1)); a.href = S[id].url; a.dataset.sourceId = id;
         var src = S[id], shown = src.title_en || src.title;
-        a.dataset.tip = shown + " (" + src.publisher + ")";
+        a.dataset.tip = shown + (publisherInTitle(src) ? "" : " (" + src.publisher + ")");
         a.dataset.tipSub = (src.title_en ? src.title + " \u00b7 " : "") + hostOf(src.url); a.dataset.tipExt = "";
         a.setAttribute("aria-label", "Source " + (n + 1) + ": " + shown);
         if (span.childNodes.length) span.appendChild(document.createTextNode(","));
@@ -1877,6 +1912,8 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       return span;
     };
   }
+  // The publisher is not printed again where the source's own title already names it (principle: Sources).
+  function publisherInTitle(src) { var p = (src.publisher || "").toLowerCase(); return !!p && [src.title, src.title_en].some(function (t) { return t && t.toLowerCase().indexOf(p) >= 0; }); }
   // None-identified entries (principle: None-identified entries): the closest body; the AI Act authorities in one group, one line per body with its roles and basis; other bodies.
   var ROLE_ORDER = ["single_point_of_contact", "market_surveillance", "notifying"];
   var BASIS_NAME = { law: "law", decree: "decree", government_decision: "government decision", cabinet_decision: "cabinet decision", ministerial_act: "ministerial act", administrative: "administrative act" };
@@ -2133,7 +2170,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       var dup = pubs.indexOf(s.publisher) !== pubs.lastIndexOf(s.publisher);
       var t = s.title.length > 48 ? s.title.slice(0, 46).replace(/\s+\S*$/, "") + "…" : s.title;
       var a = el("a", null, s.publisher + (dup ? ": " + t : "")); a.href = s.url; a.rel = "noopener"; a.title = s.title;
-      span.appendChild(a); archiveCopy(span, s);
+      span.appendChild(a); if (rereadTail(span, s)) archiveCopy(span, s); // Method names a source inline: its archived copy only beside its caveat
     });
     return span;
   }
@@ -3190,7 +3227,12 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       function columnClass(code) { var n = columns.indexOf(code); return "fn-column" + (n === 0 ? " fn-group-first" : vocab[columns[n - 1]].group !== vocab[code].group ? " fn-group-start" : ""); }
       function mark(value, pip) { var span = el("span", "fn-mark fn-" + (value === "both" ? "activity" : value) + (pip ? " fn-pip" : "")); span.setAttribute("aria-hidden", "true"); return span; }
       function pad() { var c = el("td", "fn-pad"); c.setAttribute("aria-hidden", "true"); return c; }
-      function fnSources(ids) { var list = sourceList(ids, S); list.classList.add("fn-sources"); return list; }
+      // A claim's sources carry only the re-read state of the quotations bound to that claim, never their source's other quotations (principle: Re-read line).
+      function fnSources(ids, claimId) {
+        var own = {}, bound = (CLAIM_INDEX[claimId] || { excerpts: [] }).excerpts;
+        ids.forEach(function (id) { if (S[id]) own[id] = Object.assign({}, S[id], { excerpts: bound.filter(function (b) { return b.source.id === id; }).map(function (b) { return b.excerpt; }) }); });
+        var list = sourceList(ids.filter(function (id) { return own[id]; }), own); list.classList.add("fn-sources"); return list;
+      }
       function fnSummary() {
         var marked = codes.filter(function (c) { return counts[c]; }).sort(function (a, b) { return counts[b] - counts[a] || codes.indexOf(a) - codes.indexOf(b); });
         if (!marked.length) return "";
@@ -3212,7 +3254,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         ids.forEach(function (id) {
           var claim = CLAIM_INDEX[id].claim, item = claimBlock(claim, cite); item.classList.add("fn-claim"); item.dataset.claim = id;
           if (mixed) item.prepend(el("p", "fn-basis", names[claim.basis].toLowerCase())); // a cell with both bases says which claim is which; otherwise the context line carries the state
-          item.appendChild(fnSources(fieldCitations(claim, ["text"]))); detail.appendChild(item);
+          item.appendChild(fnSources(fieldCitations(claim, ["text"]), id)); detail.appendChild(item);
         });
         glueCitations(detail); externalLinks(detail);
       }
@@ -3771,7 +3813,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         });
         if (i.display.related_funding_ids.length) { var related = el("p", "fund-context"); related.appendChild(el("span", "label", "Related funding")); related.appendChild(document.createTextNode(" ")); related.appendChild(relatedFunding(i, fundingCites)); body.appendChild(related); }
         if (i.staffing_profile) body.appendChild(el("p", "staffing-note", i.staffing_profile));
-        var sources = el("div", "srcs"); sources.appendChild(el("h4", null, "Sources")); sources.appendChild(sourceList(refs, S)); body.appendChild(sources);
+        var sources = el("div", "srcs"); sources.appendChild(el("h4", null, "Sources")); sources.appendChild(sourceList(refs, S, null, true)); body.appendChild(sources);
         if (m.repository) body.appendChild(correctionLink(j, m));
         return body;
       }

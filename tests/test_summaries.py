@@ -391,8 +391,8 @@ def expired_lead(state):
 
 
 @pytest.mark.parametrize("state, mark", [
-    ("source_gone", "Source offline since 2 November 2026; last found 14 October 2026."),
-    ("blocked_or_failed", "Source could not be re-read since 2 November 2026; last found 14 October 2026.")])
+    ("source_gone", "Source offline since 2 November 2026; last read 14 October 2026."),
+    ("blocked_or_failed", "Source could not be re-read since 2 November 2026; last read 14 October 2026.")])
 def test_offline_lead_is_kept_marked(state, mark):
     """Owner, 15 November, "Keep last quote, marked": the expired lead stays in the line and the note, its state after it."""
     record, lead = expired_lead(state)
@@ -424,7 +424,7 @@ def test_kept_lead_keeps_live_role_claims_and_drops_other_expired_ones():
                              "reread": {"state": "source_gone", "since": "2026-11-02", "last_found": "2026-10-14"}}]
     texts = summaries.generate(record, None, None, as_of=AS_OF)
     assert texts["note"] == "It says it does research."
-    assert texts["roles"][body] == f"It says it does research. {lead['text']} Source offline since 2 November 2026; last found 14 October 2026."
+    assert texts["roles"][body] == f"It says it does research. {lead['text']} Source offline since 2 November 2026; last read 14 October 2026."
     assert summaries.closest_warning(record) is None  # a live role claim is left
 
 

@@ -8887,8 +8887,15 @@ GENERIC_LEAD = "Population and region sources apply to every entry: "
 GENERIC_TAIL = ". Entry source lists leave them out; the downloads include them."
 
 
+def reread_failed(source: dict) -> bool:
+    """A source whose quotations' worst re-read state is a failure: offline, unreadable or quote not found."""
+    return any(e.get("reread", {}).get("state") in {"blocked_or_failed", "source_gone", "quote_gone"} for e in source.get("excerpts", []))
+
+
 def check_archive_links(html, data: dict) -> list[str]:
-    """A rendered source with an archive_url has "(archived copy)" right after its link; one without has none.
+    """Archived copies (principle): " · archived copy" ends a source's line where the source could not be re-read,
+    after its caveat; a record's source list also gives every other archived copy; a claim's own sources and Method's
+    inline links give none otherwise. A source without an archive_url shows none.
 
     The oracle is the data: each source list item names its source id, and the Method
     inline links follow display.generic_sources, then each other overview's source_links.
@@ -8898,26 +8905,33 @@ def check_archive_links(html, data: dict) -> list[str]:
     sources = {s["id"]: s for s in data["sources"]}
     errors, expected = [], 0
 
-    def follows(link, sid: str, where: str) -> None:
+    def visible(node) -> str:
+        return "".join(t for t in node.find_all(string=True) if not t.find_parent(class_="vh"))
+
+    def ends(parent, link, sid: str, where: str, record: bool) -> None:
         nonlocal expected
-        archive = sources[sid].get("archive_url") or ""
-        after = link.find_next_sibling()
-        has = after is not None and after.select_one("a.archive") is not None
-        if not archive:
-            if has:
-                errors.append(f"{where}: source {sid} has no archive_url but shows an archived copy link")
+        src = sources[sid]
+        archive = src.get("archive_url") or ""
+        want = bool(archive) and (record or reread_failed(src))
+        after = [n for n in link.find_next_siblings() if n.find_parent() is parent]
+        copies = [n for n in after if "archive-copy" in (n.get("class") or [])]
+        if not want:
+            if copies:
+                errors.append(f"{where}: source {sid} shows an archived copy link it should not")
             return
         expected += 1
-        if not has:
+        if len(copies) != 1:
             errors.append(f"{where}: source {sid} lacks its archived copy link")
             return
-        copy = after.select_one("a.archive")
-        if copy.get("href") != archive or not "".join(t for t in copy.find_all(string=True) if not t.find_parent(class_="vh")).strip():
+        copy, a = copies[0], copies[0].select_one("a.archive")
+        if a is None or a.get("href") != archive or not visible(a).strip():
             errors.append(f"{where}: source {sid} archived copy link differs from data")
-        text = "".join(t for t in after.find_all(string=True) if not t.find_parent(class_="vh"))
-        label = "".join(t for t in copy.find_all(string=True) if not t.find_parent(class_="vh"))
-        if "archive-copy" not in (after.get("class") or []) or text != f"({label})" or after.previous_sibling != " ":
-            errors.append(f"{where}: source {sid} archived copy is not one bracketed phrase after its link")
+        elif visible(copy) != " \u00b7 " + visible(a):
+            errors.append(f"{where}: source {sid} archived copy is not one \" \u00b7 \" phrase after its line")
+        tail = [n for n in after if "reread-tail" in (n.get("class") or [])]
+        if (tail and copy.find_previous_sibling() is not tail[0]) or any(
+                n.find_parent() is parent for n in copy.find_next_siblings() if "reread" not in (n.get("class") or [])):
+            errors.append(f"{where}: source {sid} archived copy does not end its source line")
 
     items = soup.select("li[data-source-id]")
     if not items:
@@ -8928,19 +8942,31 @@ def check_archive_links(html, data: dict) -> list[str]:
         where = f"{(host.get('data-source-scope') or host.get('data-j')) if host else 'page'} source list"
         link = li.select_one("a[href]")
         if sid in sources and link is not None:
-            follows(link, sid, where)
+            ends(li, link, sid, where, "fn-sources" not in (li.parent.get("class") or []))
     display = data["dataset"]["display"]
     lists = [display["generic_sources"]] + [o["display"]["source_links"] for o in data["dataset"].get("other_overviews") or []]
     spans = soup.select(".inline-links")
     if len(spans) != len(lists):
         errors.append(f"Method: {len(spans)} inline source groups, data has {len(lists)}")
     for span, ids in zip(spans, lists):
-        links = [a for a in span.select("a") if "archive" not in (a.get("class") or [])]
+        links = [a for a in span.select("a") if "archive" not in (a.get("class") or []) and not a.find_parent(class_="archive-copy")]
         if [a.get("href") for a in links] != [sources[sid]["url"] for sid in ids]:
             errors.append(f"Method: inline sources differ from data ({', '.join(ids)})")
             continue
-        for link, sid in zip(links, ids):
-            follows(link, sid, "Method")
+        for n, (link, sid) in enumerate(zip(links, ids)):
+            nxt = links[n + 1] if n + 1 < len(links) else None
+            src = sources[sid]
+            want = bool(src.get("archive_url")) and reread_failed(src)
+            between = []
+            for sib in link.find_next_siblings():
+                if sib is nxt:
+                    break
+                between.append(sib)
+            copies = [b for b in between if "archive-copy" in (b.get("class") or [])]
+            if want:
+                expected += 1
+            if bool(copies) != want:
+                errors.append(f"Method: source {sid} {'lacks its' if want else 'shows an'} archived copy link")
     shown = soup.select("a.archive")
     if len(shown) != expected:
         errors.append(f"{len(shown)} archived copy links on the page, {expected} expected from source lists and Method")
@@ -8950,7 +8976,7 @@ def check_archive_links(html, data: dict) -> list[str]:
 
 
 def expected_reread_line(source: dict) -> str | None:
-    """The re-read line the page principle (Re-read line) asks for, from the source's quotations' own states."""
+    """The re-read sentence the page principle (Re-read line) asks for, from the source's quotations' own states."""
     states = [e["reread"] for e in source.get("excerpts", []) if e.get("reread")]
     if not states:
         return None
@@ -8966,26 +8992,52 @@ def expected_reread_line(source: dict) -> str | None:
         count = f": {gone} of {len(states)} quotes" if any(not rank[r["state"]] for r in states) else ""
         return f"Not found in the source on {since}{count}; last found {found}; under review."
     if worst["state"] == "source_gone":
-        return f"Source offline since {since}; last found {found}."
-    return f"Source could not be re-read since {since}; last found {found}."
+        return f"Source offline since {since}; last read {found}."
+    return f"Source could not be re-read since {since}; last read {found}."
+
+
+def expected_reread_tail(source: dict) -> str | None:
+    """The short caveat that ends the source line of a source that could not be re-read: " · last read {date}"."""
+    if not reread_failed(source):
+        return None
+    states = [e["reread"] for e in source.get("excerpts", []) if e.get("reread")]
+    rank = {"blocked_or_failed": 1, "source_gone": 2, "quote_gone": 2}
+    tie = {"source_gone": 0, "quote_gone": 1, "blocked_or_failed": 2}
+    top = max(rank.get(r["state"], 0) for r in states)
+    worst = min((r for r in states if rank.get(r["state"], 0) == top), key=lambda r: (r["since"], tie[r["state"]], r["last_found"]))
+    word = "quote last found" if worst["state"] == "quote_gone" else "last read"
+    return f" \u00b7 {word} {expected_date(worst['last_found'])}"
 
 
 def check_reread_lines(html, data: dict) -> list[str]:
-    """Each source list item carries the re-read line its quotations' states give, once, last, and none says verified."""
+    """Each source list item carries its re-read state once: a source that could not be re-read ends its line with
+    " · last read {date}" (the full sentence as its tip and for screen readers), any other source with a re-read
+    state ends with its own re-read line; none says verified."""
     soup = BeautifulSoup(html, "html.parser")
     sources = {s["id"]: s for s in data["sources"]}
     errors, items = [], soup.select("li[data-source-id]")
     for li in items:
         sid = str(li["data-source-id"])
-        lines = li.select(".reread")
+        if sid not in sources:
+            continue
+        src = sources[sid]
+        lines, tails = li.select(".reread"), li.select(".reread-tail")
+        expected, tail = expected_reread_line(src), expected_reread_tail(src)
+        if tail:
+            shown = "".join(t for t in tails[0].find_all(string=True) if not t.find_parent(class_="vh")) if len(tails) == 1 else None
+            full = tails[0].select_one(".vh") if len(tails) == 1 else None
+            if lines or shown != tail:
+                errors.append(f"source {sid}: re-read caveat {shown!r}, expected {tail!r} and no separate line")
+            elif tails[0].parent is not li or tails[0].get("data-tip") != expected or tails[0].has_attr("aria-description") or full is None or " ".join(full.get_text().split()) != expected:
+                errors.append(f"source {sid}: the caveat's tip or screen reader sentence differs from {expected!r}")
+            continue
         text = [" ".join(line.get_text().split()) for line in lines]
-        expected = expected_reread_line(sources[sid]) if sid in sources else None
-        if text != ([expected] if expected else []):
+        if tails or text != ([expected] if expected else []):
             errors.append(f"source {sid}: re-read line {text or 'missing'}, expected {expected or 'none'}")
         elif lines and (lines[0].parent is not li or any(
                 not isinstance(after, str) or after.strip() for after in lines[0].next_siblings)):
             errors.append(f"source {sid}: the re-read line is not the item's last part")
-    if any("verified" in line.get_text().lower() for line in soup.select(".reread")):
+    if any("verified" in line.get_text().lower() for line in soup.select(".reread, .reread-tail")):
         errors.append("a re-read line says verified")
     return errors
 
@@ -10484,24 +10536,36 @@ def claim_bindings(data: dict, claim_id: str) -> list[tuple[dict, int, dict]]:
     return []
 
 
+def expected_quote_label(data: dict, claim_id: str) -> str:
+    """The Quote fold's label: "Quote", or "Quote, translated from {languages}" naming, in order, the plain language of
+    every translated excerpt and anchor it holds (principle: Claims; plain names as in summaries.LANGUAGE_NAMES)."""
+    from summaries import LANGUAGE_NAMES
+    sources, names = {s["id"]: s for s in data.get("sources", [])}, []
+    for s, _, e in claim_bindings(data, claim_id):
+        for span in [e, *e.get("anchors", [])]:
+            lang = sources.get(span.get("source_id"), s).get("language") if span.get("source_id") else s.get("language")
+            name = span.get("gloss") and LANGUAGE_NAMES.get(lang, lang or "an unknown language")
+            if name and name not in names:
+                names.append(name)
+    if not names:
+        return "Quote"
+    return "Quote, translated from " + (names[0] if len(names) < 2 else ", ".join(names[:-1]) + " and " + names[-1])
+
+
 def check_quote_translations(soup) -> list[str]:
-    """Markers only in Quote folds, beside each glossed excerpt/anchor; every original stays focusable."""
+    """The translation is named once, in the Quote fold's label; no marker follows a quote; every original stays focusable."""
     errors = []
-    for marker in soup.select(".translation"):
-        if marker.find_parent("details", class_="quote") is None or marker.find_parent(class_="claim-text") is not None:
-            errors.append("translation marker must appear only in a Quote fold, never in a running sentence")
+    if soup.select(".translation"):
+        errors.append("a translation marker follows a quote; the Quote fold's label names the translation")
     for quote in soup.select(".quote-text[aria-description]"):
         if quote.get("tabindex") != "0":
             errors.append("translated quote lacks keyboard focus")
-        if quote.find_parent("details", class_="quote") is None or quote.find_parent(class_="claim-text") is not None:
+        fold = quote.find_parent("details", class_="quote")
+        if fold is None or quote.find_parent(class_="claim-text") is not None:
             continue
-        scope = quote.find_parent(class_="quotation")
-        markers = scope.select(".translation") if scope is not None else []
-        if len(markers) != 1 or not markers[0].get_text(strip=True):
-            errors.append("translated quote lacks its translation marker")
-            continue
-        if quote.find_next_sibling() is not markers[0] or any(t.strip() for t in quote.next_siblings if isinstance(t, NavigableString)):
-            errors.append("translation marker must immediately follow its quote in the Quote fold")
+        summary = fold.find("summary", recursive=False)
+        if summary is None or not summary.get_text().startswith("Quote, translated from "):
+            errors.append("a Quote fold holding a translated quote does not say so in its label")
     return errors
 
 
@@ -10540,7 +10604,7 @@ def check_claim_cards(html: str, data: dict) -> list[str]:
                 errors.append(f"{c['id']}: missing claim sentence")
                 continue
             plain = copy.copy(line)
-            for extra in plain.select(".cites, .translation"):
+            for extra in plain.select(".cites"):
                 extra.decompose()
             text = " ".join(plain.get_text().split())
             if c["kind"] == "development":
@@ -10563,6 +10627,8 @@ def check_claim_cards(html: str, data: dict) -> list[str]:
             folds = block.select("details.quote")
             if len(folds) != 1 or folds[0].get("data-quote-claim") != c["id"]:
                 errors.append(f"{c['id']}: missing or mismatched quote disclosure")
+            elif (label := folds[0].find("summary", recursive=False).get_text()) != (want_label := expected_quote_label(data, c["id"])):
+                errors.append(f"{c['id']}: Quote label {label!r}, expected {want_label!r}")
             if c["kind"] == "function" and c.get("expired") and c is not lead:
                 warning = block.select_one(":scope > .reread")
                 if warning is None or not warning.get_text(strip=True):
@@ -10627,12 +10693,13 @@ def claim_quote_fixture(data: dict) -> tuple[dict, list[str]]:
                                   "authority_roles": ["single_point_of_contact"], "designation_state": "designated", "designation_basis": "law"}
                                  for bid, name, kind in [("fixture-closest", "Different legal name", "research"), ("fixture-authority", "Fixture authority", "ai_act_authority"), ("fixture-other", "Fixture other body", "research")]]
     migrated["summary"] = ('No qualifying institute identified as of November 2026. Closest body: Fixture closest body. '
-                            + lead["text"] + ' Source offline since 2 September 2026; last found 1 September 2026.')
+                            + lead["text"] + ' Source offline since 2 September 2026; last read 1 September 2026.')
     return fixture, [status["id"], migrated["id"]]
 
 
 def check_claim_quotes(browser, base_url: str, data: dict) -> list[str]:
     """Open every disclosure on selected real cards and fixture cards, with keyboard and touch originals."""
+    from summaries import LANGUAGE_NAMES
     errors = []
     institutes = {i["id"]: i for i in data["institutes"]}
     selected = []
@@ -10692,8 +10759,8 @@ def check_claim_quotes(browser, base_url: str, data: dict) -> list[str]:
                                     named = next(s for s in payload["sources"] if s["id"] == anchor["source_id"])
                                     if not line.inner_text().endswith(" (" + (named.get("title_en") or named["title"]) + ")"):  # Naming: English shown
                                         errors.append(f"{identity}: other-copy anchor source title is missing")
-                                    if anchor.get("gloss") and not line.locator(".translation").count():
-                                        errors.append(f"{identity}: other-copy anchor language is missing")
+                                    if anchor.get("gloss") and (named.get("language") or "") and LANGUAGE_NAMES.get(named["language"], named["language"]) not in fold.locator("summary").inner_text():
+                                        errors.append(f"{identity}: other-copy anchor language is missing from the Quote label")
                             for node, span in zip(block.locator(".quote-text").all(), spans):
                                 if not span.get("gloss"):
                                     # An English original needs neither a tooltip nor a translation marker.
@@ -12336,17 +12403,19 @@ const checkClaims = async (detail, cell, key) => {
          citations.every(a => a.href === data.sources.find(s => s.id === a.dataset.sourceId).url && a.target === '_blank'), key + ': claim citation differs');
     const fold = item.querySelector(':scope > details.quote'), sources = item.querySelector(':scope > .fn-sources');
     need(fold && !fold.open && !fold.querySelector('.quote-body') && fold.dataset.quoteClaim === id &&
-         fold.querySelector('summary')?.textContent === 'Quote', key + ': Quote is not closed and lazy by default');
+         /^Quote(, translated from \S.*)?$/.test(fold.querySelector('summary')?.textContent || ''), key + ': Quote is not closed and lazy by default');
+    const glossed = [q.excerpt, ...(q.excerpt.anchors || [])].some(span => span.gloss), label = fold?.querySelector('summary')?.textContent || '';
+    need(glossed ? label.startsWith('Quote, translated from ') && !/Bokmål|Nynorsk/.test(label) : label === 'Quote', key + ': Quote label does not name the translation once, in a plain language name');
     need(sentence?.nextElementSibling === fold && fold?.nextElementSibling === sources && sources === item.lastElementChild, key + ': sentence/Quote/source order differs');
     if (!fold) continue;
     await new Promise(resolve => { fold.addEventListener('toggle', resolve, {once:true}); fold.querySelector('summary').click(); });
     need(fold.open && fold.querySelector('.quote-body')?.getClientRects().length, key + ': Quote does not open to visible evidence');
     const block = item.querySelector('.quote-body > .quote-excerpt');
     need(item.querySelectorAll('.quote-excerpt').length === 1 && block?.dataset.sourceId === q.source.id, key + ': shared quote block differs');
-    const shown = block?.querySelector(':scope > .quotation > .quote-text'), marker = block?.querySelector(':scope > .quotation > .translation');
+    const shown = block?.querySelector(':scope > .quotation > .quote-text');
     need(shown?.textContent === '"' + (q.excerpt.gloss || q.excerpt.text) + '"', key + ': quote differs');
-    need(!q.excerpt.gloss || (shown?.getAttribute('aria-description') === q.excerpt.text && /^\s*translated from \S/.test(marker?.textContent || '')), key + ': translation marker or original differs');
-    need(!!q.excerpt.gloss || !marker, key + ': translation marker on an English quote');
+    need(!q.excerpt.gloss || shown?.getAttribute('aria-description') === q.excerpt.text, key + ': original differs');
+    need(!item.querySelector('.translation'), key + ': a translation marker follows a quote');
     const anchors = [...(block?.querySelectorAll('.quote-anchor') || [])];
     need(anchors.length === (q.excerpt.anchors || []).length, key + ': anchor count differs');
     (q.excerpt.anchors || []).forEach((anchor, n) => {
@@ -12355,7 +12424,8 @@ const checkClaims = async (detail, cell, key) => {
     });
     need(!!block?.querySelector('.reread') === !!q.excerpt.reread, key + ': per-quote re-read line differs');
     const reread = block?.querySelector('.reread');
-    if (reread) need(getComputedStyle(reread).display === 'block' && getComputedStyle(reread).color === getComputedStyle(sources).color, key + ': per-quote re-read line is not separate/muted');
+    if (reread && reread.classList.contains('failed')) need(getComputedStyle(reread).display === 'none' && sources.querySelector(`li[data-source-id="${q.source.id}"] > .reread-tail`)?.getClientRects().length, key + ': a source that could not be re-read does not say so at the end of its source line');
+    else if (reread) need(getComputedStyle(reread).display === 'block' && getComputedStyle(reread).color === getComputedStyle(sources).color, key + ': per-quote re-read line is not separate/muted');
     const links = [...item.querySelectorAll('.fn-sources > li > a.standalone')];
     need(JSON.stringify(links.map(a => a.href)) === JSON.stringify(q.claim.source_ids.map(sid => data.sources.find(s => s.id === sid).url)) && links.every(a => a.target === '_blank'), key + ': claim sources/order differ');
   }

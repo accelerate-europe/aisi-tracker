@@ -830,7 +830,7 @@ def _translated_lead_fixture():
     marker = '<span class="small translation"> translated from German</span>'
     cites = '<span class="cites"><a class="cn" data-source-id="s1">1</a></span>'
     html = (f'<details id="c-xx"><div class="claim" data-claim-id="lead"><span class="claim-text">It says it {quote} with them.{cites}</span>'
-            '<details class="quote" data-quote-claim="lead"><summary>Quote</summary></details></div></details>')
+            '<details class="quote" data-quote-claim="lead"><summary>Quote, translated from German</summary></details></div></details>')
     return data, html, quote, marker, cites
 
 
@@ -857,16 +857,24 @@ def test_quote_translation_rejects_sentence_markers_or_unreachable_original(plac
     assert any("translation" in e or "translated" in e for e in check_page.check_claim_cards(html, data))
 
 
-def test_quote_translation_standalone_excerpts_and_anchors_each_need_their_own_marker():
+def test_quote_translation_is_named_once_in_the_fold_label():
     _, _, quote, marker, _ = _translated_lead_fixture()
-    standalone = quote[:-7] + marker + "</span>"
-    html = (f'<details class="quote" open><summary>Quote</summary><div class="quote-excerpt">{standalone}'
-            f'<span class="quote-anchor">Heading: {standalone}</span></div></details>')
+    html = (f'<details class="quote" open><summary>Quote, translated from German</summary><div class="quote-excerpt">{quote}'
+            f'<span class="quote-anchor">Heading: {quote}</span></div></details>')
     assert check_page.check_quote_translations(BeautifulSoup(html, "html.parser")) == []
-    for broken in (html.replace(marker, "", 1), html.replace(marker, "", 2), html.replace(" translated from German", " "),
-                   html.replace(marker, marker + marker, 1), html.replace(' tabindex="0"', "", 1),
-                   html.replace(standalone, marker + quote, 1), html.replace(marker, " words in between " + marker, 1)):
+    for broken in (html.replace(", translated from German", ""), html.replace(quote + "<span", quote + marker + "<span", 1),
+                   html.replace(' tabindex="0"', "", 1)):
         assert check_page.check_quote_translations(BeautifulSoup(broken, "html.parser"))
+
+
+def test_quote_label_names_each_plain_language_once():
+    data = {"jurisdictions": [{"id": "XX", "claims": [{"id": "c", "kind": "fact", "text": "t"}]}],
+            "sources": [{"id": "a", "language": "nn", "excerpts": [{"text": "x", "gloss": "y", "supports": ["/jurisdictions/0/claims/0/text"],
+                                                                   "anchors": [{"text": "z", "gloss": "w"}, {"text": "u", "gloss": "v", "source_id": "b"}]}]},
+                        {"id": "b", "language": "fr"}]}
+    assert check_page.expected_quote_label(data, "c") == "Quote, translated from Norwegian and French"
+    data["sources"][0]["excerpts"][0] = {"text": "x", "supports": ["/jurisdictions/0/claims/0/text"]}
+    assert check_page.expected_quote_label(data, "c") == "Quote"
 
 
 def test_quote_translation_generated_sentence_without_disclosure_has_no_marker():
@@ -893,25 +901,36 @@ def test_generic_sources_stay_out_of_card_lists_and_in_method():
 
 
 def _archive_data():
+    failed = {"text": "q", "supports": [], "reread": {"state": "blocked_or_failed", "last_found": "2026-10-17", "since": "2026-11-10"}}
     return {
         "sources": [
             {"id": "kept", "url": "https://k.example/", "archive_url": "https://web.archive.org/web/1/https://k.example/"},
             {"id": "live", "url": "https://l.example/"},
+            {"id": "gone", "url": "https://g.example/", "archive_url": "https://web.archive.org/web/1/https://g.example/", "excerpts": [failed]},
         ],
-        "dataset": {"display": {"generic_sources": ["kept"]}, "other_overviews": [{"display": {"source_links": ["live"]}}]},
+        "dataset": {"display": {"generic_sources": ["kept", "gone"]}, "other_overviews": [{"display": {"source_links": ["live"]}}]},
     }
 
 
-def _archive_html(kept_archive=True, live_archive=False):
-    copy = lambda url: f' <span class="archive-copy">(<a class="archive" href="{url}">archived copy<span class="vh"> (opens in a new tab)</span></a>)</span>'  # noqa: E731
-    kept = copy("https://web.archive.org/web/1/https://k.example/") if kept_archive else ""
-    live = copy("https://l.example/") if live_archive else ""
+ARCHIVE_TAIL = (' <span class="reread-tail" data-tip="Source could not be re-read since 10 Nov 2026; last read 17 Oct 2026.">'
+                '<span aria-hidden="true"> \u00b7 last read <span class="date-text">17 Oct 2026</span></span>'
+                '<span class="vh"> Source could not be re-read since 10 Nov 2026; last read 17 Oct 2026.</span></span>')
+
+
+def _archive_html(kept_archive=True, live_archive=False, claim_archive=False, gone_archive=True):
+    copy = lambda url: f'<span class="archive-copy"> \u00b7 <a class="archive" href="{url}">archived copy<span class="vh"> (opens in a new tab)</span></a></span>'  # noqa: E731
+    kept = copy("https://web.archive.org/web/1/https://k.example/")
+    gone = ARCHIVE_TAIL + (copy("https://web.archive.org/web/1/https://g.example/") if gone_archive else "")
     return (
-        f'<article class="card" data-j="GB"><div class="srcs"><ol><li data-source-id="kept"><a class="standalone" href="https://k.example/">K</a>{kept}, Publisher</li>'
-        f'<li data-source-id="live"><a class="standalone" href="https://l.example/">L</a>{live}, Publisher</li></ol></div>'
+        f'<article class="card" data-j="GB"><div class="srcs"><ol>'
+        f'<li data-source-id="kept"><a class="standalone" href="https://k.example/">K</a>, Publisher{kept if kept_archive else ""}</li>'
+        f'<li data-source-id="live"><a class="standalone" href="https://l.example/">L</a>, Publisher{copy("https://l.example/") if live_archive else ""}</li>'
+        f'<li data-source-id="gone"><a class="standalone" href="https://g.example/">G</a>, Publisher{gone}</li></ol></div>'
+        f'<ol class="fn-sources"><li data-source-id="kept"><a class="standalone" href="https://k.example/">K</a>, Publisher{kept if claim_archive else ""}</li></ol>'
         f'<p>Value<sup><a class="cn" data-source-id="kept" href="https://k.example/">1</a></sup></p></article>'
-        f'<ul><li id="generic-sources"><span class="inline-links"><a href="https://k.example/">K</a>{kept}</span></li>'
-        f'<li><span class="inline-links"><a href="https://l.example/">L</a>{live}</span>: note</li></ul>'
+        f'<ul><li id="generic-sources"><span class="inline-links"><a href="https://k.example/">K</a>{kept if claim_archive else ""}, '
+        f'<a href="https://g.example/">G</a>{gone}</span></li>'
+        f'<li><span class="inline-links"><a href="https://l.example/">L</a>{copy("https://l.example/") if live_archive else ""}</span>: note</li></ul>'
     )
 
 
@@ -924,8 +943,8 @@ def test_reread_line_follows_the_worst_quotation():
     assert line() is None
     assert line(_reread("confirmed", "2026-11-03"), _reread("not_attempted", "2026-11-10")) == "Source last re-read 10 Nov 2026."
     assert line(_reread("confirmed"), _reread("blocked_or_failed", "2026-10-17", "2026-11-10")) == \
-        "Source could not be re-read since 10 Nov 2026; last found 17 Oct 2026."
-    assert line(_reread("source_gone", "2026-10-17", "2026-11-10")) == "Source offline since 10 Nov 2026; last found 17 Oct 2026."
+        "Source could not be re-read since 10 Nov 2026; last read 17 Oct 2026."
+    assert line(_reread("source_gone", "2026-10-17", "2026-11-10")) == "Source offline since 10 Nov 2026; last read 17 Oct 2026."
     assert line(_reread("quote_gone", "2026-10-17", "2026-11-10")) == \
         "Not found in the source on 10 Nov 2026; last found 17 Oct 2026; under review."
     assert line(_reread("confirmed"), _reread("quote_gone", "2026-10-17", "2026-11-10"), _reread("blocked_or_failed", "2026-10-01", "2026-10-03")) == \
@@ -936,10 +955,10 @@ def test_reread_line_follows_the_worst_quotation():
     # Exact ties: offline before not found, then the earliest last found, in either order.
     pair = [_reread("quote_gone", "2026-10-17", "2026-11-10"), _reread("source_gone", "2026-10-20", "2026-11-10")]
     for excerpts in (pair, pair[::-1]):
-        assert line(*excerpts) == "Source offline since 10 Nov 2026; last found 20 Oct 2026."
+        assert line(*excerpts) == "Source offline since 10 Nov 2026; last read 20 Oct 2026."
     pair = [_reread("blocked_or_failed", "2026-10-17", "2026-11-10"), _reread("blocked_or_failed", "2026-10-03", "2026-11-10")]
     for excerpts in (pair, pair[::-1]):
-        assert line(*excerpts) == "Source could not be re-read since 10 Nov 2026; last found 3 Oct 2026."
+        assert line(*excerpts) == "Source could not be re-read since 10 Nov 2026; last read 3 Oct 2026."
 
 
 def test_reread_lines_match_the_data():
@@ -956,22 +975,27 @@ def test_reread_lines_match_the_data():
     assert "a re-read line says verified" in check_page.check_reread_lines(item.format('<span class="reread">Verified.</span>'), verified)
 
 
-def test_archive_links_follow_archived_sources_only():
+def test_archive_links_only_where_needed():
     data = _archive_data()
     assert check_page.check_archive_links(_archive_html(), data) == []
     missing = check_page.check_archive_links(_archive_html(kept_archive=False), data)
     assert "GB source list: source kept lacks its archived copy link" in missing
-    assert "Method: source kept lacks its archived copy link" in missing
+    gone = check_page.check_archive_links(_archive_html(gone_archive=False), data)
+    assert "GB source list: source gone lacks its archived copy link" in gone and "Method: source gone lacks its archived copy link" in gone
     extra = check_page.check_archive_links(_archive_html(live_archive=True), data)
-    assert "GB source list: source live has no archive_url but shows an archived copy link" in extra
-    assert "Method: source live has no archive_url but shows an archived copy link" in extra
+    assert "GB source list: source live shows an archived copy link it should not" in extra
+    assert "Method: source live shows an archived copy link" in extra
+    # A claim's own sources and Method give an archived copy only beside a caveat.
+    inline = check_page.check_archive_links(_archive_html(claim_archive=True), data)
+    assert "GB source list: source kept shows an archived copy link it should not" in inline and "Method: source kept shows an archived copy link" in inline
     wrong = _archive_html().replace("web/1/", "web/2/", 1)
     assert "GB source list: source kept archived copy link differs from data" in check_page.check_archive_links(wrong, data)
-    unbracketed = _archive_html().replace("</a>)</span>", "</a></span>", 1)
-    assert "(opens in a new tab)" in unbracketed
-    assert "GB source list: source kept archived copy is not one bracketed phrase after its link" in check_page.check_archive_links(unbracketed, data)
-    extra_citation = _archive_html().replace(">1</a></sup>", '>1</a><span class="archive-copy">(<a class="archive" href="x">archived copy</a>)</span></sup>')
-    assert "3 archived copy links on the page, 2 expected from source lists and Method" in check_page.check_archive_links(extra_citation, data)
+    loose = _archive_html().replace(' \u00b7 <a class="archive"', ' (<a class="archive"', 1)
+    assert any("not one" in e for e in check_page.check_archive_links(loose, data))
+    early = _archive_html().replace(ARCHIVE_TAIL + '<span class="archive-copy">', '<span class="archive-copy">', 1).replace("</a></span></li>", "</a></span>" + ARCHIVE_TAIL + "</li>", 1)
+    assert any("does not end its source line" in e for e in check_page.check_archive_links(early, data))
+    extra_citation = _archive_html().replace(">1</a></sup>", '>1</a><span class="archive-copy"> \u00b7 <a class="archive" href="x">archived copy</a></span></sup>')
+    assert "4 archived copy links on the page, 3 expected from source lists and Method" in check_page.check_archive_links(extra_citation, data)
     as_citation = _archive_html().replace('class="archive" href="https://web.archive.org', 'class="archive cn" href="https://web.archive.org', 1)
     assert check_page.check_archive_links(as_citation, data) == ["a superscript citation carries an archived copy link"]
 
@@ -983,6 +1007,19 @@ def test_archive_links_allow_rewording_but_require_visible_link_text():
     for label in ("", " \n "):
         errors = check_page.blocking(check_page.check_archive_links(html.replace("Saved source", label), data))
         assert any("archived copy link differs" in error for error in errors)
+
+
+def test_reread_caveat_ends_the_source_line():
+    data = _archive_data()
+    assert check_page.check_reread_lines(_archive_html(), data) == []
+    as_line = _archive_html().replace(ARCHIVE_TAIL, '<span class="reread">Source could not be re-read since 10 Nov 2026; last read 17 Oct 2026.</span>', 1)
+    assert any("re-read caveat" in e for e in check_page.check_reread_lines(as_line, data))
+    no_reader = _archive_html().replace('<span class="vh"> Source could not', '<span> Source could not', 1)
+    assert any("re-read caveat" in e or "screen reader" in e for e in check_page.check_reread_lines(no_reader, data))
+    no_tip = _archive_html().replace(' data-tip="Source could not be re-read since 10 Nov 2026; last read 17 Oct 2026."', "", 1)
+    assert any("tip" in e for e in check_page.check_reread_lines(no_tip, data))
+    found = _archive_html().replace("\u00b7 last read", "\u00b7 last found", 1)
+    assert any("re-read caveat" in e for e in check_page.check_reread_lines(found, data))
 
 
 def test_former_names_are_marked_as_former():

@@ -26,6 +26,8 @@ function el(tag, cls, text) {
 var window = {}, document = {createTextNode: text => ({text}), addEventListener() {}};
 function nonbreakingDates(s) { return s; }
 function rereadLine(s) { return el('span', 'reread', s.id || ('R' + (s.excerpts || []).length)); } // a source, or one quotation's own state
+function archiveCopy(parent, s) {}
+function andJoin(xs) { return xs.length < 2 ? xs.join('') : xs.slice(0, -1).join(', ') + ' and ' + xs[xs.length - 1]; }
 """
 
 
@@ -48,23 +50,26 @@ def test_page_script_parses_without_chromium():
     assert result.returncode == 0, result.stderr
 
 
-@pytest.mark.parametrize("gloss, lang, marker", [(None, "en", ""), ("Models", "de", "German"), ("Models", "xx", "xx")])
-@pytest.mark.parametrize("in_sentence", [False, True])
-def test_quote_rule_translation_original_focus_and_language_fallback(gloss, lang, marker, in_sentence):
-    option = ", true" if in_sentence else ""  # Quote folds keep the default.
-    quote = page_call(f"window.quoteNode('<b>Modelle</b>', {json.dumps(gloss)}, {json.dumps(lang)}{option})")
-    english = quote["children"][0]
+@pytest.mark.parametrize("gloss", [None, "Models"])
+def test_quote_rule_translation_original_and_focus(gloss):
+    quote = page_call(f"window.quoteNode('<b>Modelle</b>', {json.dumps(gloss)})")
+    english, = quote["children"]  # no marker follows a quote: the Quote fold's label names the translation
     assert texts(english) == '"' + (gloss or "<b>Modelle</b>") + '"'
     assert english["tag"] == "span"
     if gloss:
         assert english["attrs"] == {"aria-description": "<b>Modelle</b>"}
         assert english["tabIndex"] == 0
-        if in_sentence:
-            assert len(quote["children"]) == 1
-        else:
-            assert texts(quote).endswith("translated from " + marker)
     else:
-        assert english["attrs"] == {} and len(quote["children"]) == 1
+        assert english["attrs"] == {}
+
+
+def test_quote_label_names_plain_languages_once():
+    data = bound_data()
+    data["sources"][0]["language"] = "nb"
+    data["sources"].append({"id": "fr", "language": "fr"})
+    data["sources"][0]["excerpts"][0]["anchors"].append({"kind": "membership", "text": "x", "gloss": "y", "source_id": "fr"})
+    labels = page_call(f"(CLAIM_INDEX = claimIndex({json.dumps(data)}), [quoteLabel('fact'), quoteLabel('development')])")
+    assert labels == ["Quote, translated from Norwegian and French", "Quote"]
 
 
 def bound_data():
@@ -88,7 +93,7 @@ def test_bindings_use_required_leaves_and_deduplicate_a_shared_act_and_date_exce
     assert [i for _, i, _ in check_page.claim_bindings(data, "development")] == [1, 2]
     body = page_call(f"(CLAIM_INDEX = claimIndex({json.dumps(data)}), claimQuoteBody('fact'))")
     assert len(body["children"]) == 1
-    assert texts(body) == '"A fact" translated from GermanHeading: "Title" translated from GermanR1'  # the quotation's own state (R1), never its source's
+    assert texts(body) == '"A fact"Heading: "Title"R1'  # the quotation's own state (R1), never its source's
     assert body["children"][0]["dataset"] == {"sourceId": "s", "excerptIndex": 0}
 
 
@@ -142,7 +147,7 @@ def saved_claim_page():
     data["jurisdictions"][0]["claims"] = data["jurisdictions"][0]["claims"][:1]
     html = ('<article id="c-xx"><div class="claim" data-claim-id="fact"><span class="claim-text">A fact.'
             '<span class="cites"><a class="cn" data-source-id="s">1</a></span></span>'
-            '<details class="quote" data-quote-claim="fact"><summary>Quote</summary></details></div></article>')
+            '<details class="quote" data-quote-claim="fact"><summary>Quote, translated from German</summary></details></div></article>')
     return html, data
 
 
@@ -179,7 +184,7 @@ def test_development_sentence_and_all_three_citations_are_checked():
     record["claims"] = record["claims"][1:]
     html = ('<details id="c-xx"><div class="claim" data-claim-id="development"><span class="claim-text">'
             'On 1 Sep 2026 the government acted, which assigns tests.<span class="cites"><a class="cn" data-source-id="s">1</a></span></span>'
-            '<details class="quote" data-quote-claim="development"><summary>Quote</summary></details></div></details>')
+            '<details class="quote" data-quote-claim="development"><summary>Quote, translated from German</summary></details></div></details>')
     assert check_page.check_claim_cards(html, data) == []
     record["claims"][0]["citations"]["act"] = ["different-act-source"]
     assert any("citations" in e for e in check_page.check_claim_cards(html, data))
@@ -215,7 +220,7 @@ def test_other_copy_anchor_shows_its_source_title_language_and_original():
     data["sources"][0]["excerpts"][0]["anchors"].append(anchor)
     body = page_call(f"(CLAIM_INDEX = claimIndex({json.dumps(data)}), claimQuoteBody('fact'))")
     line, = [n for n in body["children"][0]["children"] if n.get("className") == "quote-anchor" and texts(n).startswith("Part of:")]
-    assert texts(line) == 'Part of: "The lab belongs to the institute." translated from French (Unit <membership>)'
+    assert texts(line) == 'Part of: "The lab belongs to the institute." (Unit <membership>)'
     quote = line["children"][1]["children"][0]
     assert quote["attrs"]["aria-description"] == anchor["text"] and quote["tabIndex"] == 0
     assert line["children"][-1] == {"text": ")"} and texts(line["children"][-2]) == "Unit <membership>"

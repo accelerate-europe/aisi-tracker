@@ -206,7 +206,7 @@ def test_offline_lead_claim_is_kept_marked(migrated):
     _, after = lead_lost(migrated, "source_gone")
     state = after["jurisdictions"][0]
     claims = {c["id"]: c["text"] for c in state["claims"]}
-    mark = "Source offline since 2 January 2025; last found 1 January 2025."
+    mark = "Source offline since 2 January 2025; last read 1 January 2025."
     assert {c["id"]: c["expired"] for c in state["claims"]}[LEAD] is True
     assert state["summary"].endswith(f" Closest body: Synthetic model test centre. {claims[LEAD]} {mark}")
     assert state["closest_body"]["note"] == claims[ROLE]  # the kept lead is in the summary, marked

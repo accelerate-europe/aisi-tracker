@@ -1010,6 +1010,7 @@ def test_bilingual_names_and_titles_render_through_the_same_tooltip_route():
     helpers = source[source.index('  function sourceList('):source.index('  // The producer owns evidence')]
     helpers += source[source.index('  function withOriginal('):source.index('  function instShort(')]
     helpers += next(line for line in source.splitlines() if line.startswith('  function rowValue('))
+    helpers += '\n' + next(line for line in source.splitlines() if line.startswith('  function publisherInTitle('))
     helpers += source[source.index('  function citations('):source.index('  // None-identified entries (principle:')]
     helpers += source[source.index('  function originalName('):source.index('  function bodyGroup(')]
     helpers += next(line for line in source.splitlines() if line.startswith('  function tipText('))
@@ -1025,7 +1026,8 @@ const document = {createTextNode: text => ({text})};
 function missing(na) { return el('span', 'missing', na ? 'Not applicable' : 'Not published'); }
 function dated(text) { return el('span', 'date-text', text); }
 function rereadLine() { return el('span', 'reread', 'Source last re-read 15 Nov 2026.'); }
-function archiveCopy(li, src) { if (src.archive_url) li.appendChild(el('span', 'archive-copy', '(archived copy)')); }
+function archiveCopy(li, src) { if (src.archive_url) li.appendChild(el('span', 'archive-copy', ' · archived copy')); }
+function rereadTail() { return false; }
 function hostOf(url) { return new URL(url).hostname; }
 """
     bodies = [
@@ -1044,7 +1046,7 @@ function hostOf(url) { return new URL(url).hostname; }
 const S = Object.fromEntries(sources.map(s => [s.id, s])), order = sources.map(s => s.id);
 const cite = citations(S, order);
 const names = bodies.map(b => bodyItem(b.name_en || b.name, originalName(b), [], [], cite, 'authority role'));
-const list = sourceList(order, S, {translated: ['Finding']});
+const list = sourceList(order, S, {translated: ['Finding']}, true);
 const DISPLAY_NAME = {translated: 'Institute', same: 'Same name', absent: 'No local name'};
 const institutes = [
   {id: 'translated', name_local: 'Institut <local>'},
@@ -1091,7 +1093,7 @@ console.log(JSON.stringify({names, list, institutes, rows, marks: cite(order),
         assert ', Publisher, 2026-11-15' in text(item)
         assert text(item).endswith('Source last re-read 15 Nov 2026.')
     translated = rendered['list']['children'][0]
-    assert translated['children'][1]['className'] == 'archive-copy'
+    assert [c.get('className') for c in translated['children']][-2:] == ['archive-copy', 'reread']  # a record's list ends the line with its archived copy
     assert ', supports finding' in text(translated)
     assert sources[0]['title'] not in text(translated)
     for name in rendered['institutes'][:2]:

@@ -17,6 +17,7 @@ import datetime as dt
 
 MONTHS = ("January", "February", "March", "April", "May", "June", "July", "August", "September", "October",
           "November", "December")
+# Plain names, never a variant or script; the page's QUOTE_LANGUAGES holds the same names (tests/test_language_names.py).
 LANGUAGE_NAMES = {
     "am": "Amharic", "ar": "Arabic", "az": "Azerbaijani", "bg": "Bulgarian", "bm": "Bambara", "bn": "Bengali",
     "bs": "Bosnian", "ca": "Catalan", "cnr": "Montenegrin", "cs": "Czech", "da": "Danish", "de": "German",
@@ -25,8 +26,8 @@ LANGUAGE_NAMES = {
     "ht": "Haitian Creole", "hu": "Hungarian", "hy": "Armenian", "id": "Indonesian", "is": "Icelandic",
     "it": "Italian", "ja": "Japanese", "ka": "Georgian", "kk": "Kazakh", "km": "Khmer", "ko": "Korean",
     "ky": "Kyrgyz", "lo": "Lao", "lt": "Lithuanian", "lv": "Latvian", "mk": "Macedonian", "mn": "Mongolian",
-    "mos": "Mossi", "ms": "Malay", "my": "Burmese", "nb": "Norwegian Bokmål", "ne": "Nepali", "nl": "Dutch",
-    "nn": "Norwegian Nynorsk", "no": "Norwegian", "pl": "Polish", "ps": "Pashto", "pt": "Portuguese",
+    "mos": "Mossi", "ms": "Malay", "my": "Burmese", "nb": "Norwegian", "ne": "Nepali", "nl": "Dutch",
+    "nn": "Norwegian", "no": "Norwegian", "pl": "Polish", "ps": "Pashto", "pt": "Portuguese",
     "rn": "Kirundi", "ro": "Romanian", "ru": "Russian", "si": "Sinhala", "sk": "Slovak", "sl": "Slovenian",
     "sq": "Albanian", "sr": "Serbian", "sv": "Swedish", "sw": "Swahili", "ta": "Tamil", "tg": "Tajik",
     "th": "Thai", "ti": "Tigrinya", "tk": "Turkmen", "tr": "Turkish", "uk": "Ukrainian", "ur": "Urdu",
@@ -58,8 +59,8 @@ UNDISCLOSED_FUNDING = {
 }
 # The re-read states under which an expired lead claim is kept, marked, in the page's freshness wording (section 4).
 # A quote no longer found in a readable source is not kept: the fact may have changed (hub default, for the owner).
-KEPT_STATES = {"source_gone": "Source offline since {since}; last found {last_found}.",
-               "blocked_or_failed": "Source could not be re-read since {since}; last found {last_found}."}
+KEPT_STATES = {"source_gone": "Source offline since {since}; last read {last_found}.",
+               "blocked_or_failed": "Source could not be re-read since {since}; last read {last_found}."}
 
 
 class GeneratorError(ValueError):
@@ -178,9 +179,9 @@ def check_language_names(record: dict) -> None:
 
 
 def language_words(codes: list[str]) -> str:
-    """Distinct languages in authored order, with English last."""
+    """Distinct language names in authored order, with English last; variants share their plain name (Bokmål and Nynorsk read Norwegian)."""
     ordered = sorted(dict.fromkeys(codes), key=lambda code: code == "en")
-    return words([LANGUAGE_NAMES[code] for code in ordered])
+    return words(list(dict.fromkeys(LANGUAGE_NAMES[code] for code in ordered)))
 
 
 def notes_text(record: dict, as_of: str) -> str:
