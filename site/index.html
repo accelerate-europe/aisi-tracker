@@ -190,6 +190,7 @@
   --close-size: max(44px, var(--control), var(--hit));
   --secnav-height: calc(2 * var(--sp-3) + max(var(--hit), 2 * var(--sp-1) + var(--size-label) * var(--leading-label)) + var(--rule)); /* the section bar never wraps; one CSS source before and after hydration */
   --groupnav-height: round(nearest, calc(2 * var(--sp-1) + max(var(--hit), var(--size-label) * var(--leading-label))), 1px); /* one line; the wrapping group rows are measured with the same rounding */
+  --reading-top: var(--bars-bottom, var(--secnav-height)); /* live heads share barsBottom(); CSS heights are the saved-page fallback */
   --shadow-pop: 0 var(--rule-strong) var(--sp-2) var(--shadow-ink);
 }
 /* Custom properties accept unsupported functions, so guard the modern palette. */
@@ -315,7 +316,7 @@ a.ico::before { position: static; transform: none; min-height: 0; }
    each group is one box, so its row sticks under the bar while the group is read and leaves with the group's end.
    Its ground reaches past its box: up to the bar, so a rounded bar height leaves no strip of text between them, and
    sideways by the arrival tint's spread, so a card reached by a link shows no tint beside the row (check_page check_group_row_cover). */
-.group { display: flex; flex-direction: column; gap: var(--gap-section); --nav-offset: calc(6rem + var(--groupnav-height)); --groupnav-offset: var(--groupnav-height); }
+.group { display: flex; flex-direction: column; gap: var(--gap-section); --nav-offset: calc(6rem + var(--groupnav-height)); --groupnav-offset: var(--groupnav-height); --reading-top: var(--bars-bottom, calc(var(--secnav-height) + var(--groupnav-offset))); }
 .group-nav { --row-cover: 0 calc(-1 * var(--sp-2)) 0 var(--sp-2) var(--ground); /* one rectangle: the row grown by the tint's spread on every side and moved up by it, so it covers above and beside, corners included, and nothing below */ font: var(--type-label); display: flex; flex-wrap: wrap; align-items: first baseline; gap: 0 var(--sp-4); padding-block: var(--sp-1); color: var(--muted); position: sticky; top: var(--secnav-height); z-index: 4; background: var(--ground); box-shadow: var(--row-cover); }
 .group-nav.stuck { box-shadow: inset 0 calc(-1 * var(--rule)) 0 var(--line), var(--row-cover); } /* a rule inside its box, so sticking moves no layout */
 .group-nav + section { margin-top: calc(var(--sp-2) - var(--gap-section)); } /* the gap on the section, not the row: a sticky row's margin would carry it past its group's end */
@@ -532,7 +533,7 @@ main section.first { display: flex; flex-direction: column; gap: var(--sp-5); bo
 /* Record: covers the list in place on wide screens, so nothing around it moves; below the map on narrow ones. */
 .record { position: absolute; inset: 0; overflow: auto; display: flex; flex-direction: column; gap: var(--sp-3); background: var(--paper); border: var(--rule) solid var(--line); border-radius: var(--r-sm); padding: var(--sp-4); }
 .side:has(> .record:not([hidden])) > .regions { visibility: hidden; } /* the record covers the list beside the map: hide the list under it, so no edge shows at its corners and keyboard focus stays in the record */
-.record-top { display: flex; flex-shrink: 0; align-items: center; justify-content: space-between; gap: var(--sp-3); position: sticky; top: 0; z-index: 3; background: var(--paper); }
+.record-top { display: flex; flex-shrink: 0; align-items: center; justify-content: space-between; gap: var(--sp-3); position: sticky; top: var(--record-head-top, 0px); z-index: 3; background: var(--paper); }
 .record-top h3 { font: var(--type-label); }
 #record-name:focus { outline: none; } /* focus lands here when the record covers the list row that opened it; the heading is not a control */
 :is(h2, h3, p)[tabindex="-1"]:focus, main[tabindex="-1"]:focus { outline: none; } /* focused by script for screen readers, not a control: no ring; a heading takes the Focus tint below */
@@ -559,7 +560,7 @@ main section.first { display: flex; flex-direction: column; gap: var(--sp-5); bo
 .card { display: flex; flex-direction: column; min-width: 0; }
 .card .top { display: flex; flex-wrap: nowrap; flex-shrink: 0; justify-content: flex-start; align-items: first baseline; gap: var(--sp-1) var(--sp-3); border-top: var(--rule-strong) solid var(--ink); padding-top: var(--sp-3); margin-bottom: var(--gap-header); }
 /* D. The head travels within the whole card, including cards sharing field tracks. */
-.cards:not(.minis) .card { --card-bars: calc(var(--secnav-height) + var(--groupnav-offset, 0px)); scroll-margin-top: var(--card-bars); }
+.cards:not(.minis) .card { --card-bars: var(--reading-top); scroll-margin-top: var(--card-bars); }
 .cards .card > .top { min-width: 0; height: var(--card-head-height); border-bottom: var(--rule) solid var(--line); position: sticky; top: var(--card-bars); z-index: 3; background: var(--ground); }
 .card .top > .name { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .card .top > :is(.smark, .state-dl) { flex-shrink: 0; }
@@ -658,7 +659,7 @@ table.world [data-col="inst"] { min-width: var(--world-institute-min); }
 .scroll-hint { font: var(--type-meta); color: var(--muted); }
 table { font: var(--type-body); border-collapse: separate; border-spacing: 0; width: 100%; } /* separate borders travel with a sticky header cell */
 .scroll.fits { overflow-x: visible; } /* no sideways scroll needed, so the header can stick to the page */
-.scroll.fits thead th { position: sticky; top: calc(var(--secnav-height) + var(--groupnav-offset, 0px)); z-index: 2; background: var(--ground); }
+.scroll.fits thead th { position: sticky; top: var(--reading-top); z-index: 2; background: var(--ground); }
 .scroll:not(.fits) thead, .fn-scroll:not(.fits) thead { position: relative; z-index: 2; background: var(--ground); transform: translateY(var(--sticky-shift, 0px)); }
 .fn-scroll:not(.fits) thead { z-index: 3; } /* above the frozen country column; the later detail row can replace it */
 th, td { text-align: left; vertical-align: baseline; border-bottom: var(--rule) solid var(--line); }
@@ -712,7 +713,7 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
 .fn { --fn-hairline: color-mix(in srgb, var(--line) 65%, var(--ground)); --fn-group-line: color-mix(in srgb, var(--line) 60%, var(--muted)); --fn-tint: color-mix(in srgb, var(--highlight-fill) 55%, var(--ground)); min-width: 0; display: flex; flex-direction: column; gap: var(--gap-row); }
 .fn-scroll { position: relative; max-width: 100%; overflow-x: auto; } /* positioned, so the cells' visually hidden text is clipped here and does not widen the page */
 .fn-scroll.fits { overflow: visible; }
-.fn-scroll.fits thead { position: sticky; top: calc(var(--secnav-height) + var(--groupnav-offset, 0px)); z-index: 3; background: var(--ground); } /* the whole head sticks as one layer: cells stay transparent, so no cell paints over its neighbour's rotated label */
+.fn-scroll.fits thead { position: sticky; top: var(--reading-top); z-index: 3; background: var(--ground); } /* the whole head sticks as one layer: cells stay transparent, so no cell paints over its neighbour's rotated label */
 .fn-table { --fn-head-h: calc(10.25 * var(--size-meta) + 2 * var(--sp-1)); --fn-lean: calc(var(--fn-head-h) * .57735); border-collapse: separate; border-spacing: 0; width: 100%; font: var(--type-meta); } /* 10.25 head ems cover the longest rotated label, its line box and rounding; spacing clears the lower inset and group underline, including on the saved page. */
 .fn-table .fn-pad { width: 100%; min-width: max(var(--fn-pad-min), var(--fn-lean)); padding: 0; } /* a percentage column takes all spare width in auto table layout, so function tracks never stretch; its minimum still clears the shifted last head and keeps narrow tables scrolling */
 .fn-table tr > :is(th, td) { position: relative; box-sizing: border-box; padding: var(--sp-2) 0; border-bottom: var(--rule) solid var(--line); text-align: center; vertical-align: middle; } /* keep the last row of each block ruled, overriding the shared table's last-row reset */
@@ -764,7 +765,7 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
 .fn-legend.fn-phone-only li[data-value="not_found"] { white-space: normal; max-width: 100%; }
 .fn-table .fn-detail-row > td { padding: 0; text-align: left; }
 .fn-detail { position: sticky; left: 0; max-width: none; padding: var(--sp-4); box-sizing: border-box; white-space: normal; overflow-wrap: anywhere; background: var(--paper); font: var(--type-body); }
-.fn-detail-top { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3); max-width: none; margin-bottom: var(--sp-3); position: sticky; top: calc(var(--secnav-height) + var(--groupnav-offset, 0px)); z-index: 3; background: var(--paper); }
+.fn-detail-top { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3); max-width: none; margin-bottom: var(--sp-3); position: sticky; top: var(--reading-top); z-index: 3; background: var(--paper); }
 .fn-detail-top::before, .record-top::before { content: ""; position: absolute; inset: calc(-1 * var(--sp-4)) calc(-1 * var(--sp-4)) 0; z-index: -1; background: inherit; pointer-events: none; } /* cover just the panel's padding, never the preceding selected row */
 .fn-detail-head { flex: 1; min-width: 0; font: var(--type-label); line-height: var(--close-size); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .fn-detail-row { position: relative; z-index: 3; } /* above the table head, below the navigation */
@@ -813,7 +814,7 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
 .fn-phone-functions { list-style: none; padding: 0; margin: 0; }
 .fn-phone-functions > li { --fn-pip-width: 8px; --fn-text-inset: calc(var(--sp-1) + var(--sp-2) + var(--fn-pip-width)); display: flex; flex-wrap: wrap; align-items: baseline; padding-block: var(--sp-2); font: var(--type-body); }
 .fn-phone-detail h4 { margin-top: var(--sp-4); }
-.fn-function-label { display: flex; flex: 0 1 auto; max-width: 100%; min-width: 0; align-items: baseline; gap: var(--sp-2); padding: 0 var(--sp-1); font: inherit; color: var(--ink); }
+.fn-function-label { display: flex; flex: 0 1 auto; max-width: var(--prose); min-width: 0; align-items: baseline; gap: var(--sp-2); padding: 0 var(--sp-1); font: inherit; color: var(--ink); }
 button.fn-function-label { --fn-line-width: 100%; --fn-line-height: 100%; background: transparent; border: 0; text-align: left; cursor: pointer; }
 button.fn-function-label::before { content: ""; position: absolute; inset-inline: 0; top: 50%; transform: translateY(-50%); height: 100%; min-height: var(--hit); } /* keep the hit area without adding a gap between text baselines */
 button.fn-function-label[aria-expanded="true"]::after, button.fn-function-label:focus-visible::after { content: ""; position: absolute; inset: 0 auto auto 0; width: var(--fn-line-width); height: var(--fn-line-height); box-sizing: border-box; border: var(--rule-strong) solid var(--focus); pointer-events: none; z-index: 2; }
@@ -849,7 +850,7 @@ button.fn-function-label:focus-visible { outline: none; background: var(--highli
   .fn-phone-row { min-height: calc(var(--hit) + var(--sp-2)); }
 }
 @media (width <= 640px) {
-  .fn-phone-head { font: var(--type-fn-group); position: sticky; top: calc(var(--secnav-height) + var(--groupnav-offset, 0px)); z-index: 2; background: var(--ground); } /* the phone head's caption size, in px: larger text widens the rows, not the head */
+  .fn-phone-head { font: var(--type-fn-group); position: sticky; top: var(--reading-top); z-index: 2; background: var(--ground); } /* the phone head's caption size, in px: larger text widens the rows, not the head */
 }
 /* The narrowest phones: a slightly smaller head and a closer, still fixed, gap keep all four labels on two lines without a
    sideways scroll (owner, 18 Nov 2026: a smaller head size only if 320 fails otherwise; it does). */
@@ -894,11 +895,11 @@ html[data-prerendered] .fn-scroll.fits thead { position: static; }
 .fund-budget { --detail-columns: 1; min-width: 0; }
 .fund-detail { font: var(--type-body); margin-top: var(--gap-row); }
 /* The summary is the identity: no second title inside an open fold. Its close is a sibling, never a nested button. */
-:is(.card.mini, .fund-detail)[open] > summary { position: sticky; top: calc(var(--secnav-height) + var(--groupnav-offset, 0px)); z-index: 3; min-height: var(--close-size); align-items: center; width: 100%; margin-bottom: 0; padding-block: 0; padding-right: calc(var(--close-size) + var(--sp-3)); background: var(--ground); }
+:is(.card.mini, .fund-detail)[open] > summary { position: sticky; top: var(--reading-top); z-index: 3; min-height: var(--close-size); align-items: center; width: 100%; margin-bottom: 0; padding-block: 0; padding-right: calc(var(--close-size) + var(--sp-3)); background: var(--ground); }
 .card.mini[open] > summary .find { display: none; }
 .card.mini[open] > summary .name { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 :is(.card.mini, .fund-detail)[open] > summary::after { display: none; }
-.fold-close { position: sticky; top: calc(var(--secnav-height) + var(--groupnav-offset, 0px)); z-index: 3; display: flex; align-self: flex-end; margin: calc(-1 * var(--close-size)) 0 0 auto; }
+.fold-close { position: sticky; top: var(--reading-top); z-index: 3; display: flex; align-self: flex-end; margin: calc(-1 * var(--close-size)) 0 0 auto; }
 .card.mini > .fold-close { margin-top: calc(-1 * var(--close-size) - var(--sp-2)); }
 :is(.card.mini, .fund-detail):not([open]) > .fold-close { display: none; }
 .fund-detail.more[open] > summary { font: var(--type-label); color: var(--ink); }
@@ -907,8 +908,8 @@ html[data-prerendered] .fn-scroll.fits thead { position: static; }
 :root:not([data-js]) .fold-close { display: none; }
 :root:not([data-js]) :is(.card.mini, .fund-detail)[open] > summary { padding-right: 0; }
 :root:not([data-js]) :is(.card.mini, .fund-detail)[open] > summary::after { display: block; } /* the native disclosure still closes without scripting */
-:where(.fn-phone, .fn-scroll, .table-scroll, .fn-detail, .card.mini, .fund-detail, .record) :is(a, button, summary, [tabindex], .fn-phone-functions > li, .fn-phone-claims, .fn-claim, .claim-text) { scroll-margin-top: calc(var(--secnav-height) + var(--groupnav-offset, 0px) + var(--reading-head-height, var(--close-size)) + var(--sp-2)); }
-:is(.fn-detail-top, .record-top) :is(button, [tabindex]), .fold-close, :is(.card.mini, .fund-detail) > summary { scroll-margin-top: calc(var(--secnav-height) + var(--groupnav-offset, 0px) + var(--sp-2)); }
+:where(.fn-phone, .fn-scroll, .table-scroll, .fn-detail, .card.mini, .fund-detail, .record) :is(a, button, summary, [tabindex], .fn-phone-functions > li, .fn-phone-claims, .fn-claim, .claim-text) { scroll-margin-top: calc(var(--reading-top) + var(--reading-head-height, var(--close-size)) + var(--sp-2)); }
+:is(.fn-detail-top, .record-top) :is(button, [tabindex]), .fold-close, :is(.card.mini, .fund-detail) > summary { scroll-margin-top: calc(var(--reading-top) + var(--sp-2)); }
 @media print { .fn-phone-head, .fn-detail-top, .record-top, .scroll.fits thead th, .fn-scroll.fits thead, :is(.card.mini, .fund-detail)[open] > summary { position: static !important; transform: none !important; visibility: visible !important; box-shadow: none; } .scroll thead, .fn-scroll thead { transform: none !important; visibility: visible !important; } .fold-close { display: none; } }
 .fund-detail-body { display: grid; grid-template-columns: repeat(var(--detail-columns, 2), minmax(0, 1fr)); gap: var(--sp-6); margin-top: var(--sp-4); align-items: first baseline; }
 .fund-detail-body h4 { font: var(--type-label); margin-bottom: var(--sp-3); }
@@ -1006,7 +1007,7 @@ html[data-prerendered] .fn-scroll.fits thead { position: static; }
   .map-search { flex: 1 1 16rem; }
   .map-aside { order: 0; } /* the legend stays directly under the map */
   .record { position: static; order: -1; overflow: visible; } /* directly under the map, above the list */
-  .record-top { top: calc(var(--secnav-height) + var(--groupnav-offset, 0px)); }
+  .record-top { top: var(--reading-top); }
   .side:has(> .record:not([hidden])) > .regions { visibility: visible; } /* stacked: the list stays below the record */
   .cards { --columns: 2; }
 }
@@ -1297,12 +1298,13 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     if (target !== document.activeElement || !target.getClientRects().length) return;
     var r = target.getBoundingClientRect(), edge = readingEdge(target);
     if (r.top < edge - 1 && r.bottom > 0) window.scrollBy(0, r.top - edge - 8);
-    // Native focus scrolling can centre a grid cell underneath the frozen country column at 320px.
-    // Use that row's painted edge, just as vertical clearance uses the head's measured height.
-    var scroll = target.closest(".fn-scroll:not(.fits)"), cell = target.closest("td");
+    // Native focus scrolling can leave an inline link clipped at a scrollport edge, or a grid cell
+    // underneath the frozen country column. Clear both tables against their actual visible bounds.
+    var scroll = target.closest(".fn-scroll:not(.fits), .table-scroll > .scroll:not(.fits)"), cell = target.closest("td");
     var frozen = scroll && cell && cell.parentElement.querySelector('th[scope="row"]');
-    if (frozen) {
-      var left = frozen.getBoundingClientRect().right, right = scroll.getBoundingClientRect().left + scroll.clientWidth;
+    if (scroll && scroll !== target) {
+      var left = scroll.getBoundingClientRect().left + scroll.clientLeft, right = left + scroll.clientWidth;
+      if (frozen) left = Math.max(left, frozen.getBoundingClientRect().right);
       if (r.left < left) scroll.scrollLeft += r.left - left - 8;
       else if (r.right > right) scroll.scrollLeft += r.right - right + 8;
     }
@@ -1324,6 +1326,9 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     function update() {
       pending = false;
       var top = barsBottom(), writes = [];
+      // Unlike a sum of CSS heights, this includes the active row's wraps and its release at the group foot.
+      // Leave the saved page responsive: no viewport-specific pixel offset belongs in the pre-rendered HTML.
+      if (!PRERENDERING) ROOT.style.setProperty("--bars-bottom", top + "px");
       function move(head, owner, enabled) {
         var r = head.getBoundingClientRect(), bounds = owner.getBoundingClientRect(), old = head.readingShift || 0;
         var shift = enabled && r.height ? stickyShift(r.top - old, bounds.bottom, r.height, top) : 0;
@@ -1346,6 +1351,11 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       document.querySelectorAll(".fn-phone, .fn-detail, .card.mini[open], .fund-detail[open], .record:not([hidden])").forEach(function (owner) {
         var head = owner.querySelector(":scope > .fn-phone-head, :scope > .fn-detail-top, :scope > summary, :scope > .record-top");
         if (head) { var height = head.getBoundingClientRect().height; writes.push(function () { owner.style.setProperty("--reading-head-height", height + "px"); }); }
+        if (owner.matches(".record")) {
+          // Wide records scroll inside their own box; convert the same viewport edge to that scrollport.
+          var inset = Math.max(0, top - owner.getBoundingClientRect().top - owner.clientTop);
+          writes.push(function () { owner.style.setProperty("--record-head-top", inset + "px"); });
+        }
       });
       writes.forEach(function (write) { write(); });
     }

@@ -5824,7 +5824,7 @@ def reading_head_errors(m: dict, *, close: bool = False) -> list[str]:
     return errors
 
 
-FOCUS_CLEARANCE_JS = """n => {
+FOCUS_CLEARANCE_JS = r"""n => {
   const r=n.getBoundingClientRect(), nav=document.querySelector('.secnav').getBoundingClientRect();
   const group=n.closest('.group')?.querySelector('.group-nav')?.getBoundingClientRect();
   let edge=group && group.top<=nav.bottom+1 ? group.bottom : nav.bottom;
@@ -5835,8 +5835,13 @@ FOCUS_CLEARANCE_JS = """n => {
   }
   // Actual painted rectangles, not the page's readingEdge helper or its declared scroll margins.
   const rects=[...n.getClientRects()].filter(r=>r.width>0 && r.height>0);
-  const exposed=rects.length>0 && rects.every(r=>n.contains(document.elementFromPoint((r.left+r.right)/2,(r.top+r.bottom)/2)));
-  return {focused:n===document.activeElement, top:r.top, bottom:r.bottom, edge, viewport:innerHeight, exposed};
+  const covered=rects.map(r=>{
+    const x=(r.left+r.right)/2,y=(r.top+r.bottom)/2,hit=document.elementFromPoint(x,y);
+    return n.contains(hit) ? null : {x,y,hit:hit ? hit.tagName.toLowerCase()+(hit.id?'#'+hit.id:'')+(hit.className?'.'+String(hit.className).trim().replace(/\s+/g,'.'):'') : 'outside viewport'};
+  }).filter(Boolean);
+  const exposed=rects.length>0 && !covered.length;
+  return {focused:n===document.activeElement, name:n.getAttribute('aria-label') || n.textContent.trim(),
+    top:r.top, bottom:r.bottom, edge, viewport:innerHeight, exposed, covered};
 }"""
 
 
@@ -5847,7 +5852,8 @@ def focus_clearance_errors(m: dict) -> list[str]:
     if m['top'] < m['edge'] - 1 or m['bottom'] > m['viewport'] + 1:
         errors.append(f"keyboard focus is covered by the reading head or navigation, or outside the viewport (top {m['top']:.1f}, bottom {m['bottom']:.1f}, head edge {m['edge']:.1f})")
     if not m['exposed']:
-        errors.append('keyboard focus is covered at its painted rectangles')
+        detail = f": {m['covered']}" if m.get('covered') else ''
+        errors.append('keyboard focus is covered at its painted rectangles' + detail)
     return errors
 
 
@@ -5887,7 +5893,8 @@ def exercise_table_head(page, owner: str, head: str) -> list[str]:
             if key:
                 page.keyboard.press(key)
             layout_settled(page)
-            errors.extend(focus_clearance_errors(page.locator(':focus').evaluate(FOCUS_CLEARANCE_JS)))
+            focused = page.locator(':focus').evaluate(FOCUS_CLEARANCE_JS)
+            errors.extend(f"{owner} {key or 'focus'} {focused['name']}: " + e for e in focus_clearance_errors(focused))
         # The same head must leave when its own table ends.
         page.locator(owner).evaluate("box => scrollBy(0,box.getBoundingClientRect().bottom-document.querySelector('.secnav').getBoundingClientRect().bottom+2)")
         layout_settled(page)

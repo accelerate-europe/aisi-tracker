@@ -99,10 +99,10 @@ const head={getBoundingClientRect:()=>({top:headTop,bottom:headTop+headHeight,he
 const owner={querySelector:()=>head,getBoundingClientRect:()=>({top:ownerTop,bottom:2000})};
 const frozen={getBoundingClientRect:()=>({right:184})};
 const cell={parentElement:{querySelector:()=>frozen}};
-const scroll={clientWidth:288,getBoundingClientRect:()=>({left:16}),
+const scroll={clientWidth:288,clientLeft:0,getBoundingClientRect:()=>({left:16}),
   get scrollLeft(){return this.x ?? 100;}, set scrollLeft(x){const d=x-this.scrollLeft; this.x=x; rect.left-=d; rect.right-=d; scrolled.push(['x',d]);}};
 const target={getBoundingClientRect:()=>({...rect}),getClientRects:()=>[rect],matches:()=>false,
-  closest:s=>s==='.fn-scroll:not(.fits)' ? (grid?scroll:null) : s==='td' ? (grid?cell:null) : owner};
+  closest:s=>s==='.fn-scroll:not(.fits), .table-scroll > .scroll:not(.fits)' ? (grid?scroll:null) : s==='td' ? (grid?cell:null) : owner};
 const document={activeElement:target};
 const window={scrollBy:(x,y)=>{scrolled.push(['y',y]);rect.top-=y;rect.bottom-=y;}};
 HELPER
@@ -125,6 +125,54 @@ headTop=400; ownerTop=400; rect.top=100;
 assert.equal(readingEdge(target),93); // an unpinned head below the target is not an occluder
 clearReadingFocus(target); assert.deepEqual(scrolled,[]);
 """.replace('HELPER', helper)
+    subprocess.run(['node', '-'], input=script, text=True, capture_output=True, check=True)
+
+
+def test_world_table_focus_clears_the_scrollport_without_a_frozen_column():
+    source = (ROOT / 'site/index.html').read_text()
+    helper = source[source.index('  function readingEdge('):source.index('  function returnToOpener(')]
+    script = """
+const assert=require('node:assert/strict');
+const barsBottom=()=>93, getComputedStyle=()=>({position:'relative'});
+const head={getBoundingClientRect:()=>({top:93,bottom:137,height:44}),contains:()=>false,matches:()=>true};
+const owner={querySelector:()=>head,getBoundingClientRect:()=>({top:-100,bottom:2000})};
+let rect={top:100,bottom:128,left:-20,right:60};
+const scroll={clientWidth:358,clientLeft:0,getBoundingClientRect:()=>({left:16}),
+  get scrollLeft(){return this.x ?? 100;},set scrollLeft(x){const d=x-this.scrollLeft;this.x=x;rect.left-=d;rect.right-=d;}};
+const cell={parentElement:{querySelector:()=>null}};
+const target={getBoundingClientRect:()=>({...rect}),getClientRects:()=>[rect],matches:()=>false,
+  closest:s=>s.includes(':not(.fits)') ? scroll : s==='td' ? cell : owner};
+const document={activeElement:target},window={scrollBy:(x,y)=>{rect.top-=y;rect.bottom-=y;}};
+HELPER
+clearReadingFocus(target);
+assert.equal(rect.top,145);assert.equal(rect.left,24);
+rect.left=350;rect.right=430;clearReadingFocus(target);assert.equal(rect.right,366);
+""".replace('HELPER', helper)
+    subprocess.run(['node', '-'], input=script, text=True, capture_output=True, check=True)
+
+
+def test_reading_heads_follow_measured_bars_on_scroll_and_resize():
+    source = (ROOT / 'site/index.html').read_text()
+    bars = source[source.index('  function barsBottom('):source.index('  // Theme (principle: Theme)')]
+    install = source[source.index('  function installReadingHeads('):source.index('  function installReadingHeads(') + source[source.index('  function installReadingHeads('):].index('\n  }') + 4]
+    script = """
+const assert=require('node:assert/strict');
+let navBottom=57, group={top:57,bottom:93};
+const nav={getBoundingClientRect:()=>({bottom:navBottom})},row={getBoundingClientRect:()=>group};
+const document={querySelector:()=>nav,querySelectorAll:s=>s==='.group-nav'?[row]:[],addEventListener:()=>{},fonts:{ready:{then:()=>{}}}};
+let top,resize;const events={};
+const ROOT={style:{setProperty:(key,value)=>{assert.equal(key,'--bars-bottom');top=value;}}};
+let PRERENDERING=false;
+const window={addEventListener:(name,fn)=>events[name]=fn},requestAnimationFrame=fn=>fn();
+class ResizeObserver {constructor(fn){resize=fn;}observe(){}}
+HELPER
+installReadingHeads();assert.equal(top,'93px');
+group.bottom=121;resize();assert.equal(top,'121px'); // wrapping sub-navigation
+navBottom=85;group={top:85,bottom:149};events.resize();assert.equal(top,'149px'); // enlarged bar
+group={top:30,bottom:94};events.scroll();assert.equal(top,'94px'); // row leaving its group
+group={top:400,bottom:464};events.scroll();assert.equal(top,'85px'); // next row not stuck
+top=undefined;PRERENDERING=true;events.scroll();assert.equal(top,undefined); // no saved pixel offset
+""".replace('HELPER', bars + install)
     subprocess.run(['node', '-'], input=script, text=True, capture_output=True, check=True)
 
 
