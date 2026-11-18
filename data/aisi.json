@@ -8765,7 +8765,7 @@
           "date": "2026-09-30",
           "event": "named",
           "instrument": "unknown",
-          "description": "NIST's super intelligence page, in the earliest archived capture found (30 September 2026), names the Center for Advancing Innovation and Standards for Super Intelligence (CAISSI) and says NIST is updating its communications under the Executive Order of 29 September 2026; NIST's release of 16 October 2026 also uses the name. No published act gives the date of the change.",
+          "description": "The institute, until then the Center for AI Standards and Innovation (CAISI), is renamed the Center for Advancing Innovation and Standards for Super Intelligence (CAISSI). NIST's super intelligence page uses the new name in the earliest archived capture found, dated 30 September 2026. The page says NIST is updating its communications under the Executive Order of 29 September 2026. NIST's release of 16 October 2026 also uses the name. No published act gives the date of the change.",
           "source_ids": [
             "us-si-page-archive-2026-09-30",
             "us-caissi-archive-2026-10-03",
@@ -38194,7 +38194,7 @@
           "counterparty": "Kakao",
           "state": "signed",
           "date": "2026-09-28",
-          "scope": "Memorandum of understanding on joint AI safety evaluation: Kakao provides its AI models and agents for evaluation, the institute runs the evaluations and develops the methods, and the two review results jointly and agree what is disclosed.",
+          "scope": "Memorandum of understanding on joint AI safety evaluation: the Korean technology company Kakao provides its AI models and agents for evaluation, the institute runs the evaluations and develops the methods, and the two review results jointly and agree what is disclosed.",
           "source_ids": [
             "kr-kakao-mou-2026"
           ],
@@ -45569,6 +45569,17 @@
                 "id": "us-2026-10-03-named"
               },
               "news"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "US"
+              },
+              "timeline",
+              {
+                "id": "us-2026-10-03-named"
+              },
+              "description"
             ]
           ],
           "url": "https://content.govdelivery.com/accounts/USDOC/bulletins/3e381fb",
@@ -110048,6 +110059,17 @@
                 "id": "agreements-93e9c4f6e55753fdbdd9d4610b1bd951"
               },
               "news"
+            ],
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-93e9c4f6e55753fdbdd9d4610b1bd951"
+              },
+              "scope"
             ]
           ],
           "gloss": "In particular, through cooperation with a domestic research institution specialising in AI safety, it is expected to contribute to securing AI safety at a global level and building a trustworthy AI ecosystem.",
@@ -110066,6 +110088,17 @@
                 "id": "agreements-93e9c4f6e55753fdbdd9d4610b1bd951"
               },
               "news"
+            ],
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-93e9c4f6e55753fdbdd9d4610b1bd951"
+              },
+              "scope"
             ]
           ],
           "gloss": "Last year Kakao carried out a joint safety evaluation with the AI Safety Institute of its own language model, 'Kanana-1.5-9.8B', and found a high level of safety compared with overseas models of similar size.",

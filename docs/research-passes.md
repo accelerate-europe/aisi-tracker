@@ -125,19 +125,20 @@ The reader follows policy news but has not seen the source, does not know nation
 How a line is written:
 
 - The writer works from the record's fields: the parties, the kind of act, how firm it is (announced, proposed, signed, adopted), and each amount with what it counts and its period. The writer has not read the source. In practice a fresh agent or Codex run drafts the line from the fields, the bound quotes and this section, and nothing else.
-- The quotes are for checking, not for wording: the line says no more than they do, and does not copy their phrasing.
+- The quotes are for checking, not for wording: the line says no more than they do, and does not copy their phrasing. The line reports the event only, not how the tracker dates it, what its record leaves unconfirmed or its archived copies.
+- A drafted line is checked against this section and the quotes by a reviewer that runs on a different model from the writer and has not seen the draft being written. When this section changes, a fresh writer drafts every shown line again from the fields, and the result is compared with the lines in the data.
 
 What a line says:
 
-- One sentence, normally under 30 words and never over 40, counted as the page shows the line (`check_news_required`). In this order: who acts, what they do, about what. Active voice, present tense.
+- One sentence, with no semicolon, normally under 30 words and never over 40, counted as the page shows the line (`check_news_required`). In this order: who acts, what they do (such as telling parliament), about what. Active voice, present tense.
 - The one who acts is a person or body (the government, the Chancellor, the ministry); a document such as a budget, statement, report, strategy or law sets out, provides or contains, and does not announce, say or tell.
 - The parties as the source names them. When the governments sign and their institutes are named in the text, the governments are the parties.
 - How firm the act is. A statement of intent, a joint statement, a proposal or an agreement still being finalised does not read as a concluded agreement or an adopted budget.
 - A company, agency or body a general reader may not know gets a few words saying what it is, as in "the AI developer Anthropic".
-- Every number says what it counts and for which period. When one figure is part of another, the line says so plainly.
+- Every number says what it counts and for which period. When one figure is part of another, the line says so plainly. Write dates and periods as the fields give them, such as "by the end of 2026", never relative wording such as "this year". Amounts use the currency code and "m" or "bn", as in "GBP 120m".
 - No "which" clause, and no pronoun whose owner could be mistaken.
-- The tracked body is "the institute" (for a pair, "their institutes"), unless the name is the news, as in a rename. The line does not repeat the state's or the institute's name from the label.
-- Only abbreviations that are glossary terms or currency codes, or a name spelt out before its abbreviation in parentheses (`check_news_lines`).
+- Where the state has an institute on record, it is "the institute" (for a pair, "their institutes"), unless the name is the news, as in a rename. Where none exists yet, say what is being considered or planned, as in "an AI safety institute". The line does not repeat the state's or the institute's name from the label.
+- Only abbreviations that are glossary terms or currency codes, or a name spelt out before its abbreviation in parentheses (`check_news_lines`). Write "AI", not "artificial intelligence".
 - The same line on both records of a registered pair (`scripts/shared_claims.py`).
 
 Examples, with the quotes each rests on:
