@@ -29,6 +29,7 @@
 /* Design principles
  * View switch: alternative presentations of the same content use two visible, dot-separated text buttons in muted meta type, following the section sub-navigation with an accent marker on the current item, no bold or current text underline, and hover/focus feedback; the switch sits on its own line above the content, aligned to its visible right edge at every width; a named group holds exactly one aria-pressed button, activation keeps focus on that button even when a click does not move focus, and activating the current item leaves the view unchanged.
  * Functions views (owner, 18 Nov 2026, "grouped default, grid one click away"): at every width the section opens on the grouped view, one row per institute with a strip of marks per group; a row expands to list every function with its status and, in muted meta, its short reader's sentence. The coding rule stays on hover in the grid and in How this is coded. The caption-sized view switch above the table reads "By group · All 18 functions", with the count from the vocabulary and the current view marked; the view is the section's state, not the width's, and a link to a target inside the hidden view brings that view. On wider screens the grouped view keeps to the reading measure with room between groups and rows. As in the grid, a group line runs where each group starts, through the head, the band rows and every row; each label and strip sits left-aligned just after it with the same padding, so a label wraps inside its own column, and the padding reserves a fixed least gap between labels. An expanded row's box interrupts the lines; the selected outline and the focus ring paint above them. On phones the head, in its px caption size, prints "&" for "and", keeps the first part together and breaks after it, so the labels take two lines alike down to 320; at 360 px and below the head is 1px smaller and the gap and marks a little tighter, as the country names leave no slack (owner, 18 Nov 2026). Without the page script the grid shows and the switch is hidden, as the rows cannot open (check_page check_functions_views, check_functions_group_lines).
+ * Trailing qualifiers (owner, 18 Nov 2026): a function status or source caveat stays whole. It follows the name with a visual-only dot when it fits; otherwise it starts on the next line at the name's text edge, without the dot. Function statuses use the name's baseline rhythm, outside its button and before its summary. A small layout pass measures the available line after opening, resizing and font changes (check_page check_status_qualifiers).
  * Column-head labels: in every table's head, no two labels on one line sit closer than HEAD_LABEL_GAP (6 px) and none overlaps, at phone and desktop widths, at 110% text and in both themes; the grid's leaning function heads are held apart by their own flag test (check_page check_head_labels, check_functions_tint).
  * Functions table: institute rows in established and not-yet-established blocks, function columns in vocabulary groups, equal widths and rotated short heads. The page prints each group's label from one constant per group (Testing and science, Rules and standards, Informing government, Ecosystem and adoption; owner, 18 Nov 2026), so a word can be changed in one place; the data keeps the recorded group names (Rules, Ecosystem). Active and both use a dot, assigned a ring; not found is blank, a search result rather than absence. The jurisdiction column stays visible during sideways scrolling. Hover and focus tint the row and one continuous column through the block bands, with a slanted band behind its head. Columns are evenly spaced with no gutter between groups; a slightly stronger vertical line marks where a group starts, quieter than the selected outline in both themes, and row lines and the row and column tint run through unbroken; a group label longer than its own tracks takes a second line (owner, 18 Nov 2026). Each group has a leaning boundary and an underline at its label, meeting the upright body rules at the head rule; the shared head height follows the head type, leaving at least --sp-1 above every head tip. No upright rule crosses the head zone, and labels paint above the hover flag and boundaries. Quotes and sources open on demand below the selected institute (check_page check_functions_table, check_functions_detail, check_functions_layout, check_functions_tint, check_function_group_tabs).
  * Selection box: an open function cell, phone row or phone function, and a selected search or palette row, has one even box on all four sides, inset within its padding box and above tints and rules (check_page check_selection_boxes).
@@ -245,6 +246,10 @@ a::before, abbr.g::before, .smark[tabindex]::before, .missing[tabindex]::before,
 li:has(> .reread-tail), .inline-links:has(> .reread-tail) { position: relative; }
 .reread-tail > .vh { left: 0; top: 0; white-space: normal; } /* the screen-reader sentence sits at the item's start, so its one clipped line never runs past the measure */ /* a line that is only its title (its publisher in the title, no date) keeps the hit height */
 .archive-copy { white-space: nowrap; } /* principle: Archived copies */
+.trailing-qualifier { display: inline-block; white-space: nowrap; overflow-wrap: normal; }
+.trailing-qualifier.own-line { display: block; }
+.trailing-qualifier.own-line .qualifier-separator { display: none; }
+.status-phrase { white-space: nowrap; }
 a.archive { color: var(--muted); text-decoration-color: currentColor; }
 a.archive:is(:hover, :focus-visible) { color: var(--ink); }
 a.ico::before { position: static; transform: none; min-height: 0; }
@@ -799,13 +804,16 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
 .fn-pip.fn-not_coded { height: 2px; align-self: center; }
 .fn-phone-detail { grid-column: 1 / -1; grid-row: 2; position: static; min-width: 0; width: 100%; max-width: 100%; contain: inline-size; } /* its long definitions never widen the strips' tracks */
 .fn-phone-functions { list-style: none; padding: 0; margin: 0; }
-.fn-phone-functions > li { display: grid; grid-template-columns: minmax(0, auto) minmax(min-content, 1fr); align-items: center; }
+.fn-phone-functions > li { --fn-pip-width: 8px; --fn-text-inset: calc(var(--sp-1) + var(--sp-2) + var(--fn-pip-width)); display: flex; flex-wrap: wrap; align-items: baseline; padding-block: var(--sp-2); font: var(--type-body); }
 .fn-phone-detail h4 { margin-top: var(--sp-4); }
-.fn-function-label { display: flex; align-items: center; gap: var(--sp-2); min-height: var(--hit); padding: var(--sp-2) var(--sp-1); font: var(--type-body); color: var(--ink); }
-button.fn-function-label { width: 100%; background: transparent; border: 0; text-align: left; cursor: pointer; }
-.fn-function-status { font: var(--type-meta); color: var(--muted); }
-.fn-function-summary { grid-column: 1 / -1; margin: 0; padding-left: calc(var(--sp-1) + 2 * var(--sp-2)); font: var(--type-meta); color: var(--muted); }
-.fn-phone-claims { grid-column: 1 / -1; margin-block: var(--sp-2) var(--sp-4); }
+.fn-function-label { display: flex; flex: 0 1 auto; max-width: 100%; min-width: 0; align-items: baseline; gap: var(--sp-2); padding: 0 var(--sp-1); font: inherit; color: var(--ink); }
+button.fn-function-label { background: transparent; border: 0; text-align: left; cursor: pointer; }
+button.fn-function-label::before { content: ""; position: absolute; inset-inline: 0; top: 50%; transform: translateY(-50%); height: 100%; min-height: var(--hit); } /* keep the hit area without adding a gap between text baselines */
+.fn-function-status { flex: none; font: inherit; color: var(--muted); }
+.fn-function-status :is(.qualifier-text, .qualifier-separator) { font-size: var(--size-meta); } /* the outer body's line box keeps the name's baseline rhythm */
+.fn-function-status.own-line { flex-basis: 100%; padding-left: var(--fn-text-inset); }
+.fn-function-summary { flex-basis: 100%; margin: 0; padding-left: var(--fn-text-inset); font: var(--type-meta); color: var(--muted); }
+.fn-phone-claims { flex-basis: 100%; min-width: 0; margin-block: var(--sp-2) var(--sp-4); }
 /* The grouped view is the default at every width; the full grid is one click away (owner, 18 Nov 2026). The view is the
    section's state, not the width's. Without the page script the rows cannot open, so the readable grid shows. */
 .fn[data-view="grouped"] :is(.fn-scroll, .fn-desktop-only) { display: none; }
@@ -826,6 +834,7 @@ button.fn-function-label { width: 100%; background: transparent; border: 0; text
   .fn[data-view="grouped"] .fn-view-switch { max-width: var(--prose); }
   .fn-pips { gap: var(--sp-1); }
   .fn-pip { width: var(--sp-3); height: var(--sp-3); }
+  .fn-phone-functions > li { --fn-pip-width: var(--sp-3); }
   .fn-pip.fn-not_coded { height: var(--rule-strong); }
   .fn-phone-row { min-height: calc(var(--hit) + var(--sp-2)); }
 }
@@ -1387,6 +1396,37 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   document.addEventListener("pointerdown", function (e) { if (tipFor && !(e.target instanceof Node && (tip.contains(e.target) || tipFor.contains(e.target)))) hideTip(); }, { capture: true });
   // A separator never ends a line: where a line wraps after one, it is hidden (it stays bound to its item, so it never starts one).
   function blockOf(node) { for (var e = node.parentElement; e; e = e.parentElement) if (!/^inline/.test(getComputedStyle(e).display)) return e; return document.body; }
+  // Only the separator is decorative. A re-read caveat can supply its existing full spoken sentence instead.
+  function trailingQualifier(content, className, spoken) {
+    var box = el("span", className + " trailing-qualifier"), shown = spoken ? el("span") : box;
+    var separator = el("span", "qualifier-separator", " · "), text = el("span", "qualifier-text"); separator.setAttribute("aria-hidden", "true");
+    text.appendChild(typeof content === "string" ? document.createTextNode(content) : content);
+    shown.appendChild(separator); shown.appendChild(text);
+    if (spoken) { shown.setAttribute("aria-hidden", "true"); box.appendChild(shown); box.appendChild(el("span", "vh", " " + spoken)); }
+    return box;
+  }
+  function qualifierStartsLine(previous, current) { return !!(previous && current && current.top >= previous.bottom - 1); }
+  function layoutQualifiers(root) {
+    var items = [].filter.call(root.querySelectorAll(".trailing-qualifier"), function (item) {
+      return (!item.checkVisibility || item.checkVisibility({ contentVisibilityAuto: true })) && item.getClientRects().length;
+    });
+    // Measure the natural inline candidate again, so growing the window also restores the dot. This all runs before paint.
+    items.forEach(function (item) { item.classList.remove("own-line"); });
+    var range = document.createRange();
+    items.forEach(function (item) {
+      var walker = document.createTreeWalker(blockOf(item), NodeFilter.SHOW_TEXT), previous = null;
+      while (walker.nextNode()) {
+        var text = walker.currentNode, parent = text.parentElement;
+        if (item.contains(text)) break;
+        if (!text.textContent.trim() || parent.closest(".vh, [hidden]") || !parent.getClientRects().length || getComputedStyle(parent).visibility !== "visible") continue;
+        range.selectNodeContents(text); var rects = range.getClientRects();
+        if (rects.length) previous = rects[rects.length - 1];
+      }
+      var current = item.querySelector(".qualifier-text").getBoundingClientRect();
+      // Source tails are processed in reading order: moving one can change where the next tail fits.
+      item.classList.toggle("own-line", qualifierStartsLine(previous, current));
+    });
+  }
   function hideLineEndDots(root) {
     var range = document.createRange(), marks = [];
     [].forEach.call(root.querySelectorAll(".meta-dot"), function (dot) {
@@ -1572,8 +1612,8 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   // A source with an archive URL ends its line with "· archived copy" (principle: Archived copies).
   function archiveCopy(parent, src) {
     if (!src.archive_url) return;
-    var a = el("a", "archive", "archived copy"), copy = el("span", "archive-copy", " · "); a.href = src.archive_url;
-    copy.appendChild(a); parent.appendChild(copy);
+    var a = el("a", "archive", "archived copy"); a.href = src.archive_url;
+    parent.appendChild(trailingQualifier(a, "archive-copy"));
   }
   // Folds, part 1: a source list of more than three sits behind a counted fold, "N sources"; three or fewer stay open under "Sources".
   var SOURCES_OPEN = 3, FUND_DETAIL = "Funding and staff records";
@@ -1621,11 +1661,11 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   // exists; the full sentence is the tip and what a screen reader reads (principle: Re-read line).
   function rereadTail(parent, src) {
     var state = rereadState(src); if (!state || !state.failed) return false;
-    var sentence = rereadLine(src).textContent, tail = el("span", "reread-tail"), shown = el("span", null, " · " + (state.worst.state === "quote_gone" ? "quote last found " : "last read "));
-    shown.setAttribute("aria-hidden", "true"); shown.appendChild(dated(state.worst.last_found));
-    var full = el("span", "vh", " " + sentence); // plain text: screen readers read the sentence itself, once
+    var sentence = rereadLine(src).textContent, words = el("span", null, state.worst.state === "quote_gone" ? "quote last found " : "last read ");
+    words.appendChild(dated(state.worst.last_found));
+    var tail = trailingQualifier(words, "reread-tail", sentence);
     tail.dataset.tip = sentence; // the tip for the pointer
-    tail.appendChild(shown); tail.appendChild(full); parent.appendChild(tail);
+    parent.appendChild(tail);
     return true;
   }
   // Claims: one display rule, also exported for the functions table. Text is assigned as text, never HTML.
@@ -2052,7 +2092,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         li.dataset.bodyId = bodyId || "";
         var activity = closest && bodyId === closest.body_id ? activityLineNode(j, null, m, cite) : null;
         if (activity) {
-          if (STAGE_LINE[closest.stage]) li.appendChild(el("span", "det", STAGE_LINE[closest.stage]));
+          if (STAGE_LINE[closest.stage]) li.appendChild(el("span", "det status-phrase", STAGE_LINE[closest.stage]));
           li.appendChild(activity);
         }
         bodyClaims(j, bodyId).forEach(function (c) {
@@ -2062,7 +2102,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
           if (warning) block.insertBefore(warning, block.lastChild);
           li.appendChild(block);
         });
-        if (!activity && closest && bodyId === closest.body_id && STAGE_LINE[closest.stage]) li.appendChild(el("span", "det", STAGE_LINE[closest.stage]));
+        if (!activity && closest && bodyId === closest.body_id && STAGE_LINE[closest.stage]) li.appendChild(el("span", "det status-phrase", STAGE_LINE[closest.stage]));
       }
       return li;
     }
@@ -3378,8 +3418,12 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       }
       function appendClaims(detail, i, code, named) { // named: an enclosing heading already names the institute (the phone detail)
         var context = el("p", "fn-detail-context"), cite = citations(S, (SOURCE_ORDERS[i.jurisdiction_id] || []).slice(), {}), value = rows[i.id][code].value;
-        var sentence = (named ? FN_COPY.state_phone : FN_COPY.state)[value] || (named ? "" : "{institute} \u00b7 ") + names[value].toLowerCase();
-        sentence.split(/(\{institute\})/).forEach(function (part) { if (part === "{institute}") context.appendChild(instShort(i)); else if (part) context.appendChild(document.createTextNode(part)); });
+        var sentence = (named ? FN_COPY.state_phone : FN_COPY.state)[value];
+        if (sentence) sentence.split(/(\{institute\}|and active|without an assignment)/).forEach(function (part) {
+          if (part === "{institute}") context.appendChild(instShort(i));
+          else if (part) context.appendChild(/^(and active|without an assignment)$/.test(part) ? el("span", "status-phrase", part) : document.createTextNode(part));
+        });
+        else { if (!named) context.appendChild(instShort(i)); context.appendChild(trailingQualifier(names[value].toLowerCase(), "fn-context-status")); }
         detail.appendChild(context); // the row above names the country; the sentence takes the institute's short form (principle: Naming)
         var basisRank = function (id) { return CLAIM_INDEX[id].claim.basis === "mandate" ? 0 : 1; };
         var ids = rows[i.id][code].claim_ids.slice().sort(function (a, b) { return basisRank(a) - basisRank(b); }); // assignment first, otherwise in recorded order
@@ -3489,7 +3533,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
               var claims = el("div", "fn-phone-claims"); claims.id = button.getAttribute("aria-controls");
               claims.appendChild(el("h5", "fn-function-head", vocab[button.parentNode.dataset.code].label));
               appendClaims(claims, I[button.closest("li[data-institute]").dataset.institute], button.parentNode.dataset.code, true);
-              button.parentNode.appendChild(claims); button.setAttribute("aria-expanded", "true"); return;
+              button.parentNode.appendChild(claims); button.setAttribute("aria-expanded", "true"); layoutQualifiers(claims); return;
             }
             if (button === opened) { closeDetail(true); return; }
             closeDetail(false);
@@ -3499,13 +3543,15 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
               var heading = el("h4", null, groupName(group)), functions = el("ul", "fn-phone-functions");
               columns.filter(function (code) { return vocab[code].group === group; }).forEach(function (code) {
                 var row = rows[i.id][code], li = el("li"), label = el(coded(row.value) ? "button" : "span", "fn-function-label");
-                var pip = mark(row.value, true); pip.removeAttribute("aria-hidden"); pip.setAttribute("role", "img"); pip.setAttribute("aria-label", names[row.value]);
+                var pip = mark(row.value, true); // decorative: the sibling status announces the value once, after the name
                 label.appendChild(pip); label.appendChild(el("span", null, vocab[code].label));
                 if (coded(row.value)) { li.dataset.code = code; label.type = "button"; label.setAttribute("aria-expanded", "false"); label.setAttribute("aria-controls", detail.id + "-" + code); }
-                li.appendChild(label); li.appendChild(el("span", "fn-function-status", " · " + names[row.value].toLowerCase()));
+                var status = trailingQualifier(names[row.value].toLowerCase(), "fn-function-status"); status.id = detail.id + "-" + code + "-status";
+                if (coded(row.value)) label.setAttribute("aria-describedby", status.id);
+                li.appendChild(label); li.appendChild(status);
                 li.appendChild(el("p", "fn-function-summary", vocab[code].summary)); functions.appendChild(li);
               }); detail.appendChild(heading); detail.appendChild(functions);
-            }); button.parentNode.appendChild(detail); detailRow = detail; selected(button);
+            }); button.parentNode.appendChild(detail); detailRow = detail; selected(button); layoutQualifiers(detail);
           });
           list.addEventListener("keydown", escapeDetail); box.appendChild(list);
         } else {
@@ -3564,7 +3610,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
           detailHeading(detail, title);
           appendClaims(detail, i, code);
           detailRow = el("tr", "fn-detail-row"); detailRow.id = button.getAttribute("aria-controls"); detailRow.dataset.owner = row.dataset.institute; var td = el("td"); td.colSpan = columns.length + 2;
-          td.appendChild(detail); detailRow.appendChild(td); row.after(detailRow); selected(button); externalLinks(detail);
+          td.appendChild(detail); detailRow.appendChild(td); row.after(detailRow); selected(button); externalLinks(detail); layoutQualifiers(detail);
         });
         // Escape closes the detail only while focus is in the table, and only when no nested control has handled it.
         table.addEventListener("keydown", escapeDetail);
@@ -3575,6 +3621,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         if (detail && scroll.clientWidth) detail.style.width = scroll.clientWidth + "px";
         var fits = scroll.clientWidth > 0 && table.getBoundingClientRect().width <= scroll.clientWidth + 1;
         scroll.classList.toggle("fits", fits); $("fn-scroll-hint").hidden = fits;
+        layoutQualifiers(box);
       }
       function bindTint(table) {
         var pointer = null, focus = null;
@@ -4250,6 +4297,15 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   // Mark the saved page at this window's width before the data arrives, so takeover does not make line-end separators disappear.
   // Start early, then re-mark after fonts and layout changes; skip the build so the saved HTML has no width-specific marks.
   if (!PRERENDERING) {
+    var refreshQualifiers = function () { layoutQualifiers(document); };
+    refreshQualifiers(); document.fonts.ready.then(refreshQualifiers);
+    // ResizeObserver runs before paint, without a further animation-frame delay. Final sizes are stable on repeat passes.
+    new ResizeObserver(refreshQualifiers).observe(document.body);
+    new MutationObserver(refreshQualifiers).observe(ROOT, { attributes: true, attributeFilter: ["style"] });
+    window.addEventListener("resize", refreshQualifiers, { passive: true });
+    document.fonts.addEventListener("loadingdone", refreshQualifiers);
+    document.addEventListener("toggle", function (e) { if (e.target.open) layoutQualifiers(e.target); }, true);
+    document.addEventListener("contentvisibilityautostatechange", function (e) { if (!e.skipped) layoutQualifiers(e.target); }, true);
     var dotFrame = 0, scheduleDots = function () { if (!dotFrame) dotFrame = requestAnimationFrame(function () { dotFrame = 0; hideLineEndDots(document); }); };
     hideLineEndDots(document); document.fonts.ready.then(scheduleDots);
     new ResizeObserver(scheduleDots).observe(document.body); document.fonts.addEventListener("loadingdone", scheduleDots);

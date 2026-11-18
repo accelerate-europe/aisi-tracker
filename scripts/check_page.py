@@ -4222,7 +4222,7 @@ WIDTH_GEOMETRY = {
         ('.fn-legend.fn-phone-only li[data-value="not_found"]', "max-width"),
         (".fn-column-group:nth-last-child(2)::after", "width"), (".fn-cell", "width"),
         (".fn-phone-row", "width"), (".fn-phone-detail", "width"), (".fn-phone-detail", "max-width"),
-        ("button.fn-function-label", "width"), (".fund-bar", "width"),
+        (".fn-function-label", "max-width"), (".fund-bar", "width"),
         (".bar-value", "max-width"), (".region-chips", "max-width"),
         (".development-row", "width"), (".fn-table", "width"), (".fn-table .fn-pad", "width"),  # R6: full content width; the spacer takes the slack
     )},
@@ -13010,7 +13010,7 @@ const checkHeading = (detail, cell, country, institute, code, key) => {
   need(heading?.matches('h4, h5') && heading.textContent === data.dataset.vocabularies.function[code].label, key + ': function heading differs');
   // institute: the short form on desktop; null inside the phone detail, whose heading already names the institute
   // a sentence naming the state (owner, 18 Nov 2026): the institute's short form on desktop, none inside the phone detail
-  const said = context?.textContent || '', named = [...(context?.children || [])], assigned = /\bassigned\b/i.test(said), active = /\bactive\b/i.test(said);
+  const said = context?.textContent || '', named = [...(context?.children || [])].filter(n => !n.matches('.status-phrase, .trailing-qualifier')), assigned = /\bassigned\b/i.test(said), active = /\bactive\b/i.test(said);
   const states = {mandate: assigned && !active, activity: active && !assigned, both: active && assigned};
   need((institute ? named.length === 1 && named[0].textContent === institute && said.split(institute).length === 2 : !named.length && !said.includes(country))
        && (!(cell.value in states) || states[cell.value]) && !(institute ? said.split(institute).join('') : said).includes(country),
@@ -13425,6 +13425,137 @@ FN_PHONE_BOUNDS_JS = """
 """
 
 
+STATUS_QUALIFIERS_JS = r"""selector => {
+  /* TEXT_RECTS */
+  const rect = r => ({left: r.left, right: r.right, top: r.top, bottom: r.bottom});
+  const baseline = node => {
+    const probe = document.createElement('span');
+    probe.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+    node.appendChild(probe); const y = probe.getBoundingClientRect().top; probe.remove(); return y;
+  };
+  return [...document.querySelectorAll(selector)].flatMap(root => {
+    const items = [...root.querySelectorAll('.trailing-qualifier, .status-phrase, .activity-clause, .activity-since')];
+    return items.filter(item => item.checkVisibility({contentVisibilityAuto: true})).map(item => {
+      const trailing = item.matches('.trailing-qualifier'), text = trailing ? item.querySelector('.qualifier-text') : item;
+      const lines = textRects(text, '.cites'), separator = item.querySelector('.qualifier-separator');
+      const label = item.matches('.fn-function-status') ? item.previousElementSibling : null;
+      const name = label?.querySelector(':scope > span:not(.fn-pip)');
+      const before = [];
+      if (trailing) {
+        const walker = document.createTreeWalker(item.parentElement, NodeFilter.SHOW_TEXT);
+        for (let node; (node = walker.nextNode());) {
+          if (item.contains(node)) break;
+          if (!node.textContent.trim() || node.parentElement.closest('.vh, [hidden], .cites') ||
+              !node.parentElement.getClientRects().length || getComputedStyle(node.parentElement).visibility !== 'visible') continue;
+          const range = document.createRange(); range.selectNodeContents(node);
+          before.push(...[...range.getClientRects()].filter(r => r.width && r.height));
+        }
+      }
+      const names = name ? textRects(name) : before;
+      const container = item.parentElement.getBoundingClientRect();
+      return {text: text?.textContent.trim(), trailing, rects: lines.map(rect),
+        previous: before.length ? rect(before[before.length - 1]) : null,
+        nameLeft: names.length ? names[0].left : null,
+        left: container.left, right: container.right,
+        dot: !!textRects(separator).length, hiddenSeparator: separator?.getAttribute('aria-hidden') === 'true',
+        baselineStep: name ? baseline(item) - baseline(name) : null,
+        lineHeight: name ? parseFloat(getComputedStyle(label).lineHeight) : null};
+    });
+  });
+}""".replace("/* TEXT_RECTS */", TEXT_RECTS_JS)
+
+
+def status_qualifier_errors(items: list[dict]) -> list[str]:
+    """Judge visible text rectangles, not the producer's own-line class or its fit decision."""
+    if not items:
+        return ["no status qualifiers to measure"]
+    errors = []
+    for item in items:
+        prefix = str(item.get("text")) + ": "
+        rects = item["rects"]
+        if not rects:
+            errors.append(prefix + "status text missing")
+            continue
+        if max(r["top"] for r in rects) - min(r["top"] for r in rects) > 1:
+            errors.append(prefix + "status word group spans lines")
+        if any(r["left"] < item["left"] - 1 or r["right"] > item["right"] + 1 for r in rects):
+            errors.append(prefix + "status text overflows its container")
+        if not item["trailing"]:
+            continue
+        previous = item["previous"]
+        if not previous or item["nameLeft"] is None:
+            errors.append(prefix + "qualifier has no preceding name")
+            continue
+        own = min(r["top"] for r in rects) >= previous["bottom"] - 1
+        if not item["hiddenSeparator"]:
+            errors.append(prefix + "separator is not hidden from screen readers")
+        if item["dot"] == own:
+            errors.append(prefix + ("own line has a visible leading dot" if own else "inline status lost its dot"))
+        if own and abs(rects[0]["left"] - item["nameLeft"]) > 1:
+            errors.append(prefix + "own line does not start at the name's text edge")
+        step = item["baselineStep"]
+        if step is not None and abs(step - (item["lineHeight"] if own else 0)) > 1:
+            errors.append(prefix + "status is off the name's baseline rhythm")
+    return errors
+
+
+def check_status_qualifiers(browser, base_url: str, data: dict) -> list[str]:
+    """Whole qualifiers in grouped rows, grid panels and cards, including open-view resize and text-size changes."""
+    rows = function_phone_model(data)["rows"]
+    # Stable samples: both/assigned functions and the long public-sector-access label, currently not found in both rows.
+    samples = ("gb-aisi", "no-ki-norge")
+    if not all(any(row["id"] == identity and any(f["code"] == "public_access_continuity" for f in row["functions"])
+                   for row in rows) for identity in samples):
+        return ["status qualifier samples gb-aisi/no-ki-norge or their public-sector access rows missing"]
+    count = sum(len(group["codes"]) for group in function_columns(data))
+    page = browser.new_page(viewport={"width": 390, "height": 1000})
+    errors = []
+    page.on("pageerror", lambda error: errors.append("Status qualifiers JavaScript: " + str(error)))
+    hydrated(page, base_url, fn_view="default")
+    set_theme(page, "light")
+    page.evaluate("document.fonts.ready")
+
+    def measure(selector, prefix, minimum=1):
+        metrics = page.evaluate(STATUS_QUALIFIERS_JS, selector)
+        if len(metrics) < minimum:
+            errors.append(prefix + f"only {len(metrics)} of at least {minimum} qualifiers present")
+        errors.extend(prefix + error for error in status_qualifier_errors(metrics))
+
+    def settled():
+        page.evaluate("() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)))")
+
+    for width in (320, 360, 390, 430, 1000, 1440):
+        page.set_viewport_size({"width": width, "height": 1000})
+        for scale in ("100%", "110%"):
+            page.evaluate("s => document.documentElement.style.fontSize = s", scale)
+            settled()
+            prefix = f"qualifiers {width}px {scale}: "
+            page.evaluate("document.getElementById('functions-table').fnView('grouped')")
+            for identity in samples:
+                button = page.locator(f'.fn-phone li[data-institute="{identity}"] > .fn-phone-row')
+                if button.get_attribute("aria-expanded") != "true":
+                    button.click()
+                # No settling delay here: the open handler must lay out the status before the first paint.
+                measure('.fn-phone-detail', prefix + identity + ": ", count)
+            page.evaluate("document.getElementById('functions-table').fnView('grid')")
+            cell = page.locator('.fn-table tr[data-institute="gb-aisi"] td[data-code="model_testing"] > button')
+            if cell.get_attribute("aria-expanded") != "true":
+                cell.click()
+            measure('.fn-scroll .fn-detail', prefix + "cell panel: ")
+            page.evaluate("() => { for (const fold of document.querySelectorAll('.card.mini, .card.mini details')) fold.open = true; }")
+            settled()
+            measure('.card.mini', prefix + "mini cards: ")
+            page.evaluate("document.getElementById('functions-table').fnView('grouped')")
+    # Keep a row open across both directions and a font-completion event; no reopening can mask stale marks.
+    for width in (320, 1440, 360):
+        page.set_viewport_size({"width": width, "height": 1000})
+        page.evaluate("document.fonts.dispatchEvent(new Event('loadingdone'))")
+        settled()
+        measure('.fn-phone-detail', f"open row resize/font event {width}px: ", count)
+    page.close()
+    return errors
+
+
 def check_functions_phone(browser, base_url: str, data: dict, *, inject: bool = False, widths=(320, 360, 390, 640)) -> list[str]:
     """Phone words, gutters, alignment, values, evidence and focus; real keyboard and touch."""
     page = browser.new_page(viewport={"width": 360, "height": 1000})
@@ -13501,7 +13632,7 @@ def check_functions_phone(browser, base_url: str, data: dict, *, inject: bool = 
                     const style = getComputedStyle(node), rect = node.getBoundingClientRect();
                     const shape = value === 'both' ? 'activity' : value;
                     need(same([...node.classList].sort(), ['fn-mark', 'fn-pip', 'fn-' + shape].sort()), key + ': pip mark differs');
-                    need(detail ? !node.hasAttribute('aria-hidden') && node.getAttribute('role') === 'img' && node.getAttribute('aria-label') === names[value] : node.getAttribute('aria-hidden') === 'true', key + ': pip accessible state differs');
+                    need(node.getAttribute('aria-hidden') === 'true', key + ': pip must be decorative; the status follows the name');
                     need(Math.abs(rect.width - 8) <= 1 && Math.abs(rect.height - (value === 'not_coded' ? 2 : 8)) <= 1, key + ': pip dimensions differ');
                     if (value === 'activity' || value === 'both') need(!transparent(style.backgroundColor), key + ': active pip is not filled');
                     else if (value === 'mandate' || value === 'not_found') need(transparent(style.backgroundColor) && parseFloat(style.borderLeftWidth) >= 1, key + ': pip outline missing');
@@ -13569,6 +13700,7 @@ def check_functions_phone(browser, base_url: str, data: dict, *, inject: bool = 
                       need(summary && summary.textContent === data.dataset.vocabularies.function[f.code].summary, labelKey + ': function summary differs');
                       need(label && label.nextElementSibling === status && status?.nextElementSibling === summary &&
                            !label.querySelector('.fn-function-status, .fn-function-summary'), labelKey + ': function status/summary must follow the label outside its control');
+                      need(!marked || (status?.id && label?.getAttribute('aria-describedby') === status.id), labelKey + ': function button must describe its status');
                       pip(label?.querySelector('.fn-pip'), f.value, labelKey, true);
                       if (!marked || !label) continue;
                       need(label.getAttribute('aria-expanded') === 'false' && label.getAttribute('type') === 'button', labelKey + ': unopened function control differs');
@@ -14609,6 +14741,7 @@ def browser_jobs(dist: Path, data: dict, screenshots: Path | None) -> list[tuple
         ("interactions", check_functions_layout, ()),
         ("interactions", check_function_group_tabs, ()),
         ("interactions", check_functions_phone, (data,)),
+        ("interactions", check_status_qualifiers, (data,)),
         ("interactions", check_functions_sticky, ()),
         ("interactions", check_functions_zero_carrier, (data,)),
         ("interactions", check_functions_tint, ()),

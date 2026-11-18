@@ -12,6 +12,70 @@ from conftest import ROOT, SOURCE_URL
 from scripts import check_page
 
 
+@pytest.fixture
+def status_qualifier():
+    return {"text": "assigned and active", "trailing": True,
+            "rects": [{"top": 26, "bottom": 44, "left": 24, "right": 145}],
+            "previous": {"top": 0, "bottom": 20, "left": 24, "right": 230},
+            "nameLeft": 24, "left": 4, "right": 280, "dot": False, "hiddenSeparator": True,
+            "baselineStep": 24, "lineHeight": 24}
+
+
+def test_status_qualifiers_accept_one_line_aligned_to_name_or_following_it(status_qualifier):
+    assert check_page.status_qualifier_errors([status_qualifier]) == []
+    inline = dict(status_qualifier, rects=[{"top": 2, "bottom": 20, "left": 100, "right": 221}],
+                  dot=True, baselineStep=0)
+    assert check_page.status_qualifier_errors([inline]) == []
+    # Source dates/links can have several text nodes, all on the same line.
+    source = dict(status_qualifier, baselineStep=None, rects=[
+        {"top": 26, "bottom": 44, "left": 24, "right": 80},
+        {"top": 26.5, "bottom": 44.5, "left": 80, "right": 145}])
+    assert check_page.status_qualifier_errors([source]) == []
+
+
+@pytest.mark.parametrize("change, finding", [
+    ({"rects": []}, "text missing"),
+    ({"rects": [{"top": 26, "bottom": 44, "left": 24, "right": 130},
+                {"top": 45, "bottom": 63, "left": 24, "right": 70}]}, "spans lines"),
+    ({"dot": True}, "visible leading dot"),
+    ({"nameLeft": 4}, "name's text edge"),  # the pip's edge is wrong
+    ({"hiddenSeparator": False}, "screen readers"),
+    ({"previous": None}, "preceding name"),
+    ({"baselineStep": 32}, "baseline rhythm"),  # old button padding must not add a gap
+    ({"right": 100}, "overflows"),
+])
+def test_status_qualifiers_reject_split_loose_or_inaccessible_statuses(status_qualifier, change, finding):
+    assert any(finding in e for e in check_page.status_qualifier_errors([dict(status_qualifier, **change)]))
+
+
+def test_status_qualifier_geometry_tolerances_and_empty_sample(status_qualifier):
+    for delta, accepted in [(1, True), (1.01, False), (-1, True), (-1.01, False)]:
+        assert (check_page.status_qualifier_errors([dict(status_qualifier, nameLeft=24 + delta)]) == []) == accepted
+    inline = dict(status_qualifier, rects=[{"top": 2, "bottom": 20, "left": 100, "right": 221}], baselineStep=0)
+    assert any("lost its dot" in e for e in check_page.status_qualifier_errors([inline]))
+    assert check_page.status_qualifier_errors([]) == ["no status qualifiers to measure"]
+    # Panel sentences and the already separate Known activity clauses have no separator to test.
+    assert check_page.status_qualifier_errors([dict(status_qualifier, trailing=False, hiddenSeparator=False)]) == []
+
+
+def test_status_qualifier_gate_samples_allow_a_not_found_long_label():
+    from scripts import published
+
+    data = published.materialise_facts(json.loads((ROOT / "data/aisi.json").read_text()))
+    # No institute currently has a coded public-sector-access claim. The gate must still test the long label's plain span.
+    for institute in data["institutes"]:
+        for row in institute["functions"]:
+            if row["code"] == "public_access_continuity":
+                row.update(value="not_found", claim_ids=[])
+
+    class Browser:
+        def new_page(self, **kwargs):
+            raise RuntimeError("samples ready for geometry")
+
+    with pytest.raises(RuntimeError, match="samples ready for geometry"):
+        check_page.check_status_qualifiers(Browser(), "https://example.test/", data)
+
+
 @pytest.mark.parametrize("budget_size, budget_colour, staff_size, staff_weight, expected", [
     (16, "ink", 32, 500, []),  # the unbarred figure is smaller; it keeps the ink colour of a fact
     (16, "muted", 32, 500, []),  # colour is check_secondary_tone's concern, not this check's

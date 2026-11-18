@@ -172,9 +172,49 @@ def test_function_geometry_scripts_parse_without_browser():
     import subprocess
 
     scripts = [check_page.TEXT_RECTS_JS, check_page.CLAIM_SPACING_JS, check_page.FN_PANEL_WIDTH_JS,
-               check_page.FN_POINTER_JS, check_page.FN_OPEN_CONTROLS_JS, check_page.CLICK_WIDTH_JS, check_page.FN_VIEWS_JS]
+               check_page.FN_POINTER_JS, check_page.FN_OPEN_CONTROLS_JS, check_page.CLICK_WIDTH_JS, check_page.FN_VIEWS_JS,
+               check_page.STATUS_QUALIFIERS_JS]
     subprocess.run(['node', '-'], input='for (const source of ' + json.dumps(scripts) + ') new Function(source);',
                    text=True, capture_output=True, check=True)
+
+
+def test_qualifier_layout_remeasures_both_directions_and_skips_hidden_rows():
+    """Run the actual layout pass against supplied rectangles, including a wrapped function name."""
+    import subprocess
+
+    source = (Path(__file__).resolve().parents[1] / "site/index.html").read_text()
+    helpers = source[source.index("  function qualifierStartsLine("):source.index("  function hideLineEndDots(")]
+    script = r"""
+const assert = require('node:assert/strict');
+let width = 320, nameBottom = 20, visible = true;
+const classes = new Set();
+const parent = {closest: () => null, getClientRects: () => [{}]};
+const name = {textContent: 'Evaluation methods and tools', parentElement: parent};
+const statusText = {};
+const status = {
+  checkVisibility: () => visible, getClientRects: () => [{}],
+  contains: node => node === statusText,
+  classList: {remove: c => classes.delete(c), toggle: (c, on) => on ? classes.add(c) : classes.delete(c)},
+  querySelector: () => ({getBoundingClientRect: () => ({top: classes.has('own-line') || width < 400 ? nameBottom + 6 : 2})})
+};
+const root = {querySelectorAll: () => [status]};
+const document = {
+  createRange: () => ({selectNodeContents: () => {}, getClientRects: () => [{top: 0, bottom: nameBottom}]}),
+  createTreeWalker: () => ({nodes: [name, statusText], nextNode() {this.currentNode = this.nodes.shift(); return this.currentNode;}})
+};
+const NodeFilter = {SHOW_TEXT: 4}, getComputedStyle = () => ({visibility: 'visible'}), blockOf = () => root;
+HELPERS
+for (const [nextWidth, own] of [[320, true], [430, false], [360, true], [1440, false]]) {
+  width = nextWidth; layoutQualifiers(root); assert.equal(classes.has('own-line'), own);
+  layoutQualifiers(root); assert.equal(classes.has('own-line'), own); // stable final state on repeated observer delivery
+}
+nameBottom = 44; width = 320; layoutQualifiers(root); assert.ok(classes.has('own-line'));
+visible = false; width = 1440; layoutQualifiers(root); assert.ok(classes.has('own-line')); // no measuring hidden content
+visible = true; layoutQualifiers(root); assert.ok(!classes.has('own-line'));
+assert.equal(qualifierStartsLine(null, {top: 26}), false);
+assert.equal(qualifierStartsLine({bottom: 20}, {top: 2}), false); // mixed body/meta type on one baseline
+""".replace("HELPERS", helpers)
+    subprocess.run(['node', '-'], input=script, text=True, capture_output=True, check=True)
 
 
 @pytest.fixture(params=['grouped', 'grid'])
@@ -414,7 +454,7 @@ def test_function_summary_keeps_vocabulary_order_and_whole_ties(values, expected
 def test_function_jobs_are_registered_for_shards(functions):
     jobs = check_page.browser_jobs(Path("dist"), functions[0], None)
     names = [check_page.job_id(*job) for job in jobs]
-    for name in ("check_functions_table", "check_functions_detail", "check_functions_layout", "check_functions_phone", "check_functions_sticky", "check_functions_tint", "check_functions_zero_carrier", "check_function_group_tabs", "check_selection_boxes", "check_tinted_rows"):
+    for name in ("check_functions_table", "check_functions_detail", "check_functions_layout", "check_functions_phone", "check_status_qualifiers", "check_functions_sticky", "check_functions_tint", "check_functions_zero_carrier", "check_function_group_tabs", "check_selection_boxes", "check_tinted_rows"):
         assert names.count("interactions/" + name) == 1
 
 
@@ -667,6 +707,7 @@ def test_phone_function_summaries_statuses_and_claim_toggle():
     helpers = source[source.index("      var GROUP_LABELS ="):source.index("      function columnClass(")]
     helpers += next(line for line in source.splitlines() if "function mark(value, pip)" in line)
     helpers += next(line for line in source.splitlines() if "function coded(value)" in line)
+    helpers += source[source.index("  function trailingQualifier("):source.index("  function qualifierStartsLine(")]
     start = source.rindex("groups.forEach(function (group) {", 0, source.index('var heading = el("h4", null, groupName(group))'))
     rendering = source[start:source.index(" button.parentNode.appendChild(detail);", start)]
     start = source.index("              var existing = button.parentNode.querySelector")
@@ -697,6 +738,8 @@ function el(tag, className = '', text = '') {
     closest() { return {dataset: {institute: 'sample'}}; }
   };
 }
+const document = {createTextNode: text => el('#text', '', text)};
+function layoutQualifiers() {} // rendering and reading order here; the geometry oracle is tested separately
 const vocab = VOCAB;
 const names = {activity: 'Active', mandate: 'Assigned', both: 'Assigned and active', not_found: 'not found', not_coded: 'not yet coded'};
 const groups = [...new Set(Object.values(vocab).map(v => v.group))];
@@ -722,8 +765,13 @@ for (const value of Object.keys(names)) {
     const code = columns[n], f = {...vocab[code], code, value};
     const [label, status, summary] = item.children;
     assert.equal(label.textContent, f.label);
-    assert.equal(label.children[0].getAttribute('aria-label'), names[value]);
+    assert.equal(label.children[0].getAttribute('aria-hidden'), 'true');
+    assert.equal(label.children[0].getAttribute('aria-label'), null);
     assert.equal(status.textContent, ' · ' + names[value].toLowerCase());
+    assert.equal(status.querySelector('.qualifier-separator').getAttribute('aria-hidden'), 'true');
+    assert.equal(status.querySelector('.qualifier-text').textContent, names[value].toLowerCase());
+    assert.equal(status.id, 'detail-' + code + '-status');
+    assert.equal(label.getAttribute('aria-describedby'), ['activity', 'mandate', 'both'].includes(value) ? status.id : null);
     assert.equal(summary.textContent, f.summary);
     assert.deepEqual(checkItem(item, f), []);
     for (const node of [status, summary]) {
@@ -752,6 +800,13 @@ for (const value of Object.keys(names)) {
     }
   });
 }
+const spokenText = node => node.getAttribute('aria-hidden') === 'true' ? '' : node.text + node.children.map(spokenText).join('');
+const caveat = trailingQualifier('last read 17 Nov 2026', 'reread-tail', 'Source offline since 18 Nov 2026; last read 17 Nov 2026.');
+assert.equal(caveat.textContent, ' · last read 17 Nov 2026 Source offline since 18 Nov 2026; last read 17 Nov 2026.');
+assert.equal(spokenText(caveat), ' Source offline since 18 Nov 2026; last read 17 Nov 2026.');
+const archive = trailingQualifier(el('a', 'archive', 'archived copy'), 'archive-copy');
+assert.equal(archive.textContent, ' · archived copy');
+assert.equal(spokenText(archive), 'archived copy');
 '''
     for marker, value in {"VOCAB": json.dumps(vocab), "HELPERS": helpers, "TOGGLE": toggle, "ITEM_CHECK": item_check, "RENDERING": rendering}.items():
         script = script.replace(marker, value)
