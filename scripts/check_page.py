@@ -12624,9 +12624,16 @@ FN_VIEWS_JS = r"""() => {
 def check_functions_views(browser, base_url: str, data: dict) -> list[str]:
     """Functions views (owner, 18 Nov 2026): the grouped view by default at 1440, 1000 and 390, the full grid one click away and
     back, the control a word naming what it shows, a link to a target in the hidden view bringing that view, and an expanded
-    grouped row listing every function with its status and definition."""
+    grouped row listing every function with its status and reader's sentence, with claims opening inline on desktop too."""
     errors = []
-    count = len([c for c, v in data["dataset"]["vocabularies"]["function"].items() if not v.get("deprecated")])
+    vocab = data["dataset"]["vocabularies"]["function"]
+    codes = [code for group in function_columns(data) for code in group["codes"]]
+    count = len(codes)
+    # Stable interaction sample: the UK's model-testing function has published claims and quotes.
+    institute = next(i for i in data["institutes"] if i["id"] == "gb-aisi")
+    cell = next(f for f in institute["functions"] if f["code"] == "model_testing")
+    if not cell["claim_ids"]:
+        return ["Functions grouped desktop sample gb-aisi/model_testing has no claims"]
     for width in (1440, 1000, 390):
         page = browser.new_page(viewport={"width": width, "height": 1000})
         hydrated(page, base_url, fn_view="default")
@@ -12659,22 +12666,62 @@ def check_functions_views(browser, base_url: str, data: dict) -> list[str]:
         page.wait_for_function("() => document.getElementById('functions-table').dataset.view === 'grid'", timeout=5000)
         page.evaluate("() => { const r = document.querySelector('.fn-phone .fn-phone-row'); r.id = 'fn-arrival-probe-2'; location.hash = 'fn-arrival-probe-2'; }")
         page.wait_for_function("() => document.getElementById('functions-table').dataset.view === 'grouped'", timeout=5000)
-        # An expanded grouped row lists every function with its status and definition.
-        page.locator(".fn-phone li[data-institute] > .fn-phone-row").first.click()
+        # An expanded grouped row lists every function with its status and reader's sentence.
+        page.locator('.fn-phone li[data-institute="gb-aisi"] > .fn-phone-row').click()
         listed = page.evaluate("""() => [...document.querySelectorAll('.fn-phone-detail .fn-phone-functions > li')].map(li => ({
           shown: !!li.getClientRects().length, status: (li.querySelector('.fn-function-status')?.textContent || '').trim(),
-          definition: (li.querySelector('.fn-function-definition')?.textContent || '').trim()}))""")
-        if len(listed) != count or not all(item["shown"] and item["status"] and item["definition"] for item in listed):
-            errors.append(f"{width}px: an expanded row does not list all {count} functions, each with its status and definition")
-        # The rendered status and definition, not just their text: drawn, inside the grouped box, nothing running sideways.
+          label: li.querySelector('.fn-function-label')?.textContent,
+          summary: li.querySelector('.fn-function-summary')?.textContent}))""")
+        if len(listed) != count or not all(item["shown"] and item["status"] and item["summary"] for item in listed):
+            errors.append(f"{width}px: an expanded row does not list all {count} functions, each with its status and summary")
+        for code, item in zip(codes, listed):  # the documented group order, then vocabulary order within each group
+            if item["label"] != vocab[code]["label"] or item["summary"] != vocab[code]["summary"]:
+                errors.append(f"{width}px: {code} label or reader's sentence differs from the vocabulary")
+        # The rendered status and summary, not just their text: drawn, inside the grouped box, nothing running sideways.
         drawn = page.evaluate("""() => { const box = document.querySelector('.fn-phone'), r = box.getBoundingClientRect(), bad = [];
-          for (const n of document.querySelectorAll('.fn-phone-detail :is(.fn-function-status, .fn-function-definition)')) {
+          for (const n of document.querySelectorAll('.fn-phone-detail :is(.fn-function-status, .fn-function-summary)')) {
             const b = n.getBoundingClientRect(), s = getComputedStyle(n);
             if (!b.width || !b.height || s.visibility !== 'visible' || b.right > r.right + 1 || b.left < r.left - 1) bad.push(n.textContent.slice(0, 30)); }
           if (box.scrollWidth > box.clientWidth + 1) bad.push('the grouped box scrolls sideways');
           return bad; }""")
         if drawn:
             errors.append(f"{width}px: expanded row parts are not drawn inside the grouped view: {drawn[:3]}")
+        if width == 1440:
+            button = page.locator('.fn-phone-detail li[data-code="model_testing"] > button.fn-function-label')
+            button.click()
+            errors += button.evaluate(r"""(button, {claims, quotes}) => {
+              const errors = [], need = (ok, message) => { if (!ok) errors.push('1440px grouped gb-aisi/model_testing: ' + message); };
+              const item = button.parentElement, panel = item.querySelector(':scope > .fn-phone-claims');
+              const visible = n => !!n?.getClientRects().length && getComputedStyle(n).visibility === 'visible';
+              need(visible(panel), 'claims are not visible');
+              if (!panel) return errors;
+              const summary = item.querySelector(':scope > .fn-function-summary');
+              need(summary?.nextElementSibling === panel && panel.getBoundingClientRect().top >= summary.getBoundingClientRect().bottom - 1 &&
+                   panel.id === button.getAttribute('aria-controls') && button.getAttribute('aria-expanded') === 'true', 'claims do not open inline beneath the function');
+              need(panel.querySelectorAll('.fn-claim').length >= 1, 'no claim is shown');
+              for (const claim of claims) {
+                const row = panel.querySelector('[data-claim="' + claim.id + '"]'), sentence = row?.querySelector(':scope > .claim-text');
+                const sources = row?.querySelector(':scope > .fn-sources');
+                need(visible(sentence) && sentence.textContent.replace(/\u00a0/g, ' ') === claim.text, claim.id + ': claim sentence missing or different');
+                need(visible(sources) && sources.textContent.trim() && sources.querySelector('a[href]') && sentence?.nextElementSibling === sources,
+                     claim.id + ': source line missing beneath the sentence');
+                if (quotes[claim.id]?.excerpt) need(visible(sources?.querySelector('details.quote > summary')), claim.id + ': quote fold missing');
+              }
+              const box = button.closest('#functions-table'), bounds = box.getBoundingClientRect();
+              for (const node of [panel, ...panel.querySelectorAll('.fn-claim, .claim-text, .fn-sources')]) {
+                const r = node.getBoundingClientRect();
+                need(visible(node) && r.left >= bounds.left - 1 && r.right <= bounds.right + 1 &&
+                     r.top >= bounds.top - 1 && r.bottom <= bounds.bottom + 1 && node.scrollWidth <= node.clientWidth + 1,
+                     'claims or their contents run outside the section box');
+              }
+              need(box.scrollWidth <= box.clientWidth + 1 && button.closest('.fn-phone').scrollWidth <= button.closest('.fn-phone').clientWidth + 1,
+                   'the grouped section scrolls sideways');
+              return errors;
+            }""", {"claims": [claim for claim in institute["claims"] if claim["id"] in cell["claim_ids"]], "quotes": function_quotes(data)})
+            button.click()
+            if (page.locator('.fn-phone-detail .fn-phone-claims').count() or button.get_attribute('aria-expanded') != 'false'
+                    or not button.evaluate('n => n === document.activeElement')):
+                errors.append('1440px grouped gb-aisi/model_testing: selecting the function again does not close claims and keep focus on its button')
         page.close()
     # The view is the section's state: a resize across 640px keeps the chosen view, an open panel or row, and focus.
     page = browser.new_page(viewport={"width": 1440, "height": 1000})
@@ -13284,17 +13331,17 @@ def check_functions_phone(browser, base_url: str, data: dict, *, inject: bool = 
                       const label = item.querySelector(':scope > .fn-function-label');
                       const marked = ['activity', 'mandate', 'both'].includes(f.value), labelKey = key + '/' + f.code;
                       need(label && label.textContent === f.label && (label.tagName === 'BUTTON') === marked, labelKey + ': function label/control differs');
-                      const status = item.querySelector(':scope > .fn-function-status'), definition = item.querySelector(':scope > .fn-function-definition');
+                      const status = item.querySelector(':scope > .fn-function-status'), summary = item.querySelector(':scope > .fn-function-summary');
                       need(status && status.textContent === ' · ' + names[f.value].toLowerCase(), labelKey + ': function status word differs');
-                      need(definition && definition.textContent === data.dataset.vocabularies.function[f.code].definition, labelKey + ': function definition differs');
-                      need(label && label.nextElementSibling === status && status?.nextElementSibling === definition &&
-                           !label.querySelector('.fn-function-status, .fn-function-definition'), labelKey + ': function status/definition must follow the label outside its control');
+                      need(summary && summary.textContent === data.dataset.vocabularies.function[f.code].summary, labelKey + ': function summary differs');
+                      need(label && label.nextElementSibling === status && status?.nextElementSibling === summary &&
+                           !label.querySelector('.fn-function-status, .fn-function-summary'), labelKey + ': function status/summary must follow the label outside its control');
                       pip(label?.querySelector('.fn-pip'), f.value, labelKey, true);
                       if (!marked || !label) continue;
                       need(label.getAttribute('aria-expanded') === 'false' && label.getAttribute('type') === 'button', labelKey + ': unopened function control differs');
                       label.click();
                       const claims = item.querySelector(':scope > .fn-phone-claims');
-                      need(claims && definition?.nextElementSibling === claims && claims.id === label.getAttribute('aria-controls') && label.getAttribute('aria-expanded') === 'true', labelKey + ': function claims placement/state differs');
+                      need(claims && summary?.nextElementSibling === claims && claims.id === label.getAttribute('aria-controls') && label.getAttribute('aria-expanded') === 'true', labelKey + ': function claims placement/state differs');
                       if (claims) {
                         checkHeading(claims, f, expected.country, null, f.code, labelKey);
                         await checkClaims(claims, f, labelKey);

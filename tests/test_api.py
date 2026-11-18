@@ -53,6 +53,14 @@ def load(path):
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def test_function_summaries_reach_download_page_and_datapackage(site):
+    expected = load(build.DATA)["dataset"]["vocabularies"]["function"]
+    assert all(entry["summary"] for entry in expected.values())
+    for name in ("aisi.json", "page.json"):
+        assert load(site / "data" / name)["dataset"]["vocabularies"]["function"] == expected
+    assert load(site / "data/datapackage.json")["vocabularies"]["function"] == expected
+
+
 def named_sources(node):
     """Hand-written walk: strings in any *source_ids list or anywhere under a citations object."""
     if isinstance(node, dict):

@@ -315,6 +315,7 @@
                   "label",
                   "short",
                   "definition",
+                  "summary",
                   "group"
                 ],
                 "additionalProperties": false,
@@ -332,6 +333,11 @@
                     "type": "string",
                     "minLength": 1,
                     "description": "The test a reviewer applies to the bound quote."
+                  },
+                  "summary": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "A short reader's sentence on what the function means, shown under the function on the page; the coding rule is definition."
                   },
                   "group": {
                     "type": "string",
@@ -361,7 +367,7 @@
                   ]
                 }
               },
-              "description": "Function codes for claims of kind function (institutes, and related bodies through body_id) and for institutes[].functions, in display order, each with its label, test (definition) and group. Provisional (dataset.provisional): codes may be added, split, renamed or removed in a minor version, with a changelog line; a retired code stays with deprecated and replaced_by."
+              "description": "Function codes for claims of kind function (institutes, and related bodies through body_id) and for institutes[].functions, in display order, each with its label, test (definition), reader's sentence (summary) and group. Provisional (dataset.provisional): codes may be added, split, renamed or removed in a minor version, with a changelog line; a retired code stays with deprecated and replaced_by."
             },
             "development": {
               "type": "object",

@@ -90,6 +90,8 @@ Generated outputs: per-record `citations`; `institutes.csv` columns `staffing_mo
 
 Added in 1.1.0: `claims[]` on jurisdictions and institutes, `check.log`, `check.functions` and the generated `institutes[].functions[]`, exported as `claims.csv` and `functions.csv`; the development claim (`act`, `date`) with `dataset.vocabularies.development`, the `lead` mark, `closest_body.body_id` and `related_bodies[].designation_step`, exported as columns of `claims.csv`, `closest_bodies.csv` and `related_bodies.csv`. The design is [claims-1.1](claims-1.1.md); field meanings are in the schema; checks in `scripts/claim_checks.py`, tests in `tests/test_claims.py` and `tests/test_claims_development.py`.
 
+Also added in 1.1.0: `dataset.vocabularies.function` entries require `summary`, the short reader's sentence shown in an expanded grouped row; `definition` remains the coding rule. The vocabulary is included in the JSON download, page data and datapackage; no CSV column is added.
+
 ## Known activity
 
 The qualification policy is in `dataset.method`, with the field contract in the output schema. `qualifies_as` and a non-empty `qualification_note` are required for every output, including exclusions. `type` describes the artefact and `attribution` describes institutional credit; neither is a substitute for the reviewed qualification. The broad publication catalogue and its `first_output` milestone are unchanged and can begin before Known activity.

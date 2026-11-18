@@ -3,6 +3,7 @@ generated institutes[].functions rows, each gate with its mutation."""
 
 import copy
 import json
+import re
 
 import pytest
 from jsonschema import Draft202012Validator
@@ -20,10 +21,10 @@ FACT = "claims-" + "3" * 32
 BODY = "claims-" + "4" * 32
 STATE_FACT = "claims-" + "5" * 32
 VOCABULARY = {
-    "model_testing": {"label": "Model testing", "short": "model testing", "definition": "Synthetic test.", "group": "Testing and science"},
-    "research": {"label": "Research", "short": "research", "definition": "Synthetic test.", "group": "Testing and science"},
-    "old_code": {"label": "Old code", "short": "old code", "definition": "Synthetic test.", "group": "Rules", "deprecated": True, "replaced_by": ["research"]},
-    "policy_advice": {"label": "Policy advice", "short": "policy advice", "definition": "Synthetic test.", "group": "Informing government"},
+    "model_testing": {"label": "Model testing", "short": "model testing", "definition": "Synthetic test.", "summary": "Explains the function.", "group": "Testing and science"},
+    "research": {"label": "Research", "short": "research", "definition": "Synthetic test.", "summary": "Explains the function.", "group": "Testing and science"},
+    "old_code": {"label": "Old code", "short": "old code", "definition": "Synthetic test.", "summary": "Explains the function.", "group": "Rules", "deprecated": True, "replaced_by": ["research"]},
+    "policy_advice": {"label": "Policy advice", "short": "policy advice", "definition": "Synthetic test.", "summary": "Explains the function.", "group": "Informing government"},
 }
 
 
@@ -120,6 +121,7 @@ def test_page_data_keeps_claims_and_functions(claimed):
     """Cards read claims, including their citations and freshness, without changing the download."""
     published = build.export_dataset(claimed)
     page = json.loads(build.page_data(published))
+    assert page["dataset"]["vocabularies"]["function"] == published["dataset"]["vocabularies"]["function"] == VOCABULARY
     assert published["institutes"][0]["functions"] and published["jurisdictions"][0]["claims"]
     for collection in ("institutes", "jurisdictions"):
         for record, original in zip(page[collection], published[collection]):
@@ -141,6 +143,18 @@ def test_short_required_on_every_function_code(claimed, code):
 def test_short_is_a_nonempty_string(claimed):
     claimed["dataset"]["vocabularies"]["function"]["research"]["short"] = 7
     assert any("not of type 'string'" in e for e in schema_errors(claimed))
+
+
+@pytest.mark.parametrize("schema", [SCHEMA, AUTHORED], ids=["published", "authored"])
+@pytest.mark.parametrize("value", [None, "", 7], ids=["missing", "empty", "not-string"])
+def test_function_summary_is_required_and_nonempty(schema, value):
+    entry = copy.deepcopy(VOCABULARY["research"])
+    if value is None:
+        del entry["summary"]
+    else:
+        entry["summary"] = value
+    shape = schema["properties"]["dataset"]["properties"]["vocabularies"]["properties"]["function"]["additionalProperties"]
+    assert list(Draft202012Validator(shape).iter_errors(entry))
 
 
 def located_errors(d, schema):
@@ -269,6 +283,19 @@ def test_shape_fails(claimed, name):
     d = copy.deepcopy(claimed)
     SHAPES[name](d)
     assert schema_errors(d)
+
+
+def test_real_function_summaries_are_short_reader_sentences():
+    real = json.loads(build.DATA.read_text())
+    for code, entry in real["dataset"]["vocabularies"]["function"].items():
+        summary = entry["summary"]
+        assert isinstance(summary, str) and summary.strip(), code
+        assert summary.endswith(".") and not any(mark in summary[:-1] for mark in ".?!"), code
+        assert len(summary.split()) <= 18, code
+        assert not any(mark in summary for mark in ";()"), code
+        # the EU AI Office is one of the rows, so no sentence may tie a function to a nation (owner's hub, 18 Nov 2026)
+        assert not re.search(r"\b(nationa\w*|countr\w*|at home)\b", summary, re.I), code
+        assert summary != entry["definition"], code
 
 
 def test_real_vocabulary_is_the_spec_list():

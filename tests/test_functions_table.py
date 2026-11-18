@@ -546,7 +546,7 @@ def test_function_group_labels_in_desktop_and_phone_heads(functions, functions_p
         assert any("groups/order" in error or "group heads/order" in error for error in check(html.replace(">" + first_label + "<", ">Wrong group<"), data))
 
 
-def test_phone_function_definitions_statuses_and_claim_toggle():
+def test_phone_function_summaries_statuses_and_claim_toggle():
     """Run the phone renderer and item checks on all real codes with every status, without Chromium."""
     import inspect
     import json
@@ -612,18 +612,18 @@ for (const value of Object.keys(names)) {
   assert.equal(items.length, 18);
   items.forEach((item, n) => {
     const code = columns[n], f = {...vocab[code], code, value};
-    const [label, status, definition] = item.children;
+    const [label, status, summary] = item.children;
     assert.equal(label.textContent, f.label);
     assert.equal(label.children[0].getAttribute('aria-label'), names[value]);
     assert.equal(status.textContent, ' · ' + names[value].toLowerCase());
-    assert.equal(definition.textContent, f.definition);
+    assert.equal(summary.textContent, f.summary);
     assert.deepEqual(checkItem(item, f), []);
-    for (const node of [status, definition]) {
+    for (const node of [status, summary]) {
       const text = node.text; node.text = 'Wrong';
       assert.ok(checkItem(item, f).length); node.text = text;
       node.remove(); label.appendChild(node);
       assert.ok(checkItem(item, f).some(e => e.includes('outside its control')));
-      node.remove(); item.children = [label, status, definition]; node.parentNode = item;
+      node.remove(); item.children = [label, status, summary]; node.parentNode = item;
     }
     if (['activity', 'mandate', 'both'].includes(value)) {
       assert.equal(label.tagName, 'BUTTON');
@@ -632,11 +632,11 @@ for (const value of Object.keys(names)) {
         const claims = item.querySelector(':scope > .fn-phone-claims');
         assert.equal(label.getAttribute('aria-expanded'), 'true');
         assert.equal(claims.id, label.getAttribute('aria-controls'));
-        assert.equal(definition.nextElementSibling, claims);
+        assert.equal(summary.nextElementSibling, claims);
         assert.deepEqual(checkItem(item, f), []);
         toggle(label);
         assert.equal(label.getAttribute('aria-expanded'), 'false');
-        assert.deepEqual(item.children, [label, status, definition]);
+        assert.deepEqual(item.children, [label, status, summary]);
       }
     } else {
       assert.equal(label.tagName, 'SPAN');
