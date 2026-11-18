@@ -47,7 +47,7 @@ def texts(node):
 @pytest.mark.parametrize("gloss", [None, "Models"])
 def test_quote_rule_translation_original_and_focus(gloss):
     quote = page_call(f"window.quoteNode('<b>Modelle</b>', {json.dumps(gloss)})")
-    english, = quote["children"]  # no marker follows a quote: the Quote fold's label names the translation
+    english, = quote["children"]  # no marker follows an individual quote: its fold names the translation
     assert texts(english) == '"' + (gloss or "<b>Modelle</b>") + '"'
     assert english["tag"] == "span"
     if gloss:
@@ -144,7 +144,7 @@ def saved_claim_page():
     data["jurisdictions"][0]["claims"] = data["jurisdictions"][0]["claims"][:1]
     html = ('<article id="c-xx"><div class="claim" data-claim-id="fact"><span class="claim-text">A fact.'
             '<span class="cites"><a class="cn" data-source-id="s">1</a></span></span>'
-            '<details class="quote" data-quote-claim="fact"><summary>Quote, translated from German</summary></details></div></article>')
+            '<details class="quote" data-quote-claim="fact" data-translated="Translated from German"><summary aria-label="Quote, translated from German">Quote</summary></details></div></article>')
     return html, data
 
 
@@ -181,7 +181,7 @@ def test_development_sentence_and_all_three_citations_are_checked():
     record["claims"] = record["claims"][1:]
     html = ('<details id="c-xx"><div class="claim" data-claim-id="development"><span class="claim-text">'
             'On 1 Sep 2026 the government acted, which assigns tests.<span class="cites"><a class="cn" data-source-id="s">1</a></span></span>'
-            '<details class="quote" data-quote-claim="development"><summary>Quote, translated from German</summary></details></div></details>')
+            '<details class="quote" data-quote-claim="development" data-translated="Translated from German"><summary aria-label="Quote, translated from German">Quote</summary></details></div></details>')
     assert check_page.check_claim_cards(html, data) == []
     record["claims"][0]["citations"]["act"] = ["different-act-source"]
     assert any("citations" in e for e in check_page.check_claim_cards(html, data))

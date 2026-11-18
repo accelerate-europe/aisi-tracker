@@ -81,7 +81,7 @@ height=44; assert.equal(readingEdge(target),137); // detail replaces the table h
 end=120; assert.equal(readingEdge(target),120); // bounded by its owner
 end=-1; assert.equal(readingEdge(target),93); // past the panel/table
 end=900; contains=true; assert.equal(readingEdge(target),93); // Close is inside the head
-contains=false; position='static'; assert.equal(readingEdge(target),93); // desktop grouped head scrolls away
+contains=false; position='static'; assert.equal(readingEdge(target),93); // print keeps heads static
 height=0; position='sticky'; assert.equal(readingEdge(target),93); // hidden view
 """.replace('HELPER', helper)
     subprocess.run(['node', '-'], input=script, text=True, capture_output=True, check=True)
@@ -1149,7 +1149,7 @@ def _translated_lead_fixture():
     marker = '<span class="small translation"> translated from German</span>'
     cites = '<span class="cites"><a class="cn" data-source-id="s1">1</a></span>'
     html = (f'<details id="c-xx"><div class="claim" data-claim-id="lead"><span class="claim-text">It says it {quote} with them.{cites}</span>'
-            '<details class="quote" data-quote-claim="lead"><summary>Quote, translated from German</summary></details></div></details>')
+            '<details class="quote" data-quote-claim="lead" data-translated="Translated from German"><summary aria-label="Quote, translated from German">Quote</summary></details></div></details>')
     return data, html, quote, marker, cites
 
 
@@ -1176,13 +1176,17 @@ def test_quote_translation_rejects_sentence_markers_or_unreachable_original(plac
     assert any("translation" in e or "translated" in e for e in check_page.check_claim_cards(html, data))
 
 
-def test_quote_translation_is_named_once_in_the_fold_label():
+def test_quote_translation_is_named_accessibly_and_once_inside_the_fold():
     _, _, quote, marker, _ = _translated_lead_fixture()
-    html = (f'<details class="quote" open><summary>Quote, translated from German</summary><div class="quote-excerpt">{quote}'
-            f'<span class="quote-anchor">Under the heading {quote}</span></div></details>')
+    translation = '<span class="quote-translation">Translated from German</span>'
+    html = ('<details class="quote" open data-translated="Translated from German"><summary aria-label="Quote, translated from German">Quote</summary>'
+            f'<div class="quote-body"><div class="quote-excerpt">{quote}<span class="quote-anchor">Under the heading {quote}</span></div>{translation}</div></details>')
     assert check_page.check_quote_translations(BeautifulSoup(html, "html.parser")) == []
     for broken in (html.replace(", translated from German", ""), html.replace(quote + "<span", quote + marker + "<span", 1),
-                   html.replace(' tabindex="0"', "", 1)):
+                   html.replace(' tabindex="0"', "", 1), html.replace('>Quote</summary>', '>“</summary>'),
+                   html.replace('>Quote</summary>', '>Quote, translated from German</summary>'),
+                   html.replace(translation, ''), html.replace(translation, translation * 2),
+                   html.replace(translation, translation.replace('German', 'French'))):
         assert check_page.check_quote_translations(BeautifulSoup(broken, "html.parser"))
 
 
@@ -1194,6 +1198,37 @@ def test_quote_label_names_each_plain_language_once():
     assert check_page.expected_quote_label(data, "c") == "Quote, translated from Norwegian and French"
     data["sources"][0]["excerpts"][0] = {"text": "x", "supports": ["/jurisdictions/0/claims/0/text"]}
     assert check_page.expected_quote_label(data, "c") == "Quote"
+
+
+def test_shared_quote_renderer_keeps_words_names_and_lazy_translation_in_every_context():
+    source = (ROOT / 'site/index.html').read_text()
+    helpers = source[source.index('  function quoteLanguages('):source.index('  function shownLead(')]
+    loader = source[source.index('  function loadClaimQuote('):source.index('  document.addEventListener("toggle", function (e) { if (e.target.matches("details.quote"))')]
+    script = r"""
+const assert=require('node:assert/strict'), QUOTE_LABEL='Quote',TRANSLATED='translated from {language}';
+const languageName=code=>({de:'German',fr:'French'}[code]),andJoin=names=>names.join(' and ');
+const CLAIM_INDEX={plain:{excerpts:[]},translated:{sources:{other:{language:'fr'}},excerpts:[
+  {source:{language:'de'},excerpt:{gloss:'English text',anchors:[{gloss:'English anchor'},{source_id:'other',gloss:'French anchor'}]}}]}};
+function el(tag,cls,text) {return {tagName:tag,className:cls,textContent:text,dataset:{},children:[],attributes:{},
+  setAttribute(key,value){this.attributes[key]=value;},appendChild(n){this.children.push(n);},
+  querySelector(){return this.children.find(n=>n.className==='quote-body');},
+  classList:{add(){}}};}
+const document={createTextNode:text=>({textContent:text})};
+let loads=0;const claimQuoteBody=()=>{loads++;return el('div','quote-body');};
+HELPERS
+LOADER
+for(const inline of [false,true]) for(const id of ['plain','translated']) {
+  const fold=quoteDisclosure({id}), summary=fold.children[0], line=el('li');
+  assert.equal(summary.textContent,'Quote');assert.equal(summary.attributes['aria-label'],id==='plain'?'Quote':'Quote, translated from German and French');
+  assert.equal(summary.dataset.tip,undefined);
+  if(inline) {quoteOnSourceLine(fold,line);assert.deepEqual(line.children.map(n=>n===fold?'fold':n.textContent),[' · ','fold']);}
+  const before=loads;loadClaimQuote(fold);assert.equal(loads,before);assert.equal(fold.children.length,1);
+  fold.open=true;loadClaimQuote(fold);loadClaimQuote(fold);assert.equal(loads,before+1);
+  const markers=fold.querySelector('.quote-body').children;
+  assert.deepEqual(markers.map(n=>n.textContent),id==='plain'?[]:['Translated from German and French']);
+}
+""".replace('HELPERS', helpers).replace('LOADER', loader)
+    subprocess.run(['node', '-'], input=script, text=True, capture_output=True, check=True)
 
 
 def test_quote_translation_generated_sentence_without_disclosure_has_no_marker():

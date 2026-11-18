@@ -5517,7 +5517,7 @@ def check_panel_measure(browser, base_url: str) -> list[str]:
             page.locator('details.more, details.quote, details.srcs, details.card.mini').evaluate_all("nodes => nodes.forEach(n => n.open=true)")
             page.evaluate("async () => { await document.fonts.ready; await new Promise(requestAnimationFrame); }")
             samples = {
-                "function-phone" if width == 390 else "function-desktop": '.fn-phone-detail' if width == 390 else '.fn-detail-row .fn-detail',
+                "function-phone" if width == 390 else "function-desktop": '.fn-phone-claims' if width == 390 else '.fn-detail-row .fn-detail',
                 "function-definitions": '#functions-table > .section-foot > details.more',
                 "definitions": '#method-details .two > div',
                 "record-quote": '.card:not(.mini) details.quote .quote-body',
@@ -5948,6 +5948,16 @@ def exercise_detail_head(page, opener: str, owner: str, head: str, *, expand: bo
         page.mouse.move(1, 1)
         layout_settled(page)
         m = page.evaluate(READING_HEAD_JS, {"owner": owner, "head": head, "close": ".close-control"})
+        replacement = panel.evaluate("""n => {
+          const view=n.closest('.fn-phone, .fn-scroll'); if (!view) return true;
+          const head=view.querySelector('.fn-phone-head, thead'), nav=document.querySelector('.secnav').getBoundingClientRect();
+          const group=view.closest('.group').querySelector('.group-nav').getBoundingClientRect();
+          const edge=group.top<=nav.bottom+1 && group.bottom>nav.bottom ? group.bottom : nav.bottom, r=n.getBoundingClientRect();
+          const covered=r.top<=edge && r.bottom>edge;
+          return view.hasAttribute('data-head-covered')===covered && (getComputedStyle(head).visibility==='hidden')===covered;
+        }""")
+        if not replacement:
+            errors.append(position + ': detail header does not replace the table head')
         # Short details still have a reachable close; they need not reach the sticky threshold at their foot.
         if height >= page.viewport_size['height']:
             errors.extend(position + ": " + e for e in reading_head_errors(m, close=True))
@@ -5977,9 +5987,9 @@ def exercise_detail_head(page, opener: str, owner: str, head: str, *, expand: bo
 
 def check_wide_layout(browser, base_url: str) -> list[str]:
     """At 1100px and wider, with default settings, nothing needs sideways scroll and the worldwide
-    table header sticks below the section navigation and States row, including during sideways phone scrolling."""
+    table header sticks below the section navigation and States row at every width, including sideways scrolling."""
     errors = []
-    for width in WIDE_WIDTHS + (320, 390, 430):
+    for width in WIDE_WIDTHS + (641, 1000, 320, 390, 430):
         for theme in ("light", "dark"):
             page = themed_page(browser, theme, viewport={"width": width, "height": 900})
             try:
@@ -5987,8 +5997,7 @@ def check_wide_layout(browser, base_url: str) -> list[str]:
                 page.add_style_tag(content=".offscreen, .card-row { content-visibility: visible !important; }")
                 page.wait_for_selector("#world-rows tr")
                 page.evaluate("document.fonts.ready")
-                if width <= 640:
-                    errors.extend(f"{width}px {theme}: " + e for e in exercise_table_head(page, '#world-scroll', 'thead'))
+                errors.extend(f"{width}px {theme}: " + e for e in exercise_table_head(page, '#world-scroll', 'thead'))
                 result = page.evaluate(
                     """() => new Promise(done => requestAnimationFrame(() => requestAnimationFrame(() => {
                   const scrolling = [...document.querySelectorAll('body *')].filter(n => n.getClientRects().length && /auto|scroll/.test(getComputedStyle(n).overflowX) && n.scrollWidth > n.clientWidth + 1)
@@ -5997,7 +6006,7 @@ def check_wide_layout(browser, base_url: str) -> list[str]:
                   const table = document.querySelector('#world-rows').getBoundingClientRect();
                   scrollTo(0, scrollY + table.top + 300);
                   requestAnimationFrame(() => requestAnimationFrame(() => {
-                    const th = document.querySelector('table.world thead th'), nav = document.querySelector('.secnav').getBoundingClientRect(), row = th.closest('.group').querySelector('.group-nav').getBoundingClientRect();
+                    const th = document.querySelector('table.world thead'), nav = document.querySelector('.secnav').getBoundingClientRect(), row = th.closest('.group').querySelector('.group-nav').getBoundingClientRect();
                     done({ scrolling, page, sticky: getComputedStyle(th).position === 'sticky', top: th.getBoundingClientRect().top, nav: row.top <= nav.bottom + 1 ? row.bottom : nav.bottom });
                   }));
                 }))) """
@@ -6005,14 +6014,16 @@ def check_wide_layout(browser, base_url: str) -> list[str]:
             finally:
                 page.close()
             label = f"{width}px {theme}"
-            if width < 640:
-                if "world-scroll" not in result["scrolling"]:
+            if width < 1100:
+                if width <= 640 and "world-scroll" not in result["scrolling"]:
                     errors.append(f"{label}: phone table no longer scrolls sideways (gate expectation outdated?)")
+                if result['page']:
+                    errors.append(f'{label}: table overflows the page')
                 continue
             if result["page"] or result["scrolling"]:
                 errors.append(f"{label}: needs sideways scroll with default settings: {', '.join(result['scrolling']) or 'page'}")
             if not result["sticky"] or abs(result["top"] - result["nav"]) > 1:
-                errors.append(report_line(f"{label}: table header does not stick below the section navigation and group row (top {result['top']:.0f}, rows {result['nav']:.0f})"))
+                errors.append(f"{label}: table header does not stick below the section navigation and group row (top {result['top']:.0f}, rows {result['nav']:.0f})")
     return errors
 
 
@@ -10811,10 +10822,26 @@ def expected_quote_label(data: dict, claim_id: str) -> str:
 
 
 def check_quote_translations(soup) -> list[str]:
-    """The translation is named once, in the Quote fold's label; no marker follows a quote; every original stays focusable."""
+    """Every fold shows Quote, names its languages accessibly and once inside; originals stay focusable."""
     errors = []
     if soup.select(".translation"):
-        errors.append("a translation marker follows a quote; the Quote fold's label names the translation")
+        errors.append("a translation marker follows an individual quote")
+    for fold in soup.select('details.quote'):
+        summary = fold.find('summary', recursive=False)
+        name = summary.get('aria-label', '') if summary else ''
+        if summary is None or summary.get_text(strip=True) != 'Quote':
+            errors.append('a quote fold does not show the word Quote')
+        if name != 'Quote' and not name.startswith('Quote, translated from '):
+            errors.append('a quote fold lacks its accessible name')
+        translated = name.replace('Quote, translated', 'Translated', 1) if name.startswith('Quote, translated from ') else ''
+        if fold.get('data-translated', '') != translated:
+            errors.append('a quote fold translation differs from its accessible name')
+        body = fold.select_one(':scope > .quote-body')
+        if body is not None:
+            markers = body.select('.quote-translation')
+            if ([m.get_text(strip=True) for m in markers] != ([translated] if translated else [])
+                    or any(m.parent is not body for m in markers)):
+                errors.append('an opened quote must name its translation once inside the fold')
     for quote in soup.select(".quote-text[aria-description]"):
         if quote.get("tabindex") != "0":
             errors.append("translated quote lacks keyboard focus")
@@ -10822,8 +10849,8 @@ def check_quote_translations(soup) -> list[str]:
         if fold is None or quote.find_parent(class_="claim-text") is not None:
             continue
         summary = fold.find("summary", recursive=False)
-        if summary is None or not summary.get_text().startswith("Quote, translated from "):
-            errors.append("a Quote fold holding a translated quote does not say so in its label")
+        if summary is None or not summary.get('aria-label', '').startswith("Quote, translated from "):
+            errors.append("a Quote fold holding a translated quote does not say so in its accessible name")
     return errors
 
 
@@ -10885,7 +10912,7 @@ def check_claim_cards(html: str, data: dict) -> list[str]:
             folds = block.select("details.quote")
             if len(folds) != 1 or folds[0].get("data-quote-claim") != c["id"]:
                 errors.append(f"{c['id']}: missing or mismatched quote disclosure")
-            elif (label := folds[0].find("summary", recursive=False).get_text()) != (want_label := expected_quote_label(data, c["id"])):
+            elif (label := (folds[0].find("summary", recursive=False) or {}).get('aria-label')) != (want_label := expected_quote_label(data, c["id"])):
                 errors.append(f"{c['id']}: Quote label {label!r}, expected {want_label!r}")
             if c["kind"] == "function" and c.get("expired") and c is not lead:
                 warning = block.select_one(":scope > .reread")
@@ -11018,7 +11045,7 @@ def check_claim_quotes(browser, base_url: str, data: dict) -> list[str]:
                                     named = next(s for s in payload["sources"] if s["id"] == anchor["source_id"])
                                     if not line.inner_text().endswith(" (" + (named.get("title_en") or named["title"]) + ")"):  # Naming: English shown
                                         errors.append(f"{identity}: other-copy anchor source title is missing")
-                                    if anchor.get("gloss") and (named.get("language") or "") and LANGUAGE_NAMES.get(named["language"], named["language"]) not in fold.locator("summary").inner_text():
+                                    if anchor.get("gloss") and (named.get("language") or "") and LANGUAGE_NAMES.get(named["language"], named["language"]) not in (fold.locator("summary").get_attribute('aria-label') or ''):
                                         errors.append(f"{identity}: other-copy anchor language is missing from the Quote label")
                             for node, span in zip(block.locator(".quote-text").all(), spans):
                                 if not span.get("gloss"):
@@ -11032,7 +11059,7 @@ def check_claim_quotes(browser, base_url: str, data: dict) -> list[str]:
                         fold.locator("summary").tap() if touch else fold.locator("summary").click()
                         if fold.locator(".quote-body").count() != 1:
                             errors.append(f"{identity}: quote duplicated on reopening")
-                    # The saved lead has no marker; every loaded glossed excerpt and anchor has its own.
+                    # The saved lead has no marker; each loaded fold names all its translated languages once.
                     errors.extend(f"{jid}: {e}" for e in check_quote_translations(BeautifulSoup(card.inner_html(), "html.parser")))
                     for node in card.locator(".quote-text[aria-description]").all():
                         original = node.get_attribute("aria-description")
@@ -12628,7 +12655,6 @@ def clickable_width_errors(controls: list[dict]) -> list[str]:
 SYMBOL_ALONE = {
     '.close-control': 'the close ×',
     '.ico.i-dl': 'download',
-    '.fn-sources details.quote > summary': 'the quotation mark that opens a claim\'s quote at the end of its source line (owner, 18 Nov 2026)',
     '#theme-toggle': 'the theme switch: a named exception (owner, 18 Nov 2026)',
     'button.info': 'the (i) notes: a named exception (owner, 18 Nov 2026)',
 }
@@ -13046,7 +13072,7 @@ def check_functions_views(browser, base_url: str, data: dict) -> list[str]:
         if max(over) > 1:
             errors.append(f"{width}px: the grouped view scrolls sideways ({over})")
         page.close()
-    for width in (1440, 1000, 320, 390, 430):
+    for width in (1440, 1280, 1000, 320, 390, 430):
         page = browser.new_page(viewport={"width": width, "height": 1000})
         hydrated(page, base_url, fn_view="default")
         page.locator('#functions-table').scroll_into_view_if_needed()
@@ -13173,15 +13199,24 @@ def check_functions_views(browser, base_url: str, data: dict) -> list[str]:
             if (page.locator('.fn-phone-detail .fn-phone-claims').count() or button.get_attribute('aria-expanded') != 'false'
                     or not button.evaluate('n => n === document.activeElement')):
                 errors.append('1440px grouped gb-aisi/model_testing: selecting the function again does not close claims and keep focus on its button')
+        # All marked functions in the sample row, including International cooperation and both basis labels.
+        # Open every quote too, so anchors and translation lines participate in the child-edge check.
+        for button in page.locator('.fn-phone-detail button.fn-function-label').all():
+            button.evaluate('n => n.click()')
+            panel = page.locator('.fn-phone-claims')
+            panel.locator('details.quote > summary').evaluate_all('nodes => nodes.forEach(n=>n.click())')
+            page.wait_for_function("() => [...document.querySelectorAll('.fn-phone-claims details.quote')].every(n=>n.open && n.querySelector('.quote-body'))")
+            layout_settled(page)
+            errors.extend(f'{width}px {button.inner_text()}: ' + e for e in panel.evaluate(FN_CLAIM_INDENT_JS))
+            button.evaluate('n => n.click()')
         page.locator('.fn-detail .close-control').evaluate_all("nodes => nodes.forEach(n=>n.click())")
         for theme in ('light', 'dark'):
             set_theme(page, theme)
             errors.extend(f'{width}px {theme} grouped claims: ' + e for e in exercise_grouped_focus(page))
-            if width <= 640:
-                errors.extend(f'{width}px {theme} grouped: ' + e for e in exercise_table_head(page, '.fn-phone', '.fn-phone-head'))
-                page.evaluate("document.getElementById('functions-table').fnView('grid')")
-                errors.extend(f'{width}px {theme} grid: ' + e for e in exercise_table_head(page, '.fn-scroll', 'thead'))
-                page.evaluate("document.getElementById('functions-table').fnView('grouped')")
+            errors.extend(f'{width}px {theme} grouped: ' + e for e in exercise_table_head(page, '.fn-phone', '.fn-phone-head'))
+            page.evaluate("document.getElementById('functions-table').fnView('grid')")
+            errors.extend(f'{width}px {theme} grid: ' + e for e in exercise_table_head(page, '.fn-scroll', 'thead'))
+            page.evaluate("document.getElementById('functions-table').fnView('grouped')")
             errors.extend(f'{width}px {theme} grouped: ' + e for e in exercise_detail_head(
                 page, '.fn-phone li[data-institute="gb-aisi"] > .fn-phone-row', '.fn-phone-detail', '.fn-detail-top'))
             # Most claims, then stable institute and function IDs, rather than a hand-picked short grid panel.
@@ -13251,7 +13286,25 @@ def check_clickable_widths(browser, base_url: str) -> list[str]:
     return errors
 
 
-FN_CLAIMS_CHECK_JS = r"""
+FN_CLAIM_INDENT_JS = r"""detail => {
+  if (detail.matches('.fn-detail-row')) detail = detail.querySelector('.fn-detail');
+  const inline = detail.matches('.fn-phone-claims'), errors = [];
+  const name = inline ? detail.parentElement.querySelector('.fn-function-label > span:not(.fn-pip)') : detail.querySelector('.fn-detail-head');
+  if (!name) return ['claim block has no parent function name'];
+  const range = document.createRange(); range.selectNodeContents(name);
+  const edge = range.getBoundingClientRect().left;
+  const roots = inline ? [detail] : [...detail.querySelectorAll(':scope > .fn-claim, :scope > .fn-basis')];
+  for (const root of roots) for (const node of [root, ...root.querySelectorAll('*')]) {
+    if (node.closest('.vh') || getComputedStyle(node).visibility !== 'visible') continue;
+    const rects = [...node.getClientRects()].filter(r=>r.width>0 && r.height>0);
+    if (rects.some(r=>r.left < edge - .5)) errors.push('opened claim child starts left of its function name: ' + node.className);
+  }
+  if (inline && Math.abs(detail.getBoundingClientRect().left - edge) > .5) errors.push('opened claim block does not align with its function name');
+  return errors;
+}"""
+
+
+FN_CLAIMS_CHECK_JS = "const claimIndentErrors = " + FN_CLAIM_INDENT_JS + ";\n" + r"""
 const checkHeading = (detail, cell, country, institute, code, key) => {
   const heading = detail.querySelector('.fn-detail-head, .fn-function-head'), context = detail.querySelector(':scope > .fn-detail-context');
   if (detail.matches('.fn-phone-claims')) {
@@ -13290,11 +13343,12 @@ const checkClaims = async (detail, cell, key) => {
          key + (mixed ? ': a block in a cell with both bases lacks its Assignment or Activity label' : ': a claim repeats the cell state'));
     // Its source is written out just below, so the sentence carries no number (owner, 18 Nov 2026; principle: Citations).
     need(!sentence?.querySelector('.cites, a.cn'), key + ': a claim whose source is written out below still carries a citation number');
-    // The quote control ends the claim's source line: a quotation mark named "Quote" (", translated from X") on hover and for screen readers.
+    // The shared Quote control ends the claim's source line, with translated languages in its accessible name.
     const sources = item.querySelector(':scope > .fn-sources'), fold = sources?.querySelector('li > details.quote'), li = fold?.parentElement;
     const summary = fold?.querySelector(':scope > summary'), name = summary?.getAttribute('aria-label') || '';
-    need(fold && !fold.open && !fold.querySelector('.quote-body') && fold.dataset.quoteClaim === id && fold === li.lastElementChild && summary.textContent.trim().length === 1 && summary.dataset.tip === name,
-         key + ': the quote control is not a closed, lazy quotation mark ending the source line, named on hover');
+    need(fold && !fold.open && !fold.querySelector('.quote-body') && fold.dataset.quoteClaim === id && fold === li.lastElementChild && summary.textContent === 'Quote' && li.childNodes[li.childNodes.length - 2]?.textContent === ' · ',
+         key + ': the quote control is not a closed, lazy Quote fold after the source separator');
+    if (summary && sources) need(['fontSize', 'fontWeight', 'color'].every(k => getComputedStyle(summary)[k] === getComputedStyle(sources)[k]), key + ': Quote differs from the source line type or muted ink');
     const glossed = [q.excerpt, ...(q.excerpt.anchors || [])].some(span => span.gloss);
     need(glossed ? name.startsWith('Quote, translated from ') && !/Bokmål|Nynorsk/.test(name) : name === 'Quote', key + ': the quote control is not named "Quote", with the translation once, in a plain language name');
     need(sentence?.nextElementSibling === sources && sources === item.lastElementChild, key + ': sentence, then source line with its quote control, order differs');
@@ -13323,6 +13377,7 @@ const checkClaims = async (detail, cell, key) => {
     const links = [...item.querySelectorAll('.fn-sources > li > a.standalone')];
     need(JSON.stringify(links.map(a => a.href)) === JSON.stringify(q.claim.source_ids.map(sid => data.sources.find(s => s.id === sid).url)) && links.every(a => a.target === '_blank'), key + ': claim sources/order differ');
   }
+  errors.push(...claimIndentErrors(detail).map(error => key + ': ' + error));
 };
 """
 
@@ -14304,6 +14359,7 @@ def check_functions_sticky(browser, base_url: str, *, fixture: dict | None = Non
     errors = []
     for width in widths:
         page.set_viewport_size({"width": width, "height": 1000})
+        errors.extend(f'{width}px: ' + e for e in exercise_table_head(page, '.fn-scroll', 'thead'))
         page.locator('.fn-table tbody tr[data-institute]').last.evaluate("n => window.scrollBy(0, n.getBoundingClientRect().bottom - innerHeight + 80)")
         page.evaluate("() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))")
         errors += [f"{width}px: {error}" for error in page.evaluate("""() => {
@@ -14313,7 +14369,7 @@ def check_functions_sticky(browser, base_url: str, *, fixture: dict | None = Non
           if(fits !== !wider) errors.push('fits class disagrees with measured table/container widths');
           if(innerWidth>=1080 && (wider || !fits)) errors.push('functions table must fit from 1080px with default text');
           if(wider) {
-            if(fits || getComputedStyle(table.tHead).position==='sticky') errors.push('scrolling table has sticky heads');
+            if(fits || getComputedStyle(table.tHead).position!=='relative') errors.push('overflowing table must move its real head within the scroll box');
             return errors;
           }
           if(!fits) errors.push('fitting table lacks fits');
@@ -14396,7 +14452,10 @@ def selected_box_pixels(page, control, hover: bool) -> list[str]:
       const p={left:r.left+parseFloat(s.borderLeftWidth), right:r.right-parseFloat(s.borderRightWidth),
         top:r.top+parseFloat(s.borderTopWidth), bottom:r.bottom-parseFloat(s.borderBottomWidth)};
       if(n.matches('button.fn-function-label')) {
-        const status=n.nextElementSibling.getBoundingClientRect(); p.right=Math.max(p.right,status.right); p.bottom=Math.max(p.bottom,status.bottom);
+        // name and status, then the button's own start padding again after the status, within the row, in whole pixels
+        const status=n.nextElementSibling.getBoundingClientRect();
+        p.right=p.left+Math.floor(Math.min(Math.max(p.right,status.right)+parseFloat(s.paddingLeft),n.parentElement.getBoundingClientRect().right)-p.left);
+        p.bottom=Math.max(p.bottom,status.bottom);
       }
       const probe=document.createElement('span'); probe.style.cssText='position:absolute;pointer-events:none;border:var(--rule-strong) solid var(--focus)'; host.appendChild(probe);
       const token=getComputedStyle(probe), width=parseFloat(token.borderTopWidth), colour=token.borderTopColor;
@@ -14903,7 +14962,7 @@ def check_functions_tint(browser, base_url: str) -> list[str]:
                 page.keyboard.press("Tab")
                 if not button.evaluate("n => n===document.activeElement"):
                     errors.append(prefix + "keyboard did not reach cell")
-                expose_head(cell)  # Tab may scroll a late marked row past the non-sticky head at 1000px.
+                expose_head(cell)  # Restore the same head geometry after Tab scrolls to a later row.
                 errors += [prefix + "focus: " + e for e in inspect(cell, True)]
                 cell.hover()
                 page.mouse.move(1, 1)
@@ -14915,8 +14974,7 @@ def check_functions_tint(browser, base_url: str) -> list[str]:
             if empty.count():
                 expose_head(empty)
                 empty.hover()
-                # Every head already had a visible-label hover pass above. This extra blank can be far down
-                # the body, beyond the non-sticky head's viewport; here exercise only its row/column paint.
+                # Every head already had a visible-label hover pass above; this extra blank exercises only its row/column paint.
                 errors += [f"{width}px {theme} blank hover: " + e for e in inspect(empty, True, geometry=False)]
                 page.mouse.move(1, 1)
     # The owner's three hover remarks, at a fitting and a scrolling width, light and dark: (1) above the rule under

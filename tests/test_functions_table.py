@@ -88,6 +88,39 @@ def test_functions_structure_keeps_unanimous_not_found_columns(functions):
     assert [i["id"] for i in check_page.function_rows(data)] == ["z", "a"]
 
 
+def test_claim_indent_oracle_catches_children_outside_the_parent_text_edge():
+    """Measure the name's text, including descendants that escape an otherwise aligned block."""
+    import subprocess
+
+    script = r"""
+const assert=require('node:assert/strict'), inspect=CHECKER;
+const node=(name,left)=>({className:name,left,visible:true,closest:()=>null,
+  getClientRects(){return this.visible ? [{left:this.left,width:100,height:20}] : [];},
+  getBoundingClientRect(){return {left:this.left};}});
+const name=node('function name',40), basis=node('fn-basis',40), sentence=node('claim-text',40),
+  sources=node('fn-sources',40), body=node('quote-body',56), anchor=node('quote-anchor',56);
+const children=[basis,sentence,sources,body,anchor];
+const panel=Object.assign(node('fn-phone-claims',40), {matches:s=>s==='.fn-phone-claims',
+  parentElement:{querySelector:()=>name},querySelectorAll:()=>children});
+const document={createRange:()=>({selectNodeContents(){},getBoundingClientRect:()=>({left:40})})};
+const getComputedStyle=n=>({visibility:n.visible?'visible':'hidden'});
+assert.deepEqual(inspect(panel),[]);
+for(const child of [panel,...children]) {
+  const original=child.left; child.left=39;
+  assert.ok(inspect(panel).some(e=>e.includes(child===panel?'block':'child')),child.className);
+  child.left=original;
+}
+anchor.left=-100;anchor.visible=false;assert.deepEqual(inspect(panel),[]);
+anchor.visible=true;assert.ok(inspect(panel).some(e=>e.includes('quote-anchor')));
+anchor.left=56;panel.left=42;assert.ok(inspect(panel).some(e=>e.includes('does not align')));
+// The grid has no pip: its claims share the actual heading text edge, including wrapped child rectangles.
+panel.matches=()=>false;panel.querySelector=()=>name;panel.querySelectorAll=()=>[sources];
+sources.querySelectorAll=()=>[anchor];sources.getClientRects=()=>[{left:40,width:100,height:20},{left:39,width:20,height:20}];
+assert.ok(inspect(panel).some(e=>e.includes('fn-sources')));
+""".replace('CHECKER', check_page.FN_CLAIM_INDENT_JS)
+    subprocess.run(['node', '-'], input=script, text=True, capture_output=True, check=True)
+
+
 @pytest.mark.parametrize("opened, source", [(False, False), (True, False), (False, True), (True, True)])
 def test_claim_spacing_uses_text_edges_and_keeps_hit_height(opened, source):
     """A card reads sentence, Quote label, quote; a function panel reads sentence, source line, label, quote (owner, 18 Nov 2026)."""
@@ -196,7 +229,8 @@ const status = {
   checkVisibility: () => visible, getClientRects: () => [{}],
   contains: node => node === statusText,
   classList: {contains: c => c === 'fn-function-status' || classes.has(c), remove: c => classes.delete(c), toggle: (c, on) => on ? classes.add(c) : classes.delete(c)},
-  previousElementSibling: {getBoundingClientRect: () => ({left: 0, right: 140, top: 0, bottom: nameBottom}), style: {setProperty: (k,v) => line[k]=v}},
+  previousElementSibling: {getBoundingClientRect: () => ({left: 0, right: 140, top: 0, bottom: nameBottom}), style: {setProperty: (k,v) => line[k]=v},
+    parentElement: {getBoundingClientRect: () => ({right: width})}},
   getBoundingClientRect: () => ({right: classes.has('own-line') ? width : 240, bottom: classes.has('own-line') ? nameBottom+24 : nameBottom}),
   querySelector: () => ({getBoundingClientRect: () => ({top: classes.has('own-line') || width < 400 ? nameBottom + 6 : 2})})
 };
@@ -205,7 +239,7 @@ const document = {
   createRange: () => ({selectNodeContents: () => {}, getClientRects: () => [{top: 0, bottom: nameBottom}]}),
   createTreeWalker: () => ({nodes: [name, statusText], nextNode() {this.currentNode = this.nodes.shift(); return this.currentNode;}})
 };
-const NodeFilter = {SHOW_TEXT: 4}, getComputedStyle = () => ({visibility: 'visible'}), blockOf = () => root;
+const NodeFilter = {SHOW_TEXT: 4}, getComputedStyle = () => ({visibility: 'visible', paddingLeft: '0px'}), blockOf = () => root;
 HELPERS
 for (const [nextWidth, own] of [[320, true], [430, false], [360, true], [1440, false]]) {
   width = nextWidth; layoutQualifiers(root); assert.equal(classes.has('own-line'), own);
