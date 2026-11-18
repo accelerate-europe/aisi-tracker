@@ -3757,9 +3757,9 @@ def check_news(soup, data: dict) -> list[str]:
                 errors.append("development summary differs from canonical News lines")
         else:
             errors.append("development text missing")
-    link = soup.select_one('#events-download[download="events.csv"]')
-    if not link or link.get("href") != "data/events.csv":
-        errors.append("developments lack the events download")
+    link = soup.select_one('#news-download[download="news.csv"]')
+    if not link or link.get("href") != "data/news.csv":
+        errors.append("News lacks its download of news.csv")
     return errors
 
 
@@ -10447,7 +10447,7 @@ def check_news_layout(page, data) -> list[str]:
         }
       }
       const links = [...document.querySelectorAll('#developments .news-links a')], more = document.getElementById('developments-more');
-      if (links.length !== 2 || links[0].id !== 'news-feed' || links[1].id !== 'events-download') errors.push('News foot row needs the feed, then the download at its right end');
+      if (links.length !== 2 || links[0].id !== 'news-feed' || links[1].id !== 'news-download') errors.push('News foot row needs the feed, then the download at its right end');
       else {
         if (Math.abs((rect(links[0]).top + rect(links[0]).bottom) - (rect(links[1]).top + rect(links[1]).bottom)) > 4 || links.some(a => a.getClientRects().length !== 1)) errors.push('News links do not share one line');
         if (links.some(a => !(rows.at(-1).compareDocumentPosition(a) & Node.DOCUMENT_POSITION_FOLLOWING) || !more || !(more.compareDocumentPosition(a) & Node.DOCUMENT_POSITION_FOLLOWING) || rect(a).top < rect(rows.at(-1)).bottom - 1 || (!more.hidden && rect(a).top < rect(more).bottom - 1))) errors.push('News links must follow the entries and control');
@@ -11091,12 +11091,12 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
         page.keyboard.press("Space")
         require(more.get_attribute("aria-expanded") == "false" and more.evaluate(in_view), "keyboard collapse leaves focus off the control or off-screen")
         page.evaluate("document.activeElement.blur()")
-    with page.expect_download() as event_download:
-        page.locator("#events-download").click()
+    with page.expect_download() as news_download:
+        page.locator("#news-download").click()
     require(
-        Path(event_download.value.path()).read_bytes()
-        == (dist / "data" / "events.csv").read_bytes(),
-        "events download differs from the built events.csv",
+        Path(news_download.value.path()).read_bytes()
+        == (dist / "data" / "news.csv").read_bytes(),
+        "News download differs from the built news.csv",
     )
     page.evaluate(
         "() => { history.replaceState(null, '', location.pathname); scrollTo(0, 0); }"
