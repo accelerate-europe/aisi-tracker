@@ -32,6 +32,7 @@ import re
 import subprocess
 import sys
 import tempfile
+from functools import lru_cache
 from pathlib import Path
 
 # A one-letter name (/Users/x) is a placeholder in test fixtures; /home/runner is GitHub's CI account, exactly.
@@ -76,16 +77,23 @@ def files(root: Path):
             yield path, text, binary
 
 
-def scan_text(where: str, text: str, term: re.Pattern | None, *, dated_notes: bool) -> list[str]:
-    findings = []
-    for number, line in enumerate(text.splitlines(), 1):
+def line_scanner(term: re.Pattern | None):
+    """Reuse exact line matches within one scan, with a bounded memory cost."""
+    @lru_cache(maxsize=65536)
+    def matches(line: str, dated_notes: bool):
         found = [("home path", m.group(0)) for m in HOME_PATH.finditer(line)]
         if dated_notes and DATE.search(line):
             found += [("dated note citing a commit ID", m.group(0)) for m in COMMIT_ID.finditer(line)]
         if term:
             found += [("private term", m.group(0)) for m in term.finditer(line)]
-        findings += [f"{where}:{number}: {kind} {match!r}" for kind, match in found]
-    return findings
+        return tuple(found)
+    return matches
+
+
+def scan_text(where: str, text: str, matches, *, dated_notes: bool) -> list[str]:
+    return [f"{where}:{number}: {kind} {match!r}"
+            for number, line in enumerate(text.splitlines(), 1)
+            for kind, match in matches(line, dated_notes)]
 
 
 def scan(root: Path, terms: list[str], *, dated_notes: bool = True, prefix_depth: int = 0) -> list[str]:
@@ -93,13 +101,14 @@ def scan(root: Path, terms: list[str], *, dated_notes: bool = True, prefix_depth
     leaving out the first prefix_depth parts (commit mode's short commit). Binary files get only the home-path
     rule and private terms: a dated-note match in compressed bytes would be noise."""
     term = re.compile("|".join(re.escape(t) for t in terms), re.I) if terms else None
+    matches = line_scanner(term)
     findings = []
     for path, text, binary in files(root):
         where = path.relative_to(root).as_posix()
         name = "/".join(path.relative_to(root).parts[prefix_depth:])
         if term:
             findings += [f"{where}:0: private term in the path {m.group(0)!r}" for m in term.finditer(name)]
-        found = scan_text(where, text, term, dated_notes=dated_notes and not binary)
+        found = scan_text(where, text, matches, dated_notes=dated_notes and not binary)
         if binary:  # read twice: each match once, at its first line
             first = {}
             for finding in found:
@@ -112,7 +121,8 @@ def scan(root: Path, terms: list[str], *, dated_notes: bool = True, prefix_depth
 def scan_names(names: list[str], terms: list[str]) -> list[str]:
     """Ref names being pushed: home paths and private terms."""
     term = re.compile("|".join(re.escape(t) for t in terms), re.I) if terms else None
-    return [finding for name in names for finding in scan_text(f"ref {name}", name, term, dated_notes=False)]
+    matches = line_scanner(term)
+    return [finding for name in names for finding in scan_text(f"ref {name}", name, matches, dated_notes=False)]
 
 
 def git(repo: Path, *args: str, env: dict | None = None, input: bytes | None = None) -> bytes:
