@@ -1774,6 +1774,9 @@ def check_source_alignment(html: str, data: dict) -> list[str]:
         scope = cite.find_parent(attrs={"data-source-scope": True})
         if scope is not None:  # a section with its own source list (Testing and access): numbered from that list
             jid, order = str(scope["data-source-scope"]), [li.get("data-source-id") for li in scope.select(".srcs li")]
+        fund = cite.find_parent(class_="fund-item")
+        if fund is not None:  # a funding row numbers its own sources (principle: Folds, part 1)
+            order = [li.get("data-source-id") for li in fund.select(".srcs li[data-source-id]")]
         if sid not in order or cite.get_text(strip=True) != str(order.index(sid) + 1):
             errors.append(f"{jid}: citation {sid} differs from card source numbering")
         if sid not in sources or cite.get("href") != sources[sid]["url"]:
@@ -1787,9 +1790,12 @@ def check_source_alignment(html: str, data: dict) -> list[str]:
         if not host:
             errors.append(f"{jid}: missing funding entry")
             continue
-        ids = [li.get("data-source-id") for li in host.select(".srcs li")]
-        if ids != orders.get(jid):
-            errors.append(f"{jid}: funding source list differs from card")
+        # Its own list: exactly the sources the funding and staff shown cite, each once (principle: Folds, part 1).
+        ids = [li.get("data-source-id") for li in host.select(".srcs li[data-source-id]")]
+        cited = {a.get("data-source-id") for a in host.select(".cn")}
+        if len(ids) != len(set(ids)) or set(ids) != cited:
+            errors.append(f"{jid}: funding source list is not exactly the sources its funding and staff cite")
+        fund_order = ids
         for kind in ("funding", "staff"):
             records = host.select(f'[data-record="{kind}"]')
             expected = institute.get(kind, [])
@@ -1814,7 +1820,7 @@ def check_source_alignment(html: str, data: dict) -> list[str]:
                             continue
                         actual = [a.get("data-source-id") for a in part.select(".cn")] if part else None
                         wanted = citation_fields(record, fields) + (rate_sources(record, data) if selector == ".funding-native" else [])
-                        if actual != in_numeral_order(list(dict.fromkeys(wanted)), orders.get(jid, [])):
+                        if actual != in_numeral_order(list(dict.fromkeys(wanted)), fund_order):
                             errors.append(f"{jid}: funding {selector} citations differ from data")
                     statement = rendered.select_one(".source-statement")
                     expected_statement = expected_funding_statement(record)
@@ -1833,7 +1839,7 @@ def check_source_alignment(html: str, data: dict) -> list[str]:
                         errors.append(f"{jid}: native funding amount differs from primary value")
                     continue
                 actual = [a.get("data-source-id") for a in rendered.select(".cn")]
-                wanted = in_numeral_order(detail_citation_sources(record, kind), orders.get(jid, []))
+                wanted = in_numeral_order(detail_citation_sources(record, kind), fund_order)
                 if actual != wanted:
                     errors.append(f"{jid}: {kind} record citations differ from data")
     # dataset.method/missing-values requires Not published for unknown figures.

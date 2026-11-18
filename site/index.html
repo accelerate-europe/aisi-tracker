@@ -1535,6 +1535,12 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     var a = el("a", "archive", "archived copy"), copy = el("span", "archive-copy", " · "); a.href = src.archive_url;
     copy.appendChild(a); parent.appendChild(copy);
   }
+  // Folds, part 1: a source list of more than three sits behind a counted fold, "N sources"; three or fewer stay open under "Sources".
+  var SOURCES_OPEN = 3, FUND_DETAIL = "Funding and staff records";
+  function sourcesBlock(order, S) {
+    if (order.length > SOURCES_OPEN) { var det = el("details", "srcs"), sum = el("summary", "source-footer-line"); sum.appendChild(el("span", "source-count", order.length + " sources")); det.appendChild(sum); det.appendChild(sourceList(order, S, null, true)); return det; }
+    var box = el("div", "srcs"); box.appendChild(el("h4", null, order.length === 1 ? "Source" : "Sources")); box.appendChild(sourceList(order, S, null, true)); return box;
+  }
   // A grouped section's sources (Testing and access, Institutional set-up): one counted, closed list under the groups.
   function groupSources(order, S) {
     var foot = el("div", "foot"), det = el("details", "srcs"), sum = el("summary", "source-footer-line");
@@ -3818,7 +3824,8 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     var scaleMax = Math.max(10000000, Math.ceil(maxBudget / 10000000) * 10000000);
     var notPublished = [];
     fundItems.forEach(function (i) {
-      var j = J[i.jurisdiction_id], refs = SOURCE_ORDERS[j.id], fundingCites = citations(S, refs);
+      // Its own numbering: the sources the funding and staff shown here cite, in the order they are first cited (principle: Folds).
+      var j = J[i.jurisdiction_id], fundOrder = [], fundingCites = citations(S, fundOrder, {});
       function detailsBody() {
         var body = el("div", "fund-detail-body");
         [["Published funding", i.display.funding_ids.map(function (identity) { return i.display.funding_records[identity]; }), "funding"], ["Staff records", i.display.staff_ids.map(function (identity) { return i.display.staff_records[identity]; }), "staff"]].forEach(function (pair) {
@@ -3845,7 +3852,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         });
         if (i.display.related_funding_ids.length) { var related = el("p", "fund-context"); related.appendChild(el("span", "label", "Related funding")); related.appendChild(document.createTextNode(" ")); related.appendChild(relatedFunding(i, fundingCites)); body.appendChild(related); }
         if (i.staffing_profile) body.appendChild(el("p", "staffing-note", i.staffing_profile));
-        var sources = el("div", "srcs"); sources.appendChild(el("h4", null, "Sources")); sources.appendChild(sourceList(refs, S, null, true)); body.appendChild(sources);
+        body.appendChild(sourcesBlock(fundOrder, S));
         if (m.repository) body.appendChild(correctionLink(j, m));
         return body;
       }
@@ -3892,7 +3899,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       if (latestParts.length) { var latestLine = el("p", "fund-context"); latestLine.appendChild(separated(latestParts, true)); staffBox.appendChild(latestLine); }
       if (technical) { var tech = el("p", "fund-context"), techParts = [technical.display.technical + " technical"]; if (technical.as_of) techParts.push(asOf(technical.as_of)); if (confTag(technical)) techParts.push(confTag(technical)); tech.appendChild(separated(techParts, true)); tech.appendChild(fundingCites(fieldCitations(technical, ["technical", "technical_qualifier", "as_of"]))); staffBox.appendChild(tech); }
       row.appendChild(staffBox);
-      var det = el("details", "more quiet fund-detail"); det.appendChild(el("summary", null, "Sources"));
+      var det = el("details", "more quiet fund-detail"); det.appendChild(el("summary", null, FUND_DETAIL));
       det.appendChild(detailsBody()); budget.appendChild(det); $("fund-rows").appendChild(row);
     });
     var none = $("fund-none"), noneList = none.querySelector("ul");

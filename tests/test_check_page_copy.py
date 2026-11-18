@@ -211,3 +211,19 @@ def test_a_tooltip_reads_from_its_one_home(network):
     assert check_page.check_network_cells(page, data) == []  # the same check passes with the description as the home
     mark["aria-description"] = " \n "
     assert check_page.blocking(check_page.check_network_cells(page, data))
+
+
+def test_a_funding_row_numbers_and_lists_only_the_sources_it_cites():
+    """Folds, part 1: a funding row's records number their own sources; the card keeps its own, longer list."""
+    data = {"sources": [{"id": s, "url": f"https://example.org/{s}"} for s in ("one", "two", "three")],
+            "jurisdictions": [{"id": "XX", "status": "planned"}], "institutes": [{"id": "xx-i", "jurisdiction_id": "XX", "funding": [], "staff": []}]}
+    card = ('<article class="card" data-j="XX"><ol class="srcs">' + "".join(f'<li data-source-id="{s}"><a href="https://example.org/{s}">{s}</a></li>' for s in ("one", "two", "three"))
+            + '</ol></article>')
+    def fund(cited, number, listed):
+        return (f'<article class="fund-item" data-j="XX"><div class="fund-value">10<span class="cites"><a class="cn" data-source-id="{cited}" href="https://example.org/{cited}">{number}</a></span></div>'
+                '<details class="fund-detail"><summary>Funding and staff records</summary><div class="srcs"><ol>'
+                + "".join(f'<li data-source-id="{s}"><a href="https://example.org/{s}">{s}</a></li>' for s in listed) + '</ol></div></details></article>')
+    errors = lambda html: [e for e in check_page.blocking(check_page.check_source_alignment(html, data)) if e.startswith("XX")]  # noqa: E731
+    assert errors(card + fund("two", 1, ["two"])) == []
+    assert "XX: funding source list is not exactly the sources its funding and staff cite" in errors(card + fund("two", 1, ["one", "two", "three"]))
+    assert "XX: citation two differs from card source numbering" in errors(card + fund("two", 2, ["two"]))
