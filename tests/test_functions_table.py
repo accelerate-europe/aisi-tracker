@@ -191,10 +191,13 @@ const classes = new Set();
 const parent = {closest: () => null, getClientRects: () => [{}]};
 const name = {textContent: 'Evaluation methods and tools', parentElement: parent};
 const statusText = {};
+const line = {};
 const status = {
   checkVisibility: () => visible, getClientRects: () => [{}],
   contains: node => node === statusText,
-  classList: {remove: c => classes.delete(c), toggle: (c, on) => on ? classes.add(c) : classes.delete(c)},
+  classList: {contains: c => c === 'fn-function-status' || classes.has(c), remove: c => classes.delete(c), toggle: (c, on) => on ? classes.add(c) : classes.delete(c)},
+  previousElementSibling: {getBoundingClientRect: () => ({left: 0, right: 140, top: 0, bottom: nameBottom}), style: {setProperty: (k,v) => line[k]=v}},
+  getBoundingClientRect: () => ({right: classes.has('own-line') ? width : 240, bottom: classes.has('own-line') ? nameBottom+24 : nameBottom}),
   querySelector: () => ({getBoundingClientRect: () => ({top: classes.has('own-line') || width < 400 ? nameBottom + 6 : 2})})
 };
 const root = {querySelectorAll: () => [status]};
@@ -206,6 +209,8 @@ const NodeFilter = {SHOW_TEXT: 4}, getComputedStyle = () => ({visibility: 'visib
 HELPERS
 for (const [nextWidth, own] of [[320, true], [430, false], [360, true], [1440, false]]) {
   width = nextWidth; layoutQualifiers(root); assert.equal(classes.has('own-line'), own);
+  assert.equal(line['--fn-line-width'], (own ? width : 240) + 'px');
+  assert.equal(line['--fn-line-height'], (own ? nameBottom+24 : nameBottom) + 'px');
   layoutQualifiers(root); assert.equal(classes.has('own-line'), own); // stable final state on repeated observer delivery
 }
 nameBottom = 44; width = 320; layoutQualifiers(root); assert.ok(classes.has('own-line'));
@@ -694,6 +699,45 @@ def test_function_group_labels_in_desktop_and_phone_heads(functions, functions_p
         assert any("groups/order" in error or "group heads/order" in error for error in check(html.replace(">" + first_label + "<", ">Wrong group<"), data))
 
 
+def test_function_claims_keep_grid_status_and_mixed_basis_labels():
+    """Exercise the real claim renderer with single/mixed bases, inline and in grid panels."""
+    import subprocess
+
+    source = (Path(__file__).resolve().parents[1] / 'site/index.html').read_text()
+    copy = source[source.index('      var FN_COPY ='):source.index('      var names =', source.index('      var FN_COPY ='))]
+    renderer = source[source.index('      function appendClaims('):source.index('      function build()', source.index('      function appendClaims('))]
+    script = """
+const assert=require('node:assert/strict');
+function el(tag,cls='',text='') {
+  return {className:cls,text,children:[],dataset:{},classList:{add(){}},
+    get textContent(){return this.text+this.children.map(n=>n.textContent).join('');},
+    appendChild(n){this.children.push(n);return n;}, querySelectorAll:()=>[],querySelector:()=>null,insertBefore(){}};
+}
+const document={createTextNode:text=>el('#text','',text)}, S={}, SOURCE_ORDERS={};
+const citations=()=>{}, fieldCitations=()=>[], fnSources=()=>el('ul'), claimBlock=()=>el('div','fn-claim');
+const quoteOnSourceLine=()=>{}, glueCitations=()=>{}, externalLinks=()=>{};
+const instShort=i=>el('span','',i.short_name), names={mandate:'Assigned',activity:'Active',both:'Assigned and active'};
+const i={id:'sample',jurisdiction_id:'XX',short_name:'UK AISI'}, rows={sample:{test:{}}};
+const CLAIM_INDEX={a:{claim:{basis:'activity'},excerpts:[]},m:{claim:{basis:'mandate'},excerpts:[]},m2:{claim:{basis:'mandate'},excerpts:[]}};
+COPY
+RENDERER
+for(const [value,ids,sentence] of [
+  ['mandate',['m'],'Assigned to UK AISI'],
+  ['activity',['a'],'UK AISI is active, without an assignment'],
+  ['both',['a','m','m2'],'Assigned to UK AISI, and active']
+]) for(const inline of [false,true]) {
+  rows.sample.test={value,claim_ids:ids};
+  const detail=el('div'); appendClaims(detail,i,'test',inline);
+  const contexts=detail.children.filter(n=>n.className==='fn-detail-context');
+  assert.deepEqual(contexts.map(n=>n.textContent),inline?[]:[sentence]);
+  const evidence=detail.children.filter(n=>n.className!=='fn-detail-context');
+  assert.deepEqual(evidence.map(n=>n.className==='fn-basis'?n.textContent:n.dataset.claim),
+    value==='both'?['Assignment','m','m2','Activity','a']:ids);
+}
+""".replace('COPY', copy).replace('RENDERER', renderer)
+    subprocess.run(['node', '-'], input=script, text=True, capture_output=True, check=True)
+
+
 def test_phone_function_summaries_statuses_and_claim_toggle():
     """Run the phone renderer and item checks on all real codes with every status, without Chromium."""
     import inspect
@@ -767,9 +811,10 @@ for (const value of Object.keys(names)) {
     assert.equal(label.textContent, f.label);
     assert.equal(label.children[0].getAttribute('aria-hidden'), 'true');
     assert.equal(label.children[0].getAttribute('aria-label'), null);
-    assert.equal(status.textContent, ' · ' + names[value].toLowerCase());
+    const statusText = value === 'activity' ? 'active, without an assignment' : names[value].toLowerCase();
+    assert.equal(status.textContent, ' · ' + statusText);
     assert.equal(status.querySelector('.qualifier-separator').getAttribute('aria-hidden'), 'true');
-    assert.equal(status.querySelector('.qualifier-text').textContent, names[value].toLowerCase());
+    assert.equal(status.querySelector('.qualifier-text').textContent, statusText);
     assert.equal(status.id, 'detail-' + code + '-status');
     assert.equal(label.getAttribute('aria-describedby'), ['activity', 'mandate', 'both'].includes(value) ? status.id : null);
     assert.equal(summary.textContent, f.summary);
@@ -788,6 +833,9 @@ for (const value of Object.keys(names)) {
         const claims = item.querySelector(':scope > .fn-phone-claims');
         assert.equal(label.getAttribute('aria-expanded'), 'true');
         assert.equal(claims.id, label.getAttribute('aria-controls'));
+        assert.equal(claims.getAttribute('role'), 'region');
+        assert.equal(claims.getAttribute('aria-labelledby'), label.id);
+        assert.deepEqual(claims.children.map(n => n.className), ['fn-claim']);
         assert.equal(summary.nextElementSibling, claims);
         assert.deepEqual(checkItem(item, f), []);
         toggle(label);

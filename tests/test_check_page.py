@@ -13,6 +13,181 @@ from scripts import check_page
 
 
 @pytest.fixture
+def reading_head():
+    return {"top": 93, "bottom": 137, "bars": 93, "height": 44, "visible": True,
+            "topmost": True, "name": "UK AISI", "closeWidth": 44, "closeHeight": 44}
+
+
+def test_reading_head_accepts_a_compact_header_in_place_of_the_table_head(reading_head):
+    assert check_page.reading_head_errors(reading_head, close=True) == []
+    assert check_page.reading_head_errors(dict(reading_head, closeWidth=0), close=False) == []
+
+
+@pytest.mark.parametrize("change, finding", [
+    ({"top": 92}, None),  # subpixel tolerance
+    ({"top": 91.9}, "navigation stack"),
+    ({"top": 137}, "navigation stack"),  # accidental stacking below the table head
+    ({"visible": False}, "fully visible"),
+    ({"topmost": False}, "covered at its centre"),
+    ({"name": ""}, "no identity"),
+    ({"closeWidth": 43.9}, "44px"),
+    ({"closeHeight": 40}, "44px"),
+])
+def test_reading_head_rejects_overlap_wrong_offset_and_small_close(reading_head, change, finding):
+    errors = check_page.reading_head_errors(dict(reading_head, **change), close=True)
+    assert any(finding in e for e in errors) if finding else not errors
+
+
+def test_overflow_head_translation_is_bounded_and_reversible():
+    source = (ROOT / "site/index.html").read_text()
+    helper = next(line for line in source.splitlines() if line.startswith("  function stickyShift("))
+    # Independent examples: before the table, pinned, at its foot, shorter than a head and scrolling back.
+    script = helper + """
+const assert=require('node:assert/strict');
+for (const [start,end,height,top,wanted] of [[200,1200,44,93,0],[-100,900,44,93,193],[-900,100,44,93,956],[-20,10,44,93,0],[200,1200,44,93,0]])
+  assert.equal(stickyShift(start,end,height,top),wanted);
+"""
+    subprocess.run(['node', '-'], input=script, text=True, capture_output=True, check=True)
+
+
+@pytest.mark.parametrize('change, finding', [
+    ({}, None),
+    ({'top': 136}, None),  # one-pixel geometry tolerance
+    ({'top': 135.9}, 'covered by the reading head'),
+    ({'bottom': 845.1}, 'outside the viewport'),
+    ({'exposed': False}, 'painted rectangles'),
+    ({'focused': False}, 'intended control'),
+])
+def test_focus_clearance_measures_visibility_and_focus(change, finding):
+    measured = dict(focused=True, top=145, bottom=173, edge=137, viewport=844, exposed=True)
+    errors = check_page.focus_clearance_errors(dict(measured, **change))
+    assert any(finding in e for e in errors) if finding else not errors
+
+
+def test_focus_clearance_reserves_a_head_before_its_scroll_update():
+    source = (ROOT / 'site/index.html').read_text()
+    helper = source[source.index('  function readingEdge('):source.index('  function returnToOpener(')]
+    script = """
+const assert=require('node:assert/strict'), barsBottom=()=>93;
+let position='sticky', bottom=-200, height=43, end=900, contains=false;
+const head={getBoundingClientRect:()=>({top:bottom-height,bottom,height}), contains:()=>contains, matches:()=>false};
+const owner={querySelector:()=>head, getBoundingClientRect:()=>({top:-500,bottom:end})};
+const target={closest:()=>owner, matches:()=>false};
+const getComputedStyle=()=>({position,visibility:'hidden'});
+HELPER
+// A native focus scroll arrives before transform/covered state catches up: reserve the destination.
+assert.equal(readingEdge(target),136);
+height=44; assert.equal(readingEdge(target),137); // detail replaces the table head
+end=120; assert.equal(readingEdge(target),120); // bounded by its owner
+end=-1; assert.equal(readingEdge(target),93); // past the panel/table
+end=900; contains=true; assert.equal(readingEdge(target),93); // Close is inside the head
+contains=false; position='static'; assert.equal(readingEdge(target),93); // desktop grouped head scrolls away
+height=0; position='sticky'; assert.equal(readingEdge(target),93); // hidden view
+""".replace('HELPER', helper)
+    subprocess.run(['node', '-'], input=script, text=True, capture_output=True, check=True)
+
+
+def test_reading_focus_clears_both_axes_without_scrolling_clear_or_stale_targets():
+    source = (ROOT / 'site/index.html').read_text()
+    helper = source[source.index('  function readingEdge('):source.index('  function returnToOpener(')]
+    script = """
+const assert=require('node:assert/strict');
+let bars=121, headHeight=194.28, headTop=-500, ownerTop=-500, grid=true;
+let rect={top:50,bottom:78,left:140,right:178}, scrolled=[];
+const barsBottom=()=>bars, getComputedStyle=()=>({position:'sticky'});
+const head={getBoundingClientRect:()=>({top:headTop,bottom:headTop+headHeight,height:headHeight}), contains:()=>false, matches:()=>grid};
+const owner={querySelector:()=>head,getBoundingClientRect:()=>({top:ownerTop,bottom:2000})};
+const frozen={getBoundingClientRect:()=>({right:184})};
+const cell={parentElement:{querySelector:()=>frozen}};
+const scroll={clientWidth:288,getBoundingClientRect:()=>({left:16}),
+  get scrollLeft(){return this.x ?? 100;}, set scrollLeft(x){const d=x-this.scrollLeft; this.x=x; rect.left-=d; rect.right-=d; scrolled.push(['x',d]);}};
+const target={getBoundingClientRect:()=>({...rect}),getClientRects:()=>[rect],matches:()=>false,
+  closest:s=>s==='.fn-scroll:not(.fits)' ? (grid?scroll:null) : s==='td' ? (grid?cell:null) : owner};
+const document={activeElement:target};
+const window={scrollBy:(x,y)=>{scrolled.push(['y',y]);rect.top-=y;rect.bottom-=y;}};
+HELPER
+// The narrow grid's two-row navigation and measured leaning head leave room in a 1000px viewport.
+assert.equal(readingEdge(target),315.28);
+clearReadingFocus(target);
+assert.ok(Math.abs(rect.top-323.28)<.001);
+assert.equal(rect.left,192); // beyond the frozen country column, not merely inside the scroll box
+assert.equal(scrolled.length,2);
+scrolled=[]; clearReadingFocus(target); assert.deepEqual(scrolled,[]); // already clear on both axes
+rect.left=290; rect.right=328; clearReadingFocus(target); assert.equal(rect.right,296); // right edge too
+// A queued frame for a previous focus target must not move the page after a new tooltip has opened.
+scrolled=[]; document.activeElement={}; rect.top=20; clearReadingFocus(target); assert.deepEqual(scrolled,[]);
+document.activeElement=target; grid=false; bars=93; headHeight=44;
+rect={top:145,bottom:173,left:100,right:200};
+clearReadingFocus(target); assert.deepEqual(scrolled,[]); // clear mini-card quote: no scroll
+rect.top=130; clearReadingFocus(target); assert.equal(rect.top,145); // actually covered by summary
+scrolled=[]; rect.top=136.5; clearReadingFocus(target); assert.deepEqual(scrolled,[]); // rounding only
+headTop=400; ownerTop=400; rect.top=100;
+assert.equal(readingEdge(target),93); // an unpinned head below the target is not an occluder
+clearReadingFocus(target); assert.deepEqual(scrolled,[]);
+""".replace('HELPER', helper)
+    subprocess.run(['node', '-'], input=script, text=True, capture_output=True, check=True)
+
+
+def test_focus_tooltips_survive_scroll_and_stationary_pointer_boundary_events():
+    source = (ROOT / 'site/index.html').read_text()
+    handlers = source[source.index('  var tip = null'):source.index('  // A separator never ends a line:')]
+    script = """
+const assert=require('node:assert/strict'), listeners={}, timers=new Map(); let timerId=0;
+class Node {
+  constructor(text='',kind='') { this.textContent=text; this.kind=kind; this.dataset={}; this.style={}; this.hidden=true; this.listeners={}; }
+  setAttribute(){} addEventListener(type,fn){this.listeners[type]=fn;} appendChild(){} contains(n){return this===n;}
+  getAttribute(k){return k==='aria-description'?this.textContent:null;}
+  getBoundingClientRect(){return {top:150-window.scrollY,bottom:174-window.scrollY,left:100,width:80};}
+  get offsetWidth(){return 200;} get offsetHeight(){return 40;}
+  matches(s){
+    if(s==='abbr.g, [data-tip], [aria-description]') return true;
+    if(s==='a' || s==='a.cn, a.original-text[href]') return this.kind==='a.cn';
+    if(s==='.info') return this.kind==='info';
+    if(s==='a[href], button, summary, input, select, textarea, .tgt') return ['a.cn','close-control','info'].includes(this.kind);
+    return false; // in particular, scripted focus need not match :focus-visible
+  }
+  closest(s){return this.matches(s)?this:null;}
+}
+const document={activeElement:null,documentElement:{clientWidth:1440},body:new Node(),createElement:()=>new Node(),
+  addEventListener:(type,fn)=>(listeners[type]??=[]).push(fn)};
+const window={scrollY:0,innerHeight:1000,addEventListener(){}};
+const clearTimeout=id=>timers.delete(id), setTimeout=fn=>{timers.set(++timerId,fn);return timerId;};
+const hideLineEndDots=()=>{};
+function fire(type,target,extra={}){for(const fn of listeners[type]||[]) fn({target,preventDefault(){},...extra});}
+HANDLERS
+// Same shared lifecycle for translated quotes/names, glossary terms, citations and icon controls.
+for(const kind of ['quote-text','original-text','abbr.g','a.cn','close-control','info']) {
+  const trigger=new Node('Original '+kind,kind), other=new Node('Pointer tip');
+  if(['a.cn','close-control','info'].includes(kind)) trigger.dataset.tip=trigger.textContent;
+  document.activeElement=trigger; window.scrollY=0;
+  fire('focusin',trigger); assert.equal(tip.textContent,trigger.textContent); assert.equal(tip.hidden,false);
+  const before=tip.style.top;
+  fire('click',trigger,{detail:0}); // Enter/Space activation must not turn this into a pointer tip
+  window.scrollY=40; fire('scroll',document);
+  assert.equal(tip.hidden,false); assert.notEqual(tip.style.top,before); // follows focus even without :focus-visible
+  fire('mouseout',trigger); fire('mouseover',other); // clearance/head movement under a stationary pointer
+  tip.listeners.mouseleave({relatedTarget:null});
+  for(const fn of timers.values()) fn(); timers.clear();
+  assert.equal(tip.hidden,false); assert.equal(tip.textContent,trigger.textContent);
+  fire('pointermove',other,{pointerType:'mouse',movementX:1,movementY:0}); // real hover can take over
+  assert.equal(tip.textContent,other.textContent);
+  window.scrollY+=20; fire('scroll',document); assert.equal(tip.hidden,true); // pointer tips still dismiss
+  fire('focusin',trigger); fire('keydown',trigger,{key:'Escape'});
+  fire('scroll',document); assert.equal(tip.hidden,true); // never resurrect an escaped tip
+  fire('focusin',trigger); fire('focusout',trigger,{relatedTarget:null}); assert.equal(tip.hidden,true);
+  fire('focusin',trigger); fire('pointermove',tip,{pointerType:'mouse',movementX:1,movementY:1});
+  assert.equal(tip.hidden,false); assert.equal(timers.size,0); // a focus tip stays hoverable
+  fire('keydown',trigger,{key:'Escape'});
+  fire('pointerdown',trigger,{pointerType:'touch'}); fire('focusin',trigger); assert.equal(tip.hidden,true);
+  fire('click',trigger); assert.equal(tip.hidden,kind==='close-control'); // touch controls keep their action
+  window.scrollY+=20; fire('scroll',document); assert.equal(tip.hidden,true); // touch focus does not pin tips
+  fire('keydown',trigger,{key:'Tab'});
+}
+""".replace('HANDLERS', handlers)
+    subprocess.run(['node', '-'], input=script, text=True, capture_output=True, check=True)
+
+
+@pytest.fixture
 def status_qualifier():
     return {"text": "assigned and active", "trailing": True,
             "rects": [{"top": 26, "bottom": 44, "left": 24, "right": 145}],

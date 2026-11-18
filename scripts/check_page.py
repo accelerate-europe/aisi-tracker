@@ -4031,7 +4031,7 @@ def check_baselines_and_rhythm(page) -> list[str]:
         document.querySelectorAll(selector).forEach(row => {
           if (!visible(row)) return;
           const nodes = [...row.querySelectorAll(items)].filter(visible);
-          if (nodes.length < (['.legend-entry', '.meta'].includes(selector) || (selector === '.card .top' && row.closest('.statusgroup, .eu-level')) || (selector === '.card.mini > summary' && row.parentElement.open && row.querySelector('.find-whole')) ? 1 : 2)) errors.push(`missing baseline items: ${selector}`);
+          if (nodes.length < (['.legend-entry', '.meta'].includes(selector) || (selector === '.card .top' && row.closest('.statusgroup, .eu-level')) || (selector === '.card.mini > summary' && row.parentElement.open) ? 1 : 2)) errors.push(`missing baseline items: ${selector}`);
           const lines = [];
           nodes.forEach(node => {
             const rect = node.getBoundingClientRect();
@@ -4224,6 +4224,7 @@ WIDTH_GEOMETRY = {
         (".fn-phone-row", "width"), (".fn-phone-detail", "width"), (".fn-phone-detail", "max-width"),
         (".fn-function-label", "max-width"), (".fund-bar", "width"),
         (".bar-value", "max-width"), (".region-chips", "max-width"),
+        (":is(.card.mini, .fund-detail)[open] > summary", "width"),  # backing fills the fold behind its separate close
         (".development-row", "width"), (".fn-table", "width"), (".fn-table .fn-pad", "width"),  # R6: full content width; the spacer takes the slack
     )},
 }
@@ -5169,6 +5170,11 @@ DISCLOSURE_LEVELS_JS = r"""() => {
     quiet ? quietCount++ : listCount++;
     const name = (n.closest('section')?.getAttribute('aria-labelledby') || 'panel') + ': ' + n.textContent.trim().slice(0, 60);
     const s = getComputedStyle(n), after = getComputedStyle(n, '::after');
+    if (n.matches('.card.mini[open] > summary, .fund-detail[open] > summary')) {
+      if (after.display !== 'none' || !n.parentElement.querySelector(':scope > .fold-close') || n.getBoundingClientRect().height < 44)
+        errors.push(name + ': open record identity needs a compact head and a separate close, without a chevron');
+      continue; // the open record's identity takes the card-head role; its closed trigger keeps the disclosure role
+    }
     if (type.map(k => s[k]).join('|') !== (quiet ? quietType : listType)) errors.push(name + ': disclosure type/colour differs from its level');
     const expanded = n.parentElement.open || n.getAttribute('aria-expanded') === 'true';
     const matrix = new DOMMatrix(after.transform), angle = Math.atan2(matrix.b, matrix.a) * 180 / Math.PI;
@@ -5242,7 +5248,7 @@ CLOSE_CONTROLS_JS = r"""checkFocus => {
   const probe = document.createElement('span');
   probe.style.cssText = 'position:absolute;width:var(--control);height:var(--hit);font:var(--type-meta);outline:var(--rule-strong) solid var(--focus);outline-offset:var(--sp-1)';
   document.body.appendChild(probe);
-  const ps = getComputedStyle(probe), hit = parseFloat(ps.height), size = Math.max(parseFloat(ps.width), hit);
+  const ps = getComputedStyle(probe), hit = Math.max(44, parseFloat(ps.height)), size = Math.max(44, parseFloat(ps.width), hit);
   const type = ['fontFamily', 'fontSize', 'fontWeight', 'fontStyle', 'lineHeight'], font = type.map(k => ps[k]).join('|');
   const ring = ['outlineStyle', 'outlineWidth', 'outlineColor', 'outlineOffset'], focus = ring.map(k => ps[k]).join('|');
   probe.remove();
@@ -5272,7 +5278,7 @@ CLOSE_CONTROLS_JS = r"""checkFocus => {
         const right = pr.right - parseFloat(p.borderRightWidth) - parseFloat(p.paddingRight);
         const firstTop = hr.top + parseFloat(h.borderTopWidth) + parseFloat(h.paddingTop);
         const firstBottom = firstTop + parseFloat(h.lineHeight);
-        if (Math.abs(r.right - right) > 2 || Math.abs(r.top - (pr.top + parseFloat(p.borderTopWidth) + parseFloat(p.paddingTop))) > 2 ||
+        if (Math.abs(r.right - right) > 2 || r.top < pr.top + parseFloat(p.borderTopWidth) + parseFloat(p.paddingTop) - 2 ||
             Math.abs(r.top - firstTop) > 2 || r.bottom > firstBottom + 2 || hr.right > r.left + 2)
           fail('Close is not at the top right within the heading first line (±2px)');
       }
@@ -5677,7 +5683,7 @@ def check_saved_card_heads(browser, base_url: str) -> list[str]:
 def check_card_heads(browser, base_url: str) -> list[str]:
     errors = []
     settle = "() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))"
-    for width in (1280, 1600, 390):
+    for width in (1280, 1440, 1600, 320, 390, 430):
         for theme in ("light", "dark"):
             page = themed_page(browser, theme, viewport={"width": width, "height": 900})
             prefix = f"{width}px {theme}: "
@@ -5760,14 +5766,213 @@ def check_card_heads(browser, base_url: str) -> list[str]:
                     errors.append(prefix + "card head stays sticky in print")
             finally:
                 page.close()
+    for width in (320, 390, 430, 1440):
+        for theme in ('light', 'dark'):
+            page = themed_page(browser, theme, viewport={'width': width, 'height': 900})
+            try:
+                hydrated(page, base_url)
+                # Longest rendered fold in each class, with ID/document order breaking ties.
+                for selector in ('.card.mini', '.fund-detail'):
+                    chosen = page.locator(selector).evaluate_all("""nodes => {
+                      nodes.forEach(n=>n.open=true);
+                      const ordered=nodes.map((n,index)=>({n,index,height:n.getBoundingClientRect().height})).sort((a,b)=>b.height-a.height || a.index-b.index);
+                      nodes.forEach(n=>n.open=false);
+                      return ordered.length ? ordered[0].index : null;
+                    }""")
+                    if chosen is None:
+                        errors.append(f'{width}px {theme}: no {selector} to exercise')
+                        continue
+                    # Assign only a test anchor, restoring the actual anchor afterwards.
+                    original_id = page.locator(selector).nth(chosen).get_attribute('id')
+                    page.locator(selector).nth(chosen).evaluate("n=>n.id='reading-fold-probe'")
+                    errors.extend(f'{width}px {theme} {selector}: ' + e for e in exercise_detail_head(
+                        page, '#reading-fold-probe > summary', '#reading-fold-probe[open]', ':scope > summary'))
+                    page.locator('#reading-fold-probe').evaluate("(n,id)=>id?n.id=id:n.removeAttribute('id')", original_id)
+            finally:
+                page.close()
+    return errors
+
+
+READING_HEAD_JS = """({owner, head, close}) => {
+  const box = document.querySelector(owner), h = box.querySelector(head), r = h.getBoundingClientRect();
+  const nav = document.querySelector('.secnav').getBoundingClientRect(), group = box.closest('.group')?.querySelector('.group-nav')?.getBoundingClientRect();
+  const bars = group && group.top <= nav.bottom + 1 ? group.bottom : nav.bottom;
+  const button = close && box.querySelector(close), b = button?.getBoundingClientRect();
+  const bounds=box.getBoundingClientRect(), left=Math.max(0,r.left,bounds.left), right=Math.min(innerWidth,r.right,bounds.right);
+  const x = b ? (b.left+b.right)/2 : (left+right)/2;
+  const y = b ? (b.top+b.bottom)/2 : (r.top+r.bottom)/2, hit = document.elementFromPoint(x,y);
+  const exposed = button ? !!hit && button.contains(hit) : [left+8,x,right-8]
+    .every(x=>h.contains(document.elementFromPoint(x,y))); // also probe the frozen country column
+  return {top:r.top, bottom:r.bottom, height:r.height, bars, nav:nav.height, subnav:bars-nav.bottom,
+    visible:getComputedStyle(h).visibility==='visible' && r.height>0 && r.top>=0 && r.bottom<=innerHeight,
+    topmost:exposed,
+    name:h.textContent.trim(), closeWidth:b?.width, closeHeight:b?.height, x,y};
+}"""
+
+
+def reading_head_errors(m: dict, *, close: bool = False) -> list[str]:
+    """Geometry oracle shared by the existing table and card jobs, with mutation tests."""
+    errors = []
+    if not m["visible"] or abs(m["top"] - m["bars"]) > 1:
+        errors.append("reading head is not fully visible directly below the navigation stack")
+    if not m["topmost"]:
+        errors.append("reading head or close control is covered at its centre")
+    if not m["name"]:
+        errors.append("reading head has no identity")
+    if close and (m.get("closeWidth", 0) < 44 or m.get("closeHeight", 0) < 44):
+        errors.append("close hit area is smaller than 44px")
+    return errors
+
+
+FOCUS_CLEARANCE_JS = """n => {
+  const r=n.getBoundingClientRect(), nav=document.querySelector('.secnav').getBoundingClientRect();
+  const group=n.closest('.group')?.querySelector('.group-nav')?.getBoundingClientRect();
+  let edge=group && group.top<=nav.bottom+1 ? group.bottom : nav.bottom;
+  const panel=n.closest('.fn-detail'), owner=panel || n.closest('.fn-phone, .fn-scroll, .scroll');
+  const head=owner?.querySelector(panel ? ':scope > .fn-detail-top' : '.fn-phone-head, thead');
+  if(head && !head.contains(n) && getComputedStyle(head).visibility==='visible') {
+    const h=head.getBoundingClientRect(); edge=Math.max(edge,Math.min(h.bottom,edge+h.height));
+  }
+  // Actual painted rectangles, not the page's readingEdge helper or its declared scroll margins.
+  const rects=[...n.getClientRects()].filter(r=>r.width>0 && r.height>0);
+  const exposed=rects.length>0 && rects.every(r=>n.contains(document.elementFromPoint((r.left+r.right)/2,(r.top+r.bottom)/2)));
+  return {focused:n===document.activeElement, top:r.top, bottom:r.bottom, edge, viewport:innerHeight, exposed};
+}"""
+
+
+def focus_clearance_errors(m: dict) -> list[str]:
+    errors = []
+    if not m['focused']:
+        errors.append('keyboard focus did not reach the intended control')
+    if m['top'] < m['edge'] - 1 or m['bottom'] > m['viewport'] + 1:
+        errors.append(f"keyboard focus is covered by the reading head or navigation, or outside the viewport (top {m['top']:.1f}, bottom {m['bottom']:.1f}, head edge {m['edge']:.1f})")
+    if not m['exposed']:
+        errors.append('keyboard focus is covered at its painted rectangles')
+    return errors
+
+
+def exercise_table_head(page, owner: str, head: str) -> list[str]:
+    """Two screens of vertical travel, plus both ends of horizontal travel, on the actual head.
+
+    The current grouped/grid data can be shorter than two screens. Repeat inert rows only for this
+    geometry probe, then remove them, so the gate also catches a head bounded by one short row block.
+    """
+    page.mouse.move(1, 1)
+    page.locator(owner).evaluate("""box => {
+      const list=box.querySelector('tbody:last-child, .fn-phone-block:last-child > ul');
+      const sample=list.querySelector('tr[data-institute], tr[data-j], li[data-institute]');
+      for(let n=0; sample && box.getBoundingClientRect().height<innerHeight*3 && n<100; n++) {
+        const row=sample.cloneNode(true); row.dataset.stickyProbe='';
+        row.querySelectorAll('[id]').forEach(n=>n.removeAttribute('id')); list.appendChild(row);
+      }
+      scrollTo(0,scrollY+box.getBoundingClientRect().top+innerHeight*2);
+    }""")
+    errors = []
+    try:
+        for end in (False, True):
+            page.locator(owner).evaluate("(box,end) => box.scrollLeft=end?box.scrollWidth:0", end)
+            layout_settled(page)
+            m = page.evaluate(READING_HEAD_JS, {"owner": owner, "head": head, "close": None})
+            errors.extend(reading_head_errors(m))
+            if not end:
+                errors.append(report_line(f"{owner}: navigation {m['nav']:.2f}px + sub-navigation {m['subnav']:.2f}px + head {m['height']:.2f}px = {m['bars'] + m['height']:.2f}px"))
+        # Native keyboard focus must reveal a row below the same head, including in a sideways scroll box.
+        control = page.locator(owner).locator('tbody tr:not([data-sticky-probe]) a, tbody tr:not([data-sticky-probe]) button, li:not([data-sticky-probe]) > .fn-phone-row').first
+        page.keyboard.press('Shift')
+        # Closing the earlier detail may have left this same opener focused. A no-op focus() after our
+        # deliberate scroll does not exercise keyboard arrival. Start a fresh transition, then Tab both ways.
+        control.evaluate('n => n.blur()')
+        control.focus()
+        for key in (None, 'Tab', 'Shift+Tab'):
+            if key:
+                page.keyboard.press(key)
+            layout_settled(page)
+            errors.extend(focus_clearance_errors(page.locator(':focus').evaluate(FOCUS_CLEARANCE_JS)))
+        # The same head must leave when its own table ends.
+        page.locator(owner).evaluate("box => scrollBy(0,box.getBoundingClientRect().bottom-document.querySelector('.secnav').getBoundingClientRect().bottom+2)")
+        layout_settled(page)
+        m = page.evaluate(READING_HEAD_JS, {"owner": owner, "head": head, "close": None})
+        if m["bottom"] > m["bars"] + 1:
+            errors.append("reading head outlives its table")
+    finally:
+        page.locator(owner).evaluate("box => { box.querySelectorAll('[data-sticky-probe]').forEach(n=>n.remove()); box.scrollLeft=0; }")
+    return errors
+
+
+def exercise_grouped_focus(page) -> list[str]:
+    """Tab through a named function, its claim sources and quote controls in both directions."""
+    errors = []
+    row = page.locator('.fn-phone li[data-institute="gb-aisi"] > .fn-phone-row')
+    row.click()
+    function = page.locator('.fn-phone-detail li[data-code="model_testing"] > button.fn-function-label')
+    function.evaluate('n => n.click()')
+    count = function.locator('..').locator('.fn-phone-claims :is(a[href], button, summary, [tabindex])').count()
+    if not count:
+        errors.append('grouped focus sample has no claim controls')
+    # Deliberately start above the reading edge. The native focus transition must bring it back into view.
+    function.evaluate("n => { n.blur(); scrollBy(0,n.getBoundingClientRect().top-20); }")
+    page.keyboard.press('Shift')
+    function.focus()
+    for key in [None] + ['Tab'] * (count + 1) + ['Shift+Tab'] * (count + 1):
+        if key:
+            page.keyboard.press(key)
+        layout_settled(page)
+        errors.extend(focus_clearance_errors(page.locator(':focus').evaluate(FOCUS_CLEARANCE_JS)))
+    page.locator('.fn-phone-detail .close-control').click()
+    return errors
+
+
+def exercise_detail_head(page, opener: str, owner: str, head: str, *, expand: bool = False) -> list[str]:
+    """Real middle/foot clicks must close and leave the opener visible and focused."""
+    errors = []
+    for position in ("middle", "foot"):
+        page.locator(opener).evaluate("n => { n.scrollIntoView({block:'center'}); n.click(); }")
+        panel = page.locator(owner)
+        if expand:
+            panel.locator('details.quote > summary').evaluate_all("nodes => nodes.forEach(n=>n.click())")
+        layout_settled(page)
+        height = panel.evaluate("n => n.getBoundingClientRect().height")
+        errors.append(report_line(f"{owner} {position}: detail {height:.2f}px, viewport {page.viewport_size['height']}px"))
+        panel.evaluate("""(n,position) => {
+          const r=n.getBoundingClientRect();
+          const bars=n.closest('.group')?.querySelector('.group-nav')?.getBoundingClientRect().height || 0;
+          scrollBy(0,position==='middle' ? r.top+r.height/2-document.querySelector('.secnav').getBoundingClientRect().height-bars-44 : r.bottom-innerHeight+16);
+        }""", position)
+        page.mouse.move(1, 1)
+        layout_settled(page)
+        m = page.evaluate(READING_HEAD_JS, {"owner": owner, "head": head, "close": ".close-control"})
+        # Short details still have a reachable close; they need not reach the sticky threshold at their foot.
+        if height >= page.viewport_size['height']:
+            errors.extend(position + ": " + e for e in reading_head_errors(m, close=True))
+        elif not m["visible"] or not m["topmost"] or min(m["closeWidth"], m["closeHeight"]) < 44:
+            errors.append(position + ": short detail header/close is not reachable")
+        if panel.locator('.close-control').count() != 1:
+            errors.append(position + ": detail must have exactly one close control")
+        if m["visible"] and m["topmost"]:
+            page.mouse.click(m["x"], m["y"])
+        else:
+            panel.locator('.close-control').evaluate("n=>n.click()")  # clean up after recording the failed hit test
+        layout_settled(page)
+        if panel.count() and panel.is_visible():
+            errors.append(position + ": close leaves the detail open")
+        restored = page.locator(opener).evaluate("""n => {
+          const r=n.getBoundingClientRect(), nav=document.querySelector('.secnav').getBoundingClientRect();
+          const group=n.closest('.group')?.querySelector('.group-nav')?.getBoundingClientRect();
+          let edge=group && group.top<=nav.bottom+1 ? group.bottom : nav.bottom;
+          const head=n.closest('.fn-phone, .fn-scroll')?.querySelector('.fn-phone-head, thead');
+          if(head) edge+=head.getBoundingClientRect().height;
+          return n===document.activeElement && r.top>=edge-1 && r.bottom<=innerHeight;
+        }""")
+        if not restored:
+            errors.append(position + ": close does not return focus to its visible opener below the head")
     return errors
 
 
 def check_wide_layout(browser, base_url: str) -> list[str]:
     """At 1100px and wider, with default settings, nothing needs sideways scroll and the worldwide
-    table header sticks below the section navigation and the stuck States row; a phone scrolls the table without a sticky header."""
+    table header sticks below the section navigation and States row, including during sideways phone scrolling."""
     errors = []
-    for width in WIDE_WIDTHS + (390,):
+    for width in WIDE_WIDTHS + (320, 390, 430):
         for theme in ("light", "dark"):
             page = themed_page(browser, theme, viewport={"width": width, "height": 900})
             try:
@@ -5775,6 +5980,8 @@ def check_wide_layout(browser, base_url: str) -> list[str]:
                 page.add_style_tag(content=".offscreen, .card-row { content-visibility: visible !important; }")
                 page.wait_for_selector("#world-rows tr")
                 page.evaluate("document.fonts.ready")
+                if width <= 640:
+                    errors.extend(f"{width}px {theme}: " + e for e in exercise_table_head(page, '#world-scroll', 'thead'))
                 result = page.evaluate(
                     """() => new Promise(done => requestAnimationFrame(() => requestAnimationFrame(() => {
                   const scrolling = [...document.querySelectorAll('body *')].filter(n => n.getClientRects().length && /auto|scroll/.test(getComputedStyle(n).overflowX) && n.scrollWidth > n.clientWidth + 1)
@@ -5792,8 +5999,6 @@ def check_wide_layout(browser, base_url: str) -> list[str]:
                 page.close()
             label = f"{width}px {theme}"
             if width < 640:
-                if result["sticky"]:
-                    errors.append(f"{label}: phone table header is sticky")
                 if "world-scroll" not in result["scrolling"]:
                     errors.append(f"{label}: phone table no longer scrolls sideways (gate expectation outdated?)")
                 continue
@@ -8069,7 +8274,8 @@ REPEATED_COMPONENTS = tuple(
     (selector, SPACING_PROPERTIES)
     for selector in (
         ".statusgroup", ".cards:not(.minis)", ".card-row", ".card:not(.mini) > .top", ".card:not(.mini) > .row", ".card .foot",
-        ".card.mini", ".card.mini > summary", ".more:not(.quiet) > summary", ".more.quiet > summary", ".list-more",
+        ".card.mini", ".card.mini:not([open]) > summary", ".card.mini[open] > summary", ".more:not(.quiet) > summary",
+        ".more.quiet:not(.fund-detail[open]) > summary", ".fund-detail[open] > summary", ".list-more",
         "summary.source-footer-line", ".source-count", ".fund-item", ".development-row", ".dlist a", ".legend-entry",
         ".region-chips button", ".qualified", ".qualifiers", ".activity-kinds",
     )
@@ -12363,6 +12569,7 @@ def check_functions_pointer(browser, base_url: str) -> list[str]:
 # These controls deliberately span more than their text. Keep the exceptions narrow and explained.
 CLICK_WIDTH_ALLOW = {
     '.card.mini > summary': 'Europe mini cards use the whole finding row as their disclosure control.',
+    '.fund-detail[open] > summary': 'The open funding fold uses its summary as a full-width sticky identity beside its close.',
     'th[data-k] > button': 'Sortable table headers use the full cell as their target.',
     '#changes > summary': 'Version history fills the row so its label and latest version can truncate.',
     '.dlist a': 'Each Data download is one row link covering the file name and its description.',
@@ -12832,7 +13039,7 @@ def check_functions_views(browser, base_url: str, data: dict) -> list[str]:
         if max(over) > 1:
             errors.append(f"{width}px: the grouped view scrolls sideways ({over})")
         page.close()
-    for width in (1440, 1000, 390):
+    for width in (1440, 1000, 320, 390, 430):
         page = browser.new_page(viewport={"width": width, "height": 1000})
         hydrated(page, base_url, fn_view="default")
         page.locator('#functions-table').scroll_into_view_if_needed()
@@ -12959,6 +13166,25 @@ def check_functions_views(browser, base_url: str, data: dict) -> list[str]:
             if (page.locator('.fn-phone-detail .fn-phone-claims').count() or button.get_attribute('aria-expanded') != 'false'
                     or not button.evaluate('n => n === document.activeElement')):
                 errors.append('1440px grouped gb-aisi/model_testing: selecting the function again does not close claims and keep focus on its button')
+        page.locator('.fn-detail .close-control').evaluate_all("nodes => nodes.forEach(n=>n.click())")
+        for theme in ('light', 'dark'):
+            set_theme(page, theme)
+            errors.extend(f'{width}px {theme} grouped claims: ' + e for e in exercise_grouped_focus(page))
+            if width <= 640:
+                errors.extend(f'{width}px {theme} grouped: ' + e for e in exercise_table_head(page, '.fn-phone', '.fn-phone-head'))
+                page.evaluate("document.getElementById('functions-table').fnView('grid')")
+                errors.extend(f'{width}px {theme} grid: ' + e for e in exercise_table_head(page, '.fn-scroll', 'thead'))
+                page.evaluate("document.getElementById('functions-table').fnView('grouped')")
+            errors.extend(f'{width}px {theme} grouped: ' + e for e in exercise_detail_head(
+                page, '.fn-phone li[data-institute="gb-aisi"] > .fn-phone-row', '.fn-phone-detail', '.fn-detail-top'))
+            # Most claims, then stable institute and function IDs, rather than a hand-picked short grid panel.
+            samples = [(i['id'], f) for i in data['institutes'] for f in i.get('functions', []) if f['claim_ids']]
+            inst, function = min(samples, key=lambda pair: (-len(pair[1]['claim_ids']), pair[0], pair[1]['code']))
+            page.evaluate("document.getElementById('functions-table').fnView('grid')")
+            opener = f'.fn-table tr[data-institute="{inst}"] td[data-code="{function["code"]}"] > button'
+            errors.extend(f'{width}px {theme} grid: ' + e for e in exercise_detail_head(
+                page, opener, '.fn-scroll .fn-detail', '.fn-detail-top', expand=True))
+            page.evaluate("document.getElementById('functions-table').fnView('grouped')")
         page.close()
         saved = browser.new_page(viewport={"width": width, "height": 1000}, java_script_enabled=False)
         saved.goto(base_url)
@@ -13021,15 +13247,18 @@ def check_clickable_widths(browser, base_url: str) -> list[str]:
 FN_CLAIMS_CHECK_JS = r"""
 const checkHeading = (detail, cell, country, institute, code, key) => {
   const heading = detail.querySelector('.fn-detail-head, .fn-function-head'), context = detail.querySelector(':scope > .fn-detail-context');
-  need(heading?.matches('h4, h5') && heading.textContent === data.dataset.vocabularies.function[code].label, key + ': function heading differs');
-  // institute: the short form on desktop; null inside the phone detail, whose heading already names the institute
-  // a sentence naming the state (owner, 18 Nov 2026): the institute's short form on desktop, none inside the phone detail
-  const said = context?.textContent || '', named = [...(context?.children || [])].filter(n => !n.matches('.status-phrase, .trailing-qualifier')), assigned = /\bassigned\b/i.test(said), active = /\bactive\b/i.test(said);
+  if (detail.matches('.fn-phone-claims')) {
+    const button = detail.parentElement.querySelector('button.fn-function-label');
+    need(!heading && !context && detail.firstElementChild?.matches('.fn-claim, .fn-basis'), key + ': inline claims repeat their title or status before the evidence');
+    need(detail.getAttribute('role') === 'region' && !!button?.id && detail.getAttribute('aria-labelledby') === button.id, key + ': inline claims lost their accessible name');
+    return;
+  }
+  need(heading?.matches('h4') && heading.textContent === data.dataset.vocabularies.function[code].label, key + ': grid panel must head the claims with the function label');
+  need(!!heading?.id && detail.getAttribute('aria-labelledby') === heading.id, key + ': grid region lost its function name');
+  const said = context?.textContent || '', assigned = /\bassigned\b/i.test(said), active = /\bactive\b/i.test(said);
   const states = {mandate: assigned && !active, activity: active && !assigned, both: active && assigned};
-  need((institute ? named.length === 1 && named[0].textContent === institute && said.split(institute).length === 2 : !named.length && !said.includes(country))
-       && (!(cell.value in states) || states[cell.value]) && !(institute ? said.split(institute).join('') : said).includes(country),
-       key + ': the panel sentence does not name the institute (desktop only) and the cell state, or names the country');
-  need(!context || !context.textContent.split(' · ').includes(country), key + ': the label line repeats the country its row names');
+  need((!(cell.value in states) || states[cell.value]) && said.includes(institute), key + ': grid status must name the institute short form');
+  if (cell.value === 'activity') need(/without an assignment/i.test(said), key + ': active-only status lacks the assignment caveat');
   need(context && (heading?.closest('.fn-detail-top') || heading)?.nextElementSibling === context &&
        context.nextElementSibling?.matches('.fn-claim, .fn-basis'), key + ': heading/context/claim order differs');
   const probe = document.createElement('span'); probe.style.cssText = 'font:var(--type-label);color:var(--muted)'; detail.appendChild(probe);
@@ -13570,7 +13799,7 @@ def check_status_qualifiers(browser, base_url: str, data: dict) -> list[str]:
     return errors
 
 
-def check_functions_phone(browser, base_url: str, data: dict, *, inject: bool = False, widths=(320, 360, 390, 640)) -> list[str]:
+def check_functions_phone(browser, base_url: str, data: dict, *, inject: bool = False, widths=(320, 360, 390, 430, 640)) -> list[str]:
     """Phone words, gutters, alignment, values, evidence and focus; real keyboard and touch."""
     page = browser.new_page(viewport={"width": 360, "height": 1000})
     errors = []
@@ -13583,7 +13812,7 @@ def check_functions_phone(browser, base_url: str, data: dict, *, inject: bool = 
     for width in widths:
         page.set_viewport_size({"width": width, "height": 1000})
         page.wait_for_selector('.fn-phone')
-        for theme in (("light",) if width == 320 else ("light", "dark")):
+        for theme in ("light", "dark"):
             set_theme(page, theme)
             for scale in (("100%",) if width == 320 else ("100%", "110%")):
                 page.evaluate("scale => document.documentElement.style.fontSize = scale", scale)
@@ -13710,7 +13939,7 @@ def check_functions_phone(browser, base_url: str, data: dict, *, inject: bool = 
                       const marked = ['activity', 'mandate', 'both'].includes(f.value), labelKey = key + '/' + f.code;
                       need(label && label.textContent === f.label && (label.tagName === 'BUTTON') === marked, labelKey + ': function label/control differs');
                       const status = item.querySelector(':scope > .fn-function-status'), summary = item.querySelector(':scope > .fn-function-summary');
-                      need(status && status.textContent === ' · ' + names[f.value].toLowerCase(), labelKey + ': function status word differs');
+                      need(status && status.textContent === ' · ' + (f.value === 'activity' ? 'active, without an assignment' : names[f.value].toLowerCase()), labelKey + ': function status word differs');
                       need(summary && summary.textContent === data.dataset.vocabularies.function[f.code].summary, labelKey + ': function summary differs');
                       need(label && label.nextElementSibling === status && status?.nextElementSibling === summary &&
                            !label.querySelector('.fn-function-status, .fn-function-summary'), labelKey + ': function status/summary must follow the label outside its control');
@@ -13723,6 +13952,9 @@ def check_functions_phone(browser, base_url: str, data: dict, *, inject: bool = 
                       need(claims && summary?.nextElementSibling === claims && claims.id === label.getAttribute('aria-controls') && label.getAttribute('aria-expanded') === 'true', labelKey + ': function claims placement/state differs');
                       if (claims) {
                         checkHeading(claims, f, expected.country, null, f.code, labelKey);
+                        const a = label.getBoundingClientRect(), s = status.getBoundingClientRect(), ring = getComputedStyle(label, '::after');
+                        need(!['none', 'normal'].includes(ring.content) && a.left + parseFloat(ring.width) >= s.right - 1 &&
+                             a.top + parseFloat(ring.height) >= s.bottom - 1, labelKey + ': selected outline excludes the status');
                         await checkClaims(claims, f, labelKey);
                       }
                       overflow(labelKey);
@@ -14156,6 +14388,9 @@ def selected_box_pixels(page, control, hover: bool) -> list[str]:
       const host=n.matches('.fn-cell')?n.closest('td'):n, r=host.getBoundingClientRect(), s=getComputedStyle(host);
       const p={left:r.left+parseFloat(s.borderLeftWidth), right:r.right-parseFloat(s.borderRightWidth),
         top:r.top+parseFloat(s.borderTopWidth), bottom:r.bottom-parseFloat(s.borderBottomWidth)};
+      if(n.matches('button.fn-function-label')) {
+        const status=n.nextElementSibling.getBoundingClientRect(); p.right=Math.max(p.right,status.right); p.bottom=Math.max(p.bottom,status.bottom);
+      }
       const probe=document.createElement('span'); probe.style.cssText='position:absolute;pointer-events:none;border:var(--rule-strong) solid var(--focus)'; host.appendChild(probe);
       const token=getComputedStyle(probe), width=parseFloat(token.borderTopWidth), colour=token.borderTopColor;
       probe.remove();
@@ -14267,6 +14502,14 @@ def check_selection_boxes(browser, base_url: str) -> list[str]:
                             function.click()
                             inspect(function, function.get_attribute('aria-controls'))
                         row.click()
+                    # Phone grid uses the same cell panel, with a translated table/detail head.
+                    page.evaluate("document.getElementById('functions-table').fnView('grid')")
+                    for institute, code in (('gb-aisi', 'model_testing'), ('no-ki-norge', 'standards_guidance')):
+                        control = page.locator(f'.fn-table tr[data-institute="{institute}"] td[data-code="{code}"] > .fn-cell')
+                        control.click()
+                        inspect(control, 'grid ' + institute + '/' + code)
+                        control.click()
+                    page.evaluate("document.getElementById('functions-table').fnView('grouped')")
                 # The page's other selected rows are the search and command-palette options.
                 search = page.locator('#map-search')
                 search.fill('den')
