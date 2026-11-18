@@ -4187,7 +4187,7 @@ WIDTH_GEOMETRY = {
     (".fn-pip", "width", "8px"): "phone pip geometry, paired with its height",
     ("#tip", "max-width", "min(var(--tooltip-width), calc(100vw - var(--sp-7)))"): "tooltip stays within the viewport with its token gutter",
     (".palette", "width", "min(var(--palette-width), calc(100vw - 2 * var(--sp-4)))"): "palette stays within the viewport with its token gutters",
-    (".fn-column-group::after", "width", "calc(100% + var(--fn-group-gap))"): "group rule spans its track and the following group gap",
+    (".fn-column-group::after", "width", "100%"): "group rule spans its tracks; there is no gutter between groups",
     (".bar-value", "min-width", "min(var(--bar-min), 100%)"): "minimum visible bar never exceeds its track",
     **{(selector, prop, "100%"): "fill or cap at the containing track, without an independent measure" for selector, prop in (
         ("#changes > summary", "width"), (".suggest", "width"), (".worldmap svg", "width"),
@@ -13305,13 +13305,13 @@ def check_functions_layout(browser, base_url: str, *, fixture: dict | None = Non
                     if(Math.abs(parseFloat(textStyle.left)-h.width/2-shift)>.5 || Math.abs(parseFloat(textStyle.bottom)+line/4)>.5) errors.push('head band-centre shift differs: '+head.dataset.code);
                     if(n && Math.abs(text.getBoundingClientRect().bottom-heads[0].querySelector('.g').getBoundingClientRect().bottom)>1) errors.push('head baseline differs: '+head.dataset.code);
                     if(getComputedStyle(head).boxShadow !== 'none') errors.push('vertical rule drawn through a head: '+head.dataset.code);
-                    if(head.classList.contains('fn-group-start') && h.gutter<12) errors.push('group gutter too narrow');
+                    if(h.gutter>.5) errors.push('a gutter between column groups: columns are evenly spaced (owner, 18 Nov 2026)');
                     for(const cell of table.querySelectorAll('td[data-code="'+head.dataset.code+'"]')) {
                       const c=track(cell), style=getComputedStyle(cell);
                       if(Math.abs(c.left-h.left)>1 || Math.abs(c.width-h.width)>1) errors.push('head/body column alignment differs: '+head.dataset.code);
                       const start=n===0 || head.classList.contains('fn-group-start');
                       if(!start && (style.boxShadow==='none' || !style.boxShadow.includes('inset'))) errors.push('missing column hairline: '+head.dataset.code);
-                      if(head.classList.contains('fn-group-start') && style.boxShadow==='none') errors.push('missing group rule: '+head.dataset.code);
+                      if(head.classList.contains('fn-group-start') && (style.boxShadow==='none' || style.boxShadow===getComputedStyle(table.querySelector('tbody td.fn-column:not(.fn-group-start, .fn-group-first)')).boxShadow)) errors.push('a group start lacks its stronger line: '+head.dataset.code);
                     }
                   }
                   const widths=heads.map(h=>track(h).width);
@@ -13331,7 +13331,9 @@ def check_functions_layout(browser, base_url: str, *, fixture: dict | None = Non
                   if(Math.abs(pad.left-next)>1 || Math.abs(pad.right-table.getBoundingClientRect().right)>1) errors.push('spacer does not absorb the remaining table width');
                   for(const group of groups) {
                     const range=document.createRange(); range.selectNodeContents(group);
-                    if(new Set([...range.getClientRects()].map(r=>Math.round(r.top))).size!==1) errors.push('group label wraps: '+group.textContent);
+                    // Without gutters a short group's label may take a second line within its own tracks, never a third (owner, 18 Nov 2026).
+                    const lines=new Set([...range.getClientRects()].map(r=>Math.round(r.top))).size, line=parseFloat(getComputedStyle(group).fontSize)*1.6;
+                    if(lines>2 || (lines===2 && range.getBoundingClientRect().width>group.parentElement.getBoundingClientRect().width)) errors.push('group label takes more than two lines or runs past its tracks: '+group.textContent);
                   }
                   // The first padding edge meets the group's first track; its tip is H*tan(30deg) to the right.
                   let first=0;
