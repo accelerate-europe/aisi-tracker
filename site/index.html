@@ -65,6 +65,7 @@
  * Re-read line: a source list item whose source has a quotation with a re-read state shows that state once, from its quotations' states (docs/design/claims-1.1.md section 4). A source that could not be re-read (worst state offline, unreadable or quote not found; the earliest start, then offline before not found, then the earliest last found) ends its source line with " · last read {date}" (" · quote last found {date}" for a quote not found, as the source was read), then " · archived copy" where a copy exists; the full sentence is its tip and what a screen reader reads: "Source offline since {date}; last read {date}.", "Source could not be re-read since {date}; last read {date}.", "Not found in the source on {date}; last found {date}; under review." (with ": N of M quotes" after the first date when some quotations are still found) (owner, 18 Nov 2026). Any other source ends with one line of its own in the list's muted ink: "Source last re-read {date}.". A quotation or claim shown on its own shows its own state, never its source's, as the full sentence with its archived copy; in a function's panel the source line just below carries a failed state instead; the page never says "verified" (check_page check_reread_lines).
  * Sorting: every table column sorts values by meaning, then values without a comparable figure, research gaps, structural absence; gaps stay last in both directions; ties by state name.
  * Links: inline text uses a thin muted-accent underline and accent ink; standalone links use position, icon or colour, with hover/focus underline or ink change. State names in linked lists (Testing and access, Institutional set-up, Budget not published) take the accent link style; None identified names take the card title's type (check_page check_name_roles). News names share the quiet date label.
+ * Symbols (owner, 18 Nov 2026, "no key, one rule"): a symbol stands alone only if it is the close ×, a fold chevron, the external-link arrow or the download symbol, and then names itself on hover and for screen readers; any other symbol carries its word (the feed symbol with "Feed" or "Follow updates", Columns with its label at every width). Data marks (function cells, map dots) keep their legend. There is no symbols key. The theme switch is held icon-only pending the owner (check_page check_symbols).
  * External markers: marked links end in a compact SVG arrow with body-weight stroke and retain accessible new-tab text in every theme.
  * Citation links: accent ink only at rest, underline on hover/focus; no negative horizontal margins.
  * Navigation: muted text, full-ink active item with an accent line the width of its label; hover darkens, never underlines; keyboard focus as Focus says.
@@ -92,7 +93,7 @@
  * Toolbar: full-width search, one action row, one scrolling status row; one Download disclosure for view/full data.
  * Wide screens: at 1100px and wider, with default settings, nothing needs sideways scroll; phones may scroll the table and the status row sideways.
  * Worldwide table: at 1100px and wider its default columns fit (Budget wraps), and while it fits its header sticks below the section navigation; phones scroll it sideways without a sticky header.
- * Phone: Region keeps its visible label; only Columns, Download (the cards' download icon, with its label beside it on wider screens) and the theme toggle may be icon-only; the theme toggle sits in the header, not in the section bar (check_page check_toggle_place).
+ * Phone: Region and Columns keep their visible labels; icon-only controls follow Symbols at every width; the theme toggle sits in the header, not in the section bar (check_page check_toggle_place).
  * Filters: the table's Status select defaults to Has or considers one (every status except none identified); the count line reads "N of M states", or "N of M states and territories" while a territory is tracked; All includes every tracked state and territory.
  * Hero: title and quiet update date with the linked version ("Updated 4 Nov 2026 · v1.0.2"); the Atom feed of news and new versions (feed.xml) is a head alternate link and linked from News; no lede line; the first screen follows: Headline (only the counts bold, with their "of" and "more": "11 of 193", "5 more", as the owner's mock) with one Definition link under it to the definition at the top of Method, Region chips beside the search, then Map and Region list (legend names only, their short definitions on hover, focus or tap, one (i) saying what the World view shows); one map view, no population view; the definition is dataset.definition, never a page string (check_page check_supporting_text); News entries at every width have a small, muted, normal-weight, single-line "date · states" label, then the sentence at body size and colour on the same left edge. Ten entries, three open; earlier entries behind the control at the list's end, followed by All events (CSV) and Atom feed on one line (check_page check_news_layout).
  * Card download: a full card's title row, and a none-identified card's fold after its sources, end with an icon-only link to the state's API file, labelled "JSON, for scripts and research" (check_page check_state_download_buttons).
@@ -923,8 +924,7 @@ html[data-prerendered] .fn-scroll.fits thead { position: static; }
   .navtitle .long { display: none; }
   .navtitle .short { display: inline; }
   .hl { align-items: first baseline; }
-  :is(.cols, .download-menu) .control-label { width: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; } /* phones: Columns and Download icon-only, like the cards' download */
-  .cols .btn { width: var(--control); gap: 0; }
+  .download-menu .control-label { width: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; } /* phones: Download icon-only, like the cards' download; Columns keeps its word (principle: Symbols) */
   .download-menu .btn { gap: 0; }
   .toolbar-actions { flex-wrap: wrap; }
   .status-control, .region-control { flex: 1 1 100%; }
@@ -1177,7 +1177,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
   function closeButton(onClose) {
     var button = el("button", "close-control"), symbol = el("span", null, "×");
-    button.type = "button"; button.setAttribute("aria-label", "Close"); symbol.setAttribute("aria-hidden", "true");
+    button.type = "button"; button.setAttribute("aria-label", "Close"); button.dataset.tip = "Close"; symbol.setAttribute("aria-hidden", "true"); // a lone symbol names itself on hover (principle: Symbols)
     button.appendChild(symbol); button.addEventListener("click", onClose); return button;
   }
   var MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];

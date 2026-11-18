@@ -12341,6 +12341,70 @@ def clickable_width_errors(controls: list[dict]) -> list[str]:
     return errors
 
 
+# Symbols (principle): a symbol stands alone only if it is the close ×, a fold chevron, the external-link arrow or the
+# download symbol, and then names itself on hover and for screen readers; any other symbol carries its word. Data marks
+# (function cells, map dots) keep their legend and are not controls of this kind. The chevron and the arrow only ever
+# follow a word, so a control with no word of its own must be a close or download control.
+SYMBOL_ALONE = {
+    '.close-control': 'the close ×',
+    '.ico.i-dl': 'download',
+    '#theme-toggle': 'theme switch: held icon-only pending the owner (18 Nov 2026 report)',
+    'button.info': 'the (i) note: held pending the owner (18 Nov 2026 report)',
+}
+SYMBOL_DATA_MARKS = '.fn-cell, .fn-phone-row, #worldmap, #worldmap *'  # a phone row shows its institute's marks, named by its label
+
+SYMBOLS_JS = r"""([alone, marks]) => {
+  const words = n => { let t = ''; const w = document.createTreeWalker(n, NodeFilter.SHOW_TEXT); let x;
+    while ((x = w.nextNode())) { const p = x.parentElement; if (!p || p.closest('.vh, [aria-hidden="true"]') || !p.getClientRects().length) continue;
+      const r = document.createRange(); r.selectNodeContents(x); if ([...r.getClientRects()].some(b => b.width > 0)) t += x.data; }
+    return t; };
+  return [...document.querySelectorAll('a, button, summary, [role="button"]')].filter(n => n.getClientRects().length &&
+    getComputedStyle(n).visibility === 'visible' && !n.closest('.vh, [hidden]') && !n.matches(marks) && !/\p{N}|\p{L}{2}/u.test(words(n))).map(n => ({  // a word has two letters, or is a number; a lone "i" is a symbol
+      name: (n.id ? '#' + n.id : n.className || n.tagName) + ' ' + (n.getAttribute('aria-label') || n.textContent.trim()).slice(0, 60),
+      allowed: alone.find(sel => n.matches(sel)) || null,
+      label: (n.getAttribute('aria-label') || [...n.querySelectorAll('.vh, .control-label')].map(v => v.textContent).join('')).trim(),
+      tip: (n.dataset.tip || n.getAttribute('aria-description') || n.getAttribute('title') || '').trim()}));
+}"""
+
+SYMBOL_PROBE_JS = """() => { const a = document.createElement('a'); a.id = 'symbol-probe'; a.href = '#'; a.className = 'btn ico i-cols';
+  a.setAttribute('aria-label', 'Probe'); document.querySelector('main').prepend(a); }"""
+
+
+def symbol_errors(controls: list[dict]) -> list[str]:
+    errors = []
+    for c in controls:
+        if not c['allowed']:
+            errors.append(f"A symbol stands alone without its word: {c['name']}")
+        elif not c['label'] or not c['tip']:
+            errors.append(f"A lone symbol does not name itself on hover and for screen readers: {c['name']}")
+    return errors
+
+
+def check_symbols(browser, base_url: str) -> list[str]:
+    """Symbols (principle) at 1440 and 390, with folds and a function panel open; a probe icon link must be caught."""
+    errors = []
+    for width in (1440, 390):
+        page = browser.new_page(viewport={"width": width, "height": 1000})
+        hydrated(page, base_url)
+        page.add_style_tag(content='.offscreen, .card-row, .fund-item { content-visibility: visible !important; }')
+        args = [list(SYMBOL_ALONE), SYMBOL_DATA_MARKS]
+        page.evaluate(SYMBOL_PROBE_JS)
+        if not any('symbol-probe' in e for e in symbol_errors(page.evaluate(SYMBOLS_JS, args))):
+            errors.append(f'{width}px: the symbols audit missed a lone icon link')
+        page.evaluate("document.getElementById('symbol-probe').remove()")
+        for opened in (False, True):
+            page.locator('main details:not(.cols, .download-menu)').evaluate_all('(nodes, open) => nodes.forEach(n => n.open = open)', opened)
+            if opened and width > 400:
+                page.locator('.fn-table tr[data-institute="no-ki-norge"] td[data-code="standards_guidance"] > button').click()
+            page.evaluate('() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)))')
+            controls = page.evaluate(SYMBOLS_JS, args)
+            if opened and width > 400 and not any(c['allowed'] == '.close-control' for c in controls):
+                errors.append('Symbols audit did not reach the function panel close control')
+            errors += [f'{width}px {"expanded" if opened else "collapsed"}: ' + e for e in symbol_errors(controls)]
+        page.close()
+    return errors
+
+
 def check_clickable_widths(browser, base_url: str) -> list[str]:
     """Audit every section at the desktop widths of the pointer report, including expanded records and sources."""
     page = browser.new_page(viewport={"width": 1440, "height": 1000})
@@ -13952,6 +14016,7 @@ def browser_jobs(dist: Path, data: dict, screenshots: Path | None) -> list[tuple
         ("interactions", check_claim_spacing, ()),
         ("interactions", check_functions_pointer, ()),
         ("interactions", check_clickable_widths, ()),
+        ("interactions", check_symbols, ()),
         ("interactions", check_functions_layout, ()),
         ("interactions", check_function_group_tabs, ()),
         ("interactions", check_functions_phone, (data,)),
