@@ -19825,6 +19825,10 @@
           {
             "date": "2026-10-24",
             "scope": "Re-ran searches in English and Arabic for a government-designated institute that evaluates advanced models, or a commitment, proposal or study naming one. No qualifying institute or commitment was identified; results repeated the October 2026 call by a presidential adviser for independent testing of frontier models. Retrieved the government announcement of the Artificial Intelligence and Data Authority as new primary governance evidence. Raised confidence to medium under the status-confidence rule: recorded queries in English and a national or official language, and cited primary governance evidence consistent with no qualifying institute. Partial check; the last full-check date is unchanged."
+          },
+          {
+            "date": "2026-11-19",
+            "scope": "Checked the notes against their sources. Removed an unsourced comparison with other states. Bound the October 2026 remarks on independent testing to the Khaleej Times report of 6 October 2026; no primary text of the remarks was found on the news agency's, the council's or the conference's pages. Corrected the Authority's role: the announcement brings together the functions of three entities. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -19903,7 +19907,8 @@
         "ae-zawya-2026",
         "ae-morganlewis-2026",
         "r4-ae-mbrsg-aisi-brief",
-        "ae-dmo-ai-data-authority-2026"
+        "ae-dmo-ai-data-authority-2026",
+        "ae-khaleejtimes-testing-2026"
       ],
       "related_bodies": [
         {
@@ -19925,17 +19930,20 @@
         },
         {
           "name": "Federal Authority for Artificial Intelligence and Data",
-          "role": "Policy, legislation, standards and compliance are its announced responsibilities. The June 2026 announcement describes a merger of the AI Office, digital government and the Data Office; no testing mandate was found.",
+          "role": "Policy, legislation, standards and compliance are its announced responsibilities. The June 2026 announcement says it brings together the functions previously held by the AI office, the digital government sector of the telecommunications regulator and the UAE Data Office; no testing mandate was found.",
           "counts_as_aisi": false,
           "kind": "other",
-          "id": "related_bodies-ad17cafd315a5637b6f3ced1174bbcc3"
+          "id": "related_bodies-ad17cafd315a5637b6f3ced1174bbcc3",
+          "source_ids": [
+            "ae-dmo-ai-data-authority-2026"
+          ]
         }
       ],
       "next_check": {
         "date": "2027-01-15",
         "reason": "Whether the National AI Test and Validation Lab takes on evaluation of advanced models."
       },
-      "notes": "Closest case in the region. The lab is government-governed and offers what it calls sovereign, independent evaluation, but its remit is security conformity certification of deployed systems for government and business, without a separately identified qualifying capability or behaviour-risk assignment. A senior official called for independent testing of frontier models in October 2026; no qualifying institute announcement was identified.",
+      "notes": "The lab is government-governed and offers what it calls sovereign, independent evaluation, but its remit is security conformity certification of deployed systems for government and business, without a separately identified qualifying capability or behaviour-risk assignment. Khaleej Times reported on 6 October 2026 that an adviser to the UAE President, speaking at a conference in Abu Dhabi, said countries should build independent systems for testing increasingly powerful models; no qualifying institute announcement was identified.",
       "region": {
         "id": "142",
         "name": "Asia",
@@ -111977,6 +111985,40 @@
             ]
           ],
           "accessed": "2026-10-24"
+        },
+        {
+          "text": "The Authority will bring together under one mandate the functions previously held by three separate entities",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "AE"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-ad17cafd315a5637b6f3ced1174bbcc3"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        },
+        {
+          "text": "the Digital Government Sector at the Telecommunications and Digital Government Regulatory Authority; and the UAE Data Office",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "AE"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-ad17cafd315a5637b6f3ced1174bbcc3"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-19"
         }
       ],
       "snapshot": {
@@ -126716,6 +126758,51 @@
         "retrieved": "2026-11-19T05:59:46Z",
         "sha256": "7966747574ec294314ade2788fe021ade7ba5d3e19764f5ba5573f38d56854ca",
         "text_sha256": "d0b41c88a6dea35fc0266d12d18fdda2dd80fec57e83156fa210dbe5a08bc40c",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "ae-khaleejtimes-testing-2026",
+      "url": "https://www.khaleejtimes.com/uae/uae-official-independent-ai-safety-checks-global-advancement",
+      "title": "UAE official calls for independent AI safety checks amid rapid advances",
+      "publisher": "Khaleej Times",
+      "type": "secondary",
+      "published": "2026-10-06",
+      "language": "en",
+      "origin": "AE",
+      "accessed": "2026-11-19",
+      "excerpts": [
+        {
+          "text": "build independent systems for testing increasingly powerful models, a senior UAE official said on Tuesday",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "AE"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        },
+        {
+          "text": "adviser to the UAE President and secretary general of the Advanced Technology Research Council",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "AE"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-19T06:08:13Z",
+        "sha256": "aea5f780ad41e5071d7647db5f1020075ccdbb3f1ae2aa0af11194c89355615c",
+        "text_sha256": "4a1c9d64b472dca3df4d65863c32224146a29fde937d7fd9472075d7e4141f45",
         "text_scheme": 1
       }
     }
