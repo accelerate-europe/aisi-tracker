@@ -4313,7 +4313,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       ["States", "CSV", ["timeline", "closest_bodies", "related_bodies", "network_milestones"]], ["Evidence", "CSV", ["sources", "source_excerpts", "claims", "exchange_rates"]],
       ["For code", "JSON", ["aisi", "aisi-schema", "datapackage", "shared-claim-coverage"]]];
     var downloads = PKG.then(function (pkg) {
-      var files = pkg.resources.concat([{ name: "datapackage", path: "datapackage.json", title: "Data package", description: "lists every file, for tools such as Frictionless" }]);
+      var files = pkg.resources.concat([{ name: "datapackage", path: "datapackage.json", title: "Data package", description: "file list, formats and table schemas" }]);
       var placed = {}; DL_GROUPS.forEach(function (g) { g[2].forEach(function (n) { placed[n] = true; }); });
       var groups = DL_GROUPS.concat(files.some(function (x) { return !placed[x.name]; }) ? [["Other files", "", files.filter(function (x) { return !placed[x.name]; }).map(function (x) { return x.name; })]] : []);
       groups.forEach(function (g) {

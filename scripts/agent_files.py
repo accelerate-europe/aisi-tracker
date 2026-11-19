@@ -236,9 +236,9 @@ def definition_markdown(dataset: dict) -> str:
 
 # The Data section's "For programs and agents" rows: link, title, file shown, one-line description, symbol (or none).
 AGENT_ROWS = (
-    ("{api}/index.json", "API index", "{api}/index.json", "every state and institute as its own JSON record, and how to read them", "i-none"),
-    ("llms.txt", "llms.txt", "llms.txt", "what the data holds and how to read it, in plain text for AI agents", "i-none"),
-    ("feed.xml", "Feed", "feed.xml", "News and releases as an Atom feed, for a feed reader", "i-feed"),
+    ("{api}/index.json", "API index", "{api}/index.json", "An index of the state and institute JSON files", "i-none"),
+    ("llms.txt", "llms.txt", "llms.txt", "A plain-text guide to the data for AI agents", "i-none"),
+    ("feed.xml", "Feed", "feed.xml", "News and releases in Atom format", "i-feed"),
 )
 
 

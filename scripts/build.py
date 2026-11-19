@@ -65,15 +65,15 @@ SITE = ROOT / "site" / "index.html"
 FILES = {
     "jurisdictions": ("States and territories", "status, dates and region of every state and territory, and the EU"),
     "institutes": ("Institutes", "host, form, mandate and website of each institute"),
-    "events": ("All events", "the full events file: every dated government act, agreement, output and milestone, with every field"),
-    "news": ("News", "the items in News and the feed: date, state, institute, kind, the line shown and its sources"),
+    "events": ("All events", "dated government acts, agreements, outputs and network milestones"),
+    "news": ("News", "news entries with dates, states, institutes, kinds and sources"),
     "timeline": ("Status timeline", "the dated government acts that set each status"),
-    "funding": ("Funding", "published budgets, their period and a rough EUR figure a year"),
+    "funding": ("Funding", "published funding amounts, periods and annual EUR estimates"),
     "exchange_rates": ("Exchange rates", "the ECB rates used for the EUR figures"),
     "staff": ("Staff", "headcounts, technical staff and targets, dated"),
     "people": ("Leadership", "heads and leads of each institute"),
-    "national_partners": ("National partners", "the national bodies each institute works with, what each is, how they work together and the kind of relation"),
-    "functions": ("Functions", "each institute's value for every current function code, from its quoted claims; the code list is provisional"),
+    "national_partners": ("National partners", "national partner bodies and their work with each institute"),
+    "functions": ("Functions", "function codes and values for each institute, with supporting claims; codes are provisional"),
     "claims": ("Claims", "quoted claims on states and institutes: one sentence, its code and its sources"),
     "outputs": ("Outputs", "publications, tools and datasets credited to each institute"),
     "agreements": ("Agreements", "commitments made with AI developers, governments and other institutes"),
@@ -84,8 +84,8 @@ FILES = {
     "sources": ("Sources", "every source with publisher, date and archive link"),
     "source_excerpts": ("Source excerpts", "the quoted passages and the values they support"),
     "aisi": ("Full dataset", "every record with its sources, confidence and check dates"),
-    "aisi-schema": ("Schema", "defines every field"),
-    "shared-claim-coverage": ("Consistency checks", "which repeated figures are checked against each other"),
+    "aisi-schema": ("Schema", "field definitions and validation rules"),
+    "shared-claim-coverage": ("Consistency checks", "repeated figures and the checks that compare them"),
 }
 DIST = ROOT / "dist"
 ROSTER = ROOT / "data" / "reference" / "roster.csv"
