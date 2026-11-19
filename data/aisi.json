@@ -4114,7 +4114,7 @@
       ],
       "next_check": {
         "date": "2027-01-31",
-        "reason": "Check whether KRiBSI, once operating, or the minister assigns NASK or its AITAS laboratory a national role in evaluating advanced models, and whether Poland joins the International Network for Advanced AI Measurement, Evaluation and Science."
+        "reason": "Check whether KRiBSI, which held its first meeting on 28 October 2026, or the minister assigns NASK or its AITAS laboratory a national role in evaluating advanced models, and whether Poland joins the International Network for Advanced AI Measurement, Evaluation and Science."
       },
       "closest_body": {
         "name": "NASK AI Safety Research Centre",
@@ -81456,17 +81456,6 @@
                 "id": "related_bodies-9abdac50986a5525bca90d58733feba6"
               },
               "designation_state"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "PL"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-de1e7f85821a52ce902ccb245f304536"
-              },
-              "designation_state"
             ]
           ],
           "accessed": "2026-11-14"
@@ -83157,7 +83146,84 @@
       "instrument_status_checked": "2026-10-21",
       "published": "2026-07-27",
       "language": "pl",
-      "excerpts": [],
+      "excerpts": [
+        {
+          "text": "Komisja Rozwoju i Bezpieczeństwa Sztucznej Inteligencji, zwana dalej „Komisją”, jest organem nadzoru rynku w zakresie systemów sztucznej inteligencji w rozumieniu art. 70 ust. 1 rozporządzenia 2024/1689.",
+          "gloss": "The Commission for the Development and Safety of Artificial Intelligence, hereinafter \"the Commission\", is the market surveillance authority for artificial intelligence systems within the meaning of Article 70(1) of Regulation 2024/1689.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "PL"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-9abdac50986a5525bca90d58733feba6"
+              },
+              "authority_roles"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "PL"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-9abdac50986a5525bca90d58733feba6"
+              },
+              "designation_state"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Komisja działa jako pojedynczy punkt kontaktowy, o którym mowa w art. 70 ust. 2 rozporządzenia 2024/1689.",
+          "gloss": "The Commission acts as the single point of contact referred to in Article 70(2) of Regulation 2024/1689.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "PL"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-9abdac50986a5525bca90d58733feba6"
+              },
+              "authority_roles"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Minister właściwy do spraw informatyzacji jest organem notyfikującym, o którym mowa w rozdziale III sekcja 4 rozporządzenia 2024/1689.",
+          "gloss": "The minister responsible for digitalisation is the notifying authority referred to in Chapter III, Section 4 of Regulation 2024/1689.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "PL"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-de1e7f85821a52ce902ccb245f304536"
+              },
+              "authority_roles"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "PL"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-de1e7f85821a52ce902ccb245f304536"
+              },
+              "designation_state"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        }
+      ],
       "origin": "PL",
       "title_en": "Act of 3 July 2026 on artificial intelligence systems, Journal of Laws 2026, item 1003",
       "snapshot": {
