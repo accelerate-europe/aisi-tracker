@@ -446,7 +446,7 @@ main section.offscreen :is(.card-row, .fund-item) { contain-intrinsic-block-size
 main section.first { display: flex; flex-direction: column; gap: var(--sp-5); border-top: 0; padding-top: 0; }
 .definition { font: var(--type-body); max-width: var(--prose); margin: calc(var(--sp-2) - var(--sp-5)) 0 0; } /* belongs to the headline above it: one link to the definition */
 .method-definition { max-width: var(--prose); margin: 0; } /* the section body's row gap separates it from the fold */
-.method-definition a { white-space: nowrap; } /* 'What counts' never splits */
+.method-definition a { white-space: nowrap; } /* the full-rule link never splits */
 .headline b { font-weight: var(--weight-figure); }
 .headline { font: var(--type-figure); font-weight: var(--weight-body); max-width: none; text-wrap: balance; display: grid; font-variant-numeric: tabular-nums; } /* full width, so each regional form keeps to two lines on wide screens */
 .hl-version { grid-area: 1 / 1; visibility: hidden; } .hl-version.current { visibility: visible; } /* every region's headline in one cell: the longest sets the height, so a region switch never moves what sits below */
@@ -1190,7 +1190,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     <h2 id="method">Method</h2></div><div class="section-body">
     <p class="method-definition" id="definition"></p>
     <details class="more" id="method-details">
-      <summary>Definitions and method</summary>
+      <summary>Status, evidence and method</summary>
       <div class="two">
         <div class="prose-panel"><h3>Status definitions</h3><ul id="status-defs"></ul><h3>Method in brief</h3><ul id="rules"></ul><p><a href="method.html">Full method</a></p></div>
         <div class="prose-panel"><h3>Evidence and limits</h3><ul id="limits"></ul></div>
@@ -2492,7 +2492,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
 
     // The definition under the headline is the dataset's own sentence, shared with the README; its link goes to the full rule.
     var defLink = el("a", null, "Definition"); defLink.href = "#definition"; $("definition-link").appendChild(defLink);
-    $("definition").textContent = m.definition + " "; var counts = el("a", null, "What counts"); counts.href = "method.html#qualifying-body"; $("definition").appendChild(counts);
+    $("definition").textContent = m.definition + " "; var counts = el("a", null, "The test in detail"); counts.href = "method.html#qualifying-body"; $("definition").appendChild(counts);
     ORDER.forEach(function (status) {
       var entry = el("div", "legend-entry"), sw = el("i", "sw st-" + status); sw.setAttribute("aria-hidden", "true");
       entry.appendChild(sw);

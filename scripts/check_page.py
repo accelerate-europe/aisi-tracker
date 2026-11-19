@@ -3045,7 +3045,7 @@ def check_supporting_text(soup, data: dict) -> list[str]:
     if not full or definition_text != data["dataset"]["definition"] or not in_order:
         errors.append("Method does not open with dataset.definition as the first paragraph of its body")
     elif len(links) != 1 or links[0].get("href") != "method.html#qualifying-body" or not links[0].get_text(strip=True):
-        errors.append("the definition's 'What counts' link does not go to method.html#qualifying-body")
+        errors.append("the definition's full-rule link does not go to method.html#qualifying-body")
     definitions = data["dataset"]["status_definitions"]
     method = [li.get_text() for li in soup.select("#status-defs > li")]
     wanted = [f"{STATUS_LABELS[k]}. {v}" for k, v in definitions.items()]
