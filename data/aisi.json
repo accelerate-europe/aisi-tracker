@@ -112,7 +112,7 @@
       },
       {
         "id": "national-partners",
-        "text": "National partners: a partner is a domestic public body or public-interest research organisation that a primary text of the institute or its government names as working with the institute on its mission. The host, funders of the host, private firms, catch-all groups and the reports-to body are never entries. A consortium is one entry, and its members are listed individually only with separate evidence. Member is used only when the institute is a federation of existing bodies and the text lists the body as a constituent. Works with is used when a text in force assigns the body a specific task with the institute; an adopted programme for the current period that assigns the work counts as in force. Planned is used when the text is a plan, strategy or future commitment. A body named only as an example in a general duty to cooperate is not entered. The cyber agency flag marks the national cyber security agency or the body containing it; when no entry has the flag, the notes name the cyber agency searched and the date, and no other absence is ever claimed. The what field says in two to six words what the body is, from its own page or the quote. The how field is one sentence of at most 25 words, written from the bound quote alone, like a gloss. Every stated value, relation and how is bound to a verbatim excerpt; not published needs the dated search log. The card shows six partners, cyber agency first, then members, works with, planned, then in authored order; the rest are in the card's \"How they work together\" fold and in the downloads and the API."
+        "text": "National partners: a partner is a domestic public body or public-interest research organisation that a primary text of the institute or its government names as working with the institute on its mission. The host, funders of the host, private firms, catch-all groups and the reports-to body are never entries. A consortium is one entry, and its members are listed individually only with separate evidence. Member is used only when the institute is a federation of existing bodies and the text lists the body as a constituent. Works with is used when a text in force assigns the body a specific task with the institute; an adopted programme for the current period that assigns the work counts as in force. Planned is used when the text is a plan, strategy or future commitment. A body named only as an example in a general duty to cooperate is not entered. The cyber agency flag marks the national cyber security agency or the body containing it; when no entry has the flag, the notes name the cyber agency searched and the date, and no other absence is ever claimed. The what field says in two to six words what the body is, from its own page or the quote. The how field is one sentence of at most 25 words, written from the bound quote alone, like a gloss. Every stated value, relation and how is bound to a verbatim excerpt; not published needs the dated search log. Where a card names only some partners, it names them in this order: cyber agency first, then members, works with, planned, then in authored order; every partner is shown on the page with how it works with the institute, and is in the downloads and the API."
       },
       {
         "id": "testing-and-access",
@@ -152,7 +152,7 @@
       },
       {
         "id": "none-identified",
-        "text": "None identified entries: each state was searched in English and in at least one of its national or official languages, English counting for both where it is official, for a body its government has tasked with testing general-purpose or frontier AI models or named its AI safety or security institute; the entry names the languages searched. The bodies it lists never count as institutes: the closest candidate, AI Act authorities grouped by function, and other bodies. English names are our own faithful translations unless the body publishes its own English name, with the original beneath. The European Commission's contact list of 7 September 2026 marks some AI Act authorities as pending final adoption; for those states the national sources cited give the actual designation status."
+        "text": "None identified entries: each state was searched in English and in at least one of its national or official languages, English counting for both where it is official, for a body its government has tasked with testing general-purpose or frontier AI models or named its AI safety or security institute; the entry names the languages searched. The bodies it lists never count as institutes: the closest candidate, AI Act authorities grouped by function, and other bodies. English names are our own faithful translations unless the body publishes its own English name, with the original shown too. The European Commission's contact list of 7 September 2026 marks some AI Act authorities as pending final adoption; for those states the national sources cited give the actual designation status."
       },
       {
         "id": "currency-rounding",
@@ -160,7 +160,7 @@
       },
       {
         "id": "budget-display",
-        "text": "Budget display: every funding record states whether it covers the whole institute, a component or funding that is not institute-specific. Use the comparable whole-institute annual figure selected under Annual funding for both the cards and the funding comparison. If none qualifies, use the latest adopted or announced whole-institute funding amount, including one-off and multi-year allocations; if there is none, use the latest whole-institute proposal. Exclude only records whose decision date lies wholly after the dataset date; an allocation already announced for a future funding period stays eligible. Rank eligible records by decision date when published, otherwise by the end of the sourced funding period, newest first; records with neither date follow those with one. Components and records without an amount cannot supply this fallback. Show the value first and its period, commitment and scope qualifications below. If no own funding qualifies, show Not published. An institute with own funding but no compared figure is listed below the funding comparison with its Budget value. Parent-body, host-programme, wider-ministry and broader-purpose amounts, including a body's funding before its designation, appear only as separately labelled Related funding, and stay in the downloads."
+        "text": "Budget display: every funding record states whether it covers the whole institute, a component or funding that is not institute-specific. Use the comparable whole-institute annual figure selected under Annual funding for both the cards and the funding comparison. If none qualifies, use the latest adopted or announced whole-institute funding amount, including one-off and multi-year allocations; if there is none, use the latest whole-institute proposal. Exclude only records whose decision date lies wholly after the dataset date; an allocation already announced for a future funding period stays eligible. Rank eligible records by decision date when published, otherwise by the end of the sourced funding period, newest first; records with neither date follow those with one. Components and records without an amount cannot supply this fallback. Show the value with its period, commitment and scope qualifications. If no own funding qualifies, show Not published. An institute with own funding but no compared figure is shown with its Budget value and without a bar. Parent-body, host-programme, wider-ministry and broader-purpose amounts, including a body's funding before its designation, appear only as separately labelled Related funding, and stay in the downloads."
       },
       {
         "id": "budget-ratios",
@@ -1955,7 +1955,7 @@
         "summary": "A card shows the institute's own funding for the year that includes the data date, otherwise the latest adopted or announced amount, and failing that the latest proposal. The chart compares adopted or announced whole-institute funding for a year overlapping the data year, while wider funding is shown as Related funding.",
         "rules": {
           "annual-funding": "beb40920e78223b15d68f47bfdcc324fba8da7b91476c98f491c052db984720b",
-          "budget-display": "92e9c2a7c89160cf8bfab9402e672e59c85074286e1f6420de8b1a0012d5e469"
+          "budget-display": "053a9c0c9ad58d865f64168260b26db0ae37e876735bb362bd832bdd99cedb0b"
         }
       },
       {
@@ -1995,7 +1995,7 @@
         "title": "None identified entries",
         "summary": "Each state was searched in English and at least one national or official language for a body its government has tasked with testing general-purpose or frontier AI models or named its AI safety or security institute. Bodies listed for context never count as institutes.",
         "rules": {
-          "none-identified": "307cf9325ecf97efe961a2c42a62445d4da66b45db50808368661aac458b088b"
+          "none-identified": "4ac47b0485198d58e5bda1c9d9edfcf598b2d12c23010609cdffab6e8d296c28"
         }
       },
       {
@@ -2027,7 +2027,7 @@
         "title": "National partners",
         "summary": "We list public bodies and public-interest research organisations named by an institute or its government as working with it. A text in force that assigns the body a specific task counts as working with the institute; plans, strategies and future commitments are marked planned. An adopted programme for the current period that assigns the work counts as in force. A body mentioned only as an example in a general duty to cooperate is excluded. Consortium members need separate evidence to be listed individually. Hosts and private firms are excluded. Federation members are labelled members.",
         "rules": {
-          "national-partners": "8ab3d3f9a28113c7dd8cf1123b4372b2f6139774b956a2dc3e8685ae99dd0fcd"
+          "national-partners": "ebd400107f0b99f01971934cabfb89b2b8f8ffdbae55a8d9859e14a703210fa4"
         }
       },
       {
