@@ -22031,6 +22031,10 @@
           {
             "date": "2026-10-19",
             "scope": "Visually rechecked the three quoted headings on PDF page 2 and documented the fragmented Arabic text layer. The quotations were not changed. This was a partial evidence check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-19",
+            "scope": "Read all 19 articles of the CMC consultation draft from the page images during the blind sample for release 1.1.0. The draft creates no testing body. Corrected the Art. 13 note to providers or operators of general-purpose models. This was a partial evidence check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -22056,7 +22060,7 @@
         "governance_source_ids": [
           "iq-cmc-draft-2026"
         ],
-        "governance_note": "The CMC consultation draft sets risk classification and provider testing duties. The reviewed provisions do not create an institute for evaluation of advanced models; not every article was read."
+        "governance_note": "The CMC consultation draft sets risk classification and provider testing duties. The reviewed provisions do not create an institute for evaluation of advanced models; all 19 articles were read from the page images on 19 November 2026."
       },
       "source_ids": [
         "iq-cmc-draft-2026",
@@ -22083,7 +22087,7 @@
           "id": "related_bodies-ec51adb95a835489a1507b391a1ef0fb"
         }
       ],
-      "notes": "The CMC draft regulation (Art. 12) sets a CMC risk-classification methodology, and Art. 13 requires providers of generative and general-purpose models to run periodic safety, security and bias tests before public release and after major changes. These are duties on providers plus CMC classification; the draft creates no CMC testing body or institute for evaluating advanced models. Not every article was read in full. The national AI strategy was discussed at a planning ministry meeting in April 2026, attended by the Prime Minister's adviser on AI, and was reported as under revision.",
+      "notes": "The CMC draft regulation (Art. 12) sets a CMC risk-classification methodology, and Art. 13 requires providers or operators of general-purpose models to run periodic safety, security and bias tests before public release and after major changes. These are duties on providers and operators plus CMC classification; the draft creates no CMC testing body or institute for evaluating advanced models. The national AI strategy was discussed at a planning ministry meeting in April 2026, attended by the Prime Minister's adviser on AI, and was reported as under revision.",
       "next_check": {
         "date": "2027-01-15",
         "reason": "Final text of the CMC regulation and the revised national AI strategy."
@@ -59934,7 +59938,7 @@
       "published": "2026-09",
       "accessed": "2026-10-16",
       "language": "ar",
-      "access_note": "PDF with a partly garbled text layer and scanned pages that are legible as images; first pages and the articles on risk classification and general-purpose models were read. The three quoted Arabic headings were visually verified on 17 October 2026 and rechecked on 19 October against the contents on PDF page 2 (articles 5, 6 and 12). The text layer fragments and reorders Arabic glyphs, so the quotations rely on visual verification. The document is marked as a draft for public consultation.",
+      "access_note": "PDF with a partly garbled text layer and scanned pages that are legible as images; first pages and the articles on risk classification and general-purpose models were read. The three quoted Arabic headings were visually verified on 17 October 2026 and rechecked on 19 October against the contents on PDF page 2 (articles 5, 6 and 12). The text layer fragments and reorders Arabic glyphs, so the quotations rely on visual verification. The document is marked as a draft for public consultation. All 19 articles were read from the page images on 19 November 2026.",
       "archive_url": "https://web.archive.org/web/20261003222805/https://cmc.iq/wp-content/uploads/2026/09/%D8%A7%D9%84%D9%84%D8%A7%D9%8A%D9%94%D8%AD%D8%A9-%D8%A7%D9%84%D8%AA%D9%86%D8%B8%D9%8A%D9%85%D9%8A%D8%A9-%D9%84%D8%AE%D8%AF%D9%85%D8%A7%D8%AA-%D8%A7%D9%84%D8%B0%D9%83%D8%A7%D8%A1-%D8%A7%D9%84%D8%A7%D8%B5%D8%B7%D9%86%D8%A7%D8%B9%D9%8A-%D9%81%D9%8A-%D8%AC%D9%85%D9%87%D9%88%D8%B1%D9%8A%D8%A9-%D8%A7%D9%84%D8%B9%D8%B1%D8%A7%D9%82%D9%8A-%D8%A7%D9%84%D9%89-%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D8%B4%D8%A7%D8%B1%D8%A9-%D8%A7%D9%84%D8%B9%D8%A7%D9%85%D8%A9-1287.pdf",
       "origin": "IQ",
       "excerpts": [
