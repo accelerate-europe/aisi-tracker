@@ -5308,7 +5308,7 @@ CLOSE_CONTROLS_JS = r"""checkFocus => {
     if (funding) {
       const head=funding.querySelector(':scope > summary'), title=head?.querySelector('.fund-head-name'), hr=head?.getBoundingClientRect();
       if (!head || !title || n.parentElement!==funding || funding.firstElementChild!==head || !title.textContent.trim()) fail('Funding Close must share its sticky identity header');
-      else if (Math.abs(r.top-hr.top)>2 || r.right>hr.right+2 || r.left<hr.left || r.bottom>hr.bottom+2) fail('Funding Close is outside its header first line');
+      else if (Math.abs(r.top-hr.top-parseFloat(getComputedStyle(head).paddingTop))>2 || r.right>hr.right+2 || r.left<hr.left || r.bottom>hr.bottom+2) fail('Funding Close is outside its header first line');
     }
     if (checkFocus) {
       n.focus({preventScroll:true});
@@ -5749,6 +5749,7 @@ def check_card_heads(browser, base_url: str) -> list[str]:
                 card.evaluate("c => scrollTo(0,scrollY+c.getBoundingClientRect().top-innerHeight/2)")
                 page.evaluate(settle)
                 spaces = {id: page.locator('#' + id).evaluate(CARD_HEAD_SPACE_JS) for id in ids}
+                gaps = {id: unstuck_head_gap(page, '#' + id, ':scope > .top') for id in ids}
                 card.evaluate("c => { c.scrollIntoView(); window.scrollBy(0,200); }")
                 page.evaluate(settle)
                 measured = page.evaluate("""ids => ids.map(id => {
@@ -5761,6 +5762,9 @@ def check_card_heads(browser, base_url: str) -> list[str]:
                 for m in measured:
                     m["reserved"] = spaces[m["id"]]["reserved"]
                     errors.extend(prefix + m["id"] + ': ' + e for e in card_head_errors(m))
+                    head = page.locator('#' + m['id'] + ' > .top')
+                    errors.extend(prefix + m['id'] + ': ' + e for e in head_padding_errors(
+                        dict(m, unstuckGap=gaps[m['id']], textTop=head.evaluate(HEAD_TEXT_TOP_JS))))
                     if width == 390:
                         errors.append(report_line(prefix + f"{m['id']} sticky head measured {m['height']:.2f}px"))
                 # Past the row, no old head may remain below the navigation over the next content.
@@ -5817,6 +5821,17 @@ def check_card_heads(browser, base_url: str) -> list[str]:
             try:
                 hydrated(page, base_url)
                 errors.extend(f'{width}px {theme} Funding head: ' + e for e in exercise_table_head(page, '#fund-rows', '.fund-axis'))
+                # The first map record in document order also has a reading head, inside its own scrollport on wide screens.
+                page.locator('.regions .pick').first.evaluate('n=>n.click()')
+                gap = unstuck_head_gap(page, '.record', ':scope > .record-top')
+                page.locator('.record').evaluate("""n => {
+                  n.scrollTop=100;
+                  scrollBy(0,n.getBoundingClientRect().top-document.querySelector('.secnav').getBoundingClientRect().bottom+40);
+                }""")
+                layout_settled(page)
+                m = page.evaluate(READING_HEAD_JS, {'owner': '.record', 'head': ':scope > .record-top', 'close': '.close-control'})
+                errors.extend(f'{width}px {theme} record: ' + e for e in reading_head_errors(dict(m, unstuckGap=gap), close=True))
+                page.locator('.record .close-control').evaluate('n=>n.click()')
                 # Longest rendered fold in each class, with ID/document order breaking ties.
                 for selector in ('.card.mini', '.fund-detail'):
                     chosen = page.locator(selector).evaluate_all("""nodes => {
@@ -5851,6 +5866,25 @@ def check_card_heads(browser, base_url: str) -> list[str]:
     return errors
 
 
+HEAD_TEXT_TOP_JS = """h => {
+  const tops=[], walker=document.createTreeWalker(h,NodeFilter.SHOW_TEXT);
+  while(walker.nextNode()) {
+    const n=walker.currentNode, p=n.parentElement;
+    if(!n.textContent.trim() || p.closest('.vh, .close-control') || getComputedStyle(p).visibility!=='visible') continue;
+    const range=document.createRange(); range.selectNodeContents(n);
+    for(const r of range.getClientRects()) if(r.width && r.height) tops.push(r.top);
+  }
+  return tops.length ? Math.min(...tops) : null;
+}"""
+
+
+def unstuck_head_gap(page, owner: str, head: str) -> float | None:
+    page.locator(owner).evaluate("n => scrollTo(0,scrollY+n.getBoundingClientRect().top-innerHeight/2)")
+    layout_settled(page)
+    return page.locator(owner).locator(head).evaluate(
+        "h => { const top=(" + HEAD_TEXT_TOP_JS + ")(h); return top===null ? null : top-h.getBoundingClientRect().top; }")
+
+
 READING_HEAD_JS = """({owner, head, close}) => {
   const box = document.querySelector(owner), h = box.querySelector(head), r = h.getBoundingClientRect();
   const nav = document.querySelector('.secnav').getBoundingClientRect(), group = box.closest('.group')?.querySelector('.group-nav')?.getBoundingClientRect();
@@ -5864,8 +5898,9 @@ READING_HEAD_JS = """({owner, head, close}) => {
   return {top:r.top, bottom:r.bottom, height:r.height, bars, nav:nav.height, subnav:bars-nav.bottom,
     visible:getComputedStyle(h).visibility==='visible' && r.height>0 && r.top>=0 && r.bottom<=innerHeight,
     topmost:exposed,
+    textTop:(/* HEAD_TEXT_TOP */)(h),
     name:h.textContent.trim(), closeWidth:b?.width, closeHeight:b?.height, x,y};
-}"""
+}""".replace('/* HEAD_TEXT_TOP */', HEAD_TEXT_TOP_JS)
 
 
 def reading_head_errors(m: dict, *, close: bool = False) -> list[str]:
@@ -5877,9 +5912,19 @@ def reading_head_errors(m: dict, *, close: bool = False) -> list[str]:
         errors.append("reading head or close control is covered at its centre")
     if not m["name"]:
         errors.append("reading head has no identity")
+    errors.extend(head_padding_errors(m))
     if close and (m.get("closeWidth", 0) < 44 or m.get("closeHeight", 0) < 44):
         errors.append("close hit area is smaller than 44px")
     return errors
+
+
+def head_padding_errors(m: dict) -> list[str]:
+    gap, top = m.get('unstuckGap'), m.get('textTop')
+    if gap is None or top is None or gap <= 0:
+        return ['reading head has no measured top padding before its first text line']
+    if abs(top - m['bars'] - gap) > 1:
+        return ['stuck head text gap differs from its unstuck top padding by more than 1px']
+    return []
 
 
 FOCUS_CLEARANCE_JS = r"""n => {
@@ -5922,6 +5967,7 @@ def exercise_table_head(page, owner: str, head: str) -> list[str]:
     geometry probe, then remove them, so the gate also catches a head bounded by one short row block.
     """
     page.mouse.move(1, 1)
+    gap = unstuck_head_gap(page, owner, head)
     page.locator(owner).evaluate("""box => {
       const list=box.querySelector('tbody:last-child, .fn-phone-block:last-child > ul, .fund-block:last-child > ul');
       const sample=list.querySelector('tr[data-institute], tr[data-j], li[data-institute]');
@@ -5937,6 +5983,7 @@ def exercise_table_head(page, owner: str, head: str) -> list[str]:
             page.locator(owner).evaluate("(box,end) => box.scrollLeft=end?box.scrollWidth:0", end)
             layout_settled(page)
             m = page.evaluate(READING_HEAD_JS, {"owner": owner, "head": head, "close": None})
+            m['unstuckGap'] = gap
             errors.extend(reading_head_errors(m))
             if not end:
                 errors.append(report_line(f"{owner}: navigation {m['nav']:.2f}px + sub-navigation {m['subnav']:.2f}px + head {m['height']:.2f}px = {m['bars'] + m['height']:.2f}px"))
@@ -5996,6 +6043,7 @@ def exercise_detail_head(page, opener: str, owner: str, head: str, *, expand: bo
         if expand:
             panel.locator('details.quote > summary').evaluate_all("nodes => nodes.forEach(n=>n.click())")
         layout_settled(page)
+        gap = unstuck_head_gap(page, owner, head)
         height = panel.evaluate("n => n.getBoundingClientRect().height")
         errors.append(report_line(f"{owner} {position}: detail {height:.2f}px, viewport {page.viewport_size['height']}px"))
         panel.evaluate("""(n,position) => {
@@ -6006,6 +6054,7 @@ def exercise_detail_head(page, opener: str, owner: str, head: str, *, expand: bo
         page.mouse.move(1, 1)
         layout_settled(page)
         m = page.evaluate(READING_HEAD_JS, {"owner": owner, "head": head, "close": ".close-control"})
+        m['unstuckGap'] = gap
         replacement = panel.evaluate("""n => {
           const view=n.closest('.fn-phone, .fn-scroll, .fund-list'); if (!view) return true;
           const head=view.querySelector('.fn-phone-head, thead, .fund-axis'), nav=document.querySelector('.secnav').getBoundingClientRect();

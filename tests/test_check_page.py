@@ -16,6 +16,7 @@ from scripts import check_page
 @pytest.fixture
 def reading_head():
     return {"top": 93, "bottom": 137, "bars": 93, "height": 44, "visible": True,
+            "textTop": 107, "unstuckGap": 14,
             "topmost": True, "name": "UK AISI", "closeWidth": 44, "closeHeight": 44}
 
 
@@ -33,6 +34,10 @@ def test_reading_head_accepts_a_compact_header_in_place_of_the_table_head(readin
     ({"name": ""}, "no identity"),
     ({"closeWidth": 43.9}, "44px"),
     ({"closeHeight": 40}, "44px"),
+    ({"textTop": 105.9}, "unstuck top padding"),
+    ({"textTop": 108.1}, "unstuck top padding"),
+    ({"textTop": 108}, None),
+    ({"unstuckGap": None}, "no measured top padding"),
 ])
 def test_reading_head_rejects_overlap_wrong_offset_and_small_close(reading_head, change, finding):
     errors = check_page.reading_head_errors(dict(reading_head, **change), close=True)
