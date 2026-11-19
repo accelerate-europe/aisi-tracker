@@ -143,6 +143,20 @@ def test_legacy_closest_body_has_no_generated_activity(lead):  # noqa: F811
     assert "active_in" not in build.export_dataset(lead)["jurisdictions"][0]["closest_body"]
 
 
+def test_real_established_summaries_keep_present_form_separate_in_every_export():
+    """The page, JSON and CSV share the corrected wording without dating the present form or host."""
+    authored = json.loads(DATA.read_text(encoding="utf-8"))
+    published = build.export_dataset(authored)
+    states = {j["id"]: j for j in published["jurisdictions"]}
+    page_states = {j["id"]: j for j in json.loads(build.page_data(published))["jurisdictions"]}
+    csv_states = {j["id"]: j for j in build.tables(published)["jurisdictions"]}
+    fixture = json.loads((DATA.parents[1] / "tests/fixtures/summary_patterns.json").read_text(encoding="utf-8"))
+    expected = {r["record"]["id"]: r["summary"] for r in fixture["records"] if r["record"]["status"] == "established"}
+    assert set(expected) == {"GB", "FR", "DE"}
+    for jid, summary in expected.items():
+        assert states[jid]["summary"] == page_states[jid]["summary"] == csv_states[jid]["summary"] == summary
+
+
 def test_real_generated_status_summaries_are_cited():
     """The Netherlands and Sweden (a status, no institute): their card shows the generated summary as its finding."""
     authored = json.loads(DATA.read_text(encoding="utf-8"))
