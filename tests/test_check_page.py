@@ -20,6 +20,11 @@ def reading_head():
             "topmost": True, "name": "UK AISI", "closeWidth": 44, "closeHeight": 44}
 
 
+@pytest.mark.parametrize('edge, right, valid', [(400, 400, True), (400, 399, True), (400, 398.9, False), (400, 401.1, False), (None, 400, False)])
+def test_download_control_ends_at_its_content_edge(edge, right, valid):
+    assert (check_page.download_alignment_errors([dict(name='download', edge=edge, right=right)]) == []) == valid
+
+
 @pytest.mark.parametrize('change, valid', [({}, True), ({'height': 19.2}, False),
     ({'stroke': 2}, False), ({'face': False}, False), ({'scale': False}, False), ({'hit': 12}, False)])
 def test_information_mark_has_text_proportions_without_losing_its_target(change, valid):

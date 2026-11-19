@@ -13140,10 +13140,26 @@ def symbol_errors(controls: list[dict]) -> list[str]:
     return errors
 
 
+DOWNLOAD_ALIGNMENT_JS = """() => [...document.querySelectorAll('[download], .section-dl, #world-csv, #world-download .popover > a, .palette-option')]
+  .filter(n=>n.checkVisibility({contentVisibilityAuto:true}) && (!n.matches('.palette-option') || /^Download /.test(n.textContent))).map(n=>{
+    const box=n.closest('.popover, .dlist li') || (n.matches('.section-dl') ? n.closest('.section-foot') : n.parentElement);
+    const r=n.getBoundingClientRect(), s=box && getComputedStyle(box), b=box?.getBoundingClientRect();
+    return {name:n.id || n.getAttribute('download') || n.textContent.trim(), right:r.right,
+      edge:b ? b.right-parseFloat(s.borderRightWidth)-parseFloat(s.paddingRight) : null};
+  })"""
+
+
+def download_alignment_errors(controls: list[dict]) -> list[str]:
+    if not controls:
+        return ['no download controls measured']
+    return [f"{c['name']}: download does not end at its container's right content edge"
+            for c in controls if c['edge'] is None or abs(c['right'] - c['edge']) > 1]
+
+
 def check_symbols(browser, base_url: str) -> list[str]:
     """Symbols (principle) at 1440 and 390, with folds and a function panel open; a probe icon link must be caught."""
     errors = []
-    for width in (1440, 390):
+    for width in (1440, 1000, 390):
         page = browser.new_page(viewport={"width": width, "height": 1000})
         hydrated(page, base_url)
         page.add_style_tag(content='.offscreen, .card-row, .fund-item { content-visibility: visible !important; }')
@@ -13161,6 +13177,16 @@ def check_symbols(browser, base_url: str) -> list[str]:
             if opened and width > 400 and not any(c['allowed'] == '.close-control' for c in controls):
                 errors.append('Symbols audit did not reach the function panel close control')
             errors += [f'{width}px {"expanded" if opened else "collapsed"}: ' + e for e in symbol_errors(controls)]
+            page.locator('#world-download').evaluate('n=>n.open=true')
+            errors.extend(f'{width}px downloads: ' + e for e in download_alignment_errors(page.evaluate(DOWNLOAD_ALIGNMENT_JS)))
+            page.locator('#world-download').evaluate('n=>n.open=false')
+        page.locator('#palette-open').evaluate('n=>n.click()')
+        page.locator('#palette input').fill('download')
+        layout_settled(page)
+        downloads = page.evaluate(DOWNLOAD_ALIGNMENT_JS)
+        if sum(c['name'].startswith('palette-') for c in downloads) < 2:
+            errors.append(f'{width}px: palette download inventory is incomplete')
+        errors.extend(f'{width}px palette downloads: ' + e for e in download_alignment_errors(downloads))
         page.close()
     return errors
 
