@@ -81,7 +81,7 @@ const staff=[{id:'total',total:25,display:{total:'25'},as_of:'2026-10',notes:'St
   {id:'target',target:50,display:{target:'50'},as_of:'2027'}];
 const i={staffing_profile:'Staff are seconded.',display:{funding_ids:funding.map(r=>r.id),funding_records:Object.fromEntries(funding.map(r=>[r.id,r])),
   staff_ids:staff.map(r=>r.id),staff_records:Object.fromEntries(staff.map(r=>[r.id,r]))}};
-const fundOrder=['own-source','staff-source'];
+const fundOrder=['own-source','staff-source'], fu=null;
 const staffSummary=()=>el('div','fund-staff-summary');
 const fundingRecord=item=>{const n=el('div','funding-record',item.id);n.dataset.record='funding';n.dataset.recordId=item.id;n.appendChild(el('p','',item.id));return n;};
 const relatedFunding=()=>el('div','related-funding','Related amounts');

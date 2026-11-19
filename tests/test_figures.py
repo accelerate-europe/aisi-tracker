@@ -242,7 +242,7 @@ def test_funding_gate_approximation_marker_mutation(currency, amount, qualifier,
                                                   "minimum": 0, "stated_value": record["eur_per_year_est"], "stated_scale": 10_000_000}]
 
     soup = BeautifulSoup('<div class="fund-budget-head"><span class="fund-scale">0 to EUR 10m</span></div><div class="fund-staff-head"><span class="fund-scale">0 to 50 people</span></div>'
-                         f'<div id="fund-rows"><li class="fund-item" data-j="A" data-institute="a" data-funding-id="x"><div class="fund-budget"><div class="fund-value"><strong>{figure}</strong></div><div class="bar-value"></div></div></li></div>', "html.parser")
+                         f'<div id="fund-rows"><li class="fund-item" data-j="A" data-institute="a" data-funding-id="x"><div class="fund-budget"><div class="fund-value"><span class="fund-figure"><strong>{figure}</strong></span></div><div class="bar-value"></div></div><details class="fund-detail"><div data-record="funding" data-record-id="x"><p class="fund-comparison"><span class="budget-amount">{figure}</span></p></div></details></li></div>', "html.parser")
     record = {
         "id": "x",
         "currency": currency,
@@ -258,18 +258,23 @@ def test_funding_gate_approximation_marker_mutation(currency, amount, qualifier,
         "dataset": {"exchange_rates": [{"currency": "USD", "eur_per_unit": 1}]},
         "institutes": [{"id": "a", "jurisdiction_id": "A", "funding": [record]}],
     }
+    full_figure = figure
     if currency != "EUR":
         from scripts.check_page import short_amount, half_up_two
 
         stated = short_amount(half_up_two(amount))
         mark = "~" if half_up_two(amount) != amount else ""
-        figure += f" ({mark}USD {stated})"
-        soup.select_one("strong").string = figure
+        full_figure += f" ({mark}USD {stated})"
+    amount_node = soup.select_one(".fund-comparison .budget-amount")
+    amount_node.string = full_figure
     assert check_funding_bars(Node(soup), data, {"A": "x"}) == []
     strong = soup.select_one("strong")
     strong.string = figure.replace("~EUR", "EUR") if "~EUR" in figure else figure.replace("EUR", "~EUR")
+    assert "A: compact Budget figure differs from the complete record figure" in check_funding_bars(Node(soup), data, {"A": "x"})
+    amount_node.string = full_figure.replace("~EUR", "EUR") if "~EUR" in figure else full_figure.replace("EUR", "~EUR")
     assert check_funding_bars(Node(soup), data, {"A": "x"}) == ["A: comparison approximation marker differs from selected record"]
     strong.string = figure
+    amount_node.string = full_figure
     assert check_funding_bars(Node(soup), data, {"A": "x"}) == []
 
 

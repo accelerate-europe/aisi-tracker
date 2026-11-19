@@ -215,13 +215,13 @@ def test_qualifier_layout_remeasures_both_directions_and_skips_hidden_rows():
     import subprocess
 
     source = (Path(__file__).resolve().parents[1] / "site/index.html").read_text()
-    helpers = source[source.index("  function qualifierStartsLine("):source.index("  function hideLineEndDots(")]
+    helpers = source[source.index("  function qualifierBaseline("):source.index("  function hideLineEndDots(")]
     script = r"""
 const assert = require('node:assert/strict');
 let width = 320, nameBottom = 20, visible = true;
 const classes = new Set();
-const parent = {closest: () => null, getClientRects: () => [{}]};
-const name = {textContent: 'Evaluation methods and tools', parentElement: parent};
+const parent = {closest: () => null, getClientRects: () => [{}], insertBefore: probe => {probe.baseline = nameBottom;}};
+const name = {textContent: 'Evaluation methods and tools', nodeType: 3, parentElement: parent, parentNode: parent, nextSibling: null};
 const statusText = {};
 const line = {};
 const status = {
@@ -231,13 +231,13 @@ const status = {
   previousElementSibling: {getBoundingClientRect: () => ({left: 0, right: 140, top: 0, bottom: nameBottom}), style: {setProperty: (k,v) => line[k]=v},
     parentElement: {getBoundingClientRect: () => ({right: width})}},
   getBoundingClientRect: () => ({right: classes.has('own-line') ? width : 240, bottom: classes.has('own-line') ? nameBottom+24 : nameBottom}),
-  querySelector: () => ({getBoundingClientRect: () => ({top: classes.has('own-line') || width < 400 ? nameBottom + 6 : 2})})
+  querySelector: () => ({appendChild: probe => {probe.baseline = nameBottom + (classes.has('own-line') || width < 400 ? 24 : 0);}})
 };
 const root = {querySelectorAll: () => [status]};
 const document = {
-  createRange: () => ({selectNodeContents: () => {}, getClientRects: () => [{top: 0, bottom: nameBottom}]}),
   createTreeWalker: () => ({nodes: [name, statusText], nextNode() {this.currentNode = this.nodes.shift(); return this.currentNode;}})
 };
+const el = () => ({style: {}, getBoundingClientRect() {return {top: this.baseline};}, remove() {}});
 const NodeFilter = {SHOW_TEXT: 4}, getComputedStyle = () => ({visibility: 'visible', paddingLeft: '0px'}), blockOf = () => root;
 HELPERS
 for (const [nextWidth, own] of [[320, true], [430, false], [360, true], [1440, false]]) {
@@ -249,8 +249,8 @@ for (const [nextWidth, own] of [[320, true], [430, false], [360, true], [1440, f
 nameBottom = 44; width = 320; layoutQualifiers(root); assert.ok(classes.has('own-line'));
 visible = false; width = 1440; layoutQualifiers(root); assert.ok(classes.has('own-line')); // no measuring hidden content
 visible = true; layoutQualifiers(root); assert.ok(!classes.has('own-line'));
-assert.equal(qualifierStartsLine(null, {top: 26}), false);
-assert.equal(qualifierStartsLine({bottom: 20}, {top: 2}), false); // mixed body/meta type on one baseline
+assert.equal(qualifierStartsLine(null, 26), false);
+assert.equal(qualifierStartsLine(20, 20), false); // mixed body/meta type on one baseline
 """.replace("HELPERS", helpers)
     subprocess.run(['node', '-'], input=script, text=True, capture_output=True, check=True)
 
