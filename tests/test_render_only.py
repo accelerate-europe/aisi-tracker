@@ -869,7 +869,12 @@ def test_funding_gate_rejects_a_source_statement_for_undisclosed_funding():
     assert check_source_alignment(html, data) == []
 
 
-def test_component_name_check_accepts_published_currency_words_but_requires_the_name():
+@pytest.mark.parametrize("label", [
+    'Component: GBP 240m for a shared programme',
+    'Component: GBP 240m for a shared <span class="cite-glue">programme</span>',
+    'Component: <abbr class="g">GBP</abbr> 240m for a shared pro<span>gramme</span>',
+])
+def test_component_name_check_accepts_published_currency_words_but_requires_the_name(label):
     from scripts.check_page import check_source_alignment
 
     record = {"id": "component", "coverage": "component", "currency": "GBP", "description": "£240m for a shared programme", "citations": {"description": ["source"]}}
@@ -877,10 +882,11 @@ def test_component_name_check_accepts_published_currency_words_but_requires_the_
             "jurisdictions": [{"id": "XX", "kind": "state", "status": "established", "source_ids": []}],
             "institutes": [{"id": "institute", "jurisdiction_id": "XX", "funding": [record], "staff": []}]}
     listing = '<div class="srcs"><ol><li data-source-id="source"><a href="https://example.org/source">Source</a></li></ol></div>'
-    label = 'Component: GBP 240m for a shared programme'
     html = source_alignment_card(listing) + f'<li class="fund-item" data-j="XX" data-institute="institute">{listing}<div data-record="funding" data-record-id="component"><p class="fund-component">{label}<span class="cites"><a class="cn" data-source-id="source" href="https://example.org/source">1</a></span></p></div></li>'
     assert check_source_alignment(html, data) == []
     assert any("component" in error for error in check_source_alignment(html.replace(label, "Component"), data))
+    assert any("component" in error for error in check_source_alignment(html.replace(label, "Component: GBP 240m"), data))
+    assert any("component" in error for error in check_source_alignment(html.replace('class="fund-component"', 'class="source-statement"'), data))
 
 
 def test_all_real_funding_disclosures_separate_native_figures_from_source_statements():

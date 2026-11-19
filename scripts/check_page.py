@@ -1861,8 +1861,10 @@ def check_source_alignment(html: str, data: dict) -> list[str]:
                     errors.append(f"{jid}: a generated undisclosed-funding line is shown as a source statement")
                 if kind == "funding" and record.get("coverage") == "component":
                     label = rendered.select_one(".fund-component")
-                    description = expected_funding_statement(record) or ""
-                    if label is None or "Component" not in label.get_text() or (description and description not in label.get_text(" ")):
+                    # Inline glossary/citation spans add no spaces to the text the reader sees.
+                    text = " ".join(label.get_text().split()) if label else ""
+                    description = " ".join((expected_funding_statement(record) or "").split())
+                    if "Component" not in text or (description and description not in text):
                         errors.append(f"{jid}: component funding needs its visible identity beside its amount")
                 if kind == "funding" and record.get("amount") is not None:
                     for selector, fields in (
@@ -10988,7 +10990,8 @@ def check_funding_large_text(browser, base_url: str) -> list[str]:
     cases += [(width, 125) for width in (641, 700, 760, 1000, 1440)]
     for width, scale in cases:
         page = browser.new_page(viewport={"width": width, "height": 900})
-        page.route(base_url, lambda route, scale=scale: route.fulfill(response=(r := route.fetch()), body=r.text().replace("</head>", f"<style>html {{ font-size: {scale}% !important; }}</style></head>", 1)))
+        # Playwright supplies (route, request); keep the captured scale keyword-only.
+        page.route(base_url, lambda route, *, scale=scale: route.fulfill(response=(r := route.fetch()), body=r.text().replace("</head>", f"<style>html {{ font-size: {scale}% !important; }}</style></head>", 1)))
         hydrated(page, base_url)
         rem = page.evaluate("parseFloat(getComputedStyle(document.documentElement).fontSize)")
         if not math.isclose(rem, 16 * scale / 100, abs_tol=.01):

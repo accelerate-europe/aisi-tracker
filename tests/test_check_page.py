@@ -436,6 +436,58 @@ def test_bar_proportion_check_never_passes_without_samples():
     assert check_page.funding_bar_width_errors([]) == ["funding: no Budget or Staff bar proportions measured"]
 
 
+@pytest.mark.parametrize("apply_style", [True, False])
+def test_funding_large_text_route_keeps_scale_and_guard(monkeypatch, apply_style):
+    import inspect
+
+    class Page:
+        def __init__(self):
+            self.rem = 16
+
+        def route(self, url, handler):
+            self.handler = handler
+
+        def fetch(self):
+            return self
+
+        def text(self):
+            return '<html><head></head><body></body></html>'
+
+        def fulfill(self, response, body):
+            match = re.search(r'font-size: (\d+)% !important', body)
+            if match and apply_style:
+                self.rem = 16 * int(match[1]) / 100
+
+        def evaluate(self, script):
+            return self.rem
+
+        def close(self):
+            pass
+
+    class Browser:
+        def new_page(self, **kwargs):
+            return Page()
+
+    def navigate(page, url):
+        # Playwright supplies (route, request), truncating to the callback's positional arity.
+        args = (page, object())
+        try:
+            inspect.signature(page.handler).bind(*args)
+        except TypeError:
+            args = args[:1]
+        page.handler(*args)
+
+    monkeypatch.setattr(check_page, "hydrated", navigate)
+    monkeypatch.setattr(check_page, "set_theme", lambda *args: None)
+    monkeypatch.setattr(check_page, "check_funding_layout_states", lambda page: [])
+    errors = check_page.check_funding_large_text(Browser(), "https://example.test/")
+    if apply_style:
+        assert errors == []
+    else:
+        assert len(errors) == 9
+        assert all("16px root font" in error for error in errors)
+
+
 @pytest.fixture
 def funding_geometry():
     def box(left, top, width, height):
