@@ -9261,7 +9261,9 @@
         "au-oversight-report-2026",
         "au-oversight-news-2026",
         "depth-au-home",
-        "depth-au-forum"
+        "depth-au-forum",
+        "au-disr-annual-report-2025-26",
+        "au-charlton-afr-speech-2026"
       ],
       "region": {
         "id": "009",
@@ -9333,6 +9335,18 @@
             "depth-au-forum"
           ],
           "short": "Department describes institute as part of it; no dated founding act found."
+        },
+        {
+          "id": "au-2026-06-01-launched",
+          "date": "2026-06-01",
+          "event": "launched",
+          "instrument": "administrative",
+          "description": "The industry department formally launches the institute; the next day the assistant minister says it is operational.",
+          "source_ids": [
+            "au-disr-annual-report-2025-26",
+            "au-charlton-afr-speech-2026"
+          ],
+          "short": "Department formally launches the institute."
         }
       ],
       "iso3": "AUS",
@@ -39463,7 +39477,11 @@
         "rows-what-au-ncsc",
         "rows-what-au-oai",
         "rows-what-au-sa",
-        "rows-what-au-dfat"
+        "rows-what-au-dfat",
+        "au-best-practice-guidance-2026",
+        "r3-naaimes-best-practice",
+        "au-charlton-afr-speech-2026",
+        "au-disr-annual-report-2025-26"
       ],
       "people": [
         {
@@ -39575,6 +39593,24 @@
         "wikidata-au-aisi-identifier"
       ],
       "outputs": [
+        {
+          "date": "2026-07-23",
+          "type": "guidance",
+          "title": "Best Practice: Automated Evaluation of Large Language Models",
+          "source_ids": [
+            "au-best-practice-guidance-2026",
+            "r3-naaimes-best-practice"
+          ],
+          "lineage": "naaimes-automated-evaluation-best-practice-2026",
+          "attribution": "named_contributor",
+          "attribution_note": "The department's publication page of 24 July 2026 says Australia contributed to the network's guidance through the Australian AI Safety Institute. The guidance itself, public from 23 July 2026, names the network and its member jurisdictions, not the institute.",
+          "qualifies_as": "none",
+          "qualification_note": "Substantive guidance remains in the publication catalogue but does not itself report a qualifying evaluation, test result, benchmark or technical research result.",
+          "credit": {
+            "institute_id": "au-aisi",
+            "date": "2026-07-24"
+          }
+        },
         {
           "date": "2026-08-10",
           "type": "report",
@@ -92691,6 +92727,17 @@
                 "lineage": "naaimes-automated-evaluation-best-practice-2026"
               },
               "title"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "naaimes-automated-evaluation-best-practice-2026"
+              },
+              "title"
             ]
           ]
         }
@@ -126975,6 +127022,168 @@
         "text_sha256": "f6fc8da3f1473e2d32b3c20966f7f84c1ecc6ab8a583120aa18f26e6b829de71",
         "text_scheme": 1
       }
+    },
+    {
+      "id": "au-charlton-afr-speech-2026",
+      "url": "https://www.minister.industry.gov.au/charlton/media/speech-afr-ai-summit",
+      "title": "Speech to AFR AI Summit",
+      "publisher": "Ministers for the Department of Industry, Science and Resources",
+      "published": "2026-06-02",
+      "accessed": "2026-11-19",
+      "language": "en",
+      "origin": "AU",
+      "type": "primary",
+      "excerpts": [
+        {
+          "text": "we are pleased to announce it is operational as of today",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "AU"
+              },
+              "timeline",
+              {
+                "id": "au-2026-06-01-launched"
+              },
+              "description"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-19T06:18:03Z",
+        "sha256": "00057139488388f19973891f722fee3f421e9663291a2ff2dfe0de9278321871",
+        "text_sha256": "7b669e3b47afa1d9e029cca26ef08cc4163310a5071ac7ac923aacb789dda60d",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "au-disr-annual-report-2025-26",
+      "url": "https://www.industry.gov.au/sites/default/files/2026-10/disr-annual-report-2025-26.pdf",
+      "title": "Annual report 2025–26",
+      "publisher": "Department of Industry, Science and Resources",
+      "published": "2026-10",
+      "accessed": "2026-11-19",
+      "language": "en",
+      "origin": "AU",
+      "type": "primary",
+      "excerpts": [
+        {
+          "text": "formally launched it on 1 June 2026",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "AU"
+              },
+              "timeline",
+              {
+                "id": "au-2026-06-01-launched"
+              },
+              "date"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "AU"
+              },
+              "timeline",
+              {
+                "id": "au-2026-06-01-launched"
+              },
+              "event"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "AU"
+              },
+              "timeline",
+              {
+                "id": "au-2026-06-01-launched"
+              },
+              "description"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-19T06:18:04Z",
+        "sha256": "5dd76c875b494a164f320644b1cc53bdaece658b0df0b24e04bf0e2ea09b8a7a",
+        "text_sha256": "f8be4c993af37029f3d4fa4d932324fce4c7541ff70c8d348176fb497242c2b0",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "au-best-practice-guidance-2026",
+      "url": "https://www.industry.gov.au/publications/best-practice-automated-evaluation-large-language-models",
+      "title": "Best practice for automated evaluation of large language models",
+      "publisher": "Department of Industry, Science and Resources",
+      "published": "2026-07-24",
+      "accessed": "2026-11-19",
+      "language": "en",
+      "origin": "AU",
+      "type": "primary",
+      "excerpts": [
+        {
+          "text": "Australia contributed to the guidance through the Australian AI Safety Institute, drawing on the experience of network members.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "naaimes-automated-evaluation-best-practice-2026"
+              },
+              "attribution_note"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "naaimes-automated-evaluation-best-practice-2026"
+              },
+              "credit",
+              "institute_id"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        },
+        {
+          "text": "Date published: 24 July 2026",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "naaimes-automated-evaluation-best-practice-2026"
+              },
+              "credit",
+              "date"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-19T06:18:02Z",
+        "sha256": "cb5f14fa2db095082c96b7d6e318c5eed50a892e0b10a49ca2449f31efb9b440",
+        "text_sha256": "6e3517cc5af07f08a6529c491788e425792a182297e219a316ab7e51c0185b81",
+        "text_scheme": 1
+      },
+      "output_role": "document",
+      "output_lineage": "naaimes-automated-evaluation-best-practice-2026"
     }
   ],
   "changelog": [
