@@ -6743,6 +6743,42 @@ def check_group_rows(browser, base_url: str) -> list[str]:
     return errors
 
 
+def check_definition_tip(page, *, touch: bool) -> list[str]:
+    errors = []
+    link = page.locator('#definition-link a')
+    expected = page.locator('#definition').evaluate("n=>[...n.childNodes].filter(n=>n.nodeType===Node.TEXT_NODE).map(n=>n.textContent).join('').trim()")
+    for mode in (('tap',) if touch else ('hover', 'focus')):
+        link.scroll_into_view_if_needed()
+        layout_settled(page)
+        if mode == 'tap':
+            link.tap()
+        elif mode == 'hover':
+            link.hover()
+        else:
+            page.keyboard.press('Escape')
+            page.keyboard.press('Tab')
+            link.focus()
+        tip = page.locator('#tip')
+        if not tip.is_visible() or not tip.inner_text().startswith(expected):
+            errors.append(f'Definition {mode} does not show dataset.definition')
+    if touch:
+        destination = page.locator('#tip a[href$="#definition"]')
+        if destination.count() != 1:
+            errors.append('Definition touch tip has no link to the definition')
+            return errors
+        destination.tap()
+    else:
+        page.keyboard.press('Enter')
+    layout_settled(page)
+    if page.evaluate('location.hash') != '#definition':
+        errors.append('Definition link does not navigate')
+    if not touch:
+        link.click()
+        if page.evaluate('location.hash') != '#definition':
+            errors.append('Definition mouse click does not navigate')
+    return errors
+
+
 def check_touch_tips(browser, base_url: str) -> list[str]:
     """Touch (owner report from an Android phone): a tooltip opened by a tap closes when the reader jumps to a record
     (hash link), scrolls, or taps elsewhere; it never stays floating over other content."""
@@ -6793,6 +6829,7 @@ def check_touch_tips(browser, base_url: str) -> list[str]:
         page.wait_for_timeout(200)
         if not page.evaluate("id => { const t = document.getElementById('tip'); return !!t && !t.hidden && t.textContent.startsWith(document.getElementById(id).dataset.tip || document.getElementById(id).getAttribute('aria-description')); }", info_id):
             errors.append(f"tapping the (i) #{info_id} on touch shows no note")
+    errors.extend(check_definition_tip(page, touch=True))
     context.close()
     for viewport, scale in (({"width": 412, "height": 924}, 2.625), ({"width": 360, "height": 780}, 3)):
         errors.extend(f"{viewport['width']}px: {e}" for e in touch_control_tips(browser, base_url, viewport, scale))
@@ -6810,6 +6847,7 @@ def check_touch_tips(browser, base_url: str) -> list[str]:
       return [a.matches('#world-rows abbr.g'), !!t && !t.hidden, !!b && (Math.abs(b.top - r.bottom) < 12 || Math.abs(b.bottom - r.top) < 12)]; }""")
     if got != [True, True, True]:
         errors.append(f"a tooltip opened by keyboard does not stay with its trigger on scroll (focused, shown, beside trigger: {got})")
+    errors.extend(check_definition_tip(page, touch=False))
     page.close()
     return errors
 

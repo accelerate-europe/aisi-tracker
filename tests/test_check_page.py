@@ -195,7 +195,7 @@ class Node {
   get offsetWidth(){return 200;} get offsetHeight(){return 40;}
   matches(s){
     if(s==='abbr.g, [data-tip], [aria-description]') return true;
-    if(s==='a' || s==='a.cn, a.original-text[href]') return this.kind==='a.cn';
+    if(s==='a' || s.split(', ').includes('a.cn')) return this.kind==='a.cn';
     if(s==='.info') return this.kind==='info';
     if(s==='a[href], button, summary, input, select, textarea, .tgt') return ['a.cn','close-control','info'].includes(this.kind);
     return false; // in particular, scripted focus need not match :focus-visible

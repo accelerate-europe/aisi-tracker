@@ -1497,10 +1497,10 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       tip.addEventListener("mouseenter", function () { clearTimeout(tipTimer); });
       tip.addEventListener("mouseleave", function (e) { if (!(e.relatedTarget && tipFor && tipFor.contains(e.relatedTarget))) hideTipSoon(); }); }
     clearTimeout(tipTimer); tipFor = ab; tipFromFocus = !!fromFocus; tipY = window.scrollY; tip.textContent = tipText(ab); tip.hidden = false;
-    var originalLink = ab.matches("a.original-text[href]");
-    if (ab.dataset.tipSub || originalLink) { // a citation or translated link's destination stays reachable from its touch tip
-      var parts = ab.dataset.tipSub ? ab.dataset.tipSub.split(" · ") : [hostOf(ab.href)], sub = el("span", "tip-sub"), external = "tipExt" in ab.dataset || originalLink;
-      if (external && ab.href) { var go = el("a", "", parts.pop()); go.href = ab.href; go.target = "_blank"; go.rel = "noopener"; go.tabIndex = -1; parts.push(go); }
+    var originalLink = ab.matches("a.original-text[href]"), tipLink = ab.matches("a[data-tip-link][href]");
+    if (ab.dataset.tipSub || originalLink || tipLink) { // explanatory links keep their destination in the touch tip
+      var parts = ab.dataset.tipSub ? ab.dataset.tipSub.split(" · ") : [tipLink ? ab.dataset.tipLink : hostOf(ab.href)], sub = el("span", "tip-sub"), external = "tipExt" in ab.dataset || originalLink;
+      if ((external || tipLink) && ab.href) { var go = el("a", "", parts.pop()); go.href = ab.href; if (external) { go.target = "_blank"; go.rel = "noopener"; go.tabIndex = -1; } parts.push(go); }
       sub.appendChild(separated(parts)); if (external) bindArrow(sub); tip.appendChild(sub); }
     tip.style.left = "0px"; tip.style.top = "0px"; // measure at full available width, not the previous position
     var r = tipAnchor(ab), w = tip.offsetWidth, h = tip.offsetHeight, vw = document.documentElement.clientWidth;
@@ -1541,7 +1541,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   document.addEventListener("click", function (e) {
     if (tip && e.target instanceof Node && tip.contains(e.target)) { if (touchInput || e.target.closest("a")) hideTip(); return; } // a link in the tip opens (in a new tab) and the tip goes; on touch a tap on its text closes it
     var ab = e.target.closest && e.target.closest(TIPSEL); if (!ab) return;
-    if (touchInput && ab.matches("a.cn, a.original-text[href]")) { e.preventDefault(); showTip(ab); }
+    if (touchInput && ab.matches("a.cn, a.original-text[href], a[data-tip-link][href]")) { e.preventDefault(); showTip(ab); }
     else if (touchInput ? !ab.closest(CONTROL) || ab.matches(".info") : !ab.closest("a")) showTip(ab, !touchInput && e.detail === 0 && ab === document.activeElement); // keyboard activation keeps the focus tip; on touch a tap on an (i) opens its note; other controls keep their own action
   });
   // Instant tooltips: move every non-empty native title attribute (slow browser delay, and it stacks on the page's own tooltip) to the description, which is also the tip; data-tip only where there is no description (inside an image) or it says something else.
@@ -2536,7 +2536,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     var sortFn = function (a, b) { return ORDER.indexOf(a.status) - ORDER.indexOf(b.status) || a.name.localeCompare(b.name) || a.id.localeCompare(b.id); };
 
     // The definition under the headline is the dataset's own sentence, shared with the README; its link goes to the full rule.
-    var defLink = el("a", null, "Definition"); defLink.href = "#definition"; $("definition-link").appendChild(defLink);
+    var defLink = el("a", null, "Definition"); defLink.href = "#definition"; defLink.dataset.tip = m.definition; defLink.dataset.tipLink = "Read the definition"; $("definition-link").appendChild(defLink);
     $("definition").textContent = m.definition + " "; var counts = el("a", null, "The test in detail"); counts.href = "method.html#qualifying-body"; $("definition").appendChild(counts);
     ORDER.forEach(function (status) {
       var entry = el("div", "legend-entry"), sw = el("i", "sw st-" + status); sw.setAttribute("aria-hidden", "true");
