@@ -5292,7 +5292,7 @@ CLOSE_CONTROLS_JS = r"""checkFocus => {
     .filter(visible);
   if (!controls.length) return errors;
   const probe = document.createElement('span');
-  probe.style.cssText = 'position:absolute;width:var(--control);height:var(--hit);font:var(--type-meta);outline:var(--rule-strong) solid var(--focus);outline-offset:var(--sp-1)';
+  probe.style.cssText = 'position:absolute;width:var(--control);height:var(--hit);font:var(--type-label);outline:var(--rule-strong) solid var(--focus);outline-offset:var(--sp-1)';
   document.body.appendChild(probe);
   const ps = getComputedStyle(probe), hit = Math.max(44, parseFloat(ps.height)), size = Math.max(44, parseFloat(ps.width), hit);
   const type = ['fontFamily', 'fontSize', 'fontWeight', 'fontStyle', 'lineHeight'], font = type.map(k => ps[k]).join('|');
@@ -5305,12 +5305,19 @@ CLOSE_CONTROLS_JS = r"""checkFocus => {
     const symbol = n.firstElementChild;
     if (!n.matches('button.close-control[type="button"]') || name(n) !== 'Close' || n.getAttribute('aria-label') !== 'Close' ||
         n.hasAttribute('aria-labelledby') || n.hasAttribute('role')) fail('Close must be a shared button named Close');
-    if (n.childNodes.length !== 1 || !symbol?.matches('span[aria-hidden="true"]') || symbol.textContent !== '×') fail('Close must contain only the hidden × symbol');
+    if (n.childNodes.length !== 1 || !symbol?.matches('span.close-glyph[aria-hidden="true"]') || symbol.textContent) fail('Close must contain only the shared drawn cross');
     if (Math.abs(r.width - size) > .5 || Math.abs(r.height - size) > .5 ||
         Math.abs(parseFloat(s.width) - size) > .5 || Math.abs(parseFloat(s.height) - size) > .5 ||
         parseFloat(s.minWidth) < hit || parseFloat(s.minHeight) < hit) fail('Close size/hit area differs from --control/--hit');
     if (type.map(k => s[k]).join('|') !== font || symbol && type.map(k => getComputedStyle(symbol)[k]).join('|') !== font)
       fail('Close symbol type differs from the shared control');
+    if (symbol) {
+      const glyph=symbol.getBoundingClientRect(), em=parseFloat(s.fontSize), a=getComputedStyle(symbol,'::before'), b=getComputedStyle(symbol,'::after');
+      if (Math.min(glyph.width,glyph.height)<.75*em || Math.max(glyph.width,glyph.height)>.85*em) fail('Close glyph box must be .75 to .85 of the header label size');
+      for(const stroke of [a,b]) if(['none','normal'].includes(stroke.content) || parseFloat(stroke.height)<.04*em || parseFloat(stroke.height)>.08*em || stroke.backgroundColor!==s.color)
+        fail('Close needs two light .06em strokes');
+      if(a.transform===b.transform) fail('Close strokes do not cross');
+    }
     if (!['flex', 'inline-flex'].includes(s.display) || s.alignItems !== 'center' || s.justifyContent !== 'center' ||
         s.backgroundColor !== 'rgba(0, 0, 0, 0)' || parseFloat(s.borderWidth) || parseFloat(s.padding) || parseFloat(s.borderRadius)) fail('Close must be a bare centred symbol');
     for (const pseudo of ['::before', '::after']) if (!['none', 'normal'].includes(getComputedStyle(n, pseudo).content)) fail('Close has an extra pseudo-element');
