@@ -64,7 +64,7 @@ assert.equal(choose(institute([empty,z,a])),a);
 
 def test_funding_detail_keeps_each_record_in_its_own_group():
     source = PAGE.read_text()
-    helper = source[source.index("      function detailsBody() {"):source.index('      var row = el("li", "fund-item"')]
+    helper = source[source.index("      function detailsBody() {"):source.index('      var det = el("details", "more quiet fund-detail"')]
     script = """
 const assert=require('node:assert/strict');
 function el(tag,className,text){return {tag,className:className||'',text:text||'',dataset:{},children:[],
@@ -81,8 +81,8 @@ const staff=[{id:'total',total:25,display:{total:'25'},as_of:'2026-10',notes:'St
   {id:'target',target:50,display:{target:'50'},as_of:'2027'}];
 const i={staffing_profile:'Staff are seconded.',display:{funding_ids:funding.map(r=>r.id),funding_records:Object.fromEntries(funding.map(r=>[r.id,r])),
   staff_ids:staff.map(r=>r.id),staff_records:Object.fromEntries(staff.map(r=>[r.id,r]))}};
-const fundOrder=['own-source','staff-source'], fu=null;
-const staffSummary=()=>el('div','fund-staff-summary');
+const fundOrder=['own-source','staff-source'];
+const staffSummary=()=>el('div','fund-staff-summary'), fu=null;
 const fundingRecord=item=>{const n=el('div','funding-record',item.id);n.dataset.record='funding';n.dataset.recordId=item.id;n.appendChild(el('p','',item.id));return n;};
 const relatedFunding=()=>el('div','related-funding','Related amounts');
 const publishedFunding=item=>item.description;
@@ -520,7 +520,7 @@ def test_detail_oracle_rejects_reordered_and_duplicate_citations():
             f'<a class="cn" data-source-id="{sid}" href="https://example.org/{sid}">{[s["id"] for s in sources].index(sid) + 1}</a>'
             for sid in ids
         )
-        html = source_alignment_card(source_list) + f'<li class="fund-item" data-j="XX" data-institute="institute">{source_list}<p data-record="funding" data-record-id="budget">Published budget<span class="cites">{cites}</span></p></li>'
+        html = source_alignment_card(source_list) + f'<li class="fund-detail" data-j="XX" data-institute="institute">{source_list}<p data-record="funding" data-record-id="budget">Published budget<span class="cites">{cites}</span></p></li>'
         findings = check_source_alignment(html, data)
         assert all("record citations differ" in e for e in findings), findings
         return findings
@@ -862,7 +862,7 @@ def test_funding_gate_rejects_a_source_statement_for_undisclosed_funding():
             "institutes": [{"id": "institute", "jurisdiction_id": "XX", "funding": [record], "staff": []}]}
     listing = '<div class="srcs"><ol></ol></div>'
     statement = '<details class="source-statement"><summary>Source statement</summary><p>Generated negative.</p></details>'
-    html = source_alignment_card(listing) + f'<li class="fund-item" data-j="XX" data-institute="institute">{listing}<div data-record="funding" data-record-id="budget"><p>Not published</p>{statement}</div></li>'
+    html = source_alignment_card(listing) + f'<li class="fund-detail" data-j="XX" data-institute="institute">{listing}<div data-record="funding" data-record-id="budget"><p>Not published</p>{statement}</div></li>'
     assert check_source_alignment(html.replace(statement, ""), data) == []
     assert check_source_alignment(html, data) == ["XX: a generated undisclosed-funding line is shown as a source statement"]
     record["display"] = {}  # a legacy record's authored description may show as a statement
@@ -882,7 +882,7 @@ def test_component_name_check_accepts_published_currency_words_but_requires_the_
             "jurisdictions": [{"id": "XX", "kind": "state", "status": "established", "source_ids": []}],
             "institutes": [{"id": "institute", "jurisdiction_id": "XX", "funding": [record], "staff": []}]}
     listing = '<div class="srcs"><ol><li data-source-id="source"><a href="https://example.org/source">Source</a></li></ol></div>'
-    html = source_alignment_card(listing) + f'<li class="fund-item" data-j="XX" data-institute="institute">{listing}<div data-record="funding" data-record-id="component"><p class="fund-component">{label}<span class="cites"><a class="cn" data-source-id="source" href="https://example.org/source">1</a></span></p></div></li>'
+    html = source_alignment_card(listing) + f'<li class="fund-detail" data-j="XX" data-institute="institute">{listing}<div data-record="funding" data-record-id="component"><p class="fund-component">{label}<span class="cites"><a class="cn" data-source-id="source" href="https://example.org/source">1</a></span></p></div></li>'
     assert check_source_alignment(html, data) == []
     assert any("component" in error for error in check_source_alignment(html.replace(label, "Component"), data))
     assert any("component" in error for error in check_source_alignment(html.replace(label, "Component: GBP 240m"), data))
@@ -962,7 +962,7 @@ def test_native_funding_gate_rejects_wrong_amount_and_wrong_field_evidence(
     record = {"id": "budget", "amount": amount, "amount_qualifier": qualifier, "currency": currency, "description": "A sourced statement.", "source_ids": ["amount", "statement"], "citations": {"amount": ["amount"], "description": ["statement"]}}
     data = {"dataset": {"exchange_rates": [{"currency": "USD", "eur_per_unit": 0.5}]}, "sources": [{"id": identity, "url": "https://example.org/" + identity} for identity in ("amount", "statement")], "jurisdictions": [{"id": "XX", "kind": "state", "status": "established", "source_ids": []}], "institutes": [{"id": "institute", "jurisdiction_id": "XX", "funding": [record], "staff": []}]}
     listing = '<div class="srcs"><ol><li data-source-id="amount"><a href="https://example.org/amount">Amount</a></li><li data-source-id="statement"><a href="https://example.org/statement">Statement</a></li></ol></div>'
-    html = source_alignment_card(listing) + f'<li class="fund-item" data-j="XX" data-institute="institute">{listing}<div data-record="funding" data-record-id="budget"><p class="funding-native"><span class="budget-amount">{label}</span><span class="cites"><a class="cn" data-source-id="amount" href="https://example.org/amount">1</a></span></p><details class="source-statement"><summary>Source statement</summary><p>A sourced statement.<span class="cites"><a class="cn" data-source-id="statement" href="https://example.org/statement">2</a></span></p></details><p class="funding-metadata"></p></div></li>'
+    html = source_alignment_card(listing) + f'<li class="fund-detail" data-j="XX" data-institute="institute">{listing}<div data-record="funding" data-record-id="budget"><p class="funding-native"><span class="budget-amount">{label}</span><span class="cites"><a class="cn" data-source-id="amount" href="https://example.org/amount">1</a></span></p><details class="source-statement"><summary>Source statement</summary><p>A sourced statement.<span class="cites"><a class="cn" data-source-id="statement" href="https://example.org/statement">2</a></span></p></details><p class="funding-metadata"></p></div></li>'
     def errors(text):
         findings = check_source_alignment(text, data)
         assert not any("matched 0" in error for error in findings), findings

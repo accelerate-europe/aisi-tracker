@@ -208,54 +208,48 @@ rect.left=350;rect.right=430;clearReadingFocus(target);assert.equal(rect.right,3
     subprocess.run(['node', '-'], input=script, text=True, capture_output=True, check=True)
 
 
-def test_citation_focus_clears_painted_text_below_the_measured_funding_head():
+def test_zero_height_citation_focus_uses_ink_and_the_actual_head_height():
     source = (ROOT / 'site/index.html').read_text()
     helper = source[source.index('  function readingEdge('):source.index('  function returnToOpener(')]
     script = """
 const assert=require('node:assert/strict'), barsBottom=()=>93;
-let baseline=250, headHeight=150, moves=[];
+let headHeight=100, baseline=198, inkTop=188, moves=[];
 const head={getBoundingClientRect:()=>({top:93,bottom:93+headHeight,height:headHeight}),contains:()=>false,matches:()=>false};
-const owner={querySelector:()=>head,getBoundingClientRect:()=>({top:-100,bottom:2000})};
-const glyph=()=>({top:baseline-12,bottom:baseline,width:8,height:12,left:100,right:108});
-const target={getBoundingClientRect:()=>({...glyph(),top:baseline,height:0}),getClientRects:()=>[{width:8,height:0}],
-  matches:s=>s==='a.cn',closest:s=>s.includes('.fund-list')?owner:null};
-const document={activeElement:target,createRange:()=>({selectNodeContents:n=>assert.equal(n,target),getBoundingClientRect:glyph})};
+const owner={querySelector:()=>head,getBoundingClientRect:()=>({top:0,bottom:1000})};
+const target={matches:()=>false,closest:s=>s.includes('.fund-list')?owner:null,
+  getClientRects:()=>[{width:8,height:0}],getBoundingClientRect:()=>({top:baseline,bottom:baseline,height:0})};
+const document={activeElement:target,createRange:()=>({selectNodeContents:n=>assert.equal(n,target),
+  getBoundingClientRect:()=>({top:inkTop,bottom:inkTop+12,left:10,right:18,height:12})})};
 const getComputedStyle=()=>({position:'sticky'});
-const window={scrollBy:(x,y)=>{moves.push(y);baseline-=y;}};
+const window={scrollBy:(x,y)=>{moves.push(y);baseline-=y;inkTop-=y;}};
 HELPER
-clearReadingFocus(target);
-assert.equal(glyph().top,251); // measured 243px edge plus the normal 8px gap
-assert.equal(moves.length,1);
-clearReadingFocus(target); assert.equal(moves.length,1); // no repeated scrolling
-headHeight=180; clearReadingFocus(target); assert.equal(glyph().top,281); // taller/wrapped head
-document.activeElement={}; clearReadingFocus(target); assert.equal(moves.length,2);
+clearReadingFocus(target);assert.equal(inkTop,201); // baseline was clear, painted text was under the 100px head
+assert.deepEqual(moves,[-13]);moves=[];clearReadingFocus(target);assert.deepEqual(moves,[]);
+headHeight=60;baseline=158;inkTop=148;clearReadingFocus(target);assert.equal(inkTop,161);
+assert.deepEqual(moves,[-13]); // Staff's shorter head is measured independently
 """.replace('HELPER', helper)
     subprocess.run(['node', '-'], input=script, text=True, capture_output=True, check=True)
 
 
-@pytest.mark.parametrize('mutation, finding', [
-    (None, None), ('under-head', 'covered by the reading head'),
-    ('overlay', 'painted rectangles'), ('no-paint', 'painted rectangles'),
-])
-def test_focus_gate_hit_tests_zero_height_citation_text(mutation, finding):
+def test_focus_gate_samples_zero_height_citation_text_and_still_rejects_occlusion():
     script = """
-const mutation=JSON.parse(process.argv[1]);
-const box={left:100,right:108,top:260,bottom:272,width:8,height:12};
-if(mutation==='under-head') {box.top=235;box.bottom=247;}
-const head={contains:()=>false,getBoundingClientRect:()=>({bottom:243,height:150})};
+const assert=require('node:assert/strict');
+let inkTop=188, covered=false;
+const head={tagName:'DIV',contains:()=>false,getBoundingClientRect:()=>({top:93,bottom:193,height:100})};
 const owner={querySelector:()=>head};
-const n={getBoundingClientRect:()=>({...box,top:box.bottom,height:0}),getClientRects:()=>[{...box,height:0}],
-  closest:s=>s.includes('.fund-list')?owner:null,matches:s=>s==='a.cn',contains:hit=>hit===n,
-  getAttribute:()=>null,textContent:'1'};
-const document={activeElement:n,querySelector:()=>({getBoundingClientRect:()=>({bottom:93})}),
-  createRange:()=>({selectNodeContents(){},getBoundingClientRect:()=>box,getClientRects:()=>mutation==='no-paint'?[]:[box]}),
-  elementFromPoint:()=>mutation==='overlay'?{tagName:'DIV',className:'fund-axis'}:n};
-const getComputedStyle=()=>({visibility:'visible'}),innerHeight=900;
-console.log(JSON.stringify((PROBE)(n)));
-""".replace('PROBE', check_page.FOCUS_CLEARANCE_JS)
-    result = subprocess.run(['node', '-e', script, json.dumps(mutation)], text=True, capture_output=True, check=True)
-    errors = check_page.focus_clearance_errors(json.loads(result.stdout))
-    assert any(finding in error for error in errors) if finding else errors == []
+const target={getBoundingClientRect:()=>({top:198,bottom:198,width:8,height:0}),getClientRects:()=>[{width:8,height:0}],
+  closest:s=>s.includes('.fund-list')?owner:null,contains:n=>n===target,getAttribute:()=>null,textContent:'1'};
+const ink=()=>({top:inkTop,bottom:inkTop+12,left:10,right:18,width:8,height:12});
+const document={activeElement:target,querySelector:()=>({getBoundingClientRect:()=>({bottom:93})}),
+  createRange:()=>({selectNodeContents:n=>assert.equal(n,target),getBoundingClientRect:ink,getClientRects:()=>[ink()]}),
+  elementFromPoint:(x,y)=>{assert.equal(x,14);assert.equal(y,inkTop+6);return covered?head:target;}};
+const getComputedStyle=()=>({visibility:'visible'}),innerHeight=844;
+const measure=MEASURE;
+let got=measure(target);assert.equal(got.top,188);assert.equal(got.edge,193);assert.equal(got.exposed,true);
+inkTop=201;got=measure(target);assert.equal(got.top,201);assert.equal(got.exposed,true);
+covered=true;got=measure(target);assert.equal(got.exposed,false);assert.equal(got.covered.length,1);
+""".replace('MEASURE', check_page.FOCUS_CLEARANCE_JS)
+    subprocess.run(['node', '-'], input=script, text=True, capture_output=True, check=True)
 
 
 def test_reading_heads_follow_measured_bars_on_scroll_and_resize():
@@ -510,10 +504,7 @@ def test_status_qualifier_gate_samples_allow_a_not_found_long_label():
     ({"trackWidth": 180}, "do not share bar-track dimensions"),
     ({"trackHeight": 12}, "do not share bar-track dimensions"),
     ({"figureLeft": 150}, "figure overlaps its bar track"),
-    ({"unbarredHeight": 62}, "row without a bar is taller"),
-    ({"recordsWording": False}, "unbarred amount lacks its records wording"),
-    ({"note": "No euro rate"}, None),
-    ({"note": "Proposal"}, None),
+    ({"noBar": True}, "printed figure lacks its bar"),
 ])
 def test_funding_weights_keep_equal_compact_measures_and_row_heights(change, finding):
     class Page:
@@ -523,20 +514,15 @@ def test_funding_weights_keep_equal_compact_measures_and_row_heights(change, fin
 const change = JSON.parse(process.argv[1]);
 const typography=(size=16,weight=500)=>({fontSize:size+'px',fontWeight:String(weight),fontFamily:'Sans',lineHeight:'24px'});
 const figure=typography(change.budgetSize), staff=typography(change.staffSize,change.staffWeight);
-// After glueCitations the first note span has only the prefix; the last word and numerals are in a sibling glue.
-const prefix=(change.note || 'One-off amount')+', in the ';
-const noteValue=()=>({textContent:(change.recordsWording===false?'One-off amount':prefix+'records')+'1,2',
-  querySelectorAll(){return [{remove:()=>{this.textContent=this.textContent.replace(/1,2$/, '');}}];}});
-const rect=(width=160,height=8,left=0)=>({width,height,left,right:left+width});
-const makeMeasure=changed=>({getClientRects:()=>[{}],querySelector: selector => ({
-  '.fund-bar':{firstElementChild:{},getBoundingClientRect:()=>rect(changed ? change.trackWidth : undefined,changed ? change.trackHeight : undefined)},
+const rect=(width=160,height=8,left=0)=>({width,height,left,right:left+width,top:0,bottom:height});
+const makeMeasure=changed=>({querySelector: selector => ({
+  '.fund-bar':{firstElementChild:change.noBar?null:{},getBoundingClientRect:()=>rect(changed ? change.trackWidth : undefined,changed ? change.trackHeight : undefined)},
   '.fund-value':{getBoundingClientRect:()=>rect(100,24,changed ? (change.figureLeft ?? 164) : 164)},
 })[selector] || null});
 const makeRow=unbarred=>({dataset:{institute:unbarred?'missing':'charted'},classList:{contains:()=>unbarred},
   querySelectorAll:selector=>selector===':scope > .fund-measure' ? [makeMeasure(false),makeMeasure(unbarred)] : [figure,staff],
   querySelector:selector=>({
-    '.fund-budget .fund-note':unbarred ? {textContent:prefix} : null,
-    '.fund-budget .fund-value':unbarred ? {cloneNode:noteValue} : null,
+    '.fund-budget .budget-value':unbarred ? {textContent:change.notCharted===false?'EUR 1m':'EUR 1m; not charted'} : null,
     ':scope > .fund-budget .bar-value':unbarred ? null : {},
     '.fund-row':{getBoundingClientRect:()=>({height:unbarred ? (change.unbarredHeight ?? 60) : 60})},
   })[selector] || null,
@@ -553,20 +539,6 @@ const getComputedStyle = node => node;
 
     errors = check_page.check_funding_weights(Page())
     assert any(finding in error for error in errors) if finding else errors == []
-
-
-@pytest.mark.parametrize('tail, valid', [('', True), (' trailing amount words', False)])
-@pytest.mark.parametrize('kind, figure, qualifier', [
-    ('budget', '~EUR 52m', 'a year · 2026 · adopted'),
-    ('staff', '140+', 'at least · as at Oct 2026'),
-])
-def test_compact_figure_citations_end_the_figure_before_removable_qualifiers(kind, figure, qualifier, tail, valid):
-    html = f'<div class="fund-{kind} fund-measure"><div class="fund-value"><span class="fund-figure"><span class="cite-glue"><strong>{figure}</strong><span class="cites"><a>1</a></span></span>{tail}</span><span class="fund-qualifier">{qualifier}</span></div></div>'
-    errors = check_page.check_citation_ends(BeautifulSoup(html, 'html.parser'))
-    assert (errors == []) == valid
-    # A plain value has no compact figure boundary: text after its citation must still fail.
-    plain = html.replace('<span class="fund-figure">', '<span>')
-    assert check_page.check_citation_ends(BeautifulSoup(plain, 'html.parser'))
 
 
 @pytest.mark.parametrize("value, scale, track, width", [
@@ -611,8 +583,11 @@ def test_bar_proportion_check_never_passes_without_samples():
 def test_funding_large_text_route_keeps_scale_and_guard(monkeypatch, apply_style):
     import inspect
 
+    seen = []
+
     class Page:
-        def __init__(self):
+        def __init__(self, width):
+            self.width = width
             self.rem = 16
 
         def route(self, url, handler):
@@ -633,13 +608,11 @@ def test_funding_large_text_route_keeps_scale_and_guard(monkeypatch, apply_style
             return self.rem
 
         def close(self):
-            pass
+            seen.append((self.width, self.rem))
 
     class Browser:
         def new_page(self, **kwargs):
-            page = Page()
-            page.width = kwargs["viewport"]["width"]
-            return page
+            return Page(kwargs["viewport"]["width"])
 
     def navigate(page, url):
         # Playwright supplies (route, request), truncating to the callback's positional arity.
@@ -653,15 +626,10 @@ def test_funding_large_text_route_keeps_scale_and_guard(monkeypatch, apply_style
     monkeypatch.setattr(check_page, "hydrated", navigate)
     monkeypatch.setattr(check_page, "set_theme", lambda *args: None)
     monkeypatch.setattr(check_page, "check_funding_layout_states", lambda page: [])
-    commitments_checked = []
-    monkeypatch.setattr(check_page, "check_funding_commitments", lambda page, data: commitments_checked.append((page.width, data)) or [])
-    data = {"institutes": []}
-    errors = check_page.check_funding_large_text(Browser(), "https://example.test/", data)
-    assert len(commitments_checked) == 22  # all widths/scales in both themes
-    assert {320, 390, 1000, 1440} <= {width for width, _ in commitments_checked}
-    assert all(checked is data for _, checked in commitments_checked)
+    errors = check_page.check_funding_large_text(Browser(), "https://example.test/")
     if apply_style:
         assert errors == []
+        assert {(width, 16) for width in (320, 390, 1000, 1440)} <= set(seen)
     else:
         assert len(errors) == 9
         assert all("16px root font" in error for error in errors)
@@ -672,15 +640,14 @@ def funding_geometry():
     def box(left, top, width, height):
         return dict(left=left, right=left+width, top=top, bottom=top+height, width=width, height=height)
 
-    measures = [dict(kind=kind, box=box(left, 200, 380, 50), bar=box(left, 214, 64, 12),
-                     figure=box(left, 212, 380, 24), label=None, missing=True, visible=True, charted=False,
-                     lineHeight=24, oneLine=48, amountLines=0, qualifierLines=0, qualifierOverflow=False)
-                for kind, left in (("budget", 600), ("staff", 988))]
-    row = dict(key="a", button=box(300, 200, 1068, 48), border=1, painted=True, last=False,
-               identity=box(300, 200, 292, 48), oneLine=48, lineCount=1, unpublished=None, unpublishedLines=0, detail=None, measures=measures)
-    heads = {m["kind"]: dict(bar=box(m["bar"]["left"], 100, 64, 24), figure=box(m["bar"]["left"]+72, 100, 308, 24)) for m in measures}
-    return dict(list=box(300, 100, 1068, 500), head=box(300, 100, 1068, 90), heads=heads,
-                rows=[row, dict(copy.deepcopy(row), key="b", last=True)], overflow=[], opaque=True, desktop=True, ordinaryText=True, fits=True)
+    rows, heads = [], {}
+    for kind, top in (("budget", 100), ("staff", 500)):
+        measure = dict(kind=kind, box=box(600, top+100, 768, 48), bar=box(608, top+114, 160, 8),
+                       figure=box(776, top+108, 584, 40), amountLines=1, qualifierLines=1, commitmentVisible=True)
+        rows.append(dict(key=kind+":a", kind=kind, button=box(300, top+100, 1068, 56), border=1, painted=True, last=False,
+                         identity=box(308, top+108, 284, 24), maxHeight=56, detail=None, measures=[measure]))
+        heads[kind] = dict(box=box(300, top, 1068, 70), bar=box(608, top, 160, 24), figure=box(776, top, 584, 24), opaque=True)
+    return dict(list=box(300, 100, 1068, 800), heads=heads, rows=rows, overflow=[], desktop=True)
 
 
 @pytest.mark.parametrize("mutation, finding", [
@@ -689,11 +656,9 @@ def funding_geometry():
     ("hairline", "hairline/control"),
     ("no-hairline", "hairline/control"),
     ("transparent-hairline", "hairline/control"),
-    ("empty-height", "not one line high"),
-    ("amount-wrap", "amount must be one line"),
-    ("qualifier-wrap", "qualifier must fit within 1 line"),
-    ("qualifier-overflow", "qualifier must fit within 1 line"),
-    ("row-lines", "exceeds two text lines"),
+    ("empty-height", "exceeds two lines"),
+    ("amount-wrap", "each be one line"),
+    ("qualifier-wrap", "each be one line"),
     ("transparent", "opaque ground"),
     ("short-head", "full list"),
     ("unequal-bars", "bar tracks differ"),
@@ -702,7 +667,7 @@ def funding_geometry():
 def test_funding_geometry_rejects_screenshot_defects(funding_geometry, mutation, finding):
     got = funding_geometry
     assert check_page.funding_layout_errors(got) == []
-    row, measure = got["rows"][1], got["rows"][1]["measures"][1]  # last row and Staff must be checked too
+    row, measure = got["rows"][1], got["rows"][1]["measures"][0]  # last row and Staff must be checked too
     if mutation == "bar-left":
         measure["bar"]["left"] += 56
     elif mutation == "figure-left":
@@ -718,15 +683,11 @@ def test_funding_geometry_rejects_screenshot_defects(funding_geometry, mutation,
     elif mutation == "amount-wrap":
         measure["amountLines"] = 2
     elif mutation == "qualifier-wrap":
-        measure["qualifierLines"] = 2
-    elif mutation == "qualifier-overflow":
-        measure["qualifierOverflow"] = True
-    elif mutation == "row-lines":
-        row["lineCount"] = 3
+        measure["qualifierLines"] = 4
     elif mutation == "transparent":
-        got["opaque"] = False
+        got["heads"]["staff"]["opaque"] = False
     elif mutation == "short-head":
-        got["head"]["right"] -= 8
+        got["heads"]["staff"]["box"]["right"] -= 8
     elif mutation == "unequal-bars":
         measure["bar"]["width"] = 96
     elif mutation == "detail-width":
@@ -760,39 +721,32 @@ def test_joined_funding_panel_keeps_the_full_width_control_without_a_divider(fun
     assert any('hairline/control' in e for e in check_page.funding_layout_errors(funding_geometry))
 
 
-@pytest.mark.parametrize("mutation, finding", [(None, None), ("label-above", "label is not"), ("label-wide", "label is not"), ("bar-below", "bar is not"), ("label-shift", "fixed columns"), ("missing-height", "missing measure"), ("scroll", "sideways"), ("budget-two-lines", None), ("budget-three-lines", "qualifier must fit within 2 line"), ("staff-two-lines", "qualifier must fit within 1 line")])
-def test_phone_funding_label_column_and_empty_measure(funding_geometry, mutation, finding):
+@pytest.mark.parametrize("mutation, finding", [(None, None), ("qualifier-wrap", "within two lines"), ("unequal-bars", "bar tracks differ"), ("scroll", "sideways")])
+def test_phone_funding_allows_two_line_qualifiers_and_keeps_equal_tracks(funding_geometry, mutation, finding):
     got = funding_geometry
-    got.update(desktop=False, fits=False)
-    for row in got["rows"]:
-        row["identity"]["bottom"] = 200
-        for k, m in enumerate(row["measures"]):
-            m.update(missing=False, charted=True)
-            top = 200+k*48
-            m["box"].update(top=top, bottom=top+48, height=48)
-            m["figure"].update(left=434, top=top+12)
-            m["bar"].update(left=378, width=48, top=top+18, bottom=top+30)
-            m["label"] = dict(left=322, right=370, width=48, top=top+14, bottom=top+34)
-    m = got["rows"][1]["measures"][1]
-    if mutation == "label-above":
-        m["label"].update(top=200, bottom=220)
-    elif mutation == "label-wide":
-        m["label"]["right"] = 500
-    elif mutation == "bar-below":
-        m["bar"].update(top=300, bottom=312)
-    elif mutation == "label-shift":
-        m["label"]["left"] += 4
-    elif mutation == "missing-height":
-        m["missing"] = True
-        m["box"]["height"] += 24
+    got["desktop"] = False
+    measure = got["rows"][1]["measures"][0]
+    measure["qualifierLines"] = 2
+    if mutation == "qualifier-wrap":
+        measure["qualifierLines"] = 3
+    elif mutation == "unequal-bars":
+        measure["bar"]["width"] += 8
     elif mutation == "scroll":
         got["overflow"].append("sideways Funding scroll")
-    elif mutation in ("budget-two-lines", "budget-three-lines"):
-        got["rows"][1]["measures"][0]["qualifierLines"] = 2 if mutation == "budget-two-lines" else 3
-    elif mutation == "staff-two-lines":
-        m["qualifierLines"] = 2
     errors = check_page.funding_layout_errors(got)
     assert any(finding in e for e in errors) if finding else errors == []
+
+
+@pytest.mark.parametrize("width", [320, 390, 1000, 1440])
+def test_every_budget_row_must_keep_its_commitment_visible(funding_geometry, width):
+    got = funding_geometry
+    got["desktop"] = width >= 1000
+    second = copy.deepcopy(got["rows"][0])
+    second["key"] = "budget:second"
+    got["rows"].append(second)
+    assert check_page.funding_layout_errors(got) == []
+    second["measures"][0]["commitmentVisible"] = False
+    assert check_page.funding_layout_errors(got) == ["budget:second: Budget qualifier must show its commitment word without clipping"]
 
 
 def test_funding_overflow_measures_text_even_when_its_parent_fits():
@@ -815,122 +769,9 @@ assert.deepEqual(inspect().overflow,[]);
 textRight=410;assert.ok(inspect().overflow.some(e=>e.includes('text: descendant crosses')));
 textRight=300;child.getClientRects=()=>[{...bounds,left:10}];assert.ok(inspect().overflow.some(e=>e.includes('descendant crosses')));
 child.getClientRects=()=>[bounds];section.scrollWidth=420;section.clientWidth=350;assert.ok(inspect().overflow.some(e=>e.includes('sideways')));
-for(color of ['transparent','rgba(232, 227, 221, 0)','color(srgb 1 1 1 / 0.5)']) assert.equal(inspect().opaque,false);
+for(color of ['transparent','rgba(232, 227, 221, 0)','color(srgb 1 1 1 / 0.5)']) assert.equal(inspect().heads.staff.opaque,false);
 """.replace("INSPECT", check_page.FUNDING_LAYOUT_JS)
     subprocess.run(["node", "-"], input=script, text=True, capture_output=True, check=True)
-
-
-@pytest.mark.parametrize("mutation, finding", [(None, None), ("two-lines", "one text line"), ("summary-wrap", "summary must occupy one line"), ("show-missing", "compact unpublished summary"), ("hide-published", "published measure is hidden")])
-def test_phone_unpublished_rows_are_one_line_and_have_no_empty_measure_cells(funding_geometry, mutation, finding):
-    got = funding_geometry
-    got.update(desktop=False, fits=False)
-    for row in got["rows"]:
-        row.update(unpublished=dict(row["identity"]), unpublishedLines=1)
-        for measure in row["measures"]:
-            measure["visible"] = False
-    row = got["rows"][-1]
-    if mutation == "two-lines":
-        row["lineCount"] = 2
-    elif mutation == "summary-wrap":
-        row["unpublishedLines"] = 2
-    elif mutation == "show-missing":
-        row["measures"][0]["visible"] = True
-    elif mutation == "hide-published":
-        row["measures"][0]["missing"] = False
-    errors = check_page.funding_layout_errors(got)
-    assert any(finding in e for e in errors) if finding else errors == []
-
-
-def test_phone_enlarged_text_keeps_content_without_forcing_one_line(funding_geometry):
-    got = funding_geometry
-    got.update(desktop=False, fits=False, ordinaryText=False)
-    for row in got["rows"]:
-        row.update(unpublished=dict(row["identity"]), unpublishedLines=1, lineCount=2)
-        for measure in row["measures"]:
-            measure["visible"] = False
-    assert check_page.funding_layout_errors(got) == []
-    got["overflow"].append("sideways Funding scroll")
-    assert check_page.funding_layout_errors(got) == ["sideways Funding scroll"]
-
-
-@pytest.mark.parametrize('content_width, valid', [(280, True), (279, True), (281, False)])
-def test_narrowest_phone_allows_unpublished_text_below_name_without_allowing_overflow(funding_geometry, content_width, valid):
-    got = funding_geometry
-    got.update(desktop=False, fits=False)
-    got['list']['width'] = content_width
-    for row in got['rows']:
-        row.update(unpublished=dict(row['identity']), unpublishedLines=1, lineCount=2)
-        for measure in row['measures']:
-            measure['visible'] = False
-    assert (check_page.funding_layout_errors(got) == []) == valid
-    got['overflow'].append('sideways Funding scroll')
-    assert 'sideways Funding scroll' in check_page.funding_layout_errors(got)
-
-
-@pytest.fixture
-def funding_qualifiers_case():
-    institute = {"id": "xx", "funding": [{"id": "f1", "commitment": "announced", "period": "2026-27 to 2029-30", "annual_period": {"start": "2026-04-01", "end": "2030-03-31"}, "display": {"qualifiers": ["a year", "average over period", "2026-27 to 2029-30", "announced", "our estimate", "press report"]}}]}
-    row = BeautifulSoup('''<li data-funding-id="f1"><div class="fund-budget"><span class="bar-value"></span><div class="fund-value"><strong>EUR 1.0m</strong><span class="fund-qualifier" data-full-text='["a year", "2026-27 to 2029-30", "announced"]'><span class="fund-qualifier-part" data-required="true">a year</span><span class="fund-qualifier-part"> · 2026-27 to 2029-30</span><span class="fund-qualifier-part" data-required="true"> · announced</span></span><span class="cites">1</span></div></div><details><div class="fund-budget-summary"><p class="fund-comparison" data-budget-summary="f1"><span class="budget-amount">EUR 1.0m (USD 1.1m)</span><span class="qualifiers"><span class="meta-item">a year · average over period · 2026-27 to 2029-30 · announced · our estimate · press report</span><span class="meta-item"><abbr class="per-person">EUR 1.0 per resident (2025)</abbr></span></span></p></div></details></li>''', "html.parser").li
-    return row, institute
-
-
-@pytest.mark.parametrize("mutation,finding", [(None, None), ("priority", "qualifier priority"), ("period-drop", None), ("unit-drop", "keeping a year and commitment"), ("status-drop", "keeping a year and commitment"), ("line-drop", "keeping a year and commitment"), ("required-status", "keeping a year and commitment"), ("wrong-period-form", "qualifier priority"), ("partial-part", "complete period"), ("citation", "outside removable"), ("record-period", "full Budget qualifiers"), ("record-estimate", "full Budget qualifiers"), ("record-grade", "full Budget qualifiers"), ("summary-id", "selected Budget summary"), ("resident-order", "per-resident must be the last")])
-def test_compact_qualifiers_keep_priority_and_full_record_context(funding_qualifiers_case, mutation, finding):
-    row, institute = funding_qualifiers_case
-    parts = row.select(".fund-qualifier-part")
-    if mutation == "priority":
-        row.select_one(".fund-qualifier")["data-full-text"] = '["announced", "a year", "2026-27 to 2029-30"]'
-    elif mutation == "period-drop":
-        parts[1]["hidden"] = ""
-    elif mutation == "unit-drop":
-        parts[0]["hidden"] = ""
-    elif mutation == "status-drop":
-        parts[-1]["hidden"] = ""
-    elif mutation == "line-drop":
-        row.select_one(".fund-qualifier")["hidden"] = ""
-    elif mutation == "required-status":
-        del parts[-1]["data-required"]
-    elif mutation == "wrong-period-form":
-        parts[1].string = " · 2026/27–2029/30"
-        row.select_one(".fund-qualifier")["data-full-text"] = '["a year", "2026/27–2029/30", "announced"]'
-    elif mutation == "partial-part":
-        parts[1].string = " · 2026"
-    elif mutation == "citation":
-        parts[0].append(row.select_one(".cites").extract())
-    elif mutation and mutation.startswith("record-"):
-        phrase = {"record-period": "average over period", "record-estimate": "our estimate", "record-grade": "press report"}[mutation]
-        item = row.select_one(".fund-comparison .meta-item")
-        item.string = item.get_text().replace(phrase, "")
-    elif mutation == "summary-id":
-        row.select_one('[data-budget-summary]')["data-budget-summary"] = "other"
-    elif mutation == "resident-order":
-        row.select_one(".fund-comparison .qualifiers").insert(0, row.select_one(".per-person").parent.extract())
-    errors = check_page.funding_qualifier_errors(row, institute)
-    assert any(finding in e for e in errors) if finding else errors == []
-
-
-@pytest.mark.parametrize("word", ["adopted", "announced"])
-@pytest.mark.parametrize("mutation", [None, "hidden", "missing", "wrong-word"])
-def test_compared_commitment_check_requires_visible_matching_words(word, mutation):
-    class Status:
-        def filter(self, *, has_text):
-            self.matches = bool(has_text.fullmatch(" · " + ("proposed" if mutation == "wrong-word" else word)))
-            return self
-
-        def count(self):
-            return int(self.matches and mutation != "missing")
-
-        def is_visible(self):
-            return mutation != "hidden"
-
-    class Page:
-        def locator(self, selector):
-            assert selector == '.fund-item[data-institute="xx"] > .fund-budget .fund-qualifier-part'
-            return Status()
-
-    data = {"institutes": [{"id": "xx", "jurisdiction_id": "XX", "funding": [{"id": "f1", "commitment": word}]}]}
-    errors = check_page.check_funding_commitments(Page(), data, {"XX": "f1"})
-    assert bool(errors) == (mutation is not None)
 
 
 def test_definition_link_allows_rewording_but_requires_one_reachable_target():
@@ -1336,7 +1177,7 @@ def test_budget_oracle_rejects_wrong_id_and_missing_value_structure():
     data = {"jurisdictions": [{"id": "JP", "status": "established"}], "institutes": [{"id": "jp-aisi", "jurisdiction_id": "JP", "funding": []}]}
     identity = "funding-7d0b36a48cc65315865a6d6ec83ddeb6"
     value = f'<span class="budget-value" data-funding-id="{identity}"><span class="budget-amount">~EUR 52m (JPY 8.8bn)</span><span class="budget-qualifiers">one-off · FY2025 supplementary · adopted</span></span>'
-    html = f'<article class="card" data-j="JP"><div class="row" data-track="9"><div class="k">Budget</div><div class="v">{value}</div></div></article><table><tbody id="world-rows"><tr data-j="JP"><td data-col="budget">{value}</td></tr></tbody></table><div id="fund-rows"><li class="fund-item fund-nobar" data-j="JP" data-institute="jp-aisi"><div class="fund-budget"><div class="fund-value"><span class="fund-note" data-funding-id="{identity}">One-off amount, in the records</span></div></div><div data-record="funding" data-record-id="{identity}">{value}</div></li></div>'
+    html = f'<article class="card" data-j="JP"><div class="row" data-track="9"><div class="k">Budget</div><div class="v">{value}</div></div></article><table><tbody id="world-rows"><tr data-j="JP"><td data-col="budget">{value}</td></tr></tbody></table><div id="fund-rows"><div class="fund-list" data-kind="budget"><div class="fund-other-line"><button class="fund-inline" data-institute="jp-aisi" data-funding-id="{identity}">Japan: one-off amount, in the records</button></div></div></div>'
     assert check_page.check_budget_output(html, data) == []
     assert any("wrong funding ID" in error for error in check_page.check_budget_output(html.replace(identity, "older-record"), data))
     assert any("separate amount and qualifiers" in error for error in check_page.check_budget_output(html.replace("budget-qualifiers", "removed"), data))
@@ -1349,14 +1190,14 @@ def test_budget_oracle_covers_institutes_before_establishment():
     identity = check_page.EXPECTED_BUDGET_IDS["no-ki-norge"]
     data = {"jurisdictions": [{"id": "NO", "status": "proposed"}], "institutes": [{"id": "no-ki-norge", "jurisdiction_id": "NO", "funding": []}]}
     value = f'<span class="budget-value" data-funding-id="{identity}"><span class="budget-amount">~NOK 45m</span><span class="budget-qualifiers">a year · 2027 budget proposal</span></span>'
-    html = f'<article class="card" data-j="NO"><div class="row" data-track="9"><div class="k">Budget</div><div class="v">{value}</div></div></article><table><tbody id="world-rows"><tr data-j="NO"><td data-col="budget">{value}</td></tr></tbody></table><div id="fund-rows"><li class="fund-item fund-nobar" data-j="NO" data-institute="no-ki-norge"><div class="fund-budget"><div class="fund-value"><span class="fund-note" data-funding-id="{identity}">Proposal, in the records</span></div></div><div data-record="funding" data-record-id="{identity}">{value}</div></li></div>'
+    html = f'<article class="card" data-j="NO"><div class="row" data-track="9"><div class="k">Budget</div><div class="v">{value}</div></div></article><table><tbody id="world-rows"><tr data-j="NO"><td data-col="budget">{value}</td></tr></tbody></table><div id="fund-rows"><div class="fund-list" data-kind="budget"><div class="fund-other-line"><button class="fund-inline" data-institute="no-ki-norge" data-funding-id="{identity}">Norway: proposal, in the records</button></div></div></div>'
     assert check_page.check_budget_output(html, data) == []
     missing = html.replace(value, '<span class="missing">Not published</span>')
     assert any("wrong funding ID" in error for error in check_page.check_budget_output(missing, data))
     assert any("separate amount and qualifiers" in error for error in check_page.check_budget_output(html.replace("budget-amount", "removed"), data))
 
 
-def test_funding_band_order_is_budget_first_with_state_and_institute_ties(monkeypatch):
+def test_funding_charts_rank_their_own_figure_with_state_and_institute_ties(monkeypatch):
     monkeypatch.setattr(check_page, "EXPECTED_FUNDING_IDS", {"AA": "annual-a", "ZZ": "annual-z", "PP": "annual-p"})
     monkeypatch.setattr(check_page, "EXPECTED_BUDGET_IDS", {"aa": "annual-a", "zz": "annual-z", "pp": "annual-p", "own": "one-off", "proposed": "proposal"})
     data = {
@@ -1367,7 +1208,7 @@ def test_funding_band_order_is_budget_first_with_state_and_institute_ties(monkey
                                       ("PP", "Pending", "planned"), ("NN", "New", "proposed"), ("MM", "Missing", "exploring"))
         ],
         "institutes": [
-            {"id": "missing-b", "jurisdiction_id": "BB", "staff": [{"total": 900}]},
+            {"id": "missing-b", "jurisdiction_id": "BB", "staff": [{"total": 900, "as_of": "2026"}]},
             {"id": "missing-a", "jurisdiction_id": "BB"},
             {"id": "own", "jurisdiction_id": "OO"},
             {"id": "aa", "jurisdiction_id": "AA", "funding": [{"id": "annual-a", "eur_per_year_est": 10}]},
@@ -1378,11 +1219,11 @@ def test_funding_band_order_is_budget_first_with_state_and_institute_ties(monkey
         ],
     }
     assert check_page.expected_funding_rows(data) == {
-        "established": ["zz", "aa", "own", "missing-a", "missing-b"],
-        "not-established": ["pp", "proposed", "unpublished"],
+        "budget": ["pp", "zz", "aa"],
+        "staff": ["missing-b"],
     }
     next(i for i in data["institutes"] if i["id"] == "aa")["funding"][0]["eur_per_year_est"] = 20
-    assert check_page.expected_funding_rows(data)["established"] == ["aa", "zz", "own", "missing-a", "missing-b"]
+    assert check_page.expected_funding_rows(data)["budget"] == ["pp", "aa", "zz"]
     # A technical count or total does not promote an institute into the own-funding group.
     assert check_page.funding_groups(data) == ({"AA", "ZZ", "PP"}, {"OO", "NN"}, {"BB", "MM"})
 
@@ -1393,27 +1234,24 @@ def funding_rows_case():
         "dataset": {"as_of": "2026-11-19"},
         "jurisdictions": [{"id": "XX", "name": "Example", "status": "established"}, {"id": "YY", "name": "Pending", "status": "proposed"}],
         "institutes": [
-            {"id": "xx", "jurisdiction_id": "XX", "staff": [{"id": "xx-total", "total": 140, "total_qualifier": "at_least", "as_of": "2026-10"}], "display": {"staff_records": {}}},
+            {"id": "xx", "jurisdiction_id": "XX", "staff": [{"total": 140, "total_qualifier": "at_least", "as_of": "2026-10"}], "display": {"staff_records": {}}},
             {"id": "yy", "jurisdiction_id": "YY", "staff": [], "display": {"staff_records": {}}},
         ],
     }
 
-    def row(iid, jid, staff):
-        unpublished = "Budget not published" if iid == "xx" else "Budget and staff not published"
-        record = '<p data-record="staff" data-record-id="xx-total">140 · at least · as of Oct 2026</p>' if iid == "xx" else ""
-        return (f'<li class="fund-item fund-nobar" data-j="{jid}" data-institute="{iid}">'
-                f'<button class="fund-row" aria-label="Funding and staff records: {jid}" aria-expanded="false" aria-controls="records-{iid}"></button>'
-                f'<span class="fund-unpublished">{unpublished}</span>'
-                '<div class="fund-budget"><div class="fund-bar"></div><div class="fund-value"><span class="missing">Not published</span></div></div>'
-                f'<div class="fund-staff">{staff}</div>'
-                f'<details class="fund-detail" id="records-{iid}"><summary>Funding and staff records</summary>{record}</details></li>')
+    def opener(iid, cls="fund-inline"):
+        return f'<button class="{cls}" data-institute="{iid}" aria-label="Funding and staff records: {iid}" aria-expanded="false" aria-controls="records-{iid}">' + (iid if cls == "fund-inline" else "") + "</button>"
 
     html = ('<p id="fund-chart-h">Reference year 2026</p><div id="fund-rows">'
-            '<div class="fund-block" data-band="established"><h3>Established</h3><ul>'
-            + row("xx", "XX", '<div class="fund-bar"><span class="bar-value"></span></div><div class="fund-value"><strong>140+</strong><span class="fund-context fund-qualifier" data-full-text=\'["at least", "as at Oct\u00a02026"]\'><span class="fund-qualifier-part">at least</span><span class="fund-qualifier-part"> · as at Oct\u00a02026</span></span></div>')
-            + '</ul></div><div class="fund-block" data-band="not-established"><h3>Not yet established</h3><ul>'
-            + row("yy", "YY", '<div class="fund-bar"></div><div class="fund-value"><span class="missing">Not published</span></div>')
-            + '</ul></div></div><a id="funding-download" href="data/funding.csv" download data-tip="Staff records are in staff.csv">Funding CSV</a>')
+            '<div class="fund-list" data-kind="budget"><div class="fund-budget-head"><h3>Budget</h3></div><ul class="fund-chart-rows"></ul>'
+            '<div class="fund-other"></div><div class="fund-missing-line">Not published: ' + opener("xx") + ', ' + opener("yy") + '</div></div>'
+            '<div class="fund-list" data-kind="staff"><div class="fund-staff-head"><h3>Staff</h3></div><ul class="fund-chart-rows">'
+            '<li class="fund-item" data-j="XX" data-institute="xx">' + opener("xx", "fund-row")
+            + '<div class="fund-measure fund-staff"><div class="fund-bar"><span class="bar-value"></span></div><div class="fund-value"><strong>140+</strong>'
+            + '<span class="fund-context fund-qualifier" data-parts=\'["at least", "as at Oct 2026"]\'>at least · as at Oct 2026</span></div></div></li></ul>'
+            '<div class="fund-other"></div><div class="fund-missing-line">Not published: ' + opener("yy") + '</div></div>'
+            '<div id="fund-records">' + ''.join(f'<details class="fund-detail" data-institute="{iid}" id="records-{iid}"><summary>Funding and staff records</summary></details>' for iid in ("xx", "yy"))
+            + '</div></div><a id="funding-download" href="data/funding.csv" download data-tip="Staff records are in staff.csv">Funding CSV</a>')
     return BeautifulSoup(html, "html.parser"), data
 
 
@@ -1422,112 +1260,95 @@ def test_funding_rows_cover_every_institute_and_keep_dated_staff(funding_rows_ca
     assert check_page.check_funding_outside(str(soup), data) == []
 
 
-@pytest.mark.parametrize('funding, reason', [
-    ({'currency': 'EUR', 'kind': 'one_off'}, 'One-off amount'),
-    ({'currency': 'KES', 'kind': 'one_off'}, 'No euro rate'),
-    ({'currency': 'EUR', 'commitment': 'proposed'}, 'Proposal'),
+@pytest.mark.parametrize("commitment", ["adopted", "announced"])
+@pytest.mark.parametrize("shown,valid", [
+    ("a year · 2026-27 to 2029-30 · {commitment}", True),
+    ("a year · {commitment}", True),
+    ("a year · 2026-27 to 2029-30", False),
+    ("a year", False),
+    ("{commitment}", False),
+    ("a year · proposed", False),
 ])
-def test_funding_record_wording_survives_citation_glue_in_both_measures(funding_rows_case, monkeypatch, funding, reason):
+def test_budget_qualifier_cannot_drop_or_change_its_commitment(funding_rows_case, monkeypatch, commitment, shown, valid):
     soup, data = funding_rows_case
-    institute = next(i for i in data['institutes'] if i['id'] == 'yy')
-    institute['funding'] = [dict(funding, id='own')]
-    institute['staff'] = [{'id': 'technical', 'technical': 24}]
-    monkeypatch.setattr(check_page, 'EXPECTED_BUDGET_IDS', {'yy': 'own'})
-    row = soup.select_one('[data-institute="yy"]')
-    row.select_one('.fund-unpublished').decompose()
-    for measure, label, attribute in (
-        ('budget', reason, 'data-funding-id="own"'),
-        ('staff', 'Technical count', 'data-record-id="technical"'),
-    ):
-        # Range.extractContents splits the note around its last word and preserves the attributes in both fragments.
-        value = f'<div class="fund-value"><span class="fund-note" {attribute}>{label}, in the </span><span class="cite-glue"><span class="fund-note" {attribute}>records</span><span class="cites"><a class="cn">1</a></span></span></div>'
-        row.select_one(f'.fund-{measure} .fund-value').replace_with(BeautifulSoup(value, 'html.parser'))
-    assert check_page.check_funding_outside(str(soup), data) == []
-    row.select_one('.fund-budget .cite-glue .fund-note').string = 'details'
-    assert any('uncharted Budget must explain' in e for e in check_page.check_funding_outside(str(soup), data))
-    row.select_one('.fund-staff .cite-glue .fund-note').string = 'details'
-    assert any('uncharted Staff must name' in e for e in check_page.check_funding_outside(str(soup), data))
+    monkeypatch.setitem(check_page.EXPECTED_FUNDING_IDS, "XX", "budget")
+    data["institutes"][0]["funding"] = [{"id": "budget", "eur_per_year_est": 100, "commitment": commitment}]
+    chart = soup.select_one('.fund-list[data-kind="budget"]')
+    chart.select_one('.fund-inline[data-institute="xx"]').decompose()
+    row = copy.deepcopy(soup.select_one(".fund-item"))
+    row["data-funding-id"] = "budget"
+    row.select_one(".fund-measure")["class"] = "fund-measure fund-budget"
+    qualifier = row.select_one(".fund-qualifier")
+    qualifier["data-parts"] = json.dumps(["a year", "2026-27 to 2029-30", commitment])
+    qualifier.string = shown.format(commitment=commitment)
+    chart.select_one(".fund-chart-rows").append(row)
+    errors = check_page.check_funding_outside(str(soup), data)
+    assert (errors == []) is valid, errors
+    if not valid:
+        assert any("Budget qualifier" in error or "budget qualifier" in error for error in errors)
 
 
 @pytest.mark.parametrize("mutation, finding", [
-    ("duplicate", "each institute once"),
-    ("missing", "each institute once"),
-    ("band", "band membership/order"),
-    ("staff", "every row needs a Staff figure"),
-    ("staff-bar", "published dated total only"),
-    ("staff-date", "published dated total only"),
-    ("staff-bound", "must be stated in words"),
-    ("budget-number", "every printed budget figure must have a bar"),
-    ("staff-number", "every printed staff figure must have a bar"),
-    ("compact-summary", "compact unpublished summary"),
-    ("opener", "row opener"),
-    ("nested-link", "whole-row button contains"),
-    ("native-fold", "native Funding and staff records"),
-    ("download", "staff.csv guidance"),
-    ("empty-track", "both keep a shared bar track"),
+    ("duplicate", "each institute once"), ("missing", "each institute once"),
+    ("band", "without status bands"), ("staff", "every printed staff figure"),
+    ("staff-bar", "every printed staff figure"), ("staff-date", "published dated total only"),
+    ("staff-bound", "must be stated in words"), ("opener", "opener does not name"),
+    ("nested-link", "contains an interactive"), ("native-fold", "native Funding and staff records"),
+    ("download", "staff.csv guidance"), ("missing-list", "Not published list"),
+    ("partial-clause", "complete trailing clauses"), ("duplicate-records", "canonical records"),
 ])
 def test_funding_row_mutants_cannot_drop_coverage_or_qualifications(funding_rows_case, mutation, finding):
     soup, data = funding_rows_case
-    row = soup.select_one('[data-institute="xx"]')
+    row = soup.select_one(".fund-item")
     if mutation == "duplicate":
         row.insert_after(BeautifulSoup(str(row), "html.parser"))
     elif mutation == "missing":
         row.decompose()
     elif mutation == "band":
-        soup.select_one('[data-band="not-established"] > ul').append(row.extract())
+        row["data-band"] = "established"
     elif mutation == "staff":
-        row.select_one(".fund-staff .fund-value").decompose()
+        row.select_one(".fund-value").decompose()
     elif mutation == "staff-bar":
-        row.select_one(".fund-staff .bar-value").decompose()
+        row.select_one(".bar-value").decompose()
     elif mutation == "staff-date":
         data["institutes"][0]["staff"][0].pop("as_of")
     elif mutation == "staff-bound":
-        row.select_one('[data-record="staff"]').string = "140 · as of Oct 2026"
-    elif mutation == "budget-number":
-        row.select_one(".fund-budget .fund-value").append(BeautifulSoup('<strong>EUR 1.0m</strong>', "html.parser"))
-    elif mutation == "staff-number":
-        soup.select_one('[data-institute="yy"] .fund-staff .fund-value').append(BeautifulSoup('<strong>25</strong>', "html.parser"))
-    elif mutation == "compact-summary":
-        row.select_one(".fund-unpublished").decompose()
+        row.select_one(".fund-context")["data-parts"] = '["as at Oct 2026"]'
     elif mutation == "opener":
         row.select_one(".fund-row")["aria-controls"] = "absent"
     elif mutation == "nested-link":
         row.select_one(".fund-row").append(BeautifulSoup('<a href="#source">Source</a>', "html.parser"))
     elif mutation == "native-fold":
-        row.select_one("summary").string = ""
+        soup.select_one(".fund-detail summary").string = ""
     elif mutation == "download":
         soup.select_one("#funding-download")["data-tip"] = "Download records"
-    elif mutation == "empty-track":
-        soup.select_one('[data-institute="yy"] .fund-staff .fund-bar').decompose()
+    elif mutation == "missing-list":
+        soup.select_one('.fund-list[data-kind="budget"] .fund-missing-line .fund-inline').extract()
+    elif mutation == "partial-clause":
+        row.select_one(".fund-context").string = "at least · as at"
+    elif mutation == "duplicate-records":
+        detail = soup.select_one(".fund-detail")
+        detail.insert_after(BeautifulSoup(str(detail), "html.parser"))
     assert any(finding in error for error in check_page.check_funding_outside(str(soup), data))
 
 
 @pytest.mark.parametrize("record, text", [
-    ({"technical": 12, "as_of": "2026-10"}, "Technical count, in the records"),
-    ({"description": "Target of 100 staff", "as_of": "2026-10"}, "Target, in the records"),
-    ({"description": "Between 20 and 30 staff", "as_of": "2026-10"}, "Planned range, in the records"),
+    ({"technical": 12, "as_of": "2026-10"}, "technical staff, in the records"),
+    ({"target": 100, "as_of": "2026-10"}, "staff target, in the records"),
+    ({"description": "Between 20 and 30 staff", "as_of": "2026-10"}, "planned range, in the records"),
 ])
 def test_technical_counts_targets_and_ranges_keep_words_without_a_staff_bar(funding_rows_case, record, text):
     soup, data = funding_rows_case
-    institute = data["institutes"][1]
-    record["id"] = "record"
-    institute["staff"] = [record]
-    institute["display"] = {"staff": "record", "staff_records": {"record": record}}
-    cell = soup.select_one('[data-institute="yy"] .fund-staff .fund-value')
-    cell.clear()
-    cell.append(BeautifulSoup(f'<span class="fund-note" data-record-id="record">{text}</span><span class="cites"><a class="cn">1</a></span>', "html.parser"))
-    soup.select_one('[data-institute="yy"] .fund-unpublished').string = "Budget not published"
-    description = record.get("description", "12 technical")
-    soup.select_one('[data-institute="yy"] .fund-detail').append(BeautifulSoup(f'<p data-record="staff" data-record-id="record">{description}<span class="fund-context">as of Oct\u00a02026</span><span class="cites"><a class="cn">1</a></span></p>', "html.parser"))
+    data["institutes"][1]["staff"] = [record]
+    chart = soup.select_one('.fund-list[data-kind="staff"]')
+    button = chart.select_one('.fund-inline[data-institute="yy"]').extract()
+    button.string = "Pending: " + text
+    line = soup.new_tag("div", attrs={"class": "fund-other-line"})
+    line.append(button)
+    chart.select_one(".fund-other").append(line)
     assert check_page.check_funding_outside(str(soup), data) == []
-    numeric = copy.deepcopy(soup)
-    numeric.select_one('[data-institute="yy"] .fund-staff .fund-note').string = record.get("description", "12 technical")
-    assert any("uncharted staff must use words" in error for error in check_page.check_funding_outside(str(numeric), data))
-    missing = copy.deepcopy(soup)
-    missing.select_one('[data-institute="yy"] .fund-staff .fund-note').replace_with(BeautifulSoup('<span class="missing">Not published</span>', "html.parser"))
-    assert any("uncharted Staff must name" in error for error in check_page.check_funding_outside(str(missing), data))
-    soup.select_one('[data-institute="yy"] .fund-staff .fund-bar').append(BeautifulSoup('<span class="bar-value"></span>', "html.parser"))
-    assert any("published dated total only" in error for error in check_page.check_funding_outside(str(soup), data))
+    button.string = "Pending: 100 people, in the records"
+    assert any("unscaled amounts must use words" in error for error in check_page.check_funding_outside(str(soup), data))
 
 
 def test_setup_groups_cover_institutes_before_establishment():
@@ -1628,7 +1449,7 @@ def _names_html(gb="AI Security Institute (United Kingdom)", gb_short="UK AISI",
     def card(jid, name):
         return f'<article class="card" id="c-{jid.lower()}"><div class="row" data-track="2"><div class="k">Institute</div><div class="v">{name}</div></div></article>'
     def funding(jid, iid, short, name):
-        return f'<li class="fund-item" data-j="{jid}" data-institute="{iid}"><div class="fund-identity"><span class="smark"></span><span class="fund-institute"><abbr class="g" data-exp="{name}" tabindex="0">{short}</abbr></span></div><details class="fund-detail"><summary><span class="fund-head-name">{name}</span></summary></details></li>'
+        return f'<li class="fund-item" data-j="{jid}" data-institute="{iid}"><div class="fund-identity"><span class="smark"></span><span class="fund-institute"><abbr class="g" data-exp="{name}" tabindex="0">{short}</abbr></span></div><details class="fund-detail" data-institute="{iid}"><summary><span class="fund-head-name">{name}</span></summary></details></li>'
     def row(jid, short, full):
         return f'<tr data-j="{jid}"><td data-col="inst"><abbr class="g" data-exp="{full}">{short}</abbr></td></tr>'
     def region(jid, short, full):
@@ -2351,7 +2172,7 @@ def test_source_alignment_rejects_zero_comparable_rows(alignment_case):
 def test_source_alignment_unknown_figures_need_missing_marks(alignment_case):
     soup, data = alignment_case
     data['institutes'] = [{'id': 'xx', 'jurisdiction_id': 'XX', 'status': 'planned', 'display': {'budget': None, 'staff': None}}]
-    soup.append(BeautifulSoup('<ul id="fund-rows"><li class="fund-item" data-j="XX" data-institute="xx"><details class="fund-detail"><summary>Funding and staff records</summary></details></li></ul><span class="missing" data-tip="Unknown">Not published</span>', 'html.parser'))
+    soup.append(BeautifulSoup('<div id="fund-rows"><div id="fund-records"><details class="fund-detail" data-j="XX" data-institute="xx"><summary>Funding and staff records</summary></details></div></div><span class="missing" data-tip="Unknown">Not published</span>', 'html.parser'))
     assert check_page.check_source_alignment(str(soup), data) == []
     soup.select_one('.missing:not(.na)').decompose()
     assert 'source_alignment: .missing:not(.na) matched 0' in check_page.blocking(check_page.check_source_alignment(str(soup), data))
@@ -3329,6 +3150,30 @@ def test_euro_amounts_follow_the_rate_and_cite_it():
     assert any("does not lead with its euro figure" in e for e in check_page.check_euro_amounts(good.replace('<span class="related-funding-eur">~EUR 52m</span>: ', ""), data))
 
 
+def test_annual_budget_summary_keeps_the_source_record_separate_and_cites_both_sources():
+    record = {"id": "multi-year", "currency": "USD", "amount": 120_000_000, "years": 4,
+              "annual_amount": 30_000_000, "annual_basis_code": "period_mean", "citations": {"amount": ["amount-source"]}}
+    data = {"dataset": {"exchange_rates": [{"currency": "USD", "eur_per_unit": 0.9, "source_ids": ["rate-source"]}]},
+            "institutes": [{"id": "institute", "display": {"comparison_funding": "multi-year"}, "funding": [record]}]}
+    good = '''<details class="fund-detail" data-institute="institute"><div class="fund-budget-summary" data-source-funding-id="multi-year">
+      <div class="fund-value"><strong>~EUR 27m (USD 30m)</strong><span class="qualifiers">a year · average over period
+      <a class="cn" data-source-id="amount-source">1</a><a class="cn" data-source-id="rate-source">2</a></span></div></div>
+      <div class="funding-record" data-record-id="multi-year"><p class="funding-native"><span class="budget-amount">~EUR 110m (USD 120m)</span>
+      <a class="cn" data-source-id="amount-source">1</a><a class="cn" data-source-id="rate-source">2</a></p></div></details>'''
+    assert check_page.check_euro_amounts(good, data) == []
+    for changed in (
+        good.replace('data-source-funding-id="multi-year"', ''),
+        good.replace('data-source-funding-id="multi-year"', 'data-source-funding-id="wrong"'),
+        good.replace('data-source-funding-id=', 'data-record-id='),
+        good.replace('data-source-funding-id=', 'data-funding-id='),
+        good.replace('~EUR 27m (USD 30m)', '~EUR 110m (USD 120m)'),
+        good.replace('<strong>~EUR 27m (USD 30m)</strong>', ''),
+        good.replace('<a class="cn" data-source-id="amount-source">1</a>', '', 1),
+        good.replace('<a class="cn" data-source-id="rate-source">2</a>', '', 1),
+    ):
+        assert any("annual budget summary" in e for e in check_page.check_euro_amounts(changed, data))
+
+
 def test_gate_jobs_default_follows_the_host_setting(monkeypatch):
     """AISI_GATE_JOBS where set; else the CPUs, at most 8 and at most what the memory holds at 4 GiB a job."""
     monkeypatch.setattr(check_page.os, "cpu_count", lambda: 16)
@@ -3733,7 +3578,7 @@ def test_each_moved_content_family_has_one_home(monkeypatch):
 
 
 def test_staff_totals_come_from_the_reviewed_fixture_not_the_producer():
-    row = '<div id="fund-rows"><li class="fund-item" data-j="AU" data-institute="au-aisi"><div class="fund-staff"><span class="fund-value"><strong>25</strong></span></div><details class="fund-detail"><summary>Funding and staff records</summary><div class="fund-staff-summary"><span class="fund-value"><strong>25</strong></span></div></details></li></div>'
+    row = '<div id="fund-rows"><div class="fund-list" data-kind="staff"><li class="fund-item" data-j="AU" data-institute="au-aisi"><div class="fund-staff"><span class="fund-value"><strong>25</strong></span></div><details class="fund-detail" data-institute="au-aisi"><summary>Funding and staff records</summary><div class="fund-staff-summary"><span class="fund-value"><strong>25</strong></span></div></details></li></div>'
     soup = BeautifulSoup(row, "html.parser")
     entry = {"institute_id": "au-aisi", "as_of": "2026-09-18", "total": 25, "total_qualifier": "exact"}
     data = {"institutes": [{"id": "au-aisi", "jurisdiction_id": "AU", "staff": [{"total": 25, "total_qualifier": "exact", "as_of": "2026-09-18"}],

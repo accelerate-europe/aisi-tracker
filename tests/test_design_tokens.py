@@ -71,6 +71,7 @@ def test_geometry_exceptions_have_reasons_and_cannot_spread():
     "@media (height <= 640px)",
     "@media (640px < width < 900px)",
     "@container funding (width < 47rem)",
+    "@container funding (width < 60rem)",
     "@container other (width < 48rem)",
     "@container funding (width < calc(47rem))",
     "@container funding (width < calc(48rem))",
@@ -90,9 +91,8 @@ def test_unlisted_or_inconsistent_breakpoint_mutations_block(query):
 
 
 def test_funding_container_boundary_accepts_only_its_recorded_rem_width():
-    assert check_css_tokens(mutate_css("@container funding (width <= 17.5rem) { .mutant { display: block; } }")) == []
-    for boundary in ("< 17.5rem", "<= 17.4rem", "<= 17.6rem", "< 60rem"):
-        assert any("unlisted breakpoint" in e for e in check_css_tokens(mutate_css(f"@container funding (width {boundary}) {{ .mutant {{ display: block; }} }}")))
+    assert check_css_tokens(mutate_css("@container funding (width < 40rem) { .mutant { display: block; } }")) == []
+    assert any("unlisted breakpoint" in e for e in check_css_tokens(mutate_css("@container funding (width < 36.5rem) { .mutant { display: block; } }")))
 
 
 def test_declarations_before_a_nested_rule_are_not_skipped():
