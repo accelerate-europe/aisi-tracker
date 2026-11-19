@@ -11440,6 +11440,42 @@ def claim_quote_fixture(data: dict) -> tuple[dict, list[str]]:
     return fixture, [status["id"], migrated["id"]]
 
 
+def multiline_quotes(data: dict) -> list[dict]:
+    return [dict(span, key=f"{source['id']}/{i}/{n}")
+            for source in data['sources'] for i, excerpt in enumerate(source.get('excerpts', []))
+            for n, span in enumerate([excerpt, *excerpt.get('anchors', [])])
+            if any(re.search(r'[\r\n]', span.get(field, '')) for field in ('text', 'gloss'))]
+
+
+QUOTE_BREAKS_JS = r"""spans => {
+  const errors=[], host=document.createElement('div');host.className='quote-body';document.body.appendChild(host);
+  for(const span of spans) {
+    const quote=window.quoteNode(span.text,span.gloss), expected='"'+(span.gloss || span.text)+'"';host.appendChild(quote);
+    const shown=quote.querySelector('.quote-text'), breaks=[...shown.querySelectorAll('br')];
+    if(shown.textContent!==expected) errors.push(span.key+': stored quote text changed');
+    if(breaks.length!==(expected.match(/\r\n|\r|\n/g)||[]).length) errors.push(span.key+': a stored line break was lost');
+    // Check real glyph positions on each side of every break, including statutory list items.
+    for(const br of breaks) {
+      let before=br.previousSibling, after=br.nextSibling;
+      while(before && (before.nodeType!==Node.TEXT_NODE || !before.textContent.trim())) before=before.previousSibling;
+      while(after && (after.nodeType!==Node.TEXT_NODE || !after.textContent.trim())) after=after.nextSibling;
+      if(!before || !after) continue;
+      const a=document.createRange(), b=document.createRange();
+      const end=before.textContent.trimEnd().length, start=after.textContent.search(/\S/);
+      a.setStart(before,end-1);a.setEnd(before,end);b.setStart(after,start);b.setEnd(after,start+1);
+      if(b.getBoundingClientRect().top<=a.getBoundingClientRect().top+1) errors.push(span.key+': words on either side of a stored break share a line');
+    }
+    if(span.gloss && /[\r\n]/.test(span.text)) {
+      shown.focus({preventScroll:true});
+      const tip=document.getElementById('tip');
+      if(!tip || tip.hidden || tip.textContent!==span.text || getComputedStyle(tip).whiteSpace!=='pre-line') errors.push(span.key+': original-language tip loses line breaks');
+    }
+    quote.remove();
+  }
+  host.remove();return errors;
+}"""
+
+
 def check_claim_quotes(browser, base_url: str, data: dict) -> list[str]:
     """Open every disclosure on selected real cards and fixture cards, with keyboard and touch originals."""
     from summaries import LANGUAGE_NAMES
@@ -11461,6 +11497,11 @@ def check_claim_quotes(browser, base_url: str, data: dict) -> list[str]:
                 hydrated(page, base_url)
                 if payload is fixture:
                     errors.extend(check_claim_cards(page.content(), fixture))
+                else:
+                    spans = multiline_quotes(data)
+                    if not spans:
+                        errors.append('no multiline quotation or anchor to check')
+                    errors.extend(page.evaluate(QUOTE_BREAKS_JS, spans))
                 for jid in ids:
                     card = page.locator(f"#c-{jid.lower()}")
                     card.evaluate("n => { if (n.tagName === 'DETAILS') n.open = true; n.querySelectorAll('details.more').forEach(d => d.open = true); }")

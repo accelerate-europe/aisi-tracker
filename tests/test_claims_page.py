@@ -2,6 +2,7 @@
 
 import copy
 import json
+import re
 from pathlib import Path
 import subprocess
 
@@ -55,6 +56,28 @@ def test_quote_rule_translation_original_and_focus(gloss):
         assert english["tabIndex"] == 0
     else:
         assert english["attrs"] == {}
+
+
+@pytest.mark.parametrize('text, gloss', [('has\ninitiated13', None), ('projects.\nwhich', None),
+    ('(AISI)\nhave', None), ('1. First task\n2. Second task\n(a) Third task', None),
+    ('Original\nquotation', 'Translated\r\nquotation')])
+def test_quote_renderer_keeps_word_boundaries_and_statutory_lines(text, gloss):
+    quote = page_call(f'window.quoteNode({json.dumps(text)}, {json.dumps(gloss)})')
+    shown = quote['children'][0]
+    assert texts(shown) == '"' + (gloss or text) + '"'
+    assert sum(child.get('tag') == 'br' for child in shown['children']) == len(re.findall(r'\r\n|\r|\n', gloss or text))
+
+
+def test_every_stored_multiline_excerpt_gloss_and_anchor_keeps_its_breaks():
+    data = json.loads((PAGE.parent.parent / 'data/aisi.json').read_text())
+    spans = check_page.multiline_quotes(data)
+    assert spans
+    quotes = page_call(f'{json.dumps(spans)}.map(s=>window.quoteNode(s.text,s.gloss))')
+    for span, quote in zip(spans, quotes, strict=True):
+        shown = quote['children'][0]
+        expected = span.get('gloss') or span['text']
+        assert texts(shown) == '"' + expected + '"', span['key']
+        assert sum(child.get('tag') == 'br' for child in shown['children']) == len(re.findall(r'\r\n|\r|\n', expected)), span['key']
 
 
 def test_quote_label_names_plain_languages_once():

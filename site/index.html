@@ -45,6 +45,7 @@
  * Sticky reading heads: at every width, grouped Functions and every table head stay directly below the real navigation and group row bottom, including sideways-scrolling tables. Overflowing tables move their real head within the table, preserving column alignment and semantics. At every width, a long detail's compact identity and sole close × stay within that detail at the same top, replacing a table head while reading it. Closed mini cards keep the country and first finding sentence; open ones show the country in their sticky summary and the complete finding once beneath it. Funding's native fallback keeps "Funding and staff records" when closed; its open sticky summary shows the institute, with the records beneath it. Both folds have a separate close × alongside the summary; the open summary spans the row to paint behind that close. Full States cards keep their sticky title. Close has at least a 44px square hit area and returns focus to the visible opener. Focus and anchor clearance includes the active head for grouped rows, functions, claims and their links; print keeps heads static (check_page check_functions_views, check_functions_phone, check_wide_layout, check_card_heads).
  * Reading-head spacing: grouped, grid, world and Funding heads, card, panel, mini-card and Funding-detail headers, and record titles all keep --reading-pad inside their moving head. The first text line has the same inset below the navigation's bottom rule when stuck as it has below its head's top in flow, within 1px (check_page reading_head_errors, check_card_heads).
  * Close glyph: every closeButton draws the same light cross in a .8em square, relative to the header's label size, with .06em strokes. Its glyph box must be at least .75 times that type size and its target remains at least 44px (check_page check_close_controls).
+ * Quotation lines: quoteNode keeps every stored line break as an explicit break, including in translated quotations and anchors; numbered and lettered items therefore retain their source lines. Original-language quote tooltips preserve line breaks too (check_page check_claim_quotes).
  * Inline emphasis: inherit the paragraph's size and family, at most medium weight; no run-in heading role.
  * Sources: a collapsed card ends with the counted sources control alone (muted meta, no top rule, inline hit height); a card reached from the map also ends with "Back to map" before its Sources control; the check date and correction follow the expanded list.
  * Separators: each item of a dot-separated line is one unbreakable box, so lines break only between items (an item wraps inside only when it alone is wider than its container); middle dots stay with the preceding item's final word and are hidden where a line breaks.
@@ -404,6 +405,7 @@ abbr.g { display: inline; text-decoration: underline dotted var(--muted); text-u
 abbr.g.val { text-decoration: none; } /* a value with a tooltip (confidence, interval, per resident, a median ceiling, a developer, a provision): tooltip and focus, no dotted mark; the mark is for abbreviations and terms (owner, 5 Nov 2026) */
 
 #tip .tip-sub { display: block; margin-top: var(--sp-1); color: var(--muted); }
+#tip.quote-tip { white-space: pre-line; }
 #tip { font: var(--type-meta); position: fixed; z-index: 50; max-width: min(var(--tooltip-width), calc(100vw - var(--sp-7))); max-height: calc(100vh - var(--sp-7)); overflow: auto; background: var(--paper); color: var(--ink); border: var(--rule) solid var(--line); padding: var(--sp-1) var(--sp-2); border-radius: var(--r-sm); box-shadow: var(--shadow-pop); }
 
 /* Status symbols and map */
@@ -1504,6 +1506,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       tip.addEventListener("mouseenter", function () { clearTimeout(tipTimer); });
       tip.addEventListener("mouseleave", function (e) { if (!(e.relatedTarget && tipFor && tipFor.contains(e.relatedTarget))) hideTipSoon(); }); }
     clearTimeout(tipTimer); tipFor = ab; tipFromFocus = !!fromFocus; tipY = window.scrollY; tip.textContent = tipText(ab); tip.hidden = false;
+    tip.className = ab.matches('.quote-text') ? 'quote-tip' : '';
     var originalLink = ab.matches("a.original-text[href]"), tipLink = ab.matches("a[data-tip-link][href]");
     if (ab.dataset.tipSub || originalLink || tipLink) { // explanatory links keep their destination in the touch tip
       var parts = ab.dataset.tipSub ? ab.dataset.tipSub.split(" · ") : [tipLink ? ab.dataset.tipLink : hostOf(ab.href)], sub = el("span", "tip-sub"), external = "tipExt" in ab.dataset || originalLink;
@@ -1867,7 +1870,12 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   // The line under a quote says where its context sits in the source (owner, 18 Nov 2026, "say where it is").
   var ANCHOR_LABELS = { heading: "Under the heading", definition: "Earlier in the source:", provision: "In the provision", membership: "On what it is part of:" };
   function quoteNode(text, gloss) {
-    var box = el("span", "quotation"), quote = el("span", "quote-text", '"' + (gloss || text) + '"');
+    var box = el("span", "quotation"), quote = el("span", "quote-text");
+    // Keep the text itself verbatim for copying and citations; explicit breaks also survive normal inline whitespace rules.
+    ('"' + (gloss || text) + '"').split(/(\r\n|\r|\n)/).forEach(function (part) {
+      quote.appendChild(document.createTextNode(part));
+      if (/^[\r\n]+$/.test(part)) quote.appendChild(el("br"));
+    });
     if (gloss) { quote.setAttribute("aria-description", text); quote.tabIndex = 0; }
     box.appendChild(quote);
     return box;
