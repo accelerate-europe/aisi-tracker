@@ -637,7 +637,9 @@ def test_funding_large_text_route_keeps_scale_and_guard(monkeypatch, apply_style
 
     class Browser:
         def new_page(self, **kwargs):
-            return Page()
+            page = Page()
+            page.width = kwargs["viewport"]["width"]
+            return page
 
     def navigate(page, url):
         # Playwright supplies (route, request), truncating to the callback's positional arity.
@@ -651,7 +653,13 @@ def test_funding_large_text_route_keeps_scale_and_guard(monkeypatch, apply_style
     monkeypatch.setattr(check_page, "hydrated", navigate)
     monkeypatch.setattr(check_page, "set_theme", lambda *args: None)
     monkeypatch.setattr(check_page, "check_funding_layout_states", lambda page: [])
-    errors = check_page.check_funding_large_text(Browser(), "https://example.test/")
+    commitments_checked = []
+    monkeypatch.setattr(check_page, "check_funding_commitments", lambda page, data: commitments_checked.append((page.width, data)) or [])
+    data = {"institutes": []}
+    errors = check_page.check_funding_large_text(Browser(), "https://example.test/", data)
+    assert len(commitments_checked) == 22  # all widths/scales in both themes
+    assert {320, 390, 1000, 1440} <= {width for width, _ in commitments_checked}
+    assert all(checked is data for _, checked in commitments_checked)
     if apply_style:
         assert errors == []
     else:
@@ -683,8 +691,8 @@ def funding_geometry():
     ("transparent-hairline", "hairline/control"),
     ("empty-height", "not one line high"),
     ("amount-wrap", "amount must be one line"),
-    ("qualifier-wrap", "qualifier must never wrap"),
-    ("qualifier-overflow", "qualifier must never wrap"),
+    ("qualifier-wrap", "qualifier must fit within 1 line"),
+    ("qualifier-overflow", "qualifier must fit within 1 line"),
     ("row-lines", "exceeds two text lines"),
     ("transparent", "opaque ground"),
     ("short-head", "full list"),
@@ -752,7 +760,7 @@ def test_joined_funding_panel_keeps_the_full_width_control_without_a_divider(fun
     assert any('hairline/control' in e for e in check_page.funding_layout_errors(funding_geometry))
 
 
-@pytest.mark.parametrize("mutation, finding", [(None, None), ("label-above", "label is not"), ("label-wide", "label is not"), ("bar-below", "bar is not"), ("label-shift", "fixed columns"), ("missing-height", "missing measure"), ("scroll", "sideways")])
+@pytest.mark.parametrize("mutation, finding", [(None, None), ("label-above", "label is not"), ("label-wide", "label is not"), ("bar-below", "bar is not"), ("label-shift", "fixed columns"), ("missing-height", "missing measure"), ("scroll", "sideways"), ("budget-two-lines", None), ("budget-three-lines", "qualifier must fit within 2 line"), ("staff-two-lines", "qualifier must fit within 1 line")])
 def test_phone_funding_label_column_and_empty_measure(funding_geometry, mutation, finding):
     got = funding_geometry
     got.update(desktop=False, fits=False)
@@ -779,6 +787,10 @@ def test_phone_funding_label_column_and_empty_measure(funding_geometry, mutation
         m["box"]["height"] += 24
     elif mutation == "scroll":
         got["overflow"].append("sideways Funding scroll")
+    elif mutation in ("budget-two-lines", "budget-three-lines"):
+        got["rows"][1]["measures"][0]["qualifierLines"] = 2 if mutation == "budget-two-lines" else 3
+    elif mutation == "staff-two-lines":
+        m["qualifierLines"] = 2
     errors = check_page.funding_layout_errors(got)
     assert any(finding in e for e in errors) if finding else errors == []
 
@@ -855,50 +867,70 @@ def test_narrowest_phone_allows_unpublished_text_below_name_without_allowing_ove
     assert 'sideways Funding scroll' in check_page.funding_layout_errors(got)
 
 
-@pytest.mark.parametrize("start,end,want", [
-    ("2026-01-01", "2026-12-31", "2026"),
-    ("2026-01-01", "2028-12-31", "2026–2028"),
-    ("2025-10-01", "2026-09-30", "FY2026"),
-    ("2025-10-01", "2028-09-30", "FY2026–2028"),
-    ("2026-04-01", "2027-03-31", "2026/27"),
-    ("2026-04-01", "2029-03-31", "2026/27–2028/29"),
-    ("2026-07-01", "2027-06-30", "2026/27"),
-    ("2026-02-01", "2026-11-30", "2026"),
-    ("2026-02-01", "2027-11-30", "2026–2027"),
-])
-def test_compact_budget_period_preserves_calendar_and_financial_years(start, end, want):
-    assert check_page.compact_funding_period({"annual_period": {"start": start, "end": end}}) == want
-
-
 @pytest.fixture
 def funding_qualifiers_case():
-    institute = {"id": "xx", "funding": [{"id": "f1", "commitment": "announced", "annual_period": {"start": "2026-01-01", "end": "2027-12-31"}, "display": {"qualifiers": ["a year", "average over period", "2026 to 2027", "announced", "our estimate", "press report"]}}]}
-    row = BeautifulSoup('''<li data-funding-id="f1"><div class="fund-budget"><span class="bar-value"></span><div class="fund-value"><strong>EUR 1.0m</strong><span class="fund-qualifier" data-full-text='["a year", "2026–2027", "announced"]'><span class="fund-qualifier-part">a year</span><span class="fund-qualifier-part"> · 2026–2027</span><span class="fund-qualifier-part" hidden> · announced</span></span><span class="cites">1</span></div></div><details><div data-record="funding" data-record-id="f1"><p class="fund-comparison"><span class="budget-amount">EUR 1.0m (USD 1.1m)</span><span class="qualifiers"><span class="meta-item">a year · average over period · 2026 to 2027 · announced · our estimate · press report</span><span class="meta-item"><abbr class="per-person">EUR 1.0 per resident (2025)</abbr></span></span></p></div></details></li>''', "html.parser").li
+    institute = {"id": "xx", "funding": [{"id": "f1", "commitment": "announced", "period": "2026-27 to 2029-30", "annual_period": {"start": "2026-04-01", "end": "2030-03-31"}, "display": {"qualifiers": ["a year", "average over period", "2026-27 to 2029-30", "announced", "our estimate", "press report"]}}]}
+    row = BeautifulSoup('''<li data-funding-id="f1"><div class="fund-budget"><span class="bar-value"></span><div class="fund-value"><strong>EUR 1.0m</strong><span class="fund-qualifier" data-full-text='["a year", "2026-27 to 2029-30", "announced"]'><span class="fund-qualifier-part" data-required="true">a year</span><span class="fund-qualifier-part"> · 2026-27 to 2029-30</span><span class="fund-qualifier-part" data-required="true"> · announced</span></span><span class="cites">1</span></div></div><details><div class="fund-budget-summary"><p class="fund-comparison" data-budget-summary="f1"><span class="budget-amount">EUR 1.0m (USD 1.1m)</span><span class="qualifiers"><span class="meta-item">a year · average over period · 2026-27 to 2029-30 · announced · our estimate · press report</span><span class="meta-item"><abbr class="per-person">EUR 1.0 per resident (2025)</abbr></span></span></p></div></details></li>''', "html.parser").li
     return row, institute
 
 
-@pytest.mark.parametrize("mutation,finding", [(None, None), ("priority", "qualifier priority"), ("middle-drop", "trailing complete parts"), ("partial-part", "trailing complete parts"), ("citation", "outside removable"), ("record-period", "full Budget qualifiers"), ("record-estimate", "full Budget qualifiers"), ("record-grade", "full Budget qualifiers"), ("record-id", "selected funding record"), ("resident-order", "per-resident must be the last")])
+@pytest.mark.parametrize("mutation,finding", [(None, None), ("priority", "qualifier priority"), ("period-drop", None), ("unit-drop", "keeping a year and commitment"), ("status-drop", "keeping a year and commitment"), ("line-drop", "keeping a year and commitment"), ("required-status", "keeping a year and commitment"), ("wrong-period-form", "qualifier priority"), ("partial-part", "complete period"), ("citation", "outside removable"), ("record-period", "full Budget qualifiers"), ("record-estimate", "full Budget qualifiers"), ("record-grade", "full Budget qualifiers"), ("summary-id", "selected Budget summary"), ("resident-order", "per-resident must be the last")])
 def test_compact_qualifiers_keep_priority_and_full_record_context(funding_qualifiers_case, mutation, finding):
     row, institute = funding_qualifiers_case
     parts = row.select(".fund-qualifier-part")
     if mutation == "priority":
-        row.select_one(".fund-qualifier")["data-full-text"] = '["announced", "a year", "2026–2027"]'
-    elif mutation == "middle-drop":
+        row.select_one(".fund-qualifier")["data-full-text"] = '["announced", "a year", "2026-27 to 2029-30"]'
+    elif mutation == "period-drop":
+        parts[1]["hidden"] = ""
+    elif mutation == "unit-drop":
         parts[0]["hidden"] = ""
+    elif mutation == "status-drop":
+        parts[-1]["hidden"] = ""
+    elif mutation == "line-drop":
+        row.select_one(".fund-qualifier")["hidden"] = ""
+    elif mutation == "required-status":
+        del parts[-1]["data-required"]
+    elif mutation == "wrong-period-form":
+        parts[1].string = " · 2026/27–2029/30"
+        row.select_one(".fund-qualifier")["data-full-text"] = '["a year", "2026/27–2029/30", "announced"]'
     elif mutation == "partial-part":
         parts[1].string = " · 2026"
     elif mutation == "citation":
         parts[0].append(row.select_one(".cites").extract())
-    elif mutation and mutation.startswith("record-") and mutation != "record-id":
+    elif mutation and mutation.startswith("record-"):
         phrase = {"record-period": "average over period", "record-estimate": "our estimate", "record-grade": "press report"}[mutation]
         item = row.select_one(".fund-comparison .meta-item")
         item.string = item.get_text().replace(phrase, "")
-    elif mutation == "record-id":
-        row.select_one('[data-record="funding"]')["data-record-id"] = "other"
+    elif mutation == "summary-id":
+        row.select_one('[data-budget-summary]')["data-budget-summary"] = "other"
     elif mutation == "resident-order":
         row.select_one(".fund-comparison .qualifiers").insert(0, row.select_one(".per-person").parent.extract())
     errors = check_page.funding_qualifier_errors(row, institute)
     assert any(finding in e for e in errors) if finding else errors == []
+
+
+@pytest.mark.parametrize("word", ["adopted", "announced"])
+@pytest.mark.parametrize("mutation", [None, "hidden", "missing", "wrong-word"])
+def test_compared_commitment_check_requires_visible_matching_words(word, mutation):
+    class Status:
+        def filter(self, *, has_text):
+            self.matches = bool(has_text.fullmatch(" · " + ("proposed" if mutation == "wrong-word" else word)))
+            return self
+
+        def count(self):
+            return int(self.matches and mutation != "missing")
+
+        def is_visible(self):
+            return mutation != "hidden"
+
+    class Page:
+        def locator(self, selector):
+            assert selector == '.fund-item[data-institute="xx"] > .fund-budget .fund-qualifier-part'
+            return Status()
+
+    data = {"institutes": [{"id": "xx", "jurisdiction_id": "XX", "funding": [{"id": "f1", "commitment": word}]}]}
+    errors = check_page.check_funding_commitments(Page(), data, {"XX": "f1"})
+    assert bool(errors) == (mutation is not None)
 
 
 def test_definition_link_allows_rewording_but_requires_one_reachable_target():

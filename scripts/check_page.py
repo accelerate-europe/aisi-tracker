@@ -2804,7 +2804,7 @@ def expected_annual_amount(record, data):
         return amount * Decimal(str(rates[record["currency"]]))
 
 
-def expected_annual_funding_value(record, data):
+def expected_annual_funding_value(record, data, *, native=False):
     amount = expected_annual_amount(record, data)
     text = expected_native_funding_value(
         {**record, "amount": amount, "currency": "EUR"}
@@ -2815,6 +2815,10 @@ def expected_annual_funding_value(record, data):
         and "~EUR" not in text
     ):
         text = text.replace("EUR", "~EUR")
+    if native and record["currency"] != "EUR":
+        stated = expected_annual_native(record)
+        kept = half_up_two(stated, record.get("amount_qualifier"))
+        text += f" ({'~' if kept != stated else ''}{record['currency']} {short_amount(kept)})"
     return text
 
 
@@ -3484,7 +3488,7 @@ def check_funding_key(page) -> list[str]:
 
 
 def check_per_person(soup, data: dict) -> list[str]:
-    """The selected funding record keeps the charted budget's per-resident figure, population year and caveat."""
+    """The Budget summary keeps the charted budget's per-resident figure, population year and caveat."""
     errors, jurisdictions = [], {j["id"]: j for j in data["jurisdictions"]}
     for node in soup.select('.fund-item, .fund-item *'):
         if any("per person" in str(value).lower() for value in [*node.attrs.values(), *node.find_all(string=True, recursive=False)]):
@@ -3497,7 +3501,7 @@ def check_per_person(soup, data: dict) -> list[str]:
     for inst in data["institutes"]:
         jurisdiction = jurisdictions[inst["jurisdiction_id"]]
         record = inst["display"]["funding_records"].get(inst["display"].get("comparison_funding") or "")
-        row = fund_items.one(jurisdiction["id"], f'[data-record="funding"][data-record-id="{record["id"]}"] .fund-comparison') if record else None
+        row = fund_items.one(jurisdiction["id"], f'[data-budget-summary="{record["id"]}"]') if record else None
         node = row.select_one(".qualifiers .per-person") if row else None
         want = expected_budget_ratios(record, jurisdiction, data)[2] if record and jurisdiction["kind"] == "state" and record.get("eur_per_year_est") is not None else None
         if want:
@@ -8808,23 +8812,45 @@ def check_no_rate_amounts(html, data: dict) -> list[str]:
     return errors
 
 
-def check_euro_amounts(html, data: dict) -> list[str]:
+def check_euro_amounts(html, data: dict, expected_ids=None) -> list[str]:
     """Every shown amount in a currency with an ECB rate is also in euros, "~EUR 52m (JPY 8.8bn)", and its value cites
     the rate's source beside the amount's own (rule currency-rounding); a compared figure keeps its annual label."""
     soup = BeautifulSoup(html, "html.parser")
     errors = []
+    expected_ids = EXPECTED_FUNDING_IDS if expected_ids is None else expected_ids
+
+    def check_figure(figure, expected, wanted_sources, identity, value):
+        if figure is None or figure.get_text(strip=True) != expected:
+            shown = figure.get_text(strip=True) if figure else None
+            errors.append(f"{identity}: amount shown as {shown!r}, expected {expected!r}")
+        cited = {a.get("data-source-id") for a in value.select(".cn")} if value else set()
+        if not set(wanted_sources) <= cited:
+            errors.append(f"{identity}: euro figure {expected!r} does not cite the amount and exchange-rate sources")
+
     for institute in data["institutes"]:
-        compared = institute.get("display", {}).get("comparison_funding")
+        compared = expected_ids.get(institute.get("jurisdiction_id"))
+        summaries = soup.select(f'.fund-item[data-institute="{institute["id"]}"] [data-budget-summary]')
+        if [s.get("data-budget-summary") for s in summaries] != ([compared] if compared else []):
+            errors.append(f"{institute['id']}: expected exactly one Budget summary for {compared!r}" if compared else f"{institute['id']}: unexpected Budget summary")
+        for summary in summaries:
+            if summary.has_attr("data-record-id") or summary.has_attr("data-record") or summary.find_parent(attrs={"data-record-id": True}) or summary.select_one("[data-record-id]"):
+                errors.append(f"{institute['id']}: Budget summary must be separate from funding records")
+            record = next((r for r in institute.get("funding", []) if r["id"] == compared), None)
+            if record:
+                sources = citation_fields(record, ["amount", "currency", "amount_qualifier", "annual_amount"]) + rate_sources(record, data)
+                check_figure(summary.select_one(".budget-amount"), expected_annual_funding_value(record, data, native=True), sources, f"{compared} Budget summary", summary)
         for record in institute.get("funding", []) or []:
             identity, wanted_sources = record["id"], rate_sources(record, data)
-            if not wanted_sources:
+            if record.get("amount") is None or not record.get("currency"):
                 continue
+            wanted_sources += citation_fields(record, ["amount", "currency", "amount_qualifier"])
             expected = expected_shown_funding_value(record, data)
             figures = soup.select(f'.funding-record[data-record-id="{identity}"] .budget-amount, .related-funding-item[data-funding-id="{identity}"] .related-funding-eur')
             if identity != compared:
                 figures += soup.select(f'.budget-value[data-funding-id="{identity}"] .budget-amount')
             native = re.compile(rf"\b{re.escape(record['currency'])} \d")
-            for line in soup.select(f'.related-funding-item[data-funding-id="{identity}"]'):
+            related = soup.select(f'.related-funding-item[data-funding-id="{identity}"]') if ecb_rate(record, data) else []
+            for line in related:
                 if line.select_one(".related-funding-eur") is None:
                     errors.append(f"{identity}: related funding does not lead with its euro figure: {line.get_text(strip=True)!r}")
                 # The stated amount is always on the line, in the bracket or in the source wording (rule currency-rounding).
@@ -8834,12 +8860,8 @@ def check_euro_amounts(html, data: dict) -> list[str]:
                 after = figure.next_sibling
                 # Related funding whose source wording states the native amount: the euro figure alone, without its bracket (rule 8).
                 want = re.sub(r" \([^()]*\)$", "", expected) if "related-funding-eur" in figure.get("class", []) and isinstance(after, str) and after.startswith(": ") and native.search(after) else expected
-                if figure.get_text(strip=True) != want:
-                    errors.append(f"{identity}: amount shown as {figure.get_text(strip=True)!r}, expected {want!r}")
                 value = figure.find_parent(lambda n: n.name == "td" or bool(set(n.get("class", [])) & {"v", "fund-value", "funding-native", "related-funding-item"}))
-                cited = {a.get("data-source-id") for a in value.select(".cn")} if value else set()
-                if not set(wanted_sources) <= cited:
-                    errors.append(f"{identity}: euro figure {expected!r} does not cite the amount and exchange-rate sources")
+                check_figure(figure, want, wanted_sources, identity, value)
     return errors
 
 
@@ -10486,26 +10508,8 @@ def expected_funding_rows(data: dict) -> dict[str, list[str]]:
     return {band: [iid for _, iid in sorted(rows)] for band, rows in groups.items()}
 
 
-def compact_funding_period(record: dict) -> str | None:
-    """Short annual-period label, checked independently from the page's text formatter."""
-    period = record.get("annual_period") or {}
-    start, end = period.get("start"), period.get("end")
-    if not start or not end:
-        return None
-    first, last = start[:4], end[:4]
-    if start.endswith("-01-01") and end.endswith("-12-31"):
-        return first if first == last else first + "–" + last
-    if start.endswith("-10-01") and end.endswith("-09-30"):
-        return "FY" + last if int(last) == int(first) + 1 else "FY" + str(int(first) + 1) + "–" + last
-    if (start[5:], end[5:]) not in (("04-01", "03-31"), ("07-01", "06-30")):
-        return first if first == last else first + "–" + last
-    if int(last) == int(first) + 1:
-        return first + "/" + last[2:]
-    return first + "/" + str(int(first) + 1)[2:] + "–" + str(int(last) - 1) + "/" + last[2:]
-
-
 def funding_qualifier_errors(row, institute: dict) -> list[str]:
-    """The row keeps only ordered short qualifiers; each complete comparison remains in its own record."""
+    """The row shares its record's formatted period and always keeps the Budget commitment."""
     errors, iid = [], institute["id"]
     for kind in ("budget", "staff"):
         measure = row.select_one(f".fund-{kind}")
@@ -10516,17 +10520,20 @@ def funding_qualifier_errors(row, institute: dict) -> list[str]:
             record = next((r for r in institute.get("funding", []) if r["id"] == selected), None)
             if not record:
                 continue  # The record-selection checks report this separately.
-            wanted = ["a year", compact_funding_period(record), record.get("commitment")]
-            comparison = row.select_one(f'[data-record="funding"][data-record-id="{selected}"] .fund-comparison')
-            text = " ".join(comparison.get_text(" ").split()) if comparison else ""
             full = record.get("display", {}).get("qualifiers", [])
+            periods = [part for part in full if (part.endswith(" allocation") if record.get("annual_basis_code") == "allocation_current_year" else part == record.get("period") and part not in ("a year", "a financial year"))]
+            if len(periods) > 1:
+                errors.append(f"{iid}: Budget record must have at most one formatted period")
+            wanted = ["a year", *periods, record.get("commitment")]
+            comparison = row.select_one(f'[data-budget-summary="{selected}"]')
+            text = " ".join(comparison.get_text(" ").split()) if comparison else ""
             if not comparison or any(" ".join(part.split()) not in text for part in full):
-                errors.append(f"{iid}: full Budget qualifiers must remain in the selected funding record")
+                errors.append(f"{iid}: full Budget qualifiers must remain in the selected Budget summary")
             if comparison and comparison.select_one(".per-person"):
                 qualifiers = comparison.select_one(".qualifiers")
                 last = qualifiers.select(".meta-item") if qualifiers else []
                 if last and not last[-1].select_one(".per-person"):
-                    errors.append(f"{iid}: per-resident must be the last qualifier in the selected funding record")
+                    errors.append(f"{iid}: per-resident must be the last qualifier in the selected Budget summary")
         else:
             record, _ = latest_staff_total(institute)
             if not record or not record.get("as_of"):
@@ -10546,8 +10553,17 @@ def funding_qualifier_errors(row, institute: dict) -> list[str]:
         text = [part.get_text().replace("\u00a0", " ") for part in parts]
         expected_text = [part if index == 0 else " · " + part for index, part in enumerate(wanted)]
         hidden = [part.has_attr("hidden") for part in parts]
-        if original != wanted or text != expected_text or hidden != sorted(hidden):
-            errors.append(f"{iid}: {kind} qualifier priority must be {wanted!r}, dropping only trailing complete parts")
+        if kind == "budget":
+            required = [index == 0 or part == record.get("commitment") for index, part in enumerate(wanted)]
+            invalid_drop = (len(hidden) != len(required) or any(hide and need for hide, need in zip(hidden, required))
+                            or [part.has_attr("data-required") for part in parts] != required
+                            or bool(qualifier and qualifier.has_attr("hidden")))
+            priority = "dropping only the complete period, keeping a year and commitment"
+        else:
+            invalid_drop = hidden != sorted(hidden)
+            priority = "dropping only trailing complete parts"
+        if original != wanted or text != expected_text or invalid_drop:
+            errors.append(f"{iid}: {kind} qualifier priority must be {wanted!r}, {priority}")
         if qualifier and qualifier.select(".cites, .cn"):
             errors.append(f"{iid}: {kind} citations must remain outside removable qualifier parts")
     return errors
@@ -10812,8 +10828,27 @@ def funding_bar_width_errors(samples: list[dict]) -> list[str]:
     return errors
 
 
-def check_funding_bars(page, data: dict, expected_ids=None) -> list[str]:
+def check_funding_commitments(page, data: dict, expected_ids=None) -> list[str]:
+    """Every compared row must show its record's commitment in words at the current width."""
+    expected_ids = EXPECTED_FUNDING_IDS if expected_ids is None else expected_ids
     errors = []
+    for institute in data["institutes"]:
+        selected = expected_ids.get(institute["jurisdiction_id"])
+        if not selected:
+            continue
+        record = next((r for r in institute.get("funding", []) if r["id"] == selected), None)
+        if record is None:
+            errors.append(f'{institute["id"]}: expected funding ID is absent')
+            continue
+        word = record["commitment"]
+        status = page.locator(f'.fund-item[data-institute="{institute["id"]}"] > .fund-budget .fund-qualifier-part').filter(has_text=re.compile(r"^\s*·\s*" + re.escape(word) + r"\s*$"))
+        if status.count() != 1 or not status.is_visible():
+            errors.append(f'{institute["id"]}: Budget qualifier must visibly show {word!r}')
+    return errors
+
+
+def check_funding_bars(page, data: dict, expected_ids=None) -> list[str]:
+    errors = check_funding_commitments(page, data, expected_ids)
     expected_ids = EXPECTED_FUNDING_IDS if expected_ids is None else expected_ids
     for institute in data["institutes"]:
         jid = institute["jurisdiction_id"]
@@ -10833,7 +10868,7 @@ def check_funding_bars(page, data: dict, expected_ids=None) -> list[str]:
         if row.get_attribute("data-funding-id") != funding["id"]:
             errors.append(f"{jid}: wrong comparison record")
         figure = row.locator(".fund-budget > .fund-value strong").inner_text()
-        full_figure = row.locator(f'[data-record="funding"][data-record-id="{funding["id"]}"] .fund-comparison .budget-amount')
+        full_figure = row.locator(f'[data-budget-summary="{funding["id"]}"] .budget-amount')
         full_text = full_figure.inner_text() if full_figure.count() == 1 else ""
         stated, currency = funding.get("annual_amount"), funding.get("currency")
         bracket = ""
@@ -10856,7 +10891,7 @@ def check_funding_bars(page, data: dict, expected_ids=None) -> list[str]:
         pending = row.locator(".fund-budget .bar-value.pending").count() == 1
         if pending != (funding["commitment"] != "adopted"):
             errors.append(f"{jid}: bar fill differs from commitment")
-        value_text = " ".join(row.locator(f'[data-record="funding"][data-record-id="{funding["id"]}"] .fund-comparison').inner_text().split())
+        value_text = " ".join(row.locator(f'[data-budget-summary="{funding["id"]}"]').inner_text().split())
         if ("average over period" in value_text) != (funding.get("annual_basis_code") == "period_mean"):
             errors.append(f"{jid}: period mean marker differs from data")
     budget_values = {
@@ -10967,7 +11002,9 @@ FUNDING_LAYOUT_JS = r"""() => {
   for(const n of [list,...list.querySelectorAll('*')]) {
     if(!visible(n)) continue;
     for(const r of n.getClientRects()) outside(r,n.className);
-    for(const text of n.childNodes) if(text.nodeType===Node.TEXT_NODE && text.textContent.trim()) {
+    // Text its own box clips with an ellipsis (a one-line header name) is cut where the box ends; the box itself is measured above.
+    const clipped=(()=>{const c=getComputedStyle(n);return c.textOverflow==='ellipsis' && c.overflowX!=='visible';})();
+    if(!clipped) for(const text of n.childNodes) if(text.nodeType===Node.TEXT_NODE && text.textContent.trim()) {
       const range=document.createRange();range.selectNodeContents(text);
       for(const r of range.getClientRects()) outside(r,n.className+' text');
     }
@@ -11069,8 +11106,11 @@ def funding_layout_errors(got: dict, closed: dict | None = None) -> list[str]:
                 errors.append(f"{key} {kind}: phone missing measure must use the compact unpublished summary")
             b, v, label = measure["bar"], measure["figure"], measure["label"]
             tracks.append(b["width"])
-            if ((got["desktop"] or got["ordinaryText"]) and measure["amountLines"] > 1) or measure["qualifierLines"] > 1 or measure["qualifierOverflow"]:
-                errors.append(f"{key} {kind}: amount must be one line and its qualifier must never wrap or overflow")
+            if (got["desktop"] or got["ordinaryText"]) and measure["amountLines"] > 1:
+                errors.append(f"{key} {kind}: amount must be one line")
+            qualifier_limit = 2 if kind == "budget" and not got["desktop"] else 1
+            if measure["qualifierLines"] > qualifier_limit or measure["qualifierOverflow"]:
+                errors.append(f"{key} {kind}: qualifier must fit within {qualifier_limit} line(s) without overflow")
             if got["desktop"]:
                 head = got["heads"][kind]
                 value_head = head["figure"] if measure["charted"] else head["bar"]
@@ -11149,7 +11189,7 @@ def check_funding_layout_states(page) -> list[str]:
     return errors
 
 
-def check_funding_large_text(browser, base_url: str) -> list[str]:
+def check_funding_large_text(browser, base_url: str, data: dict) -> list[str]:
     """Exercise shared tracks, row states and descendant bounds, including both phones at 110% text."""
     errors = []
     cases = [(width, scale) for width in (320, 390) for scale in (100, 110, 125)]
@@ -11165,6 +11205,7 @@ def check_funding_large_text(browser, base_url: str) -> list[str]:
         for theme in ("light", "dark"):
             set_theme(page, theme)
             errors += [f"{width}px, {theme}, text {scale}%: {e}" for e in check_funding_layout_states(page)]
+            errors += [f"{width}px, {theme}, text {scale}%: {e}" for e in check_funding_commitments(page, data)]
         page.close()
     return errors
 
@@ -15912,7 +15953,7 @@ def browser_jobs(dist: Path, data: dict, screenshots: Path | None) -> list[tuple
         ("interactions", check_tinted_rows, (screenshots,)),
         ("interactions", check_members, (data, screenshots)),
         ("interactions", check_funding_edges, (data,)),
-        ("interactions", check_funding_large_text, ()),
+        ("interactions", check_funding_large_text, (data,)),
         ("interactions", check_published_amount_fallback, (data,)),
         ("interactions", check_menu_touch, ()),
         ("interactions", check_arrival, ()),

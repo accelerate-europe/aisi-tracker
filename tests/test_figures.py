@@ -230,6 +230,12 @@ def test_funding_gate_approximation_marker_mutation(currency, amount, qualifier,
         def count(self):
             return int(self.soup is not None)
 
+        def filter(self, *, has_text):
+            return self if self.soup and has_text.search(self.inner_text()) else Node(None)
+
+        def is_visible(self):
+            return self.soup is not None and not self.soup.has_attr("hidden")
+
         def get_attribute(self, name):
             return self.soup.get(name)
 
@@ -242,7 +248,7 @@ def test_funding_gate_approximation_marker_mutation(currency, amount, qualifier,
                                                   "minimum": 0, "stated_value": record["eur_per_year_est"], "stated_scale": 10_000_000}]
 
     soup = BeautifulSoup('<div class="fund-budget-head"><span class="fund-scale">0 to EUR 10m</span></div><div class="fund-staff-head"><span class="fund-scale">0 to 50 people</span></div>'
-                         f'<div id="fund-rows"><li class="fund-item" data-j="A" data-institute="a" data-funding-id="x"><div class="fund-budget"><div class="fund-value"><span class="fund-figure"><strong>{figure}</strong></span></div><div class="bar-value"></div></div><details class="fund-detail"><div data-record="funding" data-record-id="x"><p class="fund-comparison"><span class="budget-amount">{figure}</span></p></div></details></li></div>', "html.parser")
+                         f'<div id="fund-rows"><li class="fund-item" data-j="A" data-institute="a" data-funding-id="x"><div class="fund-budget"><div class="fund-value"><span class="fund-figure"><strong>{figure}</strong></span><span class="fund-qualifier"><span class="fund-qualifier-part"> · adopted</span></span></div><div class="bar-value"></div></div><details class="fund-detail"><div class="fund-budget-summary"><p class="fund-comparison" data-budget-summary="x"><span class="budget-amount">{figure}</span></p></div></details></li></div>', "html.parser")
     record = {
         "id": "x",
         "currency": currency,
