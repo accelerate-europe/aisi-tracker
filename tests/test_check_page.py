@@ -20,6 +20,13 @@ def reading_head():
             "topmost": True, "name": "UK AISI", "closeWidth": 44, "closeHeight": 44}
 
 
+@pytest.mark.parametrize('change, valid', [({}, True), ({'height': 19.2}, False),
+    ({'stroke': 2}, False), ({'face': False}, False), ({'scale': False}, False), ({'hit': 12}, False)])
+def test_information_mark_has_text_proportions_without_losing_its_target(change, valid):
+    mark = dict(font=16, height=11.52, width=11.52, stroke=1, face=True, scale=True, hit=28, required=28)
+    assert (check_page.info_mark_errors([dict(mark, **change)]) == []) == valid
+
+
 def test_reading_head_accepts_a_compact_header_in_place_of_the_table_head(reading_head):
     assert check_page.reading_head_errors(reading_head, close=True) == []
     assert check_page.reading_head_errors(dict(reading_head, closeWidth=0), close=False) == []

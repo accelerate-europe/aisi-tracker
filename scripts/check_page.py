@@ -467,7 +467,32 @@ INFO_LINES_JS = "() => {" + REPORT_JS + """
 
 def check_info_lines(page, width: int) -> list[str]:
     """Supporting text: every visible (i) shares a line box with the last word of the heading or text before it."""
-    return [f"{width}px: {e}" for e in page.evaluate(INFO_LINES_JS)]
+    marks = page.evaluate("""() => [...document.querySelectorAll('.info')].filter(n=>n.checkVisibility({contentVisibilityAuto:true})).map(n=>{
+      const s=getComputedStyle(n), p=getComputedStyle(n.parentElement), ring=getComputedStyle(n,'::before');
+      const letter=n.querySelector('.info-letter'), l=letter && getComputedStyle(letter), r=n.getBoundingClientRect();
+      return {font:parseFloat(p.fontSize), height:parseFloat(ring.height), width:parseFloat(ring.width), stroke:parseFloat(ring.borderTopWidth),
+        face:!!l && l.fontFamily===p.fontFamily && l.fontStyle==='normal' && l.fontWeight==='400',
+        scale:!!l && Math.abs(parseFloat(l.fontSize)/parseFloat(p.fontSize)-.65)<.01,
+        hit:Math.min(r.width,r.height), required:parseFloat(s.height)};
+    })""")
+    return [f"{width}px: {e}" for e in page.evaluate(INFO_LINES_JS) + info_mark_errors(marks)]
+
+
+def info_mark_errors(marks: list[dict]) -> list[str]:
+    errors = []
+    if not marks:
+        return ['no information marks measured']
+    for mark in marks:
+        size = mark['font']
+        if not .68 <= mark['height'] / size <= .76 or abs(mark['width'] - mark['height']) > .1:
+            errors.append('information ring is not a .72em circle')
+        if not .04 <= mark['stroke'] / size <= .08:
+            errors.append('information ring stroke is outside .04 to .08em')
+        if not mark['face'] or not mark['scale']:
+            errors.append('information i does not use the surrounding face at .65em and regular weight')
+        if mark['hit'] < mark['required'] - 1:
+            errors.append('information mark lost its hit area')
+    return errors
 
 
 def check_legend_place(page, width: int) -> list[str]:
