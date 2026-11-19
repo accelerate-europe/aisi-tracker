@@ -3358,12 +3358,12 @@ def check_figures_row(soup, data: dict) -> list[str]:
 
 # Institutional set-up (decisions: copy from Bahadir's feedback): every institute by form (principle: Scope), host as the note.
 FORM_LABELS = {"unit_in_existing_body": "Unit in an existing body", "federation_of_existing_bodies": "Network of existing bodies", "university_centre": "University centre", "new_body": "New body"}
-FORM_UNKNOWN = "Form not published"
+FORM_UNKNOWN = "Legal form not published"
 PER_PERSON_TIP = "Annual budget divided by population. For scale only, since budgets cover different work and costs differ between states."
 
 
 def check_setup_groups(soup, data: dict) -> list[str]:
-    """Institutional set-up: heading, groups by form (larger first, Form not published last), members, marks, links, host notes and citations, from aisi.json."""
+    """Institutional set-up: heading, groups by form (larger first, Legal form not published last), members, marks, links, host notes and citations, from aisi.json."""
     errors, jurisdictions = [], {j["id"]: j for j in data["jurisdictions"]}
     heading = soup.select_one("#set-up")
     if not heading or not heading.get_text(strip=True):

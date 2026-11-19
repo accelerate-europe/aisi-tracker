@@ -2329,7 +2329,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       var ht = inst.placement && HOST[inst.placement.host_type];
       if (ht && inst.legal_form !== "university_centre") { if (inst.legal_form === "unit_in_existing_body") form[0] = "Unit " + ht; else if (form.length) form[0] += " " + ht; else form.push(ht); }
       if (inst.legal_basis) {
-        if (!form.length) form.push("not published"); // the founding act alone is no form (Institutional set-up lists these under Form not published)
+        if (!form.length) form.push("not published"); // the founding act alone is no form (Institutional set-up lists these under Legal form not published)
         var lb = inst.legal_basis, fore = lb.state === "foreseen";
         // legal_basis is the act giving the qualifying mandate; a law can give it to a body that already exists (Korea), so a law reads as the mandate's source, not the founding act.
         form.push(lb.type === "law" ? (fore ? "mandate to be set by law" : "mandate set by law") : BASIS[lb.type] ? (fore ? "to be set up by " : "set up by ") + BASIS[lb.type] : (fore ? "founding act not yet specified" : "no founding act found"));
@@ -2431,7 +2431,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   var MAP_INFO = "The World view shows only states with an institute or a plan; pick a region to see every state.";
   var RECHECK_NOTE = "Every state has a planned re-check date, sooner where a decision is pending; the dates are in the downloads."; // owner decision 24 Oct
   var MEDIAN_CEILING = "Some of these budgets are ceilings, so the median is a ceiling too and is rounded up.";
-  var SETUP_UNKNOWN = "Form not published";
+  var SETUP_UNKNOWN = "Legal form not published";
   var PER_PERSON_TIP = "Annual budget divided by population. For scale only, since budgets cover different work and costs differ between states.", BAR_TIP = "Small bars have a minimum width; use the figure for the amount.";
   var STATE_DL = "JSON, for scripts and research";
   var GENERIC_LEAD = "Population and region sources apply to every entry: ", GENERIC_TAIL = ". Entry source lists leave them out; the downloads include them.";
@@ -3866,7 +3866,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       var order = [], cite = citations(S, order, {}), groups = {};
       d.institutes.forEach(function (i) { var f = LEGAL_FORM[i.legal_form] ? i.legal_form : "unknown"; (groups[f] = groups[f] || []).push(i); });
       var box = $("setup"), left = el("div", "groups-short"), right = el("div", "groups-long");
-      // Larger groups first, ties by form label, Form not published last. The first (largest) group takes the long column.
+      // Larger groups first, ties by form label, Legal form not published last. The first (largest) group takes the long column.
       Object.keys(groups).sort(function (a, b) { return (a === "unknown") - (b === "unknown") || groups[b].length - groups[a].length || (LEGAL_FORM[a] || SETUP_UNKNOWN).localeCompare(LEGAL_FORM[b] || SETUP_UNKNOWN); }).forEach(function (f) {
         // Members, squares and list alike, by status on the ladder, then by name (principle: Groups).
         var items = groups[f].map(function (i) { return [J[i.jurisdiction_id], i]; }).sort(function (a, b) { return ORDER.indexOf(a[0].status) - ORDER.indexOf(b[0].status) || a[0].name.localeCompare(b[0].name) || a[0].id.localeCompare(b[0].id); });
