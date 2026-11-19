@@ -13347,7 +13347,7 @@ LINE_CONTRAST_JS = r"""() => {
 def check_selection_single(browser, base_url: str) -> list[str]:
     """After Escape, Close or selecting another cell, at most one function cell is selected, focused and tinted, with its row and
     column; a click that does not move focus (Safari's buttons) included. The group line sits between the hairline and the
-    selected outline in contrast, in both themes. The world's Download menu and the command palette close on Escape."""
+    selection bar in contrast, in both themes. The world's Download menu and the command palette close on Escape."""
     errors = []
     page = browser.new_page(viewport={"width": 1440, "height": 1000})
     hydrated(page, base_url)
@@ -13381,7 +13381,7 @@ def check_selection_single(browser, base_url: str) -> list[str]:
         set_theme(page, theme)
         c = page.evaluate(LINE_CONTRAST_JS)
         if not c["hair"] < c["group"] < c["focus"]:
-            errors.append(f"{theme}: the group line must be stronger than the hairline and quieter than the selected outline: {c}")
+            errors.append(f"{theme}: the group line must be stronger than the hairline and quieter than the selection bar: {c}")
     menu = page.locator("#world-download")
     menu.locator("summary").focus()
     page.keyboard.press("Enter")
@@ -13529,10 +13529,10 @@ FN_GROUP_LINES_JS = r"""() => {
     }
     if (box) need(!rects.some(r => r.bottom > box.top + 1 && r.top < box.bottom - 1), 'group ' + (g + 1) + ': the line crosses the expanded row\'s box');
   }
-  need(line !== focus, 'the group line has the selected outline\'s colour');
+  need(line !== focus, 'the group line has the selection bar\'s colour');
   const row = phone.querySelector('.fn-phone-row[aria-expanded="true"]'), pips = phone.querySelector('.fn-phone-block > ul > li > .fn-pips');
   const z = n => parseInt(n, 10) || 0;
-  if (row) need(z(getComputedStyle(row, '::after').zIndex) > z(getComputedStyle(pips).zIndex), 'the selected outline is not above the group lines');
+  if (row) need(z(getComputedStyle(row, '::after').zIndex) > z(getComputedStyle(pips).zIndex), 'the selection bar is not above the group lines');
   const focused = document.activeElement?.matches('.fn-phone-row:focus-visible') ? document.activeElement : null;
   if (focused) need(z(getComputedStyle(focused).zIndex) > z(getComputedStyle(pips).zIndex), 'the focus ring is not above the group lines');
   return errors;
@@ -13542,8 +13542,8 @@ FN_GROUP_LINES_JS = r"""() => {
 def check_functions_group_lines(browser, base_url: str) -> list[str]:
     """Grouped view's group-start lines (owner, 18 Nov 2026, "as in the grid"): at 1440 and 390, in both themes, every group's
     cells in the head, the band rows and the rows carry the grid's group line at their start, straight and unbroken; an
-    expanded row's box interrupts it and is not crossed; the selected outline and the focus ring paint above it. The line
-    stays quieter than the selected outline through check_selection_single, which holds the same token."""
+    expanded row's ground interrupts it and is not crossed; the selection bar and the focus ring paint above it. The line
+    stays quieter than the selection bar through check_selection_single, which holds the same token."""
     errors = []
     for width in (1440, 390):
         page = browser.new_page(viewport={"width": width, "height": 1000})
@@ -14613,9 +14613,10 @@ def check_functions_phone(browser, base_url: str, data: dict, *, inject: bool = 
                       need(claims && summary?.nextElementSibling === claims && claims.id === label.getAttribute('aria-controls') && label.getAttribute('aria-expanded') === 'true', labelKey + ': function claims placement/state differs');
                       if (claims) {
                         checkHeading(claims, f, expected.country, null, f.code, labelKey);
-                        const a = label.getBoundingClientRect(), s = status.getBoundingClientRect(), ring = getComputedStyle(label, '::after');
-                        need(!['none', 'normal'].includes(ring.content) && a.left + parseFloat(ring.width) >= s.right - 1 &&
-                             a.top + parseFloat(ring.height) >= s.bottom - 1, labelKey + ': selected outline excludes the status');
+                        const a = label.getBoundingClientRect(), s = status.getBoundingClientRect(), bar = getComputedStyle(label, '::after');
+                        const strong = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--rule-strong'));
+                        need(!['none', 'normal'].includes(bar.content) && parseFloat(bar.width) >= strong &&
+                             a.top + parseFloat(bar.height) >= s.bottom - 1, labelKey + ': selection bar does not span the name and status');
                         await checkClaims(claims, f, labelKey);
                       }
                       overflow(labelKey);
@@ -15035,98 +15036,137 @@ def check_functions_zero_carrier(browser, base_url: str, data: dict) -> list[str
     return [f"zero-carrier {code}: " + error for error in errors]
 
 
+def selection_state_errors(mark: dict) -> list[str]:
+    """A painted start bar distinguishes selection; focus retains its own ring."""
+    errors = []
+    if mark["width"] < mark["strong"] or mark["height"] <= 0:
+        errors.append("selection bar is smaller than the strong rule")
+    if not mark["painted"] or mark["contrast"] < 3:
+        errors.append("selection bar is missing or below 3:1 against the adjacent ground")
+    if mark["outline"]:
+        errors.append("selection still draws a full outline without keyboard focus")
+    if mark.get("joined") and (mark["gap"] is None or abs(mark["gap"]) > 1 or not mark["sameGround"]):
+        errors.append("variant A's panel does not meet its row on the same ground")
+    return errors
+
+
 def selected_box_pixels(page, control, hover: bool) -> list[str]:
-    """Sample the actual four painted midpoints, excluding a table cell's transparent gutter."""
+    """Sample the painted start bar and its adjacent ground, including when hovered."""
     import base64
 
-    # Move off the table before scrolling, so a heading passing under the pointer cannot open a tooltip.
     page.mouse.move(1, 1)
     control.evaluate("n => { if(n.matches('button')) n.blur(); n.scrollIntoView({block:'center', inline:'center'}); }")
     layout_settled(page)
     page.locator('#tip').wait_for(state='hidden')
-    if hover:  # a Funding row is hovered at its start: a figure with its own tooltip may sit over its centre
-        control.hover(position={"x": 6, "y": 6}) if "fund-row" in (control.get_attribute("class") or "") else control.hover()
+    if hover:  # Keep clear of Funding figures' own tooltips.
+        control.hover(position={"x": 6, "y": 6})
     measured = control.evaluate("""n => {
       const host=n.matches('.fn-cell')?n.closest('td'):n, r=host.getBoundingClientRect(), s=getComputedStyle(host);
-      const p={left:r.left+parseFloat(s.borderLeftWidth), right:r.right-parseFloat(s.borderRightWidth),
-        top:r.top+parseFloat(s.borderTopWidth), bottom:r.bottom-parseFloat(s.borderBottomWidth)};
-      if(n.matches('button.fn-function-label')) {
-        // name and status, then the button's own start padding again after the status, within the row, in whole pixels
-        const status=n.nextElementSibling.getBoundingClientRect();
-        p.right=p.left+Math.floor(Math.min(Math.max(p.right,status.right)+parseFloat(s.paddingLeft),n.parentElement.getBoundingClientRect().right)-p.left);
-        p.bottom=Math.max(p.bottom,status.bottom);
-      }
-      const probe=document.createElement('span'); probe.style.cssText='position:absolute;pointer-events:none;border:var(--rule-strong) solid var(--focus)'; host.appendChild(probe);
-      const token=getComputedStyle(probe), width=parseFloat(token.borderTopWidth), colour=token.borderTopColor;
-      probe.remove();
-      const overlay=getComputedStyle(n,'::after'), errors=[];
-      if(['none','normal'].includes(overlay.content) || overlay.pointerEvents!=='none') errors.push('selection overlay missing or intercepts input');
-      for(const side of ['Top','Right','Bottom','Left']) {
-        if(parseFloat(overlay['border'+side+'Width'])!==width || overlay['border'+side+'Color']!==colour || overlay['border'+side+'Style']!=='solid')
-          errors.push(side+': selection width/colour differs');
-      }
-      if(n.matches('.fn-cell')) {
-        const lit=host.classList.contains('fn-col-lit') && host.parentElement.classList.contains('fn-row-lit');
-        if(lit!==n.matches(':hover')) errors.push('hover tint state differs');
-      }
-      return {box:p,width,colour,inset:n.matches('.fn-phone-row,button.fn-function-label,.fund-row')?0:width,errors};
+      const overlay=getComputedStyle(n,'::after'), strong=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--rule-strong'));
+      const left=r.left+parseFloat(s.borderLeftWidth)+parseFloat(overlay.left),
+        top=r.top+parseFloat(s.borderTopWidth)+parseFloat(overlay.top), width=parseFloat(overlay.width), height=parseFloat(overlay.height);
+      const errors=[];
+      if(['none','normal'].includes(overlay.content) || overlay.pointerEvents!=='none') errors.push('selection bar missing or intercepts input');
+      if(['Top','Right','Bottom','Left'].some(side=>parseFloat(overlay['border'+side+'Width'])>0)) errors.push('selection overlay retains a border');
+      const own=getComputedStyle(n), outline=own.outlineStyle!=='none' && parseFloat(own.outlineWidth)>0;
+      const panel=n.matches('.fn-cell')?host.closest('table').querySelector('.fn-detail'):
+        document.getElementById(n.getAttribute('aria-controls'));
+      const joined=document.documentElement.dataset.selection!=='b' && n.matches('.fn-cell,.fn-phone-row,.fund-row');
+      const ground=element=>{
+        for(let e=element;e;e=e.parentElement) { const c=getComputedStyle(e).backgroundColor; if(c!=='rgba(0, 0, 0, 0)') return c; }
+        return '';
+      };
+      return {left,top,width,height,strong,colour:overlay.backgroundColor,outline,joined,errors,
+        gap:panel?panel.getBoundingClientRect().top-r.bottom:Infinity,
+        sameGround:!!panel && ground(panel)===ground(host)};
     }""")
-    box = measured["box"]
-    clip = {"x": math.floor(box["left"]), "y": math.floor(box["top"]),
-            "width": math.ceil(box["right"]) - math.floor(box["left"]),
-            "height": math.ceil(box["bottom"]) - math.floor(box["top"])}
+    if not all(isinstance(measured[key], (int, float)) and math.isfinite(measured[key]) for key in ("left", "top", "width", "height")):
+        return measured["errors"] + ["selection bar has no measurable box"]
+    clip = {"x": math.floor(measured["left"]), "y": math.floor(measured["top"]),
+            "width": math.ceil(measured["width"]) + 8, "height": max(1, math.ceil(measured["height"]))}
     png = base64.b64encode(page.screenshot(clip=clip, scale="css", animations="disabled")).decode()
-    return measured["errors"] + page.evaluate("""async ({png, measured, clip}) => {
+    pixels = page.evaluate("""async ({png, measured, clip}) => {
       const img=new Image(); img.src='data:image/png;base64,'+png; await img.decode();
       const canvas=new OffscreenCanvas(img.width,img.height), ctx=canvas.getContext('2d'); ctx.drawImage(img,0,0);
       const data=ctx.getImageData(0,0,img.width,img.height).data;
       const rgb=colour=>{ctx.clearRect(0,0,1,1);ctx.fillStyle=colour;ctx.fillRect(0,0,1,1);return [...ctx.getImageData(0,0,1,1).data].slice(0,3);};
-      const expected=rgb(measured.colour), b=measured.box, w=measured.width;
       const pixel=(x,y)=>{
         x=Math.floor(x-clip.x); y=Math.floor(y-clip.y);
-        if(x<0 || y<0 || x>=img.width || y>=img.height) return null;
         return [...data.slice((y*img.width+x)*4,(y*img.width+x)*4+3)];
       };
-      // Phone boxes sit at the padding edge; other boxes are one rule-width inside it.
-      // The background beside a side edge is sampled a quarter down, clear of a mark or label centred on the midline.
-      const midX=(b.left+b.right)/2, midY=(b.top+b.bottom)/2, quarterY=b.top+(b.bottom-b.top)/4, stroke=measured.inset+w/2, inside=measured.inset+w+3;
-      const sides={top:[[midX,b.top+stroke],[midX,b.top+inside]], right:[[b.right-stroke,midY],[b.right-inside,quarterY]],
-        bottom:[[midX,b.bottom-stroke],[midX,b.bottom-inside]], left:[[b.left+stroke,midY],[b.left+inside,quarterY]]};
-      const errors=[];
-      for(const [side,[edge,background]] of Object.entries(sides)) {
-        const paint=pixel(...edge), ground=pixel(...background);
-        if(!paint || !ground) { errors.push(side+': sample outside screenshot'); continue; }
-        if(paint.some((v,k)=>Math.abs(v-expected[k])>8)) errors.push(side+': midpoint is not painted in the selection colour ('+paint+')');
-        if(Math.max(...paint.map((v,k)=>Math.abs(v-ground[k])))<20) errors.push(side+': selection does not stand out from its adjacent background');
-      }
-      return errors;
+      const lum=rgb=>rgb.map(v=>v/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4).reduce((s,v,k)=>s+v*[.2126,.7152,.0722][k],0);
+      const y=measured.top+Math.min(2,measured.height/2), paint=pixel(measured.left+measured.width/2,y),
+        ground=pixel(measured.left+measured.width+3,y), expected=rgb(measured.colour), a=lum(paint), b=lum(ground);
+      return {painted:paint.length===3 && paint.every((v,k)=>Math.abs(v-expected[k])<=8),
+        contrast:(Math.max(a,b)+.05)/(Math.min(a,b)+.05)};
     }""", {"png": png, "measured": measured, "clip": clip})
+    return measured["errors"] + selection_state_errors(measured | pixels)
+
+
+SELECTION_FOCUS_JS = """n => {
+  const button=n.matches('button'), target=button?n:document.activeElement, errors=[];
+  if(!button && (!target.matches('input') || target.getAttribute('aria-activedescendant')!==n.id))
+    return ['selected option no longer belongs to the focused input'];
+  target.focus({preventScroll:true});
+  if(!target.matches(':focus-visible')) errors.push('keyboard focus is not visible');
+  const style=getComputedStyle(target, target.matches('button.fn-function-label')?'::before':null);
+  const strong=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--rule-strong'));
+  const canvas=new OffscreenCanvas(1,1), ctx=canvas.getContext('2d');
+  const rgb=c=>{ctx.clearRect(0,0,1,1);ctx.fillStyle=c;ctx.fillRect(0,0,1,1);return [...ctx.getImageData(0,0,1,1).data];};
+  const lum=c=>rgb(c).slice(0,3).map(v=>v/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4).reduce((s,v,k)=>s+v*[.2126,.7152,.0722][k],0);
+  let colour=style.outlineColor;
+  if(button) {
+    if(style.outlineStyle!=='solid' || parseFloat(style.outlineWidth)<strong || rgb(colour)[3]===0)
+      errors.push('keyboard focus lacks a solid strong-width ring');
+    if(target.matches('button.fn-function-label')) {
+      const r=target.getBoundingClientRect(), status=target.nextElementSibling.getBoundingClientRect();
+      if(r.left+parseFloat(style.width)<status.right-1 || r.top+parseFloat(style.height)<status.bottom-1)
+        errors.push('function focus ring excludes its status');
+    }
+  } else {
+    // Text fields use an inset ring on all four edges, rather than an offset outline.
+    const shadow=style.boxShadow, match=shadow.match(/rgba?\\([^)]+\\)/);
+    colour=match?match[0]:'transparent';
+    if(!shadow.includes('inset') || !shadow.includes('0px 0px 0px '+strong+'px') || rgb(colour)[3]===0)
+      errors.push('focused input lacks its inset ring');
+  }
+  let ground='transparent';
+  for(let e=target;e;e=e.parentElement) { ground=getComputedStyle(e).backgroundColor; if(rgb(ground)[3]===255) break; }
+  const a=lum(colour), b=lum(ground);
+  if((Math.max(a,b)+.05)/(Math.min(a,b)+.05)<3) errors.push('keyboard focus ring is below 3:1');
+  if(button) target.blur();
+  return errors;
+}"""
 
 
 def check_selection_boxes(browser, base_url: str) -> list[str]:
-    """N5: boundary/interior cells, block ends, phone rows/functions and other selected rows."""
+    """N5: both selection variants, joined panels, painted bars and separate focus rings."""
     errors = []
-    for width in (1280, 1440, 390):
+    for width in (1440, 1000, 390):
         page = browser.new_page(viewport={"width": width, "height": 1000})
         try:
             hydrated(page, base_url)
             page.evaluate("document.fonts.ready")
-            for theme in ("light", "dark"):
+            for theme, variant in [(t, v) for t in ("light", "dark") for v in ("a", "b")]:
                 set_theme(page, theme)
+                page.evaluate("v => document.documentElement.dataset.selection=v", variant)
+                page.evaluate("document.getElementById('functions-table').fnView('grid')")
 
                 def inspect(control, label):
                     for hover in (False, True):
-                        errors.extend(f"{width}px {theme} {label} {'hover' if hover else 'no hover'}: {e}"
+                        errors.extend(f"{width}px {theme} variant {variant} {label} {'hover' if hover else 'no hover'}: {e}"
                                       for e in selected_box_pixels(page, control, hover))
-                    # The box stays after focus leaves, so keyboard focus on an open control must still look different (WCAG 2.4.7).
-                    if control.evaluate("n => n.matches('button')"):
-                        page.keyboard.press("Shift")  # keyboard modality, so focus() counts as :focus-visible
-                        look = "n => { const s = getComputedStyle(n); return [s.outlineStyle, s.outlineWidth, s.outlineColor, s.backgroundColor, s.boxShadow, s.textDecorationLine].join('|'); }"
-                        focused = control.evaluate("n => { n.focus({preventScroll: true}); return n.matches(':focus-visible'); }")
-                        seen = control.evaluate(look)
-                        control.evaluate("n => n.blur()")
-                        if not focused or seen == control.evaluate(look):
-                            errors.append(f"{width}px {theme} {label}: keyboard focus on the open control looks the same as no focus")
+                    page.keyboard.press("Shift")  # Keyboard modality, including a focus() on an open control.
+                    errors.extend(f"{width}px {theme} variant {variant} {label}: {e}" for e in control.evaluate(SELECTION_FOCUS_JS))
+                    if variant == "a":
+                        same = control.evaluate("""n => {
+                          const look=()=>[getComputedStyle(n).backgroundColor,getComputedStyle(n,'::after').backgroundColor,
+                            getComputedStyle(n,'::after').width].join('|'), explicit=look();
+                          delete document.documentElement.dataset.selection; const implicit=look();
+                          document.documentElement.dataset.selection='a'; return explicit===implicit;
+                        }""")
+                        if not same:
+                            errors.append(f"{width}px {theme} {label}: default selection differs from variant A")
 
                 if width > 640:
                     # One marked cell in each column, plus one on each block's first/last row.
@@ -15156,25 +15196,23 @@ def check_selection_boxes(browser, base_url: str) -> list[str]:
                         inspect(control, sample["institute"] + '/' + sample["code"])
                         control.click()
                 else:
-                    # First/last rows of both blocks and their first/last coded functions in document order.
-                    # Leave both functions open together so each keeps its own box.
-                    for row in page.locator('.fn-phone-block > ul > li:is(:first-child, :last-child) > .fn-phone-row').all():
-                        row.click()
-                        inspect(row, row.get_attribute('aria-controls'))
-                        functions = page.locator('.fn-phone-detail button.fn-function-label').all()
-                        samples = functions[:1] + (functions[-1:] if len(functions) > 1 else [])
-                        for function in samples:
-                            function.click()
-                            inspect(function, function.get_attribute('aria-controls'))
-                        row.click()
                     # Phone grid uses the same cell panel, with a translated table/detail head.
-                    page.evaluate("document.getElementById('functions-table').fnView('grid')")
                     for institute, code in (('gb-aisi', 'model_testing'), ('no-ki-norge', 'standards_guidance')):
                         control = page.locator(f'.fn-table tr[data-institute="{institute}"] td[data-code="{code}"] > .fn-cell')
                         control.click()
                         inspect(control, 'grid ' + institute + '/' + code)
                         control.click()
-                    page.evaluate("document.getElementById('functions-table').fnView('grouped')")
+                page.evaluate("document.getElementById('functions-table').fnView('grouped')")
+                # First/last rows of both blocks at every width; keep two functions open together.
+                for row in page.locator('.fn-phone-block > ul > li:is(:first-child, :last-child) > .fn-phone-row').all():
+                    row.click()
+                    inspect(row, row.get_attribute('aria-controls'))
+                    functions = page.locator('.fn-phone-detail button.fn-function-label').all()
+                    samples = functions[:1] + (functions[-1:] if len(functions) > 1 else [])
+                    for function in samples:
+                        function.click()
+                        inspect(function, function.get_attribute('aria-controls'))
+                    row.click()
                 funding = page.locator('.fund-block > ul > .fund-item:is(:first-child, :last-child) > .fund-row').all()
                 if not funding:
                     errors.append(f'{width}px {theme}: no Funding boundary rows to sample')

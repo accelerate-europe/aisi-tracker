@@ -314,6 +314,26 @@ assert.equal(qualifierStartsLine(null,41.6),false);
     assert not check_page.source_separator_errors([dict(source='source', leading=0)])
 
 
+@pytest.mark.parametrize('change, finding', [
+    ({'width': 1.99}, 'smaller'),
+    ({'height': 0}, 'smaller'),
+    ({'painted': False}, 'missing'),
+    ({'contrast': 2.99}, '3:1'),
+    ({'outline': True}, 'full outline'),
+    ({'gap': 1.01}, 'meet its row'),
+    ({'gap': -1.01}, 'meet its row'),
+    ({'gap': None}, 'meet its row'),
+    ({'sameGround': False}, 'same ground'),
+])
+def test_selection_gate_rejects_missing_faint_boxed_or_detached_selection(change, finding):
+    selected = dict(width=2, strong=2, height=20, painted=True, contrast=3, outline=False,
+                    joined=True, gap=1, sameGround=True)
+    assert not check_page.selection_state_errors(selected)
+    assert any(finding in e for e in check_page.selection_state_errors(selected | change))
+    # Variant B needs the same visible bar but does not join the panel's ground to the row.
+    assert not check_page.selection_state_errors(selected | dict(joined=False, gap=8, sameGround=False))
+
+
 def test_status_qualifier_gate_samples_allow_a_not_found_long_label():
     from scripts import published
 
