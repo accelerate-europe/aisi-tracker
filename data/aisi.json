@@ -36424,16 +36424,6 @@
           ]
         },
         {
-          "id": "claims-f173f118881344e5b44c2fb055e0d5f7",
-          "kind": "function",
-          "code": "research",
-          "basis": "activity",
-          "text": "ISED's announcement says it will contribute $1 million through the Canadian Institute for Advanced Research to the UK AI Security Institute's Alignment Project.",
-          "source_ids": [
-            "ca-uk-alignment-2025"
-          ]
-        },
-        {
           "id": "claims-d286d5a1123d4fb4abdc1ed5e1cdf157",
           "kind": "function",
           "code": "risk_monitoring",
@@ -85692,17 +85682,6 @@
                 "id": "agreements-dd408de818c75a0da2b99614b479409c"
               },
               "scope"
-            ],
-            [
-              "institutes",
-              {
-                "id": "ca-caisi"
-              },
-              "claims",
-              {
-                "id": "claims-f173f118881344e5b44c2fb055e0d5f7"
-              },
-              "text"
             ]
           ]
         },
