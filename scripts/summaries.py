@@ -286,7 +286,7 @@ def pattern_5(record: dict, institute: dict | None) -> str:
         line = f"{institute.get('short_name') or institute['name']} was set up {preposition} {long_date(established)}"
         form = institute.get("legal_form")
         if form in FORM_WORDS:
-            line += f" as {FORM_WORDS[form]}"
+            line += f". The institute is {FORM_WORDS[form]}"
             if form == "unit_in_existing_body" and institute.get("host"):
                 line += f" ({institute['host']})"
         return line + "."

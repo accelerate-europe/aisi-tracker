@@ -129,14 +129,22 @@ def test_pattern_4_proposed_step_and_unconfirmed():
 
 
 @pytest.mark.parametrize("form, host, words", [
-    ("new_body", "Ministry", "as a new body"),
-    ("university_centre", "University", "as a university centre"),
-    ("unit_in_existing_body", None, "as a unit within an existing body"),
+    ("new_body", "Ministry", "a new body"),
+    ("university_centre", "University", "a university centre"),
+    ("federation_of_existing_bodies", "Ministry", "a network of existing bodies"),
+    ("unit_in_existing_body", "Current ministry", "a unit within an existing body (Current ministry)"),
+    ("unit_in_existing_body", None, "a unit within an existing body"),
 ])
-def test_pattern_5_forms(form, host, words):
-    institute = {"name": "Institute", "established": "2025-07", "legal_form": form, **({"host": host} if host else {})}
+@pytest.mark.parametrize("date, when", [("2025", "in 2025"), ("2025-07", "in July 2025"),
+                                       ("2025-07-02", "on 2 July 2025")])
+def test_pattern_5_forms(form, host, words, date, when):
+    """The present form and host do not describe the founding act; the mandate still refers to the institute."""
+    institute = {"name": "Institute", "established": date, "legal_form": form,
+                 "mandate_short": "Tests models.", **({"host": host} if host else {})}
     record = {"id": "XX", "status": "established"}
-    assert summaries.pattern_5(record, institute) == f"Institute was set up in July 2025 {words}."
+    expected = f"Institute was set up {when}. The institute is {words}."
+    assert summaries.pattern_5(record, institute) == expected
+    assert summaries.summary_text(record, institute) == expected + " It tests models."
 
 
 def test_pattern_5_unknown_form_and_missing_basis():

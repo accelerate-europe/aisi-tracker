@@ -33582,16 +33582,6 @@
           ]
         },
         {
-          "id": "claims-f8457955c41a4454814281ce6a589f58",
-          "kind": "function",
-          "code": "risk_monitoring",
-          "basis": "mandate",
-          "text": "KI Norge says it is to base its assessments and advice on knowledge and give an up-to-date picture of developments and what they mean for Norwegian organisations.",
-          "source_ids": [
-            "no-ki-about"
-          ]
-        },
-        {
           "id": "claims-70abefe509fa472ea0e10af88e03c7fb",
           "kind": "function",
           "code": "sandbox",
@@ -102403,24 +102393,6 @@
             ]
           ],
           "gloss": "KI Norge makes it easier for businesses, especially small and medium-sized ones, to understand the rules, find relevant tools and get started with artificial intelligence in an innovative and responsible way.",
-          "accessed": "2026-10-19"
-        },
-        {
-          "text": "KI Norge skal bygge på kunnskap i sine vurderinger og råd, og gi et oppdatert bilde av utviklingen og hva den betyr for norske virksomheter.",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "no-ki-norge"
-              },
-              "claims",
-              {
-                "id": "claims-f8457955c41a4454814281ce6a589f58"
-              },
-              "text"
-            ]
-          ],
-          "gloss": "KI Norge is to base its assessments and advice on knowledge, and give an up-to-date picture of developments and what they mean for Norwegian organisations.",
           "accessed": "2026-10-19"
         }
       ],
