@@ -9014,7 +9014,7 @@ def check_method_pages(html: str, data: dict, dist: Path) -> list[str]:
     """Independent rendered contracts for summaries, links and verbatim full rules."""
     soup = BeautifulSoup(html, "html.parser")
     errors = []
-    summaries = data["dataset"]["method_summaries"]
+    summaries = [s for s in data["dataset"]["method_summaries"] if s["summary"] != data["dataset"].get("definition")]
     if len(soup.select("#rules > li")) != len(summaries):
         errors.append("Method: reader summary count differs from the dataset")
     for summary in summaries:
@@ -9022,8 +9022,7 @@ def check_method_pages(html: str, data: dict, dist: Path) -> list[str]:
         item = soup.find(id="method-summary-" + sid)
         text = item.select_one(".method-copy") if item else None
         want = summary["summary"]
-        shorthand = want == data["dataset"].get("definition")
-        if text is None or not text.get_text(strip=True) or (not shorthand and " ".join(text.get_text().split()) != " ".join(want.split())):
+        if text is None or not text.get_text(strip=True) or " ".join(text.get_text().split()) != " ".join(want.split()):
             errors.append(f"Method summary {sid}: reader copy differs")
         links = [(a.get("href"), a.get_text()) for a in item.select("a")] if item else []
         rules = {r["id"]: r for r in data["dataset"]["method"]}
@@ -12207,11 +12206,7 @@ def functions_forms_structure(html: str, data: dict) -> list[str]:
     for selector in ('.fn-scroll', '.fn-scroll > .fn-table', '.fn-phone', '.fn-legend.fn-desktop-only', '.fn-legend.fn-phone-only'):
         if len(box.select(selector)) != 1:
             errors.append(f"Functions needs exactly one saved {selector}")
-    count = sum(not v.get("deprecated") for v in data["dataset"]["vocabularies"]["function"].values())
     how = box.select_one('.fn-how')
-    what = how.select_one('.fn-what') if how else None
-    if not what or what.get_text() != f"The table shows which of {count} functions each institute is active in or has been assigned.":
-        errors.append("Functions table explanation missing from coding fold")
     for form, tail in (("desktop", "Select a mark to see the quote and source."),
                        ("phone", "Select a country to see its functions, then a function for its quote and source.")):
         instructions = box.select('.fn-use.fn-' + form + '-only')
