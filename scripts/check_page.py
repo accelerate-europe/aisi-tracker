@@ -13855,7 +13855,7 @@ const checkClaims = async (detail, cell, key) => {
     // The shared Quote control ends the claim's source line, with translated languages in its accessible name.
     const sources = item.querySelector(':scope > .fn-sources'), fold = sources?.querySelector('li > details.quote'), li = fold?.parentElement;
     const summary = fold?.querySelector(':scope > summary'), name = summary?.getAttribute('aria-label') || '';
-    need(fold && !fold.open && !fold.querySelector('.quote-body') && fold.dataset.quoteClaim === id && fold === li.lastElementChild && summary.textContent === 'Quote' && li.childNodes[li.childNodes.length - 2]?.textContent === ' · ',
+    need(fold && !fold.open && !fold.querySelector('.quote-body') && fold.dataset.quoteClaim === id && fold === li.lastElementChild && summary.querySelector('.qualifier-text')?.textContent === 'Quote' && summary.querySelector('.qualifier-separator')?.getAttribute('aria-hidden') === 'true',
          key + ': the quote control is not a closed, lazy Quote fold after the source separator');
     if (summary && sources) need(['fontSize', 'fontWeight', 'color'].every(k => getComputedStyle(summary)[k] === getComputedStyle(sources)[k]), key + ': Quote differs from the source line type or muted ink');
     const glossed = [q.excerpt, ...(q.excerpt.anchors || [])].some(span => span.gloss);
@@ -14256,7 +14256,7 @@ STATUS_QUALIFIERS_JS = r"""selector => {
       const name = label?.querySelector(':scope > span:not(.fn-pip)');
       const before = [];
       if (trailing) {
-        const walker = document.createTreeWalker(item.parentElement, NodeFilter.SHOW_TEXT);
+        const walker = document.createTreeWalker(item.closest('summary') ? item.closest('li[data-source-id]') : item.parentElement, NodeFilter.SHOW_TEXT);
         for (let node; (node = walker.nextNode());) {
           if (item.contains(node)) break;
           if (!node.textContent.trim() || node.parentElement.closest('.vh, [hidden], .cites') ||
@@ -14266,7 +14266,7 @@ STATUS_QUALIFIERS_JS = r"""selector => {
         }
       }
       const names = name ? textRects(name) : before;
-      const container = item.parentElement.getBoundingClientRect();
+      const container = (item.closest('summary') ? item.closest('li[data-source-id]') : item.parentElement).getBoundingClientRect();
       return {text: text?.textContent.trim(), trailing, rects: lines.map(rect),
         previous: before.length ? rect(before[before.length - 1]) : null,
         nameLeft: names.length ? names[0].left : null,
@@ -14300,7 +14300,8 @@ def status_qualifier_errors(items: list[dict]) -> list[str]:
         if not previous or item["nameLeft"] is None:
             errors.append(prefix + "qualifier has no preceding name")
             continue
-        own = min(r["top"] for r in rects) >= previous["bottom"] - 1
+        first = rects[0]
+        own = (first['top'] + first['bottom'] - previous['top'] - previous['bottom']) / 2 > min(first['bottom'] - first['top'], previous['bottom'] - previous['top']) / 2
         if not item["hiddenSeparator"]:
             errors.append(prefix + "separator is not hidden from screen readers")
         if item["dot"] == own:
@@ -14311,6 +14312,46 @@ def status_qualifier_errors(items: list[dict]) -> list[str]:
         if step is not None and abs(step - (item["lineHeight"] if own else 0)) > 1:
             errors.append(prefix + "status is off the name's baseline rhythm")
     return errors
+
+
+SOURCE_SEPARATORS_JS = r"""view => {
+  const results=[];
+  const inspect=()=>{
+    for(const line of document.querySelectorAll('.fn-detail .fn-sources > li')) {
+      const glyphs=[], walker=document.createTreeWalker(line,NodeFilter.SHOW_TEXT);
+      while(walker.nextNode()) {
+        const node=walker.currentNode, parent=node.parentElement;
+        if(parent.closest('.vh, .quote-body, [hidden]') || getComputedStyle(parent).visibility!=='visible') continue;
+        for(let i=0;i<node.length;i++) {
+          if(/\s/.test(node.data[i])) continue;
+          const range=document.createRange();range.setStart(node,i);range.setEnd(node,i+1);
+          const r=range.getBoundingClientRect();if(!r.width || !r.height) continue;
+          glyphs.push({left:r.left, y:(r.top+r.bottom)/2,
+            dot:node.data[i]==='·' && (!!parent.closest('.qualifier-separator, .meta-dot') || node.data.trim()==='·')});
+        }
+      }
+      const dots=glyphs.filter(g=>g.dot);
+      results.push({source:line.dataset.sourceId, separators:dots.length,
+        leading:dots.filter(dot=>!glyphs.some(g=>g!==dot && g.left<dot.left-.5 && Math.abs(g.y-dot.y)<3)).length});
+    }
+  };
+  document.getElementById('functions-table').fnView(view);
+  const buttons=[...document.querySelectorAll(view==='grouped'?'.fn-phone-row':'.fn-cell')];
+  for(const button of buttons) {
+    if(button.getAttribute('aria-expanded')==='true') button.click();
+    button.click();
+    if(view==='grouped') document.querySelectorAll('.fn-phone-detail button.fn-function-label').forEach(b=>b.click());
+    inspect();button.click();
+  }
+  return results;
+}"""
+
+
+def source_separator_errors(lines: list[dict]) -> list[str]:
+    if not lines:
+        return ['no function source lines inspected']
+    return [f"{line['source']}: {line['leading']} visible separator(s) begin a source line"
+            for line in lines if line['leading']]
 
 
 def check_status_qualifiers(browser, base_url: str, data: dict) -> list[str]:
@@ -14366,6 +14407,14 @@ def check_status_qualifiers(browser, base_url: str, data: dict) -> list[str]:
         page.evaluate("document.fonts.dispatchEvent(new Event('loadingdone'))")
         settled()
         measure('.fn-phone-detail', f"open row resize/font event {width}px: ", count)
+    page.evaluate("document.documentElement.style.fontSize='100%'")
+    for width in (320, 390, 1000, 1440):
+        page.set_viewport_size({'width': width, 'height': 1000})
+        settled()
+        for view in ('grouped', 'grid'):
+            lines = page.evaluate(SOURCE_SEPARATORS_JS, view)
+            errors.extend(f'{width}px {view}: ' + e for e in source_separator_errors(lines))
+            errors.append(report_line(f'{width}px {view}: inspected {len(lines)} function source lines'))
     page.close()
     return errors
 

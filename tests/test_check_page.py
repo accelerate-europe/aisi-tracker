@@ -299,6 +299,21 @@ def test_status_qualifier_geometry_tolerances_and_empty_sample(status_qualifier)
     assert check_page.status_qualifier_errors([dict(status_qualifier, trailing=False, hiddenSeparator=False)]) == []
 
 
+def test_qualifier_line_detection_uses_baselines_even_when_font_rectangles_overlap():
+    source = (ROOT / 'site/index.html').read_text()
+    helper = next(line for line in source.splitlines() if line.startswith('  function qualifierStartsLine('))
+    script = helper + """
+const assert=require('node:assert/strict');
+// Meta text can have 24px glyph boxes on a 21.6px line. Their baselines still identify separate lines.
+assert.equal(qualifierStartsLine(20,41.6),true);
+assert.equal(qualifierStartsLine(20,20.5),false);
+assert.equal(qualifierStartsLine(null,41.6),false);
+"""
+    subprocess.run(['node', '-'], input=script, text=True, capture_output=True, check=True)
+    assert check_page.source_separator_errors([dict(source='source', leading=1)])
+    assert not check_page.source_separator_errors([dict(source='source', leading=0)])
+
+
 def test_status_qualifier_gate_samples_allow_a_not_found_long_label():
     from scripts import published
 
@@ -1537,9 +1552,10 @@ const CLAIM_INDEX={plain:{excerpts:[]},translated:{sources:{other:{language:'fr'
   {source:{language:'de'},excerpt:{gloss:'English text',anchors:[{gloss:'English anchor'},{source_id:'other',gloss:'French anchor'}]}}]}};
 function el(tag,cls,text) {return {tagName:tag,className:cls,textContent:text,dataset:{},children:[],attributes:{},
   setAttribute(key,value){this.attributes[key]=value;},appendChild(n){this.children.push(n);},
-  querySelector(){return this.children.find(n=>n.className==='quote-body');},
+  querySelector(s){return this.children.find(n=>s==='summary'?n.tagName==='summary':n.className==='quote-body');},
   classList:{add(){}}};}
 const document={createTextNode:text=>({textContent:text})};
+const trailingQualifier=(text,cls)=>el('span',cls+' trailing-qualifier',text);
 let loads=0;const claimQuoteBody=()=>{loads++;return el('div','quote-body');};
 HELPERS
 LOADER
@@ -1547,7 +1563,7 @@ for(const inline of [false,true]) for(const id of ['plain','translated']) {
   const fold=quoteDisclosure({id}), summary=fold.children[0], line=el('li');
   assert.equal(summary.textContent,'Quote');assert.equal(summary.attributes['aria-label'],id==='plain'?'Quote':'Quote, translated from German and French');
   assert.equal(summary.dataset.tip,undefined);
-  if(inline) {quoteOnSourceLine(fold,line);assert.deepEqual(line.children.map(n=>n===fold?'fold':n.textContent),[' · ','fold']);}
+  if(inline) {quoteOnSourceLine(fold,line);assert.deepEqual(line.children,[fold]);assert.equal(summary.children[0].textContent,'Quote');assert.equal(summary.children[0].className,'quote-label trailing-qualifier');}
   const before=loads;loadClaimQuote(fold);assert.equal(loads,before);assert.equal(fold.children.length,1);
   fold.open=true;loadClaimQuote(fold);loadClaimQuote(fold);assert.equal(loads,before+1);
   const markers=fold.querySelector('.quote-body').children;
