@@ -1006,7 +1006,7 @@ def test_explanation_folds_follow_their_content(functions_both):
     assert check_page.explanation_order(page) == []
     soup = BeautifulSoup(page, "html.parser")
     soup.select_one('#fund-rows').insert_before(soup.select_one('#fund-how').extract())
-    assert check_page.explanation_order(str(soup)) == ["Funding explanation must follow the chart and budget list"]
+    assert check_page.explanation_order(str(soup)) == ["Funding explanation must follow every row and its comparison head"]
 
 
 @pytest.mark.parametrize("selector", ['.fn-use.fn-desktop-only', '.fn-use.fn-phone-only'])

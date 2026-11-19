@@ -236,7 +236,13 @@ def test_funding_gate_approximation_marker_mutation(currency, amount, qualifier,
         def inner_text(self):
             return self.soup.get_text(" ", strip=True)
 
-    soup = BeautifulSoup(f'<div class="fund-item" data-j="A" data-funding-id="x"><div class="fund-budget"><div class="fund-value"><strong>{figure}</strong></div></div><div class="bar-value"></div></div>', "html.parser")
+        def evaluate_all(self, expression):
+            # This fixture checks amount text; the width oracle has separate numerical mutants.
+            return [] if self.soup is None else [{"institute": "a", "track": 160, "width": record["eur_per_year_est"] / 10_000_000 * 160,
+                                                  "minimum": 0, "stated_value": record["eur_per_year_est"], "stated_scale": 10_000_000}]
+
+    soup = BeautifulSoup('<div class="fund-budget-head"><span class="fund-scale">0 to EUR 10m</span></div><div class="fund-staff-head"><span class="fund-scale">0 to 50 people</span></div>'
+                         f'<div id="fund-rows"><li class="fund-item" data-j="A" data-institute="a" data-funding-id="x"><div class="fund-budget"><div class="fund-value"><strong>{figure}</strong></div><div class="bar-value"></div></div></li></div>', "html.parser")
     record = {
         "id": "x",
         "currency": currency,
@@ -250,7 +256,7 @@ def test_funding_gate_approximation_marker_mutation(currency, amount, qualifier,
     record["eur_per_year_est"] = annual_eur_estimate(record, {"USD": 1})
     data = {
         "dataset": {"exchange_rates": [{"currency": "USD", "eur_per_unit": 1}]},
-        "institutes": [{"jurisdiction_id": "A", "funding": [record]}],
+        "institutes": [{"id": "a", "jurisdiction_id": "A", "funding": [record]}],
     }
     if currency != "EUR":
         from scripts.check_page import short_amount, half_up_two

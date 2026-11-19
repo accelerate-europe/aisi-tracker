@@ -12,6 +12,120 @@ from scripts.check_page import GENERIC_PARTNER_HOW, PLURAL_PARTNER_HOW, expected
 PAGE = Path(__file__).resolve().parents[1] / "site/index.html"
 
 
+def test_staff_bars_require_a_dated_total_and_keep_bounds_and_zero():
+    source = PAGE.read_text()
+    helpers = source[source.index("  function selectedRecord("):source.index("  // Staff counts arrive")]
+    helpers += source[source.index("    function comparedBudget("):source.index("    var fundItems =")]
+    script = """
+const assert=require('node:assert/strict'), BAR_TIP='Minimum positive width';
+function el(tag,className){return {tag,className,dataset:{},style:{},children:[],setAttribute(k,v){this[k]=v;},appendChild(n){this.children.push(n);}};}
+""" + helpers + """
+const institute=record=>({display:{total_staff:record?'staff':null,staff_records:record?{staff:record}:{}}});
+for (const record of [null,{total:25},{total:25,as_of:''},{target:50,as_of:'2026-10'},{technical:20,as_of:'2026-10'},
+  {total:'25',as_of:'2026-10'},{total:NaN,as_of:'2026-10'},{total:Infinity,as_of:'2026-10'}]) assert.equal(comparedStaff(institute(record)),null);
+for (const qualifier of ['exact','about','at_least','at_most','more_than','less_than','nearly']) {
+  const record={total:140,total_qualifier:qualifier,as_of:'2026-10',display:{total:'140'}};
+  assert.equal(comparedStaff(institute(record)),record);
+  const words={exact:null,about:'about',at_least:'at least',at_most:'up to',more_than:'more than',less_than:'less than',nearly:'nearly'};
+  assert.equal(staffBound(record),words[qualifier]);
+  assert.equal(staffBound({technical_qualifier:qualifier,display:{technical:'30'}},'technical'),words[qualifier]);
+}
+const zero={total:0,as_of:'2026-10',display:{total:'0'}};
+assert.equal(comparedStaff(institute(zero)),zero);
+assert.equal(staffBound({display:{total:'~240'}}),'about');
+for (const [value,scale,wanted] of [[140,250,'56.00000000000001%'],[50,100,'50%'],[0,250,'0%'],[1,250,'0.4%']]) {
+  const track=measureBar(value,scale,false);
+  assert.equal(track.dataset.value,value);assert.equal(track.dataset.scale,scale);
+  assert.equal(track.children.length,1);assert.ok(Math.abs(parseFloat(track.children[0].style.width)-parseFloat(wanted))<1e-10);
+  assert.equal(track.children[0].className,'bar-value');
+}
+assert.equal(measureBar(null,250,false).children.length,0);
+assert.equal(measureBar(5,10,true).children[0].className,'bar-value pending');
+"""
+    subprocess.run(["node", "-e", script], capture_output=True, text=True, check=True)
+
+
+def test_empty_staff_records_do_not_become_a_target_and_dated_targets_win():
+    source = PAGE.read_text()
+    helper = source[source.index("  function selectedRecord("):source.index("  // Staff counts arrive")]
+    choice = source[source.index('      var latest = selectedRecord(i, "staff", "total_staff")'):source.index("      function staffSummary()")]
+    script = """
+const assert=require('node:assert/strict'), comparedStaff=()=>null;
+""" + helper + "\nfunction choose(i){\n" + choice + "\nreturn described;\n}\n" + """
+const empty={id:'empty',display:{target:null}}, older={id:'older',target:100,as_of:'2025'}, newer={id:'newer',target:50,as_of:'2026-10'};
+const institute=records=>({display:{total_staff:null,technical_staff:null,staff:'empty',staff_ids:records.map(r=>r.id),staff_records:Object.fromEntries(records.map(r=>[r.id,r]))}});
+assert.equal(choose(institute([empty])),null);
+assert.equal(choose(institute([empty,newer,older])),newer);
+const a={id:'a',target:40,as_of:'2026-10'}, z={id:'z',target:60,as_of:'2026-10'};
+assert.equal(choose(institute([empty,z,a])),a);
+"""
+    subprocess.run(["node", "-e", script], capture_output=True, text=True, check=True)
+
+
+def test_funding_detail_keeps_each_record_in_its_own_group():
+    source = PAGE.read_text()
+    helper = source[source.index("      function detailsBody() {"):source.index('      var row = el("li", "fund-item"')]
+    script = """
+const assert=require('node:assert/strict');
+function el(tag,className,text){return {tag,className:className||'',text:text||'',dataset:{},children:[],
+  appendChild(n){this.children.push(n);return n;},insertBefore(n,before){this.children.splice(this.children.indexOf(before),0,n);},
+  get firstChild(){return this.children[0];},get lastChild(){return this.children[this.children.length-1];}};}
+const document={createTextNode:text=>el('text','',text)}, S={}, m={}, j={};
+const funding=[
+  {id:'own',coverage:'whole_institute',commitment:'adopted',amount:100},
+  {id:'component',coverage:'component',commitment:'adopted',amount:50,description:'Shared computing programme'},
+  {id:'proposal',coverage:'whole_institute',commitment:'proposed',amount:200},
+  {id:'related',coverage:'not_institute_specific',commitment:'adopted',amount:300},
+];
+const staff=[{id:'total',total:25,display:{total:'25'},as_of:'2026-10',notes:'Staffing qualification'},
+  {id:'target',target:50,display:{target:'50'},as_of:'2027'}];
+const i={staffing_profile:'Staff are seconded.',display:{funding_ids:funding.map(r=>r.id),funding_records:Object.fromEntries(funding.map(r=>[r.id,r])),
+  staff_ids:staff.map(r=>r.id),staff_records:Object.fromEntries(staff.map(r=>[r.id,r]))}};
+const fundOrder=['own-source','staff-source'];
+const staffSummary=()=>el('div','fund-staff-summary');
+const fundingRecord=item=>{const n=el('div','funding-record',item.id);n.dataset.record='funding';n.dataset.recordId=item.id;n.appendChild(el('p','',item.id));return n;};
+const relatedFunding=()=>el('div','related-funding','Related amounts');
+const publishedFunding=item=>item.description;
+const staffText=item=>item.display.total, withPeriod=text=>text, asOf=text=>'as of '+text, confTag=()=>null;
+const qualified=(value,parts)=>{const n=el('span','qualified');n.appendChild(el('span','value-line',value));n.appendChild(el('span','qualifiers',parts.filter(Boolean).join(' · ')));return n;};
+const fieldCitations=()=>[], staffCitations=()=>[], fundingCites=()=>el('span','cites');
+const sourcesBlock=order=>el('div','srcs',order.join(',')), missing=()=>el('span','missing','Not published');
+""" + helper + """
+const body=detailsBody(), groups=body.children.filter(n=>n.dataset.group);
+assert.deepEqual(groups.map(n=>n.dataset.group),['Own funding','Proposals','Related funding','Staff records']);
+const ids=group=>group.children.filter(n=>n.dataset.record).map(n=>n.dataset.recordId);
+assert.deepEqual(groups.map(ids),[['own','component'],['proposal'],['related'],['total','target']]);
+assert.equal(groups[0].children.find(n=>n.dataset.recordId==='component').firstChild.text,'Component: Shared computing programme');
+assert.ok(groups[2].children.some(n=>n.className==='related-funding'));
+assert.equal(body.children.find(n=>n.className==='staffing-note').text,'Staff are seconded.');
+assert.equal(body.children.find(n=>n.className==='srcs').text,'own-source,staff-source');
+const all=node=>[node,...node.children.flatMap(all)];
+assert.ok(all(body).some(n=>n.text==='Staffing qualification'));
+assert.ok(all(body).some(n=>n.text==='target 50'));
+assert.ok(all(body).some(n=>n.text==='as of 2026-10'));
+"""
+    subprocess.run(["node", "-e", script], capture_output=True, text=True, check=True)
+
+
+def test_funding_fold_close_returns_to_its_row_and_native_fold_to_its_summary():
+    source = PAGE.read_text()
+    helper = source[source.index("  function foldClose("):source.index("  // Overflow-x makes")]
+    script = """
+const assert=require('node:assert/strict');let returned;
+function closeButton(callback){return {callback,classList:{add(){}}};}
+function returnToOpener(opener){returned=opener;}
+""" + helper + """
+const summary={}, opener={setAttribute(k,v){this[k]=v;}};
+for (const given of [opener,null]) {
+  const fold={open:true,appendChild(n){this.button=n;},querySelector(){return summary;}};
+  foldClose(fold,given);fold.button.callback();
+  assert.equal(fold.open,false);assert.equal(returned,given||summary);
+}
+assert.equal(opener['aria-expanded'],'false');
+"""
+    subprocess.run(["node", "-e", script], capture_output=True, text=True, check=True)
+
+
 def partner_fold(items, label="Partners", unfolded=False):
     source = PAGE.read_text()
     helper = source[
@@ -376,6 +490,7 @@ def test_detail_oracle_rejects_reordered_and_duplicate_citations():
         "jurisdictions": [{"id": "XX", "kind": "state", "status": "established"}],
         "institutes": [
             {
+                "id": "institute",
                 "jurisdiction_id": "XX",
                 "funding": [
                     {
@@ -405,7 +520,7 @@ def test_detail_oracle_rejects_reordered_and_duplicate_citations():
             f'<a class="cn" data-source-id="{sid}" href="https://example.org/{sid}">{[s["id"] for s in sources].index(sid) + 1}</a>'
             for sid in ids
         )
-        html = source_alignment_card(source_list) + f'<article class="fund-item" data-j="XX">{source_list}<p data-record="funding" data-record-id="budget">Published budget<span class="cites">{cites}</span></p></article>'
+        html = source_alignment_card(source_list) + f'<li class="fund-item" data-j="XX" data-institute="institute">{source_list}<p data-record="funding" data-record-id="budget">Published budget<span class="cites">{cites}</span></p></li>'
         findings = check_source_alignment(html, data)
         assert all("record citations differ" in e for e in findings), findings
         return findings
@@ -747,11 +862,25 @@ def test_funding_gate_rejects_a_source_statement_for_undisclosed_funding():
             "institutes": [{"id": "institute", "jurisdiction_id": "XX", "funding": [record], "staff": []}]}
     listing = '<div class="srcs"><ol></ol></div>'
     statement = '<details class="source-statement"><summary>Source statement</summary><p>Generated negative.</p></details>'
-    html = source_alignment_card(listing) + f'<article class="fund-item" data-j="XX">{listing}<div data-record="funding" data-record-id="budget"><p>Not published</p>{statement}</div></article>'
+    html = source_alignment_card(listing) + f'<li class="fund-item" data-j="XX" data-institute="institute">{listing}<div data-record="funding" data-record-id="budget"><p>Not published</p>{statement}</div></li>'
     assert check_source_alignment(html.replace(statement, ""), data) == []
     assert check_source_alignment(html, data) == ["XX: a generated undisclosed-funding line is shown as a source statement"]
     record["display"] = {}  # a legacy record's authored description may show as a statement
     assert check_source_alignment(html, data) == []
+
+
+def test_component_name_check_accepts_published_currency_words_but_requires_the_name():
+    from scripts.check_page import check_source_alignment
+
+    record = {"id": "component", "coverage": "component", "currency": "GBP", "description": "£240m for a shared programme", "citations": {"description": ["source"]}}
+    data = {"sources": [{"id": "source", "url": "https://example.org/source"}],
+            "jurisdictions": [{"id": "XX", "kind": "state", "status": "established", "source_ids": []}],
+            "institutes": [{"id": "institute", "jurisdiction_id": "XX", "funding": [record], "staff": []}]}
+    listing = '<div class="srcs"><ol><li data-source-id="source"><a href="https://example.org/source">Source</a></li></ol></div>'
+    label = 'Component: GBP 240m for a shared programme'
+    html = source_alignment_card(listing) + f'<li class="fund-item" data-j="XX" data-institute="institute">{listing}<div data-record="funding" data-record-id="component"><p class="fund-component">{label}<span class="cites"><a class="cn" data-source-id="source" href="https://example.org/source">1</a></span></p></div></li>'
+    assert check_source_alignment(html, data) == []
+    assert any("component" in error for error in check_source_alignment(html.replace(label, "Component"), data))
 
 
 def test_all_real_funding_disclosures_separate_native_figures_from_source_statements():
@@ -827,7 +956,7 @@ def test_native_funding_gate_rejects_wrong_amount_and_wrong_field_evidence(
     record = {"id": "budget", "amount": amount, "amount_qualifier": qualifier, "currency": currency, "description": "A sourced statement.", "source_ids": ["amount", "statement"], "citations": {"amount": ["amount"], "description": ["statement"]}}
     data = {"dataset": {"exchange_rates": [{"currency": "USD", "eur_per_unit": 0.5}]}, "sources": [{"id": identity, "url": "https://example.org/" + identity} for identity in ("amount", "statement")], "jurisdictions": [{"id": "XX", "kind": "state", "status": "established", "source_ids": []}], "institutes": [{"id": "institute", "jurisdiction_id": "XX", "funding": [record], "staff": []}]}
     listing = '<div class="srcs"><ol><li data-source-id="amount"><a href="https://example.org/amount">Amount</a></li><li data-source-id="statement"><a href="https://example.org/statement">Statement</a></li></ol></div>'
-    html = source_alignment_card(listing) + f'<article class="fund-item" data-j="XX">{listing}<div data-record="funding" data-record-id="budget"><p class="funding-native"><span class="budget-amount">{label}</span><span class="cites"><a class="cn" data-source-id="amount" href="https://example.org/amount">1</a></span></p><details class="source-statement"><summary>Source statement</summary><p>A sourced statement.<span class="cites"><a class="cn" data-source-id="statement" href="https://example.org/statement">2</a></span></p></details><p class="funding-metadata"></p></div></article>'
+    html = source_alignment_card(listing) + f'<li class="fund-item" data-j="XX" data-institute="institute">{listing}<div data-record="funding" data-record-id="budget"><p class="funding-native"><span class="budget-amount">{label}</span><span class="cites"><a class="cn" data-source-id="amount" href="https://example.org/amount">1</a></span></p><details class="source-statement"><summary>Source statement</summary><p>A sourced statement.<span class="cites"><a class="cn" data-source-id="statement" href="https://example.org/statement">2</a></span></p></details><p class="funding-metadata"></p></div></li>'
     def errors(text):
         findings = check_source_alignment(text, data)
         assert not any("matched 0" in error for error in findings), findings

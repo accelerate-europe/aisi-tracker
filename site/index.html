@@ -32,17 +32,17 @@
  * Trailing qualifiers (owner, 18 Nov 2026): a function status or source caveat stays whole. It follows the name with a visual-only dot when it fits; otherwise it starts on the next line at the name's text edge, without the dot. Function statuses use the name's baseline rhythm, outside its button and before its summary. A small layout pass measures the available line after opening, resizing and font changes (check_page check_status_qualifiers).
  * Column-head labels: in every table's head, no two labels on one line sit closer than HEAD_LABEL_GAP (6 px) and none overlaps, at phone and desktop widths, at 110% text and in both themes; the grid's leaning function heads are held apart by their own flag test (check_page check_head_labels, check_functions_tint).
  * Functions table: institute rows in established and not-yet-established blocks, function columns in vocabulary groups, equal widths and rotated short heads. The page prints each group's label from one constant per group (Testing and science, Rules and standards, Informing government, Ecosystem and adoption; owner, 18 Nov 2026), so a word can be changed in one place; the data keeps the recorded group names (Rules, Ecosystem). Active and both use a dot, assigned a ring; not found is blank, a search result rather than absence. The jurisdiction column stays visible during sideways scrolling. Hover and focus tint the row and one continuous column through the block bands, with a slanted band behind its head. Columns are evenly spaced with no gutter between groups; a slightly stronger vertical line marks where a group starts, quieter than the selected outline in both themes, and row lines and the row and column tint run through unbroken; a group label longer than its own tracks takes a second line (owner, 18 Nov 2026). Each group has a leaning boundary and an underline at its label, meeting the upright body rules at the head rule; the shared head height follows the head type, leaving at least --sp-1 above every head tip. No upright rule crosses the head zone, and labels paint above the hover flag and boundaries. Quotes and sources open on demand below the selected institute (check_page check_functions_table, check_functions_detail, check_functions_layout, check_functions_tint, check_function_group_tabs).
- * Selection box: an open function cell, phone row or phone function, and a selected search or palette row, has one even box on all four sides, inset within its padding box and above tints and rules. A following detail and its sticky header backing stay within that detail, leaving the opener's bottom edge whole (check_page check_selection_boxes).
+ * Selection box: an open function cell, grouped Functions or Funding row, phone function, and a selected search or palette row, has one even box on all four sides, inset within its padding box and above tints and rules. A following detail and its sticky header backing stay within that detail, leaving the opener's bottom edge whole (check_page check_selection_boxes).
  * Tinted rows: while the functions table fits, the lit row's tint extends --sp-2 past both ends through pseudo-elements, keeping its text inside the tint and its row label on the content grid edge. During sideways scrolling the scroll box clips the tint, leaving the label on the clipped edge; this is a known limitation. The panel stays in place with its left edge aligned to the row text's left edge. Every other tinted, hovered or selected row (world rows, States lists, the arrived card, search, palette and download rows) keeps its text at least its inline padding inside the background (check_page check_tinted_rows).
  * Functions legend: marks and their names share one line directly under the desktop table, with equal gaps between visible items and no space reserved for the blank mark. The blank entry says no public text was found and this is not proof of absence. Whole items wrap on phones, retaining their pips; the caveat can wrap within its item. The head holds only the most-common line. How to open evidence belongs in How this is coded, with row order and the provisional list at its end (check_page check_functions_table, check_functions_layout).
- * Method: explanation folds follow the content they explain, including the Functions table and legend and the Funding chart and budget list. Owner-owned reader summaries link to the full editorial rules on a separate page; rule anchors stay stable (check_page check_functions_table).
+ * Method: explanation folds follow the content they explain, including the Functions table and legend and every Funding row. Funding's reference-year and scope text also follow the rows. Owner-owned reader summaries link to the full editorial rules on a separate page; rule anchors stay stable (check_page check_functions_table).
  * Type: title, label, body, meta, figure, plus fn-group for functions group labels on narrow phones; label, body and meta fixed up to 1200px and growing to their wide-screen sizes at 1440px, so tables and cards fit at 1100px and wider with default settings; the functions table also fits from 1080px. Figure and title grow from phone width; shared size, weight, family and role-specific line height. The headline is the figure role with only its numbers at figure weight, its words at body weight.
  * Content grid: section headings sit above their content and stay static below 1280px; from 1280px they occupy a sticky column beside the body. Each section body has two left-aligned widths: its full width for tables, card grids, charts and row lists, and --prose for running text. Internal row tracks keep their alignment. The full-width first section is the only exception: the geographic map may bleed, and its stacked map/tools/side retain --map-stack-width, with --region-list keeping state and institute names together (check_page check_content_grid).
  * Measure: running text, including News text and Method list items, stops at --prose; structural lists and panels span the content width (check_page check_text_measure, check_content_grid).
- * Secondary tone: --muted is for source apparatus (citations, sources, re-read lines, translation markers and source dates), method notes and field labels. Facts, body roles and qualifiers needed to read values use --ink; type sizes do not decide their colour (check_page check_secondary_tone).
+ * Secondary tone: --muted is for source apparatus (citations, sources, re-read lines, translation markers and source dates), method notes and field labels. Facts, body roles and qualifiers needed to read values use --ink; type sizes do not decide their colour. Funding's unbarred values and their qualifiers use --muted, with "not charted" for a published amount and "Not published" for a missing one (owner, 19 Nov 2026; check_page check_secondary_tone).
  * Panel measure: claims, quotations, context, re-read lines and sources share --prose from the panel's left content edge, including phone details, definitions and record folds; in a function's panel the quote control ends the source line and only the opened quote sits indented beneath it, its content sharing that indented edge (owner, 18 Nov 2026); inline quotations stay inline (check_page check_panel_measure).
  * Function detail: a grid cell is a mark, so its panel starts with the full function label and a muted status sentence naming the institute's short form: "Assigned to UK AISI, and active", "Assigned to KI Norge", "KI Norge is active, without an assignment" (owner, 18 Nov 2026). Claims directly beneath a named function in the grouped view omit the repeated function heading and status. The whole opened block, including basis labels, quotes and anchors, starts at or after the function name's text edge at every width. The row keeps any extra status information, including "without an assignment", and its selected and focus outline encloses both name and status, though the status stays outside the button. The inline region takes its accessible name from that button. In both views, mixed claims keep the block labels Assignment, then Activity. Each claim reads: its sentence, without a citation number, then its source line in the running form (Sources), ending after " · " with "Quote" and the fold chevron in the source line's size and muted ink; the quote opens beneath, indented. Cards and full records keep sentence then Quote, with their sources in the counted Sources. All quote folds follow Claims for their accessible name and translation line. The grid panel stays at its scroll box's left edge and takes its clientWidth in pixels (check_page check_functions_detail, check_functions_phone, check_functions_views).
- * Sticky reading heads: at every width, grouped Functions and every table head stay directly below the real navigation and group row bottom, including sideways-scrolling tables. Overflowing tables move their real head within the table, preserving column alignment and semantics. At every width, a long detail's compact identity and sole close × stay within that detail at the same top, replacing a table head while reading it. Closed mini cards keep the country and first finding sentence; open ones show the country in their sticky summary and the complete finding once beneath it. Funding keeps "Funding and staff records" when closed and shows the institute in its open sticky summary; its records stay beneath it. Both folds have a separate close × alongside the summary; the open summary spans the row to paint behind that close. Full States cards keep their sticky title. Close has at least a 44px square hit area and returns focus to the visible opener. Focus and anchor clearance includes the active head for grouped rows, functions, claims and their links; print keeps heads static (check_page check_functions_views, check_functions_phone, check_wide_layout, check_card_heads).
+ * Sticky reading heads: at every width, grouped Functions and every table head stay directly below the real navigation and group row bottom, including sideways-scrolling tables. Overflowing tables move their real head within the table, preserving column alignment and semantics. At every width, a long detail's compact identity and sole close × stay within that detail at the same top, replacing a table head while reading it. Closed mini cards keep the country and first finding sentence; open ones show the country in their sticky summary and the complete finding once beneath it. Funding's native fallback keeps "Funding and staff records" when closed; its open sticky summary shows the institute, with the records beneath it. Both folds have a separate close × alongside the summary; the open summary spans the row to paint behind that close. Full States cards keep their sticky title. Close has at least a 44px square hit area and returns focus to the visible opener. Focus and anchor clearance includes the active head for grouped rows, functions, claims and their links; print keeps heads static (check_page check_functions_views, check_functions_phone, check_wide_layout, check_card_heads).
  * Inline emphasis: inherit the paragraph's size and family, at most medium weight; no run-in heading role.
  * Sources: a collapsed card ends with the counted sources control alone (muted meta, no top rule, inline hit height); a card reached from the map also ends with "Back to map" before its Sources control; the check date and correction follow the expanded list.
  * Separators: each item of a dot-separated line is one unbreakable box, so lines break only between items (an item wraps inside only when it alone is wider than its container); middle dots stay with the preceding item's final word and are hidden where a line breaks.
@@ -51,7 +51,7 @@
  * Card grids: alphabetical rows share field tracks through subgrid; every field keeps a fixed shared track (Mandate and Finding share the descriptive-text track); a structurally absent field leaves its track empty, without a label; where a row has three tracks, a group's only card spans two (check_page check_card_grid), while a single trailing card in a fuller group's last row keeps the usual card width; phones keep one column.
  * Card heads: country, status and download stick below the site bars within their own card in Compare and States, including phones; the one-line name keeps its full accessible text and tooltip, with ellipsis when needed. CSS sizes the shared title track and focus clearance from the label line, hit height, rules and padding, without copies or measurement; the institute stays in its field and print keeps static heads (check_page check_card_heads, check_saved_card_heads, hydration_paint).
  * Alignment: every text row shares its first baseline, including wrapped text, smaller labels, icons and format tags; within a card every field's value starts at one x.
- * Funding rows: the state name leads with its status swatch; only a status other than established is named, in brackets in ink ("Norway (proposed)"); established stays in the accessible name. The row's three tracks stack where they no longer fit the section (a container query in rem, so enlarged text stacks them earlier); stacked, the Sources control closes the row after Staff.
+ * Funding rows (owner, 19 Nov 2026): one compact row per institute under Established and Not yet established bands, using the grouped Functions view's shared subgrid, full-width hairlines and row padding. Within each band: compared annual budgets descending, other published own amounts, then Not published; ties by state name, then institute ID. The state leads with its status swatch; only a non-established status is named, in brackets in ink, and established stays in the accessible name. The recorded short institute name has its full name on hover, focus and tap. Desktop identity fits the longest state and short institute name together, plus padding; Budget and Staff each have a bounded bar track (4rem to 10rem, 6% of section width) and share the remaining width equally for figures, with an 8px gap at standard text size. Heads, bars and figures share their tracks, closed, hovered and open. Amounts with native currency stay on one line; qualifiers run beneath them, at most two lines at 1440px, with per-resident last. Rows without figures take one text line plus the shared padding. Below 60rem of section width, identity comes first; each measure has a 3rem label, 3rem bar and flexible figure on the same line, with qualifiers beneath the figure and normal wrapping. Missing measures put the label and muted words on one line. An empty spanning button opens the full-width records in place; citations and focusable qualifiers are operable siblings above it. Opened prose cannot size the shared columns. The native Funding and staff records fold remains available without the page script (check_page check_funding_outside, check_funding_weights, check_funding_layout_states, check_funding_large_text, check_tinted_rows).
  * Status: square swatch plus name; the AE fill ladder, never black and never colour alone: established solid fill, planned an edge, a page-colour ring inside it and a solid centre of the mark's own shape (square on swatches, round on map dots), proposed hatch, exploring an empty ring, none identified a thin grey outline on the page colour, the square swatch with a short grey dash across its centre so it never reads as an empty checkbox (map dots keep the plain outline); every mark's edge is at least 3:1 on the ground and its text at least 4.5:1 on what is behind it, in both themes (check_page check_status_contrast); each map legend name carries its short definition as a tooltip (hover, focus or tap); a status square's tooltip takes the map dot's form, the state's name, then its status on a muted line; a card under a status group heading shows no status in its title row, which keeps it in the accessible name (as the funding rows do); the EU entry shows none either: its dated Status row says it, as on every other card (owner, 5 Nov 2026; check_page check_label_ladder); Known activity shows no swatch (squares are for status), only each kind found on its own line in date order ("Joint testing", with its own citations) and its muted "since <earliest date of that kind>" beneath; its tooltip defines "since"; with nothing found it says "None found yet" on one line; no line breaks mid-phrase.
  * Headline: full width above the map and the region list, following the selected region, World by default: "N of M [European] states have an AI Security Institute. K more are planning, proposing or exploring one." ("European" defines the 32-state scope on hover, focus or tap); worded from the data, never activist; each sentence wraps as a unit and a number never ends a line; room for its longest form, so a region switch moves nothing below (check_page check_headline, check_first_screen).
  * Map: one geographic map re-centred per region (the World view by default, cropped to the inhabited latitudes and the institutes' longitudes so it fills the shared frame (on phones, where the list sits below the map, the World view has its own shorter frame); Europe is the UN region, its 32-state scope counted and the other European states listed apart under their own subheading, uncounted; the region list's World view row shows only while another region is selected and moves to World), one dot per state near its country's centre, with the Status ladder as round marks drawn by one function; a hover, focus or selection highlight is the same mark, larger, with an ink ring around it, never a changed mark (check_page check_status_states); selecting the EU outlines the members' merged outer border; in region views each state's name sits beside its own dot, clearly nearer it than any other dot, edge to edge (every other dot at least 1.5 times as far), or takes its short name (NL) where the full name has no such place; a thin leader line to a name set further out is allowed only where that name still meets the same rule, since readers match a name to the nearest dot; no name covers another state's dot or name (check_page check_map_labels); vendored d3 and topology (site/assets), no third-party scripts; one drawing for wide screens and one for phones, both saved in the pre-rendered page, so nothing flashes.
@@ -69,7 +69,7 @@
  * Archived copies (owner, 18 Nov 2026, "only when needed"): a source that could not be re-read ends its source line with " · archived copy" after its caveat, wherever it is named; a record's source list (the counted sources, a full record's Sources, a group's sources) also ends every other source that has an archive URL with it; a claim's own source line and Method's inline links give no other archived copy. Quiet link in muted ink with a muted underline, no arrow, never broken across lines; superscript citations never carry one (check_page check_archive_links).
  * Re-read line: a source list item whose source has a quotation with a re-read state shows that state once, from its quotations' states (docs/design/claims-1.1.md section 4). A source that could not be re-read (worst state offline, unreadable or quote not found; the earliest start, then offline before not found, then the earliest last found) ends its source line with " · last read {date}" (" · quote last found {date}" for a quote not found, as the source was read), then " · archived copy" where a copy exists; the full sentence is its tip and what a screen reader reads: "Source offline since {date}; last read {date}.", "Source could not be re-read since {date}; last read {date}.", "Not found in the source on {date}; last found {date}; under review." (with ": N of M quotes" after the first date when some quotations are still found) (owner, 18 Nov 2026). In a record's source list (the counted sources, a full record, a group's or a funding row's sources) any other source ends with one line of its own in the list's muted ink: "Source last re-read {date}."; nowhere else (owner, 18 Nov 2026, "source lists only"). A quotation or claim shown on its own shows only a failed state, its own, never its source's, as the full sentence with its archived copy; in a function's panel the claim's source line carries it instead; the page never says "verified" (check_page check_reread_lines).
  * Sorting: every table column sorts values by meaning, then values without a comparable figure, research gaps, structural absence; gaps stay last in both directions; ties by state name.
- * Links: inline text uses a thin muted-accent underline and accent ink; standalone links use position, icon or colour, with hover/focus underline or ink change. State names in linked lists (Testing and access, Institutional set-up, Budget not published) take the accent link style; None identified names take the card title's type (check_page check_name_roles). News names share the quiet date label.
+ * Links: inline text uses a thin muted-accent underline and accent ink; standalone links use position, icon or colour, with hover/focus underline or ink change. State names in linked lists (Testing and access, Institutional set-up) take the accent link style; None identified names take the card title's type (check_page check_name_roles). News names share the quiet date label.
  * Symbols (owner, 18 Nov 2026, "no key, one rule"): a symbol stands alone only if it is the close ×, a fold chevron, the external-link arrow or the download symbol, and then names itself on hover and for screen readers; any other symbol carries its word (the feed symbol with "Feed" or "Follow updates", Columns with its label at every width). Quote folds show their word with the chevron. Data marks (function cells, map dots) keep their legend. There is no symbols key. Two named exceptions stay icon-only, each named on hover and for screen readers: the theme switch and the (i) notes (owner, 18 Nov 2026) (check_page check_symbols).
  * Downloads (owner, 18 Nov 2026): every section that shows a table or list (Functions, Testing and access, Institutional set-up, Funding and staff, News, The world) ends with one foot row: its explanation or sources fold, if any, at the left and its download alone at the right end, the download symbol named on hover, focus and for screen readers with what it holds and its format. One format per icon; where several exist (The world) the icon opens its menu, which opens upward over the table. News adds the feed symbol with "Feed" left of its icon; the footer ends with the feed symbol and "Follow updates"; Data lists the files, then "For programs and agents" (API index, llms.txt, feed), each a row with a one-line description. A state's record keeps its icon-only JSON in its card head (check_page check_controls, check_news_layout, check_agent_files, check_symbols).
  * External markers: marked links end in a compact SVG arrow with body-weight stroke and retain accessible new-tab text in every theme.
@@ -81,15 +81,15 @@
  * Tooltip cues: the dotted underline marks abbreviations and glossary terms only (abbr.g, the legend names, "Privileged", "European", MOU, institute short names); a value with a tooltip ("Medium confidence", "28 days", "~EUR 1.0 per resident (2025)", a median ceiling, a developer, a provision; "Not published") keeps its tooltip and focus with no underline (owner, 5 Nov 2026; check_page check_tooltip_cues). In a card (its summary row and its body each), or the record panel, a term is marked once, at its first use there, and not at all where that use spells it out (check_page check_terms_once).
  * Missing: absence found by research is written out ("Not published" for unknown values with a tooltip, never zero; "None found yet"); absence by category (no institute yet) is structural: cards omit the row, the table shows a muted dash and hides a column that is inapplicable to every visible row. Each term explains itself in its tooltip, alike in cards and table (Not published, None found yet, None identified, and the dash once in the table's column headers); a complete list is no research gap, so the Network column says "Not a member" with its own tooltip and sorts it after members; no legend lines (check_page check_absence_wording).
  * Scope: Testing and access, Institutional set-up, and Funding and staff cover every institute whatever its status, without introductory sentences repeating that scope (owner, 19 Nov 2026). A state outside that scope shows a dash, never Not published. Budget and Staff show on every institute's card, record and table row, Not published where nothing is found, and the table's dash means the state has no institute; Known activity stays with established institutes (check_page check_supporting_text, check_operating_output).
- * Figures: ISO currency + amount; ~ estimates to 3 significant figures, + lower bound, "up to" upper bound; technical counts labelled.
- * Values and qualifiers: in cards, table and funding alike, a field's value leads on its own line and its qualifiers (as-of date, scope, basis, confidence: 'as of Apr 2026', 'FY2024 supplementary') sit on one small ink line beneath; the unit named by the label is not repeated; a staff total is labelled "Latest total" only where a technical figure sits beside it; a funding row's amount without a bar ends its qualifier line with "not charted"; where funding rows stack, Budget and Staff each take a label above the value, with labels, values and qualifiers on one left edge (check_page check_funding_key).
+ * Figures: ISO currency + amount; ~ estimates to two significant figures, + lower bound, "up to" upper bound; technical counts labelled.
+ * Values and qualifiers: in cards, table and funding alike, a field's value leads on its own line and its qualifiers (as-of date, scope, basis, confidence: 'as of Apr 2026', 'FY2024 supplementary') sit in meta beneath it, in ink except Funding's unbarred values (Secondary tone); the unit named by the label is not repeated. A staff total is labelled "Latest total" only where a technical figure sits beside it. A funding row's published value without a bar ends its qualifier line with "not charted". Where funding rows stack, Budget and Staff each take a narrow label column beside the shared bar and figure tracks, with qualifiers aligned under their figure (check_page check_funding_key).
  * Intervals: cards only, and only an exact interval (equal bounds; a range from a month-only or year-only date stays in the downloads): an ink qualifier under Status ("Established since 21 Feb 2024") giving the announcement or proposal date and the interval to it ("Announced on 24 Jan 2024, 28 days earlier"; the date alone when the interval is a range, nothing when the date is not exact), and its own ink line under the first qualifying Known activity item, counted from establishment ("Joint testing began about 17 months after it was established"); producer wording (display.intervals), the kind label and "began" added by the page, each with a tooltip saying it is not a measure of speed or quality.
- * Funding: the amount leads, with period, kind and commitment in ink below; full descriptions stay in Source statement disclosures, except a migrated record's generated line for undisclosed funding, which shows none (display.generated_description), with notes and confidence visible; wider money has a separate Related funding line. The chart is headed with its reference year; adopted bars are solid, announced hatched, and proposals never make a bar; period means are labelled. Own funding without a bar follows the chart as one ink line of Budget values, each with its qualifiers and citations. A charted state budget adds its per-resident figure with the population year as its last qualifier, never broken across lines, its caveat in that figure's tooltip; a key of two bar swatches (adopted, announced) sits over the bars, with no axis labels (each bar prints its value and the full-width tracks share one scale); the minimum-width caveat is the bars' tooltip (check_page check_per_person, check_funding_key).
+ * Funding: Budget and Staff each have a column head naming their units and their own zero-based scale, shared across both status bands. The adopted solid / announced hatched key belongs only to Budget; proposals never make a bar and period means are labelled. Staff bars require a published total with a date; bounds, approximation and dates are written beneath the count, and a range, technical-only count or target never becomes a total bar. Each bar is value divided by scale, with only a 2px floor for non-zero values and its caveat in the tooltip; a genuine zero has zero width. A charted state budget keeps its per-resident figure and population year as its last qualifier, with the caveat in its tooltip; it can wrap within the phone figure column. An opened detail has the full institute name and sole sticky close ×, returning focus to the row. It holds current total and technical staff, every staff record and staffing note, Own funding with components named, Proposals, and separately labelled Related funding; each canonical record appears once in that inventory. Full funding descriptions stay in Source statement disclosures, except a component's visible name and generated undisclosed-funding lines (display.generated_description); notes and confidence stay visible. Citations, row-local Sources, archives, re-read lines and correction link remain in the detail. The explanation and reference year follow all rows, then the existing How this is chosen and funding CSV foot row, including its staff.csv hint (check_page check_funding_bars, check_staff_figures, check_per_person, check_funding_key).
  * Periods: annual units appear once; retain fiscal/date context without repeating the unit.
  * Dates: day Mon year, Mon year or year, preserving source precision; tabular numerals for dates and figures; a date never breaks across lines.
  * Rhythm: tighter meta leading; line gap < row gap < header gap < card gap < section gap; folds follow content at the row gap; a repeated component keeps the same spacing in every section (an inline mark's or chip strip's outer margin belongs to the context that places it).
  * Theme: follows the system setting by default; one icon-only toggle, at the right end of the sticky section bar (in the header on phones, up to 430px, where the bar holds only the five tabs), moves through follows system, light and dark, and a light or dark choice is remembered (localStorage aisi-theme; back to follows system clears it), set before first paint, also on Method, the API index and the 404 page; Method has the section bar's look, its title linking back to the tracker and the toggle at its end at every width (check_page check_method_pages); without light-dark() support the page stays light and the toggle is hidden; without scripting the page follows the system and the toggle is hidden (check_page check_theme_default, check_light_fallback).
- * Off-screen sections: a switch of theme repaints only what is near the viewport. The sections that hold most of the page (Funding and staff, Europe, The world), and within them each card row and funding row, skip style and paint while off-screen, at the size they last rendered, so scrolling, anchors and the restored scroll position land as without it (check_page check_offscreen_sections).
+ * Off-screen sections: a switch of theme repaints only what is near the viewport. The sections that hold most of the page (Funding and staff, Europe, The world), and within them each card row, skip style and paint while off-screen, at the size they last rendered, so scrolling, anchors and the restored scroll position land as without it. Funding rows remain in the shared subgrid without layout or paint containment; their section still skips off-screen (check_page check_offscreen_sections, check_funding_layout_states).
  * Theme parity: control fill, control border, selection and hairlines keep a similar contrast step from the ground in light and dark; floating surfaces (paper) are exempt.
  * Highlight: the current item in a list or menu (the selected or hovered search suggestion, a hovered download menu item, table row or download) takes --highlight-fill, at least 1.17:1 from the paper in both themes and within 0.1 of the other theme's step, with every text on it at least 4.5:1; buttons and pressed states keep --selected-fill (check_page check_highlight_fill).
  * Controls: boxed only when standalone (toolbar, filters, menus): they share height, radius, border and focus; warm fill, quiet tinted selection. Controls inside content (table headers, list extensions, disclosures) take the context's type and colour, with hover/focus feedback.
@@ -105,7 +105,7 @@
  * Card download: a full card's title row, and a none-identified card's fold after its sources, end with an icon-only link to the state's API file, labelled "JSON, for scripts and research" (check_page check_state_download_buttons).
  * Focus: one style, the --highlight-fill tint: keyboard focus on a text control (link, text button, disclosure, tooltip term or value; table headers keep their label underline and ring) shows the tint behind it and a 2px underline in --focus (the tint alone is under 3:1 on the ground; the underline is at least 3:1 in both themes); a region tab shows the tint alone, as its underline means selected (owner, 5 Nov 2026); boxed controls (buttons, fields) keep their own edge; a heading or other non-control target that a section bar, group row, anchor or palette jump focuses (the Definition paragraph too) shows no ring, only the tint, fading after about 1.5s where motion is allowed; forced colours keep a system outline (check_page shared_links).
  * Arrival: a card reached by a link (the record beside the map, table row or shared link) takes the --highlight-fill tint, as a jumped-to heading does, and no outline; the tint lasts while it is the target, also after the page script takes over, and the card takes keyboard focus; arrival opens only the fold that holds the target (Folds, part 4); motion only adds a brief accent flash settling into the tint (owner, 5 Nov 2026; check_page check_arrival).
- * Disclosures: a control that extends a list with more of the same items sits after the list and keeps its place there ("Show N earlier" / "Show fewer"); a control that reveals different content (sources, records, method) sits after what it explains, at the end of its block: a card's counted Sources control, a section's foot row, the funding records under the bar (owner, 18 Nov 2026; the text now says what is built).
+ * Disclosures: a control that extends a list with more of the same items sits after the list and keeps its place there ("Show N earlier" / "Show fewer"); a control that reveals different content (sources, records, method) sits after what it explains, at the end of its block: a card's counted Sources control or a section's foot row. Grouped Functions and Funding use the whole row as the control for records immediately beneath it; Funding retains its native records fold without the page script (owner, 19 Nov 2026).
  * Folds (owner, 18 Nov 2026, "one rule, all four"): (1) a source list of more than three sits behind a counted fold, "N sources", and lists only the sources cited in the part it belongs to (a funding row's records number their own sources); three or fewer may stay open. (2) A fold's label names what is inside and carries a count whenever it hides a list ("Funding and staff records", "How the 13 partners work together", "4 members and how they work together", "Version history (14)"). (3) A list of like items shows three, then a counted control or "and N more" when two or more would be hidden (AI Act authorities, Other bodies, the Members and Partners lines); How we checked shows its first three paragraphs and folds every later search, even one, behind "N earlier searches"; nothing is cut without a count. (4) Every fold starts closed; a link opens the fold that holds its target, and the folds around it, and no other; a fold the reader opened stays open while they are on the page (check_page check_folds).
  * Command palette: Cmd+K on a Mac, Ctrl+K elsewhere, and "/" outside a text field open one modal dialog over the page, without moving it (a floating surface, wider than a menu, fading in only): the page's search field, then rows grouped under small muted labels, States and territories (status mark and region, as the map search), Sections (the Anchors), Regions (as the tabs) and Actions (the two theme states other than the current one, each its own row, the full JSON and states CSV downloads, copy the citation); a row's search words name only where it goes, so a typed "light" never offers a row that leads elsewhere; an empty field lists Sections and Regions first; the matcher ignores case and accents and ranks a name's start, a word's start, an institute's name, short form or former name (marked formerly), then text inside, one ranking shared by both searches; unmodified arrows, Home, End and Enter (never during input-method composition) work it without the mouse, the hovered or current row takes --highlight-fill, focus stays in the field and Esc returns it to where it was; a quiet ⌘K (or Ctrl K) hint at the map search's right end, none on touch screens and phones; without scripting nothing shows (check_page check_command_palette).
  */
@@ -144,7 +144,7 @@
 @font-face { font-family: "Source Sans 3"; font-style: normal; font-weight: 600; font-display: swap; src: url(assets/fonts/source-sans-3-v20-latin.woff2) format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
 /* Logical viewport boundaries, in px: 390 function labels; 400 group gaps; 430 theme/group labels;
    460 scrolled title; 560 navigation/hints; 640 phone forms; 700 short title; 1100 stacked map and two-column cards; 1280 section heading above content.
-   CSS and JS use <=/> at these same numbers, except section headings use <1280. Funding alone uses container width < 36.5rem. */
+   CSS and JS use <=/> at these same numbers, except section headings use <1280. Funding alone uses container width < 60rem. */
 :root {
   color-scheme: light;
   --ground: #FAF7F2; --paper: #FCFAF6;
@@ -176,7 +176,7 @@
   --sp-6: 1.5rem; --sp-7: 2rem; --sp-8: 2.5rem; --sp-10: 4rem; --sp-11: 5rem;
   --gap-row: var(--sp-4); --gap-header: var(--sp-6); --gap-card: var(--sp-8); --gap-section: var(--sp-10);
   --underline-width: .06em; --underline-offset: .15em; --underline-colour: var(--accent);
-  --bar-min: 2rem;
+  --bar-min: 2px;
   --r-sm: .25rem; --rule: 1px; --rule-strong: 2px;
   --motion-short: .15s; --motion-arrival: 1.5s; --motion-focus: 2.5s;
   --measure: 80rem; --prose: 49rem; --section-label: 10.75rem; --card-key: 7.5rem; /* fits the longest card label, 'Related funding', on one line */
@@ -438,11 +438,11 @@ input[type="checkbox"]:checked::after { content: ""; position: absolute; left: v
 .legend-name { color: var(--ink); }
 
 /* First screen: headline, then the map beside the region list (below it at 1100px and narrower); the record opens over the list. */
-/* Off-screen sections (principle: Off-screen sections): the three large sections, and their card rows and funding rows, skip style and paint while far from the viewport, at the size they last rendered, once the page script marks the page settled. */
-main section.offscreen, main section.offscreen :is(.card-row, .fund-item) { contain: layout style paint; overflow-clip-margin: var(--sp-2); } /* the containment skipping needs, from the first paint (also on the saved page), so text keeps its pixel rows when skipping starts; the margin keeps an arrived card's tint (its spread shadow) unclipped */
+/* Off-screen sections and card rows skip style and paint. Funding rows must participate in their shared subgrid even when closed; layout containment breaks that inheritance. */
+main section.offscreen, main section.offscreen .card-row { contain: layout style paint; overflow-clip-margin: var(--sp-2); } /* the containment skipping needs, from the first paint (also on the saved page), so text keeps its pixel rows when skipping starts; the margin keeps an arrived card's tint (its spread shadow) unclipped */
 main section.offscreen { contain-intrinsic-block-size: auto 100vh; }
-main section.offscreen :is(.card-row, .fund-item) { contain-intrinsic-block-size: auto 20rem; }
-:root[data-settled] main section.offscreen, :root[data-settled] main section.offscreen :is(.card-row, .fund-item) { content-visibility: auto; }
+main section.offscreen .card-row { contain-intrinsic-block-size: auto 20rem; }
+:root[data-settled] main section.offscreen, :root[data-settled] main section.offscreen .card-row { content-visibility: auto; }
 main section.first { display: flex; flex-direction: column; gap: var(--sp-5); border-top: 0; padding-top: 0; }
 .definition { font: var(--type-body); max-width: var(--prose); margin: calc(var(--sp-2) - var(--sp-5)) 0 0; } /* belongs to the headline above it: one link to the definition */
 .method-definition { max-width: var(--prose); margin: 0; } /* the section body's row gap separates it from the fold */
@@ -862,38 +862,61 @@ button.fn-function-label:focus-visible { outline: none; background: var(--highli
 /* The saved page was rendered at 1440 px, where the table fits: until the script measures again, every width keeps the scroll box and a static head. */
 html[data-prerendered] .fn-scroll.fits { overflow-x: auto; }
 html[data-prerendered] .fn-scroll.fits thead { position: static; }
-/* Funding: common zero-based scale, with the full records in folds */
-.fund-axis { font: var(--type-meta); display: grid; grid-template-columns: minmax(10rem, 1fr) minmax(12.5rem, 1.5fr) 11rem; gap: var(--sp-1) var(--sp-6); align-items: first baseline; color: var(--muted); border-bottom: var(--rule) solid var(--line); padding-bottom: var(--sp-3); } /* the funding rows' tracks, so the scale sits over the bars */
+/* Funding: equal, bounded measures on separate zero-based scales; records open across the list. */
+.fund-list { --fund-track: clamp(6rem, 12cqw, 9rem); display: grid; grid-template-columns: max-content repeat(2, calc(var(--fund-track) + var(--sp-2)) minmax(0, 1fr)); column-gap: var(--sp-2); }
+.fund-axis, .fund-block, .fund-block > ul, .fund-item { display: grid; grid-column: 1 / -1; grid-template-columns: subgrid; column-gap: inherit; }
+.fund-axis { font: var(--type-label); align-items: first baseline; color: var(--muted); border-bottom: var(--rule-strong) solid var(--ink); padding-block: var(--sp-2) var(--sp-3); position: sticky; top: var(--reading-top); z-index: 2; background: var(--ground); }
+.fund-axis > div { min-width: 0; padding-inline: var(--sp-2); }
+.fund-budget-head, .fund-staff-head { display: grid; grid-template-columns: subgrid; }
+.fund-budget-head { grid-column: 2 / 4; }
+.fund-staff-head { grid-column: 4 / 6; }
+.fund-axis :is(p, .fund-scale, .fund-key) { grid-column: 1 / -1; }
+.fund-axis p, .fund-bar-head, .fund-figure-head { grid-row: 1; }
+.fund-bar-head { grid-column: 1; }
+.fund-figure-head { grid-column: 2; }
+.fund-axis p { font: inherit; }
+.fund-scale { display: block; font: var(--type-meta); margin-top: var(--sp-1); }
+.fund-list[data-head-covered] > .fund-axis { visibility: hidden; }
 .fund-key { display: flex; flex-wrap: wrap; gap: var(--sp-1) var(--sp-4); align-items: first baseline; }
+.fund-axis .fund-key { font: var(--type-meta); margin-top: var(--sp-1); }
 .key-item { display: inline-flex; align-items: baseline; gap: var(--sp-2); white-space: nowrap; }
 .key-swatch { display: inline-block; flex: none; width: var(--sp-6); height: var(--sp-3); align-self: center; } /* a piece of each bar style, solid and hatched */
-.fund-list { display: flex; flex-direction: column; }
-.fund-nobar .fund-budget .fund-value > .budget-value { font: var(--type-body); color: var(--ink); } /* a body-sized figure per cell; staff keeps its full weight */
-.fund-nobar .fund-bar { background: transparent; } /* an empty track: space, no rule */
-.fund-none { display: flex; flex-wrap: wrap; align-items: first baseline; gap: var(--sp-1) var(--sp-4); padding-block: var(--sp-6); }
-.fund-none > ul { display: flex; flex-direction: row; flex-wrap: wrap; gap: var(--sp-1) var(--sp-2); margin: 0; padding: 0; list-style: none; max-width: none; }
-.fund-none > ul > li:not(:last-child)::after { content: ","; } /* "Budget not published France, Germany": the label names the subject (labels carry no colon), commas separate the names */
-.fund-item { display: grid; grid-template-columns: minmax(10rem, 1fr) minmax(12.5rem, 1.5fr) 11rem; gap: var(--sp-3) var(--sp-6); padding-block: var(--sp-6); border-bottom: var(--rule) solid var(--line); align-items: first baseline; }
-.fund-identity h3 { margin-bottom: var(--sp-1); display: flex; flex-wrap: wrap; align-items: first baseline; column-gap: var(--sp-2); }
-.fund-identity h3 .fund-status { font: var(--type-body); color: var(--ink); white-space: nowrap; }
-.fund-identity > span:not(.smark) { font: var(--type-body); display: block; }
-.fund-identity > .smark { margin-bottom: var(--sp-2); }
-.fund-value { font: var(--type-body); }
-.fund-value strong { font: var(--type-figure); font-variant-numeric: tabular-nums; letter-spacing: -.035em; }
+.fund-block > h3 { grid-column: 1 / -1; font: var(--type-label); padding: var(--sp-4) var(--sp-2) var(--sp-2); }
+.fund-block > ul { list-style: none; padding: 0; margin: 0; max-width: none; row-gap: 0; }
+.fund-item { position: relative; min-width: 0; }
+.fund-row { grid-column: 1 / -1; grid-row: 1; position: relative; padding: 0; min-height: var(--close-size); width: 100%; border: 0; border-bottom: var(--rule) solid var(--line); border-radius: 0; background: transparent; color: var(--ink); cursor: pointer; }
+.fund-item:last-child > .fund-row { border-bottom-color: transparent; }
+.fund-row:is(:hover, :focus-visible), .fund-row[aria-expanded="true"] { background: var(--highlight-fill); }
+.fund-row[aria-expanded="true"]::after, .fund-row:focus-visible::after { content: ""; position: absolute; inset: 0; border: var(--rule-strong) solid var(--focus); z-index: 2; pointer-events: none; }
+.fund-row:focus-visible { outline: var(--rule-strong) solid var(--focus); outline-offset: var(--rule-strong); }
+.fund-identity, .fund-measure { grid-row: 1; min-width: 0; padding: var(--sp-3) var(--sp-2); position: relative; z-index: 1; pointer-events: none; }
+:is(.fund-identity, .fund-measure) :is(a, [tabindex]) { pointer-events: auto; }
+.fund-identity { grid-column: 1; display: flex; align-items: baseline; gap: var(--sp-2); }
+.fund-identity h4 { display: flex; align-items: baseline; column-gap: var(--sp-2); font: var(--type-body); white-space: nowrap; }
+.fund-status { font: var(--type-meta); color: var(--ink); white-space: nowrap; }
+.fund-institute { font: var(--type-meta); white-space: nowrap; }
+.fund-measure { display: grid; grid-template-columns: subgrid; gap: 0 var(--sp-2); align-content: start; align-items: first baseline; }
+.fund-budget { grid-column: 2 / 4; }
+.fund-staff { grid-column: 4 / 6; }
+.fund-measure-label { display: none; }
+.fund-value { grid-column: 2; grid-row: 1; min-width: 0; font: var(--type-body); overflow-wrap: anywhere; }
+.fund-value strong, .fund-value .budget-amount { font: var(--type-body); white-space: nowrap; }
+.fund-measure .meta-item { display: inline; } /* running meta text uses the whole figure column, rather than wrapping whole phrases */
+.fund-measure.unbarred, .fund-measure.unbarred .fund-value, .fund-measure.unbarred :is(.qualifiers, .fund-context, .conf, .period-mean, .missing) { color: var(--muted); }
 .fund-context { font: var(--type-meta); color: var(--ink); margin-top: var(--sp-1); }
 .period-mean { font: var(--type-meta); color: var(--ink); }
-.fund-bar { position: relative; display: block; width: 100%; height: var(--sp-3); margin-block: var(--sp-2); background: var(--line); }
+.fund-bar { grid-column: 1; grid-row: 1; align-self: start; position: relative; display: block; width: 100%; height: var(--sp-3); margin-top: calc((var(--size-body) * var(--leading-body) - var(--sp-3)) / 2); background: var(--line); }
+.fund-bar:empty { background: transparent; }
 .bar-value, .key-swatch { background: var(--ink); }
 .bar-value { display: block; height: 100%; min-width: min(var(--bar-min), 100%); max-width: 100%; background: var(--ink); }
+.fund-bar[data-value="0"] > .bar-value { min-width: 0; }
 .bar-value.pending, .key-swatch.pending { background: repeating-linear-gradient(135deg, var(--ink) 0 2.5px, var(--line) 2.5px 8px); } /* announced: a quiet ink hatch on the track colour, stripes thinner than gaps, so a long bar does not shimmer */
 @supports (color: color-mix(in srgb, white, black)) { .bar-value.pending, .key-swatch.pending { background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--ink) 40%, var(--line)) 0 2.5px, var(--line) 2.5px 8px); } }
 @media print { .fund-bar, .bar-value, .key-swatch { print-color-adjust: exact; } }
 @media (forced-colors: active) { .fund-bar, .key-swatch { --ink: CanvasText; --ground: Canvas; --line: GrayText; forced-color-adjust: none; } }
-.fund-staff { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: first baseline; gap: var(--sp-1) var(--sp-2); }
-.fund-staff > .fund-context, .fund-staff > .conf { grid-column: 2; }
-.fund-budget-label { display: none; }
-.fund-budget { --detail-columns: 1; min-width: 0; }
-.fund-detail { font: var(--type-body); margin-top: var(--gap-row); }
+.fund-detail { grid-column: 1 / -1; grid-row: 2; min-width: 0; width: 100%; contain: inline-size; font: var(--type-body); margin-top: 0; padding: var(--sp-4); background: var(--paper); } /* opened prose cannot size the shared columns */
+:root[data-js] .fund-detail:not([open]) { display: none; }
+:root:not([data-js]) .fund-row { visibility: hidden; pointer-events: none; }
 /* The summary is the identity: no second title inside an open fold. Its close is a sibling, never a nested button. */
 :is(.card.mini, .fund-detail)[open] > summary { position: sticky; top: var(--reading-top); z-index: 3; min-height: var(--close-size); align-items: center; width: 100%; margin-bottom: 0; padding-block: 0; padding-right: calc(var(--close-size) + var(--sp-3)); background: var(--ground); }
 .card.mini[open] > summary .find { display: none; }
@@ -903,15 +926,17 @@ html[data-prerendered] .fn-scroll.fits thead { position: static; }
 .card.mini > .fold-close { margin-top: calc(-1 * var(--close-size) - var(--sp-2)); }
 :is(.card.mini, .fund-detail):not([open]) > .fold-close { display: none; }
 .fund-detail.more[open] > summary { font: var(--type-label); color: var(--ink); }
+.fund-detail[open] > summary { background: var(--paper); }
 .fund-detail[open] > summary .fund-head-name { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .fund-detail:not([open]) > summary .fund-head-name, .fund-detail[open] > summary .fund-fold-label { display: none; }
 :root:not([data-js]) .fold-close { display: none; }
 :root:not([data-js]) :is(.card.mini, .fund-detail)[open] > summary { padding-right: 0; }
 :root:not([data-js]) :is(.card.mini, .fund-detail)[open] > summary::after { display: block; } /* the native disclosure still closes without scripting */
-:where(.fn-phone, .fn-scroll, .table-scroll, .fn-detail, .card.mini, .fund-detail, .record) :is(a, button, summary, [tabindex], .fn-phone-functions > li, .fn-phone-claims, .fn-claim, .claim-text) { scroll-margin-top: calc(var(--reading-top) + var(--reading-head-height, var(--close-size)) + var(--sp-2)); }
+:where(.fn-phone, .fn-scroll, .table-scroll, .fund-list, .fn-detail, .card.mini, .fund-detail, .record) :is(a, button, summary, [tabindex], .fn-phone-functions > li, .fn-phone-claims, .fn-claim, .claim-text) { scroll-margin-top: calc(var(--reading-top) + var(--reading-head-height, var(--close-size)) + var(--sp-2)); }
 :is(.fn-detail-top, .record-top) :is(button, [tabindex]), .fold-close, :is(.card.mini, .fund-detail) > summary { scroll-margin-top: calc(var(--reading-top) + var(--sp-2)); }
-@media print { .fn-phone-head, .fn-detail-top, .record-top, .scroll.fits thead, .fn-scroll.fits thead, :is(.card.mini, .fund-detail)[open] > summary { position: static !important; transform: none !important; visibility: visible !important; box-shadow: none; } .scroll thead, .fn-scroll thead { transform: none !important; visibility: visible !important; } .fold-close { display: none; } }
-.fund-detail-body { display: grid; grid-template-columns: repeat(var(--detail-columns, 2), minmax(0, 1fr)); gap: var(--sp-6); margin-top: var(--sp-4); align-items: first baseline; }
+@media print { .fn-phone-head, .fund-axis, .fn-detail-top, .record-top, .scroll.fits thead, .fn-scroll.fits thead, :is(.card.mini, .fund-detail)[open] > summary { position: static !important; transform: none !important; visibility: visible !important; box-shadow: none; } .scroll thead, .fn-scroll thead { transform: none !important; visibility: visible !important; } .fold-close { display: none; } }
+.fund-detail-body { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--sp-6); margin-top: var(--sp-4); align-items: first baseline; }
+.fund-detail-body > div { min-width: 0; max-width: var(--prose); }
 .fund-detail-body h4 { font: var(--type-label); margin-bottom: var(--sp-3); }
 .fund-detail-body p + p, .fund-detail-body > div:not(.srcs) > :not(h4) + * { margin-top: var(--sp-3); } /* records and notes in a fold column are separated alike */
 .fund-detail-body .staffing-note { grid-column: 1 / -1; }
@@ -980,17 +1005,27 @@ html[data-prerendered] .fn-scroll.fits thead { position: static; }
 }
 .more.quiet > summary { min-height: var(--control); }
 
-/* Funding rows collapse where their three tracks (10rem + 12.5rem + 11rem, the staff track fitting "as of 12 Oct 2026" and its citation, and two 1.5rem gaps) no longer fit the section, measured in rem, so enlarged text collapses them earlier. */
+/* Below 60rem of section width, identity and the two equal measures stack. Labels sit beside equal 3rem bars; the figure gets the remainder. */
 .section-body:has(> #fund-rows) { container: funding / inline-size; }
-@container funding (width < 36.5rem) {
-  .fund-axis { grid-template-columns: minmax(0, 1fr); } /* the key, then the scale over the full-width bars */
-  .fund-item { display: flex; flex-direction: column; align-items: stretch; }
-  .fund-item > .fund-budget { display: contents; } /* the Sources control after Staff, closing the row */
-  .fund-item .fund-bar { margin-block: 0; }
-  .fund-item .fund-detail { order: 1; margin-top: calc(var(--gap-row) - var(--sp-3)); } /* the row gap after Staff */
-  .fund-budget-label { display: block; margin-bottom: calc(var(--sp-1) - var(--sp-3)); } /* one left edge: Budget and Staff each a label above its value, qualifiers flush under it */
-  .fund-staff { display: flex; flex-direction: column; gap: var(--sp-1); }
-  .fund-staff > .fund-context { margin-top: 0; }
+@container funding (width < 60rem) {
+  .fund-list { grid-template-columns: minmax(0, 1fr); column-gap: 0; }
+  .fund-axis { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-3); font: var(--type-meta); }
+  .fund-axis > .fund-identity-head { display: none; }
+  .fund-budget-head, .fund-staff-head { display: block; grid-column: auto; }
+  .fund-bar-head, .fund-figure-head { display: none; }
+  .fund-key { gap: var(--sp-1) var(--sp-2); }
+  .fund-row { grid-row: 1 / 4; }
+  .fund-identity { flex-wrap: wrap; padding-bottom: var(--sp-2); }
+  .fund-identity h4 { flex-wrap: wrap; white-space: normal; }
+  .fund-institute { white-space: normal; }
+  .fund-measure { grid-column: 1; grid-template-columns: 3rem 4.5rem minmax(0, 1fr); padding-top: 0; }
+  .fund-budget { grid-row: 2; }
+  .fund-staff { grid-row: 3; }
+  .fund-measure-label { display: block; grid-column: 1; grid-row: 1; font: var(--type-meta); color: var(--muted); }
+  .fund-bar { grid-column: 2; }
+  .fund-value { grid-column: 3; }
+  .fund-value strong, .fund-value .budget-amount, .fund-measure .per-person { white-space: normal; }
+  .fund-detail { grid-row: 4; padding: var(--sp-3) var(--sp-2); }
 }
 @media (width < 1280px) {
   main section { display: flex; flex-direction: column; gap: var(--sp-6); }
@@ -1124,11 +1159,15 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
 
   <section class="offscreen" aria-labelledby="funding"><div class="section-label">
     <h2 id="funding">Funding and staff</h2></div><div class="section-body">
-    <h3 id="fund-chart-h">Committed funding</h3>
-    <div class="fund-axis"><span class="fund-key"><span class="key-item"><i class="key-swatch" aria-hidden="true"></i>adopted</span><span class="key-item"><i class="key-swatch pending" aria-hidden="true"></i>announced</span></span></div>
-    <div class="fund-list" id="fund-rows"></div>
-    <div class="fund-none" id="fund-none" hidden><span class="label">Budget not published</span><ul role="list"></ul></div>
-    <div class="section-foot"><details class="more quiet" id="fund-how"><summary>How this is chosen</summary>    <p class="small">Bars share one scale and show adopted or announced funding for the whole institute in a funding year that overlaps <span id="ref-year"></span>, the calendar year of the data date. Where several years qualify, the one containing the data date is used, if there is one. Proposals, one-off amounts and other years get no bar; institutes with only such funding are listed below the bars with their Budget value. Components are excluded. Period means are labelled. EUR figures are rough conversions at the ECB's <span id="fx-year"></span> annual-average rates and do not compare like with like.</p></details><span class="section-foot-actions"><a class="standalone section-dl ico i-dl" id="funding-download" href="data/funding.csv" download="funding.csv" data-tip="Funding (CSV); staff figures are in staff.csv under Data"><span class="vh">Download funding (CSV)</span></a></span></div>
+    <div class="fund-list" id="fund-rows">
+      <div class="fund-axis">
+        <div class="fund-identity-head">State and institute</div>
+        <div class="fund-budget-head"><span class="fund-bar-head" aria-hidden="true"></span><span class="fund-figure-head" aria-hidden="true"></span><p>Budget, EUR per year</p><span class="fund-scale" id="fund-budget-scale"></span><span class="fund-key"><span class="key-item"><i class="key-swatch" aria-hidden="true"></i>adopted</span><span class="key-item"><i class="key-swatch pending" aria-hidden="true"></i>announced</span></span></div>
+        <div class="fund-staff-head"><span class="fund-bar-head" aria-hidden="true"></span><span class="fund-figure-head" aria-hidden="true"></span><p>Staff, people</p><span class="fund-scale" id="fund-staff-scale"></span></div>
+      </div>
+    </div>
+    <p class="small" id="fund-chart-h"></p>
+    <div class="section-foot"><details class="more quiet" id="fund-how"><summary>How this is chosen</summary>    <p class="small">Budget bars share one scale and show adopted or announced funding for the whole institute in a funding year that overlaps <span id="ref-year"></span>, the calendar year of the data date. Where several years qualify, the one containing the data date is used, if there is one. Proposals, one-off amounts and other years retain their Budget value without a bar. Components are excluded from the comparison. Period means are labelled. EUR figures are rough conversions at the ECB's <span id="fx-year"></span> annual-average rates and do not compare like with like. Staff bars have their own scale and show published totals with dates; bounds and approximations stay beside the figure. Technical counts, targets and ranges remain in the records and do not become total bars.</p></details><span class="section-foot-actions"><a class="standalone section-dl ico i-dl" id="funding-download" href="data/funding.csv" download="funding.csv" data-tip="Funding (CSV); staff figures are in staff.csv under Data"><span class="vh">Download funding (CSV)</span></a></span></div>
   </div></section>
   </div>
 
@@ -1280,7 +1319,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   function readingEdge(target) {
     var edge = barsBottom(), owner = target.closest(".fn-detail, .card, .fund-detail, .record");
     var head = owner && owner.querySelector(":scope > .fn-detail-top, :scope > .top, :scope > summary, :scope > .record-top");
-    if (!head) { owner = target.closest(".fn-phone, .fn-scroll, .table-scroll"); head = owner && owner.querySelector(".fn-phone-head, thead"); }
+    if (!head) { owner = target.closest(".fn-phone, .fn-scroll, .table-scroll, .fund-list"); head = owner && owner.querySelector(".fn-phone-head, thead, .fund-axis"); }
     if (head && head !== target && !head.contains(target) && !target.matches(".fold-close")) {
       var r = head.getBoundingClientRect(), bounds = owner.getBoundingClientRect();
       // Focus can scroll before the next head update. Reserve the head's destination even if its transform or
@@ -1310,12 +1349,12 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     }
   }
   function returnToOpener(opener) {
-    var view = opener.closest(".fn-phone, .fn-scroll"); if (view && !view.querySelector(".fn-detail")) view.removeAttribute("data-head-covered");
+    var view = opener.closest(".fn-phone, .fn-scroll, .fund-list"); if (view && !view.querySelector(".fn-detail, .fund-detail[open]")) view.removeAttribute("data-head-covered");
     opener.focus({ preventScroll: true }); opener.scrollIntoView({ block: "nearest", inline: "nearest" });
     requestAnimationFrame(function () { clearReadingFocus(opener); });
   }
-  function foldClose(fold) {
-    var button = closeButton(function () { fold.open = false; returnToOpener(fold.querySelector(":scope > summary")); });
+  function foldClose(fold, opener) {
+    var button = closeButton(function () { fold.open = false; if (opener) opener.setAttribute("aria-expanded", "false"); returnToOpener(opener || fold.querySelector(":scope > summary")); });
     button.classList.add("fold-close"); fold.appendChild(button);
   }
   // Overflow-x makes CSS sticky relative to the scroll box, even when the document is the vertical scroller.
@@ -1340,16 +1379,16 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         var height = head.getBoundingClientRect().height;
         writes.push(function () { scroll.style.setProperty("--reading-head-height", height + "px"); });
       });
-      document.querySelectorAll(".fn-phone, .fn-scroll").forEach(function (view) {
-        var detail = view.querySelector(".fn-detail"), head = detail && detail.querySelector(".fn-detail-top"), covered = false;
+      document.querySelectorAll(".fn-phone, .fn-scroll, .fund-list").forEach(function (view) {
+        var detail = view.querySelector(".fn-detail, .fund-detail[open]"), head = detail && detail.querySelector(".fn-detail-top, :scope > summary"), covered = false;
         if (head) {
           move(head, detail, view.matches(".fn-scroll:not(.fits)"));
           var r = detail.getBoundingClientRect(); covered = r.height > 0 && r.top <= top && r.bottom > top;
         }
         writes.push(function () { view.toggleAttribute("data-head-covered", covered); });
       });
-      document.querySelectorAll(".fn-phone, .fn-detail, .card.mini[open], .fund-detail[open], .record:not([hidden])").forEach(function (owner) {
-        var head = owner.querySelector(":scope > .fn-phone-head, :scope > .fn-detail-top, :scope > summary, :scope > .record-top");
+      document.querySelectorAll(".fn-phone, .fund-list, .fn-detail, .card.mini[open], .fund-detail[open], .record:not([hidden])").forEach(function (owner) {
+        var head = owner.querySelector(":scope > .fn-phone-head, :scope > .fund-axis, :scope > .fn-detail-top, :scope > summary, :scope > .record-top");
         if (head) { var height = head.getBoundingClientRect().height; writes.push(function () { owner.style.setProperty("--reading-head-height", height + "px"); }); }
         if (owner.matches(".record")) {
           // Wide records scroll inside their own box; convert the same viewport edge to that scrollport.
@@ -1363,7 +1402,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     window.addEventListener("scroll", schedule, { passive: true }); window.addEventListener("resize", schedule, { passive: true });
     window.addEventListener("afterprint", schedule);
     var watch = new ResizeObserver(schedule);
-    document.querySelectorAll("main, .fn-phone, .fn-table, table.world, .secnav, .group-nav").forEach(function (node) { watch.observe(node); });
+    document.querySelectorAll("main, .fn-phone, .fund-list, .fn-table, table.world, .secnav, .group-nav").forEach(function (node) { watch.observe(node); });
     document.addEventListener("toggle", schedule, true); document.fonts.ready.then(schedule); schedule();
   }
   var MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
@@ -2431,7 +2470,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   var RECHECK_NOTE = "Every state has a planned re-check date, sooner where a decision is pending; the dates are in the downloads."; // owner decision 24 Oct
   var MEDIAN_CEILING = "Some of these budgets are ceilings, so the median is a ceiling too and is rounded up.";
   var SETUP_UNKNOWN = "Legal form not published";
-  var PER_PERSON_TIP = "Annual budget divided by population. For scale only, since budgets cover different work and costs differ between states.", BAR_TIP = "Small bars have a minimum width; use the figure for the amount.";
+  var PER_PERSON_TIP = "Annual budget divided by population. For scale only, since budgets cover different work and costs differ between states.", BAR_TIP = "Small bars have a minimum width; use the written figure.";
   var STATE_DL = "JSON, for scripts and research";
   var GENERIC_LEAD = "Population and region sources apply to every entry: ", GENERIC_TAIL = ". Entry source lists leave them out; the downloads include them.";
   function andJoin(xs) { return xs.length < 2 ? xs.join("") : xs.slice(0, -1).join(", ") + " and " + xs[xs.length - 1]; }
@@ -4112,25 +4151,72 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       $("world-download").open = false; $("world-download").querySelector("summary").focus();
     });
 
+    // Presentation order: status band, compared annual amounts, other own amounts, missing; names break ties.
+    function comparedBudget(i) { var f = selectedRecord(i, "funding", "comparison_funding"); return f && f.eur_per_year_est != null ? f : null; }
+    function comparedStaff(i) { var s = selectedRecord(i, "staff", "total_staff"); return s && s.as_of && typeof s.total === "number" && Number.isFinite(s.total) ? s : null; }
+    function fundingTier(i) { return comparedBudget(i) ? 0 : selectedRecord(i, "funding", "budget") ? 1 : 2; }
+    function staffBound(st, field) {
+      field = field || "total";
+      var words = { about: "about", at_least: "at least", at_most: "up to", more_than: "more than", less_than: "less than", nearly: "nearly" };
+      return words[st[field + "_qualifier"]] || (String(st.display[field]).startsWith("~") ? "about" : null);
+    }
+    function measureBar(amount, maximum, pending) {
+      var track = el("span", "fund-bar"); track.setAttribute("aria-hidden", "true");
+      if (amount != null) {
+        track.dataset.value = amount; track.dataset.scale = maximum; track.title = BAR_TIP;
+        var fill = el("span", "bar-value" + (pending ? " pending" : ""));
+        fill.style.width = String(amount / maximum * 100) + "%"; track.appendChild(fill);
+      }
+      return track;
+    }
     var fundItems = d.institutes.slice();
     fundItems.sort(function (a, b) {
-      var fa = selectedRecord(a, "funding", "comparison_funding"), fb = selectedRecord(b, "funding", "comparison_funding");
-      var av = fa && fa.eur_per_year_est != null ? fa.eur_per_year_est : -1;
-      var bv = fb && fb.eur_per_year_est != null ? fb.eur_per_year_est : -1;
-      return bv - av || J[a.jurisdiction_id].name.localeCompare(J[b.jurisdiction_id].name) || a.id.localeCompare(b.id);
+      var fa = comparedBudget(a), fb = comparedBudget(b);
+      return Number(a.status !== "established") - Number(b.status !== "established") || fundingTier(a) - fundingTier(b) || (fb ? fb.eur_per_year_est : 0) - (fa ? fa.eur_per_year_est : 0) || J[a.jurisdiction_id].name.localeCompare(J[b.jurisdiction_id].name) || a.id.localeCompare(b.id);
     });
-    var maxBudget = Math.max.apply(null, fundItems.map(function (i) { var fu = selectedRecord(i, "funding", "comparison_funding"); return fu && fu.eur_per_year_est != null ? fu.eur_per_year_est : 0; }));
+    var maxBudget = Math.max.apply(null, fundItems.map(function (i) { var fu = comparedBudget(i); return fu ? fu.eur_per_year_est : 0; }));
     var scaleMax = Math.max(10000000, Math.ceil(maxBudget / 10000000) * 10000000);
-    var notPublished = [];
+    var maxStaff = Math.max.apply(null, fundItems.map(function (i) { var st = comparedStaff(i); return st ? st.total : 0; }));
+    var staffScale = Math.max(50, Math.ceil(maxStaff / 50) * 50), fundBands = {};
+    $("fund-budget-scale").textContent = "0 to EUR " + money(scaleMax); $("fund-staff-scale").textContent = "0 to " + staffScale + " people";
+    ["established", "not-established"].forEach(function (band) {
+      var block = el("div", "fund-block"), list = el("ul"); block.dataset.band = band; list.setAttribute("role", "list");
+      block.appendChild(el("h3", null, band === "established" ? "Established" : "Not yet established")); block.appendChild(list); $("fund-rows").appendChild(block); fundBands[band] = list;
+    });
     fundItems.forEach(function (i) {
       // Its own numbering: the sources the funding and staff shown here cite, in the order they are first cited (principle: Folds).
       var j = J[i.jurisdiction_id], fundOrder = [], fundingCites = citations(S, fundOrder, {});
+      var fu = comparedBudget(i), own = selectedRecord(i, "funding", "budget");
+      var latest = selectedRecord(i, "staff", "total_staff"), technical = selectedRecord(i, "staff", "technical_staff"), staffBar = comparedStaff(i);
+      var described = !latest && !technical ? selectedRecord(i, "staff", "staff") : null;
+      if (described && !described.description && described.target == null) described = null;
+      // Target-only records cannot become a count. Prefer a dated target, then the permanent record ID.
+      if (!latest && !technical && !described) described = i.display.staff_ids.map(function (id) { return i.display.staff_records[id]; }).filter(function (s) { return s.target != null; }).sort(function (a, b) { return String(b.as_of || "").localeCompare(String(a.as_of || "")) || a.id.localeCompare(b.id); })[0] || null;
+      function staffSummary() {
+        var summary = el("div", "fund-staff-summary"); summary.appendChild(el("h4", null, "Staff"));
+        var count = el("div", "fund-value"); count.appendChild(latest ? el("strong", null, latest.display.total) : described ? el("span", "fund-staff-text", described.description || "Target " + described.display.target) : missing());
+        if (latest) count.appendChild(fundingCites(fieldCitations(latest, ["total", "total_qualifier", "as_of"]))); else if (described) count.appendChild(fundingCites(staffCitations(described).concat(fieldCitations(described, ["target", "target_qualifier"])))); summary.appendChild(count);
+        var parts = latest ? [technical ? "Latest total" : null, latest.as_of ? asOf(latest.as_of) : null, confTag(latest)] : described ? [described.as_of ? asOf(described.as_of) : null, confTag(described)] : [];
+        if (parts.filter(Boolean).length) { var line = el("p", "fund-context"); line.appendChild(separated(parts.filter(Boolean), true)); summary.appendChild(line); }
+        if (technical) { var tech = el("p", "fund-context"), techParts = [technical.display.technical + " technical"]; if (technical.as_of) techParts.push(asOf(technical.as_of)); if (confTag(technical)) techParts.push(confTag(technical)); tech.appendChild(separated(techParts, true)); tech.appendChild(fundingCites(fieldCitations(technical, ["technical", "technical_qualifier", "as_of"]))); summary.appendChild(tech); }
+        return summary;
+      }
       function detailsBody() {
         var body = el("div", "fund-detail-body");
-        [["Published funding", i.display.funding_ids.map(function (identity) { return i.display.funding_records[identity]; }), "funding"], ["Staff records", i.display.staff_ids.map(function (identity) { return i.display.staff_records[identity]; }), "staff"]].forEach(function (pair) {
-          var col = el("div"); col.appendChild(el("h4", null, pair[0]));
+        body.appendChild(staffSummary());
+        var funds = i.display.funding_ids.map(function (identity) { return i.display.funding_records[identity]; });
+        [["Own funding", funds.filter(function (f) { return f.coverage !== "not_institute_specific" && f.commitment !== "proposed"; }), "funding"], ["Proposals", funds.filter(function (f) { return f.coverage !== "not_institute_specific" && f.commitment === "proposed"; }), "funding"], ["Related funding", funds.filter(function (f) { return f.coverage === "not_institute_specific"; }), "funding"], ["Staff records", i.display.staff_ids.map(function (identity) { return i.display.staff_records[identity]; }), "staff"]].forEach(function (pair) {
+          if (!pair[1].length && (pair[0] === "Proposals" || pair[0] === "Related funding")) return;
+          var col = el("div", "fund-record-group"); col.dataset.group = pair[0]; col.appendChild(el("h4", null, pair[0]));
+          if (pair[0] === "Related funding") col.appendChild(relatedFunding(i, fundingCites));
           pair[1].forEach(function (item) {
-            if (pair[2] === "funding" && item.amount != null) { col.appendChild(fundingRecord(item, fundingCites)); return; }
+            if (pair[2] === "funding" && item.amount != null) {
+              var record = fundingRecord(item, fundingCites);
+              if (item.coverage === "component") {
+                var component = el("p", "fund-component", "Component: " + publishedFunding(item)); component.appendChild(fundingCites(fieldCitations(item, ["description", "coverage"]))); record.insertBefore(component, record.firstChild);
+              }
+              col.appendChild(record); return;
+            }
             var description = pair[2] === "funding" ? publishedFunding(item) : item.description || "";
             if (!description && pair[2] === "staff") {
               var counts = [];
@@ -4149,25 +4235,19 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
           });
           if (!pair[1].length) col.appendChild(missing()); body.appendChild(col);
         });
-        if (i.display.related_funding_ids.length) { var related = el("p", "fund-context"); related.appendChild(el("span", "label", "Related funding")); related.appendChild(document.createTextNode(" ")); related.appendChild(relatedFunding(i, fundingCites)); body.appendChild(related); }
         if (i.staffing_profile) body.appendChild(el("p", "staffing-note", i.staffing_profile));
         body.appendChild(sourcesBlock(fundOrder, S));
         if (m.repository) body.appendChild(correctionLink(j, m));
         return body;
       }
-      var fu = selectedRecord(i, "funding", "comparison_funding"), own = selectedRecord(i, "funding", "budget");
-      if (fu && fu.eur_per_year_est == null) fu = null; // no comparable figure, no bar
-      var latest = selectedRecord(i, "staff", "total_staff"), technical = selectedRecord(i, "staff", "technical_staff");
-      // Institutes with neither a funding figure nor a staff figure collapse into one Not published line.
-      if (!fu && !own && !latest && !technical) { notPublished.push(j); return; }
-      // One list: rows with a bar first (the sort puts them first); rows without a bar keep an empty track and say why.
-      var row = el("article", "fund-item" + (fu ? "" : " fund-nobar")); row.dataset.j = j.id; if (fu || own) row.dataset.fundingId = (fu || own).id;
-      var identity = el("div", "fund-identity"), fname = el("h3"), fsw = el("i", "sw st-" + i.status); fsw.setAttribute("aria-hidden", "true");
+      var row = el("li", "fund-item" + (fu ? "" : " fund-nobar")); row.dataset.j = j.id; row.dataset.institute = i.id; if (fu || own) row.dataset.fundingId = (fu || own).id;
+      var button = el("button", "fund-row"); button.type = "button"; button.setAttribute("aria-label", j.name + ", " + displayName(i) + ", " + LABEL[i.status] + ": " + FUND_DETAIL); button.setAttribute("aria-expanded", "false"); button.setAttribute("aria-controls", "fund-detail-" + i.id); row.appendChild(button);
+      var identity = el("div", "fund-identity"), fname = el("h4"), fsw = el("i", "sw st-" + i.status); fsw.setAttribute("aria-hidden", "true");
       fname.appendChild(fsw); fname.appendChild(document.createTextNode(j.name)); // Funding status: the swatch alone where established, the status word in brackets otherwise
       fname.appendChild(i.status === "established" ? el("span", "vh", ", " + LABEL[i.status]) : el("span", "fund-status", "(" + LABEL[i.status].toLowerCase() + ")"));
       identity.appendChild(fname);
-      var instituteLabel = el("span"); instituteLabel.appendChild(instName(i)); identity.appendChild(instituteLabel); row.appendChild(identity);
-      var budget = el("div", "fund-budget");
+      var instituteLabel = el("span", "fund-institute"); instituteLabel.appendChild(instShort(i, false)); identity.appendChild(instituteLabel); row.appendChild(identity);
+      var budget = el("div", "fund-budget fund-measure" + (fu ? "" : " unbarred"));
       var value = el("div", "fund-value");
       if (fu) {
         value.appendChild(el("strong", null, fu.display.value));
@@ -4178,38 +4258,38 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         // Not charted (a proposal, a one-off amount or another year, which its qualifiers say): the last qualifier.
         var ownBox = el("div"); ownBox.appendChild(budgetValue(own, ["not charted"])); citeTarget(ownBox).appendChild(fundingCites(budgetCitations(own))); value.appendChild(ownBox.firstChild);
       } else value.appendChild(missing());
-      budget.appendChild(el("span", "label fund-budget-label", "Budget")); budget.appendChild(value); // the label shows where the row stacks, like Staff's
-      var bar = el("span", "fund-bar"); bar.setAttribute("aria-hidden", "true"); bar.title = BAR_TIP; /* the figure beside it is the amount */
-      if (fu) {
-        var fill = el("span", "bar-value" + (fu.commitment !== "adopted" ? " pending" : ""));
-        fill.style.width = String(fu.eur_per_year_est / scaleMax * 100) + "%";
-        bar.appendChild(fill);
-      }
-      budget.appendChild(bar);
+      budget.appendChild(el("span", "fund-measure-label", "Budget")); budget.appendChild(measureBar(fu ? fu.eur_per_year_est : null, scaleMax, fu && fu.commitment !== "adopted")); budget.appendChild(value);
       row.appendChild(budget);
-      var staffBox = el("div", "fund-staff"); staffBox.appendChild(el("span", "label", "Staff"));
-      // A staff record with only a description (a published range, say) shows that text, as the card does, never Not published.
-      var described = !latest && !technical ? selectedRecord(i, "staff", "staff") : null; if (described && !described.description) described = null;
-      var count = el("div", "fund-value"); count.appendChild(latest ? el("strong", null, latest.display.total) : described ? el("span", "fund-staff-text", described.description) : missing());
-      if (latest) count.appendChild(fundingCites(fieldCitations(latest, ["total", "total_qualifier", "as_of"]))); else if (described) count.appendChild(fundingCites(staffCitations(described))); staffBox.appendChild(count);
-      if (described) { var describedParts = [described.as_of ? asOf(described.as_of) : null, confTag(described)].filter(Boolean); if (describedParts.length) { var describedLine = el("p", "fund-context"); describedLine.appendChild(separated(describedParts, true)); staffBox.appendChild(describedLine); } }
-      // "Latest total" only tells the total from a technical figure beside it; a lone total needs no label (principle: Values and qualifiers).
-      var latestParts = latest ? [technical ? "Latest total" : null, latest.as_of ? asOf(latest.as_of) : null, confTag(latest)].filter(Boolean) : [];
-      if (latestParts.length) { var latestLine = el("p", "fund-context"); latestLine.appendChild(separated(latestParts, true)); staffBox.appendChild(latestLine); }
-      if (technical) { var tech = el("p", "fund-context"), techParts = [technical.display.technical + " technical"]; if (technical.as_of) techParts.push(asOf(technical.as_of)); if (confTag(technical)) techParts.push(confTag(technical)); tech.appendChild(separated(techParts, true)); tech.appendChild(fundingCites(fieldCitations(technical, ["technical", "technical_qualifier", "as_of"]))); staffBox.appendChild(tech); }
+      var staffBox = el("div", "fund-staff fund-measure" + (staffBar ? "" : " unbarred")); staffBox.appendChild(el("span", "fund-measure-label", "Staff"));
+      staffBox.appendChild(measureBar(staffBar ? staffBar.total : null, staffScale, false));
+      var count = el("div", "fund-value"), staffRecord = latest || technical || described;
+      count.appendChild(latest ? el("strong", null, latest.display.total) : technical ? el("span", null, technical.display.technical + " technical") : described ? el("span", "fund-staff-text", described.description || "Target " + described.display.target) : missing());
+      var parts = staffRecord ? [latest ? staffBound(latest) : technical ? staffBound(technical, "technical") : null, staffRecord.as_of ? "as at " + nonbreakingDates(fmtDate(staffRecord.as_of)) : null, confTag(staffRecord), !staffBar ? "not charted" : null].filter(Boolean) : [];
+      var context = null;
+      if (parts.length) { context = el("p", "fund-context"); context.appendChild(separated(parts)); count.appendChild(context); }
+      if (staffRecord) (context || count).appendChild(fundingCites(staffCitations(staffRecord).concat(fieldCitations(staffRecord, ["target", "target_qualifier"]))));
+      staffBox.appendChild(count);
       row.appendChild(staffBox);
       var det = el("details", "more quiet fund-detail"), summary = el("summary");
+      det.id = button.getAttribute("aria-controls");
       summary.appendChild(el("span", "fund-fold-label", FUND_DETAIL));
       var identity = el("span", "fund-head-name", displayName(i)); identity.title = displayName(i); summary.appendChild(identity);
-      det.appendChild(summary); foldClose(det);
-      det.appendChild(detailsBody()); budget.appendChild(det); $("fund-rows").appendChild(row);
+      det.appendChild(summary); foldClose(det, button);
+      det.appendChild(detailsBody()); row.appendChild(det); fundBands[i.status === "established" ? "established" : "not-established"].appendChild(row);
+      button.addEventListener("click", function () {
+        var open = !det.open;
+        $("fund-rows").querySelectorAll(".fund-detail[open]").forEach(function (other) { other.open = false; other.parentElement.querySelector(".fund-row").setAttribute("aria-expanded", "false"); });
+        det.open = open; button.setAttribute("aria-expanded", String(open)); button.focus({ preventScroll: true });
+        if (!open) returnToOpener(button);
+      });
+      det.addEventListener("toggle", function () { button.setAttribute("aria-expanded", String(det.open)); if (!det.open && det.contains(document.activeElement)) returnToOpener(button); });
+      // A figure or name with its own tooltip sits above the row's button; a click on it still opens the row. Links and the records keep their own clicks.
+      row.addEventListener("click", function (event) { if (event.target !== button && !event.target.closest(".fund-detail, a, button, summary")) button.click(); });
+      row.addEventListener("keydown", function (event) { if (event.key === "Escape" && det.open && !event.defaultPrevented) { event.preventDefault(); det.open = false; button.setAttribute("aria-expanded", "false"); returnToOpener(button); } });
     });
-    var none = $("fund-none"), noneList = none.querySelector("ul");
-    notPublished.forEach(function (j) { var li = el("li"), a = el("a", "standalone", j.name); li.dataset.j = j.id; a.href = anchor(j.id); li.appendChild(a); noneList.appendChild(li); });
-    none.hidden = !notPublished.length;
     // Reference year: the calendar year of the data date (dataset.method, Annual funding).
     var refYear = m.as_of.slice(0, 4);
-    $("fund-chart-h").textContent = "Committed funding for " + refYear; $("ref-year").textContent = refYear;
+    $("fund-chart-h").textContent = "Budget bars compare committed funding for " + refYear + ". Staff bars show dated totals; dates and qualifications differ."; $("ref-year").textContent = refYear;
     // The rate year comes from the cited rates; the build checks that every row shares one period.
     $("fx-year").textContent = m.exchange_rates.map(function (r) { return r.period.start.slice(0, 4); })[0];
 

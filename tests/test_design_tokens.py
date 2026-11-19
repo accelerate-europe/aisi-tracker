@@ -70,10 +70,10 @@ def test_geometry_exceptions_have_reasons_and_cannot_spread():
     "@media (max-width: 640px)",
     "@media (height <= 640px)",
     "@media (640px < width < 900px)",
-    "@container funding (width < 37rem)",
-    "@container other (width < 36.5rem)",
-    "@container funding (width < calc(37rem))",
-    "@container funding (width < calc(36.5rem))",
+    "@container funding (width < 47rem)",
+    "@container other (width < 48rem)",
+    "@container funding (width < calc(47rem))",
+    "@container funding (width < calc(48rem))",
     "@media (width <= calc(640px + 1px))",
     "@media (width <= min(640px, 50vw))",
     "@media (width <= var(--bp))",
@@ -81,12 +81,17 @@ def test_geometry_exceptions_have_reasons_and_cannot_spread():
     "@media (640px >= width)",
     "@media (WIDTH <= 639px)",
     "@media (Width <= 639px)",
-    "@container funding (WIDTH < 37rem)",
-    "@container funding (inline-size < 37rem)",
-    "@container funding (block-size < 37rem)",
+    "@container funding (WIDTH < 47rem)",
+    "@container funding (inline-size < 48rem)",
+    "@container funding (block-size < 48rem)",
 ])
 def test_unlisted_or_inconsistent_breakpoint_mutations_block(query):
     assert any("unlisted breakpoint" in e for e in check_css_tokens(mutate_css(query + " { .mutant { display: block; } }")))
+
+
+def test_funding_container_boundary_accepts_only_its_recorded_rem_width():
+    assert check_css_tokens(mutate_css("@container funding (width < 60rem) { .mutant { display: block; } }")) == []
+    assert any("unlisted breakpoint" in e for e in check_css_tokens(mutate_css("@container funding (width < 36.5rem) { .mutant { display: block; } }")))
 
 
 def test_declarations_before_a_nested_rule_are_not_skipped():

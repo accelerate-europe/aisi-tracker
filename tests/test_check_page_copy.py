@@ -146,9 +146,15 @@ def test_privileged_heading_keeps_term_tooltip_and_focus():
 
 @pytest.mark.parametrize("tip", ["Reworded minimum-width explanation", "", None, " \n "])
 def test_funding_bar_tooltip_is_required_without_fixed_words(tip):
-    results = iter([{"key": ["adopted", "announced"], "clear": True, "solid": ["solid", "solid"], "hatch": ["hatch", "hatch"], "tips": [tip]}, []])
+    results = iter([{"key": ["adopted", "announced"], "clear": True, "budgetOnly": True, "solid": ["solid", "solid"], "hatch": ["hatch", "hatch"], "tips": [tip]}, []])
     page = SimpleNamespace(evaluate=lambda script: next(results))
     assert bool(check_page.blocking(check_page.check_funding_key(page))) == (not (tip or "").strip())
+
+
+def test_funding_commitment_key_belongs_to_budget_only():
+    results = iter([{"key": ["adopted", "announced"], "clear": True, "budgetOnly": False, "solid": ["solid", "solid"], "hatch": ["hatch", "hatch"], "tips": ["Minimum width"]}, []])
+    page = SimpleNamespace(evaluate=lambda script: next(results))
+    assert any("Budget" in error for error in check_page.blocking(check_page.check_funding_key(page)))
 
 
 @pytest.mark.parametrize("mini", [False, True])
@@ -220,9 +226,9 @@ def test_a_funding_row_numbers_and_lists_only_the_sources_it_cites():
     card = ('<article class="card" data-j="XX"><ol class="srcs">' + "".join(f'<li data-source-id="{s}"><a href="https://example.org/{s}">{s}</a></li>' for s in ("one", "two", "three"))
             + '</ol></article>')
     def fund(cited, number, listed):
-        return (f'<article class="fund-item" data-j="XX"><div class="fund-value">10<span class="cites"><a class="cn" data-source-id="{cited}" href="https://example.org/{cited}">{number}</a></span></div>'
+        return (f'<li class="fund-item" data-j="XX" data-institute="xx-i"><div class="fund-value">10<span class="cites"><a class="cn" data-source-id="{cited}" href="https://example.org/{cited}">{number}</a></span></div>'
                 '<details class="fund-detail"><summary>Funding and staff records</summary><div class="srcs"><ol>'
-                + "".join(f'<li data-source-id="{s}"><a href="https://example.org/{s}">{s}</a></li>' for s in listed) + '</ol></div></details></article>')
+                + "".join(f'<li data-source-id="{s}"><a href="https://example.org/{s}">{s}</a></li>' for s in listed) + '</ol></div></details></li>')
     errors = lambda html: [e for e in check_page.blocking(check_page.check_source_alignment(html, data)) if e.startswith("XX")]  # noqa: E731
     assert errors(card + fund("two", 1, ["two"])) == []
     assert "XX: funding source list is not exactly the sources its funding and staff cite" in errors(card + fund("two", 1, ["one", "two", "three"]))
