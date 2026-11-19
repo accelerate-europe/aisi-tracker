@@ -3084,8 +3084,8 @@
         }
       ],
       "next_check": {
-        "date": "2026-11-16",
-        "reason": "Government answers to the 2027 economy budget questions and to the consultation on the International AI Strategy; cabinet AI theme letter (Q4 2026); advisory report due by the end of 2026."
+        "date": "2026-12-31",
+        "reason": "Advisory report on a Dutch AI safety institute, expected to reach parliament in December 2026; government answers to parliament's questions on the International AI Strategy."
       },
       "check": {
         "last_checked": "2026-10-16",
@@ -3118,6 +3118,10 @@
           {
             "date": "2026-11-10",
             "scope": "News search from 17 October 2026 in English and Dutch, with the government's digitalisation theme page (newest 6 November). Left for review: the cabinet's AI vision of 6 November, which again says a possible Dutch AI safety institute is being explored, and the Netherlands' place on the endorsement list of the French presidency's Paris Call for AI Safety and Security, published on 9 November and since updated. No new institute mandate, budget, staffing or national privileged-access agreement was found. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-19",
+            "scope": "Follow-up due on 16 November 2026. Read the cabinet's AI vision of 6 November 2026 (letter to parliament) which says the exploration continues and expects the advisory report in December 2026; the next check waits for that report. The answers to the questions on the 2027 budget (adopted as a report on 28 October 2026) say the same and name the fourth quarter; they were read in the research pass and are not cited. The government's answers on the International AI Strategy were still outstanding on parliament's agenda of 18 November 2026. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -3171,7 +3175,8 @@
         "nl-miljoenennota-2027",
         "nl-budget-xiii-bill-2027",
         "fr-elysee-paris-call-2026",
-        "nl-cabinet-ai-vision-2026"
+        "nl-cabinet-ai-vision-2026",
+        "nl-cabinet-ai-vision-letter-2026"
       ],
       "region": {
         "id": "150",
@@ -127389,6 +127394,41 @@
         "text_scheme": 1
       },
       "access_note": "PDF read on 19 November 2026; it gives no publication date. The planned international centre for AI ethics and governance is in initiative 6, on consultancy and knowledge transfer (printed page 19). The PDF's text layer stores Arabic letters in presentation forms with elongation marks, so the passage was found by normalised text search and is not quoted."
+    },
+    {
+      "id": "nl-cabinet-ai-vision-letter-2026",
+      "url": "https://open.overheid.nl/overheid/openbaarmakingen/api/v0/attachment/71d01478-bff7-4fc9-bbed-c72d350d0211",
+      "title": "Kamerbrief Kabinetsvisie op Artificial Intelligence – kiezen voor AI voor iedereen",
+      "title_en": "Letter to parliament: Cabinet vision on Artificial Intelligence, choosing AI for everyone",
+      "publisher": "Ministerie van Economische Zaken en Klimaat",
+      "type": "primary",
+      "published": "2026-11-06",
+      "accessed": "2026-11-19",
+      "language": "nl",
+      "origin": "NL",
+      "excerpts": [
+        {
+          "text": "Het adviesrapport inzake het Nederlands AI-veiligheidsinstituut zal naar verwachting in december 2026 worden aangeboden aan uw Kamer.",
+          "gloss": "The advisory report on the Dutch AI safety institute is expected to be presented to your House in December 2026.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "NL"
+              },
+              "next_check",
+              "reason"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-19T06:41:46Z",
+        "sha256": "f046d9afd47574c4682138ef502210069e079bc27529582239a3128c091d2787",
+        "text_sha256": "fc675b40fc20cf016be6469c2d7f239e5789e1d8153c3435e8d5a49ff1984838",
+        "text_scheme": 1
+      }
     }
   ],
   "changelog": [
