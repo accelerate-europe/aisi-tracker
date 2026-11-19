@@ -1236,8 +1236,8 @@ def uncited_values(soup) -> list[str]:
     for item in soup.select(".related-funding-item"):
         if bare(item):
             found.append(f"related funding {item.get('data-funding-id')}")
-    for row in soup.select(".fund-item"):
-        for value in row.select(":scope > .fund-measure .fund-value, .fund-staff-summary .fund-value"):
+    for row in soup.select(".fund-item, .fund-detail"):
+        for value in row.select(":scope > .fund-measure .fund-value, .fund-staff-summary .fund-value, .fund-budget-summary .fund-value"):
             if bare(value):
                 found.append(f"funding {row.get('data-institute')}: uncited Budget or Staff figure")
     for tr in soup.select("#world-rows > tr, #world-rest > tr"):
@@ -1693,7 +1693,7 @@ def check_citation_ends(soup) -> list[str]:
                 or (n.name == "li" and (n.find_parent(class_="partner-how") or n.find_parent(class_="member-list")))
                 or "member-names" in n.get("class", [])
                 or n.has_attr("data-record")
-                or bool(set(n.get("class", [])) & {"v", "fund-value", "fund-context", "activity-clause", "activity-since", "claim-text"})  # a claim's sentence is its own value; its Quote fold follows it
+                or bool(set(n.get("class", [])) & {"v", "fund-figure", "fund-value", "fund-context", "activity-clause", "activity-since", "claim-text"})  # compact figures and claim sentences have their own boundary, before qualifiers or Quote
             )
         )
         if host:
@@ -1826,14 +1826,15 @@ def check_source_alignment(html: str, data: dict) -> list[str]:
         scope = cite.find_parent(attrs={"data-source-scope": True})
         if scope is not None:  # a section with its own source list (Testing and access): numbered from that list
             jid, order = str(scope["data-source-scope"]), [li.get("data-source-id") for li in scope.select(".srcs li")]
-        fund = cite.find_parent(class_="fund-item")
-        if fund is not None:  # a funding row numbers its own sources (principle: Folds, part 1)
-            order = [li.get("data-source-id") for li in fund.select(".srcs li[data-source-id]")]
+        fund = cite.find_parent(class_="fund-detail") or cite.find_parent(class_="fund-item")
+        if fund is not None:  # Both charts use their institute's one records source list.
+            detail = soup.select_one(f'.fund-detail[data-institute="{fund.get("data-institute")}"]')
+            order = [li.get("data-source-id") for li in detail.select(".srcs li[data-source-id]")] if detail else []
         if sid not in order or cite.get_text(strip=True) != str(order.index(sid) + 1):
             errors.append(f"{jid}: citation {sid} differs from card source numbering")
         if sid not in sources or cite.get("href") != sources[sid]["url"]:
             errors.append(f"{jid}: citation {sid} URL does not match data")
-    fund_items = Keyed(soup, ".fund-item[data-institute]", "data-institute")
+    fund_items = Keyed(soup, ".fund-detail[data-institute]", "data-institute")
     for institute in data["institutes"]:
         jid = institute["jurisdiction_id"]
         host = fund_items.one(institute["id"])
@@ -1843,6 +1844,7 @@ def check_source_alignment(html: str, data: dict) -> list[str]:
         # Its own list: exactly the sources the funding and staff shown cite, each once (principle: Folds, part 1).
         ids = [li.get("data-source-id") for li in host.select(".srcs li[data-source-id]")]
         cited = {a.get("data-source-id") for a in host.select(".cn")}
+        cited.update(a.get("data-source-id") for row in soup.select(f'.fund-item[data-institute="{institute["id"]}"]') for a in row.select(":scope > .fund-measure .cn"))
         if len(ids) != len(set(ids)) or set(ids) != cited:
             errors.append(f"{jid}: funding source list is not exactly the sources its funding and staff cite")
         fund_order = ids
@@ -2818,7 +2820,7 @@ def expected_annual_funding_value(record, data):
     return text
 
 
-TWO_FIGURE_SELECTORS = (".fund-budget > .fund-value strong", ".fund-budget .budget-amount", "#world-rows td[data-col=budget] .budget-amount", "#world-rows td[data-col=staff]", ".fund-staff > .fund-value strong", ".fund-staff-summary .fund-value strong", ".funding-native .budget-amount", ".fund-staff-summary .fund-context")
+TWO_FIGURE_SELECTORS = ('.fund-list[data-kind="budget"] .fund-budget .fund-figure strong', '.fund-list[data-kind="staff"] .fund-staff .fund-figure strong', "#world-rows td[data-col=budget] .budget-amount", "#world-rows td[data-col=staff]", ".fund-staff-summary .fund-value strong", ".fund-budget-summary .fund-value strong", ".funding-native .budget-amount", ".fund-staff-summary .fund-context")
 
 
 def expected_staff_total(record) -> str:
@@ -2853,7 +2855,8 @@ def check_staff_figures(soup, data: dict, expected: dict | None = None) -> list[
     if expected is None:
         expected = {e["institute_id"]: e for e in json.loads(STAFF_FIGURES.read_text(encoding="utf-8"))["staff"]}
     errors = []
-    chart_rows = Keyed(soup, "#fund-rows .fund-item[data-institute]", "data-institute")
+    chart_rows = Keyed(soup, '#fund-rows .fund-list[data-kind="staff"] .fund-item[data-institute]', "data-institute")
+    details = Keyed(soup, '#fund-rows .fund-detail[data-institute]', "data-institute")
     known = {inst["id"] for inst in data["institutes"]}
     errors += [f"{iid}: staff fixture entry for an institute the data does not have" for iid in sorted(set(expected) - known)]
     for inst in data["institutes"]:
@@ -2872,8 +2875,10 @@ def check_staff_figures(soup, data: dict, expected: dict | None = None) -> list[
         if (str(latest.get("as_of")), latest["total"], latest.get("total_qualifier")) != (entry["as_of"], entry["total"], entry["total_qualifier"]):
             errors.append(f"{inst['id']}: latest staff record {latest.get('as_of')} {latest['total']} {latest.get('total_qualifier')} differs from the reviewed entry {entry['as_of']} {entry['total']} {entry['total_qualifier']}")
             continue
-        for place, selector in (("row", ".fund-staff > .fund-value strong"), ("detail", ".fund-staff-summary .fund-value strong")):
-            node = chart_rows.one(inst["id"], selector)
+        for place, selector in (("row", ".fund-staff .fund-value strong"), ("detail", ".fund-staff-summary .fund-value strong")):
+            node = (details if place == "detail" else chart_rows).one(inst["id"], selector)
+            if place == "row" and not latest.get("as_of"):
+                continue
             if node:
                 node = copy.copy(node)
                 for cites in node.select(".cites"):
@@ -3002,7 +3007,7 @@ def check_figure_grades(soup, data: dict) -> list[str]:
     checked = expected_places = 0
     full_cards = Keyed(soup, ".card:not(.mini)[data-j]")
     table_rows = Keyed(soup, "#world-rows tr[data-j], #world-rest tr[data-j]")
-    chart_rows = Keyed(soup, "#fund-rows .fund-item[data-j]")
+    chart_rows = Keyed(soup, "#fund-rows .fund-detail[data-j]")
     for inst in data["institutes"]:
         jid, display = inst["jurisdiction_id"], inst["display"]
         if jid not in jurisdictions:
@@ -3051,10 +3056,7 @@ def check_figure_grades(soup, data: dict) -> list[str]:
             want = [figure_grade(total)] if figure_grade(total) else []
             if found != want:
                 errors.append(f"{jid}: funding Staff shows grade {found}, expected {want}")
-            compact = chart_rows.one(jid, ".fund-staff .fund-context")
-            got = [w for w in FIGURE_LABELS if compact and w in compact.get_text(" ")]
-            if got != want:
-                errors.append(f"{jid}: compact funding Staff shows grade {got}, expected {want}")
+            # Source grades belong to the opened records; the compact chart has one date/bound line.
             tech = shown.get("technical")
             tech_lines = [" ".join(n.get_text(" ").split()) for n in chart.select(".fund-context") if "technical" in n.get_text()]
             if tech:
@@ -3448,8 +3450,8 @@ def check_funding_key(page) -> list[str]:
       const bg = sel => { const n = document.querySelector(sel); return n ? getComputedStyle(n).backgroundImage + '|' + getComputedStyle(n).backgroundColor : null; };
       const clear = key.every(k => { const sw = k.querySelector('.key-swatch').getBoundingClientRect(), r = document.createRange(); r.selectNodeContents(k); r.setStartAfter(k.querySelector('.key-swatch')); const t = r.getBoundingClientRect(); return sw.width > 0 && sw.right <= t.left + .5; });
       return { key: key.map(k => k.textContent.trim()), clear,
-        solid: [bg('.fund-key .key-swatch:not(.pending)'), bg('#fund-rows .bar-value:not(.pending)')],
-        hatch: [bg('.fund-key .key-swatch.pending'), bg('#fund-rows .bar-value.pending')],
+        solid: [bg('.fund-key .key-swatch:not(.pending)'), bg('#fund-rows .fund-budget .bar-value:not(.pending)')],
+        hatch: [bg('.fund-key .key-swatch.pending'), bg('#fund-rows .fund-budget .bar-value.pending')],
         budgetOnly: !!document.querySelector('.fund-budget-head .fund-key') && !document.querySelector('.fund-staff-head .fund-key'),
         tips: [...document.querySelectorAll('#fund-rows .fund-bar:has(.bar-value)')].map(b => b.dataset.tip || b.getAttribute('aria-description')) };
     }""")
@@ -3460,17 +3462,13 @@ def check_funding_key(page) -> list[str]:
         errors.append("funding key: a swatch is hidden or overlapped by its label")
     if not got["budgetOnly"]:
         errors.append("funding adopted/announced key must belong to Budget only")
-    # Stacked rows use the same labelled track and value columns for both measures.
+    # Separate charts replace the former paired labelled cells; each head labels its one measure.
     ragged = page.evaluate("""() => [...document.querySelectorAll('#fund-rows .fund-item')].filter(row => {
-      const labels=[...row.querySelectorAll(':scope > .fund-measure > .fund-measure-label')].filter(n=>n.getClientRects().length);
-      if (!labels.length) return false;
-      const b=row.querySelector('.fund-budget'), s=row.querySelector('.fund-staff'), br=b.getBoundingClientRect(), sr=s.getBoundingClientRect();
-      return labels.length!==2 || labels[0].textContent.trim()!=='Budget' || labels[1].textContent.trim()!=='Staff' || sr.top<br.bottom-1 ||
-        labels.some((label,k)=>{const l=label.getBoundingClientRect(), v=[b,s][k].querySelector('.fund-value'), r=v.getBoundingClientRect();return l.left>r.left || l.top<r.top-1 || l.bottom>r.top+parseFloat(getComputedStyle(v).lineHeight)+1;}) ||
-        Math.abs(b.querySelector('.fund-bar').getBoundingClientRect().left-s.querySelector('.fund-bar').getBoundingClientRect().left)>1;
+      const chart=row.closest('.fund-list'),kind=chart?.dataset.kind;
+      return !['budget','staff'].includes(kind) || row.querySelectorAll(':scope > .fund-measure').length!==1 || !row.querySelector(':scope > .fund-'+kind) || chart.querySelector('h3')?.textContent.trim()!==kind[0].toUpperCase()+kind.slice(1);
     }).map(row => row.dataset.j)""")
     if ragged:
-        errors.append(report_line(f"stacked funding rows lack equally labelled and aligned measures: {ragged}"))
+        errors.append(f"funding chart rows lack their own labelled measure: {ragged}")
     for kind in ("solid", "hatch"):
         if not got[kind][0] or got[kind][0] != got[kind][1]:
             errors.append(report_line(f"funding key {kind} swatch is not drawn like its bars: {got[kind]}"))
@@ -3483,24 +3481,30 @@ def check_per_person(soup, data: dict) -> list[str]:
     """Funding rows: a charted state budget carries its per-resident figure and population year as a qualifier, its caveat
     in the figure's own tooltip."""
     errors, jurisdictions = [], {j["id"]: j for j in data["jurisdictions"]}
-    for node in soup.select('.fund-item, .fund-item *'):
+    for node in soup.select('#fund-rows, #fund-rows *, .fund-detail, .fund-detail *'):
         if any("per person" in str(value).lower() for value in [*node.attrs.values(), *node.find_all(string=True, recursive=False)]):
             errors.append("funding view retains per person in text or an accessible name/tooltip")
     for node in soup.select(".per-person"):
         if node.name != "abbr" or "g" not in node.get("class", []) or tip_of(node) != PER_PERSON_TIP or node.get("tabindex") != "0":
             errors.append(f"per-person figure {node.get_text()!r} lacks the focusable caveat tooltip {PER_PERSON_TIP!r}")
     shown = 0
-    fund_items = Keyed(soup, ".fund-item[data-j]")
+    fund_items = Keyed(soup, ".fund-detail[data-j]")
     for inst in data["institutes"]:
         jurisdiction = jurisdictions[inst["jurisdiction_id"]]
         record = inst["display"]["funding_records"].get(inst["display"].get("comparison_funding") or "")
-        row = fund_items.one(jurisdiction["id"], ".fund-value")
+        row = fund_items.one(jurisdiction["id"], ".fund-budget-summary")
         node = row.select_one(".qualifiers .per-person") if row else None
         want = expected_budget_ratios(record, jurisdiction, data)[2] if record and jurisdiction["kind"] == "state" and record.get("eur_per_year_est") is not None else None
         if want:
             want = want.removesuffix("per person") + f"per resident ({jurisdiction['population']['year']})"
         if (node.get_text() if node else None) != want:
             errors.append(f"{jurisdiction['id']}: per resident {node.get_text() if node else None!r}, expected {want!r}")
+        if node:
+            qualifiers = copy.deepcopy(row.select_one(".qualifiers"))
+            for citation in qualifiers.select(".cites"):
+                citation.decompose()
+            if not qualifiers.get_text().strip().endswith(node.get_text().strip()):
+                errors.append(f"{jurisdiction['id']}: per resident must remain the last Budget qualifier in the records")
         shown += want is not None
     if not shown:
         errors.append("no per-person figure shown")
@@ -3952,7 +3956,7 @@ def check_hit_targets(page) -> list[str]:
         "() => {"
         + BROWSER_GEOMETRY
         + """
-      const errors = [];
+      const errors = [], fundingTargets = [];
       const selector = 'a[href], button, input:not([type="hidden"]), select, textarea, summary, [tabindex]:not([tabindex="-1"]), [role="button"], [contenteditable="true"]';
       document.querySelectorAll(selector).forEach(control => {
         if (control.disabled || !visible(control)) return;
@@ -3973,8 +3977,16 @@ def check_hit_targets(page) -> list[str]:
           const r = n.getBoundingClientRect(), p = pseudoBox(n);
           return p ? Math.max(r.bottom, p.bottom) - Math.min(r.top, p.top) : r.height;
         }));
-        if (height < 27.5) errors.push(`${control.tagName.toLowerCase()}#${control.id}.${control.getAttribute("class")}: ${(control.textContent.trim() || control.getAttribute("aria-label") || "").slice(0,60)} (${height.toFixed(1)}px hit height)`);
+        const funding = control.matches('.fund-inline');
+        if (height < (funding ? 44 : 27.5)) errors.push(`${control.tagName.toLowerCase()}#${control.id}.${control.getAttribute("class")}: ${(control.textContent.trim() || control.getAttribute("aria-label") || "").slice(0,60)} (${height.toFixed(1)}px hit height)`);
+        if (funding) fundingTargets.push({name: control.textContent.trim(), text: control.getBoundingClientRect(), box: pseudoBox(control) || control.getBoundingClientRect()});
       });
+      for (let a=0; a<fundingTargets.length; a++) for (let b=a+1; b<fundingTargets.length; b++) {
+        const x=fundingTargets[a], y=fundingTargets[b];
+        // Vertical hit extensions may share the gap between ordinary text lines; neighbours on a line stay separate.
+        if (Math.min(x.text.bottom,y.text.bottom)-Math.max(x.text.top,y.text.top)>.5 && Math.min(x.box.right,y.box.right)-Math.max(x.box.left,y.box.left)>.5 && Math.min(x.box.bottom,y.box.bottom)-Math.max(x.box.top,y.box.top)>.5)
+          errors.push('Funding inline hit areas overlap: '+x.name+' / '+y.name);
+      }
       return errors;
     }"""
     )
@@ -4071,8 +4083,7 @@ def check_baselines_and_rhythm(page) -> list[str]:
         ['.legend-entry', ':scope > .legend-copy'],
         ['.development-label', ':scope > .development-date, :scope > .development-name'],
       ];
-      const fundLabel=document.querySelector('.fund-measure-label');
-      if (fundLabel && !fundLabel.getClientRects().length) rowTypes.push(['.fund-item', ':scope > .fund-identity, :scope > .fund-measure .fund-value']);
+      rowTypes.push(['.fund-item', ':scope > .fund-identity, :scope > .fund-measure .fund-value']);
       for (const [selector, items] of rowTypes) {
         document.querySelectorAll(selector).forEach(row => {
           if (!visible(row)) return;
@@ -4248,7 +4259,7 @@ VIEWPORT_BOUNDARIES = {
     "1100px": "stacked map and two-column cards",
     "1280px": "section heading above content below this width; sticky column from here",
 }
-CONTAINER_BOUNDARIES = {"funding": "60rem"}  # inline identity, bounded bars and equal flexible figures
+CONTAINER_BOUNDARIES = {"funding": "40rem"}  # inline identity, bounded bars and equal flexible figures
 WIDTH_GEOMETRY = {
     (".vh", "width", "1px"): "clipped accessible text must retain a nonzero box",
     (".close-glyph", "width", ".8em"): "square close glyph scales with the header label, paired with its height",
@@ -4819,12 +4830,11 @@ def check_meta_separators(page, force_wrap=False) -> list[str]:
         if (mark.left < before.right - 1 || mark.bottom <= before.top || mark.top >= before.bottom) errors.push('separator starts a line: ' + tail.textContent);
       });
       // An item wraps inside only when it alone is wider than its container; it is never split into two boxes.
-      // Citation glue goes inside a cited item (the funding qualifiers carry markers after their last item).
+      // Citation glue goes inside a cited item (opened Funding qualifiers carry markers after their last item).
       if (![...document.querySelectorAll('.meta-item .cite-glue')].some(visible)) errors.push('no cited separated item to check the glue against');
       document.querySelectorAll('.meta-item').forEach(item => {
         if (!visible(item)) return;
         if (item.parentElement.closest('.meta-item, .cite-glue') || item.querySelector('.meta-item')) errors.push('separated item split or nested: ' + item.textContent.slice(0, 60));
-        if (item.closest('.fund-measure')) return; // the owner requests natural wrapping inside the compact figure column
         const lines = item.getBoundingClientRect().height / parseFloat(getComputedStyle(item).lineHeight);
         if (!(lines >= 1.5)) return;
         let box = item.parentElement; while (box && /^inline/.test(getComputedStyle(box).display)) box = box.parentElement;
@@ -5391,12 +5401,13 @@ def check_close_controls(browser, base_url: str, data: dict) -> list[str]:
                         if (panel?.querySelector('.close-control')) panel.querySelector('.close-control').click();
                         else button.click();
                       }
-                      const funding=[...document.querySelectorAll('.fund-row')].filter(n=>n.getClientRects().length);
+                      const funding=[...document.querySelectorAll('.fund-row, .fund-inline')].filter(n=>n.getClientRects().length);
                       if (!funding.length) errors.push('no Funding openers to check');
                       for (const button of funding) {
                         button.click();
                         const panel=document.getElementById(button.getAttribute('aria-controls'));
-                        if (!panel?.open || panel.querySelectorAll('.close-control').length!==1) errors.push('Funding row needs one open panel and one ×');
+                        if (!panel?.open || panel.querySelectorAll('.close-control').length!==1 || document.querySelectorAll('.fund-detail[open]').length!==1) errors.push('Funding opener needs one open panel and one × across both charts');
+                        if (panel && panel.parentElement !== button.closest('.fund-item, .fund-other-line, .fund-missing-line')) errors.push('Funding records do not open beneath their control');
                         errors.push(...inspect(false));
                         panel?.querySelector('.close-control')?.click();
                         if (panel?.open || document.activeElement!==button || button.getAttribute('aria-expanded')!=='false') errors.push('Funding Close does not return focus and reset its row');
@@ -5470,8 +5481,8 @@ def check_secondary_tone(browser, base_url: str) -> list[str]:
                 found = page.evaluate("""() => {
                   const errors = [], probe = document.createElement('span'); document.body.appendChild(probe);
                   const roles = {
-                    ink: '.development-date, .group-note, .fund-context:not(.fund-measure.unbarred *), .period-mean:not(.fund-measure.unbarred *), .fund-status, .qualifiers:not(.fund-measure.unbarred *), .conf:not(.fund-measure.unbarred *), .partner-how li, .partners-none, .card.mini > summary .find, .related, .card.mini .body-group .det, .card.mini .body-roles',
-                    muted: '.card .k, .record-rows dt, .label, .srcs ol, .source-after, .quote-anchor, .quote .reread, .claim > .reread, .card.mini .how p:not(.gl), .fund-measure.unbarred, .fund-measure.unbarred .fund-value, .fund-measure.unbarred .budget-value, .fund-measure.unbarred .qualifiers, .fund-measure.unbarred .fund-context'
+                    ink: '.development-date, .group-note, .fund-context, .period-mean, .fund-status, .qualifiers, .conf, .partner-how li, .partners-none, .card.mini > summary .find, .related, .card.mini .body-group .det, .card.mini .body-roles',
+                    muted: '.card .k, .record-rows dt, .label, .srcs ol, .source-after, .quote-anchor, .quote .reread, .claim > .reread, .card.mini .how p:not(.gl), .fund-other, .fund-missing-names, .fund-inline:not(:hover):not(:focus-visible):not([aria-expanded="true"])'
                   };
                   for (const [role, selectors] of Object.entries(roles)) {
                     probe.style.color = 'var(--' + role + ')'; const colour = getComputedStyle(probe).color;
@@ -5857,7 +5868,8 @@ def check_card_heads(browser, base_url: str) -> list[str]:
             page = themed_page(browser, theme, viewport={'width': width, 'height': 900})
             try:
                 hydrated(page, base_url)
-                errors.extend(f'{width}px {theme} Funding head: ' + e for e in exercise_table_head(page, '#fund-rows', '.fund-axis'))
+                for kind in ('budget', 'staff'):
+                    errors.extend(f'{width}px {theme} Funding {kind} head: ' + e for e in exercise_table_head(page, f'.fund-list[data-kind="{kind}"]', '.fund-axis'))
                 # The first map record in document order also has a reading head, inside its own scrollport on wide screens.
                 page.locator('.regions .pick').first.evaluate('n=>n.click()')
                 gap = unstuck_head_gap(page, '.record', ':scope > .record-top')
@@ -5881,16 +5893,17 @@ def check_card_heads(browser, base_url: str) -> list[str]:
                         errors.append(f'{width}px {theme}: no {selector} to exercise')
                         continue
                     if selector == '.fund-detail':
-                        iid = page.locator(selector).nth(chosen).locator('..').get_attribute('data-institute')
-                        row = f'.fund-item[data-institute="{iid}"]'
+                        iid = page.locator(selector).nth(chosen).get_attribute('data-institute')
+                        opener = f'.fund-list[data-kind="budget"] button[data-institute="{iid}"]'
+                        detail = f'.fund-detail[data-institute="{iid}"]'
                         errors.extend(f'{width}px {theme} Funding: ' + e for e in exercise_detail_head(
-                            page, row + ' > .fund-row', row + ' > .fund-detail[open]', ':scope > summary'))
-                        page.locator(row + ' > .fund-row').evaluate('n=>n.click()')
+                            page, opener, detail + '[open]', ':scope > summary'))
+                        page.locator(opener).evaluate('n=>n.click()')
                         page.emulate_media(media='print')
                         if not page.locator('.fund-axis, .fund-detail[open] > summary').evaluate_all("heads=>heads.every(n=>getComputedStyle(n).position==='static')"):
                             errors.append(f'{width}px {theme}: Funding heads stay sticky in print')
                         page.emulate_media(media='screen')
-                        page.locator(row + ' .close-control').evaluate('n=>n.click()')
+                        page.locator(detail + ' .close-control').evaluate('n=>n.click()')
                         continue
                     # Assign only a test anchor, restoring the actual anchor afterwards.
                     original_id = page.locator(selector).nth(chosen).get_attribute('id')
@@ -5965,7 +5978,13 @@ def head_padding_errors(m: dict) -> list[str]:
 
 
 FOCUS_CLEARANCE_JS = r"""n => {
-  const r=n.getBoundingClientRect(), nav=document.querySelector('.secnav').getBoundingClientRect();
+  let r=n.getBoundingClientRect(), rects=[...n.getClientRects()].filter(r=>r.width>0 && r.height>0);
+  // A zero-height inline citation has painted text even though its line box is empty.
+  if(r.height===0) {
+    const range=document.createRange(); range.selectNodeContents(n);
+    r=range.getBoundingClientRect(); rects=[...range.getClientRects()].filter(r=>r.width>0 && r.height>0);
+  }
+  const nav=document.querySelector('.secnav').getBoundingClientRect();
   const group=n.closest('.group')?.querySelector('.group-nav')?.getBoundingClientRect();
   let edge=group && group.top<=nav.bottom+1 ? group.bottom : nav.bottom;
   const panel=n.closest('.fn-detail, .fund-detail'), owner=panel || n.closest('.fn-phone, .fn-scroll, .scroll, .fund-list');
@@ -5974,7 +5993,6 @@ FOCUS_CLEARANCE_JS = r"""n => {
     const h=head.getBoundingClientRect(); edge=Math.max(edge,Math.min(h.bottom,edge+h.height));
   }
   // Actual painted rectangles, not the page's readingEdge helper or its declared scroll margins.
-  const rects=[...n.getClientRects()].filter(r=>r.width>0 && r.height>0);
   const covered=rects.map(r=>{
     const x=(r.left+r.right)/2,y=(r.top+r.bottom)/2,hit=document.elementFromPoint(x,y);
     return n.contains(hit) ? null : {x,y,hit:hit ? hit.tagName.toLowerCase()+(hit.id?'#'+hit.id:'')+(hit.className?'.'+String(hit.className).trim().replace(/\s+/g,'.'):'') : 'outside viewport'};
@@ -6006,7 +6024,7 @@ def exercise_table_head(page, owner: str, head: str) -> list[str]:
     page.mouse.move(1, 1)
     gap = unstuck_head_gap(page, owner, head)
     page.locator(owner).evaluate("""box => {
-      const list=box.querySelector('tbody:last-child, .fn-phone-block:last-child > ul, .fund-block:last-child > ul');
+      const list=box.querySelector('tbody:last-child, .fn-phone-block:last-child > ul, .fund-chart-rows');
       const sample=list.querySelector('tr[data-institute], tr[data-j], li[data-institute]');
       for(let n=0; sample && box.getBoundingClientRect().height<innerHeight*3 && n<100; n++) {
         const row=sample.cloneNode(true); row.dataset.stickyProbe='';
@@ -6731,17 +6749,22 @@ def check_group_rows(browser, base_url: str) -> list[str]:
             got = page.evaluate("""() => [...document.querySelectorAll('.group-nav:has(a[href="#testing"]) a')].filter(a => a.classList.contains('active') || a.hasAttribute('aria-current')).map(a => [a.getAttribute('href'), a.getAttribute('aria-current')])""")
             if got != [[f"#{key}", "location"]]:
                 errors.append(f"{width}px: scrolled to #{key}, the Compare row marks {got}")
-        # A keyboard focus under the rows comes out from under them: a funding disclosure reached by Tab.
-        got = page.evaluate("""() => { const s = document.querySelector('#fund-rows details > summary'), all = [...document.querySelectorAll('a[href], button, summary, input, select, [tabindex="0"]')].filter(n => n.getClientRects().length);
-          const prev = all[all.indexOf(s) - 1], nav = document.querySelector('.secnav').getBoundingClientRect().bottom;
-          scrollTo(0, s.getBoundingClientRect().top + scrollY - nav - 4); prev.focus({ preventScroll: true }); return !!prev; }""")
-        page.wait_for_timeout(100)
-        page.keyboard.press("Tab")
-        page.wait_for_timeout(200)
-        got = page.evaluate("""() => { const a = document.activeElement, s = document.querySelector('#fund-rows details > summary'), row = document.querySelector('.group-nav:has(a[href="#testing"])').getBoundingClientRect();
-          return [a === s, Math.round(a.getBoundingClientRect().top), Math.round(row.bottom)]; }""")
-        if not got[0] or got[1] < got[2]:
-            errors.append(f"{width}px: a funding disclosure focused by Tab under the group row stays under it (focused, top, row bottom: {got})")
+        # A keyboard focus under the rows comes out from under them: a funding row control reached by Tab.
+        got = page.evaluate("""() => { const s = document.querySelector('#fund-rows .fund-row'), all = [...document.querySelectorAll('a[href], button, summary, input, select, [tabindex="0"]')].filter(n => n.getClientRects().length && n.tabIndex >= 0 && !n.matches(':disabled'));
+          const prev = all[all.indexOf(s) - 1];
+          if (!s || !prev) return false;
+          const nav = document.querySelector('.secnav').getBoundingClientRect().bottom;
+          scrollTo(0, s.getBoundingClientRect().top + scrollY - nav - 4); prev.focus({ preventScroll: true }); return true; }""")
+        if not got:
+            errors.append(f"{width}px: cannot check funding row focus by Tab: no tabbable row control or preceding Tab stop")
+        else:
+            page.wait_for_timeout(100)
+            page.keyboard.press("Tab")
+            page.wait_for_timeout(200)
+            got = page.evaluate("""() => { const a = document.activeElement, s = document.querySelector('#fund-rows .fund-row'), row = document.querySelector('.group-nav:has(a[href="#testing"])').getBoundingClientRect();
+              return [a === s, Math.round(a.getBoundingClientRect().top), Math.round(row.bottom)]; }""")
+            if not got[0] or got[1] < got[2]:
+                errors.append(f"{width}px: a funding row control focused by Tab under the group row stays under it (focused, top, row bottom: {got})")
         page.close()
         # A hash link from elsewhere lands the same way, on a fresh page.
         page = browser.new_page(viewport={"width": width, "height": height})
@@ -8414,8 +8437,7 @@ def check_value_qualifiers(page) -> list[str]:
         for (const q of field.querySelectorAll('.qualifiers')) {
           if (!q.getClientRects().length) continue;
           const s = getComputedStyle(q);
-          const unbarred=q.closest('.fund-measure.unbarred'), colour=unbarred?getComputedStyle(unbarred).color:want.color;
-          if (s.display !== 'block' || s.fontSize !== want.fontSize || s.color !== colour) errors.push(REPORT + `qualifiers are not a small block in their measure's ink: ${name(field)}`);
+          if (s.display !== 'block' || s.fontSize !== want.fontSize || s.color !== want.color) errors.push(REPORT + `qualifiers are not a small block in their measure's ink: ${name(field)}`);
           // The qualifier line starts below the value's first line.
           const walker = document.createTreeWalker(field, NodeFilter.SHOW_TEXT);
           let text = null; while (walker.nextNode()) if (walker.currentNode.nodeValue.trim() && !walker.currentNode.parentElement.closest('.qualifiers, .vh')) { text = walker.currentNode; break; }
@@ -8604,7 +8626,6 @@ def check_institute_names(html, data: dict) -> list[str]:
         jid = str(row.get("data-j"))
         iid = row.get("data-institute")
         name = row.select_one(".fund-identity .fund-institute")
-        detail = row.select_one(".fund-detail > summary .fund-head-name")
         if iid not in names:
             errors.append(f"{jid} funding row: unknown institute {iid!r}")
             continue
@@ -8613,9 +8634,12 @@ def check_institute_names(html, data: dict) -> list[str]:
         mark = name.select_one("abbr.g") if name else None
         if name is None or name.get_text(strip=True) != shorts[iid] or (mark is None) != (hover is None) or (mark and (tip_of(mark) != hover or mark.get("tabindex") != "0")):
             errors.append(f"{jid} funding row does not show short form {shorts[iid]!r} with its focusable full name")
+    for record in soup.select("#fund-rows .fund-detail[data-institute]"):
+        iid = record.get("data-institute")
+        detail = record.select_one(":scope > summary .fund-head-name")
         full = "".join(t for t in detail.find_all(string=True) if not t.find_parent(class_=("vh", "cites"))).strip() if detail else None
-        if full != names[iid]:
-            errors.append(f"{jid} funding detail does not name {names[iid]!r} in full")
+        if iid not in names or full != names[iid]:
+            errors.append(f"{iid} funding detail does not name {names.get(iid)!r} in full")
     return errors
 
 
@@ -8803,10 +8827,22 @@ def check_euro_amounts(html, data: dict) -> list[str]:
     errors = []
     for institute in data["institutes"]:
         compared = institute.get("display", {}).get("comparison_funding")
+        summary = soup.select_one(f'.fund-detail[data-institute="{institute["id"]}"] .fund-budget-summary')
+        if summary and (summary.get("data-source-funding-id") != compared or summary.select_one("[data-record-id], [data-funding-id]") or summary.has_attr("data-record-id") or summary.has_attr("data-funding-id")):
+            errors.append(f"{institute['id']}: annual budget summary must name its source funding record separately from the record's own amount")
         for record in institute.get("funding", []) or []:
             identity, wanted_sources = record["id"], rate_sources(record, data)
             if not wanted_sources:
                 continue
+            if summary and identity == compared:
+                figure = summary.select_one(".fund-value strong")
+                annual = {**record, "amount": expected_annual_native(record)}
+                expected_annual = expected_shown_funding_value(annual, data)
+                if figure is None or figure.get_text(strip=True) != expected_annual:
+                    errors.append(f"{identity}: annual budget summary must show {expected_annual!r}")
+                cited = {a.get("data-source-id") for a in summary.select(".fund-value .cn")}
+                if not set(wanted_sources) <= cited:
+                    errors.append(f"{identity}: annual budget summary does not cite the amount and exchange-rate sources")
             expected = expected_shown_funding_value(record, data)
             figures = soup.select(f'.funding-record[data-record-id="{identity}"] .budget-amount, .related-funding-item[data-funding-id="{identity}"] .related-funding-eur')
             if identity != compared:
@@ -9663,7 +9699,7 @@ LANDMARKS_JS = """(root, clip) => {
     }
     if (n.matches('#world-scroll thead')) return ['comparison table header', 'world-scroll'];
     if (n.matches('.fund-item')) {
-      const name = text(n.querySelector('h3'));
+      const name = text(n.querySelector('h4'));
       return [`funding chart, ${name} row`, 'fund-rows', 'funding chart rows', name];
     }
     if (n.matches('.development-row')) {
@@ -9823,9 +9859,9 @@ def check_controls(page) -> list[str]:
         if (!visible(node)) return;
         const s = getComputedStyle(node), structural = node.matches('.na');
         if (['fontSize', 'fontWeight', 'fontFamily', 'lineHeight'].some(k => s[k] !== body[k])) errors.push(REPORT + 'missing value does not use the body role');
-        // "Not published" is a research finding in body ink; a structural dash is muted by design. In the Funding list a measure
-        // without a bar is muted as a whole, so ten rows of words do not read as figures (owner's hub, 19 Nov 2026).
-        const quiet = structural || !!node.closest('.fund-measure.unbarred');
+        // "Not published" figures use body ink; a structural dash is muted. Funding's compact name lists
+        // are separate muted controls, covered by check_secondary_tone.
+        const quiet = structural;
         if (s.color !== (quiet ? muted : body.color)) errors.push(structural ? 'structural absence is not muted' : 'missing value does not use the body ink');
       });
       if (document.querySelector('#world-all')) errors.push('duplicate full-dataset toolbar action remains');
@@ -10241,7 +10277,7 @@ def check_format_output(html: str, data: dict, cases: list[dict]) -> list[str]:
                     f"format fixture {jid}: undisplayed Since date leaked into All view"
                 )
             continue
-        funding = soup.select_one(f'.fund-item[data-j="{jid}"]')
+        funding = soup.select_one(f'.fund-detail[data-j="{jid}"]')
         if not card or not table or not funding:
             errors.append(f"format fixture {jid}: a view is missing")
             continue
@@ -10284,7 +10320,7 @@ def check_format_output(html: str, data: dict, cases: list[dict]) -> list[str]:
             )
         if (
             "figure" in case
-            and prose(funding.select_one(".fund-budget > .fund-value strong"))
+            and prose(funding.select_one(".fund-budget-summary strong"))
             != case["figure"]
         ):
             errors.append(
@@ -10429,21 +10465,20 @@ def check_budget_output(html, data, expected=None):
         if card and any(row.get("coverage") == "not_institute_specific" for row in institute.get("funding", [])):
             if not card.select_one(f'.row[data-track="{CARD_TRACKS["Related funding"]}"]'):
                 errors.append(f"{jid}: wider funding must use a separate Related funding line")
-        row = soup.select_one(f'.fund-item[data-institute="{identity}"]')
+        chart = soup.select_one('.fund-list[data-kind="budget"]')
+        row = chart.select_one(f'.fund-item[data-institute="{identity}"]') if chart else None
+        inline = chart.select_one(f'.fund-inline[data-institute="{identity}"]') if chart else None
         comparison = EXPECTED_FUNDING_IDS.get(jid)
-        if row is None:
-            errors.append(f"{jid}: funding Budget row is missing")
-        elif comparison:
-            if row.get("data-funding-id") != comparison or not row.select_one(".fund-budget .fund-value strong") or not row.select_one(".fund-budget .qualifiers"):
+        if comparison:
+            if row is None or row.get("data-funding-id") != comparison or not row.select_one(".fund-budget .fund-value strong") or not row.select_one(".fund-budget .qualifiers"):
                 errors.append(f"{jid}: funding Budget comparison loses its selected amount or qualifiers")
         else:
-            selected = row.select_one(".fund-budget .budget-value")
-            if (selected.get("data-funding-id") if selected else None) != wanted:
+            if inline is None or inline.get("data-funding-id") != wanted:
                 errors.append(f"{jid}: funding Budget selected wrong funding ID")
-            if wanted is None and not row.select_one(".fund-budget .missing"):
+            if wanted is None and inline and not inline.find_parent(class_="fund-missing-line"):
                 errors.append(f"{jid}: funding Budget must be Not published")
-            if selected and (not selected.select_one(".budget-amount") or not selected.select_one(".budget-qualifiers")):
-                errors.append(f"{jid}: funding Budget must separate amount and qualifiers")
+            if inline and inline.select_one(".budget-amount, strong"):
+                errors.append(f"{jid}: funding Budget without a bar must describe its amount in words")
     return errors
 
 
@@ -10458,110 +10493,126 @@ def funding_groups(data: dict) -> tuple[set, set, set]:
 
 
 def expected_funding_rows(data: dict) -> dict[str, list[str]]:
-    """Status membership and Budget-first order, independent of the page's display selections."""
+    """Independent descending rank for each scale, then jurisdiction name and permanent ID."""
     jurisdictions = {j["id"]: j for j in data["jurisdictions"]}
-    groups = {"established": [], "not-established": []}
+    rows = {"budget": [], "staff": []}
     for inst in data["institutes"]:
-        j = jurisdictions[inst["jurisdiction_id"]]
-        selected = EXPECTED_FUNDING_IDS.get(j["id"])
-        record = next((r for r in inst.get("funding", []) if r["id"] == selected), None)
-        rank = 0 if record else 1 if EXPECTED_BUDGET_IDS.get(inst["id"]) else 2
-        amount = record.get("eur_per_year_est") if record else None
-        groups["established" if j["status"] == "established" else "not-established"].append(
-            ((rank, -float(amount or 0), j["name"], inst["id"]), inst["id"])
-        )
-    return {band: [iid for _, iid in sorted(rows)] for band, rows in groups.items()}
+        jid = inst["jurisdiction_id"]
+        budget = next((r for r in inst.get("funding", []) if r["id"] == EXPECTED_FUNDING_IDS.get(jid)), None)
+        staff, _ = latest_staff_total(inst)
+        values = {"budget": budget.get("eur_per_year_est") if budget else None,
+                  "staff": staff.get("total") if staff and staff.get("as_of") else None}
+        for kind, amount in values.items():
+            if isinstance(amount, (int, float)) and math.isfinite(amount):
+                rows[kind].append(((-amount, jurisdictions[jid]["name"], inst["id"]), inst["id"]))
+    return {kind: [iid for _, iid in sorted(items)] for kind, items in rows.items()}
 
 
 def check_funding_outside(html, data: dict) -> list[str]:
-    """Each institute has one complete row in its status band, with independent Budget and Staff measures."""
+    """Both charts cover each institute once; only comparable, dated values become numbered rows."""
     soup = BeautifulSoup(html, "html.parser")
     errors = []
     year = data["dataset"]["as_of"][:4]
     heading = soup.select_one("#fund-chart-h")
     if not heading or year not in heading.get_text():
         errors.append(f"funding chart heading must name the reference year {year}")
-    if soup.select_one("#fund-none, #fund-outside, #fund-unavailable, .fund-outside-item, .fund-missing"):
-        errors.append("funding keeps a separate list instead of one row per institute")
+    if soup.select_one("#fund-rows .fund-block, #fund-rows [data-band]"):
+        errors.append("funding charts must rank figures without status bands")
     by_id = {i["id"]: i for i in data["institutes"]}
-    institutes = {iid: i["jurisdiction_id"] for iid, i in by_id.items()}
-    bars, nobar, none = funding_groups(data)
-    has_total = {
-        i["jurisdiction_id"] for i in data["institutes"] if any(s.get("total") is not None for s in i.get("staff", []))
-    }
-    described_only = {}
-    for i in data["institutes"]:
-        shown_staff = i["display"]["staff_records"].get(i["display"].get("staff") or "")
-        if shown_staff and shown_staff.get("total") is None and shown_staff.get("technical") is None and shown_staff.get("description"):
-            described_only[i["jurisdiction_id"]] = shown_staff
-    own_ids = {institutes[iid]: fid for iid, fid in EXPECTED_BUDGET_IDS.items() if fid is not None and iid in institutes}
-    rows = soup.select("#fund-rows .fund-item[data-institute][data-j]")
-    got_bars = [str(r["data-j"]) for r in rows if r.select_one(".fund-budget .bar-value")]
-    got_nobar = [str(r["data-j"]) for r in rows if not r.select_one(".fund-budget .bar-value") and r.select_one(".fund-budget .budget-value")]
-    got_none = [str(r["data-j"]) for r in rows if r.select_one(".fund-budget .missing")]
-    for label, got, want in (("bar rows", got_bars, bars), ("other own amounts", got_nobar, nobar), ("Not published rows", got_none, none)):
-        if sorted(got) != sorted(want):
-            errors.append(f"funding {label} list {sorted(got)}, expected {sorted(want)}")
-    everyone = Counter(str(r["data-institute"]) for r in rows)
-    if everyone != Counter(by_id.keys()):
-        errors.append(f"funding must list each institute once: {dict(everyone)}, expected {sorted(by_id)}")
-    for band, expected in expected_funding_rows(data).items():
-        blocks = soup.select(f'#fund-rows > .fund-block[data-band="{band}"]')
-        actual = [str(r.get("data-institute")) for block in blocks for r in block.select(":scope > ul > .fund-item")]
-        label = "Established" if band == "established" else "Not yet established"
-        if len(blocks) != 1 or not blocks[0].select_one(":scope > h3") or label not in blocks[0].select_one(":scope > h3").get_text() or actual != expected:
-            errors.append(f"funding {band} band membership/order {actual}, expected {expected}")
-    for row in rows:
-        jid = str(row["data-j"])
-        iid = str(row["data-institute"])
-        if iid not in by_id:
-            errors.append(f"{jid}: unknown institute in funding row: {iid}")
+    expected_rows = expected_funding_rows(data)
+    details = soup.select("#fund-rows details.fund-detail[data-institute]")
+    if Counter(d.get("data-institute") for d in details) != Counter(by_id.keys()):
+        errors.append("funding must retain one canonical records fold per institute")
+    for detail in details:
+        summary = detail.select_one(":scope > summary")
+        if summary is None or "Funding and staff records" not in summary.get_text():
+            errors.append(f"{detail.get('data-institute')}: missing native Funding and staff records fallback")
+    for kind in ("budget", "staff"):
+        charts = soup.select(f'#fund-rows > .fund-list[data-kind="{kind}"]')
+        if len(charts) != 1:
+            errors.append(f"funding {kind}: expected one chart")
             continue
-        if row.name != "li" or row.get("data-j") != by_id[iid]["jurisdiction_id"]:
-            errors.append(f"{iid}: funding row has the wrong identity or is not a list item")
-        opener, detail = row.select_one(":scope > button.fund-row"), row.select_one(":scope > details.fund-detail")
-        if not opener or not detail or opener.get("aria-controls") != detail.get("id") or opener.get("aria-expanded") != "false" or "Funding and staff records" not in (opener.get("aria-label") or ""):
-            errors.append(f"{iid}: row opener does not name and control its records")
-        if opener and (opener.get_text(strip=True) or opener.select("a, button, [tabindex]")):
-            errors.append(f"{iid}: whole-row button contains visual or interactive content")
-        if detail and (not detail.select_one(":scope > summary") or "Funding and staff records" not in detail.select_one(":scope > summary").get_text()):
-            errors.append(f"{iid}: missing native Funding and staff records fallback")
-        if not row.select_one(".fund-budget .fund-bar") or not row.select_one(".fund-staff .fund-bar"):
-            errors.append(f"{jid}: Budget and Staff must both keep a shared bar track")
-        value = row.select_one(".fund-budget .budget-value")
-        if jid in own_ids and jid not in bars:
-            if not value or value.get("data-funding-id") != own_ids[jid] or not value.select_one(".budget-amount") or not value.select_one(".budget-qualifiers"):
-                errors.append(f"{jid}: row without a bar shows the wrong own Budget record")
-            if not row.select(".fund-budget .fund-value .cn"):
-                errors.append(f"{jid}: own funding without a bar has no citation")
-            # Why it has no bar is the last qualifier on the value's own line, never a sentence of its own (principle: Values and qualifiers).
-            shown = row.select_one(".fund-budget .budget-qualifiers")
-            # The qualifier words without the citation numerals that follow them (an amount in euros cites the rate too).
-            words = " ".join(" ".join(t for t in shown.find_all(string=True) if not t.find_parent(class_=["cites", "cn"])).split()) if shown else ""
-            if row.select(".fund-reason") or not words.endswith("· not charted"):
-                errors.append(f"{jid}: row without a bar should end its qualifier line with 'not charted', got {words!r}")
-        elif jid not in bars and not row.select_one(".fund-budget .fund-value > .missing"):
-            errors.append(f"{jid}: row without a bar or own funding must say Not published")
-        staff_cell = row.select_one(".fund-staff .fund-value")
-        if staff_cell is None or not staff_cell.get_text(strip=True):
-            errors.append(f"{jid}: every row needs a Staff figure or Not published")
-        described = described_only.get(jid)
-        if described is not None:
-            # A description-only staff record (a published range) shows its text, as the card does, with citations and its as-of line.
-            shown = " ".join(" ".join(t for t in staff_cell.find_all(string=True) if not t.find_parent(class_=["cites", "cn"])).split()) if staff_cell else ""
-            context = row.select_one(".fund-staff .fund-context")
-            if described["description"] not in shown or not staff_cell.select(".cites a, .cn") or (described.get("as_of") and not (context and re.search(r"as (?:of|at)", context.get_text()))):
-                errors.append(f"{jid}: funding Staff should show {described['description']!r} with citations and its date, got {shown!r}")
-        if (jid in has_total) == (staff_cell is None or staff_cell.select_one(".missing") is not None or staff_cell.select_one("strong") is None):
-            errors.append(f"{jid}: Staff cell differs from the staff records")
-        total, _ = latest_staff_total(by_id[iid])
-        eligible = total is not None and bool(total.get("as_of")) and isinstance(total.get("total"), (int, float)) and math.isfinite(total["total"])
-        if len(row.select(".fund-staff .bar-value")) != int(eligible):
-            errors.append(f"{iid}: Staff bar must represent a published dated total only")
-        if total and total.get("total_qualifier") in ("about", "at_least", "at_most"):
-            qualification = {"about": "about", "at_least": "at least", "at_most": "up to"}[total["total_qualifier"]]
-            if qualification not in row.select_one(".fund-staff").get_text(" ").lower():
-                errors.append(f"{iid}: Staff qualifier {qualification!r} must be stated in words")
+        chart = charts[0]
+        head = chart.select_one(f".fund-{kind}-head h3")
+        if head is None or head.get_text(strip=True) != kind.title():
+            errors.append(f"funding {kind}: missing chart heading")
+        rows = chart.select(".fund-chart-rows > .fund-item[data-institute]")
+        actual = [str(r.get("data-institute")) for r in rows]
+        if actual != expected_rows[kind]:
+            errors.append(f"funding {kind} ranked rows {actual}, expected {expected_rows[kind]}")
+        openers = chart.select("button.fund-row, button.fund-inline")
+        coverage = Counter(str(o.get("data-institute")) for o in openers)
+        if coverage != Counter(by_id.keys()):
+            errors.append(f"funding {kind} must list each institute once: {dict(coverage)}, expected {sorted(by_id)}")
+        if kind == "budget":
+            other = {iid for iid in by_id if EXPECTED_BUDGET_IDS.get(iid) and iid not in expected_rows[kind]}
+        else:
+            other = {iid for iid, inst in by_id.items() if inst.get("staff") and iid not in expected_rows[kind]
+                     and any(any(r.get(field) is not None for field in ("total", "technical", "target")) or r.get("description") for r in inst["staff"])}
+        missing = set(by_id) - set(expected_rows[kind]) - other
+        for selector, want, label in ((".fund-other-line .fund-inline", other, "other published amounts"),
+                                      (".fund-missing-line .fund-inline", missing, "Not published")):
+            got = [o.get("data-institute") for o in chart.select(selector)]
+            if Counter(got) != Counter(want):
+                errors.append(f"funding {kind} {label} list {sorted(got)}, expected {sorted(want)}")
+        missing_line = chart.select_one(".fund-missing-line")
+        if missing and (missing_line is None or not missing_line.get_text(" ", strip=True).startswith("Not published:")):
+            errors.append(f"funding {kind}: missing Not published label")
+        for opener in openers:
+            iid = str(opener.get("data-institute"))
+            detail = soup.find(id=opener.get("aria-controls"))
+            if iid not in by_id or detail is None or detail.get("data-institute") != iid or opener.get("aria-expanded") != "false" or "Funding and staff records" not in (opener.get("aria-label") or ""):
+                errors.append(f"{iid}: {kind} opener does not name and control its records")
+            if opener.select("a, button, [tabindex]"):
+                errors.append(f"{iid}: {kind} opener contains an interactive control")
+            if "fund-row" in opener.get("class", []) and opener.get_text(strip=True):
+                errors.append(f"{iid}: whole-row button contains visual or interactive content")
+        for row in rows:
+            iid = str(row.get("data-institute"))
+            if iid not in by_id:
+                continue
+            if row.name != "li" or row.get("data-j") != by_id[iid]["jurisdiction_id"]:
+                errors.append(f"{iid}: funding row has the wrong identity or is not a list item")
+            if len(row.select(f":scope > .fund-{kind} .bar-value")) != 1 or len(row.select(f":scope > .fund-{kind} .fund-value strong")) != 1:
+                errors.append(f"{iid}: every printed {kind} figure must have exactly one bar")
+            qualifier = row.select_one(".fund-qualifier")
+            if qualifier is None:
+                errors.append(f"{iid}: {kind} row needs its one qualifier line")
+                continue
+            try:
+                parts = json.loads(qualifier.get("data-parts", "null"))
+            except (ValueError, TypeError):
+                parts = None
+            if not isinstance(parts, list) or not parts or any(not isinstance(p, str) or not p for p in parts):
+                errors.append(f"{iid}: {kind} qualifier must preserve its ordered clauses")
+                continue
+            text = qualifier.get_text(" ", strip=True)
+            allowed = [" · ".join(parts[:n]) for n in range(len(parts)+1)]
+            if kind == "budget":
+                funding = next((f for f in by_id[iid].get("funding", []) if f["id"] == row.get("data-funding-id")), {})
+                commitment = funding.get("commitment")
+                if commitment not in {"adopted", "announced"} or parts[-1] != commitment or commitment not in text.split(" · "):
+                    errors.append(f"{iid}: Budget qualifier must show its commitment word")
+                allowed = [" · ".join(parts), " · ".join([parts[0], parts[-1]])]
+            if text not in allowed:
+                rule = "the period before commitment" if kind == "budget" else "complete trailing clauses"
+                errors.append(f"{iid}: {kind} qualifier may drop only {rule}")
+            if kind == "budget" and parts[0] != "a year":
+                errors.append(f"{iid}: Budget qualifier must start with a year")
+            if kind == "staff":
+                total, _ = latest_staff_total(by_id[iid])
+                if total is None or not total.get("as_of"):
+                    errors.append(f"{iid}: Staff bar must represent a published dated total only")
+                else:
+                    bound = {"about": "about", "at_least": "at least", "at_most": "up to", "more_than": "more than", "less_than": "less than", "nearly": "nearly"}.get(total.get("total_qualifier"))
+                    if bound and parts[0] != bound:
+                        errors.append(f"{iid}: Staff qualifier {bound!r} must be stated in words")
+                    if "as at " + expected_date(total["as_of"]) not in parts:
+                        errors.append(f"{iid}: Staff qualifier needs its recorded date")
+        for line in chart.select(".fund-other-line"):
+            words = line.get_text(" ", strip=True)
+            if re.search(r"\d", words) or "in the records" not in words or line.select(".bar-value, .budget-amount, strong"):
+                errors.append(f"funding {kind}: unscaled amounts must use words pointing to the records")
     download = soup.select_one('#funding-download a[href="data/funding.csv"], a#funding-download[href="data/funding.csv"]')
     guidance = soup.select_one("#funding-download")
     if not download or not download.has_attr("download") or not guidance or "staff.csv" not in (guidance.get_text(" ") + tip_of(guidance)):
@@ -10591,9 +10642,15 @@ def label_ladder_selectors(data: dict) -> list[str]:
     for institute in data.get("institutes", []):
         jurisdiction = jurisdictions[institute["jurisdiction_id"]]
         status = jurisdiction["status"]
-        band = "established" if status == "established" else "not-established"
-        row = f'#fund-rows .fund-block[data-band="{band}"] .fund-item[data-institute="{institute["id"]}"]'
-        selectors.update((f'#fund-rows .fund-block[data-band="{band}"] > h3:visible', row + ' .fund-identity h4', row + f' .sw.st-{status}', row + f' > .fund-row[aria-label*="{STATUS_LABELS[status]}"]', row + (' .fund-identity .vh' if status == 'established' else ' .fund-status')))
+        for kind, ranked in expected_funding_rows(data).items():
+            chart = f'#fund-rows .fund-list[data-kind="{kind}"]'
+            selectors.add(chart + ' h3:visible')
+            if institute["id"] in ranked:
+                row = chart + f' .fund-item[data-institute="{institute["id"]}"]'
+                selectors.update((row + ' .fund-identity h4', row + f' .sw.st-{status}', row + f' > .fund-row[aria-label*="{STATUS_LABELS[status]}"]', row + (' .fund-identity .vh' if status == 'established' else ' .fund-status')))
+            else:
+                inline = chart + f' .fund-inline[data-institute="{institute["id"]}"]'
+                selectors.update((inline, inline + f' .sw.st-{status}', inline + (' .vh' if status == 'established' else ' .fund-status')))
     return sorted(selectors)
 
 
@@ -10615,10 +10672,10 @@ def check_label_ladder(page) -> list[str]:
         if (!name) continue; // mini-only groups have no .top; full-card names are required above
         if (css(h, 'color') !== css(name, 'color') || parseFloat(css(h, 'fontWeight')) < parseFloat(css(name, 'fontWeight')) || parseFloat(css(h, 'fontSize')) < parseFloat(css(name, 'fontSize'))) errors.push(REPORT + `group heading is weaker than its items: ${h.textContent.trim()}`);
       }
-      for (const h of document.querySelectorAll('.fund-block > h3')) {
-        const name=h.parentElement.querySelector('.fund-institute');
+      for (const h of document.querySelectorAll('.fund-axis h3')) {
+        const name=h.closest('.fund-list').querySelector('.fund-institute');
         if (!visible(h) || !name) continue;
-        if (parseFloat(css(h,'fontWeight'))<parseFloat(css(name,'fontWeight')) || parseFloat(css(h,'fontSize'))<parseFloat(css(name,'fontSize'))) errors.push(REPORT + 'Funding band is weaker than its institute labels: '+h.textContent.trim());
+        if (parseFloat(css(h,'fontWeight'))<parseFloat(css(name,'fontWeight')) || parseFloat(css(h,'fontSize'))<parseFloat(css(name,'fontSize'))) errors.push(REPORT + 'Funding chart heading is weaker than its institute labels: '+h.textContent.trim());
       }
       // A card under a status group heading does not repeat the status in its title row; its accessible name still carries it.
       for (const card of document.querySelectorAll('.statusgroup .card:not(.mini)')) {
@@ -10640,38 +10697,26 @@ def check_label_ladder(page) -> list[str]:
 
 
 def check_funding_weights(page) -> list[str]:
-    """Budget and Staff share compact type and bar geometry; missing bars never make a taller row."""
+    """Both charts give figures equal type and tracks; every printed row figure has a bar."""
     return page.evaluate("""() => {
-      const errors = [], type = n => { const s=getComputedStyle(n); return [s.fontSize,s.fontWeight,s.fontFamily,s.lineHeight].join('|'); };
-      const rows=[...document.querySelectorAll('#fund-rows .fund-item')], figure=document.querySelector('.fund-budget .fund-value > strong');
+      const errors=[], type=n=>{const s=getComputedStyle(n);return [s.fontSize,s.fontWeight,s.fontFamily,s.lineHeight].join('|');};
+      const rows=[...document.querySelectorAll('#fund-rows .fund-item')], figure=document.querySelector('.fund-budget .fund-value strong');
       if (!figure || !rows.length) return ['funding: no charted figure or rows to compare'];
-      const probe=document.createElement('span'); probe.style.font='var(--type-body)'; document.body.appendChild(probe);
-      const bodySize=parseFloat(getComputedStyle(probe).fontSize); probe.remove();
-      if (parseFloat(getComputedStyle(figure).fontSize)>bodySize+.5) errors.push('funding: amount is larger than body type');
-      let unbarred=0;
-      const widths=[], heights=[];
-      for (const row of rows) {
-        for (const n of row.querySelectorAll(':scope > .fund-measure .fund-value > strong, :scope > .fund-measure .budget-amount'))
-          if (type(n)!==type(figure)) errors.push(row.dataset.institute+': Budget and Staff amounts do not share compact type');
-        for (const measure of row.querySelectorAll(':scope > .fund-measure')) {
-          const bar=measure.querySelector('.fund-bar'), value=measure.querySelector('.fund-value');
-          if (!bar || !value) { errors.push(row.dataset.institute+': missing measure track or figure'); continue; }
-          const b=bar.getBoundingClientRect(), v=value.getBoundingClientRect(); widths.push(b.width); heights.push(b.height);
-          if (bar.firstElementChild && v.left < b.right-1) errors.push(row.dataset.institute+': figure overlaps its bar track');
-        }
-        if (row.classList.contains('fund-nobar')) {
-          unbarred++;
-          const amount=row.querySelector('.fund-budget .budget-value');
-          if (amount && !amount.textContent.includes('not charted')) errors.push(row.dataset.institute+': unbarred amount lacks not charted');
+      const probe=document.createElement('span');probe.style.font='var(--type-body)';document.body.appendChild(probe);
+      const bodySize=parseFloat(getComputedStyle(probe).fontSize);probe.remove();
+      if(parseFloat(getComputedStyle(figure).fontSize)>bodySize+.5) errors.push('funding: amount is larger than body type');
+      const widths=[],heights=[];
+      for(const row of rows) {
+        for(const n of row.querySelectorAll(':scope > .fund-measure .fund-value strong'))
+          if(type(n)!==type(figure)) errors.push(row.dataset.institute+': Budget and Staff amounts do not share compact type');
+        for(const measure of row.querySelectorAll(':scope > .fund-measure')) {
+          const bar=measure.querySelector('.fund-bar'),value=measure.querySelector('.fund-value');
+          if(!bar || !value || !bar.firstElementChild) {errors.push(row.dataset.institute+': printed figure lacks its bar');continue;}
+          const b=bar.getBoundingClientRect(),v=value.getBoundingClientRect();widths.push(b.width);heights.push(b.height);
+          if(v.left<b.right-1 && v.top<b.bottom-1 && v.bottom>b.top+1) errors.push(row.dataset.institute+': figure overlaps its bar track');
         }
       }
-      if (!unbarred) errors.push('funding: no row without a budget bar to compare');
-      if (!widths.length || Math.max(...widths)-Math.min(...widths)>1 || Math.max(...heights)-Math.min(...heights)>1) errors.push('funding: Budget and Staff do not share bar-track dimensions in every row');
-      const closed=rows.filter(r=>!r.querySelector('.fund-detail[open]')), withBar=closed.filter(r=>r.querySelector(':scope > .fund-budget .bar-value'));
-      const maxBarHeight=Math.max(...withBar.map(r=>r.querySelector('.fund-row').getBoundingClientRect().height));
-      if (!withBar.length) errors.push('funding: no closed bar row to compare heights');
-      for (const row of closed.filter(r=>!r.querySelector(':scope > .fund-budget .bar-value')))
-        if (row.querySelector('.fund-row').getBoundingClientRect().height>maxBarHeight+1) errors.push(row.dataset.institute+': row without a bar is taller than a bar row');
+      if(!widths.length || Math.max(...widths)-Math.min(...widths)>1 || Math.max(...heights)-Math.min(...heights)>1) errors.push('funding: Budget and Staff do not share bar-track dimensions in every row');
       return errors;
     }""")
 
@@ -10703,7 +10748,7 @@ def check_funding_bars(page, data: dict, expected_ids=None) -> list[str]:
     expected_ids = EXPECTED_FUNDING_IDS if expected_ids is None else expected_ids
     for institute in data["institutes"]:
         jid = institute["jurisdiction_id"]
-        row = page.locator(f'.fund-item:not(.fund-nobar)[data-institute="{institute["id"]}"]')
+        row = page.locator(f'.fund-list[data-kind="budget"] .fund-item[data-institute="{institute["id"]}"]')
         if jid not in expected_ids:
             if row.count():
                 errors.append(f"{jid}: unexpected comparison bar")
@@ -10718,14 +10763,17 @@ def check_funding_bars(page, data: dict, expected_ids=None) -> list[str]:
             continue
         if row.get_attribute("data-funding-id") != funding["id"]:
             errors.append(f"{jid}: wrong comparison record")
-        figure = row.locator(".fund-budget > .fund-value strong").inner_text()
+        figure = row.locator(".fund-budget .fund-value strong").inner_text()
         stated, currency = funding.get("annual_amount"), funding.get("currency")
         bracket = ""
         if currency and currency != "EUR" and stated is not None:
             kept = half_up_two(stated, funding.get("amount_qualifier"))
             bracket = f" ({'~' if kept != Decimal(str(stated)) else ''}{currency} {short_amount(kept)})"
-        if (bracket and not figure.endswith(bracket)) or (not bracket and "(" in figure):
-            errors.append(f"{jid}: original-currency figure differs from the data: expected {bracket!r} at the end of {figure!r}")
+        detail_figure = page.locator(f'.fund-detail[data-institute="{institute["id"]}"] .fund-budget-summary strong').inner_text()
+        if (bracket and not detail_figure.endswith(bracket)) or (not bracket and "(" in detail_figure):
+            errors.append(f"{jid}: original-currency figure differs from the data in the opened records")
+        if "(" in figure:
+            errors.append(f"{jid}: chart figure retains the native-currency note")
         match = re.fullmatch(r"(?:up to |at least |about |nearly |more than |less than )?~?EUR ([0-9.,]+)(k|m|bn)?(?: \(~?[A-Z]{3} [0-9.,]+(?:k|m|bn)?\))?", figure)
         amount = Decimal(match[1].replace(",", "")) * {None: 1, "k": 10**3, "m": 10**6, "bn": 10**9}[match[2]] if match else None
         raw = expected_annual_amount(funding, data)
@@ -10738,7 +10786,7 @@ def check_funding_bars(page, data: dict, expected_ids=None) -> list[str]:
         pending = row.locator(".fund-budget .bar-value.pending").count() == 1
         if pending != (funding["commitment"] != "adopted"):
             errors.append(f"{jid}: bar fill differs from commitment")
-        value_text = " ".join(row.locator(".fund-budget > .fund-value").inner_text().split())
+        value_text = " ".join(page.locator(f'.fund-detail[data-institute="{institute["id"]}"] .fund-budget-summary').inner_text().split())
         if ("average over period" in value_text) != (funding.get("annual_basis_code") == "period_mean"):
             errors.append(f"{jid}: period mean marker differs from data")
     budget_values = {
@@ -10755,7 +10803,7 @@ def check_funding_bars(page, data: dict, expected_ids=None) -> list[str]:
     for kind, values, unit in (("budget", budget_values, 10_000_000), ("staff", staff_values, 50)):
         scale = max(unit, math.ceil(max(values.values(), default=0) / unit) * unit)
         head_scale = page.locator(f'.fund-{kind}-head .fund-scale')
-        expected_scale = f"0 to EUR {short_amount(Decimal(scale))}" if kind == "budget" else f"0 to {scale} people"
+        expected_scale = f"0 to EUR {short_amount(Decimal(scale))} a year" if kind == "budget" else f"0 to {scale} people"
         if head_scale.count() != 1 or " ".join(head_scale.inner_text().split()) != expected_scale:
             errors.append(f"funding {kind}: head must state its independent zero-based scale {expected_scale!r}")
         measured = page.locator(f"#fund-rows .fund-{kind} .bar-value").evaluate_all("""bars => bars.map(bar => {
@@ -10827,72 +10875,61 @@ def refresh_fixture_selections(fixture):
 
 
 FUNDING_LAYOUT_JS = r"""() => {
-  const list=document.getElementById('fund-rows'), head=list.querySelector('.fund-axis');
-  const alpha=color=>{
-    if(color==='transparent') return 0;
-    if(color.startsWith('rgba(')) return Number(color.slice(5,-1).split(',')[3]);
-    const match=color.match(/\/\s*([\d.]+)(%)?\s*\)$/);
-    return match ? Number(match[1])/(match[2]?100:1) : 1;
-  };
+  const list=document.getElementById('fund-rows');
+  const alpha=color=>{if(color==='transparent')return 0;if(color.startsWith('rgba('))return Number(color.slice(5,-1).split(',')[3]);const m=color.match(/\/\s*([\d.]+)(%)?\s*\)$/);return m?Number(m[1])/(m[2]?100:1):1;};
   const rect=n=>{const r=n.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,width:r.width,height:r.height};};
-  const visible=n=>{
-    if(n.closest('.vh, template') || !n.getClientRects().length || getComputedStyle(n).visibility==='hidden') return false;
-    for(let p=n.closest('details:not([open])');p;p=p.parentElement.closest('details:not([open])'))
-      if(!p.querySelector(':scope > summary')?.contains(n)) return false;
-    return true;
-  };
-  const section=list.closest('.section-body'), bounds=rect(section), style=getComputedStyle(section);
-  bounds.left+=parseFloat(style.paddingLeft)+parseFloat(style.borderLeftWidth);
-  bounds.right-=parseFloat(style.paddingRight)+parseFloat(style.borderRightWidth);
-  const overflow=[];
-  const outside=(r,name)=>{if(r.width && r.height && (r.left<bounds.left-.75 || r.right>bounds.right+.75)) overflow.push(name+': descendant crosses section content edge');};
+  const visible=n=>{if(n.closest('.vh, template')||!n.getClientRects().length||getComputedStyle(n).visibility==='hidden')return false;for(let p=n.closest('details:not([open])');p;p=p.parentElement.closest('details:not([open])'))if(!p.querySelector(':scope > summary')?.contains(n))return false;return true;};
+  const section=list.closest('.section-body'),bounds=rect(section),style=getComputedStyle(section);
+  bounds.left+=parseFloat(style.paddingLeft)+parseFloat(style.borderLeftWidth);bounds.right-=parseFloat(style.paddingRight)+parseFloat(style.borderRightWidth);
+  const overflow=[],outside=(r,name)=>{if(r.width&&r.height&&(r.left<bounds.left-.75||r.right>bounds.right+.75))overflow.push(name+': descendant crosses section content edge');};
   for(const n of [list,...list.querySelectorAll('*')]) {
-    if(!visible(n)) continue;
-    for(const r of n.getClientRects()) outside(r,n.className);
-    for(const text of n.childNodes) if(text.nodeType===Node.TEXT_NODE && text.textContent.trim()) {
-      const range=document.createRange();range.selectNodeContents(text);
-      for(const r of range.getClientRects()) outside(r,n.className+' text');
-    }
+    if(!visible(n))continue;
+    for(const r of n.getClientRects())outside(r,n.className);
+    // Text its own box clips with an ellipsis (a one-line header name) is cut where the box ends; the box itself is measured above.
+    const cs=getComputedStyle(n);if(cs.textOverflow==='ellipsis'&&cs.overflowX!=='visible')continue;
+    for(const text of n.childNodes)if(text.nodeType===Node.TEXT_NODE&&text.textContent.trim()){const range=document.createRange();range.selectNodeContents(text);for(const r of range.getClientRects())outside(r,n.className+' text');}
   }
-  // Funding's own extent: its list and its section. A sideways page scroll caused elsewhere on the page is not Funding's fault.
-  if(list.scrollWidth>list.clientWidth+1 || section.scrollWidth>section.clientWidth+1) overflow.push('sideways Funding scroll');
-  const cell=(n,sel)=>{const c=n.querySelector(sel);return c && visible(c)?rect(c):null;};
+  if(list.scrollWidth>list.clientWidth+1||section.scrollWidth>section.clientWidth+1)overflow.push('sideways Funding scroll');
+  const cell=(n,sel)=>{const c=n?.querySelector(sel);return c&&visible(c)?rect(c):null;};
+  const lines=n=>{if(!n)return 0;const range=document.createRange();range.selectNodeContents(n);return new Set([...range.getClientRects()].filter(r=>r.width&&r.height).map(r=>Math.round(r.top))).size;};
+  const commitmentVisible=q=>{
+    if(!q||!visible(q)||Number(getComputedStyle(q).opacity)===0)return false;
+    const word=JSON.parse(q.dataset.parts).at(-1);
+    if(!['adopted','announced'].includes(word))return false;
+    // The word may sit in any text node of the line (a fitted or wrapped line splits its text): take the last one that holds it.
+    const walker=document.createTreeWalker(q,NodeFilter.SHOW_TEXT);let node=null,at=-1;
+    while(walker.nextNode()){const k=walker.currentNode.textContent.lastIndexOf(word);if(k>=0){node=walker.currentNode;at=k;}}
+    if(!node)return false;
+    const range=document.createRange();range.setStart(node,at);range.setEnd(node,at+word.length);
+    const boxes=[...range.getClientRects()].filter(r=>r.width&&r.height),bounds=rect(q);
+    return boxes.length>0&&boxes.every(r=>{
+      if(r.left<bounds.left-.75||r.right>bounds.right+.75)return false;  // sideways only: a glyph box is taller than a tight line box
+      for(let n=q;n&&n!==list;n=n.parentElement){const s=getComputedStyle(n),b=rect(n);
+        if(/hidden|clip/.test(s.overflowX)&&(r.left<b.left-.75||r.right>b.right+.75))return false;
+        if(/hidden|clip/.test(s.overflowY)&&(r.top<b.top-.75||r.bottom>b.bottom+.75))return false;
+      }return true;
+    });
+  };
   const heads=Object.fromEntries(['budget','staff'].map(kind=>{
-    const h=head.querySelector('.fund-'+kind+'-head');return [kind,{bar:cell(h,'.fund-bar-head'),figure:cell(h,'.fund-figure-head')}];
+    const h=list.querySelector('.fund-'+kind+'-head'),s=getComputedStyle(h);
+    return [kind,{box:rect(h),bar:rect(h.querySelector('.fund-bar-head')),figure:rect(h.querySelector('.fund-figure-head')),opaque:alpha(s.backgroundColor)===1&&Number(s.opacity)===1}];
   }));
   const rows=[...list.querySelectorAll('.fund-item')].map(row=>{
-    const identity=row.querySelector('.fund-identity'), button=row.querySelector('.fund-row'), s=getComputedStyle(identity), bs=getComputedStyle(button);
-    const detail=row.querySelector('.fund-detail[open]');
-    const joined=!!detail && button.getAttribute('aria-expanded')==='true' && document.documentElement.dataset.selection!=='b' &&
-      bs.backgroundColor===getComputedStyle(detail).backgroundColor && alpha(bs.backgroundColor)===1 &&
-      Number(bs.opacity)===1 && Number(getComputedStyle(detail).opacity)===1 &&
-      Math.abs(detail.getBoundingClientRect().top-button.getBoundingClientRect().bottom)<=1;
-    return {key:row.dataset.institute, button:rect(button), border:parseFloat(bs.borderBottomWidth), joined,
-      painted:!['none','hidden'].includes(bs.borderBottomStyle) && alpha(bs.borderBottomColor)>0,
-      last:row===row.parentElement.lastElementChild, identity:rect(identity),
-      oneLine:parseFloat(s.lineHeight)+parseFloat(s.paddingTop)+parseFloat(s.paddingBottom),
-      detail:cell(row,'.fund-detail[open]'),
-      measures:['budget','staff'].map(kind=>{
-        const m=row.querySelector('.fund-'+kind), v=m.querySelector('.fund-value'), ms=getComputedStyle(m), vs=getComputedStyle(v);
-        const amount=v.querySelector('strong, .budget-amount'), q=v.querySelector('.qualifiers, .fund-context');
-        let amountLines=0;
-        if(amount) {const r=document.createRange();r.selectNodeContents(amount);amountLines=new Set([...r.getClientRects()].map(b=>Math.round(b.top))).size;}
-        const resident=v.querySelector('.per-person'), lastLine=resident && q ? Math.abs(resident.getBoundingClientRect().bottom-q.getBoundingClientRect().bottom)<parseFloat(getComputedStyle(q).lineHeight) : true;
-        return {kind,box:rect(m),bar:rect(m.querySelector('.fund-bar')),figure:rect(v),label:cell(m,'.fund-measure-label'),
-          missing:!!v.querySelector(':scope > .missing'),lineHeight:parseFloat(vs.lineHeight),oneLine:parseFloat(vs.lineHeight)+parseFloat(ms.paddingTop)+parseFloat(ms.paddingBottom),
-          amountLines,qualifierLines:q?Math.round(q.getBoundingClientRect().height/parseFloat(getComputedStyle(q).lineHeight)):0,lastLine};
-      })};
+    const identity=row.querySelector('.fund-identity'),button=row.querySelector('.fund-row'),bs=getComputedStyle(button);
+    const detail=row.querySelector('.fund-detail[open]'),kind=row.closest('.fund-list').dataset.kind;
+    const m=row.querySelector('.fund-measure'),v=m.querySelector('.fund-value'),q=v.querySelector('.fund-qualifier'),ms=getComputedStyle(m);
+    const joined=!!detail&&button.getAttribute('aria-expanded')==='true'&&bs.backgroundColor===getComputedStyle(detail).backgroundColor&&alpha(bs.backgroundColor)===1&&Math.abs(rect(detail).top-rect(button).bottom)<=1;
+    return {key:kind+':'+row.dataset.institute,kind,button:rect(button),border:parseFloat(bs.borderBottomWidth),joined,
+      painted:!['none','hidden'].includes(bs.borderBottomStyle)&&alpha(bs.borderBottomColor)>0,last:row===row.parentElement.lastElementChild,
+      identity:rect(identity),detail:cell(row,'.fund-detail[open]'),maxHeight:parseFloat(getComputedStyle(v).lineHeight)+(q?parseFloat(getComputedStyle(q).lineHeight)+parseFloat(getComputedStyle(q).marginTop):0)+parseFloat(ms.paddingTop)+parseFloat(ms.paddingBottom),
+      measures:[{kind,box:rect(m),bar:rect(m.querySelector('.fund-bar')),figure:rect(v),amountLines:lines(v.querySelector('strong')),qualifierLines:q?Math.round(q.getBoundingClientRect().height/parseFloat(getComputedStyle(q).lineHeight)):0,commitmentVisible:kind!=='budget'||commitmentVisible(q)}]};
   });
-  const hs=getComputedStyle(head), color=hs.backgroundColor;
-  const opaque=alpha(color)===1;
-  return {list:rect(list),head:rect(head),heads,rows,overflow:[...new Set(overflow)],opaque:opaque && Number(hs.opacity)===1,
-    desktop:!!heads.budget.bar,wide:innerWidth>=1440 && parseFloat(getComputedStyle(document.documentElement).fontSize)<=16,
-    fits:bounds.width>=60*parseFloat(getComputedStyle(document.documentElement).fontSize)};
+  return {list:rect(list),heads,rows,panels:[...list.querySelectorAll('.fund-detail[open]')].map(rect),overflow:[...new Set(overflow)],desktop:innerWidth>=1000};
 }"""
 
 
 def funding_layout_errors(got: dict, closed: dict | None = None) -> list[str]:
-    """Check measured edges and line boxes, independently of the CSS grid definitions."""
+    """Full-width charts, equal tracks, readable commitment and desktop two-line rows in every state."""
     errors = list(got["overflow"])
     if not got["rows"]:
         return errors + ["funding: no rows measured"]
@@ -10901,48 +10938,38 @@ def funding_layout_errors(got: dict, closed: dict | None = None) -> list[str]:
 
     def full(box):
         return all(same(box[edge], got["list"][edge]) for edge in ("left", "right"))
-    if not full(got["head"]) or not got["opaque"]:
-        errors.append("funding: sticky head needs an opaque ground across the full list")
-    if got["desktop"] != got["fits"]:
-        errors.append("funding: layout does not match the available section width")
-    tracks, phone_edges = [], []
+    if any(not full(panel) for panel in got.get("panels", [])):
+        errors.append("funding: opened records beneath a row or summary line must span the full list")
+    for kind, head in got["heads"].items():
+        if not full(head["box"]) or not head["opaque"]:
+            errors.append(f"funding {kind}: sticky head needs an opaque ground across the full list")
+    if got["heads"]["staff"]["box"]["top"] < got["heads"]["budget"]["box"]["bottom"]-.75:
+        errors.append("funding: charts must stack Budget before Staff")
+    tracks = []
     for row in got["rows"]:
         key = row["key"]
         if not full(row["button"]) or (not row["last"] and not row.get("joined", False) and (row["border"] < 1 or not row["painted"])):
             errors.append(f"{key}: row hairline/control does not span the full list")
         if row["detail"] and not full(row["detail"]):
             errors.append(f"{key}: opened detail does not span the shared tracks")
-        if got["desktop"] and all(m["missing"] for m in row["measures"]) and row["button"]["height"] > row["oneLine"] + 1:
-            errors.append(f"{key}: row without figures is not one line high")
+        if got["desktop"] and row["button"]["height"] > row["maxHeight"] + 2:
+            errors.append(f"{key}: row exceeds two lines")
         for measure in row["measures"]:
             kind = measure["kind"]
-            b, v, label = measure["bar"], measure["figure"], measure["label"]
+            b, v = measure["bar"], measure["figure"]
             tracks.append(b["width"])
+            if kind == "budget" and not measure["commitmentVisible"]:
+                errors.append(f"{key}: Budget qualifier must show its commitment word without clipping")
+            if got["desktop"] and (measure["amountLines"] != 1 or measure["qualifierLines"] > 1):
+                errors.append(f"{key}: desktop amount and qualifier must each be one line")
+            elif not got["desktop"] and measure["qualifierLines"] > 2:
+                errors.append(f"{key}: phone qualifier must fit within two lines")
             if got["desktop"]:
                 head = got["heads"][kind]
                 if not head["bar"] or not head["figure"] or not same(b["left"], head["bar"]["left"]) or not same(v["left"], head["figure"]["left"]):
-                    errors.append(f"{key} {kind}: bar-left/figure-left differ from the head cells")
-                if got["wide"] and (measure["amountLines"] > 1 or measure["qualifierLines"] > 3 or not measure["lastLine"]):
-                    errors.append(f"{key} {kind}: amount must be one line, qualifiers at most three with per-resident last")
-            else:
-                if not label or label["right"] > b["left"] + .75 or not (v["top"]-.75 <= (label["top"]+label["bottom"])/2 <= v["top"]+measure["lineHeight"]):
-                    errors.append(f"{key} {kind}: phone label is not in its first column beside the figure")
-                if not (v["top"]-.75 <= (b["top"]+b["bottom"])/2 <= v["top"]+measure["lineHeight"]):
-                    errors.append(f"{key} {kind}: phone bar is not beside the figure's first line")
-                if measure["missing"] and measure["box"]["height"] > measure["oneLine"]+1:
-                    errors.append(f"{key} {kind}: missing measure is not one line high")
-                if label:
-                    phone_edges.append((label["left"], label["width"], b["left"], None if measure["missing"] else v["left"]))
-        if not got["desktop"]:
-            budget, staff = row["measures"]
-            if budget["box"]["top"] < row["identity"]["bottom"]-.75 or staff["box"]["top"] < budget["box"]["bottom"]-.75:
-                errors.append(f"{key}: phone identity, Budget and Staff overlap")
-    if max(tracks)-min(tracks) > .75:
+                    errors.append(f"{key}: bar-left/figure-left differ from the head cells")
+    if tracks and max(tracks)-min(tracks) > .75:
         errors.append("funding: bar tracks differ across rows or measures")
-    for column in zip(*phone_edges):
-        values = [v for v in column if v is not None]
-        if values and max(values)-min(values) > .75:
-            errors.append("funding: phone labels/bars/figures do not share fixed columns")
     if closed:
         for kind in ("budget", "staff"):
             for cell in ("bar", "figure"):
@@ -10958,14 +10985,13 @@ def funding_layout_errors(got: dict, closed: dict | None = None) -> list[str]:
 
 
 def check_funding_layout_states(page) -> list[str]:
-    """All rows against the head, closed/hovered/open, then a band scrolled behind the sticky head."""
+    """Compare both charts closed, hovered and open, including their compact summary openers."""
     errors = []
-    saved = page.evaluate("() => ({y:scrollY,open:[...document.querySelectorAll('.fund-detail[open]')].map(n=>n.id)})")
+    saved = page.evaluate("() => ({y:scrollY,open:[...document.querySelectorAll('.fund-row[aria-expanded=true],.fund-inline[aria-expanded=true]')].map(n=>({kind:n.closest('.fund-list').dataset.kind,id:n.dataset.institute}))})")
     settle = "() => new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))"
     try:
-        page.locator('.fund-detail').evaluate_all("nodes=>nodes.forEach(n=>{n.open=false;n.parentElement.querySelector('.fund-row').setAttribute('aria-expanded','false');})")
+        page.locator('.fund-detail[open] .close-control').evaluate_all("nodes=>nodes.forEach(n=>n.click())")
         page.mouse.move(0, 0)
-        # The structural check enforces the budget-descending order within each band.
         opener = page.locator('#fund-rows .fund-row').first
         opener.scroll_into_view_if_needed()
         page.evaluate(settle)
@@ -10974,24 +11000,19 @@ def check_funding_layout_states(page) -> list[str]:
         opener.hover(position={"x": 2, "y": 2})
         page.evaluate(settle)
         errors += ["hovered: " + e for e in funding_layout_errors(page.evaluate(FUNDING_LAYOUT_JS), closed)]
-        opener.evaluate("n=>n.click()")
-        page.mouse.move(0, 0)
-        page.evaluate(settle)
-        errors += ["open: " + e for e in funding_layout_errors(page.evaluate(FUNDING_LAYOUT_JS), closed)]
-        page.evaluate("""() => {
-          const head=document.querySelector('.fund-axis'), band=document.querySelector('.fund-block > h3');
-          scrollBy(0,band.getBoundingClientRect().top-(parseFloat(getComputedStyle(head).top)+head.getBoundingClientRect().height-band.getBoundingClientRect().height/2));
-        }""")
-        page.evaluate(settle)
-        errors += page.evaluate("""() => {
-          const head=document.querySelector('.fund-axis'), band=document.querySelector('.fund-block > h3'), h=head.getBoundingClientRect(), b=band.getBoundingClientRect();
-          if(getComputedStyle(head).visibility==='hidden' || b.top>=h.bottom || b.bottom<=h.top) return ['funding: sticky band-overlap case was not exercised'];
-          const y=(Math.max(h.top,b.top)+Math.min(h.bottom,b.bottom))/2;
-          return [h.left+.5,(b.left+b.right)/2,h.right-.5].every(x=>head.contains(document.elementFromPoint(x,y))) ? [] : ['funding: band heading paints through/beside the sticky head'];
-        }""")
+        for selector in ('.fund-list[data-kind="budget"] .fund-row', '.fund-list[data-kind="staff"] .fund-row', '.fund-other-line .fund-inline', '.fund-missing-line .fund-inline'):
+            button = page.locator(selector).first
+            if not button.count():
+                continue
+            button.evaluate("n=>n.click()")
+            page.mouse.move(0, 0)
+            page.evaluate(settle)
+            errors += ["open: " + e for e in funding_layout_errors(page.evaluate(FUNDING_LAYOUT_JS), closed)]
+            if page.locator('.fund-detail[open]').count() != 1:
+                errors.append("funding: only one records panel may open across both charts")
+        page.locator('.fund-detail[open] .close-control').evaluate_all("nodes=>nodes.forEach(n=>n.click())")
     finally:
-        page.locator('.fund-detail').evaluate_all("(nodes,ids)=>nodes.forEach(n=>{n.open=ids.includes(n.id);n.parentElement.querySelector('.fund-row').setAttribute('aria-expanded',String(n.open));})", saved["open"])
-        page.evaluate("y=>scrollTo(0,y)", saved["y"])
+        page.evaluate("state=>{document.querySelectorAll('.fund-detail[open] .close-control').forEach(n=>n.click());for(const o of state.open)document.querySelector('.fund-list[data-kind='+o.kind+'] button[data-institute='+o.id+']')?.click();scrollTo(0,state.y);}", saved)
     return errors
 
 
@@ -10999,6 +11020,7 @@ def check_funding_large_text(browser, base_url: str) -> list[str]:
     """Exercise shared tracks, row states and descendant bounds, including both phones at 110% text."""
     errors = []
     cases = [(width, scale) for width in (320, 390) for scale in (100, 110, 125)]
+    cases += [(width, 100) for width in (1000, 1440)]
     cases += [(width, 125) for width in (641, 700, 760, 1000, 1440)]
     for width, scale in cases:
         page = browser.new_page(viewport={"width": width, "height": 900})
@@ -11068,7 +11090,7 @@ def check_funding_edges(browser, base_url: str, data: dict) -> list[str]:
     page.route(PAGE_DATA, lambda route: route.fulfill(json=fixture))
     hydrated(page, base_url)
     page.wait_for_selector("#fund-rows .fund-item")
-    if page.locator("#fund-rows .fund-item").count() != len(fixture["institutes"]):
+    if page.locator('#fund-rows .fund-list[data-kind="budget"] .fund-item').count() != len(fixture["institutes"]):
         errors.append("funding fixture: institute row coverage differs")
     page.locator(".fund-detail").evaluate_all("folds => folds.forEach(n=>n.open=true)")
     if page.locator(".fund-staff .bar-value").count():
@@ -12002,7 +12024,7 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
         fold.evaluate("e => e.open = false")
     require(
         page.locator(".fund-detail").evaluate_all(
-            "folds => folds.length && folds.every(f => { const row=f.closest('.fund-item'), was=f.open; f.open=true; const gap=f.getBoundingClientRect().top-row.querySelector('.fund-row').getBoundingClientRect().bottom; f.open=was; return gap>=-1 && gap<32; })"
+            "folds => folds.length && folds.every(f => { const button=document.querySelector('.fund-list[data-kind=budget] button[aria-controls='+f.id+']'); button.click(); const gap=f.getBoundingClientRect().top-button.closest('.fund-item,.fund-other-line,.fund-missing-line').getBoundingClientRect().top; const rightParent=f.parentElement===button.closest('.fund-item,.fund-other-line,.fund-missing-line'); f.querySelector('.close-control').click(); return gap>=-1 && rightParent; })"
         ),
         "funding records must open immediately beneath their whole-row control",
     )
@@ -12221,7 +12243,7 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
             "raw dataset download differs from build",
         )
         require(
-            page.locator("#fund-rows .fund-item").count() == len(data["institutes"]),
+            all(page.locator(f'#fund-rows .fund-list[data-kind="{kind}"] button[data-institute]').count() == len(data["institutes"]) for kind in ('budget', 'staff')),
             "funding section omits an institute",
         )
 
@@ -12762,7 +12784,7 @@ def explanation_order(html: str) -> list[str]:
     how = soup.select_one('#fund-how')
     foot = how.parent if how is not None else None  # Downloads: the fold sits in the section's foot row
     rows = soup.select_one('#fund-rows')
-    if how is None or "section-foot" not in (foot.get("class") or []) or rows is None or rows.parent is not foot.parent or foot not in rows.find_next_siblings() or rows.select_one(':scope > .fund-axis') is None:
+    if how is None or "section-foot" not in (foot.get("class") or []) or rows is None or rows.parent is not foot.parent or foot not in rows.find_next_siblings() or len(rows.select(':scope > .fund-list > .fund-axis')) != 2:
         return ["Funding explanation must follow every row and its comparison head"]
     return []
 
@@ -13318,6 +13340,8 @@ def check_folds(browser, base_url: str) -> list[str]:
             if not folds.count():
                 errors.append(f'{width}px: saved Funding has no native records folds')
                 continue
+            if not folds.evaluate_all("nodes=>nodes.every(n=>n.parentElement.id==='fund-records') && new Set(nodes.map(n=>n.dataset.institute)).size===nodes.length"):
+                errors.append(f'{width}px: native Funding must keep each institute fold once below Staff')
             for summary in folds.locator(':scope > summary').all():
                 if 'Funding and staff records' not in summary.inner_text():
                     errors.append(f'{width}px: native Funding records control lost its label')
@@ -13475,6 +13499,18 @@ HEAD_LABEL_COUNTS = {"grouped head": 4, "grid group head": 4, "Funding axis": 2}
 # the grid's leaning function heads are held apart by check_functions_tint's flag test; Testing and Set-up have no column heads
 
 
+def funding_head_label_errors(labels: list[dict]) -> list[str]:
+    """Each chart has exactly one visible head naming its units and zero-based scale."""
+    expected = {"budget": r"Budget.*EUR.*year", "staff": r"Staff.*people"}
+    if Counter(label["kind"] for label in labels) != Counter(expected.keys()) or any(
+        not re.search(expected.get(label["kind"], r"(?!)"), label["text"], re.I)
+        or not re.search(r"(?<!\d)0(?!\d)", label["text"])
+        for label in labels
+    ):
+        return [f"Budget EUR per year and Staff people need separate zero-based scale heads: {labels}"]
+    return []
+
+
 def check_head_labels(browser, base_url: str) -> list[str]:
     """Column-head labels, as a class (owner, 18 Nov 2026): in every table's head, no two labels on one line closer than
     HEAD_LABEL_GAP and none overlapping, at 320, 360, 390, 430, 1000 and 1440, at 100% and 110% text, in both themes; the
@@ -13498,12 +13534,11 @@ def check_head_labels(browser, base_url: str) -> list[str]:
                         if name == "Funding axis" and view == "grid":
                             continue
                         if name == "Funding axis":
-                            labels = page.locator(container).evaluate("""head => ['budget','staff'].map(kind => {
-                              const n=head.querySelector('.fund-'+kind+'-head');
-                              return n && n.getClientRects().length ? n.textContent.replace(/\\s+/g,' ').trim() : '';
-                            })""")
-                            if len(labels) != 2 or not re.search(r"Budget.*EUR.*year", labels[0], re.I) or not re.search(r"Staff.*people", labels[1], re.I) or any(not re.search(r"(?<!\d)0(?!\d)", label) for label in labels):
-                                errors.append(f"{width}px {scale} {theme}, Funding axis: Budget EUR per year and Staff people need separate zero-based scale heads: {labels}")
+                            labels = page.locator(container).evaluate_all("""heads => heads.map(head => ({
+                              kind: head.closest('.fund-list').dataset.kind,
+                              text: head.getClientRects().length && getComputedStyle(head).visibility === 'visible' ? head.textContent.replace(/\\s+/g,' ').trim() : ''
+                            }))""")
+                            errors.extend(f"{width}px {scale} {theme}, Funding axis: {e}" for e in funding_head_label_errors(labels))
                         rows = page.evaluate(HEAD_LABELS_JS, {"container": container, "gap": HEAD_LABEL_GAP})
                         want = HEAD_LABEL_COUNTS[name]
                         if not rows or any(row["labels"] < want for row in rows):
@@ -15239,7 +15274,7 @@ def check_selection_boxes(browser, base_url: str) -> list[str]:
                         function.click()
                         inspect(function, function.get_attribute('aria-controls'))
                     row.click()
-                funding = page.locator('.fund-block > ul > .fund-item:is(:first-child, :last-child) > .fund-row').all()
+                funding = page.locator('.fund-chart-rows > .fund-item:is(:first-child, :last-child) > .fund-row').all()
                 if not funding:
                     errors.append(f'{width}px {theme}: no Funding boundary rows to sample')
                 for control in funding:  # at the row's start: a figure with its own tooltip may sit over the row's centre
@@ -15397,7 +15432,7 @@ def check_tinted_rows(browser, base_url: str, screenshots: Path | None = None) -
                         funding.click()
                     inspect('.fund-row' + ('[aria-expanded="true"]' if state == 'open' else ':hover' if state == 'hover' else ':focus'), '--sp-2', content='.fund-item:has(> .fund-row' + ('[aria-expanded="true"]' if state == 'open' else ':hover' if state == 'hover' else ':focus') + ') > .fund-identity')
                     # Measure the two sibling columns separately, so the opened panel below is not part of the row tint.
-                    for measure in ('.fund-budget', '.fund-staff'):
+                    for measure in ('.fund-measure',):
                         inspect('.fund-row' + ('[aria-expanded="true"]' if state == 'open' else ':hover' if state == 'hover' else ':focus'), '--sp-2', content='.fund-item:has(> .fund-row' + ('[aria-expanded="true"]' if state == 'open' else ':hover' if state == 'hover' else ':focus') + ') > ' + measure)
                     if state == 'open':
                         page.locator('.fund-detail[open] .close-control').click()

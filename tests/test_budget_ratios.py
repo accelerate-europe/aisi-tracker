@@ -69,7 +69,7 @@ def test_page_ratio_uses_resident_and_the_population_year(year):
     data["dataset"]["exchange_rates"] = []
     data["jurisdictions"][0]["population"]["year"] = year
     data["institutes"][0]["display"] = {"comparison_funding": "compared", "funding_records": {"compared": record(eur_per_year_est=10_000_000)}}
-    html = f'<article class="fund-item" data-j="XX"><div class="fund-value"><span class="qualifiers"><abbr class="g per-person val" tabindex="0" aria-description="{check_page.PER_PERSON_TIP}">EUR 1.0 per resident ({year})</abbr></span></div></article>'
+    html = f'<article class="fund-detail" data-j="XX"><div class="fund-budget-summary"><span class="qualifiers"><abbr class="g per-person val" tabindex="0" aria-description="{check_page.PER_PERSON_TIP}">EUR 1.0 per resident ({year})</abbr></span></div></article>'
     def check(text):
         return check_page.check_per_person(BeautifulSoup(text, "html.parser"), data)
 
