@@ -25,6 +25,45 @@ def test_download_control_ends_at_its_content_edge(edge, right, valid):
     assert (check_page.download_alignment_errors([dict(name='download', edge=edge, right=right)]) == []) == valid
 
 
+def test_definition_hover_dismisses_the_previous_keyboard_tip():
+    events = []
+
+    class Node:
+        def evaluate(self, script):
+            return 'Definition.'
+
+        def scroll_into_view_if_needed(self):
+            pass
+
+        def hover(self):
+            assert events[-1] == 'Escape'
+            events.append('hover')
+
+        def focus(self):
+            events.append('focus')
+
+        def is_visible(self):
+            return True
+
+        def inner_text(self):
+            return 'Definition.'
+
+        def click(self):
+            pass
+
+    class Page:
+        keyboard = type('Keyboard', (), {'press': lambda _, key: events.append(key)})()
+
+        def locator(self, selector):
+            return Node()
+
+        def evaluate(self, script, *args):
+            return '#definition'
+
+    assert check_page.check_definition_tip(Page(), touch=False) == []
+    assert 'hover' in events and 'focus' in events
+
+
 @pytest.mark.parametrize('change, valid', [({}, True), ({'height': 19.2}, False),
     ({'stroke': 2}, False), ({'face': False}, False), ({'scale': False}, False), ({'hit': 12}, False)])
 def test_information_mark_has_text_proportions_without_losing_its_target(change, valid):
@@ -194,6 +233,34 @@ top=undefined;PRERENDERING=true;events.scroll();assert.equal(top,undefined); // 
     subprocess.run(['node', '-'], input=script, text=True, capture_output=True, check=True)
 
 
+def test_record_head_tracks_document_and_inner_scroll_without_sticky_inset_conversion():
+    source = (ROOT / 'site/index.html').read_text()
+    helper = next(line for line in source.splitlines() if line.startswith('  function stickyShift('))
+    start = source.index('  function installReadingHeads(')
+    install = source[start:source.index('\n  }', start) + 4]
+    script = """
+const assert=require('node:assert/strict');
+let ownerTop=200, innerScroll=0, bars=93, shift=0, overflowY='auto';
+const head={getBoundingClientRect:()=>({top:ownerTop+17-innerScroll+shift,height:56}),
+  style:{setProperty:(key,value)=>{shift=parseFloat(value);}}};
+const owner={clientTop:1,querySelector:()=>head,matches:()=>true,
+  getBoundingClientRect:()=>({top:ownerTop,bottom:ownerTop+500}),style:{setProperty(){}}};
+const document={querySelectorAll:s=>s.endsWith('.record:not([hidden])')?[owner]:[],addEventListener(){},fonts:{ready:{then(){}}}};
+const ROOT={style:{setProperty(){}}}, PRERENDERING=false, barsBottom=()=>bars;
+const getComputedStyle=()=>({overflowY}),requestAnimationFrame=fn=>fn(),events={};
+const window={addEventListener:(type,fn,options)=>{events[type]=fn;if(type==='scroll')assert.equal(options.capture,true);}};
+class ResizeObserver {observe(){}}
+HELPER
+installReadingHeads();assert.equal(shift,0); // in flow, including 16px panel padding
+ownerTop=53;events.scroll();assert.equal(head.getBoundingClientRect().top,93);
+innerScroll=100;events.scroll();assert.equal(head.getBoundingClientRect().top,93);
+events.scroll();assert.equal(head.getBoundingClientRect().top,93); // no cumulative translation
+ownerTop=200;events.scroll();assert.equal(head.getBoundingClientRect().top,201); // scrollport below nav
+overflowY='visible';events.resize();assert.equal(shift,0); // phone's native sticky head
+""".replace('HELPER', helper + '\n' + install)
+    subprocess.run(['node', '-'], input=script, text=True, capture_output=True, check=True)
+
+
 def test_focus_tooltips_survive_scroll_and_stationary_pointer_boundary_events():
     source = (ROOT / 'site/index.html').read_text()
     handlers = source[source.index('  var tip = null'):source.index('  // A separator never ends a line:')]
@@ -314,6 +381,31 @@ assert.equal(qualifierStartsLine(null,41.6),false);
     assert not check_page.source_separator_errors([dict(source='source', leading=0)])
 
 
+@pytest.mark.parametrize('list_item, marker, edge', [(True, 'inside', 16), (True, 'outside', 34), (False, 'inside', 34)])
+def test_qualifier_measurement_uses_the_wrapped_source_edge(list_item, marker, edge):
+    measure = check_page.STATUS_QUALIFIERS_JS.replace(check_page.TEXT_RECTS_JS, 'const textRects=n=>n.rects;')
+    script = """
+const text={textContent:'archived copy',rects:[{top:24,bottom:40,left:EDGE,right:130}]};
+const separator={rects:[],getAttribute:()=> 'true'};
+const parent={closest:()=>null,getClientRects:()=>[{}]};
+const previous={textContent:'Source title',parentElement:parent};
+const flow={matches:()=>LIST_ITEM,getBoundingClientRect:()=>({left:12,right:200})};
+const item={matches:s=>s==='.trailing-qualifier',checkVisibility:()=>true,contains:()=>false,closest:()=>null,parentElement:flow,
+  querySelector:s=>s==='.qualifier-text'?text:separator};
+const root={querySelectorAll:()=>[item]},NodeFilter={SHOW_TEXT:4};
+const document={querySelectorAll:()=>[root],createTreeWalker:()=>{let done=false;return {nextNode(){if(done)return null;done=true;return previous;}};},
+  createRange:()=>({selectNodeContents(){},getClientRects:()=>[{top:0,bottom:16,left:34,right:150,width:116,height:16}]})};
+const getComputedStyle=()=>({visibility:'visible',listStylePosition:MARKER,borderLeftWidth:'1px',paddingLeft:'3px'});
+console.log(JSON.stringify((MEASURE)('sources')));
+""".replace('EDGE', str(edge)).replace('LIST_ITEM', json.dumps(list_item)).replace('MARKER', json.dumps(marker)).replace('MEASURE', measure)
+    result = subprocess.run(['node', '-'], input=script, text=True, capture_output=True, check=True)
+    items = json.loads(result.stdout)
+    assert items[0]['nameLeft'] == edge
+    assert check_page.status_qualifier_errors(items) == []
+    items[0]['rects'][0]['left'] += 4
+    assert any('text edge' in e for e in check_page.status_qualifier_errors(items))
+
+
 @pytest.mark.parametrize('change, finding', [
     ({'width': 1.99}, 'smaller'),
     ({'height': 0}, 'smaller'),
@@ -332,6 +424,14 @@ def test_selection_gate_rejects_missing_faint_boxed_or_detached_selection(change
     assert any(finding in e for e in check_page.selection_state_errors(selected | change))
     # Variant B needs the same visible bar but does not join the panel's ground to the row.
     assert not check_page.selection_state_errors(selected | dict(joined=False, gap=8, sameGround=False))
+
+
+@pytest.mark.parametrize('change', [{'cellAnchored': False}, {'startOffset': 39}, {'height': 10}])
+def test_grid_selection_bar_belongs_to_the_selected_cell_band(change):
+    mark = dict(width=2, strong=2, height=36, painted=True, contrast=3, outline=False,
+                cellBand=True, cellAnchored=True, startOffset=0, bandHeight=36)
+    assert check_page.selection_state_errors(mark) == []
+    assert any('selected cell' in e for e in check_page.selection_state_errors(mark | change))
 
 
 def test_status_qualifier_gate_samples_allow_a_not_found_long_label():
@@ -567,6 +667,17 @@ def test_open_detail_cannot_move_even_aligned_heads_and_rows(funding_geometry):
     assert any("row tracks move" in e for e in errors)
 
 
+def test_joined_funding_panel_keeps_the_full_width_control_without_a_divider(funding_geometry):
+    row = funding_geometry['rows'][0]
+    row.update(joined=True, painted=False, detail=dict(funding_geometry['list']))
+    assert check_page.funding_layout_errors(funding_geometry) == []
+    row['button']['right'] -= 8
+    assert any('hairline/control' in e for e in check_page.funding_layout_errors(funding_geometry))
+    row['button']['right'] += 8
+    row['joined'] = False  # closed rows, variant B and detached/mismatched panels still need their rule
+    assert any('hairline/control' in e for e in check_page.funding_layout_errors(funding_geometry))
+
+
 @pytest.mark.parametrize("mutation, finding", [(None, None), ("label-above", "label is not"), ("label-wide", "label is not"), ("bar-below", "bar is not"), ("label-shift", "fixed columns"), ("missing-height", "missing measure"), ("scroll", "sideways")])
 def test_phone_funding_label_column_and_empty_measure(funding_geometry, mutation, finding):
     got = funding_geometry
@@ -591,7 +702,7 @@ def test_phone_funding_label_column_and_empty_measure(funding_geometry, mutation
     elif mutation == "missing-height":
         m["box"]["height"] += 24
     elif mutation == "scroll":
-        got["overflow"].append("sideways Funding/page scroll")
+        got["overflow"].append("sideways Funding scroll")
     errors = check_page.funding_layout_errors(got)
     assert any(finding in e for e in errors) if finding else errors == []
 
@@ -615,7 +726,7 @@ const inspect=INSPECT;
 assert.deepEqual(inspect().overflow,[]);
 textRight=410;assert.ok(inspect().overflow.some(e=>e.includes('text: descendant crosses')));
 textRight=300;child.getClientRects=()=>[{...bounds,left:10}];assert.ok(inspect().overflow.some(e=>e.includes('descendant crosses')));
-child.getClientRects=()=>[bounds];document.documentElement.scrollWidth=420;assert.ok(inspect().overflow.some(e=>e.includes('sideways')));
+child.getClientRects=()=>[bounds];section.scrollWidth=420;section.clientWidth=350;assert.ok(inspect().overflow.some(e=>e.includes('sideways')));
 for(color of ['transparent','rgba(232, 227, 221, 0)','color(srgb 1 1 1 / 0.5)']) assert.equal(inspect().opaque,false);
 """.replace("INSPECT", check_page.FUNDING_LAYOUT_JS)
     subprocess.run(["node", "-"], input=script, text=True, capture_output=True, check=True)

@@ -4251,6 +4251,9 @@ VIEWPORT_BOUNDARIES = {
 CONTAINER_BOUNDARIES = {"funding": "60rem"}  # inline identity, bounded bars and equal flexible figures
 WIDTH_GEOMETRY = {
     (".vh", "width", "1px"): "clipped accessible text must retain a nonzero box",
+    (".close-glyph", "width", ".8em"): "square close glyph scales with the header label, paired with its height",
+    (".close-glyph::before, .close-glyph::after", "width", "141.4214%"): "square diagonals are sqrt(2) times the side, rotated in opposite directions",
+    (".info::before", "width", ".72em"): "cap-height information ring, paired with its circular height",
     (".ext-tail::after", "width", ".65em"): "external-link arrow scales with its text, paired with its height",
     (".fn-mark", "width", ".8rem"): "circular function glyph, paired with its height",
     ('.fn-table td[data-value="not_coded"]::before', "width", ".8rem"): "dash matches the function glyph width",
@@ -6787,6 +6790,9 @@ def check_definition_tip(page, *, touch: bool) -> list[str]:
         if mode == 'tap':
             link.tap()
         elif mode == 'hover':
+            # The preceding scenario deliberately leaves a keyboard-owned tooltip open.
+            # Dismiss it before testing a new hover, including the first synthetic mouse move.
+            page.keyboard.press('Escape')
             link.hover()
         else:
             page.keyboard.press('Escape')
@@ -10848,14 +10854,20 @@ FUNDING_LAYOUT_JS = r"""() => {
       for(const r of range.getClientRects()) outside(r,n.className+' text');
     }
   }
-  if(document.documentElement.scrollWidth>innerWidth+1 || list.scrollWidth>list.clientWidth+1) overflow.push('sideways Funding/page scroll');
+  // Funding's own extent: its list and its section. A sideways page scroll caused elsewhere on the page is not Funding's fault.
+  if(list.scrollWidth>list.clientWidth+1 || section.scrollWidth>section.clientWidth+1) overflow.push('sideways Funding scroll');
   const cell=(n,sel)=>{const c=n.querySelector(sel);return c && visible(c)?rect(c):null;};
   const heads=Object.fromEntries(['budget','staff'].map(kind=>{
     const h=head.querySelector('.fund-'+kind+'-head');return [kind,{bar:cell(h,'.fund-bar-head'),figure:cell(h,'.fund-figure-head')}];
   }));
   const rows=[...list.querySelectorAll('.fund-item')].map(row=>{
     const identity=row.querySelector('.fund-identity'), button=row.querySelector('.fund-row'), s=getComputedStyle(identity), bs=getComputedStyle(button);
-    return {key:row.dataset.institute, button:rect(button), border:parseFloat(bs.borderBottomWidth),
+    const detail=row.querySelector('.fund-detail[open]');
+    const joined=!!detail && button.getAttribute('aria-expanded')==='true' && document.documentElement.dataset.selection!=='b' &&
+      bs.backgroundColor===getComputedStyle(detail).backgroundColor && alpha(bs.backgroundColor)===1 &&
+      Number(bs.opacity)===1 && Number(getComputedStyle(detail).opacity)===1 &&
+      Math.abs(detail.getBoundingClientRect().top-button.getBoundingClientRect().bottom)<=1;
+    return {key:row.dataset.institute, button:rect(button), border:parseFloat(bs.borderBottomWidth), joined,
       painted:!['none','hidden'].includes(bs.borderBottomStyle) && alpha(bs.borderBottomColor)>0,
       last:row===row.parentElement.lastElementChild, identity:rect(identity),
       oneLine:parseFloat(s.lineHeight)+parseFloat(s.paddingTop)+parseFloat(s.paddingBottom),
@@ -10896,7 +10908,7 @@ def funding_layout_errors(got: dict, closed: dict | None = None) -> list[str]:
     tracks, phone_edges = [], []
     for row in got["rows"]:
         key = row["key"]
-        if not full(row["button"]) or (not row["last"] and (row["border"] < 1 or not row["painted"])):
+        if not full(row["button"]) or (not row["last"] and not row.get("joined", False) and (row["border"] < 1 or not row["painted"])):
             errors.append(f"{key}: row hairline/control does not span the full list")
         if row["detail"] and not full(row["detail"]):
             errors.append(f"{key}: opened detail does not span the shared tracks")
@@ -14310,10 +14322,13 @@ STATUS_QUALIFIERS_JS = r"""selector => {
         }
       }
       const names = name ? textRects(name) : before;
-      const container = (item.closest('summary') ? item.closest('li[data-source-id]') : item.parentElement).getBoundingClientRect();
+      const flow = item.closest('summary') ? item.closest('li[data-source-id]') : item.parentElement;
+      const container = flow.getBoundingClientRect(), style = getComputedStyle(flow);
+      // Inside list numbers indent only the first title. Wrapped source text shares the list item's content edge.
+      const insideSource = flow.matches('li[data-source-id]') && style.listStylePosition === 'inside';
       return {text: text?.textContent.trim(), trailing, rects: lines.map(rect),
         previous: before.length ? rect(before[before.length - 1]) : null,
-        nameLeft: names.length ? names[0].left : null,
+        nameLeft: insideSource ? container.left + parseFloat(style.borderLeftWidth) + parseFloat(style.paddingLeft) : (names.length ? names[0].left : null),
         left: container.left, right: container.right,
         dot: !!textRects(separator).length, hiddenSeparator: separator?.getAttribute('aria-hidden') === 'true',
         baselineStep: name ? baseline(item) - baseline(name) : null,
@@ -15048,6 +15063,8 @@ def selection_state_errors(mark: dict) -> list[str]:
         errors.append("selection bar is missing or below 3:1 against the adjacent ground")
     if mark["outline"]:
         errors.append("selection still draws a full outline without keyboard focus")
+    if mark.get("cellBand") and (not mark["cellAnchored"] or abs(mark["startOffset"]) > 1 or abs(mark["height"] - mark["bandHeight"]) > 1):
+        errors.append("grid selection bar does not follow the selected cell's start edge and row height")
     if mark.get("joined") and (mark["gap"] is None or abs(mark["gap"]) > 1 or not mark["sameGround"]):
         errors.append("variant A's panel does not meet its row on the same ground")
     return errors
@@ -15079,7 +15096,13 @@ def selected_box_pixels(page, control, hover: bool) -> list[str]:
         for(let e=element;e;e=e.parentElement) { const c=getComputedStyle(e).backgroundColor; if(c!=='rgba(0, 0, 0, 0)') return c; }
         return '';
       };
-      return {left,top,width,height,strong,colour:overlay.backgroundColor,outline,joined,errors,
+      const cellBand=n.matches('.fn-cell'), probe=document.createElement('span');
+      probe.style.cssText='position:absolute;width:var(--sp-1);height:0'; host.appendChild(probe);
+      const inset=probe.getBoundingClientRect().width; probe.remove();
+      return {left,top,width,height,strong,colour:overlay.backgroundColor,outline,joined,errors,cellBand,
+        cellAnchored:!cellBand || own.position==='static' && n.offsetParent===host,
+        startOffset:left-r.left-parseFloat(s.borderLeftWidth),
+        bandHeight:r.height-parseFloat(s.borderTopWidth)-parseFloat(s.borderBottomWidth)-2*inset,
         gap:panel?panel.getBoundingClientRect().top-r.bottom:Infinity,
         sameGround:!!panel && ground(panel)===ground(host)};
     }""")

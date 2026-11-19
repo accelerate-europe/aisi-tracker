@@ -258,6 +258,7 @@ li:has(> .reread-tail), .inline-links:has(> .reread-tail) { position: relative; 
 .trailing-qualifier { display: inline-block; white-space: nowrap; overflow-wrap: normal; }
 .trailing-qualifier.own-line { display: block; }
 .trailing-qualifier.own-line .qualifier-separator { display: none; }
+.trailing-qualifier:not(.fn-function-status) .qualifier-separator { white-space: pre; } /* the space before the dot survives at the start of its inline block; a function's status takes its room from the row's gap */
 .status-phrase { white-space: nowrap; }
 a.archive { color: var(--muted); text-decoration-color: currentColor; }
 a.archive:is(:hover, :focus-visible) { color: var(--ink); }
@@ -545,7 +546,7 @@ main section.first { display: flex; flex-direction: column; gap: var(--sp-5); bo
 /* Record: covers the list in place on wide screens, so nothing around it moves; below the map on narrow ones. */
 .record { position: absolute; inset: 0; overflow: auto; display: flex; flex-direction: column; gap: var(--sp-3); background: var(--paper); border: var(--rule) solid var(--line); border-radius: var(--r-sm); padding: var(--sp-4); }
 .side:has(> .record:not([hidden])) > .regions { visibility: hidden; } /* the record covers the list beside the map: hide the list under it, so no edge shows at its corners and keyboard focus stays in the record */
-.record-top { display: flex; flex-shrink: 0; align-items: center; justify-content: space-between; gap: var(--sp-3); position: sticky; top: var(--record-head-top, 0px); z-index: 3; background: var(--paper); }
+.record-top { display: flex; flex-shrink: 0; align-items: center; justify-content: space-between; gap: var(--sp-3); position: relative; transform: translateY(var(--sticky-shift, 0px)); z-index: 3; background: var(--paper); }
 .record-top h3 { font: var(--type-label); }
 #record-name:focus { outline: none; } /* focus lands here when the record covers the list row that opened it; the heading is not a control */
 :is(h2, h3, p)[tabindex="-1"]:focus, main[tabindex="-1"]:focus { outline: none; } /* focused by script for screen readers, not a control: no ring; a heading takes the Focus tint below */
@@ -915,6 +916,7 @@ html[data-prerendered] .fn-scroll.fits thead { position: static; }
 .fund-value { grid-column: 2; grid-row: 1; min-width: 0; font: var(--type-body); overflow-wrap: anywhere; }
 .fund-value strong, .fund-value .budget-amount { font: var(--type-body); white-space: nowrap; }
 .fund-measure .meta-item { display: inline; } /* running meta text uses the whole figure column, rather than wrapping whole phrases */
+.fund-measure .meta-tail { white-space: normal; } /* the final phrase also wraps within the figure track at enlarged text sizes */
 .fund-measure.unbarred, .fund-measure.unbarred .fund-value, .fund-measure.unbarred :is(.qualifiers, .fund-context, .conf, .period-mean, .missing) { color: var(--muted); }
 .fund-context { font: var(--type-meta); color: var(--ink); margin-top: var(--sp-1); }
 .period-mean { font: var(--type-meta); color: var(--ink); }
@@ -945,9 +947,8 @@ html[data-prerendered] .fn-scroll.fits thead { position: static; }
 :root:not([data-js]) .fold-close { display: none; }
 :root:not([data-js]) :is(.card.mini, .fund-detail)[open] > summary { padding-right: 0; }
 :root:not([data-js]) :is(.card.mini, .fund-detail)[open] > summary::after { display: block; } /* the native disclosure still closes without scripting */
-/* Reading-head padding belongs inside the moving box, never in a gap it leaves behind. Tables put it on their first row's cells because a thead has no padding box. */
-:is(.fn-phone-head, .fund-axis, .fn-detail-top, .record-top, .cards .card > .top, .card.mini[open] > summary, .fund-detail[open] > summary, .fn-table thead > tr:first-child > th, table.world thead th) { padding-top: var(--reading-pad); }
-table.world thead th button { padding-top: 0; }
+/* Reading-head padding belongs inside the moving box. Grid tables use their first row's cells; sortable heads keep all padding inside the full-cell button. */
+:is(.fn-phone-head, .fund-axis, .fn-detail-top, .record-top, .cards .card > .top, .card.mini[open] > summary, .fund-detail[open] > summary, .fn-table thead > tr:first-child > th, table.world thead th button) { padding-top: var(--reading-pad); }
 :is(.card.mini, .fund-detail)[open] > summary { min-height: calc(var(--close-size) + var(--reading-pad)); }
 :where(.fn-phone, .fn-scroll, .table-scroll, .fund-list, .fn-detail, .card.mini, .fund-detail, .record) :is(a, button, summary, [tabindex], .fn-phone-functions > li, .fn-phone-claims, .fn-claim, .claim-text) { scroll-margin-top: calc(var(--reading-top) + var(--reading-head-height, var(--close-size)) + var(--sp-2)); }
 :is(.fn-detail-top, .record-top) :is(button, [tabindex]), .fold-close, :is(.card.mini, .fund-detail) > summary { scroll-margin-top: calc(var(--reading-top) + var(--sp-2)); }
@@ -969,7 +970,7 @@ table.world thead th button { padding-top: 0; }
 .figures:empty { display: none; }
 .figure { display: flex; flex-direction: column; gap: var(--sp-1); min-width: 0; }
 .figure b { font: var(--type-figure); font-variant-numeric: tabular-nums; letter-spacing: -.04em; }
-.figure span { font: var(--type-body); color: var(--muted); }
+.figure > span { font: var(--type-body); color: var(--muted); }
 .figure em { font-style: normal; color: var(--ink); white-space: nowrap; }
 /* Grouped lists (principle: Groups): heading, a row of status marks, then the names and facts in full-width rows. */
 .group-block { display: flex; flex-direction: column; gap: var(--sp-2); min-width: 0; border-top: var(--rule) solid var(--ink); padding-top: var(--sp-3); } /* a thin rule opens each group (owner, 5 Nov 2026) */
@@ -987,8 +988,8 @@ table.world thead th button { padding-top: 0; }
 .per-person { white-space: nowrap; } /* a figure and its unit stay on one line */
 .group-list.stacked > li { flex-direction: column; align-items: flex-start; justify-content: flex-start; }
 .card .top > .state-dl { margin-left: auto; }
-.card.mini > .foot { display: flex; align-items: flex-start; } /* the footer keeps the shared spacing; the icon takes its own margin */
-.card.mini > .foot > .state-dl { margin-left: var(--sp-3); }
+.card.mini > .foot { display: flex; align-items: flex-start; gap: var(--sp-3); } /* sources keep their prose measure; the download ends at the footer's content edge */
+.card.mini > .foot > .state-dl { flex: none; margin-left: auto; }
 .card.mini > .foot > :not(.state-dl) { flex: 1 1 auto; min-width: 0; }
 .card :is(.top, .foot) > .state-dl { display: inline-flex; align-items: center; justify-content: center; width: var(--hit); height: var(--hit); margin-block: calc((var(--size-label) * var(--leading-label) - var(--hit)) / 2); color: var(--muted); text-decoration-line: none; }
 .card :is(.top, .foot) > .state-dl:is(:hover, :focus-visible) { color: var(--ink); }
@@ -1047,7 +1048,9 @@ table.world thead th button { padding-top: 0; }
   .fund-measure-label { display: block; grid-column: 1; grid-row: 1; font: var(--type-meta); color: var(--muted); }
   .fund-bar { grid-column: 2; }
   .fund-value { grid-column: 3; }
+  .fund-measure:has(> .fund-bar:empty) > .fund-value:has(> .missing) { grid-column: 2 / -1; white-space: nowrap; }
   .fund-value strong, .fund-value .budget-amount, .fund-measure .per-person { white-space: normal; }
+  .fund-measure .cite-glue { white-space: normal; } /* in the narrow figure column a citation may leave its word rather than run off the edge at large text */
   .fund-detail { grid-row: 4; padding: var(--sp-3) var(--sp-2); }
 }
 @media (width < 1280px) {
@@ -1065,7 +1068,7 @@ table.world thead th button { padding-top: 0; }
   .map-search { flex: 1 1 16rem; }
   .map-aside { order: 0; } /* the legend stays directly under the map */
   .record { position: static; order: -1; overflow: visible; } /* directly under the map, above the list */
-  .record-top { top: var(--reading-top); }
+  .record-top { position: sticky; top: var(--reading-top); transform: none; }
   .side:has(> .record:not([hidden])) > .regions { visibility: visible; } /* stacked: the list stays below the record */
   .cards { --columns: 2; }
 }
@@ -1391,9 +1394,9 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       // Unlike a sum of CSS heights, this includes the active row's wraps and its release at the group foot.
       // Leave the saved page responsive: no viewport-specific pixel offset belongs in the pre-rendered HTML.
       if (!PRERENDERING) ROOT.style.setProperty("--bars-bottom", top + "px");
-      function move(head, owner, enabled) {
+      function move(head, owner, enabled, edge) {
         var r = head.getBoundingClientRect(), bounds = owner.getBoundingClientRect(), old = head.readingShift || 0;
-        var shift = enabled && r.height ? stickyShift(r.top - old, bounds.bottom, r.height, top) : 0;
+        var shift = enabled && r.height ? stickyShift(r.top - old, bounds.bottom, r.height, edge == null ? top : edge) : 0;
         writes.push(function () { head.readingShift = shift; head.style.setProperty("--sticky-shift", shift + "px"); });
       }
       document.querySelectorAll(".fn-scroll, .table-scroll > .scroll").forEach(function (scroll) {
@@ -1414,15 +1417,15 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         var head = owner.querySelector(":scope > .fn-phone-head, :scope > .fund-axis, :scope > .fn-detail-top, :scope > summary, :scope > .record-top");
         if (head) { var height = head.getBoundingClientRect().height; writes.push(function () { owner.style.setProperty("--reading-head-height", height + "px"); }); }
         if (owner.matches(".record")) {
-          // Wide records scroll inside their own box; convert the same viewport edge to that scrollport.
-          var inset = Math.max(0, top - owner.getBoundingClientRect().top - owner.clientTop);
-          writes.push(function () { owner.style.setProperty("--record-head-top", inset + "px"); });
+          // Wide records have a padded inner scrollport. Move the measured head, as for scrolling tables,
+          // without converting a viewport edge into a second CSS sticky coordinate system.
+          move(head, owner, getComputedStyle(owner).overflowY !== "visible", Math.max(top, owner.getBoundingClientRect().top + owner.clientTop));
         }
       });
       writes.forEach(function (write) { write(); });
     }
     function schedule() { if (!pending) { pending = true; requestAnimationFrame(update); } }
-    window.addEventListener("scroll", schedule, { passive: true }); window.addEventListener("resize", schedule, { passive: true });
+    window.addEventListener("scroll", schedule, { capture: true, passive: true }); window.addEventListener("resize", schedule, { passive: true });
     window.addEventListener("afterprint", schedule);
     var watch = new ResizeObserver(schedule);
     document.querySelectorAll("main, .fn-phone, .fund-list, .fn-table, table.world, .secnav, .group-nav").forEach(function (node) { watch.observe(node); });
