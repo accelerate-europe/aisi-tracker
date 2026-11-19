@@ -22856,6 +22856,10 @@
           {
             "date": "2026-10-17",
             "scope": "English searches for a national AI safety, security or evaluation institute, commitment, proposal or study. No qualifying institute was identified. The retrieved ministerial AI policy sets developer/user risk and assessment obligations with ministry and sector-regulator oversight; it does not designate a national institute for the safety of advanced models. Partial check only; the last full-check date is unchanged."
+          },
+          {
+            "date": "2026-11-19",
+            "scope": "Verified two leads from a blind re-check: the Cabinet's approval of the national AI programme on 19 September 2024, and the international centre for AI ethics and governance planned in the programme's second phase (2026 to 2030). Neither finding establishes a qualifying institute. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -22891,7 +22895,9 @@
         "om-mtcit-policy-2025",
         "om-ona-ram-2026",
         "om-mtcit-policy-page",
-        "om-mtcit-ai-experts-committee"
+        "om-mtcit-ai-experts-committee",
+        "om-mtcit-ai-sector-page",
+        "om-mtcit-ai-programme-2026-2030"
       ],
       "related_bodies": [
         {
@@ -22922,7 +22928,7 @@
           "id": "related_bodies-d37c350a6dc35c38b542395d4d853d07"
         }
       ],
-      "notes": "The policy requires developers to run pre-deployment ethical, social and environmental impact assessments and periodic accuracy checks including independent technical reviews, but it creates no testing body, safety institute or committee and takes the form of a circular. The UNESCO readiness assessment results were launched on 15 February 2026 as the national reference for AI governance; the report itself was not opened (HTTP 403). The AI Experts Committee (Ministerial Decision 124/2025) is advisory with a three-year term and has no testing mandate.",
+      "notes": "The policy requires developers to run pre-deployment ethical, social and environmental impact assessments and periodic accuracy checks including independent technical reviews, but it creates no testing body, safety institute or committee and takes the form of a circular. The UNESCO readiness assessment results were launched on 15 February 2026 as the national reference for AI governance; the report itself was not opened (HTTP 403). The AI Experts Committee (Ministerial Decision 124/2025) is advisory with a three-year term and has no testing mandate. The Cabinet approved the National Programme for AI and Advanced Digital Technologies on 19 September 2024. The programme's second phase, for 2026 to 2030, plans an international centre for AI ethics and governance based in Oman. Initiative 6 gives the centre no task of testing or evaluating models and does not state its operator or completion date.",
       "next_check": {
         "date": "2027-02-15",
         "reason": "Whether Oman acts on the UNESCO recommendations (for example mandatory impact assessments) or creates an AI oversight body."
@@ -127333,6 +127339,56 @@
         "text_sha256": "c869de6072042104cb982d8f0fc6f6b7d05fff6158ec1c4d4daebcfdc2c1fdcd",
         "text_scheme": 1
       }
+    },
+    {
+      "id": "om-mtcit-ai-sector-page",
+      "url": "https://mtcit.gov.om/sectors?sector=artificial_intelligence",
+      "title": "Artificial Intelligence (Ministry Sector)",
+      "publisher": "Ministry of Transport, Communications and Information Technology (Oman)",
+      "type": "primary",
+      "language": "en",
+      "origin": "OM",
+      "accessed": "2026-11-19",
+      "excerpts": [
+        {
+          "text": "approved by the Cabinet on 19 September 2024",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "OM"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-19T06:31:08Z",
+        "sha256": "c44096e5811cc3bbf643d8020b8bdbdcaf3c4c242a9621339312f120d78a1dd6",
+        "text_sha256": "620754da3da471c92b7a0928b941146c7b3e529c7709faff0f548ef8d6eccd21",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "om-mtcit-ai-programme-2026-2030",
+      "url": "https://mtcit.gov.om/web/content/69712",
+      "title": "البرنامج الوطني للذكاء الاصطناعي المرحلة الثانية (2026 – 2030)",
+      "title_en": "National Programme for Artificial Intelligence, second phase (2026 to 2030)",
+      "publisher": "Ministry of Transport, Communications and Information Technology (Oman)",
+      "type": "primary",
+      "language": "ar",
+      "origin": "OM",
+      "accessed": "2026-11-19",
+      "excerpts": [],
+      "snapshot": {
+        "retrieved": "2026-11-19T06:31:09Z",
+        "sha256": "e6243a51b459671ee2cc35e2dfd613e3131fa9ef16cda8d0399334e3ee5df27c",
+        "text_sha256": "8148e0dab376a31f38ad903986e0c05054e833d845e17943fe825c23a6671d7a",
+        "text_scheme": 1
+      },
+      "access_note": "PDF read on 19 November 2026; it gives no publication date. The planned international centre for AI ethics and governance is in initiative 6, on consultancy and knowledge transfer (printed page 19). The PDF's text layer stores Arabic letters in presentation forms with elongation marks, so the passage was found by normalised text search and is not quoted."
     }
   ],
   "changelog": [
