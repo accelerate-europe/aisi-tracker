@@ -4021,6 +4021,10 @@
           {
             "date": "2026-11-10",
             "scope": "News search from 17 October 2026 in English and Polish, with the digital affairs ministry's news page (newest 10 November). Added NASK's announcement of 23 October 2026 of its agreement with OpenAI on AI safety research, led on NASK's side by its AI Safety Research Centre, with OpenAI's description of the work from an archived copy, and CERT Polska's access to OpenAI cyber models from July 2026. No separate ministry announcement of the agreement, no new government act assigning national frontier evaluation, and no centre funding, staffing or centre-specific model-access terms were found. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-19",
+            "scope": "Research pass in Polish and English on whether a government text designates NASK's AI Safety Research Centre, or another Polish body, as Poland's AI safety institute or assigns it the testing of general-purpose models: the Sejm's and Senate's records, the Ministry of Digital Affairs' site, the official journals, the Act on AI systems, the draft AI policy to 2030, and the International Network's member lists. Added the deputy minister's statement to a Sejm committee on 2 April 2025 that the centre was set up within the global network led by the United States institute, and the ministry's announcement of 24 February 2025 naming the centre as leader of the consortium that deploys the PLLuM language model in public administration. The Network's member lists of 2024 and 2026 do not include Poland. No government text calling the centre Poland's AI safety institute, no act assigning it model evaluation, and no staff or budget figure for the centre were found. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -4078,6 +4082,25 @@
               "agreements",
               "national_partners"
             ]
+          },
+          {
+            "date": "2026-11-19",
+            "languages": [
+              "pl",
+              "en"
+            ],
+            "places": [
+              "the Sejm's and Senate's records",
+              "the Ministry of Digital Affairs' site",
+              "the official journals",
+              "NASK's site",
+              "the International Network's member lists"
+            ],
+            "fields": [
+              "status",
+              "staff",
+              "agreements"
+            ]
           }
         ]
       },
@@ -4093,7 +4116,9 @@
         "pl-nask-openai-2026",
         "pl-openai-nask-2026",
         "pl-nask-cert-openai-2026",
-        "pl-kribsi-first-meeting-2026"
+        "pl-kribsi-first-meeting-2026",
+        "pl-sejm-standerski-2025-04",
+        "pl-mc-pllum-hive-2025"
       ],
       "region": {
         "id": "150",
@@ -4185,6 +4210,28 @@
           "text": "NASK says the centre will lead its cooperation with OpenAI and \"will research the safety of increasingly advanced AI systems\" with it.",
           "source_ids": [
             "pl-nask-openai-2026"
+          ]
+        },
+        {
+          "id": "claims-b5106dc3755a4cbf988e3ae4c288f81e",
+          "kind": "function",
+          "code": "international_cooperation",
+          "basis": "activity",
+          "body_id": "related_bodies-8e2bf69316145732aea04a2f9bbd82eb",
+          "text": "The deputy minister of digital affairs told a Sejm committee on 2 April 2025 that the centre was set up within a global network, which he did not name, led by the US AI Safety Institute, adding \"We are in constant contact\".",
+          "source_ids": [
+            "pl-sejm-standerski-2025-04"
+          ]
+        },
+        {
+          "id": "claims-0e519a6be19f4b0e9abf6135b59f2a12",
+          "kind": "function",
+          "code": "convening",
+          "basis": "mandate",
+          "body_id": "related_bodies-8e2bf69316145732aea04a2f9bbd82eb",
+          "text": "The Ministry of Digital Affairs says the centre, as consortium leader, \"will coordinate the work of deploying PLLuM in public administration services\".",
+          "source_ids": [
+            "pl-mc-pllum-hive-2025"
           ]
         }
       ]
@@ -123468,6 +123515,89 @@
           "accessed": "2026-11-15"
         }
       ]
+    },
+    {
+      "id": "pl-sejm-standerski-2025-04",
+      "url": "https://www.sejm.gov.pl/sejm10.nsf/biuletyn.xsp?documentId=A89940CC98EAECF4C1258C8300396B7B",
+      "title": "Zapis przebiegu posiedzenia Komisji Gospodarki i Rozwoju (nr 66), 02-04-2025",
+      "publisher": "Sejm of the Republic of Poland",
+      "type": "primary",
+      "published": "2025-04-02",
+      "accessed": "2026-11-19",
+      "language": "pl",
+      "origin": "PL",
+      "title_en": "Record of the meeting of the Economy and Development Committee (no. 66), 2 April 2025",
+      "excerpts": [
+        {
+          "text": "W naszym instytucie NASK powstał Ośrodek Badań nad Bezpieczeństwem Sztucznej Inteligencji w ramach globalnej sieci, gdzie wiodącym jest Instytut Bezpieczeństwa Sztucznej Inteligencji w ramach administracji amerykańskiej. Jesteśmy w stałym kontakcie",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "PL"
+              },
+              "claims",
+              {
+                "id": "claims-b5106dc3755a4cbf988e3ae4c288f81e"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "In our institute NASK, an AI Safety Research Centre was set up within the global network, in which the leading body is the AI Safety Institute in the American administration. We are in constant contact",
+          "anchors": [
+            {
+              "text": "Sekretarz stanu w Ministerstwie Cyfryzacji Dariusz Standerski",
+              "kind": "heading",
+              "gloss": "Secretary of State in the Ministry of Digital Affairs Dariusz Standerski"
+            }
+          ],
+          "accessed": "2026-11-19"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-19T05:55:19Z",
+        "sha256": "addc901b4305fe1842d635f120f593fb362550c0f84d3d96e5edc1c32bd79257",
+        "text_sha256": "367f9c7658fe3d5463c242da5d9826402393ef1ed306eb4f605e905bb971e901",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "pl-mc-pllum-hive-2025",
+      "url": "https://www.gov.pl/web/cyfryzacja/polska-buduje-wlasna-sztuczna-inteligencje--pllum-gotowy-do-dzialania",
+      "title": "Polska buduje własną sztuczną inteligencję – PLLuM gotowy do działania",
+      "publisher": "Ministry of Digital Affairs, Poland",
+      "type": "primary",
+      "published": "2025-02-24",
+      "accessed": "2026-11-19",
+      "language": "pl",
+      "origin": "PL",
+      "title_en": "Poland builds its own artificial intelligence: PLLuM is ready for use",
+      "excerpts": [
+        {
+          "text": "Lider konsorcjum HIVE – Ośrodek Badań nad Bezpieczeństwem SI w NASK – będzie koordynować prace wdrożeniowe PLLuM w usługach administracji publicznej.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "PL"
+              },
+              "claims",
+              {
+                "id": "claims-0e519a6be19f4b0e9abf6135b59f2a12"
+              },
+              "text"
+            ]
+          ],
+          "gloss": "The consortium leader HIVE (the AI Safety Research Centre at NASK) will coordinate the work of deploying PLLuM in public administration services.",
+          "accessed": "2026-11-19"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-19T05:55:19Z",
+        "sha256": "61f6a87d20a190069856c8da3beaacd47a89612304a83d8538a7db6503899e13",
+        "text_sha256": "1b7b3d6711a8ad99f14276b280cd2183ad189c1d1bc0abb7d33623c0066f820b",
+        "text_scheme": 1
+      }
     },
     {
       "id": "pl-nask-cert-openai-2026",
