@@ -10279,6 +10279,10 @@
           {
             "date": "2026-10-18",
             "scope": "Selected the closest body against retrieved source text and excerpts; recorded its stage, evidence gap and limits. Partial check; the last full-check date is unchanged."
+          },
+          {
+            "date": "2026-11-19",
+            "scope": "Checked the note on the draft AI law against its sources and searched in Thai and English for the draft's latest step. Corrected the note: the committee the draft names already exists, the 2025 consultation was on draft principles, and the hearing on the full draft ran in July and August 2026 as a law firm reports it. Added the committee's resolution of 7 September 2026; no later step was found. The consultation listing for the full draft could not be read (HTTP 403). Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -10309,9 +10313,11 @@
       "source_ids": [
         "th-etda-aigpc-2027",
         "th-etda-draft-law-2025",
-        "th-thaipbs-2026"
+        "th-thaipbs-2026",
+        "th-mdes-ai-committee-2026",
+        "th-lawplus-draft-ai-act-2026"
       ],
-      "notes": "Public hearings on a draft AI law were held in mid-2026; the draft would create a support organisation and a national AI policy committee, not an evaluation institute.",
+      "notes": "The ETDA notice invited comments on draft principles of an AI law until 24 June 2025; the principles specify an organisation to support the law's operation. The law firm LawPlus reports a public hearing on the full draft Act from 9 July to 14 August 2026. Thai PBS reports that the draft defines its committee as the existing Specialised Committee for Driving the National AI Plan. No source read describes an institute for evaluating advanced models in the draft. At its meeting of 7 September 2026 that committee resolved that restructuring of the draft Act be considered; our searches found no later step.",
       "region": {
         "id": "142",
         "name": "Asia",
@@ -51739,7 +51745,37 @@
         "sha256": "5b53110f7f3f6d8a29dad92532889def5f86b070162acaa347fd252a5b04b0a1",
         "text_sha256": "dded15494f2eb454cd1985b4e67e91e336c04a3132c2d19764b18738f98424bb",
         "text_scheme": 1
-      }
+      },
+      "excerpts": [
+        {
+          "text": "ตั้งแต่วันนี้จนถึง 24 มิถุนายน 2568",
+          "gloss": "from today until 24 June 2025",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "TH"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        },
+        {
+          "text": "การกำหนดองค์กรสนับสนุนการทำงานของกฎหมายฉบับนี้",
+          "gloss": "specifying an organisation to support the operation of this law",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "TH"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        }
+      ]
     },
     {
       "id": "th-thaipbs-2026",
@@ -51757,7 +51793,23 @@
         "sha256": "dbeb75249738d1bc6abe418b45b0c5e695972e680900fb1d2dd5aadb4ad19b91",
         "text_sha256": "47d2a515ef2f05b87d688656286a61e4f743da4b878684c7654969db17711c40",
         "text_scheme": 1
-      }
+      },
+      "excerpts": [
+        {
+          "text": "คณะกรรมการ ซึ่งหมายถึง คณะกรรมการเฉพาะด้านการขับเคลื่อนแผนด้านปัญญาประดิษฐ์แห่งชาติ",
+          "gloss": "the Committee, which means the Specialised Committee for Driving the National AI Plan",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "TH"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        }
+      ]
     },
     {
       "id": "vn-mst-ai-law-2026",
@@ -126570,6 +126622,100 @@
         "retrieved": "2026-11-14T11:33:15Z",
         "sha256": "aabce9f022bee185f3c9ed32b98b2b434d751b4e5a3d9e4c2573988f7a7161c2",
         "text_sha256": "751f89d8680d576d10fe7035e5c9026fd89e4326c36331227de356fdfbdc8358",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "th-mdes-ai-committee-2026",
+      "url": "https://mdes.go.th/news/detail/11489-%E0%B8%A3%E0%B8%A1%E0%B8%A7-%E0%B8%94%E0%B8%B5%E0%B8%AD%E0%B8%B5-%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%8A%E0%B8%B8%E0%B8%A1%E0%B8%84%E0%B8%81%E0%B8%81-%E0%B9%80%E0%B8%89%E0%B8%9E%E0%B8%B2%E0%B8%B0%E0%B8%94%E0%B9%89%E0%B8%B2%E0%B8%99%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%82%E0%B8%B1%E0%B8%9A%E0%B9%80%E0%B8%84%E0%B8%A5%E0%B8%B7%E0%B9%88%E0%B8%AD%E0%B8%99%E0%B9%81%E0%B8%9C%E0%B8%99%E0%B8%94%E0%B9%89%E0%B8%B2%E0%B8%99-AI-%E0%B9%81%E0%B8%AB%E0%B9%88%E0%B8%87%E0%B8%8A%E0%B8%B2%E0%B8%95%E0%B8%B4-%E0%B8%99%E0%B8%B1%E0%B8%94%E0%B9%81%E0%B8%A3%E0%B8%81-%E0%B8%95%E0%B8%B4%E0%B8%94%E0%B8%95%E0%B8%B2%E0%B8%A1%E0%B8%AA%E0%B8%96%E0%B8%B2%E0%B8%99%E0%B8%B0%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%9E%E0%B8%B1%E0%B8%92%E0%B8%99%E0%B8%B2-AI-%E0%B9%84%E0%B8%97%E0%B8%A2-%E0%B8%9E%E0%B8%A3%E0%B9%89%E0%B8%AD%E0%B8%A1%E0%B9%81%E0%B8%9C%E0%B8%99%E0%B8%9B%E0%B8%8F%E0%B8%B4%E0%B8%9A%E0%B8%B1%E0%B8%95%E0%B8%B4%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%94%E0%B9%89%E0%B8%B2%E0%B8%99-AI-%E0%B8%8A%E0%B8%B2%E0%B8%95%E0%B8%B4",
+      "title": "รมว.ดีอี ประชุมคกก.เฉพาะด้านการขับเคลื่อนแผนด้าน AI แห่งชาติ นัดแรก ติดตามสถานะการพัฒนา AI ไทย พร้อมแผนปฏิบัติการด้าน AI ชาติ",
+      "title_en": "Digital economy minister chairs first meeting of the Specialised Committee for Driving the National AI Plan, reviewing the state of Thai AI development and the national AI action plan",
+      "publisher": "Ministry of Digital Economy and Society (Thailand)",
+      "type": "primary",
+      "published": "2026-09-07",
+      "accessed": "2026-11-19",
+      "language": "th",
+      "origin": "TH",
+      "excerpts": [
+        {
+          "text": "วันที่ 7 กันยายน 2569",
+          "gloss": "On 7 September 2026 (B.E. 2569)",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "TH"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        },
+        {
+          "text": "ประธานการประชุมคณะกรรมการเฉพาะด้านการขับเคลื่อนแผนด้านปัญญาประดิษฐ์แห่งชาติ ครั้งที่ 1/2569",
+          "gloss": "chaired meeting 1/2569 of the Specialised Committee for Driving the National AI Plan",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "TH"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        },
+        {
+          "text": "มีมติให้มีการพิจารณาการปรับโครงสร้างของ ร่าง พ.ร.บ.",
+          "gloss": "resolved that restructuring of the draft Act be considered",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "TH"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-19T05:59:46Z",
+        "sha256": "add57e140b2f00bc46cec3a774be5d5b58409c779ac6bbf8b651f67356381ca3",
+        "text_sha256": "f307821fe67f331f66cb147fadfad9f1dcb301668a2c84368289c045a2dd54fd",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "th-lawplus-draft-ai-act-2026",
+      "url": "https://www.lawplusltd.com/2026/10/thailand-holds-public-hearings-on-draft-of-artificial-intelligence-act/",
+      "title": "Thailand Holds Public Hearings on Draft of Artificial Intelligence Act",
+      "publisher": "LawPlus Ltd.",
+      "type": "secondary",
+      "published": "2026-10",
+      "accessed": "2026-11-19",
+      "language": "en",
+      "origin": "TH",
+      "excerpts": [
+        {
+          "text": "released the Draft Act on Artificial Intelligence (Draft AI Act) for public hearing during 9 July to 14 August 2026",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "TH"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-19T05:59:46Z",
+        "sha256": "7966747574ec294314ade2788fe021ade7ba5d3e19764f5ba5573f38d56854ca",
+        "text_sha256": "d0b41c88a6dea35fc0266d12d18fdda2dd80fec57e83156fa210dbe5a08bc40c",
         "text_scheme": 1
       }
     }
