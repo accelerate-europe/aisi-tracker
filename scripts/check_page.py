@@ -5617,8 +5617,10 @@ def check_panel_measure(browser, base_url: str) -> list[str]:
                 "closest-body-quote": '.card.mini details.quote .quote-body',
                 "card-sources": '.card .srcs',
                 "group-sources": '#access .foot .srcs, #setup .foot .srcs',  # inside the section foot row
-                "funding-sources": '.fund-detail-body .srcs',
+                "funding-sources": '#fund-detail-jp-aisi .fund-detail-body .srcs',  # by key: Japan's three sources stay open (a longer list folds behind its count)
             }
+            # In the two-chart Funding form the records are laid out only once a control opens them.
+            page.evaluate("""() => document.querySelector('#fund-rows [aria-controls="fund-detail-jp-aisi"][aria-expanded="false"]')?.click()""")
             for label, selector in samples.items():
                 nodes = page.locator(selector)
                 if not nodes.count():
@@ -10897,13 +10899,16 @@ FUNDING_LAYOUT_JS = r"""() => {
     const word=JSON.parse(q.dataset.parts).at(-1);
     if(!['adopted','announced'].includes(word))return false;
     // The word may sit in any text node of the line (a fitted or wrapped line splits its text): take the last one that holds it.
-    const walker=document.createTreeWalker(q,NodeFilter.SHOW_TEXT);let node=null,at=-1;
-    while(walker.nextNode()){const k=walker.currentNode.textContent.lastIndexOf(word);if(k>=0){node=walker.currentNode;at=k;}}
-    if(!node)return false;
+    let node=null,at=-1;
+    if(document.createTreeWalker){const walker=document.createTreeWalker(q,NodeFilter.SHOW_TEXT);
+      while(walker.nextNode()){const k=walker.currentNode.textContent.lastIndexOf(word);if(k>=0){node=walker.currentNode;at=k;}}
+    } else if(q.firstChild?.nodeType===Node.TEXT_NODE){node=q.firstChild;at=q.textContent.lastIndexOf(word);}
+    if(!node||at<0)return false;
     const range=document.createRange();range.setStart(node,at);range.setEnd(node,at+word.length);
     const boxes=[...range.getClientRects()].filter(r=>r.width&&r.height),bounds=rect(q);
     return boxes.length>0&&boxes.every(r=>{
-      if(r.left<bounds.left-.75||r.right>bounds.right+.75)return false;  // sideways only: a glyph box is taller than a tight line box
+      // A glyph box is a few px taller than a tight line box, so the line's own box gets that much slack above and below.
+      if(r.left<bounds.left-.75||r.right>bounds.right+.75||r.top<bounds.top-6||r.bottom>bounds.bottom+6)return false;
       for(let n=q;n&&n!==list;n=n.parentElement){const s=getComputedStyle(n),b=rect(n);
         if(/hidden|clip/.test(s.overflowX)&&(r.left<b.left-.75||r.right>b.right+.75))return false;
         if(/hidden|clip/.test(s.overflowY)&&(r.top<b.top-.75||r.bottom>b.bottom+.75))return false;

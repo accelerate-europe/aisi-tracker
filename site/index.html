@@ -4375,7 +4375,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         // Tooltip text and citations remain above the empty full-row button.
         row.addEventListener("click", function (event) { if (event.target !== button && !event.target.closest(".fund-detail, a, button, summary")) button.click(); });
       });
-      var other = el("div", "fund-other"), missingLine = el("div", "fund-missing-line"), missingNames = el("p", "fund-missing-names", "Not published: "); missingLine.appendChild(missingNames);
+      var other = el("div", "fund-other"), missingLine = el("div", "fund-missing-line"), missingNames = el("div", "fund-missing-names", "Not published: "); missingLine.appendChild(missingNames);
       var absent = 0;
       fundItems.filter(function (i) { return !select(i); }).forEach(function (i) {
         var words = otherFundWords(i, kind), line = words ? el("div", "fund-other-line") : missingLine;
