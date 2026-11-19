@@ -4,8 +4,8 @@
     "title": "AI Security Institutes tracker",
     "description": "Which states have an AI Security Institute (AISI), covering all 193 UN member states plus Taiwan and the EU AI Office, with funding, staff and leadership where published. Every record cites its sources.",
     "definition": "We count a body as an AI Security Institute (AISI) if a national government or an international organisation, such as the EU, has tasked it with testing general-purpose or frontier AI models for their capabilities and risks, or has named it its AI safety institute or its AI security institute. Being a regulator, certification body or cyber security agency is not enough on its own.",
-    "version": "1.1.0-dev",
-    "as_of": "2026-11-14",
+    "version": "1.1.0",
+    "as_of": "2026-11-19",
     "license": "CC BY 4.0",
     "license_note": "Quotations from sources remain with their rights holders and are reproduced as quotations; the licence covers our own compilation, text and data.",
     "publisher": "Accelerate Europe",
@@ -18,7 +18,7 @@
     ],
     "contact": "contact@accelerate-europe.org",
     "repository": "https://github.com/accelerate-europe/aisi-tracker",
-    "citation": "Accelerate Europe (2026). AI Security Institutes tracker, version 1.0.10, data as of 14 November 2026. Compiled by Jason Hoelscher-Obermaier. https://doi.org/10.5281/zenodo.23600431",
+    "citation": "Accelerate Europe (2026). AI Security Institutes tracker, version 1.1.0, data as of 19 November 2026. Compiled by Jason Hoelscher-Obermaier. https://doi.org/10.5281/zenodo.23600431",
     "doi": "10.5281/zenodo.23600431",
     "scope": "Status is tracked for all 193 UN member states, Taiwan (as a territory) and the EU AI Office. The Europe page counts the 27 EU member states, Iceland, Liechtenstein, Norway, the United Kingdom and Switzerland.",
     "method": [
@@ -126687,6 +126687,40 @@
         "European related bodies: every one now cites a source, among them Austria's AI service desk, Liechtenstein's digital innovation office, Luxembourg's and Romania's AI Factories and Greece's AI coordination centre and sandbox; names no longer carry a stage, which is in the role with a quote (Bulgaria, Cyprus, Iceland).",
         "AI Act authorities: the designation state of the authorities in 24 countries is now quoted, from the Commission's list of 9 November 2026 or from the national act or account where the list has no entry, names only the contact point or differs from the act. One Romanian authority, the notifying authority ADR, has no quote for its state yet.",
         "Partial news re-checks of 14 November 2026 are recorded for all 15 institutes, with what was read and what could not be."
+      ]
+    },
+    {
+      "date": "2026-11-19",
+      "version": "1.1.0",
+      "summary": "A new Functions table compares the mandates and activities of the 15 institutes across 18 functions. News now also covers changes of mandate or name, budget decisions and agreements.",
+      "changes": [
+        "Functions: a new table under Compare. For each of the 15 institutes it shows which of 18 functions are part of its mandate and which it carries out. The functions are shown in four groups, with all 18 one click away. A mark opens the claim and its source, and the quote opens from there.",
+        "Functions: the table rests on 163 claims, each with a quote from a public source: 99 on mandates and 64 on activities. We found no text for any institute on capacity building or on access and continuity for public bodies.",
+        "Functions in the data: new files functions.csv and claims.csv, and new fields `functions` and `claims` for each institute in aisi.json and the API. The function codes and the two `development` codes (public_body, testing_duty) are provisional: a minor version may add, split, rename or remove them, and the changelog will say so.",
+        "Claims: 242 facts on the page are now one-sentence claims with a quote from the source. They cover the Functions table, facts on the cards, what related bodies do and the closest body's main quote. A translated quote is shown in English, with the original on hover, focus or tap. In the data, each quote and claim has the date we last found it in its source.",
+        "News: besides changes of status, News now lists changes of mandate or name, budget decisions for the institute itself, and agreements. Each entry says in one sentence what happened.",
+        "Downloads: new file news.csv with the News entries; an agreement between two states has one row per state. events.csv gains the columns news_kind and news. Functions, the other comparison tables and News each have a download link below them.",
+        "Downloads, other new columns: anchors in source_excerpts.csv; designation_step_text and designation_step_date in related_bodies.csv; body_id and active_in in closest_bodies.csv. No file, column or code was removed or renamed.",
+        "Method: two new rules, on bills and on News. Each function's definition and test are in the vocabulary `function`.",
+        "Method: the rules on budget display, national partners and states with no institute identified now say what is shown, not where on the page. The partners rule no longer says a card shows six partners.",
+        "Europe: the summary for each of the 32 European states is now generated from the record's fields and quoted claims, and the notes under How we checked from its check dates and searches. They replace the earlier written notes. Facts from those notes that the record holds nowhere else are no longer shown.",
+        "Summaries: the generated summaries for the UK, France and Germany now give the founding date and the present form in separate sentences.",
+        "Related bodies removed: the innovation ministry as a separate body in Bulgaria, the digital ministry in Croatia, four planned bodies in Cyprus, the centre for AI and language technology in Iceland, the KTU centre of excellence in Lithuania, the sandbox configurator in Luxembourg, the AI Factory in Romania and the SIMULAB lab in Slovakia. Greece's sandbox is now a role of EETT and the data protection authority, not a body of its own.",
+        "Closest bodies: for China, Cyprus, Indonesia, Kazakhstan, Mozambique, Poland, Slovakia, Taiwan and the United Arab Emirates, the closest body now has quoted claims about what it does or is meant to do. For Cyprus, Poland and Slovakia the summary names it and gives its main quote.",
+        "Norway: the 2027 budget proposal is NOK 45.1m for KI Norge as a whole. The NOK 30m for evaluating AI models and studying risks is part of that sum.",
+        "South Korea: 12 staff as at 27 November 2024, from the ministry's release. The director was appointed on 12 November 2024.",
+        "EU AI Office: a funding record says that no amount is published for the Office as a whole, and names the budget lines in the Commission decision of 24 January 2024.",
+        "United Kingdom: the Gemini 4 Argon access event is dated 13 October 2026, not 30 September.",
+        "Australia: the short mandate now reads \"emerging AI capabilities and risks\", from the institute's page as re-read on 16 November 2026.",
+        "United States and Japan: the designation events of February 2024 now cite the governments' own announcements. The US event of 30 September 2026 says the institute was renamed from the Center for AI Standards and Innovation.",
+        "People: professional backgrounds added for the heads or named officials of eight institutes: the United Kingdom, Norway, the EU AI Office, the United States, Canada, Japan, South Korea and Singapore.",
+        "Bulgaria: the twelve AI Act authorities are no longer marked as proposed. INSAIT's role is its EXPLORER talent programme.",
+        "Quoted facts added: Norway (Digdir's interim organisation for KI Norge from 1 December 2025), Japan (Kenji Hiramoto took office as full-time secretary-general on 14 February 2024), the EU AI Office (its first job announcement), India (the call for one contract director), Poland (cooperation between NASK's centre and Korea's institute), Taiwan (131 model tests by its evaluation centre, as reported on 4 May 2026) and Indonesia (the planned AISII Academy).",
+        "Sweden: the follow-up on the AI Commission's institute recommendation moves from 13 to 20 November 2026.",
+        "Notes on funding, testing, model access and staffing for the United Kingdom, France, Germany, Spain, Norway and the EU AI Office now say only what their quotes support. No classification of testing, model access or staffing changed.",
+        "Sources: 15 added, 1,272 in total. 26 English translations of quotes corrected. Eight sources that were offline on 16 November 2026 are marked as offline, with an archived copy where one exists. Source lists show when a source was last re-read, where recorded.",
+        "Page: per-person figures in the funding chart are labelled per resident, with the population year. Lists of five or more bodies, members or partners show three and a count. Source titles are shown in English where we have a translation, with the original on hover, focus or tap. Table heads and the head of an open record stay visible while you scroll.",
+        "Checks recorded since 1.0.10: searches for Poland (15 November 2026) and Norway (17 November); the Australian institute's page re-read (16 November); source quotes re-read on 10 and 16 November. No record's full-check date changed."
       ]
     }
   ]
