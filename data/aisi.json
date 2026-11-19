@@ -20027,6 +20027,10 @@
           {
             "date": "2026-11-10",
             "scope": "News search from 17 October 2026 in English and Arabic, with the SDAIA news listing (newest 4 November) and the communications ministry's homepage (newest 8 November). No qualifying item was found. Media-use principles and a foreign-ministers' session reported by Arab News and Saudi Gazette are neither a public advanced-model evaluator nor Network accession. The event detail pages of the Saudi Press Agency and SDAIA could not be read. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-19",
+            "scope": "Checked the note on the draft Responsible AI Policy against the policy text on the consultation platform, the official gazette's notice of 7 April 2026 and a law firm briefing of 4 November 2026, and bound it to them; it had been bound to an account of a different framework. The duties fall on all entities that release a high-risk system, which the note now says. Removed the outdated remark that SDAIA's AI page could not be read: it was retrieved on 24 October 2026. On 19 November 2026 the page refused the request again. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -20077,7 +20081,10 @@
       },
       "source_ids": [
         "sa-gowling-2026",
-        "sa-sdaia-ai-page"
+        "sa-sdaia-ai-page",
+        "sa-istitlaa-rai-policy-2026",
+        "sa-uqn-istitlaa-2026",
+        "sa-ashcc-rai-policy-2026"
       ],
       "related_bodies": [
         {
@@ -20088,7 +20095,7 @@
           "id": "related_bodies-d98ac9de98a05d15b2c4055b353a72d7"
         }
       ],
-      "notes": "A draft Responsible AI Policy, consulted on in April–May 2026, would require deployers of high-risk systems to run red-teaming and security tests and commission annual third-party audits. These are proposed duties on deployers.\n\nGowling's July 2026 account describes SDAIA's framework as governance guidance without performance benchmarks or model-testing rules. Searches covered indexed public English and Arabic sources for a government-designated AI safety institute with a remit to evaluate advanced models. The additional SDAIA page could not be read: the direct request was rejected, and one text-extraction attempt returned only a logo and an AI Year heading. Search-result text was not treated as a verified second source.",
+      "notes": "SDAIA put a draft Responsible AI Policy out for consultation until 3 May 2026. The draft lists human or automated red-team tests among the safety assessment methods SDAIA approves. It would require all entities to run comprehensive safety tests before releasing a high-risk system, with a safety report that covers regular checks for security vulnerabilities, and would put high-risk systems under annual audits by a third party accredited by SDAIA. The law firm AS&H Clifford Chance described the policy as still a draft on 4 November 2026.\n\nGowling's July 2026 account describes SDAIA's framework as governance guidance without performance benchmarks or model-testing rules. Searches covered indexed public English and Arabic sources for a government-designated AI safety institute with a remit to evaluate advanced models. SDAIA's own AI page describes the authority as the national reference body for data and AI and describes no model-evaluation institute.",
       "region": {
         "id": "142",
         "name": "Asia",
@@ -111773,6 +111780,13 @@
               },
               "check",
               "governance_note"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "SA"
+              },
+              "notes"
             ]
           ],
           "accessed": "2026-10-24"
@@ -126803,6 +126817,162 @@
         "retrieved": "2026-11-19T06:08:13Z",
         "sha256": "aea5f780ad41e5071d7647db5f1020075ccdbb3f1ae2aa0af11194c89355615c",
         "text_sha256": "4a1c9d64b472dca3df4d65863c32224146a29fde937d7fd9472075d7e4141f45",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "sa-istitlaa-rai-policy-2026",
+      "url": "https://istitlaa.scbc.gov.sa/ar/Transportation/NDMO/ResponsibleAIPolicy/Pages/default.aspx",
+      "title": "سياسة الذكاء الاصطناعي المسؤول",
+      "title_en": "Responsible Artificial Intelligence Policy",
+      "publisher": "Saudi Data and Artificial Intelligence Authority (SDAIA), on the Istitlaa public consultation platform",
+      "type": "primary",
+      "language": "ar",
+      "origin": "SA",
+      "accessed": "2026-11-19",
+      "excerpts": [
+        {
+          "text": "اختبارات الفريق الأحمر البشري أو الآلي",
+          "gloss": "human or automated red-team tests",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "SA"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        },
+        {
+          "text": "يلزم على جميع الجهات قبل نشر نظام ذكاء اصطناعي عالي المخاطر، أو أحد إصداراته، إجراء اختبارات شاملة للسلامة",
+          "gloss": "All entities are required, before releasing a high-risk AI system or one of its versions, to run comprehensive safety tests",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "SA"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        },
+        {
+          "text": "وفحص الثغرات الأمنية بانتظام",
+          "gloss": "and regularly checking security vulnerabilities",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "SA"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        },
+        {
+          "text": "يجب أن تخضع أنظمة الذكاء الاصطناعي عالية المخاطر لعمليات تدقيق سنوية من قِبل طرف ثالث معتمد من الهيئة",
+          "gloss": "High-risk AI systems must undergo annual audits by a third party accredited by the Authority",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "SA"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-19T06:08:13Z",
+        "sha256": "fa450238c0b318ebd275e655cc45666960615684424e365845c57f1925139f63",
+        "text_sha256": "4b9f8018dd511d5ff96ac99aaa921dc390deec4faa5bf1ab623d1a8fe2a46392",
+        "text_scheme": 1
+      },
+      "access_note": "The page gives no publication date; the consultation platform shows it as last updated on 29 March 2026. The text read on 19 November 2026 is the consultation draft with its comment form."
+    },
+    {
+      "id": "sa-uqn-istitlaa-2026",
+      "url": "https://www.uqn.gov.sa/news/reports/4000694",
+      "title": "طرح 14 مشروعاً عبر منصة \"استطلاع\" لأخذ مرئيات العموم والقطاعين الحكومي والخاص",
+      "title_en": "Fourteen drafts put on the Istitlaa platform for comments from the public and the government and private sectors",
+      "publisher": "Umm Al-Qura (official gazette of Saudi Arabia)",
+      "type": "primary",
+      "published": "2026-04-07",
+      "language": "ar",
+      "origin": "SA",
+      "accessed": "2026-11-19",
+      "excerpts": [
+        {
+          "text": "وطرحت الهيئة السعودية للبيانات والذكاء الاصطناعي مشروع",
+          "gloss": "The Saudi Data and Artificial Intelligence Authority put forward a draft",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "SA"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        },
+        {
+          "text": "وينتهي الاستطلاع على المشروع بتاريخ 3 مايو 2026م.",
+          "gloss": "The consultation on the draft ends on 3 May 2026.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "SA"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-19T06:08:13Z",
+        "sha256": "fb862c07f7d338592a2c4e9754849c55e5e16e40bad1893f64b09d58bf0ffd3b",
+        "text_sha256": "d63a8b3199c19cdba7a3d6fa8990a8e187737320445fb93c9336ff039c306aee",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "sa-ashcc-rai-policy-2026",
+      "url": "https://www.cliffordchance.com/content/dam/cliffordchance/briefings/2026/11/responsible-ai-policy-shift-guiding-regime-supervisory-one.pdf",
+      "title": "Responsible AI Policy: A Shift from a Guiding Regime to a Supervisory One",
+      "publisher": "AS&H Clifford Chance",
+      "type": "secondary",
+      "published": "2026-11-04",
+      "language": "en",
+      "origin": "SA",
+      "accessed": "2026-11-19",
+      "excerpts": [
+        {
+          "text": "While the RAI Policy remains in draft form",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "SA"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-19T06:08:13Z",
+        "sha256": "27498e715561b160c236803faa41a39f5d8b3358d5084421f5fd1d2e0fc035d0",
+        "text_sha256": "f6fc8da3f1473e2d32b3c20966f7f84c1ecc6ab8a583120aa18f26e6b829de71",
         "text_scheme": 1
       }
     }
