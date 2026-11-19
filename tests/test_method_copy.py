@@ -253,20 +253,21 @@ def test_gate_names_each_link_when_a_summary_covers_several_rules(tmp_path):
     assert check_method_pages(page.replace(">First rule<", ">Full rule<"), data, tmp_path) == ["Method summary brief: full-rule links differ"]
 
 
-def test_gate_definition_shorthand_allows_rewording_but_requires_text(tmp_path):
+def test_gate_omits_summary_already_shown_as_definition(tmp_path):
     from scripts.check_page import check_method_pages
 
     data = {"dataset": fixture()}
     data["dataset"]["definition"] = "A summary."
     page = (
-        '<details id="method-details"><ul id="rules"><li id="method-summary-brief"><span class="method-copy">Read the definition above.</span> '
-        '<a href="method.html#first">Read the full rule</a></li></ul><a href="method.html">Full method</a></details>'
+        '<details id="method-details"><ul id="rules"></ul><a href="method.html">Full method</a></details>'
         '<footer><a href="method.html">Full method</a></footer>'
     )
     (tmp_path / "method.html").write_text(full_method_page(data["dataset"], ""), encoding="utf-8")
     assert check_method_pages(page, data, tmp_path) == []
-    for broken in (page.replace("Read the definition above.", " \n "), page.replace('<span class="method-copy">Read the definition above.</span>', "")):
-        assert check_method_pages(broken, data, tmp_path) == ["Method summary brief: reader copy differs"]
+    repeated = page.replace('<ul id="rules">', '<ul id="rules"><li>Read the definition above.</li>')
+    assert check_method_pages(repeated, data, tmp_path) == ["Method: reader summary count differs from the dataset"]
+    data["dataset"]["definition"] = "A different definition."
+    assert "Method summary brief: reader copy differs" in check_method_pages(page, data, tmp_path)
 
 
 def test_gate_requires_the_median_exception_wherever_tilde_is_explained(tmp_path):

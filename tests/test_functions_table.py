@@ -72,7 +72,6 @@ def functions():
     </tbody></table></div>
     <ul class="fn-legend fn-desktop-only" role="list"><li data-value="activity">Active</li><li data-value="mandate">Assigned</li><li data-value="not_found">Blank: no public text found; it may still be done</li><li data-value="not_coded">not yet coded</li></ul>
     <div class="section-foot"><details class="more quiet prose-panel fn-how"><summary>How this is coded</summary>
-    <p class="small fn-what">The table shows which of 5 functions each institute is active in or has been assigned.</p>
     <p class="small fn-use fn-desktop-only">Select a mark to see the quote and source.</p>
     <p class="small fn-use fn-phone-only">Select a country to see its functions, then a function for its quote and source.</p>
     <p class="small">We record quoted public texts.</p>
@@ -1010,7 +1009,7 @@ def test_explanation_folds_follow_their_content(functions_both):
     assert check_page.explanation_order(str(soup)) == ["Funding explanation must follow the chart and budget list"]
 
 
-@pytest.mark.parametrize("selector", ['.fn-use.fn-desktop-only', '.fn-use.fn-phone-only', '.fn-what'])
+@pytest.mark.parametrize("selector", ['.fn-use.fn-desktop-only', '.fn-use.fn-phone-only'])
 def test_function_instructions_stay_in_coding_fold(functions_both, selector):
     from bs4 import BeautifulSoup
 
@@ -1044,7 +1043,6 @@ def test_functions_structure_rejects_obsolete_empty_paragraph(functions_both, se
     ('class="fn-legend fn-phone-only"', 'class="fn-legend"', "exactly one saved .fn-legend.fn-phone-only"),
     ('fn-use fn-phone-only', 'fn-use fn-desktop-only', "phone instructions missing"),
     ('Select a country to see its functions, then a function for its quote and source.', 'Select a mark to see the quote and source.', "phone instructions missing"),
-    ('which of 5 functions', 'which of 4 functions', "table explanation missing"),
     ('aria-controls="fn-phone-detail-z"', 'aria-controls="detail-z"', "forms share detail controls"),
     ('<div class="fn-phone">', '<div class="fn-phone"><div class="fn-phone-detail"></div>', "detail was saved"),
 ])

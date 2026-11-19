@@ -339,7 +339,7 @@ const getComputedStyle = node => node;
 
 def test_definition_link_allows_rewording_but_requires_one_reachable_target():
     data = {"dataset": {"definition": "Example.", "status_definitions": {}}}
-    html = '<div id="headline"></div><p id="definition-link"><a href="#definition">Read the definition</a></p><section id="method-sec"><div class="section-body"><p id="definition">Example. <a href="method.html#qualifying-body">What counts</a></p></div></section>'
+    html = '<div id="headline"></div><p id="definition-link"><a href="#definition">Read the definition</a></p><section id="method-sec"><div class="section-body"><p id="definition">Example. <a href="method.html#qualifying-body">The test in detail</a></p></div></section>'
     assert check_page.check_supporting_text(BeautifulSoup(html, "html.parser"), data) == []
     for broken in (
         html.replace('id="definition"', 'id="gone"'),
@@ -2885,9 +2885,9 @@ def test_the_deadline_timer_stays_armed_through_the_job(tmp_path):
 
 def test_the_definition_must_come_before_its_rule_link():
     data = {"dataset": {"definition": "Example.", "status_definitions": {}}}
-    html = '<div id="headline"></div><p id="definition-link"><a href="#definition">Read</a></p><section id="method-sec"><div class="section-body"><p id="definition">Example. <a href="method.html#qualifying-body">What counts</a></p></div></section>'
+    html = '<div id="headline"></div><p id="definition-link"><a href="#definition">Read</a></p><section id="method-sec"><div class="section-body"><p id="definition">Example. <a href="method.html#qualifying-body">The test in detail</a></p></div></section>'
     assert check_page.check_supporting_text(BeautifulSoup(html, "html.parser"), data) == []
-    moved = html.replace('Example. <a href="method.html#qualifying-body">What counts</a>', '<a href="method.html#qualifying-body">What counts</a> Example.')
+    moved = html.replace('Example. <a href="method.html#qualifying-body">The test in detail</a>', '<a href="method.html#qualifying-body">The test in detail</a> Example.')
     assert any("dataset.definition" in e for e in check_page.blocking(check_page.check_supporting_text(BeautifulSoup(moved, "html.parser"), data)))
 
 

@@ -3045,7 +3045,7 @@ def check_supporting_text(soup, data: dict) -> list[str]:
     if not full or definition_text != data["dataset"]["definition"] or not in_order:
         errors.append("Method does not open with dataset.definition as the first paragraph of its body")
     elif len(links) != 1 or links[0].get("href") != "method.html#qualifying-body" or not links[0].get_text(strip=True):
-        errors.append("the definition's 'What counts' link does not go to method.html#qualifying-body")
+        errors.append("the definition's full-rule link does not go to method.html#qualifying-body")
     definitions = data["dataset"]["status_definitions"]
     method = [li.get_text() for li in soup.select("#status-defs > li")]
     wanted = [f"{STATUS_LABELS[k]}. {v}" for k, v in definitions.items()]
@@ -3358,12 +3358,12 @@ def check_figures_row(soup, data: dict) -> list[str]:
 
 # Institutional set-up (decisions: copy from Bahadir's feedback): every institute by form (principle: Scope), host as the note.
 FORM_LABELS = {"unit_in_existing_body": "Unit in an existing body", "federation_of_existing_bodies": "Network of existing bodies", "university_centre": "University centre", "new_body": "New body"}
-FORM_UNKNOWN = "Form not published"
+FORM_UNKNOWN = "Legal form not published"
 PER_PERSON_TIP = "Annual budget divided by population. For scale only, since budgets cover different work and costs differ between states."
 
 
 def check_setup_groups(soup, data: dict) -> list[str]:
-    """Institutional set-up: heading, groups by form (larger first, Form not published last), members, marks, links, host notes and citations, from aisi.json."""
+    """Institutional set-up: heading, groups by form (larger first, Legal form not published last), members, marks, links, host notes and citations, from aisi.json."""
     errors, jurisdictions = [], {j["id"]: j for j in data["jurisdictions"]}
     heading = soup.select_one("#set-up")
     if not heading or not heading.get_text(strip=True):
@@ -9014,7 +9014,7 @@ def check_method_pages(html: str, data: dict, dist: Path) -> list[str]:
     """Independent rendered contracts for summaries, links and verbatim full rules."""
     soup = BeautifulSoup(html, "html.parser")
     errors = []
-    summaries = data["dataset"]["method_summaries"]
+    summaries = [s for s in data["dataset"]["method_summaries"] if s["summary"] != data["dataset"].get("definition")]
     if len(soup.select("#rules > li")) != len(summaries):
         errors.append("Method: reader summary count differs from the dataset")
     for summary in summaries:
@@ -9022,8 +9022,7 @@ def check_method_pages(html: str, data: dict, dist: Path) -> list[str]:
         item = soup.find(id="method-summary-" + sid)
         text = item.select_one(".method-copy") if item else None
         want = summary["summary"]
-        shorthand = want == data["dataset"].get("definition")
-        if text is None or not text.get_text(strip=True) or (not shorthand and " ".join(text.get_text().split()) != " ".join(want.split())):
+        if text is None or not text.get_text(strip=True) or " ".join(text.get_text().split()) != " ".join(want.split()):
             errors.append(f"Method summary {sid}: reader copy differs")
         links = [(a.get("href"), a.get_text()) for a in item.select("a")] if item else []
         rules = {r["id"]: r for r in data["dataset"]["method"]}
@@ -12207,11 +12206,7 @@ def functions_forms_structure(html: str, data: dict) -> list[str]:
     for selector in ('.fn-scroll', '.fn-scroll > .fn-table', '.fn-phone', '.fn-legend.fn-desktop-only', '.fn-legend.fn-phone-only'):
         if len(box.select(selector)) != 1:
             errors.append(f"Functions needs exactly one saved {selector}")
-    count = sum(not v.get("deprecated") for v in data["dataset"]["vocabularies"]["function"].values())
     how = box.select_one('.fn-how')
-    what = how.select_one('.fn-what') if how else None
-    if not what or what.get_text() != f"The table shows which of {count} functions each institute is active in or has been assigned.":
-        errors.append("Functions table explanation missing from coding fold")
     for form, tail in (("desktop", "Select a mark to see the quote and source."),
                        ("phone", "Select a country to see its functions, then a function for its quote and source.")):
         instructions = box.select('.fn-use.fn-' + form + '-only')
