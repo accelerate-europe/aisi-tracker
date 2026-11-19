@@ -32131,6 +32131,16 @@
       },
       "claims": [
         {
+          "id": "claims-32e010da038b46058d94d1fb8559e8ac",
+          "kind": "function",
+          "code": "model_testing",
+          "basis": "activity",
+          "text": "The joint testing report says France AISI tested an alternate judge-LLM prompt \"as a proof-of-concept with a complete benchmark run on a self-hosted model\".",
+          "source_ids": [
+            "catalogue-agentic-report"
+          ]
+        },
+        {
           "id": "claims-1cf4500b70b8438ca7946698ff873a3f",
           "kind": "function",
           "code": "evaluation_methods",
@@ -77704,9 +77714,26 @@
                 "code": "in_house"
               },
               "code"
+            ],
+            [
+              "institutes",
+              {
+                "id": "fr-inesia"
+              },
+              "claims",
+              {
+                "id": "claims-32e010da038b46058d94d1fb8559e8ac"
+              },
+              "text"
             ]
           ],
-          "accessed": "2026-10-21"
+          "accessed": "2026-10-21",
+          "anchors": [
+            {
+              "text": "France AISI Variation",
+              "kind": "heading"
+            }
+          ]
         },
         {
           "text": "In addition to UK AISI, EU AI Office, and Australia, AISIs from Kenya, Canada, and the Republic of Korea also contributed to the analysis phase of the project.",
