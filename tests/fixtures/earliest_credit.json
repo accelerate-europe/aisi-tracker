@@ -142,13 +142,6 @@
         "catalogue-jp-index",
         "fix-output-jp-entry-29"
       ]
-    },
-    {
-      "institute_id": "au-aisi",
-      "lineage": "naaimes-automated-evaluation-best-practice-2026",
-      "source_ids": [
-        "au-best-practice-guidance-2026"
-      ]
     }
   ]
 }
