@@ -40292,16 +40292,6 @@
           ]
         },
         {
-          "id": "claims-90f0a690e6a244b2a1831dee395313c6",
-          "kind": "function",
-          "code": "model_testing",
-          "basis": "activity",
-          "text": "The National AI Office's overview says MY-AISafe tests systems before release using benchmarks, red teaming and evaluation reports.",
-          "source_ids": [
-            "my-aisafe-overview"
-          ]
-        },
-        {
           "id": "claims-11f2d9b2361b4866a2f17dc24acd4b71",
           "kind": "function",
           "code": "risk_monitoring",
@@ -103369,17 +103359,6 @@
               "claims",
               {
                 "id": "claims-ca125c781fc1444c9ce6fe7d9c4d9d8f"
-              },
-              "text"
-            ],
-            [
-              "institutes",
-              {
-                "id": "my-aisafe"
-              },
-              "claims",
-              {
-                "id": "claims-90f0a690e6a244b2a1831dee395313c6"
               },
               "text"
             ]
