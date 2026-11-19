@@ -2199,11 +2199,11 @@
           "date": "2025-02-14",
           "event": "mandate_changed",
           "instrument": "press_release",
-          "description": "Government redirects the institute towards serious AI risks to security and public safety, including criminal misuse.",
+          "description": "The government renames the AI Safety Institute the AI Security Institute and announces a criminal misuse team; its release says the institute will not focus on bias or freedom of speech, and the minister says its work will not change.",
           "source_ids": [
             "gb-rename"
           ],
-          "short": "Government redirects institute towards security and public safety risks, including criminal misuse."
+          "short": "Government renames the institute and announces a criminal misuse team."
         }
       ],
       "iso3": "GBR",
@@ -31453,7 +31453,7 @@
             "named_as": "Taskforce"
           }
         ],
-        "notes": "Event dates are the model's public release date in Epoch AI's data unless the source dates the access itself; for every event except Gemini 4 Argon the sources state that the access came before release, so the access took place on or before that date. The Epoch AI models cited for the leading-developer test were released at least a month before each such date. Not counted: Kimi K3 (Moonshot, July 2026), as the access route is not stated; the Llama 3.1-405B network pilot (October to November 2024), as its weights are public. The developer agreements are the commitments of Anthropic, Google DeepMind and OpenAI to give the institute's predecessor 'deep model access', announced in 2023. The institute says it has independently evaluated more than 55 models before release, working with industry; the post names no models, so they are not counted as access events. Gemini 4 Argon is dated 13 October 2026, Epoch AI's release date; Google announced it on 30 September 2026, when it was rolling out to a set of trusted cyber defenders through Google's Fairwind Program, with an initial cohort of cyber defenders and trusted testers, and release to developers, enterprises and consumers, starting with paid API customers and Google AI Ultra subscribers, was to follow. The sources do not date the institute's access. A written answer of 2 November 2026 says all the institute's current collaboration agreements are with developers based in the UK and the US; one of 6 November says its evaluations are governed by agreements with the developers and their results are not typically published.",
+        "notes": "Event dates are the model's public release date in Epoch AI's data unless the source dates the access itself; for every event except Gemini 4 Argon the sources state that the access came before release, so the access took place on or before that date. The Epoch AI models cited for the leading-developer test were released at least a month before each such date. Not counted: Kimi K3 (Moonshot, July 2026), as the access route is not stated; the Llama 3.1-405B network pilot (October to November 2024), as its weights are public. The developer agreements are the commitments of Anthropic, Google DeepMind and OpenAI to give the institute's predecessor 'deep model access', announced in 2023. The institute says it has independently evaluated more than 55 models before release, working with industry; the post names no models, so they are not counted as access events. Gemini 4 Argon is dated 13 October 2026, Epoch AI's release date; Google announced it on 30 September 2026, when it was rolling out to a set of trusted cyber defenders through Google's Fairwind Program, with an initial cohort of cyber defenders and trusted testers, and release to developers, enterprises and consumers, starting with paid API customers and Google AI Ultra subscribers, was to follow. The sources do not date the institute's access. A written answer of 2 November 2026 says all the institute's current collaboration agreements are with developers based in the UK and the US; one of 6 November says its evaluations are governed by agreements with the developers and their results are not typically published. A House of Commons committee report of 18 November 2026 says the institute has no guaranteed statutory right of access to models and that access before release is voluntary; it recommends a statutory AI regulator separate from the institute.",
         "source_ids": [
           "depth-us-kimi",
           "sg-pilot-2024",
@@ -31466,7 +31466,8 @@
           "google-gemini-4-argon-2026",
           "gb-pq-38577-2026",
           "gb-pq-38559-2026",
-          "gb-aisi-launch"
+          "gb-aisi-launch",
+          "gb-bist-guardrails-2026"
         ],
         "searches": [
           {
@@ -41219,6 +41220,17 @@
                 "id": "claims-82020cebb1ad4568b35afce6b56d6d6e"
               },
               "text"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "GB"
+              },
+              "timeline",
+              {
+                "id": "gb-2025-mandate-changed"
+              },
+              "description"
             ]
           ],
           "accessed": "2026-10-17",
@@ -41279,6 +41291,40 @@
             ]
           ],
           "accessed": "2026-10-17"
+        },
+        {
+          "text": "It will not focus on bias or freedom of speech",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "GB"
+              },
+              "timeline",
+              {
+                "id": "gb-2025-mandate-changed"
+              },
+              "description"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        },
+        {
+          "text": "The work of the AI Security Institute won’t change",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "GB"
+              },
+              "timeline",
+              {
+                "id": "gb-2025-mandate-changed"
+              },
+              "description"
+            ]
+          ],
+          "accessed": "2026-11-19"
         }
       ],
       "origin": "GB",
@@ -41658,7 +41704,35 @@
         "sha256": "52c09a83a52fa8a57fbe7412feafbc4fc2d42898eb8b464fda5dc4a4e70861c0",
         "text_sha256": "25274b83b009b60935d3dc48070b376a2f20da585e4007c5cc046514e4c44e30",
         "text_scheme": 1
-      }
+      },
+      "excerpts": [
+        {
+          "text": "Most offers land between £65,000 and £145,000 made up of a base salary plus a technical allowance",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "staffing_profile"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        },
+        {
+          "text": "An additional 28.97% employer pension contribution is paid on the base salary.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "staffing_profile"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        }
+      ]
     },
     {
       "id": "network-2025",
@@ -127184,6 +127258,81 @@
       },
       "output_role": "document",
       "output_lineage": "naaimes-automated-evaluation-best-practice-2026"
+    },
+    {
+      "id": "gb-bist-guardrails-2026",
+      "url": "https://committees.parliament.uk/publications/55827/standard/pdf",
+      "title": "Guardrails for growth: AI safety and security. Eleventh Report of Session 2026–27, HC 689",
+      "publisher": "House of Commons Business, Innovation, Science and Trade Committee",
+      "type": "primary",
+      "published": "2026-11-18",
+      "accessed": "2026-11-19",
+      "language": "en",
+      "origin": "GB",
+      "excerpts": [
+        {
+          "text": "It was published on 18 November 2026 by authority of the House of Commons.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "model_access",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        },
+        {
+          "text": "it has no guaranteed statutory right of access to models, systems, training outputs, safety frameworks or other outputs",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "model_access",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        },
+        {
+          "text": "Pre-release access for AISI and other evaluators is today voluntary",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "model_access",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        },
+        {
+          "text": "The Government should establish a statutory AI regulator, separate from AISI but drawing on its expertise, with secure multi-year funding.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "model_access",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-19T06:24:16Z",
+        "sha256": "a77258a588c68e90b30658fd759a035031f25b61ca6ec1fe08393df9d5357dba",
+        "text_sha256": "c869de6072042104cb982d8f0fc6f6b7d05fff6158ec1c4d4daebcfdc2c1fdcd",
+        "text_scheme": 1
+      }
     }
   ],
   "changelog": [
