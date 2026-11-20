@@ -76,6 +76,38 @@ def test_text_contrast_javascript_parses_without_a_browser():
     assert result.returncode == 0, result.stderr
 
 
+def test_text_contrast_still_checks_identity_on_a_uniform_tint_gradient():
+    class Capture:
+        def evaluate(self, source, *args):
+            self.source = source
+            return []
+
+    page = Capture()
+    check_text_contrast(page)
+    script = r"""
+const assert=require('node:assert/strict');
+const style={color:'rgb(170, 170, 170)',backgroundColor:'rgb(255, 255, 255)',
+  backgroundImage:'linear-gradient(rgb(240, 240, 240), rgb(240, 240, 240))',opacity:'1',
+  visibility:'visible',clipPath:'none',clip:'auto',position:'static',overflowX:'visible',overflowY:'visible',
+  fontSize:'16px',fontWeight:'400'};
+const node={tagName:'SPAN',classList:['head-institute'],textContent:'EU AI Office',parentElement:null,
+  childNodes:[{nodeType:3,textContent:'EU AI Office'}],getClientRects:()=>[{}],
+  getBoundingClientRect:()=>({width:100,height:20}),closest:()=>null};
+const canvas={clearRect(){},fillRect(){},getImageData(){
+  const parts=this.fillStyle.match(/[\d.]+/g).map(Number);
+  return {data:[...parts.slice(0,3),parts.length===4 ? Math.round(parts[3]*255) : 255]};
+}};
+const document={createElement:()=>({getContext:()=>canvas}),querySelectorAll:()=>[node]}, getComputedStyle=()=>style;
+const check=CHECKER;
+assert.ok(check([4.5,3]).some(e=>e.includes('head-institute') && e.includes('EU AI Office')));
+style.color='rgb(0, 0, 0)';assert.deepEqual(check([4.5,3]),[]);
+style.color='rgb(170, 170, 170)';style.backgroundImage='url(photo.png)';
+assert.deepEqual(check([4.5,3]),[]); // a genuine image remains outside the single-colour check
+""".replace('CHECKER', page.source)
+    result = subprocess.run(['node', '-'], input=script, capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
+
+
 def test_method_dates_preserve_day_and_month_precision_without_breaking():
     source = re.search(r"  function nonbreakingDates\(s\) .*", PAGE.read_text()).group()
     cases = [

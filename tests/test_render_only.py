@@ -6,10 +6,69 @@ import subprocess
 from pathlib import Path
 
 import pytest
+from bs4 import BeautifulSoup
 
 from scripts.check_page import GENERIC_PARTNER_HOW, PLURAL_PARTNER_HOW, expected_activity
 
 PAGE = Path(__file__).resolve().parents[1] / "site/index.html"
+
+
+@pytest.mark.parametrize('names_count', [0, 4])
+def test_hydrate_restores_idless_summary_when_funding_names_become_buttons(names_count):
+    source = PAGE.read_text()
+    hydrate = source[source.index('  function hydrate('):source.index('  // The page data (')]
+    selector = re.search(r'var FOCUSABLE = "([^"]+)"', hydrate)[1]
+    snapshots = []
+    for live in (False, True):
+        tag = 'button' if live else 'span'
+        names = ''.join(f'<{tag} class="fund-names-toggle" data-key="names-{n}">Not published: Austria</{tag}>' for n in range(names_count))
+        # The map gains tabindex and arriving cards may gain it too; hidden name-row buttons exist in both copies.
+        dynamic_tabindex = ' tabindex="0"' if live else ''
+        soup = BeautifulSoup(f'''
+          <input id="world-filter" data-key="filter" value="Austria">
+          <div id="worldmap" data-key="map"><svg><circle class="tgt" data-key="dot"{dynamic_tabindex}></circle></svg></div>
+          <article class="card" data-key="card"{dynamic_tabindex}></article>
+          {names}<ul hidden><li><button class="fund-name-row" data-key="name-row">Austria</button></li></ul>
+          <details id="method-details" data-key="method"><summary data-key="summary">Method</summary></details>
+          <table class="world"><tbody><tr><td><a href="#x" data-key="row">Row</a></td></tr></tbody></table>
+          <div id="tip"><a href="#source" data-key="tip-link">Source</a></div>
+        ''', 'html.parser')
+        snapshots.append({
+            'nodes': {n['data-key']: {'id': n.get('id', ''), 'excluded': bool(n.find_parent('tbody') or n.find_parent(id='tip'))}
+                      for n in soup.select('[data-key]')},
+            'focusable': [n['data-key'] for n in soup.select(selector)],
+            'details': [n['data-key'] for n in soup.select('details')],
+        })
+    script = """
+const assert=require('node:assert/strict');
+const snapshots=SNAPSHOTS, selector=SELECTOR;
+let live=0, finishDraw, tip={}, SAVED_MAP=null;
+const SCRIPT={}, ROOT={removeAttribute(){}}, hideTip=()=>{};
+const window={scrollX:0,scrollY:340,scrollTo(x,y){assert.equal(x,0);assert.equal(y,340);}};
+const document={body:{childNodes:[],insertBefore(){live=1;}}};
+const nodes=snapshots.map(snapshot=>Object.fromEntries(Object.entries(snapshot.nodes).map(([key,props])=>[key,{
+  ...props, open:false, value:key==='filter'?'Austria':'', childNodes:[],
+  closest:()=>props.excluded?{}:null,
+  focus(options){assert.equal(options.preventScroll,true);document.activeElement=this;}
+}])));
+document.querySelectorAll=query=>snapshots[live][query===selector?'focusable':'details'].map(key=>nodes[live][key]);
+const template={content:{cloneNode:()=>({})},remove(){}};
+const $=id=>id==='page-template'?template:Object.values(nodes[live]).find(n=>n.id===id);
+const saved={remove(){document.activeElement=document.body;}};
+document.body.childNodes=[saved,SCRIPT,template];
+document.activeElement=nodes[0].summary;nodes[0].method.open=true;
+const render=()=>new Promise(resolve=>{finishDraw=resolve;});
+HYDRATE
+hydrate({},{});
+assert.equal(live,1);assert.equal(document.activeElement,document.body);
+finishDraw();
+Promise.resolve().then(()=>{
+  assert.equal(document.activeElement,nodes[1].summary,'restore the id-less Method summary after the names buttons appear');
+  assert.equal(nodes[1].method.open,true);
+});
+""".replace('SNAPSHOTS', json.dumps(snapshots)).replace('SELECTOR', json.dumps(selector)).replace('HYDRATE', hydrate)
+    result = subprocess.run(['node', '-'], input=script, capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
 
 
 def test_staff_bars_require_a_dated_total_and_keep_bounds_and_zero():
@@ -690,7 +749,7 @@ def card_table_citation_gaps(data):
         )
     ]
     presentation = source[
-        source.index("  // One display name per body") : source.index("  function recordSources(")
+        source.index("  var DISPLAY_NAME =") : source.index("  function recordSources(")
     ]
     card_start = source.index("  function instituteCard(")
     card_rows = source[

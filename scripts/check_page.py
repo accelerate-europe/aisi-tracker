@@ -45,6 +45,7 @@ from host_checks import INSTALL_CHROME, chrome_problem as missing_chrome, defaul
 from display import GENERIC_FIELDS, record_sources as entry_sources  # noqa: E402
 from method_copy import rule_label  # noqa: E402
 from release_checks import today  # noqa: E402
+from screenshot_pixels import decode_png, differing_pixels, same_colour  # noqa: E402
 from versioning import parse_version  # noqa: E402
 
 def updated_date(data: dict) -> str:
@@ -859,11 +860,11 @@ def mapless_controls(page, failed: bool) -> list[str]:
         errors.append("the saved map drawing is gone")
     page.locator("#map-search").fill("ger")
     page.locator("#map-search").press("Enter")
-    if page.locator("#record-name").text_content() != "Germany":
+    if page.locator("#record-name .head-state").text_content() != "Germany":
         errors.append("search does not open Germany's record")
     page.locator("#record .record-close").click()
     page.locator('#worldmap svg.map-wide .tgt[data-j="FR"]').dispatch_event("click")
-    if not page.locator("#record").is_visible() or page.locator("#record-name").text_content() != "France":
+    if not page.locator("#record").is_visible() or page.locator("#record-name .head-state").text_content() != "France":
         errors.append("a dot on the saved map does not open France's record")
     page.locator("#record .record-close").click()
     page.locator('#regions .region-head[data-region="Asia"]').first.click()
@@ -1011,7 +1012,7 @@ def hydration_edges(browser, base_url: str, dist: Path) -> list[str]:
         france.scroll_into_view_if_needed()
         box = france.bounding_box()
         page.mouse.click(box["x"] + box["width"] / 2, box["y"] + box["height"] / 2)
-        if (name := page.locator("#record-name").text_content()) != "France":
+        if (name := page.locator("#record-name .head-state").text_content()) != "France":
             errors.append(f"hydration without the map: a tap at France's centre on the phone's saved drawing opens {name!r}, not France")
     except PlaywrightTimeout:
         errors.append("hydration without the map: the phone's saved drawing has no target for France")
@@ -1054,7 +1055,7 @@ def hydration_edges(browser, base_url: str, dist: Path) -> list[str]:
         map_ready(page, 10_000)  # data-map reaches drawn once the late map is drawn
         page.locator('#regions .region-head[data-region="Europe"]').first.click()
         page.locator('#worldmap svg.map-wide .tgt[data-j="FR"]').dispatch_event("click")
-        if not page.locator("#worldmap svg.map-wide .hl-sel").count() or page.locator("#record-name").text_content() != "France":
+        if not page.locator("#worldmap svg.map-wide .hl-sel").count() or page.locator("#record-name .head-state").text_content() != "France":
             errors.append("hydration: a map arriving late is not drawn as the interactive map (no selection highlight for France)")
     except PlaywrightTimeout as exc:
         errors.append(f"hydration: a late map: {exc}")
@@ -3954,19 +3955,19 @@ BROWSER_GEOMETRY = """
 """
 
 
-def check_hit_targets(page) -> list[str]:
+def check_hit_targets(page, scope: str = "body") -> list[str]:
     """Measure visible controls, including labelled inputs and expanded content.
 
     Only inline anchors within running paragraph/list text are exempt. Focusable
     glossary terms, citation marks and standalone links are controls too.
     """
     return page.evaluate(
-        "() => {"
+        "scope => {"
         + BROWSER_GEOMETRY
         + """
       const errors = [], fundingTargets = [];
       const selector = 'a[href], button, input:not([type="hidden"]), select, textarea, summary, [tabindex]:not([tabindex="-1"]), [role="button"], [contenteditable="true"]';
-      document.querySelectorAll(selector).forEach(control => {
+      document.querySelector(scope).querySelectorAll(selector).forEach(control => {
         if (control.disabled || !visible(control)) return;
         // Citations are inline targets; their own check requires one surrounding line of height.
         if (control.matches('.cn')) return;
@@ -3985,18 +3986,18 @@ def check_hit_targets(page) -> list[str]:
           const r = n.getBoundingClientRect(), p = pseudoBox(n);
           return p ? Math.max(r.bottom, p.bottom) - Math.min(r.top, p.top) : r.height;
         }));
-        const funding = control.matches('.fund-inline');
+        const funding = control.matches('.fund-row, .fund-name-row, .fund-names-toggle');
         if (height < (funding ? 44 : 27.5)) errors.push(`${control.tagName.toLowerCase()}#${control.id}.${control.getAttribute("class")}: ${(control.textContent.trim() || control.getAttribute("aria-label") || "").slice(0,60)} (${height.toFixed(1)}px hit height)`);
         if (funding) fundingTargets.push({name: control.textContent.trim(), text: control.getBoundingClientRect(), box: pseudoBox(control) || control.getBoundingClientRect()});
       });
       for (let a=0; a<fundingTargets.length; a++) for (let b=a+1; b<fundingTargets.length; b++) {
         const x=fundingTargets[a], y=fundingTargets[b];
-        // Names on the same or different wrapped lines keep independent hit areas.
+        // Summary disclosures and institute rows have disjoint targets.
         if (Math.min(x.box.right,y.box.right)-Math.max(x.box.left,y.box.left)>.5 && Math.min(x.box.bottom,y.box.bottom)-Math.max(x.box.top,y.box.top)>.5)
-          errors.push('Funding inline hit areas overlap: '+x.name+' / '+y.name);
+          errors.push('Funding hit areas overlap: '+x.name+' / '+y.name);
       }
       return errors;
-    }"""
+    }""", scope
     )
 
 
@@ -4291,6 +4292,7 @@ WIDTH_GEOMETRY = {
         (".fn-column-group:nth-last-child(2)::after", "width"), (".fn-cell", "width"),
         (".fn-phone-row", "width"), (".fn-phone-detail", "width"), (".fn-phone-detail", "max-width"),
         (".fn-function-label", "max-width"), (".fund-bar", "width"), (".fund-row", "width"), (".fund-detail", "width"),
+        (".fund-names-toggle", "width"), (".fund-name-row", "width"),
         (".bar-value", "max-width"), (".region-chips", "max-width"),
         (":is(.card.mini, .fund-detail)[open] > summary", "width"),  # backing fills the fold behind its separate close
         (".development-row", "width"), (".fn-table", "width"), (".fn-table .fn-pad", "width"),  # R6: full content width; the spacer takes the slack
@@ -5135,7 +5137,7 @@ CONTENT_GRID_JS = r"""() => {
   const probe = document.createElement('div'); probe.style.width = 'var(--prose)'; document.body.appendChild(probe);
   const measure = probe.getBoundingClientRect().width; probe.remove();
   const label = n => n.id || n.className || n.tagName.toLowerCase();
-  const full = 'table, .cards, .card-row, .access, .setup, .group-list, .fund-list, .fund-item, .development-list, .development-row, .downloads, .dlist, .two, .two > .prose-panel, .two > .prose-panel > ul';
+  const full = 'table, .cards, .card-row, .access, .setup, .group-list, .fund-list, .fund-item, .fund-name-list, .development-list, .development-row, .downloads, .dlist, .two, .two > .prose-panel, .two > .prose-panel > ul';
   const bodies = [...document.querySelectorAll('main section > .section-body')];
   if (!bodies.length) return ['no section bodies to measure'];
   for (const body of bodies) {
@@ -5326,8 +5328,11 @@ CLOSE_CONTROLS_JS = r"""checkFocus => {
     const label = n.closest('.fn-phone-detail') ? 'phone function' : n.closest('.fn-detail') ? 'desktop function' : n.closest('#record') ? 'map record' : name(n);
     const fail = text => errors.push(label + ': ' + text), s = getComputedStyle(n), r = n.getBoundingClientRect();
     const symbol = n.firstElementChild;
-    if (!n.matches('button.close-control[type="button"]') || name(n) !== 'Close' || n.getAttribute('aria-label') !== 'Close' ||
-        n.hasAttribute('aria-labelledby') || n.hasAttribute('role')) fail('Close must be a shared button named Close');
+    const identity=n.closest('.fn-detail,.record,.fund-detail,.card.mini')?.querySelector('.panel-identity');
+    const expected='Close'+(identity?' '+identity.textContent:'');
+    if (!n.matches('button.close-control[type="button"]') || name(n) !== expected || n.getAttribute('aria-label') !== expected ||
+        (n.dataset.tip || n.getAttribute('aria-description') || n.title)!==expected ||
+        n.hasAttribute('aria-labelledby') || n.hasAttribute('role')) fail('Close must be a shared button named for its panel');
     if (n.childNodes.length !== 1 || !symbol?.matches('span.close-glyph[aria-hidden="true"]') || symbol.textContent) fail('Close must contain only the shared drawn cross');
     if (Math.abs(r.width - size) > .5 || Math.abs(r.height - size) > .5 ||
         Math.abs(parseFloat(s.width) - size) > .5 || Math.abs(parseFloat(s.height) - size) > .5 ||
@@ -5409,13 +5414,14 @@ def check_close_controls(browser, base_url: str, data: dict) -> list[str]:
                         if (panel?.querySelector('.close-control')) panel.querySelector('.close-control').click();
                         else button.click();
                       }
-                      const funding=[...document.querySelectorAll('.fund-row, .fund-inline')].filter(n=>n.getClientRects().length);
+                      document.querySelectorAll('.fund-names-toggle[aria-expanded="false"]').forEach(n=>n.click());
+                      const funding=[...document.querySelectorAll('.fund-row, .fund-name-row')].filter(n=>n.getClientRects().length);
                       if (!funding.length) errors.push('no Funding openers to check');
                       for (const button of funding) {
                         button.click();
                         const panel=document.getElementById(button.getAttribute('aria-controls'));
                         if (!panel?.open || panel.querySelectorAll('.close-control').length!==1 || document.querySelectorAll('.fund-detail[open]').length!==1) errors.push('Funding opener needs one open panel and one × across both charts');
-                        if (panel && panel.parentElement !== button.closest('.fund-item, .fund-other-line, .fund-missing-line')) errors.push('Funding records do not open beneath their control');
+                        if (panel && panel.parentElement !== button.closest('.fund-item, .fund-name-item')) errors.push('Funding records do not open beneath their control');
                         errors.push(...inspect(false));
                         panel?.querySelector('.close-control')?.click();
                         if (panel?.open || document.activeElement!==button || button.getAttribute('aria-expanded')!=='false') errors.push('Funding Close does not return focus and reset its row');
@@ -5444,13 +5450,13 @@ def check_close_controls(browser, base_url: str, data: dict) -> list[str]:
                     button = page.locator('.fn-cell:visible, .fn-phone-row:visible').first
                     if button.count():
                         button.click()
-                        if page.get_by_role('button', name='Close', exact=True).count() != 2:
-                            errors.append(f"Close {width}px {scale} {theme}: expected map and function buttons named Close")
+                        if page.get_by_role('button', name=re.compile(r'^Close .+')).count() != 2:
+                            errors.append(f"Close {width}px {scale} {theme}: expected contextual map and function close names")
                         page.keyboard.press('Tab')  # establish keyboard focus before checking the shared ring
                         errors.extend(f"Close {width}px {scale} {theme}: {e}" for e in page.evaluate(CLOSE_CONTROLS_JS, True))
                         panel = page.locator('.fn-detail:visible')
                         if panel.locator('.close-control').count():
-                            panel.get_by_role('button', name='Close', exact=True).click()
+                            panel.get_by_role('button', name=re.compile(r'^Close .+')).click()
                             if page.locator('.fn-detail:visible').count() or not button.evaluate('n => document.activeElement === n'):
                                 errors.append(f"Close {width}px {scale} {theme}: function Close does not return focus")
                     funding = page.locator('.fund-row').first
@@ -5458,7 +5464,7 @@ def check_close_controls(browser, base_url: str, data: dict) -> list[str]:
                     panel = page.locator('.fund-detail[open]')
                     page.keyboard.press('Tab')
                     errors.extend(f"Funding Close {width}px {scale} {theme}: {e}" for e in page.evaluate(CLOSE_CONTROLS_JS, True))
-                    panel.get_by_role('button', name='Close', exact=True).click()
+                    panel.get_by_role('button', name=re.compile(r'^Close .+')).click()
                     if page.locator('.fund-detail[open]').count() or not funding.evaluate('n => document.activeElement === n'):
                         errors.append(f"Close {width}px {scale} {theme}: Funding Close does not return focus")
         finally:
@@ -5490,7 +5496,7 @@ def check_secondary_tone(browser, base_url: str) -> list[str]:
                   const errors = [], probe = document.createElement('span'); document.body.appendChild(probe);
                   const roles = {
                     ink: '.development-date, .group-note, .fund-context, .period-mean, .qualifiers, .conf, .partner-how li, .partners-none, .card.mini > summary .find, .related, .card.mini .body-group .det, .card.mini .body-roles',
-                    muted: '.card .k, .record-rows dt, .label, .srcs ol, .source-after, .quote-anchor, .quote .reread, .claim > .reread, .card.mini .how p:not(.gl), .fund-other, .fund-missing-names, .fund-inline:not(:hover):not(:focus-visible):not([aria-expanded="true"])'
+                    muted: '.card .k, .record-rows dt, .label, .srcs ol, .source-after, .quote-anchor, .quote .reread, .claim > .reread, .card.mini .how p:not(.gl), .fund-other, .fund-names-toggle:not(:hover):not(:focus-visible), .fund-name-row:not(:hover):not(:focus-visible):not([aria-expanded="true"])'
                   };
                   for (const [role, selectors] of Object.entries(roles)) {
                     probe.style.color = 'var(--' + role + ')'; const colour = getComputedStyle(probe).color;
@@ -5628,7 +5634,9 @@ def check_panel_measure(browser, base_url: str) -> list[str]:
                 "funding-sources": '#fund-detail-jp-aisi .fund-detail-body .srcs',  # by key: Japan's three sources stay open (a longer list folds behind its count)
             }
             # In the two-chart Funding form the records are laid out only once a control opens them.
-            page.evaluate("""() => document.querySelector('#fund-rows [aria-controls="fund-detail-jp-aisi"][aria-expanded="false"]')?.click()""")
+            funding = page.locator('#fund-rows [aria-controls="fund-detail-jp-aisi"]').first
+            funding.evaluate(REVEAL_FUNDING_LIST_JS)
+            funding.click()
             for label, selector in samples.items():
                 nodes = page.locator(selector)
                 if not nodes.count():
@@ -5689,29 +5697,46 @@ def card_head_errors(m: dict) -> list[str]:
         errors.append("head escapes its card column")
     if m["transparent"] or not m["rule"] or not 0 < m["z"] < m["bars_z"]:
         errors.append("head lacks its opaque ground, rule or stacking below the bars")
-    if m["phone"] and m["height"] is not None and m["height"] > 48:
-        errors.append("phone sticky head exceeds 48px")
     return errors
 
 
-def check_clipped_card_name(page, card, *, interactive: bool) -> list[str]:
-    """Exercise ellipsis without losing the heading's spoken name or full tooltip."""
+def identity_name_pattern(text: str) -> re.Pattern:
+    """Accessible text adds whitespace around block or positioned separator spans."""
+    return re.compile(r"^" + r"\s*,\s*".join(re.escape(part.strip()) for part in text.split(',')) + r"$")
+
+
+def check_wrapped_card_name(page, card, *, interactive: bool) -> list[str]:
+    """Long identities wrap and reserve their real height, including without scripts."""
     errors = []
-    full_name = "Synthetic country heading with deliberately long text to exercise ellipsis at every card width"
+    state = "Synthetic country heading with deliberately long text to exercise wrapping at every card width"
     name = card.locator(':scope > .top .name')
-    # Preserve the page's tooltip wiring; only lengthen text it already supplies.
-    # Do not manufacture a missing tooltip attribute and make a broken page pass.
-    name.evaluate("""(n, text) => {
-      n.textContent = text;
+    saved = card.evaluate("""(c,text)=>{
+      const n=c.querySelector(':scope > .top .name'), states=[...c.querySelectorAll(':scope > .top .head-state, :scope > .card-head-space .head-state')];
+      const saved={states:states.map(s=>s.textContent),attrs:{}};
+      states.forEach(s=>s.textContent=text);
       for (const attr of ['title', 'aria-description', 'data-tip']) {
-        if (n.hasAttribute(attr)) n.setAttribute(attr, text);
+        if(n.hasAttribute(attr)) {saved.attrs[attr]=n.getAttribute(attr);n.setAttribute(attr,n.textContent);}
       }
-    }""", full_name)
-    clipped = name.evaluate("n => { const s=getComputedStyle(n); return s.whiteSpace==='nowrap' && s.overflowX==='hidden' && s.textOverflow==='ellipsis' && n.scrollWidth>n.clientWidth && n.getBoundingClientRect().height<=parseFloat(s.lineHeight)+1; }")
-    if not clipped:
-        errors.append("long heading is not clipped to one line with ellipsis")
-    if card.get_by_role("heading", name=full_name, exact=True).count() != 1:
-        errors.append("clipped heading lost its full accessible name")
+      return saved;
+    }""", state)
+    full_name = name.text_content()
+    wrapped = name.evaluate("""n=>{
+      const s=getComputedStyle(n), range=document.createRange();range.selectNodeContents(n);
+      const r=n.getBoundingClientRect();
+      return s.whiteSpace==='normal' && s.textOverflow!=='ellipsis' && n.scrollWidth<=n.clientWidth+1 &&
+        [...range.getClientRects()].filter(t=>t.width && t.height).every(t=>t.left>=r.left-1 && t.right<=r.right+1 && t.bottom<=r.bottom+1);
+    }""")
+    if not wrapped:
+        errors.append("long heading is clipped instead of wrapping in full")
+    if card.get_by_role("heading", name=identity_name_pattern(full_name)).count() != 1:
+        errors.append("wrapped heading lost its full accessible name")
+    card.evaluate("c=>scrollTo(0,scrollY+c.getBoundingClientRect().top-innerHeight/2)")
+    errors.extend(card_head_space_errors(card.evaluate(CARD_HEAD_SPACE_JS)))
+    sizing = card.locator(':scope > .card-head-space')
+    if sizing.count() != 1 or not sizing.evaluate("n=>n.hasAttribute('inert') && n.getAttribute('aria-hidden')==='true' && !n.querySelector('[id],a,button,summary') && getComputedStyle(n).visibility==='hidden'"):
+        errors.append('card sizing identity is missing, accessible or contains controls/IDs')
+    elif not sizing.evaluate("n=>innerWidth<=640 ? getComputedStyle(n).display==='none' : Math.abs(n.getBoundingClientRect().height-n.parentElement.querySelector(':scope > .top').getBoundingClientRect().height)<=1"):
+        errors.append('card sizing identity must match the real head on desktop and disappear on phones')
     if interactive:
         # Real hover exercises TIPSEL/tipText/showTip, not just an attribute.
         page.mouse.move(0, 0)
@@ -5719,15 +5744,20 @@ def check_clipped_card_name(page, card, *, interactive: bool) -> list[str]:
         name.hover()
         tip = page.locator('#tip')
         if not tip.is_visible() or tip.inner_text() != full_name:
-            errors.append("clipped heading does not display its full name in the page tooltip")
+            errors.append("wrapped heading does not display its full name in the page tooltip")
         page.keyboard.press("Escape")
     elif not name.evaluate("(n, text) => (n.dataset.tip || n.getAttribute('aria-description') || n.title) === text", full_name):
-        errors.append("saved clipped heading lost its full tooltip text")
+        errors.append("saved wrapped heading lost its full tooltip text")
+    card.evaluate("""(c,saved)=>{
+      c.querySelectorAll(':scope > .top .head-state, :scope > .card-head-space .head-state').forEach((s,k)=>s.textContent=saved.states[k]);
+      const n=c.querySelector(':scope > .top .name');
+      Object.entries(saved.attrs).forEach(([key,value])=>n.setAttribute(key,value));
+    }""", saved)
     return errors
 
 
 def check_saved_card_heads(browser, base_url: str) -> list[str]:
-    """Saved one-line heads reserve their track without JS or while hydration waits."""
+    """Saved wrapping heads reserve their track without JS or while hydration waits."""
     errors = []
 
     def settled(page):
@@ -5747,7 +5777,7 @@ def check_saved_card_heads(browser, base_url: str) -> list[str]:
             if held:
                 held.wait()
             card = page.locator('#c-fr')
-            # Check real names before stressing the one-line track with a synthetic long title.
+            # Check real names before stressing the intrinsic track with a synthetic long title.
             for width in (1280, 1440):
                 page.set_viewport_size({"width": width, "height": 900})
                 settled(page)
@@ -5768,7 +5798,7 @@ def check_saved_card_heads(browser, base_url: str) -> list[str]:
                     settled(page)
                     if not page.evaluate("document.documentElement.hasAttribute('data-prerendered')"):
                         errors.append(prefix + "saved-page fixture hydrated before measurement")
-                    errors.extend(prefix + e for e in check_clipped_card_name(page, card, interactive=False))
+                    errors.extend(prefix + e for e in check_wrapped_card_name(page, card, interactive=False))
                     # Every peer's fields must clear the fixed head track, including enlarged text.
                     for peer in card.locator('..').locator(':scope > .card').all():
                         peer.evaluate("c => scrollTo(0,scrollY+c.getBoundingClientRect().top-innerHeight/2)")
@@ -5783,8 +5813,8 @@ def check_saved_card_heads(browser, base_url: str) -> list[str]:
     return errors
 
 
-def check_card_heads(browser, base_url: str) -> list[str]:
-    errors = []
+def check_card_heads(browser, base_url: str, data: dict) -> list[str]:
+    errors = check_panel_heads(browser, base_url, data)
     settle = "() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))"
     for width in (1280, 1440, 1600, 320, 390, 430):
         for theme in ("light", "dark"):
@@ -5865,9 +5895,9 @@ def check_card_heads(browser, base_url: str) -> list[str]:
                 }""")
                 if not landed:
                     errors.append(prefix + "card anchor hides the head or first field")
-                # After hydration the clipped heading must also show the page's
+                # After hydration the wrapped heading must also show the page's
                 # visible tooltip, in both themes and on desktop and phone.
-                errors.extend(prefix + e for e in check_clipped_card_name(page, page.locator('#c-fr'), interactive=True))
+                errors.extend(prefix + e for e in check_wrapped_card_name(page, page.locator('#c-fr'), interactive=True))
                 page.emulate_media(media="print")
                 if not page.locator('.cards .card > .top').evaluate_all("heads => heads.every(h=>getComputedStyle(h).position==='static')"):
                     errors.append(prefix + "card head stays sticky in print")
@@ -5882,6 +5912,7 @@ def check_card_heads(browser, base_url: str) -> list[str]:
                     errors.extend(f'{width}px {theme} Funding {kind} head: ' + e for e in exercise_table_head(page, f'.fund-list[data-kind="{kind}"]', '.fund-axis'))
                 # The first map record in document order also has a reading head, inside its own scrollport on wide screens.
                 page.locator('.regions .pick').first.evaluate('n=>n.click()')
+                page.evaluate('document.activeElement.blur()')
                 gap = unstuck_head_gap(page, '.record', ':scope > .record-top')
                 page.locator('.record').evaluate("""n => {
                   n.scrollTop=100;
@@ -5906,6 +5937,7 @@ def check_card_heads(browser, base_url: str) -> list[str]:
                         iid = page.locator(selector).nth(chosen).get_attribute('data-institute')
                         opener = f'.fund-list[data-kind="budget"] button[data-institute="{iid}"]'
                         detail = f'.fund-detail[data-institute="{iid}"]'
+                        page.locator(opener).evaluate(REVEAL_FUNDING_LIST_JS)
                         errors.extend(f'{width}px {theme} Funding: ' + e for e in exercise_detail_head(
                             page, opener, detail + '[open]', ':scope > summary'))
                         page.locator(opener).evaluate('n=>n.click()')
@@ -5945,29 +5977,37 @@ def unstuck_head_gap(page, owner: str, head: str) -> float | None:
         "h => { const top=(" + HEAD_TEXT_TOP_JS + ")(h); return top===null ? null : top-h.getBoundingClientRect().top; }")
 
 
+READING_EDGE_JS = """box => {
+  const nav=document.querySelector('.secnav').getBoundingClientRect(), group=box.closest('.group')?.querySelector('.group-nav')?.getBoundingClientRect();
+  const bars=group && group.top<=nav.bottom+1 && group.bottom>nav.bottom ? group.bottom : nav.bottom;
+  const scrollport=box.matches('.record') && getComputedStyle(box).overflowY!=='visible';
+  return {bars,edge:scrollport ? Math.max(bars,box.getBoundingClientRect().top+box.clientTop) : bars,
+    mode:scrollport ? 'scrollport' : 'viewport',nav:nav.height,subnav:bars-nav.bottom};
+}"""
+
+
 READING_HEAD_JS = """({owner, head, close}) => {
   const box = document.querySelector(owner), h = box.querySelector(head), r = h.getBoundingClientRect();
-  const nav = document.querySelector('.secnav').getBoundingClientRect(), group = box.closest('.group')?.querySelector('.group-nav')?.getBoundingClientRect();
-  const bars = group && group.top <= nav.bottom + 1 ? group.bottom : nav.bottom;
+  const edge = (/* READING_EDGE */)(box);
   const button = close && box.querySelector(close), b = button?.getBoundingClientRect();
   const bounds=box.getBoundingClientRect(), left=Math.max(0,r.left,bounds.left), right=Math.min(innerWidth,r.right,bounds.right);
   const x = b ? (b.left+b.right)/2 : (left+right)/2;
   const y = b ? (b.top+b.bottom)/2 : (r.top+r.bottom)/2, hit = document.elementFromPoint(x,y);
   const exposed = button ? !!hit && button.contains(hit) : [left+8,x,right-8]
     .every(x=>h.contains(document.elementFromPoint(x,y))); // also probe the frozen country column
-  return {top:r.top, bottom:r.bottom, height:r.height, bars, nav:nav.height, subnav:bars-nav.bottom,
+  return {top:r.top, bottom:r.bottom, height:r.height, ...edge,
     visible:getComputedStyle(h).visibility==='visible' && r.height>0 && r.top>=0 && r.bottom<=innerHeight,
     topmost:exposed,
     textTop:(/* HEAD_TEXT_TOP */)(h),
     name:h.textContent.trim(), closeWidth:b?.width, closeHeight:b?.height, x,y};
-}""".replace('/* HEAD_TEXT_TOP */', HEAD_TEXT_TOP_JS)
+}""".replace('/* HEAD_TEXT_TOP */', HEAD_TEXT_TOP_JS).replace('/* READING_EDGE */', READING_EDGE_JS)
 
 
 def reading_head_errors(m: dict, *, close: bool = False) -> list[str]:
     """Geometry oracle shared by the existing table and card jobs, with mutation tests."""
     errors = []
-    if not m["visible"] or abs(m["top"] - m["bars"]) > 1:
-        errors.append("reading head is not fully visible directly below the navigation stack")
+    if not m["visible"] or abs(m["top"] - m.get("edge", m["bars"])) > 1:
+        errors.append("reading head is not fully visible at its navigation stack or scrollport edge")
     if not m["topmost"]:
         errors.append("reading head or close control is covered at its centre")
     if not m["name"]:
@@ -5978,11 +6018,460 @@ def reading_head_errors(m: dict, *, close: bool = False) -> list[str]:
     return errors
 
 
+SURFACE_PAINT_JS = r"""
+  // Uniform tint gradients are solid paint, not images. Use the browser's colour parser (rgb)
+  // for colour-mix/light-dark's computed color(srgb ...) too. Unknown images fail closed.
+  const surface = s => {
+    const rgba = c => { const [r,g,b,a]=rgb(c); return [r,g,b,a/255]; };
+    let paint=rgba(s.backgroundColor);
+    if(s.backgroundImage!=='none') {
+      const layers=s.backgroundImage.match(/linear-gradient\((?:[^()]|\([^()]*\))*\)/g) || [];
+      if(!layers.length || s.backgroundImage.replace(/linear-gradient\((?:[^()]|\([^()]*\))*\)/g,'').replace(/[,\s]/g,'')) return null;
+      for(const layer of layers.reverse()) {
+        const colours=(layer.match(/rgba?\([^)]*\)|color\([^)]*\)/g) || []).map(rgba);
+        if(colours.length!==2 || colours[0].some((v,i)=>v!==colours[1][i])) return null;
+        paint=sourceOver(colours[0],paint);
+      }
+    }
+    return paint;
+  };
+"""
+
+
+PANEL_TEXT_LINES_JS = r"""
+  const textLines=n=>{
+    const lines=[], walker=document.createTreeWalker(n,NodeFilter.SHOW_TEXT);
+    while(walker.nextNode()) {
+      const t=walker.currentNode, e=t.parentElement, s=getComputedStyle(e);
+      if(!t.textContent.trim() || e.closest('.vh,.close-control,[hidden]') || s.visibility!=='visible' || Number(s.opacity)===0) continue;
+      const range=document.createRange(); range.selectNodeContents(t);
+      for(const r of range.getClientRects()) if(r.width && r.height) lines.push({element:e,rect:r});
+    }
+    return lines;
+  };
+"""
+
+
+PANEL_IDENTITY_JS = r"""({owner, head}) => {
+  const box=document.querySelector(owner), h=box.querySelector(head), identity=h.querySelector('.panel-identity'),
+    state=identity?.querySelector('.head-state'), institute=identity?.querySelector('.head-institute');
+  const visibleText=n=>{
+    const words=[], walker=document.createTreeWalker(n,NodeFilter.SHOW_TEXT);
+    while(walker.nextNode()) {
+      const t=walker.currentNode, p=t.parentElement, s=getComputedStyle(p), range=document.createRange();
+      if(p.closest('.vh,.head-separator,.close-control') || s.visibility!=='visible' || s.display==='none') continue;
+      range.selectNodeContents(t);
+      if([...range.getClientRects()].some(r=>r.width && r.height)) words.push(t.textContent);
+    }
+    return words.join(' ').replace(/\s+/g,' ').trim();
+  };
+  const label=n=>n?.hasAttribute('aria-labelledby') ? n.getAttribute('aria-labelledby').split(/\s+/)
+    .map(id=>document.getElementById(id)?.textContent || '').join(' ').trim() : n?.getAttribute('aria-label');
+  /* TEXT_LINES */
+  const edge=(/* READING_EDGE */)(box), r=h.getBoundingClientRect();
+  const left=Math.max(0,r.left), right=Math.min(innerWidth,r.right);
+  const unclipped=n=>{
+    if(!n) return false;
+    const range=document.createRange(); range.selectNodeContents(n);
+    return [...range.getClientRects()].filter(r=>r.width && r.height).every(t=>
+      t.left>=left-1 && t.right<=right+1 && t.top>=r.top-1 && t.bottom<=r.bottom+1);
+  };
+  const stateBox=state?.getBoundingClientRect(), instituteBox=institute?.getBoundingClientRect();
+  const functionHead=h.querySelector('.fn-function-head'), probe=document.createElement('span');
+  probe.style.cssText='font:var(--type-label);color:var(--ink)'; h.appendChild(probe);
+  const functionStyled=!!functionHead && ['fontFamily','fontSize','fontWeight','lineHeight','color']
+    .every(k=>getComputedStyle(functionHead)[k]===getComputedStyle(probe)[k]);
+  probe.remove();
+  const parts=[['state',state],['institute',institute],['function',functionHead]].filter(([,n])=>n), lines=[];
+  for(const [part,n] of parts) {
+    const measured=textLines(n);
+    if(!measured.length) lines.push({part,inside:false});
+    for(const line of measured) {
+      const t=line.rect;
+      lines.push({part,inside:t.left>=r.left-.01 && t.right<=r.right+.01 && t.top>=r.top-.01 && t.bottom<=r.bottom+.01});
+    }
+  }
+  return {text:visibleText(h),state:state ? visibleText(state) : '',institute:institute ? visibleText(institute) : '',
+    stateVisible:!!state && unclipped(state) && getComputedStyle(state).textOverflow!=='ellipsis',
+    instituteMuted:!institute || getComputedStyle(institute).color!==getComputedStyle(state).color,
+    phoneLines:!institute || innerWidth>640 || instituteBox.top>=stateBox.bottom-1,
+    panelName:label(box),tip:identity && (identity.dataset.tip || identity.getAttribute('aria-description') || identity.title),
+    closeName:label(box.querySelector('.close-control')),top:r.top,...edge,
+    functionText:functionHead ? visibleText(functionHead) : '',functionVisible:!!functionHead && unclipped(functionHead),
+    functionBelow:!!functionHead && functionHead.getBoundingClientRect().top>=identity.getBoundingClientRect().bottom-1,functionStyled,
+    lines};
+}""".replace('/* TEXT_LINES */', PANEL_TEXT_LINES_JS).replace('/* READING_EDGE */', READING_EDGE_JS)
+
+
+def panel_identity_errors(m: dict, state: str, institute: str | None, *, close: bool, stuck: bool = True, function: str | None = None) -> list[str]:
+    expected = state + (f", {institute}" if institute else "")
+    errors = []
+    if m['state'] != state or not m['stateVisible'] or not m['text'].startswith(state):
+        errors.append('visible head must start with the full state name')
+    if m['institute'] != (institute or '') or not m['text'].startswith(state + (' ' + institute if institute else '')):
+        errors.append('visible head must put the full institute name after the state')
+    if not m['instituteMuted'] or not m['phoneLines']:
+        errors.append('institute must be muted and on its own line on phones')
+    if m['panelName'] != expected or m['tip'] != expected:
+        errors.append('panel accessible name and title must name the state then institute')
+    if close and m['closeName'] != 'Close ' + expected:
+        errors.append('close accessible name must name the state then institute')
+    if stuck and abs(m['top'] - m.get('edge', m['bars'])) > 1:
+        errors.append('panel head is not at its navigation or scrollport edge within 1px')
+    if not m['lines']:
+        errors.append('head has no measured text lines')
+    for line in m['lines']:
+        if not line['inside']:
+            errors.append(line['part'] + ' text line lies outside the head border box')
+    if function and (m['functionText'] != function or not all(m[k] for k in ('functionVisible', 'functionBelow', 'functionStyled'))):
+        errors.append('stuck cell head must show the full function label below its identity in label type and ink')
+    return errors
+
+
+PANEL_HEAD_KINDS = ('Functions grouped row', 'Functions grid cell/row', 'Funding Budget', 'Funding Staff',
+                    'Map record', 'Testing', 'Set-up', 'States card', 'States mini card')
+PANEL_REQUIRED_STUCK = ('Functions grouped row', 'Funding Budget', 'Funding Staff')
+PANEL_SCROLL_STEP = 37
+
+
+PANEL_POSITION_JS = """(box, {head, step}) => {
+  /* TEXT_LINES */
+  const node=box.querySelector(head), h=node.getBoundingClientRect(), r=box.getBoundingClientRect(),
+    edge=(/* READING_EDGE */)(box), offset=h.top-r.top,
+    nav=document.querySelector('.secnav').getBoundingClientRect(), group=box.closest('.group')?.querySelector('.group-nav');
+  // The group bar can still be below the section bar now. Position for the stack it will form
+  // after scrolling, then assert its measured edge at both settled positions.
+  const targetEdge=edge.mode==='scrollport' ? edge.edge : nav.height+(group?.getBoundingClientRect().height || 0);
+  // Reserve the second position before choosing the first. Length alone determines a short panel;
+  // a long panel with broken sticky positioning must still reach the assertions.
+  const limit=edge.mode==='scrollport' ? box.scrollHeight-box.clientHeight : r.height-h.height-8,
+    low=offset+8, high=limit-step, enough=high>=low;
+  if(!enough) return {enough:false,body:false};
+  const origin=edge.mode==='scrollport' ? edge.edge : r.top, middle=(low+high)/2;
+  // Centre an actual body line under the head, choosing the one nearest mid-panel, with DOM
+  // order breaking ties. This avoids comparing blank section gaps; it is not a pixel retry.
+  const candidates=textLines(box).filter(t=>!node.contains(t.element)).map((t,index)=>{
+    const first=Math.max(low,Math.min(high,(t.rect.top+t.rect.bottom)/2-origin-h.height/2));
+    return {first,index,under:t.rect.bottom-origin-first>0 && t.rect.top-origin-first<h.height};
+  }).filter(t=>t.under).sort((a,b)=>Math.abs(a.first-middle)-Math.abs(b.first-middle) || a.index-b.index);
+  if(candidates.length) {
+    const first=candidates[0].first;
+    if(edge.mode==='scrollport') box.scrollTop=first;
+    else scrollBy(0,r.top+first-targetEdge);
+  }
+  return {enough:true,body:candidates.length>0};
+}""".replace('/* TEXT_LINES */', PANEL_TEXT_LINES_JS).replace('/* READING_EDGE */', READING_EDGE_JS)
+
+
+PANEL_PIXELS_JS = r"""({owner, head}) => {
+  /* TEXT_LINES */
+  const box=document.querySelector(owner), h=box.querySelector(head), r=h.getBoundingClientRect(),
+    bounds=box.getBoundingClientRect(), edge=(/* READING_EDGE */)(box), s=getComputedStyle(h),
+    body=textLines(box).filter(t=>!h.contains(t.element)), headText=textLines(h),
+    controls=[...box.querySelectorAll('.close-control, svg, .smark, .state-dl')].map(n=>n.getBoundingClientRect());
+  // Whole CSS pixels inside the panel's visible width, including the side padding beside the head.
+  // Do not include a fractional pixel of the moving body just beyond the head's bottom edge.
+  const left=Math.ceil(Math.max(0,Math.min(r.left,bounds.left+box.clientLeft))),
+    right=Math.floor(Math.min(innerWidth,Math.max(r.right,bounds.left+box.clientLeft+box.clientWidth))),
+    top=Math.ceil(Math.max(0,Math.min(edge.edge,r.top))), bottom=Math.floor(r.bottom),
+    clip={x:left,y:top,width:right-left,height:bottom-top};
+  const intersects=(a,b)=>a.left<b.right && a.right>b.left && a.top<b.bottom && a.bottom>b.top;
+  const clear=(x,y,rects)=>!rects.some(t=>x+.5>=t.left-1 && x+.5<=t.right+1 && y+.5>=t.top-1 && y+.5<=t.bottom+1);
+  const obstacles=[...headText.map(t=>t.rect),...controls], samples=[];
+  const add=(name,x,y)=>{
+    x=Math.floor(x); y=Math.floor(y);
+    if(x>=left && x<right && y>=top && y<bottom && clear(x,y,obstacles)) samples.push({name,x,y});
+  };
+  const xs=[Math.max(left,r.left+parseFloat(s.borderLeftWidth))+2,
+    Math.min(right,r.right-parseFloat(s.borderRightWidth))-3],
+    ys=[r.top+parseFloat(s.borderTopWidth)+2,r.bottom-parseFloat(s.borderBottomWidth)-3];
+  for(const [row,y] of ys.entries()) for(const [col,x] of xs.entries()) add(`padding ${row}/${col}`,x,y);
+  // An edge-aligned head has no separate band: its top padding supplies these samples.
+  const bandY=r.top-edge.edge>=4 ? (r.top+edge.edge)/2 : ys[0];
+  for(const x of [left+2,(left+right)/2,right-3]) add('band',x,bandY);
+  for(const line of headText) for(const x of [left+2,right-3]) add('panel side',x,(line.rect.top+line.rect.bottom)/2);
+  // Only the panel itself may supply the reference, never a text-free child with a different fill.
+  let ground=null;
+  const bodyBottom=Math.min(innerHeight-2,bounds.bottom-2), allText=textLines(box).map(t=>t.rect);
+  for(let y=Math.ceil(r.bottom+4); y<bodyBottom && !ground; y+=4) {
+    for(const x of [left+2,right-3,Math.floor((left+right)/2)]) {
+      if(clear(x,y,[...allText,...controls]) && document.elementFromPoint(x+.5,y+.5)===box) { ground={x,y}; break; }
+    }
+  }
+  const protectedBox={left,right,top,bottom};
+  // A head moved by a non-integer transform is rasterised between pixel rows, whatever its rounded rectangle says.
+  const moveY=s.transform==='none' ? 0 : parseFloat(s.transform.split(',').pop()), fractionalMove=Math.abs(moveY-Math.round(moveY))>.01; // matrix(a, b, c, d, e, f): f is the vertical move
+  return {clip,samples,ground,fractionalMove,top:r.top,bottom:r.bottom,left:r.left,right:r.right,edge:edge.edge,
+    panelBottom:bounds.bottom,mode:edge.mode,scroll:edge.mode==='scrollport' ? box.scrollTop : scrollY,
+    bodyTop:body.length ? body[0].rect.top : null,bodyUnder:body.some(t=>intersects(t.rect,protectedBox))};
+}""".replace('/* TEXT_LINES */', PANEL_TEXT_LINES_JS).replace('/* READING_EDGE */', READING_EDGE_JS)
+
+
+def panel_pair_errors(before: dict, after: dict) -> list[str]:
+    """Require two real stuck positions with different body text beneath the protected area."""
+    errors = []
+    if abs(after['scroll'] - before['scroll'] - PANEL_SCROLL_STEP) > 1:
+        errors.append('body did not scroll a further 37px')
+    if any(abs(m['top'] - m['edge']) > 1 or m['bottom'] > m['panelBottom'] + 1 for m in (before, after)):
+        errors.append('head is not stuck inside its panel at both positions')
+    if before['clip'] != after['clip'] or any(abs(before[k] - after[k]) > .01 for k in ('top', 'bottom', 'left', 'right')):
+        errors.append('head border box or full-width clip moved between stuck positions')
+    if (not any(m['bodyUnder'] for m in (before, after)) or any(m['bodyTop'] is None for m in (before, after))
+            or abs(before['bodyTop'] - after['bodyTop'] - PANEL_SCROLL_STEP) > 1):
+        errors.append('no moving body text beneath the head in the screenshot pair')
+    return errors
+
+
+def panel_head_snapshot(page, measured: dict):
+    """One clipped screenshot supplies both the head and its panel-ground reference."""
+    clip = measured['clip']
+    ground = measured['ground']
+    # Extend only the capture down to the reference; compare only the protected head/band crop.
+    capture = dict(clip, height=max(clip['height'], ground['y'] - clip['y'] + 1) if ground else clip['height'])
+    pixels = decode_png(page.screenshot(clip=capture, scale='css', animations='disabled'))
+    errors = []
+    if ground is None:
+        errors.append('no text-free panel body ground to sample')
+    else:
+        colour = pixels.at(ground['x'] - clip['x'], ground['y'] - clip['y'])
+        for point in measured['samples']:
+            actual = pixels.at(point['x'] - clip['x'], point['y'] - clip['y'])
+            if not same_colour(actual, colour):
+                errors.append(f"{point['name']} pixel ({point['x']}, {point['y']}) {tuple(actual)} differs from panel ground {tuple(colour)}")
+    if len([p for p in measured['samples'] if p['name'].startswith('padding')]) < 2:
+        errors.append('fewer than two text-free head padding samples')
+    if not any(p['name'] == 'band' for p in measured['samples']):
+        errors.append('no text-free band or top-padding sample')
+    return pixels.crop(0, 0, clip['width'], clip['height']), errors
+
+
+PANEL_INK_CSS = """
+[data-panel-pixel-ink], [data-panel-pixel-ink] * {
+  color: transparent !important;
+  text-decoration-color: transparent !important;
+}
+"""
+
+
+@contextmanager
+def panel_hidden_ink(page, owner: str, head: str):
+    """Hide only the head's own ink for the screenshot pair, then restore it."""
+    # Glyph edges and the close mark can redraw after scrolling. Hide their ink instead of
+    # tolerating changed pixels, which can conceal readable body text. Colour also hides the
+    # close mark's currentColor strokes; backgrounds, backing layers and layout stay intact.
+    style = None
+    try:
+        page.locator(owner).evaluate("""(box, head) => {
+          const nodes=[box.querySelector(head), ...box.querySelectorAll(':scope > .close-control .close-glyph')];
+          nodes.forEach(n=>n.setAttribute('data-panel-pixel-ink',''));
+        }""", head)
+        style = page.add_style_tag(content=PANEL_INK_CSS)
+        yield
+    finally:
+        if style is not None:
+            style.evaluate('n=>n.remove()')
+        marked = page.locator('[data-panel-pixel-ink]')
+        marked.evaluate_all("nodes=>nodes.forEach(n=>n.removeAttribute('data-panel-pixel-ink'))")
+        if style is not None:
+            connected = style.evaluate('n=>n.isConnected')
+            style.dispose()
+            if connected:
+                raise AssertionError('panel screenshot ink style was not removed')
+        if marked.count():
+            raise AssertionError('panel screenshot ink markers were not removed')
+
+
+def panel_pixel_errors(before, after, measured: dict) -> list[str]:
+    """With its own ink hidden, nothing in the protected clip may change between two stuck positions."""
+    clip = measured['clip']
+    # One exemption, only for a head moved by a non-integer transform (the sideways-scrolling table's head): its last
+    # pixel row is covered only partly, so it blends with the body scrolling beneath it. That row is the boundary
+    # itself. An integer-aligned head, the band above a head, its sides and every other row are compared exactly
+    # (channel tolerance only).
+    left, right = math.floor(measured['left'] - clip['x']), math.ceil(measured['right'] - clip['x'])
+    last = math.ceil(measured['bottom'] - clip['y']) - 1 if measured.get('fractionalMove') else None
+    changed = [(x, y) for x, y in differing_pixels(before, after) if not (left <= x < right and y == last)]
+    if not changed:
+        return []
+    bounds = (min(x for x, y in changed), min(y for x, y in changed),
+              max(x for x, y in changed) + 1, max(y for x, y in changed) + 1)
+    return [f'scrolled content shows through the head: {len(changed)} differing pixels; bounding box {bounds} '
+            '(clip coordinates; right/bottom exclusive)']
+
+
+def panel_coverage_errors(counts: dict[str, int], uk_stuck: dict[str, int]) -> list[str]:
+    return ([f'{kind}: no panel head checked' for kind in PANEL_HEAD_KINDS if not counts.get(kind)]
+            + [f'{kind}: United Kingdom never asserted stuck at two positions' for kind in PANEL_REQUIRED_STUCK if not uk_stuck.get(kind)])
+
+
+def map_head_coverage_errors(width: int, counts: dict[str, int]) -> list[str]:
+    mode = 'viewport' if width <= 1100 else 'scrollport'
+    return [] if counts.get(mode) else [f'Map record: no {mode} reading head checked']
+
+
+def check_panel_heads(browser, base_url: str, data: dict) -> list[str]:
+    """Inventory of record heads and the Testing/Set-up routes to full States cards."""
+    errors = []
+    states = {j['id']: j for j in data['jurisdictions']}
+    institutes = {i['jurisdiction_id']: i for i in data['institutes']}
+    names = expected_base_names(data)
+    kinds = PANEL_HEAD_KINDS
+    for width in (390, 1440):
+        for theme in ('light', 'dark'):
+            page = themed_page(browser, theme, viewport={'width': width, 'height': 900}, reduced_motion='reduce')
+            counts = dict.fromkeys(kinds, 0)
+            stuck_counts = dict.fromkeys(kinds, 0)
+            short_counts = dict.fromkeys(kinds, 0)
+            uk_stuck = dict.fromkeys(PANEL_REQUIRED_STUCK, 0)
+            map_counts = dict.fromkeys(('viewport', 'scrollport'), 0)
+            prefix = f'{width}px {theme}: '
+            try:
+                hydrated(page, base_url)
+                page.evaluate('document.fonts.ready')
+
+                def inspect(kind, owner, head, jid, *, close=True, function=None):
+                    panel = page.locator(owner)
+                    if panel.count() != 1:
+                        errors.append(prefix + kind + ': missing unique panel')
+                        return
+                    page.mouse.move(1, 1)
+                    # Arrival focus has its own deliberate tint and tooltip, not the head's ground.
+                    page.evaluate('document.activeElement.blur()')
+                    panel.evaluate("n=>{if(getComputedStyle(n).overflowY==='auto')n.scrollTop=0;}")
+                    gap = unstuck_head_gap(page, owner, head)
+                    panel.evaluate("""n=>{
+                      const nav=document.querySelector('.secnav').getBoundingClientRect(), group=n.closest('.group')?.querySelector('.group-nav');
+                      const edge=nav.height+(group?.getBoundingClientRect().height || 0), r=n.getBoundingClientRect();
+                      // Keep an inner scrollport visible; its own edge owns this head.
+                      if(n.matches('.record') && getComputedStyle(n).overflowY!=='visible') scrollBy(0,r.top-edge-20);
+                    }""")
+                    layout_settled(page)
+                    position = panel.evaluate(PANEL_POSITION_JS, {'head': head, 'step': PANEL_SCROLL_STEP})
+                    enough = position['enough']
+                    layout_settled(page)
+                    institute = institutes.get(jid)
+                    full = names[institute['id']] if institute else None
+
+                    def measure(phase):
+                        m = page.evaluate(READING_HEAD_JS, {'owner': owner, 'head': head, 'close': '.close-control' if close else None})
+                        identity = page.evaluate(PANEL_IDENTITY_JS, {'owner': owner, 'head': head})
+                        label = prefix + kind + f' {jid} {phase}: '
+                        if enough and position['body']:
+                            errors.extend(label + e for e in reading_head_errors(dict(m, unstuckGap=gap), close=close))
+                        errors.extend(label + e for e in panel_identity_errors(
+                            identity, states[jid]['name'], full, close=close, stuck=enough and position['body'], function=function))
+                        return page.evaluate(PANEL_PIXELS_JS, {'owner': owner, 'head': head})
+
+                    before = measure('first')
+                    if close:
+                        expected = 'Close ' + states[jid]['name'] + (', ' + full if full else '')
+                        if panel.get_by_role('button', name=expected, exact=True).count() != 1:
+                            errors.append(prefix + kind + ': close computed accessible name differs')
+                    counts[kind] += 1
+                    if kind == 'Map record':
+                        map_counts[before['mode']] += 1
+                    if not enough:
+                        short_counts[kind] += 1
+                        return
+                    if not position['body']:
+                        errors.append(prefix + kind + ': no body text available beneath the head for a stuck screenshot pair')
+                        return
+                    clip = before['clip']
+                    if clip['width'] <= 0 or clip['height'] <= 0 or clip['y'] + clip['height'] > 900:
+                        errors.append(prefix + kind + ': head screenshot clip is empty or outside the viewport')
+                        return
+                    with panel_hidden_ink(page, owner, head):
+                        layout_settled(page)
+                        first, first_errors = panel_head_snapshot(page, before)
+                        panel.evaluate("(n, args)=>{if(args.mode==='scrollport')n.scrollTop+=args.step;else scrollBy(0,args.step);}",
+                                       {'mode': before['mode'], 'step': PANEL_SCROLL_STEP})
+                        page.mouse.move(1, 1)
+                        layout_settled(page)
+                        after = page.evaluate(PANEL_PIXELS_JS, {'owner': owner, 'head': head})
+                        pair_errors = panel_pair_errors(before, after)
+                        errors.extend(prefix + kind + f' {jid}: ' + e for e in pair_errors)
+                        if pair_errors:
+                            return
+                        second, second_errors = panel_head_snapshot(page, after)
+                    measure('second')  # Identity and colour checks need the restored ink.
+                    errors.extend(prefix + kind + f' {jid} first: ' + e for e in first_errors)
+                    errors.extend(prefix + kind + f' {jid} second: ' + e for e in second_errors)
+                    errors.extend(prefix + kind + f' {jid}: ' + e for e in panel_pixel_errors(first, second, before))
+                    stuck_counts[kind] += 1
+                    if jid == 'GB' and kind in uk_stuck:
+                        uk_stuck[kind] += 1
+
+                # UK reproduces the report; EU guards the jurisdiction wording at every route.
+                for jid in ('GB', 'EU'):
+                    if jid not in institutes:
+                        errors.append(prefix + f'missing {jid} institute sample')
+                        continue
+                    iid = institutes[jid]['id']
+                    for view, kind in (('grouped', kinds[0]), ('grid', kinds[1])):
+                        page.evaluate('v=>document.getElementById("functions-table").fnView(v)', view)
+                        if view == 'grouped':
+                            opener = f'.fn-phone li[data-institute="{iid}"] > .fn-phone-row'
+                        else:
+                            functions = [f for f in institutes[jid].get('functions', []) if f['claim_ids']]
+                            if not functions:
+                                errors.append(prefix + kind + f': {iid} has no cell to exercise')
+                                continue
+                            function = min(functions, key=lambda f: (-len(f['claim_ids']), f['code']))
+                            opener = f'.fn-table tr[data-institute="{iid}"] td[data-code="{function["code"]}"] > .fn-cell'
+                        page.locator(opener).evaluate('n=>n.click()')
+                        panel = '.fn-detail'
+                        page.locator(panel + ' details.quote > summary').evaluate_all('nodes=>nodes.forEach(n=>n.click())')
+                        label = data['dataset']['vocabularies']['function'][function['code']]['label'] if view == 'grid' else None
+                        inspect(kind, panel, '.fn-detail-top', jid, function=label)
+                        page.locator(panel + ' .close-control').evaluate('n=>n.click()')
+                    for chart, kind in (('budget', kinds[2]), ('staff', kinds[3])):
+                        opener = page.locator(f'.fund-list[data-kind="{chart}"] button[data-institute="{iid}"]')
+                        if opener.count() != 1:
+                            errors.append(prefix + kind + f': missing {iid} opener')
+                            continue
+                        opener.evaluate(REVEAL_FUNDING_LIST_JS)
+                        opener.evaluate('n=>n.click()')
+                        inspect(kind, '.fund-detail[open]', ':scope > summary', jid)
+                        page.locator('.fund-detail[open] .close-control').evaluate('n=>n.click()')
+                    # Search works for EU as well as the state rows.
+                    page.locator('#map-search').fill(states[jid]['name'])
+                    page.locator('#map-search-list li').first.click()
+                    inspect(kinds[4], '#record', ':scope > .record-top', jid)
+                    page.locator('#record .close-control').evaluate('n=>n.click()')
+                    for section, kind in (('#access', 'Testing'), ('#setup', 'Set-up'), (None, 'States card')):
+                        if section:
+                            opener = page.locator(f'{section} li[data-state="{jid}"] > a')
+                            if opener.count() != 1:
+                                errors.append(prefix + kind + f': missing {jid} route')
+                                continue
+                            opener.click()
+                        inspect(kind, '#c-' + jid.lower(), ':scope > .top', jid, close=False)
+                mini = page.locator('.card.mini').evaluate_all("""nodes=>{
+                  nodes.forEach(n=>n.open=true);
+                  const ranked=nodes.map(n=>({id:n.id,j:n.dataset.j,height:n.getBoundingClientRect().height}))
+                    .sort((a,b)=>b.height-a.height || a.id.localeCompare(b.id));
+                  nodes.forEach(n=>n.open=false); return ranked[0] || null;
+                }""")
+                if mini:
+                    owner = '#' + mini['id']
+                    page.locator(owner + ' > summary').click()
+                    inspect('States mini card', owner, ':scope > summary', mini['j'])
+            finally:
+                page.close()
+            errors.extend(prefix + e for e in panel_coverage_errors(counts, uk_stuck))
+            errors.extend(prefix + e for e in map_head_coverage_errors(width, map_counts))
+            errors.append(report_line(prefix + f"Map record: {map_counts['viewport']} viewport sticky heads; {map_counts['scrollport']} inner-scrollport heads checked"))
+            errors.extend(report_line(prefix + f'{kind}: {count} heads checked; {stuck_counts[kind]} asserted stuck at two positions; '
+                                      f'{short_counts[kind]} not stuck (too short); {count-stuck_counts[kind]-short_counts[kind]} invalid pairs')
+                          for kind, count in counts.items())
+    return errors
+
+
 def head_padding_errors(m: dict) -> list[str]:
     gap, top = m.get('unstuckGap'), m.get('textTop')
     if gap is None or top is None or gap <= 0:
         return ['reading head has no measured top padding before its first text line']
-    if abs(top - m['bars'] - gap) > 1:
+    if abs(top - m.get('edge', m['bars']) - gap) > 1:
         return ['stuck head text gap differs from its unstuck top padding by more than 1px']
     return []
 
@@ -6531,7 +7020,7 @@ def check_command_palette(browser, base_url: str) -> list[str]:
                     errors.append(f"matching: the United States row found by a former name does not say formerly ({first[2]})")
             typed(page, "france")
             page.keyboard.press("Enter")
-            if palette(page)["open"] or page.locator("#record-name").text_content() != "France":
+            if palette(page)["open"] or page.locator("#record-name .head-state").text_content() != "France":
                 errors.append("state: typing France and Enter does not close the palette and open France's record")
             page.locator("#record .record-close").click()
             # A section row lands on its anchor, below the section bar.
@@ -6759,22 +7248,24 @@ def check_group_rows(browser, base_url: str) -> list[str]:
             got = page.evaluate("""() => [...document.querySelectorAll('.group-nav:has(a[href="#testing"]) a')].filter(a => a.classList.contains('active') || a.hasAttribute('aria-current')).map(a => [a.getAttribute('href'), a.getAttribute('aria-current')])""")
             if got != [[f"#{key}", "location"]]:
                 errors.append(f"{width}px: scrolled to #{key}, the Compare row marks {got}")
-        # A keyboard focus under the rows comes out from under them: a funding row control reached by Tab.
-        got = page.evaluate("""() => { const s = document.querySelector('#fund-rows .fund-row'), all = [...document.querySelectorAll('a[href], button, summary, input, select, [tabindex="0"]')].filter(n => n.getClientRects().length && n.tabIndex >= 0 && !n.matches(':disabled'));
-          const prev = all[all.indexOf(s) - 1];
-          if (!s || !prev) return false;
-          const nav = document.querySelector('.secnav').getBoundingClientRect().bottom;
-          scrollTo(0, s.getBoundingClientRect().top + scrollY - nav - 4); prev.focus({ preventScroll: true }); return true; }""")
-        if not got:
-            errors.append(f"{width}px: cannot check funding row focus by Tab: no tabbable row control or preceding Tab stop")
-        else:
-            page.wait_for_timeout(100)
-            page.keyboard.press("Tab")
-            page.wait_for_timeout(200)
-            got = page.evaluate("""() => { const a = document.activeElement, s = document.querySelector('#fund-rows .fund-row'), row = document.querySelector('.group-nav:has(a[href="#testing"])').getBoundingClientRect();
-              return [a === s, Math.round(a.getBoundingClientRect().top), Math.round(row.bottom)]; }""")
-            if not got[0] or got[1] < got[2]:
-                errors.append(f"{width}px: a funding row control focused by Tab under the group row stays under it (focused, top, row bottom: {got})")
+        # Bar rows, names disclosures and opened list rows all escape the sticky rows when reached by Tab.
+        for selector in ('.fund-row', '.fund-names-toggle', '.fund-name-row'):
+            page.locator('#fund-rows ' + selector).first.evaluate(REVEAL_FUNDING_LIST_JS)
+            got = page.evaluate("""selector => { const s = document.querySelector('#fund-rows '+selector), all = [...document.querySelectorAll('a[href], button, summary, input, select, [tabindex="0"]')].filter(n => n.getClientRects().length && n.tabIndex >= 0 && !n.matches(':disabled'));
+              const prev = all[all.indexOf(s) - 1];
+              if (!s || !prev) return false;
+              const nav = document.querySelector('.secnav').getBoundingClientRect().bottom;
+              scrollTo(0, s.getBoundingClientRect().top + scrollY - nav - 4); prev.focus({ preventScroll: true }); return true; }""", selector)
+            if not got:
+                errors.append(f"{width}px: cannot check funding {selector} focus by Tab: no control or preceding Tab stop")
+            else:
+                page.wait_for_timeout(100)
+                page.keyboard.press("Tab")
+                page.wait_for_timeout(200)
+                got = page.evaluate("""selector => { const a = document.activeElement, s = document.querySelector('#fund-rows '+selector), row = document.querySelector('.group-nav:has(a[href="#testing"])').getBoundingClientRect();
+                  return [a === s, Math.round(a.getBoundingClientRect().top), Math.round(row.bottom)]; }""", selector)
+                if not got[0] or got[1] < got[2]:
+                    errors.append(f"{width}px: funding {selector} focused by Tab stays under the group row (focused, top, row bottom: {got})")
         page.close()
         # A hash link from elsewhere lands the same way, on a fresh page.
         page = browser.new_page(viewport={"width": width, "height": height})
@@ -7140,7 +7631,7 @@ def check_access_fixes(browser, base_url: str) -> list[str]:
             errors.append(f"{width}px: pressing a search suggestion opens it before the click")
             box.fill("ger")
         page.locator("#map-search-0").click()
-        got = page.evaluate("() => { const a = document.activeElement, r = a.getBoundingClientRect(), nav = document.querySelector('.secnav').getBoundingClientRect(); return [a.id, a.textContent, r.top >= nav.bottom - 1 && r.bottom <= innerHeight]; }")
+        got = page.evaluate("() => { const a = document.activeElement, r = a.getBoundingClientRect(), nav = document.querySelector('.secnav').getBoundingClientRect(); return [a.id, a.querySelector('.head-state')?.textContent, r.top >= nav.bottom - 1 && r.bottom <= innerHeight]; }")
         if got != ["record-name", "Germany", True]:
             errors.append(f"{width}px: a search pick does not focus the record heading in view below the bar ({got})")
         if width == 390:  # the list below the map: a control partly under the sticky bar comes out from under it when focused
@@ -7646,11 +8137,11 @@ PAINT_JS = """
 def check_text_contrast(page) -> list[str]:
     """Every visible text on the page against what is painted behind it, at least 4.5:1, or 3:1 for large text: the
     text's colour and the backgrounds behind it composited as the browser paints them (PAINT_JS), opacity groups
-    included. Measured on the rendered colours, so a token that drifts fails even where other checks only compare an
+    and uniform tint gradients included. Measured on the rendered colours, so a token that drifts fails even where other checks only compare an
     element with the token. Skipped: text where a background image or gradient shows through (no single background;
     imageShows), screen-reader-only text clipped to nothing, svg text, and genuinely disabled controls and their labels
     (WCAG exempts inactive components). In both themes: the colours are the theme's."""
-    found = page.evaluate("limits => {" + CONTRAST_JS + PAINT_JS + """
+    found = page.evaluate("limits => {" + CONTRAST_JS + PAINT_JS + SURFACE_PAINT_JS + """
       const rgba = c => { const [r, g, b, a] = rgb(c); return [r, g, b, a / 255]; };
       const clippedAway = node => { for (let n = node; n; n = n.parentElement) { const s = getComputedStyle(n), r = n.getBoundingClientRect();
         if (clipHides(s.clipPath, s.clip, s.position, r.width, r.height, s.overflowX, s.overflowY)) return true; }
@@ -7664,7 +8155,10 @@ def check_text_contrast(page) -> list[str]:
         const s = getComputedStyle(node);
         if (s.visibility !== 'visible' || clippedAway(node)) continue;
         const layers = [];
-        for (let n = node; n; n = n.parentElement) { const t = getComputedStyle(n); layers.push([rgba(t.backgroundColor), parseFloat(t.opacity), t.backgroundImage !== 'none']); }
+        for (let n = node; n; n = n.parentElement) {
+          const t = getComputedStyle(n), fill = surface(t);
+          layers.push([fill || rgba(t.backgroundColor), parseFloat(t.opacity), fill === null]);
+        }
         if (imageShows(layers)) continue;
         const ink = painted(rgba(s.color), layers), ground = painted([0, 0, 0, 0], layers);
         if (layers.some(([, opacity]) => opacity === 0)) continue;  // not shown
@@ -7852,6 +8346,9 @@ def check_first_screen(page, data: dict, theme_invariant: bool = True) -> list[s
     page.mouse.move(0, 0)
     page.evaluate("scrollTo(0, 0)")
     status = {j["id"]: j["status"] for j in data["jurisdictions"]}
+    institute_names = expected_base_names(data)
+    head_names = {j['id']: j['name'] + (', ' + institute_names[j['institute_id']] if j.get('institute_id') else '')
+                  for j in data['jurisdictions']}
     snapshot = """() => {
       const svg = [...document.querySelectorAll('#worldmap svg')].find(n => n.getClientRects().length);
       const groups = [...document.querySelectorAll('#regions .region')];
@@ -7940,7 +8437,7 @@ def check_first_screen(page, data: dict, theme_invariant: bool = True) -> list[s
               t.scrollIntoView({ block: 'center' }); const r = t.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; }""", jid)
             page.mouse.click(x, y)
             got = page.evaluate("() => { const r = document.getElementById('record'); return r.hidden ? null : r.dataset.j; }")
-            # The record's heading takes focus (as for list and search picks); the dot says it controls the open record; a tooltip, if still shown, names the state.
+            # The record's heading takes focus; a surviving dot tip names the state, while the focused head's tip names both state and institute.
             aside = page.evaluate("j => { const a = document.activeElement, t = document.getElementById('tip'), d = [...document.querySelectorAll('#worldmap svg')].find(n => n.getClientRects().length).querySelector('.tgt[data-j=\"' + j + '\"]'); return [a && a.id === 'record-name' ? null : (a && (a.dataset.j || a.id || a.tagName)), t && !t.hidden ? t.firstChild.textContent : null, d.getAttribute('aria-controls') === 'record' && d.getAttribute('aria-expanded') === 'true']; }", jid)
             name = next(j["name"] for j in data["jurisdictions"] if j["id"] == jid)
             # Opening the record can scroll another tooltip trigger under the resting pointer (a region list short name); its own tip is not the dot's.
@@ -7949,7 +8446,7 @@ def check_first_screen(page, data: dict, theme_invariant: bool = True) -> list[s
                 aside[1] = None
             if got != jid:
                 wrong.append(f"{jid}->{got}")
-            elif aside[0] or aside[1] not in (name, None) or not aside[2]:
+            elif aside[0] or aside[1] not in (name, head_names[jid], None) or not aside[2]:
                 wrong.append(f"{jid}: focus on {aside[0]}, tooltip {aside[1]!r} or dot not expanded/controlling the record ({aside[2]})")
             elif page.evaluate("innerWidth > 1100") and not page.evaluate("document.getElementById('regions').inert"):
                 wrong.append(f"{jid}: the covered list stays operable")
@@ -7990,7 +8487,7 @@ def check_first_screen(page, data: dict, theme_invariant: bool = True) -> list[s
     else:
         page.mouse.click(*spot)
         got = page.evaluate("j => [document.getElementById('record').dataset.j, document.activeElement && document.activeElement.id, (document.getElementById('tip') || {}).hidden === false ? document.getElementById('tip').firstChild.textContent : null]", fr["id"])
-        if got[:2] != [fr["id"], "record-name"] or got[2] not in (fr["name"], None):
+        if got[:2] != [fr["id"], "record-name"] or got[2] not in (fr["name"], head_names[fr['id']], None):
             errors.append(f"first screen: a click on France's shape does not act like its dot (record, focus, tooltip: {got})")
         page.locator("#record .record-close").click()
         page.mouse.move(0, 0)
@@ -8048,7 +8545,7 @@ def check_first_screen(page, data: dict, theme_invariant: bool = True) -> list[s
       return [p.getBBox().width / svg.viewBox.baseVal.width, rings(p), ids.reduce((n, id) => n + rings(svg.querySelector('.land-in[data-j="' + id + '"]')), 0)]; }""", members)
     if not border or border[0] < 0.3 or border[1] >= border[2]:
         errors.append(f"first screen: selecting the EU does not draw the merged EU border ({border})")
-    if page.locator("#record-name").text_content() != eu["name"] or page.evaluate("document.activeElement && document.activeElement.id") != "record-name":
+    if page.locator("#record-name .head-state").text_content() != eu["name"] or page.evaluate("document.activeElement && document.activeElement.id") != "record-name":
         errors.append("first screen: the EU row does not open its record with focus on it")
     page.keyboard.press("Escape")
     if page.locator("#record").is_visible():
@@ -8085,9 +8582,9 @@ def check_first_screen(page, data: dict, theme_invariant: bool = True) -> list[s
     if box.get_attribute("aria-activedescendant") != "map-search-0":
         errors.append("search: ArrowUp does not move the active option back")
     box.press("Enter")
-    if page.locator("#record-name").text_content() != "Germany" or page.locator("#map-search-list").is_visible() or box.get_attribute("aria-expanded") != "false":
+    if page.locator("#record-name .head-state").text_content() != "Germany" or page.locator("#map-search-list").is_visible() or box.get_attribute("aria-expanded") != "false":
         errors.append("search: Enter does not open the active option's record and close the list")
-    if page.locator("#record-name").text_content() != "Germany":
+    if page.locator("#record-name .head-state").text_content() != "Germany":
         # The record steps below assume Germany's record; with another one open they would fail on something else
         # (a citation that is not there) and hide the search errors above, so the search errors are the result.
         return errors + [f"search: 'ger' then Enter opened {page.locator('#record-name').text_content()!r}, not Germany; later first-screen steps skipped"]
@@ -8409,7 +8906,7 @@ def check_wrapped_rows(page) -> list[str]:
     """Force multi-line text in existing row types, then restore the DOM."""
     page.evaluate("""() => {
       window.rowFixtures = [];
-      const targets = '.meta > span:first-child, .card .top .name, .fund-identity h4, .dlist .dl-title, .dlist .d, .card.mini > summary .find, .card:not(.mini) .row .v, .legend-definition, .fund-staff .fund-value, .fund-budget .fund-value, #world-rows td[data-col="inst"], .development-text';
+      const targets = '.meta > span:first-child, .card .top .name, .card .card-head-space .panel-identity, .fund-identity h4, .dlist .dl-title, .dlist .d, .card.mini > summary .find, .card:not(.mini) .row .v, .legend-definition, .fund-staff .fund-value, .fund-budget .fund-value, #world-rows td[data-col="inst"], .development-text';
       for (const selector of targets.split(', ')) {
         const node = document.querySelector(selector);
         if (!node) continue;
@@ -8554,9 +9051,14 @@ def check_repeated_spacing(page) -> list[str]:
 GENERIC_ACRONYMS = {"AISI", "AISIS", "ASI"}
 
 
+def expected_base_names(data: dict) -> dict[str, str]:
+    """A state-first identity already disambiguates the institute's recorded base name."""
+    return {i["id"]: re.sub(r" \((planned|proposed)\)$", "", i["name"]) for i in data["institutes"]}
+
+
 def expected_display_names(data: dict) -> dict[str, str]:
     """Hand-worked display name per institute: the name without a status suffix, plus the country where two share it."""
-    base = {i["id"]: re.sub(r" \((planned|proposed)\)$", "", i["name"]) for i in data["institutes"]}
+    base = expected_base_names(data)
     uses = Counter(name.casefold() for name in base.values())
     country = {j["id"]: j["name"] for j in data["jurisdictions"]}
     return {
@@ -8569,7 +9071,8 @@ def check_institute_names(html, data: dict) -> list[str]:
     """One display name per body, one recorded short form for tight places, never a bare generic acronym.
 
     Same-named bodies carry their country, tight places (table cells) show the recorded short form, the short
-    form names the full display name on hover; cards and opened funding records show the full display name.
+    form names the full display name on hover; the Institute field shows that display name, while state-first
+    funding heads show the full base name without a repeated country suffix.
     """
     soup = BeautifulSoup(html, "html.parser")
     errors = []
@@ -8641,12 +9144,20 @@ def check_institute_names(html, data: dict) -> list[str]:
             continue
         if opener is None or any(name not in value for name in (shorts[iid], names[iid]) for value in (opener.get("aria-label", ""), tip_of(opener))):
             errors.append(f"{jid} funding row does not keep short form {shorts[iid]!r} on its focusable opener")
-    for record in soup.select("#fund-rows .fund-detail[data-institute]"):
+    countries = {j["id"]: j["name"] for j in data["jurisdictions"]}
+    base_names = expected_base_names(data)
+    records = soup.select("#fund-rows .fund-detail[data-institute]")
+    if not records:
+        errors.append("no funding records found to check institute names in")
+    for record in records:
         iid = record.get("data-institute")
         detail = record.select_one(":scope > summary .fund-head-name")
-        full = "".join(t for t in detail.find_all(string=True) if not t.find_parent(class_=("vh", "cites"))).strip() if detail else None
-        if iid not in names or full != names[iid]:
-            errors.append(f"{iid} funding detail does not name {names.get(iid)!r} in full")
+        full = "".join(t for t in detail.find_all(string=True) if t.find_parent(class_="head-separator") or not t.find_parent(class_=("vh", "cites"))).strip() if detail else None
+        expected = f"{countries[owner[iid]]}, {base_names[iid]}" if iid in names else None
+        if expected is None or full != expected:
+            errors.append(f"{iid} funding detail does not name the state before {names.get(iid)!r} in full")
+        if detail is not None and (tip_of(detail) or detail.get('title')) != expected:
+            errors.append(f"{iid} funding detail tooltip does not name the state and institute")
     return errors
 
 
@@ -10476,7 +10987,7 @@ def check_budget_output(html, data, expected=None):
             continue
         chart = soup.select_one('.fund-list[data-kind="budget"]')
         row = chart.select_one(f'.fund-item[data-institute="{identity}"]') if chart else None
-        inline = chart.select_one(f'.fund-inline[data-institute="{identity}"]') if chart else None
+        inline = chart.select_one(f'.fund-name-row[data-institute="{identity}"]') if chart else None
         comparison = EXPECTED_FUNDING_IDS.get(jid)
         if comparison:
             if row is None or row.get("data-funding-id") != comparison or not row.select_one(".fund-budget .fund-value strong") or not row.select_one(".fund-budget .fund-figure abbr.g[aria-description]"):
@@ -10517,7 +11028,7 @@ def expected_funding_rows(data: dict) -> dict[str, list[str]]:
     return {kind: [iid for _, iid in sorted(items)] for kind, items in rows.items()}
 
 
-def check_funding_outside(html, data: dict) -> list[str]:
+def check_funding_outside(html, data: dict, *, saved: bool = False) -> list[str]:
     """Both charts cover each established institute once, with each figure's complete accessible explanation."""
     soup = BeautifulSoup(html, "html.parser")
     errors = []
@@ -10554,7 +11065,7 @@ def check_funding_outside(html, data: dict) -> list[str]:
         actual = [str(r.get("data-institute")) for r in rows]
         if actual != expected_rows[kind]:
             errors.append(f"funding {kind} ranked rows {actual}, expected {expected_rows[kind]}")
-        openers = chart.select("button.fund-row, button.fund-inline")
+        openers = chart.select("button.fund-row, button.fund-name-row")
         coverage = Counter(str(o.get("data-institute")) for o in openers)
         if coverage != Counter(by_id.keys()):
             errors.append(f"funding {kind} must list each institute once: {dict(coverage)}, expected {sorted(by_id)}")
@@ -10564,8 +11075,8 @@ def check_funding_outside(html, data: dict) -> list[str]:
             other = {iid for iid, inst in by_id.items() if inst.get("staff") and iid not in expected_rows[kind]
                      and any(any(r.get(field) is not None for field in ("total", "technical", "target")) or r.get("description") for r in inst["staff"])}
         missing = set(by_id) - set(expected_rows[kind]) - other
-        for selector, want, label in ((".fund-other-line .fund-inline", other, "other published amounts"),
-                                      (".fund-missing-line .fund-inline", missing, "Not published")):
+        for selector, want, label in ((".fund-other-line .fund-name-row", other, "other published amounts"),
+                                      (".fund-missing-line .fund-name-row", missing, "Not published")):
             got = [o.get("data-institute") for o in chart.select(selector)]
             if Counter(got) != Counter(want):
                 errors.append(f"funding {kind} {label} list {sorted(got)}, expected {sorted(want)}")
@@ -10577,6 +11088,35 @@ def check_funding_outside(html, data: dict) -> list[str]:
         other_lines = chart.select(".fund-other-line")
         if len(other_lines) != bool(other) or any(not line.get_text(" ", strip=True).startswith("Not compared:") for line in other_lines):
             errors.append(f"funding {kind}: Not compared must be one plain names line when needed")
+        for line in chart.select(".fund-missing-line, .fund-other-line"):
+            toggles, lists = line.select(":scope > .fund-names-toggle"), line.select(":scope > ul.fund-name-list")
+            if len(toggles) != 1 or len(lists) != 1:
+                errors.append(f"funding {kind}: each names line needs one disclosure and one plain list")
+                continue
+            toggle, listing = toggles[0], lists[0]
+            if not listing.has_attr("hidden") or listing.get("role") != "list" or toggle.find_next_sibling() is not listing or not listing.get("id") or len(soup.select(f'[id="{listing.get("id")}"]')) != 1:
+                errors.append(f"funding {kind}: names disclosure must control its own list, closed by default")
+            if saved:
+                visible = [n for n in [line, *line.find_all(True)] if n is not listing and listing not in n.parents]
+                if toggle.name != "span" or any(n.name in {"a", "button", "input", "select", "textarea", "summary"}
+                        or any(n.has_attr(a) for a in ("role", "tabindex", "contenteditable", "aria-expanded", "aria-controls")) for n in visible):
+                    errors.append(f"funding {kind}: saved names line must be plain text without control semantics or focus")
+            elif toggle.name != "button" or toggle.get("aria-expanded") != "false" or toggle.get("aria-controls") != listing.get("id"):
+                errors.append(f"funding {kind}: names disclosure must control its own list, closed by default")
+            if toggle.select("a, button, summary, [tabindex]"):
+                errors.append(f"funding {kind}: names disclosure contains an interactive control")
+            buttons = listing.select(":scope > li.fund-name-item > button.fund-name-row")
+            if len(buttons) != len(listing.find_all("li", recursive=False)) or not buttons or len(buttons) != len(line.select(".fund-name-row")) or any(len(row.select("a, button, summary, [tabindex]")) != 1 for row in listing.find_all("li", recursive=False)):
+                errors.append(f"funding {kind}: names list needs one institute button per row")
+            names = toggle.select_one(".fund-missing-names, .fund-other-names")
+            label = "Not published: " if "fund-missing-line" in line.get("class", []) else "Not compared: "
+            if names is None or names.find(True) or names.get_text() != label + ", ".join(b.get_text(strip=True) for b in buttons):
+                errors.append(f"funding {kind}: closed summary must retain all names and reasons as plain text")
+            for button in buttons:
+                inst = by_id.get(str(button.get("data-institute")))
+                state = next((j["name"] for j in data["jurisdictions"] if inst and j["id"] == inst["jurisdiction_id"]), None)
+                if not inst or button.get("data-j") != inst["jurisdiction_id"] or not state or not (button.get_text() == state or button.get_text().startswith(state + " (")):
+                    errors.append(f"funding {kind}: list row must retain its institute identity and state name")
         for opener in openers:
             iid = str(opener.get("data-institute"))
             detail = soup.find(id=opener.get("aria-controls"))
@@ -10651,7 +11191,7 @@ def check_funding_outside(html, data: dict) -> list[str]:
             words = line.get_text(" ", strip=True)
             if re.search(r"\d", words) or line.select(".bar-value, .budget-amount, strong"):
                 errors.append(f"funding {kind}: unscaled amounts must use words pointing to the records")
-            for button in line.select(".fund-inline"):
+            for button in line.select(".fund-name-row"):
                 iid = str(button.get("data-institute"))
                 record = next((r for r in by_id.get(iid, {}).get("funding", []) if r["id"] == EXPECTED_BUDGET_IDS.get(iid)), {})
                 if kind == "budget" and record.get("kind") == "one_off" and "(one-off amount)" not in button.get_text():
@@ -10689,7 +11229,7 @@ def label_ladder_selectors(data: dict) -> list[str]:
                 row = chart + f' .fund-item[data-institute="{institute["id"]}"]'
                 selectors.update((row + ' .fund-identity h4', row + ' > .fund-row[aria-label]'))
             else:
-                inline = chart + f' .fund-inline[data-institute="{institute["id"]}"]'
+                inline = chart + f' .fund-name-row[data-institute="{institute["id"]}"]'
                 selectors.add(inline)
     return sorted(selectors)
 
@@ -10717,17 +11257,17 @@ def check_label_ladder(page) -> list[str]:
         if (!visible(h) || !name) continue;
         if (parseFloat(css(h,'fontWeight'))<parseFloat(css(name,'fontWeight')) || parseFloat(css(h,'fontSize'))<parseFloat(css(name,'fontSize'))) errors.push(REPORT + 'Funding chart heading is weaker than its institute labels: '+h.textContent.trim());
       }
-      // A card under a status group heading does not repeat the status in its title row; its accessible name still carries it.
+      // A card's accessible description retains status separately from its identity.
       for (const card of document.querySelectorAll('.statusgroup .card:not(.mini)')) {
         if (card.querySelector(':scope > .top > .smark')) errors.push(REPORT + `card in a status group repeats its status in the title row: ${card.id}`);
-        const said = card.querySelector(':scope > .top > .vh'), ids = (card.getAttribute('aria-labelledby') || '').split(' ');
+        const said = card.querySelector(':scope > .top > .vh'), ids = (card.getAttribute('aria-describedby') || '').split(' ');
         const want = ', ' + card.closest('.statusgroup').querySelector(':scope > h3 .smark > span').textContent.replace(/ \\(\\d+\\)$/, '');
-        if (!said || said.textContent !== want || !ids.includes(said.id)) errors.push(`card in a status group lacks its status in the accessible name: ${card.id}`);
+        if (!said || said.textContent !== want || !ids.includes(said.id)) errors.push(`card in a status group lacks its accessible status description: ${card.id}`);
       }
-      // The EU entry's dated Status row says its status, so its title row shows none either; the accessible name keeps it (owner, 5 Nov 2026).
+      // The EU entry's dated Status row says its status, so its title row shows none either; the accessible description keeps it.
       for (const card of document.querySelectorAll('.eu-level .card:not(.mini)')) {
         if (card.querySelector(':scope > .top > .smark')) errors.push(REPORT + 'the EU entry repeats its status in the title row; its Status row says it');
-        const said = card.querySelector(':scope > .top > .vh'), ids = (card.getAttribute('aria-labelledby') || '').split(' ');
+        const said = card.querySelector(':scope > .top > .vh'), ids = (card.getAttribute('aria-describedby') || '').split(' ');
         const row = card.querySelector('.row[data-track="3"]'), shown = row ? row.querySelector('.v').textContent.trim().split(' since ')[0] : null;
         if (!said || !shown || said.textContent !== ', ' + shown || !ids.includes(said.id)) errors.push(`the EU entry's accessible status ${said && said.textContent} does not match its Status row ${shown}`);
       }
@@ -10917,6 +11457,52 @@ def refresh_fixture_selections(fixture):
     fixture.update(refreshed)
 
 
+REVEAL_FUNDING_LIST_JS = """button => {
+  const list=button.closest('.fund-name-list');
+  if(list?.hidden) list.previousElementSibling.click();
+}"""
+
+
+FUNDING_RECORD_PLACEMENT_JS = """button => {
+  const detail=document.getElementById(button.getAttribute('aria-controls'));
+  const row=button.closest('.fund-item,.fund-name-item');
+  return detail.open && detail.parentElement===row &&
+    Math.abs(detail.getBoundingClientRect().top-button.getBoundingClientRect().bottom)<=1;
+}"""
+
+
+FUNDING_SUMMARY_LINES_JS = """() => [...document.querySelectorAll('.fund-names-toggle[aria-expanded="false"]')].map(button => {
+  const names=button.querySelector('.fund-missing-names, .fund-other-names'), tops=[], bottoms=[];
+  const walker=document.createTreeWalker(names,NodeFilter.SHOW_TEXT);
+  while(walker.nextNode()) {
+    const range=document.createRange();range.selectNodeContents(walker.currentNode);
+    for(const r of range.getClientRects()) if(r.width&&r.height) {
+      bottoms.push(r.bottom);
+      if(!tops.some(t=>Math.abs(t-r.top)<.5)) tops.push(r.top);
+    }
+  }
+  return {key:button.getAttribute('aria-controls'),kind:button.closest('.fund-list').dataset.kind,
+    fontSize:parseFloat(getComputedStyle(names).fontSize),lineTops:tops.sort((a,b)=>a-b),textBottom:Math.max(...bottoms)};
+})"""
+
+
+def funding_summary_spacing_errors(summaries: list[dict]) -> list[str]:
+    """Ordinary wrapped leading and at most 1.6em from its last ink box to the next summary.
+
+    At 14px this allows 22.4px, including the next line centred in its 44px target.
+    Two single-line targets need more space; the inter-summary bound is for a wrapped predecessor.
+    """
+    errors = [f"{s['key']}: wrapped names have a reserved hit gap between text lines"
+              for s in summaries if any(b - a > 1.6 * s["fontSize"] + .1
+                                        for a, b in zip(s["lineTops"], s["lineTops"][1:]))]
+    for previous, current in zip(summaries, summaries[1:]):
+        if previous['kind'] == current['kind'] and len(previous['lineTops']) > 1 and current['lineTops']:
+            gap = current['lineTops'][0] - previous['textBottom']
+            if gap < 0 or gap > 1.6 * previous['fontSize'] + .1:
+                errors.append(f"{previous['key']}: gap to the next summary's text must be at most 1.6 times the font size")
+    return errors
+
+
 FUNDING_LAYOUT_JS = r"""() => {
   const list=document.getElementById('fund-rows');
   const alpha=color=>{if(color==='transparent')return 0;if(color.startsWith('rgba('))return Number(color.slice(5,-1).split(',')[3]);const m=color.match(/\/\s*([\d.]+)(%)?\s*\)$/);return m?Number(m[1])/(m[2]?100:1):1;};
@@ -10972,7 +11558,9 @@ FUNDING_LAYOUT_JS = r"""() => {
       identity:rect(identity),identityLines:lines(identity.querySelector('h4')),detail:cell(row,'.fund-detail[open]'),maxHeight:Math.max(44,rect(identity.querySelector('h4')).height+parseFloat(ns.paddingTop)+parseFloat(ns.paddingBottom),parseFloat(getComputedStyle(v).lineHeight)+parseFloat(ms.paddingTop)+parseFloat(ms.paddingBottom)),
       measures:[{kind,box:rect(m),bar:rect(m.querySelector('.fund-bar')),figure:rect(v),amountLines:lines(v.querySelector('strong')),qualifierLines:v.querySelector('.fund-qualifier')?1:0}]};
   });
-  return {list:rect(list),heads,rows,panels:[...list.querySelectorAll('.fund-detail[open]')].map(rect),overflow:[...new Set(overflow)],oneLineNames:parseFloat(getComputedStyle(document.documentElement).fontSize)<=16.01};
+  const targets=[...list.querySelectorAll('.fund-row, .fund-name-row, .fund-names-toggle')].filter(visible).map(n=>({key:n.closest('.fund-list').dataset.kind+':'+(n.dataset.institute||n.getAttribute('aria-controls')),box:rect(n)}));
+  const coverage=Object.fromEntries(['budget','staff'].map(kind=>[kind,[...list.querySelectorAll('.fund-list[data-kind='+kind+'] :is(.fund-row,.fund-name-row)')].filter(visible).map(n=>n.dataset.institute)]));
+  return {list:rect(list),heads,rows,targets,coverage,panels:[...list.querySelectorAll('.fund-detail[open]')].map(rect),overflow:[...new Set(overflow)],oneLineNames:parseFloat(getComputedStyle(document.documentElement).fontSize)<=16.01};
 }"""
 
 
@@ -10986,8 +11574,17 @@ def funding_layout_errors(got: dict, closed: dict | None = None) -> list[str]:
 
     def full(box):
         return all(same(box[edge], got["list"][edge]) for edge in ("left", "right"))
+    targets = got.get("targets", [])
+    for index, target in enumerate(targets):
+        box = target["box"]
+        if box["height"] < 44 - .75 or not full(box):
+            errors.append(f"{target['key']}: Funding target must span the full list and be at least 44px high")
+        for other in targets[index + 1:]:
+            b = other["box"]
+            if min(box["right"], b["right"]) - max(box["left"], b["left"]) > .5 and min(box["bottom"], b["bottom"]) - max(box["top"], b["top"]) > .5:
+                errors.append(f"Funding targets overlap: {target['key']} / {other['key']}")
     if any(not full(panel) for panel in got.get("panels", [])):
-        errors.append("funding: opened records beneath a row or summary line must span the full list")
+        errors.append("funding: opened records beneath a bar or list row must span the full list")
     for kind, head in got["heads"].items():
         if not full(head["box"]) or not head["opaque"]:
             errors.append(f"funding {kind}: sticky head needs an opaque ground across the full list")
@@ -11036,18 +11633,23 @@ def funding_layout_errors(got: dict, closed: dict | None = None) -> list[str]:
 
 
 def check_funding_layout_states(page) -> list[str]:
-    """Compare both charts closed, hovered and open, including their compact summary openers."""
+    """Exercise both summaries and their list rows, plus the ranked bars and shared records."""
     errors = []
-    saved = page.evaluate("() => ({y:scrollY,open:[...document.querySelectorAll('.fund-row[aria-expanded=true],.fund-inline[aria-expanded=true]')].map(n=>({kind:n.closest('.fund-list').dataset.kind,id:n.dataset.institute}))})")
+    saved = page.evaluate("() => ({y:scrollY,lists:[...document.querySelectorAll('.fund-names-toggle[aria-expanded=true]')].map(n=>n.getAttribute('aria-controls')),open:[...document.querySelectorAll('.fund-row[aria-expanded=true],.fund-name-row[aria-expanded=true]')].map(n=>({kind:n.closest('.fund-list').dataset.kind,id:n.dataset.institute}))})")
     settle = "() => new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))"
     try:
         page.locator('.fund-detail[open] .close-control').evaluate_all("nodes=>nodes.forEach(n=>n.click())")
+        page.locator('.fund-names-toggle[aria-expanded=true]').evaluate_all("nodes=>nodes.forEach(n=>n.click())")
         page.mouse.move(0, 0)
         opener = page.locator('#fund-rows .fund-row').first
         opener.scroll_into_view_if_needed()
         page.evaluate(settle)
         closed = page.evaluate(FUNDING_LAYOUT_JS)
         errors += ["closed: " + e for e in funding_layout_errors(closed)]
+        summaries = page.evaluate(FUNDING_SUMMARY_LINES_JS)
+        errors += funding_summary_spacing_errors(summaries)
+        if page.viewport_size["width"] in (320, 390) and not any("missing" in s["key"] and len(s["lineTops"]) > 1 for s in summaries):
+            errors.append("funding: phone spacing check must exercise wrapped Not published text")
         opener.hover(position={"x": 2, "y": 2})
         page.evaluate(settle)
         errors += ["hovered: " + e for e in funding_layout_errors(page.evaluate(FUNDING_LAYOUT_JS), closed)]
@@ -11071,8 +11673,22 @@ def check_funding_layout_states(page) -> list[str]:
                 if page.locator('.fund-detail[open]').count():
                     errors.append(f"funding {kind}: {action} on the figure also opens records")
                 page.keyboard.press("Escape")
-        last_button = None
-        for selector in ('.fund-list[data-kind="budget"] .fund-row', '.fund-list[data-kind="staff"] .fund-row', '.fund-other-line .fund-inline', '.fund-missing-line .fund-inline'):
+        toggles = page.locator('.fund-names-toggle').all()
+        for count, toggle in enumerate(toggles, 1):
+            toggle.evaluate("n=>n.click()")
+            if page.locator('.fund-names-toggle[aria-expanded=true]').count() != count or not toggle.evaluate("n=>!document.getElementById(n.getAttribute('aria-controls')).hidden"):
+                errors.append("funding: each names disclosure must open its own list independently")
+        page.evaluate(settle)
+        expanded = page.evaluate(FUNDING_LAYOUT_JS)
+        errors += ["lists open: " + e for e in funding_layout_errors(expanded, closed)]
+        errors += check_hit_targets(page, '#fund-rows')
+        expected = Counter(i["id"] for i in established_funding_institutes(checked_page_data(page)))
+        for kind in ("budget", "staff"):
+            if Counter(expanded["coverage"][kind]) != expected:
+                errors.append(f"funding {kind}: opened lists and bars must reach every expected institute exactly once")
+        selectors = [f'.fund-list[data-kind="{kind}"] .fund-row' for kind in ("budget", "staff")]
+        selectors += ['#' + toggle.get_attribute('aria-controls') + ' .fund-name-row' for toggle in toggles]
+        for selector in selectors:
             button = page.locator(selector).first
             if not button.count():
                 continue
@@ -11082,17 +11698,42 @@ def check_funding_layout_states(page) -> list[str]:
             errors += ["open: " + e for e in funding_layout_errors(page.evaluate(FUNDING_LAYOUT_JS), closed)]
             if page.locator('.fund-detail[open]').count() != 1:
                 errors.append("funding: only one records panel may open across both charts")
-            last_button = button
-        page.locator('.fund-detail[open] .close-control').evaluate_all("nodes=>nodes.forEach(n=>n.click())")
-        if last_button is not None and not last_button.evaluate("n=>document.activeElement===n&&n.getAttribute('aria-expanded')==='false'"):
-            errors.append("funding: closing records must restore focus to their exact opener")
+            if not button.evaluate(FUNDING_RECORD_PLACEMENT_JS):
+                errors.append("funding: records must open directly beneath their bar or list row")
+            for close in ("button", "escape"):
+                if close == "button":
+                    page.locator('.fund-detail[open] .close-control').evaluate_all("nodes=>nodes.forEach(n=>n.click())")
+                else:
+                    page.keyboard.press("Escape")
+                if page.locator('.fund-detail[open]').count() or not button.evaluate("n=>document.activeElement===n&&n.getAttribute('aria-expanded')==='false'"):
+                    errors.append(f"funding: {close} must close records and restore focus to their exact opener")
+                button.evaluate("n=>n.click()")  # leave one open for the next opener to replace
+        for toggle in toggles:
+            listing = '#' + toggle.get_attribute('aria-controls')
+            button = page.locator(listing + ' .fund-name-row').first
+            if button.get_attribute('aria-expanded') != 'true':
+                button.evaluate("n=>n.click()")
+            toggle.evaluate("n=>n.click()")
+            if page.locator('.fund-detail[open]').count() or not toggle.evaluate("n=>document.activeElement===n&&n.getAttribute('aria-expanded')==='false'&&document.getElementById(n.getAttribute('aria-controls')).hidden"):
+                errors.append("funding: closing a list must close its records and focus its disclosure")
+            if button.get_attribute('aria-expanded') != 'false':
+                errors.append("funding: collapsing a list must reset its record opener")
+            toggle.evaluate("n=>n.click()")
+        # Collapsing an unrelated list must leave the current records and other list alone.
+        if len(toggles) > 1:
+            owner, other = toggles[:2]  # two distinct summaries in DOM order, only for the independence check
+            button = page.locator('#' + owner.get_attribute('aria-controls') + ' .fund-name-row').first
+            button.evaluate("n=>n.click()")
+            other.evaluate("n=>n.click()")
+            if owner.get_attribute('aria-expanded') != 'true' or button.get_attribute('aria-expanded') != 'true' or page.locator('.fund-detail[open]').count() != 1:
+                errors.append("funding: closing another list must preserve the open records")
     finally:
-        page.evaluate("state=>{document.querySelectorAll('.fund-detail[open] .close-control').forEach(n=>n.click());for(const o of state.open)document.querySelector('.fund-list[data-kind='+o.kind+'] button[data-institute='+o.id+']')?.click();scrollTo(0,state.y);}", saved)
+        page.evaluate("state=>{document.querySelectorAll('.fund-detail[open] .close-control').forEach(n=>n.click());document.querySelectorAll('.fund-names-toggle').forEach(n=>{if((n.getAttribute('aria-expanded')==='true')!==state.lists.includes(n.getAttribute('aria-controls')))n.click();});for(const o of state.open)document.querySelector('.fund-list[data-kind='+o.kind+'] button[data-institute='+o.id+']')?.click();scrollTo(0,state.y);}", saved)
     return errors
 
 
 def check_funding_large_text(browser, base_url: str) -> list[str]:
-    """Exercise shared tracks, row states and descendant bounds, including both phones at 110% text."""
+    """Exercise summary line spacing, opened lists and shared tracks at 320/390px and enlarged text."""
     errors = []
     cases = [(width, scale) for width in (320, 390) for scale in (100, 110, 125)]
     cases += [(width, 100) for width in (1000, 1440)]
@@ -12097,12 +12738,18 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
         for error in check_card_grid(page):
             require(False, "expanded comparison row: " + error)
         fold.evaluate("e => e.open = false")
-    require(
-        page.locator(".fund-detail").evaluate_all(
-            "folds => folds.length && folds.every(f => { const button=document.querySelector('.fund-list[data-kind=budget] button[aria-controls='+f.id+']'); button.click(); const gap=f.getBoundingClientRect().top-button.closest('.fund-item,.fund-other-line,.fund-missing-line').getBoundingClientRect().top; const rightParent=f.parentElement===button.closest('.fund-item,.fund-other-line,.fund-missing-line'); f.querySelector('.close-control').click(); return gap>=-1 && rightParent; })"
-        ),
-        "funding records must open immediately beneath their whole-row control",
-    )
+    fund_openers = page.locator('.fund-list[data-kind="budget"] button[data-institute]').all()
+    require(bool(fund_openers), 'no Funding record controls to exercise')
+    for opener in fund_openers:
+        listing = opener.locator('xpath=ancestor::ul[contains(@class,"fund-name-list")]')
+        hidden = bool(listing.count() and listing.evaluate('n=>n.hidden'))
+        opener.evaluate(REVEAL_FUNDING_LIST_JS)
+        opener.evaluate('n=>n.click()')
+        require(opener.evaluate(FUNDING_RECORD_PLACEMENT_JS),
+                'funding records must open immediately beneath their whole-row control')
+        page.locator('.fund-detail[open] .close-control').evaluate('n=>n.click()')
+        if hidden:
+            listing.evaluate('n=>n.previousElementSibling.click()')
 
     lap("expanded sources")
     # Production bindings: filters, column preference, CSV, glossary, downloads.
@@ -13214,6 +13861,8 @@ CLICK_WIDTH_ALLOW = {
     '.dlist a': 'Each Data download is one row link covering the file name and its description.',
     '.fn-phone-row': 'A grouped Functions row is one full-width control over its name and strips.',
     '.fund-row': 'A Funding row is one full-width control; identity, figures and citations are operable siblings.',
+    '.fund-names-toggle': 'Each Funding names line is one full-width disclosure.',
+    '.fund-name-row': 'Each institute in an opened Funding names list is one full-width records control.',
 }
 
 CLICK_WIDTH_JS = r"""allowed => {
@@ -13940,6 +14589,7 @@ def check_clickable_widths(browser, base_url: str) -> list[str]:
             set_theme(page, theme)
             for opened in (False, True):
                 page.locator('main details:not(.cols, .download-menu)').evaluate_all('(nodes, open) => nodes.forEach(n => n.open = open)', opened)
+                page.locator('.fund-names-toggle').evaluate_all('(nodes, open) => nodes.forEach(n => { if ((n.getAttribute("aria-expanded") === "true") !== open) n.click(); })', opened)
                 page.evaluate('() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)))')
                 if not opened and theme == 'light':
                     # The audit must still see a stretched link whose icon sits right after its text.
@@ -13964,7 +14614,7 @@ def check_clickable_widths(browser, base_url: str) -> list[str]:
 FN_CLAIM_INDENT_JS = r"""detail => {
   if (detail.matches('.fn-detail-row')) detail = detail.querySelector('.fn-detail');
   const inline = detail.matches('.fn-phone-claims'), errors = [];
-  const name = inline ? detail.parentElement.querySelector('.fn-function-label > span:not(.fn-pip)') : detail.querySelector('.fn-detail-head');
+  const name = inline ? detail.parentElement.querySelector('.fn-function-label > span:not(.fn-pip)') : detail.querySelector('.fn-function-head');
   if (!name) return ['claim block has no parent function name'];
   const range = document.createRange(); range.selectNodeContents(name);
   const edge = range.getBoundingClientRect().left;
@@ -13981,7 +14631,7 @@ FN_CLAIM_INDENT_JS = r"""detail => {
 
 FN_CLAIMS_CHECK_JS = "const claimIndentErrors = " + FN_CLAIM_INDENT_JS + ";\n" + r"""
 const checkHeading = (detail, cell, country, institute, code, key) => {
-  const heading = detail.querySelector('.fn-detail-head, .fn-function-head'), context = detail.querySelector(':scope > .fn-detail-context');
+  const heading = detail.querySelector('.fn-function-head'), context = detail.querySelector(':scope > .fn-detail-context');
   if (detail.matches('.fn-phone-claims')) {
     const button = detail.parentElement.querySelector('button.fn-function-label');
     need(!heading && !context && detail.firstElementChild?.matches('.fn-claim, .fn-basis'), key + ': inline claims repeat their title or status before the evidence');
@@ -13989,7 +14639,8 @@ const checkHeading = (detail, cell, country, institute, code, key) => {
     return;
   }
   need(heading?.matches('h4') && heading.textContent === data.dataset.vocabularies.function[code].label, key + ': grid panel must head the claims with the function label');
-  need(!!heading?.id && detail.getAttribute('aria-labelledby') === heading.id, key + ': grid region lost its function name');
+  const identity=detail.querySelector('.fn-detail-head');
+  need(!!identity?.id && detail.getAttribute('aria-labelledby') === identity.id, key + ': grid region lost its state and institute name');
   const said = context?.textContent || '', assigned = /\bassigned\b/i.test(said), active = /\bactive\b/i.test(said);
   const states = {mandate: assigned && !active, activity: active && !assigned, both: active && assigned};
   need((!(cell.value in states) || states[cell.value]) && said.includes(institute), key + ': grid status must name the institute short form');
@@ -14065,8 +14716,10 @@ def function_phone_model(data: dict) -> dict:
     lookup = function_values(institutes, vocab)
     groups = function_columns(data)
     columns = [code for group in groups for code in group["codes"]]
+    base_names = expected_base_names(data)
     return {"groups": groups, "rows": [
         {"id": i["id"], "country": states[i["jurisdiction_id"]]["name"], "name": function_display_name(i),
+         "head_name": states[i["jurisdiction_id"]]["name"] + ', ' + base_names[i['id']],
          "block": "Established" if states[i["jurisdiction_id"]]["status"] == "established" else "Not yet established",
          "functions": [{"code": code, "label": vocab[code]["label"], "group": vocab[code]["group"], **lookup[i["id"]][code]} for code in columns]}
         for i in institutes]}
@@ -14710,7 +15363,7 @@ def check_functions_phone(browser, base_url: str, data: dict, *, inject: bool = 
                          detail.id === button.getAttribute('aria-controls') && button.getAttribute('aria-expanded') === 'true' &&
                          detail.getAttribute('role') === 'region' && detail.getAttribute('aria-labelledby') === detail.querySelector('.fn-detail-head')?.id,
                          key + ': phone detail placement/state differs');
-                    need(detail.querySelector('.fn-detail-head')?.textContent === expected.name, key + ': phone detail institute name differs');
+                    need(detail.querySelector('.fn-detail-head')?.textContent === expected.head_name, key + ': phone detail state and institute name differ');
                     const headings = [...detail.querySelectorAll(':scope > h4')], lists = [...detail.querySelectorAll(':scope > .fn-phone-functions')];
                     need(same(headings.map(h => h.textContent), model.groups.map(g => Object.prototype.hasOwnProperty.call(groupLabels, g.name) ? groupLabels[g.name] : g.name)) && lists.length === model.groups.length, key + ': phone detail groups/order differ');
                     for (const [g, group] of model.groups.entries()) {
@@ -15176,7 +15829,7 @@ def selection_state_errors(mark: dict) -> list[str]:
     if mark.get("cellBand") and (not mark["cellAnchored"] or abs(mark["startOffset"]) > 1 or abs(mark["height"] - mark["bandHeight"]) > 1):
         errors.append("grid selection bar does not follow the selected cell's start edge and row height")
     if mark.get("joined") and (mark["gap"] is None or abs(mark["gap"]) > 1 or not mark["sameGround"]):
-        errors.append("variant A's panel does not meet its row on the same ground")
+        errors.append("selected panel does not meet its row on the same ground")
     return errors
 
 
@@ -15201,7 +15854,7 @@ def selected_box_pixels(page, control, hover: bool) -> list[str]:
       const own=getComputedStyle(n), outline=own.outlineStyle!=='none' && parseFloat(own.outlineWidth)>0;
       const panel=n.matches('.fn-cell')?host.closest('table').querySelector('.fn-detail'):
         document.getElementById(n.getAttribute('aria-controls'));
-      const joined=document.documentElement.dataset.selection!=='b' && n.matches('.fn-cell,.fn-phone-row,.fund-row');
+      const joined=n.matches('.fn-cell,.fn-phone-row,.fund-row');
       const ground=element=>{
         for(let e=element;e;e=e.parentElement) { const c=getComputedStyle(e).backgroundColor; if(c!=='rgba(0, 0, 0, 0)') return c; }
         return '';
@@ -15276,33 +15929,23 @@ SELECTION_FOCUS_JS = """n => {
 
 
 def check_selection_boxes(browser, base_url: str) -> list[str]:
-    """N5: both selection variants, joined panels, painted bars and separate focus rings."""
+    """N5: tinted selection, joined panels, painted bars and separate focus rings."""
     errors = []
     for width in (1440, 1000, 390):
         page = browser.new_page(viewport={"width": width, "height": 1000})
         try:
             hydrated(page, base_url)
             page.evaluate("document.fonts.ready")
-            for theme, variant in [(t, v) for t in ("light", "dark") for v in ("a", "b")]:
+            for theme in ("light", "dark"):
                 set_theme(page, theme)
-                page.evaluate("v => document.documentElement.dataset.selection=v", variant)
                 page.evaluate("document.getElementById('functions-table').fnView('grid')")
 
                 def inspect(control, label):
                     for hover in (False, True):
-                        errors.extend(f"{width}px {theme} variant {variant} {label} {'hover' if hover else 'no hover'}: {e}"
+                        errors.extend(f"{width}px {theme} {label} {'hover' if hover else 'no hover'}: {e}"
                                       for e in selected_box_pixels(page, control, hover))
                     page.keyboard.press("Shift")  # Keyboard modality, including a focus() on an open control.
-                    errors.extend(f"{width}px {theme} variant {variant} {label}: {e}" for e in control.evaluate(SELECTION_FOCUS_JS))
-                    if variant == "a":
-                        same = control.evaluate("""n => {
-                          const look=()=>[getComputedStyle(n).backgroundColor,getComputedStyle(n,'::after').backgroundColor,
-                            getComputedStyle(n,'::after').width].join('|'), explicit=look();
-                          delete document.documentElement.dataset.selection; const implicit=look();
-                          document.documentElement.dataset.selection='a'; return explicit===implicit;
-                        }""")
-                        if not same:
-                            errors.append(f"{width}px {theme} {label}: default selection differs from variant A")
+                    errors.extend(f"{width}px {theme} {label}: {e}" for e in control.evaluate(SELECTION_FOCUS_JS))
 
                 if width > 640:
                     # One marked cell in each column, plus one on each block's first/last row.
@@ -15895,7 +16538,7 @@ def browser_jobs(dist: Path, data: dict, screenshots: Path | None) -> list[tuple
         ("interactions", check_operating_edges, (data,)),
         ("interactions", table_sorting, (data,)),
         ("interactions", check_card_grid_edges, (data,)),
-        ("interactions", check_card_heads, ()),
+        ("interactions", check_card_heads, (data,)),
         ("interactions", check_saved_card_heads, ()),
     ]
 

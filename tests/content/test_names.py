@@ -12,7 +12,7 @@ from scripts import check_page
 
 FAMILY = {
     "section bar": lambda html, data: check_page.check_section_bar(check_page.BeautifulSoup(html, "html.parser")),
-    "institute names": lambda html, data: check_page.check_institute_names(html, data),
+    "full institute names and state-first records heads": lambda html, data: check_page.check_institute_names(html, data),
     "former names": lambda html, data: check_page.check_former_names(html, data),
     "none-identified folds": lambda html, data: check_page.check_nonidentified_folds(html, data),
     "terms marked once": lambda html, data: check_page.check_terms_once(html, data),

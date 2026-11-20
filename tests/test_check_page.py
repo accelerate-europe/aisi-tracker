@@ -466,7 +466,7 @@ def test_selection_gate_rejects_missing_faint_boxed_or_detached_selection(change
                     joined=True, gap=1, sameGround=True)
     assert not check_page.selection_state_errors(selected)
     assert any(finding in e for e in check_page.selection_state_errors(selected | change))
-    # Variant B needs the same visible bar but does not join the panel's ground to the row.
+    # Search options have the same bar, without an adjoining records panel.
     assert not check_page.selection_state_errors(selected | dict(joined=False, gap=8, sameGround=False))
 
 
@@ -650,6 +650,24 @@ def funding_geometry():
     return dict(list=box(300, 100, 1068, 800), heads=heads, rows=rows, overflow=[], oneLineNames=True)
 
 
+@pytest.mark.parametrize("mutation, finding", [("short", "44px"), ("overlap", "overlap")])
+def test_funding_geometry_keeps_disclosures_and_list_rows_large_and_separate(funding_geometry, mutation, finding):
+    got = funding_geometry
+    got["targets"] = [
+        {"key": "budget missing disclosure", "box": dict(left=300, right=1368, top=260, bottom=304, width=1068, height=44)},
+        {"key": "budget missing institute", "box": dict(left=300, right=1368, top=304, bottom=348, width=1068, height=44)},
+    ]
+    assert check_page.funding_layout_errors(got) == []
+    target = got["targets"][1]["box"]
+    if mutation == "short":
+        target["height"] = 28
+        target["bottom"] = target["top"] + 28
+    else:
+        target["top"] -= 10
+        target["bottom"] -= 10
+    assert any(finding in error for error in check_page.funding_layout_errors(got))
+
+
 @pytest.mark.parametrize("mutation, finding", [
     ("bar-left", "differ from the head cells"),
     ("figure-left", "differ from the head cells"),
@@ -727,7 +745,7 @@ def test_joined_funding_panel_keeps_the_full_width_control_without_a_divider(fun
     row['button']['right'] -= 8
     assert any('hairline/control' in e for e in check_page.funding_layout_errors(funding_geometry))
     row['button']['right'] += 8
-    row['joined'] = False  # closed rows, variant B and detached/mismatched panels still need their rule
+    row['joined'] = False  # closed rows and detached/mismatched panels still need their rule
     assert any('hairline/control' in e for e in check_page.funding_layout_errors(funding_geometry))
 
 
@@ -1182,7 +1200,7 @@ def test_budget_oracle_rejects_wrong_id_and_missing_value_structure():
     data = {"jurisdictions": [{"id": "JP", "status": "established"}], "institutes": [{"id": "jp-aisi", "jurisdiction_id": "JP", "funding": []}]}
     identity = "funding-7d0b36a48cc65315865a6d6ec83ddeb6"
     value = f'<span class="budget-value" data-funding-id="{identity}"><span class="budget-amount">~EUR 52m (JPY 8.8bn)</span><span class="budget-qualifiers">one-off · FY2025 supplementary · adopted</span></span>'
-    html = f'<article class="card" data-j="JP"><div class="row" data-track="9"><div class="k">Budget</div><div class="v">{value}</div></div></article><table><tbody id="world-rows"><tr data-j="JP"><td data-col="budget">{value}</td></tr></tbody></table><div id="fund-rows"><div class="fund-list" data-kind="budget"><div class="fund-other-line"><button class="fund-inline" data-institute="jp-aisi" data-funding-id="{identity}">Japan: one-off amount, in the records</button></div></div></div>'
+    html = f'<article class="card" data-j="JP"><div class="row" data-track="9"><div class="k">Budget</div><div class="v">{value}</div></div></article><table><tbody id="world-rows"><tr data-j="JP"><td data-col="budget">{value}</td></tr></tbody></table><div id="fund-rows"><div class="fund-list" data-kind="budget"><div class="fund-other-line"><button class="fund-name-row" data-institute="jp-aisi" data-funding-id="{identity}">Japan: one-off amount, in the records</button></div></div></div>'
     assert check_page.check_budget_output(html, data) == []
     assert any("wrong funding ID" in error for error in check_page.check_budget_output(html.replace(identity, "older-record"), data))
     assert any("separate amount and qualifiers" in error for error in check_page.check_budget_output(html.replace("budget-qualifiers", "removed"), data))
@@ -1245,16 +1263,25 @@ def funding_rows_case():
         ],
     }
 
-    def opener(iid, cls="fund-inline"):
-        return f'<button class="{cls}" data-institute="{iid}" aria-label="Funding and staff records: {iid}" aria-expanded="false" aria-controls="records-{iid}">' + (iid if cls == "fund-inline" else "") + "</button>"
+    def opener(iid, cls="fund-name-row"):
+        name = {"xx": "Example", "yy": "Another"}[iid]
+        return f'<button class="{cls}" data-institute="{iid}" data-j="{iid.upper()}" aria-label="Funding and staff records: {iid}" aria-expanded="false" aria-controls="records-{iid}">' + (name if cls == "fund-name-row" else "") + "</button>"
+
+    def missing_line(kind, ids):
+        names = ", ".join({"xx": "Example", "yy": "Another"}[iid] for iid in ids)
+        rows = "".join('<li class="fund-name-item">' + opener(iid) + '</li>' for iid in ids)
+        identity = f"fund-{kind}-missing-list"
+        return (f'<div class="fund-missing-line"><button class="fund-names-toggle" type="button" aria-expanded="false" aria-controls="{identity}">'
+                f'<span class="fund-missing-names">Not published: {names}</span></button>'
+                f'<ul class="fund-name-list" id="{identity}" role="list" hidden>{rows}</ul></div>')
 
     html = ('<p id="fund-chart-h">Established institutes only; planned and proposed ones remain in their records. Reference year 2026</p><div id="fund-rows">'
             '<div class="fund-list" data-kind="budget"><div class="fund-budget-head"><h3>Budget</h3></div><ul class="fund-chart-rows"></ul>'
-            '<div class="fund-other"></div><div class="fund-missing-line">Not published: ' + opener("xx") + ', ' + opener("yy") + '</div></div>'
+            '<div class="fund-other"></div>' + missing_line("budget", ("xx", "yy")) + '</div>'
             '<div class="fund-list" data-kind="staff"><div class="fund-staff-head"><h3>Staff</h3></div><ul class="fund-chart-rows">'
             '<li class="fund-item" data-j="XX" data-institute="xx">' + opener("xx", "fund-row")
             + '<div class="fund-measure fund-staff"><div class="fund-bar"><span class="bar-value"></span></div><div class="fund-value"><span class="fund-figure"><strong><abbr class="g val" tabindex="0" aria-description="As at Oct 2026, at least.">140+</abbr></strong></span></div></div></li></ul>'
-            '<div class="fund-other"></div><div class="fund-missing-line">Not published: ' + opener("yy") + '</div></div>'
+            '<div class="fund-other"></div>' + missing_line("staff", ("yy",)) + '</div>'
             '<div id="fund-records">' + ''.join(f'<details class="fund-detail" data-institute="{iid}" id="records-{iid}"><summary>Funding and staff records</summary></details>' for iid in ("xx", "yy"))
             + '</div></div><a id="funding-download" href="data/funding.csv" download data-tip="Staff records are in staff.csv">Funding CSV</a>')
     return BeautifulSoup(html, "html.parser"), data
@@ -1280,7 +1307,8 @@ def test_budget_explanation_keeps_period_basis_and_commitment(funding_rows_case,
     monkeypatch.setitem(check_page.EXPECTED_FUNDING_IDS, "XX", "budget")
     data["institutes"][0]["funding"] = [{"id": "budget", "eur_per_year_est": 100, "commitment": commitment, "annual_basis_code": "period_mean", "period": "2026-27 to 2029-30"}]
     chart = soup.select_one('.fund-list[data-kind="budget"]')
-    chart.select_one('.fund-inline[data-institute="xx"]').decompose()
+    chart.select_one('.fund-name-row[data-institute="xx"]').parent.decompose()
+    chart.select_one('.fund-missing-names').string = "Not published: Another"
     row = copy.deepcopy(soup.select_one(".fund-item"))
     row["data-funding-id"] = "budget"
     row.select_one(".fund-measure")["class"] = "fund-measure fund-budget"
@@ -1333,7 +1361,7 @@ def test_funding_row_mutants_cannot_drop_coverage_or_qualifications(funding_rows
     elif mutation == "download":
         soup.select_one("#funding-download")["data-tip"] = "Download records"
     elif mutation == "missing-list":
-        soup.select_one('.fund-list[data-kind="budget"] .fund-missing-line .fund-inline').extract()
+        soup.select_one('.fund-list[data-kind="budget"] .fund-missing-line .fund-name-row').extract()
     elif mutation == "partial-clause":
         row.select_one(".fund-figure abbr")["aria-description"] = "As at, at least."
     elif mutation == "duplicate-records":
@@ -1365,16 +1393,119 @@ def test_technical_counts_targets_and_ranges_keep_words_without_a_staff_bar(fund
     soup, data = funding_rows_case
     data["institutes"][1]["staff"] = [record]
     chart = soup.select_one('.fund-list[data-kind="staff"]')
-    button = chart.select_one('.fund-inline[data-institute="yy"]').extract()
+    button = chart.select_one('.fund-name-row[data-institute="yy"]')
     button.string = "Another (" + text + ")"
-    line = soup.new_tag("div", attrs={"class": "fund-other-line"})
-    line.string = "Not compared: "
-    line.append(button)
+    line = chart.select_one(".fund-missing-line").extract()
+    line["class"] = "fund-other-line"
+    names = line.select_one(".fund-missing-names")
+    names["class"] = "fund-other-names"
+    names.string = "Not compared: Another (" + text + ")"
+    listing = line.select_one(".fund-name-list")
+    listing["id"] = "fund-staff-other-list"
+    line.select_one(".fund-names-toggle")["aria-controls"] = listing["id"]
     chart.select_one(".fund-other").append(line)
-    chart.select_one(".fund-missing-line").decompose()
     assert check_page.check_funding_outside(str(soup), data) == []
     button.string = "Another (100 people)"
+    names.string = "Not compared: Another (100 people)"
     assert any("unscaled amounts must use words" in error for error in check_page.check_funding_outside(str(soup), data))
+
+
+@pytest.mark.parametrize("mutation, finding", [
+    ("no-toggle", "one disclosure and one plain list"),
+    ("wrong-controls", "control its own list"),
+    ("duplicate-list-id", "control its own list"),
+    ("list-before-toggle", "control its own list"),
+    ("expanded", "closed by default"),
+    ("unhidden", "closed by default"),
+    ("list-role", "control its own list"),
+    ("nested-control", "contains an interactive control"),
+    ("missing-summary-name", "all names and reasons as plain text"),
+    ("split-summary-text", "all names and reasons as plain text"),
+    ("non-list-row", "one institute button per row"),
+    ("two-row-buttons", "one institute button per row"),
+    ("extra-row-control", "one institute button per row"),
+    ("wrong-state", "institute identity and state name"),
+    ("wrong-name", "institute identity and state name"),
+])
+def test_funding_names_disclosure_mutants_reject_broken_structure_and_saved_text(funding_rows_case, mutation, finding):
+    soup, data = funding_rows_case
+    line = soup.select_one('.fund-list[data-kind="budget"] .fund-missing-line')
+    toggle, listing = line.select_one(".fund-names-toggle"), line.select_one(".fund-name-list")
+    names, row = toggle.select_one(".fund-missing-names"), listing.select_one(".fund-name-item")
+    button = row.select_one(".fund-name-row")
+    if mutation == "no-toggle":
+        toggle.unwrap()
+    elif mutation == "wrong-controls":
+        toggle["aria-controls"] = "absent"
+    elif mutation == "duplicate-list-id":
+        soup.select_one('.fund-list[data-kind="staff"] .fund-name-list')["id"] = listing["id"]
+    elif mutation == "list-before-toggle":
+        toggle.insert_before(listing.extract())
+    elif mutation == "expanded":
+        toggle["aria-expanded"] = "true"
+    elif mutation == "unhidden":
+        del listing["hidden"]
+    elif mutation == "list-role":
+        del listing["role"]
+    elif mutation == "nested-control":
+        toggle.append(BeautifulSoup('<a href="#source">Source</a>', "html.parser"))
+    elif mutation == "missing-summary-name":
+        names.string = "Not published: Example"
+    elif mutation == "split-summary-text":
+        names.string = "Not published: "
+        names.append(BeautifulSoup('<span>Example, Another</span>', "html.parser"))
+    elif mutation == "non-list-row":
+        row.name = "div"
+    elif mutation == "two-row-buttons":
+        row.append(copy.deepcopy(button))
+    elif mutation == "extra-row-control":
+        row.append(BeautifulSoup('<a href="#source">Source</a>', "html.parser"))
+    elif mutation == "wrong-state":
+        button["data-j"] = "YY"
+    elif mutation == "wrong-name":
+        button.string = "Wrong name"
+    assert any(finding in error for error in check_page.check_funding_outside(str(soup), data))
+
+
+@pytest.fixture
+def saved_funding_rows_case(funding_rows_case):
+    soup, data = funding_rows_case
+    for toggle in soup.select('.fund-names-toggle'):
+        toggle.name = 'span'
+        toggle.attrs = {'class': ['fund-names-toggle']}
+    return soup, data
+
+
+def test_saved_funding_names_are_plain_text_until_hydration(saved_funding_rows_case):
+    soup, data = saved_funding_rows_case
+    assert check_page.check_funding_outside(str(soup), data, saved=True) == []
+    assert check_page.check_funding_outside(str(soup), data)  # Live disclosures still require buttons and ARIA.
+
+
+def test_saved_funding_check_rejects_original_dead_buttons(funding_rows_case):
+    soup, data = funding_rows_case
+    assert check_page.check_funding_outside(str(soup), data) == []
+    assert any('saved names line must be plain text' in e for e in check_page.check_funding_outside(str(soup), data, saved=True))
+
+
+@pytest.mark.parametrize('mutation', ['button', 'role', 'tabindex', 'expanded', 'controls', 'nested-focus', 'sibling-focus', 'unhidden'])
+def test_saved_funding_names_reject_dead_control_mutations(saved_funding_rows_case, mutation):
+    soup, data = saved_funding_rows_case
+    toggle = soup.select_one('.fund-names-toggle')
+    if mutation == 'button':
+        toggle.name = 'button'
+    elif mutation in ('role', 'tabindex', 'expanded', 'controls'):
+        key, value = {'role': ('role', 'button'), 'tabindex': ('tabindex', '0'),
+                      'expanded': ('aria-expanded', 'false'), 'controls': ('aria-controls', 'fund-budget-missing-list')}[mutation]
+        toggle[key] = value
+    elif mutation == 'nested-focus':
+        toggle.select_one('.fund-missing-names')['tabindex'] = '0'
+    elif mutation == 'sibling-focus':
+        toggle.insert_before(BeautifulSoup('<button>Open</button>', 'html.parser'))
+    else:
+        del soup.select_one('.fund-name-list')['hidden']
+    finding = 'closed by default' if mutation == 'unhidden' else 'saved names line must be plain text'
+    assert any(finding in e for e in check_page.check_funding_outside(str(soup), data, saved=True))
 
 
 def test_setup_groups_cover_institutes_before_establishment():
@@ -1475,7 +1606,9 @@ def _names_html(gb="AI Security Institute (United Kingdom)", gb_short="UK AISI",
     def card(jid, name):
         return f'<article class="card" id="c-{jid.lower()}"><div class="row" data-track="2"><div class="k">Institute</div><div class="v">{name}</div></div></article>'
     def funding(jid, iid, short, name):
-        return f'<li class="fund-item" data-j="{jid}" data-institute="{iid}"><button class="fund-row" aria-label="{name} ({short})" aria-description="{name} ({short})"></button><div class="fund-identity"></div><details class="fund-detail" data-institute="{iid}"><summary><span class="fund-head-name">{name}</span></summary></details></li>'
+        state = next(j['name'] for j in _names_data()['jurisdictions'] if j['id'] == jid)
+        base = name.removesuffix(f" ({state})")
+        return f'<li class="fund-item" data-j="{jid}" data-institute="{iid}"><button class="fund-row" aria-label="{name} ({short})" aria-description="{name} ({short})"></button><div class="fund-identity"></div><details class="fund-detail" data-institute="{iid}"><summary><span class="fund-head-name" title="{state}, {base}">{state}, {base}</span></summary></details></li>'
     def row(jid, short, full):
         return f'<tr data-j="{jid}"><td data-col="inst"><abbr class="g" data-exp="{full}">{short}</abbr></td></tr>'
     def region(jid, short, full):
@@ -1514,12 +1647,12 @@ def test_institute_names_pass_and_fail_on_each_rule():
     assert any("card has no Institute row" in e for e in check_page.check_institute_names(_names_html().replace('id="c-es"', 'id="c-xx"'), data))
     assert any("ES table cell" in e for e in check_page.check_institute_names(_names_html().replace('<tr data-j="ES">', '<tr data-j="XX">'), data))
     # Compact Funding openers expose both names on focus; the detail always spells the full name out.
-    bad = _names_html().replace('<span class="fund-head-name">AI Security Institute (Spain)', '<span class="fund-head-name">Spain AISI')
+    bad = _names_html().replace('>Spain, AI Security Institute</span>', '>Spain, Spain AISI</span>')
     assert any("funding" in e and "name" in e for e in check_page.check_institute_names(bad, data))
     bad = BeautifulSoup(_names_html(), "html.parser")
     del bad.select_one(".fund-row")["aria-description"]
     assert any("funding" in e and "focus" in e for e in check_page.check_institute_names(str(bad), data))
-    tab = _names_html().replace('<span class="fund-head-name">AI Security Institute (Spain)</span>', '<span class="fund-head-name">AI Security Institute (Spain)<span class="vh"> Opens elsewhere</span></span>')
+    tab = _names_html().replace('>Spain, AI Security Institute</span>', '>Spain, AI Security Institute<span class="vh"> Opens elsewhere</span></span>')
     assert check_page.check_institute_names(tab, data) == []
     # No funding rows at all is a failure, not a pass.
     assert any("no funding rows" in e for e in check_page.check_institute_names(_names_html().replace('id="fund-rows"', 'id="x"'), data))
@@ -3589,12 +3722,14 @@ def test_each_moved_content_family_has_one_home(monkeypatch):
 
     calls = []
     for name in MOVED_HELPERS:
-        monkeypatch.setattr(check_page, name, lambda *args, name=name: calls.append(name) or [])
+        monkeypatch.setattr(check_page, name, lambda *args, name=name, **kwargs: calls.append((name, kwargs)) or [])
     for module, helpers in MOVED_TO_CONTENT.items():
         calls.clear()
         for helper in importlib.import_module(f"content.test_{module}").FAMILY.values():
             helper("<html></html>", {})
-        assert sorted(calls) == sorted(helpers), module  # each once, none missing, none twice
+        assert sorted(name for name, kwargs in calls) == sorted(helpers), module  # each once, none missing, none twice
+        if module == "funding":
+            assert dict(calls)["check_funding_outside"] == {"saved": True}
     # The browser gate's static pass (main) no longer calls any of them; the calls that remain elsewhere run them on
     # planted fixtures or filtered views inside browser jobs.
     import inspect

@@ -71,7 +71,6 @@ def test_card_head_accepts_compact_phone_head(card_head):
     ("reserved", float("-inf"), "finite"),
     ("height", float("nan"), "finite"),
     ("height", float("inf"), "finite"),
-    ("height", 49, "48px"),
 ])
 def test_card_head_rejects_bad_sticking_or_clearance(card_head, field, value, finding):
     card_head[field] = value
@@ -80,6 +79,11 @@ def test_card_head_rejects_bad_sticking_or_clearance(card_head, field, value, fi
 
 def test_card_head_allows_extra_space_from_a_taller_peer(card_head):
     card_head["reserved"] = 90
+    assert check_page.card_head_errors(card_head) == []
+
+
+def test_card_head_allows_wrapping_identity_when_track_clears_it(card_head):
+    card_head.update(height=120, reserved=120)
     assert check_page.card_head_errors(card_head) == []
 
 

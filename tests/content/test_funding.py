@@ -11,7 +11,7 @@ from scripts import check_page
 
 FAMILY = {
     "budget output": lambda html, data: check_page.check_budget_output(html, data),
-    "ranked established-institute charts, plain summary lines and accessible figure explanations": lambda html, data: check_page.check_funding_outside(html, data),
+    "ranked established-institute charts, plain saved names lines, hidden lists and accessible figures": lambda html, data: check_page.check_funding_outside(html, data, saved=True),
     "intervals": lambda html, data: check_page.check_interval_output(html, data, check_page.HAND_WORKED_INTERVALS),
     "per-person figures": lambda html, data: check_page.check_per_person(check_page.BeautifulSoup(html, "html.parser"), data),
     "amounts without a rate": lambda html, data: check_page.check_no_rate_amounts(html, data),
