@@ -36582,9 +36582,7 @@
         },
         {
           "id": "claims-0424f35f5f8047f3bc784ca59f9b9eea",
-          "kind": "function",
-          "code": "standards_guidance",
-          "basis": "mandate",
+          "kind": "fact",
           "text": "Its page on the ISED site says it provides guidance to AI developers and users and to the public on the risks of advanced AI systems and how to address them.",
           "source_ids": [
             "ca-ised"
