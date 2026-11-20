@@ -40594,7 +40594,8 @@
         "in-storyboard-2026",
         "in-rs-usq-1668-2026",
         "in-ht-explainer-2026-08",
-        "in-pib-2026-07-27"
+        "in-pib-2026-07-27",
+        "in-dic-director-jd"
       ],
       "notes": "Announced by the IT minister in January 2025; the November 2025 India AI Governance Guidelines call it recently established and propose testing and evaluation of AI systems for risks. The 9 May date concerns a call for partner institutions, not a verified designation date. The exact founding date remains unknown. Not a member of the international network. Projects funded under the IndiaAI Mission's safe and trusted AI pillar are mission grants, not output credited to the institute. A Hindustan Times explainer of 8 August 2026 says the institute is yet to be formally set up.",
       "mandate_short": "Guidelines propose research, risk assessment, testing and draft standards.",
@@ -40701,11 +40702,14 @@
         ]
       },
       "staffing_model": {
-        "code": "core_with_partners",
+        "code": "host_unit",
         "source_ids": [
+          "in-dic-director",
+          "in-dic-director-jd",
           "in-indiaai-partners-2025",
           "in-pib-2026-07-27"
-        ]
+        ],
+        "notes": "The May 2025 partner call assigns technical work to decentralised institute cells; the July 2026 release describes a hub-and-spoke model."
       },
       "claims": [
         {
@@ -53957,7 +53961,36 @@
       "accessed": "2026-10-17",
       "archive_url": "https://web.archive.org/web/20260605232533/https://dic.gov.in/jobs/director-indiaai-safety-institute/",
       "language": "en",
-      "excerpts": [],
+      "excerpts": [
+        {
+          "text": "India AI is currently inviting applications for the position of Director – IndiaAI Safety Institute on a purely contractual/ consolidated basis.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "in-aisi"
+              },
+              "staffing_model",
+              "code"
+            ]
+          ],
+          "accessed": "2026-11-20"
+        },
+        {
+          "text": "Build institutional capacity by recruiting, mentoring and developing a high-quality multidisciplinary team of researchers, engineers, and policy specialists under the Institute.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "in-aisi"
+              },
+              "staffing_model",
+              "code"
+            ]
+          ],
+          "accessed": "2026-11-20"
+        }
+      ],
       "origin": "IN",
       "snapshot": {
         "retrieved": "2026-10-17T14:20:28Z",
@@ -54362,7 +54395,7 @@
                 "id": "in-aisi"
               },
               "staffing_model",
-              "code"
+              "notes"
             ]
           ],
           "accessed": "2026-10-21"
@@ -102776,6 +102809,20 @@
             ]
           ],
           "accessed": "2026-10-19"
+        },
+        {
+          "text": "The positions are purely temporary in nature for the project of DIC/IndiaAI and the appointees shall not derive any right or claim for permanent appointment at DIC/IndiaAI",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "in-aisi"
+              },
+              "staffing_model",
+              "code"
+            ]
+          ],
+          "accessed": "2026-11-20"
         }
       ],
       "snapshot": {
@@ -110474,7 +110521,7 @@
                 "id": "in-aisi"
               },
               "staffing_model",
-              "code"
+              "notes"
             ]
           ],
           "accessed": "2026-10-21"
