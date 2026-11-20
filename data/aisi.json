@@ -39534,7 +39534,8 @@
         "au-best-practice-guidance-2026",
         "r3-naaimes-best-practice",
         "au-charlton-afr-speech-2026",
-        "au-disr-annual-report-2025-26"
+        "au-disr-annual-report-2025-26",
+        "au-senate-estimates-eco-2026-10-29"
       ],
       "people": [
         {
@@ -39875,12 +39876,13 @@
             "named_as": "Australia’s AI Safety Institute"
           }
         ],
-        "notes": "No access event is recorded: no source names a model to which the institute was given access or states that access was given. The MOU is 'a statement of intent and is not intended to have legal effect' and contains no access term; Anthropic's announcement commits it to joint safety and security evaluations with the institute. On 6 October 2026 Anthropic said it was 'finalizing an agreement with the AI Safety Institute to enable it to run its own independent evaluations of our models'; no report of its conclusion was found. On 18 September 2026 a deputy secretary of the department told a parliamentary committee that colleagues in the National Intelligence Community were working with the companies and the US government 'to make sure we secure the access that we need to do the testing and evaluation that we need'. No legal power: Australia has no AI act.",
+        "notes": "No access event is recorded: the sources do not establish access to a named model before its public release or beyond publicly available access. The MOU is 'a statement of intent and is not intended to have legal effect' and contains no access term; Anthropic's announcement commits it to joint safety and security evaluations with the institute. On 6 October 2026 Anthropic said it was 'finalizing an agreement with the AI Safety Institute to enable it to run its own independent evaluations of our models'; no report of its conclusion was found. On 18 September 2026 a deputy secretary of the department told a parliamentary committee that colleagues in the National Intelligence Community were working with the companies and the US government 'to make sure we secure the access that we need to do the testing and evaluation that we need'. No legal power: Australia has no AI act. At a Senate estimates hearing on 29 October 2026 (uncorrected proof Hansard) a deputy secretary said the institute was still working through the technical aspects of how Anthropic and Microsoft, with which it has MOUs, would give it access to frontier models. The General Manager said that in the meantime the institute reaches Anthropic models through its technical partners, and that it tested frontier models with those partners in June 2026; she took on notice which models, so no event is recorded.",
         "source_ids": [
           "au-anthropic-mou-2026",
           "au-anthropic-news-2026",
           "au-forbes-2026",
-          "au-jsc-ai-2026-09-18"
+          "au-jsc-ai-2026-09-18",
+          "au-senate-estimates-eco-2026-10-29"
         ],
         "searches": [
           {
@@ -39939,6 +39941,19 @@
         ]
       },
       "staff": [
+        {
+          "total": 29,
+          "total_qualifier": "exact",
+          "technical": 7,
+          "technical_qualifier": "at_least",
+          "as_of": "2026-10-29",
+          "description": "Headcount 29, equal to 27.4 full-time equivalent posts, as the institute's General Manager told a Senate estimates hearing on 29 October 2026 (uncorrected proof Hansard). Asked how many are in technical roles, she said seven staff, 6.4 full-time equivalent, work on evaluating models and six, 5.8 full-time equivalent, are in the regulatory engagement team. The technical count of at least 7 is the staff evaluating models.",
+          "source_ids": [
+            "au-senate-estimates-eco-2026-10-29"
+          ],
+          "confidence": "high",
+          "id": "staff-5e1f0a7c93b24d6e8a41c2d7f6b9e305"
+        },
         {
           "total": 25,
           "total_qualifier": "exact",
@@ -128158,6 +128173,210 @@
         "retrieved": "2026-11-20T12:18:54Z",
         "sha256": "08e7930f76751bd69a0e64dd74326b324600706c2b673e8e0d439b606cd55ea7",
         "text_sha256": "d95f8af255604a06355913ae7e11a6ad3a5f3f805b9ed853567f18a09ec22ea6",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "au-senate-estimates-eco-2026-10-29",
+      "url": "https://parlinfo.aph.gov.au/parlInfo/download/committees/estimate/30044/toc_pdf/Economics%20Legislation%20Committee_2026_10_29.pdf;fileType=application%2Fpdf",
+      "title": "Senate Economics Legislation Committee, Estimates, 29/10/2026 (proof Hansard)",
+      "publisher": "Parliament of Australia",
+      "type": "primary",
+      "published": "2026-10-29",
+      "accessed": "2026-11-20",
+      "language": "en",
+      "origin": "AU",
+      "access_note": "ParlInfo returns HTTP 403 to automated requests. The saved copy is the proof Hansard PDF, downloaded in a browser by the maintainer on 20 November 2026 from the committee's estimates page; the address is the PDF link that page gives for 29 October 2026. The witness list is on printed page 50, the access quotations on printed page 74 and the staff quotations on printed page 75. Proof Hansard is uncorrected.",
+      "excerpts": [
+        {
+          "text": "The AI Safety Institute's headcount is 29, so that's 27.4 FTE.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "staff",
+              {
+                "id": "staff-5e1f0a7c93b24d6e8a41c2d7f6b9e305"
+              },
+              "total"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "staff",
+              {
+                "id": "staff-5e1f0a7c93b24d6e8a41c2d7f6b9e305"
+              },
+              "total_qualifier"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "staff",
+              {
+                "id": "staff-5e1f0a7c93b24d6e8a41c2d7f6b9e305"
+              },
+              "as_of"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "staff",
+              {
+                "id": "staff-5e1f0a7c93b24d6e8a41c2d7f6b9e305"
+              },
+              "description"
+            ]
+          ],
+          "accessed": "2026-11-20"
+        },
+        {
+          "text": "We have seven staff working on evaluating models—6.4 FTE—and there are six staff in the regulatory engagement team—5.8 FTE.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "staff",
+              {
+                "id": "staff-5e1f0a7c93b24d6e8a41c2d7f6b9e305"
+              },
+              "technical"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "staff",
+              {
+                "id": "staff-5e1f0a7c93b24d6e8a41c2d7f6b9e305"
+              },
+              "technical_qualifier"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "staff",
+              {
+                "id": "staff-5e1f0a7c93b24d6e8a41c2d7f6b9e305"
+              },
+              "description"
+            ]
+          ],
+          "accessed": "2026-11-20"
+        },
+        {
+          "text": "Dr Kate Conroy, General Manager, AI Safety Institute",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "staff",
+              {
+                "id": "staff-5e1f0a7c93b24d6e8a41c2d7f6b9e305"
+              },
+              "description"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "model_access",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-20"
+        },
+        {
+          "text": "The AI Safety Institute does have an MOU with Anthropic",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "model_access",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-20"
+        },
+        {
+          "text": "We are just working through some of the more technical aspects of how they would then give us access to frontier models.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "model_access",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-20"
+        },
+        {
+          "text": "we do have our technical partners that we work with to access Anthropic models",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "model_access",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-20"
+        },
+        {
+          "text": "He referred to testing we did with our technical partners of frontier models in June of this year, within our first month of operation.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "model_access",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-20"
+        },
+        {
+          "text": "I might take that on notice in terms of clarifying the specifics of the models, because our technical partners are part of that agreement.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "model_access",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-20"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-20T14:09:23Z",
+        "sha256": "2570081af0eaad95a597548087039a86bf16cccafd3a7d44548c1537df6ec52b",
+        "text_sha256": "8d182b58172236a6f615e40a4e8f4efa318a52652588045f1fbcc271f01ae58b",
         "text_scheme": 1
       }
     }
