@@ -43,11 +43,11 @@
   },
   {
    "institute_id": "au-aisi",
-   "as_of": "2026-09-18",
-   "total": 25,
+   "as_of": "2026-10-29",
+   "total": 29,
    "total_qualifier": "exact",
-   "source_id": "au-jsc-ai-2026-09-18",
-   "quote": "We have 25 staff at the Australian AI Safety Institute."
+   "source_id": "au-senate-estimates-eco-2026-10-29",
+   "quote": "The AI Safety Institute's headcount is 29, so that's 27.4 FTE."
   }
  ]
 }
