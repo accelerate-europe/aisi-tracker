@@ -82496,7 +82496,7 @@
       "type": "primary",
       "accessed": "2026-10-17",
       "legal_text": true,
-      "instrument_status_checked": "2026-10-21",
+      "instrument_status_checked": "2026-11-20",
       "published": "2025-09-25",
       "language": "it",
       "excerpts": [
@@ -122884,7 +122884,8 @@
         "text_sha256": "a01b47164fa740d98ff47956d9760865aa44f4dd14cf5e80d351f9fbcaad37af",
         "text_scheme": 1
       },
-      "access_note": "On 10 November 2026 the current text and version history of article 20 could not be read on Normattiva, so the article's current status was not verified and no status check date is recorded."
+      "access_note": "The status of article 20 was checked on 20 November 2026 against Normattiva's consolidated text of the law (https://www.normattiva.it/eli/stato/LEGGE/2025/09/23/132/CONSOLIDATED), which the maintainer saved in a browser; automated requests could not read it on 10 November 2026. The version in force on 20 November 2026 has been in force since 10 October 2025 and carries the quoted passages, with accented letters where the Gazette prints apostrophes. The saved copy is the Gazette page.",
+      "instrument_status_checked": "2026-11-20"
     },
     {
       "id": "us-metr-donate",
