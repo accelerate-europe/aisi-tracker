@@ -33369,6 +33369,7 @@
         "no-techwatch-2026-05",
         "no-karrierestart-kin-2026",
         "no-doffin-2026-116502",
+        "no-gov-uk-ai-2026-11-12",
         "gb-no-ai-statement-2026",
         "no-digdir-ki-norge-report-2025"
       ],
@@ -33391,8 +33392,9 @@
           "counterparty": "UK Government, for the UK AI Security Institute",
           "state": "signed",
           "date": "2026-11-12",
-          "scope": "Non-binding joint statement of intent to explore cooperation, including sharing best practices between the two institutes on AI security, testing and evaluation, and exchanging knowledge of the capabilities and risks of advanced AI systems. The UK government said on 19 November 2026 that the statement creates no financial commitments and that no dedicated funding had been allocated to activities under it.",
+          "scope": "Non-binding joint statement of intent to explore cooperation, including sharing best practices between the two institutes on AI security, testing and evaluation, and exchanging knowledge of the capabilities and risks of advanced AI systems. The UK government said on 19 November 2026 that the statement creates no financial commitments and that no dedicated funding had been allocated to activities under it. Norway's government calls it a letter of intent, signed with a view to a later memorandum of understanding that sets out the cooperation in each area.",
           "source_ids": [
+            "no-gov-uk-ai-2026-11-12",
             "gb-no-ai-statement-2026",
             "gb-pq-43807-2026"
           ],
@@ -125537,7 +125539,7 @@
       "accessed": "2026-11-13",
       "language": "en",
       "origin": "GB",
-      "access_note": "The joint statement was signed for both governments in English. The Norwegian government's release of 12 November 2026 answered automated requests with a challenge page and has no archived copy, so the signed text published by the UK government is cited for both institutes.",
+      "access_note": "The joint statement was signed for both governments in English; the signed text published by the UK government is cited for both institutes. The Norwegian government's release of 12 November 2026 is cited beside it for Norway.",
       "excerpts": [
         {
           "text": "The ministers committed to explore collaboration in the following potential areas:",
@@ -128377,6 +128379,132 @@
         "retrieved": "2026-11-20T14:09:23Z",
         "sha256": "2570081af0eaad95a597548087039a86bf16cccafd3a7d44548c1537df6ec52b",
         "text_sha256": "8d182b58172236a6f615e40a4e8f4efa318a52652588045f1fbcc271f01ae58b",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "no-gov-uk-ai-2026-11-12",
+      "url": "https://www.regjeringen.no/no/aktuelt/norge-og-storbritannia-etablerer-samarbeid-om-kunstig-intelligens/id3192548/",
+      "title": "Norge og Storbritannia etablerer samarbeid om kunstig intelligens",
+      "title_en": "Norway and the United Kingdom establish cooperation on artificial intelligence",
+      "publisher": "Digitaliserings- og forvaltningsdepartementet",
+      "type": "primary",
+      "published": "2026-11-12",
+      "accessed": "2026-11-20",
+      "language": "no",
+      "origin": "NO",
+      "access_note": "The page returns a challenge page to automated requests; the saved copy is the page saved in a browser by the maintainer on 20 November 2026.",
+      "excerpts": [
+        {
+          "text": "Landene vil blant annet utforske samarbeid om:",
+          "gloss": "The countries will, among other things, explore cooperation on:",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "agreements",
+              {
+                "id": "agreements-558e5548aaf54f04a8a17b3f5939783b"
+              },
+              "scope"
+            ]
+          ],
+          "accessed": "2026-11-20"
+        },
+        {
+          "text": "tettere samarbeid mellom KI Norge og AI Security Institute om KI-sikkerhet, testing og evaluering av KI-modeller, samt samarbeid om å forstå risiko ved avansert KI",
+          "gloss": "closer cooperation between KI Norge and the AI Security Institute on AI security, testing and evaluation of AI models, and cooperation on understanding the risks of advanced AI",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "agreements",
+              {
+                "id": "agreements-558e5548aaf54f04a8a17b3f5939783b"
+              },
+              "counterparty"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "agreements",
+              {
+                "id": "agreements-558e5548aaf54f04a8a17b3f5939783b"
+              },
+              "participation"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "agreements",
+              {
+                "id": "agreements-558e5548aaf54f04a8a17b3f5939783b"
+              },
+              "scope"
+            ]
+          ],
+          "accessed": "2026-11-20"
+        },
+        {
+          "text": "På møtet undertegnet ministrene en intensjonsavtale om samarbeidet med sikte på senere å utvikle en MoU (Memorandum of Understanding) som skal konkretisere samarbeidet på de ulike områdene.",
+          "gloss": "At the meeting the ministers signed a letter of intent on the cooperation, with a view to later developing an MoU (Memorandum of Understanding) that will make the cooperation concrete in the various areas.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "agreements",
+              {
+                "id": "agreements-558e5548aaf54f04a8a17b3f5939783b"
+              },
+              "state"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "agreements",
+              {
+                "id": "agreements-558e5548aaf54f04a8a17b3f5939783b"
+              },
+              "scope"
+            ]
+          ],
+          "accessed": "2026-11-20"
+        },
+        {
+          "text": "Digitaliserings- og forvaltningsminister Torgeir Micaelsen og Storbritannias minister for kunstig intelligens, Kanishka Narayan, møttes 12. november i forbindelse med Atlantic Future Forum",
+          "gloss": "The Minister of Digitalisation and Public Governance, Torgeir Micaelsen, and the United Kingdom's Minister for Artificial Intelligence, Kanishka Narayan, met on 12 November in connection with the Atlantic Future Forum",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "agreements",
+              {
+                "id": "agreements-558e5548aaf54f04a8a17b3f5939783b"
+              },
+              "date"
+            ]
+          ],
+          "accessed": "2026-11-20"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-20T14:07:32Z",
+        "sha256": "4abfbdcd61fec6cb1d577135c030e503d7590be3f272faa18afd22de95fe9ad0",
+        "text_sha256": "7c968605576c57606504c1532bbcaecb424c905a65fb4a28118d44b0f6c801e1",
         "text_scheme": 1
       }
     }
