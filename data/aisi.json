@@ -31475,7 +31475,7 @@
             "named_as": "Taskforce"
           }
         ],
-        "notes": "Event dates are the model's public release date in Epoch AI's data unless the source dates the access itself; for every event except Gemini 4 Argon the sources state that the access came before release, so the access took place on or before that date. The Epoch AI models cited for the leading-developer test were released at least a month before each such date. Not counted: Kimi K3 (Moonshot, July 2026), as the access route is not stated; the Llama 3.1-405B network pilot (October to November 2024), as its weights are public. The developer agreements are the commitments of Anthropic, Google DeepMind and OpenAI to give the institute's predecessor 'deep model access', announced in 2023. The institute says it has independently evaluated more than 55 models before release, working with industry; the post names no models, so they are not counted as access events. Gemini 4 Argon is dated 13 October 2026, Epoch AI's release date; Google announced it on 30 September 2026, when it was rolling out to a set of trusted cyber defenders through Google's Fairwind Program, with an initial cohort of cyber defenders and trusted testers, and release to developers, enterprises and consumers, starting with paid API customers and Google AI Ultra subscribers, was to follow. The sources do not date the institute's access. A written answer of 2 November 2026 says all the institute's current collaboration agreements are with developers based in the UK and the US; one of 6 November says its evaluations are governed by agreements with the developers and their results are not typically published. A House of Commons committee report of 18 November 2026 says the institute has no guaranteed statutory right of access to models and that access before release is voluntary; it recommends a statutory AI regulator separate from the institute. Anthropic's letter of 22 October 2026 to a House of Commons committee says that, while the US government considered a new framework for pre-deployment testing and access, it could not give the institute access to Mythos 5.1 without safeguards before deployment and offered access with safeguards; it says it has since been able to give the institute access without safeguards to its latest models before deployment. Anthropic's witness told the committee on 13 October 2026 that the institute decided not to use the restricted access and has access to the model now.",
+        "notes": "Event dates are the model's public release date in Epoch AI's data unless the source dates the access itself; for every event except Gemini 4 Argon the sources state that the access came before release, so the access took place on or before that date. The Epoch AI models cited for the leading-developer test were released at least a month before each such date. Not counted: Kimi K3 (Moonshot, July 2026), as the access route is not stated; the Llama 3.1-405B network pilot (October to November 2024), as its weights are public. The developer agreements are the commitments of Anthropic, Google DeepMind and OpenAI to give the institute's predecessor 'deep model access', announced in 2023. The institute says it has independently evaluated more than 55 models before release, working with industry; the post names no models, so they are not counted as access events. Gemini 4 Argon is dated 13 October 2026, Epoch AI's release date; Google announced it on 30 September 2026, when it was rolling out to a set of trusted cyber defenders through Google's Fairwind Program, with an initial cohort of cyber defenders and trusted testers, and release to developers, enterprises and consumers, starting with paid API customers and Google AI Ultra subscribers, was to follow. The sources do not date the institute's access. A written answer of 2 November 2026 says all the institute's current collaboration agreements are with developers based in the UK and the US; one of 6 November says its evaluations are governed by agreements with the developers and their results are not typically published. A House of Commons committee report of 18 November 2026 says the institute has no guaranteed statutory right of access to models and that access before release is voluntary; it recommends a statutory AI regulator separate from the institute. The institute's Director wrote to a House of Commons committee on 15 September 2026 that Anthropic had made clear, when it released Mythos 5.1, that no organisation outside the US had access to the model. Anthropic's letter of 22 October 2026 to a House of Commons committee says that, while the US government considered a new framework for pre-deployment testing and access, it could not give the institute access to Mythos 5.1 without safeguards before deployment and offered access with safeguards; it says it has since been able to give the institute access without safeguards to its latest models before deployment. Anthropic's witness told the committee on 13 October 2026 that the institute decided not to use the restricted access and has access to the model now.",
         "source_ids": [
           "depth-us-kimi",
           "sg-pilot-2024",
@@ -31490,6 +31490,7 @@
           "gb-pq-38559-2026",
           "gb-aisi-launch",
           "gb-bist-guardrails-2026",
+          "gb-bist-aisi-letter-2026-09-15",
           "gb-bist-anthropic-letter-2026-10-22",
           "gb-bist-oral-evidence-2026-10-13"
         ],
@@ -33369,6 +33370,7 @@
         "no-techwatch-2026-05",
         "no-karrierestart-kin-2026",
         "no-doffin-2026-116502",
+        "no-gov-uk-ai-2026-11-12",
         "gb-no-ai-statement-2026",
         "no-digdir-ki-norge-report-2025"
       ],
@@ -33391,8 +33393,9 @@
           "counterparty": "UK Government, for the UK AI Security Institute",
           "state": "signed",
           "date": "2026-11-12",
-          "scope": "Non-binding joint statement of intent to explore cooperation, including sharing best practices between the two institutes on AI security, testing and evaluation, and exchanging knowledge of the capabilities and risks of advanced AI systems. The UK government said on 19 November 2026 that the statement creates no financial commitments and that no dedicated funding had been allocated to activities under it.",
+          "scope": "Non-binding joint statement of intent to explore cooperation, including sharing best practices between the two institutes on AI security, testing and evaluation, and exchanging knowledge of the capabilities and risks of advanced AI systems. The UK government said on 19 November 2026 that the statement creates no financial commitments and that no dedicated funding had been allocated to activities under it. Norway's government calls it a letter of intent, signed with a view to a later memorandum of understanding that sets out the cooperation in each area.",
           "source_ids": [
+            "no-gov-uk-ai-2026-11-12",
             "gb-no-ai-statement-2026",
             "gb-pq-43807-2026"
           ],
@@ -39534,7 +39537,8 @@
         "au-best-practice-guidance-2026",
         "r3-naaimes-best-practice",
         "au-charlton-afr-speech-2026",
-        "au-disr-annual-report-2025-26"
+        "au-disr-annual-report-2025-26",
+        "au-senate-estimates-eco-2026-10-29"
       ],
       "people": [
         {
@@ -39875,12 +39879,13 @@
             "named_as": "Australia’s AI Safety Institute"
           }
         ],
-        "notes": "No access event is recorded: no source names a model to which the institute was given access or states that access was given. The MOU is 'a statement of intent and is not intended to have legal effect' and contains no access term; Anthropic's announcement commits it to joint safety and security evaluations with the institute. On 6 October 2026 Anthropic said it was 'finalizing an agreement with the AI Safety Institute to enable it to run its own independent evaluations of our models'; no report of its conclusion was found. On 18 September 2026 a deputy secretary of the department told a parliamentary committee that colleagues in the National Intelligence Community were working with the companies and the US government 'to make sure we secure the access that we need to do the testing and evaluation that we need'. No legal power: Australia has no AI act.",
+        "notes": "No access event is recorded: the sources do not establish access to a named model before its public release or beyond publicly available access. The MOU is 'a statement of intent and is not intended to have legal effect' and contains no access term; Anthropic's announcement commits it to joint safety and security evaluations with the institute. On 6 October 2026 Anthropic said it was 'finalizing an agreement with the AI Safety Institute to enable it to run its own independent evaluations of our models'; no report of its conclusion was found. On 18 September 2026 a deputy secretary of the department told a parliamentary committee that colleagues in the National Intelligence Community were working with the companies and the US government 'to make sure we secure the access that we need to do the testing and evaluation that we need'. No legal power: Australia has no AI act. At a Senate estimates hearing on 29 October 2026 (uncorrected proof Hansard) a deputy secretary said the institute was still working through the technical aspects of how Anthropic and Microsoft, with which it has MOUs, would give it access to frontier models. The General Manager said that in the meantime the institute reaches Anthropic models through its technical partners, and that it tested frontier models with those partners in June 2026; she took on notice which models, so no event is recorded.",
         "source_ids": [
           "au-anthropic-mou-2026",
           "au-anthropic-news-2026",
           "au-forbes-2026",
-          "au-jsc-ai-2026-09-18"
+          "au-jsc-ai-2026-09-18",
+          "au-senate-estimates-eco-2026-10-29"
         ],
         "searches": [
           {
@@ -39939,6 +39944,19 @@
         ]
       },
       "staff": [
+        {
+          "total": 29,
+          "total_qualifier": "exact",
+          "technical": 7,
+          "technical_qualifier": "at_least",
+          "as_of": "2026-10-29",
+          "description": "Headcount 29, equal to 27.4 full-time equivalent posts, as the institute's General Manager told a Senate estimates hearing on 29 October 2026 (uncorrected proof Hansard). Asked how many are in technical roles, she said seven staff, 6.4 full-time equivalent, work on evaluating models and six, 5.8 full-time equivalent, are in the regulatory engagement team. The technical count of at least 7 is the staff evaluating models.",
+          "source_ids": [
+            "au-senate-estimates-eco-2026-10-29"
+          ],
+          "confidence": "high",
+          "id": "staff-5e1f0a7c93b24d6e8a41c2d7f6b9e305"
+        },
         {
           "total": 25,
           "total_qualifier": "exact",
@@ -82496,7 +82514,7 @@
       "type": "primary",
       "accessed": "2026-10-17",
       "legal_text": true,
-      "instrument_status_checked": "2026-10-21",
+      "instrument_status_checked": "2026-11-20",
       "published": "2025-09-25",
       "language": "it",
       "excerpts": [
@@ -122884,7 +122902,8 @@
         "text_sha256": "a01b47164fa740d98ff47956d9760865aa44f4dd14cf5e80d351f9fbcaad37af",
         "text_scheme": 1
       },
-      "access_note": "On 10 November 2026 the current text and version history of article 20 could not be read on Normattiva, so the article's current status was not verified and no status check date is recorded."
+      "access_note": "The status of article 20 was checked on 20 November 2026 against Normattiva's consolidated text of the law (https://www.normattiva.it/eli/stato/LEGGE/2025/09/23/132/CONSOLIDATED), which the maintainer saved in a browser; automated requests could not read it on 10 November 2026. The version in force on 20 November 2026 has been in force since 10 October 2025 and carries the quoted passages, with accented letters where the Gazette prints apostrophes. The saved copy is the Gazette page.",
+      "instrument_status_checked": "2026-11-20"
     },
     {
       "id": "us-metr-donate",
@@ -125521,7 +125540,7 @@
       "accessed": "2026-11-13",
       "language": "en",
       "origin": "GB",
-      "access_note": "The joint statement was signed for both governments in English. The Norwegian government's release of 12 November 2026 answered automated requests with a challenge page and has no archived copy, so the signed text published by the UK government is cited for both institutes.",
+      "access_note": "The joint statement was signed for both governments in English; the signed text published by the UK government is cited for both institutes. The Norwegian government's release of 12 November 2026 is cited beside it for Norway.",
       "excerpts": [
         {
           "text": "The ministers committed to explore collaboration in the following potential areas:",
@@ -128157,6 +128176,384 @@
         "retrieved": "2026-11-20T12:18:54Z",
         "sha256": "08e7930f76751bd69a0e64dd74326b324600706c2b673e8e0d439b606cd55ea7",
         "text_sha256": "d95f8af255604a06355913ae7e11a6ad3a5f3f805b9ed853567f18a09ec22ea6",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "au-senate-estimates-eco-2026-10-29",
+      "url": "https://parlinfo.aph.gov.au/parlInfo/download/committees/estimate/30044/toc_pdf/Economics%20Legislation%20Committee_2026_10_29.pdf;fileType=application%2Fpdf",
+      "title": "Senate Economics Legislation Committee, Estimates, 29/10/2026 (proof Hansard)",
+      "publisher": "Parliament of Australia",
+      "type": "primary",
+      "published": "2026-10-29",
+      "accessed": "2026-11-20",
+      "language": "en",
+      "origin": "AU",
+      "access_note": "ParlInfo returns HTTP 403 to automated requests. The saved copy is the proof Hansard PDF, downloaded in a browser by the maintainer on 20 November 2026 from the committee's estimates page; the address is the PDF link that page gives for 29 October 2026. The witness list is on printed page 50, the access quotations on printed page 74 and the staff quotations on printed page 75. Proof Hansard is uncorrected.",
+      "excerpts": [
+        {
+          "text": "The AI Safety Institute's headcount is 29, so that's 27.4 FTE.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "staff",
+              {
+                "id": "staff-5e1f0a7c93b24d6e8a41c2d7f6b9e305"
+              },
+              "total"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "staff",
+              {
+                "id": "staff-5e1f0a7c93b24d6e8a41c2d7f6b9e305"
+              },
+              "total_qualifier"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "staff",
+              {
+                "id": "staff-5e1f0a7c93b24d6e8a41c2d7f6b9e305"
+              },
+              "as_of"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "staff",
+              {
+                "id": "staff-5e1f0a7c93b24d6e8a41c2d7f6b9e305"
+              },
+              "description"
+            ]
+          ],
+          "accessed": "2026-11-20"
+        },
+        {
+          "text": "We have seven staff working on evaluating models—6.4 FTE—and there are six staff in the regulatory engagement team—5.8 FTE.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "staff",
+              {
+                "id": "staff-5e1f0a7c93b24d6e8a41c2d7f6b9e305"
+              },
+              "technical"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "staff",
+              {
+                "id": "staff-5e1f0a7c93b24d6e8a41c2d7f6b9e305"
+              },
+              "technical_qualifier"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "staff",
+              {
+                "id": "staff-5e1f0a7c93b24d6e8a41c2d7f6b9e305"
+              },
+              "description"
+            ]
+          ],
+          "accessed": "2026-11-20"
+        },
+        {
+          "text": "Dr Kate Conroy, General Manager, AI Safety Institute",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "staff",
+              {
+                "id": "staff-5e1f0a7c93b24d6e8a41c2d7f6b9e305"
+              },
+              "description"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "model_access",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-20"
+        },
+        {
+          "text": "The AI Safety Institute does have an MOU with Anthropic",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "model_access",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-20"
+        },
+        {
+          "text": "We are just working through some of the more technical aspects of how they would then give us access to frontier models.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "model_access",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-20"
+        },
+        {
+          "text": "we do have our technical partners that we work with to access Anthropic models",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "model_access",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-20"
+        },
+        {
+          "text": "He referred to testing we did with our technical partners of frontier models in June of this year, within our first month of operation.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "model_access",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-20"
+        },
+        {
+          "text": "I might take that on notice in terms of clarifying the specifics of the models, because our technical partners are part of that agreement.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "model_access",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-20"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-20T14:09:23Z",
+        "sha256": "2570081af0eaad95a597548087039a86bf16cccafd3a7d44548c1537df6ec52b",
+        "text_sha256": "8d182b58172236a6f615e40a4e8f4efa318a52652588045f1fbcc271f01ae58b",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "no-gov-uk-ai-2026-11-12",
+      "url": "https://www.regjeringen.no/no/aktuelt/norge-og-storbritannia-etablerer-samarbeid-om-kunstig-intelligens/id3192548/",
+      "title": "Norge og Storbritannia etablerer samarbeid om kunstig intelligens",
+      "title_en": "Norway and the United Kingdom establish cooperation on artificial intelligence",
+      "publisher": "Digitaliserings- og forvaltningsdepartementet",
+      "type": "primary",
+      "published": "2026-11-12",
+      "accessed": "2026-11-20",
+      "language": "no",
+      "origin": "NO",
+      "access_note": "The page returns a challenge page to automated requests; the saved copy is the page saved in a browser by the maintainer on 20 November 2026.",
+      "excerpts": [
+        {
+          "text": "Landene vil blant annet utforske samarbeid om:",
+          "gloss": "The countries will, among other things, explore cooperation on:",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "agreements",
+              {
+                "id": "agreements-558e5548aaf54f04a8a17b3f5939783b"
+              },
+              "scope"
+            ]
+          ],
+          "accessed": "2026-11-20"
+        },
+        {
+          "text": "tettere samarbeid mellom KI Norge og AI Security Institute om KI-sikkerhet, testing og evaluering av KI-modeller, samt samarbeid om å forstå risiko ved avansert KI",
+          "gloss": "closer cooperation between KI Norge and the AI Security Institute on AI security, testing and evaluation of AI models, and cooperation on understanding the risks of advanced AI",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "agreements",
+              {
+                "id": "agreements-558e5548aaf54f04a8a17b3f5939783b"
+              },
+              "counterparty"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "agreements",
+              {
+                "id": "agreements-558e5548aaf54f04a8a17b3f5939783b"
+              },
+              "participation"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "agreements",
+              {
+                "id": "agreements-558e5548aaf54f04a8a17b3f5939783b"
+              },
+              "scope"
+            ]
+          ],
+          "accessed": "2026-11-20"
+        },
+        {
+          "text": "På møtet undertegnet ministrene en intensjonsavtale om samarbeidet med sikte på senere å utvikle en MoU (Memorandum of Understanding) som skal konkretisere samarbeidet på de ulike områdene.",
+          "gloss": "At the meeting the ministers signed a letter of intent on the cooperation, with a view to later developing an MoU (Memorandum of Understanding) that will make the cooperation concrete in the various areas.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "agreements",
+              {
+                "id": "agreements-558e5548aaf54f04a8a17b3f5939783b"
+              },
+              "state"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "agreements",
+              {
+                "id": "agreements-558e5548aaf54f04a8a17b3f5939783b"
+              },
+              "scope"
+            ]
+          ],
+          "accessed": "2026-11-20"
+        },
+        {
+          "text": "Digitaliserings- og forvaltningsminister Torgeir Micaelsen og Storbritannias minister for kunstig intelligens, Kanishka Narayan, møttes 12. november i forbindelse med Atlantic Future Forum",
+          "gloss": "The Minister of Digitalisation and Public Governance, Torgeir Micaelsen, and the United Kingdom's Minister for Artificial Intelligence, Kanishka Narayan, met on 12 November in connection with the Atlantic Future Forum",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "agreements",
+              {
+                "id": "agreements-558e5548aaf54f04a8a17b3f5939783b"
+              },
+              "date"
+            ]
+          ],
+          "accessed": "2026-11-20"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-20T14:07:32Z",
+        "sha256": "4abfbdcd61fec6cb1d577135c030e503d7590be3f272faa18afd22de95fe9ad0",
+        "text_sha256": "7c968605576c57606504c1532bbcaecb424c905a65fb4a28118d44b0f6c801e1",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "gb-bist-aisi-letter-2026-09-15",
+      "url": "https://committees.parliament.uk/publications/55073/standard/pdf/",
+      "title": "Letter from Henry de Zoete, Director of the AI Security Institute, to the Chair of the Committee, 15 September 2026",
+      "publisher": "House of Commons Business, Innovation, Science and Trade Committee",
+      "type": "primary",
+      "published": "2026-09-15",
+      "accessed": "2026-11-20",
+      "language": "en",
+      "origin": "GB",
+      "access_note": "The committee's site returns a browser challenge to automated requests; the saved copy is the PDF downloaded in a browser by the maintainer on 20 November 2026.",
+      "excerpts": [
+        {
+          "text": "Anthropic made clear at the time of the release of Mythos 5.1 that no organisations outside of the US had access to the model.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "model_access",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-20"
+        },
+        {
+          "text": "Director of the AI Security Institute",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "model_access",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-20"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-20T14:07:51Z",
+        "sha256": "86219e14090fd2a8a8bf71b302d51d38b3bb5ab88c90f7926d2abbe3c42454dc",
+        "text_sha256": "bd15d3ecd1f51b7e044a91f2ee3a698416fb96180c4b24253ea5bcaf913548fa",
         "text_scheme": 1
       }
     }
