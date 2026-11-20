@@ -31475,7 +31475,7 @@
             "named_as": "Taskforce"
           }
         ],
-        "notes": "Event dates are the model's public release date in Epoch AI's data unless the source dates the access itself; for every event except Gemini 4 Argon the sources state that the access came before release, so the access took place on or before that date. The Epoch AI models cited for the leading-developer test were released at least a month before each such date. Not counted: Kimi K3 (Moonshot, July 2026), as the access route is not stated; the Llama 3.1-405B network pilot (October to November 2024), as its weights are public. The developer agreements are the commitments of Anthropic, Google DeepMind and OpenAI to give the institute's predecessor 'deep model access', announced in 2023. The institute says it has independently evaluated more than 55 models before release, working with industry; the post names no models, so they are not counted as access events. Gemini 4 Argon is dated 13 October 2026, Epoch AI's release date; Google announced it on 30 September 2026, when it was rolling out to a set of trusted cyber defenders through Google's Fairwind Program, with an initial cohort of cyber defenders and trusted testers, and release to developers, enterprises and consumers, starting with paid API customers and Google AI Ultra subscribers, was to follow. The sources do not date the institute's access. A written answer of 2 November 2026 says all the institute's current collaboration agreements are with developers based in the UK and the US; one of 6 November says its evaluations are governed by agreements with the developers and their results are not typically published. A House of Commons committee report of 18 November 2026 says the institute has no guaranteed statutory right of access to models and that access before release is voluntary; it recommends a statutory AI regulator separate from the institute. Anthropic's letter of 22 October 2026 to a House of Commons committee says that, while the US government considered a new framework for pre-deployment testing and access, it could not give the institute access to Mythos 5.1 without safeguards before deployment and offered access with safeguards; it says it has since been able to give the institute access without safeguards to its latest models before deployment. Anthropic's witness told the committee on 13 October 2026 that the institute decided not to use the restricted access and has access to the model now.",
+        "notes": "Event dates are the model's public release date in Epoch AI's data unless the source dates the access itself; for every event except Gemini 4 Argon the sources state that the access came before release, so the access took place on or before that date. The Epoch AI models cited for the leading-developer test were released at least a month before each such date. Not counted: Kimi K3 (Moonshot, July 2026), as the access route is not stated; the Llama 3.1-405B network pilot (October to November 2024), as its weights are public. The developer agreements are the commitments of Anthropic, Google DeepMind and OpenAI to give the institute's predecessor 'deep model access', announced in 2023. The institute says it has independently evaluated more than 55 models before release, working with industry; the post names no models, so they are not counted as access events. Gemini 4 Argon is dated 13 October 2026, Epoch AI's release date; Google announced it on 30 September 2026, when it was rolling out to a set of trusted cyber defenders through Google's Fairwind Program, with an initial cohort of cyber defenders and trusted testers, and release to developers, enterprises and consumers, starting with paid API customers and Google AI Ultra subscribers, was to follow. The sources do not date the institute's access. A written answer of 2 November 2026 says all the institute's current collaboration agreements are with developers based in the UK and the US; one of 6 November says its evaluations are governed by agreements with the developers and their results are not typically published. A House of Commons committee report of 18 November 2026 says the institute has no guaranteed statutory right of access to models and that access before release is voluntary; it recommends a statutory AI regulator separate from the institute. The institute's Director wrote to a House of Commons committee on 15 September 2026 that Anthropic had made clear, when it released Mythos 5.1, that no organisation outside the US had access to the model. Anthropic's letter of 22 October 2026 to a House of Commons committee says that, while the US government considered a new framework for pre-deployment testing and access, it could not give the institute access to Mythos 5.1 without safeguards before deployment and offered access with safeguards; it says it has since been able to give the institute access without safeguards to its latest models before deployment. Anthropic's witness told the committee on 13 October 2026 that the institute decided not to use the restricted access and has access to the model now.",
         "source_ids": [
           "depth-us-kimi",
           "sg-pilot-2024",
@@ -31490,6 +31490,7 @@
           "gb-pq-38559-2026",
           "gb-aisi-launch",
           "gb-bist-guardrails-2026",
+          "gb-bist-aisi-letter-2026-09-15",
           "gb-bist-anthropic-letter-2026-10-22",
           "gb-bist-oral-evidence-2026-10-13"
         ],
@@ -128505,6 +128506,54 @@
         "retrieved": "2026-11-20T14:07:32Z",
         "sha256": "4abfbdcd61fec6cb1d577135c030e503d7590be3f272faa18afd22de95fe9ad0",
         "text_sha256": "7c968605576c57606504c1532bbcaecb424c905a65fb4a28118d44b0f6c801e1",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "gb-bist-aisi-letter-2026-09-15",
+      "url": "https://committees.parliament.uk/publications/55073/standard/pdf/",
+      "title": "Letter from Henry de Zoete, Director of the AI Security Institute, to the Chair of the Committee, 15 September 2026",
+      "publisher": "House of Commons Business, Innovation, Science and Trade Committee",
+      "type": "primary",
+      "published": "2026-09-15",
+      "accessed": "2026-11-20",
+      "language": "en",
+      "origin": "GB",
+      "access_note": "The committee's site returns a browser challenge to automated requests; the saved copy is the PDF downloaded in a browser by the maintainer on 20 November 2026.",
+      "excerpts": [
+        {
+          "text": "Anthropic made clear at the time of the release of Mythos 5.1 that no organisations outside of the US had access to the model.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "model_access",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-20"
+        },
+        {
+          "text": "Director of the AI Security Institute",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "model_access",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-20"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-20T14:07:51Z",
+        "sha256": "86219e14090fd2a8a8bf71b302d51d38b3bb5ab88c90f7926d2abbe3c42454dc",
+        "text_sha256": "bd15d3ecd1f51b7e044a91f2ee3a698416fb96180c4b24253ea5bcaf913548fa",
         "text_scheme": 1
       }
     }
