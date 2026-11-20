@@ -46,7 +46,7 @@ def test_card_head_allows_extra_space_from_a_taller_peer(card_head):
     assert check_page.card_head_errors(card_head) == []
 
 
-def test_card_head_allows_wrapping_identity_when_track_clears_it(card_head):
+def test_card_head_allows_enlarged_type_when_track_clears_it(card_head):
     card_head.update(height=120, reserved=120)
     assert check_page.card_head_errors(card_head) == []
 

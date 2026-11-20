@@ -26,6 +26,10 @@ def role_for(markup, selector):
     ('<div class="section-foot"><details class="srcs"></details></div>', '.section-foot', 'fill'),
     ('<div class="section-foot"><details class="srcs"></details></div>', 'details', 'fill'),
     ('<div class="fn"><p class="fn-summary">Caption</p></div>', 'p', 'fill'),
+    ('<article class="card"><div class="top"><h4 class="name">France</h4></div></article>', '.top', 'fill'),
+    ('<article class="card"><div class="top"><h4 class="name">France</h4></div></article>', '.name', 'intrinsic'),
+    ('<details class="card mini"><summary><h4 class="name">Austria</h4></summary></details>', '.name', 'intrinsic'),
+    ('<div class="fn-detail"><h4 class="panel-identity">France, INESIA</h4></div>', 'h4', 'intrinsic'),
     ('<div class="fund-detail-body"><div class="fund-record-group"></div></div>', '.fund-record-group', 'fill'),
     ('<div class="fund-missing-line"><ul class="fund-name-list"><li class="fund-name-item"></li></ul></div>', 'div', 'funding-names'),
     ('<div class="fund-missing-line"><ul class="fund-name-list"><li class="fund-name-item"></li></ul></div>', 'ul', 'funding-names'),
@@ -40,6 +44,10 @@ def role_for(markup, selector):
 ])
 def test_role_assignment_is_semantic_and_has_no_ancestor_or_css_fallback(markup, selector, role):
     assert role_for(markup, selector) == role
+
+
+def test_card_head_has_no_reserved_download_padding():
+    assert extents.content_insets({'role': 'fill', 'card_head': True}) == (0, 0)
 
 
 @pytest.mark.parametrize(("width", "page", "content"), [

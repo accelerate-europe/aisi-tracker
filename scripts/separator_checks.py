@@ -22,14 +22,14 @@ SEPARATOR_LINES = {
     "tooltip sub-line": "#tip .tip-sub",
     "world count": "#world-count",
     "version history": "#changes > summary, .change-head",
-    "footer": "#foot > p",
+    "footer": "#foot > p:has(.foot-feed)",
     "method source": "#method-sec .inline-links",
 }
 
 PAGE_SEPARATORS_JS = r"""kinds => {
-  const counts = Object.fromEntries(Object.keys(kinds).map(k => [k, {lines:0, separators:0}]));
-  counts['re-read tails'] = {lines:0, separators:0};
-  counts['archived-copy tails'] = {lines:0, separators:0};
+  const counts = Object.fromEntries(Object.keys(kinds).map(k => [k, {lines:0, separators:0, visible:0}]));
+  counts['re-read tails'] = {lines:0, separators:0, visible:0};
+  counts['archived-copy tails'] = {lines:0, separators:0, visible:0};
   const errors = [], range = document.createRange();
   const visible = n => n.checkVisibility({contentVisibilityAuto:true, visibilityProperty:true}) &&
     !n.closest('.vh, [hidden], script, style, template') && n.getClientRects().length;
@@ -40,6 +40,29 @@ PAGE_SEPARATORS_JS = r"""kinds => {
     return null;
   };
   const glyph = (node,i) => { range.setStart(node,i); range.setEnd(node,i+1); return range.getBoundingClientRect(); };
+  const sameLine = (a,b) => a && b && a.width && b.width && a.height && b.height &&
+    Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top) > Math.min(a.height,b.height)/2;
+  const readable = (t,line) => visible(t.parentElement) && !t.parentElement.closest('.cites') &&
+    (line.closest('.quote-body') || !t.parentElement.closest('.quote-body'));
+  // At 400px and narrower the section links show no dots by rule, so the row keeps to one line (principle: Separator dots).
+  const spacedNav = kind => kind==='group navigation' && globalThis.innerWidth<=400;
+  // Walk the reader-facing line, independently of the page's item/container lookup.
+  // Neighbouring ink also works when the separator itself has display:none.
+  const neighbours = (line,node,i) => {
+    const text=document.createTreeWalker(line,NodeFilter.SHOW_TEXT); let before=null, after=false;
+    while(text.nextNode()) {
+      const t=text.currentNode, shown=readable(t,line);
+      for(let j=0;j<t.length;j++) {
+        if(t===node && j===i) { after=true; continue; }
+        if(/[\s·]/.test(t.data[j]) || !shown) continue;
+        const r=glyph(t,j); if(!r.width || !r.height) continue;
+        if(after) return [before,r];
+        before=r;
+      }
+    }
+    return [before,null];
+  };
+  const visibleByLine = new Map();
   // Find all separators, including raw text that has bypassed both builders. A middle
   // dot within a word is not a separator. Hidden line-end dots still count as coverage.
   const walker = document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
@@ -48,8 +71,8 @@ PAGE_SEPARATORS_JS = r"""kinds => {
     if(!parent || parent.closest('script,style,template,.vh')) continue;
     for(let i=0;i<node.length;i++) {
       if(node.data[i]!=='·' || (/\S/.test(node.data[i-1]||' ') && /\S/.test(node.data[i+1]||' '))) continue;
-      const hiddenMark=parent.closest('.meta-dot.line-end, .own-line .qualifier-separator');
-      if(!visible(parent) && !(hiddenMark && visible(hiddenMark.parentElement))) continue;
+      const marker=parent.closest('.meta-dot, .qualifier-separator');
+      if(!visible(parent) && !(marker && visible(marker.parentElement))) continue;
       const assigned=lineOf(parent);
       if(!assigned) {
         const line=parent.closest('p, li, td, th, summary, div') || parent;
@@ -57,24 +80,45 @@ PAGE_SEPARATORS_JS = r"""kinds => {
       }
       const [kind,line]=assigned;
       counts[kind].separators++;
+      const dot=glyph(node,i), shown=!!(visible(parent) && dot.width && dot.height);
+      if(shown) {
+        counts[kind].visible++;
+        visibleByLine.set(line,(visibleByLine.get(line)||0)+1);
+      }
       for(const [tail,selector] of [['re-read tails','.reread-tail'],['archived-copy tails','.archive-copy']]) {
-        if(parent.closest(selector)) { counts[tail].lines++; counts[tail].separators++; }
+        if(parent.closest(selector)) { counts[tail].lines++; counts[tail].separators++; if(shown) counts[tail].visible++; }
       }
-      if(!hiddenMark && !parent.closest('.meta-dot, .qualifier-separator')) errors.push(kind+': unbound separator: '+line.textContent.trim());
-      if(!visible(parent)) continue;
-      const dot=glyph(node,i); if(!dot.width || !dot.height) continue;
-      const text=document.createTreeWalker(line,NodeFilter.SHOW_TEXT); let before=false;
-      while(text.nextNode() && !before) {
-        const t=text.currentNode;
-        if(!visible(t.parentElement) || t.parentElement.closest('.cites') ||
-           (!line.closest('.quote-body') && t.parentElement.closest('.quote-body'))) continue;
-        for(let j=0;j<t.length;j++) {
-          if(/\s/.test(t.data[j]) || t===node && j===i) continue;
-          const r=glyph(t,j);
-          if(r.width && r.left<dot.left-.5 && Math.abs((r.top+r.bottom-dot.top-dot.bottom)/2)<3) { before=true; break; }
-        }
+      if(!marker) errors.push(kind+': unbound separator: '+line.textContent.trim());
+      const [before,next]=neighbours(line,node,i);
+      if(!shown && sameLine(before,next) && !spacedNav(kind)) errors.push(kind+': separator hidden mid-line: '+line.textContent.trim());
+      if(shown && (!sameLine(before,dot) || before.left>=dot.left-.5)) errors.push(kind+': visible separator begins a line: '+line.textContent.trim());
+      if(shown && marker?.matches('.meta-dot') && !sameLine(dot,next)) errors.push(kind+': visible separator ends a line: '+line.textContent.trim());
+    }
+  }
+  // These rows are defined by their separators. Count adjacent items even if
+  // every dot was removed, and check each row so another row cannot mask it.
+  const required = {'group navigation':'a', 'functions switch':'button',
+    'hero update':':scope > .meta-item', 'footer':':scope > .meta-item'};
+  const edge = (item,last) => {
+    const text=document.createTreeWalker(item,NodeFilter.SHOW_TEXT); let found=null;
+    while(text.nextNode()) {
+      const t=text.currentNode;
+      if(!readable(t,item) || t.parentElement.closest('.meta-dot, .qualifier-separator')) continue;
+      for(let j=0;j<t.length;j++) {
+        if(/\s/.test(t.data[j])) continue;
+        const r=glyph(t,j); if(!r.width || !r.height) continue;
+        found=r; if(!last) return found;
       }
-      if(!before) errors.push(kind+': visible separator begins a line: '+line.textContent.trim());
+    }
+    return found;
+  };
+  for(const [kind,items] of Object.entries(required)) {
+    if(!kinds[kind]) continue;
+    for(const line of [...document.querySelectorAll(kinds[kind])].filter(visible)) {
+      const nodes=[...line.querySelectorAll(items)].filter(visible);
+      if(nodes.length<2) errors.push(kind+': missing separator items: '+line.textContent.trim());
+      const sharesLine=nodes.some((item,i)=>i && sameLine(edge(nodes[i-1],true),edge(item,false)));
+      if(sharesLine && !visibleByLine.get(line) && !spacedNav(kind)) errors.push(kind+': zero visible separators between items sharing a line: '+line.textContent.trim());
     }
   }
   return {counts, errors:[...new Set(errors)]};

@@ -44,6 +44,33 @@ assert.equal(closeButton(()=>{})['aria-label'],'Close');
     assert result.returncode == 0, result.stderr
 
 
+def test_full_card_header_keeps_state_status_and_download_without_a_sizing_copy():
+    source = (Path(__file__).resolve().parents[1] / 'site/index.html').read_text()
+    start = source.index('  function instituteCard(')
+    header = source[start:source.index('    var order = SOURCE_ORDERS', start)] + 'return card;\n}'
+    script = r"""
+const assert=require('node:assert/strict');
+function el(tag,cls,text){return {tag,className:cls,textContent:text||'',children:[],dataset:{},
+  setAttribute(k,v){this[k]=v;},appendChild(n){this.children.push(n);return n;}};}
+const LABEL={established:'Established'},stateDownload=()=>el('a','state-dl'),statusMark=()=>el('span','smark');
+HEADER
+for(const grouped of [true,false]) {
+  const card=instituteCard({id:'FR',name:'France',status:'established'},
+    {name:'National Institute for AI Evaluation and Security'},{},{},grouped);
+  assert.equal(card.children.length,1);
+  const top=card.children[0],name=top.children[0];
+  assert.equal(name.tag,'h4');assert.equal(name.textContent,'France');assert.equal(name.title,'France');
+  assert.equal(card['aria-labelledby'],grouped?'c-fr-name c-fr-status':'c-fr-name');
+  assert.equal(card['aria-describedby'],undefined);
+  assert.equal(top.children[1].className,grouped?'vh':'smark');
+  if(grouped) assert.equal(top.children[1].textContent,', Established');
+  assert.equal(top.children[2].className,'state-dl');
+}
+""".replace('HEADER', header)
+    result = subprocess.run(['node', '-'], input=script, capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
+
+
 @pytest.fixture
 def measured_identity():
     return dict(text='United Kingdom AI Security Institute', state='United Kingdom',
@@ -51,7 +78,7 @@ def measured_identity():
                 phoneLines=True, panelName='United Kingdom, AI Security Institute',
                 tip='United Kingdom, AI Security Institute', closeName='Close United Kingdom, AI Security Institute',
                 top=93, bars=93,
-                lines=[dict(part=part, inside=True)
+                lines=[dict(part=part, inside=True, verticalInside=True)
                        for part in ('state', 'institute')])
 
 
@@ -108,6 +135,95 @@ assert.equal(textLines(head).length,3);
         script += '\nnew Function("return (" + ' + json.dumps(measurement) + ' + ")");'
     result = subprocess.run(['node', '-'], input=script, capture_output=True, text=True)
     assert result.returncode == 0, result.stderr
+
+
+@pytest.mark.parametrize('part', ['identity', 'function'])
+@pytest.mark.parametrize('tops,size,valid', [
+    ([100], 20, True), ([100, 122, 144], 20, True),
+    ([100, 132], 20, True), ([100, 132.2], 20, False),
+    ([100, 144], 20, False), ([100, 122, 166], 20, False),
+    ([100, 144], 30, True), ([], 20, False), ([float('nan')], 20, False),
+    ([100, 122], float('nan'), False),
+])
+def test_heading_spacing_rejects_control_height_between_wrapped_lines(part, tops, size, valid):
+    errors = check_page.head_line_spacing_errors([dict(part=part, tops=tops, fontSize=size)])
+    assert (errors == []) is valid
+    assert all(part in error for error in errors)
+
+
+def test_heading_spacing_requires_measurements_and_phone_wrap_coverage():
+    assert check_page.head_line_spacing_errors([])
+    assert check_page.wrapped_head_coverage_errors(390, 0)
+    assert check_page.wrapped_head_coverage_errors(390, 1) == []
+    assert check_page.wrapped_head_coverage_errors(1440, 0) == []
+
+
+def test_spacing_measurement_joins_state_and_institute_fragments_on_one_line():
+    start = check_page.PANEL_IDENTITY_JS.index('  const spacing=')
+    end = check_page.PANEL_IDENTITY_JS.index('  return {text:', start)
+    measure = check_page.PANEL_IDENTITY_JS[start:end] + 'return spacing;'
+    script = r"""
+const assert=require('node:assert/strict');
+const measure=new Function('identity','functionHead','textLines','getComputedStyle',MEASURE);
+const identity={size:20},functionHead={size:18},style=n=>({fontSize:String(n.size)});
+// State, comma and the first institute fragment share a line. The next institute
+// fragment is 44px lower: measuring the spans separately would miss this fault.
+const textLines=n=>(n===identity?[144,100,100,100]:[178,198]).map(top=>({rect:{top}}));
+assert.deepEqual(measure(identity,functionHead,textLines,style),[
+  {part:'identity',tops:[100,144],fontSize:20},
+  {part:'function',tops:[178,198],fontSize:18}]);
+assert.deepEqual(measure(identity,null,()=>[{rect:{top:100}}],style),[
+  {part:'identity',tops:[100],fontSize:20}]);
+""".replace('MEASURE', json.dumps(measure))
+    result = subprocess.run(['node', '-'], input=script, capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
+
+
+@pytest.mark.parametrize('card,status,panel_name,tip', [
+    ('full', 'Established', 'United Kingdom , Established', 'United Kingdom'),
+    ('full', None, 'United Kingdom', 'United Kingdom'),
+    ('mini', None, 'United Kingdom', None),
+])
+def test_card_identity_uses_state_without_institute(measured_identity, card, status, panel_name, tip):
+    m = measured_identity | dict(text='United Kingdom', institute='', panelName=panel_name,
+                                tip=tip, closeName='Close United Kingdom', singleLine=True)
+    def errors(measured):
+        return check_page.panel_identity_errors(measured, 'United Kingdom', None, close=True, card=card, status=status)
+    assert errors(m) == []
+    assert errors(m | {'institute': 'AI Security Institute'})
+    assert errors(m | {'panelName': 'United Kingdom, AI Security Institute'})
+    assert errors(m | {'singleLine': False})
+    assert errors(m | {'lines': [dict(part='state', inside=False, verticalInside=True)]}) == []
+    assert errors(m | {'lines': [dict(part='state', inside=False, verticalInside=False)]})
+    if card == 'full':
+        assert errors(m | {'tip': 'United Kingdom, AI Security Institute'})
+
+
+@pytest.mark.parametrize('mini', [False, True])
+def test_card_content_requires_state_heading_and_original_label_binding(mini):
+    from bs4 import BeautifulSoup
+
+    shell, head = ('details', 'summary') if mini else ('article', 'div class="top"')
+    end = head.split()[0]
+    tip = '' if mini else ' title="France"'
+    status = '' if mini else '<span class="vh" id="status">, Established</span>'
+    labelled = 'name' if mini else 'name status'
+    html = f'<div class="statusgroup"><{shell} class="card {"mini" if mini else ""}" data-j="FR" aria-labelledby="{labelled}"><{head}><h4 class="name" id="name"{tip}>France</h4>{status}</{end}></{shell}></div>'
+    data = dict(jurisdictions=[dict(id='FR', name='France', status='established')])
+    assert check_page.check_card_names(html, data) == []
+    for field in ('text', 'label', 'description') + (() if mini else ('tooltip', 'status')):
+        soup = BeautifulSoup(html, 'html.parser')
+        if field == 'text':
+            soup.select_one('.name').string = 'France, National Institute for AI Evaluation and Security'
+        elif field == 'label':
+            soup.select_one('.card')['aria-labelledby'] = 'missing'
+        elif field == 'description':
+            soup.select_one('.card')['aria-describedby'] = 'status'
+        elif field == 'tooltip':
+            soup.select_one('.name')['title'] = 'INESIA'
+        else:
+            soup.select_one('.vh').decompose()
+        assert check_page.check_card_names(str(soup), data), field
 
 
 def test_phone_panel_identity_uses_base_names_for_same_named_institutes():
@@ -214,6 +330,49 @@ def stuck_pair():
     before = dict(clip=dict(x=8, y=60, width=374, height=80), top=60, bottom=140, left=24, right=366,
                   edge=60, panelBottom=500, scroll=200, bodyTop=70, bodyUnder=True)
     return before, before | dict(scroll=237, bodyTop=33, panelBottom=463)
+
+
+@pytest.mark.parametrize('shape', ['single', 'multi', 'blocked'])
+def test_card_head_padding_samples_use_real_title_and_download_geometry(shape):
+    script = r"""
+const rect=(left,top,right,bottom)=>({left,top,right,bottom,width:right-left,height:bottom-top});
+// A 332px card: the title's ink starts at the left edge, with a 44px download at the right.
+const hrect=rect(284,60,616,106), bounds=rect(284,-200,616,500), control=rect(572,60,616,104),
+  innerWidth=1440,innerHeight=900,scrollY=500;
+const title={closest:()=>null}, bodyElement={closest:()=>null};
+const titles=SHAPE==='multi' ? [rect(284,72,430,86),rect(284,90,430,104)] :
+  SHAPE==='blocked' ? [rect(284,62,572,105)] : [rect(284,72,430,104)];
+const leaves=titles.map(r=>({textContent:'United Kingdom',parentElement:title,rect:r}));
+const head={getBoundingClientRect:()=>hrect,contains:n=>n===title},
+  box={getBoundingClientRect:()=>bounds,querySelector:()=>head,
+    querySelectorAll:()=>[{getBoundingClientRect:()=>control}],
+    closest:()=>null,matches:()=>false,clientLeft:0,clientWidth:332};
+const body={textContent:'Body',parentElement:bodyElement,rect:rect(284,120,430,140)};
+const getComputedStyle=()=>({visibility:'visible',opacity:'1',borderLeftWidth:'0',borderRightWidth:'0',
+  borderTopWidth:'2',borderBottomWidth:'1',transform:'none'}),NodeFilter={SHOW_TEXT:4};
+const document={querySelector:s=>s==='.secnav'?{getBoundingClientRect:()=>({bottom:60,height:60})}:box,
+  createTreeWalker:n=>{let index=-1;const nodes=n===head?leaves:[...leaves,body];
+    return {nextNode:()=>++index<nodes.length,get currentNode(){return nodes[index];}};},
+  createRange:()=>{let node;return {selectNodeContents:n=>{node=n;},getClientRects:()=>[node.rect]};},
+  elementFromPoint:()=>box};
+const measure=MEASURE;
+console.log(JSON.stringify(measure({owner:'.card',head:'.top'})));
+""".replace('SHAPE', json.dumps(shape)).replace('MEASURE', check_page.PANEL_PIXELS_JS)
+    result = subprocess.run(['node', '-'], input=script, capture_output=True, text=True, check=True)
+    measured = json.loads(result.stdout)
+    padding = [p for p in measured['samples'] if p['name'].startswith('padding')]
+    image = Image.new('RGBA', (1440, 200), (250, 247, 242, 255))
+    _, errors = check_page.panel_head_snapshot(ScreenshotPage(image), measured)
+    if shape == 'single':
+        assert len(padding) >= 2
+        assert len({(p['x'], p['y']) for p in padding}) == len(padding)
+        assert len([p for p in padding if not p['name'].startswith('padding gap')]) == 1
+        assert any(431 < p['x'] < 571 and 72 <= p['y'] <= 104 for p in padding)
+        assert any(284 <= p['x'] < 430 and 62 <= p['y'] < 71 for p in padding)
+        assert errors == []
+    else:
+        assert len(padding) == (1 if shape == 'multi' else 0)
+        assert 'fewer than two text-free head padding samples' in errors
 
 
 @pytest.mark.parametrize('change,finding', [
@@ -483,7 +642,8 @@ def test_own_ink_redraw_is_suppressed_and_style_removed_on_every_exit(exit_kind)
     assert not page.marked and page.ink_style is None and page.removal_checked
 
 
-def test_inventory_takes_two_captures_per_long_panel_and_skips_short_ones(monkeypatch, stuck_pair):
+@pytest.mark.parametrize('phone_wrap', [True, False])
+def test_inventory_takes_two_captures_per_long_panel_and_skips_short_ones(monkeypatch, stuck_pair, phone_wrap):
     """Exercise the Python inventory/capture wiring; geometry and pixels have separate real unit tests."""
     pages, captures = [], []
 
@@ -536,6 +696,9 @@ def test_inventory_takes_two_captures_per_long_panel_and_skips_short_ones(monkey
         def evaluate(self, script, arg=None):
             if script in (check_page.PANEL_IDENTITY_JS, check_page.READING_HEAD_JS):
                 assert self.ink_style is None  # Colour assertions must see the restored head.
+            if script == check_page.PANEL_IDENTITY_JS:
+                tops = [100, 124] if phone_wrap and self.width == 390 and arg['owner'] == '.fn-detail' else [100]
+                return {'spacing': [dict(part='identity', tops=tops, fontSize=20)]}
             if script == check_page.PANEL_PIXELS_JS:
                 return stuck_pair[bool(self.scroll)] | {'mode': self.mode}
             return {}
@@ -558,20 +721,30 @@ def test_inventory_takes_two_captures_per_long_panel_and_skips_short_ones(monkey
     monkeypatch.setattr(check_page, 'layout_settled', lambda *args: None)
     monkeypatch.setattr(check_page, 'unstuck_head_gap', lambda *args: 14)
     monkeypatch.setattr(check_page, 'reading_head_errors', lambda *args, **kwargs: [])
-    monkeypatch.setattr(check_page, 'panel_identity_errors', lambda *args, **kwargs: [])
+    identities = []
+    def identity_errors(m, state, institute, **kwargs):
+        identities.append((state, institute, kwargs['card'], kwargs['status']))
+        return []
+    monkeypatch.setattr(check_page, 'panel_identity_errors', identity_errors)
     monkeypatch.setattr(check_page, 'panel_head_snapshot', snapshot)
     monkeypatch.setattr(check_page, 'panel_pixel_errors', lambda *args: [])
     monkeypatch.setattr(check_page, 'expected_base_names', lambda _: dict(gb='Institute', eu='Institute'))
-    data = dict(jurisdictions=[dict(id=jid, name=jid) for jid in ('GB', 'EU', 'AT')],
+    data = dict(jurisdictions=[dict(id=jid, name=jid, status='established') for jid in ('GB', 'EU', 'AT')],
                 institutes=[dict(id=jid.lower(), jurisdiction_id=jid, functions=[dict(code='testing', claim_ids=['one'])])
                             for jid in ('GB', 'EU')], dataset=dict(vocabularies=dict(function=dict(testing=dict(label='Model testing')))))
     errors = check_page.check_panel_heads(None, 'unused', data)
-    assert check_page.blocking(errors) == []
+    assert check_page.blocking(errors) == ([] if phone_wrap else [
+        f'390px {theme}: United Kingdom grouped Functions: no wrapped head measured at 390px'
+        for theme in ('light', 'dark')])
     assert len(pages) == 4  # two widths and both themes
     for page in pages:
         assert [scroll for p, scroll in captures if p is page] == [0, 37] * 16
         assert not page.marked and page.ink_style is None and page.removal_checked
     assert len([e for e in errors if 'States mini card' in e and '1 not stuck (too short)' in e]) == 4
+    assert len([e for e in errors if 'Functions grouped row' in e and '2 wrapped heads measured' in e]) == (2 if phone_wrap else 0)
+    assert all(institute is None and status == ('Established' if card == 'full' else None)
+               for _, institute, card, status in identities if card)
+    assert all(institute == 'Institute' and status is None for _, institute, card, status in identities if not card)
 
 
 @pytest.mark.parametrize('replacement', ['AI Security Institute (Spain)', 'AI Security Institute (Spain), Spain', 'Spain, Spain AISI'])
@@ -643,6 +816,7 @@ def test_record_arrival_dismisses_its_automatic_tip_but_explicit_tips_keep_escap
 const assert=require('node:assert/strict');
 let handler,closed=0,scrolled=0,focus=true;
 const tip={hidden:true},view={sel:'EU'},hideTip=()=>{tip.hidden=true;},pick=()=>{closed++;};
+const scheduleSeparators=()=>{assert.equal(tip.hidden,true);};
 const name={focus(){tip.hidden=false;},getBoundingClientRect:()=>({top:100,bottom:160}),scrollIntoView(){scrolled++;}};
 const document={addEventListener:(type,fn)=>{handler=fn;}},innerHeight=900,barsBottom=()=>60;
 ARRIVAL

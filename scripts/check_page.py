@@ -4075,10 +4075,9 @@ BROWSER_BASELINE = """
 """
 
 
-@reports
 def check_baselines_and_rhythm(page) -> list[str]:
     """Measure first text baselines, including text nested inside links or marks."""
-    return page.evaluate(
+    findings = page.evaluate(
         "() => {"
         + BROWSER_GEOMETRY
         + BROWSER_BASELINE
@@ -4092,7 +4091,7 @@ def check_baselines_and_rhythm(page) -> list[str]:
         ['table.world tr', ':scope > th, :scope > td'],
         ['.secnav .measure', ':scope > a'], ['.region-chips', ':scope > button'],
         ['.legend-entry', ':scope > .legend-copy'],
-        ['.development-label', ':scope > .development-date, :scope > .development-name'],
+        ['.development-label', '.development-date, .development-name'],
       ];
       rowTypes.push(['.fund-item', ':scope > .fund-identity, :scope > .fund-measure .fund-value']);
       for (const [selector, items] of rowTypes) {
@@ -4151,6 +4150,8 @@ def check_baselines_and_rhythm(page) -> list[str]:
       return errors;
     }"""
     )
+    # A lost selector removes coverage, rather than merely changing alignment.
+    return [e if e.startswith('missing baseline items: ') else report_line(e) for e in findings]
 
 
 def check_citations(page) -> list[str]:
@@ -4827,8 +4828,10 @@ def check_meta_separators(page, force_wrap=False) -> list[str]:
         if (!tail.classList.contains('meta-tail') || getComputedStyle(tail).whiteSpace !== 'nowrap') { errors.push('separator is not bound to its preceding item'); return; }
         // Funding's compact rows use running meta text; its dots still bind to the preceding word.
         const item = tail.closest('.meta-item');
+        // Flex items are blockified in computed style, but still form atomic items in the row.
+        const atomic = item && (getComputedStyle(item).display === 'inline-block' || /flex$/.test(getComputedStyle(item.parentElement).display));
         // The chart key (.fund-axis) is one sentence of two clauses, not a list of items.
-        if (!tail.closest('.fund-axis, .fund-measure') && (!item || getComputedStyle(item).display !== 'inline-block')) errors.push('separated item is not one unbreakable box: ' + tail.textContent);
+        if (!tail.closest('.fund-axis, .fund-measure') && !atomic) errors.push('separated item is not one unbreakable box: ' + tail.textContent);
         const walker = document.createTreeWalker(tail, NodeFilter.SHOW_TEXT);
         let last = null;
         while (walker.nextNode()) {
@@ -4861,14 +4864,13 @@ def check_meta_separators(page, force_wrap=False) -> list[str]:
     )
 
 
-@reports
 def check_line_end_separators(page) -> list[str]:
     """No visible separator "·" starts or ends a rendered line, and none is hidden mid-line.
 
     Measured per character, independent of the page's own marking. A "·" inside a word
     (Korean or Catalan source text) is not a separator and is skipped.
     """
-    return page.evaluate(
+    findings = page.evaluate(
         "() => {"
         + BROWSER_GEOMETRY
         + """
@@ -4900,9 +4902,10 @@ def check_line_end_separators(page) -> list[str]:
           const dot = glyph(node, i);
           if (!dot.height) continue;
           const next = neighbour(block, node, i, 1), prev = neighbour(block, node, i, -1);
-          const ends = !next || next.top >= dot.bottom - 2, starts = !prev || prev.bottom <= dot.top + 2;
+          const sameLine = r => r && r.width && r.height && Math.min(r.bottom,dot.bottom)-Math.max(r.top,dot.top) > Math.min(r.height,dot.height)/2;
+          const ends = !sameLine(next), starts = !sameLine(prev);
           const where = (block.closest('[id]')?.id || block.tagName.toLowerCase()) + ': ' + block.textContent.replace(/\\s+/g, ' ').trim().slice(0, 60);
-          if (hidden && !ends) errors.push('separator hidden mid-line: ' + where);
+          if (hidden && !ends && !(innerWidth <= 400 && parent.closest('.group-links'))) errors.push('separator hidden mid-line: ' + where); // narrow section links show no dots by rule
           if (!hidden && ends) errors.push('separator ends a line: ' + where);
           if (!hidden && starts) errors.push('separator starts a line: ' + where);
         }
@@ -4910,6 +4913,8 @@ def check_line_end_separators(page) -> list[str]:
       return errors;
     }"""
     )
+    # Keep this assertion in the sweep's states as well as the page-wide inventory.
+    return [e if e.startswith('separator hidden mid-line: ') else report_line(e) for e in findings]
 
 
 def checked_page_data(page) -> dict:
@@ -5251,7 +5256,7 @@ CLOSE_CONTROLS_JS = r"""checkFocus => {
     const label = n.closest('.fn-phone-detail') ? 'phone function' : n.closest('.fn-detail') ? 'desktop function' : n.closest('#record') ? 'map record' : name(n);
     const fail = text => errors.push(label + ': ' + text), s = getComputedStyle(n), r = n.getBoundingClientRect();
     const symbol = n.firstElementChild;
-    const identity=n.closest('.fn-detail,.record,.fund-detail,.card.mini')?.querySelector('.panel-identity');
+    const identity=n.closest('.fn-detail,.record,.fund-detail,.card.mini')?.querySelector('.panel-identity, :scope > summary .name');
     const expected='Close'+(identity?' '+identity.textContent:'');
     if (!n.matches('button.close-control[type="button"]') || name(n) !== expected || n.getAttribute('aria-label') !== expected ||
         (n.dataset.tip || n.getAttribute('aria-description') || n.title)!==expected ||
@@ -5278,13 +5283,11 @@ CLOSE_CONTROLS_JS = r"""checkFocus => {
       if (!heading || !top || n.parentElement !== top || heading.parentElement !== top || panel.firstElementChild !== top) {
         fail('Close must share the first row with the heading');
       } else {
-        const p = getComputedStyle(panel), pr = panel.getBoundingClientRect(), h = getComputedStyle(heading), hr = heading.getBoundingClientRect();
+        const p = getComputedStyle(panel), pr = panel.getBoundingClientRect(), hr = heading.getBoundingClientRect();
         const right = pr.right - parseFloat(p.borderRightWidth) - parseFloat(p.paddingRight);
-        const firstTop = hr.top + parseFloat(h.borderTopWidth) + parseFloat(h.paddingTop);
-        const firstBottom = firstTop + parseFloat(h.lineHeight);
         if (Math.abs(r.right - right) > 2 || r.top < pr.top + parseFloat(p.borderTopWidth) + parseFloat(p.paddingTop) - 2 ||
-            Math.abs(r.top - firstTop) > 2 || r.bottom > firstBottom + 2 || hr.right > r.left + 2)
-          fail('Close is not at the top right within the heading first line (±2px)');
+            Math.abs((r.top+r.bottom)/2 - (hr.top+hr.bottom)/2) > 2 || hr.right > r.left + 2)
+          fail('Close is not at the right, centred beside the identity (±2px)');
       }
     }
     const funding=n.closest('.fund-detail');
@@ -5521,59 +5524,48 @@ def identity_name_pattern(text: str) -> re.Pattern:
     return re.compile(r"^" + r"\s*,\s*".join(re.escape(part.strip()) for part in text.split(',')) + r"$")
 
 
-def check_wrapped_card_name(page, card, *, interactive: bool) -> list[str]:
-    """Long identities wrap and reserve their real height, including without scripts."""
+def check_clipped_card_name(page, card, *, interactive: bool) -> list[str]:
+    """Exercise ellipsis without losing the heading's spoken name or full tooltip."""
     errors = []
-    state = "Synthetic country heading with deliberately long text to exercise wrapping at every card width"
+    full_name = "Synthetic country heading with deliberately long text to exercise ellipsis at every card width"
     name = card.locator(':scope > .top .name')
-    saved = card.evaluate("""(c,text)=>{
-      const n=c.querySelector(':scope > .top .name'), states=[...c.querySelectorAll(':scope > .top .head-state, :scope > .card-head-space .head-state')];
-      const saved={states:states.map(s=>s.textContent),attrs:{}};
-      states.forEach(s=>s.textContent=text);
+    saved = name.evaluate("""(n,text)=>{
+      const saved={text:n.textContent,attrs:{}};
+      n.textContent=text;
       for (const attr of ['title', 'aria-description', 'data-tip']) {
-        if(n.hasAttribute(attr)) {saved.attrs[attr]=n.getAttribute(attr);n.setAttribute(attr,n.textContent);}
+        if(n.hasAttribute(attr)) {saved.attrs[attr]=n.getAttribute(attr);n.setAttribute(attr,text);}
       }
       return saved;
-    }""", state)
-    full_name = name.text_content()
-    wrapped = name.evaluate("""n=>{
-      const s=getComputedStyle(n), range=document.createRange();range.selectNodeContents(n);
-      const r=n.getBoundingClientRect();
-      return s.whiteSpace==='normal' && s.textOverflow!=='ellipsis' && n.scrollWidth<=n.clientWidth+1 &&
-        [...range.getClientRects()].filter(t=>t.width && t.height).every(t=>t.left>=r.left-1 && t.right<=r.right+1 && t.bottom<=r.bottom+1);
-    }""")
-    if not wrapped:
-        errors.append("long heading is clipped instead of wrapping in full")
-    if card.get_by_role("heading", name=identity_name_pattern(full_name)).count() != 1:
-        errors.append("wrapped heading lost its full accessible name")
-    card.evaluate("c=>scrollTo(0,scrollY+c.getBoundingClientRect().top-innerHeight/2)")
-    errors.extend(card_head_space_errors(card.evaluate(CARD_HEAD_SPACE_JS)))
-    sizing = card.locator(':scope > .card-head-space')
-    if sizing.count() != 1 or not sizing.evaluate("n=>n.hasAttribute('inert') && n.getAttribute('aria-hidden')==='true' && !n.querySelector('[id],a,button,summary') && getComputedStyle(n).visibility==='hidden'"):
-        errors.append('card sizing identity is missing, accessible or contains controls/IDs')
-    elif not sizing.evaluate("n=>innerWidth<=640 ? getComputedStyle(n).display==='none' : Math.abs(n.getBoundingClientRect().height-n.parentElement.querySelector(':scope > .top').getBoundingClientRect().height)<=1"):
-        errors.append('card sizing identity must match the real head on desktop and disappear on phones')
-    if interactive:
-        # Real hover exercises TIPSEL/tipText/showTip, not just an attribute.
-        page.mouse.move(0, 0)
-        card.evaluate("c => c.scrollIntoView({block: 'center'})")  # its own head in place, not under another card's sticky head
-        name.hover()
-        tip = page.locator('#tip')
-        if not tip.is_visible() or tip.inner_text() != full_name:
-            errors.append("wrapped heading does not display its full name in the page tooltip")
-        page.keyboard.press("Escape")
-    elif not name.evaluate("(n, text) => (n.dataset.tip || n.getAttribute('aria-description') || n.title) === text", full_name):
-        errors.append("saved wrapped heading lost its full tooltip text")
-    card.evaluate("""(c,saved)=>{
-      c.querySelectorAll(':scope > .top .head-state, :scope > .card-head-space .head-state').forEach((s,k)=>s.textContent=saved.states[k]);
-      const n=c.querySelector(':scope > .top .name');
-      Object.entries(saved.attrs).forEach(([key,value])=>n.setAttribute(key,value));
-    }""", saved)
+    }""", full_name)
+    try:
+        clipped = name.evaluate("n => { const s=getComputedStyle(n); return s.whiteSpace==='nowrap' && s.overflowX==='hidden' && s.textOverflow==='ellipsis' && n.scrollWidth>n.clientWidth && n.getBoundingClientRect().height<=parseFloat(s.lineHeight)+1; }")
+        if not clipped:
+            errors.append("long heading is not clipped to one line with ellipsis")
+        if card.get_by_role("heading", name=full_name, exact=True).count() != 1:
+            errors.append("clipped heading lost its full accessible name")
+        card.evaluate("c=>scrollTo(0,scrollY+c.getBoundingClientRect().top-innerHeight/2)")
+        errors.extend(card_head_space_errors(card.evaluate(CARD_HEAD_SPACE_JS)))
+        if interactive:
+            # Real hover exercises TIPSEL/tipText/showTip, not just an attribute.
+            page.mouse.move(0, 0)
+            card.evaluate("c => c.scrollIntoView({block: 'center'})")
+            name.hover()
+            tip = page.locator('#tip')
+            if not tip.is_visible() or tip.inner_text() != full_name:
+                errors.append("clipped heading does not display its full name in the page tooltip")
+            page.keyboard.press("Escape")
+        elif not name.evaluate("(n, text) => (n.dataset.tip || n.getAttribute('aria-description') || n.title) === text", full_name):
+            errors.append("saved clipped heading lost its full tooltip text")
+    finally:
+        name.evaluate("""(n,saved)=>{
+          n.textContent=saved.text;
+          Object.entries(saved.attrs).forEach(([key,value])=>n.setAttribute(key,value));
+        }""", saved)
     return errors
 
 
 def check_saved_card_heads(browser, base_url: str) -> list[str]:
-    """Saved wrapping heads reserve their track without JS or while hydration waits."""
+    """Saved single-line heads reserve their track without JS or while hydration waits."""
     errors = []
 
     def settled(page):
@@ -5593,7 +5585,7 @@ def check_saved_card_heads(browser, base_url: str) -> list[str]:
             if held:
                 held.wait()
             card = page.locator('#c-fr')
-            # Check real names before stressing the intrinsic track with a synthetic long title.
+            # Check real names before exercising ellipsis with a synthetic long title.
             for width in (1280, 1440):
                 page.set_viewport_size({"width": width, "height": 900})
                 settled(page)
@@ -5614,7 +5606,7 @@ def check_saved_card_heads(browser, base_url: str) -> list[str]:
                     settled(page)
                     if not page.evaluate("document.documentElement.hasAttribute('data-prerendered')"):
                         errors.append(prefix + "saved-page fixture hydrated before measurement")
-                    errors.extend(prefix + e for e in check_wrapped_card_name(page, card, interactive=False))
+                    errors.extend(prefix + e for e in check_clipped_card_name(page, card, interactive=False))
                     # Every peer's fields must clear the fixed head track, including enlarged text.
                     for peer in card.locator('..').locator(':scope > .card').all():
                         peer.evaluate("c => scrollTo(0,scrollY+c.getBoundingClientRect().top-innerHeight/2)")
@@ -5711,9 +5703,9 @@ def check_card_heads(browser, base_url: str, data: dict) -> list[str]:
                 }""")
                 if not landed:
                     errors.append(prefix + "card anchor hides the head or first field")
-                # After hydration the wrapped heading must also show the page's
+                # After hydration the clipped heading must also show the page's
                 # visible tooltip, in both themes and on desktop and phone.
-                errors.extend(prefix + e for e in check_wrapped_card_name(page, page.locator('#c-fr'), interactive=True))
+                errors.extend(prefix + e for e in check_clipped_card_name(page, page.locator('#c-fr'), interactive=True))
                 page.emulate_media(media="print")
                 if not page.locator('.cards .card > .top').evaluate_all("heads => heads.every(h=>getComputedStyle(h).position==='static')"):
                     errors.append(prefix + "card head stays sticky in print")
@@ -5869,8 +5861,8 @@ PANEL_TEXT_LINES_JS = r"""
 
 
 PANEL_IDENTITY_JS = r"""({owner, head}) => {
-  const box=document.querySelector(owner), h=box.querySelector(head), identity=h.querySelector('.panel-identity'),
-    state=identity?.querySelector('.head-state'), institute=identity?.querySelector('.head-institute');
+  const box=document.querySelector(owner), h=box.querySelector(head), identity=h.querySelector('.panel-identity, .name'),
+    state=identity?.querySelector('.head-state') || (box.matches('.card') ? identity : null), institute=identity?.querySelector('.head-institute');
   const visibleText=n=>{
     const words=[], walker=document.createTreeWalker(n,NodeFilter.SHOW_TEXT);
     while(walker.nextNode()) {
@@ -5901,12 +5893,21 @@ PANEL_IDENTITY_JS = r"""({owner, head}) => {
   const parts=[['state',state],['institute',institute],['function',functionHead]].filter(([,n])=>n), lines=[];
   for(const [part,n] of parts) {
     const measured=textLines(n);
-    if(!measured.length) lines.push({part,inside:false});
+    if(!measured.length) lines.push({part,inside:false,verticalInside:false});
     for(const line of measured) {
       const t=line.rect;
-      lines.push({part,inside:t.left>=r.left-.01 && t.right<=r.right+.01 && t.top>=r.top-.01 && t.bottom<=r.bottom+.01});
+      lines.push({part,inside:t.left>=r.left-.01 && t.right<=r.right+.01 && t.top>=r.top-.01 && t.bottom<=r.bottom+.01,
+        verticalInside:t.top>=r.top-.01 && t.bottom<=r.bottom+.01});
     }
   }
+  // Measure each heading across its inline spans. The function label is a separate heading.
+  // A line can have several fragments (state, separator, institute); count its top once.
+  const spacing=[['identity',identity],['function',functionHead]].filter(([,n])=>n).map(([part,n])=>{
+    const tops=[];
+    for(const {rect} of textLines(n).sort((a,b)=>a.rect.top-b.rect.top))
+      if(!tops.length || rect.top-tops[tops.length-1]>.5) tops.push(rect.top);
+    return {part,tops,fontSize:parseFloat(getComputedStyle(n).fontSize)};
+  });
   return {text:visibleText(h),state:state ? visibleText(state) : '',institute:institute ? visibleText(institute) : '',
     stateVisible:!!state && unclipped(state) && getComputedStyle(state).textOverflow!=='ellipsis',
     instituteMuted:!institute || getComputedStyle(institute).color!==getComputedStyle(state).color,
@@ -5915,20 +5916,29 @@ PANEL_IDENTITY_JS = r"""({owner, head}) => {
     closeName:label(box.querySelector('.close-control')),top:r.top,...edge,
     functionText:functionHead ? visibleText(functionHead) : '',functionVisible:!!functionHead && unclipped(functionHead),
     functionBelow:!!functionHead && functionHead.getBoundingClientRect().top>=identity.getBoundingClientRect().bottom-1,functionStyled,
-    lines};
+    singleLine:!!identity && getComputedStyle(identity).whiteSpace==='nowrap' && getComputedStyle(identity).textOverflow==='ellipsis',
+    spacing,lines};
 }""".replace('/* TEXT_LINES */', PANEL_TEXT_LINES_JS).replace('/* READING_EDGE */', READING_EDGE_JS)
 
 
-def panel_identity_errors(m: dict, state: str, institute: str | None, *, close: bool, stuck: bool = True, function: str | None = None) -> list[str]:
+def panel_identity_errors(m: dict, state: str, institute: str | None, *, close: bool, stuck: bool = True, function: str | None = None, card: str | None = None, status: str | None = None) -> list[str]:
     expected = state + (f", {institute}" if institute else "")
     errors = []
-    if m['state'] != state or not m['stateVisible'] or not m['text'].startswith(state):
+    if m['state'] != state or (not card and not m['stateVisible']) or not m['text'].startswith(state):
         errors.append('visible head must start with the full state name')
     if m['institute'] != (institute or '') or not m['text'].startswith(state + (' ' + institute if institute else '')):
         errors.append('visible head must put the full institute name after the state')
     if not m['instituteMuted'] or not m['phoneLines']:
         errors.append('institute must be muted and on its own line on phones')
-    if m['panelName'] != expected or m['tip'] != expected:
+    if card:
+        labelled = state + (', ' + status if status else '')
+        if not identity_name_pattern(labelled).fullmatch(m['panelName'] or ''):
+            errors.append('card accessible name must name the state and its grouped status')
+        if card == 'full' and m['tip'] != state:
+            errors.append('card title must name the state alone')
+        if not m['singleLine']:
+            errors.append('card heading must stay on one line with ellipsis')
+    elif m['panelName'] != expected or m['tip'] != expected:
         errors.append('panel accessible name and title must name the state then institute')
     if close and m['closeName'] != 'Close ' + expected:
         errors.append('close accessible name must name the state then institute')
@@ -5937,11 +5947,31 @@ def panel_identity_errors(m: dict, state: str, institute: str | None, *, close: 
     if not m['lines']:
         errors.append('head has no measured text lines')
     for line in m['lines']:
-        if not line['inside']:
+        # A card can hide the end of a state name with ellipsis. Range rectangles
+        # retain that hidden width, but the single line must still fit vertically.
+        if not (line['verticalInside'] if card else line['inside']):
             errors.append(line['part'] + ' text line lies outside the head border box')
     if function and (m['functionText'] != function or not all(m[k] for k in ('functionVisible', 'functionBelow', 'functionStyled'))):
         errors.append('stuck cell head must show the full function label below its identity in label type and ink')
     return errors
+
+
+def head_line_spacing_errors(headings: list[dict]) -> list[str]:
+    """The same 1.6em bound as Funding names, across each heading's text fragments."""
+    if not headings:
+        return ['head has no line-spacing measurements']
+    errors = []
+    for heading in headings:
+        tops, size = heading['tops'], heading['fontSize']
+        if not tops or not math.isfinite(size) or size <= 0 or not all(math.isfinite(top) for top in tops):
+            errors.append(heading['part'] + ': head has no finite text-line measurements')
+        elif any(b - a > 1.6 * size + .1 for a, b in zip(tops, tops[1:])):
+            errors.append(heading['part'] + ': wrapped head lines must be at most 1.6 times the font size apart')
+    return errors
+
+
+def wrapped_head_coverage_errors(width: int, uk_grouped: int) -> list[str]:
+    return ['United Kingdom grouped Functions: no wrapped head measured at 390px'] if width == 390 and not uk_grouped else []
 
 
 PANEL_HEAD_KINDS = ('Functions grouped row', 'Functions grid cell/row', 'Funding Budget', 'Funding Staff',
@@ -6002,6 +6032,22 @@ PANEL_PIXELS_JS = r"""({owner, head}) => {
     Math.min(right,r.right-parseFloat(s.borderRightWidth))-3],
     ys=[r.top+parseFloat(s.borderTopWidth)+2,r.bottom-parseFloat(s.borderBottomWidth)-3];
   for(const [row,y] of ys.entries()) for(const [col,x] of xs.entries()) add(`padding ${row}/${col}`,x,y);
+  // A single-row card can have ink at the left corners and a full-height download
+  // at the right. Sample the gaps between their measured edges and the strips
+  // above/below the text. Multi-line heads keep the corner coverage requirement.
+  const textTop=Math.min(...headText.map(t=>t.rect.top)), textBottom=Math.max(...headText.map(t=>t.rect.bottom)),
+    singleLine=headText.length && headText.every(t=>Math.abs(t.rect.top-textTop)<1 && Math.abs(t.rect.bottom-textBottom)<1);
+  if(singleLine && samples.filter(p=>p.name.startsWith('padding')).length<2) {
+    const l=Math.max(left,r.left+parseFloat(s.borderLeftWidth)), rr=Math.min(right,r.right-parseFloat(s.borderRightWidth)),
+      t=Math.max(top,r.top+parseFloat(s.borderTopWidth)), b=Math.min(bottom,r.bottom-parseFloat(s.borderBottomWidth)),
+      edges=[...new Set([l,rr,...obstacles.filter(o=>intersects(o,r)).flatMap(o=>[o.left-2,o.right+2])]
+        .map(x=>Math.max(l,Math.min(rr,x))))].sort((a,b)=>a-b),
+      rows=[(t+textTop)/2,(textTop+textBottom)/2,(textBottom+b)/2].filter(y=>y>=t && y<b);
+    for(const [row,y] of rows.entries()) for(let col=1;col<edges.length;col++) {
+      const x=Math.floor((edges[col-1]+edges[col])/2), yy=Math.floor(y);
+      if(!samples.some(p=>p.x===x && p.y===yy)) add(`padding gap ${row}/${col}`,x,yy);
+    }
+  }
   // An edge-aligned head has no separate band: its top padding supplies these samples.
   const bandY=r.top-edge.edge>=4 ? (r.top+edge.edge)/2 : ys[0];
   for(const x of [left+2,(left+right)/2,right-3]) add('band',x,bandY);
@@ -6138,6 +6184,8 @@ def check_panel_heads(browser, base_url: str, data: dict) -> list[str]:
             counts = dict.fromkeys(kinds, 0)
             stuck_counts = dict.fromkeys(kinds, 0)
             short_counts = dict.fromkeys(kinds, 0)
+            wrapped_counts = dict.fromkeys(kinds, 0)
+            uk_wrapped = 0
             uk_stuck = dict.fromkeys(PANEL_REQUIRED_STUCK, 0)
             map_counts = dict.fromkeys(('viewport', 'scrollport'), 0)
             prefix = f'{width}px {theme}: '
@@ -6146,6 +6194,7 @@ def check_panel_heads(browser, base_url: str, data: dict) -> list[str]:
                 page.evaluate('document.fonts.ready')
 
                 def inspect(kind, owner, head, jid, *, close=True, function=None):
+                    nonlocal uk_wrapped
                     panel = page.locator(owner)
                     if panel.count() != 1:
                         errors.append(prefix + kind + ': missing unique panel')
@@ -6165,17 +6214,25 @@ def check_panel_heads(browser, base_url: str, data: dict) -> list[str]:
                     position = panel.evaluate(PANEL_POSITION_JS, {'head': head, 'step': PANEL_SCROLL_STEP})
                     enough = position['enough']
                     layout_settled(page)
-                    institute = institutes.get(jid)
+                    card = 'mini' if kind == 'States mini card' else 'full' if kind in ('Testing', 'Set-up', 'States card') else None
+                    institute = None if card else institutes.get(jid)
                     full = names[institute['id']] if institute else None
 
                     def measure(phase):
+                        nonlocal uk_wrapped
                         m = page.evaluate(READING_HEAD_JS, {'owner': owner, 'head': head, 'close': '.close-control' if close else None})
                         identity = page.evaluate(PANEL_IDENTITY_JS, {'owner': owner, 'head': head})
                         label = prefix + kind + f' {jid} {phase}: '
                         if enough and position['body']:
                             errors.extend(label + e for e in reading_head_errors(dict(m, unstuckGap=gap), close=close))
                         errors.extend(label + e for e in panel_identity_errors(
-                            identity, states[jid]['name'], full, close=close, stuck=enough and position['body'], function=function))
+                            identity, states[jid]['name'], full, close=close, stuck=enough and position['body'], function=function,
+                            card=card, status=STATUS_LABELS[states[jid]['status']] if card == 'full' else None))
+                        errors.extend(label + e for e in head_line_spacing_errors(identity['spacing']))
+                        if phase == 'first' and any(len(h['tops']) > 1 for h in identity['spacing']):
+                            wrapped_counts[kind] += 1
+                            if jid == 'GB' and kind == 'Functions grouped row':
+                                uk_wrapped += 1
                         return page.evaluate(PANEL_PIXELS_JS, {'owner': owner, 'head': head})
 
                     before = measure('first')
@@ -6275,9 +6332,10 @@ def check_panel_heads(browser, base_url: str, data: dict) -> list[str]:
             finally:
                 page.close()
             errors.extend(prefix + e for e in panel_coverage_errors(counts, uk_stuck))
+            errors.extend(prefix + e for e in wrapped_head_coverage_errors(width, uk_wrapped))
             errors.extend(prefix + e for e in map_head_coverage_errors(width, map_counts))
             errors.append(report_line(prefix + f"Map record: {map_counts['viewport']} viewport sticky heads; {map_counts['scrollport']} inner-scrollport heads checked"))
-            errors.extend(report_line(prefix + f'{kind}: {count} heads checked; {stuck_counts[kind]} asserted stuck at two positions; '
+            errors.extend(report_line(prefix + f'{kind}: {count} heads checked; {wrapped_counts[kind]} wrapped heads measured; {stuck_counts[kind]} asserted stuck at two positions; '
                                       f'{short_counts[kind]} not stuck (too short); {count-stuck_counts[kind]-short_counts[kind]} invalid pairs')
                           for kind, count in counts.items())
     return errors
@@ -8722,7 +8780,7 @@ def check_wrapped_rows(page) -> list[str]:
     """Force multi-line text in existing row types, then restore the DOM."""
     page.evaluate("""() => {
       window.rowFixtures = [];
-      const targets = '.meta > span:first-child, .card .top .name, .card .card-head-space .panel-identity, .fund-identity h4, .dlist .dl-title, .dlist .d, .card.mini > summary .find, .card:not(.mini) .row .v, .legend-definition, .fund-staff .fund-value, .fund-budget .fund-value, #world-rows td[data-col="inst"], .development-text';
+      const targets = '.meta > span:first-child, .card .top .name, .fund-identity h4, .dlist .dl-title, .dlist .d, .card.mini > summary .find, .card:not(.mini) .row .v, .legend-definition, .fund-staff .fund-value, .fund-budget .fund-value, #world-rows td[data-col="inst"], .development-text';
       for (const selector of targets.split(', ')) {
         const node = document.querySelector(selector);
         if (!node) continue;
@@ -8883,6 +8941,32 @@ def expected_display_names(data: dict) -> dict[str, str]:
     }
 
 
+def check_card_names(html, data: dict) -> list[str]:
+    """Cards name the state; a grouped full card also announces its status."""
+    soup = BeautifulSoup(html, 'html.parser')
+    states = {j['id']: j for j in data['jurisdictions']}
+    errors = []
+    for card in soup.select('.card'):
+        jid = card.get('data-j')
+        state = states.get(jid)
+        name = card.select_one(':scope > .top > .name, :scope > summary > .name')
+        if not state or name is None or name.get_text() != state['name']:
+            errors.append(f'{jid}: card heading must name the state alone')
+            continue
+        mini = 'mini' in card.get('class', [])
+        if not mini and (tip_of(name) or name.get('title')) != state['name']:
+            errors.append(f'{jid}: card tooltip must name the state alone')
+        ids = [name.get('id')]
+        if not mini and card.find_parent(class_=('statusgroup', 'eu-level')):
+            status = card.select_one(':scope > .top > .vh')
+            if status is None or status.get_text() != ', ' + STATUS_LABELS[state['status']]:
+                errors.append(f'{jid}: grouped card must retain its status')
+            ids.append(status.get('id') if status else None)
+        if not all(ids) or card.get('aria-labelledby', '').split() != ids or card.has_attr('aria-describedby'):
+            errors.append(f'{jid}: card aria-labelledby must include its state and any grouped status')
+    return errors
+
+
 def check_institute_names(html, data: dict) -> list[str]:
     """One display name per body, one recorded short form for tight places, never a bare generic acronym.
 
@@ -8891,7 +8975,7 @@ def check_institute_names(html, data: dict) -> list[str]:
     funding heads show the full base name without a repeated country suffix.
     """
     soup = BeautifulSoup(html, "html.parser")
-    errors = []
+    errors = check_card_names(html, data)
     names = expected_display_names(data)
     shorts = {i["id"]: i["short_name"] for i in data["institutes"]}
     if len({n.casefold() for n in names.values()}) != len(names):
@@ -11073,17 +11157,17 @@ def check_label_ladder(page) -> list[str]:
         if (!visible(h) || !name) continue;
         if (parseFloat(css(h,'fontWeight'))<parseFloat(css(name,'fontWeight')) || parseFloat(css(h,'fontSize'))<parseFloat(css(name,'fontSize'))) errors.push(REPORT + 'Funding chart heading is weaker than its institute labels: '+h.textContent.trim());
       }
-      // A card's accessible description retains status separately from its identity.
+      // A grouped card's accessible name includes its status after the state.
       for (const card of document.querySelectorAll('.statusgroup .card:not(.mini)')) {
         if (card.querySelector(':scope > .top > .smark')) errors.push(REPORT + `card in a status group repeats its status in the title row: ${card.id}`);
-        const said = card.querySelector(':scope > .top > .vh'), ids = (card.getAttribute('aria-describedby') || '').split(' ');
+        const said = card.querySelector(':scope > .top > .vh'), ids = (card.getAttribute('aria-labelledby') || '').split(' ');
         const want = ', ' + card.closest('.statusgroup').querySelector(':scope > h3 .smark > span').textContent.replace(/ \\(\\d+\\)$/, '');
-        if (!said || said.textContent !== want || !ids.includes(said.id)) errors.push(`card in a status group lacks its accessible status description: ${card.id}`);
+        if (!said || said.textContent !== want || !ids.includes(said.id)) errors.push(`card in a status group lacks its accessible status name: ${card.id}`);
       }
-      // The EU entry's dated Status row says its status, so its title row shows none either; the accessible description keeps it.
+      // The EU entry's dated Status row says its status, so its title row shows none either; the accessible name keeps it.
       for (const card of document.querySelectorAll('.eu-level .card:not(.mini)')) {
         if (card.querySelector(':scope > .top > .smark')) errors.push(REPORT + 'the EU entry repeats its status in the title row; its Status row says it');
-        const said = card.querySelector(':scope > .top > .vh'), ids = (card.getAttribute('aria-describedby') || '').split(' ');
+        const said = card.querySelector(':scope > .top > .vh'), ids = (card.getAttribute('aria-labelledby') || '').split(' ');
         const row = card.querySelector('.row[data-track="3"]'), shown = row ? row.querySelector('.v').textContent.trim().split(' since ')[0] : null;
         if (!said || !shown || said.textContent !== ', ' + shown || !ids.includes(said.id)) errors.push(`the EU entry's accessible status ${said && said.textContent} does not match its Status row ${shown}`);
       }
@@ -13762,10 +13846,8 @@ DOWNLOAD_ALIGNMENT_JS = """() => [...document.querySelectorAll('[download], .sec
   .filter(n=>n.checkVisibility({contentVisibilityAuto:true}) && (!n.matches('.palette-option') || /^Download /.test(n.textContent))).map(n=>{
     const box=n.closest('.popover, .dlist li') || (n.matches('.section-dl') ? n.closest('.section-foot') : n.parentElement);
     const r=n.getBoundingClientRect(), s=box && getComputedStyle(box), b=box?.getBoundingClientRect();
-    // Only a card head reserves padding for its download and positions it at the card's edge: that one ends at the padding edge.
-    const positioned=n.matches('.card .top > .state-dl') && getComputedStyle(n).position==='absolute';
     return {name:n.id || n.getAttribute('download') || n.textContent.trim(), right:r.right,
-      edge:b ? b.right-parseFloat(s.borderRightWidth)-(positioned ? 0 : parseFloat(s.paddingRight)) : null};
+      edge:b ? b.right-parseFloat(s.borderRightWidth)-parseFloat(s.paddingRight) : null};
   })"""
 
 
@@ -15009,9 +15091,9 @@ def check_page_separators(browser, base_url: str) -> list[str]:
                 result = page.evaluate(PAGE_SEPARATORS_JS, SEPARATOR_LINES)
                 errors.extend(f'{width}px: {e}' for e in result['errors'])
                 for kind, counts in result['counts'].items():
-                    total = totals.setdefault(kind, {'lines': 0, 'separators': 0})
+                    total = totals.setdefault(kind, {})
                     for key, value in counts.items():
-                        total[key] = max(total[key], value)
+                        total[key] = max(total.get(key, 0), value)
 
             # Opening nested quote folds needs its toggle event to populate the body
             # before the next pass. Funding records need their own controls below.
@@ -15044,7 +15126,7 @@ def check_page_separators(browser, base_url: str) -> list[str]:
             for view in ('grouped', 'grid'):
                 lines = page.evaluate(SOURCE_SEPARATORS_JS, view)
                 errors.extend(f'{width}px {view}: {e}' for e in source_separator_errors(lines))
-                totals['function sources'] = {'lines': len(lines), 'separators': sum(line['separators'] for line in lines)}
+                totals.setdefault('function sources', {}).update(lines=len(lines), separators=sum(line['separators'] for line in lines))
                 # Leave one evidence panel open for the whole-page inventory, including its status.
                 page.locator('.fn-phone-row:visible, .fn-cell:visible').first.click()
                 inspect()
@@ -15065,8 +15147,8 @@ def check_page_separators(browser, base_url: str) -> list[str]:
             # coverage kinds even though they share the same builder.
             required.update(('re-read tails', 'archived-copy tails'))
             errors.extend(f'{width}px: {e}' for e in separator_coverage_errors(totals, required))
-            errors.append(report_line(f'{width}px separator coverage (maximum visible lines/dots per kind): ' +
-                                      ', '.join(f'{k}={v["lines"]}/{v["separators"]}' for k, v in sorted(totals.items()))))
+            errors.append(report_line(f'{width}px separator coverage (maximum lines/total dots/visible dots per kind): ' +
+                                      ', '.join(f'{k}={v["lines"]}/{v["separators"]}/{v.get("visible", 0)}' for k, v in sorted(totals.items()))))
         finally:
             page.close()
     return list(dict.fromkeys(errors))
@@ -15595,27 +15677,27 @@ def check_functions_layout(browser, base_url: str, *, fixture: dict | None = Non
                   scroll.scrollLeft=0;
                   return errors;
                 }""".replace("/* FUNCTION_POLYGON */", FN_POLYGON_JS))]
-    # The added Compare link must fit with the shared small-screen group-row spacing.
+    # Phone group rows may wrap or scroll, but must stay within the viewport.
     page.set_viewport_size({"width": 360, "height": 1000})
     for scale in ("100%", "110%"):
         page.evaluate("scale => document.documentElement.style.fontSize = scale", scale)
         page.evaluate("document.fonts.ready")
         page.evaluate("() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))")
         measures = page.evaluate("""() => [...document.querySelectorAll('.group-nav')].map(row => {
-          const links = [...row.querySelectorAll('a')], label = row.querySelector('.group-label');
-          // Only what is drawn: phones hide the group label, whose empty rect would read as a second line.
-          const rects = [label, ...links].filter(n => n.getClientRects().length).flatMap(n => { const range = document.createRange(); range.selectNodeContents(n); return [...range.getClientRects()].filter(r => r.width && r.height); });
+          const label = row.querySelector('.group-label');
           const bounds = row.getBoundingClientRect();
-          // Text on one line shares vertical space; fractional font metrics need not have identical rounded tops.
-          return {name: label.textContent, oneLine: rects.length > 0 && Math.max(...rects.map(r => r.top)) < Math.min(...rects.map(r => r.bottom)),
-            room: bounds.right - Math.max(...rects.map(r => r.right)), left: Math.min(...rects.map(r => r.left)) - bounds.left,
-            dots: [...row.querySelectorAll('.group-sep')].some(n => getComputedStyle(n).display !== 'none')};
+          const links = row.querySelector('.group-links'), style = getComputedStyle(links);
+          const scrolls = ['auto', 'scroll'].includes(style.overflowX);
+          return {name: label.textContent, left: bounds.left, right: bounds.right,
+            contained: row.scrollWidth <= row.clientWidth + 1,
+            linksContained: scrolls || links.scrollWidth <= links.clientWidth + 1};
         })""")
         for row in measures:
-            if not row["oneLine"] or min(row["room"], row["left"]) < -.5 or row["dots"]:
-                errors.append(f"360px at {scale} text: {row['name']} group row wraps, overflows or retains separator dots ({row})")
-            if row["name"] == "Compare":
-                errors.append(report_line(f"360px at {scale} text: Compare group row has {row['room']:.1f}px left"))
+            if row['left'] < -.5 or row['right'] > 360.5 or not row['contained'] or not row['linksContained']:
+                errors.append(f"360px at {scale} text: {row['name']} group row overflows ({row})")
+        errors.extend(f'360px at {scale} text: {e}' for e in page.evaluate(PAGE_SEPARATORS_JS, {
+            'group navigation': SEPARATOR_LINES['group navigation'],
+        })['errors'] if e.startswith('group navigation:'))
     page.close()
     return errors
 

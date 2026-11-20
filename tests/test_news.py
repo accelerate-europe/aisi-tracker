@@ -783,6 +783,25 @@ def test_news_label_and_footer_structure(next_data):
     assert [a["id"] for a in footer.select("a")] == ["news-feed", "news-download"]
 
 
+def test_baseline_selector_covers_the_rendered_news_label(next_data):
+    class Page:
+        script = ''
+
+        def evaluate(self, script):
+            self.script = script
+            return []
+
+    page = Page()
+    check_page.check_baselines_and_rhythm(page)
+    selector = re.search(r"\['\.development-label', '([^']+)'\]", page.script)[1]
+    labels = BeautifulSoup(news_html(next_data), 'html.parser').select('.development-label')
+    assert labels
+    for label in labels:
+        items = label.select(selector)
+        assert items == [label.select_one('.development-date'), label.select_one('.development-name')]
+        assert len(items) == 2
+
+
 def test_news_layout_findings_block_the_gate():
     """The News form, glossary marks and link placement are gate rules: findings are errors, never report lines."""
     assert not hasattr(check_page.check_news_layout, "__wrapped__")

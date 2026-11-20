@@ -25,6 +25,20 @@ def test_download_control_ends_at_its_content_edge(edge, right, valid):
     assert (check_page.download_alignment_errors([dict(name='download', edge=edge, right=right)]) == []) == valid
 
 
+def test_download_measurement_uses_content_edge_for_card_heads_too():
+    script = r"""
+const assert=require('node:assert/strict');
+const box={getBoundingClientRect:()=>({right:130})};
+const n={checkVisibility:()=>true,matches:s=>s==='.card .top > .state-dl',closest:()=>null,
+  parentElement:box,getBoundingClientRect:()=>({right:120}),getAttribute:()=> 'state.json'};
+const document={querySelectorAll:()=>[n]},getComputedStyle=()=>({borderRightWidth:'2px',paddingRight:'8px',position:'absolute'});
+const measure=MEASURE;
+assert.deepEqual(measure(),[{name:'state.json',right:120,edge:120}]);
+""".replace('MEASURE', check_page.DOWNLOAD_ALIGNMENT_JS)
+    result = subprocess.run(['node', '-'], input=script, capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
+
+
 def test_definition_hover_dismisses_the_previous_keyboard_tip():
     events = []
 
@@ -1604,7 +1618,8 @@ def _names_data():
 
 def _names_html(gb="AI Security Institute (United Kingdom)", gb_short="UK AISI", fr_short="INESIA"):
     def card(jid, name):
-        return f'<article class="card" id="c-{jid.lower()}"><div class="row" data-track="2"><div class="k">Institute</div><div class="v">{name}</div></div></article>'
+        state = next(j['name'] for j in _names_data()['jurisdictions'] if j['id'] == jid)
+        return f'<article class="card" id="c-{jid.lower()}" data-j="{jid}" aria-labelledby="{jid}-name"><div class="top"><h4 class="name" id="{jid}-name" title="{state}">{state}</h4></div><div class="row" data-track="2"><div class="k">Institute</div><div class="v">{name}</div></div></article>'
     def funding(jid, iid, short, name):
         state = next(j['name'] for j in _names_data()['jurisdictions'] if j['id'] == jid)
         base = name.removesuffix(f" ({state})")

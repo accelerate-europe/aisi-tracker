@@ -106,7 +106,7 @@ ROLE_SELECTORS = {
     "record-figure": ".budget-amount",
     "region-row-label": ".region-rows > li > .small",
     "intrinsic-text": ".group-note, .fn-function-label, .fn-function-status, .card.mini > summary .find",
-    "intrinsic": ".section-foot-actions, .det.status-phrase, .sort-label, .control-label, .summary-label, #changes-latest, .group-links > .meta-item, .fn-legend > li > span, .trailing-qualifier, .fn-label-full, .fn-label-short, .panel-identity, .card.mini > summary .name, .legend-entry, .legend-copy, .fn-legend > li, .fund-key > .key-item, .activity-line, .activity-kinds > li, .region-head > *, .group-label, .group-links, .view-switch .meta-item, .tbar > .search, .toolbar-actions > *, .marks > *, .figure > *, .source-count, .record-more, .back-map, .correction, .fn-phone-band-label, .fund-other .fund-names-toggle:not(button), .fund-name-row .panel-identity, .dl-title, .dl-file, .dlist .d, .close-control, .smark, .info, .head-line, .term, .g",
+    "intrinsic": ".section-foot-actions, .det.status-phrase, .sort-label, .control-label, .summary-label, #changes-latest, .group-links > .meta-item, .fn-legend > li > span, .trailing-qualifier, .fn-label-full, .fn-label-short, .panel-identity, .card .top > .name, .card.mini > summary .name, .legend-entry, .legend-copy, .fn-legend > li, .fund-key > .key-item, .activity-line, .activity-kinds > li, .region-head > *, .group-label, .group-links, .view-switch .meta-item, .tbar > .search, .toolbar-actions > *, .marks > *, .figure > *, .source-count, .record-more, .back-map, .correction, .fn-phone-band-label, .fund-other .fund-names-toggle:not(button), .fund-name-row .panel-identity, .dl-title, .dl-file, .dlist .d, .close-control, .smark, .info, .head-line, .term, .g",
     "overlay": ".popover, #tip, .suggest, .palette",
     "text": ".running-text",
     "fill": ".fn, .map-search > .search, .fn-phone-row, .fn-cell, .fund-row, .fund-name-row, button.fund-names-toggle, .region-head, table th > button, .partner-how > p, .updated, #tip .tip-sub, .fn-claim, .fn-sources, .fn-sources > li, .gl, .region-brief, .region-sub, #world-count, .hl-version, .hl-sentence, .qualified, .activity-kind, .value-line, .activity-interval, .card.mini > summary, .fund-detail > summary, .fn-summary, .fn-view-switch, .fn-legend, .fn-scroll, .fn-phone, .fn-phone-head, .fn-phone-block, .fn-phone-block > ul, .fn-phone-block > ul > li, .fn-phone-functions, .fn-phone-functions > li, .fn-detail-top, .fn-function-head, .fn-basis, .access, .setup, .groups-short, .groups-long, .group-block, .marks, .group-list, .group-list > li, #fund-rows, .fund-list, .fund-axis, .fund-chart-rows, .fund-item, .fund-other, .fund-other > div, .fund-name-list, .fund-name-item, #fund-records, .fund-detail-body, .fund-detail-body > div, .funding-record, .fund-value, .section-foot, .foot, .entries, .statusgroup, .eu-level, .eu-head, .cards, .card-row, .card > .top, .card > .row, .facts, .body-group, .body-group ul, .body-group li, .how, .partner-how, .partner-how > ul, .member-list, .members, .member-names, .srcs, .srcs > ol, .prose-panel, .claim, .quote-body, .quote-excerpt, .quote-anchor, .quote-translation, .reread, .record-rows, .record-top, .record-notes, .record-status, .region-elsewhere, .region-rows, .region-rows > li, .region-divider, .legend, .development-list, .development-row, .development-label, .table-scroll, .scroll, .tbar, .downloads, .dlgroup, .dlist, .dlist > li, .dlist > li > a, .two, #status-defs, #rules, #limits, #limits ul, #changelog, #changelog > li, .change-head, .qualifiers, .partner-how li, .body-roles, .activity-kinds, .activity-text, .activity-since, .partners-none, .related, .source-statement",
@@ -226,8 +226,6 @@ def content_insets(node: dict, rem: float = 16) -> tuple[float, float]:
         return rem, rem
     if role == "region":
         return .75 * rem, .75 * rem
-    if node.get("card_head"):
-        return 0, (1.75 + .75) * rem
     if node.get("cite"):
         return rem + 2, 0
     if role == "function-summary":
@@ -398,7 +396,7 @@ SECTION_EXTENTS_JS = r"""({selectors, scope, kinds}) => {
     const r=box(n);
     let p=n.parentElement; while(p && !ids.has(p)) p=p.parentElement;
     const item={id:nodes.length,name:name(n),matches:roles,parent:ids.get(p),left:r[0],right:r[1],
-      card_head:n.matches('.card > .top'),cite:n.matches('.cite'),world_cell:n.matches('table.world td'),
+      cite:n.matches('.cite'),world_cell:n.matches('table.world td'),
       tooltip:n.matches('#tip'),opened_summary:n.matches('.card.mini[open] > summary, .fund-detail[open] > summary'),
       list_indent:n.matches('#changelog, #limits ul')};
     if(role==='text' || role==='intrinsic-text' || n.matches('.running-text')) item.text_right=textRight(n,r[0]);

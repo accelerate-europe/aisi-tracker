@@ -29,7 +29,7 @@
 /* Design principles
  * View switch: alternative presentations of the same content use two visible, dot-separated text buttons in muted meta type, following the section sub-navigation with an accent marker on the current item, no bold or current text underline, and hover/focus feedback; the switch sits on its own line above the content, aligned to its visible right edge at every width; a named group holds exactly one aria-pressed button, activation keeps focus on that button even when a click does not move focus, and activating the current item leaves the view unchanged.
  * Functions views (owner, 18 Nov 2026, "grouped default, grid one click away"): at every width the section opens on the grouped view, one row per institute with a strip of marks per group; a row expands to list every function with its status and, in muted meta, its short reader's sentence. The coding rule stays on hover in the grid and in How this is coded. The caption-sized view switch above the table reads "By group · All 18 functions", with the count from the vocabulary and the current view marked; the view is the section's state, not the width's, and a link to a target inside the hidden view brings that view. On wider screens the grouped view fills the content column as the grid does: the first column takes its longest name, so no name wraps where the column has room, and the groups share the rest (hub, 18 Nov 2026). As in the grid, a group line runs where each group starts, through the head, the band rows and every row; each label and strip sits left-aligned just after it with the same padding, so a label wraps inside its own column, and the padding reserves a fixed least gap between labels. An expanded row's ground interrupts the lines; the selection bar and the focus ring paint above them. On phones the head, in its px caption size, prints "&" for "and", keeps the first part together and breaks after it, so the labels take two lines alike down to 320; at 360 px and below the head is 1px smaller and the gap and marks a little tighter, as the country names leave no slack (owner, 18 Nov 2026). Without the page script the grid shows and the switch is hidden, as the rows cannot open (check_page check_functions_views, check_functions_group_lines).
- * Separator dots: no line on the page starts with a separator dot. Dot-separated items use separated(), or its saved markup, binding the dot to the preceding item; hideLineEndDots hides it when the following item wraps. Whole trailing qualifiers (function status, source caveat, archived copy and Quote label) use trailingQualifier(): they keep their following phrase whole and suppress the dot when that phrase starts a new line. Both use the shared layout pass after opening, resizing and font changes. Function statuses use the name's baseline rhythm outside its button; opened evidence keeps its full measure (check_page check_page_separators, check_status_qualifiers).
+ * Separator dots: no line on the page starts with a separator dot. Dot-separated items use separated(), or its saved markup, binding the dot to the preceding item; hideLineEndDots hides it when the following item wraps and keeps it visible between items on the same line. At 400px and narrower the section links under the navigation show no dots, so the row keeps to one line; their spacing separates them. Whole trailing qualifiers (function status, source caveat, archived copy and Quote label) use trailingQualifier(): they keep their following phrase whole and suppress the dot when that phrase starts a new line. Both use the shared layout pass after opening, resizing and font changes. Function statuses use the name's baseline rhythm outside its button; opened evidence keeps its full measure (check_page check_page_separators, check_status_qualifiers).
  * Column-head labels: in every table's head, no two labels on one line sit closer than HEAD_LABEL_GAP (6 px) and none overlaps, at phone and desktop widths, at 110% text and in both themes; the grid's leaning function heads are held apart by their own flag test (check_page check_head_labels, check_functions_tint).
  * Functions table: institute rows in established and not-yet-established blocks, function columns in vocabulary groups, equal widths and rotated short heads. The page prints each group's label from one constant per group (Testing and science, Rules and standards, Informing government, Ecosystem and adoption; owner, 18 Nov 2026), so a word can be changed in one place; the data keeps the recorded group names (Rules, Ecosystem). Active and both use a dot, assigned a ring; not found is blank, a search result rather than absence. The jurisdiction column stays visible during sideways scrolling. Hover and focus tint the row and one continuous column through the block bands, with a slanted band behind its head. Columns are evenly spaced with no gutter between groups; a slightly stronger vertical line marks where a group starts, quieter than the selection bar in both themes, and row lines and the row and column tint run through unbroken; a group label longer than its own tracks takes a second line (owner, 18 Nov 2026). Each group has a leaning boundary and an underline at its label, meeting the upright body rules at the head rule; the shared head height follows the head type, leaving at least --sp-1 above every head tip. No upright rule crosses the head zone, and labels paint above the hover flag and boundaries. Quotes and sources open on demand below the selected institute (check_page check_functions_table, check_functions_detail, check_functions_layout, check_functions_tint, check_function_group_tabs).
  * Selection: every open function cell, grouped Functions or Funding row, function within a card, and selected search or palette row has a start-edge bar at least --rule-strong wide in --focus, the strong accent ink, at least 3:1 against its adjacent ground. No selected state draws a full outline. Selection adds --highlight-fill; its open panel shares that ground and meets its row without a gap or dividing outline. Keyboard focus keeps a separate visible ring; a function's ring includes its status, and search/palette focus stays in the input (check_page check_selection_boxes).
@@ -41,7 +41,7 @@
  * Secondary tone: --muted is for source apparatus (citations, sources, re-read lines, translation markers and source dates), method notes and field labels. Facts, body roles and qualifiers needed to read values use --ink; type sizes do not decide their colour. Below each Funding chart, muted Not compared and Not published lines distinguish other published amounts in the records from missing figures (owner, 19 Nov 2026; check_page check_secondary_tone).
  * Function detail: a grid cell is a mark, so its sticky head keeps the full function label in label type and ink below the state and institute. The body starts with a muted status sentence naming the institute's short form: "Assigned to UK AISI, and active", "Assigned to KI Norge", "KI Norge is active, without an assignment" (owner, 18 Nov 2026). Claims directly beneath a named function in the grouped view omit the repeated function heading and status. The whole opened block, including basis labels, quotes and anchors, starts at or after the function name's text edge at every width. The row keeps any extra status information, including "without an assignment", and its selection bar spans the name and status, and its focus ring encloses both, though the status stays outside the button. The inline region takes its accessible name from that button. In both views, mixed claims keep the block labels Assignment, then Activity. Each claim reads: its sentence, without a citation number, then its source line in the running form (Sources), ending after " · " with "Quote" and the fold chevron in the source line's size and muted ink; the quote opens beneath, indented. Cards and full records keep sentence then Quote, with their sources in the counted Sources. All quote folds follow Claims for their accessible name and translation line. The grid panel stays at its scroll box's left edge and takes its clientWidth in pixels (check_page check_functions_detail, check_functions_phone, check_functions_views).
  * Sticky reading heads: at every width, grouped Functions and every table head stay directly below the real navigation and group row bottom, including sideways-scrolling tables. Overflowing tables move their real head within the table, preserving column alignment and semantics. At every width, a long detail's compact identity and sole close × stay within that detail at the same top, replacing a table head while reading it. Closed mini cards keep the country and first finding sentence; open ones show the country in their sticky summary and the complete finding once beneath it. Funding's native fallback keeps "Funding and staff records" when closed; its open sticky summary shows the identity, with the records beneath it. Both folds have a separate close × alongside the summary; the open summary spans the row to paint behind that close. Full States cards keep their sticky title. Close has at least a 44px square hit area and returns focus to the visible opener. Focus and anchor clearance includes the active head for grouped rows, functions, claims and their links; print keeps heads static (check_page check_functions_views, check_functions_phone, check_wide_layout, check_card_heads).
- * Panel identity: every panel and records head names the state first, then the institute in muted type, using its base name without a repeated state suffix; it is what stays visible when the row has scrolled away. The state never truncates; the institute wraps, onto its own line on phones. The moving head contains every identity and function line and paints an opaque copy of its panel ground across the full panel width, including any tint over the page ground. The panel name, title and contextual Close name use the same identity (check_page check_card_heads).
+ * Panel identity: panels and records opened from a table or the map name the state first, then the institute in muted type, using its base name without a repeated state suffix; it is what stays visible when the row has scrolled away. Cards under States and Compare keep the state's name. In panels the state never truncates; the institute wraps, onto its own line on phones. Wrapped heads keep normal label line spacing; alignment with a Close control never enlarges the spacing between lines. The moving head contains every identity and function line and paints an opaque copy of its panel ground across the full panel width, including any tint over the page ground. The panel name, title and contextual Close name use the same identity (check_page check_card_heads).
  * Reading-head spacing: grouped, grid, world and Funding heads, card, panel, mini-card and Funding-detail headers, and record titles all keep --reading-pad inside their moving head. The first text line has the same inset below its sticking edge as it has below its head's top in flow, within 1px. That edge is the navigation's bottom rule, or the wide Map record's inner scrollport edge when lower (check_page reading_head_errors, check_card_heads).
  * Close glyph: every closeButton draws the same light cross in a .8em square, relative to the header's label size, with .06em strokes. Its glyph box must be at least .75 times that type size and its target remains at least 44px (check_page check_close_controls).
  * Quotation lines: quoteNode keeps every stored line break as an explicit break, including in translated quotations and anchors; numbered and lettered items therefore retain their source lines. Original-language quote tooltips preserve line breaks too (check_page check_claim_quotes).
@@ -50,7 +50,7 @@
  * Citations: every displayed value a quotation can support carries one (absence and an institute name linking to its own site need none); superscript at value end, three quarters of the text it annotates and never larger than meta (so a big figure keeps small numerals); comma-tight groups; card-local Sources order; hit area one text line high, never covering adjacent lines or preceding text.
  * Members and Partners: a network of existing bodies names its members in Form on a dot-separated short-name line, with the itemised glosses and How they work together behind one quiet fold. Arrival at the card leaves that fold as the reader left it (Folds, part 4); Partners holds the other bodies and disappears when none are left unless the cyber search tail remains. The Members and Partners lines show three names, then "and N more" when two or more would be hidden, and the fold lists every body under a counted label (Folds, part 3). Each closed fold-out groups bodies sharing an explanation, with explicit plural wording and a citation on every name. Groups follow the first body's priority order; names within a group keep that order. Generic explanations that only repeat the partner relation are omitted. Partner glosses omit the generic works-with relation; planned relations stay explicit. Downloads keep every relation.
  * Card grids: alphabetical rows share field tracks through subgrid; every field keeps a fixed shared track (Mandate and Finding share the descriptive-text track); a structurally absent field leaves its track empty, without a label; where a row has three tracks, a group's only card spans two (check_page check_card_grid), while a single trailing card in a fuller group's last row keeps the usual card width; phones keep one column.
- * Card heads: identity and download stick below the site bars within their own card in Compare and States, including phones. An inert, invisible copy of the identity sizes the first shared field track intrinsically, while the real head spans the card for native sticking; both use the same type, padding and download space. Focus clearance follows the real head's height; print keeps heads static (check_page check_card_heads, check_saved_card_heads, hydration_paint).
+ * Card heads: country, status and download stick below the site bars within their own card in Compare and States, including phones; the one-line name keeps its full accessible text and tooltip, with ellipsis when needed. CSS sizes the shared title track and focus clearance from the label line, hit height, rules and padding, without copies or measurement; the institute stays in its field and print keeps static heads (check_page check_card_heads, check_saved_card_heads, hydration_paint).
  * Alignment: every text row shares its first baseline, including wrapped text, smaller labels, icons and format tags; within a card every field's value starts at one x.
  * Funding charts (owner, 19 Nov 2026, tighter variant B): Budget then Staff, stacked across the content column at every width, each ranked by its own comparable figure descending, with ties by state name then institute ID. Each has its own sticky head and zero-based scale; only Budget has the adopted/announced key. Established institutes only, with no status marks. Every bar occupies one line: state name, bar, figure. Both charts share content-sized name and figure columns, giving the remaining width to equal bar tracks; rows keep a 44px target. Only enlarged text on the narrowest phones may wrap a name. Figures have one sentence as their tooltip and accessible description, retaining the full period or date, annual basis, bound and commitment; up to, ~ and + stay on the figure. The institute name remains in the opener's accessible name and tooltip. Native currency, confidence and per-resident figures remain in the opened records. Beneath each chart one flowing Not published line lists the missing figures; a separate Not compared line names other published amounts and why they have no bar. No unbarred figures or status markers appear in these lines. Each line is one disclosure, closed by default, with normal text spacing; opened, it lists its institutes as rows that open the same records. Every established institute is reachable once per chart, either as a bar row or in an opened list. Bar and list row buttons open the same full-width records beneath their row, one open across both charts, and close returns focus to the exact opener. Closing a list closes any records within it and returns focus to its disclosure; the other list stays as it was. Figure tooltips act independently. Opened prose cannot size chart columns. Without scripting, the names lines are plain text and one native Funding and staff records fold per established institute remains beneath Staff (check_page check_funding_outside, check_funding_weights, check_funding_layout_states, check_funding_large_text, check_tinted_rows).
  * Status: square swatch plus name; the AE fill ladder, never black and never colour alone: established solid fill, planned an edge, a page-colour ring inside it and a solid centre of the mark's own shape (square on swatches, round on map dots), proposed hatch, exploring an empty ring, none identified a thin grey outline on the page colour, the square swatch with a short grey dash across its centre so it never reads as an empty checkbox (map dots keep the plain outline); every mark's edge is at least 3:1 on the ground and its text at least 4.5:1 on what is behind it, in both themes (check_page check_status_contrast); each map legend name carries its short definition as a tooltip (hover, focus or tap); a status square's tooltip takes the map dot's form, the state's name, then its status on a muted line; a card under a status group heading shows no status in its title row, which keeps it in the accessible description; the EU entry shows none either: its dated Status row says it, as on every other card (owner, 5 Nov 2026; check_page check_label_ladder); Known activity shows no swatch (squares are for status), only each kind found on its own line in date order ("Joint testing", with its own citations) and its muted "since <earliest date of that kind>" beneath; its tooltip defines "since"; with nothing found it says "None found yet" on one line; no line breaks mid-phrase.
@@ -315,7 +315,7 @@ a.ico::before { position: static; transform: none; min-height: 0; }
 .secnav.scrolled .navtitle { display: inline-flex; }
 .navtitle .short { display: none; }
 @media (width <= 560px) { .secnav .measure { gap: var(--sp-3); } } /* the tighter gap: the five tabs fit at 360px, and from 431px the title and the theme toggle fit beside them */
-@media (width <= 430px) { .group-label { display: none; } } /* phones: the group rows' links alone (the bar marks the group), each one row at 360px with enlarged text */
+@media (width <= 430px) { .group-label { display: none; } } /* phones: the group rows' links alone (the bar marks the group); links may wrap with narrow widths or enlarged text */
 @media (width <= 460px) { .secnav.scrolled .navtitle { display: none; } } /* up to 460px the bar holds the five items alone, then also the theme toggle, one row with enlarged text */
 @media (width <= 700px) { .navtitle .long { display: none; } .navtitle .short { display: inline; } }
 /* Method page: the same section bar, holding only the title, which links back to the tracker, and the theme toggle, at every width. */
@@ -332,7 +332,7 @@ a.ico::before { position: static; transform: none; min-height: 0; }
 .group-label { color: var(--ink); padding-right: var(--sp-4); border-right: var(--rule) solid var(--line); }
 .group-links, .view-switch { display: inline-flex; flex-wrap: wrap; align-items: first baseline; gap: 0 var(--sp-2); }
 .group-links .meta-dot, .view-switch .meta-dot { margin-left: var(--sp-2); }
-@media (width <= 400px) { .group-nav, .group-links { column-gap: var(--sp-3); } .group-sep { display: none; } }
+@media (width <= 400px) { .group-nav, .group-links { column-gap: var(--sp-3); } .group-links .meta-dot { display: none; } }
 .group-nav a, .view-switch button { display: inline-flex; align-items: first baseline; min-height: var(--hit); color: var(--muted); text-decoration-line: none; }
 .group-nav a:is(:hover, :focus-visible), .group-nav a.active, .view-switch button[aria-pressed="false"]:is(:hover, :focus-visible) { color: var(--ink); text-decoration-line: none; }
 .group-nav a.active::after, .view-switch button[aria-pressed="true"]::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: var(--rule-strong); background: var(--accent); }
@@ -549,7 +549,7 @@ main section.first { display: flex; flex-direction: column; gap: var(--sp-5); bo
 /* Record: covers the list in place on wide screens, so nothing around it moves; below the map on narrow ones. */
 .record { position: absolute; inset: 0; overflow: auto; display: flex; flex-direction: column; gap: var(--sp-3); background: var(--paper); border: var(--rule) solid var(--line); border-radius: var(--r-sm); padding: var(--sp-4); }
 .side:has(> .record:not([hidden])) > .regions { visibility: hidden; } /* the record covers the list beside the map: hide the list under it, so no edge shows at its corners and keyboard focus stays in the record */
-.record-top { display: flex; flex-shrink: 0; align-items: flex-start; justify-content: space-between; gap: var(--sp-3); position: relative; transform: translateY(var(--sticky-shift, 0px)); z-index: 3; background: var(--paper); }
+.record-top { display: flex; flex-shrink: 0; align-items: center; justify-content: space-between; gap: var(--sp-3); position: relative; transform: translateY(var(--sticky-shift, 0px)); z-index: 3; background: var(--paper); }
 .record-top h3 { font: var(--type-label); }
 #record-name:focus { outline: none; } /* focus lands here when the record covers the list row that opened it; the heading is not a control */
 :is(h2, h3, p)[tabindex="-1"]:focus, main[tabindex="-1"]:focus { outline: none; } /* focused by script for screen readers, not a control: no ring; a heading takes the Focus tint below */
@@ -570,22 +570,20 @@ main section.first { display: flex; flex-direction: column; gap: var(--sp-5); bo
 .card-row > .card { display: grid; grid-template-rows: subgrid; grid-row: span 14; row-gap: 0; align-items: first baseline; }
 @media (width > 1100px) { .cards:not(.minis) > .card-row:only-child > .card:only-child { grid-column: span 2; } } /* a group's only card spans two of the three tracks, so its values do not wrap in a third of the row (principle: Card grids) */
 /* Fixed tracks: top 1, Institute 2, Status 3, Form 4, Head 5, Reports to 6, Partners 7, Mandate or Finding 8, Budget 9, Staff 10, Known activity 11, Related funding 12, Facts 13, footer 14. An omitted field leaves its track empty instead of pulling later fields up; a track empty across the row has no height or gap. */
-.card-row > .card > .card-head-space { grid-row: 1; }
+.card-row > .card > .top { grid-row: 1; }
 .card-row > .card > .row[data-track="2"] { grid-row: 2; } .card-row > .card > .row[data-track="3"] { grid-row: 3; } .card-row > .card > .row[data-track="4"] { grid-row: 4; } .card-row > .card > .row[data-track="5"] { grid-row: 5; } .card-row > .card > .row[data-track="6"] { grid-row: 6; } .card-row > .card > .row[data-track="7"] { grid-row: 7; }
 .card-row > .card > .row[data-track="8"] { grid-row: 8; } .card-row > .card > .row[data-track="9"] { grid-row: 9; } .card-row > .card > .row[data-track="10"] { grid-row: 10; } .card-row > .card > .row[data-track="11"] { grid-row: 11; } .card-row > .card > .row[data-track="12"] { grid-row: 12; } .card-row > .card > .row[data-track="13"] { grid-row: 13; } .card-row > .card > .foot { grid-row: 14; }
 .card { display: flex; flex-direction: column; min-width: 0; }
-.card :is(.top, .card-head-space) { display: flex; flex-shrink: 0; align-items: flex-start; border-top: var(--rule-strong) solid var(--ink); border-bottom: var(--rule) solid var(--line); padding-top: var(--reading-pad); padding-right: calc(var(--hit) + var(--sp-3)); min-height: calc(var(--reading-pad) + var(--hit) + var(--rule-strong) + var(--rule)); margin-bottom: var(--gap-header); }
-.card-head-space { visibility: hidden; pointer-events: none; }
+.card .top { display: flex; flex-wrap: nowrap; flex-shrink: 0; justify-content: flex-start; align-items: first baseline; gap: var(--sp-1) var(--sp-3); border-top: var(--rule-strong) solid var(--ink); padding-top: var(--sp-3); margin-bottom: var(--gap-header); }
 /* D. The head travels within the whole card, including cards sharing field tracks. */
 .cards:not(.minis) .card { --card-bars: var(--reading-top); scroll-margin-top: var(--card-bars); }
-.cards .card > .top { min-width: 0; height: max-content; position: sticky; top: var(--card-bars); z-index: 3; background: var(--ground); }
-.card .top > .name { min-width: 0; white-space: normal; }
-.card :is(.top, .card-head-space) > .panel-identity, .record-top .panel-identity { line-height: var(--close-size); }
+.cards .card > .top { min-width: 0; height: var(--card-head-height); border-bottom: var(--rule) solid var(--line); position: sticky; top: var(--card-bars); z-index: 3; background: var(--ground); }
+.card .top > .name { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .card .top > :is(.smark, .state-dl) { flex-shrink: 0; }
 .cards:not(.minis) .card :is(a, button, summary, [tabindex], input, select, textarea) { scroll-margin-top: calc(var(--card-bars) + var(--card-head-height) + var(--sp-2)); }
 .cards .card > .top :is(a, button, [tabindex]) { scroll-margin-top: calc(var(--card-bars) + var(--sp-2)); }
 @media (width > 640px) {
-  .card-row { grid-template-rows: none; grid-auto-rows: auto; } /* the hidden identity sizes the first of each card's 14 shared tracks, even when a saved wrapper changes column count */
+  .card-row { grid-template-rows: none; grid-auto-rows: calc(var(--card-head-height) + var(--gap-header)) auto auto auto auto auto auto auto auto auto auto auto auto auto; } /* 14 tracks repeat when a saved three-card wrapper flows into two columns: head, 12 fields, footer */
   .card-row > .card > * { grid-column: 1; }
   .card-row > .card > .top { align-self: start; grid-row: 1 / -1; } /* a single-track grid area would stop the sticky head at the end of track 1 */
 }
@@ -778,9 +776,9 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
 .fn-legend.fn-phone-only li[data-value="not_found"] { white-space: normal; max-width: 100%; }
 .fn-table .fn-detail-row > td { padding: 0; text-align: left; }
 .fn-detail { position: sticky; left: 0; padding: var(--sp-4); box-sizing: border-box; white-space: normal; overflow-wrap: anywhere; background: var(--paper); font: var(--type-body); }
-.fn-detail-top { display: flex; flex-shrink: 0; height: max-content; align-items: flex-start; justify-content: space-between; gap: var(--sp-3); margin-bottom: var(--sp-3); position: sticky; top: var(--reading-top); z-index: 3; background: var(--paper); }
+.fn-detail-top { display: flex; flex-shrink: 0; height: max-content; align-items: center; justify-content: space-between; gap: var(--sp-3); margin-bottom: var(--sp-3); position: sticky; top: var(--reading-top); z-index: 3; background: var(--paper); }
 .fn-detail-top::before, .record-top::before, .fund-detail[open] > summary::before { content: ""; position: absolute; inset: calc(-1 * var(--panel-pad-block, var(--sp-4))) calc(-1 * var(--panel-pad-inline, var(--sp-4))) 0; z-index: -1; background: inherit; pointer-events: none; } /* cover just the panel's padding, never the preceding selected row */
-.panel-identity { flex: 1; min-width: 0; margin: 0; font: var(--type-label); line-height: var(--close-size); white-space: normal; overflow-wrap: normal; }
+.panel-identity { flex: 1; min-width: 0; margin: 0; font: var(--type-label); white-space: normal; overflow-wrap: normal; }
 .head-state { white-space: normal; }
 .head-institute { color: var(--muted); overflow-wrap: anywhere; }
 .head-separator { color: var(--muted); }
@@ -952,21 +950,21 @@ span.fund-names-toggle::after { display: none; }
 /* The summary is the identity: no second title inside an open fold. Its close is a sibling, never a nested button. */
 :is(.card.mini, .fund-detail)[open] > summary { position: sticky; top: var(--reading-top); z-index: 3; min-height: var(--close-size); align-items: center; width: 100%; margin-bottom: 0; padding-block: 0; padding-right: calc(var(--close-size) + var(--sp-3)); background: var(--ground); }
 .card.mini[open] > summary .find { display: none; }
-.card.mini[open] > summary .name { flex: 1; min-width: 0; white-space: normal; }
+.card.mini[open] > summary .name { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 :is(.card.mini, .fund-detail)[open] > summary::after { display: none; }
 .fold-close { position: sticky; top: calc(var(--reading-top) + var(--reading-pad)); z-index: 3; display: flex; align-self: flex-end; margin: calc(-1 * var(--close-size)) 0 0 auto; }
-.card.mini > .fold-close { margin-top: calc(var(--reading-pad) - var(--reading-head-height, calc(var(--close-size) + var(--reading-pad))) - var(--sp-2)); margin-bottom: calc(var(--reading-head-height, calc(var(--close-size) + var(--reading-pad))) - var(--reading-pad) - var(--close-size)); }
+.card.mini > .fold-close { margin-top: calc(-1 * var(--close-size) - var(--sp-2)); }
 .fund-detail > .fold-close { margin-top: calc(var(--reading-pad) - var(--reading-head-height, calc(var(--close-size) + var(--reading-pad)))); margin-bottom: calc(var(--reading-head-height, calc(var(--close-size) + var(--reading-pad))) - var(--reading-pad) - var(--close-size)); } /* Keep the close on the first line of a wrapped name, without moving the body up. */
 :is(.card.mini, .fund-detail):not([open]) > .fold-close { display: none; }
 .fund-detail.more[open] > summary { font: var(--type-label); color: var(--ink); }
-.fund-detail[open] > summary .fund-head-name { white-space: normal; }
+.fund-detail[open] > summary .fund-head-name { display: block; min-height: var(--close-size); align-content: center; white-space: normal; }
 .fund-detail:not([open]) > summary .fund-head-name, .fund-detail[open] > summary .fund-fold-label { display: none; }
 :root:not([data-js]) .fold-close { display: none; }
 :root:not([data-js]) :is(.card.mini, .fund-detail)[open] > summary { padding-right: 0; }
 :root:not([data-js]) :is(.card.mini, .fund-detail)[open] > summary::after { display: block; } /* the native disclosure still closes without scripting */
 /* Reading-head padding belongs inside the moving box. Grid tables use their first row's cells; sortable heads keep all padding inside the full-cell button. */
 :is(.fn-phone-head, .fund-axis, .fn-detail-top, .record-top, .cards .card > .top, .card.mini[open] > summary, .fund-detail[open] > summary, .fn-table thead > tr:first-child > th, table.world thead th button) { padding-top: var(--reading-pad); }
-:is(.fn-detail-top, .record-top, .card .top, .card .card-head-space, .card.mini[open] > summary, .fund-detail[open] > summary) { padding-bottom: var(--sp-1); } /* contain the last line's text rect, including font descenders outside its line box */
+:is(.fn-detail-top, .record-top, .fund-detail[open] > summary) { padding-bottom: var(--sp-1); } /* contain the last line's text rect, including font descenders outside its line box */
 :is(.card.mini, .fund-detail)[open] > summary { min-height: calc(var(--close-size) + var(--reading-pad)); }
 :where(.fn-phone, .fn-scroll, .table-scroll, .fund-list, .fn-detail, .card.mini, .fund-detail, .record) :is(a, button, summary, [tabindex], .fn-phone-functions > li, .fn-phone-claims, .fn-claim, .claim-text) { scroll-margin-top: calc(var(--reading-top) + var(--reading-head-height, var(--close-size)) + var(--sp-2)); }
 :is(.fn-detail-top, .record-top) :is(button, [tabindex]), .fold-close, :is(.card.mini, .fund-detail) > summary { scroll-margin-top: calc(var(--reading-top) + var(--sp-2)); }
@@ -1008,12 +1006,11 @@ span.fund-names-toggle::after { display: none; }
 :is(.access, .setup) > .section-foot > .foot { font: var(--type-meta); color: var(--muted); }
 .per-person { white-space: nowrap; } /* a figure and its unit stay on one line */
 .group-list.stacked > li { flex-direction: column; align-items: flex-start; justify-content: flex-start; }
-.card .top > .state-dl { position: absolute; top: var(--reading-pad); right: 0; margin: 0; }
+.card .top > .state-dl { margin-left: auto; }
 .section-foot, .card.mini > .foot { position: relative; display: block; min-height: var(--hit); } /* the action reserves only the summary line; opened bodies span the shell */
 .card.mini > .foot > .state-dl { position: absolute; top: 0; right: 0; }
 .card.mini > .foot > :not(.state-dl) { min-width: 0; }
 .card :is(.top, .foot) > .state-dl { display: inline-flex; align-items: center; justify-content: center; width: var(--hit); height: var(--hit); margin-block: calc((var(--size-label) * var(--leading-label) - var(--hit)) / 2); color: var(--muted); text-decoration-line: none; }
-.card .top > .state-dl { margin-block: 0; }
 .card :is(.top, .foot) > .state-dl:is(:hover, :focus-visible) { color: var(--ink); }
 /* Section foot row (principle: Downloads): after a section's table or list, its explanation fold at the left, its download alone at the right end. */
 .section-foot > :not(.section-foot-actions) { min-width: 0; }
@@ -1087,7 +1084,6 @@ span.fund-names-toggle::after { display: none; }
   .two, .fund-detail-body { grid-template-columns: minmax(0, 1fr); }
   .cards { --columns: 1; }
   .card-row > .card { display: flex; grid-row: auto; align-items: stretch; }
-  .card .card-head-space { display: none; } /* phones have independent cards, so the real head reserves its own space */
   .navtitle .long { display: none; }
   .navtitle .short { display: inline; }
   .hl { align-items: first baseline; }
@@ -1386,7 +1382,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     requestAnimationFrame(function () { clearReadingFocus(opener); });
   }
   function foldClose(fold, opener) {
-    var button = closeButton(function () { fold.open = false; if (opener) opener.setAttribute("aria-expanded", "false"); returnToOpener(opener || fold.querySelector(":scope > summary")); }, fold.querySelector(".panel-identity"));
+    var button = closeButton(function () { fold.open = false; if (opener) opener.setAttribute("aria-expanded", "false"); returnToOpener(opener || fold.querySelector(":scope > summary")); }, fold.querySelector(".panel-identity, :scope > summary .name"));
     button.classList.add("fold-close"); fold.appendChild(button);
   }
   // Overflow-x makes CSS sticky relative to the scroll box, even when the document is the vertical scroller.
@@ -1427,11 +1423,6 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
           // without converting a viewport edge into a second CSS sticky coordinate system.
           move(head, owner, getComputedStyle(owner).overflowY !== "visible", Math.max(top, owner.getBoundingClientRect().top + owner.clientTop));
         }
-      });
-      document.querySelectorAll(".cards .card > .top").forEach(function (head) {
-        if (PRERENDERING) return;
-        var height = head.getBoundingClientRect().height;
-        writes.push(function () { head.parentElement.style.setProperty("--card-head-height", height + "px"); });
       });
       writes.forEach(function (write) { write(); });
     }
@@ -1662,17 +1653,32 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     var range = document.createRange(), marks = [];
     [].forEach.call(root.querySelectorAll(".meta-dot"), function (dot) {
       if (dot.checkVisibility && !dot.checkVisibility({ contentVisibilityAuto: true })) return; // skipped off-screen: measuring would lay it out (principle: Off-screen sections); marked when it is drawn
-      var mark = dot.getBoundingClientRect(); if (!mark.height) return;
-      var walker = document.createTreeWalker(blockOf(dot), NodeFilter.SHOW_TEXT), next = null;
+      var mark = dot.getBoundingClientRect(); if (!mark.width || !mark.height) return;
+      // A flex item's computed display is block, even when authored inline-block.
+      // Walk the siblings' container, not the item's private formatting box.
+      var item = dot.closest(".meta-item");
+      var walker = document.createTreeWalker(item ? item.parentElement : blockOf(dot), NodeFilter.SHOW_TEXT), next = null;
       walker.currentNode = dot.lastChild;
       while (walker.nextNode()) {
         var t = walker.currentNode, i = t.data.search(/\S/);
-        if (i < 0 || !t.parentElement.getClientRects().length || t.parentElement.closest(".vh")) continue;
-        range.setStart(t, i); range.setEnd(t, i + 1); next = range.getBoundingClientRect(); break;
+        if (i < 0 || !t.parentElement.getClientRects().length || t.parentElement.closest(".vh") || getComputedStyle(t.parentElement).visibility !== "visible") continue;
+        range.setStart(t, i); range.setEnd(t, i + 1);
+        var rect = range.getBoundingClientRect(); if (!rect.width || !rect.height) continue;
+        next = rect; break;
       }
-      marks.push([dot, !next || next.top >= mark.bottom - 2]);
+      // Tight leading can make adjacent lines' glyph boxes overlap slightly.
+      // No measurable neighbour is not evidence of a wrap (for example a skipped section).
+      if (next) marks.push([dot, next.top - mark.top > Math.min(mark.height, next.height) / 2]);
     });
     marks.forEach(function (m) { m[0].classList.toggle("line-end", m[1]); }); // read every position first, then write
+  }
+  function layoutSeparators(root) { layoutQualifiers(root); if (!PRERENDERING) hideLineEndDots(root); }
+  // Fills and openings need their own hook: a fixed map record need not resize
+  // the body or toggle a fold. Measure after insertion, visibility and focus settle.
+  var separatorFrame = 0;
+  function scheduleSeparators() {
+    if (PRERENDERING || separatorFrame) return;
+    separatorFrame = requestAnimationFrame(function () { separatorFrame = 0; layoutSeparators(document); });
   }
   // Each item is one unbreakable box (.meta-item), so a line breaks only between items; the separator stays with the item's final word.
   function separated(parts, whole) { // whole: each phrase stays whole (narrow columns)
@@ -2408,19 +2414,14 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   // Each card field has a fixed track in the shared row grid, so cards with different shapes stay aligned.
   var TRACK = { Institute: 2, Status: 3, Form: 4, Head: 5, "Reports to": 6, Partners: 7, Mandate: 8, Finding: 8, Budget: 9, Staff: 10, "Known activity": 11, "Related funding": 12 };
   TRACK[FACTS_LABEL] = 13;
-  // grouped: the card sits under a status group heading (or is the EU entry, whose Status row says it), so the title row keeps the status only in the accessible description.
+  // grouped: the card sits under a status group heading (or is the EU entry, whose Status row says it), so the title row keeps the status only in the accessible name.
   function instituteCard(j, inst, S, m, grouped) {
     var card = el("article", "card"); card.id = "c-" + j.id.toLowerCase(); card.dataset.j = j.id;
-    var top = el("div", "top"), name = panelIdentity("h4", "name", j, inst); name.id = card.id + "-name"; card.setAttribute("aria-labelledby", name.id);
-    top.appendChild(name);
-    if (grouped) { var said = el("span", "vh", ", " + LABEL[j.status]); said.id = card.id + "-status"; top.appendChild(said); card.setAttribute("aria-describedby", said.id); }
+    var top = el("div", "top"), name = el("h4", "name", j.name); name.id = card.id + "-name"; card.setAttribute("aria-labelledby", name.id); // a focused card announces its state
+    name.title = j.name; top.appendChild(name); // full text remains accessible when the one-line name is cut
+    if (grouped) { var said = el("span", "vh", ", " + LABEL[j.status]); said.id = card.id + "-status"; top.appendChild(said); card.setAttribute("aria-labelledby", name.id + " " + said.id); }
     else top.appendChild(statusMark(j.status));
     top.appendChild(stateDownload(j, m)); card.appendChild(top);
-    // A spanning sticky grid item cannot size just the first subgrid track. Only this inert identity
-    // supplies that size: no copied controls or IDs, and no viewport-specific saved measurement.
-    var space = el("div", "card-head-space"), sizing = name.cloneNode(true);
-    sizing.removeAttribute("id"); sizing.removeAttribute("title"); sizing.classList.remove("name");
-    space.setAttribute("aria-hidden", "true"); space.setAttribute("inert", ""); space.appendChild(sizing); card.appendChild(space);
     var order = SOURCE_ORDERS[j.id] = [], roles = {};
     var cite = citations(S, order, roles);
     function row(label, value, ids) {
@@ -3192,6 +3193,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         hideTip(); // arrival names the record itself; its automatic title tip must not consume the first Escape
         var nr = name.getBoundingClientRect(); if (nr.top < barsBottom() || nr.bottom > innerHeight) name.scrollIntoView({ block: "start" });
       }
+      scheduleSeparators();
     }
     // On wide screens the record covers the list: the list is inert until it closes.
     var wide = matchMedia("(width > 1100px)");
@@ -3558,7 +3560,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       items.forEach(function (j) {
         if (!neg) { cards.appendChild(instituteCard(j, j.institute_id ? I[j.institute_id] : null, S, m, true)); return; }
         var card = el("details", "card mini"); card.id = "c-" + j.id.toLowerCase(); card.dataset.j = j.id;
-        var top = el("summary"), name = panelIdentity("h4", "name", j, null); name.id = card.id + "-name"; card.setAttribute("aria-labelledby", name.id); top.appendChild(name);
+        var top = el("summary"), name = el("h4", "name", j.name); name.id = card.id + "-name"; card.setAttribute("aria-labelledby", name.id); top.appendChild(name);
         // The group heading already says "None identified": drop the repeated opening sentence.
         var summary = findingText(j);
         var first = firstSentence(summary);
@@ -3787,7 +3789,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
               var claims = el("div", "fn-phone-claims"); claims.id = button.getAttribute("aria-controls");
               claims.setAttribute("role", "region"); claims.setAttribute("aria-labelledby", button.id);
               appendClaims(claims, I[button.closest("li[data-institute]").dataset.institute], button.parentNode.dataset.code, true);
-              button.parentNode.appendChild(claims); button.setAttribute("aria-expanded", "true"); layoutQualifiers(claims); return;
+              button.parentNode.appendChild(claims); button.setAttribute("aria-expanded", "true"); layoutSeparators(claims); scheduleSeparators(); return;
             }
             if (button === opened) { closeDetail(true); return; }
             closeDetail(false);
@@ -3806,7 +3808,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
                 li.appendChild(label); li.appendChild(status);
                 li.appendChild(el("p", "fn-function-summary running-text", vocab[code].summary)); functions.appendChild(li);
               }); detail.appendChild(heading); detail.appendChild(functions);
-            }); button.parentNode.appendChild(detail); detailRow = detail; selected(button); layoutQualifiers(detail);
+            }); button.parentNode.appendChild(detail); detailRow = detail; selected(button); layoutSeparators(detail); scheduleSeparators();
           });
           list.addEventListener("keydown", escapeDetail); box.appendChild(list);
         } else {
@@ -3867,7 +3869,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
           detail.querySelector(".fn-detail-top").appendChild(el("h4", "fn-function-head", vocab[code].label));
           appendClaims(detail, i, code);
           detailRow = el("tr", "fn-detail-row"); detailRow.id = button.getAttribute("aria-controls"); detailRow.dataset.owner = row.dataset.institute; var td = el("td"); td.colSpan = columns.length + 2;
-          td.appendChild(detail); detailRow.appendChild(td); row.after(detailRow); selected(button); externalLinks(detail); layoutQualifiers(detail);
+          td.appendChild(detail); detailRow.appendChild(td); row.after(detailRow); selected(button); externalLinks(detail); layoutSeparators(detail); scheduleSeparators();
         });
         // Escape closes the detail only while focus is in the table, and only when no nested control has handled it.
         table.addEventListener("keydown", escapeDetail);
@@ -3878,7 +3880,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         if (detail && scroll.clientWidth) detail.style.width = scroll.clientWidth + "px";
         var fits = scroll.clientWidth > 0 && table.getBoundingClientRect().width <= scroll.clientWidth + 1;
         scroll.classList.toggle("fits", fits); $("fn-scroll-hint").hidden = fits;
-        layoutQualifiers(box);
+        layoutSeparators(box);
       }
       function bindTint(table) {
         var pointer = null, focus = null;
@@ -4299,6 +4301,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         // Close needs this header's height immediately, before the reading-head observer's next frame.
         det.style.setProperty("--reading-head-height", det.querySelector(":scope > summary").getBoundingClientRect().height + "px");
         button.setAttribute("aria-expanded", "true"); button.focus({preventScroll: true});
+        layoutSeparators(det); scheduleSeparators();
       });
       return button;
     }
@@ -4552,7 +4555,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     glueCitations($("top"));
     glueCitations(document.querySelector("main"));
     arrangeCards();
-    if (!PRERENDERING) scheduleDots(); // the fresh content needs marks before its first paint too
+    if (!PRERENDERING) scheduleSeparators(); // the fresh content needs marks before its first paint too
     new ResizeObserver(scheduleSpy).observe(document.querySelector("main"));
     // A control reached by keyboard under the sticky rows comes out from under them (scroll-margin covers only some elements).
     document.addEventListener("focusin", function (e) {
@@ -4588,6 +4591,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     instantTips(document.body); W.forEach(function (r) { instantTips(r.tr); });
     // External links open in a new tab; links within the page stay in place.
     externalLinks(document.body); W.forEach(function (r) { externalLinks(r.tr); });
+    scheduleSeparators();
     // Save once the download lists, fonts and the layout updates queued for the next frames are in place.
     if (!PRERENDERING && primePalette) downloads.then(primePalette, function () {}); // its Actions read the download links
     if (PRERENDERING) downloads.then(function () { return document.fonts.ready; }).then(function () { requestAnimationFrame(function () { requestAnimationFrame(prerendered); }); });
@@ -4677,23 +4681,17 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   // Mark the saved page at this window's width before the data arrives, so takeover does not make line-end separators disappear.
   // Start early, then re-mark after fonts and layout changes; skip the build so the saved HTML has no width-specific marks.
   if (!PRERENDERING) {
-    var refreshQualifiers = function () { layoutQualifiers(document); };
-    refreshQualifiers(); document.fonts.ready.then(refreshQualifiers);
+    var refreshSeparators = function () { layoutSeparators(document); };
+    refreshSeparators(); document.fonts.ready.then(refreshSeparators);
     // ResizeObserver runs before paint, without a further animation-frame delay. Final sizes are stable on repeat passes.
-    new ResizeObserver(refreshQualifiers).observe(document.body);
-    new MutationObserver(refreshQualifiers).observe(ROOT, { attributes: true, attributeFilter: ["style"] });
-    window.addEventListener("resize", refreshQualifiers, { passive: true });
-    document.fonts.addEventListener("loadingdone", refreshQualifiers);
+    new ResizeObserver(refreshSeparators).observe(document.body);
+    new MutationObserver(refreshSeparators).observe(ROOT, { attributes: true, attributeFilter: ["style"] });
+    window.addEventListener("resize", refreshSeparators, { passive: true });
+    document.fonts.addEventListener("loadingdone", refreshSeparators);
     // Run after every toggle handler, including lazy quote construction. One
     // frame handles nested folds together and also refreshes their enclosing line.
-    var qualifierFrame = 0, scheduleQualifiers = function () { if (!qualifierFrame) qualifierFrame = requestAnimationFrame(function () { qualifierFrame = 0; refreshQualifiers(); }); };
-    document.addEventListener("toggle", scheduleQualifiers, true);
-    document.addEventListener("contentvisibilityautostatechange", function (e) { if (!e.skipped) layoutQualifiers(e.target); }, true);
-    var dotFrame = 0, scheduleDots = function () { if (!dotFrame) dotFrame = requestAnimationFrame(function () { dotFrame = 0; hideLineEndDots(document); }); };
-    hideLineEndDots(document); document.fonts.ready.then(scheduleDots);
-    new ResizeObserver(scheduleDots).observe(document.body); document.fonts.addEventListener("loadingdone", scheduleDots);
-    document.addEventListener("toggle", scheduleDots, true);
-    document.addEventListener("contentvisibilityautostatechange", function (e) { if (!e.skipped) hideLineEndDots(e.target); }, true); // an off-screen row or section as it is drawn
+    document.addEventListener("toggle", scheduleSeparators, true);
+    document.addEventListener("contentvisibilityautostatechange", function (e) { if (!e.skipped) layoutSeparators(e.target); }, true); // an off-screen row or section as it is drawn
   }
   if (PRERENDERED) { loadSavedMap(); window.addEventListener("resize", loadSavedMap); }
   // The saved map drawings live in their own files (the build moves them out of the page, which stays under the 2 MB that
