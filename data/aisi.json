@@ -39234,7 +39234,7 @@
           "kind": "function",
           "code": "research",
           "basis": "mandate",
-          "text": "IMDA's designation factsheet lists its initial research areas as testing and evaluation, safe model design, development and deployment, content assurance, and governance and policy.",
+          "text": "IMDA's designation factsheet lists safe model design, development and deployment, and content assurance among the institute's initial AI safety research areas.",
           "source_ids": [
             "sg-imda"
           ]
