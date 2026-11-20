@@ -33368,7 +33368,8 @@
         "no-techwatch-2026-05",
         "no-karrierestart-kin-2026",
         "no-doffin-2026-116502",
-        "gb-no-ai-statement-2026"
+        "gb-no-ai-statement-2026",
+        "no-digdir-ki-norge-report-2025"
       ],
       "mandate_short": "Would add AI safety and model evaluation to KI Norge's remit.",
       "placement": {
@@ -33435,7 +33436,34 @@
         ]
       },
       "national_partners": {
-        "state": "not_published",
+        "state": "stated",
+        "entries": [
+          {
+            "id": "np-no-nkom",
+            "name": "Nasjonal kommunikasjonsmyndighet",
+            "acronym": "Nkom",
+            "what": "national communications authority",
+            "relation": "planned",
+            "how": "Is jointly tasked with KI Norge to establish and run Norway's regulatory AI sandbox.",
+            "source_ids": [
+              "no-ki-about",
+              "no-prop1s-2026-27-dfd"
+            ]
+          },
+          {
+            "id": "np-no-datatilsynet",
+            "name": "Datatilsynet",
+            "name_en": "Norwegian Data Protection Authority",
+            "what": "data protection authority",
+            "relation": "planned",
+            "how": "Is jointly tasked with KI Norge to establish and run Norway's regulatory AI sandbox.",
+            "source_ids": [
+              "no-ki-about",
+              "no-prop1s-2026-27-dfd",
+              "j7-no-datatilsynet-en"
+            ]
+          }
+        ],
         "notes": "Cyber agency searched on 19 October 2026 in Norwegian and English: NSM (including NCSC Norway); six documents were read, including the institute's current pages, its host's report and NSM's own pages."
       },
       "testing_capacity": {
@@ -33567,41 +33595,14 @@
         ]
       },
       "staffing_model": {
-        "code": "not_published",
+        "code": "host_unit",
         "source_ids": [
           "no-budget",
           "no-ki-about",
-          "no-doffin-2026-116502"
+          "no-doffin-2026-116502",
+          "no-digdir-ki-norge-report-2025"
         ],
-        "notes": "proposed: 'foreslår 30 millionar kroner' (proposes NOK 30 million) to give KI Norge 'auka kapasitet til å evaluere KI-modeller' (more capacity to evaluate AI models), with the work done 'i samarbeid med forskingsinstitusjonane' (in cooperation with the research institutions), budget press release of the Ministry of Digitalisation and Public Governance, 7 October 2026. KI Norge is a unit of the Norwegian Digitalisation Agency. Contractor: a contract award notice of 22 October 2026 records a need for one administrative support for the management in an executive assistant role, a new role for one consultant, full time for one year with an option of 6 plus 6 months.",
-        "searches": [
-          {
-            "date": "2026-10-21",
-            "query": "Prop. 1 S (2026–2027) Digitaliserings- og forvaltningsdepartementet: årsverk for KI Norge or an AI safety unit, chapters 1 to 15",
-            "language": "nn",
-            "sources_read": [
-              "https://www.regjeringen.no/no/dokumenter/prop.-1-s-20262027/id3175298/?ch=1"
-            ]
-          },
-          {
-            "date": "2026-10-21",
-            "query": "KI Norge KI-sikkerhet ny enhet statsbudsjett 2027",
-            "language": "nb",
-            "sources_read": [
-              "https://www.regjeringen.no/no/aktuelt/foreslar-kraftfull-satsing-pa-ki-og-digitalisering/id3173740/",
-              "https://www.regjeringen.no/no/aktuelt/regjeringen-styrker-arbeidet-med-sikkerhet-og-beredskap/id3176491/"
-            ]
-          },
-          {
-            "date": "2026-10-21",
-            "query": "KI Norge ledige stillinger KI-sikkerhet evaluering",
-            "language": "nb",
-            "sources_read": [
-              "https://ki.norge.no/ledige-stillinger",
-              "https://ki.norge.no/om-oss"
-            ]
-          }
-        ]
+        "notes": "proposed: 'foreslår 30 millionar kroner' (proposes NOK 30 million) to give KI Norge 'auka kapasitet til å evaluere KI-modeller' (more capacity to evaluate AI models), with the work done 'i samarbeid med forskingsinstitusjonane' (in cooperation with the research institutions), budget press release of the Ministry of Digitalisation and Public Governance, 7 October 2026. KI Norge is a unit of the Norwegian Digitalisation Agency. Contractor: a contract award notice of 22 October 2026 records a need for one administrative support for the management in an executive assistant role, a new role for one consultant, full time for one year with an option of 6 plus 6 months."
       },
       "staff": [
         {
@@ -102743,6 +102744,104 @@
           ],
           "gloss": "KI Norge makes it easier for businesses, especially small and medium-sized ones, to understand the rules, find relevant tools and get started with artificial intelligence in an innovative and responsible way.",
           "accessed": "2026-10-19"
+        },
+        {
+          "text": "I et fellesoppdrag med Nasjonal kommunikasjonsmyndighet (Nkom) og Datatilsynet skal KI Norge etablere og drive Norges regulatoriske sandkasse for kunstig intelligens, etter KI-loven.",
+          "gloss": "In a joint assignment with the National Communications Authority (Nkom) and the Data Protection Authority, KI Norge is to establish and run Norway's regulatory sandbox for artificial intelligence, under the AI Act.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "national_partners",
+              "entries",
+              {
+                "id": "np-no-nkom"
+              },
+              "name"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "national_partners",
+              "entries",
+              {
+                "id": "np-no-nkom"
+              },
+              "relation"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "national_partners",
+              "entries",
+              {
+                "id": "np-no-nkom"
+              },
+              "how"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "national_partners",
+              "entries",
+              {
+                "id": "np-no-datatilsynet"
+              },
+              "name"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "national_partners",
+              "entries",
+              {
+                "id": "np-no-datatilsynet"
+              },
+              "relation"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "national_partners",
+              "entries",
+              {
+                "id": "np-no-datatilsynet"
+              },
+              "how"
+            ]
+          ],
+          "accessed": "2026-11-20"
+        },
+        {
+          "text": "Nasjonal kommunikasjonsmyndighet (Nkom)",
+          "gloss": "National Communications Authority (Nkom)",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "national_partners",
+              "entries",
+              {
+                "id": "np-no-nkom"
+              },
+              "what"
+            ]
+          ],
+          "accessed": "2026-11-20"
         }
       ],
       "snapshot": {
@@ -103946,7 +104045,50 @@
       "accessed": "2026-10-20",
       "language": "en",
       "origin": "NO",
-      "excerpts": [],
+      "excerpts": [
+        {
+          "text": "The Norwegian Data Protection Authority (Datatilsynet)",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "national_partners",
+              "entries",
+              {
+                "id": "np-no-datatilsynet"
+              },
+              "what"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "national_partners",
+              "entries",
+              {
+                "id": "np-no-datatilsynet"
+              },
+              "name"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "national_partners",
+              "entries",
+              {
+                "id": "np-no-datatilsynet"
+              },
+              "name_en"
+            ]
+          ],
+          "accessed": "2026-11-20"
+        }
+      ],
       "snapshot": {
         "retrieved": "2026-10-20T07:04:02.288248+00:00",
         "sha256": "8ac43742b7bc79b54061b8a8e308eea0fa594f4e842d4c781ec3b27dad6bc605",
@@ -114607,6 +114749,61 @@
           ],
           "gloss": "Accounts 2025; adopted budget 2026; proposal 2027.",
           "accessed": "2026-10-24"
+        },
+        {
+          "text": "Datatilsynet skal fortsette samarbeidet med Digitaliseringsdirektoratet ved KI Noreg og Nasjonal kommunikasjonsmyndigheit med å etab- lere, utvikle og drifte den regulatoriske KI-sand- kassa etter KI-forordninga.",
+          "gloss": "The Data Protection Authority is to continue its cooperation with the Norwegian Digitalisation Agency, through KI Norge, and the National Communications Authority to establish, develop and run the regulatory AI sandbox under the AI Regulation.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "national_partners",
+              "entries",
+              {
+                "id": "np-no-nkom"
+              },
+              "name"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "national_partners",
+              "entries",
+              {
+                "id": "np-no-nkom"
+              },
+              "how"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "national_partners",
+              "entries",
+              {
+                "id": "np-no-datatilsynet"
+              },
+              "name"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "national_partners",
+              "entries",
+              {
+                "id": "np-no-datatilsynet"
+              },
+              "how"
+            ]
+          ],
+          "accessed": "2026-11-20"
         }
       ],
       "snapshot": {
@@ -126823,6 +127020,21 @@
           ],
           "gloss": "Assignment to establish KI Norge: a national arena for responsible innovation, development and use of artificial intelligence",
           "accessed": "2026-11-14"
+        },
+        {
+          "text": "KI Norge er nå en avdeling i Digdir med både faste og utlånte ressurser.",
+          "gloss": "KI Norge is now a department in Digdir with both permanent and loaned staff.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "staffing_model",
+              "code"
+            ]
+          ],
+          "accessed": "2026-11-20"
         }
       ],
       "snapshot": {
