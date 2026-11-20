@@ -13762,8 +13762,10 @@ DOWNLOAD_ALIGNMENT_JS = """() => [...document.querySelectorAll('[download], .sec
   .filter(n=>n.checkVisibility({contentVisibilityAuto:true}) && (!n.matches('.palette-option') || /^Download /.test(n.textContent))).map(n=>{
     const box=n.closest('.popover, .dlist li') || (n.matches('.section-dl') ? n.closest('.section-foot') : n.parentElement);
     const r=n.getBoundingClientRect(), s=box && getComputedStyle(box), b=box?.getBoundingClientRect();
+    // Only a card head reserves padding for its download and positions it at the card's edge: that one ends at the padding edge.
+    const positioned=n.matches('.card .top > .state-dl') && getComputedStyle(n).position==='absolute';
     return {name:n.id || n.getAttribute('download') || n.textContent.trim(), right:r.right,
-      edge:b ? b.right-parseFloat(s.borderRightWidth)-parseFloat(s.paddingRight) : null};
+      edge:b ? b.right-parseFloat(s.borderRightWidth)-(positioned ? 0 : parseFloat(s.paddingRight)) : null};
   })"""
 
 
