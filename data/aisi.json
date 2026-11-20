@@ -33440,7 +33440,7 @@
             "acronym": "Nkom",
             "what": "national communications authority",
             "relation": "planned",
-            "how": "Is jointly tasked with KI Norge to establish and run Norway's regulatory AI sandbox.",
+            "how": "Is jointly tasked with KI Norge and the data protection authority to establish and run Norway's regulatory AI sandbox.",
             "source_ids": [
               "no-ki-about",
               "no-prop1s-2026-27-dfd"
@@ -33452,7 +33452,7 @@
             "name_en": "Norwegian Data Protection Authority",
             "what": "data protection authority",
             "relation": "planned",
-            "how": "Is jointly tasked with KI Norge to establish and run Norway's regulatory AI sandbox.",
+            "how": "Is jointly tasked with KI Norge and the communications authority to establish and run Norway's regulatory AI sandbox.",
             "source_ids": [
               "no-ki-about",
               "no-prop1s-2026-27-dfd",
