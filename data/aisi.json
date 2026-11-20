@@ -2199,11 +2199,11 @@
           "date": "2025-02-14",
           "event": "mandate_changed",
           "instrument": "press_release",
-          "description": "Government redirects the institute towards serious AI risks to security and public safety, including criminal misuse.",
+          "description": "The government renames the AI Safety Institute the AI Security Institute and announces a criminal misuse team; its release says the institute will not focus on bias or freedom of speech, and the minister says its work will not change.",
           "source_ids": [
             "gb-rename"
           ],
-          "short": "Government redirects institute towards security and public safety risks, including criminal misuse."
+          "short": "Government renames the institute and announces a criminal misuse team."
         }
       ],
       "iso3": "GBR",
@@ -3084,8 +3084,8 @@
         }
       ],
       "next_check": {
-        "date": "2026-11-16",
-        "reason": "Government answers to the 2027 economy budget questions and to the consultation on the International AI Strategy; cabinet AI theme letter (Q4 2026); advisory report due by the end of 2026."
+        "date": "2026-12-31",
+        "reason": "Advisory report on a Dutch AI safety institute, expected to reach parliament in December 2026; government answers to parliament's questions on the International AI Strategy."
       },
       "check": {
         "last_checked": "2026-10-16",
@@ -3118,6 +3118,10 @@
           {
             "date": "2026-11-10",
             "scope": "News search from 17 October 2026 in English and Dutch, with the government's digitalisation theme page (newest 6 November). Left for review: the cabinet's AI vision of 6 November, which again says a possible Dutch AI safety institute is being explored, and the Netherlands' place on the endorsement list of the French presidency's Paris Call for AI Safety and Security, published on 9 November and since updated. No new institute mandate, budget, staffing or national privileged-access agreement was found. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-19",
+            "scope": "Follow-up due on 16 November 2026. Read the cabinet's AI vision of 6 November 2026 (letter to parliament) which says the exploration continues and expects the advisory report in December 2026; the next check waits for that report. The answers to the questions on the 2027 budget (adopted as a report on 28 October 2026) say the same and name the fourth quarter; they were read in the research pass and are not cited. The government's answers on the International AI Strategy were still outstanding on parliament's agenda of 18 November 2026. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -3171,7 +3175,8 @@
         "nl-miljoenennota-2027",
         "nl-budget-xiii-bill-2027",
         "fr-elysee-paris-call-2026",
-        "nl-cabinet-ai-vision-2026"
+        "nl-cabinet-ai-vision-2026",
+        "nl-cabinet-ai-vision-letter-2026"
       ],
       "region": {
         "id": "150",
@@ -4114,7 +4119,7 @@
       ],
       "next_check": {
         "date": "2027-01-31",
-        "reason": "Check whether KRiBSI, once operating, or the minister assigns NASK or its AITAS laboratory a national role in evaluating advanced models, and whether Poland joins the International Network for Advanced AI Measurement, Evaluation and Science."
+        "reason": "Check whether KRiBSI, which held its first meeting on 28 October 2026, or the minister assigns NASK or its AITAS laboratory a national role in evaluating advanced models, and whether Poland joins the International Network for Advanced AI Measurement, Evaluation and Science."
       },
       "closest_body": {
         "name": "NASK AI Safety Research Centre",
@@ -9261,7 +9266,9 @@
         "au-oversight-report-2026",
         "au-oversight-news-2026",
         "depth-au-home",
-        "depth-au-forum"
+        "depth-au-forum",
+        "au-disr-annual-report-2025-26",
+        "au-charlton-afr-speech-2026"
       ],
       "region": {
         "id": "009",
@@ -9333,6 +9340,18 @@
             "depth-au-forum"
           ],
           "short": "Department describes institute as part of it; no dated founding act found."
+        },
+        {
+          "id": "au-2026-06-01-launched",
+          "date": "2026-06-01",
+          "event": "launched",
+          "instrument": "administrative",
+          "description": "The industry department formally launches the institute; the next day the assistant minister says it is operational.",
+          "source_ids": [
+            "au-disr-annual-report-2025-26",
+            "au-charlton-afr-speech-2026"
+          ],
+          "short": "Department formally launches the institute."
         }
       ],
       "iso3": "AUS",
@@ -10279,6 +10298,10 @@
           {
             "date": "2026-10-18",
             "scope": "Selected the closest body against retrieved source text and excerpts; recorded its stage, evidence gap and limits. Partial check; the last full-check date is unchanged."
+          },
+          {
+            "date": "2026-11-19",
+            "scope": "Checked the note on the draft AI law against its sources and searched in Thai and English for the draft's latest step. Corrected the note: the committee the draft names already exists, the 2025 consultation was on draft principles, and the hearing on the full draft ran in July and August 2026 as a law firm reports it. Added the committee's resolution of 7 September 2026; no later step was found. The consultation listing for the full draft could not be read (HTTP 403). Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -10309,9 +10332,11 @@
       "source_ids": [
         "th-etda-aigpc-2027",
         "th-etda-draft-law-2025",
-        "th-thaipbs-2026"
+        "th-thaipbs-2026",
+        "th-mdes-ai-committee-2026",
+        "th-lawplus-draft-ai-act-2026"
       ],
-      "notes": "Public hearings on a draft AI law were held in mid-2026; the draft would create a support organisation and a national AI policy committee, not an evaluation institute.",
+      "notes": "The ETDA notice invited comments on draft principles of an AI law until 24 June 2025; the principles specify an organisation to support the law's operation. The law firm LawPlus reports a public hearing on the full draft Act from 9 July to 14 August 2026. Thai PBS reports that the draft defines its committee as the existing Specialised Committee for Driving the National AI Plan. No source read describes an institute for evaluating advanced models in the draft. At its meeting of 7 September 2026 that committee resolved that restructuring of the draft Act be considered; our searches found no later step.",
       "region": {
         "id": "142",
         "name": "Asia",
@@ -19819,6 +19844,10 @@
           {
             "date": "2026-10-24",
             "scope": "Re-ran searches in English and Arabic for a government-designated institute that evaluates advanced models, or a commitment, proposal or study naming one. No qualifying institute or commitment was identified; results repeated the October 2026 call by a presidential adviser for independent testing of frontier models. Retrieved the government announcement of the Artificial Intelligence and Data Authority as new primary governance evidence. Raised confidence to medium under the status-confidence rule: recorded queries in English and a national or official language, and cited primary governance evidence consistent with no qualifying institute. Partial check; the last full-check date is unchanged."
+          },
+          {
+            "date": "2026-11-19",
+            "scope": "Checked the notes against their sources. Removed an unsourced comparison with other states. Bound the October 2026 remarks on independent testing to the Khaleej Times report of 6 October 2026; no primary text of the remarks was found on the news agency's, the council's or the conference's pages. Corrected the Authority's role: the announcement brings together the functions of three entities. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -19897,7 +19926,8 @@
         "ae-zawya-2026",
         "ae-morganlewis-2026",
         "r4-ae-mbrsg-aisi-brief",
-        "ae-dmo-ai-data-authority-2026"
+        "ae-dmo-ai-data-authority-2026",
+        "ae-khaleejtimes-testing-2026"
       ],
       "related_bodies": [
         {
@@ -19919,17 +19949,20 @@
         },
         {
           "name": "Federal Authority for Artificial Intelligence and Data",
-          "role": "Policy, legislation, standards and compliance are its announced responsibilities. The June 2026 announcement describes a merger of the AI Office, digital government and the Data Office; no testing mandate was found.",
+          "role": "Policy, legislation, standards and compliance are its announced responsibilities. The June 2026 announcement says it brings together the functions previously held by the AI office, the digital government sector of the telecommunications regulator and the UAE Data Office; no testing mandate was found.",
           "counts_as_aisi": false,
           "kind": "other",
-          "id": "related_bodies-ad17cafd315a5637b6f3ced1174bbcc3"
+          "id": "related_bodies-ad17cafd315a5637b6f3ced1174bbcc3",
+          "source_ids": [
+            "ae-dmo-ai-data-authority-2026"
+          ]
         }
       ],
       "next_check": {
         "date": "2027-01-15",
         "reason": "Whether the National AI Test and Validation Lab takes on evaluation of advanced models."
       },
-      "notes": "Closest case in the region. The lab is government-governed and offers what it calls sovereign, independent evaluation, but its remit is security conformity certification of deployed systems for government and business, without a separately identified qualifying capability or behaviour-risk assignment. A senior official called for independent testing of frontier models in October 2026; no qualifying institute announcement was identified.",
+      "notes": "The lab is government-governed and offers what it calls sovereign, independent evaluation, but its remit is security conformity certification of deployed systems for government and business, without a separately identified qualifying capability or behaviour-risk assignment. Khaleej Times reported on 6 October 2026 that an adviser to the UAE President, speaking at a conference in Abu Dhabi, said countries should build independent systems for testing increasingly powerful models; no qualifying institute announcement was identified.",
       "region": {
         "id": "142",
         "name": "Asia",
@@ -20013,6 +20046,10 @@
           {
             "date": "2026-11-10",
             "scope": "News search from 17 October 2026 in English and Arabic, with the SDAIA news listing (newest 4 November) and the communications ministry's homepage (newest 8 November). No qualifying item was found. Media-use principles and a foreign-ministers' session reported by Arab News and Saudi Gazette are neither a public advanced-model evaluator nor Network accession. The event detail pages of the Saudi Press Agency and SDAIA could not be read. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-19",
+            "scope": "Checked the note on the draft Responsible AI Policy against the policy text on the consultation platform, the official gazette's notice of 7 April 2026 and a law firm briefing of 4 November 2026, and bound it to them; it had been bound to an account of a different framework. The duties fall on all entities that release a high-risk system, which the note now says. Removed the outdated remark that SDAIA's AI page could not be read: it was retrieved on 24 October 2026. On 19 November 2026 the page refused the request again. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -20063,7 +20100,10 @@
       },
       "source_ids": [
         "sa-gowling-2026",
-        "sa-sdaia-ai-page"
+        "sa-sdaia-ai-page",
+        "sa-istitlaa-rai-policy-2026",
+        "sa-uqn-istitlaa-2026",
+        "sa-ashcc-rai-policy-2026"
       ],
       "related_bodies": [
         {
@@ -20074,7 +20114,7 @@
           "id": "related_bodies-d98ac9de98a05d15b2c4055b353a72d7"
         }
       ],
-      "notes": "A draft Responsible AI Policy, consulted on in April–May 2026, would require deployers of high-risk systems to run red-teaming and security tests and commission annual third-party audits. These are proposed duties on deployers.\n\nGowling's July 2026 account describes SDAIA's framework as governance guidance without performance benchmarks or model-testing rules. Searches covered indexed public English and Arabic sources for a government-designated AI safety institute with a remit to evaluate advanced models. The additional SDAIA page could not be read: the direct request was rejected, and one text-extraction attempt returned only a logo and an AI Year heading. Search-result text was not treated as a verified second source.",
+      "notes": "SDAIA put a draft Responsible AI Policy out for consultation until 3 May 2026. The draft lists human or automated red-team tests among the safety assessment methods SDAIA approves. It would require all entities to run comprehensive safety tests before releasing a high-risk system, with a safety report that covers regular checks for security vulnerabilities, and would put high-risk systems under annual audits by a third party accredited by SDAIA. The law firm AS&H Clifford Chance described the policy as still a draft on 4 November 2026.\n\nGowling's July 2026 account describes SDAIA's framework as governance guidance without performance benchmarks or model-testing rules. Searches covered indexed public English and Arabic sources for a government-designated AI safety institute with a remit to evaluate advanced models. SDAIA's own AI page describes the authority as the national reference body for data and AI and describes no model-evaluation institute.",
       "region": {
         "id": "142",
         "name": "Asia",
@@ -22031,6 +22071,10 @@
           {
             "date": "2026-10-19",
             "scope": "Visually rechecked the three quoted headings on PDF page 2 and documented the fragmented Arabic text layer. The quotations were not changed. This was a partial evidence check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-19",
+            "scope": "Read all 19 articles of the CMC consultation draft from the page images during the blind sample for release 1.1.0. The draft creates no testing body. Corrected the Art. 13 note to providers or operators of general-purpose models. This was a partial evidence check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -22056,7 +22100,7 @@
         "governance_source_ids": [
           "iq-cmc-draft-2026"
         ],
-        "governance_note": "The CMC consultation draft sets risk classification and provider testing duties. The reviewed provisions do not create an institute for evaluation of advanced models; not every article was read."
+        "governance_note": "The CMC consultation draft sets risk classification and provider testing duties. The reviewed provisions do not create an institute for evaluation of advanced models; all 19 articles were read from the page images on 19 November 2026."
       },
       "source_ids": [
         "iq-cmc-draft-2026",
@@ -22083,7 +22127,7 @@
           "id": "related_bodies-ec51adb95a835489a1507b391a1ef0fb"
         }
       ],
-      "notes": "The CMC draft regulation (Art. 12) sets a CMC risk-classification methodology, and Art. 13 requires providers of generative and general-purpose models to run periodic safety, security and bias tests before public release and after major changes. These are duties on providers plus CMC classification; the draft creates no CMC testing body or institute for evaluating advanced models. Not every article was read in full. The national AI strategy was discussed at a planning ministry meeting in April 2026, attended by the Prime Minister's adviser on AI, and was reported as under revision.",
+      "notes": "The CMC draft regulation (Art. 12) sets a CMC risk-classification methodology, and Art. 13 requires providers or operators of general-purpose models to run periodic safety, security and bias tests before public release and after major changes. These are duties on providers and operators plus CMC classification; the draft creates no CMC testing body or institute for evaluating advanced models. The national AI strategy was discussed at a planning ministry meeting in April 2026, attended by the Prime Minister's adviser on AI, and was reported as under revision.",
       "next_check": {
         "date": "2027-01-15",
         "reason": "Final text of the CMC regulation and the revised national AI strategy."
@@ -22817,6 +22861,10 @@
           {
             "date": "2026-10-17",
             "scope": "English searches for a national AI safety, security or evaluation institute, commitment, proposal or study. No qualifying institute was identified. The retrieved ministerial AI policy sets developer/user risk and assessment obligations with ministry and sector-regulator oversight; it does not designate a national institute for the safety of advanced models. Partial check only; the last full-check date is unchanged."
+          },
+          {
+            "date": "2026-11-19",
+            "scope": "Verified two leads from a blind re-check: the Cabinet's approval of the national AI programme on 19 September 2024, and the international centre for AI ethics and governance planned in the programme's second phase (2026 to 2030). Neither finding establishes a qualifying institute. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -22852,7 +22900,9 @@
         "om-mtcit-policy-2025",
         "om-ona-ram-2026",
         "om-mtcit-policy-page",
-        "om-mtcit-ai-experts-committee"
+        "om-mtcit-ai-experts-committee",
+        "om-mtcit-ai-sector-page",
+        "om-mtcit-ai-programme-2026-2030"
       ],
       "related_bodies": [
         {
@@ -22883,7 +22933,7 @@
           "id": "related_bodies-d37c350a6dc35c38b542395d4d853d07"
         }
       ],
-      "notes": "The policy requires developers to run pre-deployment ethical, social and environmental impact assessments and periodic accuracy checks including independent technical reviews, but it creates no testing body, safety institute or committee and takes the form of a circular. The UNESCO readiness assessment results were launched on 15 February 2026 as the national reference for AI governance; the report itself was not opened (HTTP 403). The AI Experts Committee (Ministerial Decision 124/2025) is advisory with a three-year term and has no testing mandate.",
+      "notes": "The policy requires developers to run pre-deployment ethical, social and environmental impact assessments and periodic accuracy checks including independent technical reviews, but it creates no testing body, safety institute or committee and takes the form of a circular. The UNESCO readiness assessment results were launched on 15 February 2026 as the national reference for AI governance; the report itself was not opened (HTTP 403). The AI Experts Committee (Ministerial Decision 124/2025) is advisory with a three-year term and has no testing mandate. The Cabinet approved the National Programme for AI and Advanced Digital Technologies on 19 September 2024. The programme's second phase, for 2026 to 2030, plans an international centre for AI ethics and governance based in Oman. Initiative 6 gives the centre no task of testing or evaluating models and does not state its operator or completion date.",
       "next_check": {
         "date": "2027-02-15",
         "reason": "Whether Oman acts on the UNESCO recommendations (for example mandatory impact assessments) or creates an AI oversight body."
@@ -31422,7 +31472,7 @@
             "named_as": "Taskforce"
           }
         ],
-        "notes": "Event dates are the model's public release date in Epoch AI's data unless the source dates the access itself; for every event except Gemini 4 Argon the sources state that the access came before release, so the access took place on or before that date. The Epoch AI models cited for the leading-developer test were released at least a month before each such date. Not counted: Kimi K3 (Moonshot, July 2026), as the access route is not stated; the Llama 3.1-405B network pilot (October to November 2024), as its weights are public. The developer agreements are the commitments of Anthropic, Google DeepMind and OpenAI to give the institute's predecessor 'deep model access', announced in 2023. The institute says it has independently evaluated more than 55 models before release, working with industry; the post names no models, so they are not counted as access events. Gemini 4 Argon is dated 13 October 2026, Epoch AI's release date; Google announced it on 30 September 2026, when it was rolling out to a set of trusted cyber defenders through Google's Fairwind Program, with an initial cohort of cyber defenders and trusted testers, and release to developers, enterprises and consumers, starting with paid API customers and Google AI Ultra subscribers, was to follow. The sources do not date the institute's access. A written answer of 2 November 2026 says all the institute's current collaboration agreements are with developers based in the UK and the US; one of 6 November says its evaluations are governed by agreements with the developers and their results are not typically published.",
+        "notes": "Event dates are the model's public release date in Epoch AI's data unless the source dates the access itself; for every event except Gemini 4 Argon the sources state that the access came before release, so the access took place on or before that date. The Epoch AI models cited for the leading-developer test were released at least a month before each such date. Not counted: Kimi K3 (Moonshot, July 2026), as the access route is not stated; the Llama 3.1-405B network pilot (October to November 2024), as its weights are public. The developer agreements are the commitments of Anthropic, Google DeepMind and OpenAI to give the institute's predecessor 'deep model access', announced in 2023. The institute says it has independently evaluated more than 55 models before release, working with industry; the post names no models, so they are not counted as access events. Gemini 4 Argon is dated 13 October 2026, Epoch AI's release date; Google announced it on 30 September 2026, when it was rolling out to a set of trusted cyber defenders through Google's Fairwind Program, with an initial cohort of cyber defenders and trusted testers, and release to developers, enterprises and consumers, starting with paid API customers and Google AI Ultra subscribers, was to follow. The sources do not date the institute's access. A written answer of 2 November 2026 says all the institute's current collaboration agreements are with developers based in the UK and the US; one of 6 November says its evaluations are governed by agreements with the developers and their results are not typically published. A House of Commons committee report of 18 November 2026 says the institute has no guaranteed statutory right of access to models and that access before release is voluntary; it recommends a statutory AI regulator separate from the institute.",
         "source_ids": [
           "depth-us-kimi",
           "sg-pilot-2024",
@@ -31435,7 +31485,8 @@
           "google-gemini-4-argon-2026",
           "gb-pq-38577-2026",
           "gb-pq-38559-2026",
-          "gb-aisi-launch"
+          "gb-aisi-launch",
+          "gb-bist-guardrails-2026"
         ],
         "searches": [
           {
@@ -39489,7 +39540,9 @@
         "rows-what-au-ncsc",
         "rows-what-au-oai",
         "rows-what-au-sa",
-        "rows-what-au-dfat"
+        "rows-what-au-dfat",
+        "au-charlton-afr-speech-2026",
+        "au-disr-annual-report-2025-26"
       ],
       "people": [
         {
@@ -41220,6 +41273,17 @@
                 "id": "claims-82020cebb1ad4568b35afce6b56d6d6e"
               },
               "text"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "GB"
+              },
+              "timeline",
+              {
+                "id": "gb-2025-mandate-changed"
+              },
+              "description"
             ]
           ],
           "accessed": "2026-10-17",
@@ -41280,6 +41344,40 @@
             ]
           ],
           "accessed": "2026-10-17"
+        },
+        {
+          "text": "It will not focus on bias or freedom of speech",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "GB"
+              },
+              "timeline",
+              {
+                "id": "gb-2025-mandate-changed"
+              },
+              "description"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        },
+        {
+          "text": "The work of the AI Security Institute won’t change",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "GB"
+              },
+              "timeline",
+              {
+                "id": "gb-2025-mandate-changed"
+              },
+              "description"
+            ]
+          ],
+          "accessed": "2026-11-19"
         }
       ],
       "origin": "GB",
@@ -41659,7 +41757,35 @@
         "sha256": "52c09a83a52fa8a57fbe7412feafbc4fc2d42898eb8b464fda5dc4a4e70861c0",
         "text_sha256": "25274b83b009b60935d3dc48070b376a2f20da585e4007c5cc046514e4c44e30",
         "text_scheme": 1
-      }
+      },
+      "excerpts": [
+        {
+          "text": "Most offers land between £65,000 and £145,000 made up of a base salary plus a technical allowance",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "staffing_profile"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        },
+        {
+          "text": "An additional 28.97% employer pension contribution is paid on the base salary.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "staffing_profile"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        }
+      ]
     },
     {
       "id": "network-2025",
@@ -51414,7 +51540,7 @@
           ],
           "anchors": [
             {
-              "text": "AI TRUST FUNCTIONE12",
+              "text": "AI TRUST FUNCTION",
               "kind": "heading"
             },
             {
@@ -51797,7 +51923,37 @@
         "sha256": "5b53110f7f3f6d8a29dad92532889def5f86b070162acaa347fd252a5b04b0a1",
         "text_sha256": "dded15494f2eb454cd1985b4e67e91e336c04a3132c2d19764b18738f98424bb",
         "text_scheme": 1
-      }
+      },
+      "excerpts": [
+        {
+          "text": "ตั้งแต่วันนี้จนถึง 24 มิถุนายน 2568",
+          "gloss": "from today until 24 June 2025",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "TH"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        },
+        {
+          "text": "การกำหนดองค์กรสนับสนุนการทำงานของกฎหมายฉบับนี้",
+          "gloss": "specifying an organisation to support the operation of this law",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "TH"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        }
+      ]
     },
     {
       "id": "th-thaipbs-2026",
@@ -51815,7 +51971,23 @@
         "sha256": "dbeb75249738d1bc6abe418b45b0c5e695972e680900fb1d2dd5aadb4ad19b91",
         "text_sha256": "47d2a515ef2f05b87d688656286a61e4f743da4b878684c7654969db17711c40",
         "text_scheme": 1
-      }
+      },
+      "excerpts": [
+        {
+          "text": "คณะกรรมการ ซึ่งหมายถึง คณะกรรมการเฉพาะด้านการขับเคลื่อนแผนด้านปัญญาประดิษฐ์แห่งชาติ",
+          "gloss": "the Committee, which means the Specialised Committee for Driving the National AI Plan",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "TH"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        }
+      ]
     },
     {
       "id": "vn-mst-ai-law-2026",
@@ -59996,7 +60168,7 @@
       "published": "2026-09",
       "accessed": "2026-10-16",
       "language": "ar",
-      "access_note": "PDF with a partly garbled text layer and scanned pages that are legible as images; first pages and the articles on risk classification and general-purpose models were read. The three quoted Arabic headings were visually verified on 17 October 2026 and rechecked on 19 October against the contents on PDF page 2 (articles 5, 6 and 12). The text layer fragments and reorders Arabic glyphs, so the quotations rely on visual verification. The document is marked as a draft for public consultation.",
+      "access_note": "PDF with a partly garbled text layer and scanned pages that are legible as images; first pages and the articles on risk classification and general-purpose models were read. The three quoted Arabic headings were visually verified on 17 October 2026 and rechecked on 19 October against the contents on PDF page 2 (articles 5, 6 and 12). The text layer fragments and reorders Arabic glyphs, so the quotations rely on visual verification. The document is marked as a draft for public consultation. All 19 articles were read from the page images on 19 November 2026.",
       "archive_url": "https://web.archive.org/web/20261003222805/https://cmc.iq/wp-content/uploads/2026/09/%D8%A7%D9%84%D9%84%D8%A7%D9%8A%D9%94%D8%AD%D8%A9-%D8%A7%D9%84%D8%AA%D9%86%D8%B8%D9%8A%D9%85%D9%8A%D8%A9-%D9%84%D8%AE%D8%AF%D9%85%D8%A7%D8%AA-%D8%A7%D9%84%D8%B0%D9%83%D8%A7%D8%A1-%D8%A7%D9%84%D8%A7%D8%B5%D8%B7%D9%86%D8%A7%D8%B9%D9%8A-%D9%81%D9%8A-%D8%AC%D9%85%D9%87%D9%88%D8%B1%D9%8A%D8%A9-%D8%A7%D9%84%D8%B9%D8%B1%D8%A7%D9%82%D9%8A-%D8%A7%D9%84%D9%89-%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D8%B4%D8%A7%D8%B1%D8%A9-%D8%A7%D9%84%D8%B9%D8%A7%D9%85%D8%A9-1287.pdf",
       "origin": "IQ",
       "excerpts": [
@@ -81535,17 +81707,6 @@
                 "id": "related_bodies-9abdac50986a5525bca90d58733feba6"
               },
               "designation_state"
-            ],
-            [
-              "jurisdictions",
-              {
-                "id": "PL"
-              },
-              "related_bodies",
-              {
-                "id": "related_bodies-de1e7f85821a52ce902ccb245f304536"
-              },
-              "designation_state"
             ]
           ],
           "accessed": "2026-11-14"
@@ -83236,7 +83397,84 @@
       "instrument_status_checked": "2026-10-21",
       "published": "2026-07-27",
       "language": "pl",
-      "excerpts": [],
+      "excerpts": [
+        {
+          "text": "Komisja Rozwoju i Bezpieczeństwa Sztucznej Inteligencji, zwana dalej „Komisją”, jest organem nadzoru rynku w zakresie systemów sztucznej inteligencji w rozumieniu art. 70 ust. 1 rozporządzenia 2024/1689.",
+          "gloss": "The Commission for the Development and Safety of Artificial Intelligence, hereinafter \"the Commission\", is the market surveillance authority for artificial intelligence systems within the meaning of Article 70(1) of Regulation 2024/1689.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "PL"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-9abdac50986a5525bca90d58733feba6"
+              },
+              "authority_roles"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "PL"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-9abdac50986a5525bca90d58733feba6"
+              },
+              "designation_state"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Komisja działa jako pojedynczy punkt kontaktowy, o którym mowa w art. 70 ust. 2 rozporządzenia 2024/1689.",
+          "gloss": "The Commission acts as the single point of contact referred to in Article 70(2) of Regulation 2024/1689.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "PL"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-9abdac50986a5525bca90d58733feba6"
+              },
+              "authority_roles"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Minister właściwy do spraw informatyzacji jest organem notyfikującym, o którym mowa w rozdziale III sekcja 4 rozporządzenia 2024/1689.",
+          "gloss": "The minister responsible for digitalisation is the notifying authority referred to in Chapter III, Section 4 of Regulation 2024/1689.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "PL"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-de1e7f85821a52ce902ccb245f304536"
+              },
+              "authority_roles"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "PL"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-de1e7f85821a52ce902ccb245f304536"
+              },
+              "designation_state"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        }
+      ],
       "origin": "PL",
       "title_en": "Act of 3 July 2026 on artificial intelligence systems, Journal of Laws 2026, item 1003",
       "snapshot": {
@@ -111682,6 +111920,13 @@
               },
               "check",
               "governance_note"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "SA"
+              },
+              "notes"
             ]
           ],
           "accessed": "2026-10-24"
@@ -111894,6 +112139,40 @@
             ]
           ],
           "accessed": "2026-10-24"
+        },
+        {
+          "text": "The Authority will bring together under one mandate the functions previously held by three separate entities",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "AE"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-ad17cafd315a5637b6f3ced1174bbcc3"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        },
+        {
+          "text": "the Digital Government Sector at the Telecommunications and Digital Government Regulatory Authority; and the UAE Data Office",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "AE"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-ad17cafd315a5637b6f3ced1174bbcc3"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-19"
         }
       ],
       "snapshot": {
@@ -126539,6 +126818,555 @@
         "retrieved": "2026-11-14T11:33:15Z",
         "sha256": "aabce9f022bee185f3c9ed32b98b2b434d751b4e5a3d9e4c2573988f7a7161c2",
         "text_sha256": "751f89d8680d576d10fe7035e5c9026fd89e4326c36331227de356fdfbdc8358",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "th-mdes-ai-committee-2026",
+      "url": "https://mdes.go.th/news/detail/11489-%E0%B8%A3%E0%B8%A1%E0%B8%A7-%E0%B8%94%E0%B8%B5%E0%B8%AD%E0%B8%B5-%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%8A%E0%B8%B8%E0%B8%A1%E0%B8%84%E0%B8%81%E0%B8%81-%E0%B9%80%E0%B8%89%E0%B8%9E%E0%B8%B2%E0%B8%B0%E0%B8%94%E0%B9%89%E0%B8%B2%E0%B8%99%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%82%E0%B8%B1%E0%B8%9A%E0%B9%80%E0%B8%84%E0%B8%A5%E0%B8%B7%E0%B9%88%E0%B8%AD%E0%B8%99%E0%B9%81%E0%B8%9C%E0%B8%99%E0%B8%94%E0%B9%89%E0%B8%B2%E0%B8%99-AI-%E0%B9%81%E0%B8%AB%E0%B9%88%E0%B8%87%E0%B8%8A%E0%B8%B2%E0%B8%95%E0%B8%B4-%E0%B8%99%E0%B8%B1%E0%B8%94%E0%B9%81%E0%B8%A3%E0%B8%81-%E0%B8%95%E0%B8%B4%E0%B8%94%E0%B8%95%E0%B8%B2%E0%B8%A1%E0%B8%AA%E0%B8%96%E0%B8%B2%E0%B8%99%E0%B8%B0%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%9E%E0%B8%B1%E0%B8%92%E0%B8%99%E0%B8%B2-AI-%E0%B9%84%E0%B8%97%E0%B8%A2-%E0%B8%9E%E0%B8%A3%E0%B9%89%E0%B8%AD%E0%B8%A1%E0%B9%81%E0%B8%9C%E0%B8%99%E0%B8%9B%E0%B8%8F%E0%B8%B4%E0%B8%9A%E0%B8%B1%E0%B8%95%E0%B8%B4%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%94%E0%B9%89%E0%B8%B2%E0%B8%99-AI-%E0%B8%8A%E0%B8%B2%E0%B8%95%E0%B8%B4",
+      "title": "รมว.ดีอี ประชุมคกก.เฉพาะด้านการขับเคลื่อนแผนด้าน AI แห่งชาติ นัดแรก ติดตามสถานะการพัฒนา AI ไทย พร้อมแผนปฏิบัติการด้าน AI ชาติ",
+      "title_en": "Digital economy minister chairs first meeting of the Specialised Committee for Driving the National AI Plan, reviewing the state of Thai AI development and the national AI action plan",
+      "publisher": "Ministry of Digital Economy and Society (Thailand)",
+      "type": "primary",
+      "published": "2026-09-07",
+      "accessed": "2026-11-19",
+      "language": "th",
+      "origin": "TH",
+      "excerpts": [
+        {
+          "text": "วันที่ 7 กันยายน 2569",
+          "gloss": "On 7 September 2026 (B.E. 2569)",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "TH"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        },
+        {
+          "text": "ประธานการประชุมคณะกรรมการเฉพาะด้านการขับเคลื่อนแผนด้านปัญญาประดิษฐ์แห่งชาติ ครั้งที่ 1/2569",
+          "gloss": "chaired meeting 1/2569 of the Specialised Committee for Driving the National AI Plan",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "TH"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        },
+        {
+          "text": "มีมติให้มีการพิจารณาการปรับโครงสร้างของ ร่าง พ.ร.บ.",
+          "gloss": "resolved that restructuring of the draft Act be considered",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "TH"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-19T05:59:46Z",
+        "sha256": "add57e140b2f00bc46cec3a774be5d5b58409c779ac6bbf8b651f67356381ca3",
+        "text_sha256": "f307821fe67f331f66cb147fadfad9f1dcb301668a2c84368289c045a2dd54fd",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "th-lawplus-draft-ai-act-2026",
+      "url": "https://www.lawplusltd.com/2026/10/thailand-holds-public-hearings-on-draft-of-artificial-intelligence-act/",
+      "title": "Thailand Holds Public Hearings on Draft of Artificial Intelligence Act",
+      "publisher": "LawPlus Ltd.",
+      "type": "secondary",
+      "published": "2026-10",
+      "accessed": "2026-11-19",
+      "language": "en",
+      "origin": "TH",
+      "excerpts": [
+        {
+          "text": "released the Draft Act on Artificial Intelligence (Draft AI Act) for public hearing during 9 July to 14 August 2026",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "TH"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-19T05:59:46Z",
+        "sha256": "7966747574ec294314ade2788fe021ade7ba5d3e19764f5ba5573f38d56854ca",
+        "text_sha256": "d0b41c88a6dea35fc0266d12d18fdda2dd80fec57e83156fa210dbe5a08bc40c",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "ae-khaleejtimes-testing-2026",
+      "url": "https://www.khaleejtimes.com/uae/uae-official-independent-ai-safety-checks-global-advancement",
+      "title": "UAE official calls for independent AI safety checks amid rapid advances",
+      "publisher": "Khaleej Times",
+      "type": "secondary",
+      "published": "2026-10-06",
+      "language": "en",
+      "origin": "AE",
+      "accessed": "2026-11-19",
+      "excerpts": [
+        {
+          "text": "build independent systems for testing increasingly powerful models, a senior UAE official said on Tuesday",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "AE"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        },
+        {
+          "text": "adviser to the UAE President and secretary general of the Advanced Technology Research Council",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "AE"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-19T06:08:13Z",
+        "sha256": "aea5f780ad41e5071d7647db5f1020075ccdbb3f1ae2aa0af11194c89355615c",
+        "text_sha256": "4a1c9d64b472dca3df4d65863c32224146a29fde937d7fd9472075d7e4141f45",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "sa-istitlaa-rai-policy-2026",
+      "url": "https://istitlaa.scbc.gov.sa/ar/Transportation/NDMO/ResponsibleAIPolicy/Pages/default.aspx",
+      "title": "سياسة الذكاء الاصطناعي المسؤول",
+      "title_en": "Responsible Artificial Intelligence Policy",
+      "publisher": "Saudi Data and Artificial Intelligence Authority (SDAIA), on the Istitlaa public consultation platform",
+      "type": "primary",
+      "language": "ar",
+      "origin": "SA",
+      "accessed": "2026-11-19",
+      "excerpts": [
+        {
+          "text": "اختبارات الفريق الأحمر البشري أو الآلي",
+          "gloss": "human or automated red-team tests",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "SA"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        },
+        {
+          "text": "يلزم على جميع الجهات قبل نشر نظام ذكاء اصطناعي عالي المخاطر، أو أحد إصداراته، إجراء اختبارات شاملة للسلامة",
+          "gloss": "All entities are required, before releasing a high-risk AI system or one of its versions, to run comprehensive safety tests",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "SA"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        },
+        {
+          "text": "وفحص الثغرات الأمنية بانتظام",
+          "gloss": "and regularly checking security vulnerabilities",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "SA"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        },
+        {
+          "text": "يجب أن تخضع أنظمة الذكاء الاصطناعي عالية المخاطر لعمليات تدقيق سنوية من قِبل طرف ثالث معتمد من الهيئة",
+          "gloss": "High-risk AI systems must undergo annual audits by a third party accredited by the Authority",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "SA"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-19T06:08:13Z",
+        "sha256": "fa450238c0b318ebd275e655cc45666960615684424e365845c57f1925139f63",
+        "text_sha256": "4b9f8018dd511d5ff96ac99aaa921dc390deec4faa5bf1ab623d1a8fe2a46392",
+        "text_scheme": 1
+      },
+      "access_note": "The page gives no publication date; the consultation platform shows it as last updated on 29 March 2026. The text read on 19 November 2026 is the consultation draft with its comment form."
+    },
+    {
+      "id": "sa-uqn-istitlaa-2026",
+      "url": "https://www.uqn.gov.sa/news/reports/4000694",
+      "title": "طرح 14 مشروعاً عبر منصة \"استطلاع\" لأخذ مرئيات العموم والقطاعين الحكومي والخاص",
+      "title_en": "Fourteen drafts put on the Istitlaa platform for comments from the public and the government and private sectors",
+      "publisher": "Umm Al-Qura (official gazette of Saudi Arabia)",
+      "type": "primary",
+      "published": "2026-04-07",
+      "language": "ar",
+      "origin": "SA",
+      "accessed": "2026-11-19",
+      "excerpts": [
+        {
+          "text": "وطرحت الهيئة السعودية للبيانات والذكاء الاصطناعي مشروع",
+          "gloss": "The Saudi Data and Artificial Intelligence Authority put forward a draft",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "SA"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        },
+        {
+          "text": "وينتهي الاستطلاع على المشروع بتاريخ 3 مايو 2026م.",
+          "gloss": "The consultation on the draft ends on 3 May 2026.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "SA"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-19T06:08:13Z",
+        "sha256": "fb862c07f7d338592a2c4e9754849c55e5e16e40bad1893f64b09d58bf0ffd3b",
+        "text_sha256": "d63a8b3199c19cdba7a3d6fa8990a8e187737320445fb93c9336ff039c306aee",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "sa-ashcc-rai-policy-2026",
+      "url": "https://www.cliffordchance.com/content/dam/cliffordchance/briefings/2026/11/responsible-ai-policy-shift-guiding-regime-supervisory-one.pdf",
+      "title": "Responsible AI Policy: A Shift from a Guiding Regime to a Supervisory One",
+      "publisher": "AS&H Clifford Chance",
+      "type": "secondary",
+      "published": "2026-11-04",
+      "language": "en",
+      "origin": "SA",
+      "accessed": "2026-11-19",
+      "excerpts": [
+        {
+          "text": "While the RAI Policy remains in draft form",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "SA"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-19T06:08:13Z",
+        "sha256": "27498e715561b160c236803faa41a39f5d8b3358d5084421f5fd1d2e0fc035d0",
+        "text_sha256": "f6fc8da3f1473e2d32b3c20966f7f84c1ecc6ab8a583120aa18f26e6b829de71",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "au-charlton-afr-speech-2026",
+      "url": "https://www.minister.industry.gov.au/charlton/media/speech-afr-ai-summit",
+      "title": "Speech to AFR AI Summit",
+      "publisher": "Ministers for the Department of Industry, Science and Resources",
+      "published": "2026-06-02",
+      "accessed": "2026-11-19",
+      "language": "en",
+      "origin": "AU",
+      "type": "primary",
+      "excerpts": [
+        {
+          "text": "we are pleased to announce it is operational as of today",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "AU"
+              },
+              "timeline",
+              {
+                "id": "au-2026-06-01-launched"
+              },
+              "description"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-19T06:18:03Z",
+        "sha256": "00057139488388f19973891f722fee3f421e9663291a2ff2dfe0de9278321871",
+        "text_sha256": "7b669e3b47afa1d9e029cca26ef08cc4163310a5071ac7ac923aacb789dda60d",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "au-disr-annual-report-2025-26",
+      "url": "https://www.industry.gov.au/sites/default/files/2026-10/disr-annual-report-2025-26.pdf",
+      "title": "Annual report 2025–26",
+      "publisher": "Department of Industry, Science and Resources",
+      "published": "2026-10",
+      "accessed": "2026-11-19",
+      "language": "en",
+      "origin": "AU",
+      "type": "primary",
+      "excerpts": [
+        {
+          "text": "formally launched it on 1 June 2026",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "AU"
+              },
+              "timeline",
+              {
+                "id": "au-2026-06-01-launched"
+              },
+              "date"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "AU"
+              },
+              "timeline",
+              {
+                "id": "au-2026-06-01-launched"
+              },
+              "event"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "AU"
+              },
+              "timeline",
+              {
+                "id": "au-2026-06-01-launched"
+              },
+              "description"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-19T06:18:04Z",
+        "sha256": "5dd76c875b494a164f320644b1cc53bdaece658b0df0b24e04bf0e2ea09b8a7a",
+        "text_sha256": "f8be4c993af37029f3d4fa4d932324fce4c7541ff70c8d348176fb497242c2b0",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "gb-bist-guardrails-2026",
+      "url": "https://committees.parliament.uk/publications/55827/standard/pdf",
+      "title": "Guardrails for growth: AI safety and security. Eleventh Report of Session 2026–27, HC 689",
+      "publisher": "House of Commons Business, Innovation, Science and Trade Committee",
+      "type": "primary",
+      "published": "2026-11-18",
+      "accessed": "2026-11-19",
+      "language": "en",
+      "origin": "GB",
+      "excerpts": [
+        {
+          "text": "It was published on 18 November 2026 by authority of the House of Commons.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "model_access",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        },
+        {
+          "text": "it has no guaranteed statutory right of access to models, systems, training outputs, safety frameworks or other outputs",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "model_access",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        },
+        {
+          "text": "Pre-release access for AISI and other evaluators is today voluntary",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "model_access",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        },
+        {
+          "text": "The Government should establish a statutory AI regulator, separate from AISI but drawing on its expertise, with secure multi-year funding.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "model_access",
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-19T06:24:16Z",
+        "sha256": "a77258a588c68e90b30658fd759a035031f25b61ca6ec1fe08393df9d5357dba",
+        "text_sha256": "c869de6072042104cb982d8f0fc6f6b7d05fff6158ec1c4d4daebcfdc2c1fdcd",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "om-mtcit-ai-sector-page",
+      "url": "https://mtcit.gov.om/sectors?sector=artificial_intelligence",
+      "title": "Artificial Intelligence (Ministry Sector)",
+      "publisher": "Ministry of Transport, Communications and Information Technology (Oman)",
+      "type": "primary",
+      "language": "en",
+      "origin": "OM",
+      "accessed": "2026-11-19",
+      "excerpts": [
+        {
+          "text": "approved by the Cabinet on 19 September 2024",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "OM"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-19T06:31:08Z",
+        "sha256": "c44096e5811cc3bbf643d8020b8bdbdcaf3c4c242a9621339312f120d78a1dd6",
+        "text_sha256": "620754da3da471c92b7a0928b941146c7b3e529c7709faff0f548ef8d6eccd21",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "om-mtcit-ai-programme-2026-2030",
+      "url": "https://mtcit.gov.om/web/content/69712",
+      "title": "البرنامج الوطني للذكاء الاصطناعي المرحلة الثانية (2026 – 2030)",
+      "title_en": "National Programme for Artificial Intelligence, second phase (2026 to 2030)",
+      "publisher": "Ministry of Transport, Communications and Information Technology (Oman)",
+      "type": "primary",
+      "language": "ar",
+      "origin": "OM",
+      "accessed": "2026-11-19",
+      "excerpts": [],
+      "snapshot": {
+        "retrieved": "2026-11-19T06:31:09Z",
+        "sha256": "e6243a51b459671ee2cc35e2dfd613e3131fa9ef16cda8d0399334e3ee5df27c",
+        "text_sha256": "8148e0dab376a31f38ad903986e0c05054e833d845e17943fe825c23a6671d7a",
+        "text_scheme": 1
+      },
+      "access_note": "PDF read on 19 November 2026; it gives no publication date. The planned international centre for AI ethics and governance is in initiative 6, on consultancy and knowledge transfer (printed page 19). The PDF's text layer stores Arabic letters in presentation forms with elongation marks, so the passage was found by normalised text search and is not quoted."
+    },
+    {
+      "id": "nl-cabinet-ai-vision-letter-2026",
+      "url": "https://open.overheid.nl/overheid/openbaarmakingen/api/v0/attachment/71d01478-bff7-4fc9-bbed-c72d350d0211",
+      "title": "Kamerbrief Kabinetsvisie op Artificial Intelligence – kiezen voor AI voor iedereen",
+      "title_en": "Letter to parliament: Cabinet vision on Artificial Intelligence, choosing AI for everyone",
+      "publisher": "Ministerie van Economische Zaken en Klimaat",
+      "type": "primary",
+      "published": "2026-11-06",
+      "accessed": "2026-11-19",
+      "language": "nl",
+      "origin": "NL",
+      "excerpts": [
+        {
+          "text": "Het adviesrapport inzake het Nederlands AI-veiligheidsinstituut zal naar verwachting in december 2026 worden aangeboden aan uw Kamer.",
+          "gloss": "The advisory report on the Dutch AI safety institute is expected to be presented to your House in December 2026.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "NL"
+              },
+              "next_check",
+              "reason"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-19T06:41:46Z",
+        "sha256": "f046d9afd47574c4682138ef502210069e079bc27529582239a3128c091d2787",
+        "text_sha256": "fc675b40fc20cf016be6469c2d7f239e5789e1d8153c3435e8d5a49ff1984838",
         "text_scheme": 1
       }
     },
