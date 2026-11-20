@@ -29417,6 +29417,10 @@
           {
             "date": "2026-11-14",
             "scope": "Sources checked for developments from 13 November 2026: the institute's home, blog and research pages (newest 26 October), its GOV.UK organisation page (12 October), DSIT's page (newest document 4 November), the Cabinet Office's news (12 November), Parliament's home page (answers of 12 November), the written-statements listing (13 November), the daily-reports listing (stale, newest 27 March 2026) and the machinery-of-government fact sheet of 22 July, updated 27 July. No new institute item was found. The fact sheet says responsibility 'will move', so the date the move to the Cabinet Office took effect is still unresolved. The daily reports of 13 November could not be retrieved, so written answers of that day are incompletely checked. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-20",
+            "scope": "Sources checked for developments from 14 November 2026: the institute's home, blog and research pages (newest 26 October), its GOV.UK organisation page (12 October), DSIT's page (newest document 20 November), the Cabinet Office's page (19 November), the written-statements listing (19 November), the Commons daily reports of 16 to 19 November and the Lords daily report of 16 November. Added from written answers of 16 to 19 November: no dedicated funding under the UK-Norway statement, the AI Threat Assessment Centre, and what the institute does not test or report on. The answer of 18 November to question 43123 says the institute is led by two Directors, who are not named, reporting to the Director General for Artificial Intelligence; the recorded head and reporting line are unchanged pending review. The developers' oral evidence of 13 October and the two press reports on models withheld from testing were located, the report of 24 September only partly readable; nothing was entered from them. The Commons report of 18 November was read only in part, including the Cabinet Office answers. Later written-statement pages, Lords reports of 17 to 20 November and answers of 20 November were not covered. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -29928,9 +29932,10 @@
           "counterparty": "Government of Norway, for KI Norge",
           "state": "signed",
           "date": "2026-11-12",
-          "scope": "Non-binding joint statement of intent to explore cooperation, including sharing best practices between the two institutes on AI security, testing and evaluation, and exchanging knowledge of the capabilities and risks of advanced AI systems.",
+          "scope": "Non-binding joint statement of intent to explore cooperation, including sharing best practices between the two institutes on AI security, testing and evaluation, and exchanging knowledge of the capabilities and risks of advanced AI systems. The UK government said on 19 November 2026 that the statement creates no financial commitments and that no dedicated funding had been allocated to activities under it.",
           "source_ids": [
-            "gb-no-ai-statement-2026"
+            "gb-no-ai-statement-2026",
+            "gb-pq-43807-2026"
           ],
           "participation": "named_implementer",
           "domestic_interagency": false,
@@ -31079,14 +31084,17 @@
             ]
           }
         ],
-        "notes": "Further own testing: joint pre-deployment evaluations with the US institute of the upgraded Claude 3.5 Sonnet (November 2024) and OpenAI o1 (December 2024), a joint assessment of Kimi K3 with the US institute (July 2026) and its own evaluation of GPT-6 Astra (September 2026). The institute applies no fixed threshold for the models it counts as frontier or near frontier and decides case by case (written answer of 6 November 2026).",
+        "notes": "Further own testing: joint pre-deployment evaluations with the US institute of the upgraded Claude 3.5 Sonnet (November 2024) and OpenAI o1 (December 2024), a joint assessment of Kimi K3 with the US institute (July 2026) and its own evaluation of GPT-6 Astra (September 2026). The institute applies no fixed threshold for the models it counts as frontier or near frontier and decides case by case (written answer of 6 November 2026). It does not test models specifically for child safety risks, and does not report on models' compliance with the Online Safety Act or on whether frontier AI models reproduce copyrighted works, publicly funded research outputs, personal data or intellectual property (written answers of 16 and 18 November 2026).",
         "source_ids": [
           "us-claude35-2024",
           "fix-output-us-entry-14",
           "depth-us-kimi",
           "depth-gb-supply-chain",
           "gb-pq-39196-2026",
-          "catalogue-us-artifact-o1"
+          "catalogue-us-artifact-o1",
+          "gb-pq-41245-2026",
+          "gb-pq-40485-2026",
+          "gb-pq-41248-2026"
         ]
       },
       "model_access": {
@@ -31671,6 +31679,14 @@
           "source_ids": [
             "gb-cp960-2023"
           ]
+        },
+        {
+          "id": "claims-d4890a26648f1fa5ed8be318c791f809",
+          "kind": "fact",
+          "source_ids": [
+            "gb-pq-42056-2026"
+          ],
+          "text": "The government says it has established the AI Threat Assessment Centre (AITAC), which draws on expertise from bodies including the institute and the National Cyber Security Centre to assess national security threats from AI."
         }
       ]
     },
@@ -31781,6 +31797,10 @@
           {
             "date": "2026-11-14",
             "scope": "Sources checked for developments from 13 November 2026: SGDSN's publications (newest 27 October), the institute's page (5 February 2026), DGE's news (21 October) and press (22 June), the economy and digital ministry's press (13 November), DINUM's news page (news 7 August, press 30 July) and information page (news 28 July, press 10 July), and the Elysée's account of the expert report handed over on 10 November. No adopted or announced government decision to strengthen the institute was found; the report's recommendations are not a decision. No new institute publication was found. The DGE and DINUM listings were stale, so coverage of 13 and 14 November there is incomplete. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-20",
+            "scope": "Sources checked for developments from 14 November 2026: SGDSN's publications (newest 27 October), the institute's page (5 February 2026), DGE's news (3 November) and press (22 June), the economy and digital ministry's press (19 November), and DINUM's news (12 November) and press (10 September). No new institute publication was found, and no adopted or announced government decision to strengthen the institute. Several listings were stale, so coverage is incomplete. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -32357,6 +32377,10 @@
           {
             "date": "2026-11-14",
             "scope": "Sources checked for developments from 13 November 2026: BSI's institute page (newest digest 1 November) and news (11 November), the digital ministry's press (13 November) and its budget release of that day, which gives no allocation for the institute, the interior ministry's home page (11 November) and its archived press search (newest 30 June). The Bundestag's record of 13 November says motion 21/8810 was referred to committees after the debate; it was neither adopted nor rejected, and is not recorded as a change for the institute. No new institute output was found. BSI's current press list, the interior ministry's current press list and the plenary record could not be read. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-20",
+            "scope": "Sources checked for developments from 14 November 2026: BSI's institute page (newest digest 1 November), BSI's news (17 November), the digital ministry's press (18 November) and the interior ministry's home page (newest release 16 November). No new institute output, funding, staff or status fact was found. BSI's press list and the interior ministry's press search could not be read, so coverage is incomplete. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -32774,6 +32798,10 @@
           {
             "date": "2026-11-14",
             "scope": "Sources checked for developments from 13 November 2026: AESIA's news (titles undated; the newest article read is dated 12 November), its studies page (one undated study), the digital ministry's press (4 November) and the BOE daily summaries of 13 and 14 November. No constitutive act or appointment for the institute was found in the summaries read, which does not establish that none exists. No separate publication list for the institute was found, and the dates of AESIA's news list remain unresolved. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-20",
+            "scope": "Sources checked for developments from 14 November 2026: AESIA's news (newest 12 November) and studies, the digitalisation ministry's press (19 November) and the official gazette's daily summaries of 14 and 16 to 19 November. No constitutive act, appointment or publication for the planned institute was found. The ministry's guide of 19 November on ethical adoption is credited to the ministry, not to the institute. The calendar showed no issue link for 20 November, and long daily summaries were read only in part. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -33232,6 +33260,10 @@
           {
             "date": "2026-11-14",
             "scope": "Sources checked for developments from 13 November 2026: KI Norge's articles (newest dated 1 September, first item undated), Digdir's news archive (undated) and cooperation-portal news (13 November), the government's news (13 November), the government's release of 12 November on the UK-Norway statement of intent and its release of 13 November on a security expert group. The statement and the later memorandum it contemplates are already recorded; the expert-group release assigns KI Norge no task. KI Norge's publications or research listing was not found. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-20",
+            "scope": "Sources checked for developments from 14 November 2026: KI Norge's home page and articles (newest 24 September), Digdir's news (18 November), cooperation news (17 November) and reports, and the government's releases (19 November). Added the UK government's written answer of 19 November that no dedicated funding has been allocated under the joint statement of 12 November. The Norwegian government's release of 12 November on the statement was read but could not be saved as a source copy, so it is not cited. The digitalisation ministry's own news list was stale, and the 2027 budget proposal is still a proposal. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -33306,9 +33338,10 @@
           "counterparty": "UK Government, for the UK AI Security Institute",
           "state": "signed",
           "date": "2026-11-12",
-          "scope": "Non-binding joint statement of intent to explore cooperation, including sharing best practices between the two institutes on AI security, testing and evaluation, and exchanging knowledge of the capabilities and risks of advanced AI systems.",
+          "scope": "Non-binding joint statement of intent to explore cooperation, including sharing best practices between the two institutes on AI security, testing and evaluation, and exchanging knowledge of the capabilities and risks of advanced AI systems. The UK government said on 19 November 2026 that the statement creates no financial commitments and that no dedicated funding had been allocated to activities under it.",
           "source_ids": [
-            "gb-no-ai-statement-2026"
+            "gb-no-ai-statement-2026",
+            "gb-pq-43807-2026"
           ],
           "participation": "named_implementer",
           "domestic_interagency": false,
@@ -33684,6 +33717,10 @@
           {
             "date": "2026-11-14",
             "scope": "Sources checked for developments from 13 November 2026: the AI Office page (undated), the Commission's digital-strategy news (6 November) and library (13 November), and the Official Journal's L and C series of 13 November. No new institute fact and no AI Act instrument was found in the material read. An Official Journal homepage displayed 14 November, but no issue contents for that date were recovered, so coverage of 14 November is incomplete. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-20",
+            "scope": "Sources checked for developments from 14 November 2026: the AI Office's page (undated), the Commission's digital strategy library (newest 13 November) and news (19 November), and the Official Journal's daily listings of 16 to 20 November. The Commission's call of 16 November for feedback on a draft template for fundamental rights impact assessments, developed by the AI Office with input from the EU Agency for Fundamental Rights, was read; the template itself could not be retrieved and it is not entered as an output. No new AI Act act was identified by title. The listings of 14 and 15 November and some corrigenda were not covered. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -34529,6 +34566,10 @@
           {
             "date": "2026-11-14",
             "scope": "Sources checked for developments from 13 November 2026: the institute's page, its news tag (newest 16 October), research blog (23 March) and guidelines (updated 30 September), NIST's news (main news 2 November, a CHIPS item of 13 November) and Commerce's news and press releases (23 October) and blog (3 September). No new institute fact was found. Stale listings leave unlisted recent releases uncertain. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-20",
+            "scope": "Sources checked for developments from 14 November 2026: the institute's page, its news tag (newest 16 October), research blog (23 March) and guidelines page (updated 30 September), NIST's news (19 November) and the Commerce Department's news (16 November). No new institute item was found; the newest tagged items are already recorded. The institute's own listings were stale, so coverage is incomplete. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -35952,6 +35993,10 @@
           {
             "date": "2026-11-14",
             "scope": "Sources checked for developments from 13 November 2026: the institute page (its linked blog dated 8 July), the research programme's newsroom (news 6 November, insights 28 October), CIFAR's two news listings (16 September and 8 June) and the Government of Canada's news results (9 October). No new institute fact was found. NRC's stories listing was stale (newest 11 June) and its news page returned an empty table; ISED's media room returned no news list. The stale ISED, CIFAR and NRC listings leave coverage incomplete. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-20",
+            "scope": "Sources checked for developments from 14 November 2026: the institute's page (newest blog 8 July), CIFAR's programme page and news (16 September), the research programme's newsroom (6 November), ISED's media room (no dated releases returned), and the NRC's stories (28 October) and news (14 October). No new institute item was found. The Korea-Canada summit statement of 19 November names neither country's institute. The ISED and NRC listings were stale, so coverage is incomplete. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -36670,6 +36715,10 @@
           {
             "date": "2026-11-14",
             "scope": "Sources checked for developments from 13 November 2026: the institute's home and activity pages (6 November) and outputs (6 October, with bilingual titles), IPA's press releases (13 November) and the Cabinet Office's AI pages (26 October) and press (12 November). The IPA items of 13 November are not credited to the institute. No new institute fact was found. The institute's separate English home page was not found, so English-only coverage is incomplete. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-20",
+            "scope": "Sources checked for developments from 14 November 2026: the institute's home, activity (newest 17 November) and output pages (6 October), IPA's press releases (13 November) and the Cabinet Office's AI pages, including the working group meeting of 18 November. The institute's digest of 17 November summarises other organisations' work and is not an output. The working group's draft outline of 18 November proposes a wider role for the institute; it is a proposal and is not entered. The English site could not be read. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -38052,6 +38101,10 @@
           {
             "date": "2026-11-14",
             "scope": "Sources checked for developments from 13 November 2026: the institute's Korean board (newest 3 November), its English home page and English board (stale, newest 24 December 2024), the science ministry's press hub (13 November), korea.kr policy news (13 November) and korea.kr's release of 12 November on the AI Safety Guardians, which are already recorded. No new institute fact was found. English coverage is incomplete. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-20",
+            "scope": "Sources checked for developments from 14 November 2026: the institute's Korean home page and board (newest 4 November), its English home page and board (stale, newest 24 December 2024), the science ministry's press list (20 November) and korea.kr's ministry and policy news (20 November). No new institute fact was found; the evaluation of 3 November and the AI Safety Guardians programme are already recorded. Some listing dates were missing, so coverage is incomplete. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -38764,6 +38817,10 @@
           {
             "date": "2026-11-14",
             "scope": "Sources checked for developments from 13 November 2026: the institute's site and resources (newest 23 July) and MDDI's newsroom (13 November), including the minister's speech of 13 November and the release on the Washington visit (dateline 14 November). Neither gives the institute a role. Older, undated IMDA releases were read, but the first page of IMDA's current press list could not be recovered. No new institute fact was found. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-20",
+            "scope": "Sources checked for developments from 14 November 2026: the institute's page and resources (newest 23 July) and the digital ministry's newsroom (17 November). No new institute fact was found. IMDA's press list returned titles without dates and two of its articles on AI safety could not be read, so IMDA coverage is incomplete. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -39362,6 +39419,10 @@
           {
             "date": "2026-11-14",
             "scope": "Sources checked for developments from 13 November 2026: the institute page (undated), the department's news (13 November) and publications (9 November), the ministers' media page (13 November; Senator Ayres's newest item 12 November) and the Joint Select Committee on AI's answers on notice (to 5 November). Beyond the 10 November announcement already recorded, no new formal name, introduced bill or further detail of its relation to the institute was found for the proposed AI safety regulator, and no new institute publication. Individual ministers' archives and unlisted committee answers were not all checked. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-20",
+            "scope": "Sources checked for developments from 14 November 2026: the institute page (undated), the department's news (20 November) and publications (stale, 9 November), the ministers' media pages (20 November) and the Joint Select Committee's pages (latest answer 12 November). Added the full Rapid Review report, published by the Department of the Prime Minister and Cabinet on 20 November, to the review already recorded, with the technical exchange of 22 September that it reports. The review's recommendation to consider formal liaison between the Australian Cyber Security Centre, the National Office of Cyber Security and the institute is not entered as a partner. The staffing figures given at Senate estimates on 29 October are still known only from unofficial transcripts and are not entered. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -39583,7 +39644,8 @@
           "title": "Rapid Review into Australian Government arrangements for an AI-driven cyber incident",
           "source_ids": [
             "au-rapid-review-recs-2026",
-            "au-rapid-review-release-2026"
+            "au-rapid-review-release-2026",
+            "au-rapid-review-report-2026"
           ],
           "lineage": "rapid-review-ai-driven-cyber-incident",
           "attribution": "named_contributor",
@@ -39937,6 +39999,14 @@
           "source_ids": [
             "depth-au-forum"
           ]
+        },
+        {
+          "id": "claims-28b93386d8b4a8920e64dbdd6362f8df",
+          "kind": "fact",
+          "source_ids": [
+            "au-rapid-review-report-2026"
+          ],
+          "text": "The government's Rapid Review says OpenAI held its first technical exchange with ASD, Services Australia, the institute and the National Office of Cyber Security on 22 September 2026."
         }
       ]
     },
@@ -40042,6 +40112,10 @@
           {
             "date": "2026-11-14",
             "scope": "Sources checked for developments from 13 November 2026: the institute page (undated), AI Malaysia's news (stale, newest 14 May), the digital ministry's releases list (stale, newest 17 June 2025) and home page (13 November), its release of 13 November, which still describes the institute as being established, and its budget release of 6 November. The 2027 budget estimates give AI Malaysia, the host, RM9,000,000 for 2026 and RM13,663,400 for 2027, as the host's estimates rather than an institute allocation. Neither finding has been added to the data. The new sources report no testing, staff, output or agreement. The Hansard of 28 October is still marked draft; the Supply Bill schedules, their adoption and how the estimates relate to the recorded nearly MYR15m are unresolved. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-20",
+            "scope": "Sources checked for developments from 14 November 2026: the institute page (undated), AI Malaysia's news (stale, newest 11 September), the digital ministry's releases list (stale, newest 17 June 2025) and home pages, a press report of 17 November on the deputy minister's remarks, the Hansard of 28 October (still marked draft) and the 2027 budget estimates. No new institute fact was found. Current ministry releases were not recovered; the final Hansard, the Supply Bill schedules and their adoption remain unverified. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -40421,6 +40495,10 @@
           {
             "date": "2026-11-14",
             "scope": "Sources checked for developments from 13 November 2026: MeitY's What's New (12 November), press releases (newest 21 January 2025), orders and notices (21 October) and gazette notifications (16 December 2025), and IndiaAI's news, which was stale (newest 17 September 2024; archived copy 9 September 2024). IndiaAI's current news could not be recovered, and its current publications remain unverified. A Moneycontrol report of 4 November describes a consultation paper as forthcoming; no released paper was found, which does not establish that none has been released. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-20",
+            "scope": "Sources checked for developments from 14 November 2026: IndiaAI's news and research pages (stale, newest 2024), and the IT ministry's What's New (19 November), publications (17 July) and acts and policies (29 October). No new institute fact was found. A press report of 16 November, citing unnamed sources, says a consultation on AI regulation is expected as early as next month; no official release was found and whether it has been released is unresolved. The ministry's press and consultation pages could not be read. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -40756,6 +40834,10 @@
           {
             "date": "2026-11-14",
             "scope": "Sources checked for developments from 13 November 2026: the ICT ministry's home page (10 November), news (3 November), policy documents (newest dated title 22 January 2026, with undated items) and speeches and press releases (20 September), the Cabinet despatches (newest read 9 October) and the President's Cabinet briefs (10 February). No adoption of the draft AI policy and no act on the institute was found. A Mt Kenya Times report of 13 November on a court judgment of 12 November describes the policy as awaiting Cabinet approval; the judgment itself was not read, and the report is not evidence of adoption. Parliament's catalogue entry for its report on the AI Bill was read (issued 7 August, catalogued 12 October), but the report itself could not be retrieved. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-20",
+            "scope": "Sources checked for developments from 14 November 2026: the ICT ministry's news (18 November) and policy documents, the consultation page for the draft AI policy, and Parliament's catalogue of committee reports (newest relevant report 7 August). No adoption of the draft policy and no decision on the institute was found. Cabinet despatches could not be read and the presidency's briefs were stale (10 February), so adoption is unverified, not disproved. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -126457,6 +126539,283 @@
         "retrieved": "2026-11-14T11:33:15Z",
         "sha256": "aabce9f022bee185f3c9ed32b98b2b434d751b4e5a3d9e4c2573988f7a7161c2",
         "text_sha256": "751f89d8680d576d10fe7035e5c9026fd89e4326c36331227de356fdfbdc8358",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "au-rapid-review-report-2026",
+      "url": "https://www.pmc.gov.au/sites/default/files/resource/download/rapid-review-ai-cyber-incident.pdf",
+      "title": "Rapid Review into Australian Government arrangements for an AI-driven cyber incident",
+      "publisher": "Department of the Prime Minister and Cabinet (Australia)",
+      "type": "primary",
+      "published": "2026-11-20",
+      "accessed": "2026-11-20",
+      "language": "en",
+      "origin": "AU",
+      "output_role": "document",
+      "output_lineage": "rapid-review-ai-driven-cyber-incident",
+      "access_note": "The department's resource page gives the release date of the full report as Friday 20 November 2026. The live file did not answer automated requests from the maintainers' host; quotations are from the r.jina.ai text rendering read on 20 November 2026.",
+      "excerpts": [
+        {
+          "text": "in collaboration with the National Cyber Security Coordinator, ASD, AISI and Services Australia",
+          "accessed": "2026-11-20",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "rapid-review-ai-driven-cyber-incident"
+              },
+              "attribution"
+            ]
+          ]
+        },
+        {
+          "text": "On 22 September 2026, OpenAI participated in its first technical exchange with ASD, Services Australia, the AISI, and the NOCS",
+          "accessed": "2026-11-20",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-28b93386d8b4a8920e64dbdd6362f8df"
+              },
+              "text"
+            ]
+          ]
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-20T07:21:52Z",
+        "sha256": "2b9e7ac4416070aef88dabcc4b9253e211fbbdb37b6b30f10a0ab74af4e25fe1",
+        "text_sha256": "902e32cd84c5d823b9b867c813c9f5c45539b67add70ece2112a4bc9ed260623",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "gb-pq-43807-2026",
+      "url": "https://questions-statements.parliament.uk/written-questions/detail/2026-11-16/43807",
+      "title": "Artificial Intelligence: Norway (UIN 43807)",
+      "publisher": "UK Parliament, House of Commons (answer by the Department for Business, Innovation, Science and Trade)",
+      "type": "primary",
+      "published": "2026-11-19",
+      "accessed": "2026-11-20",
+      "language": "en",
+      "origin": "GB",
+      "access_note": "The page returns a browser challenge to automated requests; quotations are checked against the official written questions API record for this answer (excerpt url).",
+      "excerpts": [
+        {
+          "text": "The Statement creates no financial commitments.",
+          "accessed": "2026-11-20",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-e09480eea9104ef097cf911f435cd343"
+              },
+              "scope"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "agreements",
+              {
+                "id": "agreements-558e5548aaf54f04a8a17b3f5939783b"
+              },
+              "scope"
+            ]
+          ],
+          "url": "https://questions-statements-api.parliament.uk/api/writtenquestions/questions/1960677?expandMember=true"
+        },
+        {
+          "text": "No dedicated funding has been allocated to activities under the Statement.",
+          "accessed": "2026-11-20",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-e09480eea9104ef097cf911f435cd343"
+              },
+              "scope"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "agreements",
+              {
+                "id": "agreements-558e5548aaf54f04a8a17b3f5939783b"
+              },
+              "scope"
+            ]
+          ],
+          "url": "https://questions-statements-api.parliament.uk/api/writtenquestions/questions/1960677?expandMember=true"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-20T07:24:17Z",
+        "sha256": "f14b4506f6017adb5de205aac570ede42ab2e62787560ca0578edea38a282286",
+        "text_sha256": "f14b4506f6017adb5de205aac570ede42ab2e62787560ca0578edea38a282286",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "gb-pq-41245-2026",
+      "url": "https://questions-statements.parliament.uk/written-questions/detail/2026-11-10/41245",
+      "title": "Artificial Intelligence: Children (UIN 41245)",
+      "publisher": "UK Parliament, House of Commons (answer by the Cabinet Office)",
+      "type": "primary",
+      "published": "2026-11-16",
+      "accessed": "2026-11-20",
+      "language": "en",
+      "origin": "GB",
+      "access_note": "The page returns a browser challenge to automated requests; quotations are checked against the official written questions API record for this answer (excerpt url).",
+      "excerpts": [
+        {
+          "text": "The AI Security Institute does not test models specifically for child safety risks.",
+          "accessed": "2026-11-20",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "testing_capacity",
+              "notes"
+            ]
+          ],
+          "url": "https://questions-statements-api.parliament.uk/api/writtenquestions/questions/1957627?expandMember=true"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-20T07:24:19Z",
+        "sha256": "4d77005a9e251f6a3cfabf57b8fa174d0f26a494c7daf4198fc94638a4a12717",
+        "text_sha256": "4d77005a9e251f6a3cfabf57b8fa174d0f26a494c7daf4198fc94638a4a12717",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "gb-pq-40485-2026",
+      "url": "https://questions-statements.parliament.uk/written-questions/detail/2026-11-03/40485",
+      "title": "Artificial Intelligence: Intellectual Property (UIN 40485)",
+      "publisher": "UK Parliament, House of Commons (answer by the Cabinet Office)",
+      "type": "primary",
+      "published": "2026-11-16",
+      "accessed": "2026-11-20",
+      "language": "en",
+      "origin": "GB",
+      "access_note": "The page returns a browser challenge to automated requests; quotations are checked against the official written questions API record for this answer (excerpt url).",
+      "excerpts": [
+        {
+          "text": "It does not report on whether frontier AI models reproduce copyrighted works, publicly funded research outputs, personal data or intellectual property.",
+          "accessed": "2026-11-20",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "testing_capacity",
+              "notes"
+            ]
+          ],
+          "url": "https://questions-statements-api.parliament.uk/api/writtenquestions/questions/1956160?expandMember=true"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-20T07:24:18Z",
+        "sha256": "0d77ff70ad9d462efabd5af71821fb892d0fc7ec6ada8ef61239514d50db26a9",
+        "text_sha256": "0d77ff70ad9d462efabd5af71821fb892d0fc7ec6ada8ef61239514d50db26a9",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "gb-pq-41248-2026",
+      "url": "https://questions-statements.parliament.uk/written-questions/detail/2026-11-10/41248",
+      "title": "AI Security Institute (UIN 41248)",
+      "publisher": "UK Parliament, House of Commons (answer by the Cabinet Office)",
+      "type": "primary",
+      "published": "2026-11-18",
+      "accessed": "2026-11-20",
+      "language": "en",
+      "origin": "GB",
+      "access_note": "The page returns a browser challenge to automated requests; quotations are checked against the official written questions API record for this answer (excerpt url).",
+      "excerpts": [
+        {
+          "text": "The AI Security Institute (AISI) does not report on AI models’ compliance with the Online Safety Act.",
+          "accessed": "2026-11-20",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "testing_capacity",
+              "notes"
+            ]
+          ],
+          "url": "https://questions-statements-api.parliament.uk/api/writtenquestions/questions/1957630?expandMember=true"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-20T07:24:20Z",
+        "sha256": "cd3328c609eb8a3f20c2778b0fd6fc26ae472674b090ed052d42ab730e39d694",
+        "text_sha256": "cd3328c609eb8a3f20c2778b0fd6fc26ae472674b090ed052d42ab730e39d694",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "gb-pq-42056-2026",
+      "url": "https://questions-statements.parliament.uk/written-questions/detail/2026-11-10/42056",
+      "title": "Artificial Intelligence: National Security (UIN 42056)",
+      "publisher": "UK Parliament, House of Commons (answer by the Cabinet Office)",
+      "type": "primary",
+      "published": "2026-11-18",
+      "accessed": "2026-11-20",
+      "language": "en",
+      "origin": "GB",
+      "access_note": "The page returns a browser challenge to automated requests; quotations are checked against the official written questions API record for this answer (excerpt url).",
+      "excerpts": [
+        {
+          "text": "This government has established the AI Threat Assessment Centre (AITAC), drawing together expertise from a range of bodies including AISI and NCSC to produce all source assessments of national security threats from AI.",
+          "accessed": "2026-11-20",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-d4890a26648f1fa5ed8be318c791f809"
+              },
+              "text"
+            ]
+          ],
+          "url": "https://questions-statements-api.parliament.uk/api/writtenquestions/questions/1958528?expandMember=true"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-20T07:24:21Z",
+        "sha256": "786f7d8764078c0a4d14ea4e061cb2b571fcb834ff12f5e32636345d09c11d38",
+        "text_sha256": "786f7d8764078c0a4d14ea4e061cb2b571fcb834ff12f5e32636345d09c11d38",
         "text_scheme": 1
       }
     }
