@@ -1,4 +1,4 @@
-"""Staff totals on the saved page (test strategy D2, family 7): each Funding row and detail's figure against the hand-worked
+"""Staff totals on the saved page (test strategy D2, family 7): each established institute's Funding row and detail against the hand-worked
 entries in tests/fixtures/staff_figures.json, read from the supporting quotations, never from display.total_staff.
 
 The check is check_page.py's own; here it reads the saved, pre-rendered page once instead of the hydrated page in

@@ -157,8 +157,8 @@ def test_two_figure_gate_fails_when_a_selector_matches_nothing():
 
 @pytest.mark.parametrize("kind,bad", [("budget", "~EUR 8.15m"), ("staff", "1,234")])
 def test_two_figure_gate_reads_each_chart_and_requires_figures(kind, bad):
-    soup = BeautifulSoup('''<div class="fund-list" data-kind="budget"><div class="fund-budget"><div class="fund-value"><span class="fund-figure"><strong>~EUR 8.2m</strong><span class="cites">123</span></span><span class="fund-qualifier">a year · 2026</span></div></div></div>
-      <div class="fund-list" data-kind="staff"><div class="fund-staff"><div class="fund-value"><span class="fund-figure"><strong>~1,200</strong></span><span class="fund-qualifier">as at 12 Nov 2026</span></div></div></div>
+    soup = BeautifulSoup('''<div class="fund-list" data-kind="budget"><div class="fund-budget"><div class="fund-value"><span class="fund-figure"><strong><abbr aria-description="A year, 2026, adopted.">~EUR 8.2m</abbr></strong><span class="cites">123</span></span></div></div></div>
+      <div class="fund-list" data-kind="staff"><div class="fund-staff"><div class="fund-value"><span class="fund-figure"><strong><abbr aria-description="As at 12 Nov 2026, about.">~1,200</abbr></strong></span></div></div></div>
       <table><tbody id="world-rows"><tr><td data-col="budget"><span class="budget-amount">EUR 8.2m</span></td><td data-col="staff">~1,200</td></tr></tbody></table>
       <div class="fund-budget-summary"><div class="fund-value"><strong>~EUR 8.2m (USD 9.1m)</strong></div></div>
       <div class="fund-staff-summary"><div class="fund-value"><strong>~1,200</strong></div><p class="fund-context">30 technical; as of 2026</p></div>
@@ -259,8 +259,9 @@ def test_funding_gate_approximation_marker_mutation(currency, amount, qualifier,
             return [] if self.soup is None else [{"institute": "a", "track": 160, "width": record["eur_per_year_est"] / 10_000_000 * 160,
                                                   "minimum": 0, "stated_value": record["eur_per_year_est"], "stated_scale": 10_000_000}]
 
+    chart_figure = figure.replace("about ", "~").replace("at least ", "") + ("+" if qualifier == "at_least" else "")
     soup = BeautifulSoup('<div class="fund-budget-head"><span class="fund-scale">0 to EUR 10m a year</span></div><div class="fund-staff-head"><span class="fund-scale">0 to 50 people</span></div>'
-                         f'<div id="fund-rows"><div class="fund-list" data-kind="budget"><li class="fund-item" data-j="A" data-institute="a" data-funding-id="x"><div class="fund-budget"><div class="fund-value"><strong>{figure}</strong></div><div class="bar-value"></div></div></li></div><details class="fund-detail" data-institute="a"><div class="fund-budget-summary"><strong>{figure}</strong></div></details></div>', "html.parser")
+                         f'<div id="fund-rows"><div class="fund-list" data-kind="budget"><li class="fund-item" data-j="A" data-institute="a" data-funding-id="x"><div class="fund-budget"><div class="fund-value"><strong>{chart_figure}</strong></div><div class="bar-value"></div></div></li></div><details class="fund-detail" data-institute="a"><div class="fund-budget-summary"><strong>{figure}</strong></div></details></div>', "html.parser")
     record = {
         "id": "x",
         "currency": currency,
@@ -274,7 +275,8 @@ def test_funding_gate_approximation_marker_mutation(currency, amount, qualifier,
     record["eur_per_year_est"] = annual_eur_estimate(record, {"USD": 1})
     data = {
         "dataset": {"exchange_rates": [{"currency": "USD", "eur_per_unit": 1}]},
-        "institutes": [{"id": "a", "jurisdiction_id": "A", "funding": [record]}],
+        "jurisdictions": [{"id": "A", "status": "established"}],
+        "institutes": [{"id": "a", "jurisdiction_id": "A", "status": "established", "funding": [record]}],
     }
     if currency != "EUR":
         from scripts.check_page import short_amount, half_up_two
@@ -284,7 +286,7 @@ def test_funding_gate_approximation_marker_mutation(currency, amount, qualifier,
         figure += f" ({mark}USD {stated})"
         soup.select_one(".fund-budget-summary strong").string = figure
     assert check_funding_bars(Node(soup), data, {"A": "x"}) == []
-    figure = figure.split(" (")[0]
+    figure = chart_figure
     strong = soup.select_one(".fund-budget strong")
     strong.string = figure.replace("~EUR", "EUR") if "~EUR" in figure else figure.replace("EUR", "~EUR")
     assert check_funding_bars(Node(soup), data, {"A": "x"}) == ["A: comparison approximation marker differs from selected record"]

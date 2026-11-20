@@ -222,7 +222,7 @@ def test_a_tooltip_reads_from_its_one_home(network):
 def test_funding_charts_share_only_the_sources_the_institute_cites():
     """Both charts use one records source list; the card keeps its own, longer list."""
     data = {"sources": [{"id": s, "url": f"https://example.org/{s}"} for s in ("one", "two", "three")],
-            "jurisdictions": [{"id": "XX", "status": "planned"}], "institutes": [{"id": "xx-i", "jurisdiction_id": "XX", "funding": [], "staff": []}]}
+            "jurisdictions": [{"id": "XX", "status": "established"}], "institutes": [{"id": "xx-i", "status": "established", "jurisdiction_id": "XX", "funding": [], "staff": []}]}
     card = ('<article class="card" data-j="XX"><ol class="srcs">' + "".join(f'<li data-source-id="{s}"><a href="https://example.org/{s}">{s}</a></li>' for s in ("one", "two", "three"))
             + '</ol></article>')
     def fund(cited, number, listed, staff_number=None):

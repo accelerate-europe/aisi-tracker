@@ -66,6 +66,8 @@ def test_page_ratio_uses_resident_and_the_population_year(year):
     from scripts import check_page
 
     data = document([record()])
+    data["institutes"][0]["status"] = "established"
+    data["jurisdictions"][0]["status"] = "established"
     data["dataset"]["exchange_rates"] = []
     data["jurisdictions"][0]["population"]["year"] = year
     data["institutes"][0]["display"] = {"comparison_funding": "compared", "funding_records": {"compared": record(eur_per_year_est=10_000_000)}}

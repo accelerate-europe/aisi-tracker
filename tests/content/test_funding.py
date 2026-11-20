@@ -1,4 +1,4 @@
-"""Funding output on the saved page (test strategy D2, family 1): budgets, complete status bands, intervals,
+"""Funding output on the saved page (test strategy D2, family 1): budgets, established-institute comparison, intervals,
 per-person figures, amounts without an exchange rate and euro amounts.
 
 The checks are check_page.py's own, with their independent expectations from the data (never the page's display
@@ -11,7 +11,7 @@ from scripts import check_page
 
 FAMILY = {
     "budget output": lambda html, data: check_page.check_budget_output(html, data),
-    "independently ranked funding charts and institute coverage": lambda html, data: check_page.check_funding_outside(html, data),
+    "ranked established-institute charts, plain summary lines and accessible figure explanations": lambda html, data: check_page.check_funding_outside(html, data),
     "intervals": lambda html, data: check_page.check_interval_output(html, data, check_page.HAND_WORKED_INTERVALS),
     "per-person figures": lambda html, data: check_page.check_per_person(check_page.BeautifulSoup(html, "html.parser"), data),
     "amounts without a rate": lambda html, data: check_page.check_no_rate_amounts(html, data),
