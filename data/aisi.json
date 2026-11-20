@@ -39526,6 +39526,8 @@
         "rows-what-au-oai",
         "rows-what-au-sa",
         "rows-what-au-dfat",
+        "au-best-practice-guidance-2026",
+        "r3-naaimes-best-practice",
         "au-charlton-afr-speech-2026",
         "au-disr-annual-report-2025-26"
       ],
@@ -39639,6 +39641,24 @@
         "wikidata-au-aisi-identifier"
       ],
       "outputs": [
+        {
+          "date": "2026-07-23",
+          "type": "guidance",
+          "title": "Best Practice: Automated Evaluation of Large Language Models",
+          "source_ids": [
+            "au-best-practice-guidance-2026",
+            "r3-naaimes-best-practice"
+          ],
+          "lineage": "naaimes-automated-evaluation-best-practice-2026",
+          "attribution": "named_contributor",
+          "attribution_note": "The department's publication page of 24 July 2026 says Australia contributed to the network's guidance through the Australian AI Safety Institute.",
+          "qualifies_as": "none",
+          "qualification_note": "Substantive guidance remains in the publication catalogue but does not itself report a qualifying evaluation, test result, benchmark or technical research result.",
+          "credit": {
+            "institute_id": "au-aisi",
+            "date": "2026-07-24"
+          }
+        },
         {
           "date": "2026-08-10",
           "type": "report",
@@ -92899,6 +92919,17 @@
                 "lineage": "naaimes-automated-evaluation-best-practice-2026"
               },
               "title"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "naaimes-automated-evaluation-best-practice-2026"
+              },
+              "title"
             ]
           ]
         }
@@ -127473,6 +127504,74 @@
         "text_sha256": "f8be4c993af37029f3d4fa4d932324fce4c7541ff70c8d348176fb497242c2b0",
         "text_scheme": 1
       }
+    },
+    {
+      "id": "au-best-practice-guidance-2026",
+      "url": "https://www.industry.gov.au/publications/best-practice-automated-evaluation-large-language-models",
+      "title": "Best practice for automated evaluation of large language models",
+      "publisher": "Department of Industry, Science and Resources",
+      "published": "2026-07-24",
+      "accessed": "2026-11-19",
+      "language": "en",
+      "origin": "AU",
+      "type": "primary",
+      "excerpts": [
+        {
+          "text": "Australia contributed to the guidance through the Australian AI Safety Institute, drawing on the experience of network members.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "naaimes-automated-evaluation-best-practice-2026"
+              },
+              "attribution_note"
+            ],
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "naaimes-automated-evaluation-best-practice-2026"
+              },
+              "credit",
+              "institute_id"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        },
+        {
+          "text": "Date published: 24 July 2026",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "au-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "naaimes-automated-evaluation-best-practice-2026"
+              },
+              "credit",
+              "date"
+            ]
+          ],
+          "accessed": "2026-11-19"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-19T06:18:02Z",
+        "sha256": "cb5f14fa2db095082c96b7d6e318c5eed50a892e0b10a49ca2449f31efb9b440",
+        "text_sha256": "6e3517cc5af07f08a6529c491788e425792a182297e219a316ab7e51c0185b81",
+        "text_scheme": 1
+      },
+      "output_role": "document",
+      "output_lineage": "naaimes-automated-evaluation-best-practice-2026"
     },
     {
       "id": "gb-bist-guardrails-2026",
