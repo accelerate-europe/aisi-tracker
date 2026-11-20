@@ -775,7 +775,7 @@ def test_news_label_and_footer_structure(next_data):
     for row in soup.select(".development-row"):
         label = row.select_one(".development-label")
         assert label.get_text() == row.select_one(".development-date").get_text() + " · " + row.select_one(".development-name").get_text()
-        assert label.find_next_sibling()["class"] == ["development-text"]
+        assert "development-text" in label.find_next_sibling()["class"]
         assert row.get("data-j")
     source = BeautifulSoup((ROOT / "site/index.html").read_text(), "html.parser")
     footer = source.select_one("#developments .news-links")

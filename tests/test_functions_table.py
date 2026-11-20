@@ -218,10 +218,14 @@ def test_qualifier_layout_remeasures_both_directions_and_skips_hidden_rows():
     helpers = source[source.index("  function qualifierBaseline("):source.index("  function hideLineEndDots(")]
     script = r"""
 const assert = require('node:assert/strict');
-let width = 320, nameBottom = 20, visible = true;
+let width = 320, nameBottom = 20, visible = true, lastGlyph = 's';
 const classes = new Set();
-const parent = {closest: () => null, getClientRects: () => [{}], insertBefore: probe => {probe.baseline = nameBottom;}};
-const name = {nodeType: 3, textContent: 'Evaluation methods and tools', parentElement: parent, parentNode: parent};
+// An unattached baseline marker would wrap onto the qualifier's line. Only a
+// marker bound to the final glyph measures the preceding line correctly.
+const parent = {closest: () => null, getClientRects: () => [{}], insertBefore: probe => {probe.baseline = nameBottom + 24;}};
+const original = 'Evaluation methods and tools  ';
+const name = {nodeType: 3, textContent: original, parentElement: parent, parentNode: parent,
+  splitText(i) {const suffix={textContent:this.textContent.slice(i),parentNode:parent,remove(){}};this.textContent=this.textContent.slice(0,i);return suffix;}};
 const statusText = {};
 const line = {};
 const status = {
@@ -234,7 +238,7 @@ const status = {
   querySelector: () => ({appendChild: probe => {probe.baseline = classes.has('own-line') || width < 400 ? nameBottom + 24 : nameBottom;}})
 };
 const root = {querySelectorAll: () => [status]};
-const el = () => ({style: {}, getBoundingClientRect() {return {top: this.baseline};}, remove() {}});
+const el = () => ({style: {}, appendChild(probe) {assert.equal(this.style.whiteSpace,'nowrap');assert.equal(this.textContent,lastGlyph);probe.baseline=nameBottom;}, getBoundingClientRect() {return {top: this.baseline};}, remove() {}});
 const document = {
   createTreeWalker: () => ({nodes: [name, statusText], nextNode() {this.currentNode = this.nodes.shift(); return this.currentNode;}})
 };
@@ -242,6 +246,7 @@ const NodeFilter = {SHOW_TEXT: 4}, getComputedStyle = () => ({visibility: 'visib
 HELPERS
 for (const [nextWidth, own] of [[320, true], [430, false], [360, true], [1440, false]]) {
   width = nextWidth; layoutQualifiers(root); assert.equal(classes.has('own-line'), own);
+  assert.equal(name.textContent,original); // probes leave the original DOM text intact
   assert.equal(line['--fn-line-width'], (own ? width : 240) + 'px');
   assert.equal(line['--fn-line-height'], (own ? nameBottom+24 : nameBottom) + 'px');
   layoutQualifiers(root); assert.equal(classes.has('own-line'), own); // stable final state on repeated observer delivery
@@ -251,6 +256,9 @@ visible = false; width = 1440; layoutQualifiers(root); assert.ok(classes.has('ow
 visible = true; layoutQualifiers(root); assert.ok(!classes.has('own-line'));
 assert.equal(qualifierStartsLine(null, 26), false);
 assert.equal(qualifierStartsLine(20, 20), false); // mixed body/meta type on one baseline
+lastGlyph = '\u{10400}'; name.textContent = 'Source ' + lastGlyph + ' ';
+assert.equal(qualifierBaseline(name),nameBottom);
+assert.equal(name.textContent,'Source ' + lastGlyph + ' ');
 """.replace("HELPERS", helpers)
     subprocess.run(['node', '-'], input=script, text=True, capture_output=True, check=True)
 
@@ -329,7 +337,9 @@ const assert = require('node:assert/strict');
 let focused = null, updates = 0;
 const el = (tag, cls, text) => ({tag, className: cls, textContent: text, dataset: {}, attrs: {}, children: [],
   setAttribute(k, v) { this.attrs[k] = v; }, appendChild(n) { this.children.push(n); },
+  querySelectorAll() { return []; },
   addEventListener(k, fn) { this[k] = fn; }, focus() { focused = this; }});
+const separated = parts => ({children: parts}); // layout has its own separator oracle; these are the live controls
 const box = el('div'), columns = Array(5);
 box.id = 'functions-table'; box.dataset.view = INITIAL;
 const updateFits = () => updates++;
@@ -761,9 +771,9 @@ for(const [value,ids,sentence] of [
 ]) for(const inline of [false,true]) {
   rows.sample.test={value,claim_ids:ids};
   const detail=el('div'); appendClaims(detail,i,'test',inline);
-  const contexts=detail.children.filter(n=>n.className==='fn-detail-context');
+  const contexts=detail.children.filter(n=>n.className.split(' ').includes('fn-detail-context'));
   assert.deepEqual(contexts.map(n=>n.textContent),inline?[]:[sentence]);
-  const evidence=detail.children.filter(n=>n.className!=='fn-detail-context');
+  const evidence=detail.children.filter(n=>!n.className.split(' ').includes('fn-detail-context'));
   assert.deepEqual(evidence.map(n=>n.className==='fn-basis'?n.textContent:n.dataset.claim),
     value==='both'?['Assignment','m','m2','Activity','a']:ids);
 }

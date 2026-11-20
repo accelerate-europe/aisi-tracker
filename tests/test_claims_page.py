@@ -239,7 +239,7 @@ def test_other_copy_anchor_shows_its_source_title_language_and_original():
     anchor = {"kind": "membership", "text": "Le laboratoire appartient à l'institut.", "gloss": "The lab belongs to the institute.", "source_id": named["id"]}
     data["sources"][0]["excerpts"][0]["anchors"].append(anchor)
     body = page_call(f"(CLAIM_INDEX = claimIndex({json.dumps(data)}), claimQuoteBody('fact'))")
-    line, = [n for n in body["children"][0]["children"] if n.get("className") == "quote-anchor" and texts(n).startswith("On what it is part of:")]
+    line, = [n for n in body["children"][0]["children"] if "quote-anchor" in n.get("className", "").split() and texts(n).startswith("On what it is part of:")]
     assert texts(line) == 'On what it is part of: "The lab belongs to the institute." (Unit <membership>)'
     quote = line["children"][1]["children"][0]
     assert quote["attrs"]["aria-description"] == anchor["text"] and quote["tabIndex"] == 0
@@ -254,7 +254,7 @@ def test_other_copy_anchor_title_shows_english_with_the_original_as_tip():
     anchor = {"kind": "membership", "text": "Le laboratoire appartient à l'institut.", "gloss": "The lab belongs to the institute.", "source_id": named["id"]}
     data["sources"][0]["excerpts"][0]["anchors"].append(anchor)
     body = page_call(f"(CLAIM_INDEX = claimIndex({json.dumps(data)}), claimQuoteBody('fact'))")
-    line, = [n for n in body["children"][0]["children"] if n.get("className") == "quote-anchor" and texts(n).startswith("On what it is part of:")]
+    line, = [n for n in body["children"][0]["children"] if "quote-anchor" in n.get("className", "").split() and texts(n).startswith("On what it is part of:")]
     assert texts(line).endswith("(Unit <membership>)")
     title = line["children"][-2]
     assert title["attrs"]["aria-description"] == "Unité <membership>" and title["tabIndex"] == 0

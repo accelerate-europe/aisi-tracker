@@ -1,4 +1,4 @@
-"""A and D: mutation checks for measured panel and card geometry, without a browser."""
+"""Card-head mutation checks; section measures live in test_section_extents, without a browser."""
 
 import copy
 from pathlib import Path
@@ -6,42 +6,6 @@ from pathlib import Path
 import pytest
 
 from scripts import check_page
-
-
-# A. Long and short text have different ink extents, but the same available measure.
-@pytest.fixture
-def panel():
-    return {"measure": 784, "left": 24, "right": 1000, "blocks": [
-        {"name": "claim", "max_width": 784, "left": 24, "right": 808, "text_right": 799, "aligned": True},
-        {"name": "quote-anchor", "max_width": 784, "left": 24, "right": 808, "text_right": 720, "aligned": True},
-    ]}
-
-
-def test_panel_measure_accepts_desktop_and_narrow_phone(panel):
-    assert check_page.panel_measure_errors(panel) == []
-    panel["right"] = 366
-    for block in panel["blocks"]:
-        block.update(right=366, text_right=360)
-    assert check_page.panel_measure_errors(panel) == []
-
-
-@pytest.mark.parametrize(("field", "value", "finding"), [
-    ("max_width", None, "max-width"),
-    ("max_width", 640, "max-width"),
-    ("max_width", 900, "max-width"),
-    ("right", 810, "past"),
-    ("text_right", 810, "past"),
-    ("left", 20, "outside"),
-    ("left", 28, "left edge"),
-])
-def test_panel_measure_rejects_mismatched_or_overflowing_blocks(panel, field, value, finding):
-    panel["blocks"][1][field] = value
-    assert any(finding in e for e in check_page.panel_measure_errors(panel))
-
-
-def test_panel_measure_cannot_pass_with_one_block(panel):
-    panel["blocks"].pop()
-    assert "fewer than two text blocks measured" in check_page.panel_measure_errors(panel)
 
 
 # D. The head occupies its own column directly below two site bars. Reserved space is measured to the fields.
@@ -133,5 +97,5 @@ def test_card_hydration_requires_both_snapshots(saved_cards):
 
 def test_panel_and_card_jobs_are_registered():
     names = [check_page.job_id(*job) for job in check_page.browser_jobs(Path("dist"), {}, None)]
-    for name in ("check_panel_measure", "check_card_heads", "check_saved_card_heads"):
+    for name in ("check_card_heads", "check_saved_card_heads"):
         assert names.count("interactions/" + name) == 1

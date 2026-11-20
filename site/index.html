@@ -29,7 +29,7 @@
 /* Design principles
  * View switch: alternative presentations of the same content use two visible, dot-separated text buttons in muted meta type, following the section sub-navigation with an accent marker on the current item, no bold or current text underline, and hover/focus feedback; the switch sits on its own line above the content, aligned to its visible right edge at every width; a named group holds exactly one aria-pressed button, activation keeps focus on that button even when a click does not move focus, and activating the current item leaves the view unchanged.
  * Functions views (owner, 18 Nov 2026, "grouped default, grid one click away"): at every width the section opens on the grouped view, one row per institute with a strip of marks per group; a row expands to list every function with its status and, in muted meta, its short reader's sentence. The coding rule stays on hover in the grid and in How this is coded. The caption-sized view switch above the table reads "By group · All 18 functions", with the count from the vocabulary and the current view marked; the view is the section's state, not the width's, and a link to a target inside the hidden view brings that view. On wider screens the grouped view fills the content column as the grid does: the first column takes its longest name, so no name wraps where the column has room, and the groups share the rest (hub, 18 Nov 2026). As in the grid, a group line runs where each group starts, through the head, the band rows and every row; each label and strip sits left-aligned just after it with the same padding, so a label wraps inside its own column, and the padding reserves a fixed least gap between labels. An expanded row's ground interrupts the lines; the selection bar and the focus ring paint above them. On phones the head, in its px caption size, prints "&" for "and", keeps the first part together and breaks after it, so the labels take two lines alike down to 320; at 360 px and below the head is 1px smaller and the gap and marks a little tighter, as the country names leave no slack (owner, 18 Nov 2026). Without the page script the grid shows and the switch is hidden, as the rows cannot open (check_page check_functions_views, check_functions_group_lines).
- * Trailing qualifiers: a function status, source caveat or Quote label stays whole. It follows the preceding text with a visual-only dot when it fits; otherwise it starts on the next line at the text edge, without the dot. Quote's opened evidence keeps its full measure. Function statuses use the name's baseline rhythm, outside its button and before its summary. The shared layout pass compares baselines, not overlapping font rectangles, after opening, resizing and font changes (check_page check_status_qualifiers).
+ * Separator dots: no line on the page starts with a separator dot. Dot-separated items use separated(), or its saved markup, binding the dot to the preceding item; hideLineEndDots hides it when the following item wraps. Whole trailing qualifiers (function status, source caveat, archived copy and Quote label) use trailingQualifier(): they keep their following phrase whole and suppress the dot when that phrase starts a new line. Both use the shared layout pass after opening, resizing and font changes. Function statuses use the name's baseline rhythm outside its button; opened evidence keeps its full measure (check_page check_page_separators, check_status_qualifiers).
  * Column-head labels: in every table's head, no two labels on one line sit closer than HEAD_LABEL_GAP (6 px) and none overlaps, at phone and desktop widths, at 110% text and in both themes; the grid's leaning function heads are held apart by their own flag test (check_page check_head_labels, check_functions_tint).
  * Functions table: institute rows in established and not-yet-established blocks, function columns in vocabulary groups, equal widths and rotated short heads. The page prints each group's label from one constant per group (Testing and science, Rules and standards, Informing government, Ecosystem and adoption; owner, 18 Nov 2026), so a word can be changed in one place; the data keeps the recorded group names (Rules, Ecosystem). Active and both use a dot, assigned a ring; not found is blank, a search result rather than absence. The jurisdiction column stays visible during sideways scrolling. Hover and focus tint the row and one continuous column through the block bands, with a slanted band behind its head. Columns are evenly spaced with no gutter between groups; a slightly stronger vertical line marks where a group starts, quieter than the selection bar in both themes, and row lines and the row and column tint run through unbroken; a group label longer than its own tracks takes a second line (owner, 18 Nov 2026). Each group has a leaning boundary and an underline at its label, meeting the upright body rules at the head rule; the shared head height follows the head type, leaving at least --sp-1 above every head tip. No upright rule crosses the head zone, and labels paint above the hover flag and boundaries. Quotes and sources open on demand below the selected institute (check_page check_functions_table, check_functions_detail, check_functions_layout, check_functions_tint, check_function_group_tabs).
  * Selection: every open function cell, grouped Functions or Funding row, function within a card, and selected search or palette row has a start-edge bar at least --rule-strong wide in --focus, the strong accent ink, at least 3:1 against its adjacent ground. No selected state draws a full outline. Selection adds --highlight-fill; its open panel shares that ground and meets its row without a gap or dividing outline. Keyboard focus keeps a separate visible ring; a function's ring includes its status, and search/palette focus stays in the input (check_page check_selection_boxes).
@@ -37,10 +37,8 @@
  * Functions legend: marks and their names share one line directly under the desktop table, with equal gaps between visible items and no space reserved for the blank mark. The blank entry says no public text was found and this is not proof of absence. Whole items wrap on phones, retaining their pips; the caveat can wrap within its item. The head holds only the most-common line. How to open evidence belongs in How this is coded, with row order and the provisional list at its end (check_page check_functions_table, check_functions_layout).
  * Method: explanation folds follow the content they explain, including the Functions table and legend and every Funding row. Funding's reference-year and scope text also follow the rows. Owner-owned reader summaries link to the full editorial rules on a separate page; rule anchors stay stable (check_page check_functions_table).
  * Type: title, label, body, meta, figure, plus fn-group for functions group labels on narrow phones; label, body and meta fixed up to 1200px and growing to their wide-screen sizes at 1440px, so tables and cards fit at 1100px and wider with default settings; the functions table also fits from 1080px. Figure and title grow from phone width; shared size, weight, family and role-specific line height. The headline is the figure role with only its numbers at figure weight, its words at body weight.
- * Content grid: section headings sit above their content and stay static below 1280px; from 1280px they occupy a sticky column beside the body. Each section body has two left-aligned widths: its full width for tables, card grids, charts and row lists, and --prose for running text. Internal row tracks keep their alignment. The full-width first section is the only exception: the geographic map may bleed, and its stacked map/tools/side retain --map-stack-width, with --region-list keeping state and institute names together (check_page check_content_grid).
- * Measure: running text, including News text and Method list items, stops at --prose; structural lists and panels span the content width (check_page check_text_measure, check_content_grid).
+ * Width system: --page-width is 80rem; --content-width is the page width minus --section-label and --section-gap; --text-width is 49rem for explicit running-text paragraphs, narrative list items, claims, quotations and source-entry text inside their shells. Every ordinary section body is left-aligned and capped at the content width, even when the label stacks below 1280px. Tables have that same maximum, with intrinsic overflow confined to their scroller. Both Functions views, its caption and the Funding charts, grouped lists, bands and their rules, foot rows, fold and panel shells and card grids share the content edge. Section headings are static above the body below 1280px and sticky beside it from there. The first section uses the page width; named local geometry covers the map split/stack and region list, card/table/chart tracks, palette, tooltip, panel padding and quotation indentation (check_page check_section_extents, check_content_grid).
  * Secondary tone: --muted is for source apparatus (citations, sources, re-read lines, translation markers and source dates), method notes and field labels. Facts, body roles and qualifiers needed to read values use --ink; type sizes do not decide their colour. Below each Funding chart, muted Not compared and Not published lines distinguish other published amounts in the records from missing figures (owner, 19 Nov 2026; check_page check_secondary_tone).
- * Panel measure: claims, quotations, context, re-read lines and sources share --prose from the panel's left content edge, including phone details, definitions and record folds; in a function's panel the quote control ends the source line and only the opened quote sits indented beneath it, its content sharing that indented edge (owner, 18 Nov 2026); inline quotations stay inline (check_page check_panel_measure).
  * Function detail: a grid cell is a mark, so its sticky head keeps the full function label in label type and ink below the state and institute. The body starts with a muted status sentence naming the institute's short form: "Assigned to UK AISI, and active", "Assigned to KI Norge", "KI Norge is active, without an assignment" (owner, 18 Nov 2026). Claims directly beneath a named function in the grouped view omit the repeated function heading and status. The whole opened block, including basis labels, quotes and anchors, starts at or after the function name's text edge at every width. The row keeps any extra status information, including "without an assignment", and its selection bar spans the name and status, and its focus ring encloses both, though the status stays outside the button. The inline region takes its accessible name from that button. In both views, mixed claims keep the block labels Assignment, then Activity. Each claim reads: its sentence, without a citation number, then its source line in the running form (Sources), ending after " · " with "Quote" and the fold chevron in the source line's size and muted ink; the quote opens beneath, indented. Cards and full records keep sentence then Quote, with their sources in the counted Sources. All quote folds follow Claims for their accessible name and translation line. The grid panel stays at its scroll box's left edge and takes its clientWidth in pixels (check_page check_functions_detail, check_functions_phone, check_functions_views).
  * Sticky reading heads: at every width, grouped Functions and every table head stay directly below the real navigation and group row bottom, including sideways-scrolling tables. Overflowing tables move their real head within the table, preserving column alignment and semantics. At every width, a long detail's compact identity and sole close × stay within that detail at the same top, replacing a table head while reading it. Closed mini cards keep the country and first finding sentence; open ones show the country in their sticky summary and the complete finding once beneath it. Funding's native fallback keeps "Funding and staff records" when closed; its open sticky summary shows the identity, with the records beneath it. Both folds have a separate close × alongside the summary; the open summary spans the row to paint behind that close. Full States cards keep their sticky title. Close has at least a 44px square hit area and returns focus to the visible opener. Focus and anchor clearance includes the active head for grouped rows, functions, claims and their links; print keeps heads static (check_page check_functions_views, check_functions_phone, check_wide_layout, check_card_heads).
  * Panel identity: every panel and records head names the state first, then the institute in muted type, using its base name without a repeated state suffix; it is what stays visible when the row has scrolled away. The state never truncates; the institute wraps, onto its own line on phones. The moving head contains every identity and function line and paints an opaque copy of its panel ground across the full panel width, including any tint over the page ground. The panel name, title and contextual Close name use the same identity (check_page check_card_heads).
@@ -49,7 +47,6 @@
  * Quotation lines: quoteNode keeps every stored line break as an explicit break, including in translated quotations and anchors; numbered and lettered items therefore retain their source lines. Original-language quote tooltips preserve line breaks too (check_page check_claim_quotes).
  * Inline emphasis: inherit the paragraph's size and family, at most medium weight; no run-in heading role.
  * Sources: a collapsed card ends with the counted sources control alone (muted meta, no top rule, inline hit height); a card reached from the map also ends with "Back to map" before its Sources control; the check date and correction follow the expanded list.
- * Separators: each item of a dot-separated line is one unbreakable box, so lines break only between items (an item wraps inside only when it alone is wider than its container); middle dots stay with the preceding item's final word and are hidden where a line breaks.
  * Citations: every displayed value a quotation can support carries one (absence and an institute name linking to its own site need none); superscript at value end, three quarters of the text it annotates and never larger than meta (so a big figure keeps small numerals); comma-tight groups; card-local Sources order; hit area one text line high, never covering adjacent lines or preceding text.
  * Members and Partners: a network of existing bodies names its members in Form on a dot-separated short-name line, with the itemised glosses and How they work together behind one quiet fold. Arrival at the card leaves that fold as the reader left it (Folds, part 4); Partners holds the other bodies and disappears when none are left unless the cyber search tail remains. The Members and Partners lines show three names, then "and N more" when two or more would be hidden, and the fold lists every body under a counted label (Folds, part 3). Each closed fold-out groups bodies sharing an explanation, with explicit plural wording and a citation on every name. Groups follow the first body's priority order; names within a group keep that order. Generic explanations that only repeat the partner relation are omitted. Partner glosses omit the generic works-with relation; planned relations stay explicit. Downloads keep every relation.
  * Card grids: alphabetical rows share field tracks through subgrid; every field keeps a fixed shared track (Mandate and Finding share the descriptive-text track); a structurally absent field leaves its track empty, without a label; where a row has three tracks, a group's only card spans two (check_page check_card_grid), while a single trailing card in a fuller group's last row keeps the usual card width; phones keep one column.
@@ -184,7 +181,11 @@
   --bar-min: 2px;
   --r-sm: .25rem; --rule: 1px; --rule-strong: 2px;
   --motion-short: .15s; --motion-arrival: 1.5s; --motion-focus: 2.5s;
-  --measure: 80rem; --prose: 49rem; --section-label: 10.75rem; --card-key: 7.5rem; /* fits the longest card label, 'Related funding', on one line */
+  --page-width: 80rem; --section-label: 10.75rem; --section-gap: var(--sp-7);
+  --content-width: calc(var(--page-width) - var(--section-label) - var(--section-gap)); --text-width: 49rem;
+  --map-side-min: 16rem; --mini-country-width: 8.5rem; --map-search-basis: 16rem;
+  --download-title-width: 14rem; --download-file-width: 13rem; --foot-action-space: calc(var(--hit) + var(--sp-3));
+  --card-key: 7.5rem; /* fits 'Related funding' */
   --region-list: 30rem; /* the region list under the map: about its width beside the map on wide screens */
   --tooltip-width: 18rem; --palette-width: 40rem; --map-stack-width: 52rem;
   --fn-state-width: 10rem; --fn-column-width: 2.4rem; --fn-pad-min: 6rem; --world-institute-min: 11rem;
@@ -233,14 +234,14 @@
 [hidden] { display: none !important; }
 body { font: var(--type-body); margin: 0; background: var(--ground); color: var(--ink); }
 .gutter { padding-inline: max(var(--sp-5), env(safe-area-inset-left)) max(var(--sp-5), env(safe-area-inset-right)); }
-.measure { max-width: var(--measure); margin-inline: auto; }
+.measure { max-width: var(--page-width); margin-inline: auto; }
 h1, h2, h3, h4 { font: var(--type-label); margin: 0; text-wrap: balance; }
 h1 { font: var(--type-title); letter-spacing: -.055em; margin-top: var(--sp-4); }
 h2 { font: var(--type-figure); letter-spacing: -.025em; }
 h3, h4 { font: var(--type-label); }
 strong, b { font: inherit; font-weight: var(--weight-emphasis); }
 button, input, select, textarea { font: var(--type-label); }
-p, ul, ol { max-width: var(--prose); } /* one text measure for every running-text block, so stacked siblings wrap at the same width (check_page check_text_measure); full-width furniture opts out as a whole */
+.running-text { max-width: var(--text-width); } /* explicit narrative role; shells never inherit the text measure */
 p, ul { margin: 0; }
 ul { padding-left: var(--sp-5); display: flex; flex-direction: column; gap: var(--sp-2); }
 p, li, .legend-definition, .group-note { text-wrap: pretty; } /* no one-word last lines in body text; headings balance */
@@ -330,6 +331,7 @@ a.ico::before { position: static; transform: none; min-height: 0; }
 .group-nav + section { margin-top: calc(var(--sp-2) - var(--gap-section)); } /* the gap on the section, not the row: a sticky row's margin would carry it past its group's end */
 .group-label { color: var(--ink); padding-right: var(--sp-4); border-right: var(--rule) solid var(--line); }
 .group-links, .view-switch { display: inline-flex; flex-wrap: wrap; align-items: first baseline; gap: 0 var(--sp-2); }
+.group-links .meta-dot, .view-switch .meta-dot { margin-left: var(--sp-2); }
 @media (width <= 400px) { .group-nav, .group-links { column-gap: var(--sp-3); } .group-sep { display: none; } }
 .group-nav a, .view-switch button { display: inline-flex; align-items: first baseline; min-height: var(--hit); color: var(--muted); text-decoration-line: none; }
 .group-nav a:is(:hover, :focus-visible), .group-nav a.active, .view-switch button[aria-pressed="false"]:is(:hover, :focus-visible) { color: var(--ink); text-decoration-line: none; }
@@ -338,7 +340,7 @@ a.ico::before { position: static; transform: none; min-height: 0; }
 .view-switch button { position: relative; padding: 0; border: 0; border-radius: 0; background: none; font: inherit; cursor: pointer; white-space: nowrap; }
 
 /* Developments share the page's text roles and row rhythm. */
-.development-list { list-style: none; margin: 0; padding: 0; max-width: none; display: flex; flex-direction: column; gap: var(--gap-row); }
+.development-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--gap-row); }
 .development-row { display: flex; flex-direction: column; gap: var(--sp-1); }
 .development-label { font: var(--type-meta); color: var(--muted); white-space: nowrap; }
 .development-date { color: var(--ink); font-variant-numeric: tabular-nums; } /* an event date is a fact, not apparatus (R2) */
@@ -347,11 +349,11 @@ a.ico::before { position: static; transform: none; min-height: 0; }
 
 /* Section structure */
 main .measure { padding-block: var(--sp-8) var(--sp-11); display: flex; flex-direction: column; gap: var(--gap-section); }
-main section { display: grid; grid-template-columns: var(--section-label) minmax(0, 1fr); gap: var(--sp-7); border-top: var(--rule) solid var(--line); padding-top: var(--sp-7); }
+main section { display: grid; grid-template-columns: var(--section-label) minmax(0, 1fr); gap: var(--section-gap); border-top: var(--rule) solid var(--line); padding-top: var(--sp-7); }
 section, h2, .card, details.more, .development-list > li, .list-more, #worldmap, .region-head, .pick, #record-name { scroll-margin-top: var(--nav-offset); } /* also a development revealed by "Show N earlier", the control after collapsing and the map brought back on a region switch */
 .section-label { align-self: start; position: sticky; top: var(--nav-offset); display: flex; flex-direction: column; gap: var(--sp-4); }
 .section-label > a { align-self: flex-start; } /* a link in the heading column is as wide as its text, so the pointer shows only over it */
-.section-body { min-width: 0; display: flex; flex-direction: column; gap: var(--gap-row); }
+.section-body { max-width: var(--content-width); min-width: 0; display: flex; flex-direction: column; gap: var(--gap-row); }
 .two { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--sp-7); align-items: first baseline; }
 .two > div { display: flex; flex-direction: column; gap: var(--gap-row); min-width: 0; }
 footer { border-top: var(--rule) solid var(--line); }
@@ -385,7 +387,7 @@ details[open] > summary::after, .list-more[aria-expanded="true"]::after, .fund-n
 .list-more { font: var(--type-label); color: var(--ink); display: flex; align-items: first baseline; gap: var(--sp-2); width: fit-content; min-height: var(--control); margin-top: var(--gap-row); padding: 0; background: none; border: 0; cursor: pointer; }
 .more[open] > summary { margin-bottom: var(--sp-4); }
 #changes-latest { flex: 1; min-width: 0; } /* the collapsed row is version and date only */
-#changes > summary { width: 100%; max-width: var(--prose); } /* so the one-line summary truncates instead of widening the page */
+#changes > summary { width: 100%; } /* so the one-line summary truncates instead of widening the page */
 #changes[open] #changes-latest { display: none; }
 .change-head { font: var(--type-label); }
 #changelog { gap: var(--sp-4); }
@@ -458,14 +460,14 @@ main section.offscreen { contain-intrinsic-block-size: auto 100vh; }
 main section.offscreen .card-row { contain-intrinsic-block-size: auto 20rem; }
 :root[data-settled] main section.offscreen, :root[data-settled] main section.offscreen .card-row { content-visibility: auto; }
 main section.first { display: flex; flex-direction: column; gap: var(--sp-5); border-top: 0; padding-top: 0; }
-.definition { font: var(--type-body); max-width: var(--prose); margin: calc(var(--sp-2) - var(--sp-5)) 0 0; } /* belongs to the headline above it: one link to the definition */
-.method-definition { max-width: var(--prose); margin: 0; } /* the section body's row gap separates it from the fold */
+.definition { font: var(--type-body); margin: calc(var(--sp-2) - var(--sp-5)) 0 0; } /* belongs to the headline above it: one link to the definition */
+.method-definition { margin: 0; } /* the section body's row gap separates it from the fold */
 .method-definition a { white-space: nowrap; } /* the full-rule link never splits */
 .headline b { font-weight: var(--weight-figure); }
-.headline { font: var(--type-figure); font-weight: var(--weight-body); max-width: none; text-wrap: balance; display: grid; font-variant-numeric: tabular-nums; } /* full width, so each regional form keeps to two lines on wide screens */
+.headline { font: var(--type-figure); font-weight: var(--weight-body); text-wrap: balance; display: grid; font-variant-numeric: tabular-nums; } /* full width, so each regional form keeps to two lines on wide screens */
 .hl-version { grid-area: 1 / 1; visibility: hidden; } .hl-version.current { visibility: visible; } /* every region's headline in one cell: the longest sets the height, so a region switch never moves what sits below */
 .hl-sentence { display: block; text-wrap: balance; } /* one sentence per line (owner, 23 Oct); numbers are glued to the next word */
-.maptools { display: grid; grid-template-columns: minmax(0, 2fr) minmax(16rem, 1fr); column-gap: var(--sp-7); row-gap: var(--sp-3); align-items: end; } /* the explore grid's columns: tabs over the map, the search over the list, edge to edge */
+.maptools { display: grid; grid-template-columns: minmax(0, 2fr) minmax(var(--map-side-min), 1fr); column-gap: var(--sp-7); row-gap: var(--sp-3); align-items: end; } /* the explore grid's columns: tabs over the map, the search over the list, edge to edge */
 .map-search { position: relative; min-width: 0; }
 .suggest { font: var(--type-body); position: absolute; z-index: 10; left: 0; top: calc(100% + var(--sp-1)); width: 100%; max-height: 18rem; overflow-y: auto; margin: 0; padding: var(--sp-1) 0; list-style: none; background: var(--paper); border: var(--rule) solid var(--line); border-radius: var(--r-sm); box-shadow: var(--shadow-pop); }
 .suggest li, .palette-option { display: flex; align-items: first baseline; gap: var(--sp-2); min-height: var(--control); padding: var(--sp-2) var(--sp-3); cursor: pointer; }
@@ -490,11 +492,11 @@ main section.first { display: flex; flex-direction: column; gap: var(--sp-5); bo
 .palette-option .pnote { font: var(--type-meta); color: var(--muted); margin-left: var(--sp-2); }
 .palette-option .small .sw { margin-right: var(--sp-1); }
 .palette-empty { font: var(--type-meta); color: var(--muted); padding: var(--sp-3); margin: 0; }
-.palette-keys { flex: none; display: flex; flex-wrap: wrap; gap: var(--sp-1) var(--sp-4); max-width: none; margin: 0; padding: var(--sp-2) var(--sp-3); border-top: var(--rule) solid var(--line); font: var(--type-meta); color: var(--muted); }
+.palette-keys { flex: none; display: flex; flex-wrap: wrap; gap: var(--sp-1) var(--sp-4); margin: 0; padding: var(--sp-2) var(--sp-3); border-top: var(--rule) solid var(--line); font: var(--type-meta); color: var(--muted); }
 @media (hover: none), (width <= 560px) { .palette-hint, .palette-keys { display: none; } .palette { margin-top: var(--sp-4); } } /* no keyboard hints on touch screens and phones */
 @keyframes palette-in { from { opacity: 0; } }
 @media (prefers-reduced-motion: no-preference) { .palette[open], .palette[open]::backdrop { animation: palette-in var(--motion-short) ease-out; } } /* motion only fades */
-.explore { display: grid; grid-template-columns: minmax(0, 2fr) minmax(16rem, 1fr); gap: var(--sp-7); align-items: stretch; }
+.explore { display: grid; grid-template-columns: minmax(0, 2fr) minmax(var(--map-side-min), 1fr); gap: var(--sp-7); align-items: stretch; }
 .map-col { display: flex; flex-direction: column; gap: var(--sp-5); min-width: 0; }
 .map-aside { display: flex; flex-direction: column; gap: var(--sp-3); }
 .worldmap svg { display: block; width: 100%; height: auto; }
@@ -538,7 +540,7 @@ main section.first { display: flex; flex-direction: column; gap: var(--sp-5); bo
 .region-brief .linkbtn:is(:hover, :focus-visible) { color: var(--ink); }
 .region.open .region-brief { display: none; }
 .region-sub { font: var(--type-meta); color: var(--muted); margin: var(--sp-3) 0 0; }
-.region-rows { list-style: none; margin: 0; padding: 0; gap: 0; max-width: none; }
+.region-rows { list-style: none; margin: 0; padding: 0; gap: 0; }
 .region-rows li { display: flex; align-items: first baseline; justify-content: space-between; gap: var(--sp-3); min-width: 0; }
 .region-rows li .small { color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
 .pick { font: var(--type-body); display: inline-flex; align-items: first baseline; gap: var(--sp-2); min-height: var(--hit); padding: 0; background: none; border: 0; color: var(--ink); cursor: pointer; text-align: left; white-space: nowrap; }
@@ -615,7 +617,6 @@ main section.first { display: flex; flex-direction: column; gap: var(--sp-5); bo
 .srcs li { overflow-wrap: anywhere; }
 .srcs .role { font-style: italic; }
 .srcs .reread { display: block; } /* principle: Re-read line */
-.claim, .record-notes { max-width: var(--prose); }
 .claim + .claim { margin-top: var(--sp-2); }
 .claim > .claim-text { display: block; } /* the item form only; a mini card's summary keeps its own inline text */
 .claim > .quote { margin-top: var(--sp-2); }
@@ -630,19 +631,15 @@ main section.first { display: flex; flex-direction: column; gap: var(--sp-5); bo
 .quote-excerpt + .quote-excerpt { margin-top: var(--sp-3); }
 .quote-anchor, .quote .reread, .claim > .reread { display: block; font: var(--type-meta); color: var(--muted); }
 .quote-text[aria-description] { cursor: help; }
-/* A. One reading measure, shared by the claim/quote/source builders and their panels. */
-.prose-panel, .quote-body, .srcs,
-:is(.prose-panel, .fn-detail, .quote-body, .srcs) :where(*) { max-width: var(--prose); }
 .srcs ol { padding-left: 0; list-style-position: inside; } /* markers stay inside the panel; wrapped source text shares its left edge */
-.two > .prose-panel, .two > .prose-panel > ul { max-width: none; } /* Method panels and lists span the body; their text items retain --prose. */
 .two > .prose-panel > ul { padding-left: 0; list-style-position: inside; } /* narrative items start on the shared text axis, including their markers */
 .correction { color: var(--muted); display: inline-block; width: fit-content; min-height: var(--hit); }
 .cards.minis { --columns: 1; gap: 0; }
 .card.mini { gap: var(--sp-2); border-bottom: var(--rule) solid var(--line); }
 .card.mini > summary { display: flex; align-items: first baseline; min-height: var(--hit); gap: var(--sp-3); padding-block: var(--sp-2); }
-.card.mini > summary .name { font: var(--type-label); color: var(--ink); flex: 0 0 8.5rem; }
+.card.mini > summary .name { font: var(--type-label); color: var(--ink); flex: 0 0 var(--mini-country-width); }
 .card.mini:hover > summary .name { color: var(--link); }
-.card.mini > summary .find { font: var(--type-meta); flex: 1; min-width: 0; max-width: var(--prose); color: var(--ink); }
+.card.mini > summary .find { font: var(--type-meta); flex: 1; min-width: 0; color: var(--ink); }
 .card.mini p { font: var(--type-body); }
 .card.mini > p + p { margin-top: var(--sp-2); }
 .card.mini > p:has(+ .foot) { margin-bottom: var(--sp-2); } /* the shared footer keeps one spacing everywhere */
@@ -775,13 +772,13 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
 .fn-mandate { border: var(--rule-strong) solid currentColor; }
 .fn-not_coded, .fn-table td[data-value="not_coded"]::before { height: .12rem; border-radius: 0; background: var(--muted); }
 .fn-table td[data-value="not_coded"]::before { content: ""; display: inline-block; vertical-align: middle; width: .8rem; }
-.fn-legend { list-style: none; padding: 0; max-width: none; font: var(--type-meta); color: var(--muted); display: flex; flex-direction: row; flex-wrap: wrap; gap: var(--sp-1) var(--sp-4); } /* one line under the desktop table; whole items wrap on phones */
+.fn-legend { list-style: none; padding: 0; font: var(--type-meta); color: var(--muted); display: flex; flex-direction: row; flex-wrap: wrap; gap: var(--sp-1) var(--sp-4); } /* one line under the desktop table; whole items wrap on phones */
 .fn-legend li { display: flex; align-items: baseline; gap: var(--sp-2); white-space: nowrap; }
 .fn-legend .fn-mark { align-self: center; }
 .fn-legend.fn-phone-only li[data-value="not_found"] { white-space: normal; max-width: 100%; }
 .fn-table .fn-detail-row > td { padding: 0; text-align: left; }
-.fn-detail { position: sticky; left: 0; max-width: none; padding: var(--sp-4); box-sizing: border-box; white-space: normal; overflow-wrap: anywhere; background: var(--paper); font: var(--type-body); }
-.fn-detail-top { display: flex; flex-shrink: 0; height: max-content; align-items: flex-start; justify-content: space-between; gap: var(--sp-3); max-width: none; margin-bottom: var(--sp-3); position: sticky; top: var(--reading-top); z-index: 3; background: var(--paper); }
+.fn-detail { position: sticky; left: 0; padding: var(--sp-4); box-sizing: border-box; white-space: normal; overflow-wrap: anywhere; background: var(--paper); font: var(--type-body); }
+.fn-detail-top { display: flex; flex-shrink: 0; height: max-content; align-items: flex-start; justify-content: space-between; gap: var(--sp-3); margin-bottom: var(--sp-3); position: sticky; top: var(--reading-top); z-index: 3; background: var(--paper); }
 .fn-detail-top::before, .record-top::before, .fund-detail[open] > summary::before { content: ""; position: absolute; inset: calc(-1 * var(--panel-pad-block, var(--sp-4))) calc(-1 * var(--panel-pad-inline, var(--sp-4))) 0; z-index: -1; background: inherit; pointer-events: none; } /* cover just the panel's padding, never the preceding selected row */
 .panel-identity { flex: 1; min-width: 0; margin: 0; font: var(--type-label); line-height: var(--close-size); white-space: normal; overflow-wrap: normal; }
 .head-state { white-space: normal; }
@@ -826,7 +823,7 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
    label wraps inside its own column. The line is under the selection bar and the focus ring; an expanded row's ground covers it. */
 .fn-phone-head > span:not(:first-child), .fn-phone-band, .fn-phone-block > ul > li > .fn-pips { box-shadow: inset var(--rule) 0 var(--fn-group-line); padding-inline: var(--fn-group-pad) var(--fn-group-end); }
 .fn-phone-band { grid-row: 1; }
-.fn-phone-block > ul { list-style: none; padding: 0; margin: 0; max-width: none; row-gap: 0; } /* rows meet, so the group lines run unbroken; the room moved into each row's country cell, which sets its height */
+.fn-phone-block > ul { list-style: none; padding: 0; margin: 0; row-gap: 0; } /* rows meet, so the group lines run unbroken; the room moved into each row's country cell, which sets its height */
 .fn-phone-row { display: block; grid-column: 1 / -1; grid-row: 1; width: 100%; min-height: var(--hit); padding: var(--sp-3) 0; border: 0; border-bottom: var(--rule) solid var(--line); background: transparent; color: var(--ink); font: var(--type-body); text-align: left; cursor: pointer; }
 /* The empty button is the full-row hit area; its visual siblings share the list item's tracks. */
 .fn-phone-country, .fn-phone-block > ul > li > .fn-pips { grid-row: 1; align-self: center; position: relative; z-index: 1; pointer-events: none; }
@@ -842,7 +839,7 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
 .fn-phone-functions { list-style: none; padding: 0; margin: 0; }
 .fn-phone-functions > li { --fn-pip-width: 8px; --fn-text-inset: calc(var(--sp-1) + var(--sp-2) + var(--fn-pip-width)); display: flex; flex-wrap: wrap; align-items: baseline; padding-block: var(--sp-2); font: var(--type-body); }
 .fn-phone-detail h4 { margin-top: var(--sp-4); }
-.fn-function-label { display: flex; flex: 0 1 auto; max-width: var(--prose); min-width: 0; align-items: baseline; gap: var(--sp-2); padding: 0 var(--sp-1); font: inherit; color: var(--ink); }
+.fn-function-label { display: flex; flex: 0 1 auto; min-width: 0; align-items: baseline; gap: var(--sp-2); padding: 0 var(--sp-1); font: inherit; color: var(--ink); }
 button.fn-function-label { --fn-line-width: 100%; --fn-line-height: 100%; background: transparent; border: 0; text-align: left; cursor: pointer; }
 button.fn-function-label::before { content: ""; position: absolute; inset-inline: 0; top: 50%; transform: translateY(-50%); height: 100%; min-height: var(--hit); } /* keep the hit area without adding a gap between text baselines */
 button.fn-function-label[aria-expanded="true"]::after { top: 0; bottom: auto; height: var(--fn-line-height); }
@@ -851,7 +848,7 @@ button.fn-function-label:focus-visible { outline: none; background: var(--highli
 .fn-function-status { flex: none; font: inherit; color: var(--muted); }
 .fn-function-status :is(.qualifier-text, .qualifier-separator) { font-size: var(--size-meta); } /* the outer body's line box keeps the name's baseline rhythm */
 .fn-function-status.own-line { flex-basis: 100%; padding-left: var(--fn-text-inset); }
-.fn-function-summary { flex-basis: 100%; margin: 0; padding-left: var(--fn-text-inset); font: var(--type-meta); color: var(--muted); }
+.fn-function-summary { flex-basis: 100%; margin: 0; margin-inline-end: max(0px, calc(100% - var(--text-width))); padding-left: var(--fn-text-inset); font: var(--type-meta); color: var(--muted); } /* reserve the space beyond the text measure: the flex line otherwise clamps this item to its max-width and can place it beside a short name and status */
 .fn-phone-claims { flex-basis: 100%; min-width: 0; margin-block: var(--sp-2) var(--sp-4); margin-inline-start: var(--fn-text-inset); }
 /* The grouped view is the default at every width; the full grid is one click away (owner, 18 Nov 2026). The view is the
    section's state, not the width's. Without the page script the rows cannot open, so the readable grid shows. */
@@ -893,7 +890,7 @@ button.fn-function-label:focus-visible { outline: none; background: var(--highli
 html[data-prerendered] .fn-scroll.fits { overflow-x: auto; }
 html[data-prerendered] .fn-scroll.fits thead { position: static; }
 /* Funding: two ranked charts, with identical tracks and one shared records fold per institute. */
-#fund-rows { --fund-hit: max(44px, var(--hit)); display: grid; grid-template-columns: max-content minmax(2px, 1fr) max-content; gap: var(--sp-6) var(--sp-2); }
+#fund-rows { --fund-hit: max(44px, var(--hit)); display: grid; grid-template-columns: max-content minmax(var(--bar-min), 1fr) max-content; gap: var(--sp-6) var(--sp-2); }
 .fund-list { display: grid; grid-column: 1 / -1; grid-template-columns: subgrid; column-gap: inherit; }
 .fund-axis, .fund-chart-rows, .fund-item { display: grid; grid-column: 1 / -1; grid-template-columns: subgrid; column-gap: inherit; }
 .fund-axis { font: var(--type-label); align-items: first baseline; color: var(--muted); border-bottom: var(--rule-strong) solid var(--ink); padding-block: var(--sp-2) var(--sp-3); position: sticky; top: var(--reading-top); z-index: 2; background: var(--ground); }
@@ -906,7 +903,7 @@ html[data-prerendered] .fn-scroll.fits thead { position: static; }
 .fund-axis .fund-key { grid-column: 2 / -1; font: var(--type-meta); margin-top: var(--sp-1); padding-inline: var(--sp-2); }
 .key-item { display: inline-flex; align-items: baseline; gap: var(--sp-2); white-space: nowrap; }
 .key-swatch { display: inline-block; flex: none; width: var(--sp-6); height: var(--sp-3); align-self: center; } /* a piece of each bar style, solid and hatched */
-.fund-chart-rows { list-style: none; padding: 0; margin: 0; max-width: none; row-gap: 0; }
+.fund-chart-rows { list-style: none; padding: 0; margin: 0; row-gap: 0; }
 .fund-item { position: relative; min-width: 0; }
 .fund-row { grid-column: 1 / -1; grid-row: 1; position: relative; padding: 0; min-height: var(--close-size); width: 100%; border: 0; border-bottom: var(--rule) solid var(--line); border-radius: 0; background: transparent; color: var(--ink); cursor: pointer; }
 .fund-item:last-child > .fund-row { border-bottom-color: transparent; }
@@ -924,12 +921,12 @@ html[data-prerendered] .fn-scroll.fits thead { position: static; }
 .fund-figure abbr.g::before { min-height: var(--fund-hit); }
 .fund-value strong, .fund-value .budget-amount { font: var(--type-body); white-space: nowrap; }
 .fund-context { font: var(--type-meta); color: var(--ink); margin-top: var(--sp-1); }
-.fund-other, .fund-missing-line { grid-column: 1 / -1; min-width: 0; max-width: none; font: var(--type-meta); color: var(--muted); }
+.fund-other, .fund-missing-line { grid-column: 1 / -1; min-width: 0; font: var(--type-meta); color: var(--muted); }
 .fund-other:empty, #fund-records:empty { display: none; }
 .fund-other-line { margin: 0; }
 .fund-names-toggle, .fund-name-row { min-height: var(--fund-hit); border: 0; background: none; padding: var(--sp-2); border-radius: 0; font: inherit; color: inherit; cursor: pointer; text-align: left; }
 .fund-names-toggle { width: 100%; display: flex; align-items: center; gap: var(--sp-2); padding-block: var(--sp-1); }
-.fund-name-list { display: block; list-style: none; padding: 0; margin: 0; max-width: none; } /* the shared [hidden] rule keeps closed lists out of layout */
+.fund-name-list { display: block; list-style: none; padding: 0; margin: 0; } /* the shared [hidden] rule keeps closed lists out of layout */
 .fund-name-row { width: 100%; display: block; }
 .fund-names-toggle:is(:hover, :focus-visible), .fund-name-row:is(:hover, :focus-visible), .fund-name-row[aria-expanded="true"] { color: var(--ink); background: var(--highlight-fill); }
 .fund-names-toggle:focus-visible, .fund-name-row:focus-visible { outline: var(--rule-strong) solid var(--focus); outline-offset: var(--rule-strong); }
@@ -982,7 +979,7 @@ span.fund-names-toggle::after { display: none; }
 .fn-detail-top, .fund-detail.more[open] > summary { background: linear-gradient(var(--selection-detail-ground), var(--selection-detail-ground)), var(--ground); } /* the moving head and its inherited full-width backing paint both layers themselves */
 :is(.fn-phone-row, button.fn-function-label, .fund-row)[aria-expanded="true"]:hover, .suggest li[aria-selected="true"]:hover, .palette-option[aria-selected="true"]:hover { background-color: var(--highlight-fill); }
 .fund-detail-body { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--sp-6); margin-top: var(--sp-4); align-items: first baseline; }
-.fund-detail-body > div { min-width: 0; max-width: var(--prose); }
+.fund-detail-body > div { min-width: 0; }
 .fund-detail .fund-value strong { white-space: normal; }
 .fund-budget-summary .budget-qualifiers { display: block; margin-top: var(--sp-1); }
 .fund-detail-body h4 { font: var(--type-label); margin-bottom: var(--sp-3); }
@@ -999,9 +996,9 @@ span.fund-names-toggle::after { display: none; }
 /* Grouped lists (principle: Groups): heading, a row of status marks, then the names and facts in full-width rows. */
 .group-block { display: flex; flex-direction: column; gap: var(--sp-2); min-width: 0; border-top: var(--rule) solid var(--ink); padding-top: var(--sp-3); } /* a thin rule opens each group (owner, 5 Nov 2026) */
 .marks { display: flex; flex-wrap: wrap; gap: var(--sp-1); }
-.group-list { list-style: none; margin: 0; padding: 0; display: block; max-width: none; }
+.group-list { list-style: none; margin: 0; padding: 0; display: block; }
 .group-list > li { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: first baseline; gap: 0 var(--sp-4); padding-block: var(--sp-1); border-bottom: var(--rule) solid var(--line); break-inside: avoid; }
-.group-note { font: var(--type-meta); color: var(--ink); max-width: var(--prose); }
+.group-note { font: var(--type-meta); color: var(--ink); }
 .group-list > li:last-child { border-bottom: 0; } /* hairlines only between members: the group's spacing closes it (rule 15) */
 @media (width <= 640px) { .group-list > li { flex-direction: column; align-items: flex-start; justify-content: flex-start; } } /* phones: every note starts at one left edge, under its state (rule 6) */
 .access, .setup { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--gap-header); align-items: start; } /* every group and its row list shares the full section-body width */
@@ -1012,16 +1009,16 @@ span.fund-names-toggle::after { display: none; }
 .per-person { white-space: nowrap; } /* a figure and its unit stay on one line */
 .group-list.stacked > li { flex-direction: column; align-items: flex-start; justify-content: flex-start; }
 .card .top > .state-dl { position: absolute; top: var(--reading-pad); right: 0; margin: 0; }
-.card.mini > .foot { display: flex; align-items: flex-start; gap: var(--sp-3); } /* sources keep their prose measure; the download ends at the footer's content edge */
-.card.mini > .foot > .state-dl { flex: none; margin-left: auto; }
-.card.mini > .foot > :not(.state-dl) { flex: 1 1 auto; min-width: 0; }
+.section-foot, .card.mini > .foot { position: relative; display: block; min-height: var(--hit); } /* the action reserves only the summary line; opened bodies span the shell */
+.card.mini > .foot > .state-dl { position: absolute; top: 0; right: 0; }
+.card.mini > .foot > :not(.state-dl) { min-width: 0; }
 .card :is(.top, .foot) > .state-dl { display: inline-flex; align-items: center; justify-content: center; width: var(--hit); height: var(--hit); margin-block: calc((var(--size-label) * var(--leading-label) - var(--hit)) / 2); color: var(--muted); text-decoration-line: none; }
 .card .top > .state-dl { margin-block: 0; }
 .card :is(.top, .foot) > .state-dl:is(:hover, :focus-visible) { color: var(--ink); }
 /* Section foot row (principle: Downloads): after a section's table or list, its explanation fold at the left, its download alone at the right end. */
-.section-foot { display: flex; align-items: flex-start; gap: var(--sp-3); }
-.section-foot > :not(.section-foot-actions) { flex: 1 1 auto; min-width: 0; }
-.section-foot-actions { margin-left: auto; display: inline-flex; align-items: center; gap: var(--sp-4); flex: none; min-height: var(--hit); }
+.section-foot > :not(.section-foot-actions) { min-width: 0; }
+:is(.section-foot > details, .section-foot > .foot > details, .card.mini > .foot > details) > summary { max-width: calc(100% - var(--foot-action-space)); }
+.section-foot-actions { position: absolute; top: 0; right: 0; display: inline-flex; align-items: center; gap: var(--sp-4); min-height: var(--hit); }
 .section-dl { display: inline-flex; align-items: center; justify-content: center; width: var(--hit); height: var(--hit); padding: 0; color: var(--muted); text-decoration-line: none; cursor: pointer; }
 .section-dl:is(:hover, :focus-visible), details[open] > .section-dl { color: var(--ink); }
 .feed-link { display: inline-flex; align-items: center; gap: var(--sp-2); font: var(--type-meta); min-height: var(--hit); }
@@ -1033,11 +1030,11 @@ span.fund-names-toggle::after { display: none; }
 .downloads { display: flex; flex-direction: column; gap: var(--gap-header); }
 .dlgroup { display: flex; flex-direction: column; gap: var(--sp-1); }
 .dlgroup h4 { font: var(--type-label); color: var(--ink); display: flex; gap: var(--sp-2); align-items: first baseline; }
-.dlist { list-style: none; padding: 0; gap: 0; max-width: none; border-top: var(--rule) solid var(--line); }
+.dlist { list-style: none; padding: 0; gap: 0; border-top: var(--rule) solid var(--line); }
 .dlist li { border-bottom: var(--rule) solid var(--line); }
 .ico.i-none::before { background: none; } /* a row without a symbol keeps the icon column (For programs and agents) */
 #using-data { margin-top: var(--gap-header); }
-.dlist a { display: grid; grid-template-columns: var(--sp-3) 14rem 13rem minmax(0, 1fr); gap: var(--sp-1) var(--sp-3); align-items: first baseline; padding: var(--sp-2); color: var(--ink); text-decoration-line: none; } /* the same tracks in every group, so names, files and descriptions align */
+.dlist a { display: grid; grid-template-columns: var(--sp-3) var(--download-title-width) var(--download-file-width) minmax(0, 1fr); gap: var(--sp-1) var(--sp-3); align-items: first baseline; padding: var(--sp-2); color: var(--ink); text-decoration-line: none; } /* the same tracks in every group, so names, files and descriptions align */
 .dlist .dl-title { font: var(--type-body); white-space: nowrap; }
 .dlist .dl-file, .dlist .d { font: var(--type-meta); color: var(--muted); min-width: 0; }
 .dlist .dl-file { white-space: nowrap; }
@@ -1061,7 +1058,7 @@ span.fund-names-toggle::after { display: none; }
   .fund-key { gap: var(--sp-1) var(--sp-2); }
   .fund-detail { --panel-pad-block: var(--sp-3); --panel-pad-inline: var(--sp-2); }
   /* Shrink names only when enlarged text leaves too little room; figures stay whole. */
-  #fund-rows { grid-template-columns: minmax(0, max-content) minmax(2px, 1fr) max-content; }
+  #fund-rows { grid-template-columns: minmax(0, max-content) minmax(var(--bar-min), 1fr) max-content; }
   .fund-identity h4 { white-space: normal; }
 }
 @media (width < 1280px) {
@@ -1076,8 +1073,8 @@ span.fund-names-toggle::after { display: none; }
   #regions { max-width: var(--region-list); }
   .maptools { display: flex; flex-wrap: wrap; align-items: end; max-width: var(--map-stack-width); } /* the map's column: tabs, then the search filling the rest of the row up to the map's right edge, or below at full width */
   .region-chips { flex: none; max-width: 100%; }
-  .map-search { flex: 1 1 16rem; }
-  .map-aside { order: 0; } /* the legend stays directly under the map */
+  .map-search { flex: 1 1 var(--map-search-basis); }
+  .map-aside { order: 0; max-width: var(--map-stack-width); } /* the legend stays directly under the map */
   .record { position: static; order: -1; overflow: visible; } /* directly under the map, above the list */
   .record-top { position: sticky; top: var(--reading-top); transform: none; }
   .side:has(> .record:not([hidden])) > .regions { visibility: visible; } /* stacked: the list stays below the record */
@@ -1159,7 +1156,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
 
   <section class="first" aria-labelledby="map"><h2 id="map" class="vh">Map</h2>
     <p class="headline" id="headline"></p>
-    <p class="definition" id="definition-link"></p>
+    <p class="definition running-text" id="definition-link"></p>
     <div class="maptools">
       <div class="region-chips" id="region-chips" role="group" aria-label="Region"></div>
       <div class="map-search"><span class="search ico i-search"><input class="field" id="map-search" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="map-search-list" placeholder="Find a state" aria-label="Find a state" autocomplete="off"><button type="button" class="palette-hint" id="palette-open" tabindex="-1" aria-label="Find a state, section or action" aria-keyshortcuts="Meta+K Control+K /"><kbd class="k-mac">⌘K</kbd><kbd class="k-other">Ctrl K</kbd></button></span>
@@ -1167,7 +1164,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     </div>
     <div class="explore">
       <div class="map-col">
-        <div class="worldmap" id="worldmap"><noscript><style>#worldmap svg { display: none; }</style><p class="small">The map needs JavaScript. The lists below give the same information state by state.</p></noscript></div>
+        <div class="worldmap" id="worldmap"><noscript><style>#worldmap svg { display: none; }</style><p class="small running-text">The map needs JavaScript. The lists below give the same information state by state.</p></noscript></div>
         <div class="map-aside"><div class="legend" id="legend"></div></div>
       </div>
       <div class="side">
@@ -1180,7 +1177,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   <div class="figures" id="figures"></div>
 
   <div class="group">
-  <nav class="group-nav" aria-label="Compare sections"><span class="group-label">Compare</span><span class="group-links"><a href="#functions">Functions</a><span class="group-sep" aria-hidden="true"> · </span><a href="#testing">Testing</a><span class="group-sep" aria-hidden="true"> · </span><a href="#set-up">Set-up</a><span class="group-sep" aria-hidden="true"> · </span><a href="#funding">Funding</a></span></nav>
+  <nav class="group-nav" aria-label="Compare sections"><span class="group-label">Compare</span><span class="group-links"><span class="meta-item"><span class="meta-tail"><a href="#functions">Functions</a><span class="meta-dot group-sep" aria-hidden="true">·</span></span></span> <span class="meta-item"><span class="meta-tail"><a href="#testing">Testing</a><span class="meta-dot group-sep" aria-hidden="true">·</span></span></span> <span class="meta-item"><span class="meta-tail"><a href="#set-up">Set-up</a><span class="meta-dot group-sep" aria-hidden="true">·</span></span></span> <span class="meta-item"><span class="meta-tail"><a href="#funding">Funding</a></span></span></span></nav>
   <section class="offscreen" aria-labelledby="functions"><div class="section-label">
     <h2 id="functions">Functions</h2></div><div class="section-body">
     <div class="fn" id="functions-table"></div>
@@ -1198,8 +1195,8 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   <section class="offscreen" aria-labelledby="funding"><div class="section-label">
     <h2 id="funding">Funding and staff</h2></div><div class="section-body">
     <div id="fund-rows"></div>
-    <p class="small" id="fund-chart-h"></p>
-    <div class="section-foot"><details class="more quiet" id="fund-how"><summary>How this is chosen</summary>    <p class="small">Budget bars share one scale and show adopted or announced funding for the whole institute in a funding year that overlaps <span id="ref-year"></span>, the calendar year of the data date. Where several years qualify, the one containing the data date is used, if there is one. Proposals, one-off amounts and other years keep their amounts in the records. Components are excluded from the comparison. Period means are named in the figure explanations and the records. EUR figures are rough conversions at the ECB's <span id="fx-year"></span> annual-average rates and do not compare like with like. Staff bars have their own scale and show published totals with dates. Dates, bounds and commitments are explained on hover, focus or tap on a figure; the same explanation is available to screen readers. Bounds and approximations also stay on the number as up to, ~ or +. Technical counts, targets and ranges remain in the records and do not become total bars.</p></details><span class="section-foot-actions"><a class="standalone section-dl ico i-dl" id="funding-download" href="data/funding.csv" download="funding.csv" data-tip="Funding (CSV); staff figures are in staff.csv under Data"><span class="vh">Download funding (CSV)</span></a></span></div>
+    <p class="small running-text" id="fund-chart-h"></p>
+    <div class="section-foot"><details class="more quiet" id="fund-how"><summary>How this is chosen</summary>    <p class="small running-text">Budget bars share one scale and show adopted or announced funding for the whole institute in a funding year that overlaps <span id="ref-year"></span>, the calendar year of the data date. Where several years qualify, the one containing the data date is used, if there is one. Proposals, one-off amounts and other years keep their amounts in the records. Components are excluded from the comparison. Period means are named in the figure explanations and the records. EUR figures are rough conversions at the ECB's <span id="fx-year"></span> annual-average rates and do not compare like with like. Staff bars have their own scale and show published totals with dates. Dates, bounds and commitments are explained on hover, focus or tap on a figure; the same explanation is available to screen readers. Bounds and approximations also stay on the number as up to, ~ or +. Technical counts, targets and ranges remain in the records and do not become total bars.</p></details><span class="section-foot-actions"><a class="standalone section-dl ico i-dl" id="funding-download" href="data/funding.csv" download="funding.csv" data-tip="Funding (CSV); staff figures are in staff.csv under Data"><span class="vh">Download funding (CSV)</span></a></span></div>
   </div></section>
   </div>
 
@@ -1211,7 +1208,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   </div></section>
 
   <div class="group">
-  <nav class="group-nav" aria-label="States sections"><span class="group-label">States</span><span class="group-links"><a href="#europe">Europe</a><span class="group-sep" aria-hidden="true"> · </span><a href="#world">The world</a></span></nav>
+  <nav class="group-nav" aria-label="States sections"><span class="group-label">States</span><span class="group-links"><span class="meta-item"><span class="meta-tail"><a href="#europe">Europe</a><span class="meta-dot group-sep" aria-hidden="true">·</span></span></span> <span class="meta-item"><span class="meta-tail"><a href="#world">The world</a></span></span></span></nav>
   <section class="offscreen" aria-labelledby="europe"><div class="section-label">
     <h2 id="europe">Europe, state by state</h2></div><div class="section-body">
     <div class="entries" id="entries"></div>
@@ -1230,7 +1227,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       </div>
     </div>
     <p class="small" id="world-count" role="status"></p>
-    <p class="scroll-hint" id="world-scroll-hint" hidden>Scroll sideways for more columns →</p>
+    <p class="scroll-hint running-text" id="world-scroll-hint" hidden>Scroll sideways for more columns →</p>
     <div class="table-scroll"><div class="scroll" id="world-scroll" tabindex="0" role="group" aria-label="Worldwide table" aria-describedby="world-scroll-hint"><table class="world">
       <thead><tr><th data-k="name" aria-sort="ascending"><button type="button"><span class="sort-label">State</span></button></th><th data-k="region" data-col="region"><button type="button"><span class="sort-label">Region (UN)</span></button></th><th data-k="status"><button type="button"><span class="sort-label">Status</span></button></th><th data-k="inst" data-col="inst"><button type="button" title="A dash means there is no institute yet."><span class="sort-label">Institute</span></button></th><th data-k="since" data-col="since"><button type="button" title="A dash means there is no institute yet."><span class="sort-label">Status since</span></button></th><th data-k="op" data-col="op"><button type="button" title="Published work or joint testing found, with the date of the first known item. None found yet means none found in the sources we searched. A dash means there is no established institute."><span class="sort-label">Known activity</span></button></th><th data-k="eur" data-col="budget"><button type="button" title="A dash means there is no institute yet."><span class="sort-label">Budget</span></button></th><th data-k="staff" data-col="staff"><button type="button" title="A dash means there is no institute yet."><span class="sort-label">Staff</span></button></th><th data-k="net" data-col="net"><button type="button"><span class="sort-label">Network</span></button></th></tr></thead>
       <tbody id="world-rows"></tbody>
@@ -1240,17 +1237,17 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   </div>
 
   <div class="group">
-  <nav class="group-nav" aria-label="Data sections"><span class="group-label">Data</span><span class="group-links"><a href="#data">Downloads</a><span class="group-sep" aria-hidden="true"> · </span><a href="#method">Method</a></span></nav>
+  <nav class="group-nav" aria-label="Data sections"><span class="group-label">Data</span><span class="group-links"><span class="meta-item"><span class="meta-tail"><a href="#data">Downloads</a><span class="meta-dot group-sep" aria-hidden="true">·</span></span></span> <span class="meta-item"><span class="meta-tail"><a href="#method">Method</a></span></span></span></nav>
   <section aria-labelledby="data"><div class="section-label">
     <h2 id="data">Data</h2></div><div class="section-body">
     <h3>Download</h3>
-    <p>The data behind this page is free to reuse under <span id="licence"></span>, with attribution.</p>
+    <p class="running-text">The data behind this page is free to reuse under <span id="licence"></span>, with attribution.</p>
     <div class="downloads" id="downloads"></div>
     <!-- build:using-data -->
     <h3>Cite as</h3>
-    <p class="cite" id="cite"></p>
+    <p class="cite running-text" id="cite"></p>
     <h3 id="corrections">Corrections</h3>
-    <p id="corr"></p>
+    <p class="running-text" id="corr"></p>
     <details class="more" id="changes">
       <summary><span class="summary-label">Version history</span> <span class="small" id="changes-latest"></span></summary>
       <ul id="changelog"></ul>
@@ -1259,11 +1256,11 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
 
   <section aria-labelledby="method" id="method-sec"><div class="section-label">
     <h2 id="method">Method</h2></div><div class="section-body">
-    <p class="method-definition" id="definition"></p>
+    <p class="method-definition running-text" id="definition"></p>
     <details class="more" id="method-details">
       <summary>Status, evidence and method</summary>
       <div class="two">
-        <div class="prose-panel"><h3>Status definitions</h3><ul id="status-defs"></ul><h3>Method in brief</h3><ul id="rules"></ul><p><a href="method.html">Full method</a></p></div>
+        <div class="prose-panel"><h3>Status definitions</h3><ul id="status-defs"></ul><h3>Method in brief</h3><ul id="rules"></ul><p class="running-text"><a href="method.html">Full method</a></p></div>
         <div class="prose-panel"><h3>Evidence and limits</h3><ul id="limits"></ul></div>
       </div>
     </details>
@@ -1614,10 +1611,22 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     return box;
   }
   // Text rectangles can overlap on adjacent lines with tight leading. Measure the actual baselines instead.
-  function qualifierBaseline(node) {
+  function qualifierBaseline(node, measure) {
     var probe = el("span"); probe.style.cssText = "display:inline-block;width:0;height:0;padding:0;margin:0;vertical-align:baseline";
-    if (node.nodeType === 3) node.parentNode.insertBefore(probe, node.nextSibling); else node.appendChild(probe);
-    var y = probe.getBoundingClientRect().top; probe.remove(); return y;
+    var keep, suffix, original;
+    if (node.nodeType === 3) {
+      // A free marker after text can wrap onto the qualifier's line. Bind it to
+      // the final ink glyph, including when pretty wrapping or a text cap applies.
+      original = node.textContent;
+      var last = original.search(/\S\s*$/u);
+      suffix = node.splitText(last); keep = el("span"); keep.style.whiteSpace = "nowrap";
+      suffix.parentNode.insertBefore(keep, suffix); keep.textContent = String.fromCodePoint(suffix.textContent.codePointAt(0));
+      suffix.textContent = suffix.textContent.slice(keep.textContent.length); keep.appendChild(probe);
+    } else node.appendChild(probe);
+    // Both probes stay in the same layout while their baselines are compared.
+    var result = measure ? measure(probe) : probe.getBoundingClientRect().top;
+    if (keep) { node.textContent = original; keep.remove(); suffix.remove(); } else probe.remove();
+    return result;
   }
   function qualifierStartsLine(previous, current) { return previous != null && current - previous > 1; }
   function layoutQualifiers(root) {
@@ -1634,9 +1643,13 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         if (!text.textContent.trim() || parent.closest(".vh, [hidden], .cites") || !parent.getClientRects().length || getComputedStyle(parent).visibility !== "visible") continue;
         previous = text;
       }
-      var current = qualifierBaseline(item.querySelector(".qualifier-text"));
       // Source tails are processed in reading order: moving one can change where the next tail fits.
-      item.classList.toggle("own-line", qualifierStartsLine(previous && qualifierBaseline(previous), current));
+      var starts = previous && qualifierBaseline(previous, function (before) {
+        return qualifierBaseline(item.querySelector(".qualifier-text"), function (after) {
+          return qualifierStartsLine(before.getBoundingClientRect().top, after.getBoundingClientRect().top);
+        });
+      });
+      item.classList.toggle("own-line", !!starts);
     });
     // The status stays outside its button; the selection bar spans both, and the focus ring encloses both.
     items.filter(function (item) { return item.classList.contains("fn-function-status"); }).forEach(function (item) {
@@ -1686,7 +1699,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     var foot = el("div", "foot"), count = el("span", "source-count", order.length + (order.length === 1 ? " source" : " sources")), after = [];
     if (!("claims" in j && how) && j.check.last_checked !== m.as_of) { var checked = el("span", null, "Checked "); checked.appendChild(dated(j.check.last_checked)); after.push(checked); }
     if (m.repository) after.push(correctionLink(j, m));
-    var tail = after.length ? el("p", "source-after") : null;
+    var tail = after.length ? el("p", "source-after running-text") : null;
     if (tail) tail.appendChild(separated(after));
     if (order.length) {
       var det = el("details", "srcs"), summary = el("summary", "source-footer-line");
@@ -1807,7 +1820,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       if (group) group.items.push(item); else groups.push({ how: item.how, items: [item] });
     });
     groups.forEach(function (group) {
-      var li = el("li");
+      var li = el("li", "running-text");
       group.items.forEach(function (item, n) {
         if (n) li.appendChild(document.createTextNode(n === group.items.length - 1 ? " and " : ", "));
         var pname = el("span", "pname", item.name); pname.appendChild(cite(item.cited, label)); li.appendChild(pname);
@@ -1831,7 +1844,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     detail.appendChild(el("summary", null, (p.fold_items || p.items).length + " " + MEMBER_DETAILS));
     (p.fold_items || p.items).forEach(function (item) {
       var entry = institute.national_partners.entries.find(function (body) { return body.id === item.id; });
-      var li = el("li", null, item.text); li.appendChild(cite(fieldCitations(entry, ["name", "what"]), "Members")); list.appendChild(li);
+      var li = el("li", "running-text", item.text); li.appendChild(cite(fieldCitations(entry, ["name", "what"]), "Members")); list.appendChild(li);
     });
     detail.appendChild(list);
     var how = partnersFold(p, cite, "Members", true); if (how) detail.appendChild(how);
@@ -1882,7 +1895,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   }
   function rereadLine(src) {
     var state = rereadState(src); if (!state) return null;
-    var line = el("span", state.failed ? "reread failed" : "reread");
+    var line = el("span", state.failed ? "reread failed running-text" : "reread running-text");
     state.parts.forEach(function (p) { if (p) line.appendChild(typeof p === "string" ? document.createTextNode(p) : p); });
     return line;
   }
@@ -1939,10 +1952,10 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     var body = el("div", "quote-body"), entry = CLAIM_INDEX[id];
     if (!entry) return body;
     entry.excerpts.forEach(function (bound) {
-      var s = bound.source, e = bound.excerpt, block = el("div", "quote-excerpt"); block.dataset.sourceId = s.id; block.dataset.excerptIndex = bound.index;
+      var s = bound.source, e = bound.excerpt, block = el("div", "quote-excerpt running-text"); block.dataset.sourceId = s.id; block.dataset.excerptIndex = bound.index;
       block.appendChild(quoteNode(e.text, e.gloss));
       (e.anchors || []).forEach(function (a) {
-        var named = a.source_id && entry.sources[a.source_id], line = el("span", "quote-anchor", ANCHOR_LABELS[a.kind] + " ");
+        var named = a.source_id && entry.sources[a.source_id], line = el("span", "quote-anchor running-text", ANCHOR_LABELS[a.kind] + " ");
         line.appendChild(quoteNode(a.text, a.gloss));
         if (named) { // the other copy's title follows Naming: English shown, the original as its tip
           var title = el("span", null, named.title_en || named.title);
@@ -1961,7 +1974,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   function loadClaimQuote(fold) {
     if (!fold.open || fold.querySelector(".quote-body") || !CLAIM_INDEX[fold.dataset.quoteClaim]) return;
     var body = claimQuoteBody(fold.dataset.quoteClaim);
-    if (fold.dataset.translated) body.appendChild(el("span", "quote-translation", fold.dataset.translated));
+    if (fold.dataset.translated) body.appendChild(el("span", "quote-translation running-text", fold.dataset.translated));
     fold.appendChild(body);
   }
   document.addEventListener("toggle", function (e) { if (e.target.matches("details.quote")) loadClaimQuote(e.target); }, true);
@@ -2003,7 +2016,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   }
   function factClaims(j, inst) { return (j.claims || []).concat(inst && inst.claims || []).filter(function (c) { return c.kind === "fact" && !c.expired; }); }
   function claimSentence(c, text) {
-    var line = el("span", "claim-text"), entry = CLAIM_INDEX[c.id];
+    var line = el("span", "claim-text running-text"), entry = CLAIM_INDEX[c.id];
     var bound = entry && entry.excerpts.find(function (b) { return (b.excerpt.supports || []).indexOf(entry.pointer + "/text") >= 0; }); // exactly one text binding, checked by the producer
     var quoted = c.lead && /["“]([^"”]+)["”]/.exec(text);
     if (!quoted || !bound) { line.textContent = nonbreakingDates(text); return line; }
@@ -2027,10 +2040,10 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     var leadText = lead ? lead.text.trim() : "";
     if (lead && rest.indexOf(leadText) >= 0) {
       var at = rest.indexOf(leadText), before = rest.slice(0, at).trim(), after = rest.slice(at + leadText.length).trim();
-      if (before) card.appendChild(el("p", null, before));
+      if (before) card.appendChild(el("p", "running-text", before));
       card.appendChild(claimBlock(lead, cite));
-      if (after) card.appendChild(el("p", "small", after));
-    } else { var finding = el("p", null, rest); finding.appendChild(cite(fieldCitations(j, ["finding"]))); card.appendChild(finding); }
+      if (after) card.appendChild(el("p", "small running-text", after));
+    } else { var finding = el("p", "running-text", rest); finding.appendChild(cite(fieldCitations(j, ["finding"]))); card.appendChild(finding); }
     if (development) card.appendChild(claimBlock(development, cite, developmentSentence(development)));
   }
   function developmentSentence(c) { return "On " + fmtDate(c.date) + " " + c.act + ", which " + c.text.replace(/\.$/, "") + "."; } // summary pattern 3
@@ -2039,7 +2052,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   function sourceList(order, S, roles, record) {
     var ol = el("ol", "prose-panel");
     order.forEach(function (id) {
-      var src = S[id], li = el("li"); li.dataset.sourceId = id;
+      var src = S[id], li = el("li", "running-text"); li.dataset.sourceId = id;
       var full = src.title_en || src.title, shown = record ? full : shortTitle(full), publisher = record ? src.publisher : shortPublisher(src.publisher);
       var a = el("a", "standalone", shown); a.href = src.url; li.appendChild(a);
       if (shown !== full) { a.setAttribute("aria-label", full); a.dataset.tip = full + (src.title_en ? " (" + src.title + ")" : ""); } // a cut title keeps its full form as name and hover
@@ -2166,14 +2179,14 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   function nativeFundingCitations(fu) { return fieldCitations(fu, ["amount", "currency", "amount_qualifier", "period", "commitment", "kind", "coverage"].concat(fu.display.generated_description ? ["description"] : [])); }
   function fundingRecord(item, cite) {
     var record = el("div", "funding-record"); record.dataset.record = "funding"; record.dataset.recordId = item.id;
-    var native = el("p", "funding-native"); native.appendChild(noRateTip(el("span", "budget-amount", shownAmount(item, item.display.native_value)), item.currency)); native.appendChild(document.createTextNode(" "));
+    var native = el("p", "funding-native running-text"); native.appendChild(noRateTip(el("span", "budget-amount", shownAmount(item, item.display.native_value)), item.currency)); native.appendChild(document.createTextNode(" "));
     var qualifiers = el("span", "small budget-qualifiers qualifiers"); qualifiers.appendChild(separated(item.display.native_qualifiers)); qualifiers.appendChild(cite(withRateCitations(nativeFundingCitations(item), item, item.display.native_value))); native.appendChild(qualifiers); record.appendChild(native);
     var description = publishedFunding(item);
     if (!item.display.generated_description && item.description && description !== item.display.native_value) {
       var statement = el("details", "more quiet source-statement"); statement.appendChild(el("summary", null, "Source statement"));
-      var text = el("p", null, description); text.appendChild(cite(fieldCitations(item, ["description"]))); statement.appendChild(text); record.appendChild(statement);
+      var text = el("p", "running-text", description); text.appendChild(cite(fieldCitations(item, ["description"]))); statement.appendChild(text); record.appendChild(statement);
     }
-    var metadata = el("p", "funding-metadata"), grade = confTag(item); if (grade) metadata.appendChild(grade);
+    var metadata = el("p", "funding-metadata running-text"), grade = confTag(item); if (grade) metadata.appendChild(grade);
     if (item.as_of) { var asOfLine = el("span", "small", " "); asOfLine.appendChild(asOf(item.as_of)); metadata.appendChild(asOfLine); }
     if (item.notes) metadata.appendChild(el("span", "small", " " + item.notes));
     metadata.appendChild(cite(fieldCitations(item, ["as_of", "confidence", "notes"]))); record.appendChild(metadata);
@@ -2189,7 +2202,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   function relatedFunding(inst, cite) {
     var box = el("span", "related-funding");
     inst.display.related_funding_ids.forEach(function (identity) {
-      var record = inst.display.funding_records[identity], line = el("span", "related-funding-item"); line.dataset.fundingId = identity;
+      var record = inst.display.funding_records[identity], line = el("span", "related-funding-item running-text"); line.dataset.fundingId = identity;
       // The source wording, led by the euro figure for an amount in another currency (rule currency-rounding).
       var stated = publishedFunding(record);
       if (converted(record, record.display.value)) { var eur = shownAmount(record, record.display.value); var statesNative = stated && new RegExp("\\b" + record.currency + " \\d").test(stated); line.appendChild(el("span", "related-funding-eur", statesNative ? eur.replace(/ \([^()]*\)$/, "") : eur)); if (stated) line.appendChild(document.createTextNode(": " + nonbreakingDates(stated))); } // the euro figure drops its bracket only when the source wording itself states the native amount (Korea's does not)
@@ -2289,10 +2302,10 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   function originalName(b) { if (!b.name_en) return ""; var m = /\s*(\([^()]+\))$/.exec(b.name); return m && b.name_en.slice(-m[1].length) === m[1] ? b.name.slice(0, m.index) : b.name; }
   // A body: its name with the original as its tooltip (principle: Naming), followed by roles outside the tooltip.
   function bodyItem(name, original, details, ids, cite, after) {
-    var li = el("li"), line = el("span", "body-name"), text = withOriginal(el("span", null, name), original); line.appendChild(text); li.appendChild(line);
+    var li = el("li"), line = el("span", "body-name running-text"), text = withOriginal(el("span", null, name), original); line.appendChild(text); li.appendChild(line);
     var roles = after ? el("span", "body-roles", ": " + after) : null;
     if (roles) line.appendChild(roles);
-    details.filter(Boolean).forEach(function (text, n, all) { var d = el("span", "det", text); li.appendChild(d); if (n === all.length - 1) d.appendChild(cite(ids)); });
+    details.filter(Boolean).forEach(function (text, n, all) { var d = el("span", "det running-text", text); li.appendChild(d); if (n === all.length - 1) d.appendChild(cite(ids)); });
     if (!details.filter(Boolean).length) (roles || line).appendChild(cite(ids));
     return li;
   }
@@ -2369,11 +2382,11 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       var generated = (j.notes || "").split(/\n\s*\n/).map(function (text) { return text.trim(); }).filter(Boolean);
       if (!generated.length) return null;
       var block = el("div", "how"); block.appendChild(el("p", "gl", HOW_WORDS.title));
-      generated.slice(0, HOW_SHOWN).forEach(function (text) { block.appendChild(el("p", null, text)); });
+      generated.slice(0, HOW_SHOWN).forEach(function (text) { block.appendChild(el("p", "running-text", text)); });
       if (generated.length > HOW_SHOWN) {
         var earlier = el("details", "more quiet how-earlier");
         earlier.appendChild(el("summary", null, HOW_WORDS.earlier(generated.length - HOW_SHOWN)));
-        generated.slice(HOW_SHOWN).forEach(function (text) { earlier.appendChild(el("p", null, text)); });
+        generated.slice(HOW_SHOWN).forEach(function (text) { earlier.appendChild(el("p", "running-text", text)); });
         block.appendChild(earlier);
       }
       return block;
@@ -2388,7 +2401,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     if (pending) paragraphs.push("The Commission's contact list marks this state's AI Act authority as pending final adoption.");
     if (!paragraphs.length) return null;
     var box = el("div", "how"); box.appendChild(el("p", "gl", "How we checked"));
-    paragraphs.forEach(function (text) { box.appendChild(el("p", null, text)); });
+    paragraphs.forEach(function (text) { box.appendChild(el("p", "running-text", text)); });
     box.lastElementChild.appendChild(cite(fieldCitations(j, ["notes"])));
     return box;
   }
@@ -3074,7 +3087,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         MAPS = [];
         var saved = SAVED_MAP && view.region === DEFAULT_REGION;
         if (saved) SAVED_MAP.forEach(function (n) { box.appendChild(n); });
-        else box.appendChild(el("p", "small", mapFailed ? "The map could not be loaded; the list has every institute." : "The map is loading; the list has every institute."));
+        else box.appendChild(el("p", "small running-text", mapFailed ? "The map could not be loaded; the list has every institute." : "The map is loading; the list has every institute."));
         box.setAttribute("data-map", saved ? "saved" : mapFailed ? "failed" : "loading");
         return;
       }
@@ -3549,13 +3562,13 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         // The group heading already says "None identified": drop the repeated opening sentence.
         var summary = findingText(j);
         var first = firstSentence(summary);
-        top.appendChild(el("span", "find", first)); card.appendChild(top);
+        top.appendChild(el("span", "find running-text", first)); card.appendChild(top);
         var rest = summary; // the open summary keeps only the name; the complete finding appears once beneath it
         foldClose(card);
         var order = SOURCE_ORDERS[j.id] = recordSources(j).filter(function (id, n, ids) { return S[id] && ids.indexOf(id) === n; }), roles = {}, cite = citations(S, order, roles);
         order.forEach(function (id) { roles[id] = []; });
         if ("claims" in j) migratedFinding(card, j, rest, cite);
-        else { card.appendChild(el("p", null, rest)); citeTarget(card.lastElementChild).appendChild(cite(fieldCitations(j, ["finding"]))); }
+        else { card.appendChild(el("p", "running-text", rest)); citeTarget(card.lastElementChild).appendChild(cite(fieldCitations(j, ["finding"]))); }
         // Only marks already rendered in the finding can replace a closest body's own citations.
         var findingSources = Array.from(card.querySelectorAll("a.cn[data-source-id]")).map(function (a) { return a.dataset.sourceId; });
         nonIdentifiedBodies(j, cite, m, findingSources).forEach(function (group) { card.appendChild(group); });
@@ -3657,7 +3670,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       function appendClaims(detail, i, code, inline) {
         var cite = citations(S, (SOURCE_ORDERS[i.jurisdiction_id] || []).slice(), {}), value = rows[i.id][code].value;
         if (!inline) {
-          var context = el("p", "fn-detail-context");
+          var context = el("p", "fn-detail-context running-text");
           var sentence = FN_COPY.state[value];
           if (sentence) sentence.split(/(\{institute\}|and active|without an assignment)/).forEach(function (part) {
             if (part === "{institute}") context.appendChild(instShort(i));
@@ -3685,9 +3698,9 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       }
       function build() {
         box.replaceChildren(); // build both forms once; CSS chooses the visible form without moving the saved page
-        var how = el("details", "more quiet prose-panel fn-how"), body = el("p", "small"); how.appendChild(el("summary", null, FN_COPY.how_title));
-        how.appendChild(el("p", "small fn-use fn-desktop-only", FN_COPY.use));
-        how.appendChild(el("p", "small fn-use fn-phone-only", FN_COPY.use_phone));
+        var how = el("details", "more quiet fn-how"), body = el("p", "small running-text"); how.appendChild(el("summary", null, FN_COPY.how_title));
+        how.appendChild(el("p", "small fn-use fn-desktop-only running-text", FN_COPY.use));
+        how.appendChild(el("p", "small fn-use fn-phone-only running-text", FN_COPY.use_phone));
         var dates = institutes.map(function (i) { return i.check && i.check.functions && i.check.functions.date; }).filter(Boolean).sort();
         var latest = dates.length ? dates[dates.length - 1] : ""; // ISO dates in ascending order; latest coding date
         FN_COPY.how.replace("{assigned}", ACTIVITY_WORDS.assigned).replace("{active}", ACTIVITY_WORDS.active).split(/(\{date\}|\{data\})/).forEach(function (part) {
@@ -3696,19 +3709,20 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
           else body.appendChild(document.createTextNode(part));
         });
         how.appendChild(body);
-        how.appendChild(el("p", "small fn-order", order.label));
-        how.appendChild(el("p", "small fn-provisional", FN_COPY.provisional));
+        how.appendChild(el("p", "small fn-order running-text", order.label));
+        how.appendChild(el("p", "small fn-provisional running-text", FN_COPY.provisional));
         var summary = fnSummary(); if (summary) box.appendChild(el("p", "fn-summary", summary));
         // Both choices stay above the table; the grouped view is the default at every width.
         var viewSwitch = el("div", "view-switch fn-view-switch"), initialView = box.dataset.view === "grid" ? "grid" : "grouped";
         viewSwitch.setAttribute("role", "group"); viewSwitch.setAttribute("aria-label", "Functions view");
-        viewButtons = ["grouped", "grid"].map(function (view, n) {
-          if (n) { var sep = el("span", "view-switch-sep", " · "); sep.setAttribute("aria-hidden", "true"); viewSwitch.appendChild(sep); }
+        viewButtons = ["grouped", "grid"].map(function (view) {
           var button = el("button", null, FN_COPY["view_" + view].replace("{count}", columns.length)); button.type = "button"; button.dataset.view = view;
           button.setAttribute("aria-controls", box.id); button.setAttribute("aria-pressed", String(view === initialView));
           button.addEventListener("click", function () { setView(view); button.focus({ preventScroll: true }); }); // Safari clicks must also leave focus outside the hidden view
-          viewSwitch.appendChild(button); return button;
+          return button;
         });
+        viewSwitch.appendChild(separated(viewButtons));
+        viewSwitch.querySelectorAll('.meta-dot').forEach(function (dot) { dot.textContent = '·'; }); // the control row supplies its existing gap
         box.appendChild(viewSwitch); setView(initialView);
         buildForm(false); buildForm(true);
         var legendValues = ["activity", "mandate", "not_found"];
@@ -3790,7 +3804,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
                 var status = trailingQualifier(row.value === "activity" ? "active, without an assignment" : names[row.value].toLowerCase(), "fn-function-status"); status.id = detail.id + "-" + code + "-status";
                 if (coded(row.value)) label.setAttribute("aria-describedby", status.id);
                 li.appendChild(label); li.appendChild(status);
-                li.appendChild(el("p", "fn-function-summary", vocab[code].summary)); functions.appendChild(li);
+                li.appendChild(el("p", "fn-function-summary running-text", vocab[code].summary)); functions.appendChild(li);
               }); detail.appendChild(heading); detail.appendChild(functions);
             }); button.parentNode.appendChild(detail); detailRow = detail; selected(button); layoutQualifiers(detail);
           });
@@ -3960,7 +3974,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         var ul = el("ul", "group-list"); ul.setAttribute("role", "list");
         items.forEach(function (x) {
           var li = el("li"), a = el("a", "standalone", x[0].name); a.href = anchor(x[0].id); li.dataset.state = x[0].id;
-          var note = el("span", "group-note"); note.appendChild(g[0] === "none" ? testing(x[1]) : counterpart(x[1]));
+          var note = el("span", "group-note running-text"); note.appendChild(g[0] === "none" ? testing(x[1]) : counterpart(x[1]));
           li.appendChild(a); li.appendChild(note); ul.appendChild(li);
         });
         grp.appendChild(ul); (g[0] === "none" ? right : left).appendChild(grp);
@@ -3984,7 +3998,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         var ul = el("ul", "group-list stacked"); ul.setAttribute("role", "list");
         items.forEach(function (x) {
           var li = el("li"), a = el("a", "standalone", x[0].name); a.href = anchor(x[0].id); li.dataset.state = x[0].id;
-          var note = el("span", "group-note"); note.appendChild(x[1].host ? document.createTextNode(x[1].host) : missing()); note.appendChild(cite(fieldCitations(x[1], ["legal_form", "host"])));
+          var note = el("span", "group-note running-text"); note.appendChild(x[1].host ? document.createTextNode(x[1].host) : missing()); note.appendChild(cite(fieldCitations(x[1], ["legal_form", "host"])));
           li.appendChild(a); li.appendChild(note); ul.appendChild(li);
         });
         grp.appendChild(ul); (right.childElementCount ? left : right).appendChild(grp);
@@ -4038,10 +4052,9 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       var order = SOURCE_ORDERS[j.id] || recordSources(j).filter(function (id, n, ids) { return S[id] && ids.indexOf(id) === n; });
       var row = el("li", "development-row"); row.dataset.j = j.id; row.dataset.events = group.events.join(" "); row.dataset.pairs = pairIds.join(" ");
       var label = el("div", "development-label");
-      var date = el(group.date.length > 4 ? "time" : "span", "development-date", fmtDate(group.date)); date.dataset.date = group.date; if (date.tagName === "TIME") date.setAttribute("datetime", group.date); label.appendChild(date);
-      label.appendChild(document.createTextNode(" · "));
-      label.appendChild(el("span", "development-name", andJoin(names))); row.appendChild(label);
-      var text = el("p", "development-text"); text.appendChild(separated(texts));
+      var date = el(group.date.length > 4 ? "time" : "span", "development-date", fmtDate(group.date)); date.dataset.date = group.date; if (date.tagName === "TIME") date.setAttribute("datetime", group.date);
+      label.appendChild(separated([date, el("span", "development-name", andJoin(names))])); row.appendChild(label);
+      var text = el("p", "development-text running-text"); text.appendChild(separated(texts));
       text.appendChild(citations(S, order)(group.line_source_ids ? sourceIds : fieldCitations(group, ["display"]))); row.appendChild(text);
       if (newsCount >= 3) { row.classList.add("earlier"); row.hidden = true; }
       $("development-list").appendChild(row);
@@ -4303,8 +4316,8 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         var count = el("div", "fund-value"); count.appendChild(latest ? el("strong", null, latest.display.total) : described ? el("span", "fund-staff-text", described.description || "Target " + described.display.target) : missing());
         if (latest) count.appendChild(fundingCites(fieldCitations(latest, ["total", "total_qualifier", "as_of"]))); else if (described) count.appendChild(fundingCites(staffCitations(described).concat(fieldCitations(described, ["target", "target_qualifier"])))); summary.appendChild(count);
         var parts = latest ? [technical ? "Latest total" : null, latest.as_of ? asOf(latest.as_of) : null, confTag(latest)] : described ? [described.as_of ? asOf(described.as_of) : null, confTag(described)] : [];
-        if (parts.filter(Boolean).length) { var line = el("p", "fund-context"); line.appendChild(separated(parts.filter(Boolean), true)); summary.appendChild(line); }
-        if (technical) { var tech = el("p", "fund-context"), techParts = [technical.display.technical + " technical"]; if (technical.as_of) techParts.push(asOf(technical.as_of)); if (confTag(technical)) techParts.push(confTag(technical)); tech.appendChild(separated(techParts, true)); tech.appendChild(fundingCites(fieldCitations(technical, ["technical", "technical_qualifier", "as_of"]))); summary.appendChild(tech); }
+        if (parts.filter(Boolean).length) { var line = el("p", "fund-context running-text"); line.appendChild(separated(parts.filter(Boolean), true)); summary.appendChild(line); }
+        if (technical) { var tech = el("p", "fund-context running-text"), techParts = [technical.display.technical + " technical"]; if (technical.as_of) techParts.push(asOf(technical.as_of)); if (confTag(technical)) techParts.push(confTag(technical)); tech.appendChild(separated(techParts, true)); tech.appendChild(fundingCites(fieldCitations(technical, ["technical", "technical_qualifier", "as_of"]))); summary.appendChild(tech); }
         return summary;
       }
       function detailsBody() {
@@ -4326,7 +4339,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
             if (pair[2] === "funding" && item.amount != null) {
               var record = fundingRecord(item, fundingCites);
               if (item.coverage === "component") {
-                var component = el("p", "fund-component", "Component: " + publishedFunding(item)); component.appendChild(fundingCites(fieldCitations(item, ["description", "coverage"]))); record.insertBefore(component, record.firstChild);
+                var component = el("p", "fund-component running-text", "Component: " + publishedFunding(item)); component.appendChild(fundingCites(fieldCitations(item, ["description", "coverage"]))); record.insertBefore(component, record.firstChild);
               }
               col.appendChild(record); return;
             }
@@ -4340,7 +4353,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
             }
             var descriptionAndPeriod = pair[2] === "funding" ? description : withPeriod(description, item.period);
             // Value, then one qualifier line: published qualifiers, as-of date and confidence; notes follow on their own line.
-            var p = el("p"), recordQualifiers = (pair[2] === "funding" ? item.display.native_qualifiers.slice() : []).concat([item.as_of ? asOf(item.as_of) : null, confTag(item)]);
+            var p = el("p", "running-text"), recordQualifiers = (pair[2] === "funding" ? item.display.native_qualifiers.slice() : []).concat([item.as_of ? asOf(item.as_of) : null, confTag(item)]);
             p.appendChild(qualified(descriptionAndPeriod || missing(), recordQualifiers));
             p.dataset.record = pair[2]; p.dataset.recordId = item.id;
             var citeLine = p.lastChild.lastChild;
@@ -4348,7 +4361,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
           });
           if (!pair[1].length) col.appendChild(missing()); body.appendChild(col);
         });
-        if (i.staffing_profile) body.appendChild(el("p", "staffing-note", i.staffing_profile));
+        if (i.staffing_profile) body.appendChild(el("p", "staffing-note running-text", i.staffing_profile));
         body.appendChild(sourcesBlock(fundOrder, S));
         if (m.repository) body.appendChild(correctionLink(j, m));
         return body;
@@ -4468,7 +4481,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         $("downloads").appendChild(box);
       });
       instantTips($("downloads"));
-    }).catch(function () { $("downloads").appendChild(el("p", "small", "File list unavailable; see data/datapackage.json.")); });
+    }).catch(function () { $("downloads").appendChild(el("p", "small running-text", "File list unavailable; see data/datapackage.json.")); });
     // The citation verbatim; its closing DOI link (dataset.doi) is clickable.
     var doiUrl = m.doi ? "https://doi.org/" + m.doi : "", citeEnd = " " + doiUrl;
     if (doiUrl && m.citation.slice(-citeEnd.length) === citeEnd) {
@@ -4490,10 +4503,10 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     } else corr.appendChild(document.createTextNode("Spotted a mistake or a newer source? Write to "));
     var ml = el("a", null, m.contact); ml.href = "mailto:" + m.contact; corr.appendChild(ml); corr.appendChild(document.createTextNode("."));
 
-    ORDER.forEach(function (st) { $("status-defs").appendChild(el("li", null, LABEL[st] + ". " + m.status_definitions[st])); });
+    ORDER.forEach(function (st) { $("status-defs").appendChild(el("li", "running-text", LABEL[st] + ". " + m.status_definitions[st])); });
     m.method_summaries.forEach(function (s) {
       if (s.summary === m.definition) return; // already shown with its full-rule link above the fold
-      var li = el("li"); li.id = "method-summary-" + s.id;
+      var li = el("li", "running-text"); li.id = "method-summary-" + s.id;
       li.appendChild(el("span", "method-copy", s.summary));
       // One rule: a "Full rule" link; several: "Full rules on" and each rule's own heading, as method.html names it (dataset.display.rule_labels).
       var ids = Object.keys(s.rules);
@@ -4513,18 +4526,18 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     [(ind === eu.length ? "All " + eu.length + " European states were checked one by one." : ind + " of the " + eu.length + " European states were checked one by one.") + (broadAll ? " Outside these 32, " + broadAll + " states were covered only by searches across many states, so 'None identified' is weaker evidence for them." : ""),
      d.sources.length + " sources, " + prim + " of them primary (government, institute or official documents).",
      "International network (International Network for Advanced AI Measurement, Evaluation and Science): " + members.length + " members: " + andJoin(members.map(function (j) { return j.id === "EU" ? "the EU" : displayName(j); })) + "." + (outside.length || noInst.length ? " Membership and having an institute are not the same thing:" + (outside.length ? " " + andJoin(outside.map(displayName)) + " " + (outside.length > 1 ? "have institutes" : "has an institute") + " but " + (outside.length > 1 ? "are not members" : "is not a member") + (noInst.length ? ";" : ".") : "") + (noInst.length ? " " + andJoin(noInst.map(displayName)) + " " + (noInst.length > 1 ? "are members" : "is a member") + " without an established institute." : "") : ""),
-    ].forEach(function (t) { $("limits").appendChild(el("li", null, t)); });
-    var generic = el("li", null, GENERIC_LEAD); generic.appendChild(sourceLinks(m.display.generic_sources, S)); generic.appendChild(document.createTextNode(GENERIC_TAIL));
+    ].forEach(function (t) { $("limits").appendChild(el("li", "running-text", t)); });
+    var generic = el("li", "running-text", GENERIC_LEAD); generic.appendChild(sourceLinks(m.display.generic_sources, S)); generic.appendChild(document.createTextNode(GENERIC_TAIL));
     generic.id = "generic-sources"; $("limits").appendChild(generic);
-    var ovli = el("li", null, "In our search we found no complete, current official tracker. The best other overviews:");
+    var ovli = el("li", "running-text", "In our search we found no complete, current official tracker. The best other overviews:");
     var ovul = el("ul");
-    (m.other_overviews || []).forEach(function (o) { var li = el("li"); li.appendChild(sourceLinks(o.display.source_links, S)); li.appendChild(document.createTextNode(": " + nonbreakingDates(o.note))); ovul.appendChild(li); });
+    (m.other_overviews || []).forEach(function (o) { var li = el("li", "running-text"); li.appendChild(sourceLinks(o.display.source_links, S)); li.appendChild(document.createTextNode(": " + nonbreakingDates(o.note))); ovul.appendChild(li); });
     ovli.appendChild(ovul); $("limits").appendChild(ovli);
     // Readers get the plain summary where a version has one; the technical change list stays in the data.
     function changeText(c) { return c.summary || c.changes.join(" "); }
     m.display.changelog.forEach(function (c) {
       var li = el("li"), head = el("div", "change-head"); head.appendChild(separated([el("span", null, c.version), dated(c.date)])); li.appendChild(head);
-      li.appendChild(el("p", null, changeText(c))); $("changelog").appendChild(li);
+      li.appendChild(el("p", "running-text", changeText(c))); $("changelog").appendChild(li);
     });
     var latest = m.display.latest_change;
     // The collapsed row: version and date only; the notes are in the open list.
@@ -4534,8 +4547,8 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     var pub = el("a", null, m.publisher); pub.href = "https://accelerate-europe.org/"; $("foot").textContent = "";
     var methodLink = el("a", null, "Full method"); methodLink.href = "method.html";
     var feed = el("a", "foot-feed ico i-feed", "Follow updates"); feed.href = "feed.xml"; feed.dataset.tip = "Atom feed of News and releases, for a feed reader"; // the feed symbol carries its word (principle: Symbols)
-    var line = el("p"); line.appendChild(separated([pub, "compiled by " + andJoin(maintainers), "Code: MIT; data, page text and documentation: " + m.license, methodLink, feed])); $("foot").appendChild(line);
-    $("foot").appendChild(el("p", null, m.license_note));
+    var line = el("p", "running-text"); line.appendChild(separated([pub, "compiled by " + andJoin(maintainers), "Code: MIT; data, page text and documentation: " + m.license, methodLink, feed])); $("foot").appendChild(line);
+    $("foot").appendChild(el("p", "running-text", m.license_note));
     glueCitations($("top"));
     glueCitations(document.querySelector("main"));
     arrangeCards();
@@ -4671,11 +4684,15 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     new MutationObserver(refreshQualifiers).observe(ROOT, { attributes: true, attributeFilter: ["style"] });
     window.addEventListener("resize", refreshQualifiers, { passive: true });
     document.fonts.addEventListener("loadingdone", refreshQualifiers);
-    document.addEventListener("toggle", function (e) { if (e.target.open) layoutQualifiers(e.target); }, true);
+    // Run after every toggle handler, including lazy quote construction. One
+    // frame handles nested folds together and also refreshes their enclosing line.
+    var qualifierFrame = 0, scheduleQualifiers = function () { if (!qualifierFrame) qualifierFrame = requestAnimationFrame(function () { qualifierFrame = 0; refreshQualifiers(); }); };
+    document.addEventListener("toggle", scheduleQualifiers, true);
     document.addEventListener("contentvisibilityautostatechange", function (e) { if (!e.skipped) layoutQualifiers(e.target); }, true);
     var dotFrame = 0, scheduleDots = function () { if (!dotFrame) dotFrame = requestAnimationFrame(function () { dotFrame = 0; hideLineEndDots(document); }); };
     hideLineEndDots(document); document.fonts.ready.then(scheduleDots);
     new ResizeObserver(scheduleDots).observe(document.body); document.fonts.addEventListener("loadingdone", scheduleDots);
+    document.addEventListener("toggle", scheduleDots, true);
     document.addEventListener("contentvisibilityautostatechange", function (e) { if (!e.skipped) hideLineEndDots(e.target); }, true); // an off-screen row or section as it is drawn
   }
   if (PRERENDERED) { loadSavedMap(); window.addEventListener("resize", loadSavedMap); }

@@ -47,6 +47,8 @@ from method_copy import rule_label  # noqa: E402
 from release_checks import today  # noqa: E402
 from screenshot_pixels import decode_png, differing_pixels, same_colour  # noqa: E402
 from versioning import parse_version  # noqa: E402
+from separator_checks import PAGE_SEPARATORS_JS, SEPARATOR_LINES, separator_coverage_errors  # noqa: E402
+from section_extents import EXTENT_JOBS, check_section_extents  # noqa: E402
 
 def updated_date(data: dict) -> str:
     """The page's update line: recorded work on development builds, otherwise the last release."""
@@ -4283,6 +4285,7 @@ WIDTH_GEOMETRY = {
     (".palette", "width", "min(var(--palette-width), calc(100vw - 2 * var(--sp-4)))"): "palette stays within the viewport with its token gutters",
     (".fn-column-group::after", "width", "100%"): "group rule spans its tracks; there is no gutter between groups",
     (".bar-value", "min-width", "min(var(--bar-min), 100%)"): "minimum visible bar never exceeds its track",
+    (":is(.section-foot > details, .section-foot > .foot > details, .card.mini > .foot > details) > summary", "max-width", "calc(100% - var(--foot-action-space))"): "only the fold summary reserves room for its action; opened content keeps the column width",
     **{(selector, prop, "100%"): "fill or cap at the containing track, without an independent measure" for selector, prop in (
         ("#changes > summary", "width"), (".suggest", "width"), (".worldmap svg", "width"),
         (".region-head", "width"), (".source-footer-line", "max-width"), (".meta-item", "max-width"),
@@ -5024,50 +5027,6 @@ def check_rules_render(page) -> list[str]:
 WIDE_WIDTHS = (1100, 1101, 1120, 1200, 1279, 1280, 1440)
 
 
-TEXT_MEASURE_JS = """() => {
-  const lines = el => { const out = [], w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT); let n;
-    while ((n = w.nextNode())) { if (!n.data.trim()) continue; const p = n.parentElement; if (!p || !p.getClientRects().length) continue;
-      if (getComputedStyle(p).visibility === 'hidden' || p.closest('.vh, [hidden], .cites')) continue;
-      const r = document.createRange(); r.selectNodeContents(n); for (const b of r.getClientRects()) if (b.width > 0) out.push(b); }
-    return out; };
-  // A text block holds running text only: no table, map, control, heading or multi-column grid inside it.
-  const flowOnly = el => !el.querySelector('table, svg, img, input, select, textarea, button, h1, h2, h3, h4') && [el, ...el.querySelectorAll('*')].every(n => { const d = getComputedStyle(n); return !(/grid/.test(d.display) && d.gridTemplateColumns.split(' ').length > 1); });
-  const isText = el => parseFloat(getComputedStyle(el).fontSize) <= 16.5 && !/^H[1-6]$/.test(el.tagName) && flowOnly(el);
-  const name = e => e.tagName.toLowerCase() + (e.id ? '#' + e.id : '') + (e.classList.length ? '.' + [...e.classList].join('.') : '');
-  const errors = [], seen = new Set(); let wrapped = 0;
-  for (const c of document.querySelectorAll('main *, footer *')) {
-    const cs = getComputedStyle(c);
-    if (!c.childNodes.length || !c.getClientRects().length || cs.display.startsWith('inline') || c.closest('table, svg, .suggest, #tip, .popover')) continue;
-    const blocks = [];
-    for (const child of c.children) {
-      const s = getComputedStyle(child);
-      if (!child.getClientRects().length || s.display.startsWith('inline') || /absolute|fixed/.test(s.position) || s.whiteSpace === 'nowrap' || !isText(child)) continue;
-      const box = child.getBoundingClientRect(), ls = lines(child);
-      if (ls.length) blocks.push({ el: child, left: box.left, right: box.right - parseFloat(s.paddingRight) - parseFloat(s.borderRightWidth), ls });
-    }
-    // Bare text beside block children is one anonymous block with the container's measure. An inline element's
-    // lines are read as a block's are (its visible text only), so screen-reader text such as a link's
-    // "(opens in a new tab)", clipped beyond the line's end, never counts as running further.
-    const bare = [...c.childNodes].filter(n => n.nodeType === 3 ? n.data.trim() : n.nodeType === 1 && getComputedStyle(n).display.startsWith('inline'));
-    if (bare.length && blocks.length && isText(c)) {
-      const ls = bare.flatMap(n => { if (n.nodeType === 1) return lines(n); const r = document.createRange(); r.selectNode(n); return [...r.getClientRects()].filter(b => b.width > 0); });
-      if (ls.length) blocks.push({ el: c, bare: true, left: Math.min(...ls.map(b => b.left)), right: c.getBoundingClientRect().right - parseFloat(cs.paddingRight), ls });
-    }
-    if (blocks.length < 2) continue;
-    for (const b of blocks) {
-      if (new Set(b.ls.map(r => Math.round(r.top / 4))).size < 2 || Math.max(...b.ls.map(r => r.right)) < b.right - 160) continue; // one line, or its lines stop well short of its measure
-      wrapped++;
-      for (const o of blocks) {
-        if (o === b || Math.abs(o.left - b.left) > 40) continue; // side by side, not stacked (a list indent is stacked)
-        const further = Math.max(...o.ls.map(r => r.right)) - b.right, key = name(b.el) + '|' + name(o.el);
-        if (further > 4 && !seen.has(key)) { seen.add(key); errors.push(`${name(b.el)}${b.bare ? ' (bare text)' : ''} "${b.el.textContent.trim().slice(0, 40)}" wraps at ${Math.round(b.right - b.left)}px while its stacked sibling ${name(o.el)} "${o.el.textContent.trim().slice(0, 30)}" runs ${Math.round(further)}px further`); }
-      }
-    }
-  }
-  return [errors, wrapped];
-}"""
-
-
 # Principle Re-read line: the line is a block of its own in the source item, so it wraps at the item's measure,
 # and no visible text of the item runs past that measure. Counts wrapped lines beside a wrapped title, so a run
 # that never meets a long line next to a long title says so.
@@ -5132,45 +5091,12 @@ def check_none_identified_tips(browser, base_url: str, data: dict) -> list[str]:
     return errors
 
 
-CONTENT_GRID_JS = r"""() => {
-  const errors = [], visible = n => n.getClientRects().length && getComputedStyle(n).visibility !== 'hidden';
-  const probe = document.createElement('div'); probe.style.width = 'var(--prose)'; document.body.appendChild(probe);
-  const measure = probe.getBoundingClientRect().width; probe.remove();
-  const label = n => n.id || n.className || n.tagName.toLowerCase();
-  const full = 'table, .cards, .card-row, .access, .setup, .group-list, .fund-list, .fund-item, .fund-name-list, .development-list, .development-row, .downloads, .dlist, .two, .two > .prose-panel, .two > .prose-panel > ul';
-  const bodies = [...document.querySelectorAll('main section > .section-body')];
-  if (!bodies.length) return ['no section bodies to measure'];
-  for (const body of bodies) {
-    if (body.closest('section.first')) continue; // the sole exception, including its stacked map/list caps
-    const b = body.getBoundingClientRect(), section = body.closest('section').getAttribute('aria-labelledby');
-    const edge = (n, right) => {
-      const r = n.getBoundingClientRect();
-      if (Math.abs(r.left - b.left) > 1 || Math.abs(r.right - right) > 1)
-        errors.push(section + ': ' + label(n) + ' edges ' + r.left.toFixed(1) + '–' + r.right.toFixed(1) +
-          ', expected ' + b.left.toFixed(1) + '–' + right.toFixed(1));
-    };
-    const children = [...body.children].filter(visible), widest = Math.max(...children.map(n => n.getBoundingClientRect().width));
-    if (!children.length) errors.push(section + ': no main content block');
-    // All ties count, so a second wide block cannot hide an offset first one.
-    for (const child of children.filter(n => Math.abs(n.getBoundingClientRect().width - widest) <= 1)) {
-      edge(child, child.matches('p, ul, ol, .prose-panel') && !child.matches(full) ? b.left + Math.min(measure, b.width) : b.right);
-    }
-    for (const n of body.querySelectorAll(full)) if (visible(n)) edge(n, b.right);
-    for (const p of body.querySelectorAll(':scope > p, .fn > p, .two > .prose-panel > p, .two > .prose-panel > ul > li')) {
-      if (visible(p)) edge(p, b.left + Math.min(measure, b.width));
-    }
-  }
-  // Inside rows/cards the text starts on its own track; it still cannot exceed the shared measure.
-  for (const n of document.querySelectorAll('p, .claim, .record-notes, .development-text, .card.mini > summary .find, .group-note')) {
-    if (!visible(n) || n.closest('section.first')) continue;
-    if (n.getBoundingClientRect().width > measure + 1) errors.push(label(n) + ': running text exceeds --prose');
-  }
-  return errors;
-}"""
-
-
 def check_content_grid(browser, base_url: str) -> list[str]:
-    """R6/R1: section axes and heading placement across 1280px, with every fold and earlier News row exposed."""
+    """Heading placement across 1280px and the 1000px table fit/scroll state.
+
+    Block and text edges moved to check_section_extents, including the former
+    1000px audit gap. Sticky/static heading placement remains a distinct contract.
+    """
     errors = []
     for width in (1000, 1100, 1101, 1120, 1200, 1279, 1280, 1920):
         page = browser.new_page(viewport={"width": width, "height": 1000})
@@ -5203,18 +5129,15 @@ def check_content_grid(browser, base_url: str) -> list[str]:
                 found = page.evaluate("""() => {
                   const scroll = document.querySelector('.fn-scroll'), table = scroll?.querySelector('table');
                   if (!table) return ['missing functions table'];
-                  const body = scroll.closest('.section-body').getBoundingClientRect(), r = scroll.getBoundingClientRect();
+                  const r = scroll.getBoundingClientRect();
                   const errors = [];
-                  if (Math.abs(r.left - body.left) > 1 || Math.abs(r.right - body.right) > 1) errors.push('functions scroller is not full content width');
                   // Without group gutters (owner, 18 Nov 2026) the table may fit at 1000px; it either fits, marked so, or scrolls inside its body.
                   const fits = table.getBoundingClientRect().width <= r.width + 1;
                   if (fits ? !scroll.classList.contains('fits') : (scroll.classList.contains('fits') || !['auto', 'scroll'].includes(getComputedStyle(scroll).overflowX)))
                     errors.push('functions table neither fits nor scrolls inside its body at 1000px');
                   return errors;
                 }""")
-            else:
-                found = page.evaluate(CONTENT_GRID_JS)
-            errors.extend(f"{width}px: {e}" for e in found)
+                errors.extend(f"{width}px: {e}" for e in found)
         finally:
             page.close()
     return errors
@@ -5517,20 +5440,18 @@ def check_secondary_tone(browser, base_url: str) -> list[str]:
 
 
 def check_text_measure(browser, base_url: str) -> list[str]:
-    """Principle Measure: stacked sibling text blocks in one container wrap at one width, so no paragraph,
-    list or note breaks early beside a sibling whose lines run further (bare text included). Measured from
-    the rendered lines with every disclosure open, at 1600, 1280 and 390 px. Report lines (cosmetic, D1), except a missing
-    headline or first screen, which blocks, and the source items' re-read lines (REREAD_MEASURE_JS), which block: a
-    re-read line off its item's measure, or a width with no wrapped re-read line beside a wrapped title to measure."""
+    """Re-read line containment and headline glyph overflow, including 390px.
+
+    General text widths and sibling block edges moved to check_section_extents.
+    This check retains the unique text-glyph and source-local containment checks.
+    """
     errors = []
     for width in (1600, 1280, 390):
         page = browser.new_page(viewport={"width": width, "height": 900})
         hydrated(page, base_url)
         page.locator("details").evaluate_all("nodes => nodes.forEach(n => n.open = true)")
         page.evaluate("async () => { document.body.offsetHeight; await document.fonts.ready; await new Promise(requestAnimationFrame); }")  # opened lists reveal italic text in its own font
-        found, wrapped = page.evaluate(TEXT_MEASURE_JS)
-        errors.extend(report_line(f"{width}px: {e}") for e in found)
-        # The headline runs full width (principle: Headline) but never past the first screen's own column (the headline is not a paragraph, so TEXT_MEASURE_JS skips it).
+        # Glyph containment is stricter than the headline's box edge.
         over = page.evaluate("""() => { const h = document.querySelector('#headline'), f = document.querySelector('section.first'); if (!h || !f) return 'missing';
           const r = document.createRange(); r.selectNodeContents(h); const right = Math.max(...[...r.getClientRects()].map(x => x.right));
           return right > f.getBoundingClientRect().right + 1 ? Math.round(right) : null; }""")
@@ -5538,116 +5459,11 @@ def check_text_measure(browser, base_url: str) -> list[str]:
             errors.append(f"{width}px: the headline or the first screen's column is missing")
         elif over:
             errors.append(report_line(f"{width}px: the headline runs past the first screen's column ({over})"))
-        if wrapped < 20:
-            errors.append(report_line(f"{width}px: only {wrapped} wrapped text blocks measured; the measure check is not seeing the page"))
         off, lines, beside = page.evaluate(REREAD_MEASURE_JS)
         errors.extend(f"{width}px: {e}" for e in off[:8])
         if not beside:  # since 18 Nov 2026 a failed state ends the source line, so the own-line re-read lines left are one short line
             errors.append(report_line(f"{width}px: no wrapped re-read line beside a wrapped source title among {lines} re-read lines; the re-read measure is not seeing a long line"))
         page.close()
-    return errors
-
-
-# A. Panel measures: inspect actual text blocks, including lazy quotation content.
-def panel_measure_errors(panel: dict) -> list[str]:
-    errors = []
-    measure, left, right = panel["measure"], panel["left"], panel["right"]
-    if len(panel["blocks"]) < 2:
-        errors.append("fewer than two text blocks measured")
-    for block in panel["blocks"]:
-        width = block["max_width"]
-        if width is None or not min(measure, right - left) - 1 <= width <= measure + 1:
-            errors.append(block["name"] + ": computed max-width differs from the prose measure")
-        if block["right"] > min(right, left + measure) + 1 or block["text_right"] > min(right, left + measure) + 1:
-            errors.append(block["name"] + ": text/block runs past the panel measure")
-        if block["left"] < left - 1:
-            errors.append(block["name"] + ": block starts outside the panel")
-        if block["aligned"] and abs(block["left"] - left) > 1:
-            errors.append(block["name"] + ": text stack does not share the panel's left edge")
-    return errors
-
-
-PANEL_MEASURE_JS = r"""panel => {
-  panel.scrollIntoView({block:'center'});
-  const style=getComputedStyle(panel), r=panel.getBoundingClientRect();
-  const probe=document.createElement('div'); probe.style.width='var(--prose)'; panel.appendChild(probe);
-  const measure=probe.getBoundingClientRect().width; probe.remove();
-  const left=r.left+parseFloat(style.borderLeftWidth)+parseFloat(style.paddingLeft);
-  const right=r.right-parseFloat(style.borderRightWidth)-parseFloat(style.paddingRight);
-  const blocks=[...panel.querySelectorAll('*')].filter(n => {
-    const s=getComputedStyle(n);
-    // Structural rows and Close may span the panel; their narrative children keep the prose cap.
-    if (n.matches('.two > .prose-panel > ul, .fn-detail-top') || n.closest('.close-control')) return false;
-    return n.getClientRects().length && s.visibility!=='hidden' && !n.closest('.vh') && n.textContent.trim() &&
-      (s.display!=='inline' || n.matches('.quote-text')) && s.display!=='none';
-  }).map(n => {
-    const s=getComputedStyle(n), b=n.getBoundingClientRect(), range=document.createRange(); range.selectNodeContents(n);
-    const lines=[...range.getClientRects()].filter(r=>r.width && r.height);
-    return {name:n.className || n.tagName, max_width:Number.isFinite(parseFloat(s.maxWidth))?parseFloat(s.maxWidth):null,
-      // A function panel's quote sits indented under its source line (owner, 18 Nov 2026), so its content keeps its own edge.
-      aligned:n.matches('.fn-detail-context, .claim-text, .fn-detail-head, .fn-function-head, .quote-body, .quote-excerpt, .quote-anchor, .reread, .fn-sources, .srcs ol') && !n.closest('.fn-claim .quote'),
-      left:b.left, right:b.right, text_right:Math.max(b.left,...lines.map(r=>r.right))};
-  });
-  return {measure,left,right,blocks};
-}"""
-
-
-def check_panel_measure(browser, base_url: str) -> list[str]:
-    errors = []
-    for width in (1280, 1440, 390):
-        page = browser.new_page(viewport={"width": width, "height": 1000})
-        try:
-            hydrated(page, base_url)
-            # Explicit samples: the first function carrying an anchor, then one fold of each builder/context.
-            opened = page.evaluate("""async () => {
-              const box=document.querySelector('#functions-table');
-              const openQuotes = async () => {
-                await Promise.all([...box.querySelectorAll('.fn-claim details.quote:not([open])')].map(fold => new Promise(resolve => {
-                  fold.addEventListener('toggle', resolve, {once:true}); fold.querySelector('summary').click();
-                })));
-              };
-              if(innerWidth<=640) {
-                for(const row of box.querySelectorAll('.fn-phone-row')) {
-                  row.click();
-                  for(const fn of box.querySelectorAll('.fn-phone-detail button.fn-function-label')) {
-                    fn.click(); await openQuotes(); if(box.querySelector('.fn-phone-detail .quote-anchor')) return true; fn.click();
-                  }
-                  row.click();
-                }
-              } else for(const cell of box.querySelectorAll('.fn-cell')) {
-                cell.click(); await openQuotes(); if(box.querySelector('.fn-detail .quote-anchor')) return true; cell.click();
-              }
-              return false;
-            }""")
-            if not opened:
-                errors.append(f"{width}px: no function panel with a context line to measure")
-            page.locator('details.more, details.quote, details.srcs, details.card.mini').evaluate_all("nodes => nodes.forEach(n => n.open=true)")
-            page.evaluate("async () => { await document.fonts.ready; await new Promise(requestAnimationFrame); }")
-            samples = {
-                "function-phone" if width == 390 else "function-desktop": '.fn-phone-claims' if width == 390 else '.fn-detail-row .fn-detail',
-                "function-definitions": '#functions-table > .section-foot > details.more',
-                "definitions": '#method-details .two > div',
-                "record-quote": '.card:not(.mini) details.quote .quote-body',
-                "closest-body-quote": '.card.mini details.quote .quote-body',
-                "card-sources": '.card .srcs',
-                "group-sources": '#access .foot .srcs, #setup .foot .srcs',  # inside the section foot row
-                "funding-sources": '#fund-detail-jp-aisi .fund-detail-body .srcs',  # by key: Japan's three sources stay open (a longer list folds behind its count)
-            }
-            # In the two-chart Funding form the records are laid out only once a control opens them.
-            funding = page.locator('#fund-rows [aria-controls="fund-detail-jp-aisi"]').first
-            funding.evaluate(REVEAL_FUNDING_LIST_JS)
-            funding.click()
-            for label, selector in samples.items():
-                nodes = page.locator(selector)
-                if not nodes.count():
-                    errors.append(f"{width}px {label}: panel missing")
-                    continue
-                # The first rendered sample in document order; inspect both stacked Method panels.
-                for panel in (nodes.all() if label == "definitions" else [nodes.first]):
-                    measured = panel.evaluate(PANEL_MEASURE_JS)
-                    errors.extend(f"{width}px {label}: {e}" for e in panel_measure_errors(measured))
-        finally:
-            page.close()
     return errors
 
 
@@ -14168,7 +13984,7 @@ FN_VIEWS_JS = r"""() => {
   const shown = n => !!n?.getClientRects().length && getComputedStyle(n).visibility === 'visible';
   const rect = n => { const r = n.getBoundingClientRect(); return {top: r.top, bottom: r.bottom, right: r.right}; };
   const type = n => { const s = getComputedStyle(n); return {size: parseFloat(s.fontSize), colour: s.color, weight: s.fontWeight, decoration: s.textDecorationLine}; };
-  const probe = document.createElement('div'); probe.style.cssText = 'position:absolute;width:var(--prose);font:var(--type-meta);color:var(--muted)';
+  const probe = document.createElement('div'); probe.style.cssText = 'position:absolute;width:var(--text-width);font:var(--type-meta);color:var(--muted)';
   box.appendChild(probe); const meta = type(probe), prose = probe.getBoundingClientRect().width; probe.remove();
   const phone = box.querySelector('.fn-phone'), grid = box.querySelector('.fn-scroll');
   const surface = shown(phone) ? phone : grid, head = surface.querySelector('.fn-phone-head, thead');
@@ -15176,6 +14992,84 @@ def source_separator_errors(lines: list[dict]) -> list[str]:
             for line in lines if line['leading']]
 
 
+def check_page_separators(browser, base_url: str) -> list[str]:
+    """All dot-bearing line kinds, including raw separators and lazy evidence, at four widths."""
+    errors = []
+    for width in (320, 390, 1000, 1440):
+        page = browser.new_page(viewport={'width': width, 'height': 1000})
+        try:
+            hydrated(page, base_url, fn_view='default')
+            page.add_style_tag(content='.offscreen, .card-row { content-visibility: visible !important; }')
+            totals = {}
+
+            def inspect():
+                layout_settled(page)
+                result = page.evaluate(PAGE_SEPARATORS_JS, SEPARATOR_LINES)
+                errors.extend(f'{width}px: {e}' for e in result['errors'])
+                for kind, counts in result['counts'].items():
+                    total = totals.setdefault(kind, {'lines': 0, 'separators': 0})
+                    for key, value in counts.items():
+                        total[key] = max(total[key], value)
+
+            # Opening nested quote folds needs its toggle event to populate the body
+            # before the next pass. Funding records need their own controls below.
+            page.evaluate("""async () => {
+              const earlier=document.getElementById('developments-more');
+              if(earlier && !earlier.hidden && earlier.getAttribute('aria-expanded')==='false') earlier.click();
+              for(let pass=0;pass<4;pass++) {
+                const folds=[...document.querySelectorAll('details:not([open])')];
+                if(!folds.length) break;
+                await Promise.all(folds.map(d=>new Promise(resolve=>{d.addEventListener('toggle',resolve,{once:true});d.open=true;})));
+              }
+            }""")
+            inspect()
+            page.locator('.fund-names-toggle[aria-expanded="false"]').evaluate_all('(nodes) => nodes.forEach(n => n.click())')
+            funding = page.locator('.fund-row, .fund-name-row')
+            for index in range(funding.count()):
+                button = funding.nth(index)
+                if not button.is_visible():
+                    continue
+                button.click()
+                page.locator('.fund-detail[open]:visible details').evaluate_all('(nodes) => nodes.forEach(n => { n.open = true; })')
+                inspect()
+            if not funding.count():
+                errors.append(f'{width}px: no Funding controls inspected')
+            # The map uses the same record builders, but owns its own container width.
+            for name in ('United Kingdom', 'Norway'):
+                page.locator('#map-search').fill(name)
+                page.locator('#map-search').press('Enter')
+                inspect()
+            for view in ('grouped', 'grid'):
+                lines = page.evaluate(SOURCE_SEPARATORS_JS, view)
+                errors.extend(f'{width}px {view}: {e}' for e in source_separator_errors(lines))
+                totals['function sources'] = {'lines': len(lines), 'separators': sum(line['separators'] for line in lines)}
+                # Leave one evidence panel open for the whole-page inventory, including its status.
+                page.locator('.fn-phone-row:visible, .fn-cell:visible').first.click()
+                inspect()
+            # Real source and map tips exercise the sub-line at its viewport-clamped width.
+            tips = page.locator('[data-tip-sub*=" · "]')
+            for index in range(tips.count()):
+                trigger = tips.nth(index)
+                if trigger.is_visible():
+                    trigger.dispatch_event('mouseover')
+                    inspect()
+                    page.keyboard.press('Escape')
+                    if totals.get('tooltip sub-line', {}).get('lines'):
+                        break
+            required = set(SEPARATOR_LINES)
+            if width <= 640:  # Budget and Staff are hidden in the phone table.
+                required.discard('worldwide qualifiers')
+            # Standalone quotation failures and source-list tails are separate
+            # coverage kinds even though they share the same builder.
+            required.update(('re-read tails', 'archived-copy tails'))
+            errors.extend(f'{width}px: {e}' for e in separator_coverage_errors(totals, required))
+            errors.append(report_line(f'{width}px separator coverage (maximum visible lines/dots per kind): ' +
+                                      ', '.join(f'{k}={v["lines"]}/{v["separators"]}' for k, v in sorted(totals.items()))))
+        finally:
+            page.close()
+    return list(dict.fromkeys(errors))
+
+
 def check_status_qualifiers(browser, base_url: str, data: dict) -> list[str]:
     """Whole qualifiers in grouped rows, grid panels and cards, including open-view resize and text-size changes."""
     rows = function_phone_model(data)["rows"]
@@ -15230,13 +15124,6 @@ def check_status_qualifiers(browser, base_url: str, data: dict) -> list[str]:
         settled()
         measure('.fn-phone-detail', f"open row resize/font event {width}px: ", count)
     page.evaluate("document.documentElement.style.fontSize='100%'")
-    for width in (320, 390, 1000, 1440):
-        page.set_viewport_size({'width': width, 'height': 1000})
-        settled()
-        for view in ('grouped', 'grid'):
-            lines = page.evaluate(SOURCE_SEPARATORS_JS, view)
-            errors.extend(f'{width}px {view}: ' + e for e in source_separator_errors(lines))
-            errors.append(report_line(f'{width}px {view}: inspected {len(lines)} function source lines'))
     page.close()
     return errors
 
@@ -16504,6 +16391,7 @@ def browser_jobs(dist: Path, data: dict, screenshots: Path | None) -> list[tuple
         ("interactions", check_function_group_tabs, ()),
         ("interactions", check_functions_phone, (data,)),
         ("interactions", check_status_qualifiers, (data,)),
+        ("interactions", check_page_separators, ()),
         ("interactions", check_functions_sticky, ()),
         ("interactions", check_functions_zero_carrier, (data,)),
         ("interactions", check_functions_tint, ()),
@@ -16525,7 +16413,8 @@ def browser_jobs(dist: Path, data: dict, screenshots: Path | None) -> list[tuple
         ("interactions", check_close_controls, (data,)),
         ("interactions", check_secondary_tone, ()),
         ("interactions", partial(prefixed, "measure: ", check_text_measure), ()),
-        ("interactions", check_panel_measure, ()),
+        *(("interactions", check_section_extents, (width, group))
+          for width, group in EXTENT_JOBS),
         ("interactions", check_none_identified_tips, (data,)),
         ("interactions", check_theme_parity, ()),
         ("interactions", check_highlight_fill, ()),
@@ -16904,6 +16793,8 @@ def job_id(stage: str, check, args: tuple) -> str:
     """A browser job's stable name: stage, the check (a partial's wrapped one) and an interaction pass's width and theme."""
     inner = check.args[1] if isinstance(check, partial) else check
     name = f"{stage}/{inner.__name__}"
+    if inner is check_section_extents:
+        return f"{name}/{args[0]}/{args[1]}"
     return f"{name}/{args[3]}/{args[4]}" if inner is interaction_pass else name
 
 

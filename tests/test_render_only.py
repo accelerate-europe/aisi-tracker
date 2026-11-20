@@ -156,7 +156,7 @@ const ids=group=>group.children.filter(n=>n.dataset.record).map(n=>n.dataset.rec
 assert.deepEqual(groups.map(ids),[['own','component'],['proposal'],['related'],['total','target']]);
 assert.equal(groups[0].children.find(n=>n.dataset.recordId==='component').firstChild.text,'Component: Shared computing programme');
 assert.ok(groups[2].children.some(n=>n.className==='related-funding'));
-assert.equal(body.children.find(n=>n.className==='staffing-note').text,'Staff are seconded.');
+assert.equal(body.children.find(n=>n.className.split(' ').includes('staffing-note')).text,'Staff are seconded.');
 assert.equal(body.children.find(n=>n.className==='srcs').text,'own-source,staff-source');
 const all=node=>[node,...node.children.flatMap(all)];
 assert.ok(all(body).some(n=>n.text==='Staffing qualification'));
@@ -891,10 +891,10 @@ def test_undisclosed_funding_has_no_source_statement_and_keeps_evidence(bound):
     }
     tree = funding_record_tree(record)
     assert all("source-statement" not in child["className"] for child in tree["children"])
-    native = next(child for child in tree["children"] if child["className"] == "funding-native")
+    native = next(child for child in tree["children"] if "funding-native" in child["className"].split())
     assert tree_text(native).strip() == "Not published"
     assert native["children"][-1]["children"][-1]["text"] == ("evidence" if bound else "")
-    metadata = next(child for child in tree["children"] if child["className"] == "funding-metadata")
+    metadata = next(child for child in tree["children"] if "funding-metadata" in child["className"].split())
     assert record["notes"] in tree_text(metadata)
     assert metadata["children"][-1]["text"] == "answer"
 
@@ -957,14 +957,14 @@ def test_all_real_funding_disclosures_separate_native_figures_from_source_statem
     assert len(records) >= 15
     for record in records.values():
         tree = funding_record_tree(record, data["dataset"]["exchange_rates"])
-        native = next(child for child in tree["children"] if child["className"] == "funding-native")
+        native = next(child for child in tree["children"] if "funding-native" in child["className"].split())
         shown = expected_shown_funding_value(record, data)
         assert native["children"][0]["text"] == shown
         # The euro figure cites the rate's source after the amount's own (rule currency-rounding).
         expected_citations = list(dict.fromkeys([sid for field in ("amount", "currency", "amount_qualifier", "period", "commitment", "kind", "coverage") for sid in record.get("citations", {}).get(field, [])] + rate_sources(record, data)))
         assert native["children"][-1]["children"][-1]["text"] == ",".join(expected_citations)
         assert tree_text(native) == shown + " " + " · ".join(record["display"]["native_qualifiers"])
-        metadata = next(child for child in tree["children"] if child["className"] == "funding-metadata")
+        metadata = next(child for child in tree["children"] if "funding-metadata" in child["className"].split())
         assert record.get("notes", "") in tree_text(metadata)
         statements = [child for child in tree["children"] if child["className"] == "more quiet source-statement"]
         normalised = record.get("description", "")
@@ -1285,7 +1285,7 @@ console.log(JSON.stringify({names, list, institutes, rows, marks: cite(order),
         assert ', Publisher, 2026-11-15' in text(item)
         assert text(item).endswith('Source last re-read 15 Nov 2026.')
     translated = rendered['list']['children'][0]
-    assert [c.get('className') for c in translated['children']][-2:] == ['archive-copy', 'reread']  # a record's list ends the line with its archived copy
+    assert [c.get('className', '').split(' ')[0] for c in translated['children']][-2:] == ['archive-copy', 'reread']  # a record's list ends the line with its archived copy
     assert ', supports finding' in text(translated)
     assert sources[0]['title'] not in text(translated)
     for name in rendered['institutes'][:2]:

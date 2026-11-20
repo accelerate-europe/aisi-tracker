@@ -116,7 +116,7 @@ def full_method_page(dataset: dict, site: str, share: str = "") -> str:
         label = html.escape(rule_label(rule))
         sections.append(
             f'<section id="{rid}" aria-labelledby="heading-{rid}"><h2 id="heading-{rid}">{label}</h2><div class="section-body">'
-            + "".join(f"<p>{lead_in(part, rule_label(rule)) if n == 0 else html.escape(part)}</p>" for n, part in enumerate(rule_paragraphs(rule["text"])))
+            + "".join(f'<p class="running-text">{lead_in(part, rule_label(rule)) if n == 0 else html.escape(part)}</p>' for n, part in enumerate(rule_paragraphs(rule["text"])))
             + "</div></section>"
         )
     return (
@@ -138,8 +138,8 @@ def full_method_page(dataset: dict, site: str, share: str = "") -> str:
         '<main class="gutter"><div class="measure">'
         + "".join(sections)
         + '</div></main><footer class="gutter"><div class="measure" id="foot">'
-        f'<p>Code: MIT; data, page text and documentation: {html.escape(dataset["license"])}</p>'
-        f'<p>{html.escape(dataset["license_note"])}</p>'
+        f'<p class="running-text">Code: MIT; data, page text and documentation: {html.escape(dataset["license"])}</p>'
+        f'<p class="running-text">{html.escape(dataset["license_note"])}</p>'
         '<a href="index.html#method-sec">Back to the tracker</a></div></footer>'
         + THEME_SCRIPT
         + "</body></html>\n"

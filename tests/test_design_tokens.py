@@ -23,14 +23,14 @@ def test_page_uses_width_colour_and_breakpoint_tokens():
     ("max-width", "640px"),
     ("min-width", "40ch"),
     ("width", "min(100%, 31rem)"),
-    ("max-width", "calc(var(--prose) - 1px)"),
-    ("max-width", "calc(-1px + var(--prose))"),
-    ("width", "var(--prose, 49rem)"),
+    ("max-width", "calc(var(--text-width) - 1px)"),
+    ("max-width", "calc(-1px + var(--text-width))"),
+    ("width", "var(--text-width, 49rem)"),
     ("width", "640PX !important"),
     ("width", "1e2em"),
-    ("max-width", "calc(var(--prose) - 2vh)"),
-    ("min-width", "var(--prose, 75%)"),
-    ("width", "min(100cqi, var(--prose))"),
+    ("max-width", "calc(var(--text-width) - 2vh)"),
+    ("min-width", "var(--text-width, 75%)"),
+    ("width", "min(100cqi, var(--text-width))"),
 ])
 def test_raw_width_mutations_block(prop, value):
     errors = check_css_tokens(mutate_css(f"@media (width <= 640px) {{ .mutant {{ {prop}: {value}; }} }}"))
