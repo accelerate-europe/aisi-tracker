@@ -1676,8 +1676,10 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   // Fills and openings need their own hook: a fixed map record need not resize
   // the body or toggle a fold. Measure after insertion, visibility and focus settle.
   var separatorFrame = 0;
-  function scheduleSeparators() {
-    if (PRERENDERING || separatorFrame) return;
+  function scheduleSeparators(opened) { // opened: a panel just shown, laid out at once so it never paints unmeasured
+    if (PRERENDERING) return;
+    if (opened && opened.nodeType === 1) layoutSeparators(opened); // as an event listener it receives the event, not a panel
+    if (separatorFrame) return;
     separatorFrame = requestAnimationFrame(function () { separatorFrame = 0; layoutSeparators(document); });
   }
   // Each item is one unbreakable box (.meta-item), so a line breaks only between items; the separator stays with the item's final word.
@@ -3789,7 +3791,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
               var claims = el("div", "fn-phone-claims"); claims.id = button.getAttribute("aria-controls");
               claims.setAttribute("role", "region"); claims.setAttribute("aria-labelledby", button.id);
               appendClaims(claims, I[button.closest("li[data-institute]").dataset.institute], button.parentNode.dataset.code, true);
-              button.parentNode.appendChild(claims); button.setAttribute("aria-expanded", "true"); layoutSeparators(claims); scheduleSeparators(); return;
+              button.parentNode.appendChild(claims); button.setAttribute("aria-expanded", "true"); scheduleSeparators(claims); return;
             }
             if (button === opened) { closeDetail(true); return; }
             closeDetail(false);
@@ -3808,7 +3810,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
                 li.appendChild(label); li.appendChild(status);
                 li.appendChild(el("p", "fn-function-summary running-text", vocab[code].summary)); functions.appendChild(li);
               }); detail.appendChild(heading); detail.appendChild(functions);
-            }); button.parentNode.appendChild(detail); detailRow = detail; selected(button); layoutSeparators(detail); scheduleSeparators();
+            }); button.parentNode.appendChild(detail); detailRow = detail; selected(button); scheduleSeparators(detail);
           });
           list.addEventListener("keydown", escapeDetail); box.appendChild(list);
         } else {
@@ -3869,7 +3871,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
           detail.querySelector(".fn-detail-top").appendChild(el("h4", "fn-function-head", vocab[code].label));
           appendClaims(detail, i, code);
           detailRow = el("tr", "fn-detail-row"); detailRow.id = button.getAttribute("aria-controls"); detailRow.dataset.owner = row.dataset.institute; var td = el("td"); td.colSpan = columns.length + 2;
-          td.appendChild(detail); detailRow.appendChild(td); row.after(detailRow); selected(button); externalLinks(detail); layoutSeparators(detail); scheduleSeparators();
+          td.appendChild(detail); detailRow.appendChild(td); row.after(detailRow); selected(button); externalLinks(detail); scheduleSeparators(detail);
         });
         // Escape closes the detail only while focus is in the table, and only when no nested control has handled it.
         table.addEventListener("keydown", escapeDetail);
@@ -4301,7 +4303,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         // Close needs this header's height immediately, before the reading-head observer's next frame.
         det.style.setProperty("--reading-head-height", det.querySelector(":scope > summary").getBoundingClientRect().height + "px");
         button.setAttribute("aria-expanded", "true"); button.focus({preventScroll: true});
-        layoutSeparators(det); scheduleSeparators();
+        scheduleSeparators(det);
       });
       return button;
     }

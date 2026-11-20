@@ -827,6 +827,7 @@ function el(tag, className = '', text = '') {
 }
 const document = {createTextNode: text => el('#text', '', text)};
 function layoutQualifiers() {} // rendering and reading order here; the geometry oracle is tested separately
+function scheduleSeparators() {}
 const vocab = VOCAB;
 const names = {activity: 'Active', mandate: 'Assigned', both: 'Assigned and active', not_found: 'not found', not_coded: 'not yet coded'};
 const groups = [...new Set(Object.values(vocab).map(v => v.group))];

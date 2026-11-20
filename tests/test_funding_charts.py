@@ -216,6 +216,7 @@ const FUND_DETAIL='Funding and staff records';
 const institutes=Object.keys(DISPLAY_NAME).map(id=>({id,jurisdiction_id:id.toUpperCase(),short_name:id.toUpperCase()}));
 const fundRecords=Object.fromEntries(institutes.map(i=>{const detail=el('details');detail.id='records-'+i.id;fallback.appendChild(detail);return [i.id,{detail,own:{id:'funding-'+i.id}}];}));
 const returnToOpener=button=>{events.push('focus');focused=button;};
+const scheduleSeparators=()=>{}; // geometry has its own tests
 """ + helpers + listing + """
 const missing=fundNamesLine('budget','missing',institutes.slice(0,2).map(institute=>({institute,words:null})));
 const other=fundNamesLine('budget','other',[{institute:institutes[2],words:'one-off amount'}]);
@@ -450,6 +451,7 @@ const first=detail('fund-detail-first'), next=detail('fund-detail-second');
 const fundRecords={first:{detail:first},second:{detail:next}}, fallback=parent();
 let fundOpen=null,focused=null;
 const returnToOpener=button=>{focused=button;};
+const scheduleSeparators=()=>{}; // geometry has its own tests
 fallback.appendChild(first);fallback.appendChild(next);
 """ + helper + """
 const budgetRow=parent(56), staffRow=parent(83), missingLine=parent(110), otherLine=parent(56);
