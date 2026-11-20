@@ -52,7 +52,7 @@ OLD_NEWS = [
     ("NL", "2026-09-25", ["nl-2"], [SEPTEMBER[11][2]]),
     ("ES", "2026-09-21", ["es-1"], [SEPTEMBER[12][2]]),
     ("DE", "2026-08-31", ["de-2", "de-3"], ["Ministries establish AISI Deutschland, initially within BSI and BNetzA.", "AISI Deutschland starts work."]),
-    ("AU", "2026-08-10", ["au-first-output"], ["First published work credited to the institute."]),
+    ("AU", "2026-07-24", ["au-first-output"], ["First published work credited to the institute."]),
     ("MY", "2026-07-28", ["my-2026-07-28-designated"], ["Ministry confirms Malaysia AI Safety Institute established."]),
     ("NL", "2026-07-03", ["nl-4"], ["International AI Strategy reaffirms exploration of a Dutch AI safety institute."]),
     ("KE", "2026-07", ["ke-2026-draft-policy"], ["Draft policy proposes Kenya AI Safety Institute; consultation opens."]),
