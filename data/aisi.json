@@ -128856,7 +128856,7 @@
         "Page: tables, charts and their notes now end at the same edge, and running text keeps a shorter line.",
         "Page: no line begins with a separator dot.",
         "Page: a selected row or cell is marked by a tint and an accent bar.",
-        "Page: quotes keep the line breaks of their source, so words at a line end no longer run together and numbered lists in laws stay as lists.",
+        "Page: quotes stored with line breaks are now shown with them; 36 quotes have such breaks.",
         "Page: \"Definition\" under the headline shows the definition on hover, focus and tap. The close mark on cards and panels is larger, a card's download sits at the right edge, and a table head that stays in view keeps its space above.",
         "Downloads: the descriptions of eleven files are shorter and say what each file is, for example \"A plain-text guide to the data for AI agents\" for llms.txt.",
         "Checks recorded since 1.1.0: the news check of 20 November 2026 for all 15 institutes and partial checks of 19 November for Iraq, the Netherlands, Oman, Saudi Arabia, Thailand and the United Arab Emirates. No record's full-check date changed."

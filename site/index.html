@@ -939,7 +939,7 @@ html[data-prerendered] .fn-scroll.fits thead { position: static; }
 @supports (color: color-mix(in srgb, white, black)) { .bar-value.pending, .key-swatch.pending { background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--ink) 40%, var(--line)) 0 2.5px, var(--line) 2.5px 8px); } }
 @media print { .fund-bar, .bar-value, .key-swatch { print-color-adjust: exact; } }
 @media (forced-colors: active) { .fund-bar, .key-swatch { --ink: CanvasText; --ground: Canvas; --line: GrayText; forced-color-adjust: none; } }
-.fund-detail { --panel-pad-block: var(--sp-4); --panel-pad-inline: var(--sp-4); grid-column: 1 / -1; grid-row: 2; min-width: 0; width: 100%; contain: inline-size; font: var(--type-body); margin-top: 0; padding: var(--panel-pad-block) var(--panel-pad-inline); background: var(--paper); } /* opened prose cannot size the shared columns */
+.fund-detail { --panel-pad-block: var(--sp-4); --panel-pad-inline: var(--sp-4); grid-column: 1 / -1; grid-row: 2; min-width: 0; width: 100%; contain: inline-size; font: var(--type-body); color: var(--ink); margin-top: 0; padding: var(--panel-pad-block) var(--panel-pad-inline); background: var(--paper); } /* opened prose cannot size the shared columns */
 :root[data-js] .fund-detail:not([open]) { display: none; }
 :root:not([data-js]) .fund-row { visibility: hidden; pointer-events: none; }
 span.fund-names-toggle { pointer-events: none; cursor: auto; }
@@ -976,7 +976,7 @@ span.fund-names-toggle::after { display: none; }
 .fn-detail, .fund-detail[open] { background-color: var(--selection-detail-ground); }
 .fn-detail-top, .fund-detail.more[open] > summary { background: linear-gradient(var(--selection-detail-ground), var(--selection-detail-ground)), var(--ground); } /* the moving head and its inherited full-width backing paint both layers themselves */
 :is(.fn-phone-row, button.fn-function-label, .fund-row)[aria-expanded="true"]:hover, .suggest li[aria-selected="true"]:hover, .palette-option[aria-selected="true"]:hover { background-color: var(--highlight-fill); }
-.fund-detail-body { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--sp-6); margin-top: var(--sp-4); align-items: first baseline; }
+.fund-detail-body { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--sp-6); padding-top: var(--sp-4); align-items: first baseline; } /* padding, not a margin: a margin collapses into the close's own below a wrapped head, and the gap goes */
 .fund-detail-body > div { min-width: 0; }
 .fund-detail .fund-value strong { white-space: normal; }
 .fund-budget-summary .budget-qualifiers { display: block; margin-top: var(--sp-1); }
