@@ -33113,9 +33113,7 @@
         },
         {
           "id": "claims-fd3fdb842f724856937f29ae38c0d00a",
-          "kind": "function",
-          "code": "policy_advice",
-          "basis": "mandate",
+          "kind": "fact",
           "text": "The government's IA360 plan assigns it technical advice to the General State Administration.",
           "source_ids": [
             "es-plan"
