@@ -2197,7 +2197,7 @@
         {
           "id": "gb-2025-mandate-changed",
           "date": "2025-02-14",
-          "event": "mandate_changed",
+          "event": "named",
           "instrument": "press_release",
           "description": "The government renames the AI Safety Institute the AI Security Institute and announces a criminal misuse team; its release says the institute will not focus on bias or freedom of speech, and the minister says its work will not change.",
           "source_ids": [
@@ -31703,9 +31703,7 @@
         },
         {
           "id": "claims-be6f898fa4d84ab1950efd2f440e8ff4",
-          "kind": "function",
-          "code": "research",
-          "basis": "activity",
+          "kind": "fact",
           "text": "AISI's blog says it funded Epoch AI to explore AI researchers' differing predictions on the automation of AI research and development.",
           "source_ids": [
             "depth-gb-blog"
@@ -41371,6 +41369,45 @@
             ]
           ],
           "accessed": "2026-11-19"
+        },
+        {
+          "text": "Peter Kyle has today recast the AI Safety Institute the ‘AI Security Institute’.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "GB"
+              },
+              "timeline",
+              {
+                "id": "gb-2025-mandate-changed"
+              },
+              "date"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "GB"
+              },
+              "timeline",
+              {
+                "id": "gb-2025-mandate-changed"
+              },
+              "event"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "GB"
+              },
+              "timeline",
+              {
+                "id": "gb-2025-mandate-changed"
+              },
+              "description"
+            ]
+          ],
+          "accessed": "2026-11-20"
         }
       ],
       "origin": "GB",
