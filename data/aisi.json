@@ -35769,16 +35769,6 @@
           ]
         },
         {
-          "id": "claims-293a1f89984d4ca7b996b5eb75dfc636",
-          "kind": "function",
-          "code": "international_cooperation",
-          "basis": "mandate",
-          "text": "The Commerce Department's founding announcement said it would work with similar institutes in allied and partner nations, including the UK's AI Safety Institute.",
-          "source_ids": [
-            "us-commerce-2023"
-          ]
-        },
-        {
           "id": "claims-cc4b4a9808b4461a896887d7759ef525",
           "kind": "function",
           "code": "international_cooperation",
@@ -63317,24 +63307,6 @@
             ]
           ],
           "accessed": "2026-10-17"
-        },
-        {
-          "text": "In addition, USAISI will work with similar institutes in ally and partner nations, including with the UK's AI Safety Institute, to align and coordinate work in this sphere.",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "us-caissi"
-              },
-              "claims",
-              {
-                "id": "claims-293a1f89984d4ca7b996b5eb75dfc636"
-              },
-              "text"
-            ]
-          ],
-          "accessed": "2026-10-17",
-          "url": "https://web.archive.org/web/20260211063744/https://www.commerce.gov/news/press-releases/2023/11/direction-president-biden-department-commerce-establish-us-artificial"
         }
       ],
       "origin": "US",
