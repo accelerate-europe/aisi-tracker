@@ -769,10 +769,12 @@ def _closest_fold_fixture(*, named=True, stage="planned", claims=(), finding_sou
 
     html = f'<details class="card mini" id="c-xx"><summary>Fixture state</summary><p>{summary}{cites(finding_sources)}</p></details>'
     lines = "".join(f'<div class="claim det" data-claim-id="{c["id"]}">{c["text"]}</div>' for c in claims if not c.get("lead"))
-    if stage != "exists":
+    in_summary = named and migrated  # the summary gives name and stage, so the group leaves both out
+    if stage != "exists" and not in_summary:
         lines += f'<span class="det">{stage.replace("_", " ").capitalize()}.</span>'
+    name_line = "" if in_summary else f'<span class="body-name">{name}{cites(body_sources)}</span>'
     group = (f'<div class="body-group closest"><p class="gl">Closest body</p><ul><li data-body-id="lab">'
-             f'<span class="body-name">{name}{cites(body_sources)}</span>{lines}</li></ul></div>')
+             f'{name_line}{lines}</li></ul></div>')
     return {"jurisdictions": [record]}, html, group
 
 
@@ -818,9 +820,8 @@ def test_closest_group_kept_for_an_expired_role_claim():
     assert any("role sentences" in e for e in check_page.check_nonidentified_folds(page.replace("It tested models.", ""), data))
 
 
-def test_closest_group_keeps_a_source_not_cited_in_the_finding():
+def test_closest_body_sources_move_to_the_finding_that_names_it():
     data, html, group = _closest_fold_fixture(body_sources=("s1", "s2"))
-    assert check_page.check_nonidentified_folds(html.replace("</details>", group + "</details>"), data) == []
     assert check_page.check_nonidentified_folds(html, data)
     # A source link in the footer is not a citation mark on the card's finding.
     footer = '<div class="foot"><a data-source-id="s2">Source two</a></div>'

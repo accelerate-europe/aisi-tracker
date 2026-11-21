@@ -30,6 +30,7 @@ function el(tag, cls, text) {
     setAttribute(k,v){this.attrs[k]=v;},
     appendChild(n){if(n.parent)n.parent.children.splice(n.parent.children.indexOf(n),1);this.children.push(n);n.parent=this;return n;},
     get firstChild(){return this.children[0];},
+    get childNodes(){return this.children;},
     get classList(){return {add: c => {this.className += ' '+c;}};}};
 }
 const document={createTextNode:text=>({text})};
@@ -43,7 +44,6 @@ function cite(ids){const n=el('span','cites');[...new Set(ids)].forEach((id,i)=>
   const a=el('a','cn',String(i+1));a.dataset.sourceId=id;n.appendChild(a);});return n;}
 function bodyClaims(j,id){return (j.claims||[]).filter(c=>c.kind==='function'&&c.body_id===id&&!c.lead);}
 function claimBlock(c){return el('span','claim',c.text||'Role sentence.');}
-function closestBodyInSummary(){return false;}  // the fixtures have no summary; the omission is covered in test_claims_page.py
 function rereadLine(){return null;}
 function fmtDate(s){return s;}
 function separated(parts){const n=el('span');parts.forEach(p=>n.appendChild(typeof p==='string'?{text:p}:p));return n;}
@@ -61,6 +61,7 @@ def render_cards(data):
     helpers = source[source.index("  function qualified("):source.index("  // A None identified state's finding")]
     helpers += source[source.index("  function withOriginal("):source.index("  // Institute name, linked to its official website")]
     join = next(line for line in source.splitlines() if line.startswith("  function andJoin("))
+    join += "\n" + next(line for line in source.splitlines() if line.startswith("  function closestBodyInSummary("))
     bodies = source[source.index("  var ROLE_ORDER ="):source.index("  // Research notes in one muted block.")]
     start = source.index("      if (j.status_since) {", source.index("  function instituteCard("))
     status = source[start:source.index("      var form =", start)]
