@@ -144,9 +144,9 @@
 @font-face { font-family: "Source Sans 3"; font-style: normal; font-weight: 600; font-display: swap; src: url(assets/fonts/source-sans-3-v20-greek.woff2) format("woff2"); unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF; }
 @font-face { font-family: "Source Sans 3"; font-style: normal; font-weight: 600; font-display: swap; src: url(assets/fonts/source-sans-3-v20-latin-ext.woff2) format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
 @font-face { font-family: "Source Sans 3"; font-style: normal; font-weight: 600; font-display: swap; src: url(assets/fonts/source-sans-3-v20-latin.woff2) format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
-/* Logical viewport boundaries, in px: 390 function labels; 400 group gaps; 430 theme/group labels;
-   460 scrolled title; 560 navigation/hints; 640 phone forms; 700 short title; 1100 stacked map and two-column cards; 1280 section heading above content.
-   CSS and JS use <=/> at these same numbers, except section headings use <1280. Funding alone uses container width < 60rem. */
+/* Viewport boundaries (px): 360 group heads/marks; 400 group gaps/dots; 430 theme/group labels;
+   460 scrolled title; 560 navigation/hints; 640 phone forms; 700 short title; 1100 map/cards; 1280 section headings.
+   Queries use <=/> except <1280. JS shares 430, 640 and 1100. Funding container: <40rem. */
 :root {
   color-scheme: light;
   --ground: #FAF7F2; --paper: #FCFAF6;
@@ -198,7 +198,7 @@
   --secnav-height: calc(2 * var(--sp-3) + max(var(--hit), 2 * var(--sp-1) + var(--size-label) * var(--leading-label)) + var(--rule)); /* the section bar never wraps; one CSS source before and after hydration */
   --groupnav-height: round(nearest, calc(2 * var(--sp-1) + max(var(--hit), var(--size-label) * var(--leading-label))), 1px); /* one line; the wrapping group rows are measured with the same rounding */
   --reading-top: var(--bars-bottom, var(--secnav-height)); /* live heads share barsBottom(); CSS heights are the saved-page fallback */
-  --reading-pad: var(--sp-3); /* the same breathing room inside every reading head, stuck or in flow */
+  --reading-pad: var(--sp-3);
   --shadow-pop: 0 var(--rule-strong) var(--sp-2) var(--shadow-ink);
 }
 /* Custom properties accept unsupported functions, so guard the modern palette. */
@@ -218,18 +218,17 @@
     --link: light-dark(#8F5A23, #E9AA79); --edge: light-dark(#B4602A, #E9A66E);
     --st-est: light-dark(#DE9358, #E9A66E); --st-est-edge: light-dark(#B4602A, #F2B887);
     --st-none-edge: light-dark(#8F8273, #8A8178); --check-edge: light-dark(#8F8273, #8A8178); --map-land: light-dark(#E5DCD0, #363B3E); --map-border: light-dark(#CBBFB1, #53595D); --shadow-ink: light-dark(#0000002E, #00000066);
-    /* Theme parity: control fill, selection and hairlines step from the ground about as much in dark as in light. */
     --field-fill: color-mix(in srgb, var(--ground) 93%, var(--ink)); /* one mix, so it steps the same way from the ground in both themes */
     --selected-fill: light-dark(color-mix(in srgb, var(--ground) 90%, var(--accent)), color-mix(in srgb, var(--ground) 94%, var(--accent)));
-    --highlight-fill: light-dark(color-mix(in srgb, var(--paper) 85%, var(--accent)), color-mix(in srgb, var(--paper) 88%, var(--accent))); /* Highlight: a similar step from the paper in both themes; muted text on it stays at least 4.5:1 */
+    --highlight-fill: light-dark(color-mix(in srgb, var(--paper) 85%, var(--accent)), color-mix(in srgb, var(--paper) 88%, var(--accent)));
   }
   /* The system scheme by default; the toggle's stored choice (light or dark) overrides it and switches every light-dark() token. Only here, so an older browser keeps light native controls with its light palette. */
   :root { color-scheme: light dark; }
   :root[data-theme="light"] { color-scheme: light; }
   :root[data-theme="dark"] { color-scheme: dark; }
   :root[data-js] .btn.theme-toggle { display: inline-flex; }
-:root:not([data-js]) :is(.map-search, .region-chips, .regions, .tbar, #world-count button, #developments-more) { display: none !important; } /* controls that need the page script; the region list's content is in the cards and the table */ /* data-js: set by the head script, so no dead toggle without scripting */
 }
+:root:not([data-js]) :is(.map-search, .region-chips, .regions, .tbar, #world-count button, #developments-more) { display: none !important; } /* controls that need the page script; the region list's content is in the cards and the table */ /* data-js: set by the head script, so no dead toggle without scripting */
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 body { font: var(--type-body); margin: 0; background: var(--ground); color: var(--ink); }
@@ -241,10 +240,10 @@ h2 { font: var(--type-figure); letter-spacing: -.025em; }
 h3, h4 { font: var(--type-label); }
 strong, b { font: inherit; font-weight: var(--weight-emphasis); }
 button, input, select, textarea { font: var(--type-label); }
-.running-text { max-width: var(--text-width); } /* explicit narrative role; shells never inherit the text measure */
+.running-text { max-width: var(--text-width); }
 p, ul { margin: 0; }
 ul { padding-left: var(--sp-5); display: flex; flex-direction: column; gap: var(--sp-2); }
-p, li, .legend-definition, .group-note { text-wrap: pretty; } /* no one-word last lines in body text; headings balance */
+p, li, .legend-definition, .group-note { text-wrap: pretty; }
 a { color: var(--link); text-decoration: underline; text-decoration-thickness: var(--underline-width); text-underline-offset: var(--underline-offset); text-decoration-color: var(--underline-colour); }
 a:is(:hover, :focus-visible) { text-decoration-color: currentColor; }
 a.standalone, .wordmark, .correction, .popover a, .dlist a { text-decoration-line: none; }
@@ -258,9 +257,6 @@ li:has(> .reread-tail), .inline-links:has(> .reread-tail) { position: relative; 
 .reread-tail > .vh { left: 0; top: 0; white-space: normal; } /* the screen-reader sentence sits at the item's start, so its one clipped line never runs past the measure */ /* a line that is only its title (its publisher in the title, no date) keeps the hit height */
 .archive-copy { white-space: nowrap; } /* principle: Archived copies */
 .trailing-qualifier { display: inline-block; white-space: nowrap; overflow-wrap: normal; }
-/* Separator dots (principle): each item after the first draws its dot a fixed reach before itself; the gap before it
-   makes the room. The line's block clips its start edge just beyond a focus ring, so a dot that lands at a line start
-   is never seen and one between items on a line always is. */
 :root { --ring-reach: calc(var(--rule-strong) + var(--sp-1)); --sep-reach: calc(var(--ring-reach) + .15em); --sep-box: 1em; }
 .sep-gap { word-spacing: calc(2 * var(--sep-reach) - .25em); } /* the room is the space itself: it hangs at a line end and collapses at a line start, so it never pushes an item in */
 .sep-gap + :is(.meta-item, .trailing-qualifier)::before, .sep-gap + .quote-inline > summary > .trailing-qualifier::before { content: "·" / ""; display: inline-block; width: var(--sep-box); margin-inline: calc(-.5 * var(--sep-box)); text-align: center; position: relative; inset-inline-start: calc(-1 * var(--sep-reach)); color: var(--muted); }
@@ -272,7 +268,6 @@ a.ico::before { position: static; transform: none; min-height: 0; }
 :focus-visible { outline: var(--rule-strong) solid var(--focus); outline-offset: var(--sp-1); }
 .loading { color: var(--muted); }
 .small { font: var(--type-meta); color: var(--muted); }
-/* A value leads; its qualifiers stay on an ink second line (principle: Values and qualifiers). */
 .budget-amount, .value-line, .qualifiers, .related-funding-item, .record-notes { display: block; }
 .funding-record > .source-statement { margin-block: var(--gap-row); }
 .label { font: var(--type-meta); color: var(--muted); } /* one label style: muted meta, no colon */
@@ -314,7 +309,7 @@ a.ico::before { position: static; transform: none; min-height: 0; }
 @media (forced-colors: active) { .ext-tail::after { forced-color-adjust: none; background-color: LinkText; } #tip .ext-tail::after { background-color: CanvasText; } }
 .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .cap { text-transform: uppercase; } /* Full method: the word after a hidden lead-in that repeats its rule's heading */
-.secnav a.active::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: var(--rule-strong); background: var(--accent); } /* full label width */
+.secnav a.active::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: var(--rule-strong); background: var(--accent); }
 .secnav .navtitle { font: var(--type-label); display: none; color: var(--ink); padding-right: var(--sp-4); border-right: var(--rule) solid var(--line); }
 .secnav.scrolled .navtitle { display: inline-flex; }
 .navtitle .short { display: none; }
@@ -322,7 +317,6 @@ a.ico::before { position: static; transform: none; min-height: 0; }
 @media (width <= 430px) { .group-label { display: none; } } /* phones: the group rows' links alone (the bar marks the group); links may wrap with narrow widths or enlarged text */
 @media (width <= 460px) { .secnav.scrolled .navtitle { display: none; } } /* up to 460px the bar holds the five items alone, then also the theme toggle, one row with enlarged text */
 @media (width <= 700px) { .navtitle .long { display: none; } .navtitle .short { display: inline; } }
-/* Method page: the same section bar, holding only the title, which links back to the tracker, and the theme toggle, at every width. */
 .full-method .secnav .navtitle { display: inline-flex; border-right: 0; } /* nothing follows it but the toggle */
 @media (width <= 430px) { :root[data-js] .full-method .secnav .btn.theme-toggle { display: inline-flex; } } /* the short title beside the theme toggle, so the row fits with enlarged text */
 /* Group rows: above the first section of a group in the bar, the group's name and links to its sections, quiet like the bar;
@@ -343,11 +337,10 @@ a.ico::before { position: static; transform: none; min-height: 0; }
 .view-switch { font: var(--type-meta); color: var(--muted); }
 .view-switch button { position: relative; padding: 0; border: 0; border-radius: 0; background: none; font: inherit; cursor: pointer; white-space: nowrap; }
 
-/* Developments share the page's text roles and row rhythm. */
 .development-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--gap-row); }
 .development-row { display: flex; flex-direction: column; gap: var(--sp-1); }
 .development-label { font: var(--type-meta); color: var(--muted); white-space: nowrap; }
-.development-date { color: var(--ink); font-variant-numeric: tabular-nums; } /* an event date is a fact, not apparatus (R2) */
+.development-date { color: var(--ink); font-variant-numeric: tabular-nums; } /* dates are facts (principle: Secondary tone) */
 .development-text { font: var(--type-body); color: var(--ink); min-width: 0; }
 .news-links { margin-top: var(--sp-4); }
 
@@ -378,7 +371,6 @@ footer .measure { font: var(--type-meta); padding-block: var(--sp-4) var(--sp-7)
 .linkbtn::before { content: ""; position: absolute; inset-inline: 0; top: 50%; height: 100%; min-height: var(--hit); transform: translateY(-50%); }
 .linkbtn:hover { color: var(--ink); text-decoration: underline; text-underline-offset: var(--underline-offset); }
 .btn[aria-pressed="true"] { background: var(--selected-fill); box-shadow: inset 0 calc(-1 * var(--rule-strong)) var(--accent); }
-/* Region tabs: plain text on one hairline, the text flush with the column edge; the selected view in ink with an accent underline (principle: Region tabs) */
 .region-chips { display: flex; flex-wrap: wrap; column-gap: var(--sp-5); row-gap: 0; border-bottom: var(--rule) solid var(--line); }
 .region-chips button { font: var(--type-label); flex: none; height: var(--control); padding: 0; border: 0; border-radius: 0; background: none; color: var(--muted); cursor: pointer; white-space: nowrap; }
 .region-chips button:hover { color: var(--ink); }
@@ -397,7 +389,6 @@ details[open] > summary::after, .list-more[aria-expanded="true"]::after, .fund-n
 #changelog { gap: var(--sp-4); }
 #changelog > li > p { margin: var(--sp-1) 0 0; }
 .summary-label { flex: none; white-space: nowrap; } /* a disclosure's label stays one line beside long meta text */
-/* Record and panel controls share the quiet style below; section/list folds keep the label style. */
 .more.quiet[open] > summary { margin-bottom: var(--sp-2); }
 .missing.na { color: var(--muted); }
 .conf { font: var(--type-meta); color: var(--ink); }
@@ -412,7 +403,7 @@ details[open] > summary::after, .list-more[aria-expanded="true"]::after, .fund-n
 .cn:focus-visible { outline: none; }
 .cn:focus-visible::before { outline: var(--rule-strong) solid var(--focus); outline-offset: var(--sp-1); }
 abbr.g { display: inline; text-decoration: underline dotted var(--muted); text-underline-offset: .2em; cursor: help; }
-abbr.g.val { text-decoration: none; } /* a value with a tooltip (confidence, interval, per resident, a median ceiling, a developer, a provision): tooltip and focus, no dotted mark; the mark is for abbreviations and terms (owner, 5 Nov 2026) */
+abbr.g.val { text-decoration: none; }
 
 #tip .tip-sub { display: block; margin-top: var(--sp-1); color: var(--muted); }
 #tip.quote-tip { white-space: pre-line; }
@@ -422,14 +413,14 @@ abbr.g.val { text-decoration: none; } /* a value with a tooltip (confidence, int
 .sw { width: var(--sp-3); height: var(--sp-3); border-radius: var(--rule-strong); display: inline-block; flex: none; }
 .st-established { background: var(--st-est); color: var(--st-est-fg); border: var(--rule) solid var(--st-est-edge); }
 .st-planned { background: radial-gradient(circle closest-side, var(--st-est) 0 55%, var(--ground) 66%); color: var(--ink); border: var(--rule-strong) solid var(--edge); } /* a round mark keeps the round centre (map dots draw theirs in SVG, .dot-centre) */
-.sw.st-planned { background: var(--st-est); box-shadow: inset 0 0 0 1.5px var(--ground); } /* square swatch: the edge, a page-colour ring inside it, a square centre in the established fill */
+.sw.st-planned { background: var(--st-est); box-shadow: inset 0 0 0 1.5px var(--ground); }
 .st-proposed { background: repeating-linear-gradient(45deg, var(--edge) 0 1.2px, var(--ground) 1.2px 2.6px); color: var(--ink); border: var(--rule) solid var(--edge); }
 .st-exploring { background: var(--ground); color: var(--ink); border: var(--rule-strong) solid var(--edge); }
 .st-none_identified { background: var(--ground); color: var(--st-none-fg); border: var(--rule) solid var(--st-none-edge); }
-.sw.st-none_identified { background: linear-gradient(var(--st-none-edge) 0 0) center / 60% var(--rule-strong) no-repeat, var(--ground); } /* a short grey dash in the square: a status mark, not an empty checkbox */
+.sw.st-none_identified { background: linear-gradient(var(--st-none-edge) 0 0) center / 60% var(--rule-strong) no-repeat, var(--ground); }
 .smark { font: inherit; display: inline-flex; align-items: first baseline; gap: var(--sp-2); color: var(--ink); white-space: nowrap; }
 .smark.value { display: inline; } /* a mark carrying a value (Known activity) is inline text, so its citation follows the last word; like a status name it never breaks */
-.smark.activity { display: inline-block; white-space: normal; } /* the stacked kinds */
+.smark.activity { display: inline-block; white-space: normal; }
 .activity-kinds { display: flex; flex-direction: column; gap: var(--sp-1); min-width: 0; }
 .activity-clause, .activity-since { white-space: nowrap; } /* a kind ("Published work") and its since date never break mid-phrase; an interval line may wrap in narrow cards */
 .top > .smark, .fund-identity > .smark { font: var(--type-label); }
@@ -439,25 +430,23 @@ input[type="checkbox"]:checked { background: var(--selected-fill); }
 input[type="checkbox"]:checked::after { content: ""; position: absolute; left: var(--sp-1); top: var(--sp-1); width: var(--sp-2); height: var(--sp-1); border-left: var(--rule-strong) solid var(--ink); border-bottom: var(--rule-strong) solid var(--ink); transform: rotate(-45deg); }
 #col-opts label { display: flex; align-items: first baseline; gap: var(--sp-2); min-height: var(--control); }
 .legend { font: var(--type-label); display: flex; flex-wrap: wrap; gap: var(--sp-2) var(--sp-5); align-items: first baseline; color: var(--muted); }
-/* (i): a quiet inline info mark whose tooltip holds a scope or reading note (principle: Supporting text) */
 .info { position: relative; display: inline-flex; align-items: center; justify-content: center; width: var(--hit); height: var(--hit); margin-block: calc((1lh - var(--hit)) / 2); margin-inline: var(--sp-1) 0; padding: 0; border: 0; background: none; color: var(--muted); font: inherit; font-weight: var(--weight-body); cursor: help; vertical-align: baseline; }
 .info::before { content: ""; position: absolute; left: 50%; top: 50%; width: .72em; height: .72em; box-sizing: border-box; border: .06em solid currentColor; border-radius: 50%; transform: translate(-50%, -50%); } /* cap-height ring; the button keeps the hit height */
 .info-letter { font: inherit; font-size: .65em; line-height: 1; }
 .head-line, .eu-head { font: var(--type-label); } /* a note beside a heading inherits that heading's face and size */
 .info:is(:hover, :focus-visible) { color: var(--ink); }
-/* Without scripting no tooltip opens, so each (i) shows its note as a muted line instead (principle: Supporting text). */
 :root:not([data-js]) :is(.head-line, .info-glue) { white-space: normal; }
 :root:not([data-js]) .info { display: block; width: auto; height: auto; margin: var(--sp-1) 0 0; font-size: 0; text-align: left; cursor: auto; }
 :root:not([data-js]) .info::before { content: none; }
 :root:not([data-js]) .info::after { content: attr(data-tip); font: var(--type-meta); color: var(--muted); }
 .head-line { white-space: nowrap; text-wrap: balance; } /* a heading and its (i): no break between the last word and the (i), the heading still wraps between its own words */
 .head-line > h2, .head-line > h3 { display: inline; white-space: normal; }
-.info-glue { white-space: nowrap; } /* the last word of a text line and its (i), one unbreakable box */
+.info-glue { white-space: nowrap; }
 .legend-entry { display: flex; align-items: first baseline; gap: var(--sp-2); }
 .legend-copy { min-width: 0; display: flex; flex-direction: column; gap: var(--sp-1); }
 .legend-name { color: var(--ink); }
 
-/* First screen: headline, then the map beside the region list (below it at 1100px and narrower); the record opens over the list. */
+/* First screen */
 /* Off-screen sections and card rows skip style and paint. Funding rows must participate in their shared subgrid even when closed; layout containment breaks that inheritance. */
 main section.offscreen, main section.offscreen .card-row { contain: layout style paint; overflow-clip-margin: var(--sp-2); } /* the containment skipping needs, from the first paint (also on the saved page), so text keeps its pixel rows when skipping starts; the margin keeps an arrived card's tint (its spread shadow) unclipped */
 main section.offscreen { contain-intrinsic-block-size: auto 100vh; }
@@ -466,12 +455,12 @@ main section.offscreen .card-row { contain-intrinsic-block-size: auto 20rem; }
 main section.first { display: flex; flex-direction: column; gap: var(--sp-5); border-top: 0; padding-top: 0; }
 .definition { font: var(--type-body); margin: calc(var(--sp-2) - var(--sp-5)) 0 0; } /* belongs to the headline above it: one link to the definition */
 .method-definition { margin: 0; } /* the section body's row gap separates it from the fold */
-.method-definition a { white-space: nowrap; } /* the full-rule link never splits */
+.method-definition a { white-space: nowrap; }
 .headline b { font-weight: var(--weight-figure); }
 .headline { font: var(--type-figure); font-weight: var(--weight-body); text-wrap: balance; display: grid; font-variant-numeric: tabular-nums; } /* full width, so each regional form keeps to two lines on wide screens */
 .hl-version { grid-area: 1 / 1; visibility: hidden; } .hl-version.current { visibility: visible; } /* every region's headline in one cell: the longest sets the height, so a region switch never moves what sits below */
 .hl-sentence { display: block; text-wrap: balance; } /* one sentence per line (owner, 23 Oct); numbers are glued to the next word */
-.maptools { display: grid; grid-template-columns: minmax(0, 2fr) minmax(var(--map-side-min), 1fr); column-gap: var(--sp-7); row-gap: var(--sp-3); align-items: end; } /* the explore grid's columns: tabs over the map, the search over the list, edge to edge */
+.maptools { display: grid; grid-template-columns: minmax(0, 2fr) minmax(var(--map-side-min), 1fr); column-gap: var(--sp-7); row-gap: var(--sp-3); align-items: end; }
 .map-search { position: relative; min-width: 0; }
 .suggest { font: var(--type-body); position: absolute; z-index: 10; left: 0; top: calc(100% + var(--sp-1)); width: 100%; max-height: 18rem; overflow-y: auto; margin: 0; padding: var(--sp-1) 0; list-style: none; background: var(--paper); border: var(--rule) solid var(--line); border-radius: var(--r-sm); box-shadow: var(--shadow-pop); }
 .suggest li, .palette-option { display: flex; align-items: first baseline; gap: var(--sp-2); min-height: var(--control); padding: var(--sp-2) var(--sp-3); cursor: pointer; }
@@ -479,7 +468,6 @@ main section.first { display: flex; flex-direction: column; gap: var(--sp-5); bo
 .suggest li .small, .palette-option .small { flex: none; }
 .suggest li:hover, .palette-option:hover { background: var(--highlight-fill); }
 .suggest-empty { font: var(--type-meta); color: var(--muted); padding: var(--sp-2) var(--sp-3); }
-/* Command palette (principle: Command palette): one modal floating surface over the page, the page's search field on top, grouped rows below. */
 .palette-hint { position: absolute; right: var(--sp-2); top: calc((var(--control) - var(--hit)) / 2); height: var(--hit); display: flex; align-items: center; padding: 0; border: 0; background: none; cursor: pointer; }
 .palette-hint kbd, .palette-keys kbd { font: var(--type-meta); color: var(--muted); background: var(--paper); border: var(--rule) solid var(--line); border-radius: var(--r-sm); padding: 0 var(--sp-1); }
 .palette-hint:is(:hover, :focus-visible) kbd { color: var(--ink); }
@@ -497,9 +485,9 @@ main section.first { display: flex; flex-direction: column; gap: var(--sp-5); bo
 .palette-option .small .sw { margin-right: var(--sp-1); }
 .palette-empty { font: var(--type-meta); color: var(--muted); padding: var(--sp-3); margin: 0; }
 .palette-keys { flex: none; display: flex; flex-wrap: wrap; gap: var(--sp-1) var(--sp-4); margin: 0; padding: var(--sp-2) var(--sp-3); border-top: var(--rule) solid var(--line); font: var(--type-meta); color: var(--muted); }
-@media (hover: none), (width <= 560px) { .palette-hint, .palette-keys { display: none; } .palette { margin-top: var(--sp-4); } } /* no keyboard hints on touch screens and phones */
+@media (hover: none), (width <= 560px) { .palette-hint, .palette-keys { display: none; } .palette { margin-top: var(--sp-4); } }
 @keyframes palette-in { from { opacity: 0; } }
-@media (prefers-reduced-motion: no-preference) { .palette[open], .palette[open]::backdrop { animation: palette-in var(--motion-short) ease-out; } } /* motion only fades */
+@media (prefers-reduced-motion: no-preference) { .palette[open], .palette[open]::backdrop { animation: palette-in var(--motion-short) ease-out; } }
 .explore { display: grid; grid-template-columns: minmax(0, 2fr) minmax(var(--map-side-min), 1fr); gap: var(--sp-7); align-items: stretch; }
 .map-col { display: flex; flex-direction: column; gap: var(--sp-5); min-width: 0; }
 .map-aside { display: flex; flex-direction: column; gap: var(--sp-3); }
@@ -513,7 +501,6 @@ main section.first { display: flex; flex-direction: column; gap: var(--sp-5); bo
 .worldmap .lab { font: var(--map-label-weight) var(--map-label-size) var(--head); fill: var(--ink); paint-order: stroke; stroke: var(--ground); stroke-width: 3px; stroke-linejoin: round; cursor: pointer; }
 .worldmap .map-narrow .lab { font-size: var(--map-label-size-narrow); }
 .worldmap .lab-leader { stroke: var(--muted); stroke-width: 1; pointer-events: none; }
-/* Status marks on the map (principle: Status), drawn by one function for the dot and its highlight: the highlight is the same mark, larger, with an ink ring around it. */
 .dot { stroke-width: 1.3; }
 .dot.st-established { fill: var(--st-est); stroke: var(--st-est-edge); }
 .dot.st-planned, .dot.st-exploring { fill: var(--ground); stroke: var(--edge); stroke-width: 1.8; }
@@ -526,12 +513,11 @@ main section.first { display: flex; flex-direction: column; gap: var(--sp-5); bo
 .hl-pin { fill: none; stroke: var(--ink); stroke-width: 1.4; }
 .tgt { fill: transparent; cursor: pointer; outline: none; }
 .tgt:focus-visible { stroke: var(--focus); stroke-width: 2; }
-/* Region list: a heading moves the map and carries "established of all states"; the open region lists its institutes, the others one muted line of names. */
 .side { position: relative; min-width: 0; }
 .regions { display: flex; flex-direction: column; }
 .region-divider { border: 0; border-top: var(--rule) solid var(--line); margin: var(--sp-2) 0; }
 .region { padding: 0 var(--sp-3) var(--sp-2); border-radius: 0 var(--r-sm) var(--r-sm) 0; }
-.region.open { background: color-mix(in srgb, var(--ground) 95%, var(--accent)); box-shadow: inset var(--rule-strong) 0 var(--accent); } /* open region: light tint, thin accent rule, turned chevron */
+.region.open { background: color-mix(in srgb, var(--ground) 95%, var(--accent)); box-shadow: inset var(--rule-strong) 0 var(--accent); }
 .region-head { font: var(--type-label); display: flex; align-items: first baseline; gap: var(--sp-2); width: 100%; min-height: var(--control); padding: var(--sp-2) 0; background: none; border: 0; color: var(--ink); cursor: pointer; text-align: left; }
 .region-head .rname { flex: 1; }
 .region-head:is(:hover, :focus-visible) .rname { text-decoration-line: underline; text-underline-offset: var(--underline-offset); }
@@ -573,13 +559,12 @@ main section.first { display: flex; flex-direction: column; gap: var(--sp-5); bo
 .card-row { display: grid; grid-template-columns: repeat(var(--columns), minmax(0, 1fr)); column-gap: inherit; grid-column: 1 / -1; row-gap: 0; align-items: stretch; } /* the parent's equal tracks, not subgrid: a row skipped off-screen (Off-screen sections) is its own grid */
 .card-row > .card { display: grid; grid-template-rows: subgrid; grid-row: span 14; row-gap: 0; align-items: first baseline; }
 @media (width > 1100px) { .cards:not(.minis) > .card-row:only-child > .card:only-child { grid-column: span 2; } } /* a group's only card spans two of the three tracks, so its values do not wrap in a third of the row (principle: Card grids) */
-/* Fixed tracks: top 1, Institute 2, Status 3, Form 4, Head 5, Reports to 6, Partners 7, Mandate or Finding 8, Budget 9, Staff 10, Known activity 11, Related funding 12, Facts 13, footer 14. An omitted field leaves its track empty instead of pulling later fields up; a track empty across the row has no height or gap. */
+/* An omitted field leaves its track empty instead of pulling later fields up; a track empty across the row has no height or gap. Field tracks: TRACK. */
 .card-row > .card > .top { grid-row: 1; }
 .card-row > .card > .row[data-track="2"] { grid-row: 2; } .card-row > .card > .row[data-track="3"] { grid-row: 3; } .card-row > .card > .row[data-track="4"] { grid-row: 4; } .card-row > .card > .row[data-track="5"] { grid-row: 5; } .card-row > .card > .row[data-track="6"] { grid-row: 6; } .card-row > .card > .row[data-track="7"] { grid-row: 7; }
 .card-row > .card > .row[data-track="8"] { grid-row: 8; } .card-row > .card > .row[data-track="9"] { grid-row: 9; } .card-row > .card > .row[data-track="10"] { grid-row: 10; } .card-row > .card > .row[data-track="11"] { grid-row: 11; } .card-row > .card > .row[data-track="12"] { grid-row: 12; } .card-row > .card > .row[data-track="13"] { grid-row: 13; } .card-row > .card > .foot { grid-row: 14; }
 .card { display: flex; flex-direction: column; min-width: 0; }
 .card .top { display: flex; flex-wrap: nowrap; flex-shrink: 0; justify-content: flex-start; align-items: first baseline; gap: var(--sp-1) var(--sp-3); border-top: var(--rule-strong) solid var(--ink); padding-top: var(--sp-3); margin-bottom: var(--gap-header); }
-/* D. The head travels within the whole card, including cards sharing field tracks. */
 .cards:not(.minis) .card { --card-bars: var(--reading-top); scroll-margin-top: var(--card-bars); }
 .cards .card > .top { min-width: 0; height: var(--card-head-height); border-bottom: var(--rule) solid var(--line); position: sticky; top: var(--card-bars); z-index: 3; background: var(--ground); }
 .card .top > .name { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -643,7 +628,7 @@ main section.first { display: flex; flex-direction: column; gap: var(--sp-5); bo
 .card.mini > summary .find { font: var(--type-meta); flex: 1; min-width: 0; color: var(--ink); }
 .card.mini p { font: var(--type-body); }
 .card.mini > p + p { margin-top: var(--sp-2); }
-.card.mini > p:has(+ .foot) { margin-bottom: var(--sp-2); } /* the shared footer keeps one spacing everywhere */
+.card.mini > p:has(+ .foot) { margin-bottom: var(--sp-2); }
 .related { font: var(--type-meta); color: var(--ink); }
 .card.mini .body-group > .gl, .card.mini .how > .gl { font: var(--type-label); }
 .card.mini .body-group { display: flex; flex-direction: column; gap: var(--sp-1); }
@@ -653,7 +638,7 @@ main section.first { display: flex; flex-direction: column; gap: var(--sp-5); bo
 .card.mini .body-group .det { font: var(--type-meta); color: var(--ink); }
 .card.mini .how { font: var(--type-meta); color: var(--muted); }
 .card.mini .body-group.closest .det { font: var(--type-body); color: var(--ink); } /* the closest body's text is read like the summary */
-.card.mini .body-roles { color: var(--ink); } /* an AI Act authority's roles and basis after its name, on its line */
+.card.mini .body-roles { color: var(--ink); }
 .card.mini .body-group > details.more { margin-top: calc(var(--gap-row) - var(--sp-1)); }
 .card.mini .body-group > details.more > summary { font: var(--type-meta); color: var(--muted); } /* "N more AI Act bodies": a quiet control inside the group, not a heading */
 .card.mini .body-group > details.more > ul { margin-top: var(--sp-2); }
@@ -734,7 +719,7 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
 .fn-table thead th { vertical-align: bottom; overflow-wrap: normal; hyphens: none; font: var(--type-meta); }
 .fn-table .fn-corner, .fn-table th[scope="row"] { width: var(--fn-state-width); min-width: var(--fn-state-width); padding-right: var(--sp-2); position: sticky; left: 0; z-index: 2; background: var(--ground); text-align: left; overflow-wrap: normal; }
 .fn-table th[scope="row"] { font: var(--type-body); } /* an assigned role (principle: Type), like the state names in Compare's lists */
-.fn-table .fn-column { box-sizing: content-box; width: var(--fn-column-width); min-width: var(--fn-column-width); max-width: var(--fn-column-width); } /* equal function tracks, evenly spaced: no gutter between groups */
+.fn-table .fn-column { box-sizing: content-box; width: var(--fn-column-width); min-width: var(--fn-column-width); max-width: var(--fn-column-width); }
 .fn-table .fn-head { height: var(--fn-head-h); padding-block: 0; } /* content-box tracks: the padding-box head zone is exactly --fn-head-h, excluding the bottom rule */
 .fn-head .g { position: absolute; z-index: 1; left: calc(50% + .433013lh); bottom: -.25lh; padding-left: calc(.288675lh + var(--sp-1)); white-space: nowrap; transform: rotate(-60deg); transform-origin: left bottom; color: var(--muted); } /* centre the line on the band: right by cos(30deg)/2 line heights, down by 1/4; the added inset keeps text above the rule */
 .fn-table .fn-column-group { text-align: left; height: calc(2lh + var(--sp-1) + var(--reading-pad)); padding: 0; } /* two lines: without gutters a short group's label may wrap within its own tracks */
@@ -744,15 +729,15 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
 .fn-column-group::before { top: 100%; }
 .fn-table thead > tr:last-child > .fn-pad::before { bottom: 0; }
 .fn-column-group::after { content: ""; position: absolute; left: var(--fn-lean); top: 100%; width: 100%; height: var(--rule); background: var(--fn-group-line); pointer-events: none; }
-.fn-table tbody :is(.fn-group-start, .fn-group-first, .fn-pad) { box-shadow: inset var(--rule) 0 var(--fn-group-line); } /* no gutter between groups (owner, 18 Nov 2026): a slightly stronger line marks where one starts, quieter than the selection bar */
+.fn-table tbody :is(.fn-group-start, .fn-group-first, .fn-pad) { box-shadow: inset var(--rule) 0 var(--fn-group-line); }
 .fn-table tbody .fn-column:not(.fn-group-start, .fn-group-first) { box-shadow: inset var(--rule) 0 var(--fn-hairline); }
 .fn-table thead > tr:first-child > * { border-bottom: 0; }
 .fn-table .fn-group th { padding-top: var(--sp-4); text-align: left; font: var(--type-label); width: var(--fn-state-width); min-width: var(--fn-state-width); position: sticky; left: 0; z-index: 2; background: var(--ground); }
-.fn-group span { white-space: normal; } /* a block label may wrap inside the state column rather than widen it (R6: only the spacer grows) */
+.fn-group span { white-space: normal; } /* Only the spacer grows, so labels wrap within the state column. */
 .fn-table tr.fn-row-lit > :is(th, td), .fn-table tbody .fn-col-lit { background-color: var(--fn-tint); }
 .fn-table tbody .fn-column { background-clip: padding-box; } /* a column's tint stays inside its padding box, so its rules stay visible */
 .fn-table tbody .fn-column.fn-col-lit { box-shadow: none; }
-.fn-table .fn-column.fn-col-lit::after { content: ""; position: absolute; left: 0; right: 0; bottom: calc(-1 * var(--rule)); height: var(--rule); background: var(--fn-tint); pointer-events: none; } /* bridge the bottom rule only across the padding box, avoiding a coloured border join in the group gutter */
+.fn-table .fn-column.fn-col-lit::after { content: ""; position: absolute; left: 0; right: 0; bottom: calc(-1 * var(--rule)); height: var(--rule); background: var(--fn-tint); pointer-events: none; } /* Bridge the bottom rule so the selected column reads as one band. */
 .fn-table tr.fn-row-lit > :is(th, td) { background-clip: border-box; } /* the row band runs unbroken across the columns */
 .fn-head.fn-col-lit::before { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: var(--fn-head-h); transform: skewX(-30deg); transform-origin: left bottom; background-color: var(--fn-tint); pointer-events: none; }
 .fn-scroll.fits .fn-table tr.fn-row-lit > th::before, .fn-scroll.fits .fn-table tr.fn-row-lit > .fn-pad::after { content: ""; position: absolute; top: 0; bottom: 0; width: var(--sp-2); background: var(--fn-tint); pointer-events: none; }
@@ -773,7 +758,7 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
 .fn-mandate { border: var(--rule-strong) solid currentColor; }
 .fn-not_coded, .fn-table td[data-value="not_coded"]::before { height: .12rem; border-radius: 0; background: var(--muted); }
 .fn-table td[data-value="not_coded"]::before { content: ""; display: inline-block; vertical-align: middle; width: .8rem; }
-.fn-legend { list-style: none; padding: 0; font: var(--type-meta); color: var(--muted); display: flex; flex-direction: row; flex-wrap: wrap; gap: var(--sp-1) var(--sp-4); } /* one line under the desktop table; whole items wrap on phones */
+.fn-legend { list-style: none; padding: 0; font: var(--type-meta); color: var(--muted); display: flex; flex-direction: row; flex-wrap: wrap; gap: var(--sp-1) var(--sp-4); }
 .fn-legend li { display: flex; align-items: baseline; gap: var(--sp-2); white-space: nowrap; }
 .fn-legend .fn-mark { align-self: center; }
 .fn-legend.fn-phone-only li[data-value="not_found"] { white-space: normal; max-width: 100%; }
@@ -800,7 +785,6 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
 .fn-detail-context { font: var(--type-label); color: var(--muted); margin: 0 0 var(--sp-3); }
 .fn-claim + :is(.fn-claim, .fn-basis) { margin-top: var(--sp-4); }
 .fn-basis { margin: 0 0 var(--sp-2); }
-/* The quote control ends the claim's source line; the quote opens beneath it, indented, as a block of its own. */
 .fn-sources details.quote-inline { display: inline; margin: 0; }
 .fn-sources details.quote-inline > summary { display: inline-flex; width: auto; min-height: 0; vertical-align: baseline; } /* the Quote level's own type and ink */
 .fn-sources details.quote-inline > .quote-body { display: block; margin: var(--sp-2) 0 0 var(--sp-4); font: var(--type-body); color: var(--ink); }
@@ -818,9 +802,6 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
 .fn-phone-head > span, .fn-phone-country { overflow-wrap: normal; word-break: normal; hyphens: manual; }
 .fn-phone-block > h3 { grid-column: 1 / -1; grid-row: 1; position: relative; z-index: 1; font: var(--type-label); padding-block: var(--sp-4) var(--sp-2); pointer-events: none; }
 .fn-phone-band-label { background: var(--ground); padding-inline-end: var(--sp-1); } /* a band label wider than the first column passes over the group line, which runs on beside it */
-/* Group-start lines (owner, 18 Nov 2026, "as in the grid"): each group's cells in the head, the band rows and every row carry
-   the grid's group line at their start, and its label and strip sit left-aligned just after it, with the same padding, so a
-   label wraps inside its own column. The line is under the selection bar and the focus ring; an expanded row's ground covers it. */
 .fn-phone-head > span:not(:first-child), .fn-phone-band, .fn-phone-block > ul > li > .fn-pips { box-shadow: inset var(--rule) 0 var(--fn-group-line); padding-inline: var(--fn-group-pad) var(--fn-group-end); }
 .fn-phone-band { grid-row: 1; }
 .fn-phone-block > ul { list-style: none; padding: 0; margin: 0; row-gap: 0; } /* rows meet, so the group lines run unbroken; the room moved into each row's country cell, which sets its height */
@@ -849,8 +830,7 @@ button.fn-function-label:focus-visible { outline: none; background: var(--highli
 .fn-function-status .qualifier-text { font-size: var(--size-meta); } /* the outer body's line box keeps the name's baseline rhythm */
 .fn-function-summary { flex-basis: 100%; margin: 0; margin-inline-end: max(0px, calc(100% - var(--text-width))); padding-left: var(--fn-text-inset); font: var(--type-meta); color: var(--muted); } /* reserve the space beyond the text measure: the flex line otherwise clamps this item to its max-width and can place it beside a short name and status */
 .fn-phone-claims { flex-basis: 100%; min-width: 0; margin-block: var(--sp-2) var(--sp-4); margin-inline-start: var(--fn-text-inset); }
-/* The grouped view is the default at every width; the full grid is one click away (owner, 18 Nov 2026). The view is the
-   section's state, not the width's. Without the page script the rows cannot open, so the readable grid shows. */
+/* Without the page script the rows cannot open, so the readable grid shows. */
 .fn[data-view="grouped"] :is(.fn-scroll, .fn-desktop-only) { display: none; }
 .fn[data-view="grouped"] .fn-phone { display: grid; }
 .fn[data-view="grouped"] .fn-phone-only { display: block; }
@@ -859,12 +839,9 @@ button.fn-function-label:focus-visible { outline: none; background: var(--highli
 :root:not([data-js]) .fn .fn-scroll, :root:not([data-js]) .fn .fn-use.fn-desktop-only { display: block; }
 :root:not([data-js]) .fn .fn-legend.fn-desktop-only { display: flex; }
 .fn-view-switch { align-self: stretch; justify-content: flex-end; } /* its own line above either head, including on phones */
-/* The grouped view's head prints each label on one line on wider screens; on phones it prints "&" for "and" and breaks after the
-   first part, so all four take two lines alike (owner, 18 Nov 2026). Both forms are saved; CSS shows one. */
+/* Both forms are saved. */
 .fn-phone-head .fn-label-short { display: none; }
 @media (width <= 640px) { .fn-phone-head .fn-label-short { display: inline; } .fn-phone-head .fn-label-full { display: none; } }
-/* Wider screens: the grouped view fills the content column as the grid does; the first column is as wide as its longest name
-   (narrower only when the column cannot hold it), and the groups share the rest; where the column is narrow a label wraps. */
 @media (width > 640px) {
   .fn-phone { --fn-group-pad: var(--sp-3); --fn-group-end: var(--sp-3); grid-template-columns: minmax(min-content, max-content) repeat(var(--fn-groups), minmax(min-content, 1fr)); } /* between 641 and about 760 px a label wraps rather than the table scrolling */
   .fn-phone-country { padding-inline-end: var(--fn-group-end); } /* the longest name keeps the same room before the first group line */
@@ -888,7 +865,6 @@ button.fn-function-label:focus-visible { outline: none; background: var(--highli
 /* The saved page was rendered at 1440 px, where the table fits: until the script measures again, every width keeps the scroll box and a static head. */
 html[data-prerendered] .fn-scroll.fits { overflow-x: auto; }
 html[data-prerendered] .fn-scroll.fits thead { position: static; }
-/* Funding: two ranked charts, with identical tracks and one shared records fold per institute. */
 #fund-rows { --fund-hit: max(44px, var(--hit)); display: grid; grid-template-columns: max-content minmax(var(--bar-min), 1fr) max-content; gap: var(--sp-6) var(--sp-2); }
 .fund-list { display: grid; grid-column: 1 / -1; grid-template-columns: subgrid; column-gap: inherit; }
 .fund-axis, .fund-chart-rows, .fund-item { display: grid; grid-column: 1 / -1; grid-template-columns: subgrid; column-gap: inherit; }
@@ -982,30 +958,28 @@ span.fund-names-toggle::after { display: none; }
 .fund-detail .fund-value strong { white-space: normal; }
 .fund-budget-summary .budget-qualifiers { display: block; margin-top: var(--sp-1); }
 .fund-detail-body h4 { font: var(--type-label); margin-bottom: var(--sp-3); }
-.fund-detail-body p + p, .fund-detail-body > div:not(.srcs) > :not(h4) + * { margin-top: var(--sp-3); } /* records and notes in a fold column are separated alike */
+.fund-detail-body p + p, .fund-detail-body > div:not(.srcs) > :not(h4) + * { margin-top: var(--sp-3); }
 .fund-detail-body .staffing-note { grid-column: 1 / -1; }
 
-/* Figures below the map: the counts row's figure type, three across, one column on phones. */
 .figures { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--sp-6) var(--sp-8); border-top: var(--rule) solid var(--line); padding-top: var(--sp-6); }
 .figures:empty { display: none; }
 .figure { display: flex; flex-direction: column; gap: var(--sp-1); min-width: 0; }
 .figure b { font: var(--type-figure); font-variant-numeric: tabular-nums; letter-spacing: -.04em; }
 .figure > span { font: var(--type-body); color: var(--muted); }
 .figure em { font-style: normal; color: var(--ink); white-space: nowrap; }
-/* Grouped lists (principle: Groups): heading, a row of status marks, then the names and facts in full-width rows. */
-.group-block { display: flex; flex-direction: column; gap: var(--sp-2); min-width: 0; border-top: var(--rule) solid var(--ink); padding-top: var(--sp-3); } /* a thin rule opens each group (owner, 5 Nov 2026) */
+.group-block { display: flex; flex-direction: column; gap: var(--sp-2); min-width: 0; border-top: var(--rule) solid var(--ink); padding-top: var(--sp-3); }
 .marks { display: flex; flex-wrap: wrap; gap: var(--sp-1); }
 .group-list { list-style: none; margin: 0; padding: 0; display: block; }
 .group-list > li { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: first baseline; gap: 0 var(--sp-4); padding-block: var(--sp-1); border-bottom: var(--rule) solid var(--line); break-inside: avoid; }
 .group-note { font: var(--type-meta); color: var(--ink); }
-.group-list > li:last-child { border-bottom: 0; } /* hairlines only between members: the group's spacing closes it (rule 15) */
-@media (width <= 640px) { .group-list > li { flex-direction: column; align-items: flex-start; justify-content: flex-start; } } /* phones: every note starts at one left edge, under its state (rule 6) */
-.access, .setup { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--gap-header); align-items: start; } /* every group and its row list shares the full section-body width */
+.group-list > li:last-child { border-bottom: 0; } /* hairlines only between members: the group's spacing closes it */
+@media (width <= 640px) { .group-list > li { flex-direction: column; align-items: flex-start; justify-content: flex-start; } } /* phones: every note starts at one left edge, under its state */
+.access, .setup { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--gap-header); align-items: start; }
 .groups-short, .groups-long { display: flex; flex-direction: column; gap: var(--gap-header); min-width: 0; }
 .groups-long .group-list { columns: 1; }
 :is(.access, .setup) > .section-foot { grid-column: 1 / -1; }
 :is(.access, .setup) > .section-foot > .foot { font: var(--type-meta); color: var(--muted); }
-.per-person { white-space: nowrap; } /* a figure and its unit stay on one line */
+.per-person { white-space: nowrap; }
 .group-list.stacked > li { flex-direction: column; align-items: flex-start; justify-content: flex-start; }
 .card .top > .state-dl { margin-left: auto; }
 .section-foot, .card.mini > .foot { position: relative; display: block; min-height: var(--hit); } /* the action reserves only the summary line; opened bodies span the shell */
@@ -1013,14 +987,13 @@ span.fund-names-toggle::after { display: none; }
 .card.mini > .foot > :not(.state-dl) { min-width: 0; }
 .card :is(.top, .foot) > .state-dl { display: inline-flex; align-items: center; justify-content: center; width: var(--hit); height: var(--hit); margin-block: calc((var(--size-label) * var(--leading-label) - var(--hit)) / 2); color: var(--muted); text-decoration-line: none; }
 .card :is(.top, .foot) > .state-dl:is(:hover, :focus-visible) { color: var(--ink); }
-/* Section foot row (principle: Downloads): after a section's table or list, its explanation fold at the left, its download alone at the right end. */
 .section-foot > :not(.section-foot-actions) { min-width: 0; }
 :is(.section-foot > details, .section-foot > .foot > details, .card.mini > .foot > details) > summary { max-width: calc(100% - var(--foot-action-space)); }
 .section-foot-actions { position: absolute; top: 0; right: 0; display: inline-flex; align-items: center; gap: var(--sp-4); min-height: var(--hit); }
 .section-dl { display: inline-flex; align-items: center; justify-content: center; width: var(--hit); height: var(--hit); padding: 0; color: var(--muted); text-decoration-line: none; cursor: pointer; }
 .section-dl:is(:hover, :focus-visible), details[open] > .section-dl { color: var(--ink); }
 .feed-link { display: inline-flex; align-items: center; gap: var(--sp-2); font: var(--type-meta); min-height: var(--hit); }
-.section-foot .popover { top: auto; bottom: calc(100% + var(--sp-1)); } /* a foot row's menu opens upward, over the table it downloads */
+.section-foot .popover { top: auto; bottom: calc(100% + var(--sp-1)); }
 .feed-link.ico::before, .foot-feed.ico::before { color: var(--muted); }
 .foot-feed { display: inline-flex; align-items: center; gap: var(--sp-2); min-height: var(--hit); margin-block: calc((1lh - var(--hit)) / 2); } /* the hit height without a taller line */
 
@@ -1041,8 +1014,7 @@ span.fund-names-toggle::after { display: none; }
 .dlist a:is(:hover, :focus-visible) .dl-title { color: var(--link); }
 .dlist a.ico::before { color: var(--muted); align-self: first baseline; }
 
-/* One quiet control level, independent of the record/panel builder. Source counts put their chevron
-   on the summary itself, like every other fold. Mini summaries keep their explicit name/finding roles. */
+/* Source counts share other folds' summary chevrons; mini summaries retain their name/finding roles. */
 .more.quiet > summary, .quote > summary, .srcs > summary,
 :is(.card, .record, .fn-detail, .fund-detail) summary {
   font: var(--type-meta); color: var(--muted); display: flex; align-items: first baseline; gap: var(--sp-2);
@@ -1069,7 +1041,7 @@ span.fund-names-toggle::after { display: none; }
   .worldmap { max-width: var(--map-stack-width); }
   .side { order: 1; display: flex; flex-direction: column; gap: var(--sp-4); max-width: var(--map-stack-width); }
   #regions { max-width: var(--region-list); }
-  .maptools { display: flex; flex-wrap: wrap; align-items: end; max-width: var(--map-stack-width); } /* the map's column: tabs, then the search filling the rest of the row up to the map's right edge, or below at full width */
+  .maptools { display: flex; flex-wrap: wrap; align-items: end; max-width: var(--map-stack-width); }
   .region-chips { flex: none; max-width: 100%; }
   .map-search { flex: 1 1 var(--map-search-basis); }
   .map-aside { order: 0; max-width: var(--map-stack-width); } /* the legend stays directly under the map */
@@ -1095,7 +1067,7 @@ span.fund-names-toggle::after { display: none; }
   .region-control.ico::before { display: none; }
   .region-control .field { padding-left: var(--sp-3); padding-right: var(--sp-6); text-overflow: ellipsis; }
   #col-opts { left: auto; right: 0; } /* opens leftwards: Columns sits near the right edge beside the icon-only Download */
-  .card.mini > summary { flex-wrap: wrap; row-gap: 0; } /* phones: the name above a full-width summary */
+  .card.mini > summary { flex-wrap: wrap; row-gap: 0; }
   .card.mini > summary .name { flex-basis: 100%; }
   .figures, .access, .setup { grid-template-columns: minmax(0, 1fr); }
   .groups-long .group-list { columns: 1; }
@@ -1107,21 +1079,19 @@ span.fund-names-toggle::after { display: none; }
 }
 :is(table, .fund-item, .card, .updated, .srcs, #changelog), :is(table, .fund-item, .card, .updated, .srcs, #changelog) * { font-variant-numeric: tabular-nums; }
 /* Arrival: the tint lasts while the card is the target (class set by the script, so it survives the swap of the saved page; :target only until then, as history navigation leaves it stale); the fade is motion only. One ring when the card also has keyboard focus. */
-[data-prerendered] .card:target, .card.arrived { outline: none; background-color: var(--highlight-fill); box-shadow: 0 0 0 var(--sp-2) var(--highlight-fill); border-radius: var(--r-sm); } /* the tint headings take, kept while the card is the target; no ring (owner, 5 Nov 2026) */
+[data-prerendered] .card:target, .card.arrived { outline: none; background-color: var(--highlight-fill); box-shadow: 0 0 0 var(--sp-2) var(--highlight-fill); border-radius: var(--r-sm); }
 [data-prerendered] .cards .card:target > :is(.top, summary), .cards .card.arrived > :is(.top, summary) { background: linear-gradient(var(--highlight-fill), var(--highlight-fill)), var(--ground); } /* full and mini heads keep an opaque copy of their card's tint */
 @keyframes arrive { from { background-color: color-mix(in srgb, var(--accent) 22%, var(--highlight-fill)); } to { background-color: var(--highlight-fill); } }
 @media (prefers-reduced-motion: no-preference) {
   .region-head .chev { transition: transform var(--motion-short) ease; }
   [data-prerendered] .card:target, .card.arrived { animation: arrive var(--motion-arrival) ease-out; }
 }
-/* Focus (principle: Focus): one style. Text controls (links, tabs, text buttons, disclosures, tooltip terms) take the highlight tint behind them and a 2px underline in the focus colour,
-   which carries the 3:1 the tint alone lacks; boxed controls (.btn, .field) keep their own edge; a heading a jump focuses takes the tint alone, fading after about 1.5s. */
 html :is(a, summary, abbr.g, button.info, .linkbtn, .list-more, .popover button, .region-chips button, .view-switch button, .region-head, .pick, .smark[tabindex], .missing[tabindex], .budget-amount[tabindex], [data-tip][tabindex="0"], [aria-description][tabindex="0"]):not(.btn, .field):focus-visible {
   outline: none; background-color: var(--highlight-fill); box-shadow: 0 0 0 var(--sp-1) var(--highlight-fill); border-radius: var(--r-sm);
   text-decoration: underline var(--rule-strong) var(--focus); text-underline-offset: var(--underline-offset);
 }
 html .cn:focus-visible::before { outline: none; }
-html .region-chips button[aria-pressed]:not(.btn):focus-visible { text-decoration: none; } /* a region tab: the tint alone; the underline marks the selected tab only (owner, 5 Nov 2026) */
+html .region-chips button[aria-pressed]:not(.btn):focus-visible { text-decoration: none; }
 html .region-chips button[aria-pressed="true"]:not(.btn):focus-visible { box-shadow: inset 0 calc(-1 * var(--rule-strong)) var(--accent), 0 0 0 var(--sp-1) var(--highlight-fill); }
 html .view-switch button[aria-pressed="true"]:not(.btn):focus-visible { text-decoration: none; } /* the current marker stays below the focus tint */
 html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fill); box-shadow: 0 0 0 var(--sp-1) var(--highlight-fill); border-radius: var(--r-sm); -webkit-box-decoration-break: clone; box-decoration-break: clone; } /* a wrapped heading: one tint per line */
@@ -1303,7 +1273,6 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   })();
 
   function $(id) { return document.getElementById(id); }
-  // The lower edge of the sticky rows: the section bar, and a group row while it sticks under it.
   function barsBottom() {
     var b = document.querySelector(".secnav").getBoundingClientRect().bottom;
     [].forEach.call(document.querySelectorAll(".group-nav"), function (row) { var r = row.getBoundingClientRect(); if (r.top < b + 1 && r.bottom > b) b = r.bottom; });
@@ -1311,7 +1280,6 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   }
   // Theme (principle: Theme): the head script sets data-theme before first paint; the toggle is bound on the document,
   // so it works on the saved page and after hydration replaces the body, and its label follows the page.
-  // Three states: follows the system (nothing stored), light, dark; each click moves to the next and stores it.
   var THEME_NEXT = { system: "light", light: "dark", dark: "system" }, THEME_NAME = { system: "follows system", light: "light", dark: "dark" };
   function themeNow() { var t = document.documentElement.getAttribute("data-theme"); return t === "light" || t === "dark" ? t : "system"; }
   // The one toggle's place (principle: Theme): the section bar, or the header on phones; checked whenever the theme is synced and on a width change.
@@ -1451,7 +1419,6 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   // Figure source type, two plain scales with the status confidence: a figure from a primary source is unmarked; any other says so in plain words on its own qualifier line, with its definition in its tooltip.
   var CONF = { indirect: ["indirect or secondary", "Not stated directly in a primary source; taken from secondary sources or read indirectly from a primary one."], secondary_sources: ["secondary sources", "Not stated directly in a primary source; taken from secondary sources or read indirectly from a primary one."], press_report: ["press report", "From a press report, not confirmed in a primary source."], our_estimate: ["our estimate", "Our own estimate or calculation from reported figures."] };
   var STATUS_CONF = { medium: "This status rests on indirect primary evidence or several secondary accounts.", low: "This status rests on a single secondary source." }; // only the level shown is explained
-  // A term with a short definition shown on hover or focus.
   function term(label, definition, cls) { var t = el("abbr", "g" + (cls ? " " + cls : ""), label); t.tabIndex = 0; t.setAttribute("aria-description", definition); return t; } // the label is the name; its definition, the description, is also the tip
   function info(text, id) { var b = el("button", "info"), letter = el("span", "info-letter", "i"); letter.setAttribute("aria-hidden", "true"); b.appendChild(letter); b.type = "button"; b.dataset.tip = text; b.setAttribute("aria-label", "About this: " + text); if (id) b.id = id; return b; }
   // An (i) never sits alone on a line (principle: Supporting text). After a heading: heading and (i) share one line box whose only break-free point is between them.
@@ -1585,7 +1552,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   // a focus-opened tip follows its trigger, including when native focus or reading clearance scrolls it.
   // Track how it opened, not :focus-visible: scripted focus can open a tip without painting a keyboard ring.
   document.addEventListener("scroll", function (e) {
-    if (!tipFor || (tip && e.target instanceof Node && tip.contains(e.target))) return; /* nothing open, or scrolling the tip itself */
+    if (!tipFor || (tip && e.target instanceof Node && tip.contains(e.target))) return;
     if (tipFromFocus && tipFor === document.activeElement) showTip(tipFor, true);
     else if (e.target !== document || Math.abs(window.scrollY - tipY) > 8) hideTip();
   }, { passive: true, capture: true });
@@ -1673,7 +1640,6 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     if (original) { node.classList.add("original-text"); node.setAttribute("aria-description", original); if (node.tagName !== "A") node.tabIndex = 0; }
     return node;
   }
-  // Institute name, linked to its official website when it has one.
   function instName(inst) {
     var label = DISPLAY_NAME[inst.id], original = inst.name_local !== label ? inst.name_local : null;
     if (!inst.website) return original ? withOriginal(el("span", null, label), original) : document.createTextNode(label);
@@ -1824,11 +1790,10 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     var sentence = rereadLine(src).textContent, words = el("span", null, state.worst.state === "quote_gone" ? "quote last found " : "last read ");
     words.appendChild(dated(state.worst.last_found));
     var tail = trailingQualifier(words, "reread-tail", sentence);
-    tail.dataset.tip = sentence; // the tip for the pointer
+    tail.dataset.tip = sentence;
     parent.appendChild(sepGap()); parent.appendChild(tail);
     return true;
   }
-  // Claims: one display rule, also exported for the functions table. Text is assigned as text, never HTML.
   var FACTS_LABEL = "Facts", QUOTE_LABEL = "Quote", TRANSLATED = "translated from {language}";
   // Languages print by their plain name, never a variant or script (principle: Naming): Bokmål and Nynorsk read "Norwegian";
   // exact codes stay in the data and downloads. The same names as scripts/summaries.py LANGUAGE_NAMES (tests/test_language_names.py).
@@ -1897,7 +1862,6 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   }
   document.addEventListener("toggle", function (e) { if (e.target.matches("details.quote")) loadClaimQuote(e.target); }, true);
   // The fold's label names the languages its translated quotes come from (principle: Claims): "Quote, translated from Norwegian".
-  // The languages a claim's translated quotes and anchors come from, in order, each once.
   function quoteLanguages(id) {
     var entry = CLAIM_INDEX[id], langs = [];
     (entry ? entry.excerpts : []).forEach(function (bound) {
@@ -2292,9 +2256,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     }
     return groups;
   }
-  // Research notes in one muted block. The legacy path keeps its search and Commission wording; migrated notes arrive as generated paragraphs.
   var SEARCHED = / ?Searched in (.+?) for a body its government has tasked with testing general-purpose or frontier AI models or named its AI safety or security institute\./;
-  var COMMISSION_PENDING = "The Commission's contact list of 7 September 2026 marks this state's AI Act authority as pending final adoption; the national sources cited here give its actual designation status.";
   function howWeChecked(j, cite) {
     if ("claims" in j) {
       var generated = (j.notes || "").split(/\n\s*\n/).map(function (text) { return text.trim(); }).filter(Boolean);
@@ -2309,14 +2271,12 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       }
       return block;
     }
-    var langs = null, pending = false, paragraphs = [];
+    var langs = null, paragraphs = [];
     (j.notes || "").split(/\n\s*\n/).forEach(function (text) {
       text = text.trim(); if (!text) return;
-      if (text === COMMISSION_PENDING) { pending = true; return; }
       text = text.replace(SEARCHED, function (all, l) { langs = l.replace(/,$/, ""); return ""; }).trim(); if (text) paragraphs.push(text);
     });
     if (langs) paragraphs.unshift("Searched in " + langs + ".");
-    if (pending) paragraphs.push("The Commission's contact list marks this state's AI Act authority as pending final adoption.");
     if (!paragraphs.length) return null;
     var box = el("div", "how"); box.appendChild(el("p", "gl", "How we checked"));
     paragraphs.forEach(function (text) { box.appendChild(el("p", "running-text", text)); });
@@ -2369,13 +2329,11 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       }
       var ftxt = form.join("; "); ftxt = ftxt.charAt(0).toUpperCase() + ftxt.slice(1);
       var formValue = row("Form", ftxt || missing(), fieldCitations(inst, ["form"]));
-      var rr = inst.display.rows; // absent until the institute has the fields: then no rows show, so the card does not change
-      if (rr) {
-        if (rr.members) formValue.appendChild(membersValue(rr.members, cite, inst));
-        if (rr.head) row("Head", rowValue(rr.head), rr.head.state === "stated" ? rr.head.cited : []);
-        if (rr.reports_to) row("Reports to", rowValue(rr.reports_to), rr.reports_to.state === "stated" ? rr.reports_to.cited : []);
-        bodiesRow("Partners", rr.partners);
-      }
+      var rr = inst.display.rows;
+      if (rr.members) formValue.appendChild(membersValue(rr.members, cite, inst));
+      if (rr.head) row("Head", rowValue(rr.head), rr.head.state === "stated" ? rr.head.cited : []);
+      if (rr.reports_to) row("Reports to", rowValue(rr.reports_to), rr.reports_to.state === "stated" ? rr.reports_to.cited : []);
+      bodiesRow("Partners", rr.partners);
       var mandate = inst.mandate_short || inst.mandate;
       row("Mandate", mandate || missing(), fieldCitations(inst, [inst.mandate_short ? "mandate_short" : "mandate"]));
       // Cards keep Budget and Staff for every institute (principle: Scope); Known activity is for established institutes only.
@@ -2496,7 +2454,6 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   }
   // Display caveat; the qualification policy lives in dataset.method and decisions in outputs.
   // Two sentences: what counts, then the caveat; the full rule (what does not count, how 'since' and 'after establishment' are dated) is in dataset.method.
-  // OPHELP_INTERVAL adds the interval clause only where a card shows the interval line.
   var OPHELP = "Evaluations, test results, benchmarks and technical reports credited to the institute by name, and named participation in joint testing; 'since' gives the earliest known item of that kind. Absence is not evidence of inactivity, since some institutes test models without publishing.", OPHELP_CAVEAT = OPHELP.slice(OPHELP.indexOf("Absence")), OPHELP_INTERVAL = OPHELP.replace("of that kind.", "of that kind, and 'began' counts from establishment, which is not a measure of speed or quality.");
   // The amount carries the caveat; the other words stay plain text, so a narrow card wraps them and the citation follows the last word. A qualifier with no exact interval is plain text.
   function intervalQualifier(text) {
@@ -2587,7 +2544,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       b.addEventListener("click", function () { pick(j.id, "list"); });
       return b;
     }
-    function regionTally(r) { var pool = states.filter(REGIONS[r].counted).filter(isState); return [pool.filter(has("established")).length, pool.length]; } // established of all states, as the region list counts
+    function regionTally(r) { var pool = states.filter(REGIONS[r].counted).filter(isState); return [pool.filter(has("established")).length, pool.length]; }
     function regionHead(r, label) {
       var tally = regionTally(r), n = tally[0], all = tally[1];
       var b = el("button", "region-head"); b.type = "button"; b.dataset.region = r;
@@ -2630,7 +2587,6 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       if (n === 1) $("regions").appendChild(el("hr", "region-divider"));
       $("regions").appendChild(regionGroup(r));
     });
-    // Region chips above the map (principle: Region chips): World first, then the list's regions; the pressed chip is the region in view.
     ["World"].concat(LIST_REGIONS).forEach(function (r) {
       var c = el("button", null, r); c.type = "button"; c.dataset.region = r;
       c.addEventListener("click", function () { if (view.region !== r) setRegion(r); });
@@ -2647,7 +2603,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       worldRow.querySelector(".region-head").setAttribute("aria-pressed", String(view.region === "World"));
       var hadFocus = worldRow.contains(document.activeElement);
       worldRow.hidden = view.region === "World"; // no row for the view already shown; from another region it moves to World
-      if (hadFocus && worldRow.hidden) { var chip = document.querySelector('#region-chips button[data-region="World"]'); if (chip) chip.focus({ preventScroll: true }); } // its row goes: focus moves to the World tab
+      if (hadFocus && worldRow.hidden) { var chip = document.querySelector('#region-chips button[data-region="World"]'); if (chip) chip.focus({ preventScroll: true }); }
       [].forEach.call($("region-chips").children, function (c) { c.setAttribute("aria-pressed", String(c.dataset.region === view.region)); });
     }
     function setRegion(r) {
@@ -3144,7 +3100,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       if (i) {
         var current = [DISPLAY_NAME[i.id], i.name, i.short_name, i.acronym, i.name + " (" + i.short_name + ")"];
         current.slice(0, 4).forEach(function (t) { if (t) others.push({ text: t, inst: i }); });
-        (i.names || []).forEach(function (n) { if (current.indexOf(n.name) < 0) others.push({ text: n.name, inst: i, former: true }); }); // the recorded names other than the current one
+        (i.names || []).forEach(function (n) { if (current.indexOf(n.name) < 0) others.push({ text: n.name, inst: i, former: true }); });
       }
       return { j: j, others: others };
     });
@@ -3396,7 +3352,6 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     var groups = navLinks.map(function (a) { return a.dataset.sections.split(" ").map(function (id) { return $(id).closest("section"); }); });
     // A group box starts its first section (its row sticks, so the row's own box is no document position).
     function edge(section) { var g = section.parentElement; return g.matches(".group") && g.querySelector("section") === section ? g : section; }
-    // Group rows: each row's links, and the sections they stand for.
     var groupRows = [].slice.call(document.querySelectorAll(".group-nav")).map(function (row) {
       var links = [].slice.call(row.querySelectorAll("a"));
       return { row: row, box: row.parentElement, links: links, sections: links.map(function (a) { return $(a.getAttribute("href").slice(1)).closest("section"); }) };
@@ -3501,7 +3456,6 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       items.forEach(function (j) { cards.appendChild(instituteCard(j, j.institute_id ? I[j.institute_id] : null, S, m, true)); });
       group.appendChild(cards); $("world-cards").appendChild(group);
     });
-    // Functions table (Compare)
     (function () {
       var FN_COPY = {
         use: "Select a mark to see the quote and source.",
@@ -3851,7 +3805,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
             name.setAttribute("aria-label", dev + ". " + tip); // the visible name, then its tip
             box.appendChild(name); box.appendChild(cite(fieldCitations(e, ["developer", "kind", "model", "date"]))); return box;
           })));
-          if (a.value === "earlier_access") { var last = a.access_events.filter(function (e) { return e.date === a.latest_event; })[0]; f.appendChild(cited(", evidence from " + a.latest_event.slice(0, 4), fieldCitations(last, ["date"]))); } // vocabulary wording for earlier_access
+          if (a.value === "earlier_access") { var last = a.access_events.filter(function (e) { return e.date === a.latest_event; })[0]; f.appendChild(cited(m.vocabularies.model_access.earlier_access.label.replace(/^Yes/, "").replace("<year>", a.latest_event.slice(0, 4)), fieldCitations(last, ["date"]))); }
         } else if (a.value === "by_law") {
           var lp = a.legal_power;
           var law = (ACT_SHORT[lp.act] || lp.act) + " " + lp.provision.replace(/^Article /, "Art. "), help = LAW_HELP[lp.act + " " + lp.provision], lawBox = el("span");
@@ -3922,8 +3876,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       var c = m.display.counts, box = $("figures");
       // A median over ceilings is a ceiling and rounds up (dataset.method budget-ratios), so it can sit above every bar near it; its tooltip says so.
       function fig(figure, text, note) { var t = el("div", "figure"), s = el("span", null, text), b = el("b"); if (note) { s.appendChild(document.createTextNode(" ")); s.appendChild(el("em", null, note)); } b.appendChild(/^up to /.test(figure) ? term(figure, MEDIAN_CEILING, "val") : document.createTextNode(figure)); t.appendChild(b); t.appendChild(s); box.appendChild(t); }
-      var FIGURE_SHORT = { GB: "UK" }; // short state names in the figures row (presentation only)
-      function short(id) { return FIGURE_SHORT[id] || J[id].name; }
+      function short(id) { return SHORT_NAME[J[id].name] || J[id].name; }
       if (c.budget) fig(c.budget.median, "median annual budget of " + c.budget.n + " institutes.", short(c.budget.highest_jurisdiction_id) + " highest at " + c.budget.highest + ".");
       if (c.headcount) fig(c.headcount.median, "median staff of " + c.headcount.n + " institutes.", short(c.headcount.highest_jurisdiction_id) + " highest at " + c.headcount.highest + ".");
       var counted = d.institutes.filter(function (i) { return i.status === "established" && J[i.jurisdiction_id].kind !== "supranational"; });
@@ -4100,7 +4053,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     var colChecks = {};
     function updateScrollHint() {
       var scroller = $("world-scroll"), more = scroller.scrollWidth > scroller.clientWidth + 1;
-      $("world-scroll-hint").hidden = !more; // the hint shows only when the table scrolls
+      $("world-scroll-hint").hidden = !more;
       scroller.classList.toggle("fits", !more && !phone.matches);
       scroller.parentNode.classList.toggle("has-right", more && scroller.scrollLeft + scroller.clientWidth < scroller.scrollWidth - 2);
     }
@@ -4496,7 +4449,6 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       document.fonts.addEventListener("loadingdone", function () { if (!fontWait) redraw(true); }); // also while settling, unless the run is still waiting for the fonts
     }
     instantTips(document.body); W.forEach(function (r) { instantTips(r.tr); });
-    // External links open in a new tab; links within the page stay in place.
     externalLinks(document.body); W.forEach(function (r) { externalLinks(r.tr); });
     // Save once the download lists, fonts and the layout updates queued for the next frames are in place.
     if (!PRERENDERING && primePalette) downloads.then(primePalette, function () {}); // its Actions read the download links

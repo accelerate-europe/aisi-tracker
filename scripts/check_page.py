@@ -40,9 +40,11 @@ from urllib.parse import urljoin, urlsplit
 from bs4 import BeautifulSoup, Comment, NavigableString
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from agent_files import AI_CRAWLERS  # noqa: E402
 from browser_lock import browser_slot, lock_path  # noqa: E402
 from host_checks import INSTALL_CHROME, chrome_problem as missing_chrome, default_jobs as host_default_jobs, jobs_problem, memory_gib, playwright_version  # noqa: E402
 from display import GENERIC_FIELDS, record_sources as entry_sources  # noqa: E402
+from row_checks import RELATIONS as PARTNER_RELATIONS  # noqa: E402  the order the card sorts by
 from method_copy import rule_label  # noqa: E402
 from release_checks import today  # noqa: E402
 from screenshot_pixels import decode_png, differing_pixels, same_colour  # noqa: E402
@@ -958,7 +960,7 @@ def hydration_edges(browser, base_url: str, dist: Path) -> list[str]:
         if not page.locator("#worldmap").inner_text().strip() or mark != "failed":
             errors.append(f"hydration: {MAP_WAIT_MS} ms without the map, Asia's map box reads {page.locator('#worldmap').inner_text()!r} (data-map {mark!r})")
         late.release()
-        map_ready(page, 10_000)  # data-map reaches drawn once the late map is drawn
+        map_ready(page, 10_000)
         page.locator('#regions .region-head[data-region="Europe"]').first.click()
         page.locator('#worldmap svg.map-wide .tgt[data-j="FR"]').dispatch_event("click")
         if not page.locator("#worldmap svg.map-wide .hl-sel").count() or page.locator("#record-name .head-state").text_content() != "France":
@@ -1107,27 +1109,19 @@ def check_origins(browser, base_url: str, dist: Path) -> list[str]:
 
 # Structural card field identities, independent of reader-facing labels.
 CARD_TRACKS = {"Institute": "2", "Status": "3", "Form": "4", "Head": "5", "Reports to": "6", "Partners": "7", "Mandate": "8", "Budget": "9", "Staff": "10", "Known activity": "11", "Related funding": "12", "Facts": "13"}
-# Displayed values with no supporting quotation yet, by (table column or card label, jurisdiction id).
-KNOWN_UNCITED = {}
 CITED_COLUMNS = ("inst", "since", "op", "budget", "staff", "net")  # Region and status: reference data and derived status
-NOTHING_FOUND = "None found yet"  # Kept contract uses: known-activity findings.
+NOTHING_FOUND = "None found yet"
 
 
 def uncited_values(soup) -> list[str]:
     """Every displayed value that a citation could support carries a citation mark: card rows, related funding
     and the worldwide table's value columns. Absence ("Not published", "None found yet") and an institute name
     linking to its own website (the link is the evidence) need none."""
-    found, exempted = [], set()
+    found = []
 
     def bare(node) -> bool:
         text = " ".join(node.get_text(" ").split())
         return bool(text) and text not in ("\u2013", NOTHING_FOUND) and not node.select_one(".cites a.cn, .missing, .nonmember")
-
-    def report(key: tuple[str, str], where: str) -> None:
-        if key in KNOWN_UNCITED:
-            exempted.add(key)
-        else:
-            found.append(where)
 
     for row in soup.select(".card .row"):
         label, value = row.select_one(".k"), row.select_one(".v")
@@ -1139,7 +1133,7 @@ def uncited_values(soup) -> list[str]:
         parts = value.select(".activity-kind") or [value]
         for part in parts:
             if bare(part):
-                report((name, card.get("data-j")), f"card {card.get('data-j')}: {name}")
+                found.append(f"card {card.get('data-j')}: {name}")
     for item in soup.select(".related-funding-item"):
         if bare(item):
             found.append(f"related funding {item.get('data-funding-id')}")
@@ -1155,9 +1149,7 @@ def uncited_values(soup) -> list[str]:
                 continue
             for part in td.select(".activity-kind") or [td]:
                 if bare(part):
-                    report((column, jid), f"table {jid}: {column}")
-    # An exception whose value is now cited (or no longer shown) must leave the list.
-    found += [f"KNOWN_UNCITED entry {key} is stale: remove it" for key in sorted(set(KNOWN_UNCITED) - exempted)]
+                    found.append(f"table {jid}: {column}")
     return found
 
 
@@ -1295,10 +1287,6 @@ def check_feed(soup, dist: Path) -> list[str]:
     if root.findtext(ns + "updated") != max(stamps, default=""):
         errors.append(f"feed.xml: feed updated {root.findtext(ns + 'updated')!r} is not its newest entry")
     return errors
-
-
-# Hand-kept list: these crawlers must be explicitly allowed (see robots.txt generation in agent_files.py).
-AI_CRAWLERS = ("GPTBot", "ClaudeBot", "PerplexityBot", "Google-Extended", "CCBot", "OAI-SearchBot", "Applebot-Extended")
 
 
 def check_crawl_files(dist: Path) -> list[str]:
@@ -3469,7 +3457,7 @@ def figures_note_layout_errors(m: dict | None) -> list[str]:
 def one_column_errors(name: str, m: dict, width: int) -> list[str]:
     """The short and long groups must not overlap."""
     errors = []
-    if m["longTop"] < m["shortBottom"] - 1:  # overlapping groups cannot be read: blocking
+    if m["longTop"] < m["shortBottom"] - 1:  # overlapping groups cannot be read
         errors.append(f"{width}px: the long {name} group overlaps the short ones (short bottom {m['shortBottom']}, long top {m['longTop']})")
     groups = m["groups"]
     if any(g["top"] < p["bottom"] - 1 for p, g in zip(groups, groups[1:])):
@@ -3757,7 +3745,7 @@ def check_summary_data(html: str, data: dict) -> list[str]:
         errors.append("hero version is not 'v<version>' linking the changelog without a tooltip")
     changes = soup.select_one("#changes")
     section = changes.find_parent("section") if changes else None
-    if not section or section.get("aria-labelledby") != "data":  # the Data section's accessible name: blocking
+    if not section or section.get("aria-labelledby") != "data":  # the Data section's accessible name
         errors.append("the changelog is not in a section named by its Data heading (aria-labelledby)")
     errors += check_cite(soup, dataset)
 
@@ -3968,7 +3956,7 @@ def check_citations(page) -> list[str]:
     )
 
 
-# K. These are logical boundaries, shared by CSS, matchMedia and the early-map attribute.
+# These are logical boundaries, shared by CSS, matchMedia and the early-map attribute.
 # Range syntax gives complementary <=/> or </>= sides without a one-pixel gap.
 VIEWPORT_BOUNDARIES = {
     "360px": "narrowest phones: Functions head size, gap and marks",
@@ -4010,7 +3998,7 @@ WIDTH_GEOMETRY = {
         (".fund-names-toggle", "width"), (".fund-name-row", "width"),
         (".bar-value", "max-width"), (".region-chips", "max-width"),
         (":is(.card.mini, .fund-detail)[open] > summary", "width"),  # backing fills the fold behind its separate close
-        (".development-row", "width"), (".fn-table", "width"), (".fn-table .fn-pad", "width"),  # R6: full content width; the spacer takes the slack
+        (".development-row", "width"), (".fn-table", "width"), (".fn-table .fn-pad", "width"),  # full content width; the spacer takes the slack
     )},
 }
 # Match every dimension and percentage, including exponent notation. Restricting
@@ -4346,7 +4334,7 @@ def check_card_grid_edges(browser, base_url: str, data: dict) -> list[str]:
         tracks = finding.locator(".row").evaluate_all("rows => rows.map(r => r.dataset.track)")
         if (
             tracks != [CARD_TRACKS["Status"], CARD_TRACKS["Mandate"]]  # Finding shares the Mandate track
-            or [bool(text.strip()) for text in finding.locator(".row > .k").all_inner_texts()] != [True, True]  # one label per row
+            or [bool(text.strip()) for text in finding.locator(".row > .k").all_inner_texts()] != [True, True]
             # Dates in the value are joined by no-break spaces (nonbreakingDates), so the text is compared word by word.
             or finding.locator(".row")
             .nth(1)
@@ -4944,7 +4932,7 @@ def check_text_measure(browser, base_url: str) -> list[str]:
     return errors
 
 
-# D. Measure the first occupied field track and head offset; hydration must preserve both even at a scrolled position.
+# Hydration must preserve the first occupied field track and head offset, even at a scrolled position.
 CARD_HEAD_SPACE_JS = """c => {
   const h=c.querySelector(':scope > .top').getBoundingClientRect();
   const fields=[...c.querySelectorAll(':scope > .row')];
@@ -5227,7 +5215,6 @@ def check_card_heads(browser, base_url: str, data: dict) -> list[str]:
                         page.emulate_media(media='screen')
                         page.locator(detail + ' .close-control').evaluate('n=>n.click()')
                         continue
-                    # Assign only a test anchor, restoring the actual anchor afterwards.
                     original_id = page.locator(selector).nth(chosen).get_attribute('id')
                     page.locator(selector).nth(chosen).evaluate("n=>n.id='reading-fold-probe'")
                     errors.extend(f'{width}px {theme} {selector}: ' + e for e in exercise_detail_head(
@@ -6118,7 +6105,7 @@ def check_highlight_fill(browser, base_url: str) -> list[str]:
                 errors.append(f"{theme}: no active suggestion with text to measure")
             elif min(got["texts"]) < 4.5:
                 errors.append(f"{theme}: text on the active suggestion is {min(got['texts']):.2f}:1, below 4.5:1")
-            if got["selected"] == got["list"]:  # the active suggestion cannot be seen: blocking
+            if got["selected"] == got["list"]:  # the active suggestion cannot be seen
                 errors.append(f"{theme}: the active suggestion has the list's own fill ({got['list']})")
         finally:
             page.close()
@@ -6291,7 +6278,7 @@ def check_command_palette(browser, base_url: str) -> list[str]:
             elif len(got["groups"][0][1]) != len(PALETTE_SECTIONS) or len(set(got["groups"][0][1])) != len(PALETTE_SECTIONS) or got["groups"][1][1] != ["World", "Europe", "Americas", "Asia", "Oceania", "Africa"]:
                 errors.append(f"{theme}: the Sections and Regions rows are {got['groups'][0][1]} and {got['groups'][1][1]}")
             if got["fill"] != got["token"]:
-                errors.append(f"{theme}: the current row is {got['fill']}, not --highlight-fill {got['token']}")  # the keyboard's place: blocking
+                errors.append(f"{theme}: the current row is {got['fill']}, not --highlight-fill {got['token']}")  # the keyboard's place
             if not got["texts"] or min(got["texts"]) < 4.5:
                 errors.append(f"{theme}: text on the current row is {min(got['texts'] or [0]):.2f}:1, below 4.5:1")
             moved = []
@@ -6432,12 +6419,12 @@ def check_toggle_place(browser, base_url: str) -> list[str]:
                 overflow: bar.scrollWidth - bar.clientWidth }; }""")
             if got["count"] != 1:
                 errors.append(f"{width}px: {got['count']} theme toggles in the page, expected one")
-            if width > 430 and not got["shown"]:  # the toggle cannot be seen or reached: blocking
+            if width > 430 and not got["shown"]:  # the toggle cannot be seen or reached
                 errors.append(f"{width}px: the theme toggle is not shown in the sticky section bar while scrolled ({got})")
             if width <= 430:
                 page.evaluate("scrollTo(0, 0)")
                 shown = page.evaluate("() => { const r = document.getElementById('theme-toggle').getBoundingClientRect(); return r.width > 0 && r.height > 0 && r.top >= 0 && r.bottom <= innerHeight && r.left >= 0 && r.right <= innerWidth; }")
-                if not shown:  # at the top of the page it must be on screen: blocking
+                if not shown:  # at the top of the page it must be on screen
                     errors.append(f"{width}px: on phones the theme toggle is not shown")
             if got["overflow"] > 1:
                 errors.append(f"{width}px at {scale} text: the section bar row scrolls sideways by {got['overflow']}px with the theme toggle")
@@ -6907,7 +6894,7 @@ def check_access_fixes(browser, base_url: str) -> list[str]:
     # A tooltip taller than a short window scrolls, and scrolling it keeps it open.
     page.set_viewport_size({"width": 800, "height": 220})
     phrase = page.locator('#world-rows .smark[data-state="confirmed"]').first
-    # Tooltips are short now (rule 12), so the probe carries a long text: this tests the scrolling mechanism, not the copy.
+    # Long probe text exercises tooltip scrolling.
     phrase.evaluate("n => { const long = Array(12).fill(n.dataset.tip || n.getAttribute('aria-description') || n.title).join(' '); n.dataset.tip = long; if (n.title) n.title = long; n.scrollIntoView({ block: 'center', behavior: 'instant' }); }")
     page.wait_for_timeout(100)
     p = phrase.bounding_box()
@@ -7088,14 +7075,14 @@ def check_arrival(browser, base_url: str) -> list[str]:
                 expect(mini, "none-identified record link")
                 errors.extend(f"{label}: mini map arrival: {e}" for e in check_source_footers(page))
                 # The fresh copy must still bring the shared-link target into view.
-                hydrated(page, base_url + "#" + full, map_drawn=True)  # Europe's dots are clicked after the reload
+                hydrated(page, base_url + "#" + full, map_drawn=True)
                 page.wait_for_timeout(150)
                 got = page.evaluate(state, full)
                 if not got["visible"]:
                     errors.append(f"{label}: shared link #{full} does not arrive below the nav")
                 # The same link percent-encoded names the same card.
                 encoded = "c-" + "".join(f"%{ord(ch):02X}" for ch in full_id.lower()[:1]) + full_id.lower()[1:]
-                hydrated(page, base_url + "#" + encoded, map_drawn=True)  # Europe's dots are clicked after the reload
+                hydrated(page, base_url + "#" + encoded, map_drawn=True)
                 page.wait_for_timeout(150)
                 got = page.evaluate(state, full)
                 if not (got["marked"] and got["arrived"] and got["focused"] and got["open"]):
@@ -7780,7 +7767,6 @@ def check_first_screen(page, data: dict, theme_invariant: bool = True) -> list[s
     link = page.locator("#record .record-more")
     if not (link.text_content() or "").strip() or link.get_attribute("href") != f"#c-{de['id'].lower()}":
         errors.append(f"record: Germany's link down reads {link.text_content()!r} to {link.get_attribute('href')!r}")
-    # A citation's tooltip in the record takes the first Escape; the second closes the record.
     page.locator("#record .cn").first.focus()
     page.keyboard.press("Escape")
     if not page.locator("#record").is_visible() or page.evaluate("() => { const t = document.getElementById('tip'); return !!t && !t.hidden; }"):
@@ -7834,10 +7820,14 @@ def check_first_screen(page, data: dict, theme_invariant: bool = True) -> list[s
 
 
 
+def theme_name_has_mode(name: str | None, mode: str) -> bool:
+    return re.search(rf"\b{mode}\b", name or "", re.I) is not None
+
+
 def theme_state_matches(state: list, scheme: str, active: str, mode: str) -> bool:
     """The applied scheme and paint are the active theme's, and the toggle's name says the chosen mode (system, light
     or dark) in any wording: the state, not the words, is checked."""
-    return state[:2] == [scheme, GROUNDS[active]] and re.search(rf"\b{mode}\b", state[2] or "", re.I) is not None
+    return state[:2] == [scheme, GROUNDS[active]] and theme_name_has_mode(state[2], mode)
 
 
 def check_theme_default(browser, base_url: str, dist: Path) -> list[str]:
@@ -7896,9 +7886,8 @@ def check_theme_default(browser, base_url: str, dist: Path) -> list[str]:
             active = "light" if scheme == "light" else "dark"  # system is dark in this context
             if not theme_state_matches(got, scheme, active, "system" if key is None else key) or kept != key:
                 errors.append(f"theme: the toggle does not move to {name} and store it ({got}, stored {kept})")
-        if len(set(names)) != 3 or any(sum(bool(re.search(rf"\b{m}\b", n or "", re.I)) for m in ("light", "dark", "system")) != 1 for n in names):
+        if len(set(names)) != 3 or any(sum(theme_name_has_mode(n, m) for m in ("light", "dark", "system")) != 1 for n in names):
             errors.append(f"theme: the toggle's names do not each say one mode ({names})")
-        # Dark, then light (against the dark system), are each kept after a reload.
         toggle.focus()
         page.keyboard.press("Enter")
         toggle.focus()
@@ -7913,14 +7902,13 @@ def check_theme_default(browser, base_url: str, dist: Path) -> list[str]:
         # Before the script takes over: the saved page's toggle shows the stored state and works.
         held = Held(page, PAGE_DATA)
         page.goto(base_url, wait_until="load")
-        if not re.search(r"\blight\b", page.evaluate(label) or "", re.I):  # the mode as a whole word, as theme_state_matches
+        if not theme_name_has_mode(page.evaluate(label), "light"):
             errors.append("theme: the saved page's toggle does not show the stored light theme")
         page.locator("#theme-toggle").click(timeout=5_000)
         held.release()
         wait_hydrated(page)
         if not theme_state_matches(state(page), "dark", "dark", "dark") or page.evaluate(stored) != "dark":
             errors.append(f"theme: a toggle before the script takes over is lost ({state(page)})")
-        # The other pages follow the choice.
         api = sorted(dist.glob("api/v*/index.html"))
         others = {"Method": "method.html", "404": "404.html"} | ({"API index": api[-1].relative_to(dist).as_posix()} if api else {})
         if not api:
@@ -8254,7 +8242,6 @@ def check_institute_names(html, data: dict) -> list[str]:
 
 
 LEADERSHIP_ROWS = ("Head", "Reports to", "Partners")  # card labels, in card order, directly after Form
-PARTNER_RELATIONS = ("member", "works_with", "planned")  # card order after the cyber agency
 CARD_PARTNERS = 3  # the card line shows three, then "and N more", when two or more would be hidden; the oracle's own copy
 MISSING_TEXT = "Not published"  # dataset.method/missing-values, leadership and reporting-line.
 
@@ -8309,7 +8296,7 @@ def expected_leadership(data: dict) -> dict[str, dict[str, tuple[str, list[str],
         partners = institute.get("national_partners")
         if partners:
             if partners["state"] == "stated":
-                # Cyber agency first, then member, works with, planned; authored order breaks ties (the sort is stable).
+                # Cyber agency first, then by relation; authored order breaks ties (the sort is stable).
                 entries = sorted(
                     enumerate(partners["entries"]),
                     key=lambda pair: (not pair[1].get("cyber_agency"), PARTNER_RELATIONS.index(pair[1]["relation"])),
@@ -8466,7 +8453,7 @@ def check_euro_amounts(html, data: dict) -> list[str]:
                     errors.append(f"{identity}: related funding never states the {record['currency']} amount: {line.get_text(strip=True)!r}")
             for figure in figures:
                 after = figure.next_sibling
-                # Related funding whose source wording states the native amount: the euro figure alone, without its bracket (rule 8).
+                # The source wording already gives the native amount, so omit its bracket after the euro figure.
                 want = re.sub(r" \([^()]*\)$", "", expected) if "related-funding-eur" in figure.get("class", []) and isinstance(after, str) and after.startswith(": ") and native.search(after) else expected
                 if figure.get_text(strip=True) != want:
                     errors.append(f"{identity}: amount shown as {figure.get_text(strip=True)!r}, expected {want!r}")
@@ -10648,7 +10635,6 @@ def check_funding_layout_states(page) -> list[str]:
             if button.get_attribute('aria-expanded') != 'false':
                 errors.append("funding: collapsing a list must reset its record opener")
             toggle.evaluate("n=>n.click()")
-        # Collapsing an unrelated list must leave the current records and other list alone.
         if len(toggles) > 1:
             owner, other = toggles[:2]  # two distinct summaries in DOM order, only for the independence check
             button = page.locator('#' + owner.get_attribute('aria-controls') + ' .fund-name-row').first
@@ -10730,7 +10716,7 @@ def check_funding_edges(browser, base_url: str, data: dict) -> list[str]:
     errors = []
     page_errors: list[Exception] = []
     page = browser.new_page(viewport={"width": 390, "height": 1000})
-    page.on("pageerror", lambda e, errs=page_errors: errs.append(e))
+    page.on("pageerror", page_errors.append)
     refresh_fixture_selections(fixture)
     page.route(PAGE_DATA, lambda route: route.fulfill(json=fixture))
     hydrated(page, base_url)
@@ -11232,12 +11218,10 @@ def check_claim_quotes(browser, base_url: str, data: dict) -> list[str]:
                                         errors.append(f"{identity}: other-copy anchor language is missing from the Quote label")
                             for node, span in zip(block.locator(".quote-text").all(), spans):
                                 if not span.get("gloss"):
-                                    # An English original needs neither a tooltip nor a translation marker.
                                     if node.get_attribute("aria-description"):
                                         errors.append(f"{identity}: English original gained a translation tooltip")
                                 if span.get("gloss") and node.get_attribute("aria-description") != span["text"]:
                                     errors.append(f"{identity}: original differs from the bound span")
-                        # Closing and reopening must not append a second copy.
                         fold.evaluate("n => n.open = false")
                         fold.locator("summary").tap() if touch else fold.locator("summary").click()
                         if fold.locator(".quote-body").count() != 1:
@@ -11290,8 +11274,7 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
         viewport={"width": width, "height": 1000},
     )
     page_errors: list[Exception] = []
-    # Mypy cannot infer the overloaded callback with a bound default.
-    page.on("pageerror", lambda e, errs=page_errors: errs.append(e))  # type: ignore[call-overload]
+    page.on("pageerror", page_errors.append)
 
     def require(condition, message, context=label):
         if not condition:
@@ -11525,7 +11508,6 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
     if page.locator("#development-list > li.earlier").count():
         more = page.locator("#developments-more")
         n = page.locator("#development-list > li.earlier").count()
-        # A list extension stays after the list's last visible item and extends it in place.
         after_last = "() => { const items = [...document.querySelectorAll('#development-list > li')].filter(li => !li.hidden), b = document.getElementById('developments-more'); return b.getBoundingClientRect().top >= items.at(-1).getBoundingClientRect().bottom - 1; }"
         require([int(value) for value in re.findall(r"\b\d+\b", more.inner_text())] == [n] and more.get_attribute("aria-expanded") == "false" and page.evaluate(after_last), "developments control is not collapsed after the list with the earlier-item count")
         collapsed_name = more.inner_text().strip()
@@ -11824,7 +11806,6 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
         "Columns cannot override defaults",
     )
     page.locator("details.cols > summary").click()
-    # The hint "Scroll sideways" shows exactly when the table overflows.
     hint = page.locator("#world-scroll-hint")
     overflow = page.locator("#world-scroll").evaluate("e => e.scrollWidth > e.clientWidth + 1")
     require(hint.is_visible() == overflow, "scroll hint does not reflect table overflow")
@@ -11898,7 +11879,6 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
                 f"funding folds lost {record_type} records",
             )
     lap("filters, menus, CSV, glossary")
-    # Check all controls revealed by disclosures.
     page.locator("details").evaluate_all(
         "nodes => nodes.forEach(n => { if (!n.closest('.toolbar-actions')) n.open = true; })"
     )
@@ -12022,7 +12002,7 @@ def shared_links(browser, base_url: str) -> list[str]:
     # Short final sections must retain an explicit nav choice at a clamped scroll position.
     page = browser.new_page(viewport={"width": 1440, "height": 1600}, reduced_motion="no-preference")  # the fade is read at its start
     page_errors = []
-    page.on("pageerror", lambda e, errs=page_errors: errs.append(e))  # type: ignore[call-overload]
+    page.on("pageerror", page_errors.append)
     hydrated(page, base_url)
     page.wait_for_selector("#world-rows tr")
     page.locator('.secnav a[href="#data"]').evaluate("e => e.click()")
@@ -12049,7 +12029,7 @@ def shared_links(browser, base_url: str) -> list[str]:
         got = page.evaluate("() => {" + CONTRAST_JS + PIN_FOCUS_FADE + " const n = document.activeElement, faded = pinFade(n), c = getComputedStyle(n); return [n.id, n.tagName, c.outlineStyle, rgb(c.backgroundColor).join() === rgb(token('--highlight-fill')).join(), faded]; }")
         if got != ["functions", "H2", "none", True, True]:
             errors.append(f"{scheme}: after a jump to Functions the focused heading is {got} (expected the #functions h2 with the tint, no outline and its fade)")
-        # The palette's Definition destination is a paragraph, not a control: the same tint, no ring (rule 14).
+        # The palette's Definition destination is a paragraph, not a control: the same tint, no ring.
         got = page.evaluate("() => {" + CONTRAST_JS + PIN_FOCUS_FADE + " const n = document.getElementById('definition'); n.tabIndex = -1; n.focus({ preventScroll: true }); pinFade(n); const c = getComputedStyle(n); return [c.outlineStyle, rgb(c.backgroundColor).join() === rgb(token('--highlight-fill')).join()]; }")
         if got != ["none", True]:
             errors.append(f"{scheme}: the focused Definition paragraph shows {got} (expected the tint and no outline)")
@@ -12670,7 +12650,6 @@ def check_functions_detail(browser, base_url: str, data: dict) -> list[str]:
             page.keyboard.press("Escape")
             if page.locator('.fn-detail-row').count() or not cell.evaluate("n => document.activeElement === n"):
                 errors.append(f"Functions: Escape after {key!r} does not close/return focus")
-        # Escape outside the table leaves an open detail alone.
         cell.click()
         page.locator('#functions').evaluate("h => h.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape', bubbles: true}))")
         if page.locator('.fn-detail-row').count() != 1:
@@ -12820,10 +12799,7 @@ def clickable_width_errors(controls: list[dict]) -> list[str]:
     return errors
 
 
-# Symbols (principle): a symbol stands alone only if it is the close ×, a fold chevron, the external-link arrow or the
-# download symbol, and then names itself on hover and for screen readers; any other symbol carries its word. Data marks
-# (function cells, map dots) keep their legend and are not controls of this kind. The chevron and the arrow only ever
-# follow a word, so a control with no word of its own must be a close or download control.
+# principle: Symbols. Chevrons and arrows follow words, so they need no standalone exemption.
 SYMBOL_ALONE = {
     '.close-control': 'the close ×',
     '.ico.i-dl': 'download',
@@ -12910,8 +12886,7 @@ def check_symbols(browser, base_url: str) -> list[str]:
     return errors
 
 
-# Folds (principle): counted source folds over three, counted labels on folds that hide a list, nothing cut without a
-# count, every fold closed at first and a link opening only the fold that holds its target.
+# principle: Folds. Record and method folds do not need list counts.
 FOLD_LABEL_ALLOW = {
     '.card.mini': 'a None identified card is a record, not a list fold; its summary is the finding',
     '#method-details': 'method prose with short lists of rules, not a list of like items',
@@ -13717,7 +13692,7 @@ def functions_phone_structure(html: str, data: dict) -> list[str]:
     return errors
 
 
-# B. Group-tab endpoints are checked against the columns, not against the CSS tokens being tested.
+# Group-tab endpoints are checked against the columns, not against the CSS tokens being tested.
 def function_group_tab_errors(tab: dict) -> list[str]:
     errors = []
     top, bottom = tab["top"], tab["bottom"]
@@ -15472,11 +15447,14 @@ def read_timings(path: Path) -> list[dict]:
         print(f"warning: browser job timings not read from {path}: {exc}", file=sys.stderr)
         return []
     lines = []
+    unparsable = 0
     for line in text.splitlines():
         try:
             lines.append(json.loads(line))
         except ValueError:
-            pass  # a line cut short when its worker died
+            unparsable += 1
+    if unparsable:
+        print(f"warning: {unparsable} unparsable browser job timing lines in {path}", file=sys.stderr)
     return [line for line in lines if isinstance(line, dict)]  # a shard's lines are validated where it is merged
 
 
@@ -15575,7 +15553,7 @@ def all_job_ids() -> list[str]:
 
 def job_ids(text: str) -> list[str]:
     """--job: comma-separated job ids, each one that exists."""
-    wanted, known = list(dict.fromkeys(i.strip() for i in text.split(",") if i.strip())), all_job_ids()  # each id once
+    wanted, known = list(dict.fromkeys(i.strip() for i in text.split(",") if i.strip())), all_job_ids()
     if not wanted or (unknown := [i for i in wanted if i not in known]):
         raise argparse.ArgumentTypeError(f"unknown browser job {', '.join(unknown) if wanted else '(none given)'}; --list-jobs prints them")
     return wanted

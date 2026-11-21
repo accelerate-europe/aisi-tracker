@@ -526,10 +526,9 @@ def test_setup_groups_cover_institutes_before_establishment():
     assert any("marks differ" in error for error in check_page.check_setup_groups(page([("GB", "established"), ("NO", "established")]), data))
 
 
-def test_uncited_values_need_a_citation_link_except_absence_and_known_gaps(monkeypatch):
+def test_uncited_values_need_a_citation_link_except_absence():
     from bs4 import BeautifulSoup
 
-    monkeypatch.setattr(check_page, "KNOWN_UNCITED", {("net", "US"): "no quotation yet"})
     html = """<table><tbody id="world-rows">
       <tr data-j="GB"><td data-col="net">Member<span class="cites"><a class="cn" href="#">1</a></span></td><td data-col="budget"><span class="missing">Not published</span></td></tr>
       <tr data-j="US"><td data-col="net">Member</td><td data-col="op">None found yet</td></tr>
@@ -537,9 +536,7 @@ def test_uncited_values_need_a_citation_link_except_absence_and_known_gaps(monke
     </tbody></table>
     <article class="card" data-j="KR"><div class="row" data-track="12"><div class="k">Related funding</div><div class="v"><span class="related-funding-item" data-funding-id="f1">KRW 20.1bn<span class="cites"></span></span></div></div></article>"""
     found = check_page.uncited_values(BeautifulSoup(html, "html.parser"))
-    assert found == ["card KR: Related funding", "related funding f1", "table FR: op"]
-    monkeypatch.setattr(check_page, "KNOWN_UNCITED", {("net", "US"): "", ("net", "GB"): ""})
-    assert "KNOWN_UNCITED entry ('net', 'GB') is stale: remove it" in check_page.uncited_values(BeautifulSoup(html, "html.parser"))
+    assert found == ["card KR: Related funding", "related funding f1", "table US: net", "table FR: op"]
 
 
 def _names_data():
@@ -1521,8 +1518,9 @@ def test_a_timings_file_that_cannot_be_written_changes_no_outcome(tmp_path, caps
 
 def test_a_damaged_timings_file_loses_only_timings(tmp_path, monkeypatch, capsys):
     timings = tmp_path / "t.jsonl"
-    timings.write_text('{"job": "a", "started": 0, "seconds": 1, "errors": 0, "exception": null}\n{"job": "b", "sta\n{"job": 3}\n')
+    timings.write_text('{"job": "a", "started": 0, "seconds": 1, "errors": 0, "exception": null}\n{"job": "b", "sta\n{"job": 3}\nnot json\n')
     assert [line["job"] for line in check_page.read_timings(timings)] == ["a", 3]  # the cut line is dropped; merge validates the rest
+    assert capsys.readouterr().err == f"warning: 2 unparsable browser job timing lines in {timings}\n"
     monkeypatch.setattr(Path, "read_text", lambda self, *a, **k: (_ for _ in ()).throw(PermissionError("denied")))
     assert check_page.read_timings(timings) == [] and "not read" in capsys.readouterr().err
     monkeypatch.undo()
