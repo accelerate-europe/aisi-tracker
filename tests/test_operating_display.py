@@ -15,7 +15,6 @@ from scripts.check_page import (
     check_operating_output,
     expected_operating,
     expected_operating_lines,
-    sort_errors_for,
 )
 
 
@@ -276,20 +275,6 @@ def test_real_table_sort_keeps_gaps_last_in_both_directions():
             json.loads(subprocess.check_output(["node", "-e", code], text=True))
             == names
         )
-
-
-def test_sort_gate_rejects_gaps_first_and_wrong_order():
-    def rows(*items):
-        return [dict(name=n, n=i, **item) for i, (n, item) in enumerate(items)]
-
-    good = rows(("A", {"tier": 0, "v": "2024"}), ("B", {"tier": 0, "v": "2025"}), ("C", {"tier": 2}), ("D", {"tier": 3}))
-    assert sort_errors_for(good, "op", 1) == []
-    assert any("out of order" in e for e in sort_errors_for(good, "op", -1))
-    gaps_first = rows(("C", {"tier": 2}), ("A", {"tier": 0, "v": "2025"}), ("D", {"tier": 3}))
-    assert any("gaps must stay last" in e for e in sort_errors_for(gaps_first, "op", -1))
-    ties = rows(("B", {"tier": 2}), ("A", {"tier": 2}))
-    ties[0]["n"], ties[1]["n"] = 1, 0
-    assert any("not alphabetical" in e for e in sort_errors_for(ties, "op", 1))
 
 
 @pytest.mark.parametrize("shared_source", [False, True])

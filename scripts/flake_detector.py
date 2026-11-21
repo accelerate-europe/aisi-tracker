@@ -30,7 +30,6 @@ RISKY_JOBS = (
     "hydration/hydration_paint",
     "hydration/hydration_edges",
     "interactions/check_arrival",
-    "interactions/check_touch_tips",
     "interactions/check_theme_default",
 )
 

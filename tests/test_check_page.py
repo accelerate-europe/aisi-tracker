@@ -1558,9 +1558,9 @@ def test_without_a_timings_file_a_job_runs_untimed():
 def test_only_named_jobs_run_in_their_stages(monkeypatch):
     seen = {}
     monkeypatch.setattr(check_page, "run_stages", lambda run, work, seeds, jobs: seen.setdefault("ids", [check_page.job_id(*j) for j in work]) and [])
-    chosen = ["interactions/check_touch_tips", "hydration/hydration_paint"]
+    chosen = ["interactions/check_arrival", "hydration/hydration_paint"]
     check_page.check_browser("chrome", Path("site"), {}, only=chosen)
-    assert seen["ids"] == ["hydration/hydration_paint", "interactions/check_touch_tips"]  # report order, not the order asked
+    assert seen["ids"] == ["hydration/hydration_paint", "interactions/check_arrival"]  # report order, not the order asked
 
 
 def test_a_subset_runs_through_the_real_stages(monkeypatch):
@@ -1568,12 +1568,12 @@ def test_a_subset_runs_through_the_real_stages(monkeypatch):
     monkeypatch.setattr(check_page, "run_browser_job", lambda chrome, dist, stage, check, args: ran.append(check_page.job_id(stage, check, args)) or [])
     monkeypatch.setattr(check_page, "browser_seeds", lambda dist: {"interactions": lambda: ran.append("seed") or ["seed error"]})
     # Only an interactions job: the empty earlier stages pass, the stage's seed runs, nothing else does.
-    assert check_page.check_browser("chrome", Path("site"), {}, only=["interactions/check_menu_touch"]) == ["seed error"]
-    assert ran == ["seed", "interactions/check_menu_touch"]
+    assert check_page.check_browser("chrome", Path("site"), {}, only=["interactions/check_symbols"]) == ["seed error"]
+    assert ran == ["seed", "interactions/check_symbols"]
     ran.clear()
     # Mixed stages: a hydration finding stops the run before the interactions stage, as in the full gate.
     monkeypatch.setattr(check_page, "run_browser_job", lambda chrome, dist, stage, check, args: ran.append(check_page.job_id(stage, check, args)) or (["h"] if stage == "hydration" else []))
-    assert check_page.check_browser("chrome", Path("site"), {}, only=["interactions/check_menu_touch", "hydration/hydration_edges"]) == ["h"]
+    assert check_page.check_browser("chrome", Path("site"), {}, only=["interactions/check_symbols", "hydration/hydration_edges"]) == ["h"]
     assert ran == ["hydration/hydration_edges"]
 
 
@@ -1680,7 +1680,7 @@ def test_jobs_never_submitted_to_a_broken_pool_are_crashes(monkeypatch):
 
 
 def test_a_dead_worker_is_reported_as_a_crash_naming_the_job(tmp_path):
-    work = [("early", check_page.check_access_fixes, ("die", None)), ("early", check_page.check_menu_touch, ("ok", ["e1"]))]  # the awaited one dies
+    work = [("early", check_page.check_access_fixes, ("die", None)), ("early", check_page.check_symbols, ("ok", ["e1"]))]  # the awaited one dies
     with pytest.raises(check_page.WorkerCrashed, match="early/check_access_fixes has no result.*possibly SIGKILL: out of memory"):
         check_page.run_stages(staged_job, work, {}, jobs=2)
     outcomes = check_page.run_shard(staged_job, work, [0, 1], jobs=2)
@@ -2243,11 +2243,6 @@ def test_the_staff_fixture_names_its_source_and_quote_for_every_entry():
     data = json.loads((ROOT / "data/aisi.json").read_text(encoding="utf-8"))
     excerpts = {s["id"]: [x["text"] for x in s.get("excerpts", [])] for s in data["sources"]}
     assert [e["institute_id"] for e in entries if e["quote"] not in excerpts.get(e["source_id"], [])] == []
-
-
-def test_fold_text_ignores_case_and_accents_as_the_palette_does():
-    assert check_page.fold_text("São Tomé") == "sao tome"
-    assert check_page.fold_text(None) == ""
 
 
 @pytest.mark.parametrize("body, shown", [
