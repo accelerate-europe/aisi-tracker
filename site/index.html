@@ -638,7 +638,7 @@ main section.first { display: flex; flex-direction: column; gap: var(--sp-5); bo
 .card.mini .body-group { display: flex; flex-direction: column; gap: var(--sp-1); }
 .card.mini .body-group ul, .card.mini .how { display: flex; flex-direction: column; gap: var(--sp-2); margin: 0; padding: 0; list-style: none; }
 .card.mini .body-group li { display: flex; flex-direction: column; font: var(--type-body); }
-.card.mini .body-group li > .claim:not(.claim + .claim) { margin-top: var(--sp-2); }
+.card.mini .body-group li > .claim:not(.claim + .claim, :first-child) { margin-top: var(--sp-2); } /* below a name; an item that opens with its claim sits under the heading like any other item */
 .card.mini .body-group .det { font: var(--type-meta); color: var(--ink); }
 .card.mini .how { font: var(--type-meta); color: var(--muted); }
 .card.mini .body-group.closest .det { font: var(--type-body); color: var(--ink); } /* the closest body's text is read like the summary */
