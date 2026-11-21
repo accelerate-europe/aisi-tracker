@@ -9089,7 +9089,7 @@
         {
           "body": "intl-network",
           "source_ids": [
-            "r3-kr-collaboration-english",
+            "kr-aisi-sub33",
             "network-2025",
             "network-nist-2026",
             "gb-aisi-network-consensus-2026"
@@ -30895,8 +30895,7 @@
           "attribution_note": "The institute's own release links the complete original network guidance on its document CDN and explains its evaluation recommendations. This is institutional publication, not merely country-level network membership.",
           "source_ids": [
             "r3-gb-network-best-practice-release",
-            "r3-naaimes-best-practice",
-            "r3-gb-naaimes-best-practice-document"
+            "r3-naaimes-best-practice"
           ],
           "qualifies_as": "none",
           "qualification_note": "Substantive guidance remains in the publication catalogue but does not itself report a qualifying evaluation, test result, benchmark or technical research result.",
@@ -39105,7 +39104,7 @@
           "attribution": "own_publication",
           "attribution_note": "The institute directly publishes the network's full original guidance document on its own site. Country-only network membership does not establish publication credit for other institutes.",
           "source_ids": [
-            "r3-sg-resources",
+            "depth-sg-resources",
             "r3-naaimes-best-practice"
           ],
           "qualifies_as": "none",
@@ -71727,6 +71726,71 @@
             ]
           ],
           "accessed": "2026-10-17"
+        },
+        {
+          "text": "July 23, 2026",
+          "accessed": "2026-10-17",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "sg-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "naaimes-automated-evaluation-best-practice-2026"
+              },
+              "date"
+            ],
+            [
+              "institutes",
+              {
+                "id": "sg-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "naaimes-automated-evaluation-best-practice-2026"
+              },
+              "credit",
+              "date"
+            ]
+          ]
+        },
+        {
+          "text": "Best Practice Guidance Document: Automated Evaluation of Large Language Models",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "sg-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "naaimes-automated-evaluation-best-practice-2026"
+              },
+              "attribution_note"
+            ]
+          ],
+          "accessed": "2026-10-17"
+        },
+        {
+          "text": "Best Practice Guidance Document: Automated Evaluation of Large Language Models Report•July 23, 2026",
+          "accessed": "2026-10-18",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "sg-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "naaimes-automated-evaluation-best-practice-2026"
+              },
+              "credit",
+              "institute_id"
+            ]
+          ],
+          "url": "https://sgaisi.sg/resources/"
         }
       ],
       "origin": "SG",
@@ -71736,7 +71800,8 @@
         "sha256": "84a6d5bfc7b4a69a7111b7b98aae80210df5bfc89f77345b3cad88cb7e5cfc64",
         "text_sha256": "fcfb6f3ee787142475b6938f09f5f027d9d3342b079520ffe00f19ec6dca6da2",
         "text_scheme": 1
-      }
+      },
+      "access_note": "Cached HTML link checked on 18 October 2026: the dated Best Practice Guidance Document listing links directly to https://sgaisi.sg/wp-api/wp-content/uploads/2026/07/NAAIMES-Best-Practice-Document.pdf. The linked full PDF is retained as r3-naaimes-best-practice. This item-bound publication evidence supports the recorded own-publication credit; it does not assert sole authorship."
     },
     {
       "id": "depth-network-launch",
@@ -93128,92 +93193,7 @@
         "text_sha256": "f280c15d460040eb43ebb012250cdadb1a00b6a1cecdfa9fdce1c8b37e7154f0",
         "text_scheme": 1
       },
-      "access_note": "Cached HTML links checked on 18 October 2026: both the document-access sentence and the best-practice completion paragraph link to https://cdn.prod.website-files.com/663bd486c5e4c81588db7a1d/6a61e3fdec2b87a8f5658105_Network%20Best%20Practice.pdf. The complete original guidance is retained as r3-gb-naaimes-best-practice-document. These links and the release account support institutional publication, not sole authorship."
-    },
-    {
-      "id": "r3-sg-resources",
-      "url": "https://sgaisi.sg/resources/",
-      "title": "Resources",
-      "publisher": "Singapore AI Safety Institute",
-      "type": "primary",
-      "language": "en",
-      "accessed": "2026-10-17",
-      "excerpts": [
-        {
-          "text": "July 23, 2026",
-          "accessed": "2026-10-17",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "sg-aisi"
-              },
-              "outputs",
-              {
-                "lineage": "naaimes-automated-evaluation-best-practice-2026"
-              },
-              "date"
-            ],
-            [
-              "institutes",
-              {
-                "id": "sg-aisi"
-              },
-              "outputs",
-              {
-                "lineage": "naaimes-automated-evaluation-best-practice-2026"
-              },
-              "credit",
-              "date"
-            ]
-          ]
-        },
-        {
-          "text": "Best Practice Guidance Document: Automated Evaluation of Large Language Models",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "sg-aisi"
-              },
-              "outputs",
-              {
-                "lineage": "naaimes-automated-evaluation-best-practice-2026"
-              },
-              "attribution_note"
-            ]
-          ],
-          "accessed": "2026-10-17"
-        },
-        {
-          "text": "Best Practice Guidance Document: Automated Evaluation of Large Language Models Report•July 23, 2026",
-          "accessed": "2026-10-18",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "sg-aisi"
-              },
-              "outputs",
-              {
-                "lineage": "naaimes-automated-evaluation-best-practice-2026"
-              },
-              "credit",
-              "institute_id"
-            ]
-          ],
-          "url": "https://sgaisi.sg/resources/"
-        }
-      ],
-      "origin": "SG",
-      "output_role": "context",
-      "snapshot": {
-        "retrieved": "2026-10-17T14:03:08.327186+00:00",
-        "sha256": "551c56a98edb5007336ffc181f7bbe6c7a8ba164d7ad25206572f20cdb867c80",
-        "text_sha256": "fcfb6f3ee787142475b6938f09f5f027d9d3342b079520ffe00f19ec6dca6da2",
-        "text_scheme": 1
-      },
-      "access_note": "Cached HTML link checked on 18 October 2026: the dated Best Practice Guidance Document listing links directly to https://sgaisi.sg/wp-api/wp-content/uploads/2026/07/NAAIMES-Best-Practice-Document.pdf. The linked full PDF is retained as r3-naaimes-best-practice. This item-bound publication evidence supports the recorded own-publication credit; it does not assert sole authorship."
+      "access_note": "Cached HTML links checked on 18 October 2026: both the document-access sentence and the best-practice completion paragraph link to https://cdn.prod.website-files.com/663bd486c5e4c81588db7a1d/6a61e3fdec2b87a8f5658105_Network%20Best%20Practice.pdf. The same document, as linked by the Singapore institute, is retained as r3-naaimes-best-practice. These links and the release account support institutional publication, not sole authorship."
     },
     {
       "id": "r3-jp-multilingual-full-report-notice",
@@ -93255,44 +93235,6 @@
       }
     },
     {
-      "id": "r3-gb-naaimes-best-practice-document",
-      "url": "https://cdn.prod.website-files.com/663bd486c5e4c81588db7a1d/6a61e3fdec2b87a8f5658105_Network%20Best%20Practice.pdf",
-      "title": "Best Practice: Automated Evaluation of Large Language Models",
-      "publisher": "International Network for Advanced AI Measurement, Evaluation and Science",
-      "type": "primary",
-      "language": "en",
-      "accessed": "2026-10-17",
-      "published": "2026-07-23",
-      "excerpts": [
-        {
-          "text": "Best Practice:\nAutomated Evaluation of Large\nLanguage Models",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "gb-aisi"
-              },
-              "outputs",
-              {
-                "lineage": "naaimes-automated-evaluation-best-practice-2026"
-              },
-              "title"
-            ]
-          ],
-          "accessed": "2026-10-17"
-        }
-      ],
-      "origin": "International Network for Advanced AI Measurement, Evaluation and Science",
-      "output_role": "document",
-      "output_lineage": "naaimes-automated-evaluation-best-practice-2026",
-      "snapshot": {
-        "retrieved": "2026-10-17T14:30:12.209404+00:00",
-        "sha256": "0aa9cdc7034c7d107e48c1eac128bc3812c0196700dbf3129474a621f4116a23",
-        "text_sha256": "223e28e57cd281e72995b941132efd082c81d9b17bd05e8329a89ea9a66a1bfa",
-        "text_scheme": 1
-      }
-    },
-    {
       "id": "r3-eu-first-network-meeting",
       "url": "https://digital-strategy.ec.europa.eu/en/news/first-meeting-international-network-ai-safety-institutes",
       "title": "First meeting of the International Network of AI Safety Institutes",
@@ -93325,41 +93267,6 @@
         "retrieved": "2026-10-17T14:18:12.377995+00:00",
         "sha256": "3ef728390136deacbbe7aa5020b3dcdabcb8035003c51d38efa884b7773076d7",
         "text_sha256": "577d0abefe8116ef775d218aa0a0bee274fa45710ca0ce698e22659611ee1cbd",
-        "text_scheme": 1
-      }
-    },
-    {
-      "id": "r3-kr-collaboration-english",
-      "url": "https://www.aisi.re.kr/eng/contents/33",
-      "title": "Collaboration",
-      "publisher": "Korea AI Safety Institute",
-      "origin": "KR",
-      "type": "primary",
-      "language": "en",
-      "accessed": "2026-10-17",
-      "excerpts": [
-        {
-          "text": "International Network of AISIs (’24.11.~)",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "KR"
-              },
-              "memberships",
-              {
-                "body": "intl-network"
-              },
-              "body"
-            ]
-          ],
-          "accessed": "2026-10-17"
-        }
-      ],
-      "snapshot": {
-        "retrieved": "2026-10-17T14:19:27.224707+00:00",
-        "sha256": "af71ea33f5cf76be9b91a1ca6405a680485822ea0fbcde730f6cb2470689d96b",
-        "text_sha256": "470d57bf24dbe7206369326d80d2a974d858e3c391f2087ca2540377fc45b667",
         "text_scheme": 1
       }
     },
@@ -103736,6 +103643,23 @@
             }
           ],
           "accessed": "2026-10-19"
+        },
+        {
+          "text": "International Network of AISIs (’24.11.~)",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "KR"
+              },
+              "memberships",
+              {
+                "body": "intl-network"
+              },
+              "body"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "snapshot": {
