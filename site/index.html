@@ -1640,6 +1640,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     if (original) { node.classList.add("original-text"); node.setAttribute("aria-description", original); if (node.tagName !== "A") node.tabIndex = 0; }
     return node;
   }
+  // Institute name, linked to its official website when it has one.
   function instName(inst) {
     var label = DISPLAY_NAME[inst.id], original = inst.name_local !== label ? inst.name_local : null;
     if (!inst.website) return original ? withOriginal(el("span", null, label), original) : document.createTextNode(label);
@@ -2256,6 +2257,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     }
     return groups;
   }
+  // Research notes in one muted block. The legacy path keeps its search wording; migrated notes arrive as generated paragraphs.
   var SEARCHED = / ?Searched in (.+?) for a body its government has tasked with testing general-purpose or frontier AI models or named its AI safety or security institute\./;
   function howWeChecked(j, cite) {
     if ("claims" in j) {
@@ -2329,11 +2331,13 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       }
       var ftxt = form.join("; "); ftxt = ftxt.charAt(0).toUpperCase() + ftxt.slice(1);
       var formValue = row("Form", ftxt || missing(), fieldCitations(inst, ["form"]));
-      var rr = inst.display.rows;
-      if (rr.members) formValue.appendChild(membersValue(rr.members, cite, inst));
-      if (rr.head) row("Head", rowValue(rr.head), rr.head.state === "stated" ? rr.head.cited : []);
-      if (rr.reports_to) row("Reports to", rowValue(rr.reports_to), rr.reports_to.state === "stated" ? rr.reports_to.cited : []);
-      bodiesRow("Partners", rr.partners);
+      var rr = inst.display.rows; // absent until the institute has the fields: then no rows show, so the card does not change
+      if (rr) {
+        if (rr.members) formValue.appendChild(membersValue(rr.members, cite, inst));
+        if (rr.head) row("Head", rowValue(rr.head), rr.head.state === "stated" ? rr.head.cited : []);
+        if (rr.reports_to) row("Reports to", rowValue(rr.reports_to), rr.reports_to.state === "stated" ? rr.reports_to.cited : []);
+        bodiesRow("Partners", rr.partners);
+      }
       var mandate = inst.mandate_short || inst.mandate;
       row("Mandate", mandate || missing(), fieldCitations(inst, [inst.mandate_short ? "mandate_short" : "mandate"]));
       // Cards keep Budget and Staff for every institute (principle: Scope); Known activity is for established institutes only.
@@ -3876,7 +3880,8 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       var c = m.display.counts, box = $("figures");
       // A median over ceilings is a ceiling and rounds up (dataset.method budget-ratios), so it can sit above every bar near it; its tooltip says so.
       function fig(figure, text, note) { var t = el("div", "figure"), s = el("span", null, text), b = el("b"); if (note) { s.appendChild(document.createTextNode(" ")); s.appendChild(el("em", null, note)); } b.appendChild(/^up to /.test(figure) ? term(figure, MEDIAN_CEILING, "val") : document.createTextNode(figure)); t.appendChild(b); t.appendChild(s); box.appendChild(t); }
-      function short(id) { return SHORT_NAME[J[id].name] || J[id].name; }
+      var FIGURE_SHORT = { GB: "UK" }; // short state names in the figures row (presentation only)
+      function short(id) { return FIGURE_SHORT[id] || J[id].name; }
       if (c.budget) fig(c.budget.median, "median annual budget of " + c.budget.n + " institutes.", short(c.budget.highest_jurisdiction_id) + " highest at " + c.budget.highest + ".");
       if (c.headcount) fig(c.headcount.median, "median staff of " + c.headcount.n + " institutes.", short(c.headcount.highest_jurisdiction_id) + " highest at " + c.headcount.highest + ".");
       var counted = d.institutes.filter(function (i) { return i.status === "established" && J[i.jurisdiction_id].kind !== "supranational"; });
