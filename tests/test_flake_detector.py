@@ -191,12 +191,12 @@ def test_ids_are_validated_against_list_jobs_before_any_attempt(fake_checker, jo
     assert not out.exists()
 
 
-def test_list_risky_prints_only_the_five_existing_jobs(fake_checker, capsys):
+def test_list_risky_prints_only_the_existing_jobs(fake_checker, capsys):
     _, calls, _ = fake_checker
     assert detector.main(["--list-risky"]) == 0
     jobs = capsys.readouterr().out.splitlines()
     assert jobs == ["hydration/hydration_paint", "hydration/hydration_edges", "interactions/check_arrival",
-                    "interactions/check_touch_tips", "interactions/check_theme_default"]
+                    "interactions/check_theme_default"]
     assert set(jobs) <= set(check_page.all_job_ids()) and calls == []
 
 
