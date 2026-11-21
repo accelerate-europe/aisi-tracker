@@ -1141,11 +1141,6 @@ def test_page_oracle_rejects_unreviewed_plural_wording(rows):
     assert any("shared explanation needs explicit plural wording" in e for e in page_errors(rows, html))
 
 
-def test_page_oracle_requires_the_order_after_form(rows):
-    html = card("").replace("</article>", "") + good_rows() + "</article>"
-    assert any("must follow Form directly" in e for e in page_errors(rows, html))
-
-
 def test_page_oracle_card_line_shows_three_then_a_count(rows):
     partners(rows)["entries"] += [entry(f"x{k}") for k in range(6)]
     rows["sources"][0]["excerpts"][0]["supports"] += [

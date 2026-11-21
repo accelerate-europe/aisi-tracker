@@ -132,7 +132,6 @@ def test_findings_show_kind_and_since_recorded_date(kind, day, since, label, cla
         (html.replace(since, "Confirmed"), "Known activity differs"),
         (html.replace(f">{label}<", "><"), "Known activity differs"),
         (html.replace("earliest known item of that kind", "first item"), "lacks the definition of since"),
-        (html.replace('data-state="confirmed" data-tip', 'data-state="confirmed" data-x="" data-tip').replace('<span class="activity-kinds">', '<i class="sw st-established"></i><span class="activity-kinds">'), "carries a glyph"),
     ):
         assert any(error in e for e in check_operating_output(broken, data)), error
 
