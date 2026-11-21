@@ -339,6 +339,8 @@ def test_legacy_undisclosed_funding_may_not_repeat_a_generated_line(undisclosed_
 @pytest.mark.parametrize("bound", [False, True])
 def test_generated_funding_description_needs_no_quote_but_allows_evidence(undisclosed_funding, bound):
     authored, funding = undisclosed_funding
+    state, = authored["jurisdictions"]
+    state.pop("status")  # Generated description bindings need the primary-facts preparation path.
     source, = authored["sources"]
     institute, = authored["institutes"]
     if bound:
@@ -349,8 +351,12 @@ def test_generated_funding_description_needs_no_quote_but_allows_evidence(undisc
     institute, = published["institutes"]
     result, = institute["funding"]
     assert result["citations"].get("description", []) == ([source["id"]] if bound else [])
+    view, = method_checks.materialised_view(authored)["institutes"]
+    assert view["funding"][0]["description"] == result["description"]  # the generated text is what the check reads
     items = method_checks.unquoted_items(authored)
     assert not any(f"institutes[].funding[].description: {institute['id']}" in item for _, _, item in items)
+    funding["notes"] = "An unquoted funding fact."
+    assert any(f"institutes[].funding[].notes: {institute['id']}" in item for _, _, item in method_checks.unquoted_items(authored))
 
 
 def test_legacy_undisclosed_funding_description_still_needs_a_quote(undisclosed_funding):
@@ -359,7 +365,9 @@ def test_legacy_undisclosed_funding_description_still_needs_a_quote(undisclosed_
     funding["description"] = "The source gives no separate allocation."
     institute, = authored["institutes"]
     source, = authored["sources"]
-    excerpt = {"text": funding["description"], "supports": ["/institutes/0/funding/0/description"]}
+    excerpt = {"text": funding["description"], "supports": [
+        ["institutes", {"id": institute["id"]}, "funding", {"id": funding["id"]}, "description"],
+    ]}
     source["excerpts"].append(excerpt)
     item_name = f"institutes[].funding[].description: {institute['id']}"
     assert not any(item_name in item for _, _, item in method_checks.unquoted_items(authored))

@@ -215,14 +215,14 @@ STATUS_EVENTS = (*IMPLIES, "withdrawn", "closed")
 PRIMARY_LEAVES = {event: ("date", "event") for event in STATUS_EVENTS} | {"launched": ("date",)}
 
 
-def materialised_view(d: dict) -> dict | None:
-    """The data with generated facts and RFC 6901 support pointers, as check_method_rules reads it; None if broken."""
+def materialised_view(d: dict) -> dict:
+    """The data with generated facts and RFC 6901 support pointers; raise ValueError with the cause if broken."""
     try:
         if any("status" not in j for j in d["jurisdictions"]):
             d = prepared_facts(d)
         return materialise_references(d)
-    except (ValueError, KeyError, IndexError, TypeError, ArithmeticError):
-        return None
+    except (ValueError, KeyError, IndexError, TypeError, ArithmeticError) as exc:
+        raise ValueError(f"cannot build materialised view ({type(exc).__name__}: {exc})") from exc
 
 
 # Events whose act no primary text could be retrieved for (rule status-evidence), keyed by jurisdiction and event id,
@@ -232,18 +232,16 @@ PRIMARY_SOURCE_EXCEPTIONS = {
 }
 
 
-def primary_source_flags(d: dict) -> list[tuple[str, str, list[str], str]] | None:
+def primary_source_flags(d: dict) -> list[tuple[str, str, list[str], str]]:
     """Status-changing timeline events, and launch dates, whose date or act no primary source carries.
 
     A primary source carries the act through an excerpt bound to `event`, and the date through an excerpt bound to
     `date` or by its own `published` date when that equals the event's date at the same precision (rule
     status-evidence). Returns (jurisdiction id, event id, cited source ids, line) in jurisdiction then timeline
-    order, each line naming its kind in brackets; None when the facts cannot be prepared, which
+    order, each line naming its kind in brackets; raises when the facts cannot be prepared, which
     check_method_rules reports.
     """
     d = materialised_view(d)
-    if d is None:
-        return None
     as_of = d["dataset"]["as_of"]
     institutes = {i["id"]: i for i in d["institutes"]}
     types = {s["id"]: s.get("type") for s in d["sources"]}
@@ -303,8 +301,6 @@ def primary_source_errors(d: dict, exceptions: dict | None = None) -> list[str]:
     except (ValueError, KeyError, IndexError, TypeError, ArithmeticError) as exc:
         # Never a silent pass: an impossible date, for one, is also reported by the consistency checks.
         return [f"status evidence: not checked ({type(exc).__name__}: {exc})"]
-    if flags is None:
-        return []
     notes = {s["id"]: s.get("access_note", "").strip() for s in d["sources"]}
     present = {j["id"] for j in d["jurisdictions"]}
     errors, flagged = [], set()
@@ -327,7 +323,7 @@ def primary_source_warnings(d: dict, exceptions: dict | None = None) -> list[str
     exceptions = PRIMARY_SOURCE_EXCEPTIONS if exceptions is None else exceptions
     return [
         f"primary source [accepted exception] {line.split('] ', 1)[1]}"
-        for jid, eid, _, line in primary_source_flags(d) or []
+        for jid, eid, _, line in primary_source_flags(d)
         if (jid, eid) in exceptions
     ]
 
@@ -389,8 +385,6 @@ def unquoted_items(d: dict) -> list[tuple[str, str, str]]:
     migrated = migrated_ids(d)
     items: list[tuple[str, str, str]] = []
     d = materialised_view(d)
-    if d is None:
-        return items
     bound = {pointer for s in d["sources"] for e in s.get("excerpts", []) for pointer in e["supports"]}
     # The first_output event is generated from the output catalogue (published.prepared_facts), its description from
     # the output's title; it is not authored text, so it is never an unquoted item.
@@ -487,22 +481,23 @@ def unquoted_report(found: dict[str, list[str]]) -> str:
 
 
 def check_method_rules(d: dict, *, authored: dict | None = None) -> list[str]:
-    """Validate declared evidence metadata; judgement and quotations need review."""
+    """Validate declared evidence metadata, reporting unavailable facts or primary-source flags as errors."""
     authored = d if authored is None else authored
     status_evidence = primary_source_errors(d)
-    if any("status" not in j for j in d["jurisdictions"]):
-        try:
-            d = prepared_facts(d)
-        except (ValueError, KeyError, IndexError, TypeError, ArithmeticError) as exc:
-            return [f"authored facts or references: {exc}"]
-    d = materialise_references(d)
+    try:
+        d = materialised_view(d)
+    except ValueError as exc:
+        return [f"authored facts or references: {exc}"]
     errors = check_method_copy(d["dataset"]) + check_reader_text(d) + check_naming(d) + check_body_names(d)
     errors += status_evidence
     errors += check_rows(d)
     errors += check_flags(d)
     errors += check_claims(d)
-    errors += migrated_unquoted_errors(authored)
-    errors += lint_errors(d, migrated_ids(authored))  # mechanical reader-text classes; elsewhere counted by reader_text_warnings
+    try:
+        errors += migrated_unquoted_errors(authored)
+        errors += lint_errors(d, migrated_ids(authored))  # mechanical reader-text classes; elsewhere counted by reader_text_warnings
+    except ValueError as exc:
+        errors.append(f"authored facts or references: {exc}")
     # Owner's decision of 14 Nov 2026: a related body cites a source. An error for Europe-scope records, whose
     # bodies were all sourced in 1.0.10; elsewhere still a release warning (unquoted_claims) until a later pass.
     errors += [

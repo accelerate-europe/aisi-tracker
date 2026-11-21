@@ -13,12 +13,14 @@ from scripts.method_checks import (
     UNQUOTED_REPORT,
     check_method_rules,
     materialised_view,
+    migrated_unquoted_errors,
     negative_confidence_limit,
     primary_source_errors,
     primary_source_flags,
     primary_source_warnings,
     required_excerpt_pointers,
     unquoted_claims,
+    unquoted_items,
     unquoted_warnings,
 )
 
@@ -1044,14 +1046,61 @@ def test_unquoted_counts_reach_the_report_without_failing(dataset, monkeypatch, 
     assert "## related body role with no excerpt (1)\n\n- GB Synthetic regulator\n" in (report / UNQUOTED_REPORT).read_text()
 
 
-def test_unquoted_and_primary_checks_never_raise_on_broken_facts(dataset):
-    d = strict_dataset(dataset)
-    d["jurisdictions"][0].pop("status")
-    d["jurisdictions"][0]["timeline"] = None  # breaks prepared_facts; validation reports it, the warnings stay quiet
-    assert materialised_view(d) is None
-    assert unquoted_claims(d) == dict.fromkeys(UNQUOTED_KINDS, [])
-    assert primary_source_warnings(d) == []
-    assert primary_source_errors(d) == []
+@pytest.fixture
+def minimal_method_data():
+    return {
+        "dataset": {"as_of": "2026-10-17", "method": []},
+        "jurisdictions": [],
+        "institutes": [],
+        "sources": [],
+    }
+
+
+@pytest.fixture(params=["selector", "facts"])
+def broken_method_view(minimal_method_data, request):
+    d = minimal_method_data
+    if request.param == "selector":
+        d["sources"] = [{"id": "source", "excerpts": [{
+            "text": "Synthetic excerpt.",
+            "supports": [["jurisdictions", {"id": "missing"}, "summary"]],
+        }]}]
+        cause = "ValueError: selector {'id': 'missing'} matched 0 records"
+    else:
+        d["jurisdictions"] = [{"id": "GB", "timeline": None}]
+        cause = "TypeError: 'NoneType' object is not iterable"
+    return d, cause
+
+
+@pytest.mark.parametrize("check", [
+    materialised_view, unquoted_items, migrated_unquoted_errors,
+    unquoted_claims, primary_source_flags, primary_source_warnings,
+])
+def test_unavailable_view_raises_with_cause(broken_method_view, check):
+    d, cause = broken_method_view
+    with pytest.raises(ValueError) as raised:
+        check(d)
+    assert str(raised.value) == f"cannot build materialised view ({cause})"
+    assert raised.value.__cause__ is not None
+
+
+def test_unavailable_view_blocks_method_rules(broken_method_view):
+    d, cause = broken_method_view
+    assert check_method_rules(d) == [
+        f"authored facts or references: cannot build materialised view ({cause})"
+    ]
+    assert primary_source_errors(d) == [
+        f"status evidence: not checked (ValueError: cannot build materialised view ({cause}))"
+    ]
+
+
+def test_unavailable_primary_source_flags_block_method_rules(minimal_method_data, monkeypatch):
+    assert check_method_rules(minimal_method_data) == []
+    def unavailable(d):
+        raise ValueError("cannot build materialised view (KeyError: 'x')")
+    monkeypatch.setattr(method_checks, "primary_source_flags", unavailable)
+    assert check_method_rules(minimal_method_data) == [
+        "status evidence: not checked (ValueError: cannot build materialised view (KeyError: 'x'))"
+    ]
 
 
 def test_strings_in_a_list_under_a_free_text_key_are_checked(dataset):
