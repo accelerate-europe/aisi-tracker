@@ -132,7 +132,7 @@
       },
       {
         "id": "source-titles",
-        "text": "Source titles: keep the recorded original title. Add a faithful English translation when the title is non-English, including mixed-language titles; omit it for titles already in English and for proper names or acronyms alone. Source language describes the document read, not necessarily its title. A translation adds no dates, legal status or other claims that are not in the original, and is not presented as an official English title unless verified."
+        "text": "Source titles: keep the recorded original title. A web page's title is its own title or heading, not the site or publisher name that its HTML title may give alone. Add a faithful English translation when the title is non-English, including mixed-language titles; omit it for titles already in English and for proper names or acronyms alone. Source language describes the document read, not necessarily its title. A translation adds no dates, legal status or other claims that are not in the original, and is not presented as an official English title unless verified."
       },
       {
         "id": "consistency-checks",
@@ -1979,7 +1979,7 @@
         "title": "Source titles",
         "summary": "Non-English source titles are shown in our own English translation; the original title appears on hover, focus and tap.",
         "rules": {
-          "source-titles": "7a10ec4f15516162dd2a33f8c75b2c87f8711fa2e6551de5b379e4848dbfd8ea"
+          "source-titles": "48e57b265c6d79b13536a5a92ac552e40bdb502c8c8653f9b3707c36e1cbb0df"
         }
       },
       {
@@ -104206,7 +104206,7 @@
     {
       "id": "rows-what-us-nsa",
       "url": "https://www.nsa.gov/about/cryptologic_heritage/center_crypt_history/",
-      "title": "National Security Agency",
+      "title": "About NSA Mission",
       "publisher": "National Security Agency",
       "type": "primary",
       "accessed": "2026-10-20",
@@ -104474,7 +104474,7 @@
     {
       "id": "rows-what-au-asd",
       "url": "https://www.asd.gov.au/about",
-      "title": "Australian Signals Directorate",
+      "title": "About",
       "publisher": "Australian Signals Directorate",
       "type": "primary",
       "accessed": "2026-10-20",
@@ -104547,7 +104547,7 @@
     {
       "id": "rows-what-au-naic",
       "url": "https://www.ai.gov.au/about/about-national-ai-centre",
-      "title": "National AI Centre",
+      "title": "About the National AI Centre",
       "publisher": "National AI Centre",
       "type": "primary",
       "accessed": "2026-10-20",
@@ -105722,7 +105722,7 @@
     {
       "id": "my-csm-about",
       "url": "https://www.cybersecurity.my/portal-main/about-us/corporate-overview",
-      "title": "CyberSecurity Malaysia",
+      "title": "About Us",
       "publisher": "CyberSecurity Malaysia",
       "type": "primary",
       "accessed": "2026-10-20",
@@ -105739,7 +105739,7 @@
     {
       "id": "my-csm-events",
       "url": "https://www.cybersecurity.my/portal-main/events?type=past",
-      "title": "CyberSecurity Malaysia",
+      "title": "Events",
       "publisher": "CyberSecurity Malaysia",
       "type": "primary",
       "accessed": "2026-10-20",
