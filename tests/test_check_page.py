@@ -768,7 +768,7 @@ def _closest_fold_fixture(*, named=True, stage="planned", claims=(), finding_sou
         return '<span class="cites">' + "".join(f'<a class="cn" data-source-id="{sid}">{n}</a>' for n, sid in enumerate(ids, 1)) + '</span>'
 
     html = f'<details class="card mini" id="c-xx"><summary>Fixture state</summary><p>{summary}{cites(finding_sources)}</p></details>'
-    lines = "".join(f'<div class="claim det" data-claim-id="{c["id"]}">{c["text"]}</div>' for c in claims if not c.get("lead"))
+    lines = "".join(f'<div class="claim det" data-claim-id="{c["id"]}">{c["text"]}{cites(body_sources)}</div>' for c in claims if not c.get("lead"))
     in_summary = named and migrated  # the summary gives name and stage, so the group leaves both out
     if stage != "exists" and not in_summary:
         lines += f'<span class="det">{stage.replace("_", " ").capitalize()}.</span>'
