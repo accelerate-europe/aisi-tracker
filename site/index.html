@@ -2060,6 +2060,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     return text;
   }
   function nativeFundingCitations(fu) { return fieldCitations(fu, ["amount", "currency", "amount_qualifier", "period", "commitment", "kind", "coverage"].concat(fu.display.generated_description ? ["description"] : [])); }
+  function recordMetadata(item) { return { qualifiers: [item.as_of ? asOf(item.as_of) : null, confTag(item)].filter(Boolean), notes: item.notes ? el("span", "small record-notes", item.notes) : null }; }
   function fundingRecord(item, cite) {
     var record = el("div", "funding-record"); record.dataset.record = "funding"; record.dataset.recordId = item.id;
     var native = el("p", "funding-native running-text"); native.appendChild(noRateTip(el("span", "budget-amount", shownAmount(item, item.display.native_value)), item.currency)); native.appendChild(document.createTextNode(" "));
@@ -2069,10 +2070,10 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       var statement = el("details", "more quiet source-statement"); statement.appendChild(el("summary", null, "Source statement"));
       var text = el("p", "running-text", description); text.appendChild(cite(fieldCitations(item, ["description"]))); statement.appendChild(text); record.appendChild(statement);
     }
-    var metadata = el("p", "funding-metadata running-text"), grade = confTag(item); if (grade) metadata.appendChild(grade);
-    if (item.as_of) { var asOfLine = el("span", "small", " "); asOfLine.appendChild(asOf(item.as_of)); metadata.appendChild(asOfLine); }
-    if (item.notes) metadata.appendChild(el("span", "small", " " + item.notes));
-    metadata.appendChild(cite(fieldCitations(item, ["as_of", "confidence", "notes"]))); record.appendChild(metadata);
+    var metadata = el("p", "funding-metadata running-text"), parts = recordMetadata(item), citeLine = metadata;
+    if (parts.qualifiers.length) { citeLine = el("span", "small qualifiers"); citeLine.appendChild(separated(parts.qualifiers)); metadata.appendChild(citeLine); }
+    if (parts.notes) { citeLine = parts.notes; metadata.appendChild(citeLine); }
+    citeLine.appendChild(cite(fieldCitations(item, ["as_of", "confidence", "notes"]))); record.appendChild(metadata);
     return record;
   }
   function budgetText(fu) { return [shownAmount(fu, fu.display.value)].concat(fu.display.qualifiers).join("; "); }
@@ -4221,12 +4222,11 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
               description = counts.join("; ");
             }
             var descriptionAndPeriod = pair[2] === "funding" ? description : withPeriod(description, item.period);
-            // Value, then one qualifier line: published qualifiers, as-of date and confidence; notes follow on their own line.
-            var p = el("p", "running-text"), recordQualifiers = (pair[2] === "funding" ? item.display.native_qualifiers.slice() : []).concat([item.as_of ? asOf(item.as_of) : null, confTag(item)]);
+            var p = el("p", "running-text"), metadata = recordMetadata(item), recordQualifiers = (pair[2] === "funding" ? item.display.native_qualifiers.slice() : []).concat(metadata.qualifiers);
             p.appendChild(qualified(descriptionAndPeriod || missing(), recordQualifiers));
             p.dataset.record = pair[2]; p.dataset.recordId = item.id;
             var citeLine = p.lastChild.lastChild;
-            if (item.notes) { citeLine = el("span", "small record-notes", item.notes); p.appendChild(document.createTextNode(" ")); p.appendChild(citeLine); } citeLine.appendChild(fundingCites((pair[2] === "funding" ? publishedCitations(item) : item.description ? fieldCitations(item, ["description", "period"]) : staffCitations(item).concat(fieldCitations(item, ["target", "period"]))).concat(fieldCitations(item, ["as_of", "confidence", "notes"])))); col.appendChild(p);
+            if (metadata.notes) { citeLine = metadata.notes; p.appendChild(citeLine); } citeLine.appendChild(fundingCites((pair[2] === "funding" ? publishedCitations(item) : item.description ? fieldCitations(item, ["description", "period"]) : staffCitations(item).concat(fieldCitations(item, ["target", "period"]))).concat(fieldCitations(item, ["as_of", "confidence", "notes"])))); col.appendChild(p);
           });
           if (!pair[1].length) col.appendChild(missing()); body.appendChild(col);
         });
