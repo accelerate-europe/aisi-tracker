@@ -6137,7 +6137,7 @@ PALETTE_JS = """() => {
   const active = q && document.getElementById(q.getAttribute('aria-activedescendant') || '-');
   const fill = active ? getComputedStyle(active).backgroundColor : '';
   return { open: !!box && box.open, focus: document.activeElement && document.activeElement.id, value: q ? q.value : null,
-    roles: box && [box.getAttribute('role'), box.getAttribute('aria-modal'), q.getAttribute('role'), q.getAttribute('aria-controls'), q.getAttribute('aria-expanded'), q.getAttribute('aria-label'), list.getAttribute('role')],
+    roles: box && [box.getAttribute('role') || (box.tagName === 'DIALOG' ? 'dialog' : null), box.getAttribute('aria-modal'), q.getAttribute('role'), q.getAttribute('aria-controls'), q.getAttribute('aria-expanded'), q.getAttribute('aria-label'), list.getAttribute('role')],
     active: active ? [active.getAttribute('role'), active.getAttribute('aria-selected'), list.contains(active), active.querySelector('.sname').firstChild.textContent] : null,
     selected: [...list.querySelectorAll('[aria-selected="true"]')].length,
     groups: [...list.querySelectorAll('[role="group"]')].map(g => [g.querySelector('.palette-group')?.textContent, [...g.querySelectorAll('[role="option"]')].map(o => o.querySelector('.sname').firstChild.textContent), [...g.querySelectorAll('[role="option"]')].map(o => o.textContent), g.getAttribute('aria-labelledby')]),
