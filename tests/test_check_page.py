@@ -282,7 +282,7 @@ def test_every_browser_starts_without_a_session_bus(monkeypatch, tmp_path):
 def test_budget_oracle_rejects_wrong_id_and_missing_value_structure():
     data = {"jurisdictions": [{"id": "JP", "status": "established"}], "institutes": [{"id": "jp-aisi", "jurisdiction_id": "JP", "funding": []}]}
     identity = "funding-7d0b36a48cc65315865a6d6ec83ddeb6"
-    value = f'<span class="budget-value" data-funding-id="{identity}"><span class="budget-amount">~EUR 52m (JPY 8.8bn)</span><span class="budget-qualifiers">one-off · FY2025 supplementary · adopted</span></span>'
+    value = f'<span class="budget-value" data-funding-id="{identity}"><span class="budget-amount">~EUR 52m (JPY 8.8bn)</span><span class="budget-qualifiers"><span class="meta-item">one-off</span><span class="sep-gap"> </span><span class="meta-item">FY2025 supplementary</span><span class="sep-gap"> </span><span class="meta-item">adopted</span></span></span>'
     html = f'<article class="card" data-j="JP"><div class="row" data-track="9"><div class="k">Budget</div><div class="v">{value}</div></div></article><table><tbody id="world-rows"><tr data-j="JP"><td data-col="budget">{value}</td></tr></tbody></table><div id="fund-rows"><div class="fund-list" data-kind="budget"><div class="fund-other-line"><button class="fund-name-row" data-institute="jp-aisi" data-funding-id="{identity}">Japan: one-off amount, in the records</button></div></div></div>'
     assert check_page.check_budget_output(html, data) == []
     assert any("wrong funding ID" in error for error in check_page.check_budget_output(html.replace(identity, "older-record"), data))
@@ -295,7 +295,7 @@ def test_budget_oracle_covers_institutes_before_establishment():
     """Norway's proposed institute shows its selected ~NOK 45m record; Not published there is an error."""
     identity = check_page.EXPECTED_BUDGET_IDS["no-ki-norge"]
     data = {"jurisdictions": [{"id": "NO", "status": "proposed"}], "institutes": [{"id": "no-ki-norge", "jurisdiction_id": "NO", "funding": []}]}
-    value = f'<span class="budget-value" data-funding-id="{identity}"><span class="budget-amount">~NOK 45m</span><span class="budget-qualifiers">a year · 2027 budget proposal</span></span>'
+    value = f'<span class="budget-value" data-funding-id="{identity}"><span class="budget-amount">~NOK 45m</span><span class="budget-qualifiers"><span class="meta-item">a year</span><span class="sep-gap"> </span><span class="meta-item">2027 budget proposal</span></span></span>'
     html = f'<article class="card" data-j="NO"><div class="row" data-track="9"><div class="k">Budget</div><div class="v">{value}</div></div></article><table><tbody id="world-rows"><tr data-j="NO"><td data-col="budget">{value}</td></tr></tbody></table>'
     assert check_page.check_budget_output(html, data) == []
     missing = html.replace(value, '<span class="missing">Not published</span>')
@@ -914,13 +914,13 @@ def _archive_data():
     }
 
 
-ARCHIVE_TAIL = (' <span class="reread-tail" data-tip="Source could not be re-read since 10 Nov 2026; last read 17 Oct 2026.">'
-                '<span aria-hidden="true"> \u00b7 last read <span class="date-text">17 Oct 2026</span></span>'
+ARCHIVE_TAIL = ('<span class="sep-gap"> </span><span class="reread-tail trailing-qualifier" data-tip="Source could not be re-read since 10 Nov 2026; last read 17 Oct 2026.">'
+                '<span aria-hidden="true"><span class="qualifier-text">last read <span class="date-text">17 Oct 2026</span></span></span>'
                 '<span class="vh"> Source could not be re-read since 10 Nov 2026; last read 17 Oct 2026.</span></span>')
 
 
 def _archive_html(kept_archive=True, live_archive=False, claim_archive=False, gone_archive=True):
-    copy = lambda url: f'<span class="archive-copy"> \u00b7 <a class="archive" href="{url}">archived copy<span class="vh"> (opens in a new tab)</span></a></span>'  # noqa: E731
+    copy = lambda url: f'<span class="sep-gap"> </span><span class="archive-copy trailing-qualifier"><span class="qualifier-text"><a class="archive" href="{url}">archived copy<span class="vh"> (opens in a new tab)</span></a></span></span>'  # noqa: E731
     kept = copy("https://web.archive.org/web/1/https://k.example/")
     gone = ARCHIVE_TAIL + (copy("https://web.archive.org/web/1/https://g.example/") if gone_archive else "")
     return (
@@ -992,11 +992,13 @@ def test_archive_links_only_where_needed():
     assert "GB source list: source kept shows an archived copy link it should not" in inline and "Method: source kept shows an archived copy link" in inline
     wrong = _archive_html().replace("web/1/", "web/2/", 1)
     assert "GB source list: source kept archived copy link differs from data" in check_page.check_archive_links(wrong, data)
-    loose = _archive_html().replace(' \u00b7 <a class="archive"', ' (<a class="archive"', 1)
+    loose = _archive_html().replace('<a class="archive"', '(<a class="archive"', 1)
     assert any("not one" in e for e in check_page.check_archive_links(loose, data))
-    early = _archive_html().replace(ARCHIVE_TAIL + '<span class="archive-copy">', '<span class="archive-copy">', 1).replace("</a></span></li>", "</a></span>" + ARCHIVE_TAIL + "</li>", 1)
-    assert any("does not end its source line" in e for e in check_page.check_archive_links(early, data))
-    extra_citation = _archive_html().replace(">1</a></sup>", '>1</a><span class="archive-copy"> \u00b7 <a class="archive" href="x">archived copy</a></span></sup>')
+    early = BeautifulSoup(_archive_html(), "html.parser")
+    line = early.select_one('li[data-source-id="gone"]')
+    line.append(line.select_one('.reread-tail').extract())
+    assert any("does not end its source line" in e for e in check_page.check_archive_links(str(early), data))
+    extra_citation = _archive_html().replace(">1</a></sup>", '>1</a><span class="sep-gap"> </span><span class="archive-copy trailing-qualifier"><span class="qualifier-text"><a class="archive" href="x">archived copy</a></span></span></sup>')
     assert "4 archived copy links on the page, 3 expected from source lists and Method" in check_page.check_archive_links(extra_citation, data)
     as_citation = _archive_html().replace('class="archive" href="https://web.archive.org', 'class="archive cn" href="https://web.archive.org', 1)
     assert check_page.check_archive_links(as_citation, data) == ["a superscript citation carries an archived copy link"]
@@ -1011,7 +1013,7 @@ def test_reread_caveat_ends_the_source_line():
     assert any("re-read caveat" in e or "screen reader" in e for e in check_page.check_reread_lines(no_reader, data))
     no_tip = _archive_html().replace(' data-tip="Source could not be re-read since 10 Nov 2026; last read 17 Oct 2026."', "", 1)
     assert any("tip" in e for e in check_page.check_reread_lines(no_tip, data))
-    found = _archive_html().replace("\u00b7 last read", "\u00b7 last found", 1)
+    found = _archive_html().replace('class="qualifier-text">last read', 'class="qualifier-text">last found', 1)
     assert any("re-read caveat" in e for e in check_page.check_reread_lines(found, data))
 
 
@@ -1994,7 +1996,7 @@ def test_annual_budget_summary_keeps_the_source_record_separate_and_cites_both_s
     data = {"dataset": {"exchange_rates": [{"currency": "USD", "eur_per_unit": 0.9, "source_ids": ["rate-source"]}]},
             "institutes": [{"id": "institute", "display": {"comparison_funding": "multi-year"}, "funding": [record]}]}
     good = '''<details class="fund-detail" data-institute="institute"><div class="fund-budget-summary" data-source-funding-id="multi-year">
-      <div class="fund-value"><strong>~EUR 27m (USD 30m)</strong><span class="qualifiers">a year · average over period
+      <div class="fund-value"><strong>~EUR 27m (USD 30m)</strong><span class="qualifiers"><span class="meta-item">a year</span><span class="sep-gap"> </span><span class="meta-item">average over period</span>
       <a class="cn" data-source-id="amount-source">1</a><a class="cn" data-source-id="rate-source">2</a></span></div></div>
       <div class="funding-record" data-record-id="multi-year"><p class="funding-native"><span class="budget-amount">~EUR 110m (USD 120m)</span>
       <a class="cn" data-source-id="amount-source">1</a><a class="cn" data-source-id="rate-source">2</a></p></div></details>'''

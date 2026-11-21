@@ -55,7 +55,7 @@ const assert=require('node:assert/strict');
 function el(tag,className,text){return {tag,className:className||'',text:text||'',dataset:{},children:[],
   appendChild(n){this.children.push(n);return n;},get lastElementChild(){return this.children.at(-1);}};}
 const document={createTextNode:text=>el('text','',text)};
-const confTerms=parts=>parts, separated=parts=>el('span','',parts.join(' · '));
+const confTerms=parts=>parts, separated=parts=>el('span','',parts.join(' '));
 const citeTarget=box=>box.lastElementChild, fundingCites=ids=>el('span','cites',ids.join(','));
 const fu={id:'multi-year',amount:120000000,currency:'USD',
   citations:{amount:['amount-source'],currency:['amount-source']},

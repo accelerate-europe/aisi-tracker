@@ -341,7 +341,7 @@ def news_html(data):
                "sources": [{k: s[k] for k in ("id", "url", "title", "title_en", "publisher") if k in s} for s in data.get("sources", [])]}
     source = (ROOT / "site/index.html").read_text()
     helpers = source[source.index("  var MON ="):source.index("  function saveText(")]
-    helpers += source[source.index("  function separated("):source.index("  // One footer for full records")]
+    helpers += source[source.index("  function sepGap("):source.index("  // One footer for full records")]
     helpers += source[source.index("  function fieldCitations("):source.index("  // The Status row value")]
     helpers += source[source.index("  function citations("):source.index("  // None-identified entries")]
     helpers += next(line for line in source.splitlines() if line.startswith("  function andJoin("))

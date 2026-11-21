@@ -89,7 +89,7 @@ const fundingRecord=item=>{const n=el('div','funding-record',item.id);n.dataset.
 const relatedFunding=()=>el('div','related-funding','Related amounts');
 const publishedFunding=item=>item.description;
 const staffText=item=>item.display.total, withPeriod=text=>text, asOf=text=>'as of '+text, confTag=()=>null;
-const qualified=(value,parts)=>{const n=el('span','qualified');n.appendChild(el('span','value-line',value));n.appendChild(el('span','qualifiers',parts.filter(Boolean).join(' · ')));return n;};
+const qualified=(value,parts)=>{const n=el('span','qualified');n.appendChild(el('span','value-line',value));n.appendChild(el('span','qualifiers',parts.filter(Boolean).join(' ')));return n;};
 const fieldCitations=()=>[], staffCitations=()=>[], fundingCites=()=>el('span','cites');
 const sourcesBlock=order=>el('div','srcs',order.join(',')), missing=()=>el('span','missing','Not published');
 """ + helper + """
@@ -755,7 +755,9 @@ def funding_record_tree(record, rates=()):
     stub = """
 function el(tag, className, text) { return {tag, className:className||'', text:text||'', dataset:{}, children:[], appendChild(child){this.children.push(child); return child;}}; }
 const document={createTextNode:text=>el('text','',text)};
-function separated(parts){return el('span','',parts.join(' · '));}
+function separated(parts){const n=el('span','');parts.forEach((part,index)=>{
+  if(index)n.appendChild(el('span','sep-gap',' '));
+  n.appendChild(el('span','meta-item',part));});return n;}
 function confTag(r){return el('span','confidence',r.confidence);}
 function confTerms(qualifiers){return qualifiers;}
 function fmtDate(text){return text;}
@@ -766,6 +768,8 @@ function cite(ids){return el('span','cites',ids.join(','));}
 
 
 def tree_text(node):
+    if "sep-gap" in node["className"].split():
+        return " · "
     return node["text"] + "".join(tree_text(child) for child in node["children"] if child["className"] != "cites")
 
 
@@ -1076,7 +1080,7 @@ const document = {createTextNode: text => ({text})};
 function missing(na) { return el('span', 'missing', na ? 'Not applicable' : 'Not published'); }
 function dated(text) { return el('span', 'date-text', text); }
 function rereadLine() { return el('span', 'reread', 'Source last re-read 15 Nov 2026.'); }
-function archiveCopy(li, src) { if (src.archive_url) li.appendChild(el('span', 'archive-copy', ' · archived copy')); }
+function archiveCopy(li, src) { if (src.archive_url) { li.appendChild(el('span', 'sep-gap', ' ')); li.appendChild(el('span', 'archive-copy trailing-qualifier', 'archived copy')); } }
 function rereadTail() { return false; }
 function hostOf(url) { return new URL(url).hostname; }
 """
@@ -1117,6 +1121,8 @@ console.log(JSON.stringify({names, list, institutes, rows, marks: cite(order),
     rendered = json.loads(subprocess.run(["node", "-"], input=script, text=True, capture_output=True, check=True).stdout)
 
     def text(node):
+        if 'sep-gap' in node.get('className', '').split():
+            return ' · '
         return node.get('text', '') + ''.join(text(child) for child in node.get('children', []))
 
     assert rendered['nameTips'] == ['Agence <nationale>', 'Agence (locale)', '']

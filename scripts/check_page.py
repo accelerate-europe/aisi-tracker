@@ -47,7 +47,6 @@ from method_copy import rule_label  # noqa: E402
 from release_checks import today  # noqa: E402
 from screenshot_pixels import decode_png, differing_pixels, same_colour  # noqa: E402
 from versioning import parse_version  # noqa: E402
-from separator_checks import PAGE_SEPARATORS_JS, SEPARATOR_LINES, separator_coverage_errors  # noqa: E402
 from section_extents import EXTENT_JOBS, check_section_extents  # noqa: E402
 
 def updated_date(data: dict) -> str:
@@ -448,14 +447,14 @@ def check_version_history(page, data: dict) -> list[str]:
     page.evaluate("document.querySelector('#changes').open = false")
     row = page.locator("#changes-latest")
     text = " ".join(row.inner_text().split())
-    if text != f"{latest['version']} \u00b7 {day}":
+    if text != f"{latest['version']} {day}":
         errors.append(f"version history row reads {text[:60]!r}, expected only version and date {latest['version']} \u00b7 {day}")
     if page.evaluate("() => { const s = document.querySelector('#changes > summary').getBoundingClientRect(), b = document.querySelector('#changes').getBoundingClientRect(); return s.right > b.right + 1 || s.width > innerWidth; }"):
         errors.append("version history row is wider than its box")
     page.evaluate("document.querySelector('#changes').open = true")
     heads = [" ".join(t.split()) for t in page.locator("#changelog > li > .change-head").all_inner_texts()]
     shown = data["dataset"]["display"]["changelog"]
-    want = [f"{c['version']} \u00b7 {date.fromisoformat(c['date']).strftime('%-d %b %Y')}" for c in shown]
+    want = [f"{c['version']} {date.fromisoformat(c['date']).strftime('%-d %b %Y')}" for c in shown]
     if heads != want:
         errors.append(f"version history list {heads} differs from the changelog {want}")
     if any(not t.strip() for t in page.locator("#changelog > li > p").all_inner_texts()):
@@ -2037,15 +2036,21 @@ def expected_operating_lines(jurisdiction: dict, institute: dict | None, credit_
     ]
 
 
+def prose(node) -> str:
+    """Keep item boundaries distinct from spaces within an item."""
+    node = copy.copy(node)
+    for gap in node.select(".sep-gap") if node else []:
+        gap.replace_with(" · ")
+    return " ".join(node.get_text().split()) if node else ""
+
+
 def operating_lines(node) -> list[str]:
     """Rendered lines of a Known activity value: per kind, its value line, its since line and any interval line; else the whole value."""
-    def text(n):
-        return " ".join(n.get_text().split())
     kinds = node.select(".activity-kind")
     if not kinds:
-        return [text(node)]
+        return [prose(node)]
     return [
-        text(part)
+        prose(part)
         for kind in kinds
         for part in (kind.select_one(".activity-clause"), kind.select_one(".activity-since"), kind.select_one(".activity-interval"))
         if part is not None
@@ -2184,8 +2189,10 @@ def check_interval_output(html: str, data: dict, hand_worked: dict | None = None
             holder = copy.copy(holder)
             for cites in holder.select(".cites"):
                 cites.decompose()
+            for gap in holder.select(".sep-gap"):
+                gap.replace_with(";")
             # Any announcement or proposal wording counts, so a month-only or year-only date ("Announced on Mar 2025") cannot slip through.
-            text += re.findall(r"(?:Announced|Proposed) on [^;·]+", " ".join(holder.get_text().split()))
+            text += re.findall(r"(?:Announced|Proposed) on [^;]+", " ".join(holder.get_text().split()))
         text = [t.strip() for t in text]
         for node in shown:
             if not node.find_parent(class_="qualifiers") or STATUS_INTERVAL_CAVEAT not in tip_of(node):
@@ -2377,7 +2384,7 @@ SORT_ROWS_JS = r"""
   const ORDER = ['established', 'planned', 'proposed', 'exploring', 'none_identified'];
   const MON = 'Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec'.split(' ');
   const col = { name: 0, region: 1, status: 2, inst: 3, since: 4, op: 5, eur: 6, staff: 7, net: 8 }[key];
-  const text = node => { const c = node.cloneNode(true); c.querySelectorAll('.cites, .vh').forEach(n => n.remove()); return c.textContent.replace(/\s+/g, ' ').trim(); };
+  const text = node => { const c = node.cloneNode(true); c.querySelectorAll('.cites, .vh').forEach(n => n.remove()); c.querySelectorAll('.sep-gap').forEach(n => n.replaceWith(' · ')); return c.textContent.replace(/\s+/g, ' ').trim(); };
   const date = t => { const p = t.split(' '), y = p[p.length - 1], m = p.length > 1 ? MON.indexOf(p[p.length - 2]) + 1 : 1, d = p.length > 2 ? p[0] : '';
     return /^\d{4}$/.test(y) && m ? [y, p.length > 1 ? String(m).padStart(2, '0') : '', d.padStart(d ? 2 : 0, '0')].filter(Boolean).join('-') : null; };
   const rows = [...document.querySelectorAll('#world-rows tr')].map(tr => {
@@ -3512,7 +3519,7 @@ def first_output_data_errors(data: dict) -> list[str]:
 
 
 def first_output_part_errors(parts: list[str], events: list[dict]) -> list[str]:
-    """A development row's " · " parts: each first-output part reads the approved line, wherever it falls in a merged row."""
+    """A development row's items: each first-output part reads the approved line, wherever it falls in a merged row."""
     if len(parts) == len(events) and all(part == FIRST_OUTPUT_LINE for part, event in zip(parts, events) if event["event"] == "first_output"):
         return []
     if not any(event["event"] == "first_output" for event in events):
@@ -3686,7 +3693,7 @@ def check_news(soup, data: dict) -> list[str]:
         if text:
             for cites in text.select(".cites"):
                 cites.decompose()
-            parts = text.get_text().split(" · ")
+            parts = [item.get_text() for item in text.select(':scope > .meta-item')]
             fallback_events = [(part, event) for part, event in zip(parts, group["timeline"]) if "news" not in event]
             errors += first_output_part_errors([part for part, _ in fallback_events], [event for _, event in fallback_events])
             if parts != group["texts"]:
@@ -3738,7 +3745,7 @@ def check_summary_data(html: str, data: dict) -> list[str]:
     if (
         not updated
         or updated.get_text()
-        != f"Updated {expected_date} · v{dataset['version']}"
+        != f"Updated {expected_date} v{dataset['version']}"
     ):
         errors.append("hero metadata is not just update date and version")
     if (
@@ -4395,60 +4402,12 @@ def check_source_footers(page) -> list[str]:
         const r = summary.getBoundingClientRect();
         if (summary.scrollWidth > summary.clientWidth + 1 || r.right > foot.getBoundingClientRect().right + 1) errors.push('source footer overflows');
         if (r.height < 27.5) errors.push('source summary lacks its inline hit height');
-        if (summary.querySelector('a, .meta-dot') || summary.textContent !== count.textContent) errors.push('source summary holds more than the count');
+        if (summary.querySelector('a, .sep-gap') || summary.textContent !== count.textContent) errors.push('source summary holds more than the count');
         if (visible(list) !== fold.open) errors.push('source list visibility differs from disclosure state');
         const after = fold.querySelector(':scope > .source-after');
         if (foot.querySelectorAll('.correction').length !== (after ? after.querySelectorAll('.correction').length : 0)) errors.push('correction is outside the expanded sources');
         if (after && (after.previousElementSibling !== list || visible(after) !== fold.open)) errors.push('source metadata does not follow the list inside the fold');
       });
-      return errors;
-    }"""
-    )
-
-
-def check_line_end_separators(page) -> list[str]:
-    """No separator "·" is hidden mid-line.
-
-    Measured per character, independent of the page's own marking. A "·" inside a word
-    (Korean or Catalan source text) is not a separator and is skipped.
-    """
-    return page.evaluate(
-        "() => {"
-        + BROWSER_GEOMETRY
-        + """
-      const errors = [], range = document.createRange();
-      // A flex item (a group row's separator) shares its line with its siblings, so it is measured in its flex container.
-      const blockOf = node => { let e = node.parentElement; while (e && (/^inline/.test(getComputedStyle(e).display) || (e.parentElement && /flex$/.test(getComputedStyle(e.parentElement).display)))) e = e.parentElement; return e || document.body; };
-      const glyph = (node, i) => { range.setStart(node, i); range.setEnd(node, i + 1); return range.getBoundingClientRect(); };
-      const neighbour = (block, node, i) => {
-        const walker = document.createTreeWalker(block, NodeFilter.SHOW_TEXT);
-        walker.currentNode = node;
-        let t = node, k = i + 1;
-        for (;;) {
-          for (; k < t.data.length; k++) if (/\\S/.test(t.data[k])) return glyph(t, k);
-          do { t = walker.nextNode(); } while (t && (!visible(t.parentElement) || t.parentElement.closest('.vh')));
-          if (!t) return null;
-          k = 0;
-        }
-      };
-      const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
-      while (walker.nextNode()) {
-        const node = walker.currentNode, parent = node.parentElement;
-        if (!node.data.includes('·') || parent.closest('script, style, template') || !parent.getClientRects().length) continue;
-        if (visible(parent) || !parent.closest('.meta-dot.line-end')) continue;
-        const block = blockOf(node);
-        for (let i = 0; i < node.data.length; i++) {
-          if (node.data[i] !== '·') continue;
-          if (!parent.closest('.meta-dot') && /\\S/.test(node.data[i - 1] || ' ') && /\\S/.test(node.data[i + 1] || ' ')) continue;
-          const dot = glyph(node, i);
-          if (!dot.height) continue;
-          const next = neighbour(block, node, i);
-          const sameLine = r => r && r.width && r.height && Math.min(r.bottom,dot.bottom)-Math.max(r.top,dot.top) > Math.min(r.height,dot.height)/2;
-          const ends = !sameLine(next);
-          const where = (block.closest('[id]')?.id || block.tagName.toLowerCase()) + ': ' + block.textContent.replace(/\\s+/g, ' ').trim().slice(0, 60);
-          if (!ends && !(innerWidth <= 400 && parent.closest('.group-links'))) errors.push('separator hidden mid-line: ' + where); // narrow section links show no dots by rule
-        }
-      }
       return errors;
     }"""
     )
@@ -4610,7 +4569,7 @@ def check_none_identified_tips(browser, base_url: str, data: dict) -> list[str]:
         want = (["advisory recommendation"] if j["display"].get("advisory") else []) + ([j["status_confidence"] + " confidence"] if j.get("status_confidence") not in (None, "high") else [])
         page.locator("#map-search").fill(j["name"])
         page.locator("#map-search").press("Enter")
-        shown = page.evaluate("""j => { const r = document.getElementById('record'); if (r.dataset.j !== j) return null; const q = r.querySelector('.record-status .qualifiers'); if (!q) return []; return [...q.querySelectorAll(':scope > .meta-item')].map(n => { const c = n.cloneNode(true); c.querySelectorAll('.cites, .cn').forEach(x => x.remove()); return c.textContent.replace(/\\u00b7/g, '').trim(); }); }""", j["id"])
+        shown = page.evaluate("""j => { const r = document.getElementById('record'); if (r.dataset.j !== j) return null; const q = r.querySelector('.record-status .qualifiers'); if (!q) return []; return [...q.querySelectorAll(':scope > .meta-item')].map(n => { const c = n.cloneNode(true); c.querySelectorAll('.cites, .cn').forEach(x => x.remove()); return c.textContent.trim(); }); }""", j["id"])
         if shown is None:
             errors.append(f"record beside the map: searching {j['name']} does not open its record")
         elif shown != want:
@@ -8568,23 +8527,23 @@ def check_leadership_rows(html, data: dict) -> list[str]:
                     continue
                 names = copy.copy(value.select_one('.member-names'))
                 if names:
-                    for mark in names.select('.cites, .meta-dot'):
+                    for mark in names.select('.cites'):
                         mark.decompose()
                 hidden = cut[0] if cut else 0  # the line shows three, then "and N more" (principle: Folds)
                 line_names = [name for name, _, _ in hows][:len(hows) - hidden] + ([f"and {hidden} more"] if hidden else [])
-                if not names or names.get_text(" ", strip=True) != " ".join(line_names):
+                if not names or [" ".join(item.get_text().split()) for item in names.select(':scope > .meta-item')] != line_names:
                     errors.append(f"{jid} Members: short names differ")
             reports = institute.get("reports_to") or {}
             if label == "Reports to" and reports.get("state") == "stated" and reports.get("name_en"):
                 if not original_tip_matches(value.select_one(".original-text"), reports["name_en"], reports["name"]):
                     errors.append(f"{jid} Reports to: the English name must carry the original in a focusable tooltip")
             if label in ("Members", "Partners") and not text:
-                # The page keeps a citation with its last word by cloning the enclosing spans, so compare the line's text, not its elements.
+                # Citation glue can split a name into spans, so retain text within each item and the gaps between items.
                 clone = copy.copy(value.select_one('.member-list') if label == "Members" else value)
                 if clone is None:
                     errors.append(f"{jid} {label}: itemised list missing")
                     continue
-                for mark in clone.select(".cites, .meta-dot, .partner-how"):
+                for mark in clone.select(".cites, .partner-how"):
                     mark.decompose()
                 got = " ".join(" ".join(li.get_text().split()) for li in clone.select('li')) if label == "Members" else " ".join(clone.get_text().split())
                 if got != " ".join(items):
@@ -9016,13 +8975,15 @@ def check_archive_links(html, data: dict) -> list[str]:
             errors.append(f"{where}: source {sid} lacks its archived copy link")
             return
         copy, a = copies[0], copies[0].select_one("a.archive")
+        gap = copy.find_previous_sibling()
         if a is None or a.get("href") != archive or not visible(a).strip():
             errors.append(f"{where}: source {sid} archived copy link differs from data")
-        elif visible(copy) != " \u00b7 " + visible(a):
+        elif visible(copy) != visible(a) or gap is None or "sep-gap" not in gap.get("class", []):
             errors.append(f"{where}: source {sid} archived copy is not one \" \u00b7 \" phrase after its line")
         tail = [n for n in after if "reread-tail" in (n.get("class") or [])]
-        if (tail and copy.find_previous_sibling() is not tail[0]) or any(
-                n.find_parent() is parent for n in copy.find_next_siblings() if "reread" not in (n.get("class") or [])):
+        preceding = [n for n in copy.find_previous_siblings() if 'sep-gap' not in (n.get('class') or [])]
+        if (tail and (not preceding or preceding[0] is not tail[0])) or any(
+                n.find_parent() is parent for n in copy.find_next_siblings() if not {'reread', 'sep-gap'}.intersection(n.get("class") or [])):
             errors.append(f"{where}: source {sid} archived copy does not end its source line")
 
     items = soup.select("li[data-source-id]")
@@ -9098,7 +9059,7 @@ def expected_reread_tail(source: dict) -> str | None:
     top = max(rank.get(r["state"], 0) for r in states)
     worst = min((r for r in states if rank.get(r["state"], 0) == top), key=lambda r: (r["since"], tie[r["state"]], r["last_found"]))
     word = "quote last found" if worst["state"] == "quote_gone" else "last read"
-    return f" \u00b7 {word} {expected_date(worst['last_found'])}"
+    return f"{word} {expected_date(worst['last_found'])}"
 
 
 def check_reread_lines(html, data: dict) -> list[str]:
@@ -9118,7 +9079,8 @@ def check_reread_lines(html, data: dict) -> list[str]:
         if tail:
             shown = "".join(t for t in tails[0].find_all(string=True) if not t.find_parent(class_="vh")) if len(tails) == 1 else None
             full = tails[0].select_one(".vh") if len(tails) == 1 else None
-            if lines or shown != tail:
+            gap = tails[0].find_previous_sibling() if len(tails) == 1 else None
+            if lines or shown != tail or gap is None or "sep-gap" not in gap.get("class", []):
                 errors.append(f"source {sid}: re-read caveat {shown!r}, expected {tail!r} and no separate line")
             elif tails[0].parent is not li or tails[0].get("data-tip") != expected or tails[0].has_attr("aria-description") or full is None or " ".join(full.get_text().split()) != expected:
                 errors.append(f"source {sid}: the caveat's tip or screen reader sentence differs from {expected!r}")
@@ -9508,7 +9470,7 @@ def check_status_filter(page, data: dict) -> list[str]:
             if not label:
                 errors.append("count line action has no accessible name")
             text = text.replace(label, "")
-        return " ".join(text.split()).rstrip(" ·")
+        return " ".join(text.split())
 
     # The table lists Taiwan as a territory beside the 193 states, so its total names both (the headline counts states only).
     noun = "states and territories" if any(j["kind"] == "territory" for j in states) else "states"
@@ -9761,9 +9723,6 @@ def check_format_output(html: str, data: dict, cases: list[dict]) -> list[str]:
     soup = BeautifulSoup(html, "html.parser")
     for cite in soup.select(".cites"):
         cite.decompose()
-
-    def prose(node):
-        return " ".join(node.get_text().split()) if node else ""
 
     for case in cases:
         jid = case["jid"]
@@ -10784,15 +10743,17 @@ def check_funding_edges(browser, base_url: str, data: dict) -> list[str]:
     latest = page.locator(".fund-staff-summary .fund-context").filter(has_text="Latest total")
     if latest.count() != expected["both"]:  # the label only beside a technical figure (principle: Values and qualifiers)
         errors.append(f"funding fixture: {latest.count()} 'Latest total' labels, expected {expected['both']} (one per row with a technical figure beside the total)")
-    grade = r"\s*·\s*(?:indirect or secondary|secondary sources|press report|our estimate)"
-    for text in latest.all_text_contents():
+    grade = r"\s+(?:indirect or secondary|secondary sources|press report|our estimate)"
+    dangling = "node => [...node.querySelectorAll('.sep-gap')].some(gap => !gap.nextElementSibling?.matches('.meta-item, .trailing-qualifier'))"
+    for node in latest.all():
+        text = node.text_content()
         rest = re.sub(grade, "", " ".join(text.split())).strip()
-        if not rest or "·" in rest:
+        if not rest or node.evaluate(dangling):
             errors.append(f"funding fixture: undated latest total label is empty or has dangling punctuation ({text!r})")
     technical = page.locator(".fund-staff-summary .fund-context").filter(has_text="technical")
     if technical.count() != expected["technical"]:
         errors.append("funding fixture: technical staff records are missing")
-    if any("·" in re.sub(grade, "", text) for text in technical.all_text_contents()):
+    if any(node.evaluate(dangling) for node in technical.all()):
         errors.append(
             "funding fixture: undated technical count has dangling punctuation"
         )
@@ -10870,7 +10831,7 @@ def check_news_layout(page, data) -> list[str]:
         if (!label || !text) { errors.push('News entry needs a label and sentence'); continue; }
         const l = rect(label), t = rect(text), ls = css(label), ts = css(text);
         const date = label.querySelector('.development-date'), name = label.querySelector('.development-name');
-        if (!date || !name || label.textContent !== date.textContent + ' · ' + name.textContent) errors.push('News label is not date · states');
+        if (!date || !name || label.textContent !== date.textContent + ' ' + name.textContent) errors.push('News label is not date · states');
         const range = document.createRange(); range.selectNodeContents(label);
         const boxes = [...range.getClientRects()];
         if (ls.whiteSpace !== 'nowrap' || Math.abs(l.height - parseFloat(ls.lineHeight)) > 1 || boxes.some(b => Math.abs(b.top - boxes[0].top) > 1)) errors.push('News label wraps or is taller than one line');
@@ -11363,7 +11324,6 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
         check_citations,
         check_design_roles,
         check_source_footers,
-        check_line_end_separators,
         check_card_grid,
         check_external_markers,
         check_status_contrast,
@@ -12996,7 +12956,7 @@ def check_folds(browser, base_url: str) -> list[str]:
         errors += [f'{width}px: ' + e for e in page.evaluate(FOLDS_JS, list(FOLD_LABEL_ALLOW))]
         # The count check must not take a version or date beside the label for a count.
         page.evaluate("""() => { const d = document.createElement('details'); d.id = 'fold-count-probe';
-          d.innerHTML = '<summary><span class="summary-label">Version history</span> <span class="small">1.0.2 · <span class="date-text">4 Nov 2026</span></span></summary><ul><li>a</li><li>b</li></ul>';
+          d.innerHTML = '<summary><span class="summary-label">Version history</span> <span class="small"><span class="meta-item">1.0.2</span><span class="sep-gap"> </span><span class="meta-item"><span class="date-text">4 Nov 2026</span></span></span></summary><ul><li>a</li><li>b</li></ul>';
           document.querySelector('main').appendChild(d); }""")
         if not any('Version history' in e for e in page.evaluate(FOLDS_JS, list(FOLD_LABEL_ALLOW))):
             errors.append(f'{width}px: the fold count check takes a version or date for a count')
@@ -13135,7 +13095,7 @@ FN_VIEWS_JS = r"""() => {
   return {view: box.dataset.view, grouped: shown(phone), grid: shown(grid), phoneWidth: phone.getBoundingClientRect().width, prose,
     surface: rect(surface), head: rect(head), summary: summary ? rect(summary) : null, meta, bodySize: type(document.body).size,
     control: control ? {shown: shown(control), role: control.getAttribute('role'), name: control.getAttribute('aria-label'),
-      ...rect(control), ...type(control), separator: control.querySelector('[aria-hidden="true"]')?.textContent.trim(),
+      ...rect(control), ...type(control),
       items: [...control.querySelectorAll('button')].map(button => {
         const marker = getComputedStyle(button, '::after');
         return {view: button.dataset.view, text: button.textContent, pressed: button.getAttribute('aria-pressed'), shown: shown(button),
@@ -13307,7 +13267,7 @@ def function_view_errors(state: dict, count: int) -> list[str]:
     if not control or not control['shown']:
         return ['Functions view switch is missing or hidden']
     items = control['items']
-    if control['role'] != 'group' or control['name'] != 'Functions view' or control['separator'] != '·':
+    if control['role'] != 'group' or control['name'] != 'Functions view':
         errors.append('Functions view switch needs its named group and hidden dot separator')
     if [(b['view'], b['text']) for b in items] != [('grouped', 'By group'), ('grid', f'All {count} functions')] or not all(
             b['shown'] and b['type'] == 'button' and b['controls'] == 'functions-table' for b in items):
@@ -13428,7 +13388,7 @@ def check_functions_views(browser, base_url: str, data: dict) -> list[str]:
             errors.append(f'{width}px: activating the current view changes its open row or switch state')
         listed = page.evaluate("""() => [...document.querySelectorAll('.fn-phone-detail .fn-phone-functions > li')].map(li => ({
           shown: !!li.getClientRects().length, status: (li.querySelector('.fn-function-status')?.textContent || '').trim(),
-          label: li.querySelector('.fn-function-label')?.textContent,
+          label: [...(li.querySelector('.fn-function-label > .fn-name')?.childNodes || [])].filter(n => n.nodeType === 3).map(n => n.textContent).join(''),
           summary: li.querySelector('.fn-function-summary')?.textContent}))""")
         if len(listed) != count or not all(item["shown"] and item["status"] and item["summary"] for item in listed):
             errors.append(f"{width}px: an expanded row does not list all {count} functions, each with its status and summary")
@@ -13573,7 +13533,7 @@ def check_clickable_widths(browser, base_url: str) -> list[str]:
 FN_CLAIM_INDENT_JS = r"""detail => {
   if (detail.matches('.fn-detail-row')) detail = detail.querySelector('.fn-detail');
   const inline = detail.matches('.fn-phone-claims'), errors = [];
-  const name = inline ? detail.parentElement.querySelector('.fn-function-label > span:not(.fn-pip)') : detail.querySelector('.fn-function-head');
+  const name = inline ? detail.parentElement.querySelector('.fn-function-label > .fn-name') : detail.querySelector('.fn-function-head');
   if (!name) return ['claim block has no parent function name'];
   const range = document.createRange(); range.selectNodeContents(name);
   const edge = range.getBoundingClientRect().left;
@@ -13631,7 +13591,7 @@ const checkClaims = async (detail, cell, key) => {
     // The shared Quote control ends the claim's source line, with translated languages in its accessible name.
     const sources = item.querySelector(':scope > .fn-sources'), fold = sources?.querySelector('li > details.quote'), li = fold?.parentElement;
     const summary = fold?.querySelector(':scope > summary'), name = summary?.getAttribute('aria-label') || '';
-    need(fold && !fold.open && !fold.querySelector('.quote-body') && fold.dataset.quoteClaim === id && fold === li.lastElementChild && summary.querySelector('.qualifier-text')?.textContent === 'Quote' && summary.querySelector('.qualifier-separator')?.getAttribute('aria-hidden') === 'true',
+    need(fold && !fold.open && !fold.querySelector('.quote-body') && fold.dataset.quoteClaim === id && fold === li.lastElementChild && summary.querySelector('.qualifier-text')?.textContent === 'Quote' && fold.previousElementSibling?.matches('.sep-gap'),
          key + ': the quote control is not a closed, lazy Quote fold after the source separator');
     if (summary && sources) need(['fontSize', 'fontWeight', 'color'].every(k => getComputedStyle(summary)[k] === getComputedStyle(sources)[k]), key + ': Quote differs from the source line type or muted ink');
     const glossed = [q.excerpt, ...(q.excerpt.anchors || [])].some(span => span.gloss);
@@ -14017,258 +13977,6 @@ FN_PHONE_BOUNDS_JS = """
 """
 
 
-STATUS_QUALIFIERS_JS = r"""selector => {
-  /* TEXT_RECTS */
-  const rect = r => ({left: r.left, right: r.right, top: r.top, bottom: r.bottom});
-  const baseline = node => {
-    const probe = document.createElement('span');
-    probe.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
-    node.appendChild(probe); const y = probe.getBoundingClientRect().top; probe.remove(); return y;
-  };
-  return [...document.querySelectorAll(selector)].flatMap(root => {
-    const items = [...root.querySelectorAll('.trailing-qualifier, .status-phrase, .activity-clause, .activity-since')];
-    return items.filter(item => item.checkVisibility({contentVisibilityAuto: true})).map(item => {
-      const trailing = item.matches('.trailing-qualifier'), text = trailing ? item.querySelector('.qualifier-text') : item;
-      const lines = textRects(text, '.cites'), separator = item.querySelector('.qualifier-separator');
-      const label = item.matches('.fn-function-status') ? item.previousElementSibling : null;
-      const name = label?.querySelector(':scope > span:not(.fn-pip)');
-      const before = [];
-      if (trailing) {
-        const walker = document.createTreeWalker(item.closest('summary') ? item.closest('li[data-source-id]') : item.parentElement, NodeFilter.SHOW_TEXT);
-        for (let node; (node = walker.nextNode());) {
-          if (item.contains(node)) break;
-          if (!node.textContent.trim() || node.parentElement.closest('.vh, [hidden], .cites') ||
-              !node.parentElement.getClientRects().length || getComputedStyle(node.parentElement).visibility !== 'visible') continue;
-          const range = document.createRange(); range.selectNodeContents(node);
-          before.push(...[...range.getClientRects()].filter(r => r.width && r.height));
-        }
-      }
-      const names = name ? textRects(name) : before;
-      const flow = item.closest('summary') ? item.closest('li[data-source-id]') : item.parentElement;
-      const container = flow.getBoundingClientRect(), style = getComputedStyle(flow);
-      // Inside list numbers indent only the first title. Wrapped source text shares the list item's content edge.
-      const insideSource = flow.matches('li[data-source-id]') && style.listStylePosition === 'inside';
-      return {text: text?.textContent.trim(), trailing, rects: lines.map(rect),
-        previous: before.length ? rect(before[before.length - 1]) : null,
-        nameLeft: insideSource ? container.left + parseFloat(style.borderLeftWidth) + parseFloat(style.paddingLeft) : (names.length ? names[0].left : null),
-        left: container.left, right: container.right,
-        dot: !!textRects(separator).length, hiddenSeparator: separator?.getAttribute('aria-hidden') === 'true',
-        baselineStep: name ? baseline(item) - baseline(name) : null,
-        lineHeight: name ? parseFloat(getComputedStyle(label).lineHeight) : null};
-    });
-  });
-}""".replace("/* TEXT_RECTS */", TEXT_RECTS_JS)
-
-
-def status_qualifier_errors(items: list[dict]) -> list[str]:
-    """Judge visible text rectangles, not the producer's own-line class or its fit decision."""
-    if not items:
-        return ["no status qualifiers to measure"]
-    errors = []
-    for item in items:
-        prefix = str(item.get("text")) + ": "
-        rects = item["rects"]
-        if not rects:
-            errors.append(prefix + "status text missing")
-            continue
-        if max(r["top"] for r in rects) - min(r["top"] for r in rects) > 1:
-            errors.append(prefix + "status word group spans lines")
-        if any(r["left"] < item["left"] - 1 or r["right"] > item["right"] + 1 for r in rects):
-            errors.append(prefix + "status text overflows its container")
-        if not item["trailing"]:
-            continue
-        previous = item["previous"]
-        if not previous or item["nameLeft"] is None:
-            errors.append(prefix + "qualifier has no preceding name")
-            continue
-        first = rects[0]
-        own = (first['top'] + first['bottom'] - previous['top'] - previous['bottom']) / 2 > min(first['bottom'] - first['top'], previous['bottom'] - previous['top']) / 2
-        if not item["hiddenSeparator"]:
-            errors.append(prefix + "separator is not hidden from screen readers")
-        if item["dot"] == own:
-            errors.append(prefix + ("own line has a visible leading dot" if own else "inline status lost its dot"))
-        if own and abs(rects[0]["left"] - item["nameLeft"]) > 1:
-            errors.append(prefix + "own line does not start at the name's text edge")
-        step = item["baselineStep"]
-        if step is not None and abs(step - (item["lineHeight"] if own else 0)) > 1:
-            errors.append(prefix + "status is off the name's baseline rhythm")
-    return errors
-
-
-SOURCE_SEPARATORS_JS = r"""view => {
-  const results=[];
-  const inspect=()=>{
-    for(const line of document.querySelectorAll('.fn-detail .fn-sources > li')) {
-      const glyphs=[], walker=document.createTreeWalker(line,NodeFilter.SHOW_TEXT);
-      while(walker.nextNode()) {
-        const node=walker.currentNode, parent=node.parentElement;
-        if(parent.closest('.vh, .quote-body, [hidden]') || getComputedStyle(parent).visibility!=='visible') continue;
-        for(let i=0;i<node.length;i++) {
-          if(/\s/.test(node.data[i])) continue;
-          const range=document.createRange();range.setStart(node,i);range.setEnd(node,i+1);
-          const r=range.getBoundingClientRect();if(!r.width || !r.height) continue;
-          glyphs.push({left:r.left, y:(r.top+r.bottom)/2,
-            dot:node.data[i]==='·' && (!!parent.closest('.qualifier-separator, .meta-dot') || node.data.trim()==='·')});
-        }
-      }
-      const dots=glyphs.filter(g=>g.dot);
-      results.push({source:line.dataset.sourceId, separators:dots.length,
-        leading:dots.filter(dot=>!glyphs.some(g=>g!==dot && g.left<dot.left-.5 && Math.abs(g.y-dot.y)<3)).length});
-    }
-  };
-  document.getElementById('functions-table').fnView(view);
-  const buttons=[...document.querySelectorAll(view==='grouped'?'.fn-phone-row':'.fn-cell')];
-  for(const button of buttons) {
-    if(button.getAttribute('aria-expanded')==='true') button.click();
-    button.click();
-    if(view==='grouped') document.querySelectorAll('.fn-phone-detail button.fn-function-label').forEach(b=>b.click());
-    inspect();button.click();
-  }
-  return results;
-}"""
-
-
-def source_separator_errors(lines: list[dict]) -> list[str]:
-    if not lines:
-        return ['no function source lines inspected']
-    return [f"{line['source']}: {line['leading']} visible separator(s) begin a source line"
-            for line in lines if line['leading']]
-
-
-def check_page_separators(browser, base_url: str) -> list[str]:
-    """All dot-bearing line kinds, including raw separators and lazy evidence, at four widths."""
-    errors = []
-    for width in (320, 390, 1000, 1440):
-        page = browser.new_page(viewport={'width': width, 'height': 1000})
-        try:
-            hydrated(page, base_url, fn_view='default')
-            page.add_style_tag(content='.offscreen, .card-row { content-visibility: visible !important; }')
-            totals = {}
-
-            def inspect():
-                layout_settled(page)
-                result = page.evaluate(PAGE_SEPARATORS_JS, SEPARATOR_LINES)
-                errors.extend(f'{width}px: {e}' for e in result['errors'])
-                for kind, counts in result['counts'].items():
-                    total = totals.setdefault(kind, {})
-                    for key, value in counts.items():
-                        total[key] = max(total.get(key, 0), value)
-
-            # Opening nested quote folds needs its toggle event to populate the body
-            # before the next pass. Funding records need their own controls below.
-            page.evaluate("""async () => {
-              const earlier=document.getElementById('developments-more');
-              if(earlier && !earlier.hidden && earlier.getAttribute('aria-expanded')==='false') earlier.click();
-              for(let pass=0;pass<4;pass++) {
-                const folds=[...document.querySelectorAll('details:not([open])')];
-                if(!folds.length) break;
-                await Promise.all(folds.map(d=>new Promise(resolve=>{d.addEventListener('toggle',resolve,{once:true});d.open=true;})));
-              }
-            }""")
-            inspect()
-            page.locator('.fund-names-toggle[aria-expanded="false"]').evaluate_all('(nodes) => nodes.forEach(n => n.click())')
-            funding = page.locator('.fund-row, .fund-name-row')
-            for index in range(funding.count()):
-                button = funding.nth(index)
-                if not button.is_visible():
-                    continue
-                button.click()
-                page.locator('.fund-detail[open]:visible details').evaluate_all('(nodes) => nodes.forEach(n => { n.open = true; })')
-                inspect()
-            if not funding.count():
-                errors.append(f'{width}px: no Funding controls inspected')
-            # The map uses the same record builders, but owns its own container width.
-            for name in ('United Kingdom', 'Norway'):
-                page.locator('#map-search').fill(name)
-                page.locator('#map-search').press('Enter')
-                inspect()
-            for view in ('grouped', 'grid'):
-                lines = page.evaluate(SOURCE_SEPARATORS_JS, view)
-                errors.extend(f'{width}px {view}: {e}' for e in source_separator_errors(lines))
-                totals.setdefault('function sources', {}).update(lines=len(lines), separators=sum(line['separators'] for line in lines))
-                # Leave one evidence panel open for the whole-page inventory, including its status.
-                page.locator('.fn-phone-row:visible, .fn-cell:visible').first.click()
-                inspect()
-            # Real source and map tips exercise the sub-line at its viewport-clamped width.
-            tips = page.locator('[data-tip-sub*=" · "]')
-            for index in range(tips.count()):
-                trigger = tips.nth(index)
-                if trigger.is_visible():
-                    trigger.dispatch_event('mouseover')
-                    inspect()
-                    page.keyboard.press('Escape')
-                    if totals.get('tooltip sub-line', {}).get('lines'):
-                        break
-            required = set(SEPARATOR_LINES)
-            if width <= 640:  # Budget and Staff are hidden in the phone table.
-                required.discard('worldwide qualifiers')
-            # Standalone quotation failures and source-list tails are separate
-            # coverage kinds even though they share the same builder.
-            required.update(('re-read tails', 'archived-copy tails'))
-            errors.extend(f'{width}px: {e}' for e in separator_coverage_errors(totals, required))
-        finally:
-            page.close()
-    return list(dict.fromkeys(errors))
-
-
-def check_status_qualifiers(browser, base_url: str, data: dict) -> list[str]:
-    """Whole qualifiers in grouped rows, grid panels and cards, including open-view resize and text-size changes."""
-    rows = function_phone_model(data)["rows"]
-    # Stable samples: both/assigned functions and the long public-sector-access label, currently not found in both rows.
-    samples = ("gb-aisi", "no-ki-norge")
-    if not all(any(row["id"] == identity and any(f["code"] == "public_access_continuity" for f in row["functions"])
-                   for row in rows) for identity in samples):
-        return ["status qualifier samples gb-aisi/no-ki-norge or their public-sector access rows missing"]
-    count = sum(len(group["codes"]) for group in function_columns(data))
-    page = browser.new_page(viewport={"width": 390, "height": 1000})
-    errors = []
-    page.on("pageerror", lambda error: errors.append("Status qualifiers JavaScript: " + str(error)))
-    hydrated(page, base_url, fn_view="default")
-    set_theme(page, "light")
-    page.evaluate("document.fonts.ready")
-
-    def measure(selector, prefix, minimum=1):
-        metrics = page.evaluate(STATUS_QUALIFIERS_JS, selector)
-        if len(metrics) < minimum:
-            errors.append(prefix + f"only {len(metrics)} of at least {minimum} qualifiers present")
-        errors.extend(prefix + error for error in status_qualifier_errors(metrics))
-
-    def settled():
-        page.evaluate("() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)))")
-
-    for width in (320, 360, 390, 430, 1000, 1440):
-        page.set_viewport_size({"width": width, "height": 1000})
-        for scale in ("100%", "110%"):
-            page.evaluate("s => document.documentElement.style.fontSize = s", scale)
-            settled()
-            prefix = f"qualifiers {width}px {scale}: "
-            page.evaluate("document.getElementById('functions-table').fnView('grouped')")
-            for identity in samples:
-                button = page.locator(f'.fn-phone li[data-institute="{identity}"] > .fn-phone-row')
-                if button.get_attribute("aria-expanded") != "true":
-                    button.click()
-                # No settling delay here: the open handler must lay out the status before the first paint.
-                measure('.fn-phone-detail', prefix + identity + ": ", count)
-            page.evaluate("document.getElementById('functions-table').fnView('grid')")
-            cell = page.locator('.fn-table tr[data-institute="gb-aisi"] td[data-code="model_testing"] > button')
-            if cell.get_attribute("aria-expanded") != "true":
-                cell.click()
-            measure('.fn-scroll .fn-detail', prefix + "cell panel: ")
-            page.evaluate("() => { for (const fold of document.querySelectorAll('.card.mini, .card.mini details')) fold.open = true; }")
-            settled()
-            measure('.card.mini', prefix + "mini cards: ")
-            page.evaluate("document.getElementById('functions-table').fnView('grouped')")
-    # Keep a row open across both directions and a font-completion event; no reopening can mask stale marks.
-    for width in (320, 1440, 360):
-        page.set_viewport_size({"width": width, "height": 1000})
-        page.evaluate("document.fonts.dispatchEvent(new Event('loadingdone'))")
-        settled()
-        measure('.fn-phone-detail', f"open row resize/font event {width}px: ", count)
-    page.evaluate("document.documentElement.style.fontSize='100%'")
-    page.close()
-    return errors
-
-
 def check_functions_phone(browser, base_url: str, data: dict, *, inject: bool = False, widths=(320, 360, 390, 430, 640)) -> list[str]:
     """Phone words, gutters, alignment, values, evidence and focus; real keyboard and touch."""
     page = browser.new_page(viewport={"width": 360, "height": 1000})
@@ -14406,14 +14114,15 @@ def check_functions_phone(browser, base_url: str, data: dict, *, inject: bool = 
                     for (const [k, item] of functions.entries()) {
                       const f = expected.functions[k]; if (!f) continue;
                       const label = item.querySelector(':scope > .fn-function-label');
+                      const name = label?.querySelector(':scope > .fn-name');
                       const marked = ['activity', 'mandate', 'both'].includes(f.value), labelKey = key + '/' + f.code;
-                      need(label && label.textContent === f.label && (label.tagName === 'BUTTON') === marked, labelKey + ': function label/control differs');
-                      const status = item.querySelector(':scope > .fn-function-status'), summary = item.querySelector(':scope > .fn-function-summary');
-                      need(status && status.textContent === ' · ' + (f.value === 'activity' ? 'active, without an assignment' : names[f.value].toLowerCase()), labelKey + ': function status word differs');
+                      const statusWord = f.value === 'activity' ? 'active, without an assignment' : names[f.value].toLowerCase();
+                      need(label && name && label.textContent === f.label + ' ' + statusWord && (label.tagName === 'BUTTON') === marked, labelKey + ': function label/control differs');
+                      const status = name?.querySelector(':scope > .fn-function-status'), summary = item.querySelector(':scope > .fn-function-summary');
+                      need(status && status.textContent === statusWord, labelKey + ': function status word differs');
                       need(summary && summary.textContent === data.dataset.vocabularies.function[f.code].summary, labelKey + ': function summary differs');
-                      need(label && label.nextElementSibling === status && status?.nextElementSibling === summary &&
-                           !label.querySelector('.fn-function-status, .fn-function-summary'), labelKey + ': function status/summary must follow the label outside its control');
-                      need(!marked || (status?.id && label?.getAttribute('aria-describedby') === status.id), labelKey + ': function button must describe its status');
+                      need(label && status && label.nextElementSibling === summary && !label.querySelector('.fn-function-summary'), labelKey + ': function status must be inside the name and summary must follow the label outside its control');
+                      need(!marked || (status && !status.id && !label.hasAttribute('aria-describedby')), labelKey + ': function button must include its status');
                       pip(label?.querySelector('.fn-pip'), f.value, labelKey, true);
                       if (!marked || !label) continue;
                       need(label.getAttribute('aria-expanded') === 'false' && label.getAttribute('type') === 'button', labelKey + ': unopened function control differs');
@@ -14751,9 +14460,6 @@ def check_functions_layout(browser, base_url: str, *, fixture: dict | None = Non
         for row in measures:
             if row['left'] < -.5 or row['right'] > 360.5 or not row['contained'] or not row['linksContained']:
                 errors.append(f"360px at {scale} text: {row['name']} group row overflows ({row})")
-        errors.extend(f'360px at {scale} text: {e}' for e in page.evaluate(PAGE_SEPARATORS_JS, {
-            'group navigation': SEPARATOR_LINES['group navigation'],
-        })['errors'] if e.startswith('group navigation:'))
     page.close()
     return errors
 
@@ -14935,8 +14641,8 @@ SELECTION_FOCUS_JS = """n => {
     if(style.outlineStyle!=='solid' || parseFloat(style.outlineWidth)<strong || rgb(colour)[3]===0)
       errors.push('keyboard focus lacks a solid strong-width ring');
     if(target.matches('button.fn-function-label')) {
-      const r=target.getBoundingClientRect(), status=target.nextElementSibling.getBoundingClientRect();
-      if(r.left+parseFloat(style.width)<status.right-1 || r.top+parseFloat(style.height)<status.bottom-1)
+      const r=target.getBoundingClientRect(), status=target.querySelector('.fn-name > .fn-function-status')?.getBoundingClientRect();
+      if(!status || r.left+parseFloat(style.width)<status.right-1 || r.top+parseFloat(style.height)<status.bottom-1)
         errors.push('function focus ring excludes its status');
     }
   } else {
@@ -15530,8 +15236,6 @@ def browser_jobs(dist: Path, data: dict, screenshots: Path | None) -> list[tuple
         ("interactions", check_functions_layout, ()),
         ("interactions", check_function_group_tabs, ()),
         ("interactions", check_functions_phone, (data,)),
-        ("interactions", check_status_qualifiers, (data,)),
-        ("interactions", check_page_separators, ()),
         ("interactions", check_functions_sticky, ()),
         ("interactions", check_functions_zero_carrier, (data,)),
         ("interactions", check_functions_tint, ()),

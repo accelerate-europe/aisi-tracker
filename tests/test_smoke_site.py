@@ -22,8 +22,8 @@ PAGE = """<!doctype html><html><head>
 <script src="https://example.invalid/external.js"></script>
 <link rel="stylesheet" href="https://example.invalid/external.css">
 <link rel="alternate" href="not-an-asset.xml">
-</head><body><p id="updated">Updated today ·
-<a class="meta-link" href="#changes">v2.3.4</a></p></body></html>"""
+</head><body><p id="updated"><span class="meta-item">Updated today</span><span class="sep-gap"> </span>
+<span class="meta-item"><a class="meta-link" href="#changes">v2.3.4</a></span></p></body></html>"""
 NOT_FOUND = """<!doctype html><html><head>
 <title>Page not found | AI Security Institutes tracker</title>
 </head><body><h1>Page not found</h1></body></html>"""

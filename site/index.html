@@ -29,7 +29,7 @@
 /* Design principles
  * View switch: alternative presentations of the same content use two visible, dot-separated text buttons in muted meta type, following the section sub-navigation with an accent marker on the current item, no bold or current text underline, and hover/focus feedback; the switch sits on its own line above the content, aligned to its visible right edge at every width; a named group holds exactly one aria-pressed button, activation keeps focus on that button even when a click does not move focus, and activating the current item leaves the view unchanged.
  * Functions views (owner, 18 Nov 2026, "grouped default, grid one click away"): at every width the section opens on the grouped view, one row per institute with a strip of marks per group; a row expands to list every function with its status and, in muted meta, its short reader's sentence. The coding rule stays on hover in the grid and in How this is coded. The caption-sized view switch above the table reads "By group · All 18 functions", with the count from the vocabulary and the current view marked; the view is the section's state, not the width's, and a link to a target inside the hidden view brings that view. On wider screens the grouped view fills the content column as the grid does: the first column takes its longest name, so no name wraps where the column has room, and the groups share the rest (hub, 18 Nov 2026). As in the grid, a group line runs where each group starts, through the head, the band rows and every row; each label and strip sits left-aligned just after it with the same padding, so a label wraps inside its own column, and the padding reserves a fixed least gap between labels. An expanded row's ground interrupts the lines; the selection bar and the focus ring paint above them. On phones the head, in its px caption size, prints "&" for "and", keeps the first part together and breaks after it, so the labels take two lines alike down to 320; at 360 px and below the head is 1px smaller and the gap and marks a little tighter, as the country names leave no slack (owner, 18 Nov 2026). Without the page script the grid shows and the switch is hidden, as the rows cannot open (check_page check_functions_views, check_functions_group_lines).
- * Separator dots: no line on the page starts with a separator dot. Dot-separated items use separated(), or its saved markup, binding the dot to the preceding item; hideLineEndDots hides it when the following item wraps and keeps it visible between items on the same line. At 400px and narrower the section links under the navigation show no dots, so the row keeps to one line; their spacing separates them. Whole trailing qualifiers (function status, source caveat, archived copy and Quote label) use trailingQualifier(): they keep their following phrase whole and suppress the dot when that phrase starts a new line. Both use the shared layout pass after opening, resizing and font changes. Function statuses use the name's baseline rhythm outside its button; opened evidence keeps its full measure (check_page check_page_separators, check_status_qualifiers).
+ * Separator dots: no line on the page starts or ends with a separator dot, and none between two items on one line is ever hidden. Dot-separated items use separated(), or its saved markup; a trailing qualifier (source caveat, archived copy, Quote label, function status) follows a sepGap(). The dot is drawn by CSS before each later item, in the room its gap makes, and the line's block clips its start edge just beyond a focus ring, so a dot that lands at a line start is never seen; no script measures lines. At 400px and narrower the section links under the navigation show no dots, so the row keeps to one line; their spacing separates them. A function's status reads in its name's line inside the button, so it wraps to the name's start and the selection spans both.
  * Column-head labels: in every table's head, no two labels on one line sit closer than HEAD_LABEL_GAP (6 px) and none overlaps, at phone and desktop widths, at 110% text and in both themes; the grid's leaning function heads are held apart by their own flag test (check_page check_head_labels, check_functions_tint).
  * Functions table: institute rows in established and not-yet-established blocks, function columns in vocabulary groups, equal widths and rotated short heads. The page prints each group's label from one constant per group (Testing and science, Rules and standards, Informing government, Ecosystem and adoption; owner, 18 Nov 2026), so a word can be changed in one place; the data keeps the recorded group names (Rules, Ecosystem). Active and both use a dot, assigned a ring; not found is blank, a search result rather than absence. The jurisdiction column stays visible during sideways scrolling. Hover and focus tint the row and one continuous column through the block bands, with a slanted band behind its head. Columns are evenly spaced with no gutter between groups; a slightly stronger vertical line marks where a group starts, quieter than the selection bar in both themes, and row lines and the row and column tint run through unbroken; a group label longer than its own tracks takes a second line (owner, 18 Nov 2026). Each group has a leaning boundary and an underline at its label, meeting the upright body rules at the head rule; the shared head height follows the head type, leaving at least --sp-1 above every head tip. No upright rule crosses the head zone, and labels paint above the hover flag and boundaries. Quotes and sources open on demand below the selected institute (check_page check_functions_table, check_functions_detail, check_functions_layout, check_functions_tint, check_function_group_tabs).
  * Selection: every open function cell, grouped Functions or Funding row, function within a card, and selected search or palette row has a start-edge bar at least --rule-strong wide in --focus, the strong accent ink, at least 3:1 against its adjacent ground. No selected state draws a full outline. Selection adds --highlight-fill; its open panel shares that ground and meets its row without a gap or dividing outline. Keyboard focus keeps a separate visible ring; a function's ring includes its status, and search/palette focus stays in the input (check_page check_selection_boxes).
@@ -39,7 +39,7 @@
  * Type: title, label, body, meta, figure, plus fn-group for functions group labels on narrow phones; label, body and meta fixed up to 1200px and growing to their wide-screen sizes at 1440px, so tables and cards fit at 1100px and wider with default settings; the functions table also fits from 1080px. Figure and title grow from phone width; shared size, weight, family and role-specific line height. The headline is the figure role with only its numbers at figure weight, its words at body weight.
  * Width system: --page-width is 80rem; --content-width is the page width minus --section-label and --section-gap; --text-width is 49rem for explicit running-text paragraphs, narrative list items, claims, quotations and source-entry text inside their shells. Every ordinary section body is left-aligned and capped at the content width, even when the label stacks below 1280px. Tables have that same maximum, with intrinsic overflow confined to their scroller. Both Functions views, its caption and the Funding charts, grouped lists, bands and their rules, foot rows, fold and panel shells and card grids share the content edge. Section headings are static above the body below 1280px and sticky beside it from there. The first section uses the page width; named local geometry covers the map split/stack and region list, card/table/chart tracks, palette, tooltip, panel padding and quotation indentation (check_page check_section_extents, check_content_grid).
  * Secondary tone: --muted is for source apparatus (citations, sources, re-read lines, translation markers and source dates), method notes and field labels. Facts, body roles and qualifiers needed to read values use --ink; type sizes do not decide their colour. Below each Funding chart, muted Not compared and Not published lines distinguish other published amounts in the records from missing figures (owner, 19 Nov 2026; check_page check_secondary_tone).
- * Function detail: a grid cell is a mark, so its sticky head keeps the full function label in label type and ink below the state and institute. The body starts with a muted status sentence naming the institute's short form: "Assigned to UK AISI, and active", "Assigned to KI Norge", "KI Norge is active, without an assignment" (owner, 18 Nov 2026). Claims directly beneath a named function in the grouped view omit the repeated function heading and status. The whole opened block, including basis labels, quotes and anchors, starts at or after the function name's text edge at every width. The row keeps any extra status information, including "without an assignment", and its selection bar spans the name and status, and its focus ring encloses both, though the status stays outside the button. The inline region takes its accessible name from that button. In both views, mixed claims keep the block labels Assignment, then Activity. Each claim reads: its sentence, without a citation number, then its source line in the running form (Sources), ending after " · " with "Quote" and the fold chevron in the source line's size and muted ink; the quote opens beneath, indented. Cards and full records keep sentence then Quote, with their sources in the counted Sources. All quote folds follow Claims for their accessible name and translation line. The grid panel stays at its scroll box's left edge and takes its clientWidth in pixels (check_page check_functions_detail, check_functions_phone, check_functions_views).
+ * Function detail: a grid cell is a mark, so its sticky head keeps the full function label in label type and ink below the state and institute. The body starts with a muted status sentence naming the institute's short form: "Assigned to UK AISI, and active", "Assigned to KI Norge", "KI Norge is active, without an assignment" (owner, 18 Nov 2026). Claims directly beneath a named function in the grouped view omit the repeated function heading and status. The whole opened block, including basis labels, quotes and anchors, starts at or after the function name's text edge at every width. The row keeps any extra status information, including "without an assignment", and the status reads in the name's line inside the button, so its selection bar and focus ring enclose both. The inline region takes its accessible name from that button. In both views, mixed claims keep the block labels Assignment, then Activity. Each claim reads: its sentence, without a citation number, then its source line in the running form (Sources), ending after " · " with "Quote" and the fold chevron in the source line's size and muted ink; the quote opens beneath, indented. Cards and full records keep sentence then Quote, with their sources in the counted Sources. All quote folds follow Claims for their accessible name and translation line. The grid panel stays at its scroll box's left edge and takes its clientWidth in pixels (check_page check_functions_detail, check_functions_phone, check_functions_views).
  * Sticky reading heads: at every width, grouped Functions and every table head stay directly below the real navigation and group row bottom, including sideways-scrolling tables. Overflowing tables move their real head within the table, preserving column alignment and semantics. At every width, a long detail's compact identity and sole close × stay within that detail at the same top, replacing a table head while reading it. Closed mini cards keep the country and first finding sentence; open ones show the country in their sticky summary and the complete finding once beneath it. Funding's native fallback keeps "Funding and staff records" when closed; its open sticky summary shows the identity, with the records beneath it. Both folds have a separate close × alongside the summary; the open summary spans the row to paint behind that close. Full States cards keep their sticky title. Close has at least a 44px square hit area and returns focus to the visible opener. Focus and anchor clearance includes the active head for grouped rows, functions, claims and their links; print keeps heads static (check_page check_functions_views, check_functions_phone, check_wide_layout, check_card_heads).
  * Panel identity: panels and records opened from a table or the map name the state first, then the institute in muted type, using its base name without a repeated state suffix; it is what stays visible when the row has scrolled away. Cards under States and Compare keep the state's name. In panels the state never truncates; the institute wraps, onto its own line on phones. Wrapped heads keep normal label line spacing; alignment with a Close control never enlarges the spacing between lines. The moving head contains every identity and function line and paints an opaque copy of its panel ground across the full panel width, including any tint over the page ground. The panel name, title and contextual Close name use the same identity (check_page check_card_heads).
  * Reading-head spacing: grouped, grid, world and Funding heads, card, panel, mini-card and Funding-detail headers, and record titles all keep --reading-pad inside their moving head. The first text line has the same inset below its sticking edge as it has below its head's top in flow, within 1px. That edge is the navigation's bottom rule, or the wide Map record's inner scrollport edge when lower (check_page reading_head_errors, check_card_heads).
@@ -258,9 +258,13 @@ li:has(> .reread-tail), .inline-links:has(> .reread-tail) { position: relative; 
 .reread-tail > .vh { left: 0; top: 0; white-space: normal; } /* the screen-reader sentence sits at the item's start, so its one clipped line never runs past the measure */ /* a line that is only its title (its publisher in the title, no date) keeps the hit height */
 .archive-copy { white-space: nowrap; } /* principle: Archived copies */
 .trailing-qualifier { display: inline-block; white-space: nowrap; overflow-wrap: normal; }
-.trailing-qualifier.own-line { display: block; }
-.trailing-qualifier.own-line .qualifier-separator { display: none; }
-.trailing-qualifier:not(.fn-function-status) .qualifier-separator { white-space: pre; } /* the space before the dot survives at the start of its inline block; a function's status takes its room from the row's gap */
+/* Separator dots (principle): each item after the first draws its dot a fixed reach before itself; the gap before it
+   makes the room. The line's block clips its start edge just beyond a focus ring, so a dot that lands at a line start
+   is never seen and one between items on a line always is. */
+:root { --ring-reach: calc(var(--rule-strong) + var(--sp-1)); --sep-reach: calc(var(--ring-reach) + .15em); }
+.sep-gap { word-spacing: calc(2 * var(--sep-reach) - .25em); } /* the room is the space itself: it hangs at a line end and collapses at a line start, so it never pushes an item in */
+.sep-gap + :is(.meta-item, .trailing-qualifier)::before, .sep-gap + .quote-inline > summary > .trailing-qualifier::before { content: "·" / ""; display: inline-block; width: 1em; margin-inline: -.5em; text-align: center; position: relative; inset-inline-start: calc(-1 * var(--sep-reach)); color: var(--muted); }
+:not(summary, .inline-links, .partners):has(> .meta-item, > .trailing-qualifier, > .quote-inline), :has(> :is(.inline-links, .partners) > :is(.meta-item, .trailing-qualifier)) { clip-path: inset(-100vh -100vw -100vh calc(-1 * var(--ring-reach))); } /* an inline parent would clip to its first line, so its block clips */
 .status-phrase { white-space: nowrap; }
 a.archive { color: var(--muted); text-decoration-color: currentColor; }
 a.archive:is(:hover, :focus-visible) { color: var(--ink); }
@@ -330,9 +334,9 @@ a.ico::before { position: static; transform: none; min-height: 0; }
 .group-nav.stuck { box-shadow: inset 0 calc(-1 * var(--rule)) 0 var(--line), var(--row-cover); } /* a rule inside its box, so sticking moves no layout */
 .group-nav + section { margin-top: calc(var(--sp-2) - var(--gap-section)); } /* the gap on the section, not the row: a sticky row's margin would carry it past its group's end */
 .group-label { color: var(--ink); padding-right: var(--sp-4); border-right: var(--rule) solid var(--line); }
-.group-links, .view-switch { display: inline-flex; flex-wrap: wrap; align-items: first baseline; gap: 0 var(--sp-2); }
-.group-links .meta-dot, .view-switch .meta-dot { margin-left: var(--sp-2); }
-@media (width <= 400px) { .group-nav, .group-links { column-gap: var(--sp-3); } .group-links .meta-dot { display: none; } }
+.group-links, .view-switch { display: inline-flex; flex-wrap: wrap; align-items: first baseline; gap: 0 calc(2 * var(--sep-reach)); }
+:is(.group-links, .view-switch) > .sep-gap { display: none; } /* a flex row's gap makes the room */
+@media (width <= 400px) { .group-nav, .group-links { column-gap: var(--sp-3); } .group-links > .meta-item::before { content: none; } }
 .group-nav a, .view-switch button { display: inline-flex; align-items: first baseline; min-height: var(--hit); color: var(--muted); text-decoration-line: none; }
 .group-nav a:is(:hover, :focus-visible), .group-nav a.active, .view-switch button[aria-pressed="false"]:is(:hover, :focus-visible) { color: var(--ink); text-decoration-line: none; }
 .group-nav a.active::after, .view-switch button[aria-pressed="true"]::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: var(--rule-strong); background: var(--accent); }
@@ -609,7 +613,6 @@ main section.first { display: flex; flex-direction: column; gap: var(--sp-5); bo
 .source-after { font: var(--type-meta); color: var(--muted); min-height: var(--hit); margin: var(--sp-3) 0 0; }
 .meta-item { display: inline-block; baseline-source: first; max-width: 100%; white-space: normal; } /* one item of a dot-separated line: an atomic box, so lines break only between items; it wraps inside only when it alone is wider than its container, aligned by its first line */
 .meta-tail { white-space: nowrap; }
-.meta-dot.line-end { visibility: hidden; } /* set by the script where a line wraps after the separator */
 .srcs { font: var(--type-meta); }
 .srcs ol { margin: var(--sp-2) 0 0; padding-left: var(--sp-5); display: flex; flex-direction: column; gap: var(--sp-2); color: var(--muted); }
 .srcs li { overflow-wrap: anywhere; }
@@ -799,7 +802,6 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
 .fn-basis { margin: 0 0 var(--sp-2); }
 /* The quote control ends the claim's source line; the quote opens beneath it, indented, as a block of its own. */
 .fn-sources details.quote-inline { display: inline; margin: 0; }
-.fn-sources details.quote-inline:has(> summary > .own-line) { display: block; } /* only the label is atomic; opened evidence keeps the full source-line measure */
 .fn-sources details.quote-inline > summary { display: inline-flex; width: auto; min-height: 0; vertical-align: baseline; } /* the Quote level's own type and ink */
 .fn-sources details.quote-inline > .quote-body { display: block; margin: var(--sp-2) 0 0 var(--sp-4); font: var(--type-body); color: var(--ink); }
 .quote-translation { display: block; font: var(--type-meta); color: var(--muted); }
@@ -838,14 +840,13 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
 .fn-phone-functions > li { --fn-pip-width: 8px; --fn-text-inset: calc(var(--sp-1) + var(--sp-2) + var(--fn-pip-width)); display: flex; flex-wrap: wrap; align-items: baseline; padding-block: var(--sp-2); font: var(--type-body); }
 .fn-phone-detail h4 { margin-top: var(--sp-4); }
 .fn-function-label { display: flex; flex: 0 1 auto; min-width: 0; align-items: baseline; gap: var(--sp-2); padding: 0 var(--sp-1); font: inherit; color: var(--ink); }
-button.fn-function-label { --fn-line-width: 100%; --fn-line-height: 100%; background: transparent; border: 0; text-align: left; cursor: pointer; }
+button.fn-function-label { background: transparent; border: 0; text-align: left; cursor: pointer; }
 button.fn-function-label::before { content: ""; position: absolute; inset-inline: 0; top: 50%; transform: translateY(-50%); height: 100%; min-height: var(--hit); } /* keep the hit area without adding a gap between text baselines */
-button.fn-function-label[aria-expanded="true"]::after { top: 0; bottom: auto; height: var(--fn-line-height); }
-button.fn-function-label:focus-visible::before { inset: 0 auto auto 0; transform: none; width: var(--fn-line-width); height: var(--fn-line-height); outline: var(--rule-strong) solid var(--focus); outline-offset: var(--rule-strong); z-index: 3; }
+button.fn-function-label[aria-expanded="true"]::after { top: 0; bottom: auto; height: 100%; }
+button.fn-function-label:focus-visible::before { inset: 0 auto auto 0; transform: none; width: 100%; height: 100%; outline: var(--rule-strong) solid var(--focus); outline-offset: var(--rule-strong); z-index: 3; }
 button.fn-function-label:focus-visible { outline: none; background: var(--highlight-fill); }
-.fn-function-status { flex: none; font: inherit; color: var(--muted); }
-.fn-function-status :is(.qualifier-text, .qualifier-separator) { font-size: var(--size-meta); } /* the outer body's line box keeps the name's baseline rhythm */
-.fn-function-status.own-line { flex-basis: 100%; padding-left: var(--fn-text-inset); }
+.fn-function-status { font: inherit; color: var(--muted); }
+.fn-function-status .qualifier-text { font-size: var(--size-meta); } /* the outer body's line box keeps the name's baseline rhythm */
 .fn-function-summary { flex-basis: 100%; margin: 0; margin-inline-end: max(0px, calc(100% - var(--text-width))); padding-left: var(--fn-text-inset); font: var(--type-meta); color: var(--muted); } /* reserve the space beyond the text measure: the flex line otherwise clamps this item to its max-width and can place it beside a short name and status */
 .fn-phone-claims { flex-basis: 100%; min-width: 0; margin-block: var(--sp-2) var(--sp-4); margin-inline-start: var(--fn-text-inset); }
 /* The grouped view is the default at every width; the full grid is one click away (owner, 18 Nov 2026). The view is the
@@ -1173,7 +1174,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   <div class="figures" id="figures"></div>
 
   <div class="group">
-  <nav class="group-nav" aria-label="Compare sections"><span class="group-label">Compare</span><span class="group-links"><span class="meta-item"><span class="meta-tail"><a href="#functions">Functions</a><span class="meta-dot group-sep" aria-hidden="true">·</span></span></span> <span class="meta-item"><span class="meta-tail"><a href="#testing">Testing</a><span class="meta-dot group-sep" aria-hidden="true">·</span></span></span> <span class="meta-item"><span class="meta-tail"><a href="#set-up">Set-up</a><span class="meta-dot group-sep" aria-hidden="true">·</span></span></span> <span class="meta-item"><span class="meta-tail"><a href="#funding">Funding</a></span></span></span></nav>
+  <nav class="group-nav" aria-label="Compare sections"><span class="group-label">Compare</span><span class="group-links"><span class="meta-item"><a href="#functions">Functions</a></span><span class="sep-gap"> </span><span class="meta-item"><a href="#testing">Testing</a></span><span class="sep-gap"> </span><span class="meta-item"><a href="#set-up">Set-up</a></span><span class="sep-gap"> </span><span class="meta-item"><a href="#funding">Funding</a></span></span></nav>
   <section class="offscreen" aria-labelledby="functions"><div class="section-label">
     <h2 id="functions">Functions</h2></div><div class="section-body">
     <div class="fn" id="functions-table"></div>
@@ -1204,7 +1205,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   </div></section>
 
   <div class="group">
-  <nav class="group-nav" aria-label="States sections"><span class="group-label">States</span><span class="group-links"><span class="meta-item"><span class="meta-tail"><a href="#europe">Europe</a><span class="meta-dot group-sep" aria-hidden="true">·</span></span></span> <span class="meta-item"><span class="meta-tail"><a href="#world">The world</a></span></span></span></nav>
+  <nav class="group-nav" aria-label="States sections"><span class="group-label">States</span><span class="group-links"><span class="meta-item"><a href="#europe">Europe</a></span><span class="sep-gap"> </span><span class="meta-item"><a href="#world">The world</a></span></span></nav>
   <section class="offscreen" aria-labelledby="europe"><div class="section-label">
     <h2 id="europe">Europe, state by state</h2></div><div class="section-body">
     <div class="entries" id="entries"></div>
@@ -1233,7 +1234,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   </div>
 
   <div class="group">
-  <nav class="group-nav" aria-label="Data sections"><span class="group-label">Data</span><span class="group-links"><span class="meta-item"><span class="meta-tail"><a href="#data">Downloads</a><span class="meta-dot group-sep" aria-hidden="true">·</span></span></span> <span class="meta-item"><span class="meta-tail"><a href="#method">Method</a></span></span></span></nav>
+  <nav class="group-nav" aria-label="Data sections"><span class="group-label">Data</span><span class="group-links"><span class="meta-item"><a href="#data">Downloads</a></span><span class="sep-gap"> </span><span class="meta-item"><a href="#method">Method</a></span></span></nav>
   <section aria-labelledby="data"><div class="section-label">
     <h2 id="data">Data</h2></div><div class="section-body">
     <h3>Download</h3>
@@ -1529,7 +1530,6 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     var r = tipAnchor(ab), w = tip.offsetWidth, h = tip.offsetHeight, vw = document.documentElement.clientWidth;
     var gap = 4, x = Math.max(16, Math.min(r.left + (r.width - w) / 2, vw - 16 - w)), y = r.bottom + gap + h > window.innerHeight ? Math.max(gap, r.top - gap - h) : r.bottom + gap;
     tip.style.left = x + "px"; tip.style.top = y + "px";
-    hideLineEndDots(tip);
   }
   // A value mark's tip anchors below the whole value (card value or table cell content), so it never covers the value's own later lines.
   function tipAnchor(ab) {
@@ -1590,115 +1590,24 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   }, { passive: true, capture: true });
   window.addEventListener("hashchange", hideTip); window.addEventListener("popstate", hideTip);
   document.addEventListener("pointerdown", function (e) { if (tipFor && !(e.target instanceof Node && (tip.contains(e.target) || tipFor.contains(e.target)))) hideTip(); }, { capture: true });
-  // A separator never ends a line: where a line wraps after one, it is hidden (it stays bound to its item, so it never starts one).
-  function blockOf(node) { for (var e = node.parentElement; e; e = e.parentElement) if (!/^inline/.test(getComputedStyle(e).display)) return e; return document.body; }
-  // Only the separator is decorative. A re-read caveat can supply its existing full spoken sentence instead.
+  // Separator dots are drawn by CSS (principle: Separator dots); a gap before each later item holds the space and its room.
+  function sepGap() { return el("span", "sep-gap", " "); }
+  // Only the dot is decorative. A re-read caveat can supply its existing full spoken sentence instead.
   function trailingQualifier(content, className, spoken) {
-    var box = el("span", className + " trailing-qualifier"), shown = spoken ? el("span") : box;
-    var separator = el("span", "qualifier-separator", " · "), text = el("span", "qualifier-text"); separator.setAttribute("aria-hidden", "true");
+    var box = el("span", className + " trailing-qualifier"), shown = spoken ? el("span") : box, text = el("span", "qualifier-text");
     text.appendChild(typeof content === "string" ? document.createTextNode(content) : content);
-    shown.appendChild(separator); shown.appendChild(text);
+    shown.appendChild(text);
     if (spoken) { shown.setAttribute("aria-hidden", "true"); box.appendChild(shown); box.appendChild(el("span", "vh", " " + spoken)); }
     return box;
   }
-  // Text rectangles can overlap on adjacent lines with tight leading. Measure the actual baselines instead.
-  function qualifierBaseline(node, measure) {
-    var probe = el("span"); probe.style.cssText = "display:inline-block;width:0;height:0;padding:0;margin:0;vertical-align:baseline";
-    var keep, suffix, original;
-    if (node.nodeType === 3) {
-      // A free marker after text can wrap onto the qualifier's line. Bind it to
-      // the final ink glyph, including when pretty wrapping or a text cap applies.
-      original = node.textContent;
-      var last = original.search(/\S\s*$/u);
-      suffix = node.splitText(last); keep = el("span"); keep.style.whiteSpace = "nowrap";
-      suffix.parentNode.insertBefore(keep, suffix); keep.textContent = String.fromCodePoint(suffix.textContent.codePointAt(0));
-      suffix.textContent = suffix.textContent.slice(keep.textContent.length); keep.appendChild(probe);
-    } else node.appendChild(probe);
-    // Both probes stay in the same layout while their baselines are compared.
-    var result = measure ? measure(probe) : probe.getBoundingClientRect().top;
-    if (keep) { node.textContent = original; keep.remove(); suffix.remove(); } else probe.remove();
-    return result;
-  }
-  function qualifierStartsLine(previous, current) { return previous != null && current - previous > 1; }
-  function layoutQualifiers(root) {
-    var items = [].filter.call(root.querySelectorAll(".trailing-qualifier"), function (item) {
-      return (!item.checkVisibility || item.checkVisibility({ contentVisibilityAuto: true })) && item.getClientRects().length;
-    });
-    // Measure the natural inline candidate again, so growing the window also restores the dot. This all runs before paint.
-    items.forEach(function (item) { item.classList.remove("own-line"); });
-    items.forEach(function (item) {
-      var walker = document.createTreeWalker(blockOf(item), NodeFilter.SHOW_TEXT), previous = null;
-      while (walker.nextNode()) {
-        var text = walker.currentNode, parent = text.parentElement;
-        if (item.contains(text)) break;
-        if (!text.textContent.trim() || parent.closest(".vh, [hidden], .cites") || !parent.getClientRects().length || getComputedStyle(parent).visibility !== "visible") continue;
-        previous = text;
-      }
-      // Source tails are processed in reading order: moving one can change where the next tail fits.
-      var starts = previous && qualifierBaseline(previous, function (before) {
-        return qualifierBaseline(item.querySelector(".qualifier-text"), function (after) {
-          return qualifierStartsLine(before.getBoundingClientRect().top, after.getBoundingClientRect().top);
-        });
-      });
-      item.classList.toggle("own-line", !!starts);
-    });
-    // The status stays outside its button; the selection bar spans both, and the focus ring encloses both.
-    items.filter(function (item) { return item.classList.contains("fn-function-status"); }).forEach(function (item) {
-      var button = item.previousElementSibling, a = button.getBoundingClientRect(), b = item.getBoundingClientRect();
-      button.style.setProperty("--fn-line-width", Math.floor(Math.min(Math.max(a.right, b.right) + parseFloat(getComputedStyle(button).paddingLeft), button.parentElement.getBoundingClientRect().right) - a.left) + "px"); // the same room after the status as before the pip, within the row
-      button.style.setProperty("--fn-line-height", Math.max(a.bottom, b.bottom) - a.top + "px");
-    });
-  }
-  function hideLineEndDots(root) {
-    var range = document.createRange(), marks = [];
-    [].forEach.call(root.querySelectorAll(".meta-dot"), function (dot) {
-      if (dot.checkVisibility && !dot.checkVisibility({ contentVisibilityAuto: true })) return; // skipped off-screen: measuring would lay it out (principle: Off-screen sections); marked when it is drawn
-      var mark = dot.getBoundingClientRect(); if (!mark.width || !mark.height) return;
-      // A flex item's computed display is block, even when authored inline-block.
-      // Walk the siblings' container, not the item's private formatting box.
-      var item = dot.closest(".meta-item");
-      var walker = document.createTreeWalker(item ? item.parentElement : blockOf(dot), NodeFilter.SHOW_TEXT), next = null;
-      walker.currentNode = dot.lastChild;
-      while (walker.nextNode()) {
-        var t = walker.currentNode, i = t.data.search(/\S/);
-        if (i < 0 || !t.parentElement.getClientRects().length || t.parentElement.closest(".vh") || getComputedStyle(t.parentElement).visibility !== "visible") continue;
-        range.setStart(t, i); range.setEnd(t, i + 1);
-        var rect = range.getBoundingClientRect(); if (!rect.width || !rect.height) continue;
-        next = rect; break;
-      }
-      // Tight leading can make adjacent lines' glyph boxes overlap slightly.
-      // No measurable neighbour is not evidence of a wrap (for example a skipped section).
-      if (next) marks.push([dot, next.top - mark.top > Math.min(mark.height, next.height) / 2]);
-    });
-    marks.forEach(function (m) { m[0].classList.toggle("line-end", m[1]); }); // read every position first, then write
-  }
-  function layoutSeparators(root) { layoutQualifiers(root); if (!PRERENDERING) hideLineEndDots(root); }
-  // Fills and openings need their own hook: a fixed map record need not resize
-  // the body or toggle a fold. Measure after insertion, visibility and focus settle.
-  var separatorFrame = 0;
-  function scheduleSeparators(opened) { // opened: a panel just shown, laid out at once so it never paints unmeasured
-    if (PRERENDERING) return;
-    if (opened && opened.nodeType === 1) layoutSeparators(opened); // as an event listener it receives the event, not a panel
-    if (separatorFrame) return;
-    separatorFrame = requestAnimationFrame(function () { separatorFrame = 0; layoutSeparators(document); });
-  }
-  // Each item is one unbreakable box (.meta-item), so a line breaks only between items; the separator stays with the item's final word.
+  // Each item is one unbreakable box (.meta-item), so a line breaks only between items.
   function separated(parts, whole) { // whole: each phrase stays whole (narrow columns)
     var fragment = document.createDocumentFragment();
-    parts = parts.filter(function (part) { return typeof part !== "string" || part.trim(); });
-    parts.forEach(function (part, index) {
-      if (index) fragment.appendChild(document.createTextNode(" "));
-      var item = el("span", "meta-item");
-      fragment.appendChild(item);
-      if (index === parts.length - 1) { var last = typeof part === "string" ? document.createTextNode(part) : part; if (whole) { var keep = el("span", "meta-tail"); keep.appendChild(last); last = keep; } item.appendChild(last); return; }
-      var tail = el("span", "meta-tail");
-      if (typeof part === "string") {
-        var text = part.trimEnd(), cut = whole ? 0 : text.search(/\S+$/);
-        item.appendChild(document.createTextNode(text.slice(0, cut)));
-        tail.textContent = text.slice(cut);
-      } else tail.appendChild(part);
-      var dot = el("span", "meta-dot", " ·"); dot.setAttribute("aria-hidden", "true"); tail.appendChild(dot); // the items are separate phrases; the dot is visual only
-      item.appendChild(tail);
+    parts.filter(function (part) { return typeof part !== "string" || part.trim(); }).forEach(function (part, index) {
+      if (index) fragment.appendChild(sepGap());
+      var item = el("span", "meta-item"), content = typeof part === "string" ? document.createTextNode(part.trim()) : part;
+      if (whole) { var keep = el("span", "meta-tail"); keep.appendChild(content); content = keep; }
+      item.appendChild(content); fragment.appendChild(item);
     });
     return fragment;
   }
@@ -1863,7 +1772,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   function archiveCopy(parent, src) {
     if (!src.archive_url) return;
     var a = el("a", "archive", "archived copy"); a.href = src.archive_url;
-    parent.appendChild(trailingQualifier(a, "archive-copy"));
+    parent.appendChild(sepGap()); parent.appendChild(trailingQualifier(a, "archive-copy"));
   }
   // Folds, part 1: a source list of more than three sits behind a counted fold, "N sources"; three or fewer stay open under "Sources".
   var SOURCES_OPEN = 3, FUND_DETAIL = "Funding and staff records";
@@ -1915,7 +1824,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     words.appendChild(dated(state.worst.last_found));
     var tail = trailingQualifier(words, "reread-tail", sentence);
     tail.dataset.tip = sentence; // the tip for the pointer
-    parent.appendChild(tail);
+    parent.appendChild(sepGap()); parent.appendChild(tail);
     return true;
   }
   // Claims: one display rule, also exported for the functions table. Text is assigned as text, never HTML.
@@ -2003,7 +1912,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   function quoteOnSourceLine(fold, li) {
     var summary = fold.querySelector("summary"), label = summary.textContent; summary.textContent = "";
     summary.appendChild(trailingQualifier(label, "quote-label"));
-    fold.classList.add("quote-inline"); li.appendChild(fold);
+    fold.classList.add("quote-inline"); li.appendChild(sepGap()); li.appendChild(fold);
   }
   function quoteDisclosure(c) {
     var fold = el("details", "quote"), summary = el("summary", null, QUOTE_LABEL), langs = quoteLanguages(c.id);
@@ -3195,7 +3104,6 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         hideTip(); // arrival names the record itself; its automatic title tip must not consume the first Escape
         var nr = name.getBoundingClientRect(); if (nr.top < barsBottom() || nr.bottom > innerHeight) name.scrollIntoView({ block: "start" });
       }
-      scheduleSeparators();
     }
     // On wide screens the record covers the list: the list is inert until it closes.
     var wide = matchMedia("(width > 1100px)");
@@ -3680,7 +3588,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
             if (part === "{institute}") context.appendChild(instShort(i));
             else if (part) context.appendChild(/^(and active|without an assignment)$/.test(part) ? el("span", "status-phrase", part) : document.createTextNode(part));
           });
-          else { context.appendChild(instShort(i)); context.appendChild(trailingQualifier(names[value].toLowerCase(), "fn-context-status")); }
+          else { context.appendChild(instShort(i)); context.appendChild(sepGap()); context.appendChild(trailingQualifier(names[value].toLowerCase(), "fn-context-status")); }
           detail.appendChild(context);
         }
         var basisRank = function (id) { return CLAIM_INDEX[id].claim.basis === "mandate" ? 0 : 1; };
@@ -3726,7 +3634,6 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
           return button;
         });
         viewSwitch.appendChild(separated(viewButtons));
-        viewSwitch.querySelectorAll('.meta-dot').forEach(function (dot) { dot.textContent = '·'; }); // the control row supplies its existing gap
         box.appendChild(viewSwitch); setView(initialView);
         buildForm(false); buildForm(true);
         var legendValues = ["activity", "mandate", "not_found"];
@@ -3791,7 +3698,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
               var claims = el("div", "fn-phone-claims"); claims.id = button.getAttribute("aria-controls");
               claims.setAttribute("role", "region"); claims.setAttribute("aria-labelledby", button.id);
               appendClaims(claims, I[button.closest("li[data-institute]").dataset.institute], button.parentNode.dataset.code, true);
-              button.parentNode.appendChild(claims); button.setAttribute("aria-expanded", "true"); scheduleSeparators(claims); return;
+              button.parentNode.appendChild(claims); button.setAttribute("aria-expanded", "true"); return;
             }
             if (button === opened) { closeDetail(true); return; }
             closeDetail(false);
@@ -3802,15 +3709,15 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
               var heading = el("h4", null, groupName(group)), functions = el("ul", "fn-phone-functions");
               columns.filter(function (code) { return vocab[code].group === group; }).forEach(function (code) {
                 var row = rows[i.id][code], li = el("li"), label = el(coded(row.value) ? "button" : "span", "fn-function-label");
-                var pip = mark(row.value, true); // decorative: the sibling status announces the value once, after the name
-                label.appendChild(pip); label.appendChild(el("span", null, vocab[code].label));
+                var pip = mark(row.value, true); // decorative: the status after the name announces the value once
+                var name = el("span", "fn-name", vocab[code].label); label.appendChild(pip); label.appendChild(name);
                 if (coded(row.value)) { li.dataset.code = code; label.type = "button"; label.id = detail.id + "-" + code + "-label"; label.setAttribute("aria-expanded", "false"); label.setAttribute("aria-controls", detail.id + "-" + code); }
-                var status = trailingQualifier(row.value === "activity" ? "active, without an assignment" : names[row.value].toLowerCase(), "fn-function-status"); status.id = detail.id + "-" + code + "-status";
-                if (coded(row.value)) label.setAttribute("aria-describedby", status.id);
-                li.appendChild(label); li.appendChild(status);
+                // The status reads in the name's line, so it wraps to the name's start and the selection spans both.
+                name.appendChild(sepGap()); name.appendChild(trailingQualifier(row.value === "activity" ? "active, without an assignment" : names[row.value].toLowerCase(), "fn-function-status"));
+                li.appendChild(label);
                 li.appendChild(el("p", "fn-function-summary running-text", vocab[code].summary)); functions.appendChild(li);
               }); detail.appendChild(heading); detail.appendChild(functions);
-            }); button.parentNode.appendChild(detail); detailRow = detail; selected(button); scheduleSeparators(detail);
+            }); button.parentNode.appendChild(detail); detailRow = detail; selected(button);
           });
           list.addEventListener("keydown", escapeDetail); box.appendChild(list);
         } else {
@@ -3871,7 +3778,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
           detail.querySelector(".fn-detail-top").appendChild(el("h4", "fn-function-head", vocab[code].label));
           appendClaims(detail, i, code);
           detailRow = el("tr", "fn-detail-row"); detailRow.id = button.getAttribute("aria-controls"); detailRow.dataset.owner = row.dataset.institute; var td = el("td"); td.colSpan = columns.length + 2;
-          td.appendChild(detail); detailRow.appendChild(td); row.after(detailRow); selected(button); externalLinks(detail); scheduleSeparators(detail);
+          td.appendChild(detail); detailRow.appendChild(td); row.after(detailRow); selected(button); externalLinks(detail);
         });
         // Escape closes the detail only while focus is in the table, and only when no nested control has handled it.
         table.addEventListener("keydown", escapeDetail);
@@ -3882,7 +3789,6 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         if (detail && scroll.clientWidth) detail.style.width = scroll.clientWidth + "px";
         var fits = scroll.clientWidth > 0 && table.getBoundingClientRect().width <= scroll.clientWidth + 1;
         scroll.classList.toggle("fits", fits); $("fn-scroll-hint").hidden = fits;
-        layoutSeparators(box);
       }
       function bindTint(table) {
         var pointer = null, focus = null;
@@ -4303,7 +4209,6 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         // Close needs this header's height immediately, before the reading-head observer's next frame.
         det.style.setProperty("--reading-head-height", det.querySelector(":scope > summary").getBoundingClientRect().height + "px");
         button.setAttribute("aria-expanded", "true"); button.focus({preventScroll: true});
-        scheduleSeparators(det);
       });
       return button;
     }
@@ -4557,7 +4462,6 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     glueCitations($("top"));
     glueCitations(document.querySelector("main"));
     arrangeCards();
-    if (!PRERENDERING) scheduleSeparators(); // the fresh content needs marks before its first paint too
     new ResizeObserver(scheduleSpy).observe(document.querySelector("main"));
     // A control reached by keyboard under the sticky rows comes out from under them (scroll-margin covers only some elements).
     document.addEventListener("focusin", function (e) {
@@ -4579,10 +4483,10 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       var settle = function () { var run = ++settling, w = window.innerWidth, n = resizes; ROOT.removeAttribute("data-settled");
         var current = function () { if (run !== settling) return false; if (resizes !== n) { settle(); return false; } return true; }; // resized meanwhile, even back again: what was drawn may belong to another width
         // Two frames lay every section out, which starts the fonts its text needs (a subset loads on first use); once they
-        // are in, two more frames draw it with them, the separators are marked, and one more frame draws them before any is skipped.
+        // are in, two more frames draw it with them before any section is skipped.
         var frames = function (k, then) { requestAnimationFrame(function () { if (current()) { if (k > 1) frames(k - 1, then); else then(); } }); };
         frames(2, function () { fontWait = true; document.fonts.ready.then(function () { fontWait = false; if (current()) frames(2, function () {
-          hideLineEndDots(document); frames(1, function () { settledWidth = w; ROOT.setAttribute("data-settled", ""); }); }); }); }); };
+          settledWidth = w; ROOT.setAttribute("data-settled", ""); }); }); }); };
       var redraw = function (force) { settleForce = settleForce || force; clearTimeout(settleTimer); settleTimer = setTimeout(function () {
         if (!settleForce && window.innerWidth === settledWidth) return;
         settleForce = false; settle(); }, 250); };
@@ -4593,7 +4497,6 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     instantTips(document.body); W.forEach(function (r) { instantTips(r.tr); });
     // External links open in a new tab; links within the page stay in place.
     externalLinks(document.body); W.forEach(function (r) { externalLinks(r.tr); });
-    scheduleSeparators();
     // Save once the download lists, fonts and the layout updates queued for the next frames are in place.
     if (!PRERENDERING && primePalette) downloads.then(primePalette, function () {}); // its Actions read the download links
     if (PRERENDERING) downloads.then(function () { return document.fonts.ready; }).then(function () { requestAnimationFrame(function () { requestAnimationFrame(prerendered); }); });
@@ -4680,21 +4583,6 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   var dataMeta = document.querySelector('meta[name="aisi-page-data"]'), MAP_WAIT = 10000;
   var PKG = fetch(dataMeta ? dataMeta.getAttribute("data-package") : "data/datapackage.json").then(json);
   if (PRERENDERED) arrangeCards(); // regroup the saved card rows for this window's width before the data arrives
-  // Mark the saved page at this window's width before the data arrives, so takeover does not make line-end separators disappear.
-  // Start early, then re-mark after fonts and layout changes; skip the build so the saved HTML has no width-specific marks.
-  if (!PRERENDERING) {
-    var refreshSeparators = function () { layoutSeparators(document); };
-    refreshSeparators(); document.fonts.ready.then(refreshSeparators);
-    // ResizeObserver runs before paint, without a further animation-frame delay. Final sizes are stable on repeat passes.
-    new ResizeObserver(refreshSeparators).observe(document.body);
-    new MutationObserver(refreshSeparators).observe(ROOT, { attributes: true, attributeFilter: ["style"] });
-    window.addEventListener("resize", refreshSeparators, { passive: true });
-    document.fonts.addEventListener("loadingdone", refreshSeparators);
-    // Run after every toggle handler, including lazy quote construction. One
-    // frame handles nested folds together and also refreshes their enclosing line.
-    document.addEventListener("toggle", scheduleSeparators, true);
-    document.addEventListener("contentvisibilityautostatechange", function (e) { if (!e.skipped) layoutSeparators(e.target); }, true); // an off-screen row or section as it is drawn
-  }
   if (PRERENDERED) { loadSavedMap(); window.addEventListener("resize", loadSavedMap); }
   // The saved map drawings live in their own files (the build moves them out of the page, which stays under the 2 MB that
   // search engines read): fill the one this window shows into its empty <svg>, which keeps the page's styles on it. A

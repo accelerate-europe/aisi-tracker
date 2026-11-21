@@ -794,8 +794,8 @@ def good_rows():
         f'<div class="row" data-track="5"><div class="k">Head</div><div class="v">Synthetic lead, Director{cite()}</div></div>'
         f'<div class="row" data-track="6"><div class="k">Reports to</div><div class="v">Test ministry{cite()}</div></div>'
         '<div class="row" data-track="7"><div class="k">Partners</div><div class="v">'
-        '<span class="partners"><span class="partner">SCA (synthetic public body)</span> '
-        f'<span class="partner">LAB (synthetic public body, planned)</span>{cite()}</span>'
+        '<span class="partners"><span class="meta-item"><span class="partner">SCA (synthetic public body)</span></span><span class="sep-gap"> </span>'
+        f'<span class="meta-item"><span class="partner">LAB (synthetic public body, planned)</span>{cite()}</span></span>'
         + fold(("SCA", HOW_SCA), ("LAB", HOW_LAB))
         + "</div></div>"
     )
@@ -814,17 +814,17 @@ def members_card(rows, html=None):
     for index, item in enumerate(partner_row.select(".partner")):
         item.string = item.get_text().replace(", works with)", ")").replace(", planned)", ")")
         if index:
-            separator = soup.new_tag("span", attrs={"class": "meta-dot", "aria-hidden": "true"})
-            separator.string = " · "
+            separator = soup.new_tag("span", attrs={"class": "sep-gap"})
+            separator.string = " "
             names.append(separator)
-        name = soup.new_tag("span", attrs={"class": "member-name"})
+        name = soup.new_tag("span", attrs={"class": "meta-item"})
         name.string = item.get_text().split(" (")[0]
         names.append(name)
         li = soup.new_tag("li")
         li.append(item.extract())
         li.append(BeautifulSoup(cite(), "html.parser"))
         items.append(li)
-    names.append(partner_row.select_one(".partners > .cites").extract())
+    names.append(partner_row.select_one(".partners .cites").extract())
     members.append(names)
     detail = soup.new_tag("details", attrs={"class": "more quiet member-details"})
     summary = soup.new_tag("summary")
@@ -873,8 +873,8 @@ def test_page_oracle_members_line_shows_three_then_a_count(rows):
         for field in ("name", "relation", "how", "what")
     ]
     names = ["SCA", "LAB", "X0", "X1", "X2", "X3", "X4", "X5"]  # cyber first, then authored order
-    line = ('<span class="member-names">' + '<span class="meta-dot" aria-hidden="true"> · </span>'.join(f'<span class="member-name">{name}</span>' for name in names[:3])
-            + '<span class="meta-dot" aria-hidden="true"> · </span><span class="more-count">and 5 more</span>' + cite() + '</span>')
+    line = ('<span class="member-names">' + '<span class="sep-gap"> </span>'.join(f'<span class="meta-item">{name}</span>' for name in names[:3])
+            + '<span class="sep-gap"> </span><span class="meta-item"><span class="more-count">and 5 more</span></span>' + cite() + '</span>')
     html.select_one(".member-names").replace_with(BeautifulSoup(line, "html.parser"))
     items = '<ul class="member-list">' + "".join(f'<li>{name} (synthetic public body){cite()}</li>' for name in names) + '</ul>'
     html.select_one(".member-list").replace_with(BeautifulSoup(items, "html.parser"))
@@ -938,7 +938,7 @@ def test_page_oracle_members_only_tail_is_on_partners(rows):
     # No cyber priority now: the authored LAB precedes SCA, on the line and in the fold.
     members = html.select_one(".members")
     line = members.select_one(".member-names")
-    first, second = line.select(".member-name")
+    first, second = line.select(".meta-item")
     first.string, second.string = second.get_text(), first.get_text()
     for ul in members.select("ul"):
         ul.insert(0, ul.select("li")[1].extract())
@@ -1064,15 +1064,15 @@ def test_page_oracle_card_line_shows_three_then_a_count(rows):
         for f in ("name", "relation", "how", "what")
     ]
     names = ["SCA", "X0", "X1", "X2", "X3", "X4", "X5", "LAB"]
-    line = "".join(
-        f'<span class="partner">{n} (synthetic public body{", planned" if n == "LAB" else ""})</span> '
+    original = str(BeautifulSoup(good_rows(), "html.parser").select_one(".partners"))
+    line = '<span class="partners">' + '<span class="sep-gap"> </span>'.join(
+        f'<span class="meta-item"><span class="partner">{n} (synthetic public body{", planned" if n == "LAB" else ""})</span></span>'
         for n in names
-    )
+    ) + cite() + '</span>'
     html = card(
         good_rows()
         .replace(
-            '<span class="partner">SCA (synthetic public body)</span> '
-            '<span class="partner">LAB (synthetic public body, planned)</span>',
+            original,
             line,
         )
         .replace(
@@ -1092,15 +1092,14 @@ def test_page_oracle_card_line_shows_three_then_a_count(rows):
         "Partners: shows" in e for e in page_errors(rows, html)
     )  # eight on the line: five too many, and no count
     kept = names[:3]
-    line = "".join(
-        f'<span class="partner">{n} (synthetic public body)</span> '
+    line = '<span class="partners">' + '<span class="sep-gap"> </span>'.join(
+        f'<span class="meta-item"><span class="partner">{n} (synthetic public body)</span></span>'
         for n in kept
-    ) + '<span class="more-count">and 5 more</span> '
+    ) + '<span class="sep-gap"> </span><span class="meta-item"><span class="more-count">and 5 more</span></span>' + cite() + '</span>'
     ok = card(
         good_rows()
         .replace(
-            '<span class="partner">SCA (synthetic public body)</span> '
-            '<span class="partner">LAB (synthetic public body, planned)</span>',
+            original,
             line,
         )
         .replace(
@@ -1148,7 +1147,7 @@ def test_page_oracle_tail_and_dash(rows):
     html = card(
         good_rows()
         .replace(
-            '<span class="partner">SCA (synthetic public body)</span> ', ""
+            '<span class="meta-item"><span class="partner">SCA (synthetic public body)</span></span><span class="sep-gap"> </span>', ""
         )
         .replace(fold(("SCA", HOW_SCA), ("LAB", HOW_LAB)), fold(("LAB", HOW_LAB)))
     )
@@ -1157,10 +1156,10 @@ def test_page_oracle_tail_and_dash(rows):
         for e in page_errors(rows, html)
     )
     html = html.replace(
-        cite() + "</span>",
-        ' <span class="partners-none">cyber agency not published</span>'
+        cite() + "</span></span>",
+        '</span><span class="sep-gap"> </span><span class="meta-item"><span class="partners-none">cyber agency not published</span>'
         + cite()
-        + "</span>",
+        + "</span></span>",
         1,
     )
     assert page_errors(rows, html) == []
