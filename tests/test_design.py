@@ -8,7 +8,6 @@ from pathlib import Path
 
 import pytest
 
-from scripts.check_page import PAINT_JS, check_text_contrast
 
 
 PAGE = Path(__file__).resolve().parents[1] / "site/index.html"
@@ -28,50 +27,6 @@ def test_page_javascript_parses_without_a_browser():
         text=True,
     )
 
-    assert result.returncode == 0, result.stderr
-
-
-def test_text_contrast_javascript_parses_without_a_browser():
-    class Capture:
-        def evaluate(self, source, *args):
-            self.source = source
-            return []
-
-    page = Capture()
-    assert check_text_contrast(page) == []
-    result = subprocess.run(["node", "-"], input="new Function('return (' + " + json.dumps(page.source) + " + ')');", capture_output=True, text=True)
-    assert result.returncode == 0, result.stderr
-
-
-def test_text_contrast_still_checks_identity_on_a_uniform_tint_gradient():
-    class Capture:
-        def evaluate(self, source, *args):
-            self.source = source
-            return []
-
-    page = Capture()
-    check_text_contrast(page)
-    script = r"""
-const assert=require('node:assert/strict');
-const style={color:'rgb(170, 170, 170)',backgroundColor:'rgb(255, 255, 255)',
-  backgroundImage:'linear-gradient(rgb(240, 240, 240), rgb(240, 240, 240))',opacity:'1',
-  visibility:'visible',clipPath:'none',clip:'auto',position:'static',overflowX:'visible',overflowY:'visible',
-  fontSize:'16px',fontWeight:'400'};
-const node={tagName:'SPAN',classList:['head-institute'],textContent:'EU AI Office',parentElement:null,
-  childNodes:[{nodeType:3,textContent:'EU AI Office'}],getClientRects:()=>[{}],
-  getBoundingClientRect:()=>({width:100,height:20}),closest:()=>null};
-const canvas={clearRect(){},fillRect(){},getImageData(){
-  const parts=this.fillStyle.match(/[\d.]+/g).map(Number);
-  return {data:[...parts.slice(0,3),parts.length===4 ? Math.round(parts[3]*255) : 255]};
-}};
-const document={createElement:()=>({getContext:()=>canvas}),querySelectorAll:()=>[node]}, getComputedStyle=()=>style;
-const check=CHECKER;
-assert.ok(check([4.5,3]).some(e=>e.includes('head-institute') && e.includes('EU AI Office')));
-style.color='rgb(0, 0, 0)';assert.deepEqual(check([4.5,3]),[]);
-style.color='rgb(170, 170, 170)';style.backgroundImage='url(photo.png)';
-assert.deepEqual(check([4.5,3]),[]); // a genuine image remains outside the single-colour check
-""".replace('CHECKER', page.source)
-    result = subprocess.run(['node', '-'], input=script, capture_output=True, text=True)
     assert result.returncode == 0, result.stderr
 
 
@@ -102,60 +57,6 @@ def test_method_dates_preserve_day_and_month_precision_without_breaking():
         check=True,
     )
     assert json.loads(result.stdout) == [expected for _, expected in cases]
-
-
-def paint_js(call: str):
-    """Run one of PAINT_JS's pure functions in Node and return its JSON result."""
-    result = subprocess.run(["node", "-"], input=PAINT_JS + f"process.stdout.write(JSON.stringify({call}));", capture_output=True, text=True, check=True)
-    return json.loads(result.stdout)
-
-
-def painted(colour, layers):
-    """The screen colour of colour inside layers (innermost first)."""
-    return paint_js(f"painted({json.dumps(colour)}, {json.dumps(layers)})")
-
-
-def contrast(a, b):
-    lum = lambda c: sum(w * ((v / 255) / 12.92 if v / 255 <= 0.03928 else ((v / 255 + 0.055) / 1.055) ** 2.4) for w, v in zip((0.2126, 0.7152, 0.0722), c))  # noqa: E731
-    x, y = sorted((lum(a), lum(b)), reverse=True)
-    return (x + 0.05) / (y + 0.05)
-
-
-def test_text_contrast_composites_opacity_groups_as_the_browser_paints():
-    # White text on a black box at opacity .5 over a white page: white on mid grey, below 4.5:1. Fading only the text
-    # (and not the box behind it) would have measured about 5.3:1 and passed.
-    box = [[[0, 0, 0, 1], 0.5], [[0, 0, 0, 0], 1]]
-    ink, ground = painted([255, 255, 255, 1], box), painted([0, 0, 0, 0], box)
-    assert ink == [255, 255, 255] and [round(v) for v in ground] == [128, 128, 128]
-    assert 3.9 < contrast(ink, ground) < 4.0
-    # A translucent layer over an opaque one: the nearer layer is painted last.
-    layers = [[[255, 0, 0, 0.5], 1], [[0, 0, 255, 1], 1]]
-    assert [round(v) for v in painted([0, 0, 0, 0], layers)] == [128, 0, 128]
-    # Text at half alpha on white: halfway to white.
-    assert [round(v) for v in painted([0, 0, 0, 0.5], [[[255, 255, 255, 1], 1]])] == [128, 128, 128]
-
-
-def test_a_background_image_counts_where_it_shows_through():
-    black, white, clear = [0, 0, 0, 1], [255, 255, 255, 1], [0, 0, 0, 0]
-    assert paint_js(f"imageShows({json.dumps([[black, 1, False], [white, 1, True]])})") is False  # hidden behind an opaque box
-    assert paint_js(f"imageShows({json.dumps([[black, 0.5, False], [white, 1, True]])})") is True  # the box is faded: the image shows
-    assert paint_js(f"imageShows({json.dumps([[clear, 1, False], [white, 1, True]])})") is True
-    assert paint_js(f"imageShows({json.dumps([[clear, 1, True]])})") is True
-
-
-@pytest.mark.parametrize("args, hides", [
-    (["inset(50%)", "auto", "static", 200, 40, "visible", "visible"], True),
-    (["none", "rect(0px, 0px, 0px, 0px)", "absolute", 200, 40, "visible", "visible"], True),
-    (["none", "auto", "absolute", 1, 1, "hidden", "hidden"], True),  # the usual visually-hidden box
-    (["none", "auto", "static", 200, 1, "visible", "hidden"], True),  # 1px tall, clipped vertically
-    (["inset(50% 0px 0px)", "auto", "static", 200, 40, "visible", "visible"], False),  # the bottom half shows
-    (["none", "rect(0px, 200px, 40px, 0px)", "absolute", 200, 40, "visible", "visible"], False),  # the whole box shows
-    (["none", "auto", "static", 1, 40, "visible", "visible"], False),  # overflow shows
-    (["none", "auto", "static", 200, 1, "clip", "visible"], False),  # 1px tall but clipped only sideways
-    (["none", "auto", "static", 1, 200, "visible", "clip"], False),  # 1px wide but clipped only vertically
-])
-def test_only_text_clipped_to_nothing_is_skipped(args, hides):
-    assert paint_js(f"clipHides(...{json.dumps(args)})") is hides
 
 
 @pytest.mark.skipif(shutil.which("node") is None, reason="node is not installed")

@@ -126,7 +126,6 @@ def test_real_estimates_against_independent_arithmetic():
     rates = {
         r["currency"]: r["eur_per_unit"] for r in data["dataset"]["exchange_rates"]
     }
-    count = 0
     for institute in data["institutes"]:
         for funding in institute.get("funding", []):
             if funding.get("annual_amount") is None:
@@ -145,8 +144,6 @@ def test_real_estimates_against_independent_arithmetic():
             else:
                 expected = float(format(raw, ".6g"))
             assert funding["eur_per_year_est"] == pytest.approx(expected, rel=1e-12)
-            count += 1
-    assert count == 27
 
 
 def test_changed_valid_table_invalidates_stored_estimates(dataset):

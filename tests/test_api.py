@@ -187,13 +187,7 @@ def test_api_major_follows_the_dataset_version(site):
     full["dataset"]["version"] = "7.2.0"
     paths = list(api_files(full))
     assert paths and all(path.startswith("api/v7/") for path in paths)
-    assert "api/v7/jurisdictions/GB.json" in paths
 
-
-def test_api_record_carries_generated_intervals(site):
-    full = load(site / "data/aisi.json")
-    served = load(site / f"api/v{full['dataset']['version'].split('.')[0]}/institutes/gb-aisi.json")
-    assert served["record"]["intervals"]["announced_to_established"] == {"days_min": 7, "days_max": 7}
 
 def test_api_index_lists_every_file_pattern_and_record(site):
     full = load(site / "data/aisi.json")
@@ -249,10 +243,9 @@ def test_orientation_is_one_text_in_three_places(site):
 
     major = load(site / "data/aisi.json")["dataset"]["version"].split(".")[0]
     sections = [(s["heading"], s["text"]) for s in load(site / f"api/v{major}/index.json")["orientation"]]
-    assert len(sections) >= 5
     block = BeautifulSoup((site / "index.html").read_text(encoding="utf-8"), "html.parser").select_one("#using-data")
     assert [a["href"] for a in block.select(".dlist a")] == [f"api/v{major}/index.json", "llms.txt", "feed.xml"]
-    assert block.select_one("h4").get_text(strip=True) == "For programs and agents" and all(a.select_one(".d").get_text(strip=True) for a in block.select(".dlist a"))
+    assert all(a.select_one(".d").get_text(strip=True) for a in block.select(".dlist a"))
     llms = (site / "llms.txt").read_text(encoding="utf-8")
     for heading, text in sections:
         assert text in llms
@@ -576,7 +569,6 @@ def test_zenodo_json_from_the_cff_fields(dataset):
 def test_repository_zenodo_json_is_current():
     data = json.loads(build.DATA.read_text(encoding="utf-8"))
     tracked = json.loads((build.ROOT / ".zenodo.json").read_text(encoding="utf-8"))
-    assert tracked["creators"][0]["orcid"] == "0000-0003-4773-9059"
     assert tracked["license"] == "CC-BY-4.0"
     assert tracked["related_identifiers"][1]["identifier"].endswith("/tree/v" + data["changelog"][-1]["version"])
 

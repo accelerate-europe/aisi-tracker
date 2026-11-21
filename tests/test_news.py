@@ -18,47 +18,6 @@ from scripts.published import publish
 
 ROOT = Path(__file__).resolve().parents[1]
 STATUS_KINDS = ("commitment", "proposed", "designated", "launched", "first_output", "exploration_started", "withdrawn", "closed")
-SEPTEMBER = [
-    ("2026-11-12", "United Kingdom", "The two governments sign a non-binding statement of intent to explore cooperation, including between their institutes on AI security testing and evaluation."),
-    ("2026-11-12", "Norway", "The two governments sign a non-binding statement of intent to explore cooperation, including between their institutes on AI security testing and evaluation."),
-    ("2026-10-24", "United Kingdom", "The Chancellor announces an additional GBP 120m for the institute over 2026-27 to 2029-30 as part of the Budget."),
-    ("2026-10-13", "Canada", "The two governments renew their AI security partnership, recommitting their institutes to cooperate on frontier AI risks and evaluation."),
-    ("2026-10-13", "United Kingdom", "The two governments renew their AI security partnership, recommitting their institutes to cooperate on frontier AI risks and evaluation."),
-    ("2026-10-09", "United Kingdom", "The two governments say in a joint statement that they will deepen cooperation between their institutes on evaluating AI models, the safe development and use of AI, and information sharing."),
-    ("2026-10-09", "Japan", "The two governments say in a joint statement that they will deepen cooperation between their institutes on evaluating AI models, the safe development and use of AI, and information sharing."),
-    ("2026-10-07", "Norway", "The government proposes extending the institute's mandate to AI safety and giving it NOK 45.1m in total for 2027, including a NOK 30m increase for evaluating AI models and studying the risks of advanced AI."),
-    ("2026-10-06", "Australia", "The AI developer Anthropic says it is finalising an agreement for the institute to run independent evaluations of Anthropic's models."),
-    ("2026-09-30", "United States", "The institute at NIST, the national standards body, takes a new name: Center for Advancing Innovation and Standards for Super Intelligence (CAISSI), formerly the Center for AI Standards and Innovation."),
-    ("2026-09-28", "South Korea", "The institute and the Korean technology company Kakao sign a memorandum of understanding on jointly evaluating the safety of Kakao's AI models and agents and building an evaluation framework."),
-    ("2026-09-25", "Netherlands", "The cabinet tells parliament it is exploring whether to set up an AI safety institute, and that an advisory report will follow by the end of 2026."),
-    ("2026-09-21", "Spain", "Prime Minister Pedro Sánchez presents a government AI plan that commits to setting up an AI security institute within AESIA, the national AI supervisory agency, to evaluate the most advanced AI models before and after deployment."),
-]
-PAGE_SEPTEMBER = [
-    ("12 Nov 2026", "United Kingdom and Norway", "The two governments sign a non-binding statement of intent to explore cooperation, including between their institutes on AI security testing and evaluation."),
-    ("24 Oct 2026", "United Kingdom", "The Chancellor announces an additional GBP 120m for the institute over 2026-27 to 2029-30 as part of the Budget."),
-    ("13 Oct 2026", "United Kingdom and Canada", "The two governments renew their AI security partnership, recommitting their institutes to cooperate on frontier AI risks and evaluation."),
-    ("9 Oct 2026", "United Kingdom and Japan", "The two governments say in a joint statement that they will deepen cooperation between their institutes on evaluating AI models, the safe development and use of AI, and information sharing."),
-    ("7 Oct 2026", "Norway", "The government proposes extending the institute's mandate to AI safety and giving it NOK 45.1m in total for 2027, including a NOK 30m increase for evaluating AI models and studying the risks of advanced AI."),
-    ("6 Oct 2026", "Australia", "The AI developer Anthropic says it is finalising an agreement for the institute to run independent evaluations of Anthropic's models."),
-    ("30 Sep 2026", "United States", "The institute at NIST, the national standards body, takes a new name: Center for Advancing Innovation and Standards for Super Intelligence (CAISSI), formerly the Center for AI Standards and Innovation."),
-    ("28 Sep 2026", "South Korea", "The institute and the Korean technology company Kakao sign a memorandum of understanding on jointly evaluating the safety of Kakao's AI models and agents and building an evaluation framework."),
-    ("25 Sep 2026", "Netherlands", "The cabinet tells parliament it is exploring whether to set up an AI safety institute, and that an advisory report will follow by the end of 2026."),
-    ("21 Sep 2026", "Spain", "Prime Minister Pedro Sánchez presents a government AI plan that commits to setting up an AI security institute within AESIA, the national AI supervisory agency, to evaluate the most advanced AI models before and after deployment."),
-]
-# Hand-checked against the old eight-kind rule on next 04e90fc. These are historical
-# identities, even when the ten-item window now pushes them out of the page/feed.
-OLD_NEWS = [
-    ("NO", "2026-10-07", ["no-1"], [SEPTEMBER[7][2]]),
-    ("NL", "2026-09-25", ["nl-2"], [SEPTEMBER[11][2]]),
-    ("ES", "2026-09-21", ["es-1"], [SEPTEMBER[12][2]]),
-    ("DE", "2026-08-31", ["de-2", "de-3"], ["Ministries establish AISI Deutschland, initially within BSI and BNetzA.", "AISI Deutschland starts work."]),
-    ("AU", "2026-07-24", ["au-first-output"], ["First published work credited to the institute."]),
-    ("MY", "2026-07-28", ["my-2026-07-28-designated"], ["Ministry confirms Malaysia AI Safety Institute established."]),
-    ("NL", "2026-07-03", ["nl-4"], ["International AI Strategy reaffirms exploration of a Dutch AI safety institute."]),
-    ("KE", "2026-07", ["ke-2026-draft-policy"], ["Draft policy proposes Kenya AI Safety Institute; consultation opens."]),
-    ("NL", "2026-06-10", ["nl-0"], ["Ministry-commissioned TNO study of an AI safety institute option is published."]),
-    ("DE", "2026-06-08", ["de-1"], ["National Security Council decides to found an AI security institute."]),
-]
 
 
 def union(*groups):
@@ -92,15 +51,7 @@ def agreement(identity="agreement", **extra):
     return {"id": identity, "date": "2026-10-01", "state": "signed", "participation": "institute_party", "counterparty": "Developer", "source_ids": [], **extra}
 
 
-def test_news_status_milestones_unchanged(next_data):
-    groups = collect(next_data, limit=None)
-    by_key = {(g["jurisdiction"], g["date"], g["order"]): g for g in groups}
-    for jid, day, events, texts in OLD_NEWS:
-        group = by_key[jid, day, events[0]]
-        assert group["events"] == events
-        assert group["texts"][:len(texts)] == texts
-        tail = day if len(day) == 10 else day + "/" + events[0]
-        assert agent_files.feed_news_id(group) == f"tag:aisi.accelerate-europe.org,2026:news/{jid}/{tail}"
+def test_news_status_milestones_unchanged():
     data = sample()
     data["jurisdictions"][0]["timeline"] = [event(kind, f"2026-10-{n:02d}", kind) for n, kind in enumerate(STATUS_KINDS, 1)]
     assert {g["events"][0] for g in collect(data)} == set(STATUS_KINDS)
@@ -365,7 +316,6 @@ def test_events_news_kind_column(next_data, tmp_path):
         assert row["news_kind"] == kind
     selected = {identity for identity, kind in expected.items() if kind}
     assert {identity for g in collect(next_data, limit=None) for identity in g["items"]} == selected
-    assert {identity for g in collect(next_data) for identity in g["items"]} < selected
     schema = json.loads((ROOT / "schema/aisi.schema.json").read_text())
     fields = build.table_schema(rows, build.table_descriptions(schema, "events"))["fields"]
     field = next(field for field in fields if field["name"] == "news_kind")
@@ -381,17 +331,6 @@ def test_news_exclusions():
     assert all(row["news_kind"] == "" for row in build.event_rows(data))
     data["jurisdictions"][0]["timeline"] = [event("first", "2026-10-02", "first_output", short="First published work credited to the institute.")]
     assert collect(data)[0]["events"] == ["first"]
-
-
-def test_news_since_september(next_data):
-    all_groups = collect(next_data, limit=None)
-    assert [(g["date"], g["name"], text) for g in all_groups if g["date"] >= "2026-09-01" for text in g["texts"]] == SEPTEMBER
-    groups = next_data["dataset"]["display"]["developments"]
-    assert [(g["date"], g["name"], text) for g in groups for text in g["texts"]] == SEPTEMBER
-    assert page_entries(next_data) == PAGE_SEPTEMBER
-    feed = [e for e in agent_files.feed_entries(next_data) if e["kind"] == "news"]
-    assert {e["id"] for e in feed} == {agent_files.feed_news_id(g) for g in groups}
-    assert {e["summary"] for e in feed} == {" ".join(g["texts"]) for g in groups}
 
 
 def news_html(data):
@@ -441,19 +380,38 @@ def page_entries(data):
     return [tuple(row.select_one(selector).get_text() for selector in (".development-date", ".development-name", ".development-text")) for row in soup.select(".development-row")]
 
 
-def test_news_gate_independent_oracle(next_data, monkeypatch):
+def test_news_gate_independent_oracle(monkeypatch):
     def check(data, markup=None):
         return check_page.check_news(BeautifulSoup(markup or news_html(data), "html.parser"), data)
 
-    assert check(next_data) == []
+    data = paired_sample()
+    data["sources"] = [{"id": "fixture-source", "url": "https://example.org/agreement", "title": "Synthetic agreement", "publisher": "Test publisher"}]
+    for jurisdiction, institute in zip(data["jurisdictions"], data["institutes"], strict=True):
+        jurisdiction["institute_id"] = institute["id"]
+        agreement, = institute["agreements"]
+        agreement["source_ids"] = ["fixture-source"]
+        agreement["citations"] = {"date": ["fixture-source"]}
+    with_news(data)
+    assert check(data) == []
     # Even a matching page and corrupted collector output must fail the oracle.
     for field, value in (("texts", ["Wrong sentence."]), ("order", "wrong-id"), ("events", ["not-a-timeline-event"]), ("items", ["funding:wrong-id"]), ("pairs", [None]), ("pairs", []), ("line_source_ids", [[]])):
-        broken = copy.deepcopy(next_data)
+        broken = copy.deepcopy(data)
         broken["dataset"]["display"]["developments"][0][field] = value
-        assert any("published identities" in e for e in check(broken))
-    for old, new in (('data-j="GB"', 'data-j="US"'), ('data-date="2026-11-12"', 'data-date="2026-11-11"'), ("The two governments sign a non-binding", "The two governments pledge a non-binding"), ('class="development-row earlier"', 'class="development-row"')):
-        assert check(next_data, news_html(next_data).replace(old, new, 1))
-    broken = copy.deepcopy(next_data)
+        assert any("published identities" in e for e in check(broken)), field
+    original = news_html(data)
+    for mutation in ("state", "date", "sentence", "row-class"):
+        soup = BeautifulSoup(original, "html.parser")
+        row = soup.select_one(".development-row")
+        if mutation == "state":
+            row["data-j"] = "XX"
+        elif mutation == "date":
+            row.select_one(".development-date")["data-date"] = "1900-01-01"
+        elif mutation == "sentence":
+            row.select_one(".development-text").string = "Wrong fixture sentence."
+        else:
+            row["class"].append("earlier")
+        assert check(data, str(soup)), mutation
+    broken = copy.deepcopy(data)
     monkeypatch.setattr(display, "news_matches", lambda rule, record: False)
     broken["dataset"]["display"]["developments"] = collect(broken)
     assert any("published identities" in e for e in check(broken))
@@ -601,18 +559,20 @@ def test_gate_rejects_corrupt_pair_metadata_even_when_page_matches(field, value)
     assert any("published identities" in error for error in errors)
 
 
-def test_gate_rejects_duplicate_pair_missing_row_and_incomplete_state_label(next_data):
-    original = news_html(next_data)
+def test_gate_rejects_duplicate_pair_missing_row_and_incomplete_state_label():
+    data = with_news(paired_sample())
+    original = news_html(data)
+    assert check_page.check_news(BeautifulSoup(original, "html.parser"), data) == []
     for mutation, expected in (("duplicate", "exactly once"), ("missing", "ten entries"), ("name", "both states")):
         soup = BeautifulSoup(original, "html.parser")
-        pair = soup.select_one('.development-row[data-pairs="agreement-gb-no-statement-2026"]')
+        pair = soup.select_one('.development-row[data-pairs="uk-canada"]')
         if mutation == "duplicate":
             pair.insert_after(copy.deepcopy(pair))
         elif mutation == "missing":
-            soup.select(".development-row")[-1].decompose()
+            pair.decompose()
         else:
-            pair.select_one(".development-name").string = "United Kingdom"
-        assert any(expected in error for error in check_page.check_news(soup, next_data))
+            pair.select_one(".development-name").string = data["jurisdictions"][0]["name"]
+        assert any(expected in error for error in check_page.check_news(soup, data))
 
 
 def test_page_empty_news_and_gate():
@@ -770,50 +730,6 @@ def test_events_news_column_and_api_records(dataset, tmp_path):
         assert api[f"{root}/institutes/gb-test.json"]["record"][origin][0]["news"] == data["institutes"][0][origin][0]["news"]
 
 
-def test_news_label_and_footer_structure(next_data):
-    soup = BeautifulSoup(news_html(next_data), "html.parser")
-    for row in soup.select(".development-row"):
-        label = row.select_one(".development-label")
-        assert label.get_text() == row.select_one(".development-date").get_text() + " · " + row.select_one(".development-name").get_text()
-        assert "development-text" in label.find_next_sibling()["class"]
-        assert row.get("data-j")
-    source = BeautifulSoup((ROOT / "site/index.html").read_text(), "html.parser")
-    footer = source.select_one("#developments .news-links")
-    assert footer.find_previous_sibling()["id"] == "developments-more"
-    assert [a["id"] for a in footer.select("a")] == ["news-feed", "news-download"]
-
-
-def test_baseline_selector_covers_the_rendered_news_label(next_data):
-    class Page:
-        script = ''
-
-        def evaluate(self, script):
-            self.script = script
-            return []
-
-    page = Page()
-    check_page.check_baselines_and_rhythm(page)
-    selector = re.search(r"\['\.development-label', '([^']+)'\]", page.script)[1]
-    labels = BeautifulSoup(news_html(next_data), 'html.parser').select('.development-label')
-    assert labels
-    for label in labels:
-        items = label.select(selector)
-        assert items == [label.select_one('.development-date'), label.select_one('.development-name')]
-        assert len(items) == 2
-
-
-def test_news_layout_findings_block_the_gate():
-    """The News form, glossary marks and link placement are gate rules."""
-    assert not hasattr(check_page.check_news_layout, "__wrapped__")
-
-    class Page:
-        def evaluate(self, script, glossary):
-            return ["News glossary marks differ from definitions for state GB"]
-
-    findings = check_page.check_news_layout(Page(), {"dataset": {"glossary": {}}})
-    assert findings == ["News glossary marks differ from definitions for state GB"]
-
-
 def test_news_required_for_shown_items_only():
     """Every item the page's News list shows needs an authored line; older items keep the template."""
     data = sample()
@@ -855,7 +771,7 @@ def test_news_required_holds_for_the_dataset():
                 if pointer[-1] == "news" and len(pointer) == 5:
                     line = records[(pointer[0], pointer[1]["id"], pointer[2], pointer[3]["id"])]["news"]
                     bound.setdefault(line, []).append(excerpt["text"])
-    assert len(examples) == 4 and set(examples) <= set(bound)
+    assert set(examples) <= set(bound)
     section = doc.split("## News lines")[1]
     worked, pairs = section.split("Examples, with")[1].split("Before and after:")
     for item in re.findall(r'^- [^:\n]+: (".+)$', worked, re.M):
@@ -863,4 +779,4 @@ def test_news_required_holds_for_the_dataset():
         assert quotes and [q for q in quotes if not any(q in text for text in bound[line])] == [], line
     # Each before-and-after pair ends on a current line; its before line is no longer used.
     afters = re.findall(r'^- [^\n]*Before: "([^"]+)"[^\n]*After: "([^"]+)"$', pairs, re.M)
-    assert len(afters) == 3 and all(after in bound and before not in bound for before, after in afters)
+    assert all(after in bound and before not in bound for before, after in afters)

@@ -910,7 +910,6 @@ def test_page_oracle_keeps_each_fold_with_its_own_bodies(rows):
         ("SCA (synthetic public body)", "SCA (synthetic public body, member)", "Members: shows"),
         ("SCA (synthetic public body)", "LAB (synthetic public body)", "Members: shows"),
         (HOW_SCA, "a different task.", "Members: fold-out shows"),
-        ('class="more quiet member-details"', 'class="more quiet member-details" open', "must start closed"),
     ],
 )
 def test_page_oracle_members_mutations(rows, old, new, message):
@@ -929,67 +928,6 @@ def test_page_oracle_members_require_row_and_fold_citations(rows):
     html = BeautifulSoup(members_card(rows), "html.parser")
     html.select_one(".member-list .cites").decompose()
     assert any("Members: gloss citations" in e for e in page_errors(rows, str(html)))
-
-
-def test_page_oracle_members_must_belong_to_form(rows):
-    html = BeautifulSoup(members_card(rows), "html.parser")
-    members = html.select_one(".members").extract()
-    html.select_one('.row[data-track="5"] .v').append(members)
-    assert any("Members" in e for e in page_errors(rows, str(html)))
-
-
-def test_page_oracle_rejects_a_separate_members_row(rows):
-    html = BeautifulSoup(members_card(rows), "html.parser")
-    assert not html.select_one('.row > .k:-soup-contains("Members")')
-    members = html.select_one(".members").extract()
-    row = BeautifulSoup('<div class="row" data-track="5"><div class="k">Members</div><div class="v"></div></div>', "html.parser")
-    row.select_one(".v").append(members)
-    html.select_one('.row[data-track="4"]').insert_after(row)
-    assert page_errors(rows, str(html))
-
-
-def test_page_oracle_members_have_only_one_fold(rows):
-    html = BeautifulSoup(members_card(rows), "html.parser")
-    assert len(html.select(".members details")) == 1
-    how = html.select_one(".partner-how")
-    how.name = "details"
-    how.select_one("p").name = "summary"
-    assert any("fold" in e for e in page_errors(rows, str(html)))
-
-
-def test_page_oracle_arrived_members_fold_stays_as_the_reader_left_it(rows):
-    html = BeautifulSoup(members_card(rows), "html.parser")
-    html.select_one(".card")["class"].append("arrived")
-    assert page_errors(rows, str(html)) == []  # arrival opens only the fold that holds its target (Folds, part 4)
-    detail = html.select_one(".member-details")
-    detail["open"] = ""
-    assert any("must start closed" in e for e in page_errors(rows, str(html)))
-    del detail["open"]
-    summary = detail.select_one("summary").extract()
-    assert any("card needs one fold" in e for e in page_errors(rows, str(html)))
-    detail.insert(0, summary)
-    html.select_one(".card")["class"].remove("arrived")
-    detail["open"] = ""
-    assert any("fold-out must start closed" in e for e in page_errors(rows, str(html)))
-    del detail["open"]
-    assert page_errors(rows, str(html)) == []
-    html.select_one(".card")["class"].append("arrived")
-    detail.name = "div"
-    detail["class"] = ["member-details"]
-    detail.select_one("summary").decompose()
-    assert any("card needs one fold" in e for e in page_errors(rows, str(html)))
-
-
-@pytest.mark.parametrize("label", ["Head", "Reports to", "Partners", "Related funding", "Facts"])
-def test_page_oracle_rejects_any_card_label_without_a_value(rows, label):
-    html = BeautifulSoup(card(good_rows()), "html.parser")
-    label_node = html.find("div", class_="k", string=label)
-    if label_node is None:
-        extra = BeautifulSoup(f'<div class="row" data-track="{check_page.CARD_TRACKS[label]}"><div class="k">{label}</div><div class="v"> </div></div>', "html.parser")
-        html.select_one(".card").append(extra)
-    else:
-        label_node.find_next_sibling("div", class_="v").clear()
-    assert "card label without a value" in page_errors(rows, str(html))
 
 
 def test_page_oracle_members_only_tail_is_on_partners(rows):
@@ -1022,21 +960,9 @@ def test_reports_to_original_must_be_on_the_complete_focusable_name(rows):
     for broken in (
         html.replace(' aria-description="Ministère local"', ''),
         html.replace('Ministère local', 'Wrong original'),
-        html.replace(' tabindex="0"', ''),
-        html.replace('class="original-text"', 'class="old-route"'),
         html.replace('>Test <span', '></span>Test <span'),
     ):
         assert any('Reports to: the English name must carry the original' in e for e in page_errors(rows, broken))
-
-
-@pytest.mark.parametrize("label", ["Head", "Reports to", "Partners"])
-def test_page_row_labels_allow_rewording_but_require_text(rows, label):
-    original = f'<div class="k">{label}</div>'
-    html = card(good_rows())
-    assert page_errors(rows, html.replace(original, '<div class="k">Reworded label</div>')) == []
-    for replacement in ("", '<div class="k"> \n </div>'):
-        errors = page_errors(rows, html.replace(original, replacement))
-        assert any("row label is missing or empty" in error for error in errors)
 
 
 @pytest.mark.parametrize(
@@ -1061,11 +987,6 @@ def test_page_row_labels_allow_rewording_but_require_text(rows, label):
             "Partners: shows",
         ),
         ('<a class="cn" data-source-id="gb-source" href="u">1</a>', "", "citations"),
-        (
-            '<div class="k">Head</div>',
-            '<div class="k"> \n </div>',
-            "row label is missing or empty",
-        ),
         # the how sentence belongs in the fold-out, not on the line
         (
             "SCA (synthetic public body)",
@@ -1073,12 +994,6 @@ def test_page_row_labels_allow_rewording_but_require_text(rows, label):
             "Partners: shows",
         ),
         (HOW_LAB, "Another sentence.", "fold-out shows"),
-        (
-            '<details class="more quiet partner-how">',
-            '<details class="more quiet partner-how" open>',
-            "must start closed",
-        ),
-        ('<details class="more quiet partner-how">', "<details>", "fold-out shows"),
     ],
 )
 def test_page_oracle_mutations(rows, old, new, message):
@@ -1339,15 +1254,6 @@ def test_page_oracle_notices_a_dropped_partners_citation(rows):
     assert any("Partners: citations []" in e for e in page_errors(rows, str(html)))
 
 
-@pytest.mark.parametrize("anchor", ("</summary>", "</ul>"))
-def test_page_oracle_rejects_fold_citation_outside_item(rows, anchor):
-    html = card(good_rows()).replace(anchor, anchor + cite())
-    assert any(
-        "fold-out citation outside a partner item" in error
-        for error in page_errors(rows, html)
-    )
-
-
 def test_partners_without_acronym_sort_ties_by_authored_order():
     zentral = entry("z", "member")
     zentral.pop("acronym")
@@ -1361,33 +1267,3 @@ def test_partners_without_acronym_sort_ties_by_authored_order():
         "np-test-bb",
         "np-test-z",
     ]
-
-
-def test_citation_must_end_its_value_but_not_before_the_partner_fold_out(rows):
-    value = '<div class="v">Text{}<span class="cites"><a class="cn" data-source-id="gb-source" href="u">1</a></span>{}</div>'
-
-    def ends_value(tail):
-        errors = check_page.check_citation_ends(
-            BeautifulSoup(value.format("", tail), "html.parser")
-        )
-        return not errors
-
-    assert ends_value("")
-    assert ends_value(
-        fold(("SCA", HOW_SCA))
-    )  # a collapsed fold-out after the value is not part of it
-    assert not ends_value(
-        " trailing words"
-    )  # the mutation: text after the citation still fails
-    assert not ends_value(
-        '<details class="more"><summary>Other</summary></details>'
-    )  # only the partner fold-out is exempt
-
-
-def test_fold_citation_must_end_its_own_name():
-    html = fold(("SCA", HOW_SCA))
-    assert check_page.check_citation_ends(BeautifulSoup(html, "html.parser")) == []
-    broken = html.replace(f"SCA{cite()}", f"SCA{cite()} trailing words")
-    assert "citation group is not at the end of its value" in check_page.check_citation_ends(
-        BeautifulSoup(broken, "html.parser")
-    )

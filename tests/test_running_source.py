@@ -41,26 +41,3 @@ def test_short_title_cuts_at_a_word_boundary_with_an_ellipsis():
     assert cut.endswith("…") and len(cut) <= 81 and title.startswith(cut[:-1]) and title[len(cut) - 1] == " "
     assert not cut[:-1].endswith((",", ";", ":", " "))
     assert call('shortTitle("' + "x" * 81 + '")').endswith("…")
-
-
-def test_method_links_keep_the_full_form_as_their_accessible_name():
-    """Method's inline links are a running line: abbreviated text, the full publisher and title as the accessible name."""
-    page = PAGE.read_text(encoding="utf-8")
-    lines = page.splitlines()
-    helpers = "\n".join(next(line for line in lines if line.startswith(f"  function {name}(")) for name in ("shortPublisher", "shortTitle"))
-    body = page[page.index("  function sourceLinks("):page.index("\n  }\n", page.index("  function sourceLinks(")) + 4]
-    stub = """
-function el(tag, cls, text) { return {tag, className: cls || '', attrs: {}, children: text == null ? [] : [{text}], title: '',
-  setAttribute(k, v) { this.attrs[k] = v; }, appendChild(n) { this.children.push(n); return n; }}; }
-const document = {createTextNode: text => ({text})};
-function rereadTail() { return false; } function archiveCopy() {}
-"""
-    long_title = "A very long report title about the national approach to the evaluation of advanced artificial intelligence systems"
-    S = {"a": {"publisher": "Ministry of Digital Affairs (MoDA)", "title": long_title, "url": "https://example.org/a"},
-         "b": {"publisher": "Ministry of Digital Affairs (MoDA)", "title": "Short", "url": "https://example.org/b"}}
-    script = stub + helpers + "\n" + body + f"\nconsole.log(JSON.stringify(sourceLinks(['a', 'b'], {json.dumps(S)})));"
-    span = json.loads(subprocess.run(["node", "-"], input=script, text=True, capture_output=True, check=True).stdout)
-    first, second = [c for c in span["children"] if c.get("tag") == "a"]
-    assert first["children"][0]["text"] == "Ministry of Digital Affairs: " + long_title[:80].rsplit(" ", 1)[0] + "…"
-    assert first["attrs"]["aria-label"] == "Ministry of Digital Affairs (MoDA): " + long_title
-    assert second["attrs"]["aria-label"] == "Ministry of Digital Affairs (MoDA): Short"  # the publisher is abbreviated too

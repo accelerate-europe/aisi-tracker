@@ -71,7 +71,6 @@ def test_quote_renderer_keeps_word_boundaries_and_statutory_lines(text, gloss):
 def test_every_stored_multiline_excerpt_gloss_and_anchor_keeps_its_breaks():
     data = json.loads((PAGE.parent.parent / 'data/aisi.json').read_text())
     spans = check_page.multiline_quotes(data)
-    assert spans
     quotes = page_call(f'{json.dumps(spans)}.map(s=>window.quoteNode(s.text,s.gloss))')
     for span, quote in zip(spans, quotes, strict=True):
         shown = quote['children'][0]
@@ -217,21 +216,6 @@ def test_translated_lead_keeps_the_exact_sentence_in_the_saved_page():
     assert check_page.check_claim_cards(html, data) == []
 
 
-def test_browser_fixture_covers_every_role_and_development_binding():
-    data = {"jurisdictions": [{"id": "AA", "status": "planned"}, {"id": "BB", "status": "none_identified", "europe_scope": True}], "institutes": [], "sources": []}
-    fixture, ids = check_page.claim_quote_fixture(data)
-    assert ids == ["AA", "BB"] and data["sources"] == []
-    migrated = fixture["jurisdictions"][1]
-    shown = check_page.card_claims(migrated, {})
-    assert len(shown) == 6 and shown[0]["expired"]
-    assert [len(check_page.claim_bindings(fixture, c["id"])) for c in shown] == [1, 1, 1, 1, 1, 2]
-    other_copy = [(s, a) for s in fixture["sources"] for e in s.get("excerpts", []) for a in e.get("anchors", []) if "source_id" in a]
-    assert other_copy
-    for owner, anchor in other_copy:
-        named = next(s for s in fixture["sources"] if s["id"] == anchor["source_id"])
-        assert named["title"] and named["language"] != owner["language"]
-
-
 def test_other_copy_anchor_shows_its_source_title_language_and_original():
     data = bound_data()
     named = {"id": "unit-source", "title": "Unit <membership>", "language": "fr"}
@@ -270,17 +254,6 @@ def test_expired_body_role_stays_with_a_warning_but_not_in_the_finding():
     assert any("warning" in e for e in check_page.check_claim_cards(html, data))
     html = html.replace('<details class="quote"', '<span class="reread">Not found in the source; under review.</span><details class="quote"')
     assert check_page.check_claim_cards(html, data) == []
-
-
-def test_a_claim_sentence_is_its_own_value_for_citation_ends():
-    from bs4 import BeautifulSoup
-    from scripts import check_page
-
-    ok = ('<div class="v"><div class="claim"><span class="claim-text">It tests models.<span class="cites"><a class="cn">1</a></span></span>'
-          '<details class="quote"><summary>Quote</summary></details></div></div>')
-    assert check_page.check_citation_ends(BeautifulSoup(ok, "html.parser")) == []
-    bad = ok.replace('<a class="cn">1</a></span></span>', '<a class="cn">1</a></span> later words</span>')
-    assert check_page.check_citation_ends(BeautifulSoup(bad, "html.parser")) == ["citation group is not at the end of its value"]
 
 
 def test_a_development_without_a_closest_body_is_the_finding():

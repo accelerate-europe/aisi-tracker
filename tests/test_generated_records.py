@@ -22,11 +22,6 @@ def test_todays_data_publishes_its_authored_texts():
     notes, roles and closest notes, and their CSV columns, are the authored values; a migrated one has them generated."""
     authored = json.loads(DATA.read_text(encoding="utf-8"))
     migrated = method_checks.migrated_ids(authored)
-    assert {j["id"] for j in authored["jurisdictions"]} - migrated, "a record is left to compare"
-    # Institutes with check.log lines and fact claims: an institute's log never reaches its notes.
-    logged = {i["jurisdiction_id"] for i in authored["institutes"] if i.get("check", {}).get("log")}
-    assert {"FR", "DE", "ES"} <= logged
-    assert any(c["kind"] == "fact" for i in authored["institutes"] for c in i.get("claims", []))
     published_institutes = build.export_dataset(authored)["institutes"]
     assert [i.get("notes") for i in published_institutes] == [i.get("notes") for i in authored["institutes"]]
     published = build.export_dataset(authored)
@@ -143,20 +138,6 @@ def test_legacy_closest_body_has_no_generated_activity(lead):  # noqa: F811
     assert "active_in" not in build.export_dataset(lead)["jurisdictions"][0]["closest_body"]
 
 
-def test_real_established_summaries_keep_present_form_separate_in_every_export():
-    """The page, JSON and CSV share the corrected wording without dating the present form or host."""
-    authored = json.loads(DATA.read_text(encoding="utf-8"))
-    published = build.export_dataset(authored)
-    states = {j["id"]: j for j in published["jurisdictions"]}
-    page_states = {j["id"]: j for j in json.loads(build.page_data(published))["jurisdictions"]}
-    csv_states = {j["id"]: j for j in build.tables(published)["jurisdictions"]}
-    fixture = json.loads((DATA.parents[1] / "tests/fixtures/summary_patterns.json").read_text(encoding="utf-8"))
-    expected = {r["record"]["id"]: r["summary"] for r in fixture["records"] if r["record"]["status"] == "established"}
-    assert set(expected) == {"GB", "FR", "DE"}
-    for jid, summary in expected.items():
-        assert states[jid]["summary"] == page_states[jid]["summary"] == csv_states[jid]["summary"] == summary
-
-
 def test_real_generated_status_summaries_are_cited():
     """The Netherlands and Sweden (a status, no institute): their card shows the generated summary as its finding."""
     authored = json.loads(DATA.read_text(encoding="utf-8"))
@@ -256,12 +237,23 @@ def test_summary_stays_required_in_the_download():
 
 
 @pytest.fixture
-def undisclosed_funding():
-    authored = json.loads(DATA.read_text(encoding="utf-8"))
-    institute = next(i for i in authored["institutes"] if i["id"] == "fr-inesia")
-    funding = next(f for f in institute["funding"] if f["id"] == "funding-5900b7d819c0501a83196d3281da8527")
-    assert "description" not in funding
-    return authored, funding
+def undisclosed_funding(dataset):
+    from scripts.migrate_references import migrate
+
+    state, = dataset["jurisdictions"]
+    state.pop("summary")
+    state["related_bodies"] = []
+    institute, = dataset["institutes"]
+    funding = {"id": "test-budget", "kind": "none_disclosed", "coverage": "whole_institute",
+               "commitment": "not_applicable", "confidence": "high", "source_ids": ["gb-source"]}
+    institute["funding"] = [funding]
+    for source in dataset["sources"]:
+        for excerpt in source["excerpts"]:
+            excerpt["supports"] = [p for p in excerpt["supports"]
+                                   if not p.startswith(("/institutes/0/funding/", "/jurisdictions/0/related_bodies/"))
+                                   and p != "/jurisdictions/0/summary"]
+    authored = migrate(dataset)
+    return authored, authored["institutes"][0]["funding"][0]
 
 
 @pytest.mark.parametrize("coverage, expected", [
@@ -273,33 +265,29 @@ def test_undisclosed_funding_description_is_generated_by_coverage(undisclosed_fu
     authored, funding = undisclosed_funding
     funding["coverage"] = coverage
     published = build.export_dataset(authored)
-    institute = next(i for i in published["institutes"] if i["id"] == "fr-inesia")
-    assert next(f for f in institute["funding"] if f["id"] == funding["id"])["description"] == expected
+    institute, = published["institutes"]
+    result, = institute["funding"]
+    assert result["description"] == expected
     assert "description" not in funding  # publication never writes into the authored input
+    funding["description"] = expected
+    with pytest.raises(ValueError, match="generated in a migrated record; must not be authored"):
+        build.export_dataset(authored)
 
 
-def test_real_undisclosed_funding_migration_and_legacy_descriptions(undisclosed_funding):
-    authored, _ = undisclosed_funding
+def test_real_undisclosed_funding_migration_and_legacy_descriptions():
+    authored = json.loads(DATA.read_text(encoding="utf-8"))
     migrated = method_checks.migrated_ids(authored)
     published = build.export_dataset(authored)
     descriptions = {f["id"]: f["description"] for i in published["institutes"] for f in i.get("funding", [])}
     flagged = {f["id"] for i in published["institutes"] for f in i.get("funding", []) if f["display"].get("generated_description")}
     assert flagged == {f["id"] for i in authored["institutes"] if i["jurisdiction_id"] in migrated
                        for f in i.get("funding", []) if f["kind"] == "none_disclosed"}  # the page hides exactly these statements
-    generated = set()
-    legacy = set()
     for institute in authored["institutes"]:
         for funding in institute.get("funding", []):
             if institute["jurisdiction_id"] in migrated and funding["kind"] == "none_disclosed":
-                generated.add(institute["id"])
                 assert "description" not in funding
-                assert descriptions[funding["id"]] == "No budget published for the institute as a whole."
             else:
                 assert descriptions[funding["id"]] == funding["description"]
-                if funding["kind"] == "none_disclosed":
-                    legacy.add(institute["id"])
-    assert generated == {"fr-inesia", "de-aisi"}
-    assert legacy == {"eu-ai-office", "my-aisafe", "in-aisi"}
     assert schema_errors(authored, authored_schema(SCHEMA, strict=True)) == []
     assert located_errors(published, SCHEMA) == []
 
@@ -307,6 +295,7 @@ def test_real_undisclosed_funding_migration_and_legacy_descriptions(undisclosed_
 @pytest.mark.parametrize("description", ["Authored negative.", "No budget published for the institute as a whole."])
 def test_migrated_undisclosed_funding_refuses_an_authored_description(undisclosed_funding, description):
     authored, funding = undisclosed_funding
+    assert build.export_dataset(authored)["institutes"][0]["funding"][0]["description"]
     funding["description"] = description
     with pytest.raises(ValueError, match="generated in a migrated record; must not be authored"):
         build.export_dataset(authored)
@@ -326,9 +315,10 @@ def test_only_undisclosed_funding_can_omit_description_in_authored_schema(undisc
 
 
 def test_legacy_undisclosed_funding_still_requires_description(undisclosed_funding):
-    authored, _ = undisclosed_funding
-    institute = next(i for i in authored["institutes"] if i["id"] == "my-aisafe")
-    funding = next(f for f in institute["funding"] if f["kind"] == "none_disclosed")
+    authored, funding = undisclosed_funding
+    authored["jurisdictions"][0]["summary"] = "Synthetic institute established."
+    funding["description"] = "The source gives no separate allocation."
+    assert build.export_dataset(authored)["institutes"][0]["funding"][0]["description"] == funding["description"]
     del funding["description"]
     with pytest.raises(ValueError, match="description is required while the record authors its summary"):
         build.export_dataset(authored)
@@ -337,9 +327,10 @@ def test_legacy_undisclosed_funding_still_requires_description(undisclosed_fundi
 def test_legacy_undisclosed_funding_may_not_repeat_a_generated_line(undisclosed_funding):
     # The generated lines are what marks a description as generated (display.generated_description), so a legacy
     # record that authored one word for word would lose its source statement on the page.
-    authored, _ = undisclosed_funding
-    institute = next(i for i in authored["institutes"] if i["id"] == "my-aisafe")
-    funding = next(f for f in institute["funding"] if f["kind"] == "none_disclosed")
+    authored, funding = undisclosed_funding
+    authored["jurisdictions"][0]["summary"] = "Synthetic institute established."
+    funding["description"] = "The source gives no separate allocation."
+    assert build.export_dataset(authored)["institutes"][0]["funding"][0]["description"] == funding["description"]
     funding["description"] = "No budget published for the institute as a whole."
     with pytest.raises(ValueError, match="may not repeat a generated line"):
         build.export_dataset(authored)
@@ -348,32 +339,32 @@ def test_legacy_undisclosed_funding_may_not_repeat_a_generated_line(undisclosed_
 @pytest.mark.parametrize("bound", [False, True])
 def test_generated_funding_description_needs_no_quote_but_allows_evidence(undisclosed_funding, bound):
     authored, funding = undisclosed_funding
-    source = next(s for s in authored["sources"] if s["id"] == "fr-sgdsn-aisi")
+    source, = authored["sources"]
+    institute, = authored["institutes"]
     if bound:
         source["excerpts"].append({"text": "Synthetic non-disclosure evidence.", "supports": [
-            ["institutes", {"id": "fr-inesia"}, "funding", {"id": funding["id"]}, "description"],
+            ["institutes", {"id": institute["id"]}, "funding", {"id": funding["id"]}, "description"],
         ]})
     published = build.export_dataset(authored)
-    institute = next(i for i in published["institutes"] if i["id"] == "fr-inesia")
-    result = next(f for f in institute["funding"] if f["id"] == funding["id"])
-    assert result["description"] == "No budget published for the institute as a whole."
+    institute, = published["institutes"]
+    result, = institute["funding"]
     assert result["citations"].get("description", []) == ([source["id"]] if bound else [])
     items = method_checks.unquoted_items(authored)
-    assert not any("institutes[].funding[].description: fr-inesia" in item for _, _, item in items)
-    funding["notes"] = "An unquoted funding fact."
-    assert any("institutes[].funding[].notes: fr-inesia" in item for _, _, item in method_checks.unquoted_items(authored))
+    assert not any(f"institutes[].funding[].description: {institute['id']}" in item for _, _, item in items)
 
 
 def test_legacy_undisclosed_funding_description_still_needs_a_quote(undisclosed_funding):
-    authored, _ = undisclosed_funding
-    institute = next(i for i in authored["institutes"] if i["id"] == "my-aisafe")
-    funding = next(f for f in institute["funding"] if f["kind"] == "none_disclosed")
-    selector = ["institutes", {"id": institute["id"]}, "funding", {"id": funding["id"]}, "description"]
-    for source in authored["sources"]:
-        for excerpt in source.get("excerpts", []):
-            excerpt["supports"] = [p for p in excerpt["supports"] if p != selector]
-        source["excerpts"] = [e for e in source.get("excerpts", []) if e["supports"]]
-    assert any("institutes[].funding[].description: my-aisafe" in item for _, _, item in method_checks.unquoted_items(authored))
+    authored, funding = undisclosed_funding
+    authored["jurisdictions"][0]["summary"] = "Synthetic institute established."
+    funding["description"] = "The source gives no separate allocation."
+    institute, = authored["institutes"]
+    source, = authored["sources"]
+    excerpt = {"text": funding["description"], "supports": ["/institutes/0/funding/0/description"]}
+    source["excerpts"].append(excerpt)
+    item_name = f"institutes[].funding[].description: {institute['id']}"
+    assert not any(item_name in item for _, _, item in method_checks.unquoted_items(authored))
+    source["excerpts"].remove(excerpt)
+    assert any(item_name in item for _, _, item in method_checks.unquoted_items(authored))
 
 
 def test_migrated_closest_body_needs_gap_excerpt_and_body_id(migrated):
@@ -473,12 +464,9 @@ def test_generated_first_output_description_is_not_unquoted():
     authored = json.loads(DATA.read_text(encoding="utf-8"))
     published = build.export_dataset(authored)
     owners = {j["id"] for j in published["jurisdictions"] if any(e["event"] == "first_output" for e in j.get("timeline", []))}
-    assert {"GB", "FR"} <= owners
+    assert owners
     items = method_checks.unquoted_claims(authored)["free text with no excerpt"]
     assert not [i for i in items if i.startswith("jurisdictions[].timeline[].description: ") and i.split(": ")[1].split()[0] in owners]
-    migrated_gb = copy.deepcopy(authored)
-    next(j for j in migrated_gb["jurisdictions"] if j["id"] == "GB").pop("summary", None)  # GB may already be migrated
-    assert not [e for e in method_checks.migrated_unquoted_errors(migrated_gb) if "timeline[].description" in e]
 
 
 def test_migrated_unquoted_free_text_is_an_error(migrated):

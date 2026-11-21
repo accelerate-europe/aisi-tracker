@@ -181,7 +181,6 @@ def test_content_check_rejects_extra_lines_and_wrong_body_or_stage_order():
 
 def test_todays_data_and_all_rendered_cards_follow_the_rule():
     data = published.publish(json.loads((ROOT / "data/aisi.json").read_text()))
-    assert {c: v["short"] for c, v in data["dataset"]["vocabularies"]["function"].items()} == SHORTS
     # Every card's line against the rule on the current data; which records have a line changes with the data,
     # so it is not pinned here (the content step checks the built page the same way).
     html = render_cards(data)

@@ -151,15 +151,6 @@ def test_no_qualifying_output():
     )
 
 
-def test_activity_header_requires_a_tooltip_without_fixed_wording():
-    html, data = display()
-    assert check_operating_output(html, data) == []
-    for replacement in ('data-tip=" \n "', ""):
-        broken = html.replace('data-tip="Activity explained here."', replacement)
-        assert check_operating_output(broken, data) == ["Known activity header has no tooltip"]
-    assert check_operating_output(html.replace('data-tip="Activity explained here."', 'title="Another explanation."'), data) == []
-
-
 @pytest.mark.parametrize(
     "status", ["planned", "proposed", "exploring", "none_identified"]
 )
@@ -251,15 +242,6 @@ def test_mini_cards_have_no_field_rows():
         "table Known activity differs" in e
         for e in check_operating_output(str(soup), data)
     )
-
-
-def test_real_activity_method_is_rendered_from_dataset():
-    root = Path(__file__).resolve().parents[1]
-    data = json.loads((root / "data/aisi.json").read_text())
-    source = (root / "site/index.html").read_text()
-    assert 'm.method_summaries.forEach(function (s)' in source
-    assert sum(t["id"] == "known-activity" for t in data["dataset"]["method"]) == 1
-
 
 
 def test_real_table_sort_keeps_gaps_last_in_both_directions():

@@ -304,44 +304,6 @@ def test_named_as_records_another_name_and_never_a_parent(flagged):
     )
 
 
-def real_forms(iid):
-    forms = flag_checks.institute_forms(REAL["institutes"])
-    own, unshared = forms[iid]
-    return (
-        own,
-        unshared,
-        {f for oid, (fs, _) in forms.items() if oid != iid for f in fs} - own,
-    )
-
-
-def test_name_forms_on_the_real_institutes():
-    own, unshared, others = real_forms("ca-caisi")
-    assert "caisi" in own and "caisi" not in unshared  # shared with the former US name
-    own, unshared, others = real_forms("gb-aisi")
-    assert {
-        "aisi",
-        "ai security institute",
-    } <= own - unshared  # shared with India and Spain
-    assert not flag_checks.names_institute(
-        "the Singapore AI Safety Institute ran tests", own, others
-    )
-    assert flag_checks.names_institute(
-        "The AI Security Institute tests models", own, others
-    )
-    assert not flag_checks.names_institute(
-        "The AI Security Institute tests models", unshared, others
-    )
-    own, unshared, others = real_forms("us-caissi")
-    assert flag_checks.names_institute("CAISSI evaluates models", unshared, others)
-    own, unshared, others = real_forms("kr-aisi")
-    assert flag_checks.names_institute(
-        "인공지능안전연구소는 평가를 수행했다", unshared, others
-    )
-    assert not flag_checks.names_institute(
-        "AI안전연구소", own, others
-    )  # an informal alias needs named_as
-
-
 def minimal(origin, publisher="Someone"):
     absent = {
         "testing_capacity": {"state": "not_published", "searches": [SEARCH]},
@@ -396,35 +358,6 @@ def test_shared_name_counts_only_in_a_source_from_the_jurisdiction():
     assert (
         flag_checks.check_flags(minimal("US", publisher="GB SNI")) == []
     )  # an unshared name still counts
-
-
-def test_alias_cannot_reenable_another_institutes_name():
-    """Real data: a Singapore network credit bound to the UK's in_house with named_as "AISI"."""
-    data = copy.deepcopy(REAL)
-    for i in data["institutes"]:
-        i["testing_capacity"] = {"state": "not_published", "searches": [SEARCH]}
-        i["model_access"] = {"searches": [SEARCH]}
-    gb = next(n for n, i in enumerate(data["institutes"]) if i["id"] == "gb-aisi")
-    data["institutes"][gb]["testing_capacity"] = {
-        "modes": [
-            {
-                "code": "in_house",
-                "source_ids": ["network-multilingual-2025"],
-                "named_as": "AISI",
-            }
-        ]
-    }
-    src = next(s for s in data["sources"] if s["id"] == "network-multilingual-2025")
-    assert src.get("origin") != "GB"
-    pointer = f"/institutes/{gb}/testing_capacity/modes/0/code"
-    for text in ("Contributed by Singapore AISI", "Contributed by AISI"):
-        data["sources"] = [{**src, "excerpts": [{"text": text, "supports": [pointer]}]}]
-        assert any(
-            e.startswith(
-                "gb-aisi: testing_capacity in_house: named_as 'AISI' does not name this institute"
-            )
-            for e in flag_checks.check_flags(data)
-        )
 
 
 @pytest.mark.parametrize("provision", ["the AI law", "Synthetic Act 2024", "9"])

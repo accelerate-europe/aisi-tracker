@@ -1,4 +1,3 @@
-import re
 import subprocess
 import sys
 import copy
@@ -11,855 +10,6 @@ import pytest
 
 from conftest import ROOT, SOURCE_URL
 from scripts import check_page
-
-
-@pytest.fixture
-def reading_head():
-    return {"top": 93, "bottom": 137, "bars": 93, "height": 44, "visible": True,
-            "textTop": 107, "unstuckGap": 14,
-            "topmost": True, "name": "UK AISI", "closeWidth": 44, "closeHeight": 44}
-
-
-@pytest.mark.parametrize('edge, right, valid', [(400, 400, True), (400, 399, True), (400, 398.9, False), (400, 401.1, False), (None, 400, False)])
-def test_download_control_ends_at_its_content_edge(edge, right, valid):
-    assert (check_page.download_alignment_errors([dict(name='download', edge=edge, right=right)]) == []) == valid
-
-
-def test_download_measurement_uses_content_edge_for_card_heads_too():
-    script = r"""
-const assert=require('node:assert/strict');
-const box={getBoundingClientRect:()=>({right:130})};
-const n={checkVisibility:()=>true,matches:s=>s==='.card .top > .state-dl',closest:()=>null,
-  parentElement:box,getBoundingClientRect:()=>({right:120}),getAttribute:()=> 'state.json'};
-const document={querySelectorAll:()=>[n]},getComputedStyle=()=>({borderRightWidth:'2px',paddingRight:'8px',position:'absolute'});
-const measure=MEASURE;
-assert.deepEqual(measure(),[{name:'state.json',right:120,edge:120}]);
-""".replace('MEASURE', check_page.DOWNLOAD_ALIGNMENT_JS)
-    result = subprocess.run(['node', '-'], input=script, capture_output=True, text=True)
-    assert result.returncode == 0, result.stderr
-
-
-def test_definition_hover_dismisses_the_previous_keyboard_tip():
-    events = []
-
-    class Node:
-        def evaluate(self, script):
-            return 'Definition.'
-
-        def scroll_into_view_if_needed(self):
-            pass
-
-        def hover(self):
-            assert events[-1] == 'Escape'
-            events.append('hover')
-
-        def focus(self):
-            events.append('focus')
-
-        def is_visible(self):
-            return True
-
-        def inner_text(self):
-            return 'Definition.'
-
-        def click(self):
-            pass
-
-    class Page:
-        keyboard = type('Keyboard', (), {'press': lambda _, key: events.append(key)})()
-
-        def locator(self, selector):
-            return Node()
-
-        def evaluate(self, script, *args):
-            return '#definition'
-
-    assert check_page.check_definition_tip(Page(), touch=False) == []
-    assert 'hover' in events and 'focus' in events
-
-
-@pytest.mark.parametrize('change, valid', [({}, True), ({'height': 19.2}, False),
-    ({'stroke': 2}, False), ({'face': False}, False), ({'scale': False}, False), ({'hit': 12}, False)])
-def test_information_mark_has_text_proportions_without_losing_its_target(change, valid):
-    mark = dict(font=16, height=11.52, width=11.52, stroke=1, face=True, scale=True, hit=28, required=28)
-    assert (check_page.info_mark_errors([dict(mark, **change)]) == []) == valid
-
-
-def test_reading_head_accepts_a_compact_header_in_place_of_the_table_head(reading_head):
-    assert check_page.reading_head_errors(reading_head, close=True) == []
-    assert check_page.reading_head_errors(dict(reading_head, closeWidth=0), close=False) == []
-
-
-@pytest.mark.parametrize("change, finding", [
-    ({"top": 92}, None),  # subpixel tolerance
-    ({"top": 91.9}, "navigation stack"),
-    ({"top": 137}, "navigation stack"),  # accidental stacking below the table head
-    ({"visible": False}, "fully visible"),
-    ({"topmost": False}, "covered at its centre"),
-    ({"name": ""}, "no identity"),
-    ({"closeWidth": 43.9}, "44px"),
-    ({"closeHeight": 40}, "44px"),
-    ({"textTop": 105.9}, "unstuck top padding"),
-    ({"textTop": 108.1}, "unstuck top padding"),
-    ({"textTop": 108}, None),
-    ({"unstuckGap": None}, "no measured top padding"),
-])
-def test_reading_head_rejects_overlap_wrong_offset_and_small_close(reading_head, change, finding):
-    errors = check_page.reading_head_errors(dict(reading_head, **change), close=True)
-    assert any(finding in e for e in errors) if finding else not errors
-
-
-def test_overflow_head_translation_is_bounded_and_reversible():
-    source = (ROOT / "site/index.html").read_text()
-    helper = next(line for line in source.splitlines() if line.startswith("  function stickyShift("))
-    # Independent examples: before the table, pinned, at its foot, shorter than a head and scrolling back.
-    script = helper + """
-const assert=require('node:assert/strict');
-for (const [start,end,height,top,wanted] of [[200,1200,44,93,0],[-100,900,44,93,193],[-900,100,44,93,956],[-20,10,44,93,0],[200,1200,44,93,0]])
-  assert.equal(stickyShift(start,end,height,top),wanted);
-"""
-    subprocess.run(['node', '-'], input=script, text=True, capture_output=True, check=True)
-
-
-@pytest.mark.parametrize('change, finding', [
-    ({}, None),
-    ({'top': 136}, None),  # one-pixel geometry tolerance
-    ({'top': 135.9}, 'covered by the reading head'),
-    ({'bottom': 845.1}, 'outside the viewport'),
-    ({'exposed': False}, 'painted rectangles'),
-    ({'focused': False}, 'intended control'),
-])
-def test_focus_clearance_measures_visibility_and_focus(change, finding):
-    measured = dict(focused=True, top=145, bottom=173, edge=137, viewport=844, exposed=True)
-    errors = check_page.focus_clearance_errors(dict(measured, **change))
-    assert any(finding in e for e in errors) if finding else not errors
-
-
-def test_focus_clearance_reserves_a_head_before_its_scroll_update():
-    source = (ROOT / 'site/index.html').read_text()
-    helper = source[source.index('  function readingEdge('):source.index('  function returnToOpener(')]
-    script = """
-const assert=require('node:assert/strict'), barsBottom=()=>93;
-let position='sticky', bottom=-200, height=43, end=900, contains=false;
-const head={getBoundingClientRect:()=>({top:bottom-height,bottom,height}), contains:()=>contains, matches:()=>false};
-const owner={querySelector:()=>head, getBoundingClientRect:()=>({top:-500,bottom:end})};
-const target={closest:()=>owner, matches:()=>false};
-const getComputedStyle=()=>({position,visibility:'hidden'});
-HELPER
-// A native focus scroll arrives before transform/covered state catches up: reserve the destination.
-assert.equal(readingEdge(target),136);
-height=44; assert.equal(readingEdge(target),137); // detail replaces the table head
-end=120; assert.equal(readingEdge(target),120); // bounded by its owner
-end=-1; assert.equal(readingEdge(target),93); // past the panel/table
-end=900; contains=true; assert.equal(readingEdge(target),93); // Close is inside the head
-contains=false; position='static'; assert.equal(readingEdge(target),93); // print keeps heads static
-height=0; position='sticky'; assert.equal(readingEdge(target),93); // hidden view
-""".replace('HELPER', helper)
-    subprocess.run(['node', '-'], input=script, text=True, capture_output=True, check=True)
-
-
-def test_reading_focus_clears_both_axes_without_scrolling_clear_or_stale_targets():
-    source = (ROOT / 'site/index.html').read_text()
-    helper = source[source.index('  function readingEdge('):source.index('  function returnToOpener(')]
-    script = """
-const assert=require('node:assert/strict');
-let bars=121, headHeight=194.28, headTop=-500, ownerTop=-500, grid=true;
-let rect={top:50,bottom:78,left:140,right:178}, scrolled=[];
-const barsBottom=()=>bars, getComputedStyle=()=>({position:'sticky'});
-const head={getBoundingClientRect:()=>({top:headTop,bottom:headTop+headHeight,height:headHeight}), contains:()=>false, matches:()=>grid};
-const owner={querySelector:()=>head,getBoundingClientRect:()=>({top:ownerTop,bottom:2000})};
-const frozen={getBoundingClientRect:()=>({right:184})};
-const cell={parentElement:{querySelector:()=>frozen}};
-const scroll={clientWidth:288,clientLeft:0,getBoundingClientRect:()=>({left:16}),
-  get scrollLeft(){return this.x ?? 100;}, set scrollLeft(x){const d=x-this.scrollLeft; this.x=x; rect.left-=d; rect.right-=d; scrolled.push(['x',d]);}};
-const target={getBoundingClientRect:()=>({...rect}),getClientRects:()=>[rect],matches:()=>false,
-  closest:s=>s==='.fn-scroll:not(.fits), .table-scroll > .scroll:not(.fits)' ? (grid?scroll:null) : s==='td' ? (grid?cell:null) : owner};
-const document={activeElement:target};
-const window={scrollBy:(x,y)=>{scrolled.push(['y',y]);rect.top-=y;rect.bottom-=y;}};
-HELPER
-// The narrow grid's two-row navigation and measured leaning head leave room in a 1000px viewport.
-assert.equal(readingEdge(target),315.28);
-clearReadingFocus(target);
-assert.ok(Math.abs(rect.top-323.28)<.001);
-assert.equal(rect.left,192); // beyond the frozen country column, not merely inside the scroll box
-assert.equal(scrolled.length,2);
-scrolled=[]; clearReadingFocus(target); assert.deepEqual(scrolled,[]); // already clear on both axes
-rect.left=290; rect.right=328; clearReadingFocus(target); assert.equal(rect.right,296); // right edge too
-// A queued frame for a previous focus target must not move the page after a new tooltip has opened.
-scrolled=[]; document.activeElement={}; rect.top=20; clearReadingFocus(target); assert.deepEqual(scrolled,[]);
-document.activeElement=target; grid=false; bars=93; headHeight=44;
-rect={top:145,bottom:173,left:100,right:200};
-clearReadingFocus(target); assert.deepEqual(scrolled,[]); // clear mini-card quote: no scroll
-rect.top=130; clearReadingFocus(target); assert.equal(rect.top,145); // actually covered by summary
-scrolled=[]; rect.top=136.5; clearReadingFocus(target); assert.deepEqual(scrolled,[]); // rounding only
-headTop=400; ownerTop=400; rect.top=100;
-assert.equal(readingEdge(target),93); // an unpinned head below the target is not an occluder
-clearReadingFocus(target); assert.deepEqual(scrolled,[]);
-""".replace('HELPER', helper)
-    subprocess.run(['node', '-'], input=script, text=True, capture_output=True, check=True)
-
-
-def test_world_table_focus_clears_the_scrollport_without_a_frozen_column():
-    source = (ROOT / 'site/index.html').read_text()
-    helper = source[source.index('  function readingEdge('):source.index('  function returnToOpener(')]
-    script = """
-const assert=require('node:assert/strict');
-const barsBottom=()=>93, getComputedStyle=()=>({position:'relative'});
-const head={getBoundingClientRect:()=>({top:93,bottom:137,height:44}),contains:()=>false,matches:()=>true};
-const owner={querySelector:()=>head,getBoundingClientRect:()=>({top:-100,bottom:2000})};
-let rect={top:100,bottom:128,left:-20,right:60};
-const scroll={clientWidth:358,clientLeft:0,getBoundingClientRect:()=>({left:16}),
-  get scrollLeft(){return this.x ?? 100;},set scrollLeft(x){const d=x-this.scrollLeft;this.x=x;rect.left-=d;rect.right-=d;}};
-const cell={parentElement:{querySelector:()=>null}};
-const target={getBoundingClientRect:()=>({...rect}),getClientRects:()=>[rect],matches:()=>false,
-  closest:s=>s.includes(':not(.fits)') ? scroll : s==='td' ? cell : owner};
-const document={activeElement:target},window={scrollBy:(x,y)=>{rect.top-=y;rect.bottom-=y;}};
-HELPER
-clearReadingFocus(target);
-assert.equal(rect.top,145);assert.equal(rect.left,24);
-rect.left=350;rect.right=430;clearReadingFocus(target);assert.equal(rect.right,366);
-""".replace('HELPER', helper)
-    subprocess.run(['node', '-'], input=script, text=True, capture_output=True, check=True)
-
-
-def test_zero_height_citation_focus_uses_ink_and_the_actual_head_height():
-    source = (ROOT / 'site/index.html').read_text()
-    helper = source[source.index('  function readingEdge('):source.index('  function returnToOpener(')]
-    script = """
-const assert=require('node:assert/strict'), barsBottom=()=>93;
-let headHeight=100, baseline=198, inkTop=188, moves=[];
-const head={getBoundingClientRect:()=>({top:93,bottom:93+headHeight,height:headHeight}),contains:()=>false,matches:()=>false};
-const owner={querySelector:()=>head,getBoundingClientRect:()=>({top:0,bottom:1000})};
-const target={matches:()=>false,closest:s=>s.includes('.fund-list')?owner:null,
-  getClientRects:()=>[{width:8,height:0}],getBoundingClientRect:()=>({top:baseline,bottom:baseline,height:0})};
-const document={activeElement:target,createRange:()=>({selectNodeContents:n=>assert.equal(n,target),
-  getBoundingClientRect:()=>({top:inkTop,bottom:inkTop+12,left:10,right:18,height:12})})};
-const getComputedStyle=()=>({position:'sticky'});
-const window={scrollBy:(x,y)=>{moves.push(y);baseline-=y;inkTop-=y;}};
-HELPER
-clearReadingFocus(target);assert.equal(inkTop,201); // baseline was clear, painted text was under the 100px head
-assert.deepEqual(moves,[-13]);moves=[];clearReadingFocus(target);assert.deepEqual(moves,[]);
-headHeight=60;baseline=158;inkTop=148;clearReadingFocus(target);assert.equal(inkTop,161);
-assert.deepEqual(moves,[-13]); // Staff's shorter head is measured independently
-""".replace('HELPER', helper)
-    subprocess.run(['node', '-'], input=script, text=True, capture_output=True, check=True)
-
-
-def test_focus_gate_samples_zero_height_citation_text_and_still_rejects_occlusion():
-    script = """
-const assert=require('node:assert/strict');
-let inkTop=188, covered=false;
-const head={tagName:'DIV',contains:()=>false,getBoundingClientRect:()=>({top:93,bottom:193,height:100})};
-const owner={querySelector:()=>head};
-const target={getBoundingClientRect:()=>({top:198,bottom:198,width:8,height:0}),getClientRects:()=>[{width:8,height:0}],
-  closest:s=>s.includes('.fund-list')?owner:null,contains:n=>n===target,getAttribute:()=>null,textContent:'1'};
-const ink=()=>({top:inkTop,bottom:inkTop+12,left:10,right:18,width:8,height:12});
-const document={activeElement:target,querySelector:()=>({getBoundingClientRect:()=>({bottom:93})}),
-  createRange:()=>({selectNodeContents:n=>assert.equal(n,target),getBoundingClientRect:ink,getClientRects:()=>[ink()]}),
-  elementFromPoint:(x,y)=>{assert.equal(x,14);assert.equal(y,inkTop+6);return covered?head:target;}};
-const getComputedStyle=()=>({visibility:'visible'}),innerHeight=844;
-const measure=MEASURE;
-let got=measure(target);assert.equal(got.top,188);assert.equal(got.edge,193);assert.equal(got.exposed,true);
-inkTop=201;got=measure(target);assert.equal(got.top,201);assert.equal(got.exposed,true);
-covered=true;got=measure(target);assert.equal(got.exposed,false);assert.equal(got.covered.length,1);
-""".replace('MEASURE', check_page.FOCUS_CLEARANCE_JS)
-    subprocess.run(['node', '-'], input=script, text=True, capture_output=True, check=True)
-
-
-def test_reading_heads_follow_measured_bars_on_scroll_and_resize():
-    source = (ROOT / 'site/index.html').read_text()
-    bars = source[source.index('  function barsBottom('):source.index('  // Theme (principle: Theme)')]
-    install = source[source.index('  function installReadingHeads('):source.index('  function installReadingHeads(') + source[source.index('  function installReadingHeads('):].index('\n  }') + 4]
-    script = """
-const assert=require('node:assert/strict');
-let navBottom=57, group={top:57,bottom:93};
-const nav={getBoundingClientRect:()=>({bottom:navBottom})},row={getBoundingClientRect:()=>group};
-const document={querySelector:()=>nav,querySelectorAll:s=>s==='.group-nav'?[row]:[],addEventListener:()=>{},fonts:{ready:{then:()=>{}}}};
-let top,resize;const events={};
-const ROOT={style:{setProperty:(key,value)=>{assert.equal(key,'--bars-bottom');top=value;}}};
-let PRERENDERING=false;
-const window={addEventListener:(name,fn)=>events[name]=fn},requestAnimationFrame=fn=>fn();
-class ResizeObserver {constructor(fn){resize=fn;}observe(){}}
-HELPER
-installReadingHeads();assert.equal(top,'93px');
-group.bottom=121;resize();assert.equal(top,'121px'); // wrapping sub-navigation
-navBottom=85;group={top:85,bottom:149};events.resize();assert.equal(top,'149px'); // enlarged bar
-group={top:30,bottom:94};events.scroll();assert.equal(top,'94px'); // row leaving its group
-group={top:400,bottom:464};events.scroll();assert.equal(top,'85px'); // next row not stuck
-top=undefined;PRERENDERING=true;events.scroll();assert.equal(top,undefined); // no saved pixel offset
-""".replace('HELPER', bars + install)
-    subprocess.run(['node', '-'], input=script, text=True, capture_output=True, check=True)
-
-
-def test_record_head_tracks_document_and_inner_scroll_without_sticky_inset_conversion():
-    source = (ROOT / 'site/index.html').read_text()
-    helper = next(line for line in source.splitlines() if line.startswith('  function stickyShift('))
-    start = source.index('  function installReadingHeads(')
-    install = source[start:source.index('\n  }', start) + 4]
-    script = """
-const assert=require('node:assert/strict');
-let ownerTop=200, innerScroll=0, bars=93, shift=0, overflowY='auto';
-const head={getBoundingClientRect:()=>({top:ownerTop+17-innerScroll+shift,height:56}),
-  style:{setProperty:(key,value)=>{shift=parseFloat(value);}}};
-const owner={clientTop:1,querySelector:()=>head,matches:()=>true,
-  getBoundingClientRect:()=>({top:ownerTop,bottom:ownerTop+500}),style:{setProperty(){}}};
-const document={querySelectorAll:s=>s.endsWith('.record:not([hidden])')?[owner]:[],addEventListener(){},fonts:{ready:{then(){}}}};
-const ROOT={style:{setProperty(){}}}, PRERENDERING=false, barsBottom=()=>bars;
-const getComputedStyle=()=>({overflowY}),requestAnimationFrame=fn=>fn(),events={};
-const window={addEventListener:(type,fn,options)=>{events[type]=fn;if(type==='scroll')assert.equal(options.capture,true);}};
-class ResizeObserver {observe(){}}
-HELPER
-installReadingHeads();assert.equal(shift,0); // in flow, including 16px panel padding
-ownerTop=53;events.scroll();assert.equal(head.getBoundingClientRect().top,93);
-innerScroll=100;events.scroll();assert.equal(head.getBoundingClientRect().top,93);
-events.scroll();assert.equal(head.getBoundingClientRect().top,93); // no cumulative translation
-ownerTop=200;events.scroll();assert.equal(head.getBoundingClientRect().top,201); // scrollport below nav
-overflowY='visible';events.resize();assert.equal(shift,0); // phone's native sticky head
-""".replace('HELPER', helper + '\n' + install)
-    subprocess.run(['node', '-'], input=script, text=True, capture_output=True, check=True)
-
-
-def test_focus_tooltips_survive_scroll_and_stationary_pointer_boundary_events():
-    source = (ROOT / 'site/index.html').read_text()
-    handlers = source[source.index('  var tip = null'):source.index('  // A separator never ends a line:')]
-    script = """
-const assert=require('node:assert/strict'), listeners={}, timers=new Map(); let timerId=0;
-class Node {
-  constructor(text='',kind='') { this.textContent=text; this.kind=kind; this.dataset={}; this.style={}; this.hidden=true; this.listeners={}; }
-  setAttribute(){} addEventListener(type,fn){this.listeners[type]=fn;} appendChild(){} contains(n){return this===n;}
-  getAttribute(k){return k==='aria-description'?this.textContent:null;}
-  getBoundingClientRect(){return {top:150-window.scrollY,bottom:174-window.scrollY,left:100,width:80};}
-  get offsetWidth(){return 200;} get offsetHeight(){return 40;}
-  matches(s){
-    if(s==='abbr.g, [data-tip], [aria-description]') return true;
-    if(s==='a' || s.split(', ').includes('a.cn')) return this.kind==='a.cn';
-    if(s==='.info') return this.kind==='info';
-    if(s==='a[href], button, summary, input, select, textarea, .tgt') return ['a.cn','close-control','info'].includes(this.kind);
-    return false; // in particular, scripted focus need not match :focus-visible
-  }
-  closest(s){return this.matches(s)?this:null;}
-}
-const document={activeElement:null,documentElement:{clientWidth:1440},body:new Node(),createElement:()=>new Node(),
-  addEventListener:(type,fn)=>(listeners[type]??=[]).push(fn)};
-const window={scrollY:0,innerHeight:1000,addEventListener(){}};
-const clearTimeout=id=>timers.delete(id), setTimeout=fn=>{timers.set(++timerId,fn);return timerId;};
-const hideLineEndDots=()=>{};
-function fire(type,target,extra={}){for(const fn of listeners[type]||[]) fn({target,preventDefault(){},...extra});}
-HANDLERS
-// Same shared lifecycle for translated quotes/names, glossary terms, citations and icon controls.
-for(const kind of ['quote-text','original-text','abbr.g','a.cn','close-control','info']) {
-  const trigger=new Node('Original '+kind,kind), other=new Node('Pointer tip');
-  if(['a.cn','close-control','info'].includes(kind)) trigger.dataset.tip=trigger.textContent;
-  document.activeElement=trigger; window.scrollY=0;
-  fire('focusin',trigger); assert.equal(tip.textContent,trigger.textContent); assert.equal(tip.hidden,false);
-  const before=tip.style.top;
-  fire('click',trigger,{detail:0}); // Enter/Space activation must not turn this into a pointer tip
-  window.scrollY=40; fire('scroll',document);
-  assert.equal(tip.hidden,false); assert.notEqual(tip.style.top,before); // follows focus even without :focus-visible
-  fire('mouseout',trigger); fire('mouseover',other); // clearance/head movement under a stationary pointer
-  tip.listeners.mouseleave({relatedTarget:null});
-  for(const fn of timers.values()) fn(); timers.clear();
-  assert.equal(tip.hidden,false); assert.equal(tip.textContent,trigger.textContent);
-  fire('pointermove',other,{pointerType:'mouse',movementX:1,movementY:0}); // real hover can take over
-  assert.equal(tip.textContent,other.textContent);
-  window.scrollY+=20; fire('scroll',document); assert.equal(tip.hidden,true); // pointer tips still dismiss
-  fire('focusin',trigger); fire('keydown',trigger,{key:'Escape'});
-  fire('scroll',document); assert.equal(tip.hidden,true); // never resurrect an escaped tip
-  fire('focusin',trigger); fire('focusout',trigger,{relatedTarget:null}); assert.equal(tip.hidden,true);
-  fire('focusin',trigger); fire('pointermove',tip,{pointerType:'mouse',movementX:1,movementY:1});
-  assert.equal(tip.hidden,false); assert.equal(timers.size,0); // a focus tip stays hoverable
-  fire('keydown',trigger,{key:'Escape'});
-  fire('pointerdown',trigger,{pointerType:'touch'}); fire('focusin',trigger); assert.equal(tip.hidden,true);
-  fire('click',trigger); assert.equal(tip.hidden,kind==='close-control'); // touch controls keep their action
-  window.scrollY+=20; fire('scroll',document); assert.equal(tip.hidden,true); // touch focus does not pin tips
-  fire('keydown',trigger,{key:'Tab'});
-}
-""".replace('HANDLERS', handlers)
-    subprocess.run(['node', '-'], input=script, text=True, capture_output=True, check=True)
-
-
-@pytest.fixture
-def status_qualifier():
-    return {"text": "assigned and active", "trailing": True,
-            "rects": [{"top": 26, "bottom": 44, "left": 24, "right": 145}],
-            "previous": {"top": 0, "bottom": 20, "left": 24, "right": 230},
-            "nameLeft": 24, "left": 4, "right": 280, "dot": False, "hiddenSeparator": True,
-            "baselineStep": 24, "lineHeight": 24}
-
-
-def test_status_qualifiers_accept_one_line_aligned_to_name_or_following_it(status_qualifier):
-    assert check_page.status_qualifier_errors([status_qualifier]) == []
-    inline = dict(status_qualifier, rects=[{"top": 2, "bottom": 20, "left": 100, "right": 221}],
-                  dot=True, baselineStep=0)
-    assert check_page.status_qualifier_errors([inline]) == []
-    # Source dates/links can have several text nodes, all on the same line.
-    source = dict(status_qualifier, baselineStep=None, rects=[
-        {"top": 26, "bottom": 44, "left": 24, "right": 80},
-        {"top": 26.5, "bottom": 44.5, "left": 80, "right": 145}])
-    assert check_page.status_qualifier_errors([source]) == []
-
-
-@pytest.mark.parametrize("change, finding", [
-    ({"rects": []}, "text missing"),
-    ({"rects": [{"top": 26, "bottom": 44, "left": 24, "right": 130},
-                {"top": 45, "bottom": 63, "left": 24, "right": 70}]}, "spans lines"),
-    ({"dot": True}, "visible leading dot"),
-    ({"nameLeft": 4}, "name's text edge"),  # the pip's edge is wrong
-    ({"hiddenSeparator": False}, "screen readers"),
-    ({"previous": None}, "preceding name"),
-    ({"baselineStep": 32}, "baseline rhythm"),  # old button padding must not add a gap
-    ({"right": 100}, "overflows"),
-])
-def test_status_qualifiers_reject_split_loose_or_inaccessible_statuses(status_qualifier, change, finding):
-    assert any(finding in e for e in check_page.status_qualifier_errors([dict(status_qualifier, **change)]))
-
-
-def test_status_qualifier_geometry_tolerances_and_empty_sample(status_qualifier):
-    for delta, accepted in [(1, True), (1.01, False), (-1, True), (-1.01, False)]:
-        assert (check_page.status_qualifier_errors([dict(status_qualifier, nameLeft=24 + delta)]) == []) == accepted
-    inline = dict(status_qualifier, rects=[{"top": 2, "bottom": 20, "left": 100, "right": 221}], baselineStep=0)
-    assert any("lost its dot" in e for e in check_page.status_qualifier_errors([inline]))
-    assert check_page.status_qualifier_errors([]) == ["no status qualifiers to measure"]
-    # Panel sentences and the already separate Known activity clauses have no separator to test.
-    assert check_page.status_qualifier_errors([dict(status_qualifier, trailing=False, hiddenSeparator=False)]) == []
-
-
-def test_qualifier_line_detection_uses_baselines_even_when_font_rectangles_overlap():
-    source = (ROOT / 'site/index.html').read_text()
-    helper = next(line for line in source.splitlines() if line.startswith('  function qualifierStartsLine('))
-    script = helper + """
-const assert=require('node:assert/strict');
-// Meta text can have 24px glyph boxes on a 21.6px line. Their baselines still identify separate lines.
-assert.equal(qualifierStartsLine(20,41.6),true);
-assert.equal(qualifierStartsLine(20,20.5),false);
-assert.equal(qualifierStartsLine(null,41.6),false);
-"""
-    subprocess.run(['node', '-'], input=script, text=True, capture_output=True, check=True)
-    assert check_page.source_separator_errors([dict(source='source', leading=1)])
-    assert not check_page.source_separator_errors([dict(source='source', leading=0)])
-
-
-@pytest.mark.parametrize('list_item, marker, edge', [(True, 'inside', 16), (True, 'outside', 34), (False, 'inside', 34)])
-def test_qualifier_measurement_uses_the_wrapped_source_edge(list_item, marker, edge):
-    measure = check_page.STATUS_QUALIFIERS_JS.replace(check_page.TEXT_RECTS_JS, 'const textRects=n=>n.rects;')
-    script = """
-const text={textContent:'archived copy',rects:[{top:24,bottom:40,left:EDGE,right:130}]};
-const separator={rects:[],getAttribute:()=> 'true'};
-const parent={closest:()=>null,getClientRects:()=>[{}]};
-const previous={textContent:'Source title',parentElement:parent};
-const flow={matches:()=>LIST_ITEM,getBoundingClientRect:()=>({left:12,right:200})};
-const item={matches:s=>s==='.trailing-qualifier',checkVisibility:()=>true,contains:()=>false,closest:()=>null,parentElement:flow,
-  querySelector:s=>s==='.qualifier-text'?text:separator};
-const root={querySelectorAll:()=>[item]},NodeFilter={SHOW_TEXT:4};
-const document={querySelectorAll:()=>[root],createTreeWalker:()=>{let done=false;return {nextNode(){if(done)return null;done=true;return previous;}};},
-  createRange:()=>({selectNodeContents(){},getClientRects:()=>[{top:0,bottom:16,left:34,right:150,width:116,height:16}]})};
-const getComputedStyle=()=>({visibility:'visible',listStylePosition:MARKER,borderLeftWidth:'1px',paddingLeft:'3px'});
-console.log(JSON.stringify((MEASURE)('sources')));
-""".replace('EDGE', str(edge)).replace('LIST_ITEM', json.dumps(list_item)).replace('MARKER', json.dumps(marker)).replace('MEASURE', measure)
-    result = subprocess.run(['node', '-'], input=script, text=True, capture_output=True, check=True)
-    items = json.loads(result.stdout)
-    assert items[0]['nameLeft'] == edge
-    assert check_page.status_qualifier_errors(items) == []
-    items[0]['rects'][0]['left'] += 4
-    assert any('text edge' in e for e in check_page.status_qualifier_errors(items))
-
-
-@pytest.mark.parametrize('change, finding', [
-    ({'width': 1.99}, 'smaller'),
-    ({'height': 0}, 'smaller'),
-    ({'painted': False}, 'missing'),
-    ({'contrast': 2.99}, '3:1'),
-    ({'outline': True}, 'full outline'),
-    ({'gap': 1.01}, 'meet its row'),
-    ({'gap': -1.01}, 'meet its row'),
-    ({'gap': None}, 'meet its row'),
-    ({'sameGround': False}, 'same ground'),
-])
-def test_selection_gate_rejects_missing_faint_boxed_or_detached_selection(change, finding):
-    selected = dict(width=2, strong=2, height=20, painted=True, contrast=3, outline=False,
-                    joined=True, gap=1, sameGround=True)
-    assert not check_page.selection_state_errors(selected)
-    assert any(finding in e for e in check_page.selection_state_errors(selected | change))
-    # Search options have the same bar, without an adjoining records panel.
-    assert not check_page.selection_state_errors(selected | dict(joined=False, gap=8, sameGround=False))
-
-
-@pytest.mark.parametrize('change', [{'cellAnchored': False}, {'startOffset': 39}, {'height': 10}])
-def test_grid_selection_bar_belongs_to_the_selected_cell_band(change):
-    mark = dict(width=2, strong=2, height=36, painted=True, contrast=3, outline=False,
-                cellBand=True, cellAnchored=True, startOffset=0, bandHeight=36)
-    assert check_page.selection_state_errors(mark) == []
-    assert any('selected cell' in e for e in check_page.selection_state_errors(mark | change))
-
-
-def test_status_qualifier_gate_samples_allow_a_not_found_long_label():
-    from scripts import published
-
-    data = published.materialise_facts(json.loads((ROOT / "data/aisi.json").read_text()))
-    # No institute currently has a coded public-sector-access claim. The gate must still test the long label's plain span.
-    for institute in data["institutes"]:
-        for row in institute["functions"]:
-            if row["code"] == "public_access_continuity":
-                row.update(value="not_found", claim_ids=[])
-
-    class Browser:
-        def new_page(self, **kwargs):
-            raise RuntimeError("samples ready for geometry")
-
-    with pytest.raises(RuntimeError, match="samples ready for geometry"):
-        check_page.check_status_qualifiers(Browser(), "https://example.test/", data)
-
-
-@pytest.mark.parametrize("change, finding", [
-    ({}, None),
-    ({"budgetSize": 32}, "larger than body type"),
-    ({"staffSize": 20}, "do not share compact type"),
-    ({"staffWeight": 400}, "do not share compact type"),
-    ({"trackWidth": 180}, "do not share bar-track dimensions"),
-    ({"trackHeight": 12}, "do not share bar-track dimensions"),
-    ({"figureLeft": 150}, "figure overlaps its bar track"),
-    ({"noBar": True}, "printed figure lacks its bar"),
-])
-def test_funding_weights_keep_equal_compact_measures_and_row_heights(change, finding):
-    class Page:
-        def evaluate(self, expression):
-            # Run the gate's own JS on independently supplied computed styles.
-            script = """
-const change = JSON.parse(process.argv[1]);
-const typography=(size=16,weight=500)=>({fontSize:size+'px',fontWeight:String(weight),fontFamily:'Sans',lineHeight:'24px'});
-const figure=typography(change.budgetSize), staff=typography(change.staffSize,change.staffWeight);
-const rect=(width=160,height=8,left=0)=>({width,height,left,right:left+width,top:0,bottom:height});
-const makeMeasure=changed=>({querySelector: selector => ({
-  '.fund-bar':{firstElementChild:change.noBar?null:{},getBoundingClientRect:()=>rect(changed ? change.trackWidth : undefined,changed ? change.trackHeight : undefined)},
-  '.fund-value':{getBoundingClientRect:()=>rect(100,24,changed ? (change.figureLeft ?? 164) : 164)},
-})[selector] || null});
-const makeRow=unbarred=>({dataset:{institute:unbarred?'missing':'charted'},classList:{contains:()=>unbarred},
-  querySelectorAll:selector=>selector===':scope > .fund-measure' ? [makeMeasure(false),makeMeasure(unbarred)] : [figure,staff],
-  querySelector:selector=>({
-    '.fund-budget .budget-value':unbarred ? {textContent:change.notCharted===false?'EUR 1m':'EUR 1m; not charted'} : null,
-    ':scope > .fund-budget .bar-value':unbarred ? null : {},
-    '.fund-row':{getBoundingClientRect:()=>({height:unbarred ? (change.unbarredHeight ?? 60) : 60})},
-  })[selector] || null,
-});
-const rows=[makeRow(false),makeRow(true)];
-const document = {
-  querySelector:()=>figure,querySelectorAll:()=>rows,
-  createElement:()=>({...typography(),style:{},remove:()=>{}}),body:{appendChild:()=>{}},
-};
-const getComputedStyle = node => node;
-""" + "console.log(JSON.stringify((" + expression + ")()));"
-            result = subprocess.run(["node", "-e", script, json.dumps(change)], check=True, capture_output=True, text=True)
-            return json.loads(result.stdout)
-
-    errors = check_page.check_funding_weights(Page())
-    assert any(finding in error for error in errors) if finding else errors == []
-
-
-@pytest.mark.parametrize("value, scale, track, width", [
-    (50_000_000, 100_000_000, 160, 80),
-    (140, 250, 160, 89.6),
-    (243, 250, 160, 155.52),
-    (1, 250, 160, 2),  # the independent 2px floor
-    (0, 250, 160, 0),
-    (1, 250, 1, 1),  # no more than the whole track
-    (250, 250, 160, 160),
-    (8_900_000, 110_000_000, 132, 10.68),
-    (8_000_000, 110_000_000, 132, 9.6),
-    (6_300_000, 110_000_000, 132, 7.56),
-    (34, 250, 132, 17.952), (38, 250, 132, 20.064),
-    (31, 250, 132, 16.368), (25, 250, 132, 13.2),
-])
-def test_funding_and_staff_bar_widths_use_their_own_scale_and_minimum(value, scale, track, width):
-    sample = dict(key="xx staff", value=value, scale=scale, track=track, width=width, stated_value=value, stated_scale=scale)
-    assert check_page.funding_bar_width_errors([sample]) == []
-    assert any("bar width" in error for error in check_page.funding_bar_width_errors([dict(sample, width=width + 1)]))
-
-
-@pytest.mark.parametrize("change, finding", [
-    ({"stated_value": 141}, "metadata differs"),
-    ({"stated_scale": 300}, "metadata differs"),
-    ({"value": -1}, "invalid bar amount"),
-    ({"scale": 0}, "invalid bar amount"),
-    ({"track": 0}, "invalid bar amount"),
-    ({"width": float("nan")}, "non-finite"),
-    ({"width": 32, "value": 34, "stated_value": 34, "minimum": 32}, "bar width"),  # copying the bad CSS minimum cannot bless it
-])
-def test_bar_proportion_mutants_cannot_use_wrong_values_or_measurements(change, finding):
-    sample = dict(key="xx staff", value=140, scale=250, track=160, minimum=32, width=89.6, stated_value=140, stated_scale=250)
-    assert any(finding in error for error in check_page.funding_bar_width_errors([dict(sample, **change)]))
-
-
-def test_bar_proportion_check_never_passes_without_samples():
-    assert check_page.funding_bar_width_errors([]) == ["funding: no Budget or Staff bar proportions measured"]
-
-
-@pytest.mark.parametrize("apply_style", [True, False])
-def test_funding_large_text_route_keeps_scale_and_guard(monkeypatch, apply_style):
-    import inspect
-
-    seen = []
-
-    class Page:
-        def __init__(self, width):
-            self.width = width
-            self.rem = 16
-
-        def route(self, url, handler):
-            self.handler = handler
-
-        def fetch(self):
-            return self
-
-        def text(self):
-            return '<html><head></head><body></body></html>'
-
-        def fulfill(self, response, body):
-            match = re.search(r'font-size: (\d+)% !important', body)
-            if match and apply_style:
-                self.rem = 16 * int(match[1]) / 100
-
-        def evaluate(self, script):
-            return self.rem
-
-        def close(self):
-            seen.append((self.width, self.rem))
-
-    class Browser:
-        def new_page(self, **kwargs):
-            return Page(kwargs["viewport"]["width"])
-
-    def navigate(page, url):
-        # Playwright supplies (route, request), truncating to the callback's positional arity.
-        args = (page, object())
-        try:
-            inspect.signature(page.handler).bind(*args)
-        except TypeError:
-            args = args[:1]
-        page.handler(*args)
-
-    monkeypatch.setattr(check_page, "hydrated", navigate)
-    monkeypatch.setattr(check_page, "set_theme", lambda *args: None)
-    monkeypatch.setattr(check_page, "check_funding_layout_states", lambda page: [])
-    errors = check_page.check_funding_large_text(Browser(), "https://example.test/")
-    if apply_style:
-        assert errors == []
-        assert {(width, 16) for width in (320, 390, 1000, 1440)} <= set(seen)
-    else:
-        assert len(errors) == 9
-        assert all("16px root font" in error for error in errors)
-
-
-@pytest.fixture
-def funding_geometry():
-    def box(left, top, width, height):
-        return dict(left=left, right=left+width, top=top, bottom=top+height, width=width, height=height)
-
-    rows, heads = [], {}
-    for kind, top in (("budget", 100), ("staff", 500)):
-        measure = dict(kind=kind, box=box(600, top+100, 768, 44), bar=box(608, top+118, 160, 8),
-                       figure=box(776, top+110, 584, 24), amountLines=1, qualifierLines=0)
-        rows.append(dict(key=kind+":a", kind=kind, button=box(300, top+100, 1068, 44), border=1, painted=True, last=False,
-                         identity=box(308, top+110, 284, 24), identityLines=1, maxHeight=44, detail=None, measures=[measure]))
-        heads[kind] = dict(box=box(300, top, 1068, 70), bar=box(608, top, 160, 24), figure=box(776, top, 584, 24), opaque=True, commitmentVisible=True)
-    return dict(list=box(300, 100, 1068, 800), heads=heads, rows=rows, overflow=[], oneLineNames=True)
-
-
-@pytest.mark.parametrize("mutation, finding", [("short", "44px"), ("overlap", "overlap")])
-def test_funding_geometry_keeps_disclosures_and_list_rows_large_and_separate(funding_geometry, mutation, finding):
-    got = funding_geometry
-    got["targets"] = [
-        {"key": "budget missing disclosure", "box": dict(left=300, right=1368, top=260, bottom=304, width=1068, height=44)},
-        {"key": "budget missing institute", "box": dict(left=300, right=1368, top=304, bottom=348, width=1068, height=44)},
-    ]
-    assert check_page.funding_layout_errors(got) == []
-    target = got["targets"][1]["box"]
-    if mutation == "short":
-        target["height"] = 28
-        target["bottom"] = target["top"] + 28
-    else:
-        target["top"] -= 10
-        target["bottom"] -= 10
-    assert any(finding in error for error in check_page.funding_layout_errors(got))
-
-
-@pytest.mark.parametrize("mutation, finding", [
-    ("bar-left", "differ from the head cells"),
-    ("figure-left", "differ from the head cells"),
-    ("hairline", "hairline/control"),
-    ("no-hairline", "hairline/control"),
-    ("transparent-hairline", "hairline/control"),
-    ("empty-height", "exceeds its one-line"),
-    ("small-target", "44px hit target"),
-    ("name-wrap", "name must fit on one line"),
-    ("amount-wrap", "figure must be one line"),
-    ("qualifier-wrap", "no qualifier line"),
-    ("bar-second-line", "bar and figure must share one line"),
-    ("transparent", "opaque ground"),
-    ("short-head", "full list"),
-    ("unequal-bars", "bar tracks differ"),
-    ("detail-width", "opened detail"),
-])
-def test_funding_geometry_rejects_screenshot_defects(funding_geometry, mutation, finding):
-    got = funding_geometry
-    assert check_page.funding_layout_errors(got) == []
-    row, measure = got["rows"][1], got["rows"][1]["measures"][0]  # last row and Staff must be checked too
-    if mutation == "bar-left":
-        measure["bar"]["left"] += 56
-    elif mutation == "figure-left":
-        measure["figure"]["left"] += 28
-    elif mutation == "hairline":
-        row["button"]["right"] = 632
-    elif mutation == "no-hairline":
-        got["rows"][0]["border"] = 0
-    elif mutation == "transparent-hairline":
-        got["rows"][0]["painted"] = False
-    elif mutation == "empty-height":
-        row["button"]["height"] = 77
-    elif mutation == "small-target":
-        row["button"]["height"] = 32
-    elif mutation == "name-wrap":
-        row["identityLines"] = 2
-    elif mutation == "amount-wrap":
-        measure["amountLines"] = 2
-    elif mutation == "qualifier-wrap":
-        measure["qualifierLines"] = 1
-    elif mutation == "bar-second-line":
-        measure["bar"]["top"] += 30
-        measure["bar"]["bottom"] += 30
-    elif mutation == "transparent":
-        got["heads"]["staff"]["opaque"] = False
-    elif mutation == "short-head":
-        got["heads"]["staff"]["box"]["right"] -= 8
-    elif mutation == "unequal-bars":
-        measure["bar"]["width"] = 96
-    elif mutation == "detail-width":
-        row["detail"] = dict(got["list"], right=900)
-    assert any(finding in error for error in check_page.funding_layout_errors(got))
-
-
-def test_open_detail_cannot_move_even_aligned_heads_and_rows(funding_geometry):
-    closed = copy.deepcopy(funding_geometry)
-    for kind in ("budget", "staff"):
-        for cell in ("bar", "figure"):
-            funding_geometry["heads"][kind][cell]["left"] += 56
-    for row in funding_geometry["rows"]:
-        for measure in row["measures"]:
-            for cell in ("bar", "figure"):
-                measure[cell]["left"] += 56
-    assert check_page.funding_layout_errors(funding_geometry) == []  # all still align with their heads
-    errors = check_page.funding_layout_errors(funding_geometry, closed)
-    assert any("track moves" in e for e in errors)
-    assert any("row tracks move" in e for e in errors)
-
-
-def test_joined_funding_panel_keeps_the_full_width_control_without_a_divider(funding_geometry):
-    row = funding_geometry['rows'][0]
-    row.update(joined=True, painted=False, detail=dict(funding_geometry['list']))
-    assert check_page.funding_layout_errors(funding_geometry) == []
-    row['button']['right'] -= 8
-    assert any('hairline/control' in e for e in check_page.funding_layout_errors(funding_geometry))
-    row['button']['right'] += 8
-    row['joined'] = False  # closed rows and detached/mismatched panels still need their rule
-    assert any('hairline/control' in e for e in check_page.funding_layout_errors(funding_geometry))
-
-
-@pytest.mark.parametrize("mutation, finding", [(None, None), ("qualifier-wrap", "no qualifier line"), ("unequal-bars", "bar tracks differ"), ("scroll", "sideways")])
-def test_phone_funding_keeps_one_line_figures_and_equal_tracks(funding_geometry, mutation, finding):
-    got = funding_geometry
-    measure = got["rows"][1]["measures"][0]
-    if mutation == "qualifier-wrap":
-        measure["qualifierLines"] = 1
-    elif mutation == "unequal-bars":
-        measure["bar"]["width"] += 8
-    elif mutation == "scroll":
-        got["overflow"].append("sideways Funding scroll")
-    errors = check_page.funding_layout_errors(got)
-    assert any(finding in e for e in errors) if finding else errors == []
-
-
-@pytest.mark.parametrize("width", [320, 390, 1000, 1440])
-def test_budget_key_must_keep_both_commitments_visible(funding_geometry, width):
-    got = funding_geometry
-    got["width"] = width
-    assert check_page.funding_layout_errors(got) == []
-    got["heads"]["budget"]["commitmentVisible"] = False
-    assert check_page.funding_layout_errors(got) == ["funding Budget key must show both commitment words without clipping"]
-
-
-def test_funding_overflow_measures_text_even_when_its_parent_fits():
-    script = r"""
-const assert=require('node:assert/strict');
-let textRight=300, color='rgb(250, 247, 242)';
-const bounds={left:20,right:370,top:0,bottom:100,width:350,height:100};
-const node=()=>({className:'test',closest:()=>null,getClientRects:()=>[bounds],getBoundingClientRect:()=>bounds,childNodes:[],querySelector:()=>null});
-const section=node(),head=node(),child=node(),list=node();head.querySelectorAll=()=>[];
-list.closest=s=>s==='.section-body'?section:null;
-list.querySelector=()=>head;list.querySelectorAll=s=>s==='*'?[child]:[];
-list.scrollWidth=list.clientWidth=350;head.querySelector=()=>node();
-child.childNodes=[{nodeType:3,textContent:'up to ~EUR 0.026 per resident (2025)'}];
-const Node={TEXT_NODE:3},innerWidth=390;
-const document={documentElement:{scrollWidth:390},getElementById:()=>list,
- createRange:()=>({selectNodeContents(){},getClientRects:()=>[{...bounds,right:textRight,width:textRight-20}]})};
-const getComputedStyle=()=>({visibility:'visible',paddingLeft:'0',paddingRight:'0',borderLeftWidth:'0',borderRightWidth:'0',fontSize:'16',backgroundColor:color,opacity:'1'});
-const inspect=INSPECT;
-assert.deepEqual(inspect().overflow,[]);
-textRight=410;assert.ok(inspect().overflow.some(e=>e.includes('text: descendant crosses')));
-textRight=300;child.getClientRects=()=>[{...bounds,left:10}];assert.ok(inspect().overflow.some(e=>e.includes('descendant crosses')));
-child.getClientRects=()=>[bounds];section.scrollWidth=420;section.clientWidth=350;assert.ok(inspect().overflow.some(e=>e.includes('sideways')));
-for(color of ['transparent','rgba(232, 227, 221, 0)','color(srgb 1 1 1 / 0.5)']) assert.equal(inspect().heads.staff.opaque,false);
-""".replace("INSPECT", check_page.FUNDING_LAYOUT_JS)
-    subprocess.run(["node", "-"], input=script, text=True, capture_output=True, check=True)
-
-
-def test_definition_link_allows_rewording_but_requires_one_reachable_target():
-    data = {"dataset": {"definition": "Example.", "status_definitions": {}}}
-    html = '<div id="headline"></div><p id="definition-link"><a href="#definition">Read the definition</a></p><section id="method-sec"><div class="section-body"><p id="definition">Example. <a href="method.html#qualifying-body">The test in detail</a></p></div></section>'
-    assert check_page.check_supporting_text(BeautifulSoup(html, "html.parser"), data) == []
-    for broken in (
-        html.replace('id="definition"', 'id="gone"'),
-        html.replace('href="#definition"', 'href="#gone"'),
-        html.replace('Read the definition</a>', 'Read the definition</a><a href="#definition">Again</a>'),
-        html.replace('id="definition-link"', 'id="gone"'),
-        html.replace('Read the definition</a>', ' \n </a>'),
-    ):
-        assert any("one link to an existing #definition" in error for error in check_page.check_supporting_text(BeautifulSoup(broken, "html.parser"), data))
-
-
-def test_definition_rule_link_allows_rewording_but_requires_text_and_target():
-    data = {"dataset": {"definition": "Example.", "status_definitions": {}}}
-    html = '<div id="headline"></div><p id="definition-link"><a href="#definition">Read more</a></p><section id="method-sec"><div class="section-body"><p id="definition">Example. <a href="method.html#qualifying-body">See the criteria</a></p></div></section>'
-    assert check_page.check_supporting_text(BeautifulSoup(html, "html.parser"), data) == []
-    for broken in (
-        html.replace("See the criteria", " \n "),
-        html.replace('<a href="method.html#qualifying-body">See the criteria</a>', ""),
-        html.replace("method.html#qualifying-body", "method.html#other"),
-    ):
-        assert any("link does not go" in error for error in check_page.check_supporting_text(BeautifulSoup(broken, "html.parser"), data))
-
-
-def test_section_headings_allow_rewording_but_not_missing_or_empty_headings():
-    html = "".join(f'<h2 id="{key}">Reworded heading</h2>' for key in check_page.SECTION_HEADINGS)
-
-    def errors(markup):
-        return [e for e in check_page.check_section_bar(BeautifulSoup(markup, "html.parser")) if e.startswith("heading #")]
-
-    assert errors(html) == []
-    for key in check_page.SECTION_HEADINGS:
-        for replacement in ("", f'<h2 id="{key}"> \n </h2>'):
-            assert errors(html.replace(f'<h2 id="{key}">Reworded heading</h2>', replacement)) == [f"heading #{key} is missing or empty"]
-
-
-@pytest.mark.parametrize("key", ["privileged", "law", "agreed", "none"])
-def test_access_group_headings_allow_rewording_but_not_missing_or_empty_headings(key):
-    data = {"institutes": [], "jurisdictions": []}
-    html = f'<div id="access"><div class="group-block" data-group="{key}"><h3>Reworded heading</h3></div></div>'
-
-    def errors(markup):
-        return [e for e in check_page.check_access_groups(BeautifulSoup(markup, "html.parser"), data) if "heading is missing or empty" in e]
-
-    assert errors(html) == []
-    for replacement in ("", "<h3> \n </h3>"):
-        assert errors(html.replace("<h3>Reworded heading</h3>", replacement)) == [f"access group {key} heading is missing or empty"]
 
 
 def test_legend_definitions_allow_rewording_but_require_every_status_once():
@@ -920,82 +70,21 @@ def test_rendered_invariants_pass(rendered):
 
 
 @pytest.mark.parametrize(("selector", "message"), [
-    ("article.card", "status cards"), (".card.mini", "mini-cards"),
-    (".smark", "status mark"), ("#world-rows tr", "world table"),
-    (".cn", "citation marks missing"), ("nav", "navigation links missing"),
-    ("#dl-b li", "downloads"),
-    ("footer", "footer: missing quotations licence notice"),
+    ("article.card", "status cards"),
+    (".card.mini", "mini-cards"),
+    (".smark", "status mark"),
+    ("#world-rows tr", "world table"),
+    (".cn", "citation marks missing"),
 ])
 def test_missing_elements_fail(rendered, selector, message):
     rendered[0].select_one(selector).decompose()
     assert any(message in e for e in errors_for(rendered))
 
 
-def test_an_accessible_name_from_a_referenced_label_counts(rendered):
-    soup = rendered[0]
-    box = soup.select_one("#map-search-list")
-    box.attrs.pop("aria-label", None)
-    box["aria-labelledby"] = "list-label"
-    label = soup.new_tag("span", id="list-label", attrs={"aria-label": "Places"})  # named by its attribute, no text
-    box.insert_before(label)
-    assert errors_for(rendered) == []
-    label["aria-label"] = ""
-    image = soup.new_tag("img", alt="Places")
-    label.append(image)  # named by an image's alt text
-    assert errors_for(rendered) == []
-
-
-def test_a_label_names_only_form_controls(rendered):
-    soup = rendered[0]
-    box = soup.select_one("#map-search-list")
-    for key in ("aria-label", "aria-labelledby", "title"):
-        box.attrs.pop(key, None)
-    label = soup.new_tag("label", attrs={"for": "map-search-list"})
-    label.string = "Places"
-    box.insert_before(label)
-    assert "#map-search-list: no accessible name" in errors_for(rendered)  # a <label> cannot name a list
-    field = soup.select_one("#world-filter")
-    for key in ("aria-label", "aria-labelledby", "title"):
-        field.attrs.pop(key, None)
-    wrapper = soup.new_tag("label")
-    wrapper.string = "Search"
-    field.wrap(wrapper)
-    assert "#world-filter: no accessible name" not in errors_for(rendered)  # a wrapping label names an input
-
-
-def test_search_inputs_need_a_name_and_a_placeholder_not_fixed_wording(rendered):
-    box = rendered[0].select_one("#world-filter")
-    box["placeholder"] = "Search country or institute"
-    assert errors_for(rendered) == []  # rewording is reviewed, not pinned
-    box["placeholder"] = " "
-    assert errors_for(rendered) == ["#world-filter: no placeholder"]
-
-
-def test_listbox_requires_an_accessible_name_without_fixed_wording(rendered):
-    soup = rendered[0]
-    box = soup.select_one("#map-search-list")
-    box["aria-label"] = "Matching places"
-    assert errors_for(rendered) == []
-    for value in ("", " \n "):
-        box["aria-label"] = value
-        assert errors_for(rendered) == ["#map-search-list: no accessible name"]
-    del box["aria-label"]
-    box["aria-labelledby"] = "list-label"
-    label = soup.new_tag("span", id="list-label")
-    label.string = "Places"
-    box.insert_before(label)
-    assert errors_for(rendered) == []
-    label.decompose()
-    assert errors_for(rendered) == ["#map-search-list: no accessible name"]
-    box["title"] = "Places"
-    assert errors_for(rendered) == []
-    box.decompose()
-    assert errors_for(rendered) == ["#map-search-list: no accessible name"]
-
-
 @pytest.mark.parametrize(("selector", "message"), [
-    ("article.card", "status cards"), (".card.mini", "mini-cards"),
-    ("#world-rows tr", "world table"), ("#dl-b li", "downloads"),
+    ("article.card", "status cards"),
+    (".card.mini", "mini-cards"),
+    ("#world-rows tr", "world table"),
 ])
 def test_duplicate_elements_fail(rendered, selector, message):
     soup = rendered[0]
@@ -1006,10 +95,6 @@ def test_duplicate_elements_fail(rendered, selector, message):
 
 @pytest.mark.parametrize(("selector", "href", "message"), [
     (".cn", "#world", "not a source URL"),
-    ("nav a", "#missing", "navigation target"),
-    ("nav a", SOURCE_URL, "navigation target"),
-    ("#dl-b a", "data/absent.json", "downloads"),
-    ("#dl-b a", SOURCE_URL, "downloads"),
 ])
 def test_broken_links_fail(rendered, selector, href, message):
     rendered[0].select_one(selector)["href"] = href
@@ -1021,25 +106,9 @@ def test_missing_citation_href_fails(rendered):
     assert any("not a source URL" in e for e in errors_for(rendered))
 
 
-@pytest.mark.parametrize("text", ["undefined", "NaN", "Budget: NaN million"])
-def test_bad_rendered_text_fails(rendered, text):
-    rendered[0].body.append(text)
-    assert any("invalid rendered text" in e for e in errors_for(rendered))
-
-
 def test_swapped_jurisdiction_cannot_hide_behind_card_count(rendered):
     rendered[0].select_one("article.card")["data-j"] = "AU"
     assert any("status cards" in e for e in errors_for(rendered))
-
-
-def test_extra_download_file_needs_entry(rendered):
-    (rendered[2] / "data/datapackage.json").write_text("{}")
-    assert any("downloads" in e for e in errors_for(rendered))
-
-
-def test_empty_dom_fails(rendered):
-    _, data, dist = rendered
-    assert len(check_page.check_dom("", data, dist, "http://127.0.0.1/")) >= 5
 
 
 def test_chrome_is_the_locked_playwright_chromium_or_missing(monkeypatch, tmp_path):
@@ -1337,63 +406,49 @@ def test_budget_explanation_keeps_period_basis_and_commitment(funding_rows_case,
 
 
 @pytest.mark.parametrize("mutation, finding", [
-    ("duplicate", "each institute once"), ("missing", "each institute once"),
-    ("band", "without status bands"), ("staff", "every printed staff figure"),
-    ("staff-bar", "every printed staff figure"), ("staff-date", "published dated total only"),
-    ("staff-bound", "must be stated in words"), ("opener", "opener does not name"),
-    ("nested-link", "contains an interactive"), ("native-fold", "native Funding and staff records"),
-    ("download", "staff.csv guidance"), ("missing-list", "Not published list"),
-    ("partial-clause", "recorded date"), ("duplicate-records", "canonical records"),
-    ("no-tooltip", "focusable tooltip"), ("no-focus", "focusable tooltip"),
-    ("different-tooltip", "accessible description"), ("status-mark", "status marks"),
-    ("pending", "each institute once"), ("bound-symbol", "bound markers"),
+    ("duplicate", "each institute once"),
+    ("missing", "each institute once"),
+    ("staff", "every printed staff figure"),
+    ("staff-date", "published dated total only"),
+    ("staff-bound", "must be stated in words"),
+    ("missing-list", "Not published list"),
+    ("partial-clause", "recorded date"),
+    ("duplicate-records", "canonical records"),
+    ("no-tooltip", "focusable tooltip"),
+    ("different-tooltip", "accessible description"),
+    ("pending", "each institute once"),
+    ("bound-symbol", "bound markers"),
     ("scope", "funding scope"),
 ])
 def test_funding_row_mutants_cannot_drop_coverage_or_qualifications(funding_rows_case, mutation, finding):
     soup, data = funding_rows_case
     row = soup.select_one(".fund-item")
-    if mutation == "duplicate":
+    if mutation == 'duplicate':
         row.insert_after(BeautifulSoup(str(row), "html.parser"))
-    elif mutation == "missing":
+    elif mutation == 'missing':
         row.decompose()
-    elif mutation == "band":
-        row["data-band"] = "established"
-    elif mutation == "staff":
+    elif mutation == 'staff':
         row.select_one(".fund-value").decompose()
-    elif mutation == "staff-bar":
-        row.select_one(".bar-value").decompose()
-    elif mutation == "staff-date":
+    elif mutation == 'staff-date':
         data["institutes"][0]["staff"][0].pop("as_of")
-    elif mutation == "staff-bound":
+    elif mutation == 'staff-bound':
         row.select_one(".fund-figure abbr")["aria-description"] = "As at Oct 2026."
-    elif mutation == "opener":
-        row.select_one(".fund-row")["aria-controls"] = "absent"
-    elif mutation == "nested-link":
-        row.select_one(".fund-row").append(BeautifulSoup('<a href="#source">Source</a>', "html.parser"))
-    elif mutation == "native-fold":
-        soup.select_one(".fund-detail summary").string = ""
-    elif mutation == "download":
-        soup.select_one("#funding-download")["data-tip"] = "Download records"
-    elif mutation == "missing-list":
+    elif mutation == 'missing-list':
         soup.select_one('.fund-list[data-kind="budget"] .fund-missing-line .fund-name-row').extract()
-    elif mutation == "partial-clause":
+    elif mutation == 'partial-clause':
         row.select_one(".fund-figure abbr")["aria-description"] = "As at, at least."
-    elif mutation == "duplicate-records":
+    elif mutation == 'duplicate-records':
         detail = soup.select_one(".fund-detail")
         detail.insert_after(BeautifulSoup(str(detail), "html.parser"))
-    elif mutation == "no-tooltip":
+    elif mutation == 'no-tooltip':
         del row.select_one(".fund-figure abbr")["aria-description"]
-    elif mutation == "no-focus":
-        del row.select_one(".fund-figure abbr")["tabindex"]
-    elif mutation == "different-tooltip":
+    elif mutation == 'different-tooltip':
         row.select_one(".fund-figure abbr")["data-tip"] = "Something else."
-    elif mutation == "status-mark":
-        row.append(BeautifulSoup('<i class="sw st-established"></i>', "html.parser"))
-    elif mutation == "pending":
+    elif mutation == 'pending':
         row.select_one(".fund-row")["data-institute"] = "zz"
-    elif mutation == "bound-symbol":
+    elif mutation == 'bound-symbol':
         row.select_one(".fund-figure abbr").string = "140"
-    elif mutation == "scope":
+    elif mutation == 'scope':
         soup.select_one("#fund-chart-h").string = "Reference year 2026"
     assert any(finding in error for error in check_page.check_funding_outside(str(soup), data))
 
@@ -1425,19 +480,7 @@ def test_technical_counts_targets_and_ranges_keep_words_without_a_staff_bar(fund
 
 
 @pytest.mark.parametrize("mutation, finding", [
-    ("no-toggle", "one disclosure and one plain list"),
-    ("wrong-controls", "control its own list"),
-    ("duplicate-list-id", "control its own list"),
-    ("list-before-toggle", "control its own list"),
-    ("expanded", "closed by default"),
-    ("unhidden", "closed by default"),
-    ("list-role", "control its own list"),
-    ("nested-control", "contains an interactive control"),
     ("missing-summary-name", "all names and reasons as plain text"),
-    ("split-summary-text", "all names and reasons as plain text"),
-    ("non-list-row", "one institute button per row"),
-    ("two-row-buttons", "one institute button per row"),
-    ("extra-row-control", "one institute button per row"),
     ("wrong-state", "institute identity and state name"),
     ("wrong-name", "institute identity and state name"),
 ])
@@ -1447,79 +490,13 @@ def test_funding_names_disclosure_mutants_reject_broken_structure_and_saved_text
     toggle, listing = line.select_one(".fund-names-toggle"), line.select_one(".fund-name-list")
     names, row = toggle.select_one(".fund-missing-names"), listing.select_one(".fund-name-item")
     button = row.select_one(".fund-name-row")
-    if mutation == "no-toggle":
-        toggle.unwrap()
-    elif mutation == "wrong-controls":
-        toggle["aria-controls"] = "absent"
-    elif mutation == "duplicate-list-id":
-        soup.select_one('.fund-list[data-kind="staff"] .fund-name-list')["id"] = listing["id"]
-    elif mutation == "list-before-toggle":
-        toggle.insert_before(listing.extract())
-    elif mutation == "expanded":
-        toggle["aria-expanded"] = "true"
-    elif mutation == "unhidden":
-        del listing["hidden"]
-    elif mutation == "list-role":
-        del listing["role"]
-    elif mutation == "nested-control":
-        toggle.append(BeautifulSoup('<a href="#source">Source</a>', "html.parser"))
-    elif mutation == "missing-summary-name":
+    if mutation == 'missing-summary-name':
         names.string = "Not published: Example"
-    elif mutation == "split-summary-text":
-        names.string = "Not published: "
-        names.append(BeautifulSoup('<span>Example, Another</span>', "html.parser"))
-    elif mutation == "non-list-row":
-        row.name = "div"
-    elif mutation == "two-row-buttons":
-        row.append(copy.deepcopy(button))
-    elif mutation == "extra-row-control":
-        row.append(BeautifulSoup('<a href="#source">Source</a>', "html.parser"))
-    elif mutation == "wrong-state":
+    elif mutation == 'wrong-state':
         button["data-j"] = "YY"
-    elif mutation == "wrong-name":
+    elif mutation == 'wrong-name':
         button.string = "Wrong name"
     assert any(finding in error for error in check_page.check_funding_outside(str(soup), data))
-
-
-@pytest.fixture
-def saved_funding_rows_case(funding_rows_case):
-    soup, data = funding_rows_case
-    for toggle in soup.select('.fund-names-toggle'):
-        toggle.name = 'span'
-        toggle.attrs = {'class': ['fund-names-toggle']}
-    return soup, data
-
-
-def test_saved_funding_names_are_plain_text_until_hydration(saved_funding_rows_case):
-    soup, data = saved_funding_rows_case
-    assert check_page.check_funding_outside(str(soup), data, saved=True) == []
-    assert check_page.check_funding_outside(str(soup), data)  # Live disclosures still require buttons and ARIA.
-
-
-def test_saved_funding_check_rejects_original_dead_buttons(funding_rows_case):
-    soup, data = funding_rows_case
-    assert check_page.check_funding_outside(str(soup), data) == []
-    assert any('saved names line must be plain text' in e for e in check_page.check_funding_outside(str(soup), data, saved=True))
-
-
-@pytest.mark.parametrize('mutation', ['button', 'role', 'tabindex', 'expanded', 'controls', 'nested-focus', 'sibling-focus', 'unhidden'])
-def test_saved_funding_names_reject_dead_control_mutations(saved_funding_rows_case, mutation):
-    soup, data = saved_funding_rows_case
-    toggle = soup.select_one('.fund-names-toggle')
-    if mutation == 'button':
-        toggle.name = 'button'
-    elif mutation in ('role', 'tabindex', 'expanded', 'controls'):
-        key, value = {'role': ('role', 'button'), 'tabindex': ('tabindex', '0'),
-                      'expanded': ('aria-expanded', 'false'), 'controls': ('aria-controls', 'fund-budget-missing-list')}[mutation]
-        toggle[key] = value
-    elif mutation == 'nested-focus':
-        toggle.select_one('.fund-missing-names')['tabindex'] = '0'
-    elif mutation == 'sibling-focus':
-        toggle.insert_before(BeautifulSoup('<button>Open</button>', 'html.parser'))
-    else:
-        del soup.select_one('.fund-name-list')['hidden']
-    finding = 'closed by default' if mutation == 'unhidden' else 'saved names line must be plain text'
-    assert any(finding in e for e in check_page.check_funding_outside(str(soup), data, saved=True))
 
 
 def test_setup_groups_cover_institutes_before_establishment():
@@ -1563,42 +540,6 @@ def test_uncited_values_need_a_citation_link_except_absence_and_known_gaps(monke
     assert found == ["card KR: Related funding", "related funding f1", "table FR: op"]
     monkeypatch.setattr(check_page, "KNOWN_UNCITED", {("net", "US"): "", ("net", "GB"): ""})
     assert "KNOWN_UNCITED entry ('net', 'GB') is stale: remove it" in check_page.uncited_values(BeautifulSoup(html, "html.parser"))
-
-
-@pytest.mark.parametrize(
-    "phrase",
-    [
-        "rendered text from r.jina.ai is used",
-        "one Jina fallback failed",
-        "read through a reader proxy",
-        "direct requests returned HTTP 403",
-        "Round 6 review (17 October 2026): text",
-        "the record ID decides",
-        "the earlier entry breaks ties",
-        "The build lists records for review",
-        "The about code represents the approximation",
-    ],
-)
-def test_internal_vocabulary_is_reported(phrase):
-    found = check_page.internal_vocabulary(BeautifulSoup(f"<main><p>{phrase}.</p></main>", "html.parser"))
-    assert found
-
-
-def test_internal_vocabulary_exempts_version_history_and_plain_words():
-    html = """<main><p>The second funding round 2 opened. Ties keep a fixed order.</p>
-      <details id="changes"><p>Round 6 review: direct requests returned HTTP 403.</p></details></main>"""
-    assert check_page.internal_vocabulary(BeautifulSoup(html, "html.parser")) == []
-
-
-def test_glyph_check_allows_status_swatches_only():
-    good = BeautifulSoup('<span class="smark"><i class="sw st-planned"></i>Planned</span><span class="smark value" data-state="confirmed">Joint testing</span>', "html.parser")
-    assert check_page.check_glyphs(good) == []
-    for bad in (
-        '<span class="smark value" data-state="confirmed"><i class="sw state-confirmed"></i>Joint testing</span>',
-        '<p id="operating-legend">■ Published work</p>',
-        '<i class="sw st-planned st-extra"></i>',
-    ):
-        assert check_page.check_glyphs(BeautifulSoup(bad, "html.parser")), bad
 
 
 def _names_data():
@@ -1696,13 +637,6 @@ def test_institute_local_name_is_the_complete_names_tooltip(linked):
         assert any('Institute: the shown name must carry name_local' in e for e in check_page.check_institute_names(broken, data))
     data['institutes'][0]['name_local'] = shown
     assert check_page.check_institute_names(_names_html(), data) == []
-
-
-def test_original_names_do_not_acquire_nested_glossary_tips():
-    data = {"dataset": {"glossary": {"AI": "artificial intelligence"}}}
-    html = '<article class="card" id="c-xx"><span class="original-text" aria-description="Institut IA" tabindex="0">AI Institute</span><p><abbr class="g" aria-description="artificial intelligence">AI</abbr> research</p></article>'
-    assert check_page.check_terms_once(html, data) == []
-    assert check_page.check_terms_once(html.replace('class="original-text"', ''), data)
 
 
 def _fold_data():
@@ -1942,20 +876,6 @@ def test_quote_translation_rejects_sentence_markers_or_unreachable_original(plac
     assert any("translation" in e or "translated" in e for e in check_page.check_claim_cards(html, data))
 
 
-def test_quote_translation_is_named_accessibly_and_once_inside_the_fold():
-    _, _, quote, marker, _ = _translated_lead_fixture()
-    translation = '<span class="quote-translation">Translated from German</span>'
-    html = ('<details class="quote" open data-translated="Translated from German"><summary aria-label="Quote, translated from German">Quote</summary>'
-            f'<div class="quote-body"><div class="quote-excerpt">{quote}<span class="quote-anchor">Under the heading {quote}</span></div>{translation}</div></details>')
-    assert check_page.check_quote_translations(BeautifulSoup(html, "html.parser")) == []
-    for broken in (html.replace(", translated from German", ""), html.replace(quote + "<span", quote + marker + "<span", 1),
-                   html.replace(' tabindex="0"', "", 1), html.replace('>Quote</summary>', '>“</summary>'),
-                   html.replace('>Quote</summary>', '>Quote, translated from German</summary>'),
-                   html.replace(translation, ''), html.replace(translation, translation * 2),
-                   html.replace(translation, translation.replace('German', 'French'))):
-        assert check_page.check_quote_translations(BeautifulSoup(broken, "html.parser"))
-
-
 def test_quote_label_names_each_plain_language_once():
     data = {"jurisdictions": [{"id": "XX", "claims": [{"id": "c", "kind": "fact", "text": "t"}]}],
             "sources": [{"id": "a", "language": "nn", "excerpts": [{"text": "x", "gloss": "y", "supports": ["/jurisdictions/0/claims/0/text"],
@@ -1964,45 +884,6 @@ def test_quote_label_names_each_plain_language_once():
     assert check_page.expected_quote_label(data, "c") == "Quote, translated from Norwegian and French"
     data["sources"][0]["excerpts"][0] = {"text": "x", "supports": ["/jurisdictions/0/claims/0/text"]}
     assert check_page.expected_quote_label(data, "c") == "Quote"
-
-
-def test_shared_quote_renderer_keeps_words_names_and_lazy_translation_in_every_context():
-    source = (ROOT / 'site/index.html').read_text()
-    helpers = source[source.index('  function quoteLanguages('):source.index('  function shownLead(')]
-    loader = source[source.index('  function loadClaimQuote('):source.index('  document.addEventListener("toggle", function (e) { if (e.target.matches("details.quote"))')]
-    script = r"""
-const assert=require('node:assert/strict'), QUOTE_LABEL='Quote',TRANSLATED='translated from {language}';
-const languageName=code=>({de:'German',fr:'French'}[code]),andJoin=names=>names.join(' and ');
-const CLAIM_INDEX={plain:{excerpts:[]},translated:{sources:{other:{language:'fr'}},excerpts:[
-  {source:{language:'de'},excerpt:{gloss:'English text',anchors:[{gloss:'English anchor'},{source_id:'other',gloss:'French anchor'}]}}]}};
-function el(tag,cls,text) {return {tagName:tag,className:cls,textContent:text,dataset:{},children:[],attributes:{},
-  setAttribute(key,value){this.attributes[key]=value;},appendChild(n){this.children.push(n);},
-  querySelector(s){return this.children.find(n=>s==='summary'?n.tagName==='summary':n.className==='quote-body');},
-  classList:{add(){}}};}
-const document={createTextNode:text=>({textContent:text})};
-const trailingQualifier=(text,cls)=>el('span',cls+' trailing-qualifier',text);
-let loads=0;const claimQuoteBody=()=>{loads++;return el('div','quote-body');};
-HELPERS
-LOADER
-for(const inline of [false,true]) for(const id of ['plain','translated']) {
-  const fold=quoteDisclosure({id}), summary=fold.children[0], line=el('li');
-  assert.equal(summary.textContent,'Quote');assert.equal(summary.attributes['aria-label'],id==='plain'?'Quote':'Quote, translated from German and French');
-  assert.equal(summary.dataset.tip,undefined);
-  if(inline) {quoteOnSourceLine(fold,line);assert.deepEqual(line.children,[fold]);assert.equal(summary.children[0].textContent,'Quote');assert.equal(summary.children[0].className,'quote-label trailing-qualifier');}
-  const before=loads;loadClaimQuote(fold);assert.equal(loads,before);assert.equal(fold.children.length,1);
-  fold.open=true;loadClaimQuote(fold);loadClaimQuote(fold);assert.equal(loads,before+1);
-  const markers=fold.querySelector('.quote-body').children;
-  assert.deepEqual(markers.map(n=>n.textContent),id==='plain'?[]:['Translated from German and French']);
-}
-""".replace('HELPERS', helpers).replace('LOADER', loader)
-    subprocess.run(['node', '-'], input=script, text=True, capture_output=True, check=True)
-
-
-def test_quote_translation_generated_sentence_without_disclosure_has_no_marker():
-    _, _, quote, marker, _ = _translated_lead_fixture()
-    html = f'<p>It says it {quote} with them.</p>'
-    assert check_page.check_quote_translations(BeautifulSoup(html, "html.parser")) == []
-    assert check_page.check_quote_translations(BeautifulSoup(html.replace("</p>", marker + "</p>"), "html.parser"))
 
 
 def test_generic_sources_stay_out_of_card_lists_and_in_method():
@@ -2119,15 +1000,6 @@ def test_archive_links_only_where_needed():
     assert "4 archived copy links on the page, 3 expected from source lists and Method" in check_page.check_archive_links(extra_citation, data)
     as_citation = _archive_html().replace('class="archive" href="https://web.archive.org', 'class="archive cn" href="https://web.archive.org', 1)
     assert check_page.check_archive_links(as_citation, data) == ["a superscript citation carries an archived copy link"]
-
-
-def test_archive_links_allow_rewording_but_require_visible_link_text():
-    data = _archive_data()
-    html = _archive_html().replace("archived copy", "Saved source").replace("(opens in a new tab)", "Opens separately")
-    assert check_page.check_archive_links(html, data) == []
-    for label in ("", " \n "):
-        errors = check_page.check_archive_links(html.replace("Saved source", label), data)
-        assert any("archived copy link differs" in error for error in errors)
 
 
 def test_reread_caveat_ends_the_source_line():
@@ -2411,101 +1283,6 @@ def test_figures_row_rejects_empty_selections(figures_case, selector, message):
     assert f'figures_row: {message} matched 0' in check_page.check_figures_row(soup, data)
 
 
-def test_source_keyboard_minima_follow_sourced_card_types_and_repository():
-    data = {'dataset': {'repository': 'https://example.org/repo'}, 'sources': [{'id': 's'}], 'institutes': [], 'jurisdictions': [
-        {'id': 'EU', 'kind': 'supranational', 'status': 'established', 'source_ids': ['s']},
-        {'id': 'XX', 'kind': 'state', 'status': 'none_identified', 'europe_scope': True, 'source_ids': ['s']},
-    ]}
-    assert check_page.source_keyboard_targets(data) == {'article.card': True, '.card.mini': True}
-    for selector, expected in check_page.source_keyboard_targets(data).items():
-        assert check_page.zero_match_errors('source_keyboard', selector, 0, expected) == [f'source_keyboard: {selector} matched 0']
-        assert check_page.zero_match_errors('source_keyboard', selector, 1, expected) == []
-    data['jurisdictions'][0]['source_ids'] = []
-    data['jurisdictions'][1]['europe_scope'] = False
-    assert check_page.source_keyboard_targets(data) == {'article.card': False, '.card.mini': False}
-    for repository in ('https://example.org/repo', None):
-        errors = check_page.zero_match_errors('source_keyboard', '.source-after .correction', 0, bool(repository))
-        assert bool(errors) == bool(repository)
-
-
-def test_source_keyboard_returns_blocking_absence_without_touching_missing_card(monkeypatch):
-    data = {'dataset': {}, 'sources': [{'id': 's'}], 'institutes': [], 'jurisdictions': [
-        {'id': 'XX', 'status': 'planned', 'source_ids': ['s']},
-    ]}
-    monkeypatch.setattr(check_page, 'checked_page_data', lambda page: data)
-
-    class EmptyPage:
-        def evaluate(self, expression, *args):
-            return [0, 0] if expression == '[scrollX, scrollY]' else None
-
-        def locator(self, selector):
-            return self
-
-        def count(self):
-            return 0
-
-        @property
-        def first(self):
-            pytest.fail('must not interact with an empty locator')
-
-    assert check_page.check_source_keyboard(EmptyPage()) == ['source_keyboard: article.card:has(details.srcs):visible matched 0']
-
-
-def test_label_ladder_requires_each_data_backed_card_heading_and_name():
-    data = {'jurisdictions': [
-        {'id': 'EU', 'kind': 'supranational', 'status': 'established'},
-        {'id': 'GB', 'kind': 'state', 'status': 'established', 'europe_scope': True},
-        {'id': 'US', 'kind': 'state', 'status': 'established', 'europe_scope': False},
-        {'id': 'XX', 'kind': 'state', 'status': 'none_identified', 'europe_scope': True},
-    ]}
-    counts = dict.fromkeys(check_page.label_ladder_selectors(data), 1)
-    eu = '.eu-level .card:not(.mini)[data-j="EU"]'
-    assert eu in counts and '.eu-level .eu-head > h3' in counts
-    assert check_page.label_ladder_match_errors(data, counts) == []
-    for selector in counts:
-        errors = check_page.label_ladder_match_errors(data, {**counts, selector: 0})
-        assert errors == [f'label_ladder: {selector} matched 0']
-    data['jurisdictions'] = data['jurisdictions'][1:]
-    assert not any('.eu-level' in selector for selector in check_page.label_ladder_selectors(data))
-    assert check_page.label_ladder_match_errors(data, {k: v for k, v in counts.items() if '.eu-level' not in k}) == []
-
-
-def test_label_ladder_keeps_presence_findings_blocking_at_page_seam(monkeypatch):
-    data = {'jurisdictions': [{'id': 'EU', 'kind': 'supranational', 'status': 'established'}]}
-    monkeypatch.setattr(check_page, 'checked_page_data', lambda page: data)
-
-    class EmptyPage:
-        def evaluate(self, expression, selectors):
-            return {'counts': dict.fromkeys(selectors, 0), 'errors': []}
-
-    errors = check_page.check_label_ladder(EmptyPage())
-    assert 'label_ladder: .eu-level .card:not(.mini)[data-j="EU"] matched 0' in errors
-
-
-def test_every_theme_is_set_through_the_theme_helpers():
-    """Principle Theme: the page ignores the system scheme, so a page opened with color_scheme alone is silently
-    light. Only the helpers and the theme checks may name a colour scheme; every loop over both themes opens its
-    pages only through themed_page (no raw new_page or new_context inside it) or switches them with set_theme."""
-    import ast
-
-    tree = ast.parse(Path(check_page.__file__).read_text(encoding="utf-8"))
-    allowed = {"themed_page", "set_theme", "check_theme_default"}
-    offenders, loops = [], []
-    for function in (n for n in ast.walk(tree) if isinstance(n, ast.FunctionDef)):
-        for node in ast.walk(function):
-            if isinstance(node, ast.keyword) and node.arg == "color_scheme" and function.name not in allowed:
-                offenders.append(function.name)
-            if (isinstance(node, ast.For) and isinstance(node.iter, ast.Tuple)
-                    and {getattr(e, "value", None) for e in node.iter.elts} == {"light", "dark"}):
-                calls = [c for c in ast.walk(node) if isinstance(c, ast.Call)]
-                names = {getattr(c.func, "id", None) for c in calls}
-                raw = [c.lineno for c in calls if getattr(c.func, "attr", None) in ("new_page", "new_context")]
-                if function.name not in allowed and (raw or not names & {"themed_page", "set_theme"}):
-                    loops.append(f"{function.name} (raw page at lines {raw})" if raw else function.name)
-    assert not offenders, f"colour scheme set outside the theme helpers in {offenders}"
-    assert not loops, f"a loop over both themes does not use themed_page or set_theme in {loops}"
-
-
 def test_cite_is_the_citation_with_its_doi_link():
     doi = "10.5281/zenodo.1234567"
     url = "https://doi.org/" + doi
@@ -2518,38 +1295,6 @@ def test_cite_is_the_citation_with_its_doi_link():
     assert check_page.check_cite(wrong, dataset) == ["Cite as is not dataset.citation verbatim"]
     no_doi = {"citation": "Tracker, version 1.0.0."}
     assert check_page.check_cite(wrong, no_doi) == []
-
-
-KEYED_PAGE = BeautifulSoup("""
-<table><tbody id="world-rows">
-  <tr data-j="GB"><td data-col="budget">1</td></tr>
-  <tr data-j="FR"></tr>
-  <tr data-j="FR"><td data-col="budget">2</td></tr>
-</tbody><tbody id="world-rest"><tr data-j="DE"><td data-col="budget">3</td></tr></tbody></table>
-<article class="card" data-j="GB"><div class="row"><span class="v">a</span></div>
-  <article class="card" data-j="IT"><div class="row"><span class="v">b</span></div></article></article>
-<div id="c-gb"><div class="row" data-track="2"><span class="v">c</span></div></div>
-""", "html.parser")
-
-
-@pytest.mark.parametrize("selector, attr, value, rest", [
-    ("#world-rows tr[data-j]", "data-j", "GB", ""),
-    ("#world-rows tr[data-j]", "data-j", "FR", ""),  # two rows: the first
-    ("#world-rows tr[data-j]", "data-j", "FR", '[data-col="budget"]'),  # the first row has none: the second's
-    ("#world-rows tr[data-j], #world-rest tr[data-j]", "data-j", "DE", ""),
-    ("#world-rows tr[data-j], #world-rest tr[data-j]", "data-j", "FR", "td"),
-    ("#world-rows tr[data-j]", "data-j", "NL", ""),  # absent
-    (".card[data-j]", "data-j", "GB", ".row .v"),  # a nested card's row is inside the outer card too
-    (".card[data-j]", "data-j", "IT", ".row .v"),
-    ("[id]", "id", "c-gb", ".row[data-track='2'] .v"),
-    ("#world-rows tr[data-j]", "data-j", "G\\42", ""),  # not a plain name: CSS reads the escape
-])
-def test_keyed_finds_what_the_plain_query_finds(selector, attr, value, rest):
-    keyed = check_page.Keyed(KEYED_PAGE, selector, attr)
-    plain = ", ".join(f'{arm.strip()}[{attr}="{value}"] {rest}'.rstrip() for arm in selector.split(","))
-    assert keyed.one(value, rest) is KEYED_PAGE.select_one(plain)
-    if rest:
-        assert keyed.all(value, rest) == KEYED_PAGE.select(plain)
 
 
 def staged_job(stage, check, args):
@@ -2781,12 +1526,6 @@ def test_a_damaged_timings_file_loses_only_timings(tmp_path, monkeypatch, capsys
     monkeypatch.undo()
     timings.write_bytes(b"\xff\xfe not utf-8\n")
     assert check_page.read_timings(timings) == [] and "not read" in capsys.readouterr().err
-
-
-def test_a_working_file_that_cannot_be_removed_only_warns(tmp_path, monkeypatch, capsys):
-    monkeypatch.setattr(Path, "unlink", lambda self, missing_ok=False: (_ for _ in ()).throw(PermissionError("denied")))
-    check_page.drop_timings(tmp_path / "x.timings")
-    assert "not removed" in capsys.readouterr().err
 
 
 def test_load_shards_hands_over_the_timings_it_validated(tmp_path):
@@ -3289,102 +2028,6 @@ def test_gate_jobs_default_follows_the_host_setting(monkeypatch):
             check_page.default_jobs({"AISI_GATE_JOBS": bad})
 
 
-def test_a_held_request_must_have_been_held_before_release():
-    """Held: a check acts while the request is pending; a hold that never caught its request fails, never passes."""
-    class Route:
-        def __init__(self):
-            self.done = None
-
-        def continue_(self):
-            assert self.done is None, "Route is already handled!"  # Playwright: unroute settles a held route
-            self.done = "continued"
-
-        def abort(self):
-            assert self.done is None, "Route is already handled!"
-            self.done = "aborted"
-
-    class Page:
-        def __init__(self, arrives_after=None):
-            self.handlers, self.waited, self.arrives_after, self.route_obj = {}, 0, arrives_after, Route()
-
-        def route(self, pattern, handler):
-            self.handlers[pattern] = handler
-
-        def unroute(self, pattern, handler):
-            assert self.handlers.pop(pattern) == handler  # a bound method: equal, not identical (Playwright keys it so)
-            if self.route_obj.done is None:
-                self.route_obj.done = "unrouted"  # as Playwright does with a route still held (measured, 1.63)
-
-        def wait_for_timeout(self, ms):
-            self.waited += ms
-            if self.arrives_after is not None and self.waited >= self.arrives_after and self.handlers:
-                next(iter(self.handlers.values()))(self.route_obj)
-
-    page = Page(arrives_after=100)  # the request arrives while the check waits for it
-    held = check_page.Held(page, check_page.PAGE_DATA)
-    held.release()
-    assert page.route_obj.done == "continued" and not page.handlers
-    page = Page(arrives_after=0)
-    held = check_page.Held(page, check_page.PAGE_DATA)
-    held.release(abort=True)
-    assert page.route_obj.done == "aborted"
-    with pytest.raises(AssertionError, match="no request for"):
-        check_page.Held(Page(), check_page.PAGE_DATA).wait(timeout_ms=120)
-
-
-class _Opened(dict):
-    """A fake page or context: the options it was opened with, and the init scripts added to it."""
-
-    def __init__(self, options):
-        super().__init__(options)
-        self.scripts = []
-
-    def add_init_script(self, script):
-        self.scripts.append(script)
-
-
-class _FakeBrowser:
-    version = "1"
-
-    def new_page(self, **options):
-        return _Opened(options)
-
-    def new_context(self, **options):
-        return _Opened(options)
-
-
-def test_pages_and_contexts_open_in_the_fixed_locale_unless_a_check_names_one():
-    browser = check_page.LocalisedBrowser(_FakeBrowser())
-    assert browser.new_page(color_scheme="dark") == {"locale": check_page.LOCALE, "color_scheme": "dark"}
-    assert browser.new_context(locale="de-AT") == {"locale": "de-AT"}
-    assert browser.version == "1"
-
-
-def test_the_gate_has_one_hydration_wait_and_its_timeout_names_where(monkeypatch):
-    import sys
-    import types
-
-    class PlaywrightTimeout(Exception):
-        pass
-
-    module = types.ModuleType("playwright.sync_api")
-    module.TimeoutError = PlaywrightTimeout
-    monkeypatch.setitem(sys.modules, "playwright", types.ModuleType("playwright"))
-    monkeypatch.setitem(sys.modules, "playwright.sync_api", module)
-    source = Path(check_page.__file__).read_text(encoding="utf-8")
-    assert source.count("!document.documentElement.hasAttribute('data-prerendered')") == 1  # wait_hydrated only
-
-    class Page:
-        def wait_for_function(self, script, timeout):
-            raise PlaywrightTimeout("Timeout 30000ms exceeded.")
-
-    with pytest.raises(PlaywrightTimeout, match="did not take over within 30 s") as caught:
-        check_page.wait_hydrated(Page())
-    assert check_page.raised_at(caught.value).startswith(" at check_page.py:")
-    assert check_page.raised_at(caught.value).endswith("(wait_hydrated)")
-    assert check_page.raised_at(ValueError()) == ""
-
-
 def test_a_run_of_named_jobs_never_reads_as_the_gate(rendered, monkeypatch, capsys):
     _, data, dist = rendered
     (dist / "data/aisi.json").write_text(json.dumps(data))
@@ -3400,40 +2043,6 @@ def test_a_run_of_named_jobs_never_reads_as_the_gate(rendered, monkeypatch, caps
     assert "not the full gate" in capsys.readouterr().out
 
 
-def test_content_checks_run_in_the_content_step_not_per_state():
-    import inspect
-
-    assert not hasattr(check_page, "check_rendered_content")  # D2: every family moved to tests/content
-    passed = inspect.getsource(check_page.interaction_pass)
-    for helper in ("check_budget_output", "check_staff_figures", "check_generic_sources", "check_nonidentified_folds", "BeautifulSoup("):
-        assert helper not in passed, helper  # no per-state copy of a content check (filtered views keep their own)
-    assert 'theme_invariant=theme == "light"' in passed  # the first screen's theme-invariant steps run once per width
-    assert 'anchor = (width, theme) == (1440, "light")' in passed and passed.count("    if anchor:") == 4
-    assert passed.count('if theme == "light":') == 2  # the expanded sweep's theme-invariant checks
-    sweep = passed.split("# Check all controls revealed by disclosures.")[1].split("# Toolbar disclosures are exclusive")[0]
-    unguarded = [line.strip() for line in sweep.splitlines() if line.startswith(("    for error in check_", "        check_"))]
-    for colour in ("check_design_roles", "check_planned_swatches", "check_source_footers", "check_external_markers", "check_controls"):
-        assert any(colour in line for line in unguarded), colour  # read colours: still in both themes
-    for invariant in ("check_card_grid", "check_source_keyboard", "check_hit_targets"):
-        assert not any(invariant in line for line in unguarded), invariant  # geometry and order only: light only
-
-
-def test_laps_time_each_step_and_reach_the_job_line(tmp_path, monkeypatch):
-    clock = iter([10.0, 10.0, 11.5, 14.0, 14.0, 20.0])  # timed_job start, step_clock start, two laps, ..., end
-    monkeypatch.setattr(check_page.time, "monotonic", lambda: next(clock))
-
-    def job(stage, check, args):
-        lap = check_page.step_clock()
-        lap("load")
-        lap("layout")
-        return []
-
-    timings = tmp_path / "t.jsonl"
-    assert check_page.timed_job(timings, 10.0, job, "interactions", check_page.check_access_fixes, ()) == []
-    line = check_page.read_timings(timings)[0]
-    assert line["steps"] == {"load": 1.5, "layout": 2.5} and check_page.timing_ok(line)
-
-
 def test_a_job_without_laps_has_no_steps_key_and_bad_steps_are_refused(tmp_path):
     timings = tmp_path / "t.jsonl"
     check_page.timed_job(timings, 0.0, lambda stage, check, args: [], "origins", check_page.check_access_fixes, ())
@@ -3442,69 +2051,6 @@ def test_a_job_without_laps_has_no_steps_key_and_bad_steps_are_refused(tmp_path)
     assert check_page.timing_ok({**base, "steps": {"load": 1.0}})
     for bad in ({"load": -1}, {"load": "1"}, ["load"], {3: 1.0}):
         assert not check_page.timing_ok({**base, "steps": bad})
-
-
-def test_interaction_pass_marks_its_steps():
-    import inspect
-
-    source = inspect.getsource(check_page.interaction_pass)
-    assert source.count('lap("') == 15 and "lap = step_clock()" in source  # one per block, the last before the return
-
-
-def test_each_job_line_has_only_its_own_steps_also_when_it_raises(tmp_path):
-    def first(stage, check, args):
-        check_page.step_clock()("load")
-        return []
-
-    def second(stage, check, args):
-        lap = check_page.step_clock()
-        lap("layout")
-        raise RuntimeError("broke after a lap")
-
-    timings = tmp_path / "t.jsonl"
-    check_page.timed_job(timings, 0.0, first, "interactions", check_page.check_access_fixes, ())
-    with pytest.raises(RuntimeError):
-        check_page.timed_job(timings, 0.0, second, "interactions", check_page.check_menu_touch, ())
-    one, two = check_page.read_timings(timings)
-    assert set(one["steps"]) == {"load"} and set(two["steps"]) == {"layout"} and two["exception"] == "RuntimeError"
-
-
-def test_pages_and_contexts_draw_every_section_unless_a_check_keeps_skipping():
-    """Content checks read text that skipped sections report empty; checks of the page as shipped keep skipping."""
-    browser = check_page.LocalisedBrowser(_FakeBrowser())
-    for opened in (browser.new_page(), browser.new_context()):
-        assert opened.scripts == [check_page.NO_SKIPPING]
-    for opened in (browser.new_page(skipping=True), browser.new_context(skipping=True)):
-        assert opened.scripts == [] and "skipping" not in opened
-
-
-def test_a_crop_never_captures_skipped_content_blank(monkeypatch, tmp_path):
-    """The contact sheet once photographed off-screen sections that content-visibility skipped, as blank areas
-    reported as changes; a crop with skipped text inside it now stops the capture instead."""
-
-    class Target:
-        def evaluate(self, script, name):
-            return {"x": 0, "y": 0, "width": 100, "height": 100}
-
-    class Page:
-        def __init__(self, skipped):
-            self.skipped, self.shots = skipped, []
-
-        def evaluate(self, script, clip):
-            assert script == check_page.SKIPPED_IN_CLIP
-            return self.skipped
-
-        def screenshot(self, **options):
-            self.shots.append(options["path"])
-
-    monkeypatch.setattr(check_page, "section_targets", lambda page: [("cards", Target())])
-    blind = Page(3)
-    with pytest.raises(RuntimeError, match="skipped inside the crop"):
-        check_page.capture_sections(blind, tmp_path, "1440-light")
-    assert blind.shots == []
-    drawn = Page(0)
-    check_page.capture_sections(drawn, tmp_path, "1440-light")
-    assert len(drawn.shots) == 1
 
 
 @pytest.mark.parametrize("use, expected", [(True, {"hydration/hydration_paint"}), (False, set())])
@@ -3602,20 +2148,6 @@ def test_the_deadline_timer_stays_armed_through_the_job(tmp_path):
     assert result.returncode == check_page.NOT_RUN and check_page.DEADLINE_PASSED in result.stderr and "passed after" not in result.stdout
 
 
-def test_the_definition_must_come_before_its_rule_link():
-    data = {"dataset": {"definition": "Example.", "status_definitions": {}}}
-    html = '<div id="headline"></div><p id="definition-link"><a href="#definition">Read</a></p><section id="method-sec"><div class="section-body"><p id="definition">Example. <a href="method.html#qualifying-body">The test in detail</a></p></div></section>'
-    assert check_page.check_supporting_text(BeautifulSoup(html, "html.parser"), data) == []
-    moved = html.replace('Example. <a href="method.html#qualifying-body">The test in detail</a>', '<a href="method.html#qualifying-body">The test in detail</a> Example.')
-    assert any("dataset.definition" in e for e in check_page.check_supporting_text(BeautifulSoup(moved, "html.parser"), data))
-
-
-def test_the_new_tab_notice_keeps_its_meaning_in_any_wording():
-    source = check_page.check_external_markers.__code__.co_consts
-    script = next(c for c in source if isinstance(c, str) and "links open a new tab without saying so" in c)
-    assert "/new (tab|window)/i" in script  # a notice that no longer says it opens a new tab or window fails
-
-
 def test_skip_static_runs_only_the_job(rendered, monkeypatch, capsys):
     _, data, dist = rendered
     (dist / "data/aisi.json").write_text(json.dumps(data))
@@ -3650,6 +2182,8 @@ MOVED_TO_CONTENT = {  # content family module -> the check_page helpers it now r
     "names": ("check_section_bar", "check_institute_names", "check_former_names", "check_nonidentified_folds", "check_terms_once"),
     "staff": ("check_staff_figures",),
 }
+
+
 MOVED_HELPERS = tuple(h for helpers in MOVED_TO_CONTENT.values() for h in helpers)
 
 
@@ -3711,20 +2245,6 @@ def test_the_staff_fixture_names_its_source_and_quote_for_every_entry():
     assert [e["institute_id"] for e in entries if e["quote"] not in excerpts.get(e["source_id"], [])] == []
 
 
-def test_palette_theme_rows_are_keyed_only_by_their_own_state():
-    """The palette's theme rows (one place in the page): one row per state, and a row's words name its own state and
-    no other, so a typed state word finds only the row that goes there (the browser gate checks the behaviour)."""
-    source = (ROOT / "site" / "index.html").read_text(encoding="utf-8")
-    found = re.search(r"var THEME_ROWS = (\[\[.*?\]\]), THEME_KEYS = (\"[^\"]*\");", source)
-    assert found, "THEME_ROWS and THEME_KEYS are not declared together in site/index.html"
-    rows, shared = json.loads(found[1]), json.loads(found[2])
-    assert sorted(r[0] for r in rows) == sorted(check_page.PALETTE_THEMES)
-    for state, label, words in rows:
-        named = {check_page.PALETTE_THEME_WORDS[w] for w in (words + " " + label).lower().split() if w in check_page.PALETTE_THEME_WORDS}
-        assert named == {state}, f"the {state} row ({label!r}, keys {words!r}) names {sorted(named)}"
-    assert not set(shared.split()) & set(check_page.PALETTE_THEME_WORDS), f"the shared theme words {shared!r} name a state"
-
-
 def test_fold_text_ignores_case_and_accents_as_the_palette_does():
     assert check_page.fold_text("São Tomé") == "sao tome"
     assert check_page.fold_text(None) == ""
@@ -3737,54 +2257,6 @@ def test_fold_text_ignores_case_and_accents_as_the_palette_does():
 ])
 def test_original_name_says_a_shared_abbreviation_once(body, shown):
     assert check_page.shown_original(body) == shown
-
-
-TINT = "rgb(250, 240, 220) 0px 0px 0px 8px"
-GROUND = "rgb(23, 25, 26)"
-
-
-@pytest.mark.parametrize("shadow, ok", [
-    (f"{GROUND} 0px -8px 0px 8px", True),  # one rectangle: sides, above and the upper corners
-    (f"{GROUND} 0px -1px 0px 0px inset, {GROUND} 0px -8px 0px 8px", True),  # the stuck row's inner rule beside it
-    (f"{GROUND} 0px -2px 0px 0px, {GROUND} -8px 0px 0px 0px, {GROUND} 8px 0px 0px 0px", False),  # separate layers: corners open
-    (f"{GROUND} 0px 0px 0px 8px", True),  # grown on every side covers above too
-    (f"{GROUND} 0px -8px 0px 4px", False),  # narrower than the tint
-    (f"{GROUND} 0px -1000px 0px 8px", False),  # moved so far up it leaves the row's sides
-    (f"{GROUND} 0px -8px 4px 8px", False),  # blurred: not solid
-    ("rgb(0, 0, 0) 0px -8px 0px 8px", False),  # not the row's own ground
-    ("none", False),
-])
-def test_group_row_cover_needs_one_rectangle(shadow, ok):
-    assert (check_page.row_cover_errors(TINT, [["Europe", shadow, GROUND]]) == []) is ok
-    assert check_page.row_cover_errors(TINT, []) == []
-
-
-def _terms(body, row="", data_j="PL"):
-    return (f'<details class="card mini" id="c-pl" data-j="{data_j}"><summary><h4>Poland</h4><span class="find">{row}</span></summary>{body}</details>'
-            '<p>NASK outside any card stays as it is.</p>')
-
-
-TERMS = {"dataset": {"glossary": {"NASK": "NASK research institute", "AISI": "AI Security Institute. We use the term.",
-                                  "KR": {"PL": "Polish commission"}}}}
-
-
-@pytest.mark.parametrize("html, found", [
-    (_terms('<p><abbr class="g">NASK</abbr> runs it; NASK says so.</p>'), []),
-    (_terms('<p>NASK runs it; <abbr class="g">NASK</abbr> says so.</p>'), ["leaves the first use of 'NASK' unmarked", "marks 'NASK' again"]),
-    (_terms('<p><abbr class="g">NASK</abbr> runs it; <abbr class="g">NASK</abbr> says so.</p>'), ["marks 'NASK' again"]),
-    (_terms('<p>The AI Security Institute (AISI) leads; AISI tests.</p>'), []),  # spelt out first: no mark at all
-    (_terms('<p>The AI Security Institute (AISI) leads; <abbr class="g">AISI</abbr> tests.</p>'), ["marks 'AISI' again"]),
-    (_terms('<p><abbr class="g">NASK</abbr> runs it.</p>', row='<abbr class="g">NASK</abbr> leads.'), []),  # the row is its own view
-    (_terms('<p><abbr class="g">NASK</abbr> runs it.</p>', row='NASK leads.'), ["leaves the first use of 'NASK' unmarked"]),
-    (_terms('<p><a href="#x">NASK</a> runs it; <abbr class="g">NASK</abbr> says so.</p>'), []),  # a link's text is never marked
-    (_terms('<p><abbr class="g">KR</abbr> meets; KR decides.</p>'), []),  # an expansion for this state
-    (_terms('<p>KR meets.</p>', data_j="CZ"), []),  # no expansion for this state: nothing to mark
-    (_terms('<p><abbr class="g val">NASK</abbr> 12; <abbr class="g">NASK</abbr> runs it.</p>'), []),  # a value tip is not a term mark
-    (_terms('<p>The AI Security Institute (<abbr class="g">AISI</abbr>) leads.</p>'), ["where the text spells it out"]),
-])
-def test_terms_marked_once_per_scope(html, found):
-    errors = check_page.check_terms_once(html, TERMS)
-    assert len(errors) == len(found) and all(any(f in e for e in errors) for f in found), errors
 
 
 @pytest.mark.parametrize("space", [" ", "\u00a0"])

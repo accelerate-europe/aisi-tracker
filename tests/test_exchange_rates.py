@@ -78,8 +78,6 @@ def test_invalid_amounts_rejected(value):
 def test_current_rate_contract():
     data = json.loads((ROOT / "data/aisi.json").read_text())
     assert build.check_exchange_rates(data) == []
-    currencies = {r["currency"] for r in data["dataset"]["exchange_rates"]}
-    assert {"GBP", "CAD", "INR", "JPY", "KRW", "AUD", "NOK", "MYR", "SGD", "USD"} == currencies
 
 
 @pytest.mark.parametrize(

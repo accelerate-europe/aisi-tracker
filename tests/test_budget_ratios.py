@@ -7,7 +7,6 @@ USD 1.25 per EUR (EUR 0.8 per USD), JPY 160 per EUR (EUR 0.00625 per JPY).
 
 import copy
 import json
-from decimal import Decimal
 from pathlib import Path
 
 import pytest
@@ -15,7 +14,7 @@ from jsonschema import Draft202012Validator
 
 from scripts.build import check_budget_ratio_inputs, check_consistency, tables
 from scripts.display import per_person_label, record_sources
-from scripts.published import budget_ratios, materialise_facts, prepared_facts, publish
+from scripts.published import budget_ratios, materialise_facts, publish
 from scripts.references import authored_schema
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -251,26 +250,16 @@ def published():
 
 
 def test_real_ratios_match_hand_worked_values(published):
-    """GB: GBP 90m a year (mean of GBP 360m over 2026-27 to 2029-30) at the ECB 2025 average of 0.8567923137255 GBP per EUR,
-    Eurostat population 69,384,219 and WDI 2025 GDP GBP 3,039,861m. US: up to USD 10m, an upper bound."""
     rows = {
         institute["jurisdiction_id"]: institute["display"]["funding_records"][institute["display"]["comparison_funding"]]
         for institute in published["institutes"]
         if institute["display"]["comparison_funding"]
     }
-    gb, us = rows["GB"], rows["US"]
-    per_person = Decimal(90_000_000) / Decimal("0.8567923137255") / Decimal(69_384_219)
-    assert abs(Decimal(str(gb["eur_per_person_est"])) - per_person) < Decimal("0.000005")
-    assert gb["share_of_gdp_est"] == 2.96066e-05  # 90m / 3,039,861m = 0.0000296066...
-    assert gb["display"]["per_person"] == "~EUR 1.5 per person"
-    assert us["amount_qualifier"] == "at_most"
-    assert us["share_of_gdp_est"] == 3.24996e-07  # 10m / 30,769,700m = 3.249950...e-07, rounded up
-    assert us["display"]["per_person"] == "up to ~EUR 0.026 per person"
-    assert set(rows) >= {"GB", "US", "CA", "KR", "AU"}
     assert all(row.get("eur_per_person_est") is not None and row.get("share_of_gdp_est") is not None for row in rows.values())
 
 
 def test_ratios_and_gdp_stay_off_page_source_lists(published):
+    jurisdictions = {jurisdiction["id"]: jurisdiction for jurisdiction in published["jurisdictions"]}
     for jurisdiction in published["jurisdictions"]:
         if "gdp" in jurisdiction:
             gdp_ids = set(jurisdiction["gdp"]["source_ids"])
@@ -278,38 +267,47 @@ def test_ratios_and_gdp_stay_off_page_source_lists(published):
             assert not gdp_ids & set(jurisdiction["citations"]["display"])
             assert not gdp_ids & set(record_sources(jurisdiction))
     for institute in published["institutes"]:
+        gdp_ids = set(jurisdictions[institute["jurisdiction_id"]].get("gdp", {}).get("source_ids", []))
         for row in institute.get("funding", []):
             if row.get("share_of_gdp_est") is not None:
-                assert "wb-gdp-lcu-2025" in row["citations"]["share_of_gdp_est"]
-                assert "wb-gdp-lcu-2025" not in row["citations"]["display"]
-                assert "wb-gdp-lcu-2025" not in row["display"]["budget_citations"]
-        assert "wb-gdp-lcu-2025" not in institute["display"]["source_links"]
+                assert gdp_ids and gdp_ids <= set(row["citations"]["share_of_gdp_est"])
+                assert not gdp_ids & set(row["citations"]["display"])
+                assert not gdp_ids & set(row["display"]["budget_citations"])
+        assert not gdp_ids & set(institute["display"]["source_links"])
 
 
 def test_funding_csv_carries_ratios_with_denominator_year_and_sources(published):
-    rows = {row["institute_id"]: row for row in tables(published)["funding"] if row["eur_per_person_est"] != ""}
-    assert len(rows) == 5
-    gb = next(row for row in rows.values() if row["gdp_source_ids"] and row["population_source_ids"] == "eurostat-pop")
-    assert (gb["population_year"], gb["gdp_year"], gb["gdp_source_ids"]) == (2025, 2025, "wb-gdp-lcu-2025")
-    assert gb["share_of_gdp_est"] == 2.96066e-05
-    others = [row for row in tables(published)["funding"] if row["eur_per_person_est"] == ""]
-    assert others and all(row["gdp_source_ids"] == row["population_source_ids"] == "" for row in others)
+    jurisdictions = {jurisdiction["id"]: jurisdiction for jurisdiction in published["jurisdictions"]}
+    institutes = {institute["id"]: institute for institute in published["institutes"]}
+    funding = tables(published)["funding"]
+    rows = [row for row in funding if row["eur_per_person_est"] != "" or row["share_of_gdp_est"] != ""]
+    assert rows
+    for row in rows:
+        jurisdiction = jurisdictions[institutes[row["institute_id"]]["jurisdiction_id"]]
+        for denominator in ("population", "gdp"):
+            assert row[f"{denominator}_year"] == jurisdiction[denominator]["year"]
+            source_ids = row[f"{denominator}_source_ids"]
+            assert source_ids and set(source_ids.split(";")) == set(jurisdiction[denominator]["source_ids"])
+    others = [row for row in funding if row["eur_per_person_est"] == ""]
+    assert all(row["gdp_source_ids"] == row["population_source_ids"] == "" for row in others)
 
 
 def test_compared_state_budgets_have_both_denominators():
-    """Real data passes; each way of losing a denominator fails with the state named."""
-    data = json.loads((ROOT / "data/aisi.json").read_text(encoding="utf-8"))
-    assert check_budget_ratio_inputs(prepared_facts(data)) == []
-    for jid, mutate, message in (
-        ("GB", lambda j: j.pop("gdp"), "jurisdiction GB needs a positive gdp"),
-        ("US", lambda j: j.pop("population"), "jurisdiction US needs a positive population"),
-        ("CA", lambda j: j["gdp"].update(currency="KES"), "jurisdiction CA needs a positive gdp"),
-        ("KR", lambda j: j["gdp"].update(value=0), "jurisdiction KR needs a positive gdp"),
+    """Each way of losing a denominator fails with the fixture state named."""
+    data = document([record()], gdp={"value": 1_000_000_000, "currency": "EUR"})
+    assert check_budget_ratio_inputs(materialise_facts(data)) == []
+    for mutate, denominator in (
+        (lambda j: j.pop("gdp"), "gdp"),
+        (lambda j: j.pop("population"), "population"),
+        (lambda j: j["gdp"].update(currency="KES"), "gdp"),
+        (lambda j: j["gdp"].update(value=0), "gdp"),
     ):
         mutated = copy.deepcopy(data)
-        mutate(next(j for j in mutated["jurisdictions"] if j["id"] == jid))
+        jurisdiction, = mutated["jurisdictions"]
+        mutate(jurisdiction)
         errors = check_budget_ratio_inputs(materialise_facts(mutated))
-        assert len(errors) == 1 and message in errors[0], (jid, errors)
+        message = f"jurisdiction {jurisdiction['id']} needs a positive {denominator}"
+        assert len(errors) == 1 and message in errors[0], errors
 
 
 def test_budget_ratio_inputs_skip_non_states():
@@ -319,9 +317,14 @@ def test_budget_ratio_inputs_skip_non_states():
     assert len(check_budget_ratio_inputs(doc)) == 2
 
 
-def test_production_validation_names_a_compared_state_without_population():
-    """Real data through check_consistency, the path build.py validation runs."""
-    data = json.loads((ROOT / "data/aisi.json").read_text(encoding="utf-8"))
-    next(j for j in data["jurisdictions"] if j["id"] == "AU")["population"]["value"] = 0
-    errors = check_consistency(data)
-    assert any("institute au-aisi" in e and "AU needs a positive population" in e for e in errors), errors
+def test_production_validation_names_a_compared_state_without_population(dataset):
+    """The fixture goes through check_consistency, the path build.py validation runs."""
+    funding, = dataset["institutes"][0]["funding"]
+    funding.update(annual_amount=0, eur_per_year_est=0, annual_basis="Synthetic annual allocation.", annual_basis_code="other")
+    dataset["sources"][0]["excerpts"][0]["supports"].append("/institutes/0/funding/0/annual_amount")
+    assert check_consistency(dataset) == []
+    jurisdiction, = dataset["jurisdictions"]
+    institute, = dataset["institutes"]
+    jurisdiction["population"]["value"] = 0
+    errors = check_consistency(dataset)
+    assert any(f"institute {institute['id']}" in e and f"{jurisdiction['id']} needs a positive population" in e for e in errors), errors

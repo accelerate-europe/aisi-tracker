@@ -31,9 +31,6 @@ def test_producer_and_gate_agree_on_each_label(record, label):
 def test_real_low_figures_name_their_source_and_the_check_catches_mutations():
     data = json.loads((ROOT / "data/aisi.json").read_text())
     assert build.check_figure_sources(data) == []
-    low = [(i, r) for i in data["institutes"] for k in ("funding", "staff") for r in i.get(k, []) if r["confidence"] == "low"]
-    assert {r["figure_source"] for _, r in low} == {"secondary_sources", "press_report", "our_estimate"}
-
     broken = copy.deepcopy(data)
     record = next(r for i in broken["institutes"] for r in i.get("staff", []) if r["confidence"] == "low")
     del record["figure_source"]

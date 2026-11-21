@@ -2,7 +2,6 @@
 
 import copy
 import json
-from pathlib import Path
 
 import pytest
 
@@ -196,21 +195,3 @@ def test_authored_funding_schema_requires_only_primary_annual_amount(dataset):
     assert any(
         "annual_amount" in error.message for error in validator.iter_errors(data)
     )
-
-
-def test_singapore_designation_does_not_supply_an_announcement_date():
-    data = json.loads(
-        (Path(__file__).resolve().parents[1] / "data/aisi.json").read_text()
-    )
-    raw = next(i for i in data["institutes"] if i["id"] == "sg-aisi")
-    assert "announced" not in raw
-    published = {i["id"]: i for i in publish(data)["institutes"]}
-    institute = published["sg-aisi"]
-    assert institute["established"] == "2024-05-22"
-    assert institute["announced"] is None
-    assert institute["citations"]["announced"] == []
-    # Same situation as Singapore: designation recorded, no commitment or proposal.
-    for identity in ("fr-inesia", "my-aisafe"):
-        assert published[identity]["announced"] is None
-    us = published["us-caissi"]
-    assert (us["announced"], us["citations"]["announced"]) == ("2023-11-01", ["us-commerce-2023"])

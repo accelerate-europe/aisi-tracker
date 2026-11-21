@@ -15,23 +15,37 @@ from scripts.shared_claims import resolve
 ROOT = Path(__file__).resolve().parents[1]
 PAGE = ROOT / "site/index.html"
 
-KOREA_FUNDING_IDS = {
-    "non_rd": "funding-eb798d93b6345b24b6fb8f1c45ad7e4a",
-    "rd": "funding-a4935c40a4e750e8844af6de22176e13",
-    "total": "funding-d0f61d15548153b9830f74f6e14ec324",
-}
-
-
 def funding_selector(institute_id, funding_id, *fields):
     return ["institutes", {"id": institute_id}, "funding", {"id": funding_id}, *fields]
 
 
-def korea_record(data, key):
-    return resolve(data, funding_selector("kr-aisi", KOREA_FUNDING_IDS[key]))[0]
-
-
-def korea_pointer(data, key, field):
-    return resolve(data, funding_selector("kr-aisi", KOREA_FUNDING_IDS[key], field))[2]
+@pytest.fixture
+def summed_funding(dataset):
+    institute, = dataset["institutes"]
+    base, = institute["funding"]
+    base.update(annual_basis="Synthetic annual allocation.", annual_basis_code="other")
+    first_source, = dataset["sources"]
+    second_source = {**first_source, "id": "component-source", "url": "https://example.org/component", "excerpts": []}
+    for key in ("output_role", "output_lineage"):
+        second_source.pop(key)
+    dataset["sources"].append(second_source)
+    institute["funding"] = [
+        {**copy.deepcopy(base), "id": identity, "amount": amount, "annual_amount": amount,
+         "coverage": "component", "confidence": confidence, "source_ids": [source["id"]]}
+        for identity, amount, confidence, source in (
+            ("component-a", 10, "high", first_source), ("component-b", 20, "medium", second_source)
+        )
+    ]
+    total = {**copy.deepcopy(base), "id": "total", "sum_of": ["component-a", "component-b"],
+             "confidence": "medium", "source_ids": [first_source["id"], second_source["id"]]}
+    total.pop("amount")
+    institute["funding"].append(total)
+    for index, source in enumerate((first_source, second_source)):
+        source["excerpts"].append({"text": "Synthetic component allocation.", "supports": [
+            f"/institutes/0/funding/{index}/{field}" for field in ("description", "amount", "annual_amount")
+        ]})
+    first_source["excerpts"].append({"text": "Synthetic budget.", "supports": ["/institutes/0/funding/2/description"]})
+    return dataset
 
 
 def select(records, as_of="2026-10-18", picker="comparableFunding"):
@@ -112,32 +126,6 @@ def test_allocation_before_mean_then_adopted_for_equal_periods():
     assert select([allocation, adopted]) == adopted
 
 
-def test_real_selection_matches_expected_selections():
-    data = prepared_facts(json.loads((ROOT / "data/aisi.json").read_text()))
-    actual = {
-        i["jurisdiction_id"]: select(i.get("funding", []), data["dataset"]["as_of"])
-        for i in data["institutes"]
-    }
-    assert {
-        country: (f["period"], f["eur_per_year_est"])
-        for country, f in actual.items()
-        if f
-    } == {
-        "GB": ("2026-27 to 2029-30", 105_043_000),
-        "US": ("FY2026 enacted", 8_849_690),
-        "CA": ("2024-25 to 2028-29", 6_334_220),
-        "KR": ("2026 total", 8_019_550),
-        "AU": ("2025-26 to 2028-29", 5_993_970),
-    }
-    assert actual["CA"]["annual_basis_code"] == "period_mean"
-    # Norway's 2027 proposal makes no bar but stays its Budget.
-    norway = next(i for i in data["institutes"] if i["jurisdiction_id"] == "NO")
-    budget = select(norway["funding"], data["dataset"]["as_of"], picker="pickFunding")
-    assert (budget["period"], budget["commitment"]) == ("2027 budget proposal", "proposed")
-    assert actual["KR"]["annual_amount"] == 8_900_000_000 + 3_975_000_000
-    assert actual["KR"]["confidence"] == "low"
-
-
 @pytest.mark.parametrize(
     "mutation",
     [
@@ -151,36 +139,31 @@ def test_real_selection_matches_expected_selections():
         "component",
     ],
 )
-def test_total_mutations_fail_build(mutation):
-    data = prepared_facts(json.loads((ROOT / "data/aisi.json").read_text()))
+def test_total_mutations_fail_build(summed_funding, mutation):
+    data = prepared_facts(summed_funding)
     assert build.check_funding_totals(data, complete=True) == []
-    total = korea_record(data, "total")
-    rd = korea_record(data, "rd")
+    records = {f["id"]: f for f in data["institutes"][0]["funding"]}
+    total = records["total"]
+    component = records["component-b"]
     if mutation in ("amount", "annual_amount"):
         total[mutation] += 1
     elif mutation == "currency":
-        rd["currency"] = "USD"
+        component["currency"] = "USD"
     elif mutation == "period":
-        rd["annual_period"]["start"] = "2025-01-01"
+        component["annual_period"]["start"] = "2025-01-01"
     elif mutation == "confidence":
         total["confidence"] = "high"
     elif mutation == "sources":
         total["source_ids"].pop()
     elif mutation == "self":
-        total["sum_of"] = [KOREA_FUNDING_IDS["non_rd"], KOREA_FUNDING_IDS["total"]]
+        total["sum_of"] = ["component-a", "total"]
     elif mutation == "component":
-        rd["coverage"] = "whole_institute"
+        component["coverage"] = "whole_institute"
     if mutation in ("amount", "annual_amount"):
         with pytest.raises(ValueError, match="disagrees with derived"):
             materialise_facts(data)
     else:
         assert build.check_funding_totals(data, complete=True)
-
-
-def test_removing_total_never_makes_component_comparable():
-    data = json.loads((ROOT / "data/aisi.json").read_text())
-    only_components = [copy.deepcopy(korea_record(data, key)) for key in ("non_rd", "rd")]
-    assert select(only_components) is None
 
 
 def test_decision_dates_and_latest_decision_tie_break():
@@ -197,16 +180,20 @@ def test_decision_dates_and_latest_decision_tie_break():
         assert select([dict(base, decision_date=partial)]) is None
 
 
-def test_derived_total_uses_component_excerpts_and_exports_scope():
-    authored = json.loads((ROOT / "data/aisi.json").read_text())
+def test_derived_total_uses_component_excerpts_and_exports_scope(summed_funding):
+    authored = summed_funding
     data = prepared_facts(authored)
+    institute, = data["institutes"]
+    def pointer(key, field):
+        return resolve(data, funding_selector(institute["id"], key, field))[2]
+
     required = required_excerpt_pointers(data, authored=authored)
     for field in ("amount", "annual_amount"):
-        assert korea_pointer(data, "total", field) not in required
-        for key in ("non_rd", "rd"):
-            assert korea_pointer(data, key, field) in required
+        assert pointer("total", field) not in required
+        for key in ("component-a", "component-b"):
+            assert pointer(key, field) in required
     assert build.check_consistency(data, require_roster=True, materialised=True, authored=authored) == []
-    removed_pointer = korea_pointer(data, "rd", "amount")
+    removed_pointer = pointer("component-b", "amount")
     for source in data["sources"]:
         for excerpt in source.get("excerpts", []):
             excerpt["supports"] = [
@@ -216,31 +203,18 @@ def test_derived_total_uses_component_excerpts_and_exports_scope():
         f"required claim has no excerpt: {removed_pointer}" in e
         for e in build.check_consistency(data, materialised=True, authored=authored)
     )
-    rows = {
-        row["id"]: row for row in build.tables(data)["funding"]
-        if row["institute_id"] == "kr-aisi"
-    }
-    total = rows[KOREA_FUNDING_IDS["total"]]
-    assert total["derived_total"] is True
-    assert total["coverage"] == "whole_institute"
-    assert total["annual_period_start"] == "2026-01-01"
-    assert total["annual_period_end"] == "2026-12-31"
-    assert all(
-        rows[KOREA_FUNDING_IDS[key]]["coverage"] == "component"
-        and rows[KOREA_FUNDING_IDS[key]]["derived_total"] is False
-        for key in ("non_rd", "rd")
-    )
 
 
 @pytest.mark.parametrize("date", ["2026", "2026-10", "2026-02-30"])
-def test_build_rejects_partial_or_invalid_annual_periods(date):
-    data = prepared_facts(json.loads((ROOT / "data/aisi.json").read_text()))
-    funding = resolve(data, funding_selector("gb-aisi", "funding-9efb56f77c7a5a6c8ca9eee9f9db9191"))[0]
-    funding["annual_period"]["end"] = date
+def test_build_rejects_partial_or_invalid_annual_periods(dataset, date):
+    data = prepared_facts(dataset)
+    funding, = data["institutes"][0]["funding"]
     schema = json.loads((ROOT / "schema/aisi.schema.json").read_text())
     validator = Draft202012Validator(
         schema, format_checker=Draft202012Validator.FORMAT_CHECKER
     )
+    assert not list(validator.iter_errors(data))
+    funding["annual_period"]["end"] = date
     assert any("annual_period" in e.absolute_path for e in validator.iter_errors(data))
 
 
@@ -257,30 +231,3 @@ def test_card_and_table_picker_excludes_components_and_amountless_future_figures
         select([component, future, published_only], picker="pickFunding")
         == published_only
     )
-
-# Hand-worked owner expectations, keyed by permanent record identity, not period text.
-EXPECTED_BUDGET_IDS = {
-    "gb-aisi": "funding-ddcdd902bdc5873816ddd014c1742ad6",
-    "fr-inesia": None,
-    "de-aisi": None,
-    "es-isia": None,
-    "no-ki-norge": "funding-07dc8b2c007b4b80a356aef8e5afa53c",
-    "eu-ai-office": None,
-    "us-caissi": "funding-443aa6a31d205192966af69e21022fb1",
-    "ca-caisi": "funding-360a59a37fde5cc8ba0a03ce3a00ea5f",
-    "jp-aisi": "funding-7d0b36a48cc65315865a6d6ec83ddeb6",
-    "kr-aisi": "funding-d0f61d15548153b9830f74f6e14ec324",
-    "sg-aisi": None,
-    "au-aisi": "funding-a7c0488859f35293a4b593ba44e40d12",
-    "my-aisafe": None,
-    "in-aisi": None,
-    "ke-ai-safety-institute": "funding-b60809279d92488ebf5dcea4813d9da9",
-}
-
-
-def test_budget_ids_match_independent_institute_expectations():
-    from scripts.published import publish
-
-    authored = json.loads((ROOT / "data/aisi.json").read_text())
-    result = publish(authored, strict=True)
-    assert {i["id"]: i["display"]["budget"] for i in result["institutes"]} == EXPECTED_BUDGET_IDS

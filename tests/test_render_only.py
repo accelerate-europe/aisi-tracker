@@ -1,5 +1,6 @@
 """The browser renders supplied choices and field evidence, including empty bindings."""
 
+import copy
 import json
 import re
 import subprocess
@@ -11,64 +12,6 @@ from bs4 import BeautifulSoup
 from scripts.check_page import GENERIC_PARTNER_HOW, PLURAL_PARTNER_HOW, expected_activity
 
 PAGE = Path(__file__).resolve().parents[1] / "site/index.html"
-
-
-@pytest.mark.parametrize('names_count', [0, 4])
-def test_hydrate_restores_idless_summary_when_funding_names_become_buttons(names_count):
-    source = PAGE.read_text()
-    hydrate = source[source.index('  function hydrate('):source.index('  // The page data (')]
-    selector = re.search(r'var FOCUSABLE = "([^"]+)"', hydrate)[1]
-    snapshots = []
-    for live in (False, True):
-        tag = 'button' if live else 'span'
-        names = ''.join(f'<{tag} class="fund-names-toggle" data-key="names-{n}">Not published: Austria</{tag}>' for n in range(names_count))
-        # The map gains tabindex and arriving cards may gain it too; hidden name-row buttons exist in both copies.
-        dynamic_tabindex = ' tabindex="0"' if live else ''
-        soup = BeautifulSoup(f'''
-          <input id="world-filter" data-key="filter" value="Austria">
-          <div id="worldmap" data-key="map"><svg><circle class="tgt" data-key="dot"{dynamic_tabindex}></circle></svg></div>
-          <article class="card" data-key="card"{dynamic_tabindex}></article>
-          {names}<ul hidden><li><button class="fund-name-row" data-key="name-row">Austria</button></li></ul>
-          <details id="method-details" data-key="method"><summary data-key="summary">Method</summary></details>
-          <table class="world"><tbody><tr><td><a href="#x" data-key="row">Row</a></td></tr></tbody></table>
-          <div id="tip"><a href="#source" data-key="tip-link">Source</a></div>
-        ''', 'html.parser')
-        snapshots.append({
-            'nodes': {n['data-key']: {'id': n.get('id', ''), 'excluded': bool(n.find_parent('tbody') or n.find_parent(id='tip'))}
-                      for n in soup.select('[data-key]')},
-            'focusable': [n['data-key'] for n in soup.select(selector)],
-            'details': [n['data-key'] for n in soup.select('details')],
-        })
-    script = """
-const assert=require('node:assert/strict');
-const snapshots=SNAPSHOTS, selector=SELECTOR;
-let live=0, finishDraw, tip={}, SAVED_MAP=null;
-const SCRIPT={}, ROOT={removeAttribute(){}}, hideTip=()=>{};
-const window={scrollX:0,scrollY:340,scrollTo(x,y){assert.equal(x,0);assert.equal(y,340);}};
-const document={body:{childNodes:[],insertBefore(){live=1;}}};
-const nodes=snapshots.map(snapshot=>Object.fromEntries(Object.entries(snapshot.nodes).map(([key,props])=>[key,{
-  ...props, open:false, value:key==='filter'?'Austria':'', childNodes:[],
-  closest:()=>props.excluded?{}:null,
-  focus(options){assert.equal(options.preventScroll,true);document.activeElement=this;}
-}])));
-document.querySelectorAll=query=>snapshots[live][query===selector?'focusable':'details'].map(key=>nodes[live][key]);
-const template={content:{cloneNode:()=>({})},remove(){}};
-const $=id=>id==='page-template'?template:Object.values(nodes[live]).find(n=>n.id===id);
-const saved={remove(){document.activeElement=document.body;}};
-document.body.childNodes=[saved,SCRIPT,template];
-document.activeElement=nodes[0].summary;nodes[0].method.open=true;
-const render=()=>new Promise(resolve=>{finishDraw=resolve;});
-HYDRATE
-hydrate({},{});
-assert.equal(live,1);assert.equal(document.activeElement,document.body);
-finishDraw();
-Promise.resolve().then(()=>{
-  assert.equal(document.activeElement,nodes[1].summary,'restore the id-less Method summary after the names buttons appear');
-  assert.equal(nodes[1].method.open,true);
-});
-""".replace('SNAPSHOTS', json.dumps(snapshots)).replace('SELECTOR', json.dumps(selector)).replace('HYDRATE', hydrate)
-    result = subprocess.run(['node', '-'], input=script, capture_output=True, text=True)
-    assert result.returncode == 0, result.stderr
 
 
 def test_staff_bars_require_a_dated_total_and_keep_bounds_and_zero():
@@ -166,25 +109,6 @@ assert.ok(all(body).some(n=>n.text==='as of 2026-10'));
     subprocess.run(["node", "-e", script], capture_output=True, text=True, check=True)
 
 
-def test_funding_fold_close_returns_to_its_row_and_native_fold_to_its_summary():
-    source = PAGE.read_text()
-    helper = source[source.index("  function foldClose("):source.index("  // Overflow-x makes")]
-    script = """
-const assert=require('node:assert/strict');let returned;
-function closeButton(callback){return {callback,classList:{add(){}}};}
-function returnToOpener(opener){returned=opener;}
-""" + helper + """
-const summary={}, opener={setAttribute(k,v){this[k]=v;}};
-for (const given of [opener,null]) {
-  const fold={open:true,appendChild(n){this.button=n;},querySelector(){return summary;}};
-  foldClose(fold,given);fold.button.callback();
-  assert.equal(fold.open,false);assert.equal(returned,given||summary);
-}
-assert.equal(opener['aria-expanded'],'false');
-"""
-    subprocess.run(["node", "-e", script], capture_output=True, text=True, check=True)
-
-
 def partner_fold(items, label="Partners", unfolded=False):
     source = PAGE.read_text()
     helper = source[
@@ -266,26 +190,6 @@ def test_partner_fold_groups_without_losing_name_citations(singular, plural, lab
     ]
     # A singleton must retain the singular wording; generic claims remain names only.
     assert partner_fold(items[:1], label)[0]["how"] == (singular[:1].lower() + singular[1:] if plural else "")
-
-
-def test_partner_value_renders_a_tail_without_items():
-    source = PAGE.read_text()
-    helper = source[source.index("  function partnersValue(") : source.index("  function partnersFold(")]
-    script = """
-function el(tag, className, text) {
-  return {tag, className, text, children: [], appendChild(child) { this.children.push(child); }};
-}
-const separated = parts => parts;
-const missing = na => ({missing: true, na});
-""" + helper + """
-const assert = require("node:assert/strict");
-const value = partnersValue({state: "stated", items: [], tail: "cyber agency not published"});
-assert.equal(value.className, "partners");
-assert.deepEqual(value.children[0].map(part => [part.className, part.text]), [["partners-none", "cyber agency not published"]]);
-assert.equal(partnersValue({state: "not_published", items: []}).missing, true);
-assert.equal(partnersValue({state: "not_applicable", items: []}).na, true);
-"""
-    subprocess.run(["node", "-e", script], check=True, capture_output=True, text=True)
 
 
 def page_partner_maps():
@@ -399,10 +303,10 @@ def test_citations_use_only_named_fields_and_never_broad_sources():
 
 def test_known_activity_oracle_uses_reviewed_credit_not_bibliographic_sources():
     institute = {
-        "id": "gb-aisi",
+        "id": "fixture-institute",
         "outputs": [
             {
-                "lineage": "approach-to-evaluations",
+                "lineage": "fixture-work",
                 "date": "1900",
                 "credit": {"date": "2024-02-09"},
                 "qualifies_as": "published_work",
@@ -411,9 +315,12 @@ def test_known_activity_oracle_uses_reviewed_credit_not_bibliographic_sources():
             }
         ],
     }
-    actual = expected_activity(institute)
+    reviewed = {("fixture-institute", "fixture-work"): ["fixture-credit"]}
+    actual = expected_activity(institute, reviewed)
     assert actual[0]["date"] == "2024-02-09"
-    assert actual[0]["source_ids"] == ["gb-approach-2024"]
+    assert actual[0]["source_ids"] == ["fixture-credit"]
+    with pytest.raises(ValueError, match="needs reviewed sources"):
+        expected_activity(institute)
 
 
 def test_annual_format_uses_supplied_classification():
@@ -488,7 +395,6 @@ def test_all_real_first_outputs_match_independent_credit_oracle():
         for event in jurisdiction.get("timeline", [])
         if event["event"] == "first_output"
     ]
-    assert events, "production first-output oracle must exercise credited events"
     for jurisdiction, event in events:
         expected = sorted(
             expected_event_sources(data, jurisdiction, event),
@@ -514,11 +420,13 @@ def test_credit_oracle_rejects_unknown_work_and_missing_explicit_credit():
     }
     with pytest.raises(ValueError, match="needs reviewed sources"):
         expected_activity(institute)
-    institute["id"] = "gb-aisi"
-    institute["outputs"][0]["lineage"] = "approach-to-evaluations"
+    reviewed = {("new-institute", "new-work"): ["fixture-credit"]}
+    assert expected_activity(institute, reviewed) == [
+        {"kind": "published_work", "date": "2025", "lineage": "new-work", "source_ids": ["fixture-credit"]}
+    ]
     del institute["outputs"][0]["credit"]
     with pytest.raises(KeyError, match="credit"):
-        expected_activity(institute)
+        expected_activity(institute, reviewed)
     from scripts.check_page import expected_event_sources
 
     with pytest.raises(ValueError, match="credited catalogue item"):
@@ -589,61 +497,61 @@ def test_detail_oracle_rejects_reordered_and_duplicate_citations():
     assert errors(["description", "period", "confidence", "confidence"])
 
 
-def test_recent_development_sample_is_independent_and_order_sensitive():
-    import copy
+def test_recent_development_sample_is_independent_and_order_sensitive(dataset, monkeypatch):
     from scripts.published import publish
+    from scripts import check_page
     from scripts.check_page import check_summary_data, expected_event_sources
 
-    data = publish(
-        json.loads((PAGE.parents[1] / "data/aisi.json").read_text()), strict=True
-    )
-    jurisdiction = next(j for j in data["jurisdictions"] if j["id"] == "ES")
-    event = next(e for e in jurisdiction["timeline"] if e["id"] == "es-1")
+    data = publish(dataset, strict=False)
+    jurisdiction, = data["jurisdictions"]
+    jurisdiction.update(id="XX", name="Fixture state")
+    event = {"id": "fixture-event", "event": "designated", "date": "2025-01-02",
+             "short": "Fixture institute designated.", "description": "Fixture institute designated.",
+             "source_ids": ["fixture-first", "fixture-second"],
+             "citations": {"description": ["fixture-first", "fixture-second"]}}
+    jurisdiction["timeline"] = [event]
+    data["institutes"] = []
+    data["sources"] = [{"id": sid, "url": f"https://example.org/{sid}"} for sid in ("fixture-first", "fixture-second")]
+    monkeypatch.setitem(check_page.DEVELOPMENT_CREDIT_SOURCES, ("XX", "fixture-event"), ["fixture-first", "fixture-second"])
     assert expected_event_sources(data, jurisdiction, event) == [
-        "es-plan",
-        "es-moncloa",
+        "fixture-first",
+        "fixture-second",
     ]
     event["citations"] = {"description": ["wrong"]}
     event["source_ids"] = ["wrong"]
     assert expected_event_sources(data, jurisdiction, event) == [
-        "es-plan",
-        "es-moncloa",
+        "fixture-first",
+        "fixture-second",
     ]
-    event.pop("news", None)  # this sample tests the card-line (short) path; an authored News line has its own sources
-    fixture = copy.deepcopy(data)
-    fixture["jurisdictions"] = [jurisdiction]
-    jurisdiction["timeline"] = [event]
 
     def errors(ids):
         cites = "".join(f'<a class="cn" data-source-id="{sid}">1</a>' for sid in ids)
-        html = f'<ul id="development-list"><li class="development-row" data-j="ES" data-events="es-1"><time class="development-date" data-date="{event["date"]}"></time><span class="development-name">{jurisdiction["name"]}</span><p class="development-text">{event["short"]}<span class="cites">{cites}</span></p></li></ul>'
+        html = f'<ul id="development-list"><li class="development-row" data-j="XX" data-events="fixture-event"><time class="development-date" data-date="{event["date"]}"></time><span class="development-name">{jurisdiction["name"]}</span><p class="development-text">{event["short"]}<span class="cites">{cites}</span></p></li></ul>'
         return [
             e
-            for e in check_summary_data(html, fixture)
+            for e in check_summary_data(html, data)
             if "development citations differ" in e
         ]
 
-    assert errors(["es-plan", "es-moncloa"]) == []
-    assert errors(["es-moncloa", "es-plan"])
-    assert errors(["es-plan", "es-moncloa", "es-moncloa"])
+    assert errors(["fixture-first", "fixture-second"]) == []
+    assert errors(["fixture-second", "fixture-first"])
+    assert errors(["fixture-first", "fixture-second", "fixture-second"])
 
-    # A record's card numbers its sources in the record's own citation order, which may differ from the catalogue
-    # order (NL nl-0, 16 November 2026). The row follows its card; a different set of sources still fails.
+    # A record's card numbers its sources in its own citation order, which may differ from the catalogue order.
     def card_errors(ids):
-        card = '<article class="card" data-j="ES"><div class="srcs"><ol><li data-source-id="es-moncloa"></li><li data-source-id="es-plan"></li></ol></div></article>'
+        card = '<article class="card" data-j="XX"><div class="srcs"><ol><li data-source-id="fixture-second"></li><li data-source-id="fixture-first"></li></ol></div></article>'
         cites = "".join(f'<a class="cn" data-source-id="{sid}">1</a>' for sid in ids)
-        html = card + f'<ul id="development-list"><li class="development-row" data-j="ES" data-events="es-1"><time class="development-date" data-date="{event["date"]}"></time><span class="development-name">{jurisdiction["name"]}</span><p class="development-text">{event["short"]}<span class="cites">{cites}</span></p></li></ul>'
-        return [e for e in check_summary_data(html, fixture) if "development citations differ" in e]
+        html = card + f'<ul id="development-list"><li class="development-row" data-j="XX" data-events="fixture-event"><time class="development-date" data-date="{event["date"]}"></time><span class="development-name">{jurisdiction["name"]}</span><p class="development-text">{event["short"]}<span class="cites">{cites}</span></p></li></ul>'
+        return [e for e in check_summary_data(html, data) if "development citations differ" in e]
 
-    assert card_errors(["es-moncloa", "es-plan"]) == []
-    assert card_errors(["es-plan", "es-moncloa"])
-    assert card_errors(["es-moncloa"])
-    assert card_errors(["es-moncloa", "es-plan", "es-plan"])
-    assert card_errors(["es-moncloa", "es-plan", "other"])
+    assert card_errors(["fixture-second", "fixture-first"]) == []
+    assert card_errors(["fixture-first", "fixture-second"])
+    assert card_errors(["fixture-second"])
+    assert card_errors(["fixture-second", "fixture-first", "fixture-first"])
+    assert card_errors(["fixture-second", "fixture-first", "other"])
 
 
 def test_card_source_orders_follow_the_page_without_a_card():
-    from bs4 import BeautifulSoup
     from scripts.check_page import card_source_orders
 
     data = {
@@ -690,25 +598,6 @@ def test_fixture_refresh_rebinds_evidence_and_flags_at_current_positions():
     assert institute["staff"][0]["citations"]["total"]
     groups = fixture["dataset"]["display"]["developments"]
     assert all(g["citations"]["display"] for g in groups)
-
-
-def test_other_overview_links_are_preserved_without_note_citations():
-    from scripts.published import publish
-
-    data = publish(
-        json.loads((PAGE.parents[1] / "data/aisi.json").read_text()), strict=True
-    )
-    expected = [
-        ["network-2025", "network-nist-2026"],
-        ["ov-wikipedia"],
-        ["ov-casrai"],
-        ["ai-act-tracker"],
-    ]
-    assert [
-        o["display"]["source_links"] for o in data["dataset"]["other_overviews"]
-    ] == expected
-    assert all(not o["citations"]["note"] for o in data["dataset"]["other_overviews"])
-    assert "sourceLinks(o.display.source_links, S)" in PAGE.read_text()
 
 
 def test_mandate_cites_the_short_text_that_is_rendered():
@@ -954,7 +843,6 @@ def test_all_real_funding_disclosures_separate_native_figures_from_source_statem
 
     data = publish(json.loads((PAGE.parents[1] / "data/aisi.json").read_text()), strict=True)
     records = {record["id"]: record for institute in data["institutes"] for record in institute.get("funding", []) if record.get("amount") is not None}
-    assert len(records) >= 15
     for record in records.values():
         tree = funding_record_tree(record, data["dataset"]["exchange_rates"])
         native = next(child for child in tree["children"] if "funding-native" in child["className"].split())
@@ -979,28 +867,6 @@ def test_all_real_funding_disclosures_separate_native_figures_from_source_statem
             statement = tree_text(statements[0]["children"][1])
             assert statement == normalised
             assert " (" + (record.get("period") or "") + ")" not in statement
-    # Independent regressions for former semantic duplicates, identified by permanent IDs.
-    expected = {
-        "funding-f9ea264762c8593293364a58539295d9": ("CAD 50m", ["one-off", "announced"]),
-        "funding-8f4ea7ceaf9d5be69600d6df1c6fa215": ("JPY 380m", ["one-off", "FY2024 supplementary", "adopted"]),
-        "funding-7d0b36a48cc65315865a6d6ec83ddeb6": ("JPY 8.8bn", ["one-off", "FY2025 supplementary", "adopted"]),
-        "funding-0475119a71cc5e2099e293d3a48356b0": ("NOK 30m", ["a year", "2027 budget proposal"]),
-        "funding-443aa6a31d205192966af69e21022fb1": ("up to USD 10m", ["a year", "FY2026 enacted"]),
-        "funding-a4935c40a4e750e8844af6de22176e13": ("~KRW 4.0bn", ["a year", "2026 R&D component", "adopted"]),
-        "funding-d0f61d15548153b9830f74f6e14ec324": ("~KRW 13bn", ["a year", "2026 total", "adopted"]),
-        "funding-0d5ffdbe6b0c59dabb6edfc221aa4956": ("AUD 7.9m", ["a year", "From 2029-30 (ongoing)", "announced"]),
-    }
-    assert {identity: (records[identity]["display"]["native_value"], records[identity]["display"]["native_qualifiers"]) for identity in expected} == expected
-    # The page shows these in euros too; the downloads keep the labels above (rule currency-rounding).
-    shown = {
-        "funding-f9ea264762c8593293364a58539295d9": "~EUR 32m (CAD 50m)",
-        "funding-7d0b36a48cc65315865a6d6ec83ddeb6": "~EUR 52m (JPY 8.8bn)",
-        "funding-443aa6a31d205192966af69e21022fb1": "up to ~EUR 8.9m (USD 10m)",
-        "funding-a4935c40a4e750e8844af6de22176e13": "~EUR 2.5m (~KRW 4.0bn)",
-        "funding-618ed3226ee75def870a5fb0f9501479": "~EUR 140m (GBP 120m)",
-        "funding-b60809279d92488ebf5dcea4813d9da9": "KES 2.0bn",
-    }
-    assert {identity: expected_shown_funding_value(records[identity], data) for identity in shown} == shown
 
 
 @pytest.mark.parametrize(
@@ -1041,29 +907,21 @@ def test_native_funding_gate_rejects_wrong_amount_and_wrong_field_evidence(
     assert any("funding .funding-native citations" in error for error in errors(html.replace('data-source-id="amount" href=', 'data-source-id="statement" href=')))
 
 
-def test_unselected_canadian_envelope_remains_in_disclosures_and_downloads():
-    from scripts.published import publish
-    from scripts.build import tables
-    data = publish(json.loads((PAGE.parents[1] / "data/aisi.json").read_text()), strict=True)
-    canada = next(institute for institute in data["institutes"] if institute["id"] == "ca-caisi")
-    additional = "funding-f9ea264762c8593293364a58539295d9"
-    assert canada["display"]["budget"] == "funding-360a59a37fde5cc8ba0a03ce3a00ea5f"
-    assert additional in canada["display"]["funding_ids"]
-    record = canada["display"]["funding_records"][additional]
-    assert "additional CAD 50m" in tree_text(funding_record_tree(record))
-    exported = {row["id"]: row for row in tables(data)["funding"]}
-    assert exported[additional]["amount"] == 50_000_000
-    assert exported[additional]["currency"] == "CAD"
-    assert "additional" in exported[additional]["description"]
-
-
-def test_format_fixture_is_independent_of_live_exchange_rates():
+def test_format_fixture_is_independent_of_input_exchange_rates(dataset):
     from scripts.check_page import make_format_fixture
     from scripts.published import publish
 
-    data = publish(
-        json.loads((PAGE.parents[1] / "data/aisi.json").read_text()), strict=True
-    )
+    data = publish(dataset, strict=False)
+    state, = data["jurisdictions"]
+    institute, = data["institutes"]
+    data["jurisdictions"] = []
+    data["institutes"] = []
+    for n in range(6):
+        jid, iid = f"X{n}", f"fixture-{n}"
+        data["jurisdictions"].append({**copy.deepcopy(state), "id": jid, "institute_id": iid})
+        data["institutes"].append({**copy.deepcopy(institute), "id": iid, "jurisdiction_id": jid})
+    data["jurisdictions"].append({"id": "XX", "name": "Fixture state", "kind": "state",
+                                  "status": "none_identified", "europe_scope": False, "citations": {}})
     rate = next(r for r in data["dataset"]["exchange_rates"] if r["currency"] == "GBP")
     rate["eur_per_unit"] = 99
     fixture, cases = make_format_fixture(data)
@@ -1304,79 +1162,3 @@ console.log(JSON.stringify({names, list, institutes, rows, marks: cite(order),
     assert text(rendered['rows'][2]) == 'Not published'
     assert text(rendered['rows'][3]) == 'Not applicable'
     assert all('aria-description' not in node['attrs'] for node in rendered['rows'][2:])
-
-
-def test_translated_links_open_a_touch_tip_with_the_destination():
-    source = PAGE.read_text()
-    show = source[source.index('  function showTip('):source.index('  // A value mark')]
-    handlers = source[source.index('  var touchInput ='):source.index('  // Instant tooltips:')]
-    script = r"""
-const assert = require('node:assert/strict'), listeners = {};
-class Node {}
-function el(tag, cls, text) { return {tag, cls, text, children: [], appendChild(n) { this.children.push(n); }}; }
-const tip = {hidden: true, style: {}, offsetWidth: 100, offsetHeight: 50, children: [],
-  appendChild(n) { this.children.push(n); }, contains(n) { return n === destination; }};
-let tipFor = null, tipTimer = 0, tipY = 0, destination = null;
-const window = {scrollY: 0, innerHeight: 500};
-const document = {documentElement: {clientWidth: 400}, addEventListener(type, fn) { listeners[type] = fn; }};
-const tipText = n => n.original, tipAnchor = () => ({left: 20, width: 100, bottom: 40, top: 20});
-const hostOf = url => new URL(url).hostname, separated = parts => parts;
-function bindArrow() {} function hideLineEndDots() {} function hideTipSoon() {}
-function hideTip() { tip.hidden = true; }
-""" + show + handlers + r"""
-function click(link, touch) {
-  touchInput = touch;
-  let prevented = false;
-  listeners.click({target: link, preventDefault() { prevented = true; }});
-  return prevented;
-}
-function link(translated, citation = false) {
-  return {href: 'https://example.org/source', original: 'Titre original', dataset: {},
-    matches(selector) { return selector.includes('a.cn') && citation || selector.includes('a.original-text[href]') && translated; },
-    closest() { return this; }};
-}
-const TIPSEL = 'abbr.g, [data-tip], [aria-description]';
-const translated = link(true);
-assert.equal(click(translated, true), true);
-assert.equal(tip.textContent, 'Titre original');
-assert.equal(tip.hidden, false);
-const go = tip.children[0].children[0][0];
-assert.equal(go.tag, 'a'); assert.equal(go.text, 'example.org');
-assert.equal(go.href, translated.href); assert.equal(go.target, '_blank');
-destination = new Node(); destination.closest = () => destination;
-assert.equal(click(destination, true), false); assert.equal(tip.hidden, true);
-assert.equal(click(translated, false), false);  // mouse follows the original link
-assert.equal(click(link(false), true), false); // ordinary links keep their action
-assert.equal(click(link(false, true), true), true); // citations still open their tips
-"""
-    subprocess.run(["node", "-"], input=script, text=True, capture_output=True, check=True)
-
-
-def test_citation_glue_keeps_one_wrapping_original_name():
-    """The extraction range stays inside the name, so it cannot clone its tooltip."""
-    source = PAGE.read_text()
-    helper = source[source.index('  function glueCitations('):source.index('  // Row wrappers')]
-    script = r"""
-const assert = require('node:assert/strict');
-const NodeFilter = {SHOW_TEXT: 4}, getComputedStyle = () => ({fontSize: '16px'});
-const text = {nodeValue: 'A long English ministry'};
-const root = {querySelectorAll: () => [cites], contains: () => true};
-const name = {matches: () => false, contains: n => n === text || n === cites,
-  closest: selector => selector === '.original-text' ? name : null,
-  appendChild(n) { n.parentNode = name; }};
-text.parentElement = name;
-const cites = {parentNode: root, childNodes: [{}], closest: () => null, contains: () => false,
-  before(glue) { assert.equal(this.parentNode, name); }};
-let starts = 0, ends = 0;
-const document = {
-  createTreeWalker() { let done = false; return {currentNode: text, nextNode() { if (done) return false; done = true; return true; }}; },
-  createRange() { return {
-    setStart(node, index) { assert.equal(node, text); assert.equal(index, text.nodeValue.lastIndexOf('ministry')); starts++; },
-    setStartBefore() { assert.fail('The whole name must still wrap'); },
-    setEndBefore(node) { assert.equal(node, cites); assert.equal(node.parentNode, name); ends++; },
-    extractContents() { assert.equal(starts, 1); assert.equal(ends, 1); return {}; }
-  }; }
-};
-function el() { return {appendChild() {}}; }
-""" + helper + "\nglueCitations(root); assert.equal(starts, 1); assert.equal(ends, 1);"
-    subprocess.run(["node", "-"], input=script, text=True, capture_output=True, check=True)

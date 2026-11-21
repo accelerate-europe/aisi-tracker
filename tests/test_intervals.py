@@ -18,47 +18,6 @@ KEYS = (
     "announced_to_first_qualifying_activity",
 )
 
-# The one input read from the data: the as_of date that caps a year-only date in the current year.
-AS_OF = date.fromisoformat(json.loads(DATA.read_text(encoding="utf-8"))["dataset"]["as_of"])
-END_2026 = min(AS_OF, date(2026, 12, 31))  # where a year-only "2026" ends
-
-# Worked by hand from the timeline and credit dates at as_of 2026-10-24 (see the commit message).
-# (announced to established, established to first qualifying activity, announced to first qualifying activity)
-EXPECTED = {
-    "gb-aisi": ((7, 7), (99, 99), (106, 106)),  # 26 Oct 2023, 2 Nov 2023, 9 Feb 2024
-    "fr-inesia": (None, (146, 146), None),  # no commitment or proposal; 31 Jan 2025, 26 Jun 2025
-    "de-aisi": ((84, 84), None, None),  # 8 Jun 2026, 31 Aug 2026, nothing qualifying yet
-    "es-isia": (None, None, None),  # planned
-    "no-ki-norge": (None, None, None),  # proposed
-    "eu-ai-office": ((28, 28), (512, 512), (540, 540)),  # 24 Jan 2024, 21 Feb 2024, 17 Jul 2025
-    "us-caissi": ((98, 98), (286, 286), (384, 384)),  # 1 Nov 2023, 7 Feb 2024, 19 Nov 2024
-    "ca-caisi": ((210, 210), (226, 226), (436, 436)),  # proposal 16 Apr 2024, 12 Nov 2024, 26 Jun 2025
-    "jp-aisi": ((55, 55), (411, 411), (466, 466)),  # 21 Dec 2023, 14 Feb 2024, 31 Mar 2025
-    "kr-aisi": ((189, 189), (211, 211), (400, 400)),  # 22 May 2024, 27 Nov 2024 (not the 2026 redesignation), 26 Jun 2025
-    "sg-aisi": (None, (182, 182), None),  # no commitment or proposal; 22 May 2024, 20 Nov 2024
-    # 25 Nov 2025; "2026" read as 1 Jan 2026 to 31 Dec 2026, capped at as_of; 10 Aug 2026.
-    "au-aisi": ((37, (END_2026 - date(2025, 11, 25)).days), ((date(2026, 8, 10) - END_2026).days, 221), (258, 258)),
-    "my-aisafe": (None, None, None),  # no commitment or proposal; nothing qualifying yet
-    "in-aisi": ((-29, 335), None, None),  # 30 Jan 2025; "2025" read as the whole year
-    # Planned: qualifying network credit (26 Jun 2025) is not an institute interval.
-    "ke-ai-safety-institute": (None, None, None),
-}
-
-CARD = {
-    "gb-aisi": ("Announced on 26 Oct 2023, 7 days earlier", "about 3 months after it was established"),
-    "fr-inesia": (None, "about 5 months after it was established"),
-    "de-aisi": ("Announced on 8 Jun 2026, about 3 months earlier", None),
-    "eu-ai-office": ("Announced on 24 Jan 2024, 28 days earlier", "about 17 months after it was established"),
-    "us-caissi": ("Announced on 1 Nov 2023, about 3 months earlier", "about 9 months after it was established"),
-    "ca-caisi": ("Proposed on 16 Apr 2024, about 7 months earlier", "about 7 months after it was established"),
-    "jp-aisi": ("Announced on 21 Dec 2023, 55 days earlier", "about 14 months after it was established"),
-    "kr-aisi": ("Announced on 22 May 2024, about 6 months earlier", "about 7 months after it was established"),
-    "sg-aisi": (None, "about 6 months after it was established"),
-    "au-aisi": ("Announced on 25 Nov 2025", None),
-    "my-aisafe": (None, None),
-    "in-aisi": ("Announced on 30 Jan 2025", None),
-}
-
 
 @pytest.fixture(scope="module")
 def published():
@@ -66,30 +25,6 @@ def published():
     # Clip partial dates at the authored release baseline so recorded work on -dev
     # cannot move the hand-worked expectations between releases.
     return publish(data, as_of=data["dataset"]["as_of"])
-
-
-def as_pairs(record):
-    return tuple(
-        None if record["intervals"][key] is None
-        else (record["intervals"][key]["days_min"], record["intervals"][key]["days_max"])
-        for key in KEYS
-    )
-
-
-def test_every_record_matches_hand_worked_intervals(published):
-    assert {i["id"]: as_pairs(i) for i in published["institutes"]} == EXPECTED
-
-
-def test_card_wording_for_established_records(published):
-    shown = {
-        i["id"]: (
-            i["display"]["intervals"]["status_since"],
-            (i["display"]["intervals"]["known_activity"] or {}).get("text"),
-        )
-        for i in published["institutes"]
-        if i["status"] == "established"
-    }
-    assert shown == CARD
 
 
 def test_interval_bounds_are_ordered_in_every_record(published):

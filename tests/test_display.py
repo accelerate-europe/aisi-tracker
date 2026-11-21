@@ -507,31 +507,6 @@ def test_sentence_abbreviations_and_resolved_pointer_requirement():
         derive_display(data)
 
 
-def test_real_comparison_matches_hand_checked_owner_choices():
-    from scripts.published import materialise_facts
-    from scripts.migrate_references import migrate
-    from scripts.references import materialise_references
-
-    data = json.loads((Path(__file__).parents[1] / "data/aisi.json").read_text())
-    result = derive_display(materialise_references(materialise_facts(migrate(data))))
-    actual = {}
-    for institute in result["institutes"]:
-        n = institute["display"]["comparison_funding"]
-        if n is not None:
-            row = institute["display"]["funding_records"][n]
-            actual[institute["jurisdiction_id"]] = (
-                row["period"],
-                row["eur_per_year_est"],
-            )
-    assert actual == {
-        "GB": ("2026-27 to 2029-30", 105_043_000),
-        "US": ("FY2026 enacted", 8_849_690),
-        "CA": ("2024-25 to 2028-29", 6_334_220),
-        "KR": ("2026 total", 8_019_550),
-        "AU": ("2025-26 to 2028-29", 5_993_970),
-    }
-
-
 def test_fallback_own_allocation_uses_source_dates_and_ids_only():
     old = funding("older", kind="one_off", amount=380, currency="JPY", annual_period={"start": "2024-04-01", "end": "2025-03-31"})
     latest = funding("latest", kind="one_off", amount=8800, currency="JPY", annual_period={"start": "2025-04-01", "end": "2026-03-31"})

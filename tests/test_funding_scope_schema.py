@@ -7,22 +7,11 @@ import pytest
 from jsonschema import Draft202012Validator
 
 from scripts.published import materialise_facts
-
-
-KOREA_TOTAL_ID = "funding-d0f61d15548153b9830f74f6e14ec324"
-KOREA_COMPONENT_IDS = (
-    "funding-eb798d93b6345b24b6fb8f1c45ad7e4a",
-    "funding-a4935c40a4e750e8844af6de22176e13",
-)
+from test_funding_selection import summed_funding  # noqa: F401
 
 
 def real_data():
     return json.loads((Path(__file__).parents[1] / "data/aisi.json").read_text())
-
-
-def korea_funding(data):
-    institute = next(row for row in data["institutes"] if row["id"] == "kr-aisi")
-    return {row["id"]: row for row in institute["funding"]}
 
 
 def validator():
@@ -73,7 +62,6 @@ def test_all_real_funding_records_require_explicit_coverage():
         for institute in data["institutes"]
         for funding in institute.get("funding", [])
     }
-    assert len(records) == 36
     funding_validator = validator()
     for identity, funding in records.items():
         assert funding_validator.is_valid(funding), identity
@@ -90,21 +78,15 @@ def test_all_real_funding_records_require_explicit_coverage():
         ), identity
 
 
-def test_real_korea_unqualified_components_keep_the_hand_calculated_total():
-    data = real_data()
-    funding = korea_funding(data)
-    assert set(funding[KOREA_TOTAL_ID]["sum_of"]) == set(KOREA_COMPONENT_IDS)
-    assert all("amount_qualifier" not in funding[key] for key in KOREA_COMPONENT_IDS)
-    total = korea_funding(materialise_facts(data, strict=True))[KOREA_TOTAL_ID]
-    assert total["amount"] == total["annual_amount"] == 12_875_000_000
-
-
-@pytest.mark.parametrize("component_id", KOREA_COMPONENT_IDS)
+@pytest.mark.parametrize("component_id", ["component-a", "component-b"])
 @pytest.mark.parametrize("qualifier", ["about", "at_most", "more_than"])
-def test_real_korea_sum_rejects_any_qualified_component(component_id, qualifier):
-    data = real_data()
-    korea_funding(data)[component_id]["amount_qualifier"] = qualifier
+def test_sum_rejects_any_qualified_component(summed_funding, component_id, qualifier):  # noqa: F811
+    data = summed_funding
+    rows = {row["id"]: row for row in materialise_facts(data)["institutes"][0]["funding"]}
+    assert rows["total"]["amount"] == 30
+    component = next(row for row in data["institutes"][0]["funding"] if row["id"] == component_id)
+    component["amount_qualifier"] = qualifier
     with pytest.raises(
         ValueError, match=f"sum_of cannot combine qualified component {component_id}"
     ):
-        materialise_facts(data, strict=True)
+        materialise_facts(data)

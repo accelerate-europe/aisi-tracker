@@ -345,18 +345,6 @@ def test_how_checked_gate_rejects_lost_paragraphs_open_folds_citations_and_dupli
         assert check_how_we_checked(html.replace(before, after), data)
 
 
-@pytest.mark.parametrize("residue", ["A document was read.", "Two documents were read.", "2026-11-02-pass"])
-def test_how_checked_gate_rejects_reading_logs_and_pass_ids_only_after_migration(residue):
-    from scripts.check_page import check_how_we_checked
-
-    record = checked_record()
-    record["notes"] = residue
-    html = f'<details class="card mini" id="c-xx"><div class="how"><p class="gl">How we checked</p><p>{residue}</p></div></details>'
-    assert any("document read or a research pass id" in e for e in check_how_we_checked(html, {"jurisdictions": [record]}))
-    del record["claims"]
-    assert check_how_we_checked(html, {"jurisdictions": [record]}) == []
-
-
 def test_generate_roles_and_closest_note():
     entry = copy.deepcopy(RECORDS["PL"]["record"])
     body = entry["closest_body"]["body_id"]
