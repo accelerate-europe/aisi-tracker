@@ -8,8 +8,8 @@
 <style>
   :root { --hit: 28px; color: #111; background: white; font: 16px/24px sans-serif; }
   body { margin: 16px; }
-  header { position: sticky; top: 16px; height: 24px; z-index: 1; background: white; }
-  .under { margin-top: -24px; margin-bottom: 30px; }
+  header { position: fixed; top: 16px; height: 24px; z-index: 1; background: white; } /* another layer; a stuck sticky head needs a scrolled page (G1b) */
+  .under { margin-top: 0; margin-bottom: 30px; } /* under the fixed header: a legal overlap across layers */
   .ellipsis { width: 100px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
   .scroll { width: 100px; overflow: auto; white-space: nowrap; }
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
@@ -24,7 +24,7 @@
 </style>
 </head>
 <body>
-<header>Stuck header</header>
+<header>Fixed header</header>
 <p class="under">Flow text under another layer</p>
 <p class="ellipsis">A long name with deliberate ellipsis</p>
 <p class="scroll">A long row in a deliberate scroll container</p>

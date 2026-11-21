@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-ROOT = Path(__file__).resolve().parents[2].parent
+ROOT = Path(__file__).resolve().parents[2]
 FIXTURES = Path(__file__).with_name("fixtures")
 pytestmark = pytest.mark.chromium
 
