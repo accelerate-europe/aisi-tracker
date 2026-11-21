@@ -92,7 +92,7 @@ const staffText=item=>item.display.total, withPeriod=text=>text, asOf=text=>'as 
 const qualified=(value,parts)=>{const n=el('span','qualified');n.appendChild(el('span','value-line',value));n.appendChild(el('span','qualifiers',parts.filter(Boolean).join(' ')));return n;};
 const fieldCitations=()=>[], staffCitations=()=>[], fundingCites=()=>el('span','cites');
 const sourcesBlock=order=>el('div','srcs',order.join(',')), missing=()=>el('span','missing','Not published');
-""" + helper + """
+""" + next(line for line in source.splitlines() if line.startswith("  function recordMetadata(")) + "\n" + helper + """
 const body=detailsBody(), groups=body.children.filter(n=>n.dataset.group);
 assert.deepEqual(groups.map(n=>n.dataset.group),['Own funding','Proposals','Related funding','Staff records']);
 const ids=group=>group.children.filter(n=>n.dataset.record).map(n=>n.dataset.recordId);
@@ -102,7 +102,7 @@ assert.ok(groups[2].children.some(n=>n.className==='related-funding'));
 assert.equal(body.children.find(n=>n.className.split(' ').includes('staffing-note')).text,'Staff are seconded.');
 assert.equal(body.children.find(n=>n.className==='srcs').text,'own-source,staff-source');
 const all=node=>[node,...node.children.flatMap(all)];
-assert.ok(all(body).some(n=>n.text==='Staffing qualification'));
+assert.ok(all(body).some(n=>n.text.trim()==='Staffing qualification'));  // notes open with a space that collapses at the block's start
 assert.ok(all(body).some(n=>n.text==='target 50'));
 assert.ok(all(body).some(n=>n.text==='as of 2026-10'));
 """
@@ -757,7 +757,7 @@ function el(tag, className, text) { return {tag, className:className||'', text:t
 const document={createTextNode:text=>el('text','',text)};
 function separated(parts){const n=el('span','');parts.forEach((part,index)=>{
   if(index)n.appendChild(el('span','sep-gap',' '));
-  n.appendChild(el('span','meta-item',part));});return n;}
+  const item=n.appendChild(el('span','meta-item',typeof part==='string'?part:''));if(typeof part!=='string')item.appendChild(part);});return n;}
 function confTag(r){return el('span','confidence',r.confidence);}
 function confTerms(qualifiers){return qualifiers;}
 function fmtDate(text){return text;}
@@ -789,7 +789,7 @@ def test_undisclosed_funding_has_no_source_statement_and_keeps_evidence(bound):
     assert native["children"][-1]["children"][-1]["text"] == ("evidence" if bound else "")
     metadata = next(child for child in tree["children"] if "funding-metadata" in child["className"].split())
     assert record["notes"] in tree_text(metadata)
-    assert metadata["children"][-1]["text"] == "answer"
+    assert metadata["children"][-1]["children"][-1]["text"] == "answer"  # the citations follow the notes, the last text
 
 
 def test_legacy_undisclosed_funding_keeps_its_authored_source_statement():

@@ -2074,7 +2074,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     return text;
   }
   function nativeFundingCitations(fu) { return fieldCitations(fu, ["amount", "currency", "amount_qualifier", "period", "commitment", "kind", "coverage"].concat(fu.display.generated_description ? ["description"] : [])); }
-  function recordMetadata(item) { return { qualifiers: [item.as_of ? asOf(item.as_of) : null, confTag(item)].filter(Boolean), notes: item.notes ? el("span", "small record-notes", item.notes) : null }; }
+  function recordMetadata(item) { return { qualifiers: [item.as_of ? asOf(item.as_of) : null, confTag(item)].filter(Boolean), notes: item.notes ? el("span", "small record-notes", " " + item.notes) : null }; } // the leading space collapses at the block's start, and keeps the text a page reader or copy gets from running into the qualifier before it
   function fundingRecord(item, cite) {
     var record = el("div", "funding-record"); record.dataset.record = "funding"; record.dataset.recordId = item.id;
     var native = el("p", "funding-native running-text"); native.appendChild(noRateTip(el("span", "budget-amount", shownAmount(item, item.display.native_value)), item.currency)); native.appendChild(document.createTextNode(" "));
