@@ -1,5 +1,5 @@
 # The full page sweep of the release runbook (docs/release.md, step 3.3), on a runner instead of a shared host:
-# builds the site from the chosen ref, runs scripts/sweep_page.py and uploads the slices and sweep.json as one tar.
+# each view builds the site from the chosen ref, runs scripts/sweep_page.py and uploads its slices and sweep.json as one tar.
 # Run it on the release commit with: gh workflow run sweep.yml --ref next
 # A push that changes the sweep itself runs it too, so a change to the script is seen working before it is used.
 name: sweep
@@ -14,15 +14,19 @@ on:
       - .github/actions/fonts/**
 permissions:
   contents: read
-concurrency:
-  group: sweep-${{ github.ref }}
-  cancel-in-progress: false # a later push to the same branch waits instead of cancelling a dispatched release sweep
 env:
   UV_EXCLUDE_NEWER: "7 days" # as in pages.yml: the window the lockfiles record
 jobs:
   sweep:
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        view: [1440-light, 1440-dark, 1000-light, 1000-dark, 390-light, 390-dark]
+    concurrency:
+      group: sweep-${{ github.ref }}-${{ matrix.view }}
+      cancel-in-progress: false # a later push to the same branch waits instead of cancelling a dispatched release sweep
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
@@ -38,7 +42,7 @@ jobs:
       - run: uv run --locked -q scripts/check_page.py --install-chrome
       - uses: ./.github/actions/fonts
       - run: uv run --locked scripts/check.py --only build --out dist --report-dir "$RUNNER_TEMP/check"
-      - run: uv run --locked scripts/sweep_page.py --dist dist --out "$RUNNER_TEMP/sweep"
+      - run: uv run --locked scripts/sweep_page.py --dist dist --out "$RUNNER_TEMP/sweep" --views ${{ matrix.view }}
       # As a tar, like the site artifact: one file, unpacked with tar -xf after gh run download. Also when the sweep
       # failed, so its findings can be read; nothing is uploaded when it never started.
       - if: ${{ !cancelled() }}
@@ -46,7 +50,7 @@ jobs:
       - if: ${{ !cancelled() }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: sweep
+          name: sweep-${{ matrix.view }}
           path: ${{ runner.temp }}/sweep.tar
           if-no-files-found: ignore
           retention-days: 30

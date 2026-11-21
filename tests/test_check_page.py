@@ -1580,8 +1580,8 @@ def test_a_subset_runs_through_the_real_stages(monkeypatch):
 
 
 def test_job_ids_must_exist():
-    assert check_page.job_ids("hydration/hydration_paint, interactions/interaction_pass/390/dark") == [
-        "hydration/hydration_paint", "interactions/interaction_pass/390/dark"]
+    assert check_page.job_ids("hydration/hydration_paint, interactions/interaction_pass/390/light") == [
+        "hydration/hydration_paint", "interactions/interaction_pass/390/light"]
     assert check_page.job_ids("origins/check_origins,origins/check_origins") == ["origins/check_origins"]  # counted as run
     for text in ("", "hydration/nope", "hydration/hydration_paint,nope"):
         with pytest.raises(check_page.argparse.ArgumentTypeError, match="unknown browser job"):

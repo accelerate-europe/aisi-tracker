@@ -16,7 +16,9 @@ scroll width is horizontal overflow), folds left closed, visible collapsed butto
 console errors. Single-open Functions rows are opened in turn, including their claims and quotes,
 and saved as <width>-<theme>-fn-<institute-id>-NN.png; the grid view is saved as
 <width>-<theme>-fn-grid-NN.png. The report counts rows found, opened and captured, row and grid
-slices, and capture failures. Exit 1 when any view has errors, overflow, a collapsed button outside
+slices, and capture failures. Funding openers are also opened in turn, including their folds,
+and each record region is saved as <width>-<theme>-fund-<kind>-<institute-id>-NN.png, with
+rows found, opened and captured, slices and errors counted. Exit 1 when any view has errors, overflow, a collapsed button outside
 a single-open group, a filtered table or a failed extra capture; 3 (NOT_RUN) without
 Chromium. It takes the host's browser slot; on a shared host run it on CI (the sweep workflow).
 """
@@ -39,7 +41,7 @@ VIEWS = [f"{width}-{theme}" for width in (1440, 1000, 390) for theme in ("light"
 SLICE = 1600
 # Each form owns one detail panel: selecting another row/cell removes the previous panel.
 # Function labels within a grouped row are independent toggles, so must NOT be excluded.
-SINGLE_OPEN = {"rows": "button.fn-phone-row", "cells": "button.fn-cell"}
+SINGLE_OPEN = {"rows": "button.fn-phone-row", "cells": "button.fn-cell", "fund": "button.fund-row, button.fund-name-row"}
 OPEN_ALL = """(root, singleOpen) => {
   let n = 0;
   for (let round = 0; round < 6; round++) {
@@ -91,7 +93,7 @@ def capture_region(page, region, out: Path, prefix: str) -> int:
 
 
 def view_failed(info: dict) -> bool:
-    return bool(info["errors"] or info["sw"] > info["cw"] or info["collapsed"] or info["filtered"] or info["fn_errors"])
+    return bool(info["errors"] or info["sw"] > info["cw"] or info["collapsed"] or info["filtered"] or info["fn_errors"] or info["fund_errors"])
 
 
 class QuietHandler(SimpleHTTPRequestHandler):
@@ -160,16 +162,20 @@ def sweep_view(browser, url: str, view: str, out: Path) -> dict:
         info["filtered"] |= extra["filtered"]
         return count
 
+    def capture_folds(region, prefix):
+        nonlocal opened
+        opened += region.evaluate(OPEN_ALL, single_open)  # Labels first, then their newly inserted quote folds.
+        # Quote bodies are lazy: the page fills them on the asynchronous details toggle event.
+        page.wait_for_function("""id => { const region = document.getElementById(id);
+          return region && [...region.querySelectorAll('details.quote[open]')].every(d => d.querySelector('.quote-body')); }""",
+                               arg=region.get_attribute("id"), timeout=5000)
+        return capture_extra(region, prefix)
+
     for institute_id in row_ids:
         try:
             region = open_row(institute_id)
             fn["fn_opened"] += 1
-            opened += region.evaluate(OPEN_ALL, single_open)  # Labels first, then their newly inserted quote folds.
-            # Quote bodies are lazy: the page fills them on the asynchronous details toggle event.
-            page.wait_for_function("""id => { const region = document.getElementById(id);
-              return region && [...region.querySelectorAll('details.quote[open]')].every(d => d.querySelector('.quote-body')); }""",
-                                   arg=region.get_attribute("id"), timeout=5000)
-            fn["fn_slices"] += capture_extra(region, f"{view}-fn-{institute_id}")
+            fn["fn_slices"] += capture_folds(region, f"{view}-fn-{institute_id}")
             fn["fn_captured"] += 1
         except (Error, ValueError) as exc:
             fn["fn_errors"].append(f"{institute_id}: {exc}")
@@ -183,8 +189,25 @@ def sweep_view(browser, url: str, view: str, out: Path) -> dict:
             fn["fn_grid_slices"] = capture_extra(page.locator("#functions-table"), f"{view}-fn-grid")
         except (Error, ValueError) as exc:
             fn["fn_errors"].append(f"grid: {exc}")
+
+    fund_rows = page.locator(SINGLE_OPEN["fund"]).evaluate_all(
+        "bs => bs.map(b => [b.closest('.fund-list').dataset.kind, b.dataset.institute])")
+    fund = {"fund_rows": len(fund_rows), "fund_opened": 0, "fund_captured": 0, "fund_slices": 0, "fund_errors": []}
+    for kind, institute_id in fund_rows:
+        identity = f"{kind}-{institute_id}"  # Both charts can open the same institute's record.
+        try:
+            button = page.locator(f'.fund-list[data-kind={json.dumps(kind)}] button[data-institute={json.dumps(institute_id)}]')
+            opened += button.evaluate("b => { if (b.getAttribute('aria-expanded') !== 'false') return 0; b.click(); return 1; }")
+            if button.get_attribute("aria-expanded") != "true":
+                raise ValueError("row did not open")
+            fund["fund_opened"] += 1
+            region = page.locator(f'[id={json.dumps(button.get_attribute("aria-controls"))}]')
+            fund["fund_slices"] += capture_folds(region, f"{view}-fund-{identity}")
+            fund["fund_captured"] += 1
+        except (Error, ValueError) as exc:
+            fund["fund_errors"].append(f"{identity}: {exc}")
     context.close()
-    return {"view": view, "opened": opened, "unstuck": unstuck, **info, "errors": errors, "slices": len(clips), **fn}
+    return {"view": view, "opened": opened, "unstuck": unstuck, **info, "errors": errors, "slices": len(clips), **fn, **fund}
 
 
 def main() -> int:

@@ -32,8 +32,9 @@ def test_empty_regions_cannot_count_as_captured(width, height):
     {"errors": ["console error"]}, {"sw": 391}, {"collapsed": ["function-label"]},
     {"filtered": True}, {"fn_errors": ["institute: row did not open"]},
     {"fn_errors": ["institute: empty capture region"]}, {"fn_errors": ["grid: grid did not open"]},
+    {"fund_errors": ["budget-institute: row did not open"]},
 ])
 def test_extra_capture_failures_and_existing_checks_fail_the_view(change):
-    info = {"errors": [], "sw": 390, "cw": 390, "collapsed": [], "filtered": False, "fn_errors": []}
+    info = {"errors": [], "sw": 390, "cw": 390, "collapsed": [], "filtered": False, "fn_errors": [], "fund_errors": []}
     assert not sweep_page.view_failed(info)
     assert sweep_page.view_failed({**info, **change})

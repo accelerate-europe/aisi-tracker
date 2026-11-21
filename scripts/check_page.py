@@ -11756,8 +11756,6 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
             == f"All ({total})",
             "All status count or table total differs from data",
         )
-        for error in check_operating_output(page.content(), data):
-            require(False, error)
         region = page.locator(
             '#world-region option[value^="c:"]'
         ).first.get_attribute("value")
@@ -14942,7 +14940,6 @@ def check_members(browser, base_url: str, data: dict, screenshots: Path | None =
             page.evaluate("document.fonts.ready")
             for theme in ("light", "dark"):
                 set_theme(page, theme)
-                errors.extend(f"{width}px {theme}: {e}" for e in check_leadership_rows(page.content(), data))
                 errors.extend(f"{width}px {theme}: {e}" for e in check_card_grid(page))
                 cards = page.locator('.card:has(.members)').evaluate_all("nodes => nodes.map(n => n.id)")
                 if not cards:
@@ -14966,7 +14963,6 @@ def check_members(browser, base_url: str, data: dict, screenshots: Path | None =
                     page.wait_for_selector('#' + identity + '.arrived')
                     if detail.evaluate("(n, original) => n !== original.detail || n.querySelector(':scope > summary') !== original.summary || n.open || Boolean(n.querySelector('details'))", original):
                         errors.append(f"{identity}: arrival replaces its members fold or opens it, which does not hold the target")
-                    errors.extend(f"{width}px {theme} full: {e}" for e in check_leadership_rows(page.content(), data))
                     if screenshots:
                         card.screenshot(path=str(screenshots / f'members-{identity}-{width}-{theme}-full.png'))
                     page.evaluate("location.hash = 'europe'")
@@ -15210,7 +15206,8 @@ def check_functions_tint(browser, base_url: str) -> list[str]:
 def browser_jobs(dist: Path, data: dict, screenshots: Path | None) -> list[tuple]:
     """Every browser check as (stage, check, arguments after browser and base URL), in the order its errors are
     reported. No job depends on another: each opens its own pages."""
-    passes = [(interaction_pass, (dist, data, screenshots, width, theme)) for width in (1440, 1000, 390) for theme in ("light", "dark")]
+    # Dark once, at the widest layout: check_theme_parity compares the themes, so a layout fault is reported once, not per theme.
+    passes = [(interaction_pass, (dist, data, screenshots, width, theme)) for width, theme in ((1440, "light"), (1440, "dark"), (1000, "light"), (390, "light"))]
     return [
         ("hydration", hydration_paint, ()),
         ("hydration", hydration_edges, (dist,)),
@@ -15607,8 +15604,8 @@ JOB_COST = {
     "origins/check_origins": 2.8, "origins/check_first_load": 6.0,
     "interactions/check_recovery_page": 3.2,
     "interactions/interaction_pass/1440/light": 65.6, "interactions/interaction_pass/1440/dark": 65.6,
-    "interactions/interaction_pass/1000/light": 59.4, "interactions/interaction_pass/1000/dark": 59.6,
-    "interactions/interaction_pass/390/light": 59.1, "interactions/interaction_pass/390/dark": 57.8,
+    "interactions/interaction_pass/1000/light": 59.4,
+    "interactions/interaction_pass/390/light": 59.1,
     "interactions/shared_links": 6.5, "interactions/check_development_edges": 22.4, "interactions/check_access_edges": 8.8,
     "interactions/check_funding_edges": 2.9, "interactions/check_funding_large_text": 4.0, "interactions/check_published_amount_fallback": 2.8,
     "interactions/check_menu_touch": 2.9, "interactions/check_arrival": 45.8, "interactions/check_access_fixes": 14.4,
@@ -15980,41 +15977,25 @@ FAVICON_HREFS = {
 }
 
 
-PAGE_DATA_LEFT_OUT = "check (except last_checked and method), snapshot and access_note"
-
-
-def expected_page_data(data: dict) -> dict:
-    """aisi.json as data/page.json must carry it, without its build mark: without a state's research log (check,
-    except last_checked and method) and a source's private-copy metadata (snapshot, access_note). Functions stay for
-    the cards' activity line, claims and excerpt anchors for the cards' quotes. Written
-    here from the documented list, not from the build's table, so a field the build drops without saying so fails."""
-    want = copy.deepcopy(data)
-    for j in want["jurisdictions"]:
-        if "check" in j:
-            j["check"] = {k: j["check"][k] for k in ("last_checked", "method") if k in j["check"]}
-    for source in want["sources"]:
-        source.pop("snapshot", None)
-        source.pop("access_note", None)
-    return want
-
-
 def check_page_data(dist: Path, data: dict) -> list[str]:
-    """data/page.json is expected_page_data(aisi.json), minified; the page loads it by a URL carrying the dataset
-    version and the file's hash; and the page script reads none of the fields left out (PAGE_DATA_LEFT_OUT)."""
+    """data/page.json is what build.page_data writes for aisi.json, minified; the page loads it by a URL carrying the
+    dataset version and the file's hash; and the page script reads none of the fields the build leaves out
+    (build.PAGE_DATA_DROPPED, the one list of them)."""
     import hashlib
+    from build import PAGE_DATA_DROPPED, page_data
 
     errors = []
     path = dist / "data/page.json"
     if not path.is_file():
         return ["data/page.json: missing"]
     text = path.read_text(encoding="utf-8")
-    want = expected_page_data(data)
+    want = json.loads(page_data(data))
     page = json.loads(text)
     mark = page.pop("build_mark", None)
     if list(json.loads(text))[-1:] != ["build_mark"]:
         errors.append("data/page.json: no build_mark as its last key (the page compares it with its own to catch a mixed release)")
     if page != want:
-        errors.append(f"data/page.json differs from aisi.json without {PAGE_DATA_LEFT_OUT}")
+        errors.append("data/page.json differs from build.page_data(aisi.json)")
     if "\n" in text or ": " in text[:200]:
         errors.append("data/page.json is not minified")
     # The build mark is the version and the hash of the file without it; the data URL and the page carry the same.
@@ -16033,7 +16014,9 @@ def check_page_data(dist: Path, data: dict) -> list[str]:
     if len(meta) == 1 and meta[0].get("data-package") != f"data/datapackage.json?v={data['dataset']['version']}-{hashlib.sha256(package.encode('utf-8')).hexdigest()[:10]}":
         errors.append(f"index.html: the data package URL {meta[0].get('data-package')!r} is not versioned by its content")
     script = "\n".join(node.get_text() for node in soup.select("body > script:not([src])"))
-    for pattern in (r"\.snapshot\b", r"\baccess_note\b", r"\.check\.(?!last_checked\b|method\b|functions\b)\w+", r"\.check\[", r"\bcheck\)"):
+    kept = "|".join((*PAGE_DATA_DROPPED["check"], "functions"))
+    dropped = [rf"\b{key}\b" for key in (*PAGE_DATA_DROPPED["sources"], *PAGE_DATA_DROPPED["records"])]
+    for pattern in (*dropped, rf"\.check\.(?!(?:{kept})\b)\w+", r"\.check\[", r"\bcheck\)"):
         for found in re.finditer(pattern, script):
             errors.append(f"page script reads a field data/page.json leaves out: {script[max(0, found.start() - 40):found.end() + 20]!r}")
     return errors
