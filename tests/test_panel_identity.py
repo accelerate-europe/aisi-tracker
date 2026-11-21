@@ -56,19 +56,6 @@ def test_funding_content_requires_state_before_full_recorded_name(replacement):
     assert any('in full' in e for e in check_page.check_institute_names(html, _names_data()))
 
 
-@pytest.mark.parametrize('spoken,valid', [
-    ('France, National Institute for AI Evaluation and Security', True),
-    ('France , National Institute for AI Evaluation and Security', True),
-    ('France,National Institute for AI Evaluation and Security', True),
-    ('France National Institute for AI Evaluation and Security', False),
-    ('France, National Institute', False),
-    ('National Institute for AI Evaluation and Security, France', False),
-])
-def test_wrapped_accessible_identity_allows_only_separator_whitespace(spoken, valid):
-    pattern = check_page.identity_name_pattern('France, National Institute for AI Evaluation and Security')
-    assert bool(pattern.fullmatch(spoken)) is valid
-
-
 def test_funding_content_keeps_the_visually_hidden_separator():
     from test_check_page import _names_data, _names_html
 

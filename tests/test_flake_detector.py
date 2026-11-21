@@ -10,7 +10,7 @@ from scripts import check_page, flake_detector as detector
 
 
 JOB = "hydration/hydration_paint"
-OTHER = "interactions/check_arrival"
+OTHER = "interactions/check_theme_default"
 
 
 @pytest.fixture
@@ -195,7 +195,7 @@ def test_list_risky_prints_only_the_existing_jobs(fake_checker, capsys):
     _, calls, _ = fake_checker
     assert detector.main(["--list-risky"]) == 0
     jobs = capsys.readouterr().out.splitlines()
-    assert jobs == ["hydration/hydration_paint", "hydration/hydration_edges", "interactions/check_arrival",
+    assert jobs == ["hydration/hydration_paint", "hydration/hydration_edges",
                     "interactions/check_theme_default"]
     assert set(jobs) <= set(check_page.all_job_ids()) and calls == []
 

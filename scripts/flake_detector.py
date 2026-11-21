@@ -29,7 +29,6 @@ CHECK_PAGE = ["uv", "run", "--locked", "-q", "scripts/check_page.py"]
 RISKY_JOBS = (
     "hydration/hydration_paint",
     "hydration/hydration_edges",
-    "interactions/check_arrival",
     "interactions/check_theme_default",
 )
 
