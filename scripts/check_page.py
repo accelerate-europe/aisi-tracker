@@ -10716,7 +10716,7 @@ def check_funding_edges(browser, base_url: str, data: dict) -> list[str]:
     errors = []
     page_errors: list[Exception] = []
     page = browser.new_page(viewport={"width": 390, "height": 1000})
-    page.on("pageerror", page_errors.append)
+    page.on("pageerror", lambda e: page_errors.append(e))  # a lambda: Playwright sets an attribute on each handler, which a bound builtin refuses
     refresh_fixture_selections(fixture)
     page.route(PAGE_DATA, lambda route: route.fulfill(json=fixture))
     hydrated(page, base_url)
@@ -11274,7 +11274,7 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
         viewport={"width": width, "height": 1000},
     )
     page_errors: list[Exception] = []
-    page.on("pageerror", page_errors.append)
+    page.on("pageerror", lambda e: page_errors.append(e))
 
     def require(condition, message, context=label):
         if not condition:
@@ -12002,7 +12002,7 @@ def shared_links(browser, base_url: str) -> list[str]:
     # Short final sections must retain an explicit nav choice at a clamped scroll position.
     page = browser.new_page(viewport={"width": 1440, "height": 1600}, reduced_motion="no-preference")  # the fade is read at its start
     page_errors = []
-    page.on("pageerror", page_errors.append)
+    page.on("pageerror", lambda e: page_errors.append(e))
     hydrated(page, base_url)
     page.wait_for_selector("#world-rows tr")
     page.locator('.secnav a[href="#data"]').evaluate("e => e.click()")
