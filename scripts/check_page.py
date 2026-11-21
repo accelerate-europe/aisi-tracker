@@ -13950,7 +13950,10 @@ FN_PHONE_BOUNDS_JS = """
 """
 
 
-def check_functions_phone(browser, base_url: str, data: dict, *, inject: bool = False, widths=(320, 360, 390, 430, 640)) -> list[str]:
+PHONE_WIDTHS = (320, 360, 390, 430, 640)
+
+
+def check_functions_phone(browser, base_url: str, data: dict, widths=PHONE_WIDTHS, *, inject: bool = False) -> list[str]:
     """Phone words, gutters, alignment, values, evidence and focus; real keyboard and touch."""
     page = browser.new_page(viewport={"width": 360, "height": 1000})
     errors = []
@@ -15207,7 +15210,7 @@ def browser_jobs(dist: Path, data: dict, screenshots: Path | None) -> list[tuple
         ("interactions", check_head_labels, ()),
         ("interactions", check_functions_layout, ()),
         ("interactions", check_function_group_tabs, ()),
-        ("interactions", check_functions_phone, (data,)),
+        *(("interactions", check_functions_phone, (data, (width,))) for width in PHONE_WIDTHS),  # one job per width: together they held a shard for 338 s
         ("interactions", check_functions_sticky, ()),
         ("interactions", check_functions_zero_carrier, (data,)),
         ("interactions", check_functions_tint, ()),
@@ -15575,23 +15578,35 @@ def browser_seeds(dist: Path) -> dict:
 SHARD_FORMAT = 3  # 3: a skipped (quarantined) job's outcome carries not_run
 CAUGHT = (OSError, subprocess.SubprocessError, ValueError, RuntimeError)  # what main() reports as "page check failed"
 
-# Seconds per job on GitHub's ubuntu-latest, one job at a time (bench run 40025105295, 24 Oct 2026); shards are
-# balanced by them, so they affect only how long each shard takes. A job not listed counts DEFAULT_COST.
+# Seconds per job on CI (run 44906932395, 21 Nov 2026, the jobs of a shard sharing its runner); shards are balanced by
+# them, so they affect only how long each shard takes. A job not listed counts DEFAULT_COST. The phone job split by width.
 JOB_COST = {
-    "hydration/hydration_paint": 27.8, "hydration/hydration_edges": 23.8, "hydration/check_mixed_release": 15.0,  # estimate: six page loads
-    "origins/check_origins": 2.8, "origins/check_first_load": 6.0,
-    "interactions/check_recovery_page": 3.2,
-    "interactions/interaction_pass/1440/light": 65.6, "interactions/interaction_pass/1440/dark": 65.6,
-    "interactions/interaction_pass/1000/light": 59.4,
-    "interactions/interaction_pass/390/light": 59.1,
-    "interactions/shared_links": 6.5, "interactions/check_development_edges": 22.4, "interactions/check_access_edges": 8.8,
-    "interactions/check_funding_edges": 2.9, "interactions/check_funding_large_text": 4.0, "interactions/check_published_amount_fallback": 2.8,
-    "interactions/check_menu_touch": 2.9, "interactions/check_arrival": 45.8, "interactions/check_access_fixes": 14.4,
-    "interactions/check_group_rows": 25.1, "interactions/check_touch_tips": 46.2, "interactions/check_theme_default": 10.0,
-    "interactions/check_wide_layout": 22.5, "interactions/check_text_measure": 7.7,
-    "interactions/check_none_identified_tips": 2.9, "interactions/check_theme_parity": 4.0, "interactions/check_highlight_fill": 4.0, "interactions/check_toggle_place": 4.0, "interactions/check_anchor_aliases": 6.0,
-    "interactions/check_format_edges": 9.3, "interactions/check_operating_edges": 6.0, "interactions/table_sorting": 3.9,
-    "interactions/check_card_grid_edges": 7.8,
+    "hydration/check_mixed_release": 19.0, "hydration/hydration_edges": 39.0, "hydration/hydration_paint": 42.0,
+    "interactions/check_access_edges": 26.0, "interactions/check_access_fixes": 18.6, "interactions/check_anchor_aliases": 23.7,
+    "interactions/check_arrival": 55.3, "interactions/check_card_grid_edges": 9.2, "interactions/check_card_heads": 145.9,
+    "interactions/check_claim_spacing": 10.2, "interactions/check_clickable_widths": 16.6, "interactions/check_close_controls": 43.2,
+    "interactions/check_command_palette": 15.7, "interactions/check_content_grid": 29.2, "interactions/check_development_edges": 33.3,
+    "interactions/check_disclosure_levels": 8.7, "interactions/check_folds": 7.4, "interactions/check_format_edges": 23.3,
+    "interactions/check_function_group_tabs": 12.2, "interactions/check_functions_detail": 21.3, "interactions/check_functions_group_lines": 6.9,
+    "interactions/check_functions_layout": 25.0, "interactions/check_functions_phone/320": 19.6, "interactions/check_functions_phone/360": 39.2,
+    "interactions/check_functions_phone/390": 39.2, "interactions/check_functions_phone/430": 39.2, "interactions/check_functions_phone/640": 39.2,
+    "interactions/check_functions_pointer": 37.6, "interactions/check_functions_sticky": 14.8, "interactions/check_functions_table": 10.5,
+    "interactions/check_functions_tint": 55.2, "interactions/check_functions_views": 110.2, "interactions/check_functions_zero_carrier": 101.8,
+    "interactions/check_funding_edges": 4.9, "interactions/check_funding_large_text": 165.9, "interactions/check_group_rows": 33.9,
+    "interactions/check_head_labels": 30.5, "interactions/check_highlight_fill": 5.5, "interactions/check_members": 14.6,
+    "interactions/check_menu_touch": 4.0, "interactions/check_none_identified_tips": 4.7, "interactions/check_offscreen_sections": 4.6,
+    "interactions/check_operating_edges": 8.9, "interactions/check_published_amount_fallback": 4.6, "interactions/check_recovery_page": 4.8,
+    "interactions/check_saved_card_heads": 23.6, "interactions/check_secondary_tone": 5.6, "interactions/check_section_extents/1000/funding": 5.8,
+    "interactions/check_section_extents/1000/grid": 19.7, "interactions/check_section_extents/1000/grouped": 7.4, "interactions/check_section_extents/1000/page": 8.3,
+    "interactions/check_section_extents/1279/page": 8.8, "interactions/check_section_extents/1440/funding": 4.8, "interactions/check_section_extents/1440/grid": 19.7,
+    "interactions/check_section_extents/1440/grouped": 6.5, "interactions/check_section_extents/1440/page": 7.8, "interactions/check_section_extents/2000/funding": 5.9,
+    "interactions/check_section_extents/2000/grid": 20.3, "interactions/check_section_extents/2000/grouped": 6.9, "interactions/check_section_extents/2000/page": 9.1,
+    "interactions/check_selection_boxes": 111.7, "interactions/check_selection_single": 4.7, "interactions/check_symbols": 13.6,
+    "interactions/check_text_measure": 10.3, "interactions/check_theme_default": 19.0, "interactions/check_theme_parity": 5.2,
+    "interactions/check_tinted_rows": 19.3, "interactions/check_toggle_place": 28.6, "interactions/check_touch_tips": 67.2,
+    "interactions/check_wide_layout": 84.7, "interactions/interaction_pass/1000/light": 64.6, "interactions/interaction_pass/1440/dark": 39.7,
+    "interactions/interaction_pass/1440/light": 106.0, "interactions/interaction_pass/390/light": 70.4, "interactions/shared_links": 10.2,
+    "interactions/table_sorting": 4.9, "origins/check_first_load": 10.3, "origins/check_origins": 3.6,
 }
 DEFAULT_COST = 5.0
 
@@ -15614,6 +15629,8 @@ def job_id(stage: str, check, args: tuple) -> str:
     name = f"{stage}/{inner.__name__}"
     if inner is check_section_extents:
         return f"{name}/{args[0]}/{args[1]}"
+    if inner is check_functions_phone:
+        return f"{name}/{args[1][0]}"
     return f"{name}/{args[3]}/{args[4]}" if inner is interaction_pass else name
 
 
