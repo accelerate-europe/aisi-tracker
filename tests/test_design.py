@@ -8,45 +8,14 @@ from pathlib import Path
 
 import pytest
 
-from scripts.check_page import PAINT_JS, check_meta_separators, check_style_source, check_text_contrast, report_line
+from scripts.check_page import PAINT_JS, check_text_contrast
 
 
 PAGE = Path(__file__).resolve().parents[1] / "site/index.html"
 
 
-def test_type_and_underline_tokens():
-    assert check_style_source(PAGE.read_text()) == []
-
-
-@pytest.mark.parametrize("role", ["title", "label", "body", "meta", "figure"])
-def test_literal_leading_cannot_bypass_role_token(role):
-    source = PAGE.read_text().replace(f"/var(--leading-{role})", "/2")
-    assert report_line(f"{role} line height does not use its role token") in check_style_source(source)  # cosmetic: D1
-
-
-@pytest.mark.parametrize(
-    ("prop", "token", "value"),
-    [
-        ("text-decoration-thickness", "--underline-width", "3px"),
-        ("text-underline-offset", "--underline-offset", "3px"),
-        ("text-decoration-color", "--underline-colour", "red"),
-    ],
-)
-def test_anchor_underline_cannot_bypass_tokens(prop, token, value):
-    # Leave the token in other rules; only the inline anchor rule counts.
-    source = PAGE.read_text().replace(f"{prop}: var({token})", f"{prop}: {value}", 1)
-    assert report_line(f"inline links do not use {token}") in check_style_source(source)
-
-
-def test_page_and_separator_gate_javascript_parse_without_a_browser():
-    class Capture:
-        def evaluate(self, source, *args):
-            self.source = source
-            return []
-
+def test_page_javascript_parses_without_a_browser():
     assert shutil.which("node"), "Node is required for JavaScript parse checks (Chrome is not used)."
-    page = Capture()
-    check_meta_separators(page)
     script = PAGE.read_text().split("<script>", 1)[1].split("</script>", 1)[0]
     # Parse only: no DOM, network, browser or layout engine is invoked. The source goes on stdin:
     # Linux caps a single argument at 128 KiB, which the page script exceeds.
@@ -54,9 +23,7 @@ def test_page_and_separator_gate_javascript_parse_without_a_browser():
         ["node", "-"],
         input="new Function("
         + json.dumps(script)
-        + "); new Function('return (' + "
-        + json.dumps(page.source)
-        + " + ')');",
+        + ");",
         capture_output=True,
         text=True,
     )

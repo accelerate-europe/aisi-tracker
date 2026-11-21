@@ -1035,7 +1035,7 @@ def test_page_row_labels_allow_rewording_but_require_text(rows, label):
     html = card(good_rows())
     assert page_errors(rows, html.replace(original, '<div class="k">Reworded label</div>')) == []
     for replacement in ("", '<div class="k"> \n </div>'):
-        errors = check_page.blocking(page_errors(rows, html.replace(original, replacement)))
+        errors = page_errors(rows, html.replace(original, replacement))
         assert any("row label is missing or empty" in error for error in errors)
 
 

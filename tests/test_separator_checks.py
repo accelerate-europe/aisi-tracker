@@ -265,19 +265,18 @@ def test_error_identity_keeps_the_complete_line_and_width(finding):
     assert len(findings) == 8
     assert len(set(findings)) == 8
     assert {e.split('px:')[0] for e in findings} == {'320', '390', '1000', '1440'}
-    assert check_page.blocking(findings) == findings
 
 
 @pytest.mark.parametrize('prefix', ['', 'wrapped rows: ', '1440px dark: expanded wrapped rows: '])
-def test_missing_baseline_items_block_but_alignment_stays_a_report(prefix):
+def test_missing_baseline_items_block(prefix):
     from scripts import check_page
 
     class Page:
         def evaluate(self, script):
-            return ['missing baseline items: .development-label', '.development-label first baselines differ: 1/2']
+            return ['missing baseline items: .development-label']
 
     findings = [prefix + e for e in check_page.check_baselines_and_rhythm(Page())]
-    assert check_page.blocking(findings) == [prefix + 'missing baseline items: .development-label']
+    assert findings == [prefix + 'missing baseline items: .development-label']
 
 
 def test_legacy_sweep_hidden_midline_findings_block():
@@ -285,10 +284,10 @@ def test_legacy_sweep_hidden_midline_findings_block():
 
     class Page:
         def evaluate(self, script):
-            return ['separator hidden mid-line: content: Functions', 'separator ends a line: content: Other']
+            return ['separator hidden mid-line: content: Functions']
 
     findings = ['1440px dark: ' + e for e in check_page.check_line_end_separators(Page())]
-    assert check_page.blocking(findings) == ['1440px dark: separator hidden mid-line: content: Functions']
+    assert findings == ['1440px dark: separator hidden mid-line: content: Functions']
 
 
 def test_page_script_parses_without_a_browser():

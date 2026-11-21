@@ -166,29 +166,18 @@ def test_gate_asks_for_timings_except_in_a_shard(tmp_path, monkeypatch, gate_arg
     assert ("hydration/hydration_paint" in ctx.sections.get("jobs", "")) == timed
 
 
-@pytest.mark.parametrize("code, status", [(0, "PASS"), (1, "FAIL")])
-def test_gate_report_lines_get_their_own_section(tmp_path, monkeypatch, code, status):
+@pytest.mark.parametrize("code, status", [(3, "NOT RUN"), (1, "FAIL")])
+def test_gate_keeps_every_skipped_job_in_its_report(tmp_path, monkeypatch, code, status):
     ctx = check.Context(tmp_path, tmp_path, tmp_path, tmp_path, None, False, tmp_path / "dist", tmp_path, built=True)
 
     def fake_run(ctx, step, cmd, cwd=None):
-        (tmp_path / "gate.log").write_text("$ uv run --locked\nreport line: gap 6px, not 8px\nreport line: gap 6px, not 8px\nerror: x\nreport line: weight 500\n")
+        (tmp_path / "gate.log").write_text("$ uv run --locked\nNOT RUN: job one: owner A, #1, expires 2026-11-09\nerror: x\nNOT RUN: job two: owner B, #2, expires 2026-11-10\n")
         return code, 1.0, tmp_path / "gate.log"
 
     monkeypatch.setattr(check, "run", fake_run)
     result = check.step_gate(ctx)
     assert result.status == status
-    assert ctx.sections["report lines"].count("- gap 6px, not 8px") == 1 and "- weight 500" in ctx.sections["report lines"]
-    assert ("2 report lines" in result.detail) == (status == "PASS")
-    assert check.REPORT_ORDER.index("report lines") < check.REPORT_ORDER.index("sheet")
-
-
-def test_many_report_lines_are_cut_with_a_pointer_to_the_log(tmp_path, monkeypatch):
-    ctx = check.Context(tmp_path, tmp_path, tmp_path, tmp_path, None, False, tmp_path / "dist", tmp_path, built=True)
-    log = tmp_path / "gate.log"
-    monkeypatch.setattr(check, "run", lambda *a, **k: (log.write_text("".join(f"report line: n{i}\n" for i in range(45))), (0, 1.0, log))[1])
-    check.step_gate(ctx)
-    section = ctx.sections["report lines"]
-    assert "- n39" in section and "- n40" not in section and "and 5 more in the [gate log]" in section
+    assert "job one" in result.detail and "job two" in result.detail
 
 
 def test_unreadable_timings_never_fail_the_gate(tmp_path, monkeypatch):

@@ -733,15 +733,13 @@ def test_inventory_takes_two_captures_per_long_panel_and_skips_short_ones(monkey
                 institutes=[dict(id=jid.lower(), jurisdiction_id=jid, functions=[dict(code='testing', claim_ids=['one'])])
                             for jid in ('GB', 'EU')], dataset=dict(vocabularies=dict(function=dict(testing=dict(label='Model testing')))))
     errors = check_page.check_panel_heads(None, 'unused', data)
-    assert check_page.blocking(errors) == ([] if phone_wrap else [
+    assert errors == ([] if phone_wrap else [
         f'390px {theme}: United Kingdom grouped Functions: no wrapped head measured at 390px'
         for theme in ('light', 'dark')])
     assert len(pages) == 4  # two widths and both themes
     for page in pages:
         assert [scroll for p, scroll in captures if p is page] == [0, 37] * 16
         assert not page.marked and page.ink_style is None and page.removal_checked
-    assert len([e for e in errors if 'States mini card' in e and '1 not stuck (too short)' in e]) == 4
-    assert len([e for e in errors if 'Functions grouped row' in e and '2 wrapped heads measured' in e]) == (2 if phone_wrap else 0)
     assert all(institute is None and status == ('Established' if card == 'full' else None)
                for _, institute, card, status in identities if card)
     assert all(institute == 'Institute' and status is None for _, institute, card, status in identities if not card)

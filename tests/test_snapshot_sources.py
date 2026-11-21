@@ -1703,7 +1703,7 @@ def test_unusable_headless_render_leaves_the_archive(source, tmp_path, monkeypat
     assert attempt["status"] != "ok"
 
 
-def test_main_only_and_route_in_the_report_line(source, tmp_path, monkeypatch, capsys):
+def test_main_only_and_route_in_the_output(source, tmp_path, monkeypatch, capsys):
     headless_browser(monkeypatch, LIVE_NOW)
     fetcher = FakeFetcher(tmp_path / "cache")
     archived_source(source, fetcher)

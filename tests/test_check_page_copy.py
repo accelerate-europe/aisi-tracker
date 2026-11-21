@@ -30,20 +30,20 @@ def test_download_groups_keep_file_contracts_and_nonempty_names(downloads):
     page, files = downloads
     assert check_page.check_download_groups(page, files) == []
     page.select_one(".dl-title").string = " \n "
-    assert "download link label is missing or empty" in check_page.blocking(check_page.check_download_groups(page, files))
+    assert "download link label is missing or empty" in check_page.check_download_groups(page, files)
 
 
 @pytest.mark.parametrize("replacement", ["", '<h4> <span class="label">CSV</span></h4>'])
 def test_download_group_heading_cannot_be_missing_or_only_a_file_type(downloads, replacement):
     page, files = downloads
     page.select_one("h4").replace_with(soup(replacement))
-    assert "download group heading is missing or empty" in check_page.blocking(check_page.check_download_groups(page, files))
+    assert "download group heading is missing or empty" in check_page.check_download_groups(page, files)
 
 
 def test_download_file_cannot_be_changed_while_rewording_labels(downloads):
     page, files = downloads
     page.select_one(".dl-file").string = "another.csv"
-    assert any("contract" in error for error in check_page.blocking(check_page.check_download_groups(page, files)))
+    assert any("contract" in error for error in check_page.check_download_groups(page, files))
 
 
 @pytest.fixture
@@ -55,7 +55,7 @@ def test_network_tooltip_allows_rewording_but_keeps_membership(network):
     page, data = network
     assert check_page.check_network_cells(page, data) == []
     data["jurisdictions"][0]["memberships"] = [{"body": "intl-network"}]
-    assert any("disagrees" in error for error in check_page.blocking(check_page.check_network_cells(page, data)))
+    assert any("disagrees" in error for error in check_page.check_network_cells(page, data))
 
 
 @pytest.mark.parametrize(("attribute", "value"), [("data-tip", " \n "), ("data-tip", None), ("tabindex", None), ("tabindex", "-1")])
@@ -66,7 +66,7 @@ def test_network_tooltip_cannot_be_empty_or_unfocusable(network, attribute, valu
         del node[attribute]
     else:
         node[attribute] = value
-    assert any("focusable tooltip" in error for error in check_page.blocking(check_page.check_network_cells(page, data)))
+    assert any("focusable tooltip" in error for error in check_page.check_network_cells(page, data))
 
 
 @pytest.fixture
@@ -83,7 +83,7 @@ def test_absence_definitions_allow_rewording_and_retired_variants(absence):
     absence.append(soup('<p>Not available. No data. Unknown. Not stated.</p>'))
     assert check_page.check_absence_wording(absence) == []
     absence.select_one(".missing:not(.na)").string = "Unknown"
-    assert any("not Not published" in error for error in check_page.blocking(check_page.check_absence_wording(absence)))
+    assert any("not Not published" in error for error in check_page.check_absence_wording(absence))
 
 
 @pytest.mark.parametrize("selector", ['#entries .missing:not(.na)', '#world-cards .missing', '#entries .smark[data-state]', '#world-cards .smark', '#entries h3 .smark', '#entries .missing.na', *[f'th[data-k="{key}"] button' for key in check_page.DASH_COLUMNS]])
@@ -94,20 +94,20 @@ def test_each_absence_tooltip_must_exist_and_be_nonempty(absence, selector, valu
         del node['data-tip']
     else:
         node['data-tip'] = value
-    assert check_page.blocking(check_page.check_absence_wording(absence))
+    assert check_page.check_absence_wording(absence)
 
 
 @pytest.mark.parametrize("selector", ['#entries .missing:not(.na)', '#world-cards .missing', '#entries .smark[data-state]', '#world-cards .smark', '#entries h3 .smark'])
 def test_absence_terms_remain_focusable(absence, selector):
     del absence.select_one(selector)['tabindex']
-    assert check_page.blocking(check_page.check_absence_wording(absence))
+    assert check_page.check_absence_wording(absence)
 
 
 def test_source_alignment_missing_tooltip_still_blocks():
     data = {"sources": [], "jurisdictions": [], "institutes": []}
     html = '<span class="missing" data-tip="Reworded explanation">Not published</span>'
     assert check_page.check_source_alignment(html, data) == []
-    assert "missing-value tooltip loses the null definition" in check_page.blocking(check_page.check_source_alignment(html.replace('data-tip="Reworded explanation"', 'data-tip=" "'), data))
+    assert "missing-value tooltip loses the null definition" in check_page.check_source_alignment(html.replace('data-tip="Reworded explanation"', 'data-tip=" "'), data)
 
 
 @pytest.mark.parametrize("key", ["law", "agreed"])
@@ -127,13 +127,13 @@ def test_access_glossary_definitions_are_nonempty_and_focusable(key):
     for attribute, value in [("data-exp", " \n "), ("tabindex", "-1")]:
         page = soup(html)
         page.select_one("abbr")[attribute] = value
-        assert any("tooltips" in error for error in check_page.blocking(check_page.check_access_groups(page, data)))
+        assert any("tooltips" in error for error in check_page.check_access_groups(page, data))
 
 
 def test_privileged_heading_keeps_term_tooltip_and_focus():
     html = '<div id="access"><div class="group-block" data-group="privileged"><h3><abbr class="g" data-exp="Reworded definition" tabindex="0">Early access</abbr></h3></div></div>'
     data = {"institutes": [], "jurisdictions": []}
-    errors = lambda page: [error for error in check_page.blocking(check_page.check_access_groups(page, data)) if "heading lacks" in error]  # noqa: E731
+    errors = lambda page: [error for error in check_page.check_access_groups(page, data) if "heading lacks" in error]  # noqa: E731
     assert errors(soup(html)) == []
     for attribute, value in [("data-exp", " "), ("tabindex", "-1")]:
         page = soup(html)
@@ -148,13 +148,13 @@ def test_privileged_heading_keeps_term_tooltip_and_focus():
 def test_funding_bar_tooltip_is_required_without_fixed_words(tip):
     results = iter([{"key": ["adopted", "announced"], "clear": True, "budgetOnly": True, "solid": ["solid", "solid"], "hatch": ["hatch", "hatch"], "tips": [tip]}, []])
     page = SimpleNamespace(evaluate=lambda script: next(results))
-    assert bool(check_page.blocking(check_page.check_funding_key(page))) == (not (tip or "").strip())
+    assert bool(check_page.check_funding_key(page)) == (not (tip or "").strip())
 
 
 def test_funding_commitment_key_belongs_to_budget_only():
     results = iter([{"key": ["adopted", "announced"], "clear": True, "budgetOnly": False, "solid": ["solid", "solid"], "hatch": ["hatch", "hatch"], "tips": ["Minimum width"]}, []])
     page = SimpleNamespace(evaluate=lambda script: next(results))
-    assert any("Budget" in error for error in check_page.blocking(check_page.check_funding_key(page)))
+    assert any("Budget" in error for error in check_page.check_funding_key(page))
 
 
 @pytest.mark.parametrize("mini", [False, True])
@@ -166,7 +166,7 @@ def test_state_download_names_and_tips_allow_rewording_but_keep_contract(tmp_pat
     html = f'<article class="card {"mini" if mini else ""}" data-j="XX"><div class="{"foot" if mini else "top"}"><a class="state-dl i-dl" href="api/v1/jurisdictions/XX.json" download="XX.json" data-tip="Download this record"><span class="vh">Get this record</span></a></div></article>'
     assert check_page.check_state_download_buttons(html, tmp_path, data) == []
     for old, new in [('Download this record', ' '), ('Get this record', ' '), ('download="XX.json"', 'download="YY.json"'), ('i-dl', 'other')]:
-        assert check_page.blocking(check_page.check_state_download_buttons(html.replace(old, new), tmp_path, data))
+        assert check_page.check_state_download_buttons(html.replace(old, new), tmp_path, data)
 
 
 @pytest.mark.parametrize("active", ["light", "dark"])
@@ -190,7 +190,7 @@ def test_renamed_card_fields_still_compare_their_citations_with_the_table():
     html = f'<article class="card" data-j="XX"><div class="row" data-track="9"><div class="k">Reworded field</div><div class="v">10<span class="qualifiers">Qualification</span>{cite}</div></div><ol class="srcs"><li data-source-id="one"><a href="https://example.org/one">One</a></li><li data-source-id="two"><a href="https://example.org/two">Two</a></li></ol></article><table><tbody id="world-rows"><tr data-j="XX"><td data-col="status"><span class="smark"><i class="sw"></i>Planned</span></td><td data-col="budget">10{cite}</td><td data-col="op"><span class="missing na"><span aria-hidden="true">–</span><span class="vh">Not applicable</span></span></td></tr></tbody></table>'
     assert check_page.check_source_alignment(html, data) == []
     broken = html.replace(cite, cite.replace('data-source-id="one"', 'data-source-id="two"').replace('example.org/one', 'example.org/two').replace('>1</a>', '>2</a>'), 1)
-    errors = check_page.blocking(check_page.check_source_alignment(broken, data))
+    errors = check_page.check_source_alignment(broken, data)
     assert 'XX: budget citations differ between card and table' in errors
     assert errors == ['XX: budget citations differ between card and table']
 
@@ -216,7 +216,7 @@ def test_a_tooltip_reads_from_its_one_home(network):
     mark["aria-description"] = mark.attrs.pop("data-tip")
     assert check_page.check_network_cells(page, data) == []  # the same check passes with the description as the home
     mark["aria-description"] = " \n "
-    assert check_page.blocking(check_page.check_network_cells(page, data))
+    assert check_page.check_network_cells(page, data)
 
 
 def test_funding_charts_share_only_the_sources_the_institute_cites():
@@ -234,7 +234,7 @@ def test_funding_charts_share_only_the_sources_the_institute_cites():
         return ('<div id="fund-rows">' + charts
                 + '<div id="fund-records"><details class="fund-detail" data-j="XX" data-institute="xx-i"><summary>Funding and staff records</summary><div class="srcs"><ol>'
                 + "".join(f'<li data-source-id="{s}"><a href="https://example.org/{s}">{s}</a></li>' for s in listed) + '</ol></div></details></div></div>')
-    errors = lambda html: [e for e in check_page.blocking(check_page.check_source_alignment(html, data)) if e.startswith("XX")]  # noqa: E731
+    errors = lambda html: [e for e in check_page.check_source_alignment(html, data) if e.startswith("XX")]  # noqa: E731
     assert errors(card + fund("two", 1, ["two"])) == []
     assert "XX: funding source list is not exactly the sources its funding and staff cite" in errors(card + fund("two", 1, ["one", "two", "three"]))
     assert "XX: citation two differs from card source numbering" in errors(card + fund("two", 2, ["two"]))

@@ -572,7 +572,7 @@ def gate_result(step: str, code: int, seconds: float, log: Path) -> Result:
     if code == NOT_RUN:  # check_page.py names the cause and its fix on a NOT RUN: line (a Chromium build, too many jobs)
         said = [line.removeprefix("NOT RUN: ") for line in log.read_text(encoding="utf-8", errors="replace").splitlines()
                 if line.startswith("NOT RUN: ")] if log.is_file() else []
-        return Result(step, "NOT RUN", seconds, said[-1] if said else "Playwright's Chromium is not installed (uv run --locked scripts/check_page.py --install-chrome)", log)
+        return Result(step, "NOT RUN", seconds, "; ".join(said) if said else "Playwright's Chromium is not installed (uv run --locked scripts/check_page.py --install-chrome)", log)
     return Result(step, "FAIL", seconds, tail(log), log)
 
 
@@ -630,28 +630,7 @@ def step_gate(ctx: Context) -> Result:
             ctx.sections["jobs"] = browser_job_section(lines)
         except (OSError, ValueError, KeyError, TypeError) as exc:  # timings are a report aid: never fail the gate over them
             ctx.sections["jobs"] = f"## Browser jobs\n\nTimings unreadable ({type(exc).__name__}: {exc}).\n"
-    result = gate_result("gate", code, seconds, log)
-    if notes := report_lines(log):
-        rest = [f"- and {len(notes) - REPORT_LINES_SHOWN} more in the [gate log]({log})"] if len(notes) > REPORT_LINES_SHOWN else []
-        ctx.sections["report lines"] = "\n".join(["## Report lines", "", "Cosmetic drift the gate reports but does not block on (test strategy D1); "
-                                                   "the reviewer judges each against the design principles.", "",
-                                                   *(f"- {n}" for n in notes[:REPORT_LINES_SHOWN]), *rest, ""])
-        if result.status == "PASS":
-            result.detail = f"{len(notes)} report line{'' if len(notes) == 1 else 's'} (see Report lines)"
-    return result
-
-
-REPORT_LINES_SHOWN = 40  # one cosmetic slip can repeat in every state and element; the log keeps them all
-REPORT_LINE = "report line: "  # check_page.REPORT_LINE: the gate prints each report line on its own line
-
-
-def report_lines(log: Path) -> list[str]:
-    """The gate's report lines in its log, in order, each once."""
-    try:
-        text = log.read_text(encoding="utf-8", errors="replace")
-    except OSError:
-        return []
-    return list(dict.fromkeys(line[len(REPORT_LINE):].rstrip() for line in text.splitlines() if line.startswith(REPORT_LINE)))
+    return gate_result("gate", code, seconds, log)
 
 
 # The pre-render and the locks that pin its browser count too: a new browser can draw the page differently.
@@ -1094,9 +1073,7 @@ def preflight(cache: Path, snapshots: Path | None) -> int:
     return 0 if all(ok for _, ok, _ in rows) else 1
 
 
-# The owner's list of where to look leads, then why --changed chose its steps, release warnings, the gate's report
-# lines, the agent's visual pass, the claims and the browser job timings.
-REPORT_ORDER = ("where", "changed", "warnings", "report lines", "sheet", "compare", "jobs", "budgets")
+REPORT_ORDER = ("where", "changed", "warnings", "sheet", "compare", "jobs", "budgets")
 
 
 def ordered_sections(sections: dict[str, str]) -> list[str]:

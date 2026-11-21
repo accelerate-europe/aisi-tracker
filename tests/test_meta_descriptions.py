@@ -50,11 +50,11 @@ def test_share_tags_and_page_size_budget(tmp_path):
                 node.attrs.pop("content")
             else:
                 node["content"] = content
-            assert any("must appear once and not be empty" in error for error in check_page.blocking(check_page.check_share_tags(broken, "index.html", TITLE, address)))
+            assert any("must appear once and not be empty" in error for error in check_page.check_share_tags(broken, "index.html", TITLE, address))
     for selector in ('meta[name="twitter:title"]', 'meta[name="twitter:image"]', 'meta[property="og:site_name"]'):
         broken = BeautifulSoup(str(soup), "html.parser")
         broken.select_one(selector).decompose()
-        assert check_page.blocking(check_page.check_share_tags(broken, "index.html", TITLE, address))
+        assert check_page.check_share_tags(broken, "index.html", TITLE, address)
     budget = check_page.PAGE_BYTES_BUDGET
     opening, closing = b'<section><div><h2 id="world">', b"</div><section>nested</section></section>"
 
@@ -64,15 +64,10 @@ def test_share_tags_and_page_size_budget(tmp_path):
         return check_page.check_page_size(tmp_path)
 
     fixed = len(b"<p>x</p>" + opening + closing)
-    assert check_page.blocking(serve(budget - fixed)) == []  # the world section ends exactly at the budget
-    (near,) = serve(budget - fixed)  # but past 95% it says so, without blocking
-    assert check_page.is_report_line(near) and "100.0%" in near
-    warn = int(check_page.PAGE_BYTES_WARN * budget)
-    assert serve(warn - fixed) == []  # at 95% exactly: nothing yet
-    assert check_page.is_report_line(serve(warn - fixed + 1)[0])
-    assert len(check_page.blocking(serve(budget - fixed + 1))) == 1  # one byte beyond
-    assert len(check_page.blocking(serve(budget * 2))) == 1  # an oversized world body
-    assert serve(100, after_bytes=budget * 2) == []  # a large section after it only warns
+    assert serve(budget - fixed) == []  # the world section ends exactly at the budget
+    assert len(serve(budget - fixed + 1)) == 1  # one byte beyond
+    assert len(serve(budget * 2)) == 1  # an oversized world body
+    assert serve(100, after_bytes=budget * 2) == []
     (error,) = serve(100, world=False)  # the heading keeps its id but its section is gone
     assert "cannot find where the world section" in error
     for broken in (b'<section><h2 id="world">never closes',

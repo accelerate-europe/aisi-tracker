@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from scripts.check_page import REPORT_MARK, WIDTH_GEOMETRY, check_css_tokens, browser_seeds
+from scripts.check_page import WIDTH_GEOMETRY, check_css_tokens, browser_seeds
 
 
 PAGE = Path(__file__).resolve().parents[1] / "site/index.html"
@@ -34,7 +34,7 @@ def test_page_uses_width_colour_and_breakpoint_tokens():
 ])
 def test_raw_width_mutations_block(prop, value):
     errors = check_css_tokens(mutate_css(f"@media (width <= 640px) {{ .mutant {{ {prop}: {value}; }} }}"))
-    assert any("raw width" in error and not error.startswith(REPORT_MARK) for error in errors)
+    assert any("raw width" in error for error in errors)
 
 
 @pytest.mark.parametrize("unit", [
@@ -49,7 +49,7 @@ def test_raw_width_mutations_block(prop, value):
 @pytest.mark.parametrize("prop", ["width", "min-width", "max-width"])
 def test_all_length_units_and_percentages_block_outside_geometry(prop, unit):
     errors = check_css_tokens(mutate_css(f".mutant {{ {prop}: 20{unit}; }}"))
-    assert any("raw width" in error and not error.startswith(REPORT_MARK) for error in errors)
+    assert any("raw width" in error for error in errors)
 
 
 def test_geometry_exceptions_have_reasons_and_cannot_spread():
@@ -188,8 +188,8 @@ def test_raw_declaration_in_root_is_not_a_token_definition():
 def test_token_guard_is_blocking_in_the_gate_seed(tmp_path):
     (tmp_path / "index.html").write_text(mutate_css(".mutant { width: 30rem; color: red; }"))
     errors = browser_seeds(tmp_path)["interactions"]()
-    assert any("raw width" in e and not e.startswith(REPORT_MARK) for e in errors)
-    assert any("raw text colour" in e and not e.startswith(REPORT_MARK) for e in errors)
+    assert any("raw width" in e for e in errors)
+    assert any("raw text colour" in e for e in errors)
 
 
 def test_inline_styles_cannot_bypass_tokens():

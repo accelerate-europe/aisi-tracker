@@ -8,8 +8,6 @@ with that row. Only intrinsic controls/labels and viewport overlays use containm
 
 from collections import Counter
 from math import isfinite
-import sys
-from time import monotonic
 
 
 WIDTHS = (1000, 1440, 2000)
@@ -47,7 +45,6 @@ BLOCK_KINDS = {
 }
 
 # Every former mandatory kind belongs to at least one independently failing job.
-# Evidence jobs also report all the roles and kinds their scoped snapshots see.
 GROUP_KINDS = {
     "page": tuple(kind for kind in BLOCK_KINDS if kind not in {
         "grid Functions", "Funding record groups", "quotation bodies",
@@ -351,7 +348,7 @@ BLOCK_PARTICIPATION_JS = r"""(style, parent, named) => {
 
 SECTION_EXTENTS_JS = r"""({selectors, scope, kinds}) => {
   const participates = """ + BLOCK_PARTICIPATION_JS + r""";
-  const entries = Object.entries(selectors), nodes = [], ids = new Map(), tracks = {};
+  const entries = Object.entries(selectors), nodes = [], ids = new Map();
   const visible = n => !n.closest('.vh, [hidden], svg, script, style, template') &&
     n.checkVisibility({visibilityProperty:true, contentVisibilityAuto:true}) && n.getClientRects().length;
   const box = n => {const r=n.getBoundingClientRect();return [r.left,r.right];};
@@ -453,7 +450,6 @@ SECTION_EXTENTS_JS = r"""({selectors, scope, kinds}) => {
     // computed max-width. Nested prose lists retain the normal list inset.
     ids.set(n,item.id);nodes.push(item);
   }
-  for(const item of nodes) tracks[item.matches[0] || 'unclassified']=(tracks[item.matches[0] || 'unclassified']||0)+1;
   const coverage=Object.fromEntries(Object.entries(kinds).map(([kind,[selector]])=>[kind,[...ids.keys()].filter(n=>n.matches(selector)).length]));
   const track_groups=[];
   for(const owner of ids.keys()) if(owner.matches('.fn-phone')) {
@@ -464,7 +460,7 @@ SECTION_EXTENTS_JS = r"""({selectors, scope, kinds}) => {
     if(first) track_groups.push({name:'Funding '+owner.dataset.kind+' tracks',owner:ids.get(owner),gap:8,
       tracks:[first.querySelector('.fund-identity'),first.querySelector('.fund-bar'),first.querySelector('.fund-measure > .fund-value')].map(box)});
   }
-  return {viewport:innerWidth,rem:parseFloat(getComputedStyle(document.documentElement).fontSize),nodes,counts:tracks,coverage,track_groups};
+  return {viewport:innerWidth,rem:parseFloat(getComputedStyle(document.documentElement).fontSize),nodes,coverage,track_groups};
 }"""
 
 
@@ -492,20 +488,13 @@ OPEN_FOLDS_JS = r"""async scope => {
 
 def check_section_extents(browser, base_url: str, width: int, group: str) -> list[str]:
     """One width and state family per job; one hydrated page for all its states."""
-    from check_page import REVEAL_FUNDING_LIST_JS, hydrated, layout_settled, printed_report_line, report_line
+    from check_page import REVEAL_FUNDING_LIST_JS, hydrated, layout_settled
 
     if (width, group) not in EXTENT_JOBS:
         raise ValueError(f"unknown section extent job: {width}/{group}")
     errors, required = [], {}
-    counts, role_counts, block_counts = Counter(), Counter(), Counter()
+    counts, block_counts = Counter(), Counter()
     prefix = f"{width}px {group}"
-    started = monotonic()
-
-    def progress(label):
-        line = report_line(f"{prefix} section extents: {label} ({monotonic() - started:.1f}s)")
-        errors.append(line)
-        # Survives a watchdog exit before the job returns its normal report.
-        print(printed_report_line(line), file=sys.stderr, flush=True)
 
     page = browser.new_page(viewport={"width": width, "height": 1000})
     try:
@@ -529,8 +518,6 @@ def check_section_extents(browser, base_url: str, width: int, group: str) -> lis
                 errors.append(f"{prefix} {label}: missing visible scope {snapshot['missing']}")
                 return False
             errors.extend(f"{prefix} {label}: {finding}" for finding in extent_errors(snapshot))
-            for role, number in snapshot["counts"].items():
-                role_counts[role] = max(role_counts[role], number)
             for kind, number in snapshot["coverage"].items():
                 block_counts[kind] = max(block_counts[kind], number)
             return True
@@ -539,13 +526,11 @@ def check_section_extents(browser, base_url: str, width: int, group: str) -> lis
             required.update({"map record": 1, "earlier News": 1, "explanation folds": 1,
                              "source folds": 1, "quote folds": 1, "mini cards": 1})
             inspect("initial closed folds", open_folds=False)
-            progress("initial closed folds complete")
             earlier = page.locator('#developments-more')
             if earlier.count() and earlier.is_visible() and earlier.get_attribute('aria-expanded') == 'false':
                 earlier.click()
                 counts['earlier News'] += 1
             inspect("all native folds and earlier News")
-            progress("native folds and earlier News complete")
             page.locator('#map-search').fill('United Kingdom')
             page.locator('#map-search').press('Enter')
             counts['map record'] += int(inspect("map record", '#record'))
@@ -554,41 +539,33 @@ def check_section_extents(browser, base_url: str, width: int, group: str) -> lis
                 tip.dispatch_event('mouseover')
                 inspect('tooltip', '#tip', open_folds=False)
                 page.keyboard.press('Escape')
-            progress("map record and tooltip complete")
         elif group == "funding":
             targets = page.locator('#fund-rows [aria-controls^="fund-detail-"]').evaluate_all("ns=>[...new Set(ns.map(n=>n.getAttribute('aria-controls')))]")
             required['Funding details'] = max(1, len(targets))
-            for index, target in enumerate(targets):
+            for target in targets:
                 button = page.locator(f'#fund-rows [aria-controls="{target}"]').first
                 button.evaluate(REVEAL_FUNDING_LIST_JS)
                 button.evaluate("n=>{if(n.getAttribute('aria-expanded')!=='true') n.click();}")
                 counts['Funding details'] += int(inspect(target, f"#{target}[open]"))
                 button.evaluate('n=>n.click()')
-                progress(f"Funding details {index + 1}/{len(targets)} complete")
         else:
             view = group
             required[view + ' view'] = 1
             page.evaluate("v=>document.getElementById('functions-table').fnView(v)", view)
             scope = '.fn-phone' if view == 'grouped' else '.fn-scroll'
             counts[view + ' view'] += int(inspect(view + ' view', scope))
-            progress(view + " view complete")
             controls = page.locator('.fn-phone-row' if view == 'grouped' else '.fn-cell')
             indices = range(controls.count())
             required[view + ' evidence'] = max(1, len(indices))
-            for done, index in enumerate(indices, 1):
+            for index in indices:
                 control = controls.nth(index)
                 control.evaluate("n=>{if(n.getAttribute('aria-expanded')!=='true') n.click();}")
                 if view == 'grouped':
                     page.locator('.fn-phone-detail button.fn-function-label[aria-expanded="false"]').evaluate_all('ns=>ns.forEach(n=>n.click())')
                 counts[view + ' evidence'] += int(inspect(f'{view} evidence {index + 1}', '.fn-detail'))
                 control.evaluate('n=>n.click()')
-                if done % 5 == 0 or done == len(indices):
-                    progress(f"{view} evidence {done}/{len(indices)} complete")
         errors.extend(f"{prefix}: {finding}" for finding in coverage_errors(counts, required))
         errors.extend(f"{prefix} blocks: {finding}" for finding in coverage_errors(block_counts, required_blocks(group)))
-        progress('states: ' + ', '.join(f'{k}={counts[k]}/{v}' for k, v in required.items()))
-        progress('roles (maximum visible): ' + ', '.join(f'{k}={v}' for k, v in sorted(role_counts.items())))
-        progress('kinds (maximum visible): ' + ', '.join(f'{k}={v}' for k, v in sorted(block_counts.items())))
     finally:
         page.close()
     return list(dict.fromkeys(errors))

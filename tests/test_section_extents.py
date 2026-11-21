@@ -238,7 +238,7 @@ def test_missing_scoped_state_cannot_measure_an_unrelated_page():
 
 
 @pytest.mark.parametrize(('width', 'group'), [(1000, group) for group in extents.EXTENT_GROUPS] + [(1279, 'page')])
-def test_each_job_fails_missing_states_reuses_its_page_and_reports_progress(width, group, monkeypatch, capsys):
+def test_each_job_fails_missing_states_and_reuses_its_page(width, group, monkeypatch):
     import sys
 
     class Locator:
@@ -274,7 +274,7 @@ def test_each_job_fails_missing_states_reuses_its_page_and_reports_progress(widt
             if script == extents.SECTION_EXTENTS_JS:
                 if arg['scope']:
                     return {'missing': arg['scope']}
-                return {'viewport': width, 'nodes': [], 'counts': {}, 'coverage': {}}
+                return {'viewport': width, 'nodes': [], 'coverage': {}}
 
     class Browser:
         opened = 0
@@ -297,7 +297,6 @@ def test_each_job_fails_missing_states_reuses_its_page_and_reports_progress(widt
     assert any(f'{state}: inspected 0 of 1 required states' in error for error in errors)
     assert all(any(f'{kind}: inspected 0 of {minimum} required states' in error for error in errors)
                for kind, minimum in extents.required_blocks(group).items())
-    assert f'{width}px {group} section extents:' in capsys.readouterr().err
 
 
 def test_browser_collectors_parse_in_node_without_a_browser():

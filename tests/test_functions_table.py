@@ -506,13 +506,6 @@ def test_function_jobs_are_registered_for_shards(functions):
         assert names.count("interactions/" + name) == 1
 
 
-def test_functions_group_type_requires_its_leading_token():
-    page = (Path(__file__).resolve().parents[1] / "site/index.html").read_text()
-    changed = page.replace("/var(--leading-fn-group)", "/2")
-    assert changed != page
-    assert check_page.report_line("fn-group line height does not use its role token") in check_page.check_style_source(changed)
-
-
 @pytest.fixture
 def slanted_function_flag():
     # A 40px track after a gutter: a 60px lean over 60*sqrt(3) height.

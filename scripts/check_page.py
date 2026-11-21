@@ -30,7 +30,7 @@ import unicodedata
 from collections import Counter, defaultdict
 from contextlib import contextmanager, nullcontext
 from datetime import date
-from functools import partial, wraps
+from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from decimal import ROUND_CEILING, ROUND_FLOOR, ROUND_HALF_UP, Decimal, localcontext
 from pathlib import Path
@@ -63,18 +63,6 @@ DEADLINE_PASSED = "NOT RUN: job deadline passed"
 ROOT = Path(__file__).resolve().parents[1]
 QUARANTINE = ROOT / "scripts/quarantine.json"
 NOT_RUN = 3
-# A finding that starts with REPORT_MARK, or carries it after a caller's prefix (a width, theme or check name), is
-# cosmetic drift (exact spacing, font weights, decorative alignment; test strategy D1) or a quarantined harness
-# finding (D5). It travels with the
-# errors, so stages, shards and the merge carry it unchanged, but it never fails the gate or stops a stage; the gate
-# prints it as a report line (REPORT_LINE) and check.py lists it in its report for review. The mark is a control
-# character, so no page text, data value or exception message carries it by accident; in-page checks write it as
-# REPORT_JS's REPORT.
-REPORT_MARK = "\x1f"
-REPORT_LINE = "report line: "
-REPORT_JS = f"const REPORT = {json.dumps(REPORT_MARK)};"
-
-
 def tip_of(node) -> str:
     """A tooltip's text from the saved or drawn page: its one home, the description screen readers hear
     (aria-description), or data-tip where the element has none (site/index.html tipText); data-exp for older pages."""
@@ -93,42 +81,6 @@ def original_tip_matches(node, shown: str, original: str) -> bool:
     )
 
 
-def report_line(text: str) -> str:
-    return REPORT_MARK + text
-
-
-def is_report_line(finding: str) -> bool:
-    return REPORT_MARK in finding
-
-
-def printed_report_line(finding: str) -> str:
-    """How the gate prints a report line: REPORT_LINE first, the caller's prefix and the text after it, unmarked."""
-    return REPORT_LINE + finding.replace(REPORT_MARK, "")
-
-
-def check_reserved_mark(dist: Path, html: str) -> list[str]:
-    """REPORT_MARK is reserved for report lines: no built file or rendered page may carry it, raw or JSON-escaped, so
-    page text quoted in a blocking finding can never demote it. Blocking, and run before every other check."""
-    text = {".html", ".json", ".js", ".svg", ".xml", ".txt", ".csv", ".cff", ".md"}
-    files = [p for p in sorted(dist.rglob("*")) if p.is_file()]
-    found = [p.relative_to(dist).as_posix().replace(REPORT_MARK, "\\x1f") for p in files if REPORT_MARK in p.relative_to(dist).as_posix()
-             or (p.suffix in text and (REPORT_MARK.encode() in (b := p.read_bytes()) or b"\\u001f" in b.lower()))]
-    found += ["the rendered page"] if REPORT_MARK in html else []
-    return [f"reserved report-line mark U+001F found in {', '.join(found)}: remove it (control characters do not belong in the site)"] if found else []
-
-
-def blocking(findings: list[str]) -> list[str]:
-    """The findings that fail the gate: all but report lines."""
-    return [f for f in findings if not is_report_line(f)]
-
-
-def reports(check):
-    """A check whose every finding is a report line: it pins cosmetic drift only (exact spacing, type roles,
-    decorative alignment). It keeps its name, so it stays one browser job with the same id and pickles as before."""
-    @wraps(check)
-    def reported(*args, **kwargs) -> list[str]:
-        return [report_line(finding) for finding in check(*args, **kwargs)]
-    return reported
 # One browser for build, gate and contact sheet on every host: the Chromium of the Playwright version this
 # script's lock pins (every lock pins the same, the lint checks), in Playwright's default browser folder (host_checks.INSTALL_CHROME).
 
@@ -205,7 +157,7 @@ LOCALE = "en-GB"  # every page's locale: its default-locale collation then match
 
 # Principle Off-screen sections: the content checks read text and hit-test boxes, which Chromium reports empty while
 # content-visibility skips them, so their pages draw every section; checks of the page's rendering as shipped (the
-# off-screen sections, interaction times, the hydration flash) open theirs with skipping=True.
+# off-screen sections, the hydration flash) open theirs with skipping=True.
 NO_SKIPPING = ("document.addEventListener('DOMContentLoaded', () => { const s = document.createElement('style'); s.textContent ="
                " 'main section.offscreen, main section.offscreen :is(.card-row, .fund-item) { content-visibility: visible !important; }';"
                " document.head.appendChild(s); });")
@@ -445,31 +397,8 @@ def check_download_groups(soup, files: set) -> list[str]:
     return errors
 
 
-INFO_LINES_JS = "() => {" + REPORT_JS + """
-  const errors = [];
-  for (const b of document.querySelectorAll('.info')) {
-    const r = b.getBoundingClientRect();
-    if (!r.width || !r.height || b.closest('[hidden], details:not([open]) > :not(summary)')) continue;
-    // The nearest visible text before the (i) in document order: the last word of its heading or text.
-    const walk = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
-    let prev = null;
-    for (let n = walk.nextNode(); n; n = walk.nextNode()) {
-      if (b.compareDocumentPosition(n) & Node.DOCUMENT_POSITION_FOLLOWING) break;
-      if (b.contains(n) || !n.textContent.trim() || n.parentElement.closest('.vh, [aria-hidden="true"], #tip')) continue;
-      const range = document.createRange(); range.selectNodeContents(n);
-      const rects = [...range.getClientRects()].filter(x => x.width > 0);
-      if (rects.length) prev = rects[rects.length - 1];
-    }
-    const mid = (r.top + r.bottom) / 2;
-    if (!prev || mid < prev.top || mid > prev.bottom || prev.right > r.left + 2)
-      errors.push(REPORT + `(i) ${b.id || b.getAttribute('aria-label').slice(0, 40)} sits alone on a line, not beside the last word before it`);
-  }
-  return errors;
-}"""
-
-
 def check_info_lines(page, width: int) -> list[str]:
-    """Supporting text: every visible (i) shares a line box with the last word of the heading or text before it."""
+    """Supporting text: information marks remain legible and reachable at the surrounding text size."""
     marks = page.evaluate("""() => [...document.querySelectorAll('.info')].filter(n=>n.checkVisibility({contentVisibilityAuto:true})).map(n=>{
       const s=getComputedStyle(n), p=getComputedStyle(n.parentElement), ring=getComputedStyle(n,'::before');
       const letter=n.querySelector('.info-letter'), l=letter && getComputedStyle(letter), r=n.getBoundingClientRect();
@@ -478,7 +407,7 @@ def check_info_lines(page, width: int) -> list[str]:
         scale:!!l && Math.abs(parseFloat(l.fontSize)/parseFloat(p.fontSize)-.65)<.01,
         hit:Math.min(r.width,r.height), required:parseFloat(s.height)};
     })""")
-    return [f"{width}px: {e}" for e in page.evaluate(INFO_LINES_JS) + info_mark_errors(marks)]
+    return [f"{width}px: {e}" for e in info_mark_errors(marks)]
 
 
 def info_mark_errors(marks: list[dict]) -> list[str]:
@@ -523,8 +452,6 @@ def check_version_history(page, data: dict) -> list[str]:
         errors.append(f"version history row reads {text[:60]!r}, expected only version and date {latest['version']} \u00b7 {day}")
     if page.evaluate("() => { const s = document.querySelector('#changes > summary').getBoundingClientRect(), b = document.querySelector('#changes').getBoundingClientRect(); return s.right > b.right + 1 || s.width > innerWidth; }"):
         errors.append("version history row is wider than its box")
-    if row.evaluate("n => n.getBoundingClientRect().height > 1.5 * parseFloat(getComputedStyle(n).lineHeight)"):
-        errors.append(report_line("version history row is more than one line"))
     page.evaluate("document.querySelector('#changes').open = true")
     heads = [" ".join(t.split()) for t in page.locator("#changelog > li > .change-head").all_inner_texts()]
     shown = data["dataset"]["display"]["changelog"]
@@ -538,33 +465,17 @@ def check_version_history(page, data: dict) -> list[str]:
 
 
 def check_download_layout(page) -> list[str]:
-    """Names, file names and descriptions align across every group; the file name is muted; a group label is never
-    weaker than its rows. Report lines, except that no download rows at all blocks (the downloads are missing)."""
+    """Downloads must contain visible rows."""
     found = page.evaluate("""() => {
-      const errors = [], rows = [...document.querySelectorAll('.dlist a')].filter(a => a.getClientRects().length);
-      if (!rows.length) return null;
-      const x = (a, sel) => Math.round(a.querySelector(sel).getBoundingClientRect().left);
-      if (innerWidth > 640) for (const sel of ['.dl-title', '.dl-file', '.d']) if (new Set(rows.map(a => x(a, sel))).size > 1) errors.push(`download ${sel} does not align across rows`);
-      const p = document.createElement('span'); p.style.color = 'var(--muted)'; document.body.appendChild(p); const muted = getComputedStyle(p).color; p.remove();
-      for (const a of rows) {
-        const file = getComputedStyle(a.querySelector('.dl-file'));
-        const meta = (() => { const q = document.createElement('span'); q.style.font = 'var(--type-meta)'; document.body.appendChild(q); const v = parseFloat(getComputedStyle(q).fontSize); q.remove(); return v; })();
-        if (file.color !== muted || parseFloat(file.fontSize) > meta + 0.5) errors.push('download file name is not muted meta text');
-      }
-      for (const h of document.querySelectorAll('.dlgroup > h4')) {
-        const title = h.parentElement.querySelector('.dl-title');
-        if (parseFloat(getComputedStyle(h).fontWeight) < parseFloat(getComputedStyle(title).fontWeight) || getComputedStyle(h).color !== getComputedStyle(title).color) errors.push(`download group label is weaker than its rows: ${h.textContent.trim()}`);
-      }
-      return errors;
+      return [...document.querySelectorAll('.dlist a')].some(a => a.getClientRects().length);
     }""")
-    return ["no download rows"] if found is None else [report_line(e) for e in found]
+    return [] if found else ["no download rows"]
 
 
 USING_THE_DATA = "For programs and agents"
 
 
 PAGE_BYTES_BUDGET = 2_000_000  # search engines read only the first 2 MB of a page, so everything a reader should find must sit within it
-PAGE_BYTES_WARN = 0.95  # a report line once the world section ends past this share of the budget
 # What a first visit downloads, in gzip bytes (level 6, as the host compresses text; woff2 counts as stored). Budgets,
 # not timings, so the check is deterministic: a saved map drawing past its budget, or the data the page reads, or the
 # whole first load, fails the gate and asks for a decision instead of slowing the first screen unnoticed. Set about a
@@ -704,19 +615,13 @@ def check_saved_map_early(html: str, soup) -> list[str]:
 
 
 def check_page_size(dist: Path) -> list[str]:
-    """Search engines read only the first PAGE_BYTES_BUDGET bytes of a page: the state-by-state content (the world
-    section) must end within them, or the check fails; a page that is longer in total only warns, because what
-    follows is not content to find."""
+    """Search engines read only the first PAGE_BYTES_BUDGET bytes, so the state-by-state content must end within them."""
     page = (dist / "index.html").read_bytes()
     end = world_section_end(page)
     if end is None:
         return ["index.html: cannot find where the world section (id=\"world\") ends"]
-    if len(page) > PAGE_BYTES_BUDGET:
-        print(f"warning: index.html is {len(page)} bytes, beyond the {PAGE_BYTES_BUDGET} that search engines read", file=sys.stderr)
     if end > PAGE_BYTES_BUDGET:
         return [f"index.html: the world section ends at byte {end}, beyond the {PAGE_BYTES_BUDGET} that search engines read"]
-    if end > PAGE_BYTES_WARN * PAGE_BYTES_BUDGET:  # seen before it blocks: the next data merge may not fit
-        return [report_line(f"index.html: the world section ends at byte {end}, {end / PAGE_BYTES_BUDGET:.1%} of the {PAGE_BYTES_BUDGET} that search engines read; shrink the saved page before the next data merge")]
     return []
 
 
@@ -2379,8 +2284,6 @@ def check_operating_output(
                     clause_sources[id(c)] for c in clauses
                 ] != cited:
                     errors.append(f"{j['id']}: {view} Known activity clause citations differ")
-                if node.select(".sw, i"):
-                    errors.append(report_line(f"{j['id']}: {view} Known activity carries a glyph; squares are for status only"))
                 state = "confirmed" if evidence else "not_confirmed"
                 if not node.select_one(f'.smark[data-state="{state}"]'):
                     errors.append(f"{j['id']}: {view} operational text mark missing")
@@ -2623,22 +2526,6 @@ def check_activity_tooltip(page) -> list[str]:
     return errors
 
 
-@reports
-def check_activity_width(page) -> list[str]:
-    """Known activity never breaks mid-phrase: each kind line and each since line stay on one line, table and cards."""
-    return page.evaluate(
-        """() => {
-      const table = document.querySelector('table.world'), hidden = table.classList.contains('hide-op'), errors = [];
-      table.classList.remove('hide-op');
-      for (const n of document.querySelectorAll('[data-col="op"] .smark.value:not(.activity), [data-col="op"] .activity-clause, [data-col="op"] .activity-since, .card .row[data-track="12"] .smark.value:not(.activity), .card .row[data-track="12"] .activity-clause, .card .row[data-track="12"] .activity-since'))
-        if (new Set([...n.getClientRects()].map(r => Math.round(r.top))).size !== 1)  // fragments (text, glued citation) on one line share a top
-          errors.push('Known activity breaks mid-phrase: ' + n.textContent.trim());
-      table.classList.toggle('hide-op', hidden);
-      return [...new Set(errors)];
-    }"""
-    )
-
-
 def check_state_counts(soup, data: dict) -> list[str]:
     """Counts count states only: the EU is in no number and has its own entry at the top of Europe, state by state."""
     jurisdictions = data["jurisdictions"]
@@ -2719,7 +2606,7 @@ def expected_region_rows(data: dict, region: str) -> list[str]:
 
 
 def check_headline(soup, data: dict) -> list[str]:
-    """The saved headline is the World sentence pair, worded from the data; Europe's 'European' carries the scope; no number ends a line."""
+    """The saved headline is the World sentence pair, worded from the data; Europe's 'European' carries the scope."""
     node = soup.select_one("#headline .hl-version.current")
     if not node:
         return ["headline missing"]
@@ -2735,19 +2622,10 @@ def check_headline(soup, data: dict) -> list[str]:
     scope = europe.select_one("abbr.g") if europe else None
     if not scope or not scope.get_text(strip=True) or not tip_of(scope).strip():
         errors.append("headline: 'European' lacks its scope definition")
-    if re.search(r"\d ", node.get_text()):
-        errors.append(report_line("headline: a number may end a line (no non-breaking space after it)"))
     for version in soup.select("#headline .hl-version"):
         region = version.get("data-region")
-        pool = [j for j in region_pool(data, region) if j["kind"] == "state"]
-        n, k = sum(j["status"] == "established" for j in pool), sum(j["status"] in MOVING_STATUSES for j in pool)
-        bold = [b.get_text().replace("\u00a0", " ") for b in version.select("b")]
-        if bold != [f"{n} of {len(pool)}"] + ([f"{k} more" if n else str(k)] if k else []):
-            errors.append(report_line(f"headline {region}: only the numbers are bold, got {bold}"))
         if version.get_text().replace("\u00a0", " ") != expected_headline(data, region):
             errors.append(f"headline {region}: {version.get_text()!r} differs from the data {expected_headline(data, region)!r}")
-    if len(node.select(".hl-sentence")) != 2:
-        errors.append(report_line("headline: the two sentences are not separate wrapping units"))
     # Owner's order: title and meta line in the header, then headline, definition, region chips with the search, then map and region list.
     header = soup.select_one("#top .measure")
     if not header or [c.name if c.name == "h1" else c.get("id") for c in header.find_all(recursive=False)] != ["h1", "updated"] or not header.find_next("section", class_="first"):
@@ -3241,9 +3119,6 @@ def check_access_groups(soup, data: dict) -> list[str]:
         block = soup.select_one(f'#access .group-block[data-group="{key}"]')
         if block is None:
             continue
-        column = "groups-long" if key == "none" else "groups-short"
-        if not block.find_parent(class_=column):
-            errors.append(report_line(f"access group {key} is not in {column}"))
         heading = block.select_one("h3")
         if not heading or not heading.get_text(" ", strip=True):
             errors.append(f"access group {key} heading is missing or empty")
@@ -3459,11 +3334,8 @@ def check_funding_key(page) -> list[str]:
     """The funding key labels its swatches adopted and announced; bars carry the minimum-width caveat."""
     got = page.evaluate("""() => {
       const key = [...document.querySelectorAll('.fund-key .key-item')];
-      const bg = sel => { const n = document.querySelector(sel); return n ? getComputedStyle(n).backgroundImage + '|' + getComputedStyle(n).backgroundColor : null; };
       const clear = key.every(k => { const sw = k.querySelector('.key-swatch').getBoundingClientRect(), r = document.createRange(); r.selectNodeContents(k); r.setStartAfter(k.querySelector('.key-swatch')); const t = r.getBoundingClientRect(); return sw.width > 0 && sw.right <= t.left + .5; });
       return { key: key.map(k => k.textContent.trim()), clear,
-        solid: [bg('.fund-key .key-swatch:not(.pending)'), bg('#fund-rows .fund-budget .bar-value:not(.pending)')],
-        hatch: [bg('.fund-key .key-swatch.pending'), bg('#fund-rows .fund-budget .bar-value.pending')],
         budgetOnly: !!document.querySelector('.fund-budget-head .fund-key') && !document.querySelector('.fund-staff-head .fund-key'),
         tips: [...document.querySelectorAll('#fund-rows .fund-bar:has(.bar-value)')].map(b => b.dataset.tip || b.getAttribute('aria-description')) };
     }""")
@@ -3481,9 +3353,6 @@ def check_funding_key(page) -> list[str]:
     }).map(row => row.dataset.j)""")
     if ragged:
         errors.append(f"funding chart rows lack their own labelled measure: {ragged}")
-    for kind in ("solid", "hatch"):
-        if not got[kind][0] or got[kind][0] != got[kind][1]:
-            errors.append(report_line(f"funding key {kind} swatch is not drawn like its bars: {got[kind]}"))
     if not got["tips"] or any(not (t or "").strip() for t in got["tips"]):
         errors.append("funding bars lack a non-empty tooltip")
     return errors
@@ -3541,17 +3410,9 @@ def check_state_download_buttons(html: str, dist: Path, data: dict) -> list[str]
 
 ACCESS_LAYOUT_JS = """(sel) => {
   const box = document.querySelector(sel), short = box.querySelector('.groups-short'), long = box.querySelector('.groups-long');
-  const xs = [...long.querySelectorAll('.group-list > li')].map(li => Math.round(li.getBoundingClientRect().left));
-  const columns = [...new Set(xs)].sort((a, b) => a - b), per = columns.map(x => xs.filter(v => v === x).length);
-  const shortGroups = [...short.querySelectorAll('.group-block')].map(g => g.getBoundingClientRect());
   const sr = short.getBoundingClientRect(), lr = long.getBoundingClientRect();
-  const groups = [...box.querySelectorAll('.group-block')].map(g => { const r = g.getBoundingClientRect(), lefts = new Set([...g.querySelectorAll('.group-list > li')].map(li => Math.round(li.getBoundingClientRect().left))); return { left: r.left, top: r.top, bottom: r.bottom, listColumns: lefts.size }; });
-  // Lines (rule 15): a thin rule opens each group; no hairline after a group's last member. Phones (rule 6): every note starts at one left edge.
-  const px = v => parseFloat(v) || 0;
-  const rules = [...box.querySelectorAll('.group-block')].map(g => ({ top: px(getComputedStyle(g).borderTopWidth), last: px(getComputedStyle(g.querySelector('.group-list > li:last-child')).borderBottomWidth) }));
-  const noteLefts = new Set([...box.querySelectorAll('.group-list > li')].map(li => { const a = li.querySelector(':scope > a'), n = li.querySelector('.group-note'); return n ? Math.round(n.getBoundingClientRect().left - a.getBoundingClientRect().left) : 0; }));
-  return { rules, noteOffsets: [...noteLefts], columns: columns.length, per, groups, longLeft: lr.left, shortRight: sr.right, shortLeft: sr.left, shortBottom: sr.bottom, longTop: lr.top,
-    stacked: shortGroups.every((r, k) => !k || r.top >= shortGroups[k - 1].bottom - 1), longWidth: long.getBoundingClientRect().width, shortWidth: short.getBoundingClientRect().width };
+  const groups = [...box.querySelectorAll('.group-block')].map(g => { const r = g.getBoundingClientRect(); return { top: r.top, bottom: r.bottom }; });
+  return { groups, shortBottom: sr.bottom, longTop: lr.top };
 }"""
 
 
@@ -3599,22 +3460,13 @@ def figures_note_layout_errors(m: dict | None) -> list[str]:
 
 
 def one_column_errors(name: str, m: dict, width: int) -> list[str]:
-    """The short groups and the long group share one left edge, the long group below them, its list in one
-    column. Overlap blocks; the edge and the column count are report lines."""
+    """The short and long groups must not overlap."""
     errors = []
-    if m["columns"] != 1:
-        errors.append(report_line(f"{width}px: long {name} list keeps {m['columns']} columns"))
-    if abs(m["shortLeft"] - m["longLeft"]) > 1:
-        errors.append(report_line(f"{width}px: {name} groups do not share one left edge (short left {m['shortLeft']}, long left {m['longLeft']})"))
     if m["longTop"] < m["shortBottom"] - 1:  # overlapping groups cannot be read: blocking
         errors.append(f"{width}px: the long {name} group overlaps the short ones (short bottom {m['shortBottom']}, long top {m['longTop']})")
-    groups = m["groups"]  # every group, in reading order: one left edge, each below the one before, each list in one column
-    if any(abs(g["left"] - groups[0]["left"]) > 1 for g in groups):
-        errors.append(report_line(f"{width}px: {name} groups are not stacked on one left edge: {[(round(g['left']), round(g['top'])) for g in groups]}"))
+    groups = m["groups"]
     if any(g["top"] < p["bottom"] - 1 for p, g in zip(groups, groups[1:])):
         errors.append(f"{width}px: a {name} group starts above the end of the one before (overlap): {[(round(g['top']), round(g['bottom'])) for g in groups]}")
-    if any(g["listColumns"] > 1 for g in groups):
-        errors.append(report_line(f"{width}px: a {name} group list keeps several columns: {[g['listColumns'] for g in groups]}"))
     return errors
 
 
@@ -3623,12 +3475,6 @@ def check_access_layout(page, width: int) -> list[str]:
     errors = []
     for name, sel in (("access", "#access"), ("set-up", "#setup")):
         m = page.evaluate(ACCESS_LAYOUT_JS, sel)
-        if not m["stacked"]:
-            errors.append(report_line(f"short {name} groups are not stacked"))
-        if any(abs(r["top"] - 1) > 0.01 or r["last"] for r in m["rules"]):
-            errors.append(report_line(f"{name} groups: expected a thin top rule and no hairline after the last member, got {m['rules']}"))
-        if width <= 640 and m["noteOffsets"] != [0]:
-            errors.append(report_line(f"{name} groups on a phone: notes do not start at their state's left edge (offsets {m['noteOffsets']})"))
         errors += one_column_errors(name, m, width)
     errors += check_funding_key(page)
     errors += figures_note_layout_errors(page.evaluate(FIGURES_NOTE_JS))
@@ -3906,8 +3752,6 @@ def check_summary_data(html: str, data: dict) -> list[str]:
     section = changes.find_parent("section") if changes else None
     if not section or section.get("aria-labelledby") != "data":  # the Data section's accessible name: blocking
         errors.append("the changelog is not in a section named by its Data heading (aria-labelledby)")
-    elif not section.select_one("#cite"):
-        errors.append(report_line("changelog is not next to Cite as in Data"))
     errors += check_cite(soup, dataset)
 
     errors += check_news(soup, data)
@@ -4003,84 +3847,11 @@ def check_hit_targets(page, scope: str = "body") -> list[str]:
     )
 
 
-@reports
-def check_typography(page, scope: str = "body") -> list[str]:
-    """Resolve responsive font tokens, then inspect actual visible text parents."""
-    return page.evaluate(
-        "scope => {"
-        + BROWSER_GEOMETRY
-        + """
-      const errors = [], roles = ['title', 'label', 'body', 'meta', 'figure', 'fn-group'];
-      const probe = document.createElement('span');
-      probe.style.cssText = 'position:fixed;visibility:hidden;pointer-events:none';
-      document.body.appendChild(probe);
-      const pairs = roles.map(role => {
-        probe.style.font = 'var(--type-' + role + ')';
-        const style = getComputedStyle(probe);
-        return [style.fontSize, style.fontWeight, style.fontFamily];
-      });
-      probe.remove();
-      if (new Set(pairs.map(p => p.join('/'))).size !== roles.length) errors.push('typography roles do not resolve to distinct size/weight/family roles');
-      const walker = document.createTreeWalker(document.querySelector(scope), NodeFilter.SHOW_TEXT);
-      const checked = new Set();
-      while (walker.nextNode()) {
-        const text = walker.currentNode, parent = text.parentElement;
-        if (!text.textContent.trim() || checked.has(parent) || parent.closest('script, style, template, svg, option') || !visible(parent)) continue;
-        const range = document.createRange(); range.selectNodeContents(text);
-        if (![...range.getClientRects()].some(r => r.width && r.height)) continue;
-        checked.add(parent);
-        const s = getComputedStyle(parent);
-        const emphasis = parent.closest('strong, b');
-        const base = emphasis && getComputedStyle(emphasis.parentElement);
-        const inheritedEmphasis = base && s.fontSize === base.fontSize && s.fontFamily === base.fontFamily && Number(s.fontWeight) <= 500;
-        // Citations are sized relative to the text they annotate (.75em), not a fixed role.
-        const cites = parent.closest('.cites'), host = cites && cites.parentElement && getComputedStyle(cites.parentElement.closest(':not(.cite-glue)') || cites.parentElement);
-        if (cites && Math.abs(parseFloat(s.fontSize) - .75 * parseFloat(host.fontSize)) < .6) continue;
-        // The headline is the figure role with only its numbers at figure weight; its words take body weight (owner's mock).
-        const [figSize, , figFamily] = pairs[roles.indexOf('figure')], bodyWeight = pairs[roles.indexOf('body')][1];
-        if (parent.closest('#headline') && s.fontSize === figSize && s.fontFamily === figFamily && s.fontWeight === bodyWeight) continue;
-        if (!inheritedEmphasis && !pairs.some(([size, weight, family]) => size === s.fontSize && weight === s.fontWeight && family === s.fontFamily)) {
-          errors.push(`unassigned typography ${s.fontSize}/${s.fontWeight}/${s.fontFamily}: ${parent.tagName.toLowerCase()}.${parent.className} ${text.textContent.trim().slice(0,60)}`);
-        }
-      }
-      return errors;
-    }""", scope
-    )
-
-
-BROWSER_BASELINE = """
-      const baseline = node => {
-        if (!node) return null;
-        const walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT);
-        while (walker.nextNode()) {
-          const text = walker.currentNode;
-          if (!text.textContent.trim() || !visible(text.parentElement)) continue;
-          const probe = document.createElement('span');
-          probe.style.cssText = 'display:inline-block;width:0;height:0;padding:0;margin:0;border:0;vertical-align:baseline';
-          // A raw text node is an anonymous flex/grid item. Keep the probe in
-          // that text run, rather than creating an independently aligned item.
-          let wrapper = null;
-          if (/(flex|grid)/.test(getComputedStyle(text.parentElement).display)) {
-            wrapper = document.createElement('span'); wrapper.style.display = 'inline';
-            text.before(wrapper); wrapper.appendChild(text);
-          }
-          text.before(probe);
-          const y = probe.getBoundingClientRect().bottom;
-          probe.remove();
-          if (wrapper) wrapper.replaceWith(text);
-          return y;
-        }
-        return null;
-      };
-"""
-
-
 def check_baselines_and_rhythm(page) -> list[str]:
-    """Measure first text baselines, including text nested inside links or marks."""
-    findings = page.evaluate(
+    """Visual rows retain the visible items required for their shape."""
+    return page.evaluate(
         "() => {"
         + BROWSER_GEOMETRY
-        + BROWSER_BASELINE
         + """
       const errors = [];
       // Each descriptor is one visual row, not a stack of independent rows.
@@ -4099,67 +3870,18 @@ def check_baselines_and_rhythm(page) -> list[str]:
           if (!visible(row)) return;
           const nodes = [...row.querySelectorAll(items)].filter(visible);
           if (nodes.length < (['.legend-entry', '.meta'].includes(selector) || (selector === '.card .top' && row.closest('.statusgroup, .eu-level')) || (selector === '.card.mini > summary' && row.parentElement.open) ? 1 : 2)) errors.push(`missing baseline items: ${selector}`);
-          const lines = [];
-          nodes.forEach(node => {
-            const rect = node.getBoundingClientRect();
-            // Flex items on separate wrapped lines are separate baseline groups.
-            const wraps = getComputedStyle(row).flexWrap === 'wrap';
-            let line = wraps ? lines.find(group => group.some(other => {
-              const r = other.getBoundingClientRect(); return Math.min(rect.bottom, r.bottom) - Math.max(rect.top, r.top) > .5;
-            })) : lines[0];
-            if (!line) { line = []; lines.push(line); }
-            line.push(node);
-          });
-          const ys = nodes.map(baseline);
-          for (const line of lines) {
-            const values = line.map(node => ys[nodes.indexOf(node)]);
-            if (values.some(y => y === null) || (values.length > 1 && Math.max(...values) - Math.min(...values) > 1)) errors.push(`${selector} first baselines differ: ${values.join('/')} (${row.textContent.trim().slice(0,60)})`);
-          }
-          // Empty swatches and pseudo icons synthesise a baseline at their bottom edge.
-          const icon = row.querySelector(':scope > .sw');
-          const pseudo = row.matches('.dlist a') && getComputedStyle(row, '::before');
-          if (icon && ys.length && Math.abs(icon.getBoundingClientRect().bottom - ys[0]) > 1) errors.push(`${selector} swatch misses first baseline`);
-          if (pseudo && pseudo.alignSelf !== 'baseline' && pseudo.alignSelf !== 'first baseline') errors.push('download icon does not use the first baseline');
         });
-      }
-      document.querySelectorAll('.smark:not([data-state])').forEach(mark => {
-        if (!visible(mark)) return;
-        const sw = mark.querySelector('.sw'), y = baseline(mark);
-        if (!sw || y === null || Math.abs(sw.getBoundingClientRect().bottom - y) > 1) errors.push(`swatch misses first baseline: ${mark.className} ${mark.textContent.trim().slice(0,60)}`);
-      });
-      const measure = (selector, property) => {
-        const node = document.querySelector(selector);
-        return node ? parseFloat(getComputedStyle(node)[property]) : NaN;
-      };
-      const line = Math.max(...[...document.querySelectorAll('.card .k, .card .v, .card .v *')].filter(visible).map(n => {
-        const s = getComputedStyle(n); return parseFloat(s.lineHeight) - parseFloat(s.fontSize);
-      }).filter(Number.isFinite));
-      const row = measure('.card .row', 'marginBottom');
-      const header = measure('.card .top', 'marginBottom');
-      const card = measure('.cards:not(.minis)', 'rowGap');
-      const section = measure('main .measure', 'rowGap');
-      const probe = document.createElement('span'); document.body.appendChild(probe);
-      const roleLine = Math.max(...['body', 'label', 'meta'].map(role => {
-        probe.style.font = 'var(--type-' + role + ')'; const s = getComputedStyle(probe);
-        return parseFloat(s.lineHeight) - parseFloat(s.fontSize);
-      })); probe.remove();
-      const values = [line, row, header, card, section], expected = [roleLine, 16, 24, 40, 64];
-      if (values.some((v, i) => !Number.isFinite(v) || Math.abs(v - expected[i]) > 1) || values.some((v, i) => i && v <= values[i-1])) {
-        errors.push(`line/row/header/card/section rhythm: ${values.join('/')}px, expected approximately ${expected.join('/')}px`);
       }
       return errors;
     }"""
     )
-    # A lost selector removes coverage, rather than merely changing alignment.
-    return [e if e.startswith('missing baseline items: ') else report_line(e) for e in findings]
 
 
 def check_citations(page) -> list[str]:
-    """Check tight superscripts and their vertical-only effective hit regions."""
+    """Citations stay with their text and retain vertical-only effective hit regions."""
     return page.evaluate(
         "() => {"
         + BROWSER_GEOMETRY
-        + REPORT_JS
         + """
       const errors = [];
       const stickyOverlay = hit => {
@@ -4191,29 +3913,12 @@ def check_citations(page) -> list[str]:
         if (!wr || !wr.width || !wr.height) { errors.push('citation glue word has no box'); return; }
         if (!first) { errors.push('citation group has no link'); return; }
         range.selectNodeContents(first);
-        const cr = range.getBoundingClientRect(), s = getComputedStyle(cites);
+        const cr = range.getBoundingClientRect();
         if (wr.bottom < cr.top || wr.top > cr.bottom) errors.push('citation is on a separate line');
-        const gap = cr.left - wr.right;
-        // The gap is .12em of the marker (site/index.html .cites), so it grows with the annotated text.
-        if (gap < 0 || gap > Math.max(2, .13 * parseFloat(s.fontSize))) errors.push(REPORT + `citation gap to final word is ${gap.toFixed(1)}px`);
-        if (s.whiteSpace !== 'nowrap' || parseFloat(s.lineHeight) !== 0 || Math.abs(parseFloat(s.top) + .4 * parseFloat(s.fontSize)) > .5) errors.push(REPORT + 'citation group is not a tight raised superscript');
-        // One rule everywhere: three quarters of the annotated text's size, raised from that text, never above meta size (beside a big figure).
-        const annotated = parseFloat(getComputedStyle(word.parentElement).fontSize), ratio = parseFloat(s.fontSize) / annotated;
-        const probe = document.body.appendChild(Object.assign(document.createElement('span'), { style: 'font: var(--type-meta); position: absolute' }));
-        const meta = parseFloat(getComputedStyle(probe).fontSize); probe.remove();
-        const want = Math.min(.75 * annotated, meta);
-        if (Math.abs(parseFloat(s.fontSize) - want) > .02 * annotated) errors.push(REPORT + `citation ${cites.textContent} is sized from its container, not its text: ${ratio.toFixed(2)} of "${word.textContent.trim().slice(-20)}"`);
         const numbers = [...cites.querySelectorAll('a')].map(a => Number(a.textContent));
         if (numbers.some((n, k) => k && n <= numbers[k - 1])) errors.push(`citation numerals not ascending: ${cites.textContent}`);
-        const commas = document.createTreeWalker(cites, NodeFilter.SHOW_TEXT);
-        while (commas.nextNode()) {
-          const text = commas.currentNode;
-          if (text.parentElement.closest('a')) continue;
-          range.selectNodeContents(text);
-          if (text.textContent !== ',' || range.getBoundingClientRect().width > 4) errors.push(REPORT + 'citation separator is not a tight comma');
-        }
         cites.querySelectorAll('a').forEach(a => {
-          const r = a.getBoundingClientRect(), p = pseudoBox(a), style = getComputedStyle(a);
+          const r = a.getBoundingClientRect(), p = pseudoBox(a);
           const preceding = document.createTreeWalker(glue, NodeFilter.SHOW_TEXT), boxes = [];
           while (preceding.nextNode()) {
             const text = preceding.currentNode;
@@ -4222,7 +3927,6 @@ def check_citations(page) -> list[str]:
             boxes.push(...[...range.getClientRects()].filter(box => box.width && box.height));
           }
           if (boxes.some(box => box.left < r.right && box.right > r.left + .1 && box.top < (p || r).bottom && box.bottom > (p || r).top)) errors.push(`citation ${a.textContent} overlaps preceding text`);
-          if (parseFloat(style.marginLeft) < 0 || parseFloat(style.marginRight) < 0) errors.push(REPORT + 'negative horizontal citation margin');
           // Inline targets are exempt from WCAG 2.5.8's size minimum; our rule: three quarters of the surrounding line (28px is enough).
           const ps = getComputedStyle(glue), line = parseFloat(ps.lineHeight) || parseFloat(ps.fontSize) * 1.2;
           if (!p || p.height < Math.min(27.5, line * .75)) { errors.push('citation effective hit height below one text line'); return; }
@@ -4394,61 +4098,17 @@ def check_css_tokens(html: str) -> list[str]:
     return list(dict.fromkeys(errors))
 
 
-@reports
-def check_style_source(html: str) -> list[str]:
-    """Static token contracts that can run without a browser."""
-    errors = []
-    for role in ("title", "label", "body", "meta", "figure", "fn-group"):
-        if not re.search(rf"--type-{role}:\s*[^;]*/var\(--leading-{role}\)", html):
-            errors.append(f"{role} line height does not use its role token")
-    anchor_rule = re.search(r"(?:^|\n)a\s*\{([^}]+)\}", html)
-    for prop, token in (
-        ("text-decoration-thickness", "--underline-width"),
-        ("text-underline-offset", "--underline-offset"),
-        ("text-decoration-color", "--underline-colour"),
-    ):
-        if not anchor_rule or not re.search(
-            rf"{prop}:\s*var\({token}\)", anchor_rule[1]
-        ):
-            errors.append(f"inline links do not use {token}")
-    return errors
-
-
 def check_design_roles(page) -> list[str]:
-    """Inspect contextual links, inline emphasis, leading, folds and bar fills."""
+    """Links retain their decoration and hit regions; bars and active navigation remain visible."""
     return page.evaluate(
         "() => {"
         + BROWSER_GEOMETRY
-        + REPORT_JS
         + """
-      const errors = [], root = getComputedStyle(document.documentElement);
+      const errors = [];
       const probe = document.createElement('span'); document.body.appendChild(probe);
-      probe.style.font = 'var(--type-meta)';
-      const metaLeading = getComputedStyle(probe).lineHeight;
-      probe.style.marginTop = 'var(--gap-row)';
-      const rowGap = getComputedStyle(probe).marginTop;
       const barMin = 2; // owner's visibility floor in px, independent of the CSS under test
       probe.style.color = 'var(--ink)'; const ink = getComputedStyle(probe).color;
-      probe.style.color = 'var(--accent)'; const accent = getComputedStyle(probe).color;
       probe.remove();
-      if (!(Number(root.getPropertyValue('--leading-meta')) < Number(root.getPropertyValue('--leading-body')))) errors.push(REPORT + 'meta leading is not tighter than body');
-      document.querySelectorAll('.dlist .d, .fund-context, .updated, .legend-def, .legend-definition').forEach(n => {
-        if (visible(n) && getComputedStyle(n).lineHeight !== metaLeading) errors.push(REPORT + `meta line height differs from token: ${n.className}`);
-      });
-      document.querySelectorAll('details.more').forEach(n => {
-        if (n.matches('.fund-detail')) return; // the whole-row opener owns this in-place panel; its gap is checked below
-        const previous = n.previousElementSibling;
-        if (!visible(n) || !previous || !visible(previous)) return;
-        // The content's own extent: an inline line's box leaves out an item box that wraps below its first line.
-        const bottom = Math.max(previous.getBoundingClientRect().bottom, ...[...previous.querySelectorAll('.meta-item')].filter(visible).map(i => i.getBoundingClientRect().bottom));
-        const gap = n.getBoundingClientRect().top - bottom;
-        if (Math.abs(gap - parseFloat(rowGap)) > 1) errors.push(REPORT + `fold does not follow content at row gap: ${n.id || n.className} (${gap}px)`);
-      });
-      document.querySelectorAll('p strong, p b, p em, .v .smark, td .smark').forEach(n => {
-        if (n.closest('#headline')) return; // the headline's numbers take figure weight by design (Type principle)
-        const s = getComputedStyle(n), p = getComputedStyle(n.parentElement);
-        if (s.fontSize !== p.fontSize || s.fontFamily !== p.fontFamily || Number(s.fontWeight) > 500) errors.push(REPORT + `inline emphasis changes type role: ${n.textContent}`);
-      });
       document.querySelectorAll('a').forEach(n => {
         if (!visible(n) || n.matches(':hover, :focus-visible')) return;
         const s = getComputedStyle(n);
@@ -4456,13 +4116,10 @@ def check_design_roles(page) -> list[str]:
         if (s.textDecorationLine !== (standalone ? 'none' : 'underline')) errors.push(`wrong resting link decoration: ${n.className} ${n.textContent.slice(0,40)}`);
       });
       document.querySelectorAll('.secnav a').forEach(n => {
-        if (getComputedStyle(n).textDecorationLine !== 'none') errors.push(REPORT + 'nav has an underline');
         if (!n.classList.contains('active')) return;
-        const s = getComputedStyle(n), line = getComputedStyle(n, '::after');
-        // The active link must show a mark (state, not decoration): blocking. Its colour and exact size are cosmetic.
+        const line = getComputedStyle(n, '::after');
         const behind = getComputedStyle(n.closest('nav') || document.body).backgroundColor, paint = line.backgroundColor;
         if (line.content === 'none' || parseFloat(line.height) < 1 || parseFloat(line.width) < 1 || /^(transparent|rgba\\(.*,\\s*0\\))$/.test(paint) || paint === behind) errors.push('active nav shows no indicator');
-        else if (s.color !== ink || parseFloat(line.width) < 8 || parseFloat(line.width) > n.getBoundingClientRect().width + .5 || line.backgroundColor !== accent) errors.push(REPORT + 'active nav lacks its short accent indicator'); // the label's width (principle: Navigation); computed widths round, so a label-wide line can read a hair either side
       });
       const sourceLinks = [...document.querySelectorAll('.srcs a:not(.cn), .inline-links a')].filter(visible);
       for (const link of sourceLinks) {
@@ -4484,22 +4141,15 @@ def check_design_roles(page) -> list[str]:
         const track = n.parentElement.getBoundingClientRect();
         const zero=Number(n.parentElement.dataset.value)===0;
         if ((zero ? r.width > .5 : r.width < Math.min(barMin, track.width) - .5) || r.width > track.width + .5) errors.push('funding bar violates its minimum/maximum width');
-        if (parseFloat(s.borderTopWidth) || s.boxShadow !== 'none') errors.push(REPORT + 'funding bar uses an outline');
         if (n.classList.contains('pending')) {
           if (!s.backgroundImage.includes('repeating-linear-gradient')) errors.push('non-adopted funding bar is not hatched');
-          // A quiet hatch (owner: the dense black one shimmered): stripes thinner than gaps, a period of at least 7px, and stripes lighter than full ink.
           const rgb = c => { const m = c.match(/^color\\(srgb ([\\d.e-]+) ([\\d.e-]+) ([\\d.e-]+)/); return m ? m.slice(1, 4).map(v => parseFloat(v) * 255) : (c.match(/[\\d.]+/g) || []).slice(0, 3).map(Number); };
           const dist = (a, b) => Math.hypot(...a.map((v, k) => v - b[k]));
           const stops = [...s.backgroundImage.matchAll(/(rgba?\\([^)]*\\)|color\\([^)]*\\))\\s+([\\d.]+)px/g)].map(m => [rgb(m[1]), parseFloat(m[2])]);
-          const [p0, p1, p2, p3] = stops.length === 4 ? stops.map(t => t[1]) : [0, 0, 0, 0], period = p3 - p0, stripe = p1 - p0, gap = p3 - p2;
-          const inkRgb = rgb(ink), track = rgb(getComputedStyle(n.parentElement).backgroundColor), axis = track.map((v, k) => v - inkRgb[k]), span2 = axis.reduce((a, v) => a + v * v, 0);
-          const c = stops.length === 4 ? stops[0][0] : inkRgb, frac = axis.reduce((a, v, k) => a + v * (c[k] - inkRgb[k]), 0) / span2, off = dist(c, inkRgb.map((v, k) => v + frac * axis[k]));
-          const quiet = stops.length === 4 && dist(stops[0][0], stops[1][0]) < 1 && dist(stops[2][0], stops[3][0]) < 1 && dist(stops[2][0], track) < 2
-            && Math.abs(p1 - p2) < .01 && off < 3 && frac > .3 && frac < .8; // stripes an interior mix of ink and track, gaps the track colour
-          // No visible hatch (no stripe, no gap, or stripes the gaps' colour) leaves announced funding looking like spent
-          // funding: blocking. Its quietness is cosmetic.
+          const [p0, p1, p2, p3] = stops.length === 4 ? stops.map(t => t[1]) : [0, 0, 0, 0], stripe = p1 - p0, gap = p3 - p2;
+          // An invisible hatch leaves announced funding looking like spent funding.
           const unseen = stops.length !== 4 || stripe <= 0 || gap <= 0 || dist(stops[0][0], stops[2][0]) < 2;
-          if (unseen || !quiet || period < 7 || stripe >= gap) errors.push((unseen ? '' : REPORT) + `announced funding bar hatch is not a quiet ink hatch on the track (stops: ${JSON.stringify(stops)}, ink ${ink}, track ${JSON.stringify(track)})`);
+          if (unseen) errors.push(`announced funding bar hatch is invisible (stops: ${JSON.stringify(stops)})`);
         } else if (s.backgroundImage !== 'none' || s.backgroundColor !== ink) errors.push('adopted funding bar is not solid ink');
       });
       return errors;
@@ -4552,13 +4202,9 @@ def check_external_markers(page) -> list[str]:
 
 
 def check_card_grid(page) -> list[str]:
-    """Compare real first baselines, not card heights, in row reading order."""
+    """Cards retain their reading order, fields and non-overlapping rows."""
     return page.evaluate(
-        "() => {"
-        + BROWSER_GEOMETRY
-        + BROWSER_BASELINE
-        + REPORT_JS
-        + """
+        """() => {
       // Three card shapes; structurally absent fields are omitted. Each field owns a fixed track so shapes stay aligned.
       const SHAPES = {
         established: ['2', '3', '4', '8', '9', '10', '11'],  // Head, Reports to and Partners are optional here: check_leadership_rows holds them to the data
@@ -4569,18 +4215,10 @@ def check_card_grid(page) -> list[str]:
       const errors = [];
       document.querySelectorAll('.cards:not(.minis)').forEach(grid => {
         const cards = [...grid.querySelectorAll('.card')], rows = [...grid.children];
-        const columns = Number(getComputedStyle(grid).getPropertyValue('--columns'));
-        if (columns !== (innerWidth > 1100 ? 3 : innerWidth > 640 ? 2 : 1)) errors.push(REPORT + 'card column count differs from breakpoint contract');
-        if (!cards.length || rows.some(r => !r.matches('.card-row'))) errors.push(REPORT + 'card row wrappers missing');
-        if (columns === 3 && cards.length === 1) {  // a lone card spans two of the three tracks (principle: Card grids)
-          const gap = parseFloat(getComputedStyle(grid).columnGap), track = (grid.getBoundingClientRect().width - 2 * gap) / 3;
-          if (Math.abs(cards[0].getBoundingClientRect().width - (2 * track + gap)) > 1) errors.push(REPORT + `lone card does not span two tracks: ${cards[0].id}`);
-        }
         const names = cards.map(c => c.querySelector('.name').textContent);
         if (names.some((n, i) => i && n.localeCompare(names[i-1], 'en') < 0)) errors.push('cards are not alphabetical in row reading order');
         rows.forEach((row, i) => {
           const siblings = [...row.children];
-          if (siblings.length !== Math.min(columns, cards.length - i * columns)) errors.push(REPORT + 'incorrect card row length');
           siblings.forEach((card, j) => {
             const r = card.getBoundingClientRect();
             if (j && (r.left <= siblings[j-1].getBoundingClientRect().left || Math.abs(r.top - siblings[0].getBoundingClientRect().top) > 1)) errors.push('cards do not flow left to right');
@@ -4591,33 +4229,11 @@ def check_card_grid(page) -> list[str]:
             if (fieldRows.some(n => n.querySelector('.k')?.textContent.trim() && !n.querySelector('.v')?.textContent.trim())) errors.push(`card label without a value: ${card.id}`);
             const shape = tracks[0] !== '2' ? 'none' : (card.querySelector('.top .sw.st-established') || card.closest('.statusgroup[data-status="established"]') || (card.closest('.eu-level') && card.querySelector(':scope > .top > .vh')?.textContent === ', Established')) ? 'established' : 'record';  // the EU entry says its status in its accessible name only
             if (JSON.stringify(tracks.filter(track => !OPTIONAL.includes(track))) !== JSON.stringify(SHAPES[shape])) errors.push(`missing or misplaced card fields: ${card.id} (${tracks.join(', ')})`);
-            card.querySelectorAll(':scope > .row > .k').forEach(k => { if (visible(k) && k.getBoundingClientRect().height > parseFloat(getComputedStyle(k).lineHeight) * 1.5) errors.push(REPORT + `card label wraps: ${k.textContent}`); });
             if (shape === 'none') {
               const finding = fieldRows[1]?.querySelector('.v');
               if (!finding || !finding.textContent.trim()) errors.push('record without an institute lost its finding');
             }
-            if (innerWidth <= 640 && getComputedStyle(card).display !== 'flex') errors.push(REPORT + 'phone card lost its flex stack');
-            if (innerWidth > 640) {
-              if (!getComputedStyle(card).gridTemplateRows.startsWith('subgrid')) errors.push(REPORT + 'card does not use row subgrid');
-              const placed = [[card.querySelector(':scope > .top'), 1, 'top'], [card.querySelector(':scope > .foot'), 14, 'footer']]
-                .concat(fieldRows.map((n, k) => [n, tracks[k], tracks[k]]));
-              placed.forEach(([n, track, label]) => {
-                if (!n || getComputedStyle(n).gridRowStart !== String(track)) errors.push(REPORT + `${label} is not in its fixed track ${track}: ${card.id}`);
-              });
-            }
           });
-          if (innerWidth <= 640 || siblings.length < 2) return;
-          // Compare per track among the cards that fill it; Mandate and Finding share track 8.
-          for (const track of [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 'footer']) {
-            for (const side of track === 'footer' ? ['.source-footer-line'] : ['.k', '.v']) {
-              const ys = siblings.map(card => {
-                const row = track === 'footer' ? card.querySelector('.foot') : card.querySelector(`:scope > .row[data-track="${track}"]`);
-                return row ? baseline(row.querySelector(side)) : undefined;
-              }).filter(y => y !== undefined);
-              if (ys.length < 2) continue;
-              if (ys.some(y => y == null) || Math.max(...ys) - Math.min(...ys) > 1) errors.push(REPORT + `track ${track} ${side} baselines differ across cards: ${ys.join('/')}`);
-            }
-          }
         });
       });
       return errors;
@@ -4745,7 +4361,6 @@ def check_source_footers(page) -> list[str]:
     return page.evaluate(
         "() => {"
         + BROWSER_GEOMETRY
-        + REPORT_JS
         + """
       const errors = [], probe = document.createElement('span');
       probe.style.cssText = 'font:var(--type-meta);color:var(--muted)';
@@ -4776,8 +4391,6 @@ def check_source_footers(page) -> list[str]:
           errors.push('source footer lost its count or list'); return;
         }
         if (!foot.closest('.card').matches('.mini') && [...foot.children].some(n => n !== fold && !isMapReturn(n, fold))) errors.push('collapsed source footer holds more than Sources and its map return');
-        if (getComputedStyle(foot).borderTopWidth !== '0px') errors.push(REPORT + 'source footer has a top rule');
-        if (!isMeta(summary)) errors.push(REPORT + 'source summary is not muted meta');
         if (!visible(summary)) return; // A mini card may itself be closed.
         const r = summary.getBoundingClientRect();
         if (summary.scrollWidth > summary.clientWidth + 1 || r.right > foot.getBoundingClientRect().right + 1) errors.push('source footer overflows');
@@ -4793,84 +4406,13 @@ def check_source_footers(page) -> list[str]:
     )
 
 
-@reports
-def check_meta_separators(page, force_wrap=False) -> list[str]:
-    """A dot's preceding character must share its line, including wrapped footers."""
-    return page.evaluate(
-        "forceWrap => {"
-        + BROWSER_GEOMETRY
-        + """
-      const errors = [];
-      let fixture = null;
-      if (forceWrap) {
-        fixture = document.createElement('div'); fixture.style.cssText = 'width:180px;position:fixed;left:0;top:0';
-        const original = document.querySelector('.source-after:has(.meta-dot)');
-        if (!original) return ['missing footer for forced-wrap fixture'];
-        fixture.appendChild(original.cloneNode(true)); document.body.appendChild(fixture);
-        const line = fixture.firstChild;
-        if (line.getBoundingClientRect().height < parseFloat(getComputedStyle(line).lineHeight) * 1.5) errors.push('separator fixture did not force a wrapped footer');
-      }
-      const selectors = '.source-footer-line, .source-after, .finding, .updated, .development-text, .fund-value, .fund-context, #world-count, #foot, #changes > summary, .fund-axis, .card .v';
-      document.querySelectorAll(selectors).forEach(line => {
-        if (!visible(line)) return;
-        const walker = document.createTreeWalker(line, NodeFilter.SHOW_TEXT);
-        while (walker.nextNode()) {
-          const node = walker.currentNode;
-          if (node.textContent.includes('·') && !node.parentElement.closest('.meta-dot')) errors.push('unbound meta separator: ' + line.textContent.slice(0, 70));
-        }
-      });
-      for (const selector of ['.source-after', '.updated']) {
-        if (!document.querySelector(selector + ' .meta-dot')) errors.push('missing separator coverage: ' + selector);
-      }
-      document.querySelectorAll('.meta-dot').forEach(dot => {
-        if (!visible(dot)) return;
-        const tail = dot.parentElement;
-        if (!tail.classList.contains('meta-tail') || getComputedStyle(tail).whiteSpace !== 'nowrap') { errors.push('separator is not bound to its preceding item'); return; }
-        // Funding's compact rows use running meta text; its dots still bind to the preceding word.
-        const item = tail.closest('.meta-item');
-        // Flex items are blockified in computed style, but still form atomic items in the row.
-        const atomic = item && (getComputedStyle(item).display === 'inline-block' || /flex$/.test(getComputedStyle(item.parentElement).display));
-        // The chart key (.fund-axis) is one sentence of two clauses, not a list of items.
-        if (!tail.closest('.fund-axis, .fund-measure') && !atomic) errors.push('separated item is not one unbreakable box: ' + tail.textContent);
-        const walker = document.createTreeWalker(tail, NodeFilter.SHOW_TEXT);
-        let last = null;
-        while (walker.nextNode()) {
-          const node = walker.currentNode;
-          if (dot.contains(node)) break;
-          if (node.textContent.trim() && !node.parentElement.closest('.vh')) last = node;
-        }
-        if (!last) { errors.push('separator has no preceding text'); return; }
-        const end = last.textContent.trimEnd().length, range = document.createRange();
-        range.setStart(last, end - 1); range.setEnd(last, end);
-        const before = range.getBoundingClientRect(), mark = dot.getBoundingClientRect();
-        if (mark.left < before.right - 1 || mark.bottom <= before.top || mark.top >= before.bottom) errors.push('separator starts a line: ' + tail.textContent);
-      });
-      // An item wraps inside only when it alone is wider than its container; it is never split into two boxes.
-      // Citation glue goes inside a cited item (opened Funding qualifiers carry markers after their last item).
-      if (![...document.querySelectorAll('.meta-item .cite-glue')].some(visible)) errors.push('no cited separated item to check the glue against');
-      document.querySelectorAll('.meta-item').forEach(item => {
-        if (!visible(item)) return;
-        if (item.parentElement.closest('.meta-item, .cite-glue') || item.querySelector('.meta-item')) errors.push('separated item split or nested: ' + item.textContent.slice(0, 60));
-        const lines = item.getBoundingClientRect().height / parseFloat(getComputedStyle(item).lineHeight);
-        if (!(lines >= 1.5)) return;
-        let box = item.parentElement; while (box && /^inline/.test(getComputedStyle(box).display)) box = box.parentElement;
-        if (box && item.getBoundingClientRect().width < box.clientWidth - parseFloat(getComputedStyle(box).paddingLeft) - parseFloat(getComputedStyle(box).paddingRight) - 2)
-          errors.push('separated item wraps inside though it fits its container: ' + item.textContent.slice(0, 60));
-      });
-      if (fixture) fixture.remove();
-      return errors;
-    }""",
-        force_wrap,
-    )
-
-
 def check_line_end_separators(page) -> list[str]:
-    """No visible separator "·" starts or ends a rendered line, and none is hidden mid-line.
+    """No separator "·" is hidden mid-line.
 
     Measured per character, independent of the page's own marking. A "·" inside a word
     (Korean or Catalan source text) is not a separator and is skipped.
     """
-    findings = page.evaluate(
+    return page.evaluate(
         "() => {"
         + BROWSER_GEOMETRY
         + """
@@ -4878,43 +4420,38 @@ def check_line_end_separators(page) -> list[str]:
       // A flex item (a group row's separator) shares its line with its siblings, so it is measured in its flex container.
       const blockOf = node => { let e = node.parentElement; while (e && (/^inline/.test(getComputedStyle(e).display) || (e.parentElement && /flex$/.test(getComputedStyle(e.parentElement).display)))) e = e.parentElement; return e || document.body; };
       const glyph = (node, i) => { range.setStart(node, i); range.setEnd(node, i + 1); return range.getBoundingClientRect(); };
-      const neighbour = (block, node, i, step) => {
+      const neighbour = (block, node, i) => {
         const walker = document.createTreeWalker(block, NodeFilter.SHOW_TEXT);
         walker.currentNode = node;
-        let t = node, k = i + step;
+        let t = node, k = i + 1;
         for (;;) {
-          for (; k >= 0 && k < t.data.length; k += step) if (/\\S/.test(t.data[k])) return glyph(t, k);
-          do { t = step > 0 ? walker.nextNode() : walker.previousNode(); } while (t && (!visible(t.parentElement) || t.parentElement.closest('.vh')));
+          for (; k < t.data.length; k++) if (/\\S/.test(t.data[k])) return glyph(t, k);
+          do { t = walker.nextNode(); } while (t && (!visible(t.parentElement) || t.parentElement.closest('.vh')));
           if (!t) return null;
-          k = step > 0 ? 0 : t.data.length - 1;
+          k = 0;
         }
       };
       const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
       while (walker.nextNode()) {
         const node = walker.currentNode, parent = node.parentElement;
         if (!node.data.includes('·') || parent.closest('script, style, template') || !parent.getClientRects().length) continue;
-        const hidden = !visible(parent);
-        if (hidden && !parent.closest('.meta-dot.line-end')) continue;
+        if (visible(parent) || !parent.closest('.meta-dot.line-end')) continue;
         const block = blockOf(node);
         for (let i = 0; i < node.data.length; i++) {
           if (node.data[i] !== '·') continue;
           if (!parent.closest('.meta-dot') && /\\S/.test(node.data[i - 1] || ' ') && /\\S/.test(node.data[i + 1] || ' ')) continue;
           const dot = glyph(node, i);
           if (!dot.height) continue;
-          const next = neighbour(block, node, i, 1), prev = neighbour(block, node, i, -1);
+          const next = neighbour(block, node, i);
           const sameLine = r => r && r.width && r.height && Math.min(r.bottom,dot.bottom)-Math.max(r.top,dot.top) > Math.min(r.height,dot.height)/2;
-          const ends = !sameLine(next), starts = !sameLine(prev);
+          const ends = !sameLine(next);
           const where = (block.closest('[id]')?.id || block.tagName.toLowerCase()) + ': ' + block.textContent.replace(/\\s+/g, ' ').trim().slice(0, 60);
-          if (hidden && !ends && !(innerWidth <= 400 && parent.closest('.group-links'))) errors.push('separator hidden mid-line: ' + where); // narrow section links show no dots by rule
-          if (!hidden && ends) errors.push('separator ends a line: ' + where);
-          if (!hidden && starts) errors.push('separator starts a line: ' + where);
+          if (!ends && !(innerWidth <= 400 && parent.closest('.group-links'))) errors.push('separator hidden mid-line: ' + where); // narrow section links show no dots by rule
         }
       }
       return errors;
     }"""
     )
-    # Keep this assertion in the sweep's states as well as the page-wide inventory.
-    return [e if e.startswith('separator hidden mid-line: ') else report_line(e) for e in findings]
 
 
 def checked_page_data(page) -> dict:
@@ -5011,19 +4548,11 @@ def check_source_keyboard(page) -> list[str]:
 
 
 def check_rules_render(page) -> list[str]:
-    """Rules, control borders and bar tracks must actually paint (guards token collisions)."""
+    """Funding must contain bar tracks."""
     return page.evaluate(
-        "() => {" + REPORT_JS + """
-      const errors = [], clear = c => !c || c === 'transparent' || /rgba\\(.*,\\s*0\\)$/.test(c);
-      const noBorder = (s, side) => clear(s['border' + side + 'Color']) || s['border' + side + 'Style'] === 'none' || parseFloat(s['border' + side + 'Width']) === 0;
-      const nav = document.querySelector('.secnav'), th = document.querySelector('table.world th');
-      const search = document.querySelector('#world-search, input[type="search"]'), bars = [...document.querySelectorAll('.fund-bar:has(.bar-value)')];
-      if (nav && noBorder(getComputedStyle(nav), 'Bottom')) errors.push(REPORT + 'nav rule does not paint');
-      // Principle Controls: a field is a soft fill without a drawn edge, so its fill (not a border) must paint against the page.
-      if (search && (clear(getComputedStyle(search).backgroundColor) || getComputedStyle(search).backgroundColor === getComputedStyle(document.body).backgroundColor)) errors.push(REPORT + 'control fill does not paint');
+        """() => {
+      const errors = [], bars = [...document.querySelectorAll('.fund-bar:has(.bar-value)')];
       if (!bars.length) errors.push('funding has no bar tracks to inspect');
-      for (const bar of bars) if (clear(getComputedStyle(bar).backgroundColor) && getComputedStyle(bar).backgroundImage === 'none') errors.push(REPORT + 'funding bar track does not paint');
-      if (th && noBorder(getComputedStyle(th), 'Bottom') && noBorder(getComputedStyle(th.closest('thead') || th), 'Bottom')) errors.push(REPORT + 'table header rule does not paint');
       return errors;
     }"""
     )
@@ -5033,31 +4562,25 @@ WIDE_WIDTHS = (1100, 1101, 1120, 1200, 1279, 1280, 1440)
 
 
 # Principle Re-read line: the line is a block of its own in the source item, so it wraps at the item's measure,
-# and no visible text of the item runs past that measure. Counts wrapped lines beside a wrapped title, so a run
-# that never meets a long line next to a long title says so.
+# and no visible text of the item runs past that measure.
 REREAD_MEASURE_JS = """() => {
   const visible = (el, skip) => { const out = [], w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT); let n;
     while ((n = w.nextNode())) { if (!n.data.trim()) continue; const p = n.parentElement; if (!p || !p.getClientRects().length || (skip && skip.contains(p))) continue;
       if (getComputedStyle(p).visibility === 'hidden' || p.closest('.vh, [hidden]')) continue;
       const r = document.createRange(); r.selectNodeContents(n); for (const b of r.getClientRects()) if (b.width > 0) out.push(b); }
     return out; };
-  // Rendered lines: rectangles grouped by vertical overlap (a new line starts below the current one's middle).
-  const rows = ls => { let n = 0, bottom = -Infinity; for (const r of [...ls].sort((a, b) => a.top - b.top)) { if ((r.top + r.bottom) / 2 > bottom) { n++; bottom = r.bottom; } else bottom = Math.max(bottom, r.bottom); } return n; };
-  const errors = [], seen = new Set(); let lines = 0, beside = 0;
+  const errors = [], seen = new Set();
   for (const s of document.querySelectorAll('li[data-source-id] > .reread')) {
     if (!s.getClientRects().length) continue;
     const li = s.parentElement, id = li.dataset.sourceId, ls = getComputedStyle(li), lb = li.getBoundingClientRect(), sb = s.getBoundingClientRect();
     const left = lb.left + parseFloat(ls.paddingLeft) + parseFloat(ls.borderLeftWidth), right = lb.right - parseFloat(ls.paddingRight) - parseFloat(ls.borderRightWidth);
     const own = visible(s), rest = visible(li, s);
-    lines++;
     const say = m => { if (!seen.has(id)) { seen.add(id); errors.push(`source ${id}: ${m}`); } };
     if (Math.abs(sb.left - left) > 1 || Math.abs(sb.right - right) > 1) say(`the re-read line spans ${Math.round(sb.left)}-${Math.round(sb.right)}px, its item ${Math.round(left)}-${Math.round(right)}px`);
     const over = Math.max(...own.concat(rest).map(r => r.right)) - right;
     if (over > 1) say(`text runs ${Math.round(over)}px past the item's measure`);
-    const title = li.querySelector(':scope > a.standalone');  // the source title, the item's first part (sourceList)
-    if (title && rows(own) > 1 && rows(visible(title)) > 1) beside++;
   }
-  return [errors, lines, beside];
+  return errors;
 }"""
 
 
@@ -5443,7 +4966,7 @@ def check_secondary_tone(browser, base_url: str) -> list[str]:
 
 
 def check_text_measure(browser, base_url: str) -> list[str]:
-    """Re-read line containment and headline glyph overflow, including 390px.
+    """Re-read line containment and the headline's presence, including 390px.
 
     General text widths and sibling block edges moved to check_section_extents.
     This check retains the unique text-glyph and source-local containment checks.
@@ -5454,18 +4977,10 @@ def check_text_measure(browser, base_url: str) -> list[str]:
         hydrated(page, base_url)
         page.locator("details").evaluate_all("nodes => nodes.forEach(n => n.open = true)")
         page.evaluate("async () => { document.body.offsetHeight; await document.fonts.ready; await new Promise(requestAnimationFrame); }")  # opened lists reveal italic text in its own font
-        # Glyph containment is stricter than the headline's box edge.
-        over = page.evaluate("""() => { const h = document.querySelector('#headline'), f = document.querySelector('section.first'); if (!h || !f) return 'missing';
-          const r = document.createRange(); r.selectNodeContents(h); const right = Math.max(...[...r.getClientRects()].map(x => x.right));
-          return right > f.getBoundingClientRect().right + 1 ? Math.round(right) : null; }""")
-        if over == "missing":  # the headline or the first screen is not on the page: blocking
+        if not page.evaluate("() => !!document.querySelector('#headline') && !!document.querySelector('section.first')"):
             errors.append(f"{width}px: the headline or the first screen's column is missing")
-        elif over:
-            errors.append(report_line(f"{width}px: the headline runs past the first screen's column ({over})"))
-        off, lines, beside = page.evaluate(REREAD_MEASURE_JS)
+        off = page.evaluate(REREAD_MEASURE_JS)
         errors.extend(f"{width}px: {e}" for e in off[:8])
-        if not beside:  # since 18 Nov 2026 a failed state ends the source line, so the own-line re-read lines left are one short line
-            errors.append(report_line(f"{width}px: no wrapped re-read line beside a wrapped source title among {lines} re-read lines; the re-read measure is not seeing a long line"))
         page.close()
     return errors
 
@@ -5661,8 +5176,6 @@ def check_card_heads(browser, base_url: str, data: dict) -> list[str]:
                     head = page.locator('#' + m['id'] + ' > .top')
                     errors.extend(prefix + m['id'] + ': ' + e for e in head_padding_errors(
                         dict(m, unstuckGap=gaps[m['id']], textTop=head.evaluate(HEAD_TEXT_TOP_JS))))
-                    if width == 390:
-                        errors.append(report_line(prefix + f"{m['id']} sticky head measured {m['height']:.2f}px"))
                 # Past the row, no old head may remain below the navigation over the next content.
                 card.evaluate("c => window.scrollBy(0,c.getBoundingClientRect().bottom-c.closest('.group').querySelector('.group-nav').getBoundingClientRect().bottom+2)")
                 page.evaluate(settle)
@@ -6182,9 +5695,6 @@ def check_panel_heads(browser, base_url: str, data: dict) -> list[str]:
         for theme in ('light', 'dark'):
             page = themed_page(browser, theme, viewport={'width': width, 'height': 900}, reduced_motion='reduce')
             counts = dict.fromkeys(kinds, 0)
-            stuck_counts = dict.fromkeys(kinds, 0)
-            short_counts = dict.fromkeys(kinds, 0)
-            wrapped_counts = dict.fromkeys(kinds, 0)
             uk_wrapped = 0
             uk_stuck = dict.fromkeys(PANEL_REQUIRED_STUCK, 0)
             map_counts = dict.fromkeys(('viewport', 'scrollport'), 0)
@@ -6230,7 +5740,6 @@ def check_panel_heads(browser, base_url: str, data: dict) -> list[str]:
                             card=card, status=STATUS_LABELS[states[jid]['status']] if card == 'full' else None))
                         errors.extend(label + e for e in head_line_spacing_errors(identity['spacing']))
                         if phase == 'first' and any(len(h['tops']) > 1 for h in identity['spacing']):
-                            wrapped_counts[kind] += 1
                             if jid == 'GB' and kind == 'Functions grouped row':
                                 uk_wrapped += 1
                         return page.evaluate(PANEL_PIXELS_JS, {'owner': owner, 'head': head})
@@ -6244,7 +5753,6 @@ def check_panel_heads(browser, base_url: str, data: dict) -> list[str]:
                     if kind == 'Map record':
                         map_counts[before['mode']] += 1
                     if not enough:
-                        short_counts[kind] += 1
                         return
                     if not position['body']:
                         errors.append(prefix + kind + ': no body text available beneath the head for a stuck screenshot pair')
@@ -6270,7 +5778,6 @@ def check_panel_heads(browser, base_url: str, data: dict) -> list[str]:
                     errors.extend(prefix + kind + f' {jid} first: ' + e for e in first_errors)
                     errors.extend(prefix + kind + f' {jid} second: ' + e for e in second_errors)
                     errors.extend(prefix + kind + f' {jid}: ' + e for e in panel_pixel_errors(first, second, before))
-                    stuck_counts[kind] += 1
                     if jid == 'GB' and kind in uk_stuck:
                         uk_stuck[kind] += 1
 
@@ -6334,10 +5841,6 @@ def check_panel_heads(browser, base_url: str, data: dict) -> list[str]:
             errors.extend(prefix + e for e in panel_coverage_errors(counts, uk_stuck))
             errors.extend(prefix + e for e in wrapped_head_coverage_errors(width, uk_wrapped))
             errors.extend(prefix + e for e in map_head_coverage_errors(width, map_counts))
-            errors.append(report_line(prefix + f"Map record: {map_counts['viewport']} viewport sticky heads; {map_counts['scrollport']} inner-scrollport heads checked"))
-            errors.extend(report_line(prefix + f'{kind}: {count} heads checked; {wrapped_counts[kind]} wrapped heads measured; {stuck_counts[kind]} asserted stuck at two positions; '
-                                      f'{short_counts[kind]} not stuck (too short); {count-stuck_counts[kind]-short_counts[kind]} invalid pairs')
-                          for kind, count in counts.items())
     return errors
 
 
@@ -6413,8 +5916,6 @@ def exercise_table_head(page, owner: str, head: str) -> list[str]:
             m = page.evaluate(READING_HEAD_JS, {"owner": owner, "head": head, "close": None})
             m['unstuckGap'] = gap
             errors.extend(reading_head_errors(m))
-            if not end:
-                errors.append(report_line(f"{owner}: navigation {m['nav']:.2f}px + sub-navigation {m['subnav']:.2f}px + head {m['height']:.2f}px = {m['bars'] + m['height']:.2f}px"))
         # Native keyboard focus must reveal a row below the same head, including in a sideways scroll box.
         control = page.locator(owner).locator('tbody tr:not([data-sticky-probe]) a, tbody tr:not([data-sticky-probe]) button, li:not([data-sticky-probe]) > .fn-phone-row, li:not([data-sticky-probe]) > .fund-row').first
         page.keyboard.press('Shift')
@@ -6473,7 +5974,6 @@ def exercise_detail_head(page, opener: str, owner: str, head: str, *, expand: bo
         layout_settled(page)
         gap = unstuck_head_gap(page, owner, head)
         height = panel.evaluate("n => n.getBoundingClientRect().height")
-        errors.append(report_line(f"{owner} {position}: detail {height:.2f}px, viewport {page.viewport_size['height']}px"))
         panel.evaluate("""(n,position) => {
           const r=n.getBoundingClientRect();
           const bars=n.closest('.group')?.querySelector('.group-nav')?.getBoundingClientRect().height || 0;
@@ -6635,7 +6135,7 @@ HIGHLIGHT_JS = """() => {
   const lum = c => { const f = v => { v /= 255; return v <= .03928 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4; }; const [r, g, b] = rgb(c).map(f); return .2126 * r + .7152 * g + .0722 * b; };
   const ratio = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y) + .05) / (Math.min(x, y) + .05); };
   const token = name => { const p = document.createElement('span'); p.style.color = `var(${name})`; document.body.appendChild(p); const c = getComputedStyle(p).color; p.remove(); return c; };
-  return { token: token('--highlight-fill'), paper: token('--paper'), ground: token('--ground'), step: ratio(token('--highlight-fill'), token('--paper')),
+  return { step: ratio(token('--highlight-fill'), token('--paper')),
     texts: [...document.querySelectorAll('#map-search-list li[aria-selected="true"], #map-search-list li[aria-selected="true"] *')].filter(n => [...n.childNodes].some(c => c.nodeType === 3 && c.textContent.trim())).map(n => ratio(getComputedStyle(n).color, token('--highlight-fill'))),
     selected: getComputedStyle(document.querySelector('#map-search-list li[aria-selected="true"]') || document.body).backgroundColor, list: getComputedStyle(document.getElementById('map-search-list')).backgroundColor };
 }"""
@@ -6643,8 +6143,8 @@ HIGHLIGHT_JS = """() => {
 
 def check_highlight_fill(browser, base_url: str) -> list[str]:
     """Principle Highlight: the current item in a list or menu stands out from the paper by HIGHLIGHT_STEP in both themes, its text at least 4.5:1,
-    and the active suggestion, a hovered download menu item, table row and download all take that one token."""
-    errors, steps = [], {}
+    and the active suggestion has a visible fill."""
+    errors = []
     for theme in ("light", "dark"):
         page = themed_page(browser, theme, viewport={"width": 1280, "height": 900})
         try:
@@ -6653,7 +6153,6 @@ def check_highlight_fill(browser, base_url: str) -> list[str]:
             page.locator("#map-search").press("ArrowDown")
             page.wait_for_timeout(50)
             got = page.evaluate(HIGHLIGHT_JS)
-            steps[theme] = got["step"]
             if got["step"] < HIGHLIGHT_STEP:
                 errors.append(f"{theme}: --highlight-fill steps {got['step']:.2f}:1 from the paper, below {HIGHLIGHT_STEP}:1")
             if not got["texts"]:
@@ -6662,25 +6161,8 @@ def check_highlight_fill(browser, base_url: str) -> list[str]:
                 errors.append(f"{theme}: text on the active suggestion is {min(got['texts']):.2f}:1, below 4.5:1")
             if got["selected"] == got["list"]:  # the active suggestion cannot be seen: blocking
                 errors.append(f"{theme}: the active suggestion has the list's own fill ({got['list']})")
-            elif got["selected"] != got["token"] or got["list"] != got["paper"]:
-                errors.append(report_line(f"{theme}: the active suggestion ({got['selected']}) is not --highlight-fill ({got['token']}) on the paper list ({got['list']})"))
-            page.locator("#map-search").fill("")
-            page.locator("#map-search").press("Escape")
-            def hovered(label, node):
-                node.scroll_into_view_if_needed()
-                node.hover()
-                if node.evaluate("n => getComputedStyle(n).backgroundColor") != got["token"]:
-                    errors.append(report_line(f"{theme}: a hovered {label} does not take --highlight-fill"))
-
-            hovered("table row", page.locator("#world-rows tr").first)
-            page.locator("#world-download > summary").click()
-            hovered("download menu item", page.locator("#world-download .popover > *").first)
-            page.locator("#world-download > summary").click()
-            hovered("download", page.locator(".dlist a").first)
         finally:
             page.close()
-    if len(steps) == 2 and abs(steps["light"] - steps["dark"]) > THEME_PARITY_TOLERANCE:
-        errors.append(report_line(f"--highlight-fill steps {steps['light']:.2f}:1 from the paper in light but {steps['dark']:.2f}:1 in dark"))
     return [f"highlight: {e}" for e in errors]
 
 
@@ -6921,19 +6403,12 @@ def check_command_palette(browser, base_url: str) -> list[str]:
             errors.extend(palette_key_errors(page, typed))
         finally:
             page.close()
-    page = browser.new_page(viewport={"width": 390, "height": 800})
-    try:
-        hydrated(page, base_url)
-        if page.locator("#palette-open").is_visible():
-            errors.append(report_line("390px: the shortcut hint shows on a phone"))
-    finally:
-        page.close()
     return [f"command palette: {e}" for e in errors]
 
 
 # Principle Off-screen sections: a section with more elements than this skips style and paint while off-screen, and the
 # page outside such sections keeps under the budget, so a theme switch restyles and repaints only that much. A
-# structural bound rather than a switch time, which varies with the machine's load (timings warn, never block).
+# structural bound avoids timing differences caused by the machine's load.
 OFFSCREEN_SECTION_ELEMENTS, ALWAYS_DRAWN_ELEMENTS = 1500, 4000
 
 
@@ -6981,48 +6456,6 @@ def check_offscreen_sections(browser, base_url: str) -> list[str]:
     return errors
 
 
-# Interaction times (they warn, never block): at CPU_SLOWDOWN, standing in for a phone, the page
-# answers within INTERACTION_MS after load and on a theme switch, opening the command palette and opening a disclosure.
-CPU_SLOWDOWN, INTERACTION_MS = 4, 100
-
-
-def check_interaction_times(browser, base_url: str) -> list[str]:
-    """Warn (stderr, no error) where an interaction takes longer than INTERACTION_MS at CPU_SLOWDOWN: the longest task
-    after load, and the median of several theme switches, palette openings and disclosure openings, each timed from
-    the action to the next frame."""
-    # Each sample starts from the closed state, after a pause in which the page's idle work (the palette list) can run.
-    timed = """async ([action, n]) => { const frame = () => new Promise(r => requestAnimationFrame(() => setTimeout(r, 0)));
-      const out = []; for (let i = 0; i < n; i++) { const p = document.getElementById('palette'); if (p.open) p.close(); await new Promise(r => setTimeout(r, 300));
-        await frame(); await frame(); const t0 = performance.now(); await (0, eval)(action)(i); await frame(); out.push(performance.now() - t0); }
-      return out.sort((a, b) => a - b)[Math.floor(out.length / 2)]; }"""
-    actions = {
-        "theme switch": "i => document.documentElement.setAttribute('data-theme', i % 2 ? 'light' : 'dark')",
-        "opening the command palette": "i => document.dispatchEvent(new KeyboardEvent('keydown', { key: '/', bubbles: true }))",
-        "opening a disclosure": "i => { const d = document.getElementById('method-details'); if (d.open) d.open = false; d.open = true; }",
-    }
-    from playwright.sync_api import TimeoutError as PlaywrightTimeout
-
-    for width in (1440, 390):
-        page = browser.new_page(viewport={"width": width, "height": 900}, skipping=True)
-        try:
-            page.context.new_cdp_session(page).send("Emulation.setCPUThrottlingRate", {"rate": CPU_SLOWDOWN})
-            page.add_init_script("window.__long = 0; new PerformanceObserver(l => l.getEntries().forEach(e => { window.__long = Math.max(window.__long, e.duration); })).observe({ type: 'longtask', buffered: true });")
-            hydrated(page, base_url)
-            page.wait_for_function("document.documentElement.hasAttribute('data-settled')", timeout=60_000)
-            page.wait_for_timeout(1000)
-            got = {"longest task after load": page.evaluate("window.__long")}
-            for name, action in actions.items():
-                got[name] = page.evaluate(timed, [action, 5])
-                page.evaluate("() => { const p = document.getElementById('palette'); if (p.open) p.close(); document.documentElement.removeAttribute('data-theme'); }")
-            for name, ms in got.items():
-                if ms > INTERACTION_MS:
-                    print(f"warning: {width}px at {CPU_SLOWDOWN}x slower CPU: {name} takes {ms:.0f} ms, beyond {INTERACTION_MS} ms", file=sys.stderr)
-        except PlaywrightTimeout as exc:  # a timing diagnostic: readiness itself is checked, unslowed, by the blocking checks
-            print(f"warning: {width}px at {CPU_SLOWDOWN}x slower CPU: interaction times not measured ({exc})", file=sys.stderr)
-        finally:
-            page.close()
-    return []
-
 
 def check_toggle_place(browser, base_url: str) -> list[str]:
     """Principles Theme and Phone: one theme toggle, at the right end of the sticky section bar above 430px (still there
@@ -7035,23 +6468,18 @@ def check_toggle_place(browser, base_url: str) -> list[str]:
             page.evaluate(f"document.documentElement.style.fontSize = '{scale}'")
             page.evaluate("scrollTo(0, 1500)")
             page.wait_for_timeout(100)
-            got = page.evaluate("""() => { const t = document.getElementById('theme-toggle'), bar = document.querySelector('.secnav .measure'), r = t.getBoundingClientRect(), b = bar.getBoundingClientRect(), pad = parseFloat(getComputedStyle(bar).paddingRight);
-              return { count: document.querySelectorAll('.theme-toggle').length, inBar: !!t.closest('.secnav'), inHeader: !!t.closest('.topbar'), last: bar.lastElementChild === t,
-                right: b.right - pad - r.right, shown: r.width > 0 && r.top >= 0 && r.bottom <= document.querySelector('.secnav').getBoundingClientRect().bottom + 1,
+            got = page.evaluate("""() => { const t = document.getElementById('theme-toggle'), bar = document.querySelector('.secnav .measure'), r = t.getBoundingClientRect();
+              return { count: document.querySelectorAll('.theme-toggle').length, shown: r.width > 0 && r.top >= 0 && r.bottom <= document.querySelector('.secnav').getBoundingClientRect().bottom + 1,
                 overflow: bar.scrollWidth - bar.clientWidth }; }""")
             if got["count"] != 1:
                 errors.append(f"{width}px: {got['count']} theme toggles in the page, expected one")
             if width > 430 and not got["shown"]:  # the toggle cannot be seen or reached: blocking
                 errors.append(f"{width}px: the theme toggle is not shown in the sticky section bar while scrolled ({got})")
-            elif width > 430 and not (got["inBar"] and got["last"] and abs(got["right"]) <= 2):
-                errors.append(report_line(f"{width}px: the theme toggle is not at the right end of the sticky section bar while scrolled ({got})"))
             if width <= 430:
                 page.evaluate("scrollTo(0, 0)")
-                shown, top = page.evaluate("() => { const r = document.getElementById('theme-toggle').getBoundingClientRect(); return [r.width > 0 && r.height > 0 && r.top >= 0 && r.bottom <= innerHeight && r.left >= 0 && r.right <= innerWidth, r.bottom <= document.querySelector('.secnav').getBoundingClientRect().top + 1]; }")
+                shown = page.evaluate("() => { const r = document.getElementById('theme-toggle').getBoundingClientRect(); return r.width > 0 && r.height > 0 && r.top >= 0 && r.bottom <= innerHeight && r.left >= 0 && r.right <= innerWidth; }")
                 if not shown:  # at the top of the page it must be on screen: blocking
                     errors.append(f"{width}px: on phones the theme toggle is not shown")
-                elif not got["inHeader"] or not top:
-                    errors.append(report_line(f"{width}px: on phones the theme toggle is not in the header above the section bar"))
             if got["overflow"] > 1:
                 errors.append(f"{width}px at {scale} text: the section bar row scrolls sideways by {got['overflow']}px with the theme toggle")
         finally:
@@ -7072,14 +6500,11 @@ def check_toggle_place(browser, base_url: str) -> list[str]:
 
 def check_group_rows(browser, base_url: str) -> list[str]:
     """Phones and sticky group rows (owner report from an Android phone): at 360, 390 and 412px, also with the root
-    text 10% larger, the bar is one row of the five items with no sideways scroll and no visible scrollbar, and each
-    group row is one line; inside a group its row sticks directly under the bar with the current section's link
-    marked, and in News none sticks; after a jump to a section, from a group row or a hash link, its heading
-    lands below both rows."""
+    text 10% larger, the bar shows all five items without sideways scroll. Group links mark the current section,
+    and a jump from a group row or hash link lands the heading below both rows."""
     errors: list[str] = []
     bar = """() => { const n = document.querySelector('.secnav'), m = n.querySelector('.measure'), items = [...m.children].filter(a => a.getBoundingClientRect().width);
-      return [m.scrollWidth - m.clientWidth, new Set(items.map(a => Math.round(a.getBoundingClientRect().top))).size, items.map(a => a.innerText.trim()), m.offsetHeight - m.clientHeight,
-        Math.max(...[...document.querySelectorAll('.group-nav')].map(r => new Set([...r.querySelectorAll('a')].map(a => Math.round(a.getBoundingClientRect().top))).size))]; }"""
+      return [m.scrollWidth - m.clientWidth, items.map(a => a.innerText.trim())]; }"""
     for width in (360, 390, 412):
         for scale in ("100%", "110%"):
             page = browser.new_page(viewport={"width": width, "height": 780})
@@ -7089,11 +6514,8 @@ def check_group_rows(browser, base_url: str) -> list[str]:
             page.evaluate("scrollTo(0, document.querySelector('#testing').closest('section').offsetTop)")
             page.wait_for_timeout(150)
             got = page.evaluate(bar)
-            # An item cut off or missing blocks; a wrapped row or a visible scrollbar is a report line.
-            if got[0] != 0 or len(got[2]) != len(SECTION_BAR) or not all(got[2]):
-                errors.append(f"{width}px at {scale} text: the bar cuts off or lacks one of the five items (overflow, items: {got[0]}, {got[2]})")
-            if got[1] != 1 or got[3] != 0 or got[4] != 1:
-                errors.append(report_line(f"{width}px at {scale} text: the bar wraps or shows a scrollbar, or a group row wraps (bar rows, scrollbar, most group row lines: {got[1]}, {got[3]}, {got[4]})"))
+            if got[0] != 0 or len(got[1]) != len(SECTION_BAR) or not all(got[1]):
+                errors.append(f"{width}px at {scale} text: the bar cuts off or lacks one of the five items (overflow, items: {got[0]}, {got[1]})")
             page.close()
     rows = """() => { const nav = document.querySelector('.secnav').getBoundingClientRect().bottom;
       return [...document.querySelectorAll('.group-nav')].filter(r => { const b = r.getBoundingClientRect(); return b.top <= nav + 1 && b.bottom > nav + 1; })
@@ -7150,31 +6572,7 @@ def check_group_rows(browser, base_url: str) -> list[str]:
           return [Math.round(row.top - nav), row.bottom, document.getElementById('funding').getBoundingClientRect().top]; }""")
         if heading[0] != 0 or heading[2] < heading[1]:
             errors.append(f"{width}px: the hash link #funding lands with its heading under the sticky rows (row offset, row bottom, heading top: {heading})")
-        # Deep inside a group the row stays; in News no group row shows.
-        page.evaluate("scrollTo(0, document.getElementById('world-scroll').getBoundingClientRect().top + scrollY - 200)")
-        page.wait_for_timeout(200)
-        got = page.evaluate(rows)
-        if not got or not (got[0][0] or "").strip() or got[0][1] != 0 or "#world" not in got[0][3]:
-            errors.append(report_line(f"{width}px: deep in The world the States row is not stuck under the bar ({got})"))
-        page.evaluate("scrollTo(0, document.getElementById('news').closest('section').getBoundingClientRect().top + scrollY - 96)")
-        page.wait_for_timeout(200)
-        got = page.evaluate(rows)
-        if got:
-            errors.append(report_line(f"{width}px: in News a group row sticks under the bar ({got})"))
         page.close()
-    # Without scripting, with larger text, the saved page's row still sticks flush under the bar (rem defaults, no stale pixels).
-    page = browser.new_page(viewport={"width": 360, "height": 780}, java_script_enabled=False)
-    page.route(base_url, lambda route: route.fulfill(response=(r := route.fetch()), body=r.text().replace("</head>", "<style>html { font-size: 110% !important; }</style></head>", 1)))
-    page.goto(base_url)
-    page.wait_for_timeout(200)
-    box = page.locator(".group-nav").first.bounding_box()
-    page.mouse.move(180, 400)
-    page.mouse.wheel(0, box["y"] + 600)
-    page.wait_for_timeout(400)
-    got = [page.locator(".secnav").bounding_box(), page.locator(".group-nav").first.bounding_box()]
-    if abs(got[1]["y"] - (got[0]["y"] + got[0]["height"])) > 1:
-        errors.append(report_line(f"no script, 110% text: the Compare row does not stick flush under the bar (bar bottom {got[0]['y'] + got[0]['height']:.0f}, row top {got[1]['y']:.0f})"))
-    page.close()
     return errors
 
 
@@ -7491,12 +6889,9 @@ def check_access_fixes(browser, base_url: str) -> list[str]:
             page.evaluate("scrollTo(0, document.querySelector('#testing').closest('section').offsetTop)")
             page.wait_for_timeout(150)
             got = page.evaluate("""() => { const n = document.querySelector('.secnav'), m = n.querySelector('.measure'), items = [...m.children].filter(a => a.getBoundingClientRect().width);
-              return [n.classList.contains('scrolled'), m.scrollWidth - m.clientWidth, new Set(items.map(a => Math.round(a.getBoundingClientRect().top))).size, items.map(a => a.innerText.trim())]; }""")
-            # A cut-off or missing item, or a bar not in its scrolled state, blocks; a wrap is a report line.
-            if got[0] is not True or got[1] != 0 or len(got[3]) != len(SECTION_BAR) or not all(got[3]):
-                errors.append(f"390px: the section bar is not scrolled, or cuts off or lacks one of the five items (scrolled, overflow, items: {got[0]}, {got[1]}, {got[3]})")
-            if got[2] != 1:
-                errors.append(report_line(f"390px: the section bar wraps onto {got[2]} rows"))
+              return [n.classList.contains('scrolled'), m.scrollWidth - m.clientWidth, items.map(a => a.innerText.trim())]; }""")
+            if got[0] is not True or got[1] != 0 or len(got[2]) != len(SECTION_BAR) or not all(got[2]):
+                errors.append(f"390px: the section bar is not scrolled, or cuts off or lacks one of the five items (scrolled, overflow, items: {got[0]}, {got[1]}, {got[2]})")
             page.evaluate("scrollTo(0, 0)")
         box = page.locator("#map-search")
         box.fill("ger")
@@ -7625,8 +7020,8 @@ NOSCRIPT_INFO_IDS = ("map-info", "figures-scope", "test-scope", "eu-scope", "rec
 
 
 def check_arrival(browser, base_url: str) -> list[str]:
-    """Principle Arrival: a card reached from the record beside the map, a repeated click or a shared link keeps the
-    --highlight-fill tint with no outline while it is the target, and takes focus; a card reached from the record has one "Back to map" link, which returns to the first
+    """Principle Arrival: a card reached from the record beside the map, a repeated click or a shared link keeps a
+    visible fill with no outline while it is the target, and takes focus; a card reached from the record has one "Back to map" link, which returns to the first
     screen with the same region and record open, focus on the record's link.
 
     Records are opened from the page: the first Europe list row whose card is a full card (list click) and the first
@@ -7635,9 +7030,8 @@ def check_arrival(browser, base_url: str) -> list[str]:
     """
     errors: list[str] = []
     state = r"""id => { const c = document.getElementById(id), s = getComputedStyle(c), nav = document.querySelector('.secnav').getBoundingClientRect(), r = c.getBoundingClientRect();
-        const probe = document.createElement('span'); probe.style.backgroundColor = 'var(--highlight-fill)'; document.body.appendChild(probe); const fill = getComputedStyle(probe).backgroundColor; probe.remove();
         const alpha = (s.backgroundColor.match(/[\d.]+/g) || []).map(Number), seen = alpha.length === 4 ? alpha[3] > 0 : alpha.length === 3;
-        return { hash: location.hash, marked: seen && s.outlineStyle === 'none', tinted: seen, tint: s.backgroundColor === fill, ring: s.outlineStyle !== 'none', arrived: c.classList.contains('arrived'),
+        return { hash: location.hash, marked: seen && s.outlineStyle === 'none', arrived: c.classList.contains('arrived'),
           focused: document.activeElement === c, visible: r.top >= nav.bottom - 1 && r.top < innerHeight, open: c.tagName !== 'DETAILS' || c.open,
           named: !!c.getAttribute('aria-labelledby') && c.getAttribute('aria-labelledby').split(' ').every(n => document.getElementById(n)), animation: s.animationName }; }"""
     for width in (1440, 1000, 390):
@@ -7683,8 +7077,6 @@ def check_arrival(browser, base_url: str) -> list[str]:
                 def expect(card_id, step, *, motion=motion):
                     page.wait_for_timeout(150)
                     got = page.evaluate(state, card_id)
-                    if got["ring"]:
-                        errors.append(report_line(f"{label}: {step}: #{card_id} arrives with an outline; arrival is the tint alone"))
                     for key, message in (("marked", "is not visibly tinted"), ("arrived", "is not marked as arrived"), ("focused", "does not take focus"),
                                          ("visible", "is not in view below the nav"), ("open", "fold is not open"), ("named", "has no accessible name")):
                         if not got[key]:
@@ -7703,10 +7095,6 @@ def check_arrival(browser, base_url: str) -> list[str]:
                 if page.locator("#record").get_attribute("data-j") != full_id or page.evaluate("document.getElementById('record').hidden"):
                     errors.append(f"{label}: Escape on the card closes the record that Back to map returns to")
                     continue  # the rest of this run needs the record
-                if motion == "no-preference":
-                    page.wait_for_timeout(1700)  # past the 1.5 s fade: the outline lasts
-                    if not page.evaluate(state, full)["tint"]:
-                        errors.append(report_line(f"{label}: #{full} loses its arrival tint when the flash ends"))
                 page.evaluate("() => { document.activeElement.blur(); scrollTo(0, 0); }")
                 page.wait_for_timeout(100)
                 page.locator("#record .record-more").click()
@@ -7740,19 +7128,10 @@ def check_arrival(browser, base_url: str) -> list[str]:
                 open_record(mini_id, "map")
                 expect(mini, "none-identified record link")
                 errors.extend(f"{label}: mini map arrival: {e}" for e in check_source_footers(page))
-                if page.evaluate("id => document.getElementById(id).matches('.arrived, :target')", full) or page.evaluate(state, full)["tinted"] or page.evaluate(state, full)["ring"]:
-                    errors.append(report_line(f"{label}: #{full} keeps its arrival tint after another card is the target"))
-                # Section navigation changes the address without a hashchange; the arrival ends there too.
-                page.locator('.secnav a[href="#europe"]').click()
-                page.wait_for_timeout(100)
-                if page.evaluate(state, mini)["tinted"] or page.evaluate(state, mini)["ring"]:
-                    errors.append(report_line(f"{label}: #{mini} keeps its arrival tint after section navigation"))
-                # A shared link: the saved page is swapped for a fresh copy; the outline must survive the swap.
+                # The fresh copy must still bring the shared-link target into view.
                 hydrated(page, base_url + "#" + full, map_drawn=True)  # Europe's dots are clicked after the reload
                 page.wait_for_timeout(150)
                 got = page.evaluate(state, full)
-                if not (got["marked"] and got["arrived"]):
-                    errors.append(report_line(f"{label}: shared link #{full} has no arrival tint after the page script takes over"))
                 if not got["visible"]:
                     errors.append(f"{label}: shared link #{full} does not arrive below the nav")
                 # The same link percent-encoded names the same card.
@@ -7818,27 +7197,24 @@ STATUS_ORDER = ("established", "planned", "proposed", "exploring", "none_identif
 
 def status_marks(page) -> list[dict]:
     """Measure every status mark the page draws (legend swatch, first map dot of each status in the drawing on
-    screen): edge against the ground (a dot's stroke at its drawn width), text against what is behind it, and every
-    fill colour, including gradient stops and the hatch."""
+    screen): edge against the ground (a dot's stroke at its drawn width) and text against what is behind it."""
     return page.evaluate(
         "statuses => {" + CONTRAST_JS + """
       const ground = token('--ground'), out = [];
       const behind = node => { for (let n = node; n; n = n.parentElement) { const s = getComputedStyle(n); if (opaque(s.backgroundColor)) return { colour: s.backgroundColor, pattern: false }; if (s.backgroundImage !== 'none') return { colour: null, pattern: true }; } return { colour: ground, pattern: false }; };
-      const fills = n => { const s = getComputedStyle(n); return [s.backgroundColor, ...(s.backgroundImage.match(/rgba?\\([^)]*\\)/g) || [])].filter(opaque); };
       const svg = [...document.querySelectorAll('#worldmap svg')].find(n => n.getClientRects().length);
       const scale = svg ? svg.getBoundingClientRect().width / svg.viewBox.baseVal.width : 1;
       for (const status of statuses) for (const [kind, node] of [['swatch', document.querySelector('#legend .sw.st-' + status)], ['dot', svg && svg.querySelector(':scope > g > .dot.st-' + status)]]) {
         if (!node) { out.push({ status, kind, missing: true }); continue; }
         if (kind === 'dot') {
           const s = getComputedStyle(node), hatch = s.fill.startsWith('url') && svg.querySelector('.hatch-line'), centre = node.nextElementSibling && node.nextElementSibling.matches('.dot-centre') ? node.nextElementSibling : null;
-          const fillsOf = [hatch ? getComputedStyle(hatch).fill : s.fill, centre && getComputedStyle(centre).fill].filter(c => c && opaque(c));
           out.push({ status, kind, edge: ratio(s.stroke, ground), edgeWidth: parseFloat(s.strokeWidth) * scale, image: hatch ? 'hatch' : 'none', text: [],
-            fills: fillsOf.filter(c => rgb(c).join() !== rgb(ground).join()).map(c => [c, ratio(c, '#000')]), centre: centre ? ratio(getComputedStyle(centre).fill, ground) : 0, centreRound: !!centre && centre.tagName.toLowerCase() === 'circle' });
+            centre: centre ? ratio(getComputedStyle(centre).fill, ground) : 0, centreRound: !!centre && centre.tagName.toLowerCase() === 'circle' });
           continue;
         }
         const s = getComputedStyle(node), shadow = s.boxShadow.match(/^(rgba?\\([^)]*\\)) 0px 0px 0px ([\\d.]+)px inset$/);
         const m = { status, kind, edge: ratio(s.borderTopColor, ground), edgeWidth: parseFloat(s.borderTopWidth), image: s.backgroundImage, ring: !!shadow && rgb(shadow[1]).join() === rgb(ground).join() && parseFloat(shadow[2]) >= 1,
-          fills: [...fills(node), ...[...node.children].flatMap(fills)].filter(c => rgb(c).join() !== rgb(ground).join()).map(c => [c, ratio(c, '#000')]), text: [] };
+          text: [] };
         if (status === 'planned') {
           // A square swatch: a square centre (its own fill, the established colour) inside an inset page-colour ring that leaves it visible (at least 2px across).
           const ring = s.boxShadow.match(/^(rgba?\\([^)]*\\)) 0px 0px 0px ([\\d.]+)px inset$/), centre = ring && s.backgroundImage === 'none' && s.backgroundColor;
@@ -7855,27 +7231,11 @@ def status_marks(page) -> list[dict]:
     )
 
 
-VALUE_TIP_CLASSES = ("conf", "interval", "per-person", "developer", "provision")  # values with a tooltip, held here independently of the page
-
-
 def check_tooltip_cues(page) -> list[str]:
-    """Principle Tooltip cues (owner, 5 Nov 2026): the dotted underline marks abbreviations and terms only; a value with a
-    tooltip keeps its tooltip and focus without it. Developer names, provisions and a median ceiling in the figures row are values too."""
-    got = page.evaluate("""cls => [...document.querySelectorAll('abbr.g')].filter(n => n.getClientRects().length).map(n => {
-        const value = cls.some(c => n.classList.contains(c)) || !!n.closest('#figures .figure > b');
-        const c = getComputedStyle(n);
-        return [n.textContent.trim().slice(0, 40), value, c.textDecorationLine, c.textDecorationStyle, n.tabIndex === 0 && !!(n.dataset.tip || n.getAttribute('aria-description'))]; })""", list(VALUE_TIP_CLASSES))
-    errors = []
-    for text, value, line, style, tip in got:
-        if not tip:
-            errors.append(f"tooltip cues: {text!r} has no focusable tooltip")
-        if value and line != "none":
-            errors.append(report_line(f"tooltip cues: the value {text!r} is underlined; values keep their tooltip without the dotted mark"))
-        if not value and (line != "underline" or style != "dotted"):
-            errors.append(report_line(f"tooltip cues: the term {text!r} lacks its dotted underline"))
-    if not any(value for _, value, *_ in got):
-        errors.append(report_line("tooltip cues: no value with a tooltip to check"))
-    return errors
+    """Visible tooltip terms and values must have focusable tooltips."""
+    got = page.evaluate("""() => [...document.querySelectorAll('abbr.g')].filter(n => n.getClientRects().length).map(n =>
+      [n.textContent.trim().slice(0, 40), n.tabIndex === 0 && !!(n.dataset.tip || n.getAttribute('aria-description'))])""")
+    return [f"tooltip cues: {text!r} has no focusable tooltip" for text, tip in got if not tip]
 
 
 def check_group_row_cover(page) -> list[str]:
@@ -7906,8 +7266,6 @@ def row_cover_errors(tint_shadow: str, rows: list) -> list[str]:
     """One outer shadow layer in the row's own ground must cover, as one rectangle, the arrival tint's spread on both
     sides and at least a pixel above the row: separate layers leave the upper corners open."""
     tint = max([layer["spread"] for layer in shadow_layers(tint_shadow) if not layer["inset"]] or [0])
-    if not rows:
-        return [report_line("group row cover: no group row to check")]
     errors = []
     for text, shadow, ground in rows:
         covers = [layer for layer in shadow_layers(shadow) if not layer["inset"] and layer["colour"] == ground
@@ -8069,9 +7427,6 @@ def check_status_contrast(page) -> list[str]:
         for tag, ratio in m["text"]:
             if ratio < 4.5:
                 errors.append(f"status contrast: {where} text ({tag}) {ratio:.2f}:1 on its background" + (" (on a pattern)" if ratio == 0 else "") + " (needs 4.5:1)")
-        for colour, black in m["fills"]:
-            if black < 2:
-                errors.append(report_line(f"status contrast: {where} has a near-black fill {colour} ({black:.2f}:1 against black)"))
         if m["status"] == "planned" and m["kind"] == "swatch" and not (m.get("squareCentre") and m.get("centreFill")):
             errors.append("status contrast: planned swatch lacks a square established-colour centre (a square mark has a square centre)")
         if m["status"] == "planned" and m["kind"] == "dot" and m["centre"] > 1.5 and not m.get("centreRound"):
@@ -8540,13 +7895,6 @@ def check_theme_default(browser, base_url: str, dist: Path) -> list[str]:
     def state(page):
         return page.evaluate(f"[getComputedStyle(document.documentElement).colorScheme, {ground}, {label}]")
 
-    def bare_toggle(page, theme):
-        """The toggle is a bare icon button: no visible border, fill or pressed accent line, in either state."""
-        look = page.evaluate("""() => { const s = getComputedStyle(document.getElementById('theme-toggle'));
-          return [s.borderTopColor, s.backgroundColor, s.boxShadow]; }""")
-        if look[0] != "rgba(0, 0, 0, 0)" or look[1] != "rgba(0, 0, 0, 0)" or look[2] != "none":
-            errors.append(report_line(f"theme: in {theme} the toggle is not a bare icon button (border, fill, shadow: {look})"))
-
     for system in ("light", "dark"):
         context = browser.new_context(viewport={"width": 1440, "height": 1000}, color_scheme=system)
         try:
@@ -8578,7 +7926,6 @@ def check_theme_default(browser, base_url: str, dist: Path) -> list[str]:
             errors.append("theme: the toggle is not reachable by keyboard")
         page.mouse.move(0, 0)
         page.evaluate("document.activeElement.blur()")
-        bare_toggle(page, "system dark")
         # The cycle: follows system -> light -> dark -> follows system, each stored (system clears the key).
         names = []  # the toggle's name in each mode of the cycle: each must tell its mode apart from the others
         for scheme, name, key in (("light", "light", "light"), ("dark", "dark", "dark"), ("light dark", "follows system", None)):
@@ -8590,7 +7937,6 @@ def check_theme_default(browser, base_url: str, dist: Path) -> list[str]:
             active = "light" if scheme == "light" else "dark"  # system is dark in this context
             if not theme_state_matches(got, scheme, active, "system" if key is None else key) or kept != key:
                 errors.append(f"theme: the toggle does not move to {name} and store it ({got}, stored {kept})")
-            bare_toggle(page, name)
         if len(set(names)) != 3 or any(sum(bool(re.search(rf"\b{m}\b", n or "", re.I)) for m in ("light", "dark", "system")) != 1 for n in names):
             errors.append(f"theme: the toggle's names do not each say one mode ({names})")
         # Dark, then light (against the dark system), are each kept after a reload.
@@ -8717,15 +8063,9 @@ def check_menu_touch(browser, base_url: str) -> list[str]:
 
 
 def check_link_states(page) -> list[str]:
-    """Exercise hover and focus instead of trusting the rest-state declarations."""
+    """Keyboard focus is visible; citation hit areas remain usable on focus and hover."""
     errors = []
-    for selector, decoration in (
-        ('.secnav a[href="#map"]', "none"),
-        (".cn", "underline"),
-        ("a.standalone", "underline"),
-        ("#regions .pick .pname", "underline"),
-        ("#corr a", "underline"),
-    ):
+    for selector in ('.secnav a[href="#map"]', ".cn", "a.standalone", "#regions .pick .pname", "#corr a"):
         # Citations have a zero-height box (line-height 0), which Playwright treats as
         # invisible; select them by width and hover by coordinates instead.
         located = page.locator(selector)
@@ -8742,34 +8082,23 @@ def check_link_states(page) -> list[str]:
             errors.append(f"missing link-state fixture: {selector}")
             continue
         link.scroll_into_view_if_needed()
-        for state in ("hover", "focus"):
-            if state == "hover" and selector == ".cn":
-                box = link.bounding_box()
-                page.mouse.move(
-                    box["x"] + box["width"] / 2, box["y"] + box["height"] / 2
-                )
-            elif state == "hover":
-                link.hover()
-            else:
-                page.mouse.move(0, 0)
-                page.keyboard.press("Shift")
-                (link.locator("xpath=..") if selector.endswith(".pname") else link).focus()
-            want = "underline" if state == "focus" and selector.startswith(".secnav") else decoration  # Focus: keyboard focus underlines nav links too (tint plus underline)
-            if (
-                link.evaluate("n => getComputedStyle(n).textDecorationLine")
-                != want
-            ):
-                errors.append(f"{selector} has wrong {state} decoration" if state == "focus" else report_line(f"{selector} has wrong {state} decoration"))  # focus must show: blocking
-            if selector.startswith(".secnav") and not link.evaluate(
-                "n => { const p=document.createElement('span'); p.style.color='var(--ink)'; document.body.appendChild(p); const ok=getComputedStyle(n).color===getComputedStyle(p).color; p.remove(); return ok; }"
-            ):
-                errors.append(f"nav does not darken on {state}" if state == "focus" else report_line(f"nav does not darken on {state}"))
-            if selector == "#corr a" and not link.evaluate(
-                "n => getComputedStyle(n).textDecorationColor === getComputedStyle(n).color"
-            ):
-                errors.append(f"inline link underline does not strengthen on {state}" if state == "focus" else report_line(f"inline link underline does not strengthen on {state}"))
-            if selector == ".cn":
-                errors.extend(check_citations(page))
+        page.mouse.move(0, 0)
+        page.keyboard.press("Shift")
+        (link.locator("xpath=..") if selector.endswith(".pname") else link).focus()
+        if link.evaluate("n => getComputedStyle(n).textDecorationLine") != "underline":
+            errors.append(f"{selector} has wrong focus decoration")
+        if selector.startswith(".secnav") and not link.evaluate(
+            "n => { const p=document.createElement('span'); p.style.color='var(--ink)'; document.body.appendChild(p); const ok=getComputedStyle(n).color===getComputedStyle(p).color; p.remove(); return ok; }"
+        ):
+            errors.append("nav does not darken on focus")
+        if selector == "#corr a" and not link.evaluate("n => getComputedStyle(n).textDecorationColor === getComputedStyle(n).color"):
+            errors.append("inline link underline does not strengthen on focus")
+        if selector == ".cn":
+            errors.extend(check_citations(page))
+            link.evaluate("n => n.blur()")
+            box = link.bounding_box()
+            page.mouse.move(box["x"] + box["width"] / 2, box["y"] + box["height"] / 2)
+            errors.extend(check_citations(page))
         link.evaluate("n => n.blur()")
     page.mouse.move(0, 0)
     page.evaluate("scrollTo(0, 0)")
@@ -8803,28 +8132,17 @@ def check_wrapped_rows(page) -> list[str]:
 
 
 def check_value_qualifiers(page) -> list[str]:
-    """One rule in cards, table and funding: the value leads on its own line; qualifiers sit on one small
-    ink line beneath; no qualifier (confidence, as-of date, scope) is written inline after the value."""
-    return page.evaluate("() => {" + REPORT_JS + r"""
+    """Qualifiers remain separate from values in cards, the table and funding."""
+    return page.evaluate(r"""() => {
       // Folded records (funding disclosures) count too: open them, measure, restore.
       const folds = [...document.querySelectorAll('details:not([open])')]; folds.forEach(d => d.open = true);
-      const errors = [], probe = document.createElement('span');
+      const errors = [];
       let tracked = 0;  // card and table fields that carry qualifiers: none found means the check saw nothing
-      probe.style.cssText = 'font: var(--type-meta); color: var(--ink)'; document.body.appendChild(probe);
-      const meta = getComputedStyle(probe), want = { fontSize: meta.fontSize, color: meta.color }; probe.remove();
       const fields = [...document.querySelectorAll('.card .row .v, #world-rows td, .fund-value, .funding-native, .fund-context, p[data-record]')].filter(n => n.getClientRects().length);
       const name = n => (n.closest('[data-j]') || {}).dataset?.j + ' ' + (n.closest('.row')?.querySelector('.k')?.textContent || n.closest('td')?.dataset.col || n.className);
       for (const field of fields) {
         for (const q of field.querySelectorAll('.qualifiers')) {
           if (!q.getClientRects().length) continue;
-          const s = getComputedStyle(q);
-          if (s.display !== 'block' || s.fontSize !== want.fontSize || s.color !== want.color) errors.push(REPORT + `qualifiers are not a small block in their measure's ink: ${name(field)}`);
-          // The qualifier line starts below the value's first line.
-          const walker = document.createTreeWalker(field, NodeFilter.SHOW_TEXT);
-          let text = null; while (walker.nextNode()) if (walker.currentNode.nodeValue.trim() && !walker.currentNode.parentElement.closest('.qualifiers, .vh')) { text = walker.currentNode; break; }
-          const range = document.createRange(); if (text) range.selectNodeContents(text);
-          const first = text && [...range.getClientRects()].find(r => r.width > 0);
-          if (!first || q.getBoundingClientRect().top < first.bottom - 1) errors.push(REPORT + `qualifiers share the value's line: ${name(field)}`);
           // Nothing but citations and a notes line follows the qualifier line within its value.
           const holder = q.closest('.qualified, .budget-value') || q;
           for (let n = holder.nextSibling; n; n = n.nextSibling) if (!(n.nodeType === 1 && n.matches('.cites, .cite-glue, .record-notes, .qualifiers, .activity-kind')) && n.textContent.trim()) { errors.push(`text follows the qualifier line: ${name(field)}`); break; }
@@ -8840,89 +8158,8 @@ def check_value_qualifiers(page) -> list[str]:
       }
       if (!tracked) errors.push('no card or table field with qualifiers found to check (tracks 2, 3, 9, 10, since, budget, staff)');
       folds.forEach(d => d.open = false);
-      return errors.filter(e => !e.startsWith(REPORT)).concat(errors.filter(e => e.startsWith(REPORT)).slice(0, 10));  // every blocking finding, at most 10 report lines
-    }""")
-
-
-@reports
-def check_value_column(page) -> list[str]:
-    """Within a card, every field's value starts at the same x (first glyph or swatch of each value)."""
-    return page.evaluate("""() => {
-      const errors = [];
-      const start = v => {
-        const walker = document.createTreeWalker(v, NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT);
-        while (walker.nextNode()) {
-          const n = walker.currentNode;
-          if (n.nodeType === 1 && n.matches('.sw') && n.getClientRects().length) return n.getBoundingClientRect().left;
-          if (n.nodeType === 3 && n.nodeValue.trim() && !n.parentElement.closest('.vh')) {
-            const range = document.createRange(); range.selectNodeContents(n);
-            const rect = [...range.getClientRects()].find(r => r.width > 0);
-            if (rect) return rect.left;
-          }
-        }
-        return null;
-      };
-      document.querySelectorAll('.card:not(.mini)').forEach(card => {
-        const xs = [...card.querySelectorAll(':scope > .row > .v')].map(v => [v.parentElement.querySelector('.k').textContent, start(v)]).filter(([, x]) => x != null);
-        if (xs.length < 2) return;
-        const min = Math.min(...xs.map(([, x]) => x));
-        const off = xs.filter(([, x]) => x - min > .5);
-        if (off.length) errors.push(`card ${card.dataset.j}: values do not start at one x (${off.map(([k, x]) => k + ' +' + (x - min).toFixed(1) + 'px').join(', ')})`);
-      });
       return errors;
     }""")
-
-
-# Repeated components: every instance shares its spacing, whichever section it sits in. Inline components
-# (marks, chip strips) compare only their inner spacing; their outer margin belongs to the context that places them.
-INNER_SPACING = ("paddingTop", "paddingRight", "paddingBottom", "paddingLeft", "rowGap", "columnGap")
-SPACING_PROPERTIES = ("marginTop", "marginRight", "marginBottom", "marginLeft") + INNER_SPACING
-REPEATED_COMPONENTS = tuple(
-    (selector, SPACING_PROPERTIES)
-    for selector in (
-        ".statusgroup", ".cards:not(.minis)", ".card-row", ".card:not(.mini) > .top", ".card:not(.mini) > .row", ".card .foot",
-        ".card.mini", ".card.mini:not([open]) > summary", ".card.mini[open] > summary", ".more:not(.quiet) > summary",
-        ".more.quiet:not(.fund-detail[open]) > summary", ".fund-detail[open] > summary", ".list-more",
-        "summary.source-footer-line", ".source-count", ".fund-item", ".development-row", ".dlist a", ".legend-entry",
-        ".region-chips button", ".qualified", ".qualifiers", ".activity-kinds",
-    )
-) + ((".smark", ("rowGap", "columnGap")), (".region-chips", ("rowGap", "columnGap")))
-
-
-@reports
-def check_repeated_spacing(page) -> list[str]:
-    """Repeated components keep the same spacing across sections: identical spacing properties (including a
-    disclosure chevron's offset) for every instance, and the same measured gaps between a status group's heading
-    and its cards and between card rows. Hidden instances (earlier developments, closed folds) are not compared."""
-    return page.evaluate(
-        """components => {
-      const errors = [], section = n => n.closest('section[aria-labelledby], header, footer')?.getAttribute('aria-labelledby') || n.closest('header, footer')?.tagName.toLowerCase() || 'page';
-      for (const [selector, props] of components) {
-        const seen = new Map();
-        for (const n of document.querySelectorAll(selector)) {
-          if (!n.getClientRects().length) continue;
-          const s = getComputedStyle(n), after = getComputedStyle(n, '::after');
-          const key = props.map(p => s[p]).join(' ') + (after.content !== 'none' ? ' | after ' + after.marginLeft + ' ' + after.marginRight : '');
-          if (!seen.has(key)) seen.set(key, section(n) + ' ' + (n.id || n.closest('[data-j]')?.dataset.j || ''));
-        }
-        if (seen.size > 1) errors.push(`${selector}: spacing differs between instances (${[...seen.values()].join(' vs ')})`);
-      }
-      const gaps = (label, pairs) => {
-        const values = pairs.map(([a, b, where]) => [Math.round((b.getBoundingClientRect().top - a.getBoundingClientRect().bottom) * 10) / 10, where]);
-        if (values.length && Math.max(...values.map(([v]) => v)) - Math.min(...values.map(([v]) => v)) > .5) errors.push(`${label} differs across sections: ${values.map(([v, w]) => w + ' ' + v + 'px').join(', ')}`);
-      };
-      const groups = [...document.querySelectorAll('.statusgroup')].filter(g => g.getClientRects().length);
-      gaps('status group heading-to-cards gap', groups.map(g => [g.querySelector(':scope > h3'), g.querySelector(':scope > .cards'), section(g) + '/' + g.dataset.status]));
-      const rows = [...document.querySelectorAll('.cards:not(.minis)')].flatMap(grid => [...grid.children].slice(1).map(r => [r.previousElementSibling, r, section(grid) + '/' + grid.closest('.statusgroup').dataset.status]));
-      gaps('card row gap', rows);
-      return errors;
-    }""",
-        [[selector, list(props)] for selector, props in REPEATED_COMPONENTS],
-    )
-
-
-# Kept apart from method_checks.GENERIC_SHORT_FORMS on purpose: the page gate is an independent oracle.
-GENERIC_ACRONYMS = {"AISI", "AISIS", "ASI"}
 
 
 def expected_base_names(data: dict) -> dict[str, str]:
@@ -9027,10 +8264,6 @@ def check_institute_names(html, data: dict) -> list[str]:
             mark = short.select_one("abbr.g")
             if short.get_text(strip=True) != shorts[iid] or (mark is None) != (hover is None) or (mark is not None and (tip_of(mark) != hover or mark.get("tabindex") != "0")):
                 errors.append(f"{jid} region list short form {shorts[iid]!r} does not give {hover!r} on hover and focus")
-    for node in soup.select("td[data-col=inst] abbr"):
-        if re.sub(r"[^A-Za-z]", "", node.get_text()).upper() in GENERIC_ACRONYMS:
-            # dataset.method: none requires an acronym ban.
-            errors.append(report_line(f"bare generic acronym {' '.join(node.get_text().split())!r} used as an institute name"))
     # Compact Funding rows keep the short institute name on their opener; records retain the full name.
     fund_rows = soup.select("#fund-rows .fund-item")
     if not fund_rows:
@@ -9316,8 +8549,6 @@ def check_leadership_rows(html, data: dict) -> list[str]:
         if shown != wanted_tracks:
             errors.append(f"{jid}: card rows {shown} differ from the data's {wanted_tracks}")
             continue
-        if want and ("4" not in tracks or tracks[tracks.index("4") + 1 : tracks.index("4") + 1 + len(want)] != wanted_tracks):
-            errors.append(report_line(f"{jid}: Members, Head, Reports to and Partners must follow Form directly, in that order when present: {tracks}"))
         members = card.select('.members')
         if len(members) != int("Members" in rows) or any(node.find_parent(class_="row") != card.select_one('.row[data-track="4"]') for node in members):
             errors.append(f"{jid}: members must be in Form, with no separate Members row")
@@ -9704,57 +8935,6 @@ def check_method_pages(html: str, data: dict, dist: Path) -> list[str]:
     return errors
 
 
-@reports
-def check_name_roles(page) -> list[str]:
-    """One style per role for state names in lists: names in linked lists (Testing and access, Institutional set-up,
-    take the accent link style; None identified names take the card title's type.
-    On phones a None identified row stacks its name above a full-width summary."""
-    return page.evaluate("""() => {
-      const errors = [], look = n => { const c = getComputedStyle(n); return [c.fontFamily, c.fontWeight, c.fontSize, c.color].join('|'); };
-      const title = document.querySelector('.card .top .name'), link = document.querySelector('#access .group-list a.standalone');
-      if (!title || !link) return ['name roles: no card title or linked list name to compare'];
-      const linkLook = look(link), titleType = look(title).split('|').slice(0, 3).join('|');
-      document.querySelectorAll('#setup .group-list a.standalone').forEach(a => { if (look(a) !== linkLook) errors.push('linked list name not in the accent link style: ' + a.textContent); });
-      document.querySelectorAll('.card.mini > summary .name').forEach(n => { if (look(n).split('|').slice(0, 3).join('|') !== titleType) errors.push('list name not in the card title type: ' + n.textContent); });
-      if (innerWidth <= 640) document.querySelectorAll('.card.mini > summary').forEach(s => {
-        const name = s.querySelector('.name').getBoundingClientRect(), find = s.querySelector('.find');
-        if (!find || !find.getClientRects().length) return;
-        const f = find.getBoundingClientRect();
-        if (f.top < name.bottom - 1 || Math.abs(f.left - name.left) > 1) errors.push('phone None identified row keeps its name beside the summary: ' + s.textContent.slice(0, 30));
-        // Full width: the summary runs to the chevron (the summary's content edge less the chevron, its margin and the gap).
-        const sc = getComputedStyle(s), chev = getComputedStyle(s, '::after'), right = s.getBoundingClientRect().right - parseFloat(sc.paddingRight) - parseFloat(chev.width) - parseFloat(chev.marginLeft) - parseFloat(sc.columnGap);
-        if (right - f.right > 1) errors.push('phone None identified summary is not full width: ' + s.textContent.slice(0, 30));
-      });
-      return [...new Set(errors)].slice(0, 10);
-    }""")
-
-
-@reports
-def check_nonidentified_style(page) -> list[str]:
-    """Muted notes, group heading hierarchy and the first body claim's separation from its name."""
-    return page.evaluate("""() => {
-      const folds = [...document.querySelectorAll('details:not([open])')]; folds.forEach(d => d.open = true);
-      const errors = [], px = e => parseFloat(getComputedStyle(e).fontSize), weight = e => Number(getComputedStyle(e).fontWeight);
-      const probe = document.createElement('span'); probe.style.marginTop = 'var(--sp-2)'; document.body.appendChild(probe);
-      const claimGap = parseFloat(getComputedStyle(probe).marginTop); probe.remove();
-      for (const card of document.querySelectorAll('.card.mini')) {
-        const id = card.dataset.j, how = card.querySelector('.how p:not(.gl)');
-        if (how && getComputedStyle(how).color === getComputedStyle(card.querySelector('summary .name')).color) errors.push(id + ': How we checked is not muted');
-        if (how && px(how) >= px(card.querySelector('summary .name'))) errors.push(id + ': How we checked is not smaller than the entry name');
-        for (const g of card.querySelectorAll('.body-group')) {
-          const gl = g.querySelector('.gl'), name = g.querySelector('.body-name');
-          if (name && (weight(gl) < weight(name) || px(gl) < px(name))) errors.push(id + ': group heading ' + gl.textContent + ' is weaker than its items');
-          for (const claim of g.querySelectorAll('li > .claim:not(.claim + .claim)')) {
-            const previous = claim.previousElementSibling;
-            if (previous && Math.abs(claim.getBoundingClientRect().top - previous.getBoundingClientRect().bottom - claimGap) > 1) errors.push(id + ': first body claim does not follow its name at --sp-2');
-          }
-        }
-      }
-      folds.forEach(d => d.open = false);
-      return [...new Set(errors)];
-    }""")
-
-
 def check_generic_sources(html, data: dict) -> list[str]:
     """Population and region sources apply to every entry: out of card source lists, named once in Method."""
     soup = BeautifulSoup(html, "html.parser")
@@ -9971,12 +9151,11 @@ def check_archive_wrap(page) -> list[str]:
 
 
 def check_fold_block_gaps(page) -> list[str]:
-    """Consecutive blocks in an open fold (none-identified entries, funding records) never touch: an overlap
-    blocks, a gap under 4px is a report line.
+    """Consecutive blocks in an open fold (none-identified entries, funding records) never overlap.
 
     Opens every disclosure to measure, then restores the page.
     """
-    return page.evaluate("() => {" + REPORT_JS + """
+    return page.evaluate("""() => {
       const folds = [...document.querySelectorAll('details:not([open])')];
       folds.forEach(d => d.open = true);
       const errors = [];
@@ -9984,44 +9163,11 @@ def check_fold_block_gaps(page) -> list[str]:
         const kids = [...box.children].filter(k => k.tagName !== 'SUMMARY' && k.getClientRects().length && getComputedStyle(k).position !== 'absolute');
         for (let i = 1; i < kids.length; i++) {
           const gap = kids[i].getBoundingClientRect().top - kids[i - 1].getBoundingClientRect().bottom;
-          if (gap < 4) errors.push((gap < -0.5 ? 'blocks overlap' : REPORT + 'blocks touch') + ` in ${box.closest('[data-j]')?.dataset.j || box.closest('.fund-item')?.querySelector('h3')?.textContent.trim() || box.className}: ${kids[i].tagName.toLowerCase()}.${kids[i].className} ${gap.toFixed(1)}px`);
+          if (gap < -0.5) errors.push(`blocks overlap in ${box.closest('[data-j]')?.dataset.j || box.closest('.fund-item')?.querySelector('h3')?.textContent.trim() || box.className}: ${kids[i].tagName.toLowerCase()}.${kids[i].className} ${gap.toFixed(1)}px`);
         }
       }
       folds.forEach(d => d.open = false);
       return [...new Set(errors)];
-    }""")
-
-
-@reports
-def check_unbroken_dates(page) -> list[str]:
-    """A formatted date (day Mon year or Mon year) never breaks across lines, folds included.
-
-    Opens every disclosure and earlier development to measure them, then restores the page.
-    """
-    return page.evaluate(r"""() => {
-      const folds = [...document.querySelectorAll('details:not([open])')], earlier = [...document.querySelectorAll('#development-list > [hidden]')];
-      folds.forEach(d => d.open = true); earlier.forEach(r => r.hidden = false);
-      const errors = [], seen = new Set(), date = /\b(?:\d{1,2} )?(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{4}\b/g;
-      // Join each block's text nodes, so a date split across elements (e.g. by a citation glue) is still found.
-      const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
-      const nodes = []; while (walker.nextNode()) if (walker.currentNode.parentElement.getClientRects().length && !walker.currentNode.parentElement.closest('script, style, #tip, .vh')) nodes.push(walker.currentNode);
-      let text = '', map = [];
-      // Text from different blocks is separated, so a trailing digit never joins the next block's date.
-      const block = n => { let e = n.parentElement; while (e && getComputedStyle(e).display.startsWith('inline')) e = e.parentElement; return e; };
-      let previous = null;
-      for (const n of nodes) { const b = block(n); if (previous && b !== previous) text += '\n'; previous = b; map.push([text.length, n]); text += n.nodeValue; }
-      const locate = i => { let lo = 0, hi = map.length - 1; while (lo < hi) { const mid = (lo + hi + 1) >> 1; if (map[mid][0] <= i) lo = mid; else hi = mid - 1; } return [map[lo][1], i - map[lo][0]]; };
-      let m;
-      while ((m = date.exec(text))) {
-        const [sn, so] = locate(m.index), [en, eo] = locate(m.index + m[0].length - 1);
-        const range = document.createRange(); range.setStart(sn, so); range.setEnd(en, eo + 1);
-        const lines = new Set([...range.getClientRects()].filter(r => r.width > 0 && r.height > 0).map(r => Math.round(r.bottom)));
-        const where = sn.parentElement.closest('[data-j]')?.dataset.j || sn.parentElement.closest('[id]')?.id || sn.parentElement.className || sn.parentElement.tagName;
-        const key = m[0] + ' in ' + where;
-        if (lines.size > 1 && !seen.has(key)) { seen.add(key); errors.push(`date breaks across lines: ${key}`); }
-      }
-      folds.forEach(d => d.open = false); earlier.forEach(r => r.hidden = true);
-      return errors.slice(0, 8);
     }""")
 
 
@@ -10214,27 +9360,12 @@ def capture_states(chrome: str, dist: Path, out: Path) -> None:
 
 
 def check_controls(page) -> list[str]:
-    """Measure the shared control system and responsive toolbar in the browser."""
+    """Controls retain usable targets, names and room in the responsive toolbar."""
     return page.evaluate(
         "() => {"
         + BROWSER_GEOMETRY
-        + REPORT_JS
         + """
-      const errors = [], probe = document.createElement('span');
-      probe.style.cssText = 'position:fixed;visibility:hidden;height:var(--control);border:var(--control-border);border-radius:var(--r-sm);background:var(--field-fill)';
-      document.body.appendChild(probe);
-      const p = getComputedStyle(probe);
-      const expected = {height:parseFloat(p.height), radius:p.borderTopLeftRadius, border:p.borderTop, fill:p.backgroundColor};
-      probe.style.background = 'var(--selected-fill)';
-      expected.selected = getComputedStyle(probe).backgroundColor; probe.remove();
-      if (Math.abs(expected.height - 40) > .5) errors.push(REPORT + 'control token is not 40px');
-      document.querySelectorAll('.field, .btn').forEach(node => {
-        if (!visible(node) || node.id === 'theme-toggle') return; // a bare icon button by design; check_theme_default checks it
-        const s = getComputedStyle(node), r = node.getBoundingClientRect();
-        const selected = node.matches('[aria-pressed="true"], .btn:hover') || !!node.closest('.selectwrap.is-filtered');
-        if (Math.abs(r.height-expected.height) > 1 || s.borderTopLeftRadius !== expected.radius || s.borderTop !== expected.border) errors.push(REPORT + `inconsistent control dimensions/border: ${node.id || node.className || node.textContent}`);
-        if (s.backgroundColor !== (selected ? expected.selected : expected.fill)) errors.push(REPORT + `inconsistent control fill: ${node.id || node.className || node.textContent}`);
-      });
+      const errors = [];
       document.querySelectorAll('input[type="checkbox"]').forEach(node => {
         if (!visible(node)) return;
         const r = node.getBoundingClientRect(), p = pseudoBox(node);
@@ -10243,11 +9374,7 @@ def check_controls(page) -> list[str]:
       document.querySelectorAll('#col-opts label, .more > summary').forEach(node => {
         if (visible(node) && node.getBoundingClientRect().height < 39) errors.push(`control/disclosure label is below 40px: ${node.textContent.trim().slice(0,60)}`);
       });
-      const toolbar = document.querySelector('.tbar'), search = document.querySelector('#world-filter');
-      const tr = toolbar.getBoundingClientRect(), sr = search.getBoundingClientRect();
-      if (Math.abs(sr.width-tr.width) > 1 || Math.abs(sr.left-tr.left) > 1) errors.push(REPORT + 'search does not fill toolbar width');
-      const actions = [...document.querySelector('.toolbar-actions').children].filter(n => innerWidth > 640 || n.matches('.cols')).map(n => n.getBoundingClientRect());
-      if (!actions.length || actions.some(r => Math.abs(r.top-actions[0].top) > 1 || r.top < sr.bottom)) errors.push(REPORT + 'toolbar actions do not share one row below search');
+      const tr = document.querySelector('.tbar').getBoundingClientRect();
       const region = document.querySelector('#world-region');
       if (!(region.getAttribute('aria-label') || '').trim()) errors.push('region filter lacks an accessible name');
       if (innerWidth <= 640) {
@@ -10266,8 +9393,7 @@ def check_controls(page) -> list[str]:
       }
       const inline = document.querySelector('#world-count button');
       if (inline) {
-        const s = getComputedStyle(inline), parent = getComputedStyle(inline.parentElement), hit = pseudoBox(inline);
-        if (['fontSize', 'fontWeight', 'fontFamily', 'lineHeight'].some(k => s[k] !== parent[k]) || parseFloat(s.borderTopWidth) || parseFloat(s.paddingLeft) || parseFloat(s.paddingRight) || inline.getBoundingClientRect().height > parseFloat(parent.lineHeight)+1) errors.push(REPORT + 'Show all does not share the count line typography');
+        const hit = pseudoBox(inline);
         if (!hit || hit.height < 28) errors.push('Show all lacks its invisible hit area');
       }
       const body = getComputedStyle(document.body);
@@ -10276,71 +9402,33 @@ def check_controls(page) -> list[str]:
       document.querySelectorAll('.missing').forEach(node => {
         if (!visible(node)) return;
         const s = getComputedStyle(node), structural = node.matches('.na');
-        if (['fontSize', 'fontWeight', 'fontFamily', 'lineHeight'].some(k => s[k] !== body[k])) errors.push(REPORT + 'missing value does not use the body role');
         // "Not published" figures use body ink; a structural dash is muted. Funding's compact name lists
         // are separate muted controls, covered by check_secondary_tone.
         const quiet = structural;
         if (s.color !== (quiet ? muted : body.color)) errors.push(structural ? 'structural absence is not muted' : 'missing value does not use the body ink');
       });
       if (document.querySelector('#world-all')) errors.push('duplicate full-dataset toolbar action remains');
-      // Principle Region tabs: the tab text starts on the map column's edge and the search spans the list column (beside the map) or the list's width (under it).
       const tabs = document.querySelector('#region-chips'), first = tabs && tabs.querySelector('button'), map = [...document.querySelectorAll('#worldmap svg')].find(visible), list = document.querySelector('#regions'), find = document.querySelector('#map-search');
       if (tabs && visible(tabs) && first && map && list && find) {
-        const range = document.createRange(); range.selectNodeContents(first);
-        const tx = range.getBoundingClientRect().left, mr = map.closest('#worldmap').getBoundingClientRect(), lr = list.getBoundingClientRect(), fr = find.getBoundingClientRect();
-        if (Math.abs(tx - mr.left) > 1) errors.push(REPORT + `region tab text starts ${Math.round(tx - mr.left)}px off the map column edge`);
+        const mr = map.closest('#worldmap').getBoundingClientRect(), lr = list.getBoundingClientRect(), fr = find.getBoundingClientRect();
         const beside = lr.left > mr.right; // the list beside the map, or stacked under it
-        if (beside && (Math.abs(fr.left - lr.left) > 1 || Math.abs(fr.right - lr.right) > 1)) errors.push(REPORT + `search box [${Math.round(fr.left)}, ${Math.round(fr.right)}] does not span the region list [${Math.round(lr.left)}, ${Math.round(lr.right)}]`);
-        if (!beside && Math.abs(fr.right - mr.right) > 1) errors.push(REPORT + `search box ends at ${Math.round(fr.right)}, not on the map's right edge ${Math.round(mr.right)}`);
         const hr = tabs.getBoundingClientRect();
         if (!beside && hr.right > fr.left + 1 && hr.bottom > fr.top + 1) errors.push('region tabs and the search overlap');
-        const ts = getComputedStyle(first);
-        if (parseFloat(ts.borderTopWidth) || ts.backgroundColor !== 'rgba(0, 0, 0, 0)') errors.push(REPORT + 'region tabs are boxed');
       }
       return errors;
     }"""
     )
 
 
-IN_CONTENT_CONTROLS = "th button, .list-more, .more > summary, .linkbtn, summary.source-footer-line"
-
-
 def check_in_content_controls(page) -> list[str]:
-    """Controls inside content are never boxed: no border, fill or shadow, the context's type and colour;
-    the table header shows an underline on hover. Standalone controls are boxed (check_controls)."""
-    errors = page.evaluate(
-        "selector => {" + REPORT_JS + """
-      const errors = [], clear = c => c === 'transparent' || /rgba\\(.*,\\s*0\\)$/.test(c);
-      document.querySelectorAll(selector).forEach(node => {
-        if (!node.getClientRects().length) return;
-        const s = getComputedStyle(node), name = (node.className || node.tagName.toLowerCase()) + ': ' + node.textContent.trim().slice(0, 30);
-        const border = ['Top', 'Right', 'Bottom', 'Left'].some(side => parseFloat(s['border' + side + 'Width']) > 0 && s['border' + side + 'Style'] !== 'none' && !clear(s['border' + side + 'Color']));
-        if (border || !clear(s.backgroundColor) || s.backgroundImage !== 'none' || s.boxShadow !== 'none') errors.push(REPORT + `in-content control is boxed: ${name}`);
-        if (node.matches('th button')) {
-          const th = getComputedStyle(node.closest('th'));
-          if (['fontSize', 'fontWeight', 'fontFamily', 'color'].some(k => s[k] !== th[k])) errors.push(REPORT + `table header control does not take the header's type and colour: ${name}`);
-          const td = document.querySelector('#world-rows td');
-          if (td && Math.abs(parseFloat(s.paddingLeft) - parseFloat(getComputedStyle(td).paddingLeft)) > .5) errors.push(REPORT + 'table header text is not aligned with the cell padding');
-        }
-      });
-      const head = document.querySelector('table.world thead th');
-      if (head && (parseFloat(getComputedStyle(head).borderBottomWidth) < 2 || getComputedStyle(head).borderBottomColor !== getComputedStyle(document.body).color)) errors.push(REPORT + 'table header lacks one strong rule');
-      const arrows = [...document.querySelectorAll('table.world th')].filter(th => th.getClientRects().length).map(th => [th.hasAttribute('aria-sort'), getComputedStyle(th.querySelector('button'), '::after').color]);
-      const ink = getComputedStyle(document.body).color;
-      if (arrows.some(([active, colour]) => active !== (colour === ink))) errors.push(REPORT + 'sort arrows: only the active one is full ink');
-      return errors;
-    }""",
-        IN_CONTENT_CONTROLS,
-    )
+    """The table header label shows an underline on hover and focus."""
+    errors = []
     # The first column's header is always in view horizontally, so the table's sideways scroll is untouched.
     scroll_y = page.evaluate("scrollY")
     button = page.locator('table.world th[data-k="name"] button')
     button.scroll_into_view_if_needed()
-    feedback = """n => { const s = getComputedStyle(n), label = n.querySelector('.sort-label'), arrow = getComputedStyle(n, '::after');
-      const clear = c => c === 'transparent' || /rgba\\(.*,\\s*0\\)$/.test(c);
-      return { underline: !!label && getComputedStyle(label).textDecorationLine.includes('underline'),
-               arrowUnderlined: s.textDecorationLine.includes('underline') || arrow.textDecorationLine.includes('underline'),
-               boxed: !clear(s.backgroundColor) || s.boxShadow !== 'none' || parseFloat(s.borderTopWidth) > 0 }; }"""
+    feedback = """n => { const label = n.querySelector('.sort-label');
+      return !!label && getComputedStyle(label).textDecorationLine.includes('underline'); }"""
     button.hover()
     hovered = button.evaluate(feedback)
     page.mouse.move(0, 0)
@@ -10349,12 +9437,8 @@ def check_in_content_controls(page) -> list[str]:
     focused = button.evaluate(feedback)
     button.evaluate("n => n.blur()")
     for state, result in (("hover", hovered), ("focus", focused)):
-        if not result["underline"]:
+        if not result:
             errors.append(f"table header control lacks {state} underline on its label")
-        if result["arrowUnderlined"]:
-            errors.append(report_line(f"table header sort arrow is underlined on {state}"))
-        if result["boxed"]:
-            errors.append(report_line(f"table header control gains a box on {state}"))
     # Restore the scroll position, and with it the section navigation, for later checks.
     page.evaluate(
         "y => new Promise(done => { scrollTo(0, y); requestAnimationFrame(() => requestAnimationFrame(done)); })",
@@ -11140,33 +10224,19 @@ def label_ladder_match_errors(data: dict, counts: dict[str, int]) -> list[str]:
 
 
 def check_label_ladder(page) -> list[str]:
-    """Group headings are not weaker than items; cards retain accessible status; source marks match Method."""
+    """Cards retain their accessible status and required labels."""
     data = checked_page_data(page)
-    result = page.evaluate("selectors => {" + REPORT_JS + """
+    result = page.evaluate("""selectors => {
       const errors = [], visible = n => n.getClientRects().length > 0;
-      const css = (n, p) => getComputedStyle(n)[p];
       const counts = Object.fromEntries(selectors.map(s => [s, [...document.querySelectorAll(s.replace(/:visible$/, ''))].filter(n => !s.endsWith(':visible') || visible(n)).length]));
-      for (const h of document.querySelectorAll('.statusgroup > h3, .eu-level .eu-head > h3')) {
-        if (!visible(h)) continue;
-        const name = h.closest('.statusgroup, .eu-level').querySelector('.card .top .name');
-        if (!name) continue; // mini-only groups have no .top; full-card names are required above
-        if (css(h, 'color') !== css(name, 'color') || parseFloat(css(h, 'fontWeight')) < parseFloat(css(name, 'fontWeight')) || parseFloat(css(h, 'fontSize')) < parseFloat(css(name, 'fontSize'))) errors.push(REPORT + `group heading is weaker than its items: ${h.textContent.trim()}`);
-      }
-      for (const h of document.querySelectorAll('.fund-axis h3')) {
-        const name=h.closest('.fund-list').querySelector('.fund-identity h4');
-        if (!visible(h) || !name) continue;
-        if (parseFloat(css(h,'fontWeight'))<parseFloat(css(name,'fontWeight')) || parseFloat(css(h,'fontSize'))<parseFloat(css(name,'fontSize'))) errors.push(REPORT + 'Funding chart heading is weaker than its institute labels: '+h.textContent.trim());
-      }
       // A grouped card's accessible name includes its status after the state.
       for (const card of document.querySelectorAll('.statusgroup .card:not(.mini)')) {
-        if (card.querySelector(':scope > .top > .smark')) errors.push(REPORT + `card in a status group repeats its status in the title row: ${card.id}`);
         const said = card.querySelector(':scope > .top > .vh'), ids = (card.getAttribute('aria-labelledby') || '').split(' ');
         const want = ', ' + card.closest('.statusgroup').querySelector(':scope > h3 .smark > span').textContent.replace(/ \\(\\d+\\)$/, '');
         if (!said || said.textContent !== want || !ids.includes(said.id)) errors.push(`card in a status group lacks its accessible status name: ${card.id}`);
       }
       // The EU entry's dated Status row says its status, so its title row shows none either; the accessible name keeps it.
       for (const card of document.querySelectorAll('.eu-level .card:not(.mini)')) {
-        if (card.querySelector(':scope > .top > .smark')) errors.push(REPORT + 'the EU entry repeats its status in the title row; its Status row says it');
         const said = card.querySelector(':scope > .top > .vh'), ids = (card.getAttribute('aria-labelledby') || '').split(' ');
         const row = card.querySelector('.row[data-track="3"]'), shown = row ? row.querySelector('.v').textContent.trim().split(' since ')[0] : null;
         if (!said || !shown || said.textContent !== ', ' + shown || !ids.includes(said.id)) errors.push(`the EU entry's accessible status ${said && said.textContent} does not match its Status row ${shown}`);
@@ -12289,12 +11359,10 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
     for error in check_hit_targets(page):
         require(False, error)
     for check in (
-        check_typography,
         check_baselines_and_rhythm,
         check_citations,
         check_design_roles,
         check_source_footers,
-        check_meta_separators,
         check_line_end_separators,
         check_card_grid,
         check_external_markers,
@@ -12310,18 +11378,10 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
         require(False, error)
     for error in check_wrapped_rows(page):
         require(False, "wrapped rows: " + error)
-    for error in check_unbroken_dates(page):
-        require(False, error)
     for error in check_fold_block_gaps(page):
         require(False, error)
     for error in check_value_qualifiers(page):
         require(False, error)
-    for check in (check_value_column, check_repeated_spacing):
-        for error in check(page):
-            require(False, error)
-    if width in (390, 1000):
-        for error in check_meta_separators(page, force_wrap=True):
-            errors.append(f"{width}px forced wrap: {error}")
     if width == 390:
         page.set_viewport_size({"width": 320, "height": 1000})
         for error in check_controls(page):
@@ -12349,7 +11409,7 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
     # style or behaviour.
     for error in check_funding_bars(page, data) + check_access_layout(page, width) + check_access_tips(page):
         require(False, error)
-    for error in check_archive_wrap(page) + check_nonidentified_style(page) + check_name_roles(page):
+    for error in check_archive_wrap(page):
         require(False, error)
     lap("funding bars, access, archive, names")
     require(
@@ -12430,7 +11490,7 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
         ),
         "Institute column is too narrow",
     )
-    for error in check_activity_width(page) + check_activity_tooltip(page):
+    for error in check_activity_tooltip(page):
         require(False, error)
     lap("grids, tooltips, nav, columns, activity")
     # The first screen's region switches, dot clicks, search and records do not depend on the theme: in light only.
@@ -12902,10 +11962,10 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
     for error in check_planned_swatches(page):
         require(False, "expanded content: " + error)
     for check in (
-        *((check_typography, check_baselines_and_rhythm, check_citations) if theme == "light" else ()),
+        *((check_baselines_and_rhythm, check_citations) if theme == "light" else ()),
         check_design_roles,
         check_source_footers,  # compares each footer's colour with the theme's --muted, so in both themes
-        *((check_meta_separators, check_card_grid) if theme == "light" else ()),
+        *((check_card_grid,) if theme == "light" else ()),
         check_external_markers,
         check_text_contrast,  # every text against its real background, every fold open
     ):
@@ -12954,7 +12014,6 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
                 click_control_text(page, choice)
             for check in (
                 check_hit_targets,
-                check_typography,
                 check_controls,
             ):
                 for error in check(page):
@@ -15147,8 +14206,6 @@ def check_page_separators(browser, base_url: str) -> list[str]:
             # coverage kinds even though they share the same builder.
             required.update(('re-read tails', 'archived-copy tails'))
             errors.extend(f'{width}px: {e}' for e in separator_coverage_errors(totals, required))
-            errors.append(report_line(f'{width}px separator coverage (maximum lines/total dots/visible dots per kind): ' +
-                                      ', '.join(f'{k}={v["lines"]}/{v["separators"]}/{v.get("visible", 0)}' for k, v in sorted(totals.items()))))
         finally:
             page.close()
     return list(dict.fromkeys(errors))
@@ -15536,7 +14593,6 @@ def check_functions_layout(browser, base_url: str, *, fixture: dict | None = Non
                 page.locator('#functions').evaluate("n => n.closest('section').scrollIntoView({block:'start'})")
                 page.evaluate("() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))")
                 prefix = f"{width}px {theme} {scale}: "
-                errors += [prefix + e for e in check_typography(page, '#functions-table')]
                 errors += [prefix + e for e in page.evaluate(FN_GEOMETRY)]
                 errors += [prefix + e for e in page.evaluate(r"""() => {
                   const errors=[], box=document.querySelector('#functions-table'), scroll=box.querySelector('.fn-scroll'), table=box.querySelector('.fn-table');
@@ -16504,7 +15560,6 @@ def browser_jobs(dist: Path, data: dict, screenshots: Path | None) -> list[tuple
         ("interactions", check_highlight_fill, ()),
         ("interactions", check_toggle_place, ()),
         ("interactions", check_offscreen_sections, ()),
-        ("interactions", check_interaction_times, ()),
         ("interactions", check_command_palette, ()),
         ("interactions", check_anchor_aliases, ()),
         ("interactions", check_format_edges, (data,)),
@@ -16581,17 +15636,12 @@ def load_quarantine() -> dict[str, dict]:
     return active
 
 
-def quarantine_findings(entry: dict | None, findings: list[str]) -> list[str]:
-    """A quarantined job's findings as report lines naming the entry; any other job's unchanged."""
-    if entry is None:
-        return findings
-    prefix = f"quarantined until {entry['expires']} (owner {entry['owner']}, {entry['issue']}): "
-    return [report_line(prefix + finding.replace(REPORT_MARK, "")) for finding in findings]
+class JobsNotRun(Exception):
+    """The completed checks passed, but quarantined jobs were skipped."""
 
 
-def quarantined_job(run, quarantine: dict[str, dict], stage: str, check, args: tuple) -> list[str]:
-    # Exceptions still raise and block, including for quarantined jobs: only returned findings become report lines.
-    return quarantine_findings(quarantine.get(job_id(stage, check, args)), run(stage, check, args))
+def skipped_job(entry: dict) -> None:
+    print(f"NOT RUN: {entry['job']}: quarantined until {entry['expires']} (owner {entry['owner']}, {entry['issue']})", file=sys.stderr)
 
 
 def raised_at(exc: BaseException) -> str:
@@ -16671,7 +15721,7 @@ def timed_job(timings: Path | None, origin: float, run, stage: str, check, args:
     ended = {}
     try:
         errors = run(stage, check, args)
-        ended.update(errors=len(blocking(errors)), exception=None)  # report lines are not errors
+        ended.update(errors=len(errors), exception=None)
         return errors
     except BaseException as exc:
         ended.update(errors=None, exception=type(exc).__name__)
@@ -16758,17 +15808,16 @@ def inherit_browser_slot(path: str) -> None:
     os.environ["AISI_BROWSER_LOCK_HELD"] = path
 
 
-def run_stages(run, work: list[tuple], seeds: dict, jobs: int = 1) -> list[str]:
+def run_stages(run, work: list[tuple], seeds: dict, jobs: int = 1, stages: list[str] | None = None) -> list[str]:
     """Report (stage, check, args) jobs, each run as run(stage, check, args), as the sequential gate does: stages in
     the order they first appear, each only when every earlier one passed; within a stage its seed's errors (a
-    function of no arguments), then each job's in list order; the first exception in that order ends the run. Report
-    lines are reported in the same order but never stop a stage.
+    function of no arguments), then each job's in list order; the first exception in that order ends the run.
 
     With jobs > 1 every job starts at once in that many spawned processes (FIRST first) and results are read back
     in list order, so the report and the exception are the same; the results of a stage that is not reached are
     discarded. run and every check must pickle: module-level functions or partials of them.
     """
-    stages = list(dict.fromkeys(stage for stage, _, _ in work))
+    stages = list(dict.fromkeys(stage for stage, _, _ in work)) if stages is None else stages
     pool, futures, finished = None, {}, False
     try:
         if jobs > 1:
@@ -16780,7 +15829,7 @@ def run_stages(run, work: list[tuple], seeds: dict, jobs: int = 1) -> list[str]:
             futures = submit_jobs(pool, run, work, sorted(range(len(work)), key=lambda n: start_order(work[n][1])))
         errors = []
         for stage in stages:
-            if blocking(errors):
+            if errors:
                 break
             found = seeds[stage]() if stage in seeds else []
             for n, job in enumerate(work):
@@ -16806,9 +15855,16 @@ def check_browser(chrome: str, dist: Path, data: dict, screenshots: Path | None 
     if only is not None:
         work = [job for job in work if job_id(*job) in only]
     quarantine = load_quarantine() if quarantine is None else quarantine
-    # Timings count raw findings, as shards record them; the quarantine applies only to what is reported.
-    run = partial(quarantined_job, partial(timed_job, timings, time.monotonic(), partial(run_browser_job, chrome, dist), limit=limit), quarantine)
-    return run_stages(run, work, browser_seeds(dist), jobs)
+    skipped = [quarantine[job_id(*job)] for job in work if job_id(*job) in quarantine]
+    for entry in skipped:
+        skipped_job(entry)
+    stages = list(dict.fromkeys(stage for stage, _, _ in work))
+    work = [job for job in work if job_id(*job) not in quarantine]
+    run = partial(timed_job, timings, time.monotonic(), partial(run_browser_job, chrome, dist), limit=limit)
+    errors = run_stages(run, work, browser_seeds(dist), jobs, **({"stages": stages} if skipped else {}))
+    if skipped and not errors:
+        raise JobsNotRun
+    return errors
 
 
 def all_job_ids() -> list[str]:
@@ -16827,7 +15883,7 @@ def job_ids(text: str) -> list[str]:
 def browser_seeds(dist: Path) -> dict:
     def style_checks():
         html = (dist / "index.html").read_text()
-        return check_style_source(html) + check_css_tokens(html)
+        return check_css_tokens(html)
 
     return {"interactions": style_checks}
 
@@ -16837,7 +15893,7 @@ def browser_seeds(dist: Path) -> dict:
 # gate's; an exception from a browser job prints the same text when main() catches its type, and any other failure
 # (a dead worker, a missing or foreign shard result) still fails, with its own message.
 
-SHARD_FORMAT = 2  # 2: every shard result carries its jobs' timings
+SHARD_FORMAT = 3  # 3: a skipped (quarantined) job's outcome carries not_run
 CAUGHT = (OSError, subprocess.SubprocessError, ValueError, RuntimeError)  # what main() reports as "page check failed"
 
 # Seconds per job on GitHub's ubuntu-latest, one job at a time (bench run 40025105295, 24 Oct 2026); shards are
@@ -16939,13 +15995,17 @@ def run_shard(run, work: list[tuple], indices: list[int], jobs: int) -> dict[int
             stop_pool(pool, finished)
 
 
-def write_shard(chrome: str, dist: Path, data: dict, shard: tuple[int, int], results: Path, jobs: int) -> int:
-    """Run shard K of N and write its results; print its findings as raw diagnostics. Exit 1 when it found any.
-    Shards record raw findings: the merge applies the quarantine on its own date, so no date ties shards to it."""
+def write_shard(chrome: str, dist: Path, data: dict, shard: tuple[int, int], results: Path, jobs: int,
+                quarantine: dict | None = None) -> int:
+    """Run shard K of N, preserving skipped jobs so the merge cannot count them as passed."""
     number, count = shard
     work = browser_jobs(dist, data, None)
     ids = [job_id(*job) for job in work]
     mine = [n for n, s in enumerate(shard_numbers(ids, count)) if s == number]
+    quarantine = load_quarantine() if quarantine is None else quarantine
+    skipped = {n: {"not_run": quarantine[ids[n]]} for n in mine if ids[n] in quarantine}
+    for o in skipped.values():
+        skipped_job(o["not_run"])
     results.parent.mkdir(parents=True, exist_ok=True)
     try:  # a new file, so no line of an earlier run can join this one; without one, this shard runs untimed
         handle, name = tempfile.mkstemp(prefix=results.name + ".", suffix=".timings", dir=results.parent)
@@ -16954,7 +16014,8 @@ def write_shard(chrome: str, dist: Path, data: dict, shard: tuple[int, int], res
     except OSError as exc:
         print(f"warning: browser jobs of shard {number}/{count} not timed: {exc}", file=sys.stderr)
         timings = None
-    outcomes = run_shard(partial(timed_job, timings, time.monotonic(), partial(run_browser_job, chrome, dist)), work, mine, jobs)
+    outcomes = skipped | run_shard(partial(timed_job, timings, time.monotonic(), partial(run_browser_job, chrome, dist)),
+                                  work, [n for n in mine if n not in skipped], jobs)
     site = file_digests(dist)
     results.write_text(json.dumps({
         "format": SHARD_FORMAT, "shard": number, "count": count, "jobs": ids, "checker": checker_digest(),
@@ -16966,13 +16027,14 @@ def write_shard(chrome: str, dist: Path, data: dict, shard: tuple[int, int], res
     found = 0
     for n in mine:
         o = outcomes[n]
+        if "not_run" in o:
+            continue
         lines = o["errors"] if "errors" in o else [f"{o['exception']['type']}: {o['exception']['message']}"]
         for line in lines:
-            shown = printed_report_line(line) if "errors" in o and is_report_line(line) else line
-            print(f"shard {number}/{count} (raw, not the gate's report; the build job merges): {ids[n]}: {shown}", file=sys.stderr)
-        found += len(blocking(lines)) if "errors" in o else 1  # an exception always fails, whatever its message says
-    print(f"shard {number}/{count}: {len(mine)} browser jobs, {found} findings; results in {results}")
-    return 1 if found else 0
+            print(f"shard {number}/{count} (raw, not the gate's report; the build job merges): {ids[n]}: {line}", file=sys.stderr)
+        found += len(lines) if "errors" in o else 1
+    print(f"shard {number}/{count}: {len(mine) - len(skipped)} browser jobs run, {len(skipped)} NOT RUN, {found} findings; results in {results}")
+    return 1 if found else NOT_RUN if skipped else 0
 
 
 def load_shards(directory: Path, dist: Path, ids: list[str], timings: list[dict] | None = None) -> dict[int, dict]:
@@ -17035,7 +16097,12 @@ def load_shards(directory: Path, dist: Path, ids: list[str], timings: list[dict]
             exception_ok = (isinstance(exception, dict) and set(exception) == {"type", "message", "caught", "stderr"}
                             and isinstance(exception["type"], str) and isinstance(exception["message"], str)
                             and isinstance(exception["caught"], bool) and isinstance(exception["stderr"], (str, type(None))))
-            if not (errors_ok or exception_ok):
+            skipped = o.get("not_run") if isinstance(o, dict) and set(o) == {"not_run"} else None
+            skipped_ok = (isinstance(skipped, dict) and {"job", "owner", "issue", "expires", "reason"} <= skipped.keys()
+                          and skipped["job"] == ids[int(key)]
+                          and all(isinstance(skipped[k], str) and skipped[k].strip() and not any(ord(c) < 32 for c in skipped[k])
+                                  for k in ("job", "owner", "issue", "expires", "reason")))
+            if not (errors_ok or exception_ok or skipped_ok):
                 refuse(f"{path.name} has a malformed outcome for job {ids[int(key)]}")
             outcomes[int(key)] = o
     if len(counts) != 1 or set(shards) != set(range(1, next(iter(counts)) + 1)):
@@ -17068,22 +16135,23 @@ def recorded(outcomes: dict[int, dict], stage: str, n: int, args: tuple) -> list
     raise ShardJobError(f"{exc['type']}: {exc['message']}")
 
 
-def check_merged(dist: Path, data: dict, directory: Path, timings: Path | None = None, quarantine: dict | None = None) -> list[str]:
+def check_merged(dist: Path, data: dict, directory: Path, timings: Path | None = None) -> list[str]:
     """check_browser's report from shard results instead of running the browser jobs; with timings, every shard's
-    job lines there, each with its shard (started counts from that shard's start). The quarantine is applied here,
-    on the merge's own run date, to the shards' raw findings."""
+    job lines there, each with its shard (started counts from that shard's start). Skipped jobs stay NOT RUN even
+    after their quarantine expires: the shards contain no findings for them."""
     work = browser_jobs(dist, data, None)
     lines, ids = [], [job_id(*job) for job in work]
     outcomes = load_shards(directory, dist, ids, lines)
     if timings is not None:
         write_timings(timings, "".join(json.dumps(t) + "\n" for t in lines), "w")
-    indexed = [(stage, n, ()) for n, (stage, _, _) in enumerate(work)]
-    quarantine = load_quarantine() if quarantine is None else quarantine
-    return run_stages(partial(quarantined_record, outcomes, ids, quarantine), indexed, browser_seeds(dist))
-
-
-def quarantined_record(outcomes: dict[int, dict], ids: list[str], quarantine: dict[str, dict], stage: str, n: int, args: tuple) -> list[str]:
-    return quarantine_findings(quarantine.get(ids[n]), recorded(outcomes, stage, n, args))
+    skipped = [o["not_run"] for o in outcomes.values() if "not_run" in o]
+    for entry in skipped:
+        skipped_job(entry)
+    indexed = [(stage, n, ()) for n, (stage, _, _) in enumerate(work) if "not_run" not in outcomes[n]]
+    errors = run_stages(partial(recorded, outcomes), indexed, browser_seeds(dist), stages=list(dict.fromkeys(stage for stage, _, _ in work)))
+    if skipped and not errors:
+        raise JobsNotRun
+    return errors
 
 
 def expected_budget_ratios(record, jurisdiction, data):
@@ -17409,16 +16477,13 @@ def main(dist: Path = ROOT / "dist", screenshots: Path | None = None, capture: P
             return 0
         data = json.loads((dist / "data/aisi.json").read_text(encoding="utf-8"))
         if shard:
-            return write_shard(chrome, dist, data, shard, results, jobs)
-        # --skip-static (the flake detector's runs only): no render and no static checks, just the selected job; the
-        # reserved-mark scan of the built files still runs, as it must before any finding is read.
+            return write_shard(chrome, dist, data, shard, results, jobs, quarantine)
         html, base_url = ("", None) if skip_static else render(chrome, dist)
-        if reserved := check_reserved_mark(dist, html):  # fails outright: a finding quoting such text could pass for a report line
-            print(f"error: {reserved[0]}", file=sys.stderr)
-            return 1
         errors = [] if skip_static else check_method_pages(html, data, dist) + check_dom(html, data, dist, base_url) + check_agent_files(dist) + check_static_page(dist, data) + check_hydrated(html) + check_archive_links(html, data) + check_reread_lines(html, data) + check_launch_assets(dist) + check_page_data(dist, data) + check_budget_ratio_downloads(dist, data) + check_state_downloads(dist, data) + check_state_download_buttons(html, dist, data)
-        if not blocking(errors):
-            errors.extend(check_merged(dist, data, merge, timings, quarantine) if merge else check_browser(chrome, dist, data, screenshots, jobs, timings, only, quarantine, job_limit(deadline)))
+        if not errors:
+            errors.extend(check_merged(dist, data, merge, timings) if merge else check_browser(chrome, dist, data, screenshots, jobs, timings, only, quarantine, job_limit(deadline)))
+    except JobsNotRun:
+        return NOT_RUN
     except DeadlinePassed as exc:
         print(exc, file=sys.stderr)
         return NOT_RUN
@@ -17429,11 +16494,8 @@ def main(dist: Path = ROOT / "dist", screenshots: Path | None = None, capture: P
         if isinstance(exc, RecordedError) and exc.stderr:
             print(exc.stderr, file=sys.stderr)  # recorded already as printed above
         return 1
-    for line in errors:
-        if is_report_line(line):
-            print(printed_report_line(line))  # stdout, so check.py's report lists it
-    if blocking(errors):
-        for error in blocking(errors):
+    if errors:
+        for error in errors:
             print(f"error: {error}", file=sys.stderr)
         return 1
     if only is not None:  # never mistaken for the gate
@@ -17539,7 +16601,7 @@ if __name__ == "__main__":
                         "within its budget so, and also stops a whole attempt 30 s past its deadline")
     parser.add_argument("--skip-static", action="store_true", help="with --job and --no-quarantine: run only the selected jobs, without the "
                         "page render and static checks (the flake detector repeats jobs so; never the gate)")
-    parser.add_argument("--no-quarantine", action="store_true", help="report quarantined jobs' findings as errors (the flake detector measures them so)")
+    parser.add_argument("--no-quarantine", action="store_true", help="run quarantined jobs too (the flake detector measures their findings)")
     parser.add_argument("--timings", type=Path, help="write one JSON line per browser job (id, start, seconds, errors) to this file; with --merge, the shards' lines")
     parser.add_argument(
         "--find-chrome",

@@ -803,7 +803,7 @@ def test_baseline_selector_covers_the_rendered_news_label(next_data):
 
 
 def test_news_layout_findings_block_the_gate():
-    """The News form, glossary marks and link placement are gate rules: findings are errors, never report lines."""
+    """The News form, glossary marks and link placement are gate rules."""
     assert not hasattr(check_page.check_news_layout, "__wrapped__")
 
     class Page:
@@ -811,7 +811,7 @@ def test_news_layout_findings_block_the_gate():
             return ["News glossary marks differ from definitions for state GB"]
 
     findings = check_page.check_news_layout(Page(), {"dataset": {"glossary": {}}})
-    assert check_page.blocking(findings) == findings
+    assert findings == ["News glossary marks differ from definitions for state GB"]
 
 
 def test_news_required_for_shown_items_only():

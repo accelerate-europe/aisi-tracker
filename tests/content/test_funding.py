@@ -22,4 +22,4 @@ FAMILY = {
 @pytest.mark.parametrize("name", FAMILY)
 def test_funding_output_matches_the_data(name, saved_html, published):
     found = FAMILY[name](saved_html, published)
-    assert check_page.blocking(found) == [], f"{name}: {check_page.blocking(found)[:5]}"
+    assert found == [], f"{name}: {found[:5]}"

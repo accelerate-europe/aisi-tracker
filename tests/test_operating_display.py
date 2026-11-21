@@ -157,7 +157,7 @@ def test_activity_header_requires_a_tooltip_without_fixed_wording():
     assert check_operating_output(html, data) == []
     for replacement in ('data-tip=" \n "', ""):
         broken = html.replace('data-tip="Activity explained here."', replacement)
-        assert check_page.blocking(check_operating_output(broken, data)) == ["Known activity header has no tooltip"]
+        assert check_operating_output(broken, data) == ["Known activity header has no tooltip"]
     assert check_operating_output(html.replace('data-tip="Activity explained here."', 'title="Another explanation."'), data) == []
 
 

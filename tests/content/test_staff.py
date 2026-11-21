@@ -17,4 +17,4 @@ FAMILY = {
 @pytest.mark.parametrize("name", FAMILY)
 def test_staff_totals_match_the_reviewed_figures(name, saved_html, published):
     found = FAMILY[name](saved_html, published)
-    assert check_page.blocking(found) == [], f"{name}: {check_page.blocking(found)[:5]}"
+    assert found == [], f"{name}: {found[:5]}"
