@@ -63,9 +63,9 @@
  * Region list: beside the map (below it and the map legend at 1100px and narrower, so the legend stays directly under the map (check_page check_legend_place), then at most --region-list wide, so a row's state and institute never drift apart), map and list tops aligned; an accordion whose open region (light tint, thin accent rule, turned chevron) lists its institutes with status marks (institute names right-aligned, like the counts above them), the others their heading, "established of all states" count and one line of names, both in ink; a divider between Europe and the other regions; the EU AI Office under Europe.
  * Record: a map, list or search pick opens the record beside the map (over the list on wide screens, which it hides while open, under the map on narrow ones) and focuses its heading, in view below the section bar, its values cited and qualified as on the card (status date: advisory recommendation, confidence), never more; "Full record ↓" goes to the card (Arrival), whose "↑ Back to map" returns to the same view with the record open; a state without a card links to its table row. Search uses the page's own suggestion list (floating surface, status mark and region per row, keyboard).
  * Naming: one display name per body (no status suffix; the country in brackets where two bodies share a name, omitted in panel identities that already start with the state); tight places such as table cells use the recorded short form (data field short_name, never a bare generic acronym such as AISI) with the full name on hover; check_page check_institute_names. An institute has one display name and one short form; former names are marked as former ('then', 'former' or 'formerly', or 'now' with the current short form), source titles excepted (check_page check_former_names). Text with an English form shows that form, with the original available on hover, focus and tap through tipText (aria-description on a focusable element), without a second line, brackets or marker; otherwise the original shows as it is, with lang where known. This covers body names, source titles, Reports to (the producer supplies the original separately) and the Institute name (name_local when it differs); check_page check_source_alignment, check_nonidentified_folds, check_leadership_rows, check_institute_names. A related body's original omits a closing abbreviation repeated in English. A translated link's tap opens its tip with a link to the destination. Downloads keep both forms.
- * None-identified entries: three groups, Closest body, AI Act authorities and Other bodies; the closest body's text in body type, its stage only where it does not exist yet and never a reason it is not counted (Method says what qualifies); the AI Act authorities one line per body (name, roles in the summary's words from dataset.display.authority_roles, basis), single point of contact first, folded after three when two or more would be hidden; other bodies' roles in ink, citations inline (owner, 15 Nov 2026); migrated bodies' role claims are separate cited sentences, starting --sp-2 below the name; the closest body's lead stays in the finding, its group shows its other role claims (expired ones marked) or just its name and stage, and is omitted when it has no role claim and the finding already names and cites it (hub default); a migrated record's muted How we checked block is generated from its full-check date, search languages, later search passes and next-check date, and names no document read; on phones the name sits above a full-width summary; wording every entry shares lives in Method (check_page check_nonidentified_folds).
+ * None-identified entries: three groups, Closest body, AI Act authorities and Other bodies; the closest body's text in body type, its stage only where it does not exist yet and never a reason it is not counted (Method says what qualifies); the AI Act authorities one line per body (name, roles in the summary's words from dataset.display.authority_roles, basis), single point of contact first, folded after three when two or more would be hidden; other bodies' roles in ink, citations inline (owner, 15 Nov 2026); migrated bodies' role claims are separate cited sentences, starting --sp-2 below the name; the closest body's lead stays in the finding, and its group omits the name and stage when a migrated summary already gives them, keeping activity and other role claims (expired ones marked) and disappearing only when nothing remains; the name's citations follow it in the finding; a migrated record's muted How we checked block is generated from its full-check date, search languages, later search passes and next-check date, and names no document read; on phones the name sits above a full-width summary; wording every entry shares lives in Method (check_page check_nonidentified_folds).
  * Claims: current facts, body-role sentences and developments, their citations and closed Quote disclosures are in the saved page; bound excerpts, anchors and source re-read lines are built from page.json only on open. In cards and full records the sentence, Quote label and opened evidence, and in a function's panel the sentence, its source line (ending with the quote control) and the opened evidence (owner, 18 Nov 2026), have one --sp-2 gap between text lines; the label keeps its hit height without adding that height to the visible gap. Every quote fold shows "Quote" and the chevron. Its accessible name includes every translated quote and anchor language once, "Quote, translated from Norwegian", while the opened body ends with one small "Translated from Norwegian" line; no marker follows an individual quote. Translated quotes follow Naming, including the saved closest-body lead. Languages print by their plain name, never a variant or script (Bokmål and Nynorsk read Norwegian); exact codes stay in the data and downloads (tests/test_language_names.py).
- * Activity line: an ink qualifier after the closest body's name and stage, only for live activity claims for that body; institute cards and legacy records show none; words come from ACTIVITY_WORDS and the vocabulary's short.
+ * Activity line: an ink qualifier after the closest body's name and stage where they are shown, only for live activity claims for that body; institute cards and legacy records show none; words come from ACTIVITY_WORDS and the vocabulary's short.
  * Sources: entry source lists hold sources that support the entry; population and region sources (display.generic_sources) are named once in Method and stay in the downloads; check_page check_generic_sources. A source line reads title, publisher, date. Running lines (a function panel's source line, a citation's hover, Method's inline links) abbreviate with one rule: the publisher without its bracketed parts or a "hosted by", "published by" or "reproducing" tail, a title over 80 characters cut at a word boundary with "…"; a record's source list and the hover (and the link's accessible name) keep the full form (owner, 18 Nov 2026; tests/test_running_source.py). The publisher is not printed again where the source's own title (original or English) already contains it, and a citation's tip drops it the same way (owner, 18 Nov 2026).
  * Archived copies (owner, 18 Nov 2026, "only when needed"): a source that could not be re-read ends its source line with " · archived copy" after its caveat, wherever it is named; a record's source list (the counted sources, a full record's Sources, a group's sources) also ends every other source that has an archive URL with it; a claim's own source line and Method's inline links give no other archived copy. Quiet link in muted ink with a muted underline, no arrow, never broken across lines; superscript citations never carry one (check_page check_archive_links).
  * Re-read line: a source list item whose source has a quotation with a re-read state shows that state once, from its quotations' states (docs/design/claims-1.1.md section 4). A source that could not be re-read (worst state offline, unreadable or quote not found; the earliest start, then offline before not found, then the earliest last found) ends its source line with " · last read {date}" (" · quote last found {date}" for a quote not found, as the source was read), then " · archived copy" where a copy exists; the full sentence is its tip and what a screen reader reads: "Source offline since {date}; last read {date}.", "Source could not be re-read since {date}; last read {date}.", "Not found in the source on {date}; last found {date}; under review." (with ": N of M quotes" after the first date when some quotations are still found) (owner, 18 Nov 2026). In a record's source list (the counted sources, a full record, a group's or a funding row's sources) any other source ends with one line of its own in the list's muted ink: "Source last re-read {date}."; nowhere else (owner, 18 Nov 2026, "source lists only"). A quotation or claim shown on its own shows only a failed state, its own, never its source's, as the full sentence with its archived copy; in a function's panel the claim's source line carries it instead; the page never says "verified" (check_page check_reread_lines).
@@ -1891,12 +1891,8 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     return (j.claims || []).find(function (c) { return c.kind === "function" && c.lead && j.closest_body && c.body_id === j.closest_body.body_id && (!c.expired || ["source_gone", "blocked_or_failed"].indexOf((c.reread || {}).state) >= 0); });
   }
   function bodyClaims(j, id) { return (j.claims || []).filter(function (c) { return c.kind === "function" && c.body_id === id && c !== shownLead(j); }); }
-  // A closest body with no role claim (live or expired, so no expired role loses its warning) whose name the finding already gives, with every source cited there, adds nothing (hub default, copy sheet C12).
-  function closestBodyRepeated(j, findingSources) {
-    var closest = j.closest_body;
-    return !!(closest && "claims" in j && !bodyClaims(j, closest.body_id).length && (j.summary || "").indexOf(closest.name) >= 0
-      && closest.display.source_links.every(function (id) { return findingSources.indexOf(id) >= 0; }));
-  }
+  // summaries.pattern_2 includes the stage whenever a migrated summary names the closest body.
+  function closestBodyInSummary(j) { return !!(j.closest_body && "claims" in j && (j.summary || "").indexOf(j.closest_body.name) >= 0); }
   function factClaims(j, inst) { return (j.claims || []).concat(inst && inst.claims || []).filter(function (c) { return c.kind === "fact" && !c.expired; }); }
   function claimSentence(c, text) {
     var line = el("span", "claim-text running-text"), entry = CLAIM_INDEX[c.id];
@@ -1917,16 +1913,17 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   // the finding once, with all three leaves cited, even when a closest body took priority in the summary.
   function migratedFinding(card, j, rest, cite) {
     var lead = shownLead(j), development = (j.claims || []).find(function (c) { return c.kind === "development" && !c.expired; });
+    var closestSources = closestBodyInSummary(j) ? j.closest_body.display.source_links : [];
     // Pattern 3 (a development and no closest body): the development is the finding, with its own citations; the
     // "No qualifying institute identified" opening stays dropped, as on every none-identified card.
     if (development && !j.closest_body) { card.appendChild(claimBlock(development, cite, developmentSentence(development))); return; }
     var leadText = lead ? lead.text.trim() : "";
     if (lead && rest.indexOf(leadText) >= 0) {
       var at = rest.indexOf(leadText), before = rest.slice(0, at).trim(), after = rest.slice(at + leadText.length).trim();
-      if (before) card.appendChild(el("p", "running-text", before));
+      if (before) { var intro = el("p", "running-text", before); if (closestSources.length) intro.appendChild(cite(closestSources)); card.appendChild(intro); }
       card.appendChild(claimBlock(lead, cite));
       if (after) card.appendChild(el("p", "small running-text", after));
-    } else { var finding = el("p", "running-text", rest); finding.appendChild(cite(fieldCitations(j, ["finding"]))); card.appendChild(finding); }
+    } else { var finding = el("p", "running-text", rest); finding.appendChild(cite(fieldCitations(j, ["finding"]).concat(closestSources).filter(function (id, n, ids) { return ids.indexOf(id) === n; }))); card.appendChild(finding); }
     if (development) card.appendChild(claimBlock(development, cite, developmentSentence(development)));
   }
   function developmentSentence(c) { return "On " + fmtDate(c.date) + " " + c.act + ", which " + c.text.replace(/\.$/, "") + "."; } // summary pattern 3
@@ -2214,16 +2211,16 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     var name = function (x) { return x.name_en || x.name; };
     return spoc(a) - spoc(b) || (b.authority_roles || []).length - (a.authority_roles || []).length || (name(a) < name(b) ? -1 : name(a) > name(b) ? 1 : 0);
   }
-  function nonIdentifiedBodies(j, cite, m, findingSources) {
+  function nonIdentifiedBodies(j, cite, m) {
     var groups = [], closest = j.closest_body, all = j.related_bodies || [];
-    var migrated = "claims" in j;
+    var migrated = "claims" in j, repeated = closestBodyInSummary(j);
     function item(name, original, details, ids, bodyId, after) {
-      var li = bodyItem(name, original, migrated ? [] : details, ids, cite, after);
+      var omitName = repeated && bodyId === closest.body_id, li = omitName ? el("li") : bodyItem(name, original, migrated ? [] : details, ids, cite, after);
       if (migrated) {
         li.dataset.bodyId = bodyId || "";
         var activity = closest && bodyId === closest.body_id ? activityLineNode(j, null, m, cite) : null;
         if (activity) {
-          if (STAGE_LINE[closest.stage]) li.appendChild(el("span", "det status-phrase", STAGE_LINE[closest.stage]));
+          if (!omitName && STAGE_LINE[closest.stage]) li.appendChild(el("span", "det status-phrase", STAGE_LINE[closest.stage]));
           li.appendChild(activity);
         }
         bodyClaims(j, bodyId).forEach(function (c) {
@@ -2233,14 +2230,17 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
           if (warning) block.insertBefore(warning, block.lastChild);
           li.appendChild(block);
         });
-        if (!activity && closest && bodyId === closest.body_id && STAGE_LINE[closest.stage]) li.appendChild(el("span", "det status-phrase", STAGE_LINE[closest.stage]));
+        if (!activity && !omitName && closest && bodyId === closest.body_id && STAGE_LINE[closest.stage]) li.appendChild(el("span", "det status-phrase", STAGE_LINE[closest.stage]));
       }
       return li;
     }
-    if (closest && !closestBodyRepeated(j, findingSources)) {
+    if (closest) {
       var noteShown = closest.note && closest.note !== closest.name + "." ? closest.note : ""; // a note that is only the name, the generator's fallback, is not said twice
-      groups.push(bodyGroup("Closest body", [item(closest.name, "", [noteShown, STAGE_LINE[closest.stage]], closest.display.source_links, closest.body_id)]));
-      groups[groups.length - 1].classList.add("closest"); // its text in body type: the body nearest to an institute is read, not skimmed
+      var closestItem = item(closest.name, "", [noteShown, STAGE_LINE[closest.stage]], closest.display.source_links, closest.body_id);
+      if (closestItem.childNodes.length) {
+        var group = bodyGroup("Closest body", [closestItem]); group.classList.add("closest"); // its text in body type: the body nearest to an institute is read, not skimmed
+        groups.push(group);
+      }
     }
     var others = all.filter(function (b) { return !closest || (migrated ? b.id !== closest.body_id : b.name !== closest.name && b.name.indexOf(closest.name + " (") !== 0); });
     var words = (m.display && m.display.authority_roles) || {};
@@ -3442,9 +3442,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         order.forEach(function (id) { roles[id] = []; });
         if ("claims" in j) migratedFinding(card, j, rest, cite);
         else { card.appendChild(el("p", "running-text", rest)); citeTarget(card.lastElementChild).appendChild(cite(fieldCitations(j, ["finding"]))); }
-        // Only marks already rendered in the finding can replace a closest body's own citations.
-        var findingSources = Array.from(card.querySelectorAll("a.cn[data-source-id]")).map(function (a) { return a.dataset.sourceId; });
-        nonIdentifiedBodies(j, cite, m, findingSources).forEach(function (group) { card.appendChild(group); });
+        nonIdentifiedBodies(j, cite, m).forEach(function (group) { card.appendChild(group); });
         var how = howWeChecked(j, cite); if (how) card.appendChild(how);
         var foot = sourceFooter(j, m, order, S, roles, how); foot.appendChild(stateDownload(j, m)); card.appendChild(foot); // a mini card's download sits in its fold, never in the summary row
         cards.appendChild(card);
