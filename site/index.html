@@ -2623,7 +2623,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     // The map: d3 projections of the vendored world topology, one drawing for wide screens and one for phones (CSS shows one).
     var NS = "http://www.w3.org/2000/svg";
     function svgEl(tag, attrs, parent) { var n = document.createElementNS(NS, tag); Object.keys(attrs).forEach(function (k) { n.setAttribute(k, attrs[k]); }); if (parent) parent.appendChild(n); return n; }
-    var LAYOUTS = [{ cls: "map-wide", W: 720, H: 500, k: 1, hit: 14 }, { cls: "map-narrow", W: 360, H: 330, worldH: 200, k: .72, hit: 18 }]; // hit: target radius in user units, at least 27.5px at the layout's narrowest width (320px)
+    var LAYOUTS = [{ cls: "map-wide", W: 720, H: 500, k: 1, hit: 17 }, { cls: "map-narrow", W: 360, H: 330, worldH: 200, k: .72, hit: 18 }]; // hit: target radius in user units, at least 28px across at the layout's narrowest width (wide: 601px of drawing at 641px; narrow: 320px)
     var geo = null;
     function makeGeo(world) {
       var countries = world.objects.countries, feats = topojson.feature(world, countries).features.filter(function (f) { return f.id !== "010"; }); // without Antarctica

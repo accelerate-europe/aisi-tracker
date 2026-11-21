@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" data-prerendered>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>Legal layout states</title>
+<style>
+  :root { --hit: 28px; color: #111; background: white; font: 16px/24px sans-serif; }
+  body { margin: 16px; }
+  header { position: sticky; top: 16px; height: 24px; z-index: 1; background: white; }
+  .under { margin-top: -24px; margin-bottom: 30px; }
+  .ellipsis { width: 100px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .scroll { width: 100px; overflow: auto; white-space: nowrap; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .hit { position: relative; display: inline-block; font: inherit; padding: 0; border: 0; background: white; color: inherit; }
+  .hit::before { content: ""; position: absolute; inset: -8px; }
+  .dots { overflow: hidden; }
+  .dots span::before { content: ""; display: inline-block; width: 3px; height: 3px; margin-left: -6px; margin-right: 3px; border-radius: 50%; background: currentColor; }
+  .tint { background: linear-gradient(rgba(0, 0, 0, .1), rgba(0, 0, 0, .1)), white; }
+  .tooltip { position: relative; }
+  .tooltip span { position: absolute; left: 0; top: 0; color: #111; background: white; }
+  h1 { font-size: 28px; line-height: 36px; }
+</style>
+</head>
+<body>
+<header>Stuck header</header>
+<p class="under">Flow text under another layer</p>
+<p class="ellipsis">A long name with deliberate ellipsis</p>
+<p class="scroll">A long row in a deliberate scroll container</p>
+<span class="sr">Accessible text outside the visual layout</span>
+<p><button type="button" class="hit">Go</button></p>
+<p>Running text with an <a href="#end">inline link</a> on its line.</p>
+<p class="dots"><span>Text after a clipped decorative dot</span></p>
+<p class="tint">Text on a composited tint</p>
+<p class="tooltip">Flow under a tip<span>Tip in another layer</span></p>
+<h1>Heading<br>second line</h1>
+<p id="end">Ordinary text<br>on consecutive lines.</p>
+<script>document.documentElement.removeAttribute('data-prerendered');</script>
+</body>
+</html>

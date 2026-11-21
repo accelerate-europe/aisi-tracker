@@ -13,7 +13,7 @@
 # the browser jobs; build (the required status check) runs the static checks, merges the shard results into the gate's
 # report in its usual order and uploads the site for deploy. build runs even when a dependency failed, so that a
 # failed, skipped or cancelled dependency can never leave the required check passing; it fails unless everything passed,
-# and accepts a skipped site and gate only when plan said, without error, that the change needs no build.
+# and accepts a skipped site, gate and walk only when plan said, without error, that the change needs no build.
 name: pages
 on:
   push:
@@ -60,8 +60,8 @@ jobs:
           cache-dependency-glob: |
             uv.lock
             scripts/*.lock
-      # browser=false only when check.py names no step that builds or gates; any error fails this job, and then site
-      # and gate are skipped and build fails.
+      # browser=false only when check.py names no step that builds or gates; any error fails this job, and then site,
+      # gate and walk are skipped and build fails.
       - id: plan
         env:
           EVENT: ${{ github.event_name }}
@@ -253,8 +253,46 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           overwrite: true
+  walk:
+    needs: site
+    runs-on: ubuntu-latest
+    # Bound a stuck view without cancelling evidence from the others.
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        view: [320-light, 390-light, 641-light, 1000-light, 1440-light, 1440-dark]
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86 # v5.4.2
+        with:
+          version: "0.11.14"
+          enable-cache: true
+          cache-dependency-glob: |
+            uv.lock
+            scripts/*.lock
+      - run: uv run --locked -q scripts/check_page.py --install-chrome
+      - uses: ./.github/actions/fonts
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: site
+          path: ${{ runner.temp }}
+      - run: mkdir "$RUNNER_TEMP/site" && tar -C "$RUNNER_TEMP/site" -xf "$RUNNER_TEMP/site.tar"
+      - run: uv run --locked scripts/walk.py --dist "$RUNNER_TEMP/site" --out "$RUNNER_TEMP/walk" --views ${{ matrix.view }}
+      - if: always()
+        run: cat "$RUNNER_TEMP/walk/report.txt" || true
+      - if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: walk-${{ matrix.view }}
+          path: ${{ runner.temp }}/walk
+          if-no-files-found: error
+          retention-days: 30
+          overwrite: true
   build:
-    needs: [plan, checks, site, gate]
+    needs: [plan, checks, site, gate, walk]
     if: always()
     runs-on: ubuntu-latest
     env:
@@ -306,7 +344,7 @@ jobs:
       # The required check passes only when every job and every step before this one passed. A job with always()
       # is never cancelled, so a cancellation that arrives once the dependencies are done lets build run to its end
       # and report truthfully (green only if everything passed); deploy, a new job, is cancelled. A cancellation
-      # earlier cancels a dependency, and build then fails here. site and gate may be skipped only when plan
+      # earlier cancels a dependency, and build then fails here. site, gate and walk may be skipped only when plan
       # succeeded and said the change needs no build, and never on the publishing path.
       - if: always()
         env:
@@ -315,6 +353,7 @@ jobs:
           CHECKS: ${{ needs.checks.result }}
           SITE: ${{ needs.site.result }}
           GATE: ${{ needs.gate.result }}
+          WALK: ${{ needs.walk.result }}
         # One test per line: under bash -e a failed test that is not the last of an && list would not stop the script.
         run: |
           test "$JOB" = success
@@ -323,6 +362,7 @@ jobs:
           if [ "$BROWSER" = false ] && [ "$PUBLISH" != true ]; then want=skipped; else want=success; fi
           test "$SITE" = "$want"
           test "$GATE" = "$want"
+          test "$WALK" = "$want"
       - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1
         if: env.PUBLISH == 'true'
         with:
