@@ -1416,7 +1416,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     var a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([text], { type: type + ";charset=utf-8" })); a.download = name;
     document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
   }
-  // Figure source type, two plain scales with the status confidence: a figure from a primary source is unmarked; any other says so in plain words on its own qualifier line, with its definition in its tooltip.
+  // Figure source type, two plain scales with the status confidence: a figure from a primary source is unmarked; any other says so in plain words among the value's qualifiers, with its definition in its tooltip.
   var CONF = { indirect: ["indirect or secondary", "Not stated directly in a primary source; taken from secondary sources or read indirectly from a primary one."], secondary_sources: ["secondary sources", "Not stated directly in a primary source; taken from secondary sources or read indirectly from a primary one."], press_report: ["press report", "From a press report, not confirmed in a primary source."], our_estimate: ["our estimate", "Our own estimate or calculation from reported figures."] };
   var STATUS_CONF = { medium: "This status rests on indirect primary evidence or several secondary accounts.", low: "This status rests on a single secondary source." }; // only the level shown is explained
   function term(label, definition, cls) { var t = el("abbr", "g" + (cls ? " " + cls : ""), label); t.tabIndex = 0; t.setAttribute("aria-description", definition); return t; } // the label is the name; its definition, the description, is also the tip
