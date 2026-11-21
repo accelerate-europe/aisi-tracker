@@ -1939,7 +1939,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       var full = src.title_en || src.title, shown = record ? full : shortTitle(full), publisher = record ? src.publisher : shortPublisher(src.publisher);
       publisher = publisher && !publisherInTitle(src, publisher) ? publisher : "";
       var line = { id: id, src: src, full: full, shown: shown, publisher: publisher };
-      var key = JSON.stringify([shown.toLowerCase().replace(/[^\p{L}\p{N}]/gu, ""), publisher, src.published || ""]);
+      var key = JSON.stringify([shown.toLowerCase().replace(/[^\p{L}\p{N}]/gu, ""), publisher]); // no date: a dated live page and its undated capture read alike
       (groups[key] || (groups[key] = [])).push(line); return line;
     });
     Object.keys(groups).forEach(function (key) {
