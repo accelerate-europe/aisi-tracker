@@ -29,7 +29,7 @@ sys.dont_write_bytecode = True
 from jsonschema import Draft202012Validator  # noqa: E402
 
 if __package__:
-    from .display import check_news_lines, check_news_required, news_kind
+    from .display import PAGE_DATA_DROPPED as PAGE_DATA_DROPPED, check_news_lines, check_news_required, news_kind, page_data as page_data
     from . import published as fact_pipeline
     from .references import authored_schema, excerpt_identity, materialise_references, pointer_ancestors
     from .published import INTERVAL_KEYS, NO_ECB_RATE, budget_ratios, comparable_funding, annual_eur_estimate as annual_eur_estimate, known_activity as known_activity, output_activity_kind as output_activity_kind, publish, prepared_facts, timeline_status as timeline_status, eur_per_unit as eur_per_unit, significant as significant
@@ -43,7 +43,7 @@ if __package__:
     from .agent_files import LICENSES, doi_url, api_files, api_landing_html, api_root, citation_cff, zenodo_json, head_links, share_tags, image_alt_text, json_ld_script, llms_txt, robots_txt, sitemap_xml, feed_xml, FEED_PATH, orientation_html, definition_markdown, public_url_errors
     from .release_checks import check_metadata, check_readme_licence, check_readme_doi, check_markdown, generated_block, generated_citation, generated_counts, check_launch_wording, write_citation, check_instrument_status_dates, instrument_status_warnings, dates_after_as_of, check_changelog_entry, write_release_citation
 else:  # Direct script execution.
-    from display import check_news_lines, check_news_required, news_kind
+    from display import PAGE_DATA_DROPPED as PAGE_DATA_DROPPED, check_news_lines, check_news_required, news_kind, page_data as page_data
     import published as fact_pipeline
     from references import authored_schema, excerpt_identity, materialise_references, pointer_ancestors
     from published import INTERVAL_KEYS, NO_ECB_RATE, budget_ratios, comparable_funding, annual_eur_estimate as annual_eur_estimate, known_activity as known_activity, output_activity_kind as output_activity_kind, publish, prepared_facts, timeline_status as timeline_status, eur_per_unit as eur_per_unit, significant as significant
@@ -1029,35 +1029,6 @@ def prerender(site: Path) -> None:
     result = subprocess.run(["uv", "run", "--locked", "-q", str(script), "--dist", str(site)], env=env, capture_output=True, text=True)
     if result.returncode:
         fail([f"pre-rendering failed (scripts/prerender.py exit {result.returncode}): {result.stderr.strip()[-2000:]}"])
-
-
-PAGE_DATA_DROPPED = {"check": ("last_checked", "method"), "sources": ("snapshot", "access_note"), "records": ()}
-
-
-def page_data(published: dict, build_mark: str | None = None) -> str:
-    """data/page.json, what the page script loads: aisi.json without the fields it never reads (a state's research
-    log in check, except last_checked and method; a source's private-copy metadata, snapshot and access_note),
-    minified. Functions, closest-body activity, claims and excerpt anchors stay for
-    the cards and their quotes on open. The build mark
-    (content_mark of the file without it) is its last key. aisi.json stays the public download; the page fetches
-    this file by a URL carrying the same mark."""
-    page = dict(published)
-    keep = PAGE_DATA_DROPPED["check"]
-
-    def shown(record: dict) -> dict:
-        return {k: v for k, v in record.items() if k not in PAGE_DATA_DROPPED["records"]}
-
-    if "institutes" in published:
-        page["institutes"] = [shown(i) for i in published["institutes"]]
-    page["jurisdictions"] = [shown(j) | {"check": {k: j["check"][k] for k in keep if k in j["check"]}} if "check" in j else shown(j) for j in published["jurisdictions"]]
-    def source(s: dict) -> dict:
-        kept = {k: v for k, v in s.items() if k not in PAGE_DATA_DROPPED["sources"]}
-        return kept
-
-    page["sources"] = [source(s) for s in published["sources"]]
-    if build_mark is not None:
-        page["build_mark"] = build_mark
-    return json.dumps(page, ensure_ascii=False, separators=(",", ":"))
 
 
 def content_mark(text: str, version: str) -> str:

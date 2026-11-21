@@ -15978,11 +15978,11 @@ FAVICON_HREFS = {
 
 
 def check_page_data(dist: Path, data: dict) -> list[str]:
-    """data/page.json is what build.page_data writes for aisi.json, minified; the page loads it by a URL carrying the
+    """data/page.json is what the build writes for aisi.json (display.page_data), minified; the page loads it by a URL carrying the
     dataset version and the file's hash; and the page script reads none of the fields the build leaves out
-    (build.PAGE_DATA_DROPPED, the one list of them)."""
+    (display.PAGE_DATA_DROPPED, the one list of them)."""
     import hashlib
-    from build import PAGE_DATA_DROPPED, page_data
+    from display import PAGE_DATA_DROPPED, page_data
 
     errors = []
     path = dist / "data/page.json"
@@ -15995,7 +15995,7 @@ def check_page_data(dist: Path, data: dict) -> list[str]:
     if list(json.loads(text))[-1:] != ["build_mark"]:
         errors.append("data/page.json: no build_mark as its last key (the page compares it with its own to catch a mixed release)")
     if page != want:
-        errors.append("data/page.json differs from build.page_data(aisi.json)")
+        errors.append("data/page.json differs from display.page_data(aisi.json)")
     if "\n" in text or ": " in text[:200]:
         errors.append("data/page.json is not minified")
     # The build mark is the version and the hash of the file without it; the data URL and the page carry the same.

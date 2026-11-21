@@ -5,6 +5,7 @@ are never evidence fallbacks. This layer copies its input and performs no I/O.
 """
 
 import copy
+import json
 import datetime as dt
 import re
 from decimal import Decimal, ROUND_HALF_UP
@@ -1127,3 +1128,32 @@ def derive_display(published_data):
         ),
     }
     return data
+
+
+PAGE_DATA_DROPPED = {"check": ("last_checked", "method"), "sources": ("snapshot", "access_note"), "records": ()}
+
+
+def page_data(published: dict, build_mark: str | None = None) -> str:
+    """data/page.json, what the page script loads: aisi.json without the fields it never reads (a state's research
+    log in check, except last_checked and method; a source's private-copy metadata, snapshot and access_note),
+    minified. Functions, closest-body activity, claims and excerpt anchors stay for
+    the cards and their quotes on open. The build mark
+    (content_mark of the file without it) is its last key. aisi.json stays the public download; the page fetches
+    this file by a URL carrying the same mark."""
+    page = dict(published)
+    keep = PAGE_DATA_DROPPED["check"]
+
+    def shown(record: dict) -> dict:
+        return {k: v for k, v in record.items() if k not in PAGE_DATA_DROPPED["records"]}
+
+    if "institutes" in published:
+        page["institutes"] = [shown(i) for i in published["institutes"]]
+    page["jurisdictions"] = [shown(j) | {"check": {k: j["check"][k] for k in keep if k in j["check"]}} if "check" in j else shown(j) for j in published["jurisdictions"]]
+    def source(s: dict) -> dict:
+        kept = {k: v for k, v in s.items() if k not in PAGE_DATA_DROPPED["sources"]}
+        return kept
+
+    page["sources"] = [source(s) for s in published["sources"]]
+    if build_mark is not None:
+        page["build_mark"] = build_mark
+    return json.dumps(page, ensure_ascii=False, separators=(",", ":"))
