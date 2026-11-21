@@ -6633,8 +6633,9 @@ def check_nonidentified_folds(html, data: dict) -> list[str]:
     """None-identified fold-outs: the closest body, the AI Act authorities and other bodies, each group recognised by
     its members, so the owner may reword a heading (test strategy D1); a heading must have text.
 
-    A migrated closest body shows its other role claims (expired ones marked), or just its name and stage; omit it
-    when it has no role claim and the finding already names it and carries all its citations. Legacy notes stay as before. The AI
+    A migrated closest body shows its activity and other role claims (expired ones marked) under its name and stage;
+    when the summary names it (pattern 2, which gives the stage too) the name and stage are left out, the finding
+    cites the body's sources, and the group is omitted when nothing else remains. Legacy notes stay as before. The AI
     Act authorities are one group in pattern 4's order, each line naming its roles in the published words
     (dataset.display.authority_roles); with more than four, the first three show and the rest fold behind a summary
     giving their number. An English name carries the original in its own focusable tooltip; without an English
@@ -6662,12 +6663,20 @@ def check_nonidentified_folds(html, data: dict) -> list[str]:
         lead = shown_lead(j) if "claims" in j else None
         closest_claims = [c for c in j.get("claims", []) if c["kind"] == "function" and closest
                           and c.get("body_id") == closest.get("body_id") and c is not lead]
-        finding_sources = {a.get("data-source-id") for a in card.select(":scope > summary a.cn, :scope > p a.cn, :scope > .claim a.cn")}
         closest_sources = (closest.get("display", {}).get("source_links", closest.get("source_ids", [])) if closest else [])
-        repeated = (closest and "claims" in j and not closest_claims and closest["name"] in j.get("summary", "")
-                    and set(closest_sources) <= finding_sources)
-        if closest and not repeated:
+        in_summary = bool(closest and "claims" in j and closest["name"] in j.get("summary", ""))
+        active = any(c["kind"] == "function" and c.get("basis") == "activity" and not c.get("expired")
+                     and c.get("body_id") == closest.get("body_id") for c in j.get("claims", [])) if closest else False
+        if in_summary:  # the name's marks move to the finding paragraph that names the body
+            naming = [p for p in card.select(":scope > p") if closest["name"] in " ".join(p.get_text().split())]
+            marked = {a.get("data-source-id") for a in naming[0].select("a.cn")} if naming else set()
+            if not set(closest_sources) <= marked:
+                errors.append(f"{j['id']}: the finding paragraph that names the closest body lacks citation marks for {sorted(set(closest_sources) - marked)}")
+        if closest and (not in_summary or closest_claims or active):
             expected["closest"] = [closest]
+
+        def shown_names(key, members):
+            return [] if key == "closest" and in_summary else [b.get("name_en") or b["name"] for b in members]
         if authorities := sorted((b for b in bodies if b["kind"] == "ai_act_authority"), key=authority_key):
             expected["authorities"] = authorities
         if rest := [b for b in bodies if b["kind"] != "ai_act_authority"]:
@@ -6681,7 +6690,7 @@ def check_nonidentified_folds(html, data: dict) -> list[str]:
                     extra.extract()  # the numerals and an authority's roles are not part of the name
                 names.append(" ".join(n.get_text().split()))
             found.append(names)
-            matches = [key for key, members in expected.items() if names == [b.get("name_en") or b["name"] for b in members]]
+            matches = [key for key, members in expected.items() if names == shown_names(key, members)]
             if len(matches) != 1 or matches[0] in groups:
                 errors.append(f"{j['id']} fold-out group lists {names}, which matches no expected group or repeats one")
             if len(matches) == 1 and matches[0] not in groups:
@@ -6690,7 +6699,7 @@ def check_nonidentified_folds(html, data: dict) -> list[str]:
                 if not heading or not heading.get_text().strip():
                     errors.append(f"{j['id']} fold-out groups: the {matches[0]} heading is empty")
         if list(groups) != list(expected):
-            errors.append(f"{j['id']} fold-out groups list {found}, expected {[[b.get('name_en') or b['name'] for b in m] for m in expected.values()]} in this order")
+            errors.append(f"{j['id']} fold-out groups list {found}, expected {[shown_names(k, m) for k, m in expected.items()]} in this order")
             continue
         for key, members in expected.items():
             group = groups[key]
@@ -6712,12 +6721,12 @@ def check_nonidentified_folds(html, data: dict) -> list[str]:
                     errors.append(f"{j['id']} AI Act authorities: {folded} folded under {summary.strip()!r}, expected {wanted} under their number {hidden}")
             for li, b in zip(items, members):
                 cited = bool(li.select(".cn"))
-                if key == "closest" and "claims" in j:
+                if key == "closest" and "claims" in j and not in_summary:
                     missing_sources = set(closest_sources) - {a.get("data-source-id") for a in li.select("a.cn")}
                     if missing_sources:
                         errors.append(f"{j['id']}: closest body lacks citation marks for {sorted(missing_sources)}")
                 want = b.get("name_en") or b["name"]
-                if b.get("name_en"):
+                if b.get("name_en") and not (key == "closest" and in_summary):
                     name = li.select_one(".body-name > span")
                     if not original_tip_matches(name, want, shown_original(b)):
                         errors.append(f"{j['id']} body {want!r}: the English name alone must carry the original name in a focusable tooltip, without a repeated closing abbreviation")
@@ -6742,7 +6751,7 @@ def check_nonidentified_folds(html, data: dict) -> list[str]:
                     body_id = b.get("body_id") if key == "closest" else b["id"]
                     want_dets = [" ".join(c["text"].split()) for c in j["claims"] if c["kind"] == "function"
                                  and c.get("body_id") == body_id and c is not lead]
-                    if key == "closest" and b.get("stage", "exists") != "exists":
+                    if key == "closest" and b.get("stage", "exists") != "exists" and not in_summary:
                         stage = b["stage"].replace("_", " ").capitalize() + "."
                         # An activity line follows the stage directly under the name; without it the existing order stays.
                         if b.get("active_in"):

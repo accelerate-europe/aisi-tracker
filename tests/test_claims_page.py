@@ -138,21 +138,14 @@ def test_expired_leads_and_body_roles_match_summary_selection(state, kept):
     assert actual == [kept, (["role", "old-role"] if kept else ["lead", "role", "old-role"])]
 
 
-@pytest.mark.parametrize("named, sources, role, repeated", [
-    (True, ["s1", "s2"], None, True),
-    (True, ["s1"], None, False),
-    (False, ["s1", "s2"], None, False),
-    (True, ["s1", "s2"], {"lead": True}, True),
-    (True, ["s1", "s2"], {}, False),
-    (True, ["s1", "s2"], {"expired": True}, False),
-])
-def test_closest_body_repeated_requires_name_citations_and_no_role_claim(named, sources, role, repeated):
+@pytest.mark.parametrize("named, migrated, given", [(True, True, True), (False, True, False), (True, False, False)])
+def test_closest_body_in_summary_needs_a_migrated_summary_that_names_it(named, migrated, given):
+    # Summary pattern 2 names the closest body with its stage; only then does the block leave both out.
     record = {"summary": "Closest body: Fixture lab." if named else "An authority is listed.",
-              "closest_body": {"name": "Fixture lab", "body_id": "lab", "display": {"source_links": ["s1", "s2"]}},
-              "claims": [] if role is None else [{"id": "role", "kind": "function", "body_id": "lab", **role}]}
-    assert page_call(f"closestBodyRepeated({json.dumps(record)}, {json.dumps(sources)})") is repeated
-    record.pop("claims")
-    assert page_call(f"closestBodyRepeated({json.dumps(record)}, {json.dumps(sources)})") is False
+              "closest_body": {"name": "Fixture lab", "body_id": "lab", "display": {"source_links": ["s1"]}}}
+    if migrated:
+        record["claims"] = [{"id": "role", "kind": "function", "body_id": "lab"}]
+    assert page_call(f"closestBodyInSummary({json.dumps(record)})") is given
 
 
 def test_facts_keep_jurisdiction_then_institute_order_without_functions_or_expired_facts():

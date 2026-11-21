@@ -69,7 +69,11 @@ def check_activity_lines(html, data, case=None):
         if line.parent is not target or target.get("data-body-id") != j["closest_body"]["body_id"]:
             errors.append(f"{j['id']}: activity must belong to the closest body's item")
         previous = line.find_previous_sibling()
-        stage = {"planned": "Planned.", "proposed": "Proposed.", "under_study": "Under study."}.get(j["closest_body"]["stage"])
+        if j["closest_body"]["name"] in j.get("summary", ""):  # summary pattern 2 gives name and stage, so the item opens with the activity
+            if previous is not None:
+                errors.append(f"{j['id']}: activity must open the closest body's item when the summary names the body")
+            continue
+        stage ={"planned": "Planned.", "proposed": "Proposed.", "under_study": "Under study."}.get(j["closest_body"]["stage"])
         if stage:
             if previous is None or line_text(previous) != stage:
                 errors.append(f"{j['id']}: activity must follow the stage")

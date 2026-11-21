@@ -43,7 +43,7 @@ function cite(ids){const n=el('span','cites');[...new Set(ids)].forEach((id,i)=>
   const a=el('a','cn',String(i+1));a.dataset.sourceId=id;n.appendChild(a);});return n;}
 function bodyClaims(j,id){return (j.claims||[]).filter(c=>c.kind==='function'&&c.body_id===id&&!c.lead);}
 function claimBlock(c){return el('span','claim',c.text||'Role sentence.');}
-function closestBodyRepeated(){return false;}  // the group's omission is covered in test_claims_page.py
+function closestBodyInSummary(){return false;}  // the fixtures have no summary; the omission is covered in test_claims_page.py
 function rereadLine(){return null;}
 function fmtDate(s){return s;}
 function separated(parts){const n=el('span');parts.forEach(p=>n.appendChild(typeof p==='string'?{text:p}:p));return n;}
