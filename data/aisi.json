@@ -4,8 +4,8 @@
     "title": "AI Security Institutes tracker",
     "description": "Which states have an AI Security Institute (AISI), covering all 193 UN member states plus Taiwan and the EU AI Office, with funding, staff and leadership where published. Every record cites its sources.",
     "definition": "We count a body as an AI Security Institute (AISI) if a national government or an international organisation, such as the EU, has tasked it with testing general-purpose or frontier AI models for their capabilities and risks, or has named it its AI safety institute or its AI security institute. Being a regulator, certification body or cyber security agency is not enough on its own.",
-    "version": "1.1.2-dev",
-    "as_of": "2026-11-20",
+    "version": "1.1.2",
+    "as_of": "2026-11-23",
     "license": "CC BY 4.0",
     "license_note": "Quotations from sources remain with their rights holders and are reproduced as quotations; the licence covers our own compilation, text and data.",
     "publisher": "Accelerate Europe",
@@ -18,7 +18,7 @@
     ],
     "contact": "contact@accelerate-europe.org",
     "repository": "https://github.com/accelerate-europe/aisi-tracker",
-    "citation": "Accelerate Europe (2026). AI Security Institutes tracker, version 1.1.1, data as of 20 November 2026. Compiled by Jason Hoelscher-Obermaier. https://doi.org/10.5281/zenodo.23600431",
+    "citation": "Accelerate Europe (2026). AI Security Institutes tracker, version 1.1.2, data as of 23 November 2026. Compiled by Jason Hoelscher-Obermaier. https://doi.org/10.5281/zenodo.23600431",
     "doi": "10.5281/zenodo.23600431",
     "scope": "Status is tracked for all 193 UN member states, Taiwan (as a territory) and the EU AI Office. The Europe page counts the 27 EU member states, Iceland, Liechtenstein, Norway, the United Kingdom and Switzerland.",
     "method": [
@@ -129669,6 +129669,28 @@
         "Page: \"Definition\" under the headline shows the definition on hover, focus and tap. The close mark on cards and panels is larger, a card's download sits at the right edge, and a table head that stays in view keeps its space above.",
         "Downloads: the descriptions of eleven files are shorter and say what each file is, for example \"A plain-text guide to the data for AI agents\" for llms.txt.",
         "Checks recorded since 1.1.0: the news check of 20 November 2026 for all 15 institutes and partial checks of 19 November for Iraq, the Netherlands, Oman, Saudi Arabia, Thailand and the United Arab Emirates. No record's full-check date changed."
+      ]
+    },
+    {
+      "date": "2026-11-23",
+      "version": "1.1.2",
+      "summary": "Estonia's closest body is now shown, Germany and Japan's announced cooperation is recorded, and facts in a record carry the date of their source. Corrections to source lists and three notes.",
+      "changes": [
+        "Estonia: the Secure AI Knowledge Centre initiative (T3) of the Estonian Academy of Security Sciences is shown as the closest body. Estonia's status is unchanged: no qualifying institute identified.",
+        "Germany and Japan: the two governments' leaders announced on 28 October 2026 that they will explore cooperation on AI safety and security through their institutes. Both records list it as an announced agreement.",
+        "EU AI Office: the short mandate now reads \"Enforces the AI Act's rules for general-purpose AI models; evaluates those with systemic risk.\"",
+        "EU AI Office: its draft template for fundamental rights impact assessments of 16 November 2026 is in the catalogue, as guidance.",
+        "Germany: the note on related funding no longer opens with \"Related funding.\"",
+        "Malaysia and China: two notes no longer contain wording meant for editors.",
+        "Sources: three sources that were listed twice are now listed once (the network's best practice guidance on automated evaluation, Singapore's resources page and Korea's collaboration page).",
+        "Sources: a web page's title is now its own heading, not the site's name. Five titles corrected, among them two CyberSecurity Malaysia pages that both read \"CyberSecurity Malaysia\".",
+        "Sources: 9 added, 1,303 in total.",
+        "Method: the rule on source titles says how two sources that would read the same line are told apart. The page adds each one's language, or else its web host.",
+        "Page: a fact in a record shows the date of its earliest source, so an older fact no longer reads as current. A fact whose sentence already names that year, or whose source has no publication date, shows none.",
+        "Page: in a funding record, the source type and date sit on their own line above the notes.",
+        "Page: the Closest body block no longer repeats the name and stage when the summary gives them.",
+        "Page: a qualifier line that wraps keeps its separator dot at the end of the first line.",
+        "Checks recorded since 1.1.1: the news check of 23 November 2026 for all 15 institutes and a partial check of 23 November for Estonia. No record's full-check date changed."
       ]
     }
   ]
