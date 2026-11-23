@@ -5311,6 +5311,10 @@
           {
             "date": "2026-11-10",
             "scope": "News search from 17 October 2026 in English and Estonian, with the justice and digital affairs ministry's website (news titles readable but undated) and its search page (newest 14 October, before the window). Left for review: Estonia's place on the endorsement list of the French presidency's Paris Call for AI Safety and Security, published on 9 November and since updated. The consumer protection and technical regulatory authority's AI page, last updated 10 September, repeats a supervisory role already in the record, and no Estonian announcement of the endorsement was found. No new national evaluator or final designation act was found. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-23",
+            "scope": "Owner-requested check of 23 November 2026 of a reader's lead on an Estonian AI safety body: the government's, interior ministry's, information system authority's, consumer protection authority's and economy ministry's news for 2024 to 2026, the justice and digital ministry's AI items, the Estonian Academy of Security Sciences' pages and news, the adopted Digital Society Development Plan 2035 and the 2027-2030 digital programme. Added as closest body the academy's Secure AI Knowledge Centre initiative (T3), which by the academy's own account is to become a knowledge centre once funding and partners are found; no government act concerning it and no testing work were found. The Estonia-Finland joint letter of 11 November 2026 and the Prime Minister's statement of 14 November 2026 call for independent EU-level evaluation of the most advanced models and name no national body. Status unchanged. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -5371,7 +5375,12 @@
         "ee-ttja-ai-supervision",
         "ai-act-tracker",
         "eu-ai-act-authorities-2026",
-        "fr-elysee-paris-call-2026"
+        "fr-elysee-paris-call-2026",
+        "ee-sisekaitse-t3-en",
+        "ee-sisekaitse-t3",
+        "ee-aisi-ee",
+        "ee-valitsus-ee-fi-letter-2026",
+        "ee-valitsus-pm-dublin-2026"
       ],
       "region": {
         "id": "150",
@@ -5407,8 +5416,31 @@
           "designation_basis": "none_yet",
           "kind": "ai_act_authority",
           "id": "related_bodies-e9418b44f082585ea0aaa36f10f7beae"
+        },
+        {
+          "name": "Turvalise tehisaru teadmuskeskuse (T3) initsiatiiv, Sisekaitseakadeemia",
+          "name_en": "Secure AI Knowledge Centre initiative (T3), Estonian Academy of Security Sciences",
+          "counts_as_aisi": false,
+          "source_ids": [
+            "ee-sisekaitse-t3-en",
+            "ee-sisekaitse-t3",
+            "ee-aisi-ee"
+          ],
+          "kind": "other",
+          "id": "related_bodies-3c9e6a1f5d2b4e8a9f07c1d2e3b4a5f6"
         }
-      ]
+      ],
+      "closest_body": {
+        "name": "Secure AI Knowledge Centre initiative (T3), Estonian Academy of Security Sciences",
+        "stage": "exists",
+        "gap": "designation",
+        "source_ids": [
+          "ee-sisekaitse-t3-en",
+          "ee-sisekaitse-t3",
+          "ee-aisi-ee"
+        ],
+        "body_id": "related_bodies-3c9e6a1f5d2b4e8a9f07c1d2e3b4a5f6"
+      }
     },
     {
       "id": "PT",
@@ -129101,6 +129133,235 @@
         "retrieved": "2026-11-23T12:58:58Z",
         "sha256": "3af0f288101f7b41c7e42ef306c0ea445c0fbd5c4948202a924070d0193ba397",
         "text_sha256": "111b962d949b1254977261b3f4ef5ea897ccde4f90e0548b8c4fed8210b092d5",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "ee-sisekaitse-t3-en",
+      "url": "https://www.sisekaitse.ee/en/faith",
+      "title": "Friendly AI Transformation Hub",
+      "publisher": "Estonian Academy of Security Sciences",
+      "type": "primary",
+      "accessed": "2026-11-23",
+      "language": "en",
+      "origin": "EE",
+      "excerpts": [
+        {
+          "text": "the Estonian Academy of Security Sciences, as a development partner in smart security, has this year launched the Secure AI Knowledge Centre initiative, known as T3.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "EE"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-3c9e6a1f5d2b4e8a9f07c1d2e3b4a5f6"
+              },
+              "name"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "EE"
+              },
+              "closest_body",
+              "name"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "EE"
+              },
+              "closest_body",
+              "stage"
+            ]
+          ],
+          "accessed": "2026-11-23"
+        },
+        {
+          "text": "Once funding and cooperation partners have been secured, this initiative will develop into the T3 Knowledge Centre, focusing on the security dimension of artificial intelligence – security risks and their mitigation.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "EE"
+              },
+              "closest_body",
+              "stage"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "EE"
+              },
+              "closest_body",
+              "gap"
+            ]
+          ],
+          "accessed": "2026-11-23"
+        },
+        {
+          "text": "Similar organisations already exist around the world, from the United Kingdom and Singapore to Canada and Korea. Their common denominator is AI safety and/or security.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "EE"
+              },
+              "closest_body",
+              "gap"
+            ]
+          ],
+          "accessed": "2026-11-23"
+        }
+      ],
+      "access_note": "The page carries no date, and its 'this year' gives no year, so no published date is recorded.",
+      "snapshot": {
+        "retrieved": "2026-11-23T13:50:53Z",
+        "sha256": "f3861d7b049c00b32ce42c11da9d91eb0dad574bd927e5d1a5db151134b48b5a",
+        "text_sha256": "783dd30841eab47987455be0605ab69718ec856152fa7c81e6c0a437288362cc",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "ee-sisekaitse-t3",
+      "url": "https://www.sisekaitse.ee/t3",
+      "title": "Turvalise tehisaru teadmuskeskus",
+      "publisher": "Sisekaitseakadeemia",
+      "type": "primary",
+      "accessed": "2026-11-23",
+      "language": "et",
+      "origin": "EE",
+      "excerpts": [
+        {
+          "text": "Sisekaitseakadeemia sellest aastast alustanud turvalise tehisaru teadmuskeskuse (T3) initsiatiiviga",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "EE"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-3c9e6a1f5d2b4e8a9f07c1d2e3b4a5f6"
+              },
+              "name"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "EE"
+              },
+              "closest_body",
+              "name"
+            ]
+          ],
+          "accessed": "2026-11-23",
+          "gloss": "the Academy of Security Sciences has this year started the safe-AI knowledge centre (T3) initiative"
+        },
+        {
+          "text": "Selliseid organisatsioone on üle maailma veel – Suurbritanniast ja Singapurist kuni Kanada ja Koreani. Nende ühine nimetaja on tehisaru turvalisus ja/või julgeolek (AI Safety/Security).",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "EE"
+              },
+              "closest_body",
+              "gap"
+            ]
+          ],
+          "accessed": "2026-11-23",
+          "gloss": "There are other such organisations in the world, from the UK and Singapore to Canada and Korea. Their common denominator is AI safety and/or security."
+        }
+      ],
+      "title_en": "Safe AI knowledge centre",
+      "access_note": "The page carries no date, and its 'this year' gives no year, so no published date is recorded.",
+      "snapshot": {
+        "retrieved": "2026-11-23T13:50:52Z",
+        "sha256": "56645387558b86680e64d5fd756d627cb6dd9ac0a8430d7b7dbf30a1dd423049",
+        "text_sha256": "57ea6334ad92c473aafe45f43f82ede861f54f61bce867b27d5dbc4419bacdaf",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "ee-aisi-ee",
+      "url": "https://aisi.ee/",
+      "title": "T3 – Turvalise Tehisaru Teadmuskeskus | Friendly AI Transformation Hub",
+      "publisher": "Estonian Academy of Security Sciences",
+      "type": "primary",
+      "accessed": "2026-11-23",
+      "language": "en",
+      "origin": "EE",
+      "excerpts": [
+        {
+          "text": "EASS Competence Centre",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "EE"
+              },
+              "related_bodies",
+              {
+                "id": "related_bodies-3c9e6a1f5d2b4e8a9f07c1d2e3b4a5f6"
+              },
+              "name"
+            ],
+            [
+              "jurisdictions",
+              {
+                "id": "EE"
+              },
+              "closest_body",
+              "name"
+            ]
+          ],
+          "accessed": "2026-11-23"
+        }
+      ],
+      "access_note": "The site carries no date; its footer reads '© 2026 T3 · sisekaitse.ee'.",
+      "snapshot": {
+        "retrieved": "2026-11-23T13:50:52Z",
+        "sha256": "24697a44546c751bbc4654f02fed6af263e4e19a1b2905b4f80c725fa24d1735",
+        "text_sha256": "f3e106f5887259d3bbd15f313932d9abb3dc7facd5f4a6700f8240524f028bcb",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "ee-valitsus-ee-fi-letter-2026",
+      "url": "https://valitsus.ee/sites/default/files/documents/2026-11/Building%20Europes%20AI%20Power%20-%20A%20joint%20contribution%20by%20Finland%20and%20Estonia.pdf",
+      "title": "Building Europe’s AI Power - A joint contribution by Finland and Estonia",
+      "publisher": "Government Office of Estonia",
+      "type": "primary",
+      "accessed": "2026-11-23",
+      "language": "en",
+      "origin": "EE",
+      "excerpts": [],
+      "published": "2026-11-11",
+      "snapshot": {
+        "retrieved": "2026-11-23T13:50:52Z",
+        "sha256": "23a497de546b96bbc15cae467a94af2a0ecfa55e75f142bad0543ea08e446e38",
+        "text_sha256": "969093cab72c9e546c96c3cd6cd8842577f5179f545bf22958160d4081e22644",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "ee-valitsus-pm-dublin-2026",
+      "url": "https://valitsus.ee/en/news/prime-minister-michal-european-security-architecture-will-not-be-rewritten-russias-request",
+      "title": "Prime Minister Michal: European Security Architecture Will Not Be Rewritten at Russia’s Request",
+      "publisher": "Government Office of Estonia",
+      "type": "primary",
+      "accessed": "2026-11-23",
+      "language": "en",
+      "origin": "EE",
+      "excerpts": [],
+      "published": "2026-11-14",
+      "snapshot": {
+        "retrieved": "2026-11-23T13:50:53Z",
+        "sha256": "b2494b4d0b976cfa3201d36ef75fda1a844f183961f37e1e707aa566149a6443",
+        "text_sha256": "d27c81eda5534b9ce43a09fdbd2b9cc7dfca3fdce4c36d3809e6cd37e3dc988d",
         "text_scheme": 1
       }
     }
