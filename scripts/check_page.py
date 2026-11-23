@@ -8875,7 +8875,7 @@ def check_claim_cards(html: str, data: dict) -> list[str]:
                 errors.append(f"{c['id']}: missing claim sentence")
                 continue
             plain = copy.copy(line)
-            for extra in plain.select(".cites"):
+            for extra in plain.select(".cites, .claim-date"):
                 extra.decompose()
             text = " ".join(plain.get_text().split())
             if c["kind"] == "development":
@@ -9148,7 +9148,7 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
         "render failed",
     )
     page.evaluate("document.fonts.ready")
-    page.wait_for_timeout(100)
+    settle(page, "(() => { const f = document.getElementById('figures'); if (!f) return false; const r = f.getBoundingClientRect(); return r.width > 0 && r.height > 0 && f.checkVisibility({ visibilityProperty: true }); })()")
     require(
         page.locator("#figures").is_visible(),
         "figures row is hidden",
@@ -9259,7 +9259,7 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
     page.evaluate("([x, y]) => scrollTo(x, y)", scroll)
     page.wait_for_timeout(300)
     page.evaluate("scrollTo(0, 0)")  # the nav strip follows the section in view; at the top it starts at its first item
-    page.wait_for_timeout(300)
+    settle(page, "document.querySelector('.secnav .measure').scrollLeft === 0")
     require(
         page.evaluate(
             "() => !document.body.textContent.includes('\\u2197') && ![...document.querySelectorAll('[data-tip], [data-tip-sub], [data-exp], [aria-description]')].some(n => [...Object.values(n.dataset), n.getAttribute('aria-description') || ''].some(v => v.includes('\\u2197')))"
@@ -9302,7 +9302,7 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
     page.evaluate(
         "() => { const h = document.querySelector('#top h1'), n = document.querySelector('.secnav'); window.scrollTo(0, h.getBoundingClientRect().bottom + scrollY - n.offsetHeight + 2); }"
     )
-    page.wait_for_timeout(150)
+    settle(page, "document.querySelector('.secnav').classList.contains('scrolled')")
     require(
         page.locator(".secnav").evaluate(
             "n => n.classList.contains('scrolled')"
@@ -9313,7 +9313,7 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
         require(not page.locator(".secnav .navtitle").is_visible(), "nav title shows on a phone")
     else:
         page.locator(".secnav .navtitle").click()
-        page.wait_for_timeout(400)
+        settle(page, "document.querySelector('#top h1').getBoundingClientRect().top >= document.querySelector('.secnav').getBoundingClientRect().bottom")
         require(
             page.evaluate(
                 "() => document.querySelector('#top h1').getBoundingClientRect().top >= document.querySelector('.secnav').getBoundingClientRect().bottom"
@@ -9411,7 +9411,7 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
         ).evaluate(
             "e => scrollTo(0, e.getBoundingClientRect().top + scrollY + Math.min(220, e.offsetHeight / 2))"
         )
-        page.wait_for_timeout(100)
+        settle(page, "t => document.querySelector(`.secnav a[data-sections~=\"${t}\"]`).getAttribute('aria-current') === 'location'", target)
         require(
             page.locator(
                 f'.secnav a[data-sections~="{target}"]'
@@ -9428,7 +9428,7 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
     page.evaluate(
         "scrollTo(0, document.documentElement.scrollHeight)"
     )
-    page.wait_for_timeout(100)
+    settle(page, "document.querySelector('.secnav a[data-sections~=\"method\"]').getAttribute('aria-current') === 'location'")
     require(
         page.locator('.secnav a[data-sections~="method"]').get_attribute("aria-current")
         == "location",
@@ -9437,7 +9437,7 @@ def interaction_pass(browser, base_url: str, dist: Path, data: dict, screenshots
     page.locator('.secnav a[href="#europe"]').evaluate(
         "e => e.click()"
     )
-    page.wait_for_timeout(100)
+    settle(page, "document.querySelector('.secnav a[href=\"#europe\"]').getAttribute('aria-current') === 'location'")
     require(
         page.locator('.secnav a[href="#europe"]').get_attribute(
             "aria-current"
