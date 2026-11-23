@@ -1918,8 +1918,15 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
   }
   function claimBlock(c, cite, text, date) {
     var block = el("div", "claim prose-panel"), line = claimSentence(c, text || c.text); block.dataset.claimId = c.id;
-    if (date) { line.appendChild(sepGap()); line.appendChild(trailingQualifier(dated(date), "claim-date", "Source dated " + fmtDate(date) + ".")); } // before the citation, which ends the value
-    line.appendChild(cite(fieldCitations(c, claimFields(c)))); block.appendChild(line);
+    var citeHost = line;
+    if (date) {
+      // The date is the last word, so the citation goes inside its qualifier: glueCitations binds a marker to the text
+      // just before it, and the spoken words come first so that text is the date.
+      var words = el("span"); words.appendChild(el("span", "vh", "Source dated ")); words.appendChild(dated(date));
+      var qualifier = trailingQualifier(words, "claim-date"); line.appendChild(sepGap()); line.appendChild(qualifier);
+      citeHost = qualifier.querySelector(".qualifier-text");
+    }
+    citeHost.appendChild(cite(fieldCitations(c, claimFields(c)))); block.appendChild(line);
     block.appendChild(quoteDisclosure(c)); return block;
   }
   // Keep the generated finding's words and expiry warning; enhance only the lead sentence. A development follows
