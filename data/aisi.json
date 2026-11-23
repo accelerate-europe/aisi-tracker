@@ -1302,6 +1302,143 @@
         ]
       },
       {
+        "id": "agreement-de-jp-declaration-2026",
+        "kind": "agreement",
+        "subject": "de-aisi + jp-aisi",
+        "metric": "date and state of one instrument",
+        "unit": "ISO8601 and agreement_state",
+        "period": "instrument date, not announcement source date",
+        "scope": "de-jp-declaration-2026",
+        "source_ids": [
+          "de-jp-statement-2026",
+          "jp-de-declaration-2026"
+        ],
+        "targets": [
+          [
+            "institutes",
+            {
+              "id": "de-aisi"
+            },
+            "agreements",
+            {
+              "id": "agreements-6f3c1e8a2b9d4c57a0e4d81b93f2c6a5"
+            }
+          ],
+          [
+            "institutes",
+            {
+              "id": "jp-aisi"
+            },
+            "agreements",
+            {
+              "id": "agreements-b47e20d95c1a4f3e8d6a7c0e2f19b384"
+            }
+          ]
+        ]
+      },
+      {
+        "id": "agreement-gb-jp-frontier-tech-2026",
+        "kind": "agreement",
+        "subject": "gb-aisi + jp-aisi",
+        "metric": "date and state of one instrument",
+        "unit": "ISO8601 and agreement_state",
+        "period": "instrument date, not announcement source date",
+        "scope": "gb-jp-frontier-tech-partnership-2026",
+        "source_ids": [
+          "gb-jp-frontier-tech-partnership-2026"
+        ],
+        "targets": [
+          [
+            "institutes",
+            {
+              "id": "gb-aisi"
+            },
+            "agreements",
+            {
+              "id": "agreements-c99fd9e6b1004ac788e92192bad1f16d"
+            }
+          ],
+          [
+            "institutes",
+            {
+              "id": "jp-aisi"
+            },
+            "agreements",
+            {
+              "id": "agreements-e3b3a4e8db5844b7ad4d6b330bad895f"
+            }
+          ]
+        ]
+      },
+      {
+        "id": "agreement-ca-kr-mou-2026",
+        "kind": "agreement",
+        "subject": "ca-caisi + kr-aisi",
+        "metric": "date and state of one instrument",
+        "unit": "ISO8601 and agreement_state",
+        "period": "instrument date, not announcement source date",
+        "scope": "ca-kr-mou-2026",
+        "source_ids": [
+          "ca-kr-mou-2026"
+        ],
+        "targets": [
+          [
+            "institutes",
+            {
+              "id": "ca-caisi"
+            },
+            "agreements",
+            {
+              "id": "agreements-98e55099d0ff5b20895ad87dbf2c59a0"
+            }
+          ],
+          [
+            "institutes",
+            {
+              "id": "kr-aisi"
+            },
+            "agreements",
+            {
+              "id": "agreements-5351ee6d38f15518a01a92f05c991295"
+            }
+          ]
+        ]
+      },
+      {
+        "id": "agreement-kr-sg-mou-2026",
+        "kind": "agreement",
+        "subject": "kr-aisi + sg-aisi",
+        "metric": "date and state of one instrument",
+        "unit": "ISO8601 and agreement_state",
+        "period": "instrument date, not announcement source date",
+        "scope": "kr-sg-mou-2026",
+        "source_ids": [
+          "kr-sg-mou-2026"
+        ],
+        "targets": [
+          [
+            "institutes",
+            {
+              "id": "kr-aisi"
+            },
+            "agreements",
+            {
+              "id": "agreements-a079d7bcc63f5c7aa4325fc9574ff7ed"
+            }
+          ],
+          [
+            "institutes",
+            {
+              "id": "sg-aisi"
+            },
+            "agreements",
+            {
+              "id": "agreements-a2e6c97f5f3457b0b4e0ee60a952d502"
+            }
+          ]
+        ]
+      },
+      {
         "id": "annual-gb-aisi-15",
         "kind": "number",
         "subject": "gb-aisi",
