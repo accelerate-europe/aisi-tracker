@@ -8875,7 +8875,7 @@ def check_claim_cards(html: str, data: dict) -> list[str]:
                 errors.append(f"{c['id']}: missing claim sentence")
                 continue
             plain = copy.copy(line)
-            for extra in plain.select(".cites"):
+            for extra in plain.select(".cites, .claim-date"):
                 extra.decompose()
             text = " ".join(plain.get_text().split())
             if c["kind"] == "development":
