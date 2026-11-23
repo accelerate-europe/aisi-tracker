@@ -29471,6 +29471,10 @@
           {
             "date": "2026-11-20",
             "scope": "Sources checked for developments from 14 November 2026: the institute's home, blog and research pages (newest 26 October), its GOV.UK organisation page (12 October), DSIT's page (newest document 20 November), the Cabinet Office's page (19 November), the written-statements listing (19 November), the Commons daily reports of 16 to 19 November and the Lords daily report of 16 November. Added from written answers of 16 to 19 November: no dedicated funding under the UK-Norway statement, the AI Threat Assessment Centre, and what the institute does not test or report on. The answer of 18 November to question 43123 says the institute is led by two Directors, who are not named, reporting to the Director General for Artificial Intelligence; the recorded head and reporting line are unchanged pending review. The developers' oral evidence of 13 October and the two press reports on models withheld from testing were located, the report of 24 September only partly readable; nothing was entered from them. The Commons report of 18 November was read only in part, including the Cabinet Office answers. Later written-statement pages, Lords reports of 17 to 20 November and answers of 20 November were not covered. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-23",
+            "scope": "Post-release news re-check from 20 November 2026: the institute's blog and research pages (newest 26 October), its GOV.UK organisation page and news (newest 12 October), Cabinet Office news to 23 November, the Commons written answers of 20 November and the Lords daily reports of 17 to 20 November. No new institute fact entered. The Government's response to the Joint Committee on Human Rights (HC 844, published 20 November) restates the institute's own model testing; no government response to HC 689 was found in the sources read. Who the institute's two Directors are is not published in any official source read. The Commons daily report for 23 November was not yet available. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -31855,6 +31859,10 @@
           {
             "date": "2026-11-20",
             "scope": "Sources checked for developments from 14 November 2026: SGDSN's publications (newest 27 October), the institute's page (5 February 2026), DGE's news (3 November) and press (22 June), the economy and digital ministry's press (19 November), and DINUM's news (12 November) and press (10 September). No new institute publication was found, and no adopted or announced government decision to strengthen the institute. Several listings were stale, so coverage is incomplete. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-23",
+            "scope": "Post-release news re-check from 20 November 2026: SGDSN publications (newest 27 October) and its INESIA page, DGE press (newest 17 November), the digital ministry's press (newest 10 September) and the Prime Minister's speech of 19 November. The government's cyber plan of 19 November says INESIA's development will continue; it gives no new mandate, power or budget, so nothing is entered. The plan's primary page was not found. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -32435,6 +32443,10 @@
           {
             "date": "2026-11-20",
             "scope": "Sources checked for developments from 14 November 2026: BSI's institute page (newest digest 1 November), BSI's news (17 November), the digital ministry's press (18 November) and the interior ministry's home page (newest release 16 November). No new institute output, funding, staff or status fact was found. BSI's press list and the interior ministry's press search could not be read, so coverage is incomplete. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-23",
+            "scope": "Post-release news re-check from 20 November 2026: BSI's AISI page (newest 1 November), BSI news (17 November) and its annual IT security report of 19 November, which names the institute and confirms recorded values, and BMDS press (20 November). Added the Japan-Germany leaders' texts of 28 October 2026, which name the institute for cooperation with the Japan AI Safety Institute. The interior ministry's press could not be read on any route. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -32535,6 +32547,21 @@
           "participation": "named_implementer",
           "domestic_interagency": false,
           "id": "agreements-7ef25b269b075f109986bd8579fda9b5"
+        },
+        {
+          "counterparty_type": "government",
+          "counterparty": "Government of Japan, for the Japan AI Safety Institute",
+          "state": "announced",
+          "date": "2026-10-28",
+          "scope": "Joint leaders' declaration on economic security cooperation: the two governments will explore cooperation on AI safety and security through their institutes, with particular attention to the misuse of AI against critical infrastructure.",
+          "source_ids": [
+            "de-jp-statement-2026",
+            "jp-de-declaration-2026"
+          ],
+          "participation": "named_implementer",
+          "domestic_interagency": false,
+          "id": "agreements-6f3c1e8a2b9d4c57a0e4d81b93f2c6a5",
+          "news": "The leaders of Japan and Germany say they will explore cooperation on AI safety and security through their two institutes, with particular attention to the misuse of AI against critical infrastructure."
         }
       ],
       "outputs": [],
@@ -32856,6 +32883,10 @@
           {
             "date": "2026-11-20",
             "scope": "Sources checked for developments from 14 November 2026: AESIA's news (newest 12 November) and studies, the digitalisation ministry's press (19 November) and the official gazette's daily summaries of 14 and 16 to 19 November. No constitutive act, appointment or publication for the planned institute was found. The ministry's guide of 19 November on ethical adoption is credited to the ministry, not to the institute. The calendar showed no issue link for 20 November, and long daily summaries were read only in part. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-23",
+            "scope": "Post-release news re-check from 20 November 2026: the BOE daily summaries of 20, 21 and 23 November, AESIA news (newest 12 November) and the ministry's press on La Moncloa (newest 3 November). No constitutive act and no institute appointment found. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -33316,6 +33347,10 @@
           {
             "date": "2026-11-20",
             "scope": "Sources checked for developments from 14 November 2026: KI Norge's home page and articles (newest 24 September), Digdir's news (18 November), cooperation news (17 November) and reports, and the government's releases (19 November). Added the UK government's written answer of 19 November that no dedicated funding has been allocated under the joint statement of 12 November. The Norwegian government's release of 12 November on the statement was read but could not be saved as a source copy, so it is not cited. The digitalisation ministry's own news list was stale, and the 2027 budget proposal is still a proposal. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-23",
+            "scope": "Post-release news re-check from 20 November 2026: KI Norge news (newest dated item 1 September), Digdir news (18 November), the digitalisation ministry's releases (13 November) and the Storting's 2027 budget cases, which are still in committee (deadline 30 November). The 2027 figures stay proposed. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -33776,6 +33811,10 @@
           {
             "date": "2026-11-20",
             "scope": "Sources checked for developments from 14 November 2026: the AI Office's page (undated), the Commission's digital strategy library (newest 13 November) and news (19 November), and the Official Journal's daily listings of 16 to 20 November. The Commission's call of 16 November for feedback on a draft template for fundamental rights impact assessments, developed by the AI Office with input from the EU Agency for Fundamental Rights, was read; the template itself could not be retrieved and it is not entered as an output. No new AI Act act was identified by title. The listings of 14 and 15 November and some corrigenda were not covered. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-23",
+            "scope": "Post-release news re-check from 20 November 2026: the AI Office page (still more than 125 staff), Commission digital-strategy news (newest 20 November) and library (13 November), and the Official Journal's L series of 20 and 23 November. Added the draft fundamental rights impact assessment template of 16 November 2026, developed by the AI Office, as an output. The C series of 23 November was read only in part. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -33919,6 +33958,24 @@
           "credit": {
             "institute_id": "eu-ai-office",
             "date": "2026-10-21"
+          }
+        },
+        {
+          "date": "2026-11-16",
+          "type": "guidance",
+          "title": "Draft Explanatory Notice and template for the fundamental rights impact assessment under Article 27(5) of Regulation (EU) 2024/1689 (the ‘AI Act’)",
+          "source_ids": [
+            "eu-fria-template-2026",
+            "eu-fria-news-2026"
+          ],
+          "lineage": "fria-template-article-27",
+          "attribution": "institutional_author",
+          "attribution_note": "Draft template and explanatory notice developed by the AI Office with input from the EU Agency for Fundamental Rights, published for feedback; the draft is not adopted by the Commission.",
+          "qualifies_as": "none",
+          "qualification_note": "Guidance for deployers of high-risk AI systems on the fundamental rights impact assessment; it reports no evaluation, test result or benchmark.",
+          "credit": {
+            "institute_id": "eu-ai-office",
+            "date": "2026-11-16"
           }
         }
       ],
@@ -34625,6 +34682,10 @@
           {
             "date": "2026-11-20",
             "scope": "Sources checked for developments from 14 November 2026: the institute's page, its news tag (newest 16 October), research blog (23 March) and guidelines page (updated 30 September), NIST's news (19 November) and the Commerce Department's news (16 November). No new institute item was found; the newest tagged items are already recorded. The institute's own listings were stale, so coverage is incomplete. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-23",
+            "scope": "Post-release news re-check from 20 November 2026: the institute page, its news tag (newest 16 October), research blog and guidelines page, NIST news (19 November) and Commerce news (16 November). No institute item dated in the window. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -36042,6 +36103,10 @@
           {
             "date": "2026-11-20",
             "scope": "Sources checked for developments from 14 November 2026: the institute's page (newest blog 8 July), CIFAR's programme page and news (16 September), the research programme's newsroom (6 November), ISED's media room (no dated releases returned), and the NRC's stories (28 October) and news (14 October). No new institute item was found. The Korea-Canada summit statement of 19 November names neither country's institute. The ISED and NRC listings were stale, so coverage is incomplete. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-23",
+            "scope": "Post-release news re-check from 20 November 2026: the institute's ISED page, the CAISI Research Program site and newsroom (newest 6 November) and CIFAR news. No new institute item. ISED's media room and NRC news could not be read on any route. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -36762,6 +36827,10 @@
           {
             "date": "2026-11-20",
             "scope": "Sources checked for developments from 14 November 2026: the institute's home, activity (newest 17 November) and output pages (6 October), IPA's press releases (13 November) and the Cabinet Office's AI pages, including the working group meeting of 18 November. The institute's digest of 17 November summarises other organisations' work and is not an output. The working group's draft outline of 18 November proposes a wider role for the institute; it is a proposal and is not entered. The English site could not be read. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-23",
+            "scope": "Post-release news re-check from 20 November 2026: the institute's activity list (newest 20 November, a news digest of others' work) and outputs (6 October), IPA press (13 November) and the Cabinet Office AI pages (working group last met 18 November). Added the Japan-Germany leaders' texts of 28 October 2026, which name the institute for cooperation with AISI Deutschland. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -36991,6 +37060,21 @@
           "participation": "named_implementer",
           "domestic_interagency": false,
           "id": "agreements-e3b3a4e8db5844b7ad4d6b330bad895f"
+        },
+        {
+          "counterparty_type": "government",
+          "counterparty": "Government of Germany, for AISI Deutschland",
+          "state": "announced",
+          "date": "2026-10-28",
+          "scope": "Joint leaders' declaration on economic security cooperation: the two governments will explore cooperation on AI safety and security through their institutes, with particular attention to the misuse of AI against critical infrastructure.",
+          "source_ids": [
+            "jp-de-declaration-2026",
+            "de-jp-statement-2026"
+          ],
+          "participation": "named_implementer",
+          "domestic_interagency": false,
+          "id": "agreements-b47e20d95c1a4f3e8d6a7c0e2f19b384",
+          "news": "The leaders of Japan and Germany say they will explore cooperation on AI safety and security through their two institutes, with particular attention to the misuse of AI against critical infrastructure."
         }
       ],
       "wikidata": "Q139585178",
@@ -38148,6 +38232,10 @@
           {
             "date": "2026-11-20",
             "scope": "Sources checked for developments from 14 November 2026: the institute's Korean home page and board (newest 4 November), its English home page and board (stale, newest 24 December 2024), the science ministry's press list (20 November) and korea.kr's ministry and policy news (20 November). No new institute fact was found; the evaluation of 3 November and the AI Safety Guardians programme are already recorded. Some listing dates were missing, so coverage is incomplete. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-23",
+            "scope": "Post-release news re-check from 20 November 2026: the institute's Korean news board (newest 4 November) and English board, the science ministry's press list (no dates shown) and korea.kr policy news (23 November). No new institute fact. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -38864,6 +38952,10 @@
           {
             "date": "2026-11-20",
             "scope": "Sources checked for developments from 14 November 2026: the institute's page and resources (newest 23 July) and the digital ministry's newsroom (17 November). No new institute fact was found. IMDA's press list returned titles without dates and two of its articles on AI safety could not be read, so IMDA coverage is incomplete. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-23",
+            "scope": "Post-release news re-check from 20 November 2026: the institute's home and resources pages (newest 23 July), MDDI news (22 November) and IMDA's press list (undated titles). The MDDI release of 22 November on the Singapore-China digital policy dialogue does not name the institute. No new institute fact. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -39466,6 +39558,10 @@
           {
             "date": "2026-11-20",
             "scope": "Sources checked for developments from 14 November 2026: the institute page (undated), the department's news (20 November) and publications (stale, 9 November), the ministers' media pages (20 November) and the Joint Select Committee's pages (latest answer 12 November). Added the full Rapid Review report, published by the Department of the Prime Minister and Cabinet on 20 November, to the review already recorded, with the technical exchange of 22 September that it reports. The review's recommendation to consider formal liaison between the Australian Cyber Security Centre, the National Office of Cyber Security and the institute is not entered as a partner. The staffing figures given at Senate estimates on 29 October are still known only from unofficial transcripts and are not entered. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-23",
+            "scope": "Post-release news re-check from 20 November 2026: the institute page, the department's news (23 November) and ministers' and PM&C media (newest institute items already recorded). The Senate estimates proof Hansard of 29 October 2026 was read again; its staff figures are already recorded. The department's publications listing could not be read. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -40196,6 +40292,10 @@
           {
             "date": "2026-11-20",
             "scope": "Sources checked for developments from 14 November 2026: the institute page (undated), AI Malaysia's news (stale, newest 11 September), the digital ministry's releases list (stale, newest 17 June 2025) and home pages, a press report of 17 November on the deputy minister's remarks, the Hansard of 28 October (still marked draft) and the 2027 budget estimates. No new institute fact was found. Current ministry releases were not recovered; the final Hansard, the Supply Bill schedules and their adoption remain unverified. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-23",
+            "scope": "Post-release news re-check from 20 November 2026: the MY-AISafe page (unchanged), AI Malaysia news and the Ministry of Digital's pages (stale copies only) and the digital Hansard of 28 October. The Supply Bill 2027 is at committee stage, with no institute line found. AI Malaysia's appointment of a chief executive, known only from press, is not entered. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -40579,6 +40679,10 @@
           {
             "date": "2026-11-20",
             "scope": "Sources checked for developments from 14 November 2026: IndiaAI's news and research pages (stale, newest 2024), and the IT ministry's What's New (19 November), publications (17 July) and acts and policies (29 October). No new institute fact was found. A press report of 16 November, citing unnamed sources, says a consultation on AI regulation is expected as early as next month; no official release was found and whether it has been released is unresolved. The ministry's press and consultation pages could not be read. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-23",
+            "scope": "Post-release news re-check from 20 November 2026: MeitY's home page announcements and the PIB release list (to 22 November, MeitY section not reached). IndiaAI's pages could not be read on any route. No release of the consultation paper on AI regulation was found in the sources read. No new institute fact. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -40922,6 +41026,10 @@
           {
             "date": "2026-11-20",
             "scope": "Sources checked for developments from 14 November 2026: the ICT ministry's news (18 November) and policy documents, the consultation page for the draft AI policy, and Parliament's catalogue of committee reports (newest relevant report 7 August). No adoption of the draft policy and no decision on the institute was found. Cabinet despatches could not be read and the presidency's briefs were stale (10 February), so adoption is unverified, not disproved. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-23",
+            "scope": "Post-release news re-check from 20 November 2026: the ICT ministry's home page (newest 3 November) and the presidency's Cabinet briefs (newest 30 June). No adoption of the draft AI policy and no act on the institute found; current Cabinet despatches were not reached, so adoption is unverified rather than disproved. The High Court judgment of 12 November was not read. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -128478,6 +128586,521 @@
         "retrieved": "2026-11-20T14:07:51Z",
         "sha256": "86219e14090fd2a8a8bf71b302d51d38b3bb5ab88c90f7926d2abbe3c42454dc",
         "text_sha256": "bd15d3ecd1f51b7e044a91f2ee3a698416fb96180c4b24253ea5bcaf913548fa",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "jp-de-declaration-2026",
+      "url": "https://japan.kantei.go.jp/contents/topics/30706_ext_20_3.pdf",
+      "title": "Japan-Germany Joint Leaders’ Declaration on Economic Security Cooperation",
+      "publisher": "Prime Minister's Office of Japan",
+      "type": "primary",
+      "published": "2026-10-28",
+      "accessed": "2026-11-23",
+      "language": "en",
+      "origin": "JP",
+      "excerpts": [
+        {
+          "text": "including through cooperation on AI safety and security via our AISIs, namely the Japan AI Safety Institute (J-AISI) and the AI Safety and Security Institute Deutschland (AISI Deutschland), with particular attention to the misuse of AI against critical infrastructure.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "de-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-6f3c1e8a2b9d4c57a0e4d81b93f2c6a5"
+              },
+              "state"
+            ],
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-b47e20d95c1a4f3e8d6a7c0e2f19b384"
+              },
+              "state"
+            ],
+            [
+              "institutes",
+              {
+                "id": "de-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-6f3c1e8a2b9d4c57a0e4d81b93f2c6a5"
+              },
+              "counterparty"
+            ],
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-b47e20d95c1a4f3e8d6a7c0e2f19b384"
+              },
+              "counterparty"
+            ],
+            [
+              "institutes",
+              {
+                "id": "de-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-6f3c1e8a2b9d4c57a0e4d81b93f2c6a5"
+              },
+              "scope"
+            ],
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-b47e20d95c1a4f3e8d6a7c0e2f19b384"
+              },
+              "scope"
+            ],
+            [
+              "institutes",
+              {
+                "id": "de-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-6f3c1e8a2b9d4c57a0e4d81b93f2c6a5"
+              },
+              "participation"
+            ],
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-b47e20d95c1a4f3e8d6a7c0e2f19b384"
+              },
+              "participation"
+            ],
+            [
+              "institutes",
+              {
+                "id": "de-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-6f3c1e8a2b9d4c57a0e4d81b93f2c6a5"
+              },
+              "news"
+            ],
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-b47e20d95c1a4f3e8d6a7c0e2f19b384"
+              },
+              "news"
+            ]
+          ],
+          "accessed": "2026-11-23"
+        },
+        {
+          "text": "Explore cooperation to harness the opportunities, while minimising risks, provided by highly capable AI models and light AI models",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "de-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-6f3c1e8a2b9d4c57a0e4d81b93f2c6a5"
+              },
+              "scope"
+            ],
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-b47e20d95c1a4f3e8d6a7c0e2f19b384"
+              },
+              "scope"
+            ],
+            [
+              "institutes",
+              {
+                "id": "de-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-6f3c1e8a2b9d4c57a0e4d81b93f2c6a5"
+              },
+              "news"
+            ],
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-b47e20d95c1a4f3e8d6a7c0e2f19b384"
+              },
+              "news"
+            ]
+          ],
+          "accessed": "2026-11-23"
+        },
+        {
+          "text": "We, the Prime Minister of Japan and the Chancellor of Germany",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "de-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-6f3c1e8a2b9d4c57a0e4d81b93f2c6a5"
+              },
+              "counterparty"
+            ],
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-b47e20d95c1a4f3e8d6a7c0e2f19b384"
+              },
+              "counterparty"
+            ]
+          ],
+          "accessed": "2026-11-23"
+        },
+        {
+          "text": "October 28, 2026",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "de-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-6f3c1e8a2b9d4c57a0e4d81b93f2c6a5"
+              },
+              "date"
+            ],
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-b47e20d95c1a4f3e8d6a7c0e2f19b384"
+              },
+              "date"
+            ]
+          ],
+          "accessed": "2026-11-23"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-23T12:58:58Z",
+        "sha256": "51721fbe837394a7b52f804332e3c020790f7d2e9987355070199bb3bc84f026",
+        "text_sha256": "9a0def6a0f205ef5454d4b71e8445851f504224f90a2736206e9293f97dab773",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "de-jp-statement-2026",
+      "url": "https://www.bundeskanzler.de/resource/blob/1832584/2458850/43e62f8c2dee120691e3c4e03e3fbad4/2026-10-28-japan-germany-joint-leaders-statement-data.pdf?download=1",
+      "title": "Japan-Germany Joint Leaders’ Statement",
+      "publisher": "Presse- und Informationsamt der Bundesregierung",
+      "type": "primary",
+      "published": "2026-10-28",
+      "accessed": "2026-11-23",
+      "language": "en",
+      "origin": "DE",
+      "excerpts": [
+        {
+          "text": "Both leaders took note of recent AI related incidents and concurred on the collaboration between Japan AI Safety Institute and German AI Safety and Security Institute.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "de-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-6f3c1e8a2b9d4c57a0e4d81b93f2c6a5"
+              },
+              "state"
+            ],
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-b47e20d95c1a4f3e8d6a7c0e2f19b384"
+              },
+              "state"
+            ],
+            [
+              "institutes",
+              {
+                "id": "de-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-6f3c1e8a2b9d4c57a0e4d81b93f2c6a5"
+              },
+              "counterparty"
+            ],
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-b47e20d95c1a4f3e8d6a7c0e2f19b384"
+              },
+              "counterparty"
+            ],
+            [
+              "institutes",
+              {
+                "id": "de-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-6f3c1e8a2b9d4c57a0e4d81b93f2c6a5"
+              },
+              "participation"
+            ],
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-b47e20d95c1a4f3e8d6a7c0e2f19b384"
+              },
+              "participation"
+            ]
+          ],
+          "accessed": "2026-11-23"
+        },
+        {
+          "text": "October 28, 2026",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "de-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-6f3c1e8a2b9d4c57a0e4d81b93f2c6a5"
+              },
+              "date"
+            ],
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "agreements",
+              {
+                "id": "agreements-b47e20d95c1a4f3e8d6a7c0e2f19b384"
+              },
+              "date"
+            ]
+          ],
+          "accessed": "2026-11-23"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-23T12:58:58Z",
+        "sha256": "d5a7612cb828bf943a312b36713264c751d3c99b6342f5b29ed51b9957a90690",
+        "text_sha256": "88f69f21c167ab8ffd51277e8fd535db996e0f480cac4f67b250aa4d270fb53c",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "eu-fria-template-2026",
+      "url": "https://ec.europa.eu/newsroom/dae/redirection/document/135051",
+      "title": "Draft Explanatory Notice and template for the fundamental rights impact assessment under Article 27(5) of Regulation (EU) 2024/1689 (the ‘AI Act’)",
+      "publisher": "European Commission (DG CONNECT, AI Office)",
+      "type": "primary",
+      "published": "2026-11-16",
+      "accessed": "2026-11-23",
+      "language": "en",
+      "origin": "EU",
+      "output_role": "document",
+      "output_lineage": "fria-template-article-27",
+      "excerpts": [
+        {
+          "text": "This template has been developed by the AI Office",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "outputs",
+              {
+                "lineage": "fria-template-article-27"
+              },
+              "attribution"
+            ],
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "outputs",
+              {
+                "lineage": "fria-template-article-27"
+              },
+              "credit",
+              "institute_id"
+            ],
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "outputs",
+              {
+                "lineage": "fria-template-article-27"
+              },
+              "attribution_note"
+            ]
+          ],
+          "accessed": "2026-11-23"
+        },
+        {
+          "text": "This draft has not been adopted or endorsed by the European Commission.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "outputs",
+              {
+                "lineage": "fria-template-article-27"
+              },
+              "attribution_note"
+            ]
+          ],
+          "accessed": "2026-11-23"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-23T12:58:58Z",
+        "sha256": "3cb48a66f09377b02a179bb476672df40a9ddbd8c605d7c6ac6b7bdcd3d2535d",
+        "text_sha256": "865b4101bbae1c4ec96e37885665b97e707b5b937834c150599769209fcd1ad4",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "eu-fria-news-2026",
+      "url": "https://digital-strategy.ec.europa.eu/en/news/commission-seeks-feedback-draft-template-fundamental-rights-impact-assessment-under-ai-act",
+      "title": "Commission seeks feedback on draft template for the fundamental rights impact assessment under the AI Act",
+      "publisher": "European Commission",
+      "type": "primary",
+      "published": "2026-11-16",
+      "accessed": "2026-11-23",
+      "language": "en",
+      "origin": "EU",
+      "output_role": "context",
+      "excerpts": [
+        {
+          "text": "Publication 16 November 2026",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "outputs",
+              {
+                "lineage": "fria-template-article-27"
+              },
+              "date"
+            ],
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "outputs",
+              {
+                "lineage": "fria-template-article-27"
+              },
+              "credit",
+              "date"
+            ]
+          ],
+          "accessed": "2026-11-23"
+        },
+        {
+          "text": "This draft template has been developed by the AI Office pursuant to Article 27(5) AI Act with input from the EU Agency for Fundamental Rights (FRA).",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "outputs",
+              {
+                "lineage": "fria-template-article-27"
+              },
+              "attribution"
+            ],
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "outputs",
+              {
+                "lineage": "fria-template-article-27"
+              },
+              "attribution_note"
+            ]
+          ],
+          "accessed": "2026-11-23"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-23T12:58:58Z",
+        "sha256": "3af0f288101f7b41c7e42ef306c0ea445c0fbd5c4948202a924070d0193ba397",
+        "text_sha256": "111b962d949b1254977261b3f4ef5ea897ccde4f90e0548b8c4fed8210b092d5",
         "text_scheme": 1
       }
     }
