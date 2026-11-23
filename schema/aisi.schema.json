@@ -1779,7 +1779,7 @@
           },
           "mandate_short": {
             "type": "string",
-            "description": "One plain line, about 12 words at most, for the page card."
+            "description": "One plain line of about 15 words for the page card. Where the body's remit is wider than the tracked function, the line says so."
           },
           "legal_basis": {
             "type": "object",
