@@ -132,7 +132,7 @@
       },
       {
         "id": "source-titles",
-        "text": "Source titles: keep the recorded original title. A web page's title is its own title or heading, not the site or publisher name that its HTML title may give alone. Add a faithful English translation when the title is non-English, including mixed-language titles; omit it for titles already in English and for proper names or acronyms alone. Source language describes the document read, not necessarily its title. A translation adds no dates, legal status or other claims that are not in the original, and is not presented as an official English title unless verified."
+        "text": "Source titles: keep the recorded original title. A web page's title is its own title or heading, not the site or publisher name that its HTML title may give alone. Add a faithful English translation when the title is non-English, including mixed-language titles; omit it for titles already in English and for proper names or acronyms alone. Source language describes the document read, not necessarily its title. A translation adds no dates, legal status or other claims that are not in the original, and is not presented as an official English title unless verified. Where two sources in one list would show the same line (title, publisher and date), the page adds the language of each, or else its web host, after the line; the recorded titles stay as they are."
       },
       {
         "id": "consistency-checks",
@@ -1979,7 +1979,7 @@
         "title": "Source titles",
         "summary": "Non-English source titles are shown in our own English translation; the original title appears on hover, focus and tap.",
         "rules": {
-          "source-titles": "48e57b265c6d79b13536a5a92ac552e40bdb502c8c8653f9b3707c36e1cbb0df"
+          "source-titles": "8c44b5a5783711a4d92ac17e6c3aad05c9f2f486ac4d0c5bda581b533bddde87"
         }
       },
       {
