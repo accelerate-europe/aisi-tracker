@@ -4,8 +4,8 @@
     "title": "AI Security Institutes tracker",
     "description": "Which states have an AI Security Institute (AISI), covering all 193 UN member states plus Taiwan and the EU AI Office, with funding, staff and leadership where published. Every record cites its sources.",
     "definition": "We count a body as an AI Security Institute (AISI) if a national government or an international organisation, such as the EU, has tasked it with testing general-purpose or frontier AI models for their capabilities and risks, or has named it its AI safety institute or its AI security institute. Being a regulator, certification body or cyber security agency is not enough on its own.",
-    "version": "1.1.3-dev",
-    "as_of": "2026-11-23",
+    "version": "1.1.4-dev",
+    "as_of": "2026-11-24",
     "license": "CC BY 4.0",
     "license_note": "Quotations from sources remain with their rights holders and are reproduced as quotations; the licence covers our own compilation, text and data.",
     "publisher": "Accelerate Europe",
@@ -18,7 +18,7 @@
     ],
     "contact": "contact@accelerate-europe.org",
     "repository": "https://github.com/accelerate-europe/aisi-tracker",
-    "citation": "Accelerate Europe (2026). AI Security Institutes tracker, version 1.1.2, data as of 23 November 2026. Compiled by Jason Hoelscher-Obermaier. https://doi.org/10.5281/zenodo.23600431",
+    "citation": "Accelerate Europe (2026). AI Security Institutes tracker, version 1.1.3, data as of 24 November 2026. Compiled by Jason Hoelscher-Obermaier. https://doi.org/10.5281/zenodo.23600431",
     "doi": "10.5281/zenodo.23600431",
     "scope": "Status is tracked for all 193 UN member states, Taiwan (as a territory) and the EU AI Office. The Europe page counts the 27 EU member states, Iceland, Liechtenstein, Norway, the United Kingdom and Switzerland.",
     "method": [
@@ -130417,6 +130417,20 @@
         "Page: the Closest body block no longer repeats the name and stage when the summary gives them.",
         "Page: a qualifier line that wraps keeps its separator dot at the end of the first line.",
         "Checks recorded since 1.1.1: the news check of 23 November 2026 for all 15 institutes and a partial check of 23 November for Estonia. No record's full-check date changed."
+      ]
+    },
+    {
+      "date": "2026-11-24",
+      "version": "1.1.3",
+      "summary": "The Functions view now shows since when an institute has done each kind of work, and its latest example. Twenty examples were added, and 130 sentences were reworded to say plainly what each institute does.",
+      "changes": [
+        "Functions: for work an institute carries out, the page now says \"active since at least\" a date and shows the latest example. The date is that of the oldest published text in which we found the work. It is left out where we know of older work that we have not added yet.",
+        "Functions: an opened function shows when the task was assigned and since when the institute has been active. Below that it lists the assignment and the three most recent examples, each with its date and source; older ones sit under \"earlier\". The general definition of the function is no longer repeated there.",
+        "20 examples added, from sources the tracker already cited: the United Kingdom (7), the United States (6), Canada (2), Singapore (2), the EU AI Office (2) and South Korea (1). Among them are the joint evaluation of an Anthropic model by the UK and US institutes, the US evaluation of GLM-5.3, and the joint test by the Korean and Singapore institutes of whether AI agents leak sensitive data.",
+        "Functions: the UK's research, the EU AI Office's standards and guidelines, and Canada's model testing and research now read Active, not only assigned.",
+        "130 sentences reworded. A sentence now says what the institute does or was tasked with, and the source mark shows who published it. It names a speaker only where someone other than the publisher speaks, and starts with \"It says\" where an institute describes its work only in general terms.",
+        "Downloads and API: each institute's `functions` rows and `functions.csv` gain `since` and `newest`. In `claim_ids`, assignments come first, then examples, newest first.",
+        "Sources: publication dates added for six sources, each taken from the source itself. 1,303 sources in total, none added."
       ]
     }
   ]
