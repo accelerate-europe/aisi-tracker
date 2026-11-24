@@ -33062,16 +33062,6 @@
           ]
         },
         {
-          "id": "claims-5c0b259e725942878f6269ca5cb9c344",
-          "kind": "function",
-          "code": "evaluation_methods",
-          "basis": "activity",
-          "text": "The federal government says existing test and evaluation methods are used and further developed at AISI Deutschland.",
-          "source_ids": [
-            "de-bt-8727-2026"
-          ]
-        },
-        {
           "id": "claims-1c74cce9dbee43f88ab46829071a01ac",
           "kind": "function",
           "code": "international_cooperation",
@@ -33079,16 +33069,6 @@
           "text": "The participating authorities are already holding technical exchanges with international partner institutions, including those in France and the UK, and the EU AI Office.",
           "source_ids": [
             "de-bmds"
-          ]
-        },
-        {
-          "id": "claims-87ca619af49645c1bb9155add73e82a9",
-          "kind": "function",
-          "code": "research",
-          "basis": "mandate",
-          "text": "Its core tasks include analysing the security-relevant effects of AI on government, business and society.",
-          "source_ids": [
-            "de-bsi-aisi"
           ]
         }
       ]
@@ -33969,16 +33949,6 @@
           "text": "Under the budget bill, it would be the contact point for international AI safety communities such as AI Safety Institutes, aiming at cooperation on methods, assessments and test tools.",
           "source_ids": [
             "no-prop1s-2026-27-dfd"
-          ]
-        },
-        {
-          "id": "claims-0132732c8534478a827e1d638e013617",
-          "kind": "function",
-          "code": "adoption",
-          "basis": "activity",
-          "text": "It says it makes it easier for businesses, especially small and medium-sized ones, to understand the rules, find relevant tools and get started with artificial intelligence.",
-          "source_ids": [
-            "no-ki-about"
           ]
         },
         {
@@ -36255,13 +36225,13 @@
           ]
         },
         {
-          "id": "claims-89ed3febc2ab477fa8544e388c36a71d",
+          "id": "claims-0793976f52fa4fb2bd73620e05239667",
           "kind": "function",
           "code": "adoption",
           "basis": "activity",
-          "text": "NIST's post describes the then CAISI as one way NIST supports the American AI industry through collaborative research on AI metrology and model evaluations.",
+          "text": "Works with the General Services Administration on resources that support federal agencies' procurement and adoption of AI systems.",
           "source_ids": [
-            "r5-us-raman-nist-post"
+            "depth-us-gsa"
           ]
         }
       ]
@@ -38376,16 +38346,6 @@
           ]
         },
         {
-          "id": "claims-897d981bc75c479c8dafbe84751693ab",
-          "kind": "function",
-          "code": "international_cooperation",
-          "basis": "activity",
-          "text": "It has built a strong and enduring relationship with the UK AI Security Institute, the UK-Japan Joint Committee statement says.",
-          "source_ids": [
-            "gb-jp-joint-committee-2026"
-          ]
-        },
-        {
           "id": "claims-277280ea0ff5407593c7ba38e0c1c6c1",
           "kind": "function",
           "code": "international_cooperation",
@@ -39164,7 +39124,7 @@
           "kind": "function",
           "code": "foresight",
           "basis": "activity",
-          "text": "Published the fifth edition of its quarterly AI Safety Forecast Report.",
+          "text": "Published the fifth edition of its AI Safety Forecast Report, in which an expert group designed future scenarios from an analysis of news coverage from May to July 2026.",
           "source_ids": [
             "kr-forecast-5-2026"
           ]
@@ -39227,26 +39187,6 @@
           "text": "Is intended to be set up to spread safe AI development and use.",
           "source_ids": [
             "kr-policy-briefing-2024-10-18"
-          ]
-        },
-        {
-          "id": "claims-b9b1763aca844926bcd807645c2c5299",
-          "kind": "function",
-          "code": "adoption",
-          "basis": "activity",
-          "text": "Its director says the AISI is a collaborative organisation dedicated to supporting Korean AI companies by reducing risk factors that hinder their global competitiveness.",
-          "source_ids": [
-            "kr-nst-launch-2024"
-          ]
-        },
-        {
-          "id": "claims-3c0a171f93634bbbb83571ff38797b62",
-          "kind": "function",
-          "code": "convening",
-          "basis": "activity",
-          "text": "It says it serves as \"a platform for sharing information on AI safety technologies and policies\" and supports collaboration in human resources, technology and infrastructure among domestic companies, universities and research institutes.",
-          "source_ids": [
-            "kr-aisi-sub33"
           ]
         },
         {
@@ -40651,26 +40591,6 @@
           ]
         },
         {
-          "id": "claims-1b478ab800b148af874a100a97a8fab4",
-          "kind": "function",
-          "code": "regulatory_support",
-          "basis": "activity",
-          "text": "The Department of Industry, Science and Resources says the institute supports \"government and regulators’ understanding of emerging AI capabilities, risks and mitigation approaches\".",
-          "source_ids": [
-            "au-industry"
-          ]
-        },
-        {
-          "id": "claims-970fb146e1704424b8a8c6a8fcc210f5",
-          "kind": "function",
-          "code": "risk_monitoring",
-          "basis": "activity",
-          "text": "The assistant minister says AISI combines \"ongoing systems testing with active monitoring of risks and harms\".",
-          "source_ids": [
-            "depth-au-forum"
-          ]
-        },
-        {
           "id": "claims-28b93386d8b4a8920e64dbdd6362f8df",
           "kind": "fact",
           "source_ids": [
@@ -41010,36 +40930,6 @@
           ]
         },
         {
-          "id": "claims-d8ea191dbb5748858e822c74278f612b",
-          "kind": "function",
-          "code": "certification",
-          "basis": "activity",
-          "text": "AI Malaysia's overview says the institute delivers the national AI Trust Function, which brings together testing of AI models and applications against standards.",
-          "source_ids": [
-            "my-aisafe-overview"
-          ]
-        },
-        {
-          "id": "claims-9ffc2525857043a9a8c96d2d820dffe5",
-          "kind": "function",
-          "code": "evaluation_methods",
-          "basis": "activity",
-          "text": "The National AI Office's overview says the institute \"develops tests, benchmarks and evaluation reports to assess AI systems against key areas of responsible AI\".",
-          "source_ids": [
-            "my-aisafe-overview"
-          ]
-        },
-        {
-          "id": "claims-ca125c781fc1444c9ce6fe7d9c4d9d8f",
-          "kind": "function",
-          "code": "incident_response",
-          "basis": "activity",
-          "text": "The National AI Office's overview says MY-AISafe \"manages incidents and tracks emerging threats\" once systems are in use.",
-          "source_ids": [
-            "my-aisafe-overview"
-          ]
-        },
-        {
           "id": "claims-11f2d9b2361b4866a2f17dc24acd4b71",
           "kind": "function",
           "code": "risk_monitoring",
@@ -41057,16 +40947,6 @@
           "text": "Is to work through strategic collaborations for talent development, expertise sharing and technology transfer at national and international levels.",
           "source_ids": [
             "my-digital-2026-07"
-          ]
-        },
-        {
-          "id": "claims-2d1df4ccb30245b0baccfdb710a5d324",
-          "kind": "function",
-          "code": "risk_monitoring",
-          "basis": "activity",
-          "text": "AI Malaysia says MY-AISafe tests systems before release, then manages incidents and tracks emerging threats during use.",
-          "source_ids": [
-            "my-aisafe-overview"
           ]
         }
       ]
@@ -49706,17 +49586,6 @@
               },
               "staffing_model",
               "notes"
-            ],
-            [
-              "institutes",
-              {
-                "id": "au-aisi"
-              },
-              "claims",
-              {
-                "id": "claims-1b478ab800b148af874a100a97a8fab4"
-              },
-              "text"
             ]
           ],
           "accessed": "2026-10-21"
@@ -57291,31 +57160,6 @@
               "gloss": "AISI Deutschland brings together technical, strategic and security-policy expertise in one central body. Its core tasks include in particular:"
             }
           ]
-        },
-        {
-          "text": "Analyse sicherheitsrelevanter Auswirkungen von KI auf Staat, Wirtschaft und Gesellschaft,",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "de-aisi"
-              },
-              "claims",
-              {
-                "id": "claims-87ca619af49645c1bb9155add73e82a9"
-              },
-              "text"
-            ]
-          ],
-          "gloss": "analysis of AI's security-relevant effects on government, business and society,",
-          "anchors": [
-            {
-              "text": "Das AISI Deutschland bündelt technische, strategische und sicherheitspolitische Expertise in einer zentralen Einrichtung. Zu den Kernaufgaben zählen insbesondere:",
-              "kind": "heading",
-              "gloss": "AISI Deutschland brings together technical, strategic and security-policy expertise in one central body. Its core tasks include in particular:"
-            }
-          ],
-          "accessed": "2026-10-17"
         },
         {
           "text": "Zurzeit befindet sich das Institut noch im Aufbau. Der Fokus liegt zunächst auf der Beratung von Verwaltung und Politik",
@@ -71562,24 +71406,6 @@
             ]
           ],
           "accessed": "2026-10-21"
-        },
-        {
-          "text": "One of AISI's key roles is to be a central expert capability that identifies those risks and builds a shared understanding of them across government so that policymakers and regulators can act with insight and evidence. This combines ongoing systems testing with active monitoring of risks and harms.",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "au-aisi"
-              },
-              "claims",
-              {
-                "id": "claims-970fb146e1704424b8a8c6a8fcc210f5"
-              },
-              "text"
-            ]
-          ],
-          "accessed": "2026-10-17",
-          "url": "https://r.jina.ai/https://www.minister.industry.gov.au/charlton/media/ai-safety-forum"
         }
       ],
       "origin": "AU",
@@ -73152,23 +72978,6 @@
             ]
           ],
           "accessed": "2026-10-20"
-        },
-        {
-          "text": "The AISI is not a regulatory body but a collaborative organization dedicated to supporting Korean AI companies by reducing risk factors that hinder their global competitiveness.",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "kr-aisi"
-              },
-              "claims",
-              {
-                "id": "claims-b9b1763aca844926bcd807645c2c5299"
-              },
-              "text"
-            ]
-          ],
-          "accessed": "2026-10-17"
         }
       ],
       "origin": "KR",
@@ -79715,6 +79524,23 @@
                 "id": "np-us-gsa"
               },
               "what"
+            ]
+          ],
+          "accessed": "2026-10-20"
+        },
+        {
+          "text": "This partnership will further GSA and CAISI’s work to create resources that support federal agencies’ procurement and adoption of AI systems",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "claims",
+              {
+                "id": "claims-0793976f52fa4fb2bd73620e05239667"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-20"
@@ -97523,23 +97349,6 @@
             ]
           ],
           "accessed": "2026-10-20"
-        },
-        {
-          "text": "CAISI is just one of the ways by which NIST serves as American industry’s national lab, by supporting the world-leading American AI industry through collaborative research on AI metrology and model evaluations.",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "us-caissi"
-              },
-              "claims",
-              {
-                "id": "claims-89ed3febc2ab477fa8544e388c36a71d"
-              },
-              "text"
-            ]
-          ],
-          "accessed": "2026-10-19"
         }
       ],
       "snapshot": {
@@ -103571,24 +103380,6 @@
           "accessed": "2026-10-19"
         },
         {
-          "text": "KI Norge gjør det enklere for virksomheter, særlig små og mellomstore, å forstå regelverk, finne relevante verktøy og komme i gang med kunstig intelligens på en innovativ og ansvarlig måte.",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "no-ki-norge"
-              },
-              "claims",
-              {
-                "id": "claims-0132732c8534478a827e1d638e013617"
-              },
-              "text"
-            ]
-          ],
-          "gloss": "KI Norge makes it easier for businesses, especially small and medium-sized ones, to understand the rules, find relevant tools and get started with artificial intelligence in an innovative and responsible way.",
-          "accessed": "2026-10-19"
-        },
-        {
           "text": "I et fellesoppdrag med Nasjonal kommunikasjonsmyndighet (Nkom) og Datatilsynet skal KI Norge etablere og drive Norges regulatoriske sandkasse for kunstig intelligens, etter KI-loven.",
           "gloss": "In a joint assignment with the National Communications Authority (Nkom) and the Data Protection Authority, KI Norge is to establish and run Norway's regulatory sandbox for artificial intelligence, under the AI Act.",
           "supports": [
@@ -104499,29 +104290,6 @@
           "accessed": "2026-10-19"
         },
         {
-          "text": "We serve as a platform for sharing information on AI safety technologies and policies, while fostering collaboration in human resources, technology, and infrastructure among domestic companies, universities, and research institutes.",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "kr-aisi"
-              },
-              "claims",
-              {
-                "id": "claims-3c0a171f93634bbbb83571ff38797b62"
-              },
-              "text"
-            ]
-          ],
-          "anchors": [
-            {
-              "text": "National Safety Hub",
-              "kind": "heading"
-            }
-          ],
-          "accessed": "2026-10-19"
-        },
-        {
           "text": "International Network of AISIs (’24.11.~)",
           "supports": [
             [
@@ -104636,80 +104404,6 @@
               },
               "staffing_model",
               "code"
-            ]
-          ],
-          "accessed": "2026-10-19"
-        },
-        {
-          "text": "The national AI Trust Function brings together: Standards and Policy AI safety and security standards, risk classiﬁcations and guidance on safe use Evaluation and Certiﬁcation Testing of AI models and applications against those standards",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "my-aisafe"
-              },
-              "claims",
-              {
-                "id": "claims-d8ea191dbb5748858e822c74278f612b"
-              },
-              "text"
-            ]
-          ],
-          "anchors": [
-            {
-              "text": "MY-AISAFE DELIVERS E12 AI TRUST FUNCTION, ONE OF THE PLAN’S 28 INITIATIVES",
-              "kind": "heading"
-            }
-          ],
-          "accessed": "2026-10-19"
-        },
-        {
-          "text": "MY-AISafe puts these principles into practice through testing, evaluation and technical evidence. The institute develops tests, benchmarks and evaluation reports to assess AI systems against key areas of responsible AI.",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "my-aisafe"
-              },
-              "claims",
-              {
-                "id": "claims-9ffc2525857043a9a8c96d2d820dffe5"
-              },
-              "text"
-            ]
-          ],
-          "accessed": "2026-10-19"
-        },
-        {
-          "text": "MY-AISafe tests systems before release, then manages incidents and tracks emerging threats once they are in use. 1 Before release: Benchmarks, red teaming and evaluation reports.",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "my-aisafe"
-              },
-              "claims",
-              {
-                "id": "claims-ca125c781fc1444c9ce6fe7d9c4d9d8f"
-              },
-              "text"
-            ]
-          ],
-          "accessed": "2026-10-19"
-        },
-        {
-          "text": "MY-AISafe tests systems before release, then manages incidents and tracks emerging threats once they are in use.",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "my-aisafe"
-              },
-              "claims",
-              {
-                "id": "claims-2d1df4ccb30245b0baccfdb710a5d324"
-              },
-              "text"
             ]
           ],
           "accessed": "2026-10-19"
@@ -116998,7 +116692,14 @@
                 "id": "claims-dac88e4331254b3a97fae1b30b26307a"
               },
               "text"
-            ],
+            ]
+          ],
+          "accessed": "2026-10-24",
+          "gloss": "Korea AISI publishes the fifth edition of its quarterly AI Safety Forecast Report."
+        },
+        {
+          "text": "인공지능안전연구소(Korea AISI)가 'AI 안전 전망 보고서(AI Safety Forecast Report)' 제5호를 발간합니다. 이번 호는 2026년 5~7월 주요 뉴스 보도를 대상으로 가중도, 고유벡터, 매개 중심성 분석을 수행하고, 전문가 그룹이 정책·거버넌스, 산업·기술, 지정학의 세 축을 교차 분석하여 미래 시나리오를 설계했습니다.",
+          "supports": [
             [
               "institutes",
               {
@@ -117012,7 +116713,7 @@
             ]
           ],
           "accessed": "2026-10-24",
-          "gloss": "Korea AISI publishes the fifth edition of its quarterly AI Safety Forecast Report."
+          "gloss": "Korea AISI publishes the fifth edition of the AI Safety Forecast Report. This edition analyses major news coverage from May to July 2026 by weighted degree, eigenvector and betweenness centrality, and an expert group cross-analysed three axes, policy and governance, industry and technology, and geopolitics, to design future scenarios."
         }
       ],
       "snapshot": {
@@ -117353,17 +117054,6 @@
                 "id": "agreements-0de799faa70640d78c37d2c4d5f0f6fe"
               },
               "counterparty"
-            ],
-            [
-              "institutes",
-              {
-                "id": "jp-aisi"
-              },
-              "claims",
-              {
-                "id": "claims-897d981bc75c479c8dafbe84751693ab"
-              },
-              "text"
             ]
           ],
           "accessed": "2026-10-24"
@@ -119193,31 +118883,6 @@
               "next_check",
               "reason"
             ]
-          ],
-          "accessed": "2026-11-02"
-        },
-        {
-          "text": "Hierzu \nwerden vorhandene Prüf- und Evaluierungsmethoden genutzt und weiterentwi-\nckelt.",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "de-aisi"
-              },
-              "claims",
-              {
-                "id": "claims-5c0b259e725942878f6269ca5cb9c344"
-              },
-              "text"
-            ]
-          ],
-          "gloss": "For this, existing test and evaluation methods are used and further developed.",
-          "anchors": [
-            {
-              "text": "3. Über welche technischen Prüfverfahren, Evaluierungsmethoden oder \nTestumgebungen verfügt das AISI Deutschland nach Kenntnis der Bun-\ndesregierung bereits, und welche sollen noch entwickelt werden?",
-              "kind": "heading",
-              "gloss": "3. What technical testing procedures, evaluation methods or test environments does AISI Deutschland already have, to the federal government's knowledge, and which are still to be developed?"
-            }
           ],
           "accessed": "2026-11-02"
         }
