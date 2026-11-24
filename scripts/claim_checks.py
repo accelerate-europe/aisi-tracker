@@ -49,15 +49,17 @@ def current_codes(vocabularies: dict) -> list[str]:
     ]
 
 
-def function_rows(institute: dict, vocabularies: dict) -> list[dict] | None:
+def function_rows(institute: dict, vocabularies: dict, text_sources: dict | None = None) -> list[dict] | None:
     """One row per current code: the bases of the institute's function claims, else not_found or not_coded.
 
-    None when the dataset defines no function vocabulary.
+    text_sources maps claim IDs to the sources bound to their text leaves. None when the
+    dataset defines no function vocabulary. Equal dates retain the authored claim order.
     """
     if not vocabularies.get("function"):
         return None
     coded = set(institute.get("check", {}).get("functions", {}).get("codes", []))
     claims = [c for c in institute.get("claims", []) if c.get("kind") == "function"]
+    dates = {c["id"]: (text_sources or {}).get(c["id"], {}).get("published") for c in claims}
     rows = []
     for code in current_codes(vocabularies):
         matching = [c for c in claims if c.get("code") == code]
@@ -68,9 +70,14 @@ def function_rows(institute: dict, vocabularies: dict) -> list[dict] | None:
             value = next(b for b in BASES if b in bases)
         else:
             value = "not_found" if code in coded else "not_coded"
-        rows.append(
-            {"code": code, "value": value, "claim_ids": [c.get("id") for c in matching]}
-        )
+        mandates = [c for c in matching if c.get("basis") == "mandate"]
+        live = [c for c in matching if c.get("basis") == "activity" and not c.get("expired")]
+        expired = [c for c in matching if c.get("basis") == "activity" and c.get("expired")]
+        # Padding puts a partial date before longer dates with the same prefix; stable sorting preserves ties.
+        live.sort(key=lambda c: (dates[c["id"]] or "").ljust(10), reverse=True)
+        since = min((dates[c["id"]] for c in live), key=lambda day: day.ljust(10)) if live and all(dates[c["id"]] for c in live) else None
+        rows.append({"code": code, "value": value, "claim_ids": [c["id"] for c in mandates + live + expired],
+                     "since": since, "newest": live[0]["id"] if live else None})
     return rows
 
 

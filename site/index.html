@@ -39,7 +39,7 @@
  * Type: title, label, body, meta, figure, plus fn-group for functions group labels on narrow phones; label, body and meta fixed up to 1200px and growing to their wide-screen sizes at 1440px, so tables and cards fit at 1100px and wider with default settings; the functions table also fits from 1080px. Figure and title grow from phone width; shared size, weight, family and role-specific line height. The headline is the figure role with only its numbers at figure weight, its words at body weight.
  * Width system: --page-width is 80rem; --content-width is the page width minus --section-label and --section-gap; --text-width is 49rem for explicit running-text paragraphs, narrative list items, claims, quotations and source-entry text inside their shells. Every ordinary section body is left-aligned and capped at the content width, even when the label stacks below 1280px. Tables have that same maximum, with intrinsic overflow confined to their scroller. Both Functions views, its caption and the Funding charts, grouped lists, bands and their rules, foot rows, fold and panel shells and card grids share the content edge. Section headings are static above the body below 1280px and sticky beside it from there. The first section uses the page width; named local geometry covers the map split/stack and region list, card/table/chart tracks, palette, tooltip, panel padding and quotation indentation (check_page check_content_grid).
  * Secondary tone: --muted is for source apparatus (citations, sources, re-read lines, translation markers and source dates), method notes and field labels. Facts, body roles and qualifiers needed to read values use --ink; type sizes do not decide their colour. Below each Funding chart, muted Not compared and Not published lines distinguish other published amounts in the records from missing figures (owner, 19 Nov 2026).
- * Function detail: a grid cell is a mark, so its sticky head keeps the full function label in label type and ink below the state and institute. The body starts with a muted status sentence naming the institute's short form: "Assigned to UK AISI, and active", "Assigned to KI Norge", "KI Norge is active, without an assignment" (owner, 18 Nov 2026). Claims directly beneath a named function in the grouped view omit the repeated function heading and status. The whole opened block, including basis labels, quotes and anchors, starts at or after the function name's text edge at every width. The row keeps any extra status information, including "without an assignment", and the status reads in the name's line inside the button, so its selection bar and focus ring enclose both. The inline region takes its accessible name from that button. In both views, mixed claims keep the block labels Assignment, then Activity. Each claim reads: its sentence, without a citation number, then its source line in the running form (Sources), ending after " · " with "Quote" and the fold chevron in the source line's size and muted ink; the quote opens beneath, indented. Cards and full records keep sentence then Quote, with their sources in the counted Sources. All quote folds follow Claims for their accessible name and translation line. The grid panel stays at its scroll box's left edge and takes its clientWidth in pixels (check_page check_functions_phone).
+ * Function detail: a grid cell is a mark, so its sticky head keeps the full function label in label type and ink below the state and institute. The body starts with a muted status sentence naming the institute's short form: "Assigned to UK AISI, and active", "Assigned to KI Norge", "KI Norge is active, without an assignment" (owner, 18 Nov 2026). Claims directly beneath a named function in the grouped view omit the repeated function heading and status. The whole opened block, including basis labels, quotes and anchors, starts at or after the function name's text edge at every width. The row keeps any extra status information, including "without an assignment", and the status reads in the name's line inside the button, so its selection bar and focus ring enclose both. The inline region takes its accessible name from that button. In both views, mixed claims keep the block labels Assignment, then Activity. Opened functions list assignment entries, then the three most recent activity entries, then "{n} earlier" folded; the grouped function line names since and the newest entry. Each claim reads: its sentence, without a citation number, then its source line in the running form (Sources), ending after " · " with "Quote" and the fold chevron in the source line's size and muted ink; the quote opens beneath, indented. Cards and full records keep sentence then Quote, with their sources in the counted Sources. All quote folds follow Claims for their accessible name and translation line. The grid panel stays at its scroll box's left edge and takes its clientWidth in pixels (check_page check_functions_phone).
  * Sticky reading heads: at every width, grouped Functions and every table head stay directly below the real navigation and group row bottom, including sideways-scrolling tables. Overflowing tables move their real head within the table, preserving column alignment and semantics. At every width, a long detail's compact identity and sole close × stay within that detail at the same top, replacing a table head while reading it. Closed mini cards keep the country and first finding sentence; open ones show the country in their sticky summary and the complete finding once beneath it. Funding's native fallback keeps "Funding and staff records" when closed; its open sticky summary shows the identity, with the records beneath it. Both folds have a separate close × alongside the summary; the open summary spans the row to paint behind that close. Full States cards keep their sticky title. Close has at least a 44px square hit area and returns focus to the visible opener. Focus and anchor clearance includes the active head for grouped rows, functions, claims and their links; print keeps heads static (check_page check_functions_phone, check_wide_layout).
  * Panel identity: panels and records opened from a table or the map name the state first, then the institute in muted type, using its base name without a repeated state suffix; it is what stays visible when the row has scrolled away. Cards under States and Compare keep the state's name. In panels the state never truncates; the institute wraps, onto its own line on phones. Wrapped heads keep normal label line spacing; alignment with a Close control never enlarges the spacing between lines. The moving head contains every identity and function line and paints an opaque copy of its panel ground across the full panel width, including any tint over the page ground. The panel name, title and contextual Close name use the same identity.
  * Reading-head spacing: grouped, grid, world and Funding heads, card, panel, mini-card and Funding-detail headers, and record titles all keep --reading-pad inside their moving head. The first text line has the same inset below its sticking edge as it has below its head's top in flow, within 1px. That edge is the navigation's bottom rule, or the wide Map record's inner scrollport edge when lower (check_page reading_head_errors).
@@ -788,7 +788,7 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
 .fn-scroll:not(.fits) .fn-detail-top { position: relative; top: auto; transform: translateY(var(--sticky-shift, 0px)); }
 .fn-phone[data-head-covered] > .fn-phone-head, .fn-scroll[data-head-covered] thead { visibility: hidden; }
 .fn-detail-context { font: var(--type-label); color: var(--muted); margin: 0 0 var(--sp-3); }
-.fn-claim + :is(.fn-claim, .fn-basis) { margin-top: var(--sp-4); }
+.fn-claim + :is(.fn-claim, .fn-basis, .fn-earlier) { margin-top: var(--sp-4); }
 .fn-basis { margin: 0 0 var(--sp-2); }
 .fn-sources details.quote-inline { display: inline; margin: 0; }
 .fn-sources details.quote-inline > summary { display: inline-flex; width: auto; min-height: 0; vertical-align: baseline; } /* the Quote level's own type and ink */
@@ -833,7 +833,7 @@ button.fn-function-label:focus-visible::before { inset: 0; transform: none; outl
 button.fn-function-label:focus-visible { outline: none; background: var(--highlight-fill); }
 .fn-function-status { font: inherit; color: var(--muted); }
 .fn-function-status .qualifier-text { font-size: var(--size-meta); } /* the outer body's line box keeps the name's baseline rhythm */
-.fn-function-summary { flex-basis: 100%; margin: 0; margin-inline-end: max(0px, calc(100% - var(--text-width))); padding-left: var(--fn-text-inset); font: var(--type-meta); color: var(--muted); } /* reserve the space beyond the text measure: the flex line otherwise clamps this item to its max-width and can place it beside a short name and status */
+.fn-function-summary, .fn-function-newest { flex-basis: 100%; margin: 0; margin-inline-end: max(0px, calc(100% - var(--text-width))); padding-left: var(--fn-text-inset); font: var(--type-meta); color: var(--muted); } /* reserve the space beyond the text measure: the flex line otherwise clamps this item to its max-width and can place it beside a short name and status */
 .fn-phone-claims { flex-basis: 100%; min-width: 0; margin-block: var(--sp-2) var(--sp-4); margin-inline-start: var(--fn-text-inset); }
 /* Without the page script the rows cannot open, so the readable grid shows. */
 .fn[data-view="grouped"] :is(.fn-scroll, .fn-desktop-only) { display: none; }
@@ -1409,9 +1409,10 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     document.addEventListener("toggle", schedule, true); document.fonts.ready.then(schedule); schedule();
   }
   var MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-  function fmtDate(s) {
+  function fmtDate(s, monthOnly) {
     if (!s) return "";
     var p = s.split("-");
+    if (monthOnly && p.length > 1) return new Date(s.slice(0, 7) + "-01T00:00:00Z").toLocaleDateString("en-GB", { month: "long", year: "numeric", timeZone: "UTC" });
     return p.length === 3 ? (+p[2]) + " " + MON[+p[1] - 1] + " " + p[0] : p.length === 2 ? MON[+p[1] - 1] + " " + p[0] : p[0];
   }
   // A date inside running text, kept on one line.
@@ -3507,7 +3508,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         view_grid: "All {count} functions", view_grouped: "By group",
         show: "{country}, {institute}: show functions", phone_not_found: "No public text found; it may still be done",
         // The grid panel's second line, a sentence under the function's name (owner, 18 Nov 2026), at every width.
-        state: { mandate: "Assigned to {institute}", activity: "{institute} is active, without an assignment", both: "Assigned to {institute}, and active" },
+        state: { mandate: "Assigned to {institute}", activity: "{institute} is active{since}, without an assignment", both: "Assigned to {institute}, and active{since}" },
         // A cell with both bases groups its claims under these labels, in the status line's order (owner, 18 Nov 2026).
         blocks: { mandate: "Assignment", activity: "Activity" }
       };
@@ -3571,32 +3572,45 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         }
         return FN_COPY.summary.replace("{functions}", text);
       }
+      function fnSince(row) { return row.since ? " since " + fmtDate(row.since, true) : ""; }
+      function fnStatus(row) { return row.value === "activity" ? "active" + fnSince(row) + ", without an assignment" : names[row.value].toLowerCase() + fnSince(row); }
+      function fnNewest(row) {
+        if (!row.newest) return "";
+        var entry = CLAIM_INDEX[row.newest], bound = entry.excerpts[0]; // A function claim has exactly one text binding.
+        var day = bound && bound.source.published;
+        return "Newest: " + entry.claim.text + (day ? " (" + fmtDate(day, true) + ")" : "");
+      }
       function appendClaims(detail, i, code, inline) {
-        var cite = citations(S, (SOURCE_ORDERS[i.jurisdiction_id] || []).slice(), {}), value = rows[i.id][code].value;
+        var cite = citations(S, (SOURCE_ORDERS[i.jurisdiction_id] || []).slice(), {}), row = rows[i.id][code], value = row.value;
         if (!inline) {
           var context = el("p", "fn-detail-context running-text");
           var sentence = FN_COPY.state[value];
-          if (sentence) sentence.split(/(\{institute\}|and active|without an assignment)/).forEach(function (part) {
+          if (sentence) sentence.replace("{since}", fnSince(row)).split(/(\{institute\}|and active|without an assignment)/).forEach(function (part) {
             if (part === "{institute}") context.appendChild(instShort(i));
             else if (part) context.appendChild(/^(and active|without an assignment)$/.test(part) ? el("span", "status-phrase", part) : document.createTextNode(part));
           });
           else { context.appendChild(instShort(i)); context.appendChild(sepGap()); context.appendChild(trailingQualifier(names[value].toLowerCase(), "fn-context-status")); }
           detail.appendChild(context);
         }
-        var basisRank = function (id) { return CLAIM_INDEX[id].claim.basis === "mandate" ? 0 : 1; };
-        var ids = rows[i.id][code].claim_ids.slice().sort(function (a, b) { return basisRank(a) - basisRank(b); }); // assignment first, otherwise in recorded order
+        var ids = row.claim_ids;
         var mixed = ids.some(function (id) { return CLAIM_INDEX[id].claim.basis !== CLAIM_INDEX[ids[0]].claim.basis; }), labelled = null;
+        var activities = ids.filter(function (id) { return CLAIM_INDEX[id].claim.basis === "activity"; }), shown = 0, earlier;
         ids.forEach(function (id) {
           var claim = CLAIM_INDEX[id].claim, item = claimBlock(claim, cite); item.classList.add("fn-claim"); item.dataset.claim = id;
           // A cell with both bases heads each block "Assignment" or "Activity"; otherwise the status line carries the state.
           if (mixed && claim.basis !== labelled) { detail.appendChild(el("p", "fn-basis", FN_COPY.blocks[claim.basis] || capital(names[claim.basis]))); labelled = claim.basis; }
+          var target = detail;
+          if (claim.basis === "activity" && ++shown > 3) {
+            if (!earlier) { earlier = el("details", "more quiet fn-earlier"); earlier.appendChild(el("summary", null, (activities.length - 3) + " earlier")); detail.appendChild(earlier); }
+            target = earlier;
+          }
           // The sentence without its number (its source is written out just below), its source line ending with the quote control,
           // the quote opening beneath (principle: Function detail, Citations).
           item.querySelectorAll(":scope > .claim-text .cites").forEach(function (n) { n.remove(); });
           var fold = item.querySelector(":scope > details.quote"), list = fnSources(fieldCitations(claim, ["text"]), id), bound = (CLAIM_INDEX[id].excerpts[0] || {}).source;
           item.insertBefore(list, fold);
           quoteOnSourceLine(fold, (bound && list.querySelector('li[data-source-id="' + bound.id + '"]')) || list.lastElementChild);
-          detail.appendChild(item);
+          target.appendChild(item);
         });
         glueCitations(detail); externalLinks(detail);
       }
@@ -3705,9 +3719,11 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
                 var name = el("span", "fn-name", vocab[code].label); label.appendChild(pip); label.appendChild(name);
                 if (coded(row.value)) { li.dataset.code = code; label.type = "button"; label.id = detail.id + "-" + code + "-label"; label.setAttribute("aria-expanded", "false"); label.setAttribute("aria-controls", detail.id + "-" + code); }
                 // The status reads in the name's line, so it wraps to the name's start and the selection spans both.
-                name.appendChild(sepGap()); name.appendChild(trailingQualifier(row.value === "activity" ? "active, without an assignment" : names[row.value].toLowerCase(), "fn-function-status"));
+                name.appendChild(sepGap()); name.appendChild(trailingQualifier(fnStatus(row), "fn-function-status"));
                 li.appendChild(label);
-                li.appendChild(el("p", "fn-function-summary running-text", vocab[code].summary)); functions.appendChild(li);
+                li.appendChild(el("p", "fn-function-summary running-text", vocab[code].summary));
+                if (row.newest) li.appendChild(el("p", "fn-function-newest running-text", fnNewest(row)));
+                functions.appendChild(li);
               }); detail.appendChild(heading); detail.appendChild(functions);
             }); button.parentNode.appendChild(detail); detailRow = detail; selected(button);
           });
@@ -3746,7 +3762,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
                 if (coded(row.value)) {
                   var button = el("button", "fn-cell"); button.type = "button"; button.appendChild(mark(row.value));
                   button.setAttribute("aria-expanded", "false"); button.setAttribute("aria-controls", "fn-detail-" + i.id);
-                  button.setAttribute("aria-label", place + ", " + vocab[code].label + ": " + names[row.value]); td.appendChild(button);
+                  button.setAttribute("aria-label", place + ", " + vocab[code].label + ": " + names[row.value] + (row.since ? "," + fnSince(row) : "")); td.appendChild(button);
                 } else td.appendChild(el("span", "vh", names[row.value])); // only not_coded draws a dash via ::before
                 tr.appendChild(td);
               }); tr.appendChild(pad()); tbody.appendChild(tr);

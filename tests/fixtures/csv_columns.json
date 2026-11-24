@@ -204,7 +204,9 @@
   "institute_id",
   "code",
   "value",
-  "claim_ids"
+  "claim_ids",
+  "since",
+  "newest"
  ],
  "claims": [
   "id",

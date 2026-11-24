@@ -4,6 +4,7 @@ generated institutes[].functions rows, each gate with its mutation."""
 import copy
 import json
 import re
+from pathlib import Path
 
 import pytest
 from jsonschema import Draft202012Validator
@@ -73,24 +74,25 @@ def claimed(dataset):
 def test_functions_rows_follow_claims_and_check(claimed):
     rows = build.export_dataset(claimed)["institutes"][0]["functions"]
     assert rows == [
-        {"code": "model_testing", "value": "both", "claim_ids": [TESTING, MANDATE]},
-        {"code": "research", "value": "not_found", "claim_ids": []},
-        {"code": "policy_advice", "value": "not_coded", "claim_ids": []},
+        {"code": "model_testing", "value": "both", "claim_ids": [MANDATE, TESTING], "since": None, "newest": TESTING},
+        {"code": "research", "value": "not_found", "claim_ids": [], "since": None, "newest": None},
+        {"code": "policy_advice", "value": "not_coded", "claim_ids": [], "since": None, "newest": None},
     ]  # vocabulary order; the retired code gets no row; a jurisdiction's body claim never counts
 
 
 @pytest.mark.parametrize("basis", ["mandate", "activity"])
-def test_one_basis(basis):
+@pytest.mark.parametrize("day", [None, "2024", "2024-11", "2024-11-20"])
+def test_one_basis(basis, day):
     institute = {"claims": [{"id": TESTING, "kind": "function", "code": "research", "basis": basis}]}
-    rows = claim_checks.function_rows(institute, {"function": VOCABULARY})
-    assert rows[1] == {"code": "research", "value": basis, "claim_ids": [TESTING]}
+    rows = claim_checks.function_rows(institute, {"function": VOCABULARY}, {TESTING: {"published": day}})
+    assert rows[1] == {"code": "research", "value": basis, "claim_ids": [TESTING], "since": day if basis == "activity" else None, "newest": TESTING if basis == "activity" else None}
     assert rows[0]["value"] == "not_coded"
 
 
 def test_csv_rows(claimed):
     tables = build.tables(build.export_dataset(claimed))
     assert [(r["institute_id"], r["code"], r["value"], r["claim_ids"]) for r in tables["functions"]] == [
-        ("gb-test", "model_testing", "both", f"{TESTING}; {MANDATE}"),
+        ("gb-test", "model_testing", "both", f"{MANDATE}; {TESTING}"),
         ("gb-test", "research", "not_found", ""),
         ("gb-test", "policy_advice", "not_coded", ""),
     ]
@@ -100,6 +102,69 @@ def test_csv_rows(claimed):
     assert (rows[FACT]["jurisdiction_id"], rows[FACT]["institute_id"], rows[FACT]["code"]) == ("GB", "gb-test", "")
     assert list(rows[TESTING]) == build.EMPTY_COLUMNS["claims"]
     assert list(tables["functions"][0]) == build.EMPTY_COLUMNS["functions"]
+    contract = json.loads((Path(__file__).parent / "fixtures/csv_columns.json").read_text())
+    assert list(tables["functions"][0]) == contract["functions"]
+    assert tables["functions"][0]["since"] is None
+    assert tables["functions"][0]["newest"] == TESTING
+
+
+@pytest.mark.parametrize("undated", [False, True])
+def test_function_rows_order_live_evidence_and_preserve_partial_dates(undated):
+    claims = [{"id": cid, "kind": "function", "code": "research", "basis": "activity"}
+              for cid in ("year", "expired-first", "full", "month", "tied", "mandate", "older", "expired-second", "mandate-second")]
+    for c in claims:
+        if c["id"].startswith("expired"):
+            c["expired"] = True
+        if c["id"].startswith("mandate"):
+            c["basis"] = "mandate"
+    dates = {"year": "2024", "expired-first": "2026", "full": "2024-11-20", "month": "2024-11",
+             "tied": "2024-11-20", "mandate": "2020", "older": "2024-03", "expired-second": "2025"}
+    if undated:
+        claims.insert(0, {"id": "undated", "kind": "function", "code": "research", "basis": "activity"})
+    rows = claim_checks.function_rows({"claims": claims}, {"function": VOCABULARY}, {cid: {"published": day} for cid, day in dates.items()})
+    row = next(r for r in rows if r["code"] == "research")
+    assert row == {"code": "research", "value": "both",
+                   "claim_ids": ["mandate", "mandate-second", "full", "tied", "month", "older", "year"] + (["undated"] if undated else []) + ["expired-first", "expired-second"],
+                   "since": None if undated else "2024", "newest": "full"}
+
+
+def test_function_rows_only_undated_and_expired_activity():
+    claims = [{"id": cid, "kind": "function", "code": "research", "basis": "activity", "expired": expired}
+              for cid, expired in (("expired", True), ("first", False), ("second", False))]
+    sources = {"expired": {"published": "2026-01-01"}}
+    row = claim_checks.function_rows({"claims": claims}, {"function": VOCABULARY}, sources)[1]
+    assert (row["claim_ids"], row["since"], row["newest"]) == (["first", "second", "expired"], None, "first")
+    for c in claims:
+        c["expired"] = True
+    row = claim_checks.function_rows({"claims": claims}, {"function": VOCABULARY}, sources)[1]
+    assert (row["claim_ids"], row["since"], row["newest"]) == (["expired", "first", "second"], None, None)
+
+
+def test_function_dates_use_text_binding_and_refresh_after_expiry(claimed):
+    d = copy.deepcopy(claimed)
+    source = d["sources"][0]
+    source["published"] = "2024-11"
+    claims = d["institutes"][0]["claims"]
+    later = "claims-" + "6" * 32
+    claims.append({**claims[0], "id": later, "source_ids": ["later", "unbound"]})
+    # The newer cited source has no text binding, so it must never supply the claim date.
+    d["sources"].extend([
+        {**source, "id": "later", "published": "2025-02-03", "excerpts": [excerpt("Later tests.", "/institutes/0/claims/3/text")]},
+        {**source, "id": "unbound", "published": "2026", "excerpts": []},
+    ])
+    empty = {"checked_to": None, "runs": [], "sources": {}}
+    row = fact_pipeline.publish(d, rereads=empty)["institutes"][0]["functions"][0]
+    assert (row["claim_ids"], row["since"], row["newest"]) == ([MANDATE, later, TESTING], "2024-11", later)
+    states = {**empty, "sources": {"later": {rereads.quote_id("Later tests."): {
+        "state": "quote_gone", "last_found": "2025-02-03", "since": "2025-02-04",
+    }}}}
+    published = fact_pipeline.publish(d, rereads=states)
+    institute = published["institutes"][0]
+    assert next(c for c in institute["claims"] if c["id"] == later)["expired"]
+    row = institute["functions"][0]
+    assert (row["claim_ids"], row["since"], row["newest"]) == ([MANDATE, TESTING, later], "2024-11", TESTING)
+    csv = build.tables(published)["functions"][0]
+    assert (csv["since"], csv["newest"]) == ("2024-11", TESTING)
 
 
 def test_claim_sources_stay_off_the_page(claimed):

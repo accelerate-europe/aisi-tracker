@@ -781,6 +781,7 @@ def tables(d: dict) -> dict[str, list[dict]]:
     } for i in d["institutes"] for e in i.get("national_partners", {}).get("entries", [])]
     functions = [{
         "id": row["code"], "institute_id": i["id"], "code": row["code"], "value": row["value"], "claim_ids": join(row["claim_ids"]),
+        "since": row.get("since"), "newest": row.get("newest"),
     } for i in d["institutes"] for row in i.get("functions", [])]
     claim_owners = [(j["id"], "", j) for j in d["jurisdictions"]] + [(i["jurisdiction_id"], i["id"], i) for i in d["institutes"]]
     claims = [{
@@ -1000,7 +1001,7 @@ EMPTY_COLUMNS = {
     "exchange_rates": ["id", "currency", "units_per_eur", "eur_per_unit", "basis", "period_start", "period_end", "source_ids", "source_urls", "source_accessed"],
     "timeline": ["id", "jurisdiction_id", "event_id", "date", "event", "instrument", "description", "short", "withdraws", "source_ids", "source_urls"],
     "national_partners": ["id", "institute_id", "name", "name_en", "acronym", "what", "relation", "cyber_agency", "how", "source_ids", "source_urls"],
-    "functions": ["id", "institute_id", "code", "value", "claim_ids"],
+    "functions": ["id", "institute_id", "code", "value", "claim_ids", "since", "newest"],
     "claims": ["id", "jurisdiction_id", "institute_id", "kind", "code", "basis", "body_id", "lead", "text", "act", "date", "source_ids", "source_urls", "reread_state", "last_found"],
     "agreements": ["id", "institute_id", "counterparty", "counterparty_type", "state", "participation", "date", "scope", "source_ids", "source_urls"],
     "events": ["id", "jurisdiction_id", "jurisdiction", "institute_id", "institute", "type", "news_kind", "date", "description", "short", "news", "origin_kind", "origin_id", "source_pointer", "withdraws", "scheduled", "source_ids", "source_urls"],

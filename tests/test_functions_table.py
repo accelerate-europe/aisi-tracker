@@ -87,6 +87,18 @@ def test_functions_structure_keeps_unanimous_not_found_columns(functions):
     assert [i["id"] for i in check_page.function_rows(data)] == ["z", "a"]
 
 
+@pytest.mark.parametrize("day, label", [("2024", "2024"), ("2024-11", "November 2024"), ("2024-11-20", "November 2024")])
+def test_grid_control_names_since_at_month_precision(functions, day, label):
+    data, html = functions
+    data = copy.deepcopy(data)
+    institute = next(i for i in data["institutes"] if i["id"] == "z")
+    next(row for row in institute["functions"] if row["code"] == "testing")["since"] = day
+    assert check_page.function_month(day) == label
+    assert any("coded control/name differs" in e for e in check_page.functions_structure(html, data))
+    html = html.replace('aria-label="Zulu, Testing: Active"', 'aria-label="Zulu, Testing: Active, since ' + label + '"')
+    assert check_page.functions_structure(html, data) == []
+
+
 def test_functions_structure_rejects_a_missing_vocabulary_column(functions):
     from bs4 import BeautifulSoup
 
@@ -340,11 +352,12 @@ def test_function_claims_keep_grid_status_and_mixed_basis_labels():
 
     source = (Path(__file__).resolve().parents[1] / 'site/index.html').read_text()
     copy = source[source.index('      var FN_COPY ='):source.index('      var names =', source.index('      var FN_COPY ='))]
-    renderer = source[source.index('      function appendClaims('):source.index('      function build()', source.index('      function appendClaims('))]
+    renderer = source[source.index('      function fnSince('):source.index('      function build()', source.index('      function appendClaims('))]
+    dates = source[source.index('  var MON ='):source.index('  // A date inside running text')]
     script = """
 const assert=require('node:assert/strict');
 function el(tag,cls='',text='') {
-  return {className:cls,text,children:[],dataset:{},classList:{add(){}},
+  return {tag,className:cls,text,children:[],dataset:{},open:false,classList:{add(){}},
     get textContent(){return this.text+this.children.map(n=>n.textContent).join('');},
     appendChild(n){this.children.push(n);return n;}, querySelectorAll:()=>[],querySelector:()=>null,insertBefore(){}};
 }
@@ -353,15 +366,20 @@ const citations=()=>{}, fieldCitations=()=>[], fnSources=()=>el('ul'), claimBloc
 const quoteOnSourceLine=()=>{}, glueCitations=()=>{}, externalLinks=()=>{};
 const instShort=i=>el('span','',i.short_name), names={mandate:'Assigned',activity:'Active',both:'Assigned and active'};
 const i={id:'sample',jurisdiction_id:'XX',short_name:'UK AISI'}, rows={sample:{test:{}}};
-const CLAIM_INDEX={a:{claim:{basis:'activity'},excerpts:[]},m:{claim:{basis:'mandate'},excerpts:[]},m2:{claim:{basis:'mandate'},excerpts:[]}};
+const CLAIM_INDEX={a:{claim:{basis:'activity',text:'It ran tests.'},excerpts:[{source:{published:'2024-11-20'}}]},m:{claim:{basis:'mandate'},excerpts:[]},m2:{claim:{basis:'mandate'},excerpts:[]}};
 COPY
+DATES
 RENDERER
-for(const [value,ids,sentence] of [
-  ['mandate',['m'],'Assigned to UK AISI'],
-  ['activity',['a'],'UK AISI is active, without an assignment'],
-  ['both',['a','m','m2'],'Assigned to UK AISI, and active']
+for(const [value,ids,since,sentence,status] of [
+  ['mandate',['m'],null,'Assigned to UK AISI','assigned'],
+  ['activity',['a'],null,'UK AISI is active, without an assignment','active, without an assignment'],
+  ['both',['m','m2','a'],null,'Assigned to UK AISI, and active','assigned and active'],
+  ['activity',['a'],'2024-11-20','UK AISI is active since November 2024, without an assignment','active since November 2024, without an assignment'],
+  ['both',['m','m2','a'],'2024-11','Assigned to UK AISI, and active since November 2024','assigned and active since November 2024'],
+  ['activity',['a'],'2024','UK AISI is active since 2024, without an assignment','active since 2024, without an assignment']
 ]) for(const inline of [false,true]) {
-  rows.sample.test={value,claim_ids:ids};
+  rows.sample.test={value,claim_ids:ids,since};
+  assert.equal(fnStatus(rows.sample.test),status);
   const detail=el('div'); appendClaims(detail,i,'test',inline);
   const contexts=detail.children.filter(n=>n.className.split(' ').includes('fn-detail-context'));
   assert.deepEqual(contexts.map(n=>n.textContent),inline?[]:[sentence]);
@@ -369,7 +387,32 @@ for(const [value,ids,sentence] of [
   assert.deepEqual(evidence.map(n=>n.className==='fn-basis'?n.textContent:n.dataset.claim),
     value==='both'?['Assignment','m','m2','Activity','a']:ids);
 }
-""".replace('COPY', copy).replace('RENDERER', renderer)
+assert.equal(fnNewest({newest:'a'}),'Newest: It ran tests. (November 2024)');
+CLAIM_INDEX.a.excerpts[0].source.published='2024';
+assert.equal(fnNewest({newest:'a'}),'Newest: It ran tests. (2024)');
+delete CLAIM_INDEX.a.excerpts[0].source.published;
+assert.equal(fnNewest({newest:'a'}),'Newest: It ran tests.');
+assert.equal(fnNewest({newest:null}),'');
+for(const count of [1,3,4,6]) for(const value of ['activity','both']) for(const inline of [false,true]) {
+  // Generated order is authoritative, even when IDs do not sort in date order.
+  const activityIds=['z','a','q','b','expired-z','expired-a'].slice(0,count);
+  activityIds.forEach(id=>CLAIM_INDEX[id]={claim:{basis:'activity',expired:id.startsWith('expired')},excerpts:[]});
+  const assignments=value==='both'?['m','m2']:[], ids=[...assignments,...activityIds];
+  rows.sample.test={value,claim_ids:ids,since:null};
+  const detail=el('div'); appendClaims(detail,i,'test',inline);
+  assert.deepEqual(detail.children.filter(n=>n.className==='fn-claim').map(n=>n.dataset.claim),[...assignments,...activityIds.slice(0,3)]);
+  const folds=detail.children.filter(n=>n.className.split(' ').includes('fn-earlier'));
+  assert.equal(folds.length,count>3?1:0);
+  if(count>3) {
+    const fold=folds[0]; assert.equal(fold.tag,'details'); assert.equal(fold.open,false);
+    assert.equal(fold.children[0].tag,'summary'); assert.equal(fold.children[0].textContent,(count-3)+' earlier');
+    assert.deepEqual(fold.children.slice(1).map(n=>n.dataset.claim),activityIds.slice(3));
+    assert.equal(detail.children.at(-1),fold);
+    assert.deepEqual(fold.className.split(' '),['more','quiet','fn-earlier']);
+  }
+  assert.deepEqual(detail.children.filter(n=>n.className==='fn-basis').map(n=>n.textContent),value==='both'?['Assignment','Activity']:[]);
+}
+""".replace('COPY', copy).replace('DATES', dates).replace('RENDERER', renderer)
     subprocess.run(['node', '-'], input=script, text=True, capture_output=True, check=True)
 
 
