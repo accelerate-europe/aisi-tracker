@@ -795,6 +795,7 @@ table.world.empty-inst [data-col="inst"], table.world.empty-since [data-col="sin
 :is(.fn-sources, .fn-entry) details.quote-inline > .quote-body { display: block; margin: var(--sp-2) 0 0 var(--sp-4); font: var(--type-body); color: var(--ink); }
 .fn-entry { position: relative; z-index: 1; font: var(--type-body); color: var(--ink); }
 .fn-entry > .meta-item { display: inline; } /* the sentence flows after its date and before its publisher */
+.fn-entry > .meta-item:not(:has(> .claim-text)) { display: inline-block; } /* the date and the publishers move whole, with their dot, so no line ends with a separator */
 .fn-entry .fn-entry-date { font: var(--type-meta); color: var(--muted); }
 .fn-entry .claim-text { color: var(--ink); }
 .quote-translation { display: block; font: var(--type-meta); color: var(--muted); }
