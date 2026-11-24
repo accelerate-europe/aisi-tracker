@@ -93,8 +93,10 @@ def function_gaps(published_or_authored_data: dict) -> dict:
 
 
 def report_lines(report: dict) -> list[str]:
-    """The CLI and build share the same counts and warning lines."""
+    """The CLI and build share the same counts and warning lines; a dataset with no credited output has nothing to report."""
     counts = report["counts"]
+    if not counts["credited_outputs"]:
+        return []
     lines = [
         f"function gaps: {counts['credited_outputs']} credited outputs; {counts['reviewed']} reviewed, "
         f"{counts['unreviewed']} unreviewed; {counts['shown_without_entry']} shown without an entry; "

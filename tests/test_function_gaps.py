@@ -270,3 +270,8 @@ def test_warning_lines_never_fail_validation_or_check_report(fragment, dataset, 
     ctx = check.Context(tmp_path, tmp_path, tmp_path, tmp_path / "check-report", "HEAD", False, tmp_path / "dist", tmp_path / "cache")
     assert check.step_validate(ctx).status == "PASS"
     assert all(line in ctx.sections["warnings"] for line in lines)
+
+
+def test_no_credited_output_means_no_warning_lines(fragment):
+    fragment["institutes"][0]["outputs"] = []
+    assert gaps.report_lines(gaps.function_gaps(fragment)) == []
