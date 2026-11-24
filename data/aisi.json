@@ -31837,7 +31837,7 @@
           "kind": "function",
           "code": "international_cooperation",
           "basis": "activity",
-          "text": "Advanced the science of evaluation internationally by coordinating the Network for Advanced AI Measurement, Evaluation and Science and contributing to a NIST taxonomy.",
+          "text": "It says it has advanced the science of evaluation internationally by coordinating the Network for Advanced AI Measurement, Evaluation and Science and contributing to a NIST taxonomy.",
           "source_ids": [
             "gb-aisi-best-practice-2026"
           ]
@@ -31905,7 +31905,7 @@
           "kind": "function",
           "code": "foresight",
           "basis": "activity",
-          "text": "Assesses that current oversight rests on properties likely to erode over the next few years unless something is done to preserve them.",
+          "text": "A project team at the institute assesses that current oversight rests on properties likely to erode over the next few years unless something is done to preserve them.",
           "source_ids": [
             "catalogue-gb-19"
           ]
@@ -32969,7 +32969,7 @@
           "kind": "function",
           "code": "foresight",
           "basis": "mandate",
-          "text": "Provides current situation pictures with early-warning indicators.",
+          "text": "Under the report's target picture for 2030, it is to provide current situation pictures with early-warning indicators.",
           "source_ids": [
             "de-ki-taskforce-2030"
           ]
@@ -33909,7 +33909,7 @@
           "kind": "function",
           "code": "model_testing",
           "basis": "mandate",
-          "text": "Under the budget bill, it would be tasked with evaluating AI models, including their safety.",
+          "text": "Under the budget bill, it would be tasked in 2027 with evaluating AI models, including their safety.",
           "source_ids": [
             "no-prop1s-2026-27-dfd"
           ]
@@ -36047,7 +36047,7 @@
           "kind": "function",
           "code": "model_testing",
           "basis": "activity",
-          "text": "Evaluated the open-weight model DeepSeek V4 Pro.",
+          "text": "Evaluated the open-weight model DeepSeek V4 Pro in April 2026.",
           "source_ids": [
             "depth-us-deepseek"
           ]
@@ -38277,7 +38277,7 @@
           "kind": "function",
           "code": "convening",
           "basis": "activity",
-          "text": "Led the launch of a discussion framework aimed at building AI safety benchmarks and held its kick-off.",
+          "text": "Led the launch of a discussion framework aimed at building AI safety benchmarks and held its kick-off in October 2025.",
           "source_ids": [
             "catalogue-jp-4-2"
           ]
@@ -38297,7 +38297,7 @@
           "kind": "function",
           "code": "policy_advice",
           "basis": "activity",
-          "text": "Took part in government discussions on the procurement and use of AI, led by the Digital Agency and other bodies, and made proposals for addressing the risks of generative AI.",
+          "text": "It says it took part in government discussions on the procurement and use of AI, led by the Digital Agency and other bodies, and made proposals for addressing the risks of generative AI.",
           "source_ids": [
             "catalogue-jp-20-2"
           ]
@@ -38317,7 +38317,7 @@
           "kind": "function",
           "code": "talent",
           "basis": "activity",
-          "text": "Has given lectures and conducted training, 14 times in total.",
+          "text": "It says it has given lectures and conducted training, 14 times in total.",
           "source_ids": [
             "catalogue-jp-20-2"
           ]
@@ -38997,7 +38997,7 @@
           "kind": "function",
           "code": "evaluation_methods",
           "basis": "activity",
-          "text": "With Scale AI, it jointly developed ROK-FORTRESS.",
+          "text": "Scale AI says it developed ROK-FORTRESS jointly with the institute.",
           "source_ids": [
             "kr-rok-fortress-2026"
           ]
