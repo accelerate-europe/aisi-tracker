@@ -23,22 +23,30 @@ def functions():
                           {"id": "ZZ", "name": "Zulu", "status": "established", "status_since": "2024"}],
         "institutes": [
             {"id": "a", "jurisdiction_id": "AA", "name": "Alpha Institute", "acronym": "AI",
-             "functions": [{"code": "testing", "value": "both", "claim_ids": []},
+             "functions": [{"code": "testing", "value": "both", "claim_ids": ["am", "aa"]},
                            {"code": "advice", "value": "not_coded", "claim_ids": []},
-                           {"code": "research", "value": "activity", "claim_ids": []},
+                           {"code": "research", "value": "activity", "claim_ids": ["ar"]},
                            {"code": "foresight", "value": "not_found", "claim_ids": []},
-                           {"code": "incidents", "value": "not_found", "claim_ids": []}], "claims": []},
+                           {"code": "incidents", "value": "not_found", "claim_ids": []}],
+             "claims": [{"id": "am", "kind": "function", "basis": "mandate", "text": "It shall test."},
+                        {"id": "aa", "kind": "function", "basis": "activity", "text": "It tested."},
+                        {"id": "ar", "kind": "function", "basis": "activity", "text": "It researched."}]},
             {"id": "z", "jurisdiction_id": "ZZ", "name": "Zulu Institute", "short_name": "ZI",
              "functions": [{"code": "testing", "value": "activity", "claim_ids": ["c"]},
-                           {"code": "advice", "value": "mandate", "claim_ids": []},
+                           {"code": "advice", "value": "mandate", "claim_ids": ["zm"]},
                            {"code": "research", "value": "not_found", "claim_ids": []},
                            {"code": "foresight", "value": "not_found", "claim_ids": []},
                            {"code": "incidents", "value": "not_found", "claim_ids": []}],
              "claims": [{"id": "fact", "kind": "fact", "text": "A separate fact."},
-                        {"id": "c", "kind": "function", "basis": "activity", "text": "It tested a model.", "source_ids": ["s"]}]},
+                        {"id": "c", "kind": "function", "basis": "activity", "text": "It tested a model.", "source_ids": ["s"]},
+                        {"id": "zm", "kind": "function", "basis": "mandate", "text": "It shall advise."}]},
         ],
         "sources": [{"id": "s", "url": "https://example.org/source", "excerpts": [
-            {"text": "We tested model X.", "supports": ["/institutes/1/claims/1/text"]}]}],
+            {"text": "We tested model X.", "supports": ["/institutes/1/claims/1/text"]},
+            {"text": "It shall test.", "supports": ["/institutes/0/claims/0/text"]},
+            {"text": "It tested.", "supports": ["/institutes/0/claims/1/text"]},
+            {"text": "It researched.", "supports": ["/institutes/0/claims/2/text"]},
+            {"text": "It shall advise.", "supports": ["/institutes/1/claims/2/text"]}]}],
     }
     html = '''<nav class="secnav"><a href="#functions" data-sections="functions testing set-up funding">Compare</a></nav>
     <div class="group"><nav class="group-nav"><a href="#functions">Functions</a></nav>
@@ -64,7 +72,7 @@ def functions():
     <td data-code="incidents" data-value="not_found"><span class="vh">not found</span></td><td class="fn-pad" aria-hidden="true"></td></tr>
     </tbody><tbody><tr class="fn-group"><th scope="rowgroup">Not yet established</th><td class="fn-column fn-group-first" data-code="testing" aria-hidden="true"></td><td class="fn-column" data-code="research" aria-hidden="true"></td><td class="fn-column fn-group-start" data-code="advice" aria-hidden="true"></td><td class="fn-column" data-code="foresight" aria-hidden="true"></td><td class="fn-column" data-code="incidents" aria-hidden="true"></td><td class="fn-pad" aria-hidden="true"></td></tr>
     <tr data-institute="a"><th scope="row"><abbr class="g" tabindex="0" aria-description="Alpha Institute">Alpha</abbr></th>
-    <td data-code="testing" data-value="both"><button type="button" class="fn-cell" aria-label="Alpha, Testing: active" aria-expanded="false" aria-controls="detail-a"><span class="fn-mark fn-activity" aria-hidden="true"></span></button></td>
+    <td data-code="testing" data-value="both"><button type="button" class="fn-cell" aria-label="Alpha, Testing: assigned, active" aria-expanded="false" aria-controls="detail-a"><span class="fn-mark fn-activity" aria-hidden="true"></span></button></td>
     <td data-code="research" data-value="activity"><button type="button" class="fn-cell" aria-label="Alpha, Research: active" aria-expanded="false" aria-controls="detail-a"><span class="fn-mark fn-activity" aria-hidden="true"></span></button></td>
     <td data-code="advice" data-value="not_coded" class="fn-group-start"><span class="vh">not yet coded</span></td>
     <td data-code="foresight" data-value="not_found"><span class="vh">not found</span></td>
@@ -97,6 +105,32 @@ def test_grid_control_names_since_at_month_precision(functions, day, label):
     assert any("coded control/name differs" in e for e in check_page.functions_structure(html, data))
     html = html.replace('aria-label="Zulu, Testing: active"', 'aria-label="Zulu, Testing: active since at least ' + label + '"')
     assert check_page.functions_structure(html, data) == []
+
+
+@pytest.mark.parametrize("day, label", [(None, "assigned"), ("2022", "assigned 2022"), ("2022-06", "assigned Jun 2022"), ("2022-06-14", "assigned Jun 2022")])
+def test_grid_control_names_assignment_before_activity_from_bound_source(functions, day, label):
+    data, html = functions
+    data = copy.deepcopy(data)
+    data["sources"].append({"id": "mandate", "published": day, "excerpts": [data["sources"][0]["excerpts"].pop(1)]})
+    institute = next(i for i in data["institutes"] if i["id"] == "a")
+    mandate = next(c for c in institute["claims"] if c["id"] == "am")
+    mandate["source_ids"] = ["s", "mandate"]
+    data["sources"][0]["published"] = "1999"
+    row = next(row for row in institute["functions"] if row["code"] == "testing")
+    row["since"] = "2026-07-16"
+    parts = [label, "active since at least Jul 2026"]
+    assert check_page.function_status_parts(row, check_page.function_quotes(data)) == parts
+    html = html.replace('aria-label="Alpha, Testing: assigned, active"', 'aria-label="Alpha, Testing: ' + ", ".join(parts) + '"')
+    html = html.replace('aria-label="Zulu, Advice: assigned"', 'aria-label="Zulu, Advice: assigned 1999"')
+    assert check_page.functions_structure(html, data) == []
+    assert any("coded control/name differs" in e for e in check_page.functions_structure(html.replace(", active since", " active since"), data))
+    mandate["id"] = "am-later"
+    row["claim_ids"] = ["am-later", "am", "aa"]
+    institute["claims"].append({"id": "am", "kind": "function", "basis": "mandate"})
+    data["sources"].append({"id": "earliest", "published": "2001-02", "excerpts": [{"supports": ["/institutes/0/claims/3/text"]}]})
+    assert check_page.function_status_parts(row, check_page.function_quotes(data))[0] == "assigned Feb 2001"
+    next(c for c in institute["claims"] if c["id"] == "aa")["expired"] = True
+    assert check_page.function_status_parts(row, check_page.function_quotes(data)) == ["assigned Feb 2001"]
 
 
 def test_functions_structure_rejects_a_missing_vocabulary_column(functions):
@@ -134,7 +168,7 @@ def test_function_rows_order_by_year_then_name_then_id(functions):
     ('data-value="activity"', 'data-value="mandate"', "value counts"),
     ('<colgroup span="2"></colgroup>', '<colgroup span="3"></colgroup>', "column groups"),
     ('aria-label="Zulu, Testing: active"', 'aria-label="ZI, Testing: active"', "coded control/name"),
-    ('aria-label="Alpha, Testing: active"', 'aria-label="Alpha, Testing: assigned and active"', "coded control/name"),
+    ('aria-label="Alpha, Testing: assigned, active"', 'aria-label="Alpha, Testing: active"', "coded control/name"),
     ('aria-description="Testing: Tests models."', 'aria-description="Wrong test."', "function label/test"),
     ('aria-description="Zulu Institute"', 'aria-description="Wrong institute"', "row name/institute tip"),
     ('aria-description="Zulu Institute"', 'aria-description="Zulu Institute (planned)"', "status word in row tip"),
@@ -346,7 +380,7 @@ def test_function_group_labels_in_desktop_and_phone_heads(functions, functions_p
         assert any("groups/order" in error or "group heads/order" in error for error in check(html.replace(">" + first_label + "<", ">Wrong group<"), data))
 
 
-def test_function_claims_keep_grid_status_and_mixed_basis_labels():
+def test_function_claims_keep_status_parts_and_generated_order():
     """Exercise the real claim renderer with single/mixed bases, inline and in grid panels."""
     import subprocess
 
@@ -362,32 +396,38 @@ function el(tag,cls='',text='') {
     appendChild(n){this.children.push(n);return n;}, querySelectorAll:()=>[],querySelector:()=>null,insertBefore(){}};
 }
 const document={createTextNode:text=>el('#text','',text)}, S={}, SOURCE_ORDERS={};
-const citations=()=>{}, fieldCitations=()=>[], fnSources=()=>el('ul'), claimBlock=()=>el('div','fn-claim');
+const citations=()=>{}, fieldCitations=()=>[], claimBlock=()=>el('div','fn-claim');
 const quoteOnSourceLine=()=>{}, glueCitations=()=>{}, externalLinks=()=>{};
+const sepGap=()=>el('span','sep-gap',' '), trailingQualifier=(text,cls)=>el('span',cls,text);
+const coded=value=>['mandate','activity','both'].includes(value);
 const instShort=i=>el('span','',i.short_name), names={mandate:'Assigned',activity:'Active',both:'Active'};
 const i={id:'sample',jurisdiction_id:'XX',short_name:'UK AISI'}, rows={sample:{test:{}}};
-const CLAIM_INDEX={a:{claim:{basis:'activity',text:'It ran tests.'},excerpts:[{source:{published:'2024-11-20'}}]},m:{claim:{basis:'mandate'},excerpts:[]},m2:{claim:{basis:'mandate'},excerpts:[]}};
+const CLAIM_INDEX={a:{claim:{basis:'activity',text:'It ran tests.'},excerpts:[{source:{published:'2024-11-20'}}]},
+  m:{claim:{basis:'mandate'},excerpts:[{source:{}}]},m2:{claim:{basis:'mandate'},excerpts:[{source:{published:'2022-06-15'}}]},
+  m3:{claim:{basis:'mandate'},excerpts:[{source:{published:'2024-03'}}]},expired:{claim:{basis:'activity',expired:true},excerpts:[]}};
 COPY
 DATES
 RENDERER
 fnEntry=()=>el('div','fn-claim');
-for(const [value,ids,since,sentence,status] of [
-  ['mandate',['m'],null,'Assigned to UK AISI','assigned'],
-  ['mandate',['m'],'2024-11','Assigned to UK AISI','assigned'],
-  ['activity',['a'],null,'UK AISI is active','active'],
-  ['both',['m','m2','a'],null,'UK AISI is active','active'],
-  ['activity',['a'],'2024-11-20','UK AISI is active since at least Nov 2024','active since at least Nov 2024'],
-  ['both',['m','m2','a'],'2024-11','UK AISI is active since at least Nov 2024','active since at least Nov 2024'],
-  ['activity',['a'],'2024','UK AISI is active since at least 2024','active since at least 2024']
+for(const [value,ids,since,status] of [
+  ['mandate',['m'],null,['assigned']],
+  ['mandate',['m'],'2024-11',['assigned']],
+  ['mandate',['m','m3','m2'],null,['assigned Jun 2022']],
+  ['activity',['a'],null,['active']],
+  ['both',['m','a'],null,['assigned','active']],
+  ['activity',['a'],'2024-11-20',['active since at least Nov 2024']],
+  ['both',['m','m3','m2','a'],'2024-11',['assigned Jun 2022','active since at least Nov 2024']],
+  ['activity',['a'],'2024',['active since at least 2024']],
+  ['both',['m2','expired'],null,['assigned Jun 2022']]
 ]) for(const inline of [false,true]) {
   rows.sample.test={value,claim_ids:ids,since};
-  assert.equal(fnStatus(rows.sample.test),status);
+  assert.deepEqual(fnStatus(rows.sample.test),status);
   const detail=el('div'); appendClaims(detail,i,'test',inline);
   const contexts=detail.children.filter(n=>n.className.split(' ').includes('fn-detail-context'));
-  assert.deepEqual(contexts.map(n=>n.textContent),inline?[]:[sentence]);
+  assert.deepEqual(contexts.map(n=>n.textContent),inline?[]:[['UK AISI',...status].join(' ')]);
+  if(!inline) assert.deepEqual(contexts[0].children.slice(1).map(n=>n.className),status.flatMap(()=>['sep-gap','fn-context-status']));
   const evidence=detail.children.filter(n=>!n.className.split(' ').includes('fn-detail-context'));
-  assert.deepEqual(evidence.map(n=>n.className==='fn-basis'?n.textContent:n.dataset.claim),
-    value==='both'?['Assignment','m','m2','Activity','a']:ids);
+  assert.deepEqual(evidence.map(n=>n.dataset.claim),ids);
 }
 for(const count of [1,3,4,6]) for(const value of ['activity','both']) for(const inline of [false,true]) {
   // Generated order is authoritative, even when IDs do not sort in date order.
@@ -406,13 +446,13 @@ for(const count of [1,3,4,6]) for(const value of ['activity','both']) for(const 
     assert.equal(detail.children.at(-1),fold);
     assert.deepEqual(fold.className.split(' '),['more','quiet','fn-earlier']);
   }
-  assert.deepEqual(detail.children.filter(n=>n.className==='fn-basis').map(n=>n.textContent),value==='both'?['Assignment','Activity']:[]);
+  assert.equal(detail.children.filter(n=>n.className==='fn-basis').length,0);
 }
 """.replace('COPY', copy).replace('DATES', dates).replace('RENDERER', renderer)
     subprocess.run(['node', '-'], input=script, text=True, capture_output=True, check=True)
 
 
-def test_function_entry_and_task_use_bound_source_date_and_publisher():
+def test_function_entries_use_bound_dates_card_citations_and_assignment_marker():
     """The bound source may follow another citation; preview and opened entries share this renderer."""
     import subprocess
 
@@ -420,18 +460,21 @@ def test_function_entry_and_task_use_bound_source_date_and_publisher():
     helpers = source[source.index('  function sepGap('):source.index('  // One footer for full records')]
     helpers += source[source.index('  function quoteOnSourceLine('):source.index('  function shownLead(')]
     helpers += source[source.index('  function claimBlock('):source.index('  // Keep the generated finding')]
-    helpers += source[source.index('      function fnPublisher('):source.index('      function fnSummary(')]
     helpers += source[source.index('      function fnSince('):source.index('      function appendClaims(')]
     helpers += source[source.index('  var MON ='):source.index('  // A date inside running text')]
     helpers += source[source.index('  function dated('):source.index('  function nonbreakingDates(')]
+    helpers += source[source.index('  function citations('):source.index('  // None-identified entries')]
+    helpers += source[source.index('  function fieldCitations('):source.index('  // The Status row value')]
     script = """
 const assert=require('node:assert/strict');
 function el(tag,cls='',text='') {
   const node={tag,className:cls||'',children:[],dataset:{},attrs:{},open:false,
     setAttribute(k,v){this.attrs[k]=v;},
     appendChild(n){if(n.tag==='#fragment')this.children.push(...n.children);else this.children.push(n);return n;},
+    insertBefore(n,before){this.children.splice(this.children.indexOf(before),0,n);},
     set textContent(t){this.children=[];this.text=t;},
     get textContent(){return (this.text||'')+this.children.map(n=>n.textContent).join('');},
+    get childNodes(){return this.children;}, get firstChild(){return this.children[0];},
     querySelector(selector){return walk(this).find(n=>selector==='summary'?n.tag==='summary':n.className.split(' ').includes(selector.slice(1)));}};
   node.textContent=text;
   node.classList={add(...xs){node.className=[node.className,...xs].filter(Boolean).join(' ');}};
@@ -439,48 +482,48 @@ function el(tag,cls='',text='') {
 }
 function walk(node){return node.children.flatMap(n=>[n,...walk(n)]);}
 const document={createTextNode:t=>el('#text','',t),createDocumentFragment:()=>el('#fragment')};
-const claimSentence=(c,t)=>el('span','claim-text running-text',t), claimFields=()=>['text'];
-const fieldCitations=c=>c.source_ids, quoteLanguages=()=>[], quoteLabel=()=> 'Quote', QUOTE_LABEL='Quote';
-const rereadTail=(node,s)=>{if(s.excerpts.length){node.appendChild(el('span','reread-tail','Source offline'));return true;}return false;};
-const archiveCopy=(node,s)=>{if(s.archive_url)node.appendChild(el('a','archive','archived copy'));};
-const sourceList=(ids,own)=>{const list=el('ol');list.ids=ids;list.sources=own;return list;};
+const claimSentence=(c,t)=>{const line=el('span','claim-text running-text');line.appendChild(document.createTextNode(t));return line;}, claimFields=()=>['text'];
+const quoteLanguages=()=>[], quoteLabel=()=> 'Quote', QUOTE_LABEL='Quote', hostOf=url=>new URL(url).hostname;
+const rereadTail=(node,s)=>{assert.equal(s.excerpts.length,1);if(s.excerpts[0].failed){node.appendChild(sepGap());node.appendChild(el('span','reread-tail','Source offline'));return true;}return false;};
+const archiveCopy=(node,s)=>{if(s.archive_url){node.appendChild(sepGap());node.appendChild(el('span','archive-copy','archived copy'));}};
 const S={other:{id:'other',publisher:'Other Publisher',title:'Other source',url:'https://example.org/other',published:'1999'},
   bound:{id:'bound',publisher:'Bound Publisher',title:'Original title',title_en:'Source title',url:'https://example.org/bound',archive_url:'https://example.org/archive'},
   later:{id:'later',publisher:'Later Publisher',title:'Later assignment',url:'https://example.org/later',published:'2025'}};
-const CLAIM_INDEX={a:{claim:{id:'a',basis:'activity',text:'It ran tests.',source_ids:['other','bound']},excerpts:[{source:S.bound,excerpt:{text:'Quote'}}]},
-  m:{claim:{id:'m',basis:'mandate',text:'It shall test.',source_ids:['other','bound']},excerpts:[{source:S.bound,excerpt:{text:'Task'}}]},
+const CLAIM_INDEX={a:{claim:{id:'a',basis:'activity',text:'It ran tests.',source_ids:['other','bound','later'],citations:{text:['other','bound','other']}},excerpts:[{source:S.bound,excerpt:{text:'Quote',failed:true}}]},
+  m:{claim:{id:'m',basis:'mandate',text:'It shall test.',source_ids:['other','bound'],citations:{text:['other','bound']}},excerpts:[{source:S.bound,excerpt:{text:'Task',failed:true}}]},
   m2:{claim:{id:'m2',basis:'mandate'},excerpts:[{source:S.later,excerpt:{text:'Later task'}}]}};
 HELPERS
+const order=['later','other','bound'], cite=citations(S,order.slice(),{});
 for(const [published,label] of [['2024-11-20','Nov 2024'],['2024-11','Nov 2024'],['2024','2024'],[null,null]]) {
   S.bound.published=published;
-  for(const id of ['a','m']) {
-    const entry=fnEntry(id), parts=entry.children.filter(n=>n.className==='meta-item').map(n=>n.children[0]);
-    assert.deepEqual(parts.map(n=>n.className),[...(label?['date-text fn-entry-date']:[]),'claim-text running-text','fn-sources']);
+  for(const id of ['a','m']) for(const preview of [false,true]) {
+    const entry=fnEntry(id,cite,preview), parts=entry.children.filter(n=>n.className==='meta-item').map(n=>n.children[0]);
+    assert.deepEqual(parts.map(n=>n.className),[...(label?['date-text fn-entry-date']:[]),'claim-text running-text']);
     if(label)assert.equal(parts[0].textContent,label);
-    assert.equal(parts.at(-2).textContent,CLAIM_INDEX[id].claim.text);
-    assert.deepEqual(entry.children.map(n=>n.className),[...(label?['meta-item','sep-gap']:[]),'meta-item','sep-gap','meta-item','sep-gap','quote quote-inline']);
-    const links=walk(parts.at(-1)).filter(n=>n.className==='standalone');
-    assert.deepEqual(links.map(n=>[n.textContent,n.href,n.attrs['aria-label'],n.title]),[
-      ['Bound Publisher',S.bound.url,'Source title','Source title'],['Other Publisher',S.other.url,'Other source','Other source']]);
+    const sentence=parts.at(-1);
+    assert.equal(sentence.textContent,(id==='m'?'Assigned: ':'')+CLAIM_INDEX[id].claim.text+'2,3');
+    assert.equal(sentence.children[0].className,id==='m'?'fn-assigned':'');
+    assert.equal(sentence.children.at(-1).className,'cites');
+    assert.deepEqual(entry.children.map(n=>n.className),[...(label?['meta-item','sep-gap']:[]),'meta-item','sep-gap','reread-tail','sep-gap','archive-copy',...(preview?[]:['sep-gap','quote quote-inline'])]);
+    const links=walk(sentence).filter(n=>n.className==='cn');
+    assert.deepEqual(links.map(n=>[n.textContent,n.href,n.attrs['aria-label'],n.dataset.tip]),[
+      ['2',S.other.url,'Source 2: Other source','Other source (Other Publisher)'],['3',S.bound.url,'Source 3: Source title','Source title (Bound Publisher)']]);
     assert.equal(walk(entry).filter(n=>n.className==='reread-tail').length,1);
-    assert.equal(walk(entry).filter(n=>n.className==='archive').length,1);
+    assert.equal(walk(entry).filter(n=>n.className==='archive-copy').length,1);
+    if(preview){assert.equal(walk(entry).filter(n=>n.tag==='details').length,0);continue;}
     const fold=entry.children.at(-1);
     assert.equal(fold.tag,'details');assert.equal(fold.open,false);assert.equal(fold.dataset.quoteClaim,id);
     assert.equal(fold.children.length,1);assert.equal(fold.children[0].textContent,'Quote');
     assert.equal(fold.children[0].attrs['aria-label'],'Quote');
   }
-  const task=fnTask({claim_ids:['m','m2','a']});
-  assert.equal(task.textContent,'Task given by Bound Publisher'+(label?', '+label:''));
-  assert.equal(task.children[0].href,S.bound.url);
-  assert.equal(fnTask({claim_ids:['a']}),null);
 }
-// Other claim/source callers keep their citation and list output without the entry option.
+// A different failed quotation on the same source must not add this entry's notice.
+S.bound.excerpts=[{failed:true}];CLAIM_INDEX.a.excerpts[0].excerpt.failed=false;
+assert.equal(walk(fnEntry('a',cite)).filter(n=>n.className==='reread-tail').length,0);
+// Other claim callers keep their citation and quote output without the entry option.
 const normal=claimBlock(CLAIM_INDEX.a.claim,()=>el('span','cites','1'));
 assert.equal(normal.children[0].textContent,'It ran tests.1');
 assert.equal(normal.children[1].className,'quote');
-const sources=fnSources(['other','bound'],'a');
-assert.equal(sources.tag,'ol');assert.deepEqual(sources.ids,['other','bound']);
-assert.equal(sources.sources.other.excerpts.length,0);assert.equal(sources.sources.bound.excerpts.length,1);
 """.replace('HELPERS', helpers)
     result = subprocess.run(['node', '-'], input=script, text=True, capture_output=True)
     assert result.returncode == 0, result.stderr
