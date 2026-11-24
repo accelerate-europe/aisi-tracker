@@ -10,6 +10,7 @@ when Playwright's Chromium is missing, so callers can tell "not run" from "passe
 """
 
 import argparse
+import calendar
 import copy
 import csv
 import faulthandler
@@ -9993,6 +9994,10 @@ def function_display_name(institute: dict) -> str:
     return re.sub(r"\s*\((?:planned|proposed|exploring|announced)\)$", "", institute["name"], flags=re.I)
 
 
+def function_month(day: str) -> str:
+    return f"{calendar.month_abbr[int(day[5:7])]} {day[:4]}" if len(day) > 4 else day
+
+
 def function_summary(vocab: dict, counts: dict, total: int) -> str:
     """Independent count buckets: vocabulary order within each tie, never split the third-place tie."""
     buckets = defaultdict(list)
@@ -10147,7 +10152,8 @@ def functions_structure(html: str, data: dict) -> list[str]:
             need(("fn-group-start" in td.get("class", [])) == (n > 0 and vocab[code]["group"] != vocab[columns[n - 1]]["group"]), key + ": body group gap differs")
             button = td.select_one("button.fn-cell")
             if value in ("mandate", "activity", "both"):
-                need(button and button.get("type") == "button" and button.get("aria-label") == f"{place}, {vocab[code]['label']}: {FN_NAMES[value]}"
+                since = f", since {function_month(expected['since'])}" if expected.get("since") else ""
+                need(button and button.get("type") == "button" and button.get("aria-label") == f"{place}, {vocab[code]['label']}: {FN_NAMES[value]}{since}"
                      and button.get("aria-expanded") == "false" and bool(button.get("aria-controls")), key + ": coded control/name differs")
             else:
                 need(not td.select("button") and td.get_text() == FN_NAMES[value] and td.select_one('.vh'), key + ": absent value must be unbuttoned and named")
@@ -10356,7 +10362,7 @@ FN_CLAIM_INDENT_JS = r"""detail => {
   if (!name) return ['claim block has no parent function name'];
   const range = document.createRange(); range.selectNodeContents(name);
   const edge = range.getBoundingClientRect().left;
-  const roots = inline ? [detail] : [...detail.querySelectorAll(':scope > .fn-claim, :scope > .fn-basis')];
+  const roots = inline ? [detail] : [...detail.querySelectorAll(':scope > .fn-claim, :scope > .fn-basis, :scope > .fn-earlier')];
   for (const root of roots) for (const node of [root, ...root.querySelectorAll('*')]) {
     if (node.closest('.vh') || getComputedStyle(node).visibility !== 'visible') continue;
     const rects = [...node.getClientRects()].filter(r=>r.width>0 && r.height>0);
@@ -10368,6 +10374,7 @@ FN_CLAIM_INDENT_JS = r"""detail => {
 
 
 FN_CLAIMS_CHECK_JS = "const claimIndentErrors = " + FN_CLAIM_INDENT_JS + ";\n" + r"""
+const functionMonth = day => day.length > 4 ? ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+day.slice(5, 7) - 1] + ' ' + day.slice(0, 4) : day; // the page's fmtDate at month precision
 const checkHeading = (detail, cell, country, institute, code, key) => {
   const heading = detail.querySelector('.fn-function-head'), context = detail.querySelector(':scope > .fn-detail-context');
   if (detail.matches('.fn-phone-claims')) {
@@ -10383,6 +10390,7 @@ const checkHeading = (detail, cell, country, institute, code, key) => {
   const states = {mandate: assigned && !active, activity: active && !assigned, both: active && assigned};
   need((!(cell.value in states) || states[cell.value]) && said.includes(institute), key + ': grid status must name the institute short form');
   if (cell.value === 'activity') need(/without an assignment/i.test(said), key + ': active-only status lacks the assignment caveat');
+  need(cell.since ? said.includes('active since ' + functionMonth(cell.since)) : !said.includes(' since '), key + ': grid status since differs');
   need(context && (heading?.closest('.fn-detail-top') || heading)?.nextElementSibling === context &&
        context.nextElementSibling?.matches('.fn-claim, .fn-basis'), key + ': heading/context/claim order differs');
   const probe = document.createElement('span'); probe.style.cssText = 'font:var(--type-label);color:var(--muted)'; detail.appendChild(probe);
@@ -10391,9 +10399,26 @@ const checkHeading = (detail, cell, country, institute, code, key) => {
 };
 const checkClaims = async (detail, cell, key) => {
   const items = [...detail.querySelectorAll('.fn-claim')];
-  // Assignment first, then activity, otherwise in recorded order (owner, 18 Nov 2026).
-  const order = [...cell.claim_ids].sort((a, b) => (quotes[a]?.claim.basis === 'mandate' ? 0 : 1) - (quotes[b]?.claim.basis === 'mandate' ? 0 : 1));
-  need(JSON.stringify(items.map(n => n.dataset.claim)) === JSON.stringify(order), key + ': claim order differs (assignment first)');
+  const order = cell.claim_ids;
+  need(JSON.stringify(items.map(n => n.dataset.claim)) === JSON.stringify(order), key + ': claim order differs from generated claim_ids');
+  const activities = order.filter(id => quotes[id]?.claim.basis === 'activity'), earlierIds = activities.slice(3);
+  const earlier = detail.querySelector(':scope > details.fn-earlier'), summary = earlier?.querySelector(':scope > summary');
+  need(detail.querySelectorAll('details.fn-earlier').length === (earlierIds.length ? 1 : 0), key + ': earlier disclosure count differs');
+  if (earlierIds.length) {
+    need(earlier && !earlier.open && summary?.textContent === earlierIds.length + ' earlier' && earlier === detail.lastElementChild, key + ': earlier entries need one closed disclosure after the recent entries');
+    need(JSON.stringify([...earlier?.querySelectorAll('.fn-claim') || []].map(n => n.dataset.claim)) === JSON.stringify(earlierIds), key + ': earlier disclosure claims differ');
+    const probe = document.createElement('span'); probe.style.cssText = 'font:var(--type-meta);color:var(--muted)'; detail.appendChild(probe);
+    if (summary) need(['fontFamily', 'fontSize', 'fontWeight', 'lineHeight', 'color'].every(k => getComputedStyle(summary)[k] === getComputedStyle(probe)[k]), key + ': earlier summary is not muted meta type');
+    probe.remove();
+  }
+  for (const item of items) {
+    const folded = earlierIds.includes(item.dataset.claim);
+    need(folded ? item.parentElement === earlier : item.parentElement === detail && !!item.getClientRects().length, key + ': assignments and first three activities must be visible, earlier activities folded');
+  }
+  if (earlier && summary) {
+    await new Promise(resolve => { earlier.addEventListener('toggle', resolve, {once:true}); summary.click(); });
+    need(earlier.open && [...earlier.querySelectorAll('.fn-claim')].every(item => item.getClientRects().length), key + ': earlier entries do not open');
+  }
   for (const id of cell.claim_ids) {
     const item = items.find(n => n.dataset.claim === id), q = quotes[id];
     if (!item || !q) { errors.push(key + ': claim missing ' + id); continue; }
@@ -10700,11 +10725,19 @@ def check_functions_phone(browser, base_url: str, data: dict, widths=PHONE_WIDTH
                       const label = item.querySelector(':scope > .fn-function-label');
                       const name = label?.querySelector(':scope > .fn-name');
                       const marked = ['activity', 'mandate', 'both'].includes(f.value), labelKey = key + '/' + f.code;
-                      const statusWord = f.value === 'activity' ? 'active, without an assignment' : names[f.value].toLowerCase();
+                      const since = f.since ? ' since ' + functionMonth(f.since) : '';
+                      const statusWord = f.value === 'activity' ? 'active' + since + ', without an assignment' : names[f.value].toLowerCase() + since;
                       need(label && name && label.textContent === f.label + ' ' + statusWord && (label.tagName === 'BUTTON') === marked, labelKey + ': function label/control differs');
                       const status = name?.querySelector(':scope > .fn-function-status'), summary = item.querySelector(':scope > .fn-function-summary');
                       need(status && status.textContent === statusWord, labelKey + ': function status word differs');
                       need(summary && summary.textContent === data.dataset.vocabularies.function[f.code].summary, labelKey + ': function summary differs');
+                      const newest = item.querySelector(':scope > .fn-function-newest'), latest = f.newest && quotes[f.newest];
+                      need(!!newest === !!f.newest, labelKey + ': newest entry presence differs');
+                      if (latest) {
+                        const day = latest.source.published, text = 'Newest: ' + latest.claim.text + (day ? ' (' + functionMonth(day) + ')' : '');
+                        need(newest?.textContent === text && summary?.nextElementSibling === newest, labelKey + ': newest entry text/date/order differs');
+                        if (newest && summary) need(['fontSize', 'fontWeight', 'color'].every(k => getComputedStyle(newest)[k] === getComputedStyle(summary)[k]), labelKey + ': newest entry is not muted meta type');
+                      }
                       need(label && status && label.nextElementSibling === summary && !label.querySelector('.fn-function-summary'), labelKey + ': function status must be inside the name and summary must follow the label outside its control');
                       need(!marked || (status && !status.id && !label.hasAttribute('aria-describedby')), labelKey + ': function button must include its status');
                       pip(label?.querySelector('.fn-pip'), f.value, labelKey, true);
@@ -10712,7 +10745,7 @@ def check_functions_phone(browser, base_url: str, data: dict, widths=PHONE_WIDTH
                       need(label.getAttribute('aria-expanded') === 'false' && label.getAttribute('type') === 'button', labelKey + ': unopened function control differs');
                       label.click();
                       const claims = item.querySelector(':scope > .fn-phone-claims');
-                      need(claims && summary?.nextElementSibling === claims && claims.id === label.getAttribute('aria-controls') && label.getAttribute('aria-expanded') === 'true', labelKey + ': function claims placement/state differs');
+                      need(claims && (item.querySelector(':scope > .fn-function-newest') || summary)?.nextElementSibling === claims && claims.id === label.getAttribute('aria-controls') && label.getAttribute('aria-expanded') === 'true', labelKey + ': function claims placement/state differs');
                       if (claims) {
                         checkHeading(claims, f, expected.country, null, f.code, labelKey);
                         const a = label.getBoundingClientRect(), s = status.getBoundingClientRect(), bar = getComputedStyle(label, '::after');

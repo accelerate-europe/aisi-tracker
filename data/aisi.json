@@ -31823,6 +31823,26 @@
           ]
         },
         {
+          "id": "claims-9e101e0d45fa4d7fbc3ade8c2b145ec8",
+          "kind": "function",
+          "code": "international_cooperation",
+          "basis": "activity",
+          "text": "It says that, with the US institute, it jointly evaluated Moonshot AI's Kimi K3 model.",
+          "source_ids": [
+            "r3-gb-kimi-release"
+          ]
+        },
+        {
+          "id": "claims-517388a879514066a463175799109c07",
+          "kind": "function",
+          "code": "international_cooperation",
+          "basis": "activity",
+          "text": "It says that, with the US institute, it conducted a joint pre-deployment evaluation of Anthropic's latest model.",
+          "source_ids": [
+            "r3-gb-claude35-release"
+          ]
+        },
+        {
           "id": "claims-9b738056fb284533b4951aec055d0399",
           "kind": "function",
           "code": "adoption",
@@ -31868,6 +31888,16 @@
           "text": "The government's launch announcement says the institute is tasked with testing the safety of emerging types of AI.",
           "source_ids": [
             "gb-aisi-launch"
+          ]
+        },
+        {
+          "id": "claims-99fa6752b3ca4c97b86babc76a35de87",
+          "kind": "function",
+          "code": "model_testing",
+          "basis": "activity",
+          "text": "The research paper says the UK AI Security Institute developed and performed an alignment evaluation.",
+          "source_ids": [
+            "depth-gb-supply-chain"
           ]
         },
         {
@@ -34528,6 +34558,16 @@
           ]
         },
         {
+          "id": "claims-4388813297314e63aa98e43db6bf2b19",
+          "kind": "function",
+          "code": "model_testing",
+          "basis": "activity",
+          "text": "The Commission says it was one of the three network members that ran the agentic evaluations for the cybersecurity strand.",
+          "source_ids": [
+            "eu-joint-testing-2025"
+          ]
+        },
+        {
           "id": "claims-8dd06cb022f34a19bcf111cf0da4ba0a",
           "kind": "function",
           "code": "regulatory_enforcement",
@@ -35973,6 +36013,26 @@
           ]
         },
         {
+          "id": "claims-cc05688a08fd41f6a893cf6f26f26ece",
+          "kind": "function",
+          "code": "model_testing",
+          "basis": "activity",
+          "text": "NIST's report says it evaluated GLM-5.3 on four benchmarks covering vulnerability discovery and exploit development.",
+          "source_ids": [
+            "us-glm53"
+          ]
+        },
+        {
+          "id": "claims-c4e73b5e404a41c1a5fe219c7b739510",
+          "kind": "function",
+          "code": "model_testing",
+          "basis": "activity",
+          "text": "NIST's report says it conducted a joint pre-deployment evaluation of Anthropic's latest model with the UK institute.",
+          "source_ids": [
+            "us-claude35-2024"
+          ]
+        },
+        {
           "id": "claims-ae9202af0518471fa52b995a5da33743",
           "kind": "function",
           "code": "evaluation_methods",
@@ -36003,6 +36063,16 @@
           ]
         },
         {
+          "id": "claims-0fc3e30d883649df9179ed50cae86fc3",
+          "kind": "function",
+          "code": "research",
+          "basis": "activity",
+          "text": "NIST's research blog says it partnered on a research paper using data from a public AI agent red-teaming competition to examine the robustness of leading AI models.",
+          "source_ids": [
+            "us-blog-red-teaming-2026"
+          ]
+        },
+        {
           "id": "claims-cc4b4a9808b4461a896887d7759ef525",
           "kind": "function",
           "code": "international_cooperation",
@@ -36010,6 +36080,16 @@
           "text": "NIST's announcement says it and the UK AI Security Institute ran a joint evaluation of Moonshot AI's Kimi K3.",
           "source_ids": [
             "depth-us-kimi"
+          ]
+        },
+        {
+          "id": "claims-93f2a3baf2274e47ab6eaaf00d9d84b8",
+          "kind": "function",
+          "code": "international_cooperation",
+          "basis": "activity",
+          "text": "NIST's report says it conducted a joint pre-deployment evaluation of Anthropic's latest model with the UK institute.",
+          "source_ids": [
+            "us-claude35-2024"
           ]
         },
         {
@@ -38983,6 +39063,16 @@
           ]
         },
         {
+          "id": "claims-27e877612eca411c93c9b8684cad36cd",
+          "kind": "function",
+          "code": "model_testing",
+          "basis": "activity",
+          "text": "The Singapore institute reports that the Korean and Singapore institutes completed a bilateral test of whether AI agents carry out multi-step tasks without leaking sensitive data.",
+          "source_ids": [
+            "fix-output-sg-kr-january"
+          ]
+        },
+        {
           "id": "claims-74b3c80e552d474097641a9ebac41d70",
           "kind": "function",
           "code": "research",
@@ -39489,6 +39579,16 @@
           ]
         },
         {
+          "id": "claims-048607bbf6a64363a59244d6808da9b1",
+          "kind": "function",
+          "code": "model_testing",
+          "basis": "activity",
+          "text": "It says that, with the Korean institute, it completed a bilateral test of whether AI agents carry out multi-step tasks without leaking sensitive data.",
+          "source_ids": [
+            "fix-output-sg-kr-january"
+          ]
+        },
+        {
           "id": "claims-20f3a4a585014bd1b6d4f954624d66b1",
           "kind": "function",
           "code": "evaluation_methods",
@@ -39536,6 +39636,16 @@
           "text": "It says that, with the Korean institute, it concluded a bilateral test of whether AI agents leak sensitive data in common tasks.",
           "source_ids": [
             "fix-output-sg-kr-january"
+          ]
+        },
+        {
+          "id": "claims-f44a8bd7a2994c278721079abc19f54d",
+          "kind": "function",
+          "code": "international_cooperation",
+          "basis": "activity",
+          "text": "It says that it tested Llama-3.1 405B with the US and UK institutes.",
+          "source_ids": [
+            "sg-pilot-2024"
           ]
         },
         {
@@ -56487,6 +56597,17 @@
               },
               "testing_capacity",
               "notes"
+            ],
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "claims",
+              {
+                "id": "claims-4388813297314e63aa98e43db6bf2b19"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-17"
@@ -63338,6 +63459,17 @@
                 "code": "in_house"
               },
               "code"
+            ],
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "claims",
+              {
+                "id": "claims-cc05688a08fd41f6a893cf6f26f26ece"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-17"
@@ -64115,6 +64247,28 @@
               "claims",
               {
                 "id": "claims-3e1cd8160012411a89b7e5c3a89d9f4d"
+              },
+              "text"
+            ],
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "claims",
+              {
+                "id": "claims-c4e73b5e404a41c1a5fe219c7b739510"
+              },
+              "text"
+            ],
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "claims",
+              {
+                "id": "claims-93f2a3baf2274e47ab6eaaf00d9d84b8"
               },
               "text"
             ]
@@ -66189,9 +66343,26 @@
               },
               "model_access",
               "notes"
+            ],
+            [
+              "institutes",
+              {
+                "id": "sg-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-f44a8bd7a2994c278721079abc19f54d"
+              },
+              "text"
             ]
           ],
-          "accessed": "2026-10-17"
+          "accessed": "2026-10-17",
+          "anchors": [
+            {
+              "text": "Singapore AI Safety Institute (SG AISI)",
+              "kind": "definition"
+            }
+          ]
         },
         {
           "text": "For this proof of concept, the Network used an open foundation model, Llama-3.1 405B.",
@@ -72319,6 +72490,17 @@
               },
               "testing_capacity",
               "notes"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-99fa6752b3ca4c97b86babc76a35de87"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-17"
@@ -89451,6 +89633,28 @@
                 "id": "claims-1822c155dc964f6686d26f5f7cfbcf4a"
               },
               "text"
+            ],
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-27e877612eca411c93c9b8684cad36cd"
+              },
+              "text"
+            ],
+            [
+              "institutes",
+              {
+                "id": "sg-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-048607bbf6a64363a59244d6808da9b1"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-17"
@@ -89772,6 +89976,7 @@
       "title": "Towards Best Practices for Automated Benchmark Evaluations",
       "publisher": "NIST",
       "type": "primary",
+      "published": "2026-01-30",
       "accessed": "2026-10-17",
       "language": "en",
       "excerpts": [
@@ -89867,6 +90072,7 @@
       "title": "New Report: Challenges to the Monitoring of Deployed AI Systems",
       "publisher": "NIST",
       "type": "primary",
+      "published": "2026-03-09",
       "accessed": "2026-10-17",
       "language": "en",
       "excerpts": [
@@ -94742,6 +94948,17 @@
               },
               "credit",
               "institute_id"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-517388a879514066a463175799109c07"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-17"
@@ -94861,6 +95078,17 @@
               },
               "credit",
               "institute_id"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-9e101e0d45fa4d7fbc3ade8c2b145ec8"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-17"
@@ -102197,6 +102425,7 @@
       "title": "U.S. AI Safety Institute Establishes New U.S. Government Taskforce to Collaborate on Research and Testing of AI Models to Manage National Security Capabilities and Risks",
       "publisher": "National Institute of Standards and Technology",
       "type": "primary",
+      "published": "2024-11-20",
       "accessed": "2026-10-19",
       "language": "en",
       "origin": "US",
@@ -116561,6 +116790,7 @@
       "title": "Towards technical best practice for frontier AI development",
       "publisher": "AI Security Institute",
       "type": "primary",
+      "published": "2026-10-12",
       "language": "en",
       "origin": "GB",
       "excerpts": [
@@ -119968,6 +120198,17 @@
                 "lineage": "insights-ai-agent-security-large-scale-red-teaming-competition"
               },
               "attribution"
+            ],
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "claims",
+              {
+                "id": "claims-0fc3e30d883649df9179ed50cae86fc3"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-11-07"

@@ -482,7 +482,33 @@ def prepared_facts(data: dict, *, strict: bool | None = None) -> dict:
         source = migrate(data)
     result = materialise_references(materialise_facts(source, strict=strict))
     assign_credit_provenance(result)
+    assign_function_rows(result)
     return result
+
+
+def assign_function_rows(data: dict) -> None:
+    """Refresh function evidence after reference resolution and after the expiry join."""
+    if __package__:
+        from .references import support_pointer
+    else:
+        from references import support_pointer
+    bindings = {}
+    for source in data.get("sources", []):
+        for excerpt in source.get("excerpts", []):
+            for pointer in excerpt["supports"]:
+                bindings.setdefault(pointer, []).append(source)
+    for institute in data.get("institutes", []):
+        sources = {}
+        for claim in institute.get("claims", []):
+            if claim["kind"] != "function":
+                continue
+            pointer = support_pointer(data, ["institutes", {"id": institute["id"]}, "claims", {"id": claim["id"]}, "text"])
+            bound = bindings.get(pointer, [])
+            if len(bound) == 1:  # Validation rejects missing or ambiguous text bindings.
+                sources[claim["id"]] = bound[0]
+        rows = function_rows(institute, data.get("dataset", {}).get("vocabularies", {}), sources)
+        if rows is not None:
+            institute["functions"] = rows
 
 
 def publish(data: dict, *, strict: bool | None = None, rereads: dict | None = None, as_of: str | None = None) -> dict:
@@ -500,6 +526,7 @@ def publish(data: dict, *, strict: bool | None = None, rereads: dict | None = No
     rereads = reread_states.load() if rereads is None else rereads
     data = dated_data(data, effective_date(data, rereads) if as_of is None else as_of)
     facts = reread_states.join(prepared_facts(data, strict=strict), rereads)
+    assign_function_rows(facts)
     # The join marks expired claims after prepared_facts has worded the migrated records, so they are worded again
     # without them (docs/design/claims-1.1.md, section 4: an expired claim leaves the summary).
     institutes = {i["id"]: i for i in facts.get("institutes", [])}

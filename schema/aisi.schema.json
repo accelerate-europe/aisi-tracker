@@ -4819,7 +4819,16 @@
           "items": {
             "type": "string"
           },
-          "description": "The institute's function claims with this code, in authored order; empty for not_found and not_coded."
+          "description": "The institute's function claims with this code: mandates in authored order, then live activity dated newest first and undated last (ties in authored order), then expired activity in authored order; empty for not_found and not_coded."
+        },
+        "since": {
+          "type": ["string", "null"],
+          "pattern": "^\\d{4}(-\\d{2}(-\\d{2})?)?$",
+          "description": "Generated for activity or both: the earliest published date of the source bound to a live activity claim's text, at its recorded precision. Null if any live activity is undated or there is none, or when the institute holds older credited work of the same kind (an output of a type mapped to this function, or a signed agreement with a non-developer for international_cooperation; scripts/claim_checks.py OUTPUT_FUNCTIONS) that has no entry yet."
+        },
+        "newest": {
+          "type": ["string", "null"],
+          "description": "Generated for activity or both: the ID of the first live activity claim in claim_ids, preferring dated claims; null when there is none."
         }
       }
     }
