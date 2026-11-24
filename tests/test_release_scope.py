@@ -235,6 +235,31 @@ def test_empty_scope_never_falls_back_to_all_records_or_sources(make_repo, capsy
     assert "scripts/verify_excerpts.py" not in md
 
 
+@pytest.mark.parametrize("collection", ["institutes", "jurisdictions"])
+@pytest.mark.parametrize("field_change", [False, True])
+def test_check_only_records_stay_in_scope_but_are_not_drawn(make_repo, capsys, collection, field_change):
+    repo, data = make_repo()
+    record = data[collection][0]
+    record["check"] = {"partial": []}
+    write_data(repo, data)
+    commit(repo)
+    git(repo, "tag", "v1.0.1")
+    record["check"]["partial"].append({"checked": "2026-02-01"})
+    reasons = [f"/{collection}/0/check/partial/0"]
+    if field_change:
+        record["name"] = "Changed name"
+        reasons.append(f"/{collection}/0/name")
+    scope, _, md = run_scope(repo, data)
+    identity = {"collection": collection, "id": record["id"]}
+    assert scope["records"] == [{**identity, "reasons": reasons}]
+    assert scope["draw_population"] == int(field_change)
+    assert scope["draw_excluded_check_only"] == ([] if field_change else [record["id"]])
+    assert scope["blind_draw"] == ([identity] if field_change else [])
+    assert f"Records excluded from the draw as check-only: {int(not field_change)}." in md
+    message = f"Only {int(field_change)} in the draw population; taking them all."
+    assert message in md and message in capsys.readouterr().out
+
+
 def test_seeded_draw_is_reproducible_sorted_and_capped(make_repo):
     repo, data = make_repo()
     data["jurisdictions"] += [{"id": f"J{n}", "name": "Added"} for n in range(8)]
@@ -250,7 +275,7 @@ def test_seeded_draw_is_reproducible_sorted_and_capped(make_repo):
     assert [row["id"] for row in scope["blind_draw"]] == expected
     capped, _, md = run_scope(repo, data, repo.parent / "capped", "--draw", "20")
     assert len(capped["blind_draw"]) == 8
-    assert "Only 8 records changed; taking them all." in md
+    assert "Only 8 in the draw population; taking them all." in md
 
 
 def test_no_release_tag_is_refused_but_explicit_base_is_allowed(make_repo, capsys):

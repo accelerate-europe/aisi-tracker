@@ -300,6 +300,15 @@ def test_poll_apply_verify_and_token_isolation(scenario, monkeypatch, capsys):
     assert "Reviewed-by" in captured.out and "base=origin/next" in captured.out
 
 
+def test_zenodo_polls_after_uv_setup_lines(scenario):
+    runner, _, _, run = scenario
+    setup = "Using CPython 3.12.8\nCreating virtual environment at: .venv\nInstalled 10 packages in 1s\n"
+    runner.zenodo = [(2, "", setup + MISSING + "\n \t\n"), (0, "matches", "")]
+    assert run("--act") == 0
+    assert runner.sleeps == [30]
+    assert commands(runner).count(DIFF) == 2
+
+
 @pytest.mark.parametrize("contents", [None, "IGNORED=foo\n", "ZENODO_TOKEN=\n", 'ZENODO_TOKEN="unterminated\n'])
 def test_missing_or_invalid_token_stops_before_zenodo(scenario, contents, capsys):
     runner, work, token_file, run = scenario
@@ -322,7 +331,8 @@ def test_token_file_syntax(tmp_path, assignment):
 
 
 @pytest.mark.parametrize("error,age", [(MISSING, 601), ("refused: unexpected edit draft", 10),
-                                     (MISSING.replace("0 Zenodo", "2 Zenodo"), 10)])
+                                     (MISSING.replace("0 Zenodo", "2 Zenodo"), 10),
+                                     (MISSING + "another failure\n", 10), ("prefix " + MISSING, 10), ("", 10)])
 def test_zenodo_refusals_are_not_polled(scenario, error, age, capsys):
     runner, _, _, run = scenario
     runner.published = NOW - age

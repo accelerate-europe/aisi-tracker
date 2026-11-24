@@ -139,7 +139,10 @@ def compare(old: dict, new: dict, seed: int | None, draw: int) -> tuple[dict, di
                     entry[side].append(excerpt)
 
     ordered = sorted(reasons)
-    chosen = sorted(random.Random(seed).sample(ordered, min(draw, len(ordered))))
+    population = [key for key in ordered
+                  if any(parts[0] != key[0] or parts[2:3] != ["check"]
+                         for parts in map(pointer_parts, reasons[key]))]
+    chosen = sorted(random.Random(seed).sample(population, min(draw, len(population))))
     scope = {
         "records": [{**record_id(key), "reasons": sorted(reasons[key])} for key in ordered],
         "claims": [{**record_id(key), "pointers": sorted(pointers)}
@@ -152,6 +155,8 @@ def compare(old: dict, new: dict, seed: int | None, draw: int) -> tuple[dict, di
         "dataset_changes": sorted(pointer for pointer, _, _ in dataset_changes),
         "seed": seed,
         "draw": draw,
+        "draw_population": len(population),
+        "draw_excluded_check_only": sorted(key[1] for key in reasons.keys() - set(population)),
         "blind_draw": [record_id(key) for key in chosen],
     }
     detail = {
@@ -167,10 +172,12 @@ def compare(old: dict, new: dict, seed: int | None, draw: int) -> tuple[dict, di
 
 def summary(scope: dict) -> str:
     counts = {name: len(scope[name]) for name in
-              ("records", "excerpts", "sources", "verify_sources", "dataset_changes", "blind_draw")}
+              ("records", "excerpts", "sources", "verify_sources", "dataset_changes", "draw_excluded_check_only", "blind_draw")}
     counts["claims"] = sum(len(row["pointers"]) for row in scope["claims"])
+    counts["draw_population"] = scope["draw_population"]
     return "; ".join(f"{counts[name]} {name}" for name in
-                     ("records", "claims", "excerpts", "sources", "verify_sources", "dataset_changes", "blind_draw"))
+                     ("records", "claims", "excerpts", "sources", "verify_sources", "dataset_changes",
+                      "draw_population", "draw_excluded_check_only", "blind_draw"))
 
 
 def markdown(scope: dict) -> str:
@@ -200,8 +207,9 @@ def markdown(scope: dict) -> str:
     lines += ["", "## Dataset wording changes", "", "Owner wording approval is needed for these pointers.", ""]
     lines += [f"- `{pointer}`" for pointer in scope["dataset_changes"]] or ["None."]
     lines += ["", f"## Blind re-check ({len(scope['blind_draw'])})", "", f"Seed: {scope['seed']}; requested: {scope['draw']}."]
-    if len(scope["records"]) < scope["draw"]:
-        lines += [f"Only {len(scope['records'])} records changed; taking them all."]
+    lines += [f"Records excluded from the draw as check-only: {len(scope['draw_excluded_check_only'])}."]
+    if scope["draw_population"] < scope["draw"]:
+        lines += [f"Only {scope['draw_population']} in the draw population; taking them all."]
     lines += [""]
     lines += [f"- `{row['collection']}/{row['id']}`" for row in scope["blind_draw"]] or ["None."]
     return "\n".join(lines) + "\n"
@@ -244,8 +252,8 @@ def main(argv: list[str] | None = None, root: Path = ROOT) -> int:
     print(summary(scope))
     if not detail["changes"] and not detail["bindings"] and not scope["excerpts"]:
         print(f"nothing changed since {base_ref}")
-    if len(scope["records"]) < args.draw:
-        print(f"Only {len(scope['records'])} records changed; taking them all.")
+    if scope["draw_population"] < args.draw:
+        print(f"Only {scope['draw_population']} in the draw population; taking them all.")
     return 0
 
 

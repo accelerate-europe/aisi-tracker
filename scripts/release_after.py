@@ -231,7 +231,8 @@ class ReleaseAfter:
         deadline = self.clock() + 600
         while result.returncode == 2:
             fresh = published is not None and 0 <= self.clock() - published < 600
-            if not missing.fullmatch(result.stderr.strip()) or not fresh or self.clock() + 30 > deadline:
+            last_line = next((line.strip() for line in reversed(result.stderr.splitlines()) if line.strip()), "")
+            if not missing.fullmatch(last_line) or not fresh or self.clock() + 30 > deadline:
                 self.failed(diff, result, "Zenodo refused or its version did not appear within ten minutes")
             self.say("  Zenodo has not archived the new release; waiting 30 s")
             self.sleep(30)
