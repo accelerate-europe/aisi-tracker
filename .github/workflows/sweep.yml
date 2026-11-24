@@ -1,15 +1,17 @@
-# The full page sweep of the release runbook (docs/release.md, step 3.3), on a runner instead of a shared host:
+# The full page sweep of the release runbook (docs/release.md), on a runner instead of a shared host:
 # each view builds the site from the chosen ref, runs scripts/sweep_page.py and uploads its slices and sweep.json as one tar.
-# Run it on the release commit with: gh workflow run sweep.yml --ref next
-# A push that changes the sweep itself runs it too, so a change to the script is seen working before it is used.
+# A push to next that changes the data, the page, the scripts or the sweep starts it, so a page fault shows when it
+# merges, not first at the release (docs/release.md, step 1). A newer push may replace a sweep still waiting to start,
+# so read the sweep of the commit you release from. Elsewhere, start it by hand: gh workflow run sweep.yml --ref <branch>
 name: sweep
 on:
   workflow_dispatch:
   push:
-    branches: ['**']
+    branches: [next]
     paths:
-      - scripts/sweep_page.py
-      - scripts/sweep_page.py.lock
+      - data/**
+      - site/**
+      - scripts/**
       - .github/workflows/sweep.yml
       - .github/actions/fonts/**
 permissions:
