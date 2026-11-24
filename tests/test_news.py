@@ -367,6 +367,7 @@ const S=Object.fromEntries(payload.sources.map(s=>[s.id,s])), SOURCE_ORDERS=payl
 const list=el('ul');list.setAttribute('id','development-list');
 function $(id){if(id!=='development-list')throw new Error(id);return list;}
 function recordSources(){return [];}
+function sourceHref(s){return s.url;}
 function hostOf(url){return new URL(url).host;}
 ''' + helpers + rendering + "\nconsole.log(html(list));"
     result = subprocess.run(["node", "-e", script], input=json.dumps(payload), text=True, capture_output=True, check=True)

@@ -1082,6 +1082,7 @@ function dated(text) { return el('span', 'date-text', text); }
 function rereadLine() { return el('span', 'reread', 'Source last re-read 15 Nov 2026.'); }
 function archiveCopy(li, src) { if (src.archive_url) { li.appendChild(el('span', 'sep-gap', ' ')); li.appendChild(el('span', 'archive-copy trailing-qualifier', 'archived copy')); } }
 function rereadTail() { return false; }
+function sourceHref(src) { return src.url; }
 function hostOf(url) { return new URL(url).hostname; }
 """
     bodies = [

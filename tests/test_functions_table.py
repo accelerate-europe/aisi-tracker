@@ -485,6 +485,7 @@ const document={createTextNode:t=>el('#text','',t),createDocumentFragment:()=>el
 const claimSentence=(c,t)=>{const line=el('span','claim-text running-text');line.appendChild(document.createTextNode(t));return line;}, claimFields=()=>['text'];
 const quoteLanguages=()=>[], quoteLabel=()=> 'Quote', QUOTE_LABEL='Quote', hostOf=url=>new URL(url).hostname;
 const rereadTail=(node,s)=>{assert.equal(s.excerpts.length,1);if(s.excerpts[0].failed){node.appendChild(sepGap());node.appendChild(el('span','reread-tail','Source offline'));return true;}return false;};
+const sourceHref=s=>s.url;
 const archiveCopy=(node,s)=>{if(s.archive_url){node.appendChild(sepGap());node.appendChild(el('span','archive-copy','archived copy'));}};
 const S={other:{id:'other',publisher:'Other Publisher',title:'Other source',url:'https://example.org/other',published:'1999'},
   bound:{id:'bound',publisher:'Bound Publisher',title:'Original title',title_en:'Source title',url:'https://example.org/bound',archive_url:'https://example.org/archive'},
