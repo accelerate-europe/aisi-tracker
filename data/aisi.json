@@ -32543,6 +32543,17 @@
           ]
         },
         {
+          "id": "claims-71e93d19fa3d43a59aff3cf92fea6c78",
+          "kind": "function",
+          "code": "international_cooperation",
+          "basis": "activity",
+          "text": "Found that, in the network's joint multilingual testing, both models showed acceptability rates above 90% in French on the MLCommons and AnswerCarefully datasets.",
+          "source_ids": [
+            "network-multilingual-2025",
+            "fix-output-fr-inesia-evaluation-prioritisation-guidance"
+          ]
+        },
+        {
           "id": "claims-4d1cc3be51da4f70b2bb35acd0b24750",
           "kind": "function",
           "code": "regulatory_support",
@@ -36949,6 +36960,16 @@
           ]
         },
         {
+          "id": "claims-6163465b322d421a93bd0e7e1ee3b71e",
+          "kind": "function",
+          "code": "international_cooperation",
+          "basis": "activity",
+          "text": "Tested two models on a translated subset of the original datasets in the network's joint multilingual testing exercise.",
+          "source_ids": [
+            "network-multilingual-2025"
+          ]
+        },
+        {
           "id": "claims-9b1b78c24b4848fabf57585f7135b4c2",
           "kind": "function",
           "code": "talent",
@@ -38303,6 +38324,16 @@
           ]
         },
         {
+          "id": "claims-277280ea0ff5407593c7ba38e0c1c6c1",
+          "kind": "function",
+          "code": "international_cooperation",
+          "basis": "activity",
+          "text": "Its team took part in the network's second joint testing exercise, on multilingual testing.",
+          "source_ids": [
+            "network-multilingual-2025"
+          ]
+        },
+        {
           "id": "claims-aef25f53ece0411e9ce9098eb3a4e2e9",
           "kind": "function",
           "code": "convening",
@@ -39090,6 +39121,16 @@
           "text": "Signed a memorandum of understanding with the Singapore AI Safety Institute to strengthen cooperation centred on AI safety evaluation.",
           "source_ids": [
             "kr-sg-mou-2026"
+          ]
+        },
+        {
+          "id": "claims-f8cc62213f754e3694c8ecb9dc0b0162",
+          "kind": "function",
+          "code": "international_cooperation",
+          "basis": "activity",
+          "text": "Found that, across the network's joint evaluation, the models showed generally high fluency and surface-level coherence in Korean.",
+          "source_ids": [
+            "network-multilingual-2025"
           ]
         },
         {
@@ -63421,6 +63462,17 @@
                 "id": "claims-245b002026c242a8ab07de33f41e19a9"
               },
               "text"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "claims",
+              {
+                "id": "claims-6163465b322d421a93bd0e7e1ee3b71e"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-17",
@@ -63428,6 +63480,81 @@
             {
               "text": "Contributed by Canada AISI",
               "kind": "heading"
+            }
+          ]
+        },
+        {
+          "text": "The Japan team participated in the second Joint Testing Exercise (JTE) focusing on Multilingual Testing.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-277280ea0ff5407593c7ba38e0c1c6c1"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17",
+          "anchors": [
+            {
+              "text": "Contributed by Japan AISI",
+              "kind": "heading"
+            }
+          ]
+        },
+        {
+          "text": "Across the joint evaluation, large language models demonstrated generally high fluency and surface-level coherence in Korean.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-f8cc62213f754e3694c8ecb9dc0b0162"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17",
+          "anchors": [
+            {
+              "text": "Contributed by Korea AISI",
+              "kind": "heading"
+            }
+          ]
+        },
+        {
+          "text": "Both models showcase high acceptability rates in French (above 90%) for both the MLCommons and the AnswerCarefully datasets.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "fr-inesia"
+              },
+              "claims",
+              {
+                "id": "claims-71e93d19fa3d43a59aff3cf92fea6c78"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17",
+          "anchors": [
+            {
+              "text": "Contributed by France AISI",
+              "kind": "heading"
+            },
+            {
+              "text": "INESIA - the French AISI",
+              "kind": "definition",
+              "source_id": "fix-output-fr-inesia-evaluation-prioritisation-guidance",
+              "gloss": "INESIA - the French AISI"
             }
           ]
         }
