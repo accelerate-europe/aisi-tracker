@@ -63,14 +63,14 @@ The GitHub release and the Zenodo step need the owner's Go, like moving `main`; 
 
 ```sh
 uv run --locked scripts/release_after.py         # prints what it will do and checks what it can without writing
-uv run --locked scripts/release_after.py --act --work <folder>   # does it; the notes and the development worktree go in <folder>
+uv run --locked scripts/release_after.py --act --work <folder> --token-file <file>   # does it; the notes and the development worktree go in <folder>
 ```
 
 It checks first that `HEAD` carries a released version, equals `origin/main` and is on `origin/next`, and that CI passed on `main` for it. Then, one step at a time, stopping at the first that fails and never running a later one:
 
 1. The live site serves the new version (`scripts/smoke_site.py --version`).
 2. The GitHub release: notes from the version's changelog entry (summary, then one line per change), tag from `scripts/release_tag.py`, which refuses `-dev`, a different version in `.zenodo.json` at `HEAD`, another version tag on `HEAD`, or the tag already existing elsewhere, locally or on the remote. Never type the tag by hand.
-3. Zenodo archives the GitHub release and mints the version DOI; `scripts/zenodo_metadata.py` then adds what `.zenodo.json` cannot carry (Accelerate Europe as organisational creator, so the record's citation matches ours, and the MIT licence for the code): diff, `--apply`, diff again, which must report nothing to do. The script waits for Zenodo to hold the new version and for its API, which can serve the old record for about a minute after `--apply`. The Zenodo token is read only inside the script, from the maintainers' token file it names, and is never printed or put on a command line.
+3. Zenodo archives the GitHub release and mints the version DOI; `scripts/zenodo_metadata.py` then adds what `.zenodo.json` cannot carry (Accelerate Europe as organisational creator, so the record's citation matches ours, and the MIT licence for the code): diff, `--apply`, diff again, which must report nothing to do. The script waits for Zenodo to hold the new version and for its API, which can serve the old record for about a minute after `--apply`. The Zenodo token is read only inside the script, from the owner's token file given with `--token-file` (a line `ZENODO_TOKEN=...`), and is never printed or put on a command line.
 4. `git fetch --tags`; the next release check compares with the new tag.
 5. The next development version: on a new branch `dev-X.Y.(Z+1)` from `origin/next`, `dataset.version` becomes `X.Y.(Z+1)-dev` and `scripts/build.py --update-readme` refreshes the README; `as_of`, the citation and the changelog stay at the release. It stages the change and stops: review, commit, push, run CI by hand and merge into `next` as usual. A planned minor or major release can change that number when its branch merges into `next`.
 

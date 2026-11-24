@@ -1,6 +1,6 @@
 """Finish a release after the owner's Go has moved main, stopping at the first failure.
 
-    uv run --locked scripts/release_after.py [--act] [--work DIR]
+    uv run --locked scripts/release_after.py [--act --work DIR --token-file FILE]
 
 The default prints the plan and probes the release without changing it. --act writes
 notes, creates the GitHub release, updates Zenodo and stages the next development
@@ -29,7 +29,6 @@ except ImportError:
     from versioning import parse_version, require_release
 
 ROOT = Path(__file__).resolve().parents[1]
-TOKEN_FILE = Path.home() / ".config/aisi/zenodo.env"
 STEPS = ("Live site", "Release notes", "GitHub release", "Zenodo", "Tags",
          "Next development version", "Summary")
 UV = ["uv", "run", "--locked"]
@@ -215,6 +214,8 @@ class ReleaseAfter:
         if self.act:
             token = read_token(self.token_file)
             self.secrets.append(token)
+        elif self.token_file is None:
+            self.say("  Token file: not given (--act needs --token-file)")
         else:
             self.say(f"  Token file {self.token_file}: {'exists' if self.token_file.is_file() else 'missing'} (not read)")
         diff = UV + ["scripts/zenodo_metadata.py"]
@@ -243,8 +244,8 @@ class ReleaseAfter:
         if not self.act:
             self.command(apply)
             self.command(diff)
-            if not self.token_file.is_file():
-                raise Refusal(f"cannot apply without Zenodo token file {self.token_file}")
+            if self.token_file is None or not self.token_file.is_file():
+                raise Refusal(f"cannot apply without a Zenodo token file (--token-file; given: {self.token_file or 'none'})")
             self.outcome("would run (--apply, then verify; token key checked only with --act)")
             return
         applied = self.call(apply, token=token)
@@ -348,17 +349,20 @@ class ReleaseAfter:
         return 0
 
 
-def main(argv=None, *, root=ROOT, runner=subprocess.run, token_file=TOKEN_FILE,
-         sleep=time.sleep, clock=time.time):
+def main(argv=None, *, root=ROOT, runner=subprocess.run, sleep=time.sleep, clock=time.time):
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--act", action="store_true", help="perform the plan, leaving development changes staged")
     parser.add_argument("--work", type=Path, help="notes and development worktree directory (required with --act; dry-run default: a new temporary path)")
+    # The owner names the token file on each run, so the repository carries no host's private path.
+    parser.add_argument("--token-file", type=Path, help="file holding ZENODO_TOKEN=... (required with --act; read only for the Zenodo apply)")
     args = parser.parse_args(argv)
     if args.act and args.work is None:
         parser.error("--act requires --work")
+    if args.act and args.token_file is None:
+        parser.error("--act requires --token-file")
     work = args.work or Path(tempfile.gettempdir()) / f"aisi-release-{uuid.uuid4().hex}"
     return ReleaseAfter(root=Path(root), act=args.act, work=work.absolute(), runner=runner,
-                        token_file=Path(token_file), sleep=sleep, clock=clock).run()
+                        token_file=args.token_file, sleep=sleep, clock=clock).run()
 
 
 if __name__ == "__main__":

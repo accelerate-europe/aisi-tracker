@@ -4,6 +4,7 @@ import copy
 import json
 import subprocess
 from datetime import datetime, timezone
+from pathlib import Path
 
 import pytest
 
@@ -111,8 +112,8 @@ def scenario(tmp_path):
     work = tmp_path / "work"
 
     def run(*args, **kwargs):
-        return ra.main(["--work", str(work), *args], root=tmp_path, runner=runner,
-                       token_file=token_file, sleep=runner.sleep, clock=lambda: runner.time, **kwargs)
+        return ra.main(["--work", str(work), "--token-file", str(token_file), *args], root=tmp_path, runner=runner,
+                       sleep=runner.sleep, clock=lambda: runner.time, **kwargs)
 
     return runner, work, token_file, run
 
@@ -169,7 +170,7 @@ def test_fresh_release_dry_run_defers_zenodo(scenario, token_exists, monkeypatch
 def test_act_requires_explicit_work_before_any_probe(scenario, capsys):
     runner, work, token_file, _ = scenario
     with pytest.raises(SystemExit) as exc:
-        ra.main(["--act"], root=work.parent, runner=runner, token_file=token_file)
+        ra.main(["--act", "--token-file", str(token_file)], root=work.parent, runner=runner)
     assert exc.value.code == 2
     assert "--act requires --work" in capsys.readouterr().err
     assert not runner.calls
@@ -180,7 +181,7 @@ def test_default_work_is_printed_but_not_created(scenario, monkeypatch, capsys):
     runner, work, token_file, _ = scenario
     monkeypatch.setattr(ra.tempfile, "gettempdir", lambda: str(work.parent))
     monkeypatch.setattr(ra.uuid, "uuid4", lambda: type("Id", (), {"hex": "fixed"})())
-    assert ra.main([], root=work.parent, runner=runner, token_file=token_file) == 0
+    assert ra.main(["--token-file", str(token_file)], root=work.parent, runner=runner) == 0
     planned = work.parent / "aisi-release-fixed"
     assert str(planned) in capsys.readouterr().out
     assert not planned.exists()
@@ -263,7 +264,7 @@ def test_github_probe_failure_is_not_absence(scenario, capsys):
             return subprocess.CompletedProcess(argv, 1, "", "network unavailable")
         return base_runner(argv, **kwargs)
 
-    assert ra.main([], root=scenario[1].parent, runner=unavailable, token_file=scenario[2]) == 1
+    assert ra.main(["--token-file", str(scenario[2])], root=scenario[1].parent, runner=unavailable) == 1
     assert not any(c[:3] == ["gh", "release", "create"] for c in commands(runner))
     assert "could not establish" in capsys.readouterr().err
 
@@ -435,3 +436,27 @@ def test_development_edit_refuses_wrong_base_without_writing(tmp_path):
     with pytest.raises(ra.Refusal, match="expected 1.1.1"):
         ra.edit_development_version(path, "1.1.1", "1.1.2-dev")
     assert path.read_bytes() == raw
+
+
+def test_act_requires_token_file_before_any_probe(scenario, capsys):
+    runner, work, _, _ = scenario
+    with pytest.raises(SystemExit) as exc:
+        ra.main(["--act", "--work", str(work)], root=work.parent, runner=runner)
+    assert exc.value.code == 2
+    assert "--act requires --token-file" in capsys.readouterr().err
+    assert not runner.calls
+
+
+def test_dry_run_without_token_file_says_so_and_would_not_apply(scenario, capsys):
+    runner, work, _, _ = scenario
+    runner.zenodo = [(1, "creators differ", "")]
+    assert ra.main(["--work", str(work)], root=work.parent, runner=runner, sleep=runner.sleep,
+                   clock=lambda: runner.time) == 1
+    output = capsys.readouterr()
+    assert "Token file: not given (--act needs --token-file)" in output.out
+    assert "cannot apply without a Zenodo token file" in output.err
+    assert DIFF + ["--apply"] not in commands(runner)
+
+
+def test_no_default_token_path_in_the_script():
+    assert ".config" not in Path(ra.__file__).read_text(encoding="utf-8")
