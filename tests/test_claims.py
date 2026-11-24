@@ -366,3 +366,62 @@ def test_real_function_summaries_are_short_reader_sentences():
 def test_real_vocabulary_is_the_spec_list():
     real = json.loads(build.DATA.read_text())
     assert all(claim_checks.schema_node(p) for p in real["dataset"]["provisional"])
+
+
+HELD_VOCABULARY = {code: {**VOCABULARY["research"], "label": code} for code in
+                   ("model_testing", "evaluation_methods", "standards_guidance", "international_cooperation", "research")}
+
+
+def held_row(code: str, held: dict, entry_day: str = "2025-06") -> dict:
+    institute = {"claims": [{"id": "entry", "kind": "function", "code": code, "basis": "activity"}], **held}
+    rows = claim_checks.function_rows(institute, {"function": HELD_VOCABULARY}, {"entry": {"published": entry_day}})
+    return next(r for r in rows if r["code"] == code)
+
+
+HELD_PAIRS = [("joint_testing", "model_testing"), ("joint_testing", "international_cooperation"), ("evaluation", "model_testing"),
+              ("tool", "evaluation_methods"), ("dataset", "evaluation_methods"), ("guidance", "standards_guidance")]
+
+
+def test_held_map_is_the_approved_one():
+    assert sorted((kind, code) for kind, codes in claim_checks.OUTPUT_FUNCTIONS.items() for code in codes) == sorted(HELD_PAIRS)
+
+
+@pytest.mark.parametrize("kind, code", HELD_PAIRS)
+def test_older_credited_output_withholds_since(kind, code):
+    older = {"outputs": [{"type": kind, "date": "2024-11-20", "credit": {"institute_id": "x", "date": "2024-11-20"}}]}
+    newer = {"outputs": [{"type": kind, "date": "2026-01", "credit": {"institute_id": "x", "date": "2026-01"}}]}
+    assert held_row(code, older)["since"] is None
+    assert held_row(code, newer)["since"] == "2025-06"
+
+
+def test_older_signed_agreement_withholds_cooperation_since():
+    def agreement(state="signed", party="government", day="2024-04-01"):
+        return {"agreements": [{"state": state, "counterparty_type": party, "date": day}]}
+    assert held_row("international_cooperation", agreement())["since"] is None
+    assert held_row("international_cooperation", agreement(party="institute"))["since"] is None
+    assert held_row("international_cooperation", agreement(state="announced"))["since"] == "2025-06"
+    assert held_row("international_cooperation", agreement(state="pledged"))["since"] == "2025-06"
+    assert held_row("international_cooperation", agreement(day="2025"))["since"] == "2025-06"  # same year, coarser: not older
+    assert held_row("international_cooperation", agreement(party="developer"))["since"] == "2025-06"
+    assert held_row("international_cooperation", agreement(day="2025-07"))["since"] == "2025-06"
+    assert held_row("model_testing", agreement())["since"] == "2025-06"
+
+
+def test_reports_and_uncredited_outputs_never_withhold_since():
+    report = {"outputs": [{"type": "report", "date": "2020", "credit": {"institute_id": "x", "date": "2020"}}]}
+    uncredited = {"outputs": [{"type": "joint_testing", "date": "2020"}]}
+    assert held_row("research", report)["since"] == "2025-06"
+    assert held_row("model_testing", uncredited)["since"] == "2025-06"
+    # Same month at a coarser precision is not older: "2025-06" pads before "2025-06-01" only within a prefix.
+    same = {"outputs": [{"type": "evaluation", "date": "2025-06-15", "credit": {"institute_id": "x", "date": "2025-06-15"}}]}
+    assert held_row("model_testing", same)["since"] == "2025-06"
+
+
+def test_held_output_uses_credit_date_then_output_date_and_shared_precision():
+    credited_later = {"outputs": [{"type": "evaluation", "date": "2024-01", "credit": {"institute_id": "x", "date": "2026-01"}}]}
+    assert held_row("model_testing", credited_later)["since"] == "2025-06"  # the institute's credit starts after its entry
+    no_credit_date = {"outputs": [{"type": "evaluation", "date": "2024-01", "credit": {"institute_id": "x"}}]}
+    assert held_row("model_testing", no_credit_date)["since"] is None
+    coarse = {"outputs": [{"type": "evaluation", "date": "2025-06", "credit": {"institute_id": "x", "date": "2025-06"}}]}
+    assert held_row("model_testing", coarse, entry_day="2025-06-15")["since"] == "2025-06-15"
+    assert held_row("model_testing", coarse, entry_day="2025-07-01")["since"] is None

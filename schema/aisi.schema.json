@@ -4824,7 +4824,7 @@
         "since": {
           "type": ["string", "null"],
           "pattern": "^\\d{4}(-\\d{2}(-\\d{2})?)?$",
-          "description": "Generated for activity or both: the earliest published date of the source bound to a live activity claim's text, at its recorded precision. Null if any live activity is undated or there is none."
+          "description": "Generated for activity or both: the earliest published date of the source bound to a live activity claim's text, at its recorded precision. Null if any live activity is undated or there is none, or when the institute holds older credited work of the same kind (an output of a type mapped to this function, or a signed agreement with a non-developer for international_cooperation; scripts/claim_checks.py OUTPUT_FUNCTIONS) that has no entry yet."
         },
         "newest": {
           "type": ["string", "null"],

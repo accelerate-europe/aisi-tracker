@@ -49,6 +49,40 @@ def current_codes(vocabularies: dict) -> list[str]:
     ]
 
 
+# Held work that shows a function without being a claim: a credited output of these types, or a signed agreement
+# with a counterparty other than a developer. A function's since is withheld while such work predates its earliest
+# entry, so the page never dates work later than the record shows it. Reports are left out: their type does not say
+# which function they show (research, monitoring, foresight or advice), so only a quoted entry can.
+OUTPUT_FUNCTIONS = {
+    "joint_testing": ("model_testing", "international_cooperation"),
+    "evaluation": ("model_testing",),
+    "tool": ("evaluation_methods",),
+    "dataset": ("evaluation_methods",),
+    "guidance": ("standards_guidance",),
+}
+AGREEMENT_FUNCTION = "international_cooperation"
+
+
+def earlier(day: str, other: str) -> bool:
+    """Whether a partial date is before another at the precision both share: "2025-06" is not before "2025-06-15"."""
+    n = min(len(day), len(other))
+    return day[:n] < other[:n]
+
+
+def held_work_dates(institute: dict) -> dict[str, list[str]]:
+    """Dates of credited outputs and signed non-developer agreements, by the function they show."""
+    held: dict[str, list[str]] = {}
+    for output in institute.get("outputs", []):
+        day = (output.get("credit") or {}).get("date") or output.get("date")
+        if output.get("credit") and day:
+            for code in OUTPUT_FUNCTIONS.get(output.get("type"), ()):
+                held.setdefault(code, []).append(day)
+    for agreement in institute.get("agreements", []):
+        if agreement.get("state") == "signed" and agreement.get("counterparty_type") != "developer" and agreement.get("date"):
+            held.setdefault(AGREEMENT_FUNCTION, []).append(agreement["date"])
+    return held
+
+
 def function_rows(institute: dict, vocabularies: dict, text_sources: dict | None = None) -> list[dict] | None:
     """One row per current code: the bases of the institute's function claims, else not_found or not_coded.
 
@@ -60,6 +94,7 @@ def function_rows(institute: dict, vocabularies: dict, text_sources: dict | None
     coded = set(institute.get("check", {}).get("functions", {}).get("codes", []))
     claims = [c for c in institute.get("claims", []) if c.get("kind") == "function"]
     dates = {c["id"]: (text_sources or {}).get(c["id"], {}).get("published") for c in claims}
+    held = held_work_dates(institute)
     rows = []
     for code in current_codes(vocabularies):
         matching = [c for c in claims if c.get("code") == code]
@@ -76,6 +111,8 @@ def function_rows(institute: dict, vocabularies: dict, text_sources: dict | None
         # Padding puts a partial date before longer dates with the same prefix; stable sorting preserves ties.
         live.sort(key=lambda c: (dates[c["id"]] or "").ljust(10), reverse=True)
         since = min((dates[c["id"]] for c in live), key=lambda day: day.ljust(10)) if live and all(dates[c["id"]] for c in live) else None
+        if since and any(earlier(day, since) for day in held.get(code, [])):
+            since = None  # older held work of this kind has no entry yet
         rows.append({"code": code, "value": value, "claim_ids": [c["id"] for c in mandates + live + expired],
                      "since": since, "newest": live[0]["id"] if live else None})
     return rows
