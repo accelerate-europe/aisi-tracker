@@ -10059,7 +10059,7 @@ def function_values(institutes: list[dict], codes) -> dict:
 def function_quotes(data: dict) -> dict:
     """Bind by the original claim position, independently of the page projection."""
     pointers = defaultdict(list)
-    for source in data["sources"]:
+    for source in data.get("sources", []):  # a fixture without sources has no function claims to bind
         for excerpt in source.get("excerpts", []):
             for pointer in excerpt.get("supports", []):
                 pointers[pointer].append({"excerpt": excerpt, "source": source})
@@ -10408,7 +10408,7 @@ const checkHeading = (detail, cell, country, institute, code, key) => {
   if (context) need(['fontFamily', 'fontSize', 'fontWeight', 'lineHeight', 'color'].every(k => getComputedStyle(context)[k] === getComputedStyle(probe)[k]), key + ': context is not muted list-level type');
   probe.remove();
 };
-const checkEntry = (item, q, key, preview) => {
+const checkEntry = (item, q, key, preview, panelOrder) => {
   const sentence = item?.querySelector(':scope > .meta-item > .claim-text'), cites = sentence?.querySelector('.cites');
   const assigned = sentence?.querySelector(':scope > .fn-assigned'), text = sentence?.cloneNode(true);
   text?.querySelector('.fn-assigned')?.remove(); text?.querySelector('.cites')?.remove();
@@ -10420,8 +10420,11 @@ const checkEntry = (item, q, key, preview) => {
   need(JSON.stringify(parts.map(n => n?.className)) === JSON.stringify([...(q.source.published ? [day?.className] : []), sentence?.className]) &&
        parts.every((n, index) => !index || n.parentElement.previousElementSibling?.matches('.sep-gap')), key + ': entry must read date then cited sentence with separators');
   const links = [...cites?.querySelectorAll('a.cn') || []], institute = item?.closest('[data-institute]')?.dataset.institute;
-  const order = orders[data.institutes.find(i => i.id === institute)?.jurisdiction_id] || [];
-  const ids = q.claim.citations?.text || [];
+  // The card's Sources order; a source the card does not cite takes the next number within this opened function,
+  // as citations() numbers it (panelOrder carries those additions from one entry to the next).
+  const order = panelOrder || [...(orders[data.institutes.find(i => i.id === institute)?.jurisdiction_id] || [])];
+  const ids = [...new Set(q.claim.citations?.text || [])].filter(id => data.sources.some(s => s.id === id));
+  ids.forEach(id => { if (!order.includes(id)) order.push(id); });
   const cited = order.filter(id => ids.includes(id)).map(id => data.sources.find(s => s.id === id));
   need(JSON.stringify(links.map(a => a.href)) === JSON.stringify(cited.map(s => s.url)) && links.every((a, n) =>
        a.target === '_blank' && a.dataset.sourceId === cited[n].id && a.textContent === String(order.indexOf(cited[n].id) + 1) &&
@@ -10464,10 +10467,12 @@ const checkClaims = async (detail, cell, key) => {
     await new Promise(resolve => { earlier.addEventListener('toggle', resolve, {once:true}); summary.click(); });
     need(earlier.open && [...earlier.querySelectorAll('.fn-claim')].every(item => item.getClientRects().length), key + ': earlier entries do not open');
   }
+  const owner = data.institutes.find(i => i.id === detail.closest('[data-institute]')?.dataset.institute);
+  const panelOrder = [...(orders[owner?.jurisdiction_id] || [])]; // one numbering per opened function, as the page builds it
   for (const id of cell.claim_ids) {
     const item = items.find(n => n.dataset.claim === id), q = quotes[id];
     if (!item || !q) { errors.push(key + ': claim missing ' + id); continue; }
-    const {fold, summary} = checkEntry(item, q, key);
+    const {fold, summary} = checkEntry(item, q, key, false, panelOrder);
     need(!detail.querySelector('.fn-basis, .fn-task'), key + ': replaced assignment/activity labels or task line remain');
     const name = summary?.getAttribute('aria-label') || '';
     const glossed = [q.excerpt, ...(q.excerpt.anchors || [])].some(span => span.gloss);
