@@ -31767,7 +31767,7 @@
           "kind": "function",
           "code": "model_testing",
           "basis": "activity",
-          "text": "With the US institute, it ran a joint pre-deployment evaluation of Anthropic's latest model.",
+          "text": "With the US institute, it ran a joint pre-deployment evaluation of Anthropic's upgraded Claude 3.5 Sonnet.",
           "source_ids": [
             "us-claude35-2024"
           ]
@@ -31790,6 +31790,26 @@
           "text": "Is to launch a criminal misuse team to work with the Home Office on research into crime and security issues that threaten British citizens.",
           "source_ids": [
             "gb-rename"
+          ]
+        },
+        {
+          "id": "claims-e1f4a5083c8a4612b095ccb84e951ba0",
+          "kind": "function",
+          "code": "research",
+          "basis": "activity",
+          "text": "Its research found pretraining data filtering in protein language models moderately effective at selectively degrading performance on viral proteins, but not durable against fine-tuning with modest computational resources and access to relevant data.",
+          "source_ids": [
+            "gb-protein-lm-filtering-2026"
+          ]
+        },
+        {
+          "id": "claims-587ff7aad81e4de586f6bc8a26ab894b",
+          "kind": "function",
+          "code": "research",
+          "basis": "activity",
+          "text": "Coordinated the International Scientific Report on the Safety of Advanced AI, chaired by Yoshua Bengio.",
+          "source_ids": [
+            "fix-output-international-safety-report-interim"
           ]
         },
         {
@@ -31837,7 +31857,7 @@
           "kind": "function",
           "code": "international_cooperation",
           "basis": "activity",
-          "text": "With the US institute, it conducted a joint pre-deployment evaluation of Anthropic's latest model.",
+          "text": "With the US institute, it conducted a joint pre-deployment evaluation of Anthropic's upgraded Claude 3.5 Sonnet.",
           "source_ids": [
             "r3-gb-claude35-release"
           ]
@@ -31871,6 +31891,16 @@
           ]
         },
         {
+          "id": "claims-7593f17f91324cadaa46a45f0f25889c",
+          "kind": "function",
+          "code": "evaluation_methods",
+          "basis": "activity",
+          "text": "Introduced optstop, an open-source tool for LLM evaluations that keeps running where uncertainty is high and stops where estimates are precise or stable enough.",
+          "source_ids": [
+            "fix-output-uk-extra-7"
+          ]
+        },
+        {
           "id": "claims-f99a92b4f79b48bab1638919ddd96d31",
           "kind": "function",
           "code": "foresight",
@@ -31898,6 +31928,16 @@
           "text": "Developed and performed an alignment evaluation.",
           "source_ids": [
             "depth-gb-supply-chain"
+          ]
+        },
+        {
+          "id": "claims-c85639de5d654976b5ca667bb5e3586d",
+          "kind": "function",
+          "code": "model_testing",
+          "basis": "activity",
+          "text": "Presented results from its evaluations of five large language models.",
+          "source_ids": [
+            "fix-output-gb-advanced-evaluations-may-2024"
           ]
         },
         {
@@ -36027,7 +36067,7 @@
           "kind": "function",
           "code": "model_testing",
           "basis": "activity",
-          "text": "With the UK institute, it conducted a joint pre-deployment evaluation of Anthropic's latest model.",
+          "text": "With the UK institute, it conducted a joint pre-deployment evaluation of Anthropic's upgraded Claude 3.5 Sonnet.",
           "source_ids": [
             "us-claude35-2024"
           ]
@@ -36053,6 +36093,16 @@
           ]
         },
         {
+          "id": "claims-4d8d009b9aab49889afbefad6b75735c",
+          "kind": "function",
+          "code": "evaluation_methods",
+          "basis": "activity",
+          "text": "Built custom agent hijacking scenarios in-house, in addition to AgentDojo's default suite.",
+          "source_ids": [
+            "us-hijacking-blog-2025-archive"
+          ]
+        },
+        {
           "id": "claims-b510f43e1b6741eb89686f05a1f4de48",
           "kind": "function",
           "code": "research",
@@ -36073,6 +36123,16 @@
           ]
         },
         {
+          "id": "claims-78c818648f9b47c2bdb0bffad4432651",
+          "kind": "function",
+          "code": "research",
+          "basis": "activity",
+          "text": "Has found, with other evaluators, the risk that AI agents use their tools to cheat.",
+          "source_ids": [
+            "us-blog-cheating-2025"
+          ]
+        },
+        {
           "id": "claims-cc4b4a9808b4461a896887d7759ef525",
           "kind": "function",
           "code": "international_cooperation",
@@ -36087,7 +36147,7 @@
           "kind": "function",
           "code": "international_cooperation",
           "basis": "activity",
-          "text": "With the UK institute, it conducted a joint pre-deployment evaluation of Anthropic's latest model.",
+          "text": "With the UK institute, it conducted a joint pre-deployment evaluation of Anthropic's upgraded Claude 3.5 Sonnet.",
           "source_ids": [
             "us-claude35-2024"
           ]
@@ -88868,6 +88928,17 @@
               },
               "credit",
               "institute_id"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-7593f17f91324cadaa46a45f0f25889c"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-17"
@@ -90231,6 +90302,17 @@
               },
               "credit",
               "institute_id"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-c85639de5d654976b5ca667bb5e3586d"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-17"
@@ -90565,6 +90647,17 @@
               },
               "credit",
               "institute_id"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-587ff7aad81e4de586f6bc8a26ab894b"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-17"
@@ -113008,6 +113101,23 @@
             ]
           ],
           "accessed": "2026-10-24"
+        },
+        {
+          "text": "US AISI leveraged AgentDojo’s default suite of hijacking scenarios and built additional, custom scenarios in-house.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "claims",
+              {
+                "id": "claims-4d8d009b9aab49889afbefad6b75735c"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-24"
         }
       ],
       "snapshot": {
@@ -118987,6 +119097,17 @@
               },
               "credit",
               "institute_id"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-e1f4a5083c8a4612b095ccb84e951ba0"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-11-07"
@@ -120032,6 +120153,23 @@
                 "lineage": "cheating-ai-agent-evaluations"
               },
               "qualification_note"
+            ]
+          ],
+          "accessed": "2026-11-07"
+        },
+        {
+          "text": "as CAISI and other evaluators have found, the risk that AI agents can use their tools to cheat",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "claims",
+              {
+                "id": "claims-78c818648f9b47c2bdb0bffad4432651"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-11-07"
