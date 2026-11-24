@@ -31767,7 +31767,7 @@
           "kind": "function",
           "code": "model_testing",
           "basis": "activity",
-          "text": "NIST's report says that, with the US institute, it ran a joint pre-deployment evaluation of Anthropic's latest model.",
+          "text": "With the US institute, it ran a joint pre-deployment evaluation of Anthropic's latest model.",
           "source_ids": [
             "us-claude35-2024"
           ]
@@ -31777,7 +31777,7 @@
           "kind": "function",
           "code": "evaluation_methods",
           "basis": "activity",
-          "text": "The government's announcement says it has open released a new testing platform to strengthen AI safety evaluations.",
+          "text": "Released a new testing platform openly to strengthen AI safety evaluations.",
           "source_ids": [
             "depth-gb-inspect"
           ]
@@ -31787,7 +31787,7 @@
           "kind": "function",
           "code": "research",
           "basis": "mandate",
-          "text": "The government's renaming announcement says it will launch a criminal misuse team that works with the Home Office to research crime and security issues that threaten British citizens.",
+          "text": "Is to launch a criminal misuse team to work with the Home Office on research into crime and security issues that threaten British citizens.",
           "source_ids": [
             "gb-rename"
           ]
@@ -31797,7 +31797,7 @@
           "kind": "function",
           "code": "standards_guidance",
           "basis": "activity",
-          "text": "It says it recommends that frontier AI developers follow a five-step plan for rigorous assessment of misuse safeguards.",
+          "text": "Recommends that frontier AI developers follow a five-step plan for rigorous assessment of misuse safeguards.",
           "source_ids": [
             "catalogue-gb-75"
           ]
@@ -31807,7 +31807,7 @@
           "kind": "function",
           "code": "international_cooperation",
           "basis": "mandate",
-          "text": "The UK-Japan partnership statement commits to deepening cooperation between Japan AISI and it on the science of AI evaluation through the International Network for Advanced AI Measurement, Evaluation and Science.",
+          "text": "Is to deepen cooperation with Japan AISI on the science of AI evaluation through the International Network for Advanced AI Measurement, Evaluation and Science.",
           "source_ids": [
             "gb-jp-frontier-tech-partnership-2026"
           ]
@@ -31817,7 +31817,7 @@
           "kind": "function",
           "code": "international_cooperation",
           "basis": "activity",
-          "text": "It says it has advanced the science of evaluation internationally by coordinating the Network for Advanced AI Measurement, Evaluation and Science and contributing to a NIST taxonomy.",
+          "text": "Coordinated the Network for Advanced AI Measurement, Evaluation and Science and contributed to a NIST taxonomy, work it says advanced the science of evaluation internationally.",
           "source_ids": [
             "gb-aisi-best-practice-2026"
           ]
@@ -31827,7 +31827,7 @@
           "kind": "function",
           "code": "international_cooperation",
           "basis": "activity",
-          "text": "It says that, with the US institute, it jointly evaluated Moonshot AI's Kimi K3 model.",
+          "text": "With the US institute, it jointly evaluated Moonshot AI's Kimi K3 model.",
           "source_ids": [
             "r3-gb-kimi-release"
           ]
@@ -31837,7 +31837,7 @@
           "kind": "function",
           "code": "international_cooperation",
           "basis": "activity",
-          "text": "It says that, with the US institute, it conducted a joint pre-deployment evaluation of Anthropic's latest model.",
+          "text": "With the US institute, it conducted a joint pre-deployment evaluation of Anthropic's latest model.",
           "source_ids": [
             "r3-gb-claude35-release"
           ]
@@ -31847,7 +31847,7 @@
           "kind": "function",
           "code": "adoption",
           "basis": "mandate",
-          "text": "The government's renaming announcement says a revitalised institute will boost public confidence in AI and drive its uptake across the economy.",
+          "text": "Is to boost public confidence in AI and drive its uptake across the economy.",
           "source_ids": [
             "gb-rename"
           ]
@@ -31865,7 +31865,7 @@
           "kind": "function",
           "code": "evaluation_methods",
           "basis": "mandate",
-          "text": "The government's announcement says the then AI Safety Institute, with i.AI and Number 10, will bring together AI talent to test and develop new open-source AI safety tools.",
+          "text": "With i.AI and Number 10, it is to bring together AI talent to test and develop new open-source AI safety tools.",
           "source_ids": [
             "depth-gb-inspect"
           ]
@@ -31875,7 +31875,7 @@
           "kind": "function",
           "code": "foresight",
           "basis": "activity",
-          "text": "An AISI project team's report says current oversight rests on properties that are likely to erode over the next few years unless something is done to preserve them.",
+          "text": "Assesses that current oversight rests on properties likely to erode over the next few years unless something is done to preserve them.",
           "source_ids": [
             "catalogue-gb-19"
           ]
@@ -31885,7 +31885,7 @@
           "kind": "function",
           "code": "model_testing",
           "basis": "mandate",
-          "text": "The government's launch announcement says the institute is tasked with testing the safety of emerging types of AI.",
+          "text": "Is tasked with testing the safety of emerging types of AI.",
           "source_ids": [
             "gb-aisi-launch"
           ]
@@ -31895,7 +31895,7 @@
           "kind": "function",
           "code": "model_testing",
           "basis": "activity",
-          "text": "The research paper says the UK AI Security Institute developed and performed an alignment evaluation.",
+          "text": "Developed and performed an alignment evaluation.",
           "source_ids": [
             "depth-gb-supply-chain"
           ]
@@ -31905,7 +31905,7 @@
           "kind": "function",
           "code": "regulatory_support",
           "basis": "mandate",
-          "text": "DSIT's paper introducing the institute says its research will provide technical tools for governance and regulation.",
+          "text": "Its research is to provide technical tools for governance and regulation.",
           "source_ids": [
             "gb-cp960-2023"
           ]
@@ -31923,7 +31923,7 @@
           "kind": "function",
           "code": "risk_monitoring",
           "basis": "activity",
-          "text": "AISI's blog says its inaugural Frontier AI Trends Report draws on 2 years' worth of evaluations to give insights into the trajectory of AI development.",
+          "text": "Its inaugural Frontier AI Trends Report draws on two years' worth of evaluations to give insights into the trajectory of AI development.",
           "source_ids": [
             "depth-gb-blog"
           ]
@@ -31933,7 +31933,7 @@
           "kind": "function",
           "code": "risk_monitoring",
           "basis": "mandate",
-          "text": "DSIT's paper introducing the institute says it will work with other UK government functions to feed up-to-date information from the frontier of AI development and AI safety into government.",
+          "text": "Is to work with other UK government functions to feed up-to-date information from the frontier of AI development and AI safety into government.",
           "source_ids": [
             "gb-cp960-2023"
           ]
@@ -32417,7 +32417,7 @@
           "kind": "function",
           "code": "model_testing",
           "basis": "activity",
-          "text": "The joint testing report says France AISI tested an alternate judge-LLM prompt \"as a proof-of-concept with a complete benchmark run on a self-hosted model\".",
+          "text": "Tested an alternate judge-LLM prompt as a proof of concept with a complete benchmark run on a self-hosted model.",
           "source_ids": [
             "catalogue-agentic-report"
           ]
@@ -32427,7 +32427,7 @@
           "kind": "function",
           "code": "evaluation_methods",
           "basis": "mandate",
-          "text": "The SGDSN's page says its roadmap plans the development of evaluation methods suited to the cybersecurity of systems and products that integrate AI.",
+          "text": "Is to develop evaluation methods suited to the cybersecurity of systems and products that integrate AI.",
           "source_ids": [
             "fr-sgdsn-aisi"
           ]
@@ -32437,7 +32437,7 @@
           "kind": "function",
           "code": "evaluation_methods",
           "basis": "activity",
-          "text": "The UK AI Security Institute's release says it published 'What should evaluators prioritise when resources are limited?'",
+          "text": "Published 'What should evaluators prioritise when resources are limited?'",
           "source_ids": [
             "r3-gb-network-best-practice-release"
           ]
@@ -32447,7 +32447,7 @@
           "kind": "function",
           "code": "research",
           "basis": "mandate",
-          "text": "The SGDSN's page says its roadmap plans research to better understand, characterise and control systemic risks and to inform public decision-making.",
+          "text": "Is to conduct research to better understand, characterise and control systemic risks and to inform public decision-making.",
           "source_ids": [
             "fr-sgdsn-aisi"
           ]
@@ -32457,7 +32457,7 @@
           "kind": "function",
           "code": "regulatory_support",
           "basis": "mandate",
-          "text": "The SGDSN's page says its roadmap sets a regulatory support pillar to help implement the AI regulatory framework effectively.",
+          "text": "Is to help implement the AI regulatory framework effectively.",
           "source_ids": [
             "fr-sgdsn-aisi"
           ]
@@ -32467,7 +32467,7 @@
           "kind": "function",
           "code": "convening",
           "basis": "mandate",
-          "text": "The government's founding announcement gives it the mission of federating the national evaluation and security bodies.",
+          "text": "Is tasked with bringing together the national evaluation and security bodies.",
           "source_ids": [
             "fr-dge"
           ]
@@ -32487,7 +32487,7 @@
           "kind": "function",
           "code": "international_cooperation",
           "basis": "activity",
-          "text": "It says it has published a blog post on evaluators' priorities as part of the evaluation work of the International Network for Advanced AI Measurement, Evaluation and Science.",
+          "text": "Published a blog post on evaluators' priorities as part of the evaluation work of the International Network for Advanced AI Measurement, Evaluation and Science.",
           "source_ids": [
             "fix-output-fr-inesia-evaluation-prioritisation-guidance"
           ]
@@ -32497,7 +32497,7 @@
           "kind": "function",
           "code": "international_cooperation",
           "basis": "mandate",
-          "text": "The conclusions of the 26th Franco-German Ministerial Council say France and Germany have agreed to step up their cooperation on AI safety and security through future collaboration between INESIA and its German counterpart.",
+          "text": "France and Germany have agreed to step up their cooperation on AI safety and security through future collaboration between INESIA and its German counterpart.",
           "source_ids": [
             "depth-de-fr-cooperation"
           ]
@@ -32507,7 +32507,7 @@
           "kind": "function",
           "code": "regulatory_support",
           "basis": "activity",
-          "text": "Inria's 2024 annual report says INESIA's work focuses on, among other things, supporting the implementation of AI regulation.",
+          "text": "Inria's annual report says INESIA's work focuses on, among other things, supporting the implementation of AI regulation.",
           "source_ids": [
             "fr-inria-annual-2024"
           ]
@@ -32517,7 +32517,7 @@
           "kind": "function",
           "code": "research",
           "basis": "activity",
-          "text": "Inria's 2024 annual report says INESIA's work focuses on, among other things, analysing systemic risks in the field of national security.",
+          "text": "Inria's annual report says INESIA's work focuses on, among other things, analysing systemic risks in the field of national security.",
           "source_ids": [
             "fr-inria-annual-2024"
           ]
@@ -32909,7 +32909,7 @@
           "kind": "function",
           "code": "model_testing",
           "basis": "mandate",
-          "text": "Its founding ministries' launch statement makes analysing and evaluating leading AI models, above all their cybersecurity capabilities and risks, an important focus of its current first phase.",
+          "text": "Is to focus in its current first phase on analysing and evaluating leading AI models, especially their cybersecurity capabilities and risks.",
           "source_ids": [
             "de-bmds"
           ]
@@ -32919,7 +32919,7 @@
           "kind": "function",
           "code": "risk_monitoring",
           "basis": "mandate",
-          "text": "Its core tasks, as listed on the BSI's page for the institute, include international technology watch and situation analysis.",
+          "text": "Its core tasks include international technology watch and situation analysis.",
           "source_ids": [
             "de-bsi-aisi"
           ]
@@ -32939,7 +32939,7 @@
           "kind": "function",
           "code": "policy_advice",
           "basis": "mandate",
-          "text": "Its core tasks, as listed on the BSI's page for the institute, include strategic advice to the federal government on AI-related security and sovereignty questions.",
+          "text": "Its core tasks include strategic advice to the federal government on AI-related security and sovereignty questions.",
           "source_ids": [
             "de-bsi-aisi"
           ]
@@ -32949,7 +32949,7 @@
           "kind": "function",
           "code": "international_cooperation",
           "basis": "mandate",
-          "text": "Its founding ministries' announcement says it will work closely with comparable institutions in other states and with multilateral structures.",
+          "text": "Is to work closely with comparable institutions in other states and with multilateral structures.",
           "source_ids": [
             "de-bmds"
           ]
@@ -32959,7 +32959,7 @@
           "kind": "function",
           "code": "convening",
           "basis": "mandate",
-          "text": "The federal government's announcement of its opening says it is to act as the central interface for analysing and countering the new security risks that rapid progress in AI brings.",
+          "text": "Is to act as the central interface for analysing and countering the new security risks that rapid progress in AI brings.",
           "source_ids": [
             "de-breg"
           ]
@@ -32969,7 +32969,7 @@
           "kind": "function",
           "code": "adoption",
           "basis": "activity",
-          "text": "The BSI's AI security bulletin says AISI Deutschland has again pointed out that the BSI strongly recommends using AI for vulnerability searches and software quality assurance.",
+          "text": "Has again pointed out that the BSI strongly recommends using AI for vulnerability searches and software quality assurance.",
           "source_ids": [
             "de-bsi-ki-themen-2026-10"
           ]
@@ -32989,7 +32989,7 @@
           "kind": "function",
           "code": "international_cooperation",
           "basis": "activity",
-          "text": "The digital ministry's announcement of the institute's start says technical exchanges with international partner institutions, including in France, the UK and the EU AI Office, are already taking place.",
+          "text": "The participating authorities are already holding technical exchanges with international partner institutions, including those in France and the UK, and the EU AI Office.",
           "source_ids": [
             "de-bmds"
           ]
@@ -32999,7 +32999,7 @@
           "kind": "function",
           "code": "research",
           "basis": "mandate",
-          "text": "The BSI's page on the institute lists among its core tasks analysing the security-relevant effects of AI on government, business and society.",
+          "text": "Its core tasks include analysing the security-relevant effects of AI on government, business and society.",
           "source_ids": [
             "de-bsi-aisi"
           ]
@@ -33312,7 +33312,7 @@
           "kind": "function",
           "code": "model_testing",
           "basis": "mandate",
-          "text": "The government's IA360 plan assigns it the evaluation of the most advanced models before and after deployment, with pre-launch access through voluntary agreements with developers.",
+          "text": "Is to evaluate the most advanced models before and after deployment, with pre-launch access through voluntary agreements with developers.",
           "source_ids": [
             "es-plan"
           ]
@@ -33322,7 +33322,7 @@
           "kind": "function",
           "code": "evaluation_methods",
           "basis": "mandate",
-          "text": "The government's IA360 plan assigns it the development of evaluation methodology and tools, and of standards for safe testing environments.",
+          "text": "Is to develop evaluation methodology and tools, and standards for safe testing environments.",
           "source_ids": [
             "es-plan"
           ]
@@ -33332,7 +33332,7 @@
           "kind": "function",
           "code": "regulatory_support",
           "basis": "mandate",
-          "text": "The national plan says it will give technical support to AESIA, the supervisory authority, in market surveillance and in helping companies prepare.",
+          "text": "Is to give technical support to AESIA, the supervisory authority, in market surveillance and in helping companies prepare.",
           "source_ids": [
             "es-plan"
           ]
@@ -33342,7 +33342,7 @@
           "kind": "function",
           "code": "risk_monitoring",
           "basis": "mandate",
-          "text": "The government's IA360 plan assigns it a periodic report to the General State Administration on how the capabilities and risks of frontier models evolve.",
+          "text": "Is to provide the General State Administration with a periodic report on how the capabilities and risks of frontier models evolve.",
           "source_ids": [
             "es-plan"
           ]
@@ -33360,7 +33360,7 @@
           "kind": "function",
           "code": "international_cooperation",
           "basis": "mandate",
-          "text": "The government's IA360 plan assigns it international cooperation with counterpart institutes in other countries and with the European AI Office.",
+          "text": "Is to cooperate internationally with counterpart institutes in other countries and with the European AI Office.",
           "source_ids": [
             "es-plan"
           ]
@@ -33378,7 +33378,7 @@
           "kind": "function",
           "code": "incident_response",
           "basis": "mandate",
-          "text": "The government's plan lists among the institute's functions defining response protocols for incidents arising from the behaviour of advanced models or agents, in coordination with INCIBE and the National Cryptologic Centre.",
+          "text": "Is to define response protocols for incidents arising from the behaviour of advanced models or agents, in coordination with INCIBE and the National Cryptologic Centre.",
           "source_ids": [
             "es-plan"
           ]
@@ -33869,7 +33869,7 @@
           "kind": "function",
           "code": "model_testing",
           "basis": "mandate",
-          "text": "The government's 2027 budget bill assigns it the evaluation of AI models, including their safety, in 2027.",
+          "text": "Under the budget bill, it would be tasked with evaluating AI models, including their safety.",
           "source_ids": [
             "no-prop1s-2026-27-dfd"
           ]
@@ -33879,7 +33879,7 @@
           "kind": "function",
           "code": "international_cooperation",
           "basis": "mandate",
-          "text": "The government's 2027 budget bill makes it the contact point towards international AI safety communities such as AI Safety Institutes, aiming at cooperation on methods, assessments and test tools.",
+          "text": "Under the budget bill, it would be the contact point for international AI safety communities such as AI Safety Institutes, aiming at cooperation on methods, assessments and test tools.",
           "source_ids": [
             "no-prop1s-2026-27-dfd"
           ]
@@ -33899,7 +33899,7 @@
           "kind": "function",
           "code": "adoption",
           "basis": "mandate",
-          "text": "Digdir's report on the assignment says KI Norge is to drive innovative and responsible development and use of AI.",
+          "text": "Is to drive innovative and responsible development and use of AI.",
           "source_ids": [
             "no-digdir-ki-norge-report-2025"
           ]
@@ -33909,7 +33909,7 @@
           "kind": "function",
           "code": "convening",
           "basis": "mandate",
-          "text": "Digdir's report records the assignment to establish KI Norge as a national arena for responsible innovation, development and use of AI.",
+          "text": "Is to be established as a national arena for responsible innovation, development and use of AI.",
           "source_ids": [
             "no-digdir-ki-norge-report-2025"
           ]
@@ -33919,7 +33919,7 @@
           "kind": "function",
           "code": "sandbox",
           "basis": "mandate",
-          "text": "The ministry's press release says KI Norge is to operate the national AI sandbox together with the Data Protection Authority and the Norwegian Communications Authority.",
+          "text": "Is to operate the national AI sandbox together with the Data Protection Authority and the Norwegian Communications Authority.",
           "source_ids": [
             "no-holte-appointment-dfd"
           ]
@@ -33929,7 +33929,7 @@
           "kind": "function",
           "code": "standards_guidance",
           "basis": "mandate",
-          "text": "The ministry's budget proposition says that through KI Norge the agency has a particular responsibility to guide on, and drive, responsible and innovative use of AI in the public and private sectors.",
+          "text": "Through KI Norge, the agency has a particular responsibility to guide on, and promote, responsible and innovative use of AI in the public and private sectors.",
           "source_ids": [
             "no-prop1s-2026-27-dfd"
           ]
@@ -34402,7 +34402,7 @@
           "kind": "function",
           "code": "evaluation_methods",
           "basis": "mandate",
-          "text": "The Commission decision establishing it assigns it developing tools, methodologies and benchmarks for evaluating the capabilities of general-purpose AI models.",
+          "text": "Is tasked with developing tools, methodologies and benchmarks for evaluating the capabilities of general-purpose AI models.",
           "source_ids": [
             "eu-decision-oj"
           ]
@@ -34412,7 +34412,7 @@
           "kind": "function",
           "code": "regulatory_enforcement",
           "basis": "mandate",
-          "text": "The Commission decision establishing it assigns it investigating possible infringements of the rules on general-purpose AI models and systems.",
+          "text": "Is tasked with investigating possible infringements of the rules on general-purpose AI models and systems.",
           "source_ids": [
             "eu-decision-oj"
           ]
@@ -34422,7 +34422,7 @@
           "kind": "function",
           "code": "regulatory_support",
           "basis": "mandate",
-          "text": "The Commission decision establishing it assigns it supporting the implementation of the rules on prohibited AI practices and high-risk AI systems, in coordination with sectoral bodies.",
+          "text": "Is tasked with supporting the implementation of the rules on prohibited AI practices and high-risk AI systems, in coordination with sectoral bodies.",
           "source_ids": [
             "eu-decision-oj"
           ]
@@ -34432,7 +34432,7 @@
           "kind": "function",
           "code": "risk_monitoring",
           "basis": "mandate",
-          "text": "The Commission decision establishing it assigns it monitoring the emergence of unforeseen risks from general-purpose AI models.",
+          "text": "Is tasked with monitoring the emergence of unforeseen risks from general-purpose AI models.",
           "source_ids": [
             "eu-decision-oj"
           ]
@@ -34452,7 +34452,7 @@
           "kind": "function",
           "code": "international_cooperation",
           "basis": "mandate",
-          "text": "The Commission decision establishing it assigns it contributing to the Commission's international cooperation on AI with third countries and international organisations.",
+          "text": "Is tasked with contributing to the Commission's international cooperation on AI with third countries and international organisations.",
           "source_ids": [
             "eu-decision-oj"
           ]
@@ -34462,7 +34462,7 @@
           "kind": "function",
           "code": "international_cooperation",
           "basis": "activity",
-          "text": "The Commission says it was one of the three network members that ran the agentic evaluations for the cybersecurity strand.",
+          "text": "Was one of the three network members that ran the agentic evaluations for the cybersecurity strand.",
           "source_ids": [
             "eu-joint-testing-2025"
           ]
@@ -34482,7 +34482,7 @@
           "kind": "function",
           "code": "adoption",
           "basis": "mandate",
-          "text": "The Commission decision establishing it assigns it supporting the accelerated development, roll-out and use of trustworthy AI systems that contribute to the Union's competitiveness and economic growth.",
+          "text": "Is tasked with supporting the accelerated development, roll-out and use of trustworthy AI systems that contribute to the Union's competitiveness and economic growth.",
           "source_ids": [
             "eu-decision-oj"
           ]
@@ -34492,7 +34492,7 @@
           "kind": "function",
           "code": "certification",
           "basis": "mandate",
-          "text": "The consolidated AI Act makes it responsible for conformity assessments and tests of the high-risk AI systems referred to in that article that are subject to third-party conformity assessment.",
+          "text": "Is tasked with conformity assessments and tests of AI systems referred to in paragraph 1 of the quoted article that are classified as high-risk and subject to third-party conformity assessment.",
           "source_ids": [
             "r5-eu-ai-act-article74"
           ]
@@ -34512,7 +34512,7 @@
           "kind": "function",
           "code": "convening",
           "basis": "mandate",
-          "text": "The AI Act assigns it providing the secretariat for the Board, convening the Board's meetings at the Chair's request and preparing the agenda.",
+          "text": "Is tasked with providing the secretariat for the Board, convening the Board's meetings at the Chair's request and preparing the agenda.",
           "source_ids": [
             "r5-eu-ai-act-article74"
           ]
@@ -34522,7 +34522,7 @@
           "kind": "function",
           "code": "model_testing",
           "basis": "mandate",
-          "text": "The Commission's announcement of the AI Office says it will conduct testing and evaluation of general-purpose AI models.",
+          "text": "Is to conduct testing and evaluation of general-purpose AI models.",
           "source_ids": [
             "eu-office-structure-2024"
           ]
@@ -34542,7 +34542,7 @@
           "kind": "function",
           "code": "standards_guidance",
           "basis": "mandate",
-          "text": "The AI Act assigns it developing a questionnaire template, including through an automated tool, to help deployers comply with their obligations under that article in a simplified manner.",
+          "text": "Is tasked with developing a questionnaire template, including through an automated tool, to help deployers comply more easily with their obligations under the quoted article.",
           "source_ids": [
             "r5-eu-ai-act-article74"
           ]
@@ -34552,7 +34552,7 @@
           "kind": "function",
           "code": "model_testing",
           "basis": "activity",
-          "text": "The International Network's joint testing report says the EU AI Office, with UK AISI and Australia, ran evaluations on two open-source models.",
+          "text": "With UK AISI and Australia, it ran evaluations on two open-source models.",
           "source_ids": [
             "catalogue-agentic-report"
           ]
@@ -34562,7 +34562,7 @@
           "kind": "function",
           "code": "model_testing",
           "basis": "activity",
-          "text": "The Commission says it was one of the three network members that ran the agentic evaluations for the cybersecurity strand.",
+          "text": "Was one of the three network members that ran the agentic evaluations for the cybersecurity strand.",
           "source_ids": [
             "eu-joint-testing-2025"
           ]
@@ -34572,7 +34572,7 @@
           "kind": "function",
           "code": "regulatory_enforcement",
           "basis": "activity",
-          "text": "The Commission says it has already started to use its enforcement powers under the AI Act, with requests for information sent to several companies to make sure they comply with their obligations.",
+          "text": "The Commission has started using its enforcement powers under the AI Act, with requests for information sent to several companies to check compliance with their obligations.",
           "source_ids": [
             "eu-midday-briefing-2026-09-11"
           ]
@@ -35997,7 +35997,7 @@
           "kind": "function",
           "code": "model_testing",
           "basis": "mandate",
-          "text": "The Commerce Department's statement says it will lead unclassified evaluations of AI capabilities that may pose risks to national security.",
+          "text": "Is to lead unclassified evaluations of AI capabilities that may pose risks to national security.",
           "source_ids": [
             "us-commerce-2025"
           ]
@@ -36007,7 +36007,7 @@
           "kind": "function",
           "code": "model_testing",
           "basis": "activity",
-          "text": "NIST's report says it evaluated the open-weight model DeepSeek V4 Pro in April 2026.",
+          "text": "Evaluated the open-weight model DeepSeek V4 Pro.",
           "source_ids": [
             "depth-us-deepseek"
           ]
@@ -36017,7 +36017,7 @@
           "kind": "function",
           "code": "model_testing",
           "basis": "activity",
-          "text": "NIST's report says it evaluated GLM-5.3 on four benchmarks covering vulnerability discovery and exploit development.",
+          "text": "Evaluated GLM-5.3 on four benchmarks covering vulnerability discovery and exploit development.",
           "source_ids": [
             "us-glm53"
           ]
@@ -36027,7 +36027,7 @@
           "kind": "function",
           "code": "model_testing",
           "basis": "activity",
-          "text": "NIST's report says it conducted a joint pre-deployment evaluation of Anthropic's latest model with the UK institute.",
+          "text": "With the UK institute, it conducted a joint pre-deployment evaluation of Anthropic's latest model.",
           "source_ids": [
             "us-claude35-2024"
           ]
@@ -36037,7 +36037,7 @@
           "kind": "function",
           "code": "evaluation_methods",
           "basis": "mandate",
-          "text": "The Commerce Department's statement says it will coordinate with other federal agencies to develop evaluation methods.",
+          "text": "Is to coordinate with other federal agencies to develop evaluation methods.",
           "source_ids": [
             "us-commerce-2025"
           ]
@@ -36047,7 +36047,7 @@
           "kind": "function",
           "code": "evaluation_methods",
           "basis": "activity",
-          "text": "NIST says it requested public comment on a draft document, NIST AI 800-2 Practices for Automated Benchmark Evaluations of Language Models.",
+          "text": "Requested public comment on a draft document, NIST AI 800-2 Practices for Automated Benchmark Evaluations of Language Models.",
           "source_ids": [
             "fix-output-us-entry-9"
           ]
@@ -36057,7 +36057,7 @@
           "kind": "function",
           "code": "research",
           "basis": "activity",
-          "text": "NIST's announcement says it held three practitioner workshops and conducted a literature review on the challenges of post-deployment monitoring of AI systems.",
+          "text": "Held three practitioner workshops and conducted a literature review on the challenges of post-deployment monitoring of AI systems.",
           "source_ids": [
             "fix-output-us-entry-4"
           ]
@@ -36067,7 +36067,7 @@
           "kind": "function",
           "code": "research",
           "basis": "activity",
-          "text": "NIST's research blog says it partnered on a research paper using data from a public AI agent red-teaming competition to examine the robustness of leading AI models.",
+          "text": "Partnered on a research paper using data from a public AI agent red-teaming competition to examine the robustness of leading AI models.",
           "source_ids": [
             "us-blog-red-teaming-2026"
           ]
@@ -36077,7 +36077,7 @@
           "kind": "function",
           "code": "international_cooperation",
           "basis": "activity",
-          "text": "NIST's announcement says it and the UK AI Security Institute ran a joint evaluation of Moonshot AI's Kimi K3.",
+          "text": "With the UK AI Security Institute, it ran a joint evaluation of Moonshot AI's Kimi K3.",
           "source_ids": [
             "depth-us-kimi"
           ]
@@ -36087,7 +36087,7 @@
           "kind": "function",
           "code": "international_cooperation",
           "basis": "activity",
-          "text": "NIST's report says it conducted a joint pre-deployment evaluation of Anthropic's latest model with the UK institute.",
+          "text": "With the UK institute, it conducted a joint pre-deployment evaluation of Anthropic's latest model.",
           "source_ids": [
             "us-claude35-2024"
           ]
@@ -36097,7 +36097,7 @@
           "kind": "function",
           "code": "convening",
           "basis": "mandate",
-          "text": "The Commerce Department's statement says it will serve as industry's primary point of contact in the US government to facilitate testing and collaborative research on commercial AI systems.",
+          "text": "Is to be industry's primary point of contact in the US government for testing and collaborative research on commercial AI systems.",
           "source_ids": [
             "us-commerce-2025"
           ]
@@ -36117,7 +36117,7 @@
           "kind": "function",
           "code": "adoption",
           "basis": "mandate",
-          "text": "Its introduction in a NIST AI update lists supporting the diffusion and adoption of AI throughout the US economy.",
+          "text": "Is to support the diffusion and adoption of AI throughout the US economy.",
           "source_ids": [
             "us-nist-march-slides"
           ]
@@ -36853,7 +36853,7 @@
           "kind": "function",
           "code": "international_cooperation",
           "basis": "mandate",
-          "text": "The government's launch announcement says it will collaborate with safety institutes in other jurisdictions as part of the International Network of AI Safety Institutes.",
+          "text": "Is to collaborate with safety institutes in other jurisdictions as part of the International Network of AI Safety Institutes.",
           "source_ids": [
             "ca-launch"
           ]
@@ -36863,7 +36863,7 @@
           "kind": "function",
           "code": "international_cooperation",
           "basis": "activity",
-          "text": "ISED's announcement says it and the Korean AI Safety Institute signed a memorandum of understanding to strengthen international cooperation on AI safety.",
+          "text": "With the Korean AI Safety Institute, it signed a memorandum of understanding to strengthen international cooperation on AI safety.",
           "source_ids": [
             "ca-kr-mou-2026"
           ]
@@ -36883,7 +36883,7 @@
           "kind": "function",
           "code": "evaluation_methods",
           "basis": "activity",
-          "text": "Innovation, Science and Economic Development Canada's Question Period note says CAISI has initiated 13 projects, including on developing benchmarks and evaluations for AI models.",
+          "text": "Initiated 13 projects, including on developing benchmarks and evaluations for AI models.",
           "source_ids": [
             "ca-qp-caisi-2025"
           ]
@@ -36893,7 +36893,7 @@
           "kind": "function",
           "code": "research",
           "basis": "mandate",
-          "text": "ISED's departmental plan says the institute's project provides a non-repayable contribution to CIFAR to deliver the institute's applied and investigator-led research stream.",
+          "text": "Its project provides a non-repayable contribution to CIFAR to deliver the institute's applied and investigator-led research stream.",
           "source_ids": [
             "ca-ised-dp-2025-26-tpp"
           ]
@@ -38127,7 +38127,7 @@
           "kind": "function",
           "code": "model_testing",
           "basis": "mandate",
-          "text": "The Cabinet's AI Basic Plan says it needs strengthening and lists active evaluation of high-performance AI, to deter events that threaten national security, among the work to advance.",
+          "text": "The AI Basic Plan says the institute needs further strengthening and lists active evaluation of high-performance AI to deter events that threaten national security among the work to advance.",
           "source_ids": [
             "jp-ai-basic-plan-2026"
           ]
@@ -38137,7 +38137,7 @@
           "kind": "function",
           "code": "model_testing",
           "basis": "activity",
-          "text": "It says it evaluated the cyber capabilities of Anthropic's Claude Opus 4.8.",
+          "text": "Evaluated the cyber capabilities of Anthropic's Claude Opus 4.8.",
           "source_ids": [
             "jp-aisi-note-exploitbench-2026"
           ]
@@ -38147,7 +38147,7 @@
           "kind": "function",
           "code": "evaluation_methods",
           "basis": "activity",
-          "text": "It says it released an AI safety evaluation tool as open-source software.",
+          "text": "Released an AI safety evaluation tool as open-source software.",
           "source_ids": [
             "catalogue-jp-index"
           ]
@@ -38157,7 +38157,7 @@
           "kind": "function",
           "code": "research",
           "basis": "activity",
-          "text": "It says it commissioned the 'Report on the Specific Influence on AI Safety', with NRI SecureTechnologies as research contractor.",
+          "text": "Commissioned the 'Report on the Specific Influence on AI Safety', with NRI SecureTechnologies as research contractor.",
           "source_ids": [
             "catalogue-jp-12-1"
           ]
@@ -38167,7 +38167,7 @@
           "kind": "function",
           "code": "standards_guidance",
           "basis": "activity",
-          "text": "It says it published a guide to evaluation perspectives that AI system developers and providers can refer to when conducting AI safety evaluations.",
+          "text": "Published a guide to evaluation perspectives that AI system developers and providers can refer to when conducting AI safety evaluations.",
           "source_ids": [
             "depth-jp-evaluation-guide"
           ]
@@ -38177,7 +38177,7 @@
           "kind": "function",
           "code": "risk_monitoring",
           "basis": "activity",
-          "text": "It says it published the second edition of its overview of known attacks on AI systems and their impacts.",
+          "text": "Published the second edition of its overview of known attacks on AI systems and their impacts.",
           "source_ids": [
             "catalogue-jp-5-2"
           ]
@@ -38187,7 +38187,7 @@
           "kind": "function",
           "code": "incident_response",
           "basis": "mandate",
-          "text": "The Cabinet's AI Basic Plan says it needs strengthening and lists the collection and sharing of international AI vulnerability and incident information among the work to advance.",
+          "text": "The AI Basic Plan says the institute needs further strengthening and lists the collection and sharing of international AI vulnerability and incident information among the work to advance.",
           "source_ids": [
             "jp-ai-basic-plan-2026"
           ]
@@ -38197,7 +38197,7 @@
           "kind": "function",
           "code": "international_cooperation",
           "basis": "mandate",
-          "text": "Its host's founding announcement assigns it work on international cooperation with bodies in other countries, such as the UK and US AI Safety Institutes.",
+          "text": "Is tasked with international cooperation with bodies in other countries, such as the UK and US AI Safety Institutes.",
           "source_ids": [
             "jp-ipa-2024-02"
           ]
@@ -38217,7 +38217,7 @@
           "kind": "function",
           "code": "convening",
           "basis": "activity",
-          "text": "J-AISI's status report says it led the launch of a discussion framework aimed at building AI safety benchmarks and held its kickoff in October 2025.",
+          "text": "Led the launch of a discussion framework aimed at building AI safety benchmarks and held its kick-off.",
           "source_ids": [
             "catalogue-jp-4-2"
           ]
@@ -38227,7 +38227,7 @@
           "kind": "function",
           "code": "convening",
           "basis": "mandate",
-          "text": "Its 2024 national status report says that, as a hub for AI safety in Japan, it will consolidate the latest information from industry and academia and promote collaboration among related companies and organisations.",
+          "text": "It says that, as a hub for AI safety in Japan, it plans to consolidate the latest information from industry and academia and promote collaboration among related companies and organisations.",
           "source_ids": [
             "catalogue-jp-20-2"
           ]
@@ -38237,7 +38237,7 @@
           "kind": "function",
           "code": "policy_advice",
           "basis": "activity",
-          "text": "Its 2024 national status report says it took part in government discussions on the procurement and use of AI, led by the Digital Agency and other bodies, and made proposals for addressing the risks of generative AI.",
+          "text": "Took part in government discussions on the procurement and use of AI, led by the Digital Agency and other bodies, and made proposals for addressing the risks of generative AI.",
           "source_ids": [
             "catalogue-jp-20-2"
           ]
@@ -38247,7 +38247,7 @@
           "kind": "function",
           "code": "research",
           "basis": "mandate",
-          "text": "Its page about the institute lists among its tasks research on safety standards, checking tools, disinformation countermeasure technology, and AI and cybersecurity.",
+          "text": "It says its tasks include research on safety standards, checking tools, disinformation countermeasure technology, and AI and cybersecurity.",
           "source_ids": [
             "jp-aisi-about"
           ]
@@ -38257,7 +38257,7 @@
           "kind": "function",
           "code": "talent",
           "basis": "activity",
-          "text": "Its 2024 national status report says it has given lectures and conducted training, 14 times in total.",
+          "text": "Has given lectures and conducted training, 14 times in total.",
           "source_ids": [
             "catalogue-jp-20-2"
           ]
@@ -38937,7 +38937,7 @@
           "kind": "function",
           "code": "evaluation_methods",
           "basis": "activity",
-          "text": "It says it and Scale AI jointly developed ROK-FORTRESS.",
+          "text": "With Scale AI, it jointly developed ROK-FORTRESS.",
           "source_ids": [
             "kr-rok-fortress-2026"
           ]
@@ -38957,7 +38957,7 @@
           "kind": "function",
           "code": "risk_monitoring",
           "basis": "activity",
-          "text": "It says it published the fifth edition of its quarterly AI Safety Forecast Report.",
+          "text": "Published the fifth edition of its quarterly AI Safety Forecast Report.",
           "source_ids": [
             "kr-forecast-5-2026"
           ]
@@ -38967,7 +38967,7 @@
           "kind": "function",
           "code": "foresight",
           "basis": "activity",
-          "text": "It says it published the fifth edition of its quarterly AI Safety Forecast Report.",
+          "text": "Published the fifth edition of its quarterly AI Safety Forecast Report.",
           "source_ids": [
             "kr-forecast-5-2026"
           ]
@@ -38997,7 +38997,7 @@
           "kind": "function",
           "code": "international_cooperation",
           "basis": "activity",
-          "text": "It says it signed a memorandum of understanding with the Singapore AI Safety Institute to strengthen cooperation centred on AI safety evaluation.",
+          "text": "Signed a memorandum of understanding with the Singapore AI Safety Institute to strengthen cooperation centred on AI safety evaluation.",
           "source_ids": [
             "kr-sg-mou-2026"
           ]
@@ -39007,7 +39007,7 @@
           "kind": "function",
           "code": "convening",
           "basis": "mandate",
-          "text": "Its establishment plan from the science ministry assigns it building an AI safety partnership of industry, academia and research centred on the institute to promote research cooperation.",
+          "text": "Is to be the centre of a planned AI safety partnership of industry, academia and research to promote research cooperation.",
           "source_ids": [
             "kr-policy-briefing-2024-10-18"
           ]
@@ -39017,7 +39017,7 @@
           "kind": "function",
           "code": "adoption",
           "basis": "mandate",
-          "text": "Its establishment plan from the science ministry says the government intends to set it up to spread safe AI development and use.",
+          "text": "Is intended to be set up to spread safe AI development and use.",
           "source_ids": [
             "kr-policy-briefing-2024-10-18"
           ]
@@ -39047,7 +39047,7 @@
           "kind": "function",
           "code": "model_testing",
           "basis": "activity",
-          "text": "The joint testing report says Korea AISI ran variation tests on temperature and model size \"to assess the impact of temperature and model size on agent behaviour and safety performance\".",
+          "text": "Ran variation tests on temperature and model size to assess their impact on agent behaviour and safety performance.",
           "source_ids": [
             "catalogue-agentic-report"
           ]
@@ -39057,7 +39057,7 @@
           "kind": "function",
           "code": "model_testing",
           "basis": "mandate",
-          "text": "The ministry says the two sides agreed that the institute and Anthropic will actively work together to secure AI safety through \"AI model and autonomous AI agent safety evaluations\".",
+          "text": "With Anthropic, it is to work on AI model and autonomous AI agent safety evaluations to secure AI safety.",
           "source_ids": [
             "kr-msit-anthropic-2026"
           ]
@@ -39067,7 +39067,7 @@
           "kind": "function",
           "code": "model_testing",
           "basis": "activity",
-          "text": "The Singapore institute reports that the Korean and Singapore institutes completed a bilateral test of whether AI agents carry out multi-step tasks without leaking sensitive data.",
+          "text": "With the Singapore institute, it completed a bilateral test of whether AI agents carry out multi-step tasks without leaking sensitive data.",
           "source_ids": [
             "fix-output-sg-kr-january"
           ]
@@ -39077,7 +39077,7 @@
           "kind": "function",
           "code": "research",
           "basis": "mandate",
-          "text": "The ministry's launch release describes the institute as a dedicated AI safety research organisation for responding systematically and expertly to various AI risks, including those arising from AI's technical limitations, human misuse of AI technology and loss of control over AI.",
+          "text": "Is tasked with AI safety research to respond to risks arising from AI's technical limitations, human misuse of AI technology and loss of control over AI.",
           "source_ids": [
             "kr-msit-2024-11-pdf"
           ]
@@ -39087,7 +39087,7 @@
           "kind": "function",
           "code": "talent",
           "basis": "mandate",
-          "text": "The decree lists advice and education related to AI safety among the institute's businesses.",
+          "text": "Is tasked with advice and education related to AI safety.",
           "source_ids": [
             "kr-ai-basic-act-decree"
           ]
@@ -39097,7 +39097,7 @@
           "kind": "function",
           "code": "evaluation_methods",
           "basis": "mandate",
-          "text": "The ministry's briefing lists among the institute's planned core functions developing \"AI safety evaluation methodology\".",
+          "text": "Is to develop AI safety evaluation methodology.",
           "source_ids": [
             "kr-policy-briefing-2024-10-18"
           ]
@@ -39107,7 +39107,7 @@
           "kind": "function",
           "code": "risk_monitoring",
           "basis": "mandate",
-          "text": "The ministry's briefing lists among the institute's planned core functions collecting and analysing information on major domestic and international AI risks.",
+          "text": "Is to collect and analyse information on major domestic and international AI risks.",
           "source_ids": [
             "kr-policy-briefing-2024-10-18"
           ]
@@ -39573,7 +39573,7 @@
           "kind": "function",
           "code": "model_testing",
           "basis": "activity",
-          "text": "It says that, with the US and UK institutes, it tested Llama-3.1 405B on GSM8K, SQuAD2.0 and MMMLU.",
+          "text": "With the US and UK institutes, it tested Llama-3.1 405B on GSM8K, SQuAD2.0 and MMMLU.",
           "source_ids": [
             "sg-pilot-2024"
           ]
@@ -39583,7 +39583,7 @@
           "kind": "function",
           "code": "model_testing",
           "basis": "activity",
-          "text": "It says that, with the Korean institute, it completed a bilateral test of whether AI agents carry out multi-step tasks without leaking sensitive data.",
+          "text": "With the Korean institute, it completed a bilateral test of whether AI agents carry out multi-step tasks without leaking sensitive data.",
           "source_ids": [
             "fix-output-sg-kr-january"
           ]
@@ -39593,7 +39593,7 @@
           "kind": "function",
           "code": "evaluation_methods",
           "basis": "activity",
-          "text": "The UK AI Security Institute's publication says it authored 'How should evaluators test AI systems (as opposed to models)?'",
+          "text": "Authored 'How should evaluators test AI systems (as opposed to models)?'",
           "source_ids": [
             "r3-gb-network-best-practice-release"
           ]
@@ -39603,7 +39603,7 @@
           "kind": "function",
           "code": "research",
           "basis": "mandate",
-          "text": "IMDA's designation factsheet lists safe model design, development and deployment, and content assurance among the institute's initial AI safety research areas.",
+          "text": "Its initial AI safety research areas include safe model design, development and deployment, and content assurance.",
           "source_ids": [
             "sg-imda"
           ]
@@ -39623,7 +39623,7 @@
           "kind": "function",
           "code": "international_cooperation",
           "basis": "mandate",
-          "text": "IMDA's designation factsheet says it will work with other countries' AI safety institutes on AI safety research.",
+          "text": "Is to work with other countries' AI safety institutes on AI safety research.",
           "source_ids": [
             "sg-imda"
           ]
@@ -39633,7 +39633,7 @@
           "kind": "function",
           "code": "international_cooperation",
           "basis": "activity",
-          "text": "It says that, with the Korean institute, it concluded a bilateral test of whether AI agents leak sensitive data in common tasks.",
+          "text": "With the Korean institute, it concluded a bilateral test of whether AI agents leak sensitive data in common tasks.",
           "source_ids": [
             "fix-output-sg-kr-january"
           ]
@@ -39643,7 +39643,7 @@
           "kind": "function",
           "code": "international_cooperation",
           "basis": "activity",
-          "text": "It says that it tested Llama-3.1 405B with the US and UK institutes.",
+          "text": "Tested Llama-3.1 405B with the US and UK institutes.",
           "source_ids": [
             "sg-pilot-2024"
           ]
@@ -39653,7 +39653,7 @@
           "kind": "function",
           "code": "talent",
           "basis": "mandate",
-          "text": "IMDA's factsheet says the DTC would deepen local capabilities by nurturing R&D talent in digital trust.",
+          "text": "The DTC would deepen local capabilities by nurturing R&D talent in digital trust.",
           "source_ids": [
             "sg-imda"
           ]
@@ -39663,7 +39663,7 @@
           "kind": "function",
           "code": "evaluation_methods",
           "basis": "mandate",
-          "text": "IMDA's fact sheet says the Digital Trust Centre will help to focus on outcomes that include testing the trustworthiness of AI and developing algorithms to test and evaluate the fairness of AI.",
+          "text": "The Digital Trust Centre is to help focus on outcomes including testing the trustworthiness of AI and developing algorithms to test and evaluate its fairness.",
           "source_ids": [
             "sg-imda-dtc-factsheet-2022"
           ]
@@ -40361,7 +40361,7 @@
           "kind": "function",
           "code": "model_testing",
           "basis": "mandate",
-          "text": "The department lists analysing and testing new AI models and applications as one of its goals.",
+          "text": "Has a goal of analysing and testing new AI models and applications.",
           "source_ids": [
             "au-industry"
           ]
@@ -40371,7 +40371,7 @@
           "kind": "function",
           "code": "research",
           "basis": "activity",
-          "text": "The department says it commissioned CSIRO to explore scalable oversight, an aspect of AI alignment.",
+          "text": "Commissioned CSIRO to explore scalable oversight, an aspect of AI alignment.",
           "source_ids": [
             "au-oversight-news-2026"
           ]
@@ -40381,7 +40381,7 @@
           "kind": "function",
           "code": "regulatory_support",
           "basis": "mandate",
-          "text": "The department lists supporting regulators and agencies in responding to emerging AI capabilities, risks and harms as one of its goals.",
+          "text": "Has a goal of supporting regulators and agencies in responding to emerging AI capabilities, risks and harms.",
           "source_ids": [
             "au-industry"
           ]
@@ -40391,7 +40391,7 @@
           "kind": "function",
           "code": "risk_monitoring",
           "basis": "mandate",
-          "text": "The National AI Plan announcement says the government is setting it up to monitor, test and share information on emerging AI capabilities, risks and harms.",
+          "text": "Is being set up to monitor, test and share information on emerging AI capabilities, risks and harms.",
           "source_ids": [
             "au-plan"
           ]
@@ -40401,7 +40401,7 @@
           "kind": "function",
           "code": "policy_advice",
           "basis": "mandate",
-          "text": "The ministers' founding announcement says it will advise where updates to legislation might be needed.",
+          "text": "Is to advise where updates to legislation might be needed.",
           "source_ids": [
             "au-minister"
           ]
@@ -40411,7 +40411,7 @@
           "kind": "function",
           "code": "international_cooperation",
           "basis": "mandate",
-          "text": "The ministers' founding announcement says that, collaborating with partners including the International Network of AI Safety Institutes, it will support global efforts to address AI risks and harms.",
+          "text": "Is to support global efforts to address AI risks and harms in collaboration with partners including the International Network of AI Safety Institutes.",
           "source_ids": [
             "au-minister"
           ]
@@ -40421,7 +40421,7 @@
           "kind": "function",
           "code": "international_cooperation",
           "basis": "activity",
-          "text": "The Australian government's announcement says the memorandum of understanding brings it together with the UK AI Security Institute.",
+          "text": "A memorandum of understanding brings it together with the UK AI Security Institute.",
           "source_ids": [
             "depth-au-uk-mou"
           ]
@@ -40760,7 +40760,7 @@
           "kind": "function",
           "code": "model_testing",
           "basis": "mandate",
-          "text": "The Ministry of Digital's launch release assigns it a pillar of work that covers safety evaluations, testing and AI red teaming.",
+          "text": "Its planned work includes a pillar covering safety evaluations, testing and AI red teaming.",
           "source_ids": [
             "my-digital-2026-07"
           ]
@@ -40770,7 +40770,7 @@
           "kind": "function",
           "code": "regulatory_support",
           "basis": "mandate",
-          "text": "The Ministry of Digital's launch release assigns it governance, safety and regulatory support through the development of standards, risk management and compliance assurance.",
+          "text": "Is to provide governance, safety and regulatory support through the development of standards, risk management and compliance assurance.",
           "source_ids": [
             "my-digital-2026-07"
           ]
@@ -40840,7 +40840,7 @@
           "kind": "function",
           "code": "talent",
           "basis": "mandate",
-          "text": "The ministry says the institute will work through strategic collaborations for talent development, expertise sharing and technology transfer at national and international levels.",
+          "text": "Is to work through strategic collaborations for talent development, expertise sharing and technology transfer at national and international levels.",
           "source_ids": [
             "my-digital-2026-07"
           ]
@@ -41136,7 +41136,7 @@
           "kind": "function",
           "code": "model_testing",
           "basis": "mandate",
-          "text": "It is tasked by the national AI governance guidelines to test and evaluate AI systems for risks.",
+          "text": "Should test and evaluate AI systems for risks.",
           "source_ids": [
             "in-guidelines-2025"
           ]
@@ -41146,7 +41146,7 @@
           "kind": "function",
           "code": "evaluation_methods",
           "basis": "mandate",
-          "text": "Its IndiaAI mandate assigns it research and development on indigenous tools, benchmarks and measurement systems to mitigate AI risks.",
+          "text": "Is to drive research and development on indigenous tools, benchmarks and measurement systems to mitigate AI risks.",
           "source_ids": [
             "in-indiaai-partners-2025"
           ]
@@ -41176,7 +41176,7 @@
           "kind": "function",
           "code": "policy_advice",
           "basis": "mandate",
-          "text": "The national AI governance guidelines say it should advise policymakers and industry actors on AI safety.",
+          "text": "Should advise policymakers and industry actors on AI safety.",
           "source_ids": [
             "in-guidelines-2025"
           ]
@@ -41186,7 +41186,7 @@
           "kind": "function",
           "code": "international_cooperation",
           "basis": "mandate",
-          "text": "The national AI governance guidelines say it should anchor India's participation in global forums such as the International Network of AI Safety Institutes.",
+          "text": "Should anchor India's participation in global forums such as the International Network of AI Safety Institutes.",
           "source_ids": [
             "in-guidelines-2025"
           ]
@@ -41196,7 +41196,7 @@
           "kind": "function",
           "code": "convening",
           "basis": "mandate",
-          "text": "The IndiaAI Mission's announcement says it will be set up on a hub and spoke model, with research and academic institutions and private sector partners joining the hub and taking up projects.",
+          "text": "Is to be set up on a hub and spoke model, with research and academic institutions and private sector partners joining the hub and taking up projects.",
           "source_ids": [
             "in-indiaai-2025"
           ]
@@ -41206,7 +41206,7 @@
           "kind": "function",
           "code": "talent",
           "basis": "mandate",
-          "text": "Its IndiaAI mandate assigns it leading training and awareness programmes for key stakeholders.",
+          "text": "Is to lead training and awareness programmes for key stakeholders.",
           "source_ids": [
             "in-indiaai-partners-2025"
           ]
@@ -41216,7 +41216,7 @@
           "kind": "function",
           "code": "adoption",
           "basis": "mandate",
-          "text": "The ministry's release says it is responsible for promoting the safe, secure, inclusive and trustworthy development, deployment and adoption of AI in India.",
+          "text": "Is responsible for promoting the safe, secure, inclusive and trustworthy development, deployment and adoption of AI in India.",
           "source_ids": [
             "in-pib-2026-07-27"
           ]
@@ -41226,7 +41226,7 @@
           "kind": "function",
           "code": "foresight",
           "basis": "mandate",
-          "text": "The government's AI governance guidelines list among its suggested key functions conducting forecasting research on the potential impact of AI and issues in online safety, privacy, data governance, labour and competition.",
+          "text": "Its suggested functions include conducting forecasting research on the potential impact of AI and issues in online safety, privacy, data governance, labour and competition.",
           "source_ids": [
             "in-guidelines-2025"
           ]
@@ -41236,7 +41236,7 @@
           "kind": "function",
           "code": "research",
           "basis": "mandate",
-          "text": "The IndiaAI Mission's call for partnerships says the institute has been established \"to advance science-based and indigenous research on AI governance\" and approaches to AI safety relevant to the developing world.",
+          "text": "Was established to advance science-based and indigenous research on AI governance and approaches to AI safety relevant to the developing world.",
           "source_ids": [
             "in-indiaai-partners-2025"
           ]
@@ -41589,7 +41589,7 @@
           "kind": "function",
           "code": "international_cooperation",
           "basis": "activity",
-          "text": "The international network's joint testing report says that, with the UK, the EU AI Office, Australia, Canada and Korea, it contributed to the analysis phase of the project.",
+          "text": "With the UK, the EU AI Office, Australia, Canada and Korea, it contributed to the analysis phase of the project.",
           "source_ids": [
             "catalogue-agentic-report"
           ]
@@ -41599,7 +41599,7 @@
           "kind": "function",
           "code": "model_testing",
           "basis": "mandate",
-          "text": "The draft policy says the Kenya AI Safety Institute is to be established as the national technical institution responsible for AI safety testing, evaluation and red-teaming.",
+          "text": "Under the draft policy, it would be established as the national technical institution responsible for AI safety testing, evaluation and red teaming.",
           "source_ids": [
             "ke-draft-policy-2026"
           ]
@@ -41609,7 +41609,7 @@
           "kind": "function",
           "code": "regulatory_support",
           "basis": "mandate",
-          "text": "The draft policy says the Kenya AI Safety Institute shall provide technical evidence, testing capacity, research support, evaluation tools, benchmarks and advisory inputs to support regulators and public institutions.",
+          "text": "Under the draft policy, it would provide technical evidence, testing capacity, research support, evaluation tools, benchmarks and advisory inputs to support regulators and public institutions.",
           "source_ids": [
             "ke-draft-policy-2026"
           ]
@@ -41619,7 +41619,7 @@
           "kind": "function",
           "code": "international_cooperation",
           "basis": "mandate",
-          "text": "The draft policy lists \"international AI safety cooperation\" among the Kenya AI Safety Institute's roles.",
+          "text": "Under the draft policy, its roles would include international AI safety cooperation.",
           "source_ids": [
             "ke-draft-policy-2026"
           ]
@@ -41629,7 +41629,7 @@
           "kind": "function",
           "code": "policy_advice",
           "basis": "mandate",
-          "text": "The draft policy says the Kenya AI Safety Institute and the other listed public bodies shall provide technical expertise, evidence and policy positions to inform Kenya's international engagements.",
+          "text": "Under the draft policy, it and the other listed public bodies would provide technical expertise, evidence and policy positions to inform Kenya's international engagements.",
           "source_ids": [
             "ke-draft-policy-2026"
           ]
