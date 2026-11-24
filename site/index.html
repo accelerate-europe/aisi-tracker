@@ -831,7 +831,7 @@ button.fn-function-label::before { content: ""; position: absolute; inset-inline
 button.fn-function-label[aria-expanded="true"]::after { top: 0; bottom: auto; height: 100%; }
 button.fn-function-label:focus-visible::before { inset: 0; transform: none; outline: var(--rule-strong) solid var(--focus); outline-offset: var(--rule-strong); z-index: 3; }
 button.fn-function-label:focus-visible { outline: none; background: var(--highlight-fill); }
-.fn-function-status { font: inherit; color: var(--muted); }
+.fn-function-status { font: inherit; color: var(--muted); white-space: normal; } /* the status with its since date wraps inside its unit at 320px; the dot stays before its first word */
 .fn-function-status .qualifier-text { font-size: var(--size-meta); } /* the outer body's line box keeps the name's baseline rhythm */
 .fn-function-summary, .fn-function-newest { flex-basis: 100%; margin: 0; margin-inline-end: max(0px, calc(100% - var(--text-width))); padding-left: var(--fn-text-inset); font: var(--type-meta); color: var(--muted); } /* reserve the space beyond the text measure: the flex line otherwise clamps this item to its max-width and can place it beside a short name and status */
 .fn-phone-claims { flex-basis: 100%; min-width: 0; margin-block: var(--sp-2) var(--sp-4); margin-inline-start: var(--fn-text-inset); }
@@ -1409,10 +1409,9 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     document.addEventListener("toggle", schedule, true); document.fonts.ready.then(schedule); schedule();
   }
   var MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-  function fmtDate(s, monthOnly) {
+  function fmtDate(s) {
     if (!s) return "";
     var p = s.split("-");
-    if (monthOnly && p.length > 1) return new Date(s.slice(0, 7) + "-01T00:00:00Z").toLocaleDateString("en-GB", { month: "long", year: "numeric", timeZone: "UTC" });
     return p.length === 3 ? (+p[2]) + " " + MON[+p[1] - 1] + " " + p[0] : p.length === 2 ? MON[+p[1] - 1] + " " + p[0] : p[0];
   }
   // A date inside running text, kept on one line.
@@ -3572,13 +3571,13 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         }
         return FN_COPY.summary.replace("{functions}", text);
       }
-      function fnSince(row) { return row.since ? " since " + fmtDate(row.since, true) : ""; }
+      function fnSince(row) { return row.since ? " since " + fmtDate(row.since.slice(0, 7)) : ""; }
       function fnStatus(row) { return row.value === "activity" ? "active" + fnSince(row) + ", without an assignment" : names[row.value].toLowerCase() + fnSince(row); }
       function fnNewest(row) {
         if (!row.newest) return "";
         var entry = CLAIM_INDEX[row.newest], bound = entry.excerpts[0]; // A function claim has exactly one text binding.
         var day = bound && bound.source.published;
-        return "Newest: " + entry.claim.text + (day ? " (" + fmtDate(day, true) + ")" : "");
+        return "Newest: " + entry.claim.text + (day ? " (" + fmtDate(day.slice(0, 7)) + ")" : "");
       }
       function appendClaims(detail, i, code, inline) {
         var cite = citations(S, (SOURCE_ORDERS[i.jurisdiction_id] || []).slice(), {}), row = rows[i.id][code], value = row.value;

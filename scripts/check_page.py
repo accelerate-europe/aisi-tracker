@@ -9995,7 +9995,7 @@ def function_display_name(institute: dict) -> str:
 
 
 def function_month(day: str) -> str:
-    return f"{calendar.month_name[int(day[5:7])]} {day[:4]}" if len(day) > 4 else day
+    return f"{calendar.month_abbr[int(day[5:7])]} {day[:4]}" if len(day) > 4 else day
 
 
 def function_summary(vocab: dict, counts: dict, total: int) -> str:
@@ -10374,7 +10374,7 @@ FN_CLAIM_INDENT_JS = r"""detail => {
 
 
 FN_CLAIMS_CHECK_JS = "const claimIndentErrors = " + FN_CLAIM_INDENT_JS + ";\n" + r"""
-const functionMonth = day => day.length > 4 ? new Date(day.slice(0, 7) + '-01T00:00:00Z').toLocaleDateString('en-GB', {month:'long', year:'numeric', timeZone:'UTC'}) : day;
+const functionMonth = day => day.length > 4 ? ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+day.slice(5, 7) - 1] + ' ' + day.slice(0, 4) : day; // the page's fmtDate at month precision
 const checkHeading = (detail, cell, country, institute, code, key) => {
   const heading = detail.querySelector('.fn-function-head'), context = detail.querySelector(':scope > .fn-detail-context');
   if (detail.matches('.fn-phone-claims')) {
@@ -10745,7 +10745,7 @@ def check_functions_phone(browser, base_url: str, data: dict, widths=PHONE_WIDTH
                       need(label.getAttribute('aria-expanded') === 'false' && label.getAttribute('type') === 'button', labelKey + ': unopened function control differs');
                       label.click();
                       const claims = item.querySelector(':scope > .fn-phone-claims');
-                      need(claims && summary?.nextElementSibling === claims && claims.id === label.getAttribute('aria-controls') && label.getAttribute('aria-expanded') === 'true', labelKey + ': function claims placement/state differs');
+                      need(claims && (item.querySelector(':scope > .fn-function-newest') || summary)?.nextElementSibling === claims && claims.id === label.getAttribute('aria-controls') && label.getAttribute('aria-expanded') === 'true', labelKey + ': function claims placement/state differs');
                       if (claims) {
                         checkHeading(claims, f, expected.country, null, f.code, labelKey);
                         const a = label.getBoundingClientRect(), s = status.getBoundingClientRect(), bar = getComputedStyle(label, '::after');

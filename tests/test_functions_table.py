@@ -87,7 +87,7 @@ def test_functions_structure_keeps_unanimous_not_found_columns(functions):
     assert [i["id"] for i in check_page.function_rows(data)] == ["z", "a"]
 
 
-@pytest.mark.parametrize("day, label", [("2024", "2024"), ("2024-11", "November 2024"), ("2024-11-20", "November 2024")])
+@pytest.mark.parametrize("day, label", [("2024", "2024"), ("2024-11", "Nov 2024"), ("2024-11-20", "Nov 2024")])
 def test_grid_control_names_since_at_month_precision(functions, day, label):
     data, html = functions
     data = copy.deepcopy(data)
@@ -374,8 +374,8 @@ for(const [value,ids,since,sentence,status] of [
   ['mandate',['m'],null,'Assigned to UK AISI','assigned'],
   ['activity',['a'],null,'UK AISI is active, without an assignment','active, without an assignment'],
   ['both',['m','m2','a'],null,'Assigned to UK AISI, and active','assigned and active'],
-  ['activity',['a'],'2024-11-20','UK AISI is active since November 2024, without an assignment','active since November 2024, without an assignment'],
-  ['both',['m','m2','a'],'2024-11','Assigned to UK AISI, and active since November 2024','assigned and active since November 2024'],
+  ['activity',['a'],'2024-11-20','UK AISI is active since Nov 2024, without an assignment','active since Nov 2024, without an assignment'],
+  ['both',['m','m2','a'],'2024-11','Assigned to UK AISI, and active since Nov 2024','assigned and active since Nov 2024'],
   ['activity',['a'],'2024','UK AISI is active since 2024, without an assignment','active since 2024, without an assignment']
 ]) for(const inline of [false,true]) {
   rows.sample.test={value,claim_ids:ids,since};
@@ -387,7 +387,7 @@ for(const [value,ids,since,sentence,status] of [
   assert.deepEqual(evidence.map(n=>n.className==='fn-basis'?n.textContent:n.dataset.claim),
     value==='both'?['Assignment','m','m2','Activity','a']:ids);
 }
-assert.equal(fnNewest({newest:'a'}),'Newest: It ran tests. (November 2024)');
+assert.equal(fnNewest({newest:'a'}),'Newest: It ran tests. (Nov 2024)');
 CLAIM_INDEX.a.excerpts[0].source.published='2024';
 assert.equal(fnNewest({newest:'a'}),'Newest: It ran tests. (2024)');
 delete CLAIM_INDEX.a.excerpts[0].source.published;
