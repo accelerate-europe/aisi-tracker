@@ -31823,6 +31823,16 @@
           ]
         },
         {
+          "id": "claims-9e101e0d45fa4d7fbc3ade8c2b145ec8",
+          "kind": "function",
+          "code": "international_cooperation",
+          "basis": "activity",
+          "text": "It says that, with the US institute, it jointly evaluated Moonshot AI's Kimi K3 model.",
+          "source_ids": [
+            "r3-gb-kimi-release"
+          ]
+        },
+        {
           "id": "claims-9b738056fb284533b4951aec055d0399",
           "kind": "function",
           "code": "adoption",
@@ -31868,6 +31878,16 @@
           "text": "The government's launch announcement says the institute is tasked with testing the safety of emerging types of AI.",
           "source_ids": [
             "gb-aisi-launch"
+          ]
+        },
+        {
+          "id": "claims-99fa6752b3ca4c97b86babc76a35de87",
+          "kind": "function",
+          "code": "model_testing",
+          "basis": "activity",
+          "text": "The research paper says the UK AI Security Institute developed and performed an alignment evaluation.",
+          "source_ids": [
+            "depth-gb-supply-chain"
           ]
         },
         {
@@ -34528,6 +34548,16 @@
           ]
         },
         {
+          "id": "claims-4388813297314e63aa98e43db6bf2b19",
+          "kind": "function",
+          "code": "model_testing",
+          "basis": "activity",
+          "text": "The Commission says it was one of the three network members that ran the agentic evaluations for the cybersecurity strand.",
+          "source_ids": [
+            "eu-joint-testing-2025"
+          ]
+        },
+        {
           "id": "claims-8dd06cb022f34a19bcf111cf0da4ba0a",
           "kind": "function",
           "code": "regulatory_enforcement",
@@ -35973,6 +36003,16 @@
           ]
         },
         {
+          "id": "claims-cc05688a08fd41f6a893cf6f26f26ece",
+          "kind": "function",
+          "code": "model_testing",
+          "basis": "activity",
+          "text": "NIST's report says it evaluated GLM-5.3 on four benchmarks covering vulnerability discovery and exploit development.",
+          "source_ids": [
+            "us-glm53"
+          ]
+        },
+        {
           "id": "claims-ae9202af0518471fa52b995a5da33743",
           "kind": "function",
           "code": "evaluation_methods",
@@ -36000,6 +36040,16 @@
           "text": "NIST's announcement says it held three practitioner workshops and conducted a literature review on the challenges of post-deployment monitoring of AI systems.",
           "source_ids": [
             "fix-output-us-entry-4"
+          ]
+        },
+        {
+          "id": "claims-0fc3e30d883649df9179ed50cae86fc3",
+          "kind": "function",
+          "code": "research",
+          "basis": "activity",
+          "text": "NIST's research blog says it partnered on a research paper using data from a public AI agent red-teaming competition to examine the robustness of leading AI models.",
+          "source_ids": [
+            "us-blog-red-teaming-2026"
           ]
         },
         {
@@ -38983,6 +39033,16 @@
           ]
         },
         {
+          "id": "claims-27e877612eca411c93c9b8684cad36cd",
+          "kind": "function",
+          "code": "model_testing",
+          "basis": "activity",
+          "text": "The Singapore institute reports that the Korean and Singapore institutes completed a bilateral test of whether AI agents carry out multi-step tasks without leaking sensitive data.",
+          "source_ids": [
+            "fix-output-sg-kr-january"
+          ]
+        },
+        {
           "id": "claims-74b3c80e552d474097641a9ebac41d70",
           "kind": "function",
           "code": "research",
@@ -39486,6 +39546,16 @@
           "text": "It says that, with the US and UK institutes, it tested Llama-3.1 405B on GSM8K, SQuAD2.0 and MMMLU.",
           "source_ids": [
             "sg-pilot-2024"
+          ]
+        },
+        {
+          "id": "claims-048607bbf6a64363a59244d6808da9b1",
+          "kind": "function",
+          "code": "model_testing",
+          "basis": "activity",
+          "text": "It says that, with the Korean institute, it completed a bilateral test of whether AI agents carry out multi-step tasks without leaking sensitive data.",
+          "source_ids": [
+            "fix-output-sg-kr-january"
           ]
         },
         {
@@ -56487,6 +56557,17 @@
               },
               "testing_capacity",
               "notes"
+            ],
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "claims",
+              {
+                "id": "claims-4388813297314e63aa98e43db6bf2b19"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-17"
@@ -63338,6 +63419,17 @@
                 "code": "in_house"
               },
               "code"
+            ],
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "claims",
+              {
+                "id": "claims-cc05688a08fd41f6a893cf6f26f26ece"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-17"
@@ -72319,6 +72411,17 @@
               },
               "testing_capacity",
               "notes"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-99fa6752b3ca4c97b86babc76a35de87"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-17"
@@ -89451,6 +89554,28 @@
                 "id": "claims-1822c155dc964f6686d26f5f7cfbcf4a"
               },
               "text"
+            ],
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-27e877612eca411c93c9b8684cad36cd"
+              },
+              "text"
+            ],
+            [
+              "institutes",
+              {
+                "id": "sg-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-048607bbf6a64363a59244d6808da9b1"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-17"
@@ -94863,6 +94988,17 @@
               },
               "credit",
               "institute_id"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-9e101e0d45fa4d7fbc3ade8c2b145ec8"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-17"
@@ -119972,6 +120108,17 @@
                 "lineage": "insights-ai-agent-security-large-scale-red-teaming-competition"
               },
               "attribution"
+            ],
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "claims",
+              {
+                "id": "claims-0fc3e30d883649df9179ed50cae86fc3"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-11-07"
