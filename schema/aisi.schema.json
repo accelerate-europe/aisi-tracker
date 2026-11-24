@@ -1999,6 +1999,14 @@
                   "type": "string",
                   "description": "Title of the published artefact."
                 },
+                "shows": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Authored: the functions this output shows, judged on its bound text against the function tests (docs/design/claims-1.1.md section 2). Absent means not yet judged; the gap report then uses its type."
+                },
                 "source_ids": {
                   "$ref": "#/$defs/source_ids_required"
                 },

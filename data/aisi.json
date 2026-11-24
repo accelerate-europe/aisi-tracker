@@ -532,6 +532,7 @@
     },
     "provisional": [
       "institutes[].functions",
+      "institutes[].outputs[].shows",
       "vocabularies.function",
       "vocabularies.development"
     ],

@@ -38,6 +38,7 @@ if __package__:
     from .method_checks import check_method_rules, UNQUOTED_REPORT, primary_source_warnings, unquoted_claims, unquoted_report, unquoted_warnings, search_log_notes, reader_text_warnings, reader_text_report  # type: ignore[import-not-found]
     from .reader_text import READER_TEXT_REPORT  # type: ignore[import-not-found]
     from .source_origins import source_origin_report, write_source_origin_report
+    from .function_gaps import function_gaps, report_lines as function_gap_lines
     from . import rereads
     from .versioning import dated_data, effective_date, parse_version, require_release
     from .agent_files import LICENSES, doi_url, api_files, api_landing_html, api_root, citation_cff, zenodo_json, head_links, share_tags, image_alt_text, json_ld_script, llms_txt, robots_txt, sitemap_xml, feed_xml, FEED_PATH, orientation_html, definition_markdown, public_url_errors
@@ -52,6 +53,7 @@ else:  # Direct script execution.
     from method_checks import check_method_rules, UNQUOTED_REPORT, primary_source_warnings, unquoted_claims, unquoted_report, unquoted_warnings, search_log_notes, reader_text_warnings, reader_text_report
     from reader_text import READER_TEXT_REPORT  # type: ignore[import-not-found, no-redef]
     from source_origins import source_origin_report, write_source_origin_report
+    from function_gaps import function_gaps, report_lines as function_gap_lines
     import rereads  # type: ignore[no-redef]
     from versioning import dated_data, effective_date, parse_version, require_release
     from agent_files import LICENSES, doi_url, api_files, api_landing_html, api_root, citation_cff, zenodo_json, head_links, share_tags, image_alt_text, json_ld_script, llms_txt, robots_txt, sitemap_xml, feed_xml, FEED_PATH, orientation_html, definition_markdown, public_url_errors
@@ -1180,6 +1182,7 @@ def main() -> None:
     warnings += [f"closest body: {line}" for line in fact_pipeline.closest_body_warnings(d, published)]
     warnings += fact_pipeline.next_check_warnings(d, published)
     warnings += search_log_notes(d)
+    warnings += function_gap_lines(function_gaps(published))
     for warning in warnings:
         print(f"warning: {warning}", file=sys.stderr)
     if args.report_dir:

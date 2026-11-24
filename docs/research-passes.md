@@ -2,6 +2,8 @@
 
 Research for the dataset runs as dedicated passes. A pass is one research session, or a session and its subagents, with its own folder in the private store and a pass file that states who ran it, with which harness and models, when, what kind of pass it is and its scope. During a pass the agent searches, reads and writes findings; it does not edit the repository. Data changes follow in a separate session whose commits name the pass.
 
+Every output a pass adds answers "which function does it show" in `outputs[].shows`, judged on its bound text against the [function tests](design/claims-1.1.md#2-code-lists-proposals).
+
 `scripts/research_pass.py` extracts a pass's log and validates pass folders. `scripts/research_log.py` is the transcript extractor it uses; its module docstring defines the log format. `scripts/sweep.py` prepares the two recurring kinds of pass, the per-state re-check and the monthly global topic sweep ([sweeps](sweep.md)).
 
 ## Where passes live
